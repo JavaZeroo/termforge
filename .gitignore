@@ -1,0 +1,20 @@
+# Generated workloads and local measurements (publish only reviewed results)
+/benchmarks/generated/
+/benchmarks/local-results/
+/local/
+/build/
+/dist/
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.env
+.env.*
+!.env.example
+*.dmp
+*.exe
+*.dll
+*.pdb
+*.log
+.DS_Store
+Thumbs.db
