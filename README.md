@@ -23,6 +23,7 @@ An independent, fully open-source terminal project driven by reproducible perfor
 |---|---|
 | [总体计划](docs/PLAN.md) | 分阶段交付与决策关卡 |
 | [首个里程碑](docs/milestones/M0-baseline.md) | WindTerm 基线工具、实验及原型规格 |
+| [任务跟踪](docs/TRACKING.md) | GitHub 里程碑及有依赖关系的实施任务 |
 | [性能测量规范](benchmarks/README.md) | 场景、指标、环境控制与正确性 |
 | [运行记录模板](benchmarks/run-template.json) | 不包含虚构结果的记录格式草案 |
 | [功能矩阵](docs/FEATURES.md) | 首版范围与高级能力 |
