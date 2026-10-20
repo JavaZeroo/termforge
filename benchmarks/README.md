@@ -1,8 +1,10 @@
 # 性能基准
 
-已定义 [M0 实验协议 v0.1](PROTOCOL.md)、[机器可读场景参数](cases.json) 与 [记录模板](run-template.json)。[工具使用说明](tools/README.md) 包含已实现的生成器、播放器和 Windows 资源采样。#3 的画面/输入端点及正式开销校准仍未完成；尚无 WindTerm 实测结果。执行以 PROTOCOL.md 为准，本页为导航摘要。
+已定义 [M0 实验协议 v0.1](PROTOCOL.md)、[机器可读场景参数](cases.json) 与 [记录模板](run-template.json)。[工具使用说明](tools/README.md) 包含生成器、播放器、Windows 资源采样与自建窗口视觉诊断。#3 的实际终端端点适配及正式开销校准仍未完成；尚无 WindTerm 实测结果。执行以 PROTOCOL.md 为准，本页为导航摘要。
 
 [2026-10-20 工具自检记录](results/2026-10-20-tool-calibration/README.md) 保留了开销问题及修正后的诊断；校准门槛仍未通过。
+
+[视觉链路两批诊断](results/2026-10-20-visual-diagnostic/README.md) 保留了全部事件、捕获间隔与时钟区间；当前实际捕获粒度不足以可靠比较几毫秒差异。
 
 ## 测量矩阵
 

@@ -52,5 +52,6 @@ JSONL 有 metadata、sample、schedule_gap、end 类型。采样包含 root、de
 ## 完成边界
 
 - 已实现：确定性数据、逻辑文本 oracle、字节播放器、Windows 进程树资源 JSONL、合成负载校准。
-- 待实现：画面 capture/marker 匹配、输入注入与时钟对齐、T01 实际采样开销校准、完整 JSON Schema/采样汇总、节流/交互驱动。
+- 已实现视觉诊断：[自建窗口捕获、序列标记匹配、F13 注入、时钟往返校准](VISUAL.md)，另有实验性的固定像素模板录制/等待工具。
+- 待完成：WindTerm 实际文本标记/输入驱动验证、T01 捕获/采样开销校准、完整 JSON Schema/采样汇总、节流/交互驱动。
 - #3 保持进行中；任何工具校准均不代表 WindTerm 基线或性能达标。

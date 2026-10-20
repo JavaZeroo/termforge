@@ -1,0 +1,860 @@
+{
+  "kind": "owned_window_visual_diagnostic",
+  "status": "complete_diagnostic",
+  "python_version": "3.12.10",
+  "os": "Windows-11-10.0.26200-SP0",
+  "events_per_delay": 10,
+  "configured_delays_ms": [
+    0,
+    80
+  ],
+  "backend": "visible desktop BitBlt BGRA ROI; SendInput F13",
+  "source_sha256": {
+    "visual.py": "18abdef1b3f6211f376c1bc9549a49222d0099d124d20bbafc2e6e1fc8251b67",
+    "visual_fixture.py": "ebff7d600f312c2f20804ed8195e346408b8b0e14148db640f8d5dc93f30614b",
+    "calibrate_visual.py": "3c882715d53cee3a55c258906bc925d5df3c5d484db019693dacd1251cac2e56"
+  },
+  "samples": [
+    {
+      "event_id": "0-1",
+      "delay_ms": 0,
+      "sequence": 1,
+      "injection": {
+        "submit_ns": 1077577483118400,
+        "return_ns": 1077577484372500,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 2,
+      "first_match": {
+        "capture_before_ns": 1077577509482300,
+        "capture_after_ns": 1077577518581600
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077577484494600,
+        "capture_after_ns": 1077577500888400
+      },
+      "capture_observed_latency_ns": 35463200,
+      "observation_bracket_ns": [
+        1376200,
+        35463200
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 1,
+        "input_received_ns": 1077577486031900,
+        "paint_submitted_ns": 1077577487147800
+      }
+    },
+    {
+      "event_id": "0-2",
+      "delay_ms": 0,
+      "sequence": 2,
+      "injection": {
+        "submit_ns": 1077578003004100,
+        "return_ns": 1077578003653000,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 1,
+      "first_match": {
+        "capture_before_ns": 1077578003719200,
+        "capture_after_ns": 1077578010658600
+      },
+      "previous_nonmatch": null,
+      "capture_observed_latency_ns": 7654500,
+      "observation_bracket_ns": [
+        0,
+        7654500
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 2,
+        "input_received_ns": 1077578003824300,
+        "paint_submitted_ns": 1077578004599800
+      }
+    },
+    {
+      "event_id": "0-3",
+      "delay_ms": 0,
+      "sequence": 3,
+      "injection": {
+        "submit_ns": 1077578593802000,
+        "return_ns": 1077578594516500,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 2,
+      "first_match": {
+        "capture_before_ns": 1077578610768200,
+        "capture_after_ns": 1077578618669700
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077578594550100,
+        "capture_after_ns": 1077578602086000
+      },
+      "capture_observed_latency_ns": 24867700,
+      "observation_bracket_ns": [
+        748100,
+        24867700
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 3,
+        "input_received_ns": 1077578594760400,
+        "paint_submitted_ns": 1077578595584800
+      }
+    },
+    {
+      "event_id": "0-4",
+      "delay_ms": 0,
+      "sequence": 4,
+      "injection": {
+        "submit_ns": 1077579034902500,
+        "return_ns": 1077579035457600,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 1,
+      "first_match": {
+        "capture_before_ns": 1077579035543300,
+        "capture_after_ns": 1077579043571000
+      },
+      "previous_nonmatch": null,
+      "capture_observed_latency_ns": 8668500,
+      "observation_bracket_ns": [
+        0,
+        8668500
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 4,
+        "input_received_ns": 1077579035711100,
+        "paint_submitted_ns": 1077579036482400
+      }
+    },
+    {
+      "event_id": "0-5",
+      "delay_ms": 0,
+      "sequence": 5,
+      "injection": {
+        "submit_ns": 1077579543849300,
+        "return_ns": 1077579544427800,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 2,
+      "first_match": {
+        "capture_before_ns": 1077579560378400,
+        "capture_after_ns": 1077579567970000
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077579544510500,
+        "capture_after_ns": 1077579551993700
+      },
+      "capture_observed_latency_ns": 24120700,
+      "observation_bracket_ns": [
+        661200,
+        24120700
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 5,
+        "input_received_ns": 1077579544671300,
+        "paint_submitted_ns": 1077579545440900
+      }
+    },
+    {
+      "event_id": "0-6",
+      "delay_ms": 0,
+      "sequence": 6,
+      "injection": {
+        "submit_ns": 1077580155705000,
+        "return_ns": 1077580156587600,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 2,
+      "first_match": {
+        "capture_before_ns": 1077580168747600,
+        "capture_after_ns": 1077580176227500
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077580156621100,
+        "capture_after_ns": 1077580160342400
+      },
+      "capture_observed_latency_ns": 20522500,
+      "observation_bracket_ns": [
+        916100,
+        20522500
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 6,
+        "input_received_ns": 1077580156902300,
+        "paint_submitted_ns": 1077580158197500
+      }
+    },
+    {
+      "event_id": "0-7",
+      "delay_ms": 0,
+      "sequence": 7,
+      "injection": {
+        "submit_ns": 1077580834498800,
+        "return_ns": 1077580835134300,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 1,
+      "first_match": {
+        "capture_before_ns": 1077580835196600,
+        "capture_after_ns": 1077580842446000
+      },
+      "previous_nonmatch": null,
+      "capture_observed_latency_ns": 7947200,
+      "observation_bracket_ns": [
+        0,
+        7947200
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 7,
+        "input_received_ns": 1077580835343000,
+        "paint_submitted_ns": 1077580836968900
+      }
+    },
+    {
+      "event_id": "0-8",
+      "delay_ms": 0,
+      "sequence": 8,
+      "injection": {
+        "submit_ns": 1077581145367000,
+        "return_ns": 1077581146635300,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 2,
+      "first_match": {
+        "capture_before_ns": 1077581161695300,
+        "capture_after_ns": 1077581166643100
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077581146713200,
+        "capture_after_ns": 1077581153259800
+      },
+      "capture_observed_latency_ns": 21276100,
+      "observation_bracket_ns": [
+        1346200,
+        21276100
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 8,
+        "input_received_ns": 1077581147616900,
+        "paint_submitted_ns": 1077581148499300
+      }
+    },
+    {
+      "event_id": "0-9",
+      "delay_ms": 0,
+      "sequence": 9,
+      "injection": {
+        "submit_ns": 1077581438206800,
+        "return_ns": 1077581438803600,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 1,
+      "first_match": {
+        "capture_before_ns": 1077581438828500,
+        "capture_after_ns": 1077581441912800
+      },
+      "previous_nonmatch": null,
+      "capture_observed_latency_ns": 3706000,
+      "observation_bracket_ns": [
+        0,
+        3706000
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 9,
+        "input_received_ns": 1077581439010000,
+        "paint_submitted_ns": 1077581439782800
+      }
+    },
+    {
+      "event_id": "0-10",
+      "delay_ms": 0,
+      "sequence": 10,
+      "injection": {
+        "submit_ns": 1077581951166600,
+        "return_ns": 1077581951883800,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 1,
+      "first_match": {
+        "capture_before_ns": 1077581951909900,
+        "capture_after_ns": 1077581959947900
+      },
+      "previous_nonmatch": null,
+      "capture_observed_latency_ns": 8781300,
+      "observation_bracket_ns": [
+        0,
+        8781300
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 10,
+        "input_received_ns": 1077581952138000,
+        "paint_submitted_ns": 1077581952939700
+      }
+    },
+    {
+      "event_id": "80-1",
+      "delay_ms": 80,
+      "sequence": 1,
+      "injection": {
+        "submit_ns": 1077582267227000,
+        "return_ns": 1077582267838000,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 7,
+      "first_match": {
+        "capture_before_ns": 1077582358344700,
+        "capture_after_ns": 1077582366608600
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077582341638900,
+        "capture_after_ns": 1077582350069100
+      },
+      "capture_observed_latency_ns": 99381600,
+      "observation_bracket_ns": [
+        74411900,
+        99381600
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 1,
+        "input_received_ns": 1077582268081900,
+        "paint_submitted_ns": 1077582358415400
+      }
+    },
+    {
+      "event_id": "80-2",
+      "delay_ms": 80,
+      "sequence": 2,
+      "injection": {
+        "submit_ns": 1077582666825800,
+        "return_ns": 1077582667728600,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 6,
+      "first_match": {
+        "capture_before_ns": 1077582751369800,
+        "capture_after_ns": 1077582753588700
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077582734256800,
+        "capture_after_ns": 1077582742982400
+      },
+      "capture_observed_latency_ns": 86762900,
+      "observation_bracket_ns": [
+        67431000,
+        86762900
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 2,
+        "input_received_ns": 1077582668215400,
+        "paint_submitted_ns": 1077582749991800
+      }
+    },
+    {
+      "event_id": "80-3",
+      "delay_ms": 80,
+      "sequence": 3,
+      "injection": {
+        "submit_ns": 1077583125068300,
+        "return_ns": 1077583125690400,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 7,
+      "first_match": {
+        "capture_before_ns": 1077583223519600,
+        "capture_after_ns": 1077583232877600
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077583213341500,
+        "capture_after_ns": 1077583215196400
+      },
+      "capture_observed_latency_ns": 107809300,
+      "observation_bracket_ns": [
+        88273200,
+        107809300
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 3,
+        "input_received_ns": 1077583125904100,
+        "paint_submitted_ns": 1077583219837100
+      }
+    },
+    {
+      "event_id": "80-4",
+      "delay_ms": 80,
+      "sequence": 4,
+      "injection": {
+        "submit_ns": 1077583824589400,
+        "return_ns": 1077583825472700,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 6,
+      "first_match": {
+        "capture_before_ns": 1077583912898100,
+        "capture_after_ns": 1077583916807000
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077583891381700,
+        "capture_after_ns": 1077583904050700
+      },
+      "capture_observed_latency_ns": 92217600,
+      "observation_bracket_ns": [
+        66792300,
+        92217600
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 4,
+        "input_received_ns": 1077583825748700,
+        "paint_submitted_ns": 1077583908641700
+      }
+    },
+    {
+      "event_id": "80-5",
+      "delay_ms": 80,
+      "sequence": 5,
+      "injection": {
+        "submit_ns": 1077584283145400,
+        "return_ns": 1077584284006200,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 7,
+      "first_match": {
+        "capture_before_ns": 1077584377903500,
+        "capture_after_ns": 1077584382847000
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077584357267600,
+        "capture_after_ns": 1077584369210500
+      },
+      "capture_observed_latency_ns": 99701600,
+      "observation_bracket_ns": [
+        74122200,
+        99701600
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 5,
+        "input_received_ns": 1077584284217900,
+        "paint_submitted_ns": 1077584377002600
+      }
+    },
+    {
+      "event_id": "80-6",
+      "delay_ms": 80,
+      "sequence": 6,
+      "injection": {
+        "submit_ns": 1077584661347200,
+        "return_ns": 1077584662328600,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 7,
+      "first_match": {
+        "capture_before_ns": 1077584758614600,
+        "capture_after_ns": 1077584765632400
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077584741211100,
+        "capture_after_ns": 1077584749846100
+      },
+      "capture_observed_latency_ns": 104285200,
+      "observation_bracket_ns": [
+        79863900,
+        104285200
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 6,
+        "input_received_ns": 1077584662793000,
+        "paint_submitted_ns": 1077584754326100
+      }
+    },
+    {
+      "event_id": "80-7",
+      "delay_ms": 80,
+      "sequence": 7,
+      "injection": {
+        "submit_ns": 1077585099571000,
+        "return_ns": 1077585100548200,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 7,
+      "first_match": {
+        "capture_before_ns": 1077585199614500,
+        "capture_after_ns": 1077585212465800
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077585182134800,
+        "capture_after_ns": 1077585191328900
+      },
+      "capture_observed_latency_ns": 112894800,
+      "observation_bracket_ns": [
+        82563800,
+        112894800
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 7,
+        "input_received_ns": 1077585100881000,
+        "paint_submitted_ns": 1077585190265400
+      }
+    },
+    {
+      "event_id": "80-8",
+      "delay_ms": 80,
+      "sequence": 8,
+      "injection": {
+        "submit_ns": 1077585959171400,
+        "return_ns": 1077585959823400,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 7,
+      "first_match": {
+        "capture_before_ns": 1077586052926100,
+        "capture_after_ns": 1077586059091700
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077586031730700,
+        "capture_after_ns": 1077586044289200
+      },
+      "capture_observed_latency_ns": 99920300,
+      "observation_bracket_ns": [
+        72559300,
+        99920300
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 8,
+        "input_received_ns": 1077585960940100,
+        "paint_submitted_ns": 1077586049064100
+      }
+    },
+    {
+      "event_id": "80-9",
+      "delay_ms": 80,
+      "sequence": 9,
+      "injection": {
+        "submit_ns": 1077586689893000,
+        "return_ns": 1077586690529400,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 6,
+      "first_match": {
+        "capture_before_ns": 1077586781775600,
+        "capture_after_ns": 1077586783809400
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077586764563000,
+        "capture_after_ns": 1077586773171700
+      },
+      "capture_observed_latency_ns": 93916400,
+      "observation_bracket_ns": [
+        74670000,
+        93916400
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 9,
+        "input_received_ns": 1077586690788200,
+        "paint_submitted_ns": 1077586773499800
+      }
+    },
+    {
+      "event_id": "80-10",
+      "delay_ms": 80,
+      "sequence": 10,
+      "injection": {
+        "submit_ns": 1077587175409600,
+        "return_ns": 1077587177123200,
+        "accepted_events": 2
+      },
+      "status": "observed",
+      "frames": 8,
+      "first_match": {
+        "capture_before_ns": 1077587282066900,
+        "capture_after_ns": 1077587283988400
+      },
+      "previous_nonmatch": {
+        "capture_before_ns": 1077587264226800,
+        "capture_after_ns": 1077587273352600
+      },
+      "capture_observed_latency_ns": 108578800,
+      "observation_bracket_ns": [
+        88817200,
+        108578800
+      ],
+      "fixture": {
+        "type": "paint_submitted",
+        "sequence": 10,
+        "input_received_ns": 1077587177642800,
+        "paint_submitted_ns": 1077587278046700
+      }
+    }
+  ],
+  "limitations": [
+    "Calibration fixture only, no WindTerm or PTY. Capture visibility is not photons.",
+    "BitBlt has no compositor presentation timestamp; polling bracket is observational.",
+    "Marker checks 32 cell centers, not full screenshot/text/style correctness.",
+    "Focus guard cannot atomically bind global SendInput to a window; fixture only.",
+    "Topmost overlays/HDR/color transforms can invalidate visible-desktop capture.",
+    "No universal capture overhead bound or formal T01 calibration established."
+  ],
+  "clock_alignment": {
+    "lower_ns": -36200,
+    "upper_ns": 27500,
+    "rtt_ns": 63700,
+    "method": "minimum-RTT interval; no symmetric-delay assumption",
+    "exchanges": [
+      {
+        "before_ns": 1077577446778500,
+        "after_ns": 1077577447182600,
+        "remote_ns": 1077577446907500
+      },
+      {
+        "before_ns": 1077577447184700,
+        "after_ns": 1077577447368400,
+        "remote_ns": 1077577447279000
+      },
+      {
+        "before_ns": 1077577447369800,
+        "after_ns": 1077577447463200,
+        "remote_ns": 1077577447413800
+      },
+      {
+        "before_ns": 1077577447464400,
+        "after_ns": 1077577447689700,
+        "remote_ns": 1077577447543600
+      },
+      {
+        "before_ns": 1077577447690800,
+        "after_ns": 1077577447815200,
+        "remote_ns": 1077577447727300
+      },
+      {
+        "before_ns": 1077577447816500,
+        "after_ns": 1077577447898800,
+        "remote_ns": 1077577447851100
+      },
+      {
+        "before_ns": 1077577447899700,
+        "after_ns": 1077577447984600,
+        "remote_ns": 1077577447931900
+      },
+      {
+        "before_ns": 1077577447985700,
+        "after_ns": 1077577448078700,
+        "remote_ns": 1077577448029400
+      },
+      {
+        "before_ns": 1077577448079700,
+        "after_ns": 1077577448157600,
+        "remote_ns": 1077577448111400
+      },
+      {
+        "before_ns": 1077577448158500,
+        "after_ns": 1077577448246800,
+        "remote_ns": 1077577448192000
+      },
+      {
+        "before_ns": 1077577448247600,
+        "after_ns": 1077577448336800,
+        "remote_ns": 1077577448279400
+      },
+      {
+        "before_ns": 1077577448337700,
+        "after_ns": 1077577448437500,
+        "remote_ns": 1077577448374600
+      },
+      {
+        "before_ns": 1077577448438500,
+        "after_ns": 1077577448516200,
+        "remote_ns": 1077577448474300
+      },
+      {
+        "before_ns": 1077577448517000,
+        "after_ns": 1077577448615800,
+        "remote_ns": 1077577448540200
+      },
+      {
+        "before_ns": 1077577448616600,
+        "after_ns": 1077577448702100,
+        "remote_ns": 1077577448643100
+      },
+      {
+        "before_ns": 1077577448702800,
+        "after_ns": 1077577448766500,
+        "remote_ns": 1077577448730300
+      },
+      {
+        "before_ns": 1077577448767200,
+        "after_ns": 1077577448842500,
+        "remote_ns": 1077577448795200
+      },
+      {
+        "before_ns": 1077577448843600,
+        "after_ns": 1077577448914300,
+        "remote_ns": 1077577448873500
+      },
+      {
+        "before_ns": 1077577448915200,
+        "after_ns": 1077577449053300,
+        "remote_ns": 1077577448998300
+      },
+      {
+        "before_ns": 1077577449054500,
+        "after_ns": 1077577449164100,
+        "remote_ns": 1077577449124100
+      }
+    ]
+  },
+  "capture_only": {
+    "samples_ns": [
+      9400300,
+      7792200,
+      8460000,
+      8512200,
+      8455800,
+      11371700,
+      4490200,
+      8179600,
+      8509900,
+      8594200,
+      11370500,
+      7407000,
+      6200600,
+      1671300,
+      6022800,
+      8226800,
+      8759700,
+      9561900,
+      8947800,
+      6279600,
+      1967700,
+      7234800,
+      7343900,
+      12226500,
+      5618900,
+      8295000,
+      6916600,
+      8658900,
+      7781800,
+      9334700,
+      8357500,
+      7759900,
+      7675800,
+      8824900,
+      8002200,
+      12065600,
+      4336300,
+      8365700,
+      8475900,
+      8674700,
+      7885700,
+      10096500,
+      6283000,
+      1528700,
+      6432200,
+      8500500,
+      8244300,
+      14920700,
+      10167000,
+      8523400,
+      9748800,
+      6667900,
+      8993700,
+      7630900,
+      8230500,
+      8423400,
+      8033000,
+      13109300,
+      5560000,
+      7830600,
+      6793700,
+      8486800,
+      9255900,
+      8520200,
+      7388700,
+      7834800,
+      8548300,
+      7807100,
+      8108000,
+      12109400,
+      6181300,
+      6654100,
+      2629100,
+      6570900,
+      7815300,
+      12411500,
+      5762200,
+      6133100,
+      8392700,
+      10130100,
+      6773100,
+      12133500,
+      5140800,
+      8395600,
+      7609600,
+      9633100,
+      7308000,
+      11884200,
+      4158200,
+      8138100,
+      8461300,
+      8292000,
+      11597100,
+      5595400,
+      7793100,
+      8719700,
+      7435100,
+      8172500,
+      11280000,
+      7134200
+    ],
+    "process_cpu_seconds": 0.046875,
+    "median_ns": 8203200.0
+  },
+  "summary": {
+    "0": {
+      "observed": 10,
+      "median_ns": 14651900.0,
+      "p95_ns": null,
+      "p99_ns": null
+    },
+    "80": {
+      "observed": 10,
+      "median_ns": 99810950.0,
+      "p95_ns": null,
+      "p99_ns": null
+    }
+  }
+}

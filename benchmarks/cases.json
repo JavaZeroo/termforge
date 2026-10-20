@@ -171,6 +171,7 @@
     "partial_generator": {
       "T05": "alternate-screen bytes only; resize/interactive acknowledgement pending"
     },
-    "resources": "Windows process-tree polling implemented; presentation/input pending"
+    "resources": "Windows process-tree polling implemented; presentation/input pending",
+    "visual": "Owned-window capture/input/clock diagnostics implemented; fixed-template watcher experimental; WindTerm integration and overhead gate pending"
   }
 }

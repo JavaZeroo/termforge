@@ -1,0 +1,85 @@
+{"type": "frame", "event_id": "baseline-0", "matched": true, "capture_before_ns": 1077577464664100, "capture_after_ns": 1077577472178500, "actual_frame_gap_ns": null, "frame_sha256": "7a1d38a1d6ff149f0c4c497667f7e80b7a17a3db2140883b1aa53a3b37caac32"}
+{"type": "frame", "event_id": "0-1", "matched": false, "capture_before_ns": 1077577484494600, "capture_after_ns": 1077577500888400, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "0-1", "matched": true, "capture_before_ns": 1077577509482300, "capture_after_ns": 1077577518581600, "actual_frame_gap_ns": 24987700, "frame_sha256": "ec5a552fcaf7bcd9236ed8e671c3fb0d8ac0b632098c5cc0b101a490af2c52fd"}
+{"type": "frame", "event_id": "0-2", "matched": true, "capture_before_ns": 1077578003719200, "capture_after_ns": 1077578010658600, "actual_frame_gap_ns": null, "frame_sha256": "51ae1f3e79a1cce161dc09911fc25b83a266ce87c08111f10986a651433040a0"}
+{"type": "frame", "event_id": "0-3", "matched": false, "capture_before_ns": 1077578594550100, "capture_after_ns": 1077578602086000, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "0-3", "matched": true, "capture_before_ns": 1077578610768200, "capture_after_ns": 1077578618669700, "actual_frame_gap_ns": 16218100, "frame_sha256": "1653307cc796850fe982c7fd15f8f3d42858f443c5710be9040f83d94a2d1cfb"}
+{"type": "frame", "event_id": "0-4", "matched": true, "capture_before_ns": 1077579035543300, "capture_after_ns": 1077579043571000, "actual_frame_gap_ns": null, "frame_sha256": "8532f78f744334ac466cebdf6e158a4a4c74e14fb4df840c05227496101e52c1"}
+{"type": "frame", "event_id": "0-5", "matched": false, "capture_before_ns": 1077579544510500, "capture_after_ns": 1077579551993700, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "0-5", "matched": true, "capture_before_ns": 1077579560378400, "capture_after_ns": 1077579567970000, "actual_frame_gap_ns": 15867900, "frame_sha256": "00f657dcab49f9e56f0b7bb5d646a009a8754bdec2c14f0108360c7f0db6edf6"}
+{"type": "frame", "event_id": "0-6", "matched": false, "capture_before_ns": 1077580156621100, "capture_after_ns": 1077580160342400, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "0-6", "matched": true, "capture_before_ns": 1077580168747600, "capture_after_ns": 1077580176227500, "actual_frame_gap_ns": 12126500, "frame_sha256": "fc7b8a2e88e5316446984f270925029de3f10470a7fb6ccc784f169219aca872"}
+{"type": "frame", "event_id": "0-7", "matched": true, "capture_before_ns": 1077580835196600, "capture_after_ns": 1077580842446000, "actual_frame_gap_ns": null, "frame_sha256": "84bcb7cac48b859831ae05582c9f8cd01527193e583d5dca06ecedf3a5e99a92"}
+{"type": "frame", "event_id": "0-8", "matched": false, "capture_before_ns": 1077581146713200, "capture_after_ns": 1077581153259800, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "0-8", "matched": true, "capture_before_ns": 1077581161695300, "capture_after_ns": 1077581166643100, "actual_frame_gap_ns": 14982100, "frame_sha256": "351b90741ecd27108c964e6bd7c100324e2691c2e6ccebabc0acacfc55b4a453"}
+{"type": "frame", "event_id": "0-9", "matched": true, "capture_before_ns": 1077581438828500, "capture_after_ns": 1077581441912800, "actual_frame_gap_ns": null, "frame_sha256": "d73ecbd26d63132488b3308ff807af90f4afcadee7d69e7d06a4e85303977867"}
+{"type": "frame", "event_id": "0-10", "matched": true, "capture_before_ns": 1077581951909900, "capture_after_ns": 1077581959947900, "actual_frame_gap_ns": null, "frame_sha256": "5420a82ee6f921cbbac1549d6af9c8c634b8a1989f728435a1187af6d0eea536"}
+{"type": "frame", "event_id": "baseline-80", "matched": true, "capture_before_ns": 1077582249457500, "capture_after_ns": 1077582256753600, "actual_frame_gap_ns": null, "frame_sha256": "3897860027b18f64a796c0d2007fb38e332dd7e8a4a9a662e1c173500368e324"}
+{"type": "frame", "event_id": "80-1", "matched": false, "capture_before_ns": 1077582267900300, "capture_after_ns": 1077582275007000, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-1", "matched": false, "capture_before_ns": 1077582283463200, "capture_after_ns": 1077582291637300, "actual_frame_gap_ns": 15562900}
+{"type": "frame", "event_id": "80-1", "matched": false, "capture_before_ns": 1077582299978900, "capture_after_ns": 1077582308740900, "actual_frame_gap_ns": 16515700}
+{"type": "frame", "event_id": "80-1", "matched": false, "capture_before_ns": 1077582317236800, "capture_after_ns": 1077582319314300, "actual_frame_gap_ns": 17257900}
+{"type": "frame", "event_id": "80-1", "matched": false, "capture_before_ns": 1077582327588000, "capture_after_ns": 1077582333181900, "actual_frame_gap_ns": 10351200}
+{"type": "frame", "event_id": "80-1", "matched": false, "capture_before_ns": 1077582341638900, "capture_after_ns": 1077582350069100, "actual_frame_gap_ns": 14050900}
+{"type": "frame", "event_id": "80-1", "matched": true, "capture_before_ns": 1077582358344700, "capture_after_ns": 1077582366608600, "actual_frame_gap_ns": 16705800, "frame_sha256": "c97199d27c2c49af4a733395311925034c06fb167c29f8202f6ea031a50d4498"}
+{"type": "frame", "event_id": "80-2", "matched": false, "capture_before_ns": 1077582667829900, "capture_after_ns": 1077582679646500, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-2", "matched": false, "capture_before_ns": 1077582688253400, "capture_after_ns": 1077582691825800, "actual_frame_gap_ns": 20423500}
+{"type": "frame", "event_id": "80-2", "matched": false, "capture_before_ns": 1077582700243400, "capture_after_ns": 1077582708284400, "actual_frame_gap_ns": 11990000}
+{"type": "frame", "event_id": "80-2", "matched": false, "capture_before_ns": 1077582716509100, "capture_after_ns": 1077582725425300, "actual_frame_gap_ns": 16265700}
+{"type": "frame", "event_id": "80-2", "matched": false, "capture_before_ns": 1077582734256800, "capture_after_ns": 1077582742982400, "actual_frame_gap_ns": 17747700}
+{"type": "frame", "event_id": "80-2", "matched": true, "capture_before_ns": 1077582751369800, "capture_after_ns": 1077582753588700, "actual_frame_gap_ns": 17113000, "frame_sha256": "a5476a251cc9e9c843504ee8b05a91b629abbc2bb8ea42a70b370b78be4bb048"}
+{"type": "frame", "event_id": "80-3", "matched": false, "capture_before_ns": 1077583125720700, "capture_after_ns": 1077583133131100, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-3", "matched": false, "capture_before_ns": 1077583141575800, "capture_after_ns": 1077583153251500, "actual_frame_gap_ns": 15855100}
+{"type": "frame", "event_id": "80-3", "matched": false, "capture_before_ns": 1077583161552300, "capture_after_ns": 1077583166470600, "actual_frame_gap_ns": 19976500}
+{"type": "frame", "event_id": "80-3", "matched": false, "capture_before_ns": 1077583175263000, "capture_after_ns": 1077583182784400, "actual_frame_gap_ns": 13710700}
+{"type": "frame", "event_id": "80-3", "matched": false, "capture_before_ns": 1077583191226900, "capture_after_ns": 1077583204949000, "actual_frame_gap_ns": 15963900}
+{"type": "frame", "event_id": "80-3", "matched": false, "capture_before_ns": 1077583213341500, "capture_after_ns": 1077583215196400, "actual_frame_gap_ns": 22114600}
+{"type": "frame", "event_id": "80-3", "matched": true, "capture_before_ns": 1077583223519600, "capture_after_ns": 1077583232877600, "actual_frame_gap_ns": 10178100, "frame_sha256": "3be358656cfbc86deefa06288d9448fb33c1ca6a6712df305b5070cd1b123720"}
+{"type": "frame", "event_id": "80-4", "matched": false, "capture_before_ns": 1077583825551100, "capture_after_ns": 1077583832489000, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-4", "matched": false, "capture_before_ns": 1077583840721100, "capture_after_ns": 1077583852755700, "actual_frame_gap_ns": 15170000}
+{"type": "frame", "event_id": "80-4", "matched": false, "capture_before_ns": 1077583861464600, "capture_after_ns": 1077583865705200, "actual_frame_gap_ns": 20743500}
+{"type": "frame", "event_id": "80-4", "matched": false, "capture_before_ns": 1077583874432400, "capture_after_ns": 1077583882910900, "actual_frame_gap_ns": 12967800}
+{"type": "frame", "event_id": "80-4", "matched": false, "capture_before_ns": 1077583891381700, "capture_after_ns": 1077583904050700, "actual_frame_gap_ns": 16949300}
+{"type": "frame", "event_id": "80-4", "matched": true, "capture_before_ns": 1077583912898100, "capture_after_ns": 1077583916807000, "actual_frame_gap_ns": 21516400, "frame_sha256": "233e0bfe0a23a059212942f57cae036ff65e0c8dd59fd3b46f336ccb7555d278"}
+{"type": "frame", "event_id": "80-5", "matched": false, "capture_before_ns": 1077584284070200, "capture_after_ns": 1077584290420800, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-5", "matched": false, "capture_before_ns": 1077584298751700, "capture_after_ns": 1077584301065500, "actual_frame_gap_ns": 14681500}
+{"type": "frame", "event_id": "80-5", "matched": false, "capture_before_ns": 1077584309353500, "capture_after_ns": 1077584316081200, "actual_frame_gap_ns": 10601800}
+{"type": "frame", "event_id": "80-5", "matched": false, "capture_before_ns": 1077584324850400, "capture_after_ns": 1077584332341500, "actual_frame_gap_ns": 15496900}
+{"type": "frame", "event_id": "80-5", "matched": false, "capture_before_ns": 1077584341016500, "capture_after_ns": 1077584348828800, "actual_frame_gap_ns": 16166100}
+{"type": "frame", "event_id": "80-5", "matched": false, "capture_before_ns": 1077584357267600, "capture_after_ns": 1077584369210500, "actual_frame_gap_ns": 16251100}
+{"type": "frame", "event_id": "80-5", "matched": true, "capture_before_ns": 1077584377903500, "capture_after_ns": 1077584382847000, "actual_frame_gap_ns": 20635900, "frame_sha256": "0c6336bb62afce64f7312bc7d07282a598d3935fe631231744cc5541f8315d75"}
+{"type": "frame", "event_id": "80-6", "matched": false, "capture_before_ns": 1077584662401600, "capture_after_ns": 1077584665384200, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-6", "matched": false, "capture_before_ns": 1077584673957200, "capture_after_ns": 1077584681786600, "actual_frame_gap_ns": 11555600}
+{"type": "frame", "event_id": "80-6", "matched": false, "capture_before_ns": 1077584690268500, "capture_after_ns": 1077584703168800, "actual_frame_gap_ns": 16311300}
+{"type": "frame", "event_id": "80-6", "matched": false, "capture_before_ns": 1077584711901700, "capture_after_ns": 1077584715910000, "actual_frame_gap_ns": 21633200}
+{"type": "frame", "event_id": "80-6", "matched": false, "capture_before_ns": 1077584724188900, "capture_after_ns": 1077584732675800, "actual_frame_gap_ns": 12287200}
+{"type": "frame", "event_id": "80-6", "matched": false, "capture_before_ns": 1077584741211100, "capture_after_ns": 1077584749846100, "actual_frame_gap_ns": 17022200}
+{"type": "frame", "event_id": "80-6", "matched": true, "capture_before_ns": 1077584758614600, "capture_after_ns": 1077584765632400, "actual_frame_gap_ns": 17403500, "frame_sha256": "36b4ee647eba633892fea93c21381100a6adc4836b51c9bba2e09db18ba296ff"}
+{"type": "frame", "event_id": "80-7", "matched": false, "capture_before_ns": 1077585100644800, "capture_after_ns": 1077585107694800, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-7", "matched": false, "capture_before_ns": 1077585116084400, "capture_after_ns": 1077585123627600, "actual_frame_gap_ns": 15439600}
+{"type": "frame", "event_id": "80-7", "matched": false, "capture_before_ns": 1077585132057700, "capture_after_ns": 1077585140231500, "actual_frame_gap_ns": 15973300}
+{"type": "frame", "event_id": "80-7", "matched": false, "capture_before_ns": 1077585148900800, "capture_after_ns": 1077585156993400, "actual_frame_gap_ns": 16843100}
+{"type": "frame", "event_id": "80-7", "matched": false, "capture_before_ns": 1077585165393400, "capture_after_ns": 1077585173795400, "actual_frame_gap_ns": 16492600}
+{"type": "frame", "event_id": "80-7", "matched": false, "capture_before_ns": 1077585182134800, "capture_after_ns": 1077585191328900, "actual_frame_gap_ns": 16741400}
+{"type": "frame", "event_id": "80-7", "matched": true, "capture_before_ns": 1077585199614500, "capture_after_ns": 1077585212465800, "actual_frame_gap_ns": 17479700, "frame_sha256": "1ccf15c46753a22dbdda753b8a4fd1de2e101c7ba99815644e4512746747f870"}
+{"type": "frame", "event_id": "80-8", "matched": false, "capture_before_ns": 1077585959928900, "capture_after_ns": 1077585964719500, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-8", "matched": false, "capture_before_ns": 1077585973104800, "capture_after_ns": 1077585981429700, "actual_frame_gap_ns": 13175900}
+{"type": "frame", "event_id": "80-8", "matched": false, "capture_before_ns": 1077585989963400, "capture_after_ns": 1077585999383400, "actual_frame_gap_ns": 16858600}
+{"type": "frame", "event_id": "80-8", "matched": false, "capture_before_ns": 1077586008088500, "capture_after_ns": 1077586009920900, "actual_frame_gap_ns": 18125100}
+{"type": "frame", "event_id": "80-8", "matched": false, "capture_before_ns": 1077586018473900, "capture_after_ns": 1077586022959500, "actual_frame_gap_ns": 10385400}
+{"type": "frame", "event_id": "80-8", "matched": false, "capture_before_ns": 1077586031730700, "capture_after_ns": 1077586044289200, "actual_frame_gap_ns": 13256800}
+{"type": "frame", "event_id": "80-8", "matched": true, "capture_before_ns": 1077586052926100, "capture_after_ns": 1077586059091700, "actual_frame_gap_ns": 21195400, "frame_sha256": "05a0ac3a951c9f46f07bb7059ee32efa56760bc65002ea2adf2686ea7d97029f"}
+{"type": "frame", "event_id": "80-9", "matched": false, "capture_before_ns": 1077586690605200, "capture_after_ns": 1077586707074600, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-9", "matched": false, "capture_before_ns": 1077586715383600, "capture_after_ns": 1077586723016900, "actual_frame_gap_ns": 24778400}
+{"type": "frame", "event_id": "80-9", "matched": false, "capture_before_ns": 1077586731638900, "capture_after_ns": 1077586739956000, "actual_frame_gap_ns": 16255300}
+{"type": "frame", "event_id": "80-9", "matched": false, "capture_before_ns": 1077586748295600, "capture_after_ns": 1077586756145800, "actual_frame_gap_ns": 16656700}
+{"type": "frame", "event_id": "80-9", "matched": false, "capture_before_ns": 1077586764563000, "capture_after_ns": 1077586773171700, "actual_frame_gap_ns": 16267400}
+{"type": "frame", "event_id": "80-9", "matched": true, "capture_before_ns": 1077586781775600, "capture_after_ns": 1077586783809400, "actual_frame_gap_ns": 17212600, "frame_sha256": "9393ede62659a29f812f532d7c1ec11a1bbfd3790bf6ee201ac0eeae843fc607"}
+{"type": "frame", "event_id": "80-10", "matched": false, "capture_before_ns": 1077587177270400, "capture_after_ns": 1077587182123900, "actual_frame_gap_ns": null}
+{"type": "frame", "event_id": "80-10", "matched": false, "capture_before_ns": 1077587190453200, "capture_after_ns": 1077587192384700, "actual_frame_gap_ns": 13182800}
+{"type": "frame", "event_id": "80-10", "matched": false, "capture_before_ns": 1077587201118400, "capture_after_ns": 1077587206211900, "actual_frame_gap_ns": 10665200}
+{"type": "frame", "event_id": "80-10", "matched": false, "capture_before_ns": 1077587214913400, "capture_after_ns": 1077587225063500, "actual_frame_gap_ns": 13795000}
+{"type": "frame", "event_id": "80-10", "matched": false, "capture_before_ns": 1077587233805300, "capture_after_ns": 1077587239072600, "actual_frame_gap_ns": 18891900}
+{"type": "frame", "event_id": "80-10", "matched": false, "capture_before_ns": 1077587247636100, "capture_after_ns": 1077587255721100, "actual_frame_gap_ns": 13830800}
+{"type": "frame", "event_id": "80-10", "matched": false, "capture_before_ns": 1077587264226800, "capture_after_ns": 1077587273352600, "actual_frame_gap_ns": 16590700}
+{"type": "frame", "event_id": "80-10", "matched": true, "capture_before_ns": 1077587282066900, "capture_after_ns": 1077587283988400, "actual_frame_gap_ns": 17840100, "frame_sha256": "258598a521c3a36deb8584ff1c7ee1638d8f8b611ddc625cc431e2513023ccd4"}
