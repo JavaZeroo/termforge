@@ -1,0 +1,107 @@
+{
+  "kind": "synthetic_sampler_calibration",
+  "samples": [
+    {
+      "elapsed_ns": 2576418500,
+      "cpu_seconds": 2.53125,
+      "allocation_bytes": 67108864,
+      "pair": 0,
+      "sampler_enabled": false
+    },
+    {
+      "elapsed_ns": 2732318800,
+      "cpu_seconds": 2.671875,
+      "allocation_bytes": 67108864,
+      "pair": 0,
+      "sampler_enabled": true
+    },
+    {
+      "elapsed_ns": 2909096700,
+      "cpu_seconds": 2.71875,
+      "allocation_bytes": 67108864,
+      "pair": 1,
+      "sampler_enabled": true
+    },
+    {
+      "elapsed_ns": 2511752400,
+      "cpu_seconds": 2.46875,
+      "allocation_bytes": 67108864,
+      "pair": 1,
+      "sampler_enabled": false
+    },
+    {
+      "elapsed_ns": 2450023000,
+      "cpu_seconds": 2.421875,
+      "allocation_bytes": 67108864,
+      "pair": 2,
+      "sampler_enabled": false
+    },
+    {
+      "elapsed_ns": 2811622600,
+      "cpu_seconds": 2.71875,
+      "allocation_bytes": 67108864,
+      "pair": 2,
+      "sampler_enabled": true
+    },
+    {
+      "elapsed_ns": 2889518300,
+      "cpu_seconds": 2.78125,
+      "allocation_bytes": 67108864,
+      "pair": 3,
+      "sampler_enabled": true
+    },
+    {
+      "elapsed_ns": 2749543500,
+      "cpu_seconds": 2.6875,
+      "allocation_bytes": 67108864,
+      "pair": 3,
+      "sampler_enabled": false
+    },
+    {
+      "elapsed_ns": 2734765200,
+      "cpu_seconds": 2.703125,
+      "allocation_bytes": 67108864,
+      "pair": 4,
+      "sampler_enabled": false
+    },
+    {
+      "elapsed_ns": 2901080300,
+      "cpu_seconds": 2.703125,
+      "allocation_bytes": 67108864,
+      "pair": 4,
+      "sampler_enabled": true
+    }
+  ],
+  "python_version": "3.12.10",
+  "os": "Windows-11-10.0.26200-SP0",
+  "worker_source_sha256": "b944fe5ea5a983a86109542b521cc0cca8a353ebf135ef92fa73caf2aa025117",
+  "sampler_source_sha256": "0a0c02560925ad37b32c4fdad041f36267f3241bfa4b337a3cba36553f302637",
+  "calibrator_source_sha256": "ffc9a4f1ae3e457a52e758f338a7a770f4999d9479c122be6ebb37aeca4a3e2e",
+  "median_sampler_off_ns": 2576418500,
+  "median_sampler_on_ns": 2889518300,
+  "median_elapsed_change_percent": 12.152521028707097,
+  "above_protocol_5_percent_trigger": true,
+  "limitations": [
+    "Synthetic CPU/memory worker only; not T01, PTY, renderer or WindTerm.",
+    "Five pairs are diagnostic, not a universal overhead bound.",
+    "Sampling every 100 ms until worker exit (30 second cap); final CPU after exit may be missed.",
+    "No capture/input tool or inter-process clock alignment calibrated."
+  ],
+  "sampler_cpu_seconds_per_instrumented_run": [
+    1.3125,
+    1.484375,
+    1.4375,
+    1.578125,
+    1.234375
+  ],
+  "median_collection_ns_per_instrumented_run": [
+    48124200.0,
+    53523700.0,
+    47810700,
+    49959100,
+    47327300.0
+  ],
+  "discovery_interval_ms": 100,
+  "resource_interval_ms": 100,
+  "interpretation": "Diagnostic only; overhead gate unresolved. Not a terminal benchmark."
+}

@@ -1,6 +1,6 @@
 # M0：WindTerm 性能基线与核心原型规格
 
-状态：未开始运行测量。初步静态调查及 [实验协议 v0.1](../../benchmarks/PROTOCOL.md) 已完成；下一步实现生成器与测量工具，校准后执行基线。
+状态：初步静态调查及 [实验协议 v0.1](../../benchmarks/PROTOCOL.md) 已完成。生成器、字节播放器和 Windows 资源采样已实现并做工具自检；画面/输入端点和正式开销校准仍待完成，尚未运行 WindTerm 基线。见 [工具说明](../../benchmarks/tools/README.md)。
 
 ## 交付项
 

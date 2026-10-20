@@ -1,6 +1,6 @@
 {
   "protocol_version": "0.1",
-  "status": "specified_not_implemented",
+  "status": "partially_implemented_not_measured",
   "base_profile": {
     "id": "C0",
     "columns": 120,
@@ -25,19 +25,152 @@
     "input_timeout_seconds": 5,
     "settle_seconds_min": 30,
     "input_events_per_level": 200,
-    "input_gap_ms": [250, 750]
+    "input_gap_ms": [
+      250,
+      750
+    ]
   },
   "cases": [
-    {"id": "T01", "kind": "ascii", "sizes_bytes": [8388608, 134217728], "variants": ["repeated", "pseudorandom"]},
-    {"id": "T02", "kind": "ansi", "sizes_bytes": [8388608, 134217728], "style_interval_chars": 8, "palette_colors": 16},
-    {"id": "T03", "kind": "unicode", "sizes_bytes": [8388608], "write_chunks_bytes": [65536, 1, 7, 4096]},
-    {"id": "T04", "kind": "overwrite", "updates": 100000, "columns": 80},
-    {"id": "T05", "kind": "screen_resize", "screen_switches": 1000, "resize_cycles": 100, "sizes_cells": [[120, 40], [80, 24]]},
-    {"id": "H01", "kind": "history", "line_counts": [10000, 100000, 1000000], "scrollback_lines": 1000000, "variants": ["repeated", "pseudorandom"], "line_columns_max": 80, "search_repeats_per_target": 10, "scroll_repeats_per_target": 10},
-    {"id": "I01", "kind": "input_latency", "background_bytes_per_second": [0, 1048576, 8388608]},
-    {"id": "M01", "kind": "multi_session", "sessions": [1, 5, 20], "background_bytes_per_second_per_session": 1048576},
-    {"id": "L01", "kind": "soak", "duration_seconds": 3600, "timeout_seconds": 3900, "bytes_per_second": 1048576},
-    {"id": "L02", "kind": "lifecycle", "cycles": 20, "payload_bytes_per_cycle": 8388608, "settle_seconds_per_cycle": 30, "final_observation_seconds": 300},
-    {"id": "F01", "kind": "sftp", "variants": [{"file_count": 1, "file_bytes": 1073741824}, {"file_count": 10000, "file_bytes": 4096}], "directions": ["upload", "download"], "warmups": 1, "repeats": 5}
-  ]
+    {
+      "id": "T01",
+      "kind": "ascii",
+      "sizes_bytes": [
+        8388608,
+        134217728
+      ],
+      "variants": [
+        "repeated",
+        "pseudorandom"
+      ]
+    },
+    {
+      "id": "T02",
+      "kind": "ansi",
+      "sizes_bytes": [
+        8388608,
+        134217728
+      ],
+      "style_interval_chars": 8,
+      "palette_colors": 16
+    },
+    {
+      "id": "T03",
+      "kind": "unicode",
+      "sizes_bytes": [
+        8388608
+      ],
+      "write_chunks_bytes": [
+        65536,
+        1,
+        7,
+        4096
+      ]
+    },
+    {
+      "id": "T04",
+      "kind": "overwrite",
+      "updates": 100000,
+      "columns": 80
+    },
+    {
+      "id": "T05",
+      "kind": "screen_resize",
+      "screen_switches": 1000,
+      "resize_cycles": 100,
+      "sizes_cells": [
+        [
+          120,
+          40
+        ],
+        [
+          80,
+          24
+        ]
+      ]
+    },
+    {
+      "id": "H01",
+      "kind": "history",
+      "line_counts": [
+        10000,
+        100000,
+        1000000
+      ],
+      "scrollback_lines": 1000000,
+      "variants": [
+        "repeated",
+        "pseudorandom"
+      ],
+      "line_columns_max": 80,
+      "search_repeats_per_target": 10,
+      "scroll_repeats_per_target": 10
+    },
+    {
+      "id": "I01",
+      "kind": "input_latency",
+      "background_bytes_per_second": [
+        0,
+        1048576,
+        8388608
+      ]
+    },
+    {
+      "id": "M01",
+      "kind": "multi_session",
+      "sessions": [
+        1,
+        5,
+        20
+      ],
+      "background_bytes_per_second_per_session": 1048576
+    },
+    {
+      "id": "L01",
+      "kind": "soak",
+      "duration_seconds": 3600,
+      "timeout_seconds": 3900,
+      "bytes_per_second": 1048576
+    },
+    {
+      "id": "L02",
+      "kind": "lifecycle",
+      "cycles": 20,
+      "payload_bytes_per_cycle": 8388608,
+      "settle_seconds_per_cycle": 30,
+      "final_observation_seconds": 300
+    },
+    {
+      "id": "F01",
+      "kind": "sftp",
+      "variants": [
+        {
+          "file_count": 1,
+          "file_bytes": 1073741824
+        },
+        {
+          "file_count": 10000,
+          "file_bytes": 4096
+        }
+      ],
+      "directions": [
+        "upload",
+        "download"
+      ],
+      "warmups": 1,
+      "repeats": 5
+    }
+  ],
+  "tool_coverage": {
+    "generator": [
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "H01"
+    ],
+    "partial_generator": {
+      "T05": "alternate-screen bytes only; resize/interactive acknowledgement pending"
+    },
+    "resources": "Windows process-tree polling implemented; presentation/input pending"
+  }
 }

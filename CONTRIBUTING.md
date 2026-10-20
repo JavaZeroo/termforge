@@ -14,10 +14,11 @@
 
 ## 当前本地检查
 
-当前仓库主要是文档和 JSON 模板，尚无客户端构建命令：
+当前已有 Python 基准工具，尚无客户端构建命令。安装 `benchmarks/requirements.txt` 后执行：
 
 ```sh
 python -m json.tool benchmarks/run-template.json
+python -m unittest discover -s benchmarks/tests -v
 git diff --check
 ```
 
