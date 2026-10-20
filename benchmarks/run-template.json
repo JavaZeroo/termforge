@@ -1,17 +1,93 @@
 {
-  "schema_version": "0.1-draft",
+  "schema_version": "0.2-draft",
   "status": "not_measured",
   "run_id": null,
   "started_at_utc": null,
-  "application": {"name": null, "version": null, "sha256": null, "build_commit": null},
-  "environment": {"os": null, "cpu": null, "ram_bytes": null, "gpu_driver": null, "display_hz": null, "display_scale": null, "power_mode": null},
-  "settings": {"columns": null, "rows": null, "font": null, "font_size": null, "scrollback_lines": null, "highlighting": null, "logging": null},
-  "workload": {"name": null, "generator_commit": null, "seed": null, "sha256": null, "bytes": null, "expected_state": null},
-  "transport": {"kind": null, "server": null, "rtt_ms": null, "bandwidth_limit": null},
-  "measurement": {"method": null, "clock": null, "sampling_interval_ms": null, "process_scope": null, "instrumentation_overhead": null},
-  "protocol": {"cold_or_warm": null, "warmup_count": null, "repeat_count": null, "run_order": null},
+  "application": {
+    "name": null,
+    "version": null,
+    "sha256": null,
+    "build_commit": null
+  },
+  "environment": {
+    "os": null,
+    "cpu": null,
+    "ram_bytes": null,
+    "gpu_driver": null,
+    "display_hz": null,
+    "display_scale": null,
+    "power_mode": null
+  },
+  "settings": {
+    "columns": null,
+    "rows": null,
+    "font": null,
+    "font_size": null,
+    "scrollback_lines": null,
+    "highlighting": null,
+    "logging": null
+  },
+  "workload": {
+    "name": null,
+    "generator_commit": null,
+    "seed": null,
+    "sha256": null,
+    "bytes": null,
+    "expected_state": null
+  },
+  "transport": {
+    "kind": null,
+    "server": null,
+    "rtt_ms": null,
+    "bandwidth_limit": null
+  },
+  "measurement": {
+    "method": null,
+    "clock": null,
+    "sampling_interval_ms": null,
+    "process_scope": null,
+    "instrumentation_overhead": null,
+    "capture_interval_ms": null,
+    "clock_alignment_uncertainty_ns": null,
+    "process_groups": []
+  },
+  "protocol": {
+    "cold_or_warm": null,
+    "warmup_count": null,
+    "repeat_count": null,
+    "run_order": null
+  },
   "samples": [],
-  "correctness": {"passed": null, "method": null, "details": null},
+  "correctness": {
+    "status": "not_checked",
+    "method": null,
+    "evidence_paths": [],
+    "details": null
+  },
   "limitations": [],
-  "notes": "Template only. No performance measurements have been collected."
+  "notes": "Template only. samples is empty. sample_fields describes one future sample, not an observation. null is unobserved, never a measured zero. Record timeout/failed samples too. Versioned JSON Schema validation will be added with tooling.",
+  "protocol_version": "0.1",
+  "case_id": null,
+  "profile_id": null,
+  "batch_id": null,
+  "actual_settings": {},
+  "sample_fields": {
+    "index": null,
+    "status": null,
+    "failure_reason": null,
+    "exclusion_reason": null,
+    "payload_bytes": null,
+    "events_relative_ns": {
+      "t0": null,
+      "producer_done": null,
+      "consumer_done": null,
+      "presented_done": null
+    },
+    "cpu_seconds_by_group": {},
+    "sampled_peak_private_bytes_by_group": {},
+    "sampled_peak_working_set_bytes_by_group": {},
+    "raw_resource_trace": null,
+    "input_events": [],
+    "correctness_status": "not_checked"
+  }
 }
