@@ -84,7 +84,7 @@
     ]
   },
   "actual_settings": {},
-  "visible_marker_status": "not_independently_verified",
+  "visible_marker_status": "not_confirmed_by_operator",
   "correctness_status": "not_checked",
   "consumer_done": null,
   "presented_done": null,
@@ -104,5 +104,10 @@
     "One 100-line smoke run only; no repeated performance statistics.",
     "Original traces retained locally; public summary excludes process identifiers, creation times and absolute clock counters.",
     "Manual visible marker confirmation, if supplied, does not verify all text or measure presentation time."
-  ]
+  ],
+  "operator_observation": {
+    "diagnostic_status_seen": "producer_complete",
+    "end_marker_seen": false,
+    "interpretation": "Operator did not notice the marker; this does not establish that rendering omitted it."
+  }
 }
