@@ -84,7 +84,7 @@
     ]
   },
   "actual_settings": {},
-  "visible_marker_status": "not_confirmed_by_operator",
+  "visible_marker_status": "confirmed_by_operator",
   "correctness_status": "not_checked",
   "consumer_done": null,
   "presented_done": null,
@@ -107,7 +107,8 @@
   ],
   "operator_observation": {
     "diagnostic_status_seen": "producer_complete",
-    "end_marker_seen": false,
-    "interpretation": "Operator did not notice the marker; this does not establish that rendering omitted it."
+    "end_marker_seen": true,
+    "end_marker_text": "TERMFORGE-END ascii 0000000100",
+    "interpretation": "Operator confirmed the exact visible marker after reviewing existing output; no new run or presentation timestamp."
   }
 }

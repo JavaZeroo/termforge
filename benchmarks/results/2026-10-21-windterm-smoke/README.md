@@ -18,6 +18,6 @@
 
 实际 C0 设置尚未验证；完整文本、布局与最终画面尚未独立核验。`correctness_status` 保持 `not_checked`，消费/呈现端点保持 `null`，性能门槛保持 `not_evaluated`。用户的运行完成反馈不自动视为画面正确性证据。
 
-用户随后确认看到了 `TermForge diagnostic: producer_complete`，但没有看到结束标记。记录为 `not_confirmed_by_operator`；这不能直接证明终端漏画，也不能据此通过可见标记检查。先回看状态行上方输出，不要求重新运行或把重复运行补作成功样本。
+用户最初只注意到 `TermForge diagnostic: producer_complete`，回看现有输出后明确确认看到了完整的 `TERMFORGE-END ascii 0000000100`。可见标记记录更新为 `confirmed_by_operator`。这是同一次运行的人工确认，不新增成功样本，也不产生呈现时间戳；完整文本正确性仍未验证。
 
-下一步先核对可见结束标记与实际设置，再按协议执行 8 MiB T01 交错 on/off 采样开销校准。烟测不能代替预热、重复、稳定等待或独立批次。
+下一步核对实际 C0 设置，再按协议执行 8 MiB T01 交错 on/off 采样开销校准。烟测不能代替预热、重复、稳定等待或独立批次。
