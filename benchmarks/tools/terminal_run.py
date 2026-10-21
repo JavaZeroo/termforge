@@ -52,6 +52,13 @@ def run(directory, output, executable, sampling=False, timeout=120):
             "Descendants include shell, controller and producer; do not sum sampler with descendants.",
             "No capture or input injection; on/off measurements alone cannot calibrate capture."
         ]}
+    try:
+        size = os.get_terminal_size(sys.stdout.fileno())
+        report["actual_settings"] = {"columns": size.columns, "rows": size.lines,
+                                     "source": "inherited console buffer API"}
+    except OSError:
+        report["actual_settings"] = {"columns": None, "rows": None,
+                                     "source": "console size unavailable"}
     report_path = output / "run.json"
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     stop = threading.Event()
