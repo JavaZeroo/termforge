@@ -65,7 +65,7 @@ JSONL 有 metadata、sample、schedule_gap、end 类型。采样包含 root、de
 
 ## 完成边界
 
-新增 [官方 WindTerm 隔离环境与单次诊断入口](WINDTERM-LAB.md)：固定发行物哈希、独立 profile-home、祖先进程核验、可选采样、超时保留。实际终端烟测仍待人工启动。
+新增 [官方 WindTerm 隔离环境与单次诊断入口](WINDTERM-LAB.md)：固定发行物哈希、独立 profile-home、祖先进程核验、可选采样、超时保留。首次人工运行的真实终端生产端烟测已核验；画面正确性和正式校准仍待完成。
 
 - 已实现：确定性数据、逻辑文本 oracle、字节播放器、Windows 进程树资源 JSONL、合成负载校准。
 - 已实现视觉诊断：[自建窗口捕获、序列标记匹配、F13 注入、时钟往返校准](VISUAL.md)，另有实验性的固定像素模板录制/等待工具。

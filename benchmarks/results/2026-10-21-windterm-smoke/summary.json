@@ -1,0 +1,108 @@
+{
+  "kind": "windterm_producer_smoke",
+  "status": "producer_complete",
+  "application": {
+    "release": "2.7.0",
+    "distribution": "official Windows x64",
+    "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0"
+  },
+  "workload": {
+    "kind": "ascii",
+    "records": 100,
+    "seed": 20261020,
+    "variant": "pseudorandom",
+    "payload_bytes": 7732,
+    "sha256": "a4ff8ec9c96f5deb5f4a2fed9d18f7192c08a41a7888a5afbe636dba49cf0782",
+    "marker": "TERMFORGE-END ascii 0000000100"
+  },
+  "producer": {
+    "fully_written_chunk_bytes": 7732,
+    "elapsed_ns": 824300,
+    "chunk_bytes": 65536,
+    "exit_code": 0,
+    "stderr_bytes": 0
+  },
+  "sampling_enabled": true,
+  "resources": {
+    "schema_version": "0.1",
+    "kind": "resource_trace_summary",
+    "validation_status": "valid",
+    "performance_gate": "not_evaluated",
+    "source_sha256": "f8242f308184cd7da24e466092c9e3a1d392296318ceed58033b414df6b2381f",
+    "sample_count": 7,
+    "sampling_span_ns": 598150800,
+    "trace_elapsed_ns": 700518700,
+    "requested_interval_ns": 100000000,
+    "requested_discovery_interval_ns": 1000000000,
+    "groups": {
+      "root": {
+        "observed_processes": 1,
+        "observed_samples": 7,
+        "unavailable_rows": 0,
+        "observed_cpu_seconds": 0.046875,
+        "sampled_peak_observed_private_bytes": 59875328,
+        "sampled_peak_observed_working_set_bytes": 105385984,
+        "observed_cpu_core_equivalents": 0.07836652563199782
+      },
+      "descendant": {
+        "observed_processes": 8,
+        "observed_samples": 7,
+        "unavailable_rows": 0,
+        "observed_cpu_seconds": 0.015625,
+        "sampled_peak_observed_private_bytes": 42082304,
+        "sampled_peak_observed_working_set_bytes": 101834752,
+        "observed_cpu_core_equivalents": 0.02612217521066594
+      },
+      "sampler": {
+        "observed_processes": 1,
+        "observed_samples": 7,
+        "unavailable_rows": 0,
+        "observed_cpu_seconds": 0.015625,
+        "sampled_peak_observed_private_bytes": 11358208,
+        "sampled_peak_observed_working_set_bytes": 22388736,
+        "observed_cpu_core_equivalents": 0.02612217521066594
+      }
+    },
+    "quality": {
+      "collection_ns_max": 15962400,
+      "actual_interval_ns_max": 100312500,
+      "schedule_lateness_ns_max": 2045500,
+      "skipped_ticks": 0,
+      "discovery_errors": 0,
+      "samples_with_unavailable_processes": 0
+    },
+    "process_status_counts": {
+      "observed": 70
+    },
+    "limitations": [
+      "Observed CPU retains exited processes but misses CPU before first/after last observation.",
+      "Core equivalents divide observed CPU by first-to-last sample span, not workload duration.",
+      "Memory peaks sum only observed processes within each sample; unavailable processes are unknown.",
+      "No observations produce null, not zero; working sets can double-count shared pages.",
+      "Discovery can miss short-lived children; descendants include producers and helpers.",
+      "Valid trace does not imply low overhead, complete coverage, or terminal correctness."
+    ]
+  },
+  "actual_settings": {},
+  "visible_marker_status": "not_independently_verified",
+  "correctness_status": "not_checked",
+  "consumer_done": null,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "local_evidence_sha256": {
+    "run.json": "03a22783a0428c92d61dc7ce586e344a4ab8ca89e4d31a4ccc1f6fd71b9ad87c",
+    "producer.json": "c7b422639019f8712b2541a3a3da3d0e4373d911b61d754d09481e500d3aa561",
+    "resources.jsonl": "f8242f308184cd7da24e466092c9e3a1d392296318ceed58033b414df6b2381f",
+    "resource-summary.json": "37683650a8298ce33f043d9e5ed898d393c4e79ddc899d10f2f0f0adb1aa10e7"
+  },
+  "limitations": [
+    "Single manual run, not a formal T01 batch; record actual settings separately.",
+    "Producer completion does not establish parsing, presentation, or correctness.",
+    "Resource window includes setup and 500 ms after producer exit, not exactly payload time.",
+    "Descendants include shell, controller and producer; do not sum sampler with descendants.",
+    "No capture or input injection; on/off measurements alone cannot calibrate capture.",
+    "One 100-line smoke run only; no repeated performance statistics.",
+    "Original traces retained locally; public summary excludes process identifiers, creation times and absolute clock counters.",
+    "Manual visible marker confirmation, if supplied, does not verify all text or measure presentation time."
+  ]
+}
