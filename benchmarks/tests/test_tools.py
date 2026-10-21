@@ -168,6 +168,11 @@ class Sampling(unittest.TestCase):
             self.assertGreater(max(p["private_bytes"] for p in descendants), 32 * 1024 * 1024)
             self.assertGreater(max(p["cpu_seconds_since_first_observation"] for p in descendants), .05)
             self.assertTrue(any(p["group"] == "sampler" for p in samples[0]["processes"]))
+            report = load("summarize_resources").summarize(path)
+            self.assertEqual(report["sample_count"], len(samples))
+            self.assertGreater(report["groups"]["descendant"]["observed_cpu_seconds"], .05)
+            self.assertGreater(report["groups"]["descendant"]["sampled_peak_observed_private_bytes"],
+                               32 * 1024 * 1024)
 
 
 if __name__ == "__main__":

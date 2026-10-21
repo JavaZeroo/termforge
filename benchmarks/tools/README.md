@@ -37,6 +37,7 @@ python -m venv .venv
 ```powershell
 .venv\Scripts\python benchmarks/tools/sample.py --pid 12345 --out benchmarks/local-results/resources.jsonl --seconds 10 --interval-ms 100
 .venv\Scripts\python benchmarks/tools/calibrate.py --out benchmarks/local-results/calibration-01
+.venv\Scripts\python benchmarks/tools/summarize_resources.py benchmarks/local-results/resources.jsonl --out benchmarks/local-results/resource-summary.json
 ```
 
 将 12345 换成隔离测试进程 PID。工具不会启动/终止该目标；只读指定树的资源，不读取命令行、连接、文件内容和凭据。
@@ -49,9 +50,23 @@ JSONL 有 metadata、sample、schedule_gap、end 类型。采样包含 root、de
 
 校准工具启动自己的无窗口 CPU/内存负载，以五对交错 on/off 运行观察差异，原始资源样本在本地。它是初步自检，不代替协议要求的 T01 采样/捕获开销验证。
 
+### 资源汇总与校验
+
+`summarize_resources.py` 使用标准库，流式读取 v0.1 JSONL，校验记录顺序、完整结束、时钟间隔、进程身份、CPU 累计值与差值的一致性，以及非负有限数值。拒绝截断、重复进程行、未知版本和不一致数据；校验失败时不生成汇总，已有输出不会覆盖。此工具是资源记录的语义校验器，尚不替代完整运行记录的 JSON Schema。
+
+汇总按 root、descendant、sampler 分组，不包含 PID、创建时间或本机路径，并记录原始文件 SHA-256。公开前仍需检查来源与其他运行信息。
+
+- CPU：对每个 PID+create_time 保留最后观察到的累计差值，再按组求和。进程退出不会抹去已观察 CPU；首次观察前和最后观察后的 CPU 仍未知。
+- 核心当量：观察到的 CPU 秒数除以首末样本的时间跨度；不是整机 CPU 百分比，也不是工作负载运行时长归一化。只有一个样本时为 `null`。
+- 内存：先求每次采样中同组可观察进程之和，再取峰值，避免相加不同时刻的进程峰值。权限失败或退出行不补零；字段显式命名为 `sampled_peak_observed_*`，不能解释为完整进程树峰值。完全没有观察时为 `null`。
+- 质量：保留缺失进程行数、发现错误数、跳过 tick 数、最大采集耗时/实际间隔/调度迟到。`validation_status: valid` 只表示数据内部一致，`performance_gate` 始终为 `not_evaluated`。
+
+测试覆盖进程退出、PID 重用、非同时内存峰值、权限失败、截断及损坏记录，并将真实受控子进程采样结果送入汇总器。采样本身的覆盖和开销限制仍然成立。
+
 ## 完成边界
 
 - 已实现：确定性数据、逻辑文本 oracle、字节播放器、Windows 进程树资源 JSONL、合成负载校准。
 - 已实现视觉诊断：[自建窗口捕获、序列标记匹配、F13 注入、时钟往返校准](VISUAL.md)，另有实验性的固定像素模板录制/等待工具。
-- 待完成：WindTerm 实际文本标记/输入驱动验证、T01 捕获/采样开销校准、完整 JSON Schema/采样汇总、节流/交互驱动。
+- 已实现资源汇总与语义校验：观察到的分组 CPU、同时采样内存峰值、缺失与调度质量、来源哈希。
+- 待完成：WindTerm 实际文本标记/输入驱动验证、T01 捕获/采样开销校准、完整运行记录 JSON Schema、节流/交互驱动。
 - #3 保持进行中；任何工具校准均不代表 WindTerm 基线或性能达标。
