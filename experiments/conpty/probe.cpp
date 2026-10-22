@@ -24,6 +24,16 @@ static std::string hex_bytes(const std::string& bytes) {
     }
     return result;
 }
+static std::string utf8(const std::wstring& text) {
+    if (text.empty()) return {};
+    const int size = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, text.data(),
+                                         static_cast<int>(text.size()), nullptr, 0, nullptr, nullptr);
+    if (!size) fail("WideCharToMultiByte(size)");
+    std::string result(static_cast<size_t>(size), '\0');
+    if (WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, text.data(), static_cast<int>(text.size()),
+                            result.data(), size, nullptr, nullptr) != size) fail("WideCharToMultiByte");
+    return result;
+}
 static void write_child(const std::string& bytes) {
     size_t offset = 0;
     while (offset < bytes.size()) {
@@ -49,16 +59,21 @@ static int child() {
         !SetConsoleMode(output, ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING |
                                 DISABLE_NEWLINE_AUTO_RETURN)) fail("SetConsoleMode");
     write_child("TFREADY\r\n");
-    std::string command;
-    char buffer[128]; DWORD count = 0;
-    while (ReadFile(input, buffer, sizeof(buffer), &count, nullptr) && count) {
+    // The transport is still UTF-8. A console client uses the Unicode console
+    // API rather than the older console host's ANSI ReadFile conversion path.
+    // Accumulate a complete command before conversion so split surrogate pairs
+    // are never independently converted at a ReadConsoleW chunk boundary.
+    std::wstring pending;
+    wchar_t buffer[128]; DWORD count = 0;
+    while (ReadConsoleW(input, buffer, 128, &count, nullptr) && count) {
         for (DWORD i = 0; i < count; ++i) {
-            const char c = buffer[i];
-            if (c != '\r' && c != '\n') {
-                if (command.size() >= 1024) return 12;
-                command += c; continue;
+            const wchar_t c = buffer[i];
+            if (c != L'\r' && c != L'\n') {
+                if (pending.size() >= 1024) return 12;
+                pending += c; continue;
             }
-            if (command.empty()) continue;
+            if (pending.empty()) continue;
+            const std::string command = utf8(pending);
             if (command.rfind("ECHO:", 0) == 0) {
                 // ASCII diagnostic distinguishes input decoding from output VT
                 // framing when an older console host fails the UTF-8 round trip.
@@ -86,7 +101,7 @@ static int child() {
                 for (unsigned line = 0;; ++line) write_child(record(line) + "\r\n");
             } else if (command == "EXIT") { write_child("TFEXIT:37\r\n"); return 37; }
             else return 13;
-            command.clear();
+            pending.clear();
         }
     }
     return 0;
