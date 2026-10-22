@@ -15,6 +15,15 @@ static std::wstring executable_path() {
     if (!size || size == result.size()) fail("GetModuleFileName");
     result.resize(size); return result;
 }
+static std::string hex_bytes(const std::string& bytes) {
+    static constexpr char digits[] = "0123456789abcdef";
+    std::string result;
+    result.reserve(bytes.size() * 2);
+    for (unsigned char byte : bytes) {
+        result += digits[byte >> 4]; result += digits[byte & 15];
+    }
+    return result;
+}
 static void write_child(const std::string& bytes) {
     size_t offset = 0;
     while (offset < bytes.size()) {
@@ -50,7 +59,12 @@ static int child() {
                 command += c; continue;
             }
             if (command.empty()) continue;
-            if (command.rfind("ECHO:", 0) == 0) write_child("TF" + command + ":END\r\n");
+            if (command.rfind("ECHO:", 0) == 0) {
+                // ASCII diagnostic distinguishes input decoding from output VT
+                // framing when an older console host fails the UTF-8 round trip.
+                write_child("TFINPUTHEX:" + hex_bytes(command) + ":END\r\n");
+                write_child("TF" + command + ":END\r\n");
+            }
             else if (command == "SIZE") {
                 CONSOLE_SCREEN_BUFFER_INFO info{};
                 if (!GetConsoleScreenBufferInfo(output, &info)) fail("GetConsoleScreenBufferInfo");
@@ -156,6 +170,11 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
                                mode == "close" ? session.child_signaled : session.exit_code == 37;
     const bool valid = error.empty() && clean && expected_exit && !session.capture_overflow &&
                        (session.read_error == ERROR_BROKEN_PIPE || session.read_error == ERROR_SUCCESS);
+    const std::string captured = valid ? std::string{} : session.output();
+    constexpr size_t diagnostic_limit = 4096;
+    const bool diagnostic_truncated = captured.size() > diagnostic_limit;
+    const std::string failure_prefix = captured.substr(0, diagnostic_limit);
+    const std::string failure_tail = diagnostic_truncated ? captured.substr(captured.size() - diagnostic_limit) : std::string{};
     const double elapsed = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin).count();
     std::cout << "{\"mode\":" << quoted(mode) << ",\"repeat\":" << repeat
               << ",\"startup\":" << (startup ? "true" : "false")
@@ -169,6 +188,9 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
               << ",\"active_children_after\":" << session.active_after
               << ",\"forced_reader_cancel\":" << session.forced_reader_cancel
               << ",\"forced_process_cancel\":" << session.forced_process_cancel
+              << ",\"failure_output_prefix_hex\":" << quoted(hex_bytes(failure_prefix))
+              << ",\"failure_output_tail_hex\":" << quoted(hex_bytes(failure_tail))
+              << ",\"failure_output_truncated\":" << diagnostic_truncated
               << ",\"handles_before\":" << before_handles << ",\"handles_after\":" << after_handles
               << ",\"threads_before\":" << before_threads << ",\"threads_after\":" << after_threads
               << ",\"elapsed_ms\":" << elapsed << "}" << std::endl;
@@ -186,9 +208,11 @@ int main(int argc, char** argv) {
         // The supervisor assigns this host to its job before sending this gate.
         std::string gate;
         if (!std::getline(std::cin, gate) || gate != "GO") return 2;
-        bool valid = probe("normal", 0, true);
-        for (unsigned repeat = 0; repeat < repeats; ++repeat) valid = probe(mode, repeat) && valid;
-        return valid ? 0 : 1;
+        if (!probe("normal", 0, true)) return 1;
+        for (unsigned repeat = 0; repeat < repeats; ++repeat) {
+            if (!probe(mode, repeat)) return 1;
+        }
+        return 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n'; return 1;
     }
