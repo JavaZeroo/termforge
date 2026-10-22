@@ -6,9 +6,30 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from cases import Case, cases
+import run as differential_run
 from run import ROOT, chunks, compare_traces, run_case, run_suite, trace_binary
+from experiments import build_paths
+
+
+class TracePathTests(unittest.TestCase):
+    def test_explicit_missing_binary_directory_does_not_fall_back(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            name = "terminal_trace.exe" if os.name == "nt" else "terminal_trace"
+            stale = root / "build/bin/Release" / name
+            stale.parent.mkdir(parents=True)
+            stale.touch()
+            empty = root / "empty"
+            empty.mkdir()
+            for explicit in (root / "missing", empty):
+                with self.subTest(directory=explicit.name), \
+                        patch.object(differential_run, "ROOT", root), patch.object(build_paths, "ROOT", root), \
+                        patch.dict(os.environ, {"TERMFORGE_BIN_DIR": str(explicit)}, clear=True):
+                    with self.assertRaises(FileNotFoundError):
+                        trace_binary()
 
 
 class DifferentialTests(unittest.TestCase):

@@ -22,6 +22,9 @@ from wcwidth import wcwidth
 from cases import Case, cases
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from experiments.build_paths import binary
+
 VERSIONS = {"pyte": "0.8.2", "wcwidth": "0.2.13"}
 COLORS = {"default": -1, **{c: i for i, c in enumerate(
     ("black", "red", "green", "brown", "blue", "magenta", "cyan", "white",
@@ -57,13 +60,7 @@ def trace_binary(value=None):
     value = value or os.environ.get("TERMFORGE_TRACE")
     if value:
         return Path(value).resolve(strict=True)
-    name = "terminal_trace.exe" if os.name == "nt" else "terminal_trace"
-    dirs = [Path(os.environ["TERMFORGE_BIN_DIR"])] if "TERMFORGE_BIN_DIR" in os.environ else []
-    dirs += [ROOT / "build/bin/Release", ROOT / "build/bin"]
-    for directory in dirs:
-        if (directory / name).is_file():
-            return (directory / name).resolve()
-    raise FileNotFoundError("build terminal_trace and set --trace or TERMFORGE_TRACE")
+    return binary("terminal_trace")
 
 
 def chunks(length, plan):
