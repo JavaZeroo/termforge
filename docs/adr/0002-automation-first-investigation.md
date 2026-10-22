@@ -40,9 +40,9 @@
 
 ## 工具事实与当前状态
 
-2026-10-22 命令发现已找到本机 WPR 和 WPA。当前 PATH 未找到 Java 或 analyzeHeadless，尚未验证 Ghidra 是否在其他位置安装，也未安装或运行新的分析环境。
+2026-10-22 命令发现已找到本机 WPR 和 WPA。随后已在项目 `local/toolchains/` 部署并校验 Ghidra 12.1.4 和 Temurin JDK 21，完成固定官方 EXE 的无界面导入、索引与只读定向复查；未修改系统 PATH 或 MCP 配置。工作包 A 首轮结果见[报告](../research/windterm-headless-2026-10-22.md)及[入口](../../research/README.md)。
 
 - [Ghidra 官方 HeadlessAnalyzer](https://ghidra.re/ghidra_docs/api/ghidra/app/util/headless/HeadlessAnalyzer.html)：支持命令行分析；具体安装版本和脚本接口在工作包 A 中固定。
 - [WPR 官方命令行文档](https://learn.microsoft.com/en-us/windows-hardware/test/wpt/wpr-command-line-options)：可命令行开始、停止和保存记录。采集权限、符号、导出及扰动仍需实测；只操作本任务创建的记录，不取消其他活动录制。
 
-以上为已接受的执行计划，不表示自动逆向管线、WindTerm 自动会话或 TermForge 核心已经实现。
+静态分析入口已验证；WindTerm 自动会话与 TermForge 核心尚未实现，工作包 B/C 继续按上述边界推进。

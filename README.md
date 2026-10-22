@@ -28,6 +28,7 @@ An independent, fully open-source terminal project driven by reproducible perfor
 | [运行记录模板](benchmarks/run-template.json) | 不包含虚构结果的记录格式草案 |
 | [功能矩阵](docs/FEATURES.md) | 首版范围与高级能力 |
 | [WindTerm 调查](docs/research/windterm-audit.md) | 已公开/未公开内容和静态证据边界 |
+| [无界面定向分析](docs/research/windterm-headless-2026-10-22.md) | 官方 2.7.0 接收路径、证据与可重复执行入口 |
 | [架构决策 ADR-0001](docs/adr/0001-evidence-before-stack.md) | 性能基线先于技术栈 |
 | [执行决策 ADR-0002](docs/adr/0002-automation-first-investigation.md) | 自动执行优先，定向逆向与原型交替推进 |
 | [贡献指南](CONTRIBUTING.md) | 如何提交可验证的工作 |
