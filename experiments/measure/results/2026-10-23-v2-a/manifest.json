@@ -1,0 +1,27 @@
+{
+  "schema_version": 2,
+  "status": "complete",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "started_utc": "2026-10-22T17:04:26.667533+00:00",
+  "machine": "AMD64",
+  "python": "3.12.10",
+  "exe_sha256": "94a32b28a78380d4ef4072e6b373c6f856a2eb61df94c382241c3f202b1fd1d5",
+  "source_sha256": "82610da74cbd7d0af5afc6912f83e457289432c1b8bc9c7cb347e6dd3d10e3d1",
+  "runner_sha256": "0768a37047a5f1dbd2d9b39ba0211d1886d302f9b157e4c4ec118d4762f91bd2",
+  "core_sources": {
+    "terminal.hpp": "892997bc2b869a8655d272e9ff049c4102bb1366f1ac709cff8c3d4a41657396",
+    "screen.hpp": "909aec301b64e2d5e52377167873bcb1dc124e28967ffd75d0c5c25b748ea20f",
+    "unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+  },
+  "fixture_sha256": "02ff60ca95c13ab3e41909685634ee6a800310dc39a07a98ac6965b0c57f2b14",
+  "cpu_floor_seconds": 2.0,
+  "repeats": 3,
+  "seed": 20261023,
+  "calibration_only": false,
+  "endpoint": "one continuous interval: parser construction, prior-iteration destruction, feed/state updates and timed gates; warmup, oracle, serialization and final destruction excluded",
+  "comparable_to_schema_v1": false,
+  "performance_gate": "not_evaluated",
+  "samples": 24,
+  "calibrations": 2,
+  "finished_utc": "2026-10-22T17:05:32.368411+00:00"
+}

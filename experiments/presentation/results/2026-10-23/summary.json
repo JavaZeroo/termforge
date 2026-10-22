@@ -1,0 +1,102 @@
+[
+  {
+    "backend": "gdi",
+    "logical_dpi": 96,
+    "draw_samples_ms": {
+      "count": 48,
+      "min": 2.3729,
+      "median": 2.9935,
+      "p95": 4.0072,
+      "max": 4.2152
+    },
+    "frame_submit_samples_ms": {
+      "count": 48,
+      "min": 0.0222,
+      "median": 0.048100000000000004,
+      "p95": 0.1777,
+      "max": 2.0118
+    },
+    "timer_pair_samples_ms": {
+      "count": 256,
+      "min": 0,
+      "median": 0.0,
+      "p95": 0.0001,
+      "max": 0.0001
+    }
+  },
+  {
+    "backend": "gdi",
+    "logical_dpi": 144,
+    "draw_samples_ms": {
+      "count": 48,
+      "min": 2.6064,
+      "median": 3.295,
+      "p95": 5.3951,
+      "max": 6.879
+    },
+    "frame_submit_samples_ms": {
+      "count": 48,
+      "min": 0.0468,
+      "median": 0.09165,
+      "p95": 0.4138,
+      "max": 0.6741
+    },
+    "timer_pair_samples_ms": {
+      "count": 256,
+      "min": 0,
+      "median": 0.0,
+      "p95": 0.0001,
+      "max": 0.0001
+    }
+  },
+  {
+    "backend": "dwrite",
+    "logical_dpi": 96,
+    "draw_samples_ms": {
+      "count": 48,
+      "min": 0.5589,
+      "median": 1.2692,
+      "p95": 3.0668,
+      "max": 5.3836
+    },
+    "frame_submit_samples_ms": {
+      "count": 48,
+      "min": 0.0253,
+      "median": 0.05345,
+      "p95": 0.2261,
+      "max": 0.3059
+    },
+    "timer_pair_samples_ms": {
+      "count": 256,
+      "min": 0,
+      "median": 0.0,
+      "p95": 0.0001,
+      "max": 0.0002
+    }
+  },
+  {
+    "backend": "dwrite",
+    "logical_dpi": 144,
+    "draw_samples_ms": {
+      "count": 48,
+      "min": 0.9093,
+      "median": 1.64535,
+      "p95": 3.6173,
+      "max": 5.0904
+    },
+    "frame_submit_samples_ms": {
+      "count": 48,
+      "min": 0.0366,
+      "median": 0.07485,
+      "p95": 0.1694,
+      "max": 0.2475
+    },
+    "timer_pair_samples_ms": {
+      "count": 256,
+      "min": 0,
+      "median": 0.0,
+      "p95": 0.0001,
+      "max": 0.0001
+    }
+  }
+]

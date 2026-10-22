@@ -5,3 +5,5 @@
 已有 #1–#5 的状态以 GitHub 为准。未配置自动 triage 或外部 PR 处理，代码审查不修改 issue 状态。
 
 第一批实施的审查起点固定为 `acc38c3`（本批开始前 HEAD）；规范来源为 AGENTS.md、CONTRIBUTING.md、PROVENANCE.md，需求来源为上述任务地图与用户批准的第一批工作。
+
+第二批实施的审查起点固定为 `51b50ef`。范围为 C2、V1 及 P1 计量校准；P1 的完整分层归因和 A1 的 shell 整合不在本批验收范围内。

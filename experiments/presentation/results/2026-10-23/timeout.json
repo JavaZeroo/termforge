@@ -1,0 +1,12 @@
+{
+  "backend": "gdi",
+  "logical_dpi": 96,
+  "status": "passed",
+  "expected_timeout": true,
+  "timed_out": true,
+  "exit_code": 1,
+  "stdout": "{\"timeout_probe_ready\":true,\"window_painted\":true}\r\n",
+  "stderr": "",
+  "owned_process_exited": true,
+  "owned_desktop_gone": true
+}

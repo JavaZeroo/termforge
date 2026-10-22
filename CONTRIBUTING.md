@@ -27,7 +27,7 @@ ctest --test-dir build -C Release --output-on-failure
 git diff --check
 ```
 
-CTest 自动把当前构建的二进制路径交给测试，不依赖开发机旧构建。`replay`、`terminal_trace` 与核心计量在 Windows/Linux 构建；匿名管道、ConPTY 和呈现探针仅在 Windows 构建。Linux 跳过明确依赖 Windows 的用例，不把缺失的 Windows 二进制当作已通过。只构建源码时可加 `-DBUILD_TESTING=OFF`，此时不要求 Python 测试依赖。
+CTest 自动把当前构建的二进制路径交给测试，不依赖开发机旧构建。`replay`、`terminal_trace`、`recovery_probe` 与核心计量在 Windows/Linux 构建；匿名管道、ConPTY 和呈现探针仅在 Windows 构建。恢复、计时校准与 Windows 自有窗口验证均纳入 CTest。Linux 跳过明确依赖 Windows 的用例，不把缺失的 Windows 二进制当作已通过。只构建源码时可加 `-DBUILD_TESTING=OFF`，此时不要求 Python 测试依赖。
 
 默认可执行文件位于 `build/bin/Release`（Visual Studio）或 `build/bin`（Make/Ninja）。单独运行测试或完整回放时，支持 `TERMFORGE_BIN_DIR` 环境变量；回放脚本也接受 `--bin-dir`。显式指定的目录缺文件会报错，不回退到旧构建。例如：
 

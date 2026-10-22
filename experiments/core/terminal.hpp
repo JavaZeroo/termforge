@@ -1,11 +1,24 @@
 // Original bounded UTF-8 terminal experiment; see README for contract.
 #pragma once
 #include "screen.hpp"
+#include <limits>
 #include <string_view>
 
 namespace termforge {
+enum class ParseMode { strict, recovery };
+struct RecoveryDiagnostics {
+    uint64_t ignored_sequences = 0, ignored_controls = 0;
+    uint64_t malformed_utf8 = 0, replaced_scalars = 0;
+    uint64_t cancelled_sequences = 0, truncated_sequences = 0;
+    uint64_t oversized_sequences = 0, resynchronized_sequences = 0;
+    size_t max_sequence_bytes = 0, max_parameters = 0, max_utf8_bytes = 0;
+};
 class Parser {
-    enum class State { ground, escape, csi } state = State::ground;
+    enum class State { ground, escape, escape_ignore, csi, csi_ignore, string_body, string_escape };
+    State state = State::ground;
+    const ParseMode mode;
+    RecoveryDiagnostics stats;
+    bool osc = false;
     std::vector<int> params;
     size_t sequence_bytes = 0;
     uint32_t scalar = 0, minimum = 0;
@@ -14,7 +27,7 @@ class Parser {
     void dispatch(unsigned char final) {
         if (final == 'm') { screen.sgr(params); return; }
         if (params.size() > ((final == 'H' || final == 'f') ? 2u : 1u))
-            throw std::runtime_error("too many CSI parameters");
+            throw InputError("too many CSI parameters");
         const int n = params[0] == 0 ? 1 : params[0];
         switch (final) {
         case 'A': screen.move(screen.row - n, screen.column); break;
@@ -26,13 +39,10 @@ class Parser {
         case 'H': case 'f': screen.move(n - 1, params.size() < 2 || params[1] == 0 ? 0 : params[1] - 1); break;
         case 'J': screen.erase_display(params[0]); break;
         case 'K': screen.erase_line(params[0]); break;
-        default: throw std::runtime_error("unsupported CSI command");
+        default: throw InputError("unsupported CSI command");
         }
     }
-public:
-    Screen screen;
-    Parser(int rows = 24, int columns = 80, size_t history = 100) : screen(rows, columns, history) {}
-    void feed(std::string_view bytes) {
+    void feed_strict(std::string_view bytes) {
         for (unsigned char c : bytes) {
             if (remaining) {
                 if ((c & 0xC0) != 0x80) throw std::runtime_error("invalid UTF-8 continuation");
@@ -77,6 +87,134 @@ public:
             }
         }
     }
-    void finish() const { if (state != State::ground || remaining) throw std::runtime_error("incomplete sequence at EOF"); }
+    static void count(uint64_t& value) {
+        if (value != (std::numeric_limits<uint64_t>::max)()) ++value;
+    }
+    void reset_sequence() {
+        state = State::ground; params.clear(); sequence_bytes = 0;
+    }
+    void reset_utf8() { remaining = 0; encoded.clear(); scalar = minimum = 0; }
+    void replacement() { screen.put(0xFFFD, "\xEF\xBF\xBD"); }
+    void put_recovering(uint32_t cp, const std::string& text) {
+        try { screen.put(cp, text); }
+        catch (const InputError&) { count(stats.replaced_scalars); replacement(); }
+    }
+    void utf8_error() { count(stats.malformed_utf8); reset_utf8(); replacement(); }
+    bool valid_continuation(unsigned char c) const {
+        if ((c & 0xC0) != 0x80) return false;
+        if (encoded.size() != 1) return true;
+        // Unicode Table 3-7: reject impossible prefixes before consuming the
+        // next byte so maximal-subpart replacement preserves valid successors.
+        const auto lead = static_cast<unsigned char>(encoded[0]);
+        return !((lead == 0xE0 && c < 0xA0) || (lead == 0xED && c > 0x9F) ||
+                 (lead == 0xF0 && c < 0x90) || (lead == 0xF4 && c > 0x8F));
+    }
+    void note_sequence_byte(size_t limit) {
+        if (sequence_bytes <= limit) {
+            ++sequence_bytes;
+            stats.max_sequence_bytes = (std::max)(stats.max_sequence_bytes, sequence_bytes);
+            if (sequence_bytes > limit) count(stats.oversized_sequences);
+        }
+    }
+    void ignore_sequence(State ignored) {
+        if (state != State::escape_ignore && state != State::csi_ignore) count(stats.ignored_sequences);
+        state = ignored; params.clear();
+    }
+    void feed_recovering(unsigned char c) {
+        if (remaining) {
+            if (valid_continuation(c)) {
+                encoded += static_cast<char>(c); scalar = (scalar << 6) | (c & 0x3F);
+                stats.max_utf8_bytes = (std::max)(stats.max_utf8_bytes, encoded.size());
+                if (--remaining == 0) { put_recovering(scalar, encoded); reset_utf8(); }
+                return;
+            }
+            utf8_error(); // Reprocess this byte; it can start valid text or ESC.
+        }
+        const bool in_string = state == State::string_body || state == State::string_escape;
+        if (state != State::ground && (c == 0x18 || c == 0x1A)) {
+            count(stats.cancelled_sequences); reset_sequence(); return;
+        }
+        if (in_string) {
+            note_sequence_byte(4096);
+            if ((osc && c == 7) || (state == State::string_escape && c == '\\')) reset_sequence();
+            else state = c == 27 ? State::string_escape : State::string_body;
+            return; // Never interpret a string body, even ESC followed by CSI.
+        }
+        if (c == 27) {
+            if (state != State::ground) count(stats.resynchronized_sequences);
+            reset_sequence(); state = State::escape; return;
+        }
+        if (state != State::ground) {
+            note_sequence_byte(32);
+            if (c < 32 || c == 127) { count(stats.ignored_controls); return; }
+            if (state == State::escape || state == State::escape_ignore) {
+                if (state == State::escape && c == '[') {
+                    state = State::csi; sequence_bytes = 0; params.assign(1, 0);
+                    stats.max_parameters = (std::max)(stats.max_parameters, params.size()); return;
+                }
+                if (state == State::escape &&
+                    (c == ']' || c == 'P' || c == 'X' || c == '^' || c == '_')) {
+                    count(stats.ignored_sequences); osc = c == ']';
+                    state = State::string_body; sequence_bytes = 0; return;
+                }
+                ignore_sequence(State::escape_ignore);
+                if (c >= 0x30 && c <= 0x7E) reset_sequence();
+                return;
+            }
+            if (sequence_bytes > 32) ignore_sequence(State::csi_ignore);
+            if (c >= 0x40 && c <= 0x7E) {
+                if (state == State::csi) {
+                    try { dispatch(c); }
+                    catch (const InputError&) { count(stats.ignored_sequences); }
+                }
+                reset_sequence(); return;
+            }
+            if (state == State::csi_ignore) return;
+            if (c >= '0' && c <= '9') {
+                if (params.back() > 9999) ignore_sequence(State::csi_ignore);
+                else params.back() = params.back() * 10 + c - '0';
+            } else if (c == ';') {
+                if (params.size() == 16) ignore_sequence(State::csi_ignore);
+                else {
+                    params.push_back(0);
+                    stats.max_parameters = (std::max)(stats.max_parameters, params.size());
+                }
+            } else ignore_sequence(State::csi_ignore);
+            return;
+        }
+        if (c >= 0x80) {
+            if (c >= 0xC2 && c <= 0xDF) { remaining = 1; minimum = 0x80; scalar = c & 0x1F; }
+            else if (c >= 0xE0 && c <= 0xEF) { remaining = 2; minimum = 0x800; scalar = c & 0x0F; }
+            else if (c >= 0xF0 && c <= 0xF4) { remaining = 3; minimum = 0x10000; scalar = c & 0x07; }
+            else { utf8_error(); return; }
+            encoded.assign(1, static_cast<char>(c));
+            stats.max_utf8_bytes = (std::max)(stats.max_utf8_bytes, encoded.size());
+        } else if (c >= 32 && c <= 126) screen.put(c, std::string(1, static_cast<char>(c)));
+        else switch (c) {
+        case '\r': screen.move(screen.row, 0); break;
+        case '\n': screen.newline(); break;
+        case '\b': screen.move(screen.row, screen.column - 1); break;
+        case '\t': screen.move(screen.row, (screen.column / 8 + 1) * 8); break;
+        default: count(stats.ignored_controls); break;
+        }
+    }
+public:
+    Screen screen;
+    Parser(int rows = 24, int columns = 80, size_t history = 100, ParseMode selected = ParseMode::strict)
+        : mode(selected), screen(rows, columns, history) {}
+    const RecoveryDiagnostics& diagnostics() const { return stats; }
+    size_t buffered_input_bytes() const { return params.size() * sizeof(int) + encoded.size(); }
+    void feed(std::string_view bytes) {
+        if (mode == ParseMode::strict) feed_strict(bytes);
+        else for (unsigned char c : bytes) feed_recovering(c);
+    }
+    void finish() {
+        if (mode == ParseMode::strict) {
+            if (state != State::ground || remaining) throw std::runtime_error("incomplete sequence at EOF");
+            return;
+        }
+        if (remaining) { count(stats.truncated_sequences); utf8_error(); }
+        if (state != State::ground) { count(stats.truncated_sequences); reset_sequence(); }
+    }
 };
 } // namespace termforge

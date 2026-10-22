@@ -8,6 +8,12 @@
 #include <vector>
 
 namespace termforge {
+// Only malformed or unsupported terminal input uses this exception. Allocation
+// failures and programming errors must propagate, including in recovery mode.
+class InputError : public std::runtime_error {
+public:
+    using std::runtime_error::runtime_error;
+};
 struct Style {
     int fg = -1, bg = -1; // -1 default, 0..15 palette index
     bool bold = false;
@@ -84,14 +90,14 @@ public:
     }
     void put(uint32_t cp, const std::string& utf8) {
         const int cells = scalar_width(cp);
-        if (cells < 0) throw std::runtime_error("unsupported Unicode scalar or sequence component");
+        if (cells < 0) throw InputError("unsupported Unicode scalar or sequence component");
         if (cells == 0) {
-            if (last_row != row || last_column < 0) throw std::runtime_error("combining mark without adjacent base");
+            if (last_row != row || last_column < 0) throw InputError("combining mark without adjacent base");
             auto& base = lines[last_row][last_column];
-            if (base.marks == 16) throw std::runtime_error("combining mark limit exceeded");
+            if (base.marks == 16) throw InputError("combining mark limit exceeded");
             base.text += utf8; ++base.marks; return;
         }
-        if (cells > width()) throw std::runtime_error("wide scalar cannot fit screen");
+        if (cells > width()) throw InputError("wide scalar cannot fit screen");
         if (wrap_pending || column + cells > width()) { column = 0; newline(); }
         auto& line = lines[row];
         for (int c = column; c < column + cells; ++c) break_glyph(line, c);
@@ -102,29 +108,31 @@ public:
         else column += cells;
     }
     void erase_line(int mode) {
-        if (mode > 2) throw std::runtime_error("unsupported erase mode");
+        if (mode > 2) throw InputError("unsupported erase mode");
         erase_range(lines[row], mode == 0 ? column : 0, mode == 1 ? column + 1 : width());
         wrap_pending = false; invalidate_attachment();
     }
     void erase_display(int mode) {
-        if (mode > 2) throw std::runtime_error("unsupported erase mode");
+        if (mode > 2) throw InputError("unsupported erase mode");
         for (int r = 0; r < height(); ++r)
             if (mode == 2 || (mode == 0 && r > row) || (mode == 1 && r < row)) erase_range(lines[r], 0, width());
         erase_line(mode);
     }
     void sgr(const std::vector<int>& params) {
+        Style next = style;
         for (int p : params) {
-            if (p == 0) style = {};
-            else if (p == 1) style.bold = true;
-            else if (p == 22) style.bold = false;
-            else if (p >= 30 && p <= 37) style.fg = p - 30;
-            else if (p >= 40 && p <= 47) style.bg = p - 40;
-            else if (p >= 90 && p <= 97) style.fg = p - 90 + 8;
-            else if (p >= 100 && p <= 107) style.bg = p - 100 + 8;
-            else if (p == 39) style.fg = -1;
-            else if (p == 49) style.bg = -1;
-            else throw std::runtime_error("unsupported SGR parameter");
+            if (p == 0) next = {};
+            else if (p == 1) next.bold = true;
+            else if (p == 22) next.bold = false;
+            else if (p >= 30 && p <= 37) next.fg = p - 30;
+            else if (p >= 40 && p <= 47) next.bg = p - 40;
+            else if (p >= 90 && p <= 97) next.fg = p - 90 + 8;
+            else if (p >= 100 && p <= 107) next.bg = p - 100 + 8;
+            else if (p == 39) next.fg = -1;
+            else if (p == 49) next.bg = -1;
+            else throw InputError("unsupported SGR parameter");
         }
+        style = next;
     }
     static void quoted(std::ostream& out, const std::string& value) {
         out << '"';

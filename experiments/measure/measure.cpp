@@ -1,10 +1,14 @@
-// Single-thread core cost probe. Ordinary allocation counts are diagnostic, not product RSS.
+// Original single-thread diagnostic. See README for the v2 continuous interval.
 #include "../core/terminal.hpp"
 #include <chrono>
+#include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <iomanip>
 #include <iostream>
+#include <limits>
 #include <new>
+#include <optional>
 #include <sstream>
 #ifdef _WIN32
 #include <windows.h>
@@ -26,6 +30,7 @@ void* operator new[](size_t size) { return ::operator new(size); }
 void operator delete[](void* p) noexcept { ::operator delete(p); }
 void operator delete[](void* p, size_t) noexcept { ::operator delete(p); }
 using Clock = std::chrono::steady_clock;
+static constexpr double cpu_poll_seconds = .25;
 static double cpu_seconds() {
 #ifdef _WIN32
     FILETIME create{}, exit{}, kernel{}, user{};
@@ -33,8 +38,69 @@ static double cpu_seconds() {
     auto value = [](FILETIME t) { return (uint64_t(t.dwHighDateTime) << 32) | t.dwLowDateTime; };
     return double(value(kernel) + value(user)) / 1e7;
 #else
-    return double(std::clock()) / CLOCKS_PER_SEC;
+    const auto value = std::clock();
+    if (value == static_cast<std::clock_t>(-1)) throw std::runtime_error("process CPU clock unavailable");
+    return double(value) / CLOCKS_PER_SEC;
 #endif
+}
+static void clock_identity() {
+#ifdef _WIN32
+    std::cout << "\"cpu_clock\":\"GetProcessTimes kernel plus user\",\"cpu_representation_unit_seconds\":1e-7";
+#else
+    std::cout << "\"cpu_clock\":\"std::clock process CPU\",\"cpu_representation_unit_seconds\":" << 1.0 / CLOCKS_PER_SEC;
+#endif
+    std::cout << ",\"wall_clock\":\"std::chrono::steady_clock\",\"wall_clock_is_steady\":" << (Clock::is_steady ? "true" : "false")
+        << ",\"wall_representation_unit_seconds\":" << double(Clock::period::num) / Clock::period::den;
+}
+
+struct Interval {
+    size_t iterations = 0, wall_polls = 0, cpu_polls = 0;
+    double wall = 0, cpu = 0;
+};
+// CPU is ONE end-minus-start value for the entire uninterrupted interval. Gates
+// are part of that interval, never subtracted. No per-iteration CPU differences.
+template<class Work> static Interval measure(double duration, size_t group, Work work) {
+    Interval result;
+    const double cpu_start = cpu_seconds();
+    const auto started = Clock::now();
+    double last_cpu_poll_wall = 0;
+    for (;;) {
+        for (size_t i = 0; i < group; ++i) { work(); ++result.iterations; }
+        result.wall = std::chrono::duration<double>(Clock::now() - started).count();
+        ++result.wall_polls;
+        if (result.wall >= 60) throw std::runtime_error("continuous interval exceeded 60-second budget");
+        if (result.wall - last_cpu_poll_wall >= cpu_poll_seconds) {
+            const double current_cpu = cpu_seconds();
+            ++result.cpu_polls;
+            last_cpu_poll_wall = result.wall;
+            if (current_cpu >= cpu_start + duration && result.wall >= duration) break;
+        }
+    }
+    // Include the successful gate as well; the endpoints have one clock-call
+    // skew, which clock calibration reports rather than pretending to remove.
+    result.cpu = cpu_seconds() - cpu_start;
+    result.wall = std::chrono::duration<double>(Clock::now() - started).count();
+    return result;
+}
+static void interval_json(const Interval& value, size_t group) {
+    std::cout << "\"iterations\":" << value.iterations << ",\"interval_wall_seconds\":" << value.wall
+        << ",\"interval_cpu_seconds\":" << value.cpu << ",\"wall_gate_polls\":" << value.wall_polls
+        << ",\"cpu_gate_polls\":" << value.cpu_polls << ",\"wall_gate_every_iterations\":" << group
+        << ",\"cpu_gate_min_wall_spacing_seconds\":" << cpu_poll_seconds;
+}
+static double duration_arg(const char* argument) {
+    size_t used = 0;
+    const std::string text(argument);
+    const double value = std::stod(text, &used);
+    if (used != text.size() || !std::isfinite(value) || value < .1 || value > 10) throw std::runtime_error("invalid duration");
+    return value;
+}
+static size_t integer_arg(const char* argument, size_t maximum) {
+    const std::string text(argument);
+    if (text.empty() || text.find_first_not_of("0123456789") != std::string::npos) throw std::runtime_error("invalid integer");
+    const auto value = std::stoull(text);
+    if (value > maximum) throw std::runtime_error("integer out of range");
+    return static_cast<size_t>(value);
 }
 static uint64_t hash_state(const termforge::Screen& screen) {
     std::ostringstream json; screen.json(json);
@@ -42,26 +108,90 @@ static uint64_t hash_state(const termforge::Screen& screen) {
     for (unsigned char c : json.str()) { hash ^= c; hash *= 1099511628211ull; }
     return hash;
 }
+
+static void calibrate(double duration, bool on_first) {
+    // Repeated clock-read loop: includes two wall reads, CPU read, bookkeeping
+    // and periodic gates. Its average is NOT an isolated GetProcessTimes cost.
+    size_t positive_steps = 0;
+    double min_cpu_step = std::numeric_limits<double>::max(), max_cpu_step = 0;
+    double min_wall_step = std::numeric_limits<double>::max(), max_wall_step = 0;
+    double previous_cpu = cpu_seconds();
+    const auto clock_interval = measure(duration, 1024, [&] {
+        const auto before = Clock::now();
+        const double current = cpu_seconds();
+        const double wall_step = std::chrono::duration<double>(Clock::now() - before).count();
+        if (wall_step > 0) min_wall_step = std::min(min_wall_step, wall_step);
+        max_wall_step = std::max(max_wall_step, wall_step);
+        const double step = current - previous_cpu;
+        if (step < 0) throw std::runtime_error("CPU clock went backwards");
+        if (step > 0) { ++positive_steps; min_cpu_step = std::min(min_cpu_step, step); max_cpu_step = std::max(max_cpu_step, step); }
+        previous_cpu = current;
+    });
+    struct AllocationSample { bool observed; Interval interval; size_t calls, bytes; } samples[2];
+    for (size_t index = 0; index < 2; ++index) {
+        const bool observed = index == 0 ? on_first : !on_first;
+        allocations = allocated_bytes = 0;
+        count_allocations = observed;
+        const auto interval = measure(duration, 4096, [] {
+            void* memory = ::operator new(64);
+            // Volatile write keeps the tiny synthetic allocation observable.
+            *static_cast<volatile unsigned char*>(memory) = 42;
+            ::operator delete(memory);
+        });
+        count_allocations = false;
+        if (observed && (allocations != interval.iterations || allocated_bytes != 64 * interval.iterations))
+            throw std::runtime_error("allocation calibration count mismatch");
+        samples[index] = {observed, interval, allocations, allocated_bytes};
+    }
+    std::cout << "{\"schema_version\":2,\"kind\":\"calibration\",\"valid\":true,\"cpu_floor_seconds\":" << duration << ',';
+    clock_identity();
+    std::cout << ",\"clock_read_loop\":{"; interval_json(clock_interval, 1024);
+    std::cout << ",\"positive_cpu_steps\":" << positive_steps << ",\"min_observed_cpu_step_seconds\":";
+    if (positive_steps) std::cout << min_cpu_step; else std::cout << "null";
+    std::cout << ",\"max_observed_cpu_step_seconds\":" << max_cpu_step << ",\"min_observed_read_span_seconds\":";
+    if (min_wall_step != std::numeric_limits<double>::max()) std::cout << min_wall_step; else std::cout << "null";
+    std::cout << ",\"max_observed_read_span_seconds\":" << max_wall_step << "},\"allocation_loop\":[";
+    for (size_t index = 0; index < 2; ++index) {
+        const auto& sample = samples[index];
+        if (index) std::cout << ',';
+        std::cout << "{\"observe\":" << sample.observed << ','; interval_json(sample.interval, 4096);
+        std::cout << ",\"allocation_request_bytes\":64,\"ordinary_allocations\":";
+        if (sample.observed) std::cout << sample.calls; else std::cout << "null";
+        std::cout << ",\"ordinary_allocated_bytes\":";
+        if (sample.observed) std::cout << sample.bytes; else std::cout << "null";
+        std::cout << '}';
+    }
+    std::cout << "],\"counter_off_is_uninstrumented\":false,\"calibration_is_subtracted\":false}\n";
+}
+
 int main(int argc, char** argv) {
     try {
-        if (argc != 5) throw std::runtime_error("core_measure parse|state chunk observe(0|1) min_cpu_seconds");
+        std::cout << std::setprecision(17);
+        if ((argc == 3 || argc == 4) && std::string(argv[1]) == "calibrate") {
+            calibrate(duration_arg(argv[2]), argc == 4 && integer_arg(argv[3], 1) != 0);
+            return 0;
+        }
+        if (argc != 5) throw std::runtime_error("core_measure parse|state chunk observe(0|1) min_cpu_seconds OR calibrate min_cpu_seconds [observe_first(0|1)]");
         const std::string route = argv[1];
-        const size_t chunk = std::stoull(argv[2]);
-        const int observe = std::stoi(argv[3]);
-        const double duration = std::stod(argv[4]);
-        if ((route != "parse" && route != "state") || chunk == 0 || chunk > 1048576 ||
-            (observe != 0 && observe != 1) || !(duration >= .1 && duration <= 10)) throw std::runtime_error("invalid arguments");
-        // Fixed fixture, prepared before all measured intervals. 1,000 x 78 payload bytes.
+        const size_t chunk = integer_arg(argv[2], 1048576);
+        const bool observe = integer_arg(argv[3], 1) != 0;
+        const double duration = duration_arg(argv[4]);
+        if ((route != "parse" && route != "state") || chunk == 0) throw std::runtime_error("invalid arguments");
         const std::string line(76, 'x');
         std::string payload;
         for (int i = 0; i < 1000; ++i) payload += line + "\r\n";
-        auto state_only = [&line](termforge::Screen& screen) {
-            for (int i = 0; i < 1000; ++i) {
-                for (char c : line) screen.put(static_cast<unsigned char>(c), std::string(1, c));
-                screen.move(screen.row, 0); screen.newline();
+        auto run = [&](termforge::Parser& parser) {
+            if (route == "parse") {
+                for (size_t offset = 0; offset < payload.size(); offset += chunk)
+                    parser.feed(std::string_view(payload).substr(offset, chunk));
+                parser.finish();
+            } else {
+                for (int i = 0; i < 1000; ++i) {
+                    for (char c : line) parser.screen.put(static_cast<unsigned char>(c), std::string(1, c));
+                    parser.screen.move(parser.screen.row, 0); parser.screen.newline();
+                }
             }
         };
-        // Independent expected physical rows for this simple fixture.
         auto correct = [&line](const termforge::Screen& s) {
             if (s.row != 23 || s.column != 0 || s.wrap_pending || s.discarded != 877 || s.history.size() != 100) return false;
             for (int r = 0; r < 24; ++r) for (int c = 0; c < 80; ++c) {
@@ -72,50 +202,44 @@ int main(int argc, char** argv) {
                 if (row[c].text != (c < 76 ? "x" : " ") || row[c].width != 1 || !row[c].style.plain()) return false;
             return true;
         };
-        termforge::Parser warmup;
-        warmup.feed(payload); warmup.finish();
-        if (!correct(warmup.screen)) throw std::runtime_error("warmup oracle failed");
-        const auto expected_hash = hash_state(warmup.screen);
-        size_t rounds = 0;
-        double work_seconds = 0, checks_seconds = 0, cpu_work = 0;
-        const auto overall = Clock::now();
-        // Per-round CPU deltas exclude oracle/serialization and destruction; include parser construction.
-        while (cpu_work < duration || work_seconds < duration) {
-            const auto started = Clock::now();
-            const double cpu_start = cpu_seconds();
-            count_allocations = observe != 0;
-            termforge::Parser parser;
-            if (route == "parse") {
-                for (size_t offset = 0; offset < payload.size(); offset += chunk)
-                    parser.feed(std::string_view(payload).substr(offset, chunk));
-                parser.finish();
-            } else state_only(parser.screen);
-            count_allocations = false;
-            cpu_work += cpu_seconds() - cpu_start;
-            work_seconds += std::chrono::duration<double>(Clock::now() - started).count();
-            const auto checks = Clock::now();
-            if (!correct(parser.screen) || hash_state(parser.screen) != expected_hash) throw std::runtime_error("state oracle failed");
-            checks_seconds += std::chrono::duration<double>(Clock::now() - checks).count();
-            ++rounds;
-            if (std::chrono::duration<double>(Clock::now() - overall).count() > 60) throw std::runtime_error("time budget exceeded");
+        const auto oracle_start = Clock::now();
+        uint64_t expected_hash = 0;
+        {
+            termforge::Parser warmup; run(warmup);
+            if (!correct(warmup.screen)) throw std::runtime_error("warmup oracle failed");
+            expected_hash = hash_state(warmup.screen);
         }
+        const double preparation = std::chrono::duration<double>(Clock::now() - oracle_start).count();
+        // Emplace destroys the prior round before constructing the next. The
+        // final state stays alive for the oracle OUTSIDE the measured interval.
+        std::optional<termforge::Parser> parser;
+        allocations = allocated_bytes = 0;
+        count_allocations = observe;
+        const auto interval = measure(duration, 8, [&] { parser.emplace(); run(*parser); });
+        count_allocations = false;
+        const auto checks = Clock::now();
+        if (!correct(parser->screen) || hash_state(parser->screen) != expected_hash) throw std::runtime_error("final state oracle failed");
+        const double oracle_seconds = std::chrono::duration<double>(Clock::now() - checks).count();
         size_t peak = 0;
 #ifdef _WIN32
         PROCESS_MEMORY_COUNTERS memory{}; memory.cb = sizeof(memory);
         if (!GetProcessMemoryInfo(GetCurrentProcess(), &memory, sizeof(memory))) throw std::runtime_error("memory query failed");
         peak = memory.PeakWorkingSetSize;
 #endif
-        std::cout << "{\"valid\":true,\"route\":\"" << route << "\",\"chunk\":" << chunk
-            << ",\"observe\":" << observe << ",\"rounds\":" << rounds << ",\"bytes_per_round\":" << payload.size()
-            << ",\"work_seconds\":" << work_seconds << ",\"work_cpu_seconds\":" << cpu_work
-            << ",\"oracle_seconds\":" << checks_seconds << ",\"state_fnv1a64\":\"" << expected_hash << "\""
-            << ",\"ordinary_allocations\":";
+        std::cout << "{\"schema_version\":2,\"kind\":\"core_cost\",\"valid\":true,\"route\":\"" << route << "\",\"chunk\":" << chunk
+            << ",\"observe\":" << observe << ",\"rounds\":" << interval.iterations << ",\"bytes_per_round\":" << payload.size()
+            << ",\"cpu_floor_seconds\":" << duration << ',';
+        interval_json(interval, 8); std::cout << ','; clock_identity();
+        std::cout << ",\"warmup_and_oracle_seconds\":" << preparation << ",\"final_oracle_seconds\":" << oracle_seconds
+            << ",\"oracle_scope\":\"warmup and final iteration; intermediate iterations not inspected\""
+            << ",\"state_fnv1a64\":\"" << expected_hash << "\",\"ordinary_allocations\":";
         if (observe) std::cout << allocations; else std::cout << "null";
         std::cout << ",\"ordinary_allocated_bytes\":";
         if (observe) std::cout << allocated_bytes; else std::cout << "null";
         std::cout << ",\"peak_working_set_bytes\":";
         if (peak) std::cout << peak; else std::cout << "null";
-        std::cout << ",\"receive_seconds\":null,\"presented_done\":null}\n";
+        std::cout << ",\"cpu_interval_differences\":1,\"counted_parser_destructions\":" << interval.iterations - 1
+            << ",\"counter_off_is_uninstrumented\":false,\"receive_seconds\":null,\"presented_done\":null}\n";
         return 0;
-    } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 2; }
+    } catch (const std::exception& e) { count_allocations = false; std::cerr << e.what() << '\n'; return 2; }
 }

@@ -34,10 +34,12 @@ An independent, fully open-source terminal project driven by reproducible perfor
 | [最小状态回放](experiments/core/README.md) | 分块解析、屏幕/历史状态和完整管道回放检查 |
 | [独立参考差分](experiments/differential/README.md) | 固定参考版本、逐检查点和随机拆包、六类已知差异 |
 | [ConPTY 生命周期](experiments/conpty/README.md) | 无窗口双向输入、resize、子进程取消和回收 |
-| [成本初步探针](experiments/measure/README.md) / [离屏呈现](experiments/presentation/README.md) | 自动实验及仍未完成的 P1/V1 边界 |
+| [输入恢复策略](experiments/core/RECOVERY.md) | 严格/恢复模式、控制序列消费、UTF-8 与缓存上限 |
+| [连续区间计量](experiments/measure/README.md) / [自有窗口验证](experiments/presentation/README.md) | 时钟校准、窗口绘制/字体/光标与未知呈现端点 |
 | [架构决策 ADR-0001](docs/adr/0001-evidence-before-stack.md) | 性能基线先于技术栈 |
 | [执行决策 ADR-0002](docs/adr/0002-automation-first-investigation.md) | 自动执行优先，定向逆向与原型交替推进 |
 | [核心路线 ADR-0003](docs/adr/0003-core-reference-and-reuse.md) | 临时保留受限自研核心，产品复用路线保留重审 |
+| [呈现路线 ADR-0004](docs/adr/0004-presentation-backend.md) | G1 暂用 DirectWrite，实际呈现与产品后端仍待验证 |
 | [贡献指南](CONTRIBUTING.md) | 如何提交可验证的工作 |
 
 ## 路线

@@ -1,0 +1,34 @@
+{
+  "schema": "termforge-window-probe-v1",
+  "status": "complete",
+  "started_utc": "2026-10-22T17:03:02.883262+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "exe_sha256": "1107dae633055f2eb39809a82138dbefe9ac4ab0025a3569744f9243a40583ad",
+  "source_sha256": {
+    "presentation.cpp": "b537a06204cb137a347fac1488adee6c063aec13e598b3162f4936e2338648de"
+  },
+  "runner_sha256": "ba353fcb71e5f6245508e29fc0e83080023a50ee0d64c184c856fa04470eab9a",
+  "core_sources": {
+    "terminal.hpp": "892997bc2b869a8655d272e9ff049c4102bb1366f1ac709cff8c3d4a41657396",
+    "screen.hpp": "909aec301b64e2d5e52377167873bcb1dc124e28967ffd75d0c5c25b748ea20f",
+    "unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+  },
+  "font_family_requested": "Consolas",
+  "seed": 20261023,
+  "repeats": 2,
+  "capture_layer": "WM_PRINTCLIENT from WM_PAINT retained DIB",
+  "presented_done": null,
+  "physical_dpi_transition_verified": false,
+  "performance_ranking": false,
+  "limitations": [
+    "private non-input desktop",
+    "programmatic UpdateWindow paint trigger",
+    "GDI font fallback unobserved; its DirectWrite audit is a separate reference",
+    "HWND resize only, no terminal resize/reflow",
+    "bounded fixed-scene layout cache",
+    "instrumented draw/BitBlt durations, no observer-off calibration"
+  ],
+  "timeout_cleanup_passed": true,
+  "finished_utc": "2026-10-22T17:03:08.201922+00:00"
+}
