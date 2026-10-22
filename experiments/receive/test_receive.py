@@ -1,18 +1,18 @@
 """Reject corrupt telemetry and verify native argument guards without UI."""
 import json
-from pathlib import Path
+import os
 import subprocess
 import unittest
 
-from experiments.receive.run import check, ROOT
+from experiments.receive.run import check
+from experiments.build_paths import binary
 
 
+@unittest.skipUnless(os.name == "nt", "Windows anonymous pipe experiment")
 class ReceiveChecks(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.exe = ROOT / "build/receive/Release/receive.exe"
-        if not cls.exe.exists():
-            raise unittest.SkipTest("Build Release receive.exe first")
+        cls.exe = binary("receive")
 
     def result(self):
         p = subprocess.run([str(self.exe), "512", "edge", "yield", "131101", "512"],

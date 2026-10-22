@@ -1,0 +1,21 @@
+{
+  "schema": "termforge-conpty-lifecycle-v1",
+  "status": "passed",
+  "started_utc": "2026-10-22T15:21:18.772746+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "binary_sha256": "08afa61145f3d1c5f59a654e4defe161578dd61ee23ab95cf8009c34d50ac1b0",
+  "source_sha256": {
+    "CMakeLists.txt": "be7fa494ef70805a78287af41b561a1ad2871f5ad00ffd560d93eae6eb911975",
+    "probe.cpp": "1467c9db92b864441f349b6eae149c3bde6e75d9bf23158487be53707f7faffb",
+    "run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329",
+    "session.hpp": "e57c51b614438165198e0bfaf958fd21bc065574a4b52262d4cd3b6f78ec11dd",
+    "test_conpty.py": "ad7bf27c5909ba7534b5d3c7b3c9b553aa5803dfb5f73ce2ac5e40cd231040d7"
+  },
+  "repeats": 5,
+  "performance_claim": false,
+  "checked_sessions": 20,
+  "checked_startup_sessions": 5,
+  "checked_watchdogs": 1,
+  "finished_utc": "2026-10-22T15:21:42.555774+00:00"
+}

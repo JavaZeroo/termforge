@@ -1,12 +1,12 @@
 """Hand-authored screen expectations, chunk boundaries, bounds and pipe failure checks."""
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
-BIN = ROOT / "build/receive/Release"
+from experiments.build_paths import binary
 
 
 class CoreTests(unittest.TestCase):
@@ -17,7 +17,7 @@ class CoreTests(unittest.TestCase):
 
     def replay(self, data, rows=3, columns=5, history=2, chunk=1):
         self.path.write_bytes(data)
-        return subprocess.run([str(BIN / "replay.exe"), str(self.path), str(rows), str(columns), str(history), str(chunk)],
+        return subprocess.run([str(binary("replay")), str(self.path), str(rows), str(columns), str(history), str(chunk)],
                               capture_output=True, text=True, encoding="utf-8", timeout=10)
 
     def expect(self, data, lines, row, column, wrap=False, history=(), discarded=0, limit=2):
@@ -88,10 +88,11 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(self.replay(b"X", columns=501).returncode, 2)
         self.assertEqual(self.replay(b"X", history=10001).returncode, 2)
 
+    @unittest.skipUnless(os.name == "nt", "Windows anonymous pipe experiment")
     def test_pipe_parser_failure_drains_and_exits(self):
         data = b"\x1b[38;5;1m" + b"A" * 131101
         self.path.write_bytes(data)
-        p = subprocess.run([str(BIN / "receive.exe"), "512", "edge", "yield", str(len(data)), "512", str(self.path)],
+        p = subprocess.run([str(binary("receive")), "512", "edge", "yield", str(len(data)), "512", str(self.path)],
                            capture_output=True, text=True, timeout=10)
         self.assertEqual(p.returncode, 1)
         result = json.loads(p.stdout)

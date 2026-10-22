@@ -1,0 +1,20 @@
+{
+  "status": "complete",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "exe_sha256": "341e61d80fb16db844dbcd94388cd3d7344cfb8b550793cf47b12f2c37c6c18b",
+  "source_sha256": "ce4d1a56d50a51dc540c446f12eaa6046443026b4a740aa20654267a9622b565",
+  "runner_sha256": "e0963a7406150a6f1eed0df98048d2a3a15ad353bb69d7eb72602bc448f7214a",
+  "core_sources": {
+    "terminal.hpp": "c4f8b5f2eef3567fce14825df77ba526609fa47e800a119d83081447da76790a",
+    "screen.hpp": "2f5c4a63b00f202efcc2921f343f00787e02439d312096b3818c4bf66307e9dc",
+    "unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+  },
+  "fixture_sha256": "02ff60ca95c13ab3e41909685634ee6a800310dc39a07a98ac6965b0c57f2b14",
+  "cpu_floor_seconds": 1.0,
+  "repeats": 3,
+  "seed": 20261022,
+  "endpoint": "parser construction plus feed/state updates; oracle and destruction excluded",
+  "performance_gate": "not_evaluated",
+  "samples": 24
+}

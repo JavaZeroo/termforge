@@ -8,8 +8,11 @@ from pathlib import Path
 import random
 import statistics
 import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from experiments.build_paths import binary
 
 
 def sha(path):
@@ -30,10 +33,14 @@ def check(row):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--exe", type=Path, default=ROOT / "build/receive/Release/receive.exe")
+    parser.add_argument("--exe", type=Path, help="explicit receive executable")
+    parser.add_argument("--bin-dir", type=Path, help="CMake runtime directory; overrides TERMFORGE_BIN_DIR")
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--repeats", type=int, default=3)
     args = parser.parse_args()
+    if args.exe is not None and args.bin_dir is not None:
+        parser.error("choose --exe or --bin-dir")
+    args.exe = args.exe.resolve() if args.exe is not None else binary("receive", args.bin_dir)
     if args.repeats < 1:
         parser.error("repeats must be positive")
     args.out.mkdir(parents=True, exist_ok=False)

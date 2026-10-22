@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 import unittest
 
-BIN = Path(__file__).resolve().parents[2] / "build/receive/Release"
+from experiments.build_paths import binary
 
 
 def style(fg=-1, bg=-1, bold=False):
@@ -24,7 +24,7 @@ class UnicodeTests(unittest.TestCase):
 
     def run_input(self, data, chunk, rows=2, cols=6):
         self.path.write_bytes(data)
-        return subprocess.run([str(BIN / "replay.exe"), str(self.path), str(rows), str(cols), "2", str(chunk)],
+        return subprocess.run([str(binary("replay")), str(self.path), str(rows), str(cols), "2", str(chunk)],
                               capture_output=True, text=True, encoding="utf-8", timeout=10)
 
     def expect(self, text, lines, col, row=0, wrap=False, details=(), hist=(), hdetails=(), current=None, cols=6):

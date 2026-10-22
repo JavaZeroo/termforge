@@ -1,0 +1,57 @@
+name: Build and synthetic regression
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            bin_dir: build/bin/Release
+          - os: ubuntu-24.04
+            bin_dir: build/bin
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: '1'
+      TERMFORGE_BIN_DIR: ${{ github.workspace }}/${{ matrix.bin_dir }}
+      TERMFORGE_TEST_ARTIFACTS: ${{ github.workspace }}/build/test-artifacts
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: |
+          python -m pip install -r benchmarks/requirements.txt
+          python -m pip install --require-hashes -r experiments/differential/requirements.txt
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release --parallel 2
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure --output-junit test-results.xml
+      - name: Full ASCII state replay
+        run: python -m experiments.core.run --out build/test-artifacts/replay-ascii
+      - name: Full Unicode state replay
+        run: python -m experiments.core.run --fixture unicode --out build/test-artifacts/replay-unicode
+      - name: Preserve synthetic failure evidence
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: failure-${{ matrix.os }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            build/Testing/Temporary/
+            build/test-results.xml
+            build/CMakeFiles/CMakeConfigureLog.yaml
+            build/test-artifacts/

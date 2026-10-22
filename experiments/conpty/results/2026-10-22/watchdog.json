@@ -1,0 +1,46 @@
+{
+  "mode": "watchdog",
+  "status": "passed",
+  "expected_timeout": true,
+  "timed_out": true,
+  "job_at_timeout": {
+    "active": 5,
+    "total": 7,
+    "terminated": 0
+  },
+  "returncode": 99,
+  "stdout": "{\"mode\":\"normal\",\"repeat\":0,\"startup\":true,\"steady_resources\":0,\"valid\":true,\"error\":\"\",\"ready\":1,\"echo\":1,\"resized\":1,\"descendant_created\":0,\"child_pid\":58320,\"child_signaled\":1,\"exit_code\":37,\"read_error\":109,\"output_bytes\":488,\"validated_records\":0,\"capture_overflow\":0,\"active_children_after\":0,\"forced_reader_cancel\":0,\"forced_process_cancel\":0,\"handles_before\":45,\"handles_after\":51,\"threads_before\":4,\"threads_after\":4,\"elapsed_ms\":274.943}\r\n{\"watchdog_ready\":true}\r\n",
+  "stderr": "",
+  "job_after": {
+    "active": 0,
+    "total": 7,
+    "terminated": 0
+  },
+  "startup": {
+    "mode": "normal",
+    "repeat": 0,
+    "startup": true,
+    "steady_resources": 0,
+    "valid": true,
+    "error": "",
+    "ready": 1,
+    "echo": 1,
+    "resized": 1,
+    "descendant_created": 0,
+    "child_pid": 58320,
+    "child_signaled": 1,
+    "exit_code": 37,
+    "read_error": 109,
+    "output_bytes": 488,
+    "validated_records": 0,
+    "capture_overflow": 0,
+    "active_children_after": 0,
+    "forced_reader_cancel": 0,
+    "forced_process_cancel": 0,
+    "handles_before": 45,
+    "handles_after": 51,
+    "threads_before": 4,
+    "threads_after": 4,
+    "elapsed_ms": 274.943
+  }
+}

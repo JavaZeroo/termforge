@@ -47,11 +47,12 @@
 
 ## 无交互构建与验证
 
-当前构建入口使用 Windows / Visual Studio 2022 C++ 工具链；核心源码本身不包含 Windows API，尚未验证其他平台。
+根目录 CMake 已在 Windows / Visual Studio 2022 和 Linux / GCC 构建验证；核心不包含 Windows API，管道与 ConPTY 条件构建。完整依赖及 CI 说明见 [贡献指南](../../CONTRIBUTING.md)。
 
 ```powershell
-cmake -S experiments/receive -B build/receive -G "Visual Studio 17 2022" -A x64
-cmake --build build/receive --config Release
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+cmake --build build --config Release
+$env:TERMFORGE_BIN_DIR = (Resolve-Path build/bin/Release).Path
 .venv/Scripts/python -m unittest experiments.core.test_core experiments.core.test_unicode experiments.receive.test_receive -v
 .venv/Scripts/python experiments/core/run.py --out local/experiments/core-new
 .venv/Scripts/python experiments/core/run.py --fixture unicode --out local/experiments/core-unicode-new
@@ -60,9 +61,9 @@ cmake --build build/receive --config Release
 输出目录必须不存在，每次子进程有超时，失败记录会保留。单独回放命令：
 
 ```powershell
-build/receive/Release/replay.exe input.bin 24 80 100 512
+build/bin/Release/replay.exe input.bin 24 80 100 512
 # 读取上限、通知策略、调度模式、输入文件字节数、队列容量、文件
-build/receive/Release/receive.exe 512 edge stream 580000 512 input.bin
+build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 ```
 
 `test_core.py` 使用手写期望画面，每个有效短案例遍历块长 1 到输入长度+1；同时覆盖不支持字节、截断序列、参数/尺寸上限和管道中的失败退出。不是用同一个解析器生成自己的正确答案。
@@ -86,4 +87,4 @@ v0.1 的历史结果保留，对应 commit `d15a1fc`：
 
 每个配置只跑一次，是正确性与计量端点烟测，没有预热和统计对照。`parse_ms` 在文件回放中是整个 feed 循环，在管道中是各块 feed 的墙钟耗时总和；后者包含计时开销及可能的线程抢占，排除队列等待和字节比较。它已经包含于整体运行时间，不能重复相加。解析、屏幕更新和历史维护尚未各自计量。管道原有的队列到校验延迟字段在解析模式下结束于 feed 之后，不能与旧的纯字节校验样本直接等同比较。
 
-未测显示或输入响应，没有做 xterm/其他终端的差分验证，也没有覆盖完整终端协议。新单元格模型改变了成本，不能用历史单次计时声称性能改善。下一步优先补差分验证和备用屏幕/滚动区域等日常应用行为，再开展更长时段的成本分解和多会话实验。完整客户端、WindTerm 正式基线和自动会话探针仍未完成。
+以上 v0.2 历史样本未测显示或输入响应，也没有覆盖完整终端协议。新单元格模型改变了成本，不能用历史单次计时声称性能改善。后续已加入 [pyte 参考差分](../differential/README.md) 与 [初步长批次计量](../measure/README.md)：六类边界差异明确保留，计量尚不足以归因或排名。下一步补有界错误恢复、窗口整合和备用屏幕/滚动区域等行为。完整客户端、WindTerm 正式基线和自动会话探针仍未完成。

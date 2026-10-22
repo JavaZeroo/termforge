@@ -2,12 +2,15 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import platform
 import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-BIN = ROOT / "build/receive/Release"
+sys.path.insert(0, str(ROOT))
+from experiments.build_paths import binary
 
 
 def digest(data):
@@ -22,7 +25,14 @@ def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--out", required=True, type=Path)
     cli.add_argument("--fixture", choices=("ascii", "unicode"), default="ascii")
+    cli.add_argument("--bin-dir", type=Path, help="CMake runtime directory; overrides TERMFORGE_BIN_DIR")
+    cli.add_argument("--route", choices=("auto", "replay", "all"), default="auto",
+                     help="auto includes Windows pipes on Windows, replay elsewhere")
     args = cli.parse_args()
+    use_pipe = args.route == "all" or (args.route == "auto" and os.name == "nt")
+    if use_pipe and os.name != "nt":
+        cli.error("the anonymous pipe experiment requires Windows; use --route replay")
+    binaries = {name: binary(name, args.bin_dir) for name in (("replay", "receive") if use_pipe else ("replay",))}
     args.out.mkdir(parents=True, exist_ok=False)
     # Each record overwrites and erases throwaway text, then leaves a numbered line.
     # Expected state is derived from record numbers, not another escape interpreter.
@@ -50,25 +60,27 @@ def main():
         expected.update(cell_details=details(23), history_cell_details=details(100))
     (args.out / "expected.json").write_text(json.dumps(expected, indent=2) + "\n")
     sources = ["experiments/core/terminal.hpp", "experiments/core/screen.hpp", "experiments/core/unicode_width.hpp", "experiments/core/replay.cpp",
-               "experiments/core/run.py", "experiments/receive/receive.cpp"]
+               "experiments/core/run.py", "experiments/build_paths.py", "experiments/receive/receive.cpp"]
     meta = dict(schema_version=2, fixture=args.fixture, unicode_version="15.0.0", status="running", platform=platform.platform(),
                 python=platform.python_version(), input_bytes=len(payload), input_sha256=digest(payload),
                 expected_sha256=state_digest(expected),
                 sources={p: digest((ROOT / p).read_bytes()) for p in sources},
-                binaries={name: digest((BIN / name).read_bytes()) for name in ("receive.exe", "replay.exe")})
+                routes=["replay", "pipe"] if use_pipe else ["replay"],
+                binaries={path.name: digest(path.read_bytes()) for path in binaries.values()})
     manifest = args.out / "manifest.json"
     manifest.write_text(json.dumps(meta, indent=2) + "\n")
     completed = 0
     try:
         with (args.out / "samples.jsonl").open("w") as output:
             configurations = [("replay", chunk, None, None) for chunk in (1, 7, 512, 4096, 65536)]
-            configurations += [("pipe", chunk, policy, mode) for chunk in (512, 4096, 65536)
-                               for policy in ("each", "edge") for mode in ("stream", "yield")]
+            if use_pipe:
+                configurations += [("pipe", chunk, policy, mode) for chunk in (512, 4096, 65536)
+                                   for policy in ("each", "edge") for mode in ("stream", "yield")]
             for route, chunk, policy, mode in configurations:
                 if route == "replay":
-                    command = [str(BIN / "replay.exe"), str(path.resolve()), "24", "80", "100", str(chunk)]
+                    command = [str(binaries["replay"]), str(path.resolve()), "24", "80", "100", str(chunk)]
                 else:
-                    command = [str(BIN / "receive.exe"), str(chunk), policy, mode, str(len(payload)), str(chunk), str(path.resolve())]
+                    command = [str(binaries["receive"]), str(chunk), policy, mode, str(len(payload)), str(chunk), str(path.resolve())]
                 record = dict(route=route, chunk=chunk, policy=policy, mode=mode)
                 try:
                     result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", timeout=30)

@@ -1,0 +1,16 @@
+{
+  "status": "complete",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "exe_sha256": "b92e628a241c61bc6713c87edd148b2548d1450b04cd136f45e1a10583b4298e",
+  "source_sha256": "e9776beaf17cbe62373acf6531b72b28b2bda06cc35795999a407d9bc2b58bc0",
+  "core_sources": {
+    "terminal.hpp": "c4f8b5f2eef3567fce14825df77ba526609fa47e800a119d83081447da76790a",
+    "screen.hpp": "2f5c4a63b00f202efcc2921f343f00787e02439d312096b3818c4bf66307e9dc",
+    "unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+  },
+  "target_font_family": "Consolas",
+  "resolved_fallback_fonts": null,
+  "capture_layer": "owned offscreen DIB",
+  "window_verified": false,
+  "presented_done": null
+}

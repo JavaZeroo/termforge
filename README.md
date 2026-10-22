@@ -32,8 +32,12 @@ An independent, fully open-source terminal project driven by reproducible perfor
 | [无界面定向分析](docs/research/windterm-headless-2026-10-22.md) | 官方 2.7.0 接收路径、证据与可重复执行入口 |
 | [接收机制实验](experiments/receive/README.md) | 自有管道、通知合并、有界队列与自动正确性检查 |
 | [最小状态回放](experiments/core/README.md) | 分块解析、屏幕/历史状态和完整管道回放检查 |
+| [独立参考差分](experiments/differential/README.md) | 固定参考版本、逐检查点和随机拆包、六类已知差异 |
+| [ConPTY 生命周期](experiments/conpty/README.md) | 无窗口双向输入、resize、子进程取消和回收 |
+| [成本初步探针](experiments/measure/README.md) / [离屏呈现](experiments/presentation/README.md) | 自动实验及仍未完成的 P1/V1 边界 |
 | [架构决策 ADR-0001](docs/adr/0001-evidence-before-stack.md) | 性能基线先于技术栈 |
 | [执行决策 ADR-0002](docs/adr/0002-automation-first-investigation.md) | 自动执行优先，定向逆向与原型交替推进 |
+| [核心路线 ADR-0003](docs/adr/0003-core-reference-and-reuse.md) | 临时保留受限自研核心，产品复用路线保留重审 |
 | [贡献指南](CONTRIBUTING.md) | 如何提交可验证的工作 |
 
 ## 路线

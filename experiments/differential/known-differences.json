@@ -1,0 +1,86 @@
+{
+  "wide_at_right_margin": {
+    "input_sha256": "70a863d4ded137ba697685097ce0d5172392c17d9265544206c3c6f1e444e9a5",
+    "rows": 3,
+    "columns": 12,
+    "history": 3,
+    "first_difference": {
+      "offset": 14,
+      "path": ".screen.row",
+      "expected": 0,
+      "actual": 1
+    },
+    "final_core_sha256": "c1b293fc748fc25526ca4a5262c7eaa95ec59a2d6ed288951e75884be26db4fc",
+    "final_reference_sha256": "2d19d9aa525cfc8b42c68b048a8fb59ea2cf5feaec51469b52afdce55b8c9ace"
+  },
+  "wide_lead_overwrite": {
+    "input_sha256": "8ac4252536df91fa15f7fb224d1838b786e8e439f31624403807e63c5d2e46cd",
+    "rows": 3,
+    "columns": 12,
+    "history": 3,
+    "first_difference": {
+      "offset": 5,
+      "path": ".screen.cells[0][1].text",
+      "expected": "",
+      "actual": " "
+    },
+    "final_core_sha256": "f38585126d829c899ae213d794f8965ab541f2587885d216b92e766a416ea249",
+    "final_reference_sha256": "256218ebdbcb8af5aaa3872e0d6dd9876e1acb68d5ca9198c90a16481e84612d"
+  },
+  "wide_trailer_overwrite": {
+    "input_sha256": "982eca16d0707242ccd4f27d534eade3ddb0ee87a6995bebf308319143bcecce",
+    "rows": 3,
+    "columns": 12,
+    "history": 3,
+    "first_difference": {
+      "offset": 8,
+      "path": ".screen.cells[0][0].text",
+      "expected": "中",
+      "actual": " "
+    },
+    "final_core_sha256": "b5c36577d649ac029743b8a495a765a26206e2c11f2372364c812f27cc906f5e",
+    "final_reference_sha256": "de1aa2c7aece397be2fc189d467e7d33769906c7a8c43bbadecd4257e8f5d1a9"
+  },
+  "combining_at_pending_wrap": {
+    "input_sha256": "bc8d7a6f46ef3ac8a2021fbf740322711b5c3da37439cbbbdab793fa7921006f",
+    "rows": 3,
+    "columns": 12,
+    "history": 3,
+    "first_difference": {
+      "offset": 14,
+      "path": ".screen.row",
+      "expected": 1,
+      "actual": 0
+    },
+    "final_core_sha256": "b5858b0f0ac0fd4dea59e96517829a311edbc4a9b45f47bf42ddde1ea65f0274",
+    "final_reference_sha256": "9df32cdd72775c54dc16bdab577a7758351e6d6d5349863e7fb25b638d30b66c"
+  },
+  "vertical_move_at_pending_wrap": {
+    "input_sha256": "4334087f6e148b3c01e0fbf1f743cba0326568903c8c8e993e91d14f22ac6c50",
+    "rows": 3,
+    "columns": 12,
+    "history": 3,
+    "first_difference": {
+      "offset": 15,
+      "path": ".screen.wrap_pending",
+      "expected": true,
+      "actual": false
+    },
+    "final_core_sha256": "4fef83c5585a214953bdd16ade82441e90333cfdff8632cc66c0ca5774a5fe46",
+    "final_reference_sha256": "1c1d947903edf57014e1e5d726adef851821ebb425ff35a2edbe5720a6b8eb69"
+  },
+  "styled_scroll_blank": {
+    "input_sha256": "0d63e102dcd7787333a73f1cec97a3ac6d1d3e6280601ab950cd9aebe376cb24",
+    "rows": 3,
+    "columns": 12,
+    "history": 3,
+    "first_difference": {
+      "offset": 14,
+      "path": ".screen.cells[2][0].style.fg",
+      "expected": -1,
+      "actual": 1
+    },
+    "final_core_sha256": "dd02f5b6d6758a542d614c69984912c06b3ead58477f1488da5e7528b16f7149",
+    "final_reference_sha256": "e41fd45531b8a05c55740f5b9c4821d955d9ae45d3ac1264eb47e03aceb14f18"
+  }
+}

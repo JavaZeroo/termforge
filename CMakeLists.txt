@@ -1,0 +1,61 @@
+cmake_minimum_required(VERSION 3.20)
+project(termforge_experiments VERSION 0.1.0 LANGUAGES CXX)
+
+# Single-config generators use bin/, multi-config generators use bin/<config>/.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+include(CTest)
+
+function(termforge_warnings target)
+  target_compile_features(${target} PRIVATE cxx_std_17)
+  if(MSVC)
+    target_compile_options(${target} PRIVATE /W4 /utf-8)
+  else()
+    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+endfunction()
+
+add_library(termforge_core INTERFACE)
+target_include_directories(termforge_core INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/experiments/core")
+target_compile_features(termforge_core INTERFACE cxx_std_17)
+add_executable(replay experiments/core/replay.cpp)
+target_link_libraries(replay PRIVATE termforge_core)
+termforge_warnings(replay)
+
+add_executable(terminal_trace experiments/core/trace.cpp)
+target_link_libraries(terminal_trace PRIVATE termforge_core)
+termforge_warnings(terminal_trace)
+
+add_executable(core_measure experiments/measure/measure.cpp)
+target_link_libraries(core_measure PRIVATE termforge_core)
+termforge_warnings(core_measure)
+if(WIN32)
+  target_compile_definitions(core_measure PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+  target_link_libraries(core_measure PRIVATE Psapi)
+  add_subdirectory(experiments/receive)
+  add_subdirectory(experiments/conpty)
+  add_executable(presentation_probe experiments/presentation/presentation.cpp)
+  termforge_warnings(presentation_probe)
+  target_compile_definitions(presentation_probe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
+  target_link_libraries(presentation_probe PRIVATE termforge_core d2d1 dwrite gdi32 user32)
+endif()
+
+if(BUILD_TESTING)
+  find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+  # New experiment suites can register ordinary Python module invocations here.
+  function(termforge_add_python_test name)
+    add_test(NAME ${name} COMMAND "${Python3_EXECUTABLE}" ${ARGN})
+    set_tests_properties(${name} PROPERTIES
+      WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+      TIMEOUT 180
+      ENVIRONMENT "TERMFORGE_BIN_DIR=$<TARGET_FILE_DIR:replay>;TERMFORGE_TRACE=$<TARGET_FILE:terminal_trace>;PYTHONUTF8=1")
+  endfunction()
+  termforge_add_python_test(core -m unittest experiments.core.test_core experiments.core.test_unicode -v)
+  termforge_add_python_test(binary_paths -m unittest experiments.test_build_paths -v)
+  termforge_add_python_test(benchmark_tools -m unittest discover -s benchmarks/tests -v)
+  termforge_add_python_test(differential -m unittest discover -s experiments/differential -p test_*.py -v)
+  if(WIN32)
+    termforge_add_python_test(research_guards -m unittest discover -s research/tests -v)
+    termforge_add_python_test(receive -m unittest experiments.receive.test_receive -v)
+    termforge_add_python_test(conpty -m unittest experiments.conpty.test_conpty -v)
+  endif()
+endif()
