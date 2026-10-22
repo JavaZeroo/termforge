@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "machine": "AMD64",
+  "python": "3.12.10",
+  "exe_sha256": "ef55d3fdb4e55f77d74b50af788c1aa1a16130b43cc73a3c31d6410aedd36997",
+  "source_sha256": "fdafec532edb0ccb1576b3dfbdffad4ba2432a122c08c10095fa605042ba7693",
+  "runner_sha256": "77cff5f99d2db3d4a84a45ccf846faa0718450790a8f4634768f595b5c3d7f6f",
+  "repeats": 3,
+  "seed": 20261022,
+  "fixture": "xorshift32 seed 0x12345678; low byte after shifts 13,17,5",
+  "status": "complete",
+  "timeout_per_run_seconds": 60,
+  "checked_runs": 120
+}

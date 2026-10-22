@@ -1,0 +1,986 @@
+[
+  {
+    "chunk": 512,
+    "policy": "each",
+    "mode": "burst",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 3.99525,
+      "min": 3.99184,
+      "max": 4.23631
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 109.375
+    },
+    "notifications": {
+      "median": 2048,
+      "min": 2048,
+      "max": 2048
+    },
+    "reads": {
+      "median": 2048,
+      "min": 2048,
+      "max": 2048
+    },
+    "peak_queued_bytes": {
+      "median": 29696,
+      "min": 26624,
+      "max": 38400
+    },
+    "peak_working_set_bytes": {
+      "median": 5869568,
+      "min": 5849088,
+      "max": 5898240
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 36.4,
+      "min": 31.1,
+      "max": 38.4
+    }
+  },
+  {
+    "chunk": 512,
+    "policy": "each",
+    "mode": "slow",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 0.0312918,
+      "min": 0.0312502,
+      "max": 0.0313248
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "notifications": {
+      "median": 512,
+      "min": 512,
+      "max": 512
+    },
+    "reads": {
+      "median": 512,
+      "min": 512,
+      "max": 512
+    },
+    "peak_queued_bytes": {
+      "median": 261632,
+      "min": 261632,
+      "max": 261632
+    },
+    "peak_working_set_bytes": {
+      "median": 5341184,
+      "min": 5337088,
+      "max": 5345280
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 7581020.0,
+      "min": 7575340.0,
+      "max": 7593240.0
+    }
+  },
+  {
+    "chunk": 512,
+    "policy": "each",
+    "mode": "stream",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 291.241,
+      "min": 253.485,
+      "max": 424.237
+    },
+    "cpu_ms": {
+      "median": 31.25,
+      "min": 15.625,
+      "max": 62.5
+    },
+    "notifications": {
+      "median": 16384,
+      "min": 16384,
+      "max": 16384
+    },
+    "reads": {
+      "median": 16384,
+      "min": 16384,
+      "max": 16384
+    },
+    "peak_queued_bytes": {
+      "median": 60928,
+      "min": 47616,
+      "max": 69120
+    },
+    "peak_working_set_bytes": {
+      "median": 13385728,
+      "min": 13340672,
+      "max": 13393920
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 66,
+      "min": 19,
+      "max": 77.4
+    }
+  },
+  {
+    "chunk": 512,
+    "policy": "each",
+    "mode": "yield",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 298.445,
+      "min": 249.172,
+      "max": 332.038
+    },
+    "cpu_ms": {
+      "median": 15.625,
+      "min": 0,
+      "max": 15.625
+    },
+    "notifications": {
+      "median": 2048,
+      "min": 2048,
+      "max": 2048
+    },
+    "reads": {
+      "median": 2048,
+      "min": 2048,
+      "max": 2048
+    },
+    "peak_queued_bytes": {
+      "median": 39424,
+      "min": 35840,
+      "max": 44032
+    },
+    "peak_working_set_bytes": {
+      "median": 5869568,
+      "min": 5849088,
+      "max": 5890048
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 37.9,
+      "min": 34.1,
+      "max": 59.3
+    }
+  },
+  {
+    "chunk": 512,
+    "policy": "edge",
+    "mode": "burst",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 3.96815,
+      "min": 3.94791,
+      "max": 4.09597
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 62.5
+    },
+    "notifications": {
+      "median": 930,
+      "min": 924,
+      "max": 978
+    },
+    "reads": {
+      "median": 2048,
+      "min": 2048,
+      "max": 2048
+    },
+    "peak_queued_bytes": {
+      "median": 32768,
+      "min": 32256,
+      "max": 38400
+    },
+    "peak_working_set_bytes": {
+      "median": 5885952,
+      "min": 5873664,
+      "max": 5890048
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 38.4,
+      "min": 29.1,
+      "max": 65.1
+    }
+  },
+  {
+    "chunk": 512,
+    "policy": "edge",
+    "mode": "slow",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 0.031348,
+      "min": 0.0312736,
+      "max": 0.0313615
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 15.625
+    },
+    "notifications": {
+      "median": 1,
+      "min": 1,
+      "max": 2
+    },
+    "reads": {
+      "median": 512,
+      "min": 512,
+      "max": 512
+    },
+    "peak_queued_bytes": {
+      "median": 261632,
+      "min": 261632,
+      "max": 261632
+    },
+    "peak_working_set_bytes": {
+      "median": 5353472,
+      "min": 5345280,
+      "max": 5361664
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 7568980.0,
+      "min": 7566800.0,
+      "max": 7585110.0
+    }
+  },
+  {
+    "chunk": 512,
+    "policy": "edge",
+    "mode": "stream",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 343.635,
+      "min": 299.414,
+      "max": 353.863
+    },
+    "cpu_ms": {
+      "median": 31.25,
+      "min": 15.625,
+      "max": 62.5
+    },
+    "notifications": {
+      "median": 7624,
+      "min": 6347,
+      "max": 8107
+    },
+    "reads": {
+      "median": 16384,
+      "min": 16384,
+      "max": 16384
+    },
+    "peak_queued_bytes": {
+      "median": 69120,
+      "min": 47104,
+      "max": 87552
+    },
+    "peak_working_set_bytes": {
+      "median": 13381632,
+      "min": 13373440,
+      "max": 13393920
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 32.8,
+      "min": 27.1,
+      "max": 65.2
+    }
+  },
+  {
+    "chunk": 512,
+    "policy": "edge",
+    "mode": "yield",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 240.159,
+      "min": 227.417,
+      "max": 318.299
+    },
+    "cpu_ms": {
+      "median": 15.625,
+      "min": 0,
+      "max": 31.25
+    },
+    "notifications": {
+      "median": 807,
+      "min": 681,
+      "max": 999
+    },
+    "reads": {
+      "median": 2048,
+      "min": 2048,
+      "max": 2048
+    },
+    "peak_queued_bytes": {
+      "median": 46080,
+      "min": 31744,
+      "max": 51200
+    },
+    "peak_working_set_bytes": {
+      "median": 5873664,
+      "min": 5849088,
+      "max": 5873664
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 75.2,
+      "min": 33.1,
+      "max": 100.8
+    }
+  },
+  {
+    "chunk": 4096,
+    "policy": "each",
+    "mode": "burst",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 4.20612,
+      "min": 3.96901,
+      "max": 4.24224
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 46.875
+    },
+    "notifications": {
+      "median": 256,
+      "min": 256,
+      "max": 256
+    },
+    "reads": {
+      "median": 256,
+      "min": 256,
+      "max": 256
+    },
+    "peak_queued_bytes": {
+      "median": 57344,
+      "min": 28672,
+      "max": 65536
+    },
+    "peak_working_set_bytes": {
+      "median": 5947392,
+      "min": 5914624,
+      "max": 6012928
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 41.1,
+      "min": 34.7,
+      "max": 127.8
+    }
+  },
+  {
+    "chunk": 4096,
+    "policy": "each",
+    "mode": "slow",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 0.251748,
+      "min": 0.251179,
+      "max": 0.253476
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 15.625
+    },
+    "notifications": {
+      "median": 64,
+      "min": 64,
+      "max": 64
+    },
+    "reads": {
+      "median": 64,
+      "min": 64,
+      "max": 64
+    },
+    "peak_queued_bytes": {
+      "median": 258048,
+      "min": 258048,
+      "max": 258048
+    },
+    "peak_working_set_bytes": {
+      "median": 5365760,
+      "min": 5361664,
+      "max": 5394432
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 930366,
+      "min": 922073,
+      "max": 931465
+    }
+  },
+  {
+    "chunk": 4096,
+    "policy": "each",
+    "mode": "stream",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 721.761,
+      "min": 688.836,
+      "max": 898.271
+    },
+    "cpu_ms": {
+      "median": 15.625,
+      "min": 0,
+      "max": 31.25
+    },
+    "notifications": {
+      "median": 2048,
+      "min": 2048,
+      "max": 2048
+    },
+    "reads": {
+      "median": 2048,
+      "min": 2048,
+      "max": 2048
+    },
+    "peak_queued_bytes": {
+      "median": 81920,
+      "min": 77824,
+      "max": 110592
+    },
+    "peak_working_set_bytes": {
+      "median": 13438976,
+      "min": 13336576,
+      "max": 13459456
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 30.2,
+      "min": 29,
+      "max": 43.1
+    }
+  },
+  {
+    "chunk": 4096,
+    "policy": "each",
+    "mode": "yield",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 527.398,
+      "min": 475.511,
+      "max": 548.667
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 31.25
+    },
+    "notifications": {
+      "median": 256,
+      "min": 256,
+      "max": 256
+    },
+    "reads": {
+      "median": 256,
+      "min": 256,
+      "max": 256
+    },
+    "peak_queued_bytes": {
+      "median": 73728,
+      "min": 73728,
+      "max": 81920
+    },
+    "peak_working_set_bytes": {
+      "median": 5955584,
+      "min": 5914624,
+      "max": 5988352
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 27.9,
+      "min": 22.9,
+      "max": 67.2
+    }
+  },
+  {
+    "chunk": 4096,
+    "policy": "edge",
+    "mode": "burst",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 3.97857,
+      "min": 3.95548,
+      "max": 4.00255
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 31.25
+    },
+    "notifications": {
+      "median": 122,
+      "min": 120,
+      "max": 133
+    },
+    "reads": {
+      "median": 256,
+      "min": 256,
+      "max": 256
+    },
+    "peak_queued_bytes": {
+      "median": 49152,
+      "min": 32768,
+      "max": 57344
+    },
+    "peak_working_set_bytes": {
+      "median": 5943296,
+      "min": 5844992,
+      "max": 5980160
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 32,
+      "min": 26.6,
+      "max": 37.4
+    }
+  },
+  {
+    "chunk": 4096,
+    "policy": "edge",
+    "mode": "slow",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 0.252443,
+      "min": 0.249161,
+      "max": 0.254098
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "notifications": {
+      "median": 1,
+      "min": 1,
+      "max": 2
+    },
+    "reads": {
+      "median": 64,
+      "min": 64,
+      "max": 64
+    },
+    "peak_queued_bytes": {
+      "median": 258048,
+      "min": 258048,
+      "max": 258048
+    },
+    "peak_working_set_bytes": {
+      "median": 5357568,
+      "min": 5316608,
+      "max": 5386240
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 926396,
+      "min": 920116,
+      "max": 937928
+    }
+  },
+  {
+    "chunk": 4096,
+    "policy": "edge",
+    "mode": "stream",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 827.78,
+      "min": 623.592,
+      "max": 1107.93
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 15.625
+    },
+    "notifications": {
+      "median": 999,
+      "min": 701,
+      "max": 1038
+    },
+    "reads": {
+      "median": 2048,
+      "min": 2048,
+      "max": 2048
+    },
+    "peak_queued_bytes": {
+      "median": 81920,
+      "min": 81920,
+      "max": 106496
+    },
+    "peak_working_set_bytes": {
+      "median": 13336576,
+      "min": 13320192,
+      "max": 13426688
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 26.6,
+      "min": 13.4,
+      "max": 62.9
+    }
+  },
+  {
+    "chunk": 4096,
+    "policy": "edge",
+    "mode": "yield",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 552.517,
+      "min": 308.642,
+      "max": 681.292
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 31.25
+    },
+    "notifications": {
+      "median": 132,
+      "min": 78,
+      "max": 145
+    },
+    "reads": {
+      "median": 256,
+      "min": 256,
+      "max": 256
+    },
+    "peak_queued_bytes": {
+      "median": 69632,
+      "min": 57344,
+      "max": 81920
+    },
+    "peak_working_set_bytes": {
+      "median": 6041600,
+      "min": 5963776,
+      "max": 6070272
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 34.2,
+      "min": 24,
+      "max": 99.7
+    }
+  },
+  {
+    "chunk": 65536,
+    "policy": "each",
+    "mode": "burst",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 4.14106,
+      "min": 3.88762,
+      "max": 4.19776
+    },
+    "cpu_ms": {
+      "median": 31.25,
+      "min": 0,
+      "max": 46.875
+    },
+    "notifications": {
+      "median": 33,
+      "min": 32,
+      "max": 36
+    },
+    "reads": {
+      "median": 33,
+      "min": 32,
+      "max": 36
+    },
+    "peak_queued_bytes": {
+      "median": 49152,
+      "min": 49152,
+      "max": 65536
+    },
+    "peak_working_set_bytes": {
+      "median": 5914624,
+      "min": 5914624,
+      "max": 6090752
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 60.6,
+      "min": 52.6,
+      "max": 461.8
+    }
+  },
+  {
+    "chunk": 65536,
+    "policy": "each",
+    "mode": "slow",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 3.47416,
+      "min": 2.2154,
+      "max": 3.67973
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 15.625
+    },
+    "notifications": {
+      "median": 5,
+      "min": 5,
+      "max": 8
+    },
+    "reads": {
+      "median": 5,
+      "min": 5,
+      "max": 8
+    },
+    "peak_queued_bytes": {
+      "median": 245760,
+      "min": 245760,
+      "max": 245760
+    },
+    "peak_working_set_bytes": {
+      "median": 5386240,
+      "min": 5386240,
+      "max": 5574656
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 54483.6,
+      "min": 49986.6,
+      "max": 95140.2
+    }
+  },
+  {
+    "chunk": 65536,
+    "policy": "each",
+    "mode": "stream",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 927.816,
+      "min": 617.641,
+      "max": 1102.86
+    },
+    "cpu_ms": {
+      "median": 46.875,
+      "min": 15.625,
+      "max": 46.875
+    },
+    "notifications": {
+      "median": 184,
+      "min": 182,
+      "max": 186
+    },
+    "reads": {
+      "median": 184,
+      "min": 182,
+      "max": 186
+    },
+    "peak_queued_bytes": {
+      "median": 98304,
+      "min": 81920,
+      "max": 262144
+    },
+    "peak_working_set_bytes": {
+      "median": 13320192,
+      "min": 13312000,
+      "max": 13479936
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 74.3,
+      "min": 58.1,
+      "max": 149.2
+    }
+  },
+  {
+    "chunk": 65536,
+    "policy": "each",
+    "mode": "yield",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 565.483,
+      "min": 416.823,
+      "max": 590.493
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 15.625
+    },
+    "notifications": {
+      "median": 26,
+      "min": 24,
+      "max": 26
+    },
+    "reads": {
+      "median": 26,
+      "min": 24,
+      "max": 26
+    },
+    "peak_queued_bytes": {
+      "median": 98304,
+      "min": 81920,
+      "max": 114688
+    },
+    "peak_working_set_bytes": {
+      "median": 6017024,
+      "min": 5971968,
+      "max": 6017024
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 52.4,
+      "min": 33.3,
+      "max": 86.8
+    }
+  },
+  {
+    "chunk": 65536,
+    "policy": "edge",
+    "mode": "burst",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 4.15494,
+      "min": 3.95636,
+      "max": 4.21747
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 31.25
+    },
+    "notifications": {
+      "median": 32,
+      "min": 32,
+      "max": 36
+    },
+    "reads": {
+      "median": 33,
+      "min": 32,
+      "max": 37
+    },
+    "peak_queued_bytes": {
+      "median": 49152,
+      "min": 49152,
+      "max": 49152
+    },
+    "peak_working_set_bytes": {
+      "median": 5922816,
+      "min": 5910528,
+      "max": 5926912
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 54.2,
+      "min": 40.6,
+      "max": 56.2
+    }
+  },
+  {
+    "chunk": 65536,
+    "policy": "edge",
+    "mode": "slow",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 3.499,
+      "min": 2.48867,
+      "max": 3.65034
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "notifications": {
+      "median": 2,
+      "min": 2,
+      "max": 2
+    },
+    "reads": {
+      "median": 5,
+      "min": 5,
+      "max": 7
+    },
+    "peak_queued_bytes": {
+      "median": 245760,
+      "min": 245760,
+      "max": 245760
+    },
+    "peak_working_set_bytes": {
+      "median": 5386240,
+      "min": 5382144,
+      "max": 5517312
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 54881.4,
+      "min": 52487.8,
+      "max": 83449
+    }
+  },
+  {
+    "chunk": 65536,
+    "policy": "edge",
+    "mode": "stream",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 1134.22,
+      "min": 961.631,
+      "max": 1142.11
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "notifications": {
+      "median": 127,
+      "min": 123,
+      "max": 127
+    },
+    "reads": {
+      "median": 194,
+      "min": 192,
+      "max": 195
+    },
+    "peak_queued_bytes": {
+      "median": 98304,
+      "min": 98304,
+      "max": 131072
+    },
+    "peak_working_set_bytes": {
+      "median": 13357056,
+      "min": 13344768,
+      "max": 13357056
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 58,
+      "min": 52.1,
+      "max": 83.6
+    }
+  },
+  {
+    "chunk": 65536,
+    "policy": "edge",
+    "mode": "yield",
+    "samples": 3,
+    "mib_per_second": {
+      "median": 423.388,
+      "min": 337.815,
+      "max": 542.446
+    },
+    "cpu_ms": {
+      "median": 0,
+      "min": 0,
+      "max": 0
+    },
+    "notifications": {
+      "median": 17,
+      "min": 17,
+      "max": 18
+    },
+    "reads": {
+      "median": 26,
+      "min": 25,
+      "max": 28
+    },
+    "peak_queued_bytes": {
+      "median": 98304,
+      "min": 81920,
+      "max": 147456
+    },
+    "peak_working_set_bytes": {
+      "median": 6025216,
+      "min": 6012928,
+      "max": 6029312
+    },
+    "queue_to_validated_block_p95_us": {
+      "median": 90.8,
+      "min": 52.6,
+      "max": 151.1
+    }
+  }
+]
