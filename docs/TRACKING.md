@@ -8,4 +8,4 @@
 - [#4 运行并发布 WindTerm 受控性能基线](https://github.com/JavaZeroo/termforge/issues/4)
 - [#5 依据基线制定最小终端核心规格与候选实验](https://github.com/JavaZeroo/termforge/issues/5)
 
-顺序：实验协议 → 生成器与采样工具 → 基线 → 原型规格。任务状态以 GitHub 为准。
+顺序按 [ADR-0002](adr/0002-automation-first-investigation.md) 调整：现有协议/工具 → 定向逆向与原型规格/实验交替推进。#4 继续提供正式预算和性能结论的证据，#5 无需等待 #4 全部完成才能开始。任务状态以 GitHub 为准；手工补跑不作为默认推进路径。

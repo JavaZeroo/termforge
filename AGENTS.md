@@ -11,4 +11,6 @@
 - Keep benchmark data local until reviewed for provenance and privacy. Publish synthetic workloads and sanitized results.
 - Prefer focused changes with validation appropriate to the work. Do not invent measurements or percentage-complete estimates.
 - Keep the roadmap and known differences current when scope changes.
+- Follow docs/adr/0002-automation-first-investigation.md: prefer unattended CLI/test workflows; do not turn automation blockers into repeated user clicks, commands or per-run confirmations. Preserve unresolved evidence gaps and continue independent investigation/prototype work.
+- M0 investigation and small M1 experiments may proceed iteratively; a complete WindTerm baseline is required for supported performance claims, not for beginning an independently testable prototype.
 - Documentation is primarily Chinese; technical identifiers and concise English summaries are welcome.
