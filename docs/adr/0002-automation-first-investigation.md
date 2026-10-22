@@ -45,4 +45,4 @@
 - [Ghidra 官方 HeadlessAnalyzer](https://ghidra.re/ghidra_docs/api/ghidra/app/util/headless/HeadlessAnalyzer.html)：支持命令行分析；具体安装版本和脚本接口在工作包 A 中固定。
 - [WPR 官方命令行文档](https://learn.microsoft.com/en-us/windows-hardware/test/wpt/wpr-command-line-options)：可命令行开始、停止和保存记录。采集权限、符号、导出及扰动仍需实测；只操作本任务创建的记录，不取消其他活动录制。
 
-静态分析入口已验证；WindTerm 自动会话与 TermForge 核心尚未实现，工作包 B/C 继续按上述边界推进。
+静态分析入口已验证；B 已交付有限核心 v0.2 与自动状态回放，完整交互核心/客户端尚未实现；C 的 WindTerm 自动会话仍待验证。当前并行工作与验收见[现状与任务拆解](../STATUS-AND-BACKLOG.md)，本 ADR 的证据和自动执行原则保持有效。

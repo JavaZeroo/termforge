@@ -6,7 +6,7 @@
 
 An independent, fully open-source terminal project driven by reproducible performance evidence. WindTerm is a comparison target, not an upstream product or affiliation.
 
-> 当前阶段：研究与基准设计。尚无可用客户端、已完成的性能测量或性能等价声明。`TermForge` 是项目暂名。
+> 当前阶段：研究与有限核心原型。已有机制实验和状态回放，尚无可用客户端、正式 WindTerm 性能基线或性能等价声明。`TermForge` 是项目暂名。
 
 ## 项目原则
 
@@ -22,6 +22,7 @@ An independent, fully open-source terminal project driven by reproducible perfor
 | 文档 | 内容 |
 |---|---|
 | [总体计划](docs/PLAN.md) | 分阶段交付与决策关卡 |
+| [当前现状与任务拆解](docs/STATUS-AND-BACKLOG.md) | 目标差距、交付关卡、近期任务与依赖 |
 | [首个里程碑](docs/milestones/M0-baseline.md) | WindTerm 基线工具、实验及原型规格 |
 | [任务跟踪](docs/TRACKING.md) | GitHub 里程碑及有依赖关系的实施任务 |
 | [性能测量规范](benchmarks/README.md) | 场景、指标、环境控制与正确性 |

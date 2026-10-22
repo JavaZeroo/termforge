@@ -14,12 +14,21 @@
 
 ## 当前本地检查
 
-当前已有 Python 基准工具，尚无客户端构建命令。安装 `benchmarks/requirements.txt` 后执行：
+当前已有 Python 基准工具和有限 C++ 核心实验，尚无客户端。安装 `benchmarks/requirements.txt` 后执行：
 
 ```sh
 python -m json.tool benchmarks/run-template.json
 python -m unittest discover -s benchmarks/tests -v
+python -m unittest discover -s research/tests -v
 git diff --check
 ```
 
-后续引入代码时，在同一变更中增加必要的构建和测试说明。
+Windows / Visual Studio 2022 C++ 工具链的现有核心检查：
+
+```powershell
+cmake -S experiments/receive -B build/receive -G "Visual Studio 17 2022" -A x64
+cmake --build build/receive --config Release
+python -m unittest experiments.core.test_core experiments.core.test_unicode experiments.receive.test_receive -v
+```
+
+自动完整回放与版本限制见[核心说明](experiments/core/README.md)。独立核心构建、可指定二进制路径的测试和 CI 是[当前计划 E1](docs/STATUS-AND-BACKLOG.md)的待办项。后续修改在同一变更中补充必要的构建和测试说明。
