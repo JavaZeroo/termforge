@@ -1,0 +1,246 @@
+{
+  "source_run": "https://github.com/JavaZeroo/termforge/actions/runs/39806587262",
+  "commit": "b4a391c6bc46499d22b62cfbc6c19b90e59fb584",
+  "platform": "windows-2022 hosted runner",
+  "status": "failed",
+  "scope": "Controlled ConPTY lifecycle; resource gate fails. No performance claim.",
+  "diagnostic_input_before_wide_api": {
+    "source_run": "https://github.com/JavaZeroo/termforge/actions/runs/39805975727",
+    "expected": "ECHO:alpha-汉字-123",
+    "observed_hex": "4543484f3a616c7068612d38382d313233"
+  },
+  "records": [
+    {
+      "mode": "cancel",
+      "status": "failed",
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "samples": [
+        {
+          "mode": "normal",
+          "repeat": 0,
+          "startup": true,
+          "valid": true,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "exit_code": 37,
+          "child_signaled": 1,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 47,
+          "handles_after": 61,
+          "threads_before": 4,
+          "threads_after": 4,
+          "validated_records": 0
+        },
+        {
+          "mode": "cancel",
+          "repeat": 0,
+          "startup": false,
+          "valid": false,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "exit_code": 91,
+          "child_signaled": 1,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 61,
+          "handles_after": 62,
+          "threads_before": 4,
+          "threads_after": 4,
+          "validated_records": 0
+        }
+      ]
+    },
+    {
+      "mode": "close",
+      "status": "failed",
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "samples": [
+        {
+          "mode": "normal",
+          "repeat": 0,
+          "startup": true,
+          "valid": true,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "exit_code": 37,
+          "child_signaled": 1,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 41,
+          "handles_after": 55,
+          "threads_before": 4,
+          "threads_after": 4,
+          "validated_records": 0
+        },
+        {
+          "mode": "close",
+          "repeat": 0,
+          "startup": false,
+          "valid": false,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "exit_code": 1,
+          "child_signaled": 1,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 55,
+          "handles_after": 56,
+          "threads_before": 4,
+          "threads_after": 4,
+          "validated_records": 0
+        }
+      ]
+    },
+    {
+      "mode": "large",
+      "status": "failed",
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 6,
+        "terminated": 0
+      },
+      "samples": [
+        {
+          "mode": "normal",
+          "repeat": 0,
+          "startup": true,
+          "valid": true,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "exit_code": 37,
+          "child_signaled": 1,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 41,
+          "handles_after": 55,
+          "threads_before": 4,
+          "threads_after": 4,
+          "validated_records": 0
+        },
+        {
+          "mode": "large",
+          "repeat": 0,
+          "startup": false,
+          "valid": false,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "exit_code": 37,
+          "child_signaled": 1,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 55,
+          "handles_after": 56,
+          "threads_before": 4,
+          "threads_after": 4,
+          "validated_records": 16384
+        }
+      ]
+    },
+    {
+      "mode": "normal",
+      "status": "failed",
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 6,
+        "terminated": 0
+      },
+      "samples": [
+        {
+          "mode": "normal",
+          "repeat": 0,
+          "startup": true,
+          "valid": true,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "exit_code": 37,
+          "child_signaled": 1,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 41,
+          "handles_after": 55,
+          "threads_before": 4,
+          "threads_after": 4,
+          "validated_records": 0
+        },
+        {
+          "mode": "normal",
+          "repeat": 0,
+          "startup": false,
+          "valid": false,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "exit_code": 37,
+          "child_signaled": 1,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 55,
+          "handles_after": 56,
+          "threads_before": 4,
+          "threads_after": 4,
+          "validated_records": 0
+        }
+      ]
+    },
+    {
+      "mode": "watchdog",
+      "status": "passed",
+      "timed_out": true,
+      "job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "samples": [
+        {
+          "mode": "normal",
+          "repeat": 0,
+          "startup": true,
+          "valid": true,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "exit_code": 37,
+          "child_signaled": 1,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 41,
+          "handles_after": 55,
+          "threads_before": 4,
+          "threads_after": 4,
+          "validated_records": 0
+        },
+        {}
+      ]
+    }
+  ]
+}

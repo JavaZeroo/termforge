@@ -17,4 +17,10 @@ Microsoft 的 [console UTF-8 A API 问题讨论](https://github.com/microsoft/te
 
 本机最初的短批次则是首次增加 6 个句柄，后续稳态差为零。两个环境的差异不用于推导任何性能优劣。现代 Windows runner 同时改变系统和工具链，不能只凭两边通过/失败就断定唯一根因。
 
-资源验收继续要求回到基线；失败结果没有被跳过或改成通过。后续有界诊断与最终支持范围以[当前状态表](../STATUS-AND-BACKLOG.md)及本记录更新为准。
+额外的[有界 PSS 诊断 / `2bd61ec`](https://github.com/JavaZeroo/termforge/actions/runs/39807637556) 在 Server 2022 输出首次快照后以 `0xC0000005` 异常退出，未获得稳态残留句柄的有效归属证据；该快照路径已从默认代码移除。不能据首次快照或其他项目的历史 bug 认定这 1 个句柄属于哪个系统组件。保留约 1 秒回收等待、严格数量检查和有界 HEX 失败记录。
+
+## 本批范围决定
+
+[`75e39f9` 的三平台运行](https://github.com/JavaZeroo/termforge/actions/runs/39807244160)及上述 `2bd61ec` 运行中，Server 2025 和 Ubuntu 均通过全部对应构建、测试和 ASCII/Unicode 回放。Server 2022 没有通过。主 CI 因而固定为 `windows-2025` / `ubuntu-24.04`，与本机 Windows 11 的验证共同构成本批已验收范围；这不代表 Windows 10 全系列或真实桌面应用均已支持。
+
+Server 2022 的兼容性问题保留为后续任务，不扩大本批去修改私有 HPCON 布局。独立[兼容性 workflow](../../.github/workflows/conpty-compat.yml)可由代理 `gh workflow run conpty-compat.yml` 无交互触发，使用相同严格 T1 断言，失败仍使运行失败。原始已知失败和[审阅后的摘要](../../experiments/conpty/results/2026-10-22-server2022/summary.json)保留。此范围决定没有把资源增长改成合格，也没有据此宣称产品已经无泄漏。

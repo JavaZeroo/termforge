@@ -1,0 +1,39 @@
+name: ConPTY legacy compatibility probe (known failing)
+
+# This platform has a recorded resource regression; it is not a supported gate.
+# Keep a fully automatic, strictly failing reproduction available for follow-up.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-2022-conpty:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    env:
+      PYTHONUTF8: '1'
+      TERMFORGE_TEST_ARTIFACTS: ${{ github.workspace }}/build/test-artifacts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Configure
+        run: cmake -S . -B build
+      - name: Build controlled probe
+        run: cmake --build build --config Release --target termforge_conpty_probe --parallel 2
+      - name: Strict ConPTY lifecycle checks
+        run: ctest --test-dir build -C Release -R "^conpty$" --output-on-failure --output-junit conpty-results.xml
+      - name: Preserve synthetic reproduction evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: conpty-windows-2022
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            build/Testing/Temporary/
+            build/conpty-results.xml
+            build/test-artifacts/conpty/

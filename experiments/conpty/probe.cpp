@@ -1,7 +1,5 @@
 #include "session.hpp"
 #include <tlhelp32.h>
-#include <processsnapshot.h>
-#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -122,56 +120,6 @@ static DWORD threads() {
     while (Thread32Next(snapshot.get(), &entry));
     return count;
 }
-struct HandleRecord {
-    ULONG_PTR value = 0;
-    DWORD type = 0, flags = 0, process_id = 0, parent_id = 0, exit_status = 0;
-    std::string image_basename;
-};
-struct HandleSnapshot {
-    DWORD error = ERROR_SUCCESS;
-    std::vector<HandleRecord> entries;
-};
-static HandleSnapshot own_handles() {
-    HandleSnapshot result;
-    HPSS snapshot = nullptr;
-    result.error = PssCaptureSnapshot(GetCurrentProcess(),
-        static_cast<PSS_CAPTURE_FLAGS>(PSS_CAPTURE_HANDLES | PSS_CAPTURE_HANDLE_TYPE_SPECIFIC_INFORMATION),
-        0, &snapshot);
-    if (result.error != ERROR_SUCCESS) return result;
-    struct SnapshotCleanup {
-        HPSS value;
-        ~SnapshotCleanup() { PssFreeSnapshot(GetCurrentProcess(), value); }
-    } snapshot_cleanup{snapshot};
-    HPSSWALK marker = nullptr;
-    result.error = PssWalkMarkerCreate(nullptr, &marker);
-    if (result.error != ERROR_SUCCESS) return result;
-    struct MarkerCleanup {
-        HPSSWALK value;
-        ~MarkerCleanup() { PssWalkMarkerFree(value); }
-    } marker_cleanup{marker};
-    PSS_HANDLE_ENTRY entry{};
-    while ((result.error = PssWalkSnapshot(snapshot, PSS_WALK_HANDLES, marker, &entry, sizeof(entry))) == ERROR_SUCCESS) {
-        HandleRecord row;
-        row.value = reinterpret_cast<ULONG_PTR>(entry.Handle);
-        row.type = static_cast<DWORD>(entry.ObjectType); row.flags = static_cast<DWORD>(entry.Flags);
-        if (entry.ObjectType == PSS_OBJECT_TYPE_PROCESS && (entry.Flags & PSS_HANDLE_HAVE_TYPE_SPECIFIC_INFORMATION)) {
-            row.process_id = entry.TypeSpecificInformation.Process.ProcessId;
-            row.parent_id = entry.TypeSpecificInformation.Process.ParentProcessId;
-            row.exit_status = entry.TypeSpecificInformation.Process.ExitStatus;
-            // Query only an existing handle in this probe host. Retain just the
-            // executable basename, never object names or absolute image paths.
-            wchar_t path[32768]; DWORD size = 32768;
-            if (QueryFullProcessImageNameW(entry.Handle, 0, path, &size)) {
-                const std::wstring full(path, size);
-                const size_t slash = full.find_last_of(L"\\/");
-                row.image_basename = utf8(full.substr(slash == std::wstring::npos ? 0 : slash + 1));
-            }
-        }
-        result.entries.push_back(std::move(row));
-    }
-    if (result.error == ERROR_NO_MORE_ITEMS) result.error = ERROR_SUCCESS;
-    return result;
-}
 static std::string quoted(const std::string& text) {
     std::ostringstream result; result << '"';
     for (unsigned char c : text) {
@@ -185,7 +133,6 @@ static void require(bool condition, const char* detail) {
     if (!condition) throw std::runtime_error(detail);
 }
 static bool probe(const std::string& mode, unsigned repeat, bool startup = false) {
-    const HandleSnapshot before_snapshot = own_handles();
     const DWORD before_handles = handles(), before_threads = threads();
     Session session;
     bool ready = false, echo = false, resized = false, exited = false, tree = false;
@@ -237,23 +184,6 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
         Sleep(10); after_handles = handles(); after_threads = threads();
     }
     const double settle_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - settle_begin).count();
-    const HandleSnapshot after_snapshot = own_handles();
-    std::ostringstream added_json;
-    size_t added_count = 0; added_json << '[';
-    for (const auto& entry : after_snapshot.entries) {
-        const auto existing = std::find_if(before_snapshot.entries.begin(), before_snapshot.entries.end(), [&](const auto& old) {
-            return old.value == entry.value && old.type == entry.type && old.process_id == entry.process_id;
-        });
-        if (existing != before_snapshot.entries.end()) continue;
-        ++added_count;
-        if (added_count > 128) continue;
-        if (added_count > 1) added_json << ',';
-        added_json << "{\"handle\":" << entry.value << ",\"object_type\":" << entry.type
-                   << ",\"flags\":" << entry.flags << ",\"process_id\":" << entry.process_id
-                   << ",\"parent_id\":" << entry.parent_id << ",\"exit_status\":" << entry.exit_status
-                   << ",\"image_basename\":" << quoted(entry.image_basename) << '}';
-    }
-    added_json << ']';
     const bool steady_resources = before_handles == after_handles && before_threads == after_threads;
     // Retain first-use initialization growth separately; subsequent sessions
     // must return to the established process baseline exactly.
@@ -286,10 +216,7 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
               << ",\"handles_before\":" << before_handles << ",\"handles_after\":" << after_handles
               << ",\"threads_before\":" << before_threads << ",\"threads_after\":" << after_threads
               << ",\"handles_immediate_after\":" << immediate_handles << ",\"threads_immediate_after\":" << immediate_threads
-              << ",\"resource_settle_ms\":" << settle_ms << ",\"host_pid\":" << GetCurrentProcessId()
-              << ",\"handle_snapshot_before_error\":" << before_snapshot.error
-              << ",\"handle_snapshot_after_error\":" << after_snapshot.error
-              << ",\"added_handles_count\":" << added_count << ",\"added_handles\":" << added_json.str()
+              << ",\"resource_settle_ms\":" << settle_ms
               << ",\"elapsed_ms\":" << elapsed << "}" << std::endl;
     return valid;
 }

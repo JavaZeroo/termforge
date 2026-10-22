@@ -14,7 +14,7 @@
 
 ## 干净构建与自动检查
 
-当前交付是 Python 工具与有限 C++17 核心实验，尚无客户端。需要 CMake 3.20+、Python 3.10+ 和 C++17 编译器；CI 使用 Python 3.12，Windows / Visual Studio 2022 与 Ubuntu 24.04 / GCC。正常构建使用仓库内已生成的 Unicode 表，不访问 WindTerm 安装目录，也不下载私有程序。
+当前交付是 Python 工具与有限 C++17 核心实验，尚无客户端。需要 CMake 3.20+、Python 3.10+ 和 C++17 编译器；主 CI 使用 Python 3.12、Windows Server 2025 runner 的 Visual Studio 与 Ubuntu 24.04 / GCC，本机另验证 Windows 11 / Visual Studio 2022。正常构建使用仓库内已生成的 Unicode 表，不访问 WindTerm 安装目录，也不下载私有程序。
 
 从仓库根目录运行，推荐使用 Python 虚拟环境：
 
@@ -42,3 +42,5 @@ python -m experiments.core.run --fixture unicode --out local/experiments/core-un
 完整回放的输出目录必须不存在；默认在 Windows 验证文件与管道两条路径，在 Linux 只验证文件回放，也可显式使用 `--route replay`。自动回放与核心支持边界见[核心说明](experiments/core/README.md)。
 
 [GitHub Actions](.github/workflows/build.yml) 在干净检出上构建并执行相同检查及两套完整回放。失败时仅上传本次生成的 CTest/CMake 日志和 `build/test-artifacts` 内的合成用例结果；不会上传仓库 `local/`、WindTerm、个人终端会话或完整工作目录。测试可通过 `TERMFORGE_TEST_ARTIFACTS` 指定合成失败记录目录。CI 的运行时间用于回归诊断，不是受控性能基准。
+
+Server 2022 的 ConPTY 稳态句柄增长尚未解决，未列入已验收平台。它保留为[按需兼容性探针](.github/workflows/conpty-compat.yml)，运行同样严格的断言，失败仍报告失败；[原因与证据](docs/research/conpty-platform-check-2026-10-22.md)独立保留，不能把现代 Windows 主 CI 通过解释为旧系统也通过。
