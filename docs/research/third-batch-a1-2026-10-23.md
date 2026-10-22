@@ -2,6 +2,8 @@
 
 日期：2026-10-23，实施基点 `a559541`。范围是本地交互闭环，不含 C5 resize、完整 G1、日常开发版或 WindTerm 性能对等。
 
+实施提交 `81e9fab` 已通过 Windows Server 2025 / Ubuntu 24.04 干净构建和各自平台回归；[独立审查](../reviews/2026-10-23-a1.md)的 Standards、Spec 两轴均为 0 项实质发现。
+
 ## 交付与运行
 
 入口 `termforge_shell.exe` 是 Windows GUI 程序，启动真实系统 cmd，经过 ConPTY、双向有界队列、Recovery 和只读快照绘制到窗口。支持普通输入、中文字符消息、退格、左右方向键、Ctrl-C 和退出。普通使用不向 stdout 输出屏幕诊断，不自动保存用户会话。
