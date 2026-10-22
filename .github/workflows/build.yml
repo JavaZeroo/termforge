@@ -16,6 +16,8 @@ jobs:
         include:
           - os: windows-2022
             bin_dir: build/bin/Release
+          - os: windows-2025
+            bin_dir: build/bin/Release
           - os: ubuntu-24.04
             bin_dir: build/bin
     runs-on: ${{ matrix.os }}
