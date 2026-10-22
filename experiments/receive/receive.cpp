@@ -12,6 +12,9 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <fstream>
+#include <iterator>
+#include "../core/terminal.hpp"
 
 using Clock = std::chrono::steady_clock;
 struct Block { std::vector<unsigned char> bytes; Clock::time_point queued; };
@@ -23,7 +26,7 @@ static double cpu_ms() {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 6) { std::cerr << "receive chunk each|edge stream|burst|slow|yield bytes capacity\n"; return 2; }
+    if (argc != 6 && argc != 7) { std::cerr << "receive chunk each|edge stream|burst|slow|yield bytes capacity [ASCII input file]\n"; return 2; }
     size_t chunk, total, capacity;
     try { chunk = std::stoull(argv[1]); total = std::stoull(argv[4]); capacity = std::stoull(argv[5]); }
     catch (...) { return 2; }
@@ -36,6 +39,16 @@ int main(int argc, char** argv) {
     std::vector<unsigned char> expected(total);
     uint32_t state = 0x12345678;
     for (auto& byte : expected) { state ^= state << 13; state ^= state >> 17; state ^= state << 5; byte = static_cast<unsigned char>(state); }
+    const bool parse = argc == 7;
+    if (parse) {
+        std::ifstream input(argv[6], std::ios::binary | std::ios::ate);
+        if (!input || input.tellg() != static_cast<std::streamoff>(total)) return 2;
+        input.seekg(0); input.read(reinterpret_cast<char*>(expected.data()), static_cast<std::streamsize>(total));
+        if (!input) return 2;
+    }
+    termforge::Parser parser;
+    std::string parser_error;
+    double parse_ms = 0;
     HANDLE read_pipe{}, write_pipe{};
     if (!CreatePipe(&read_pipe, &write_pipe, nullptr, 65536)) return 3;
     std::mutex mutex;
@@ -65,6 +78,12 @@ int main(int argc, char** argv) {
             if (consumed + block.bytes.size() > expected.size() ||
                 std::memcmp(expected.data() + consumed, block.bytes.data(), block.bytes.size()) != 0) valid = false;
             consumed += block.bytes.size();
+            if (parse && parser_error.empty()) {
+                const auto parse_start = Clock::now();
+                try { parser.feed(std::string_view(reinterpret_cast<const char*>(block.bytes.data()), block.bytes.size())); }
+                catch (const std::exception& e) { parser_error = e.what(); }
+                parse_ms += std::chrono::duration<double, std::milli>(Clock::now() - parse_start).count();
+            }
             latencies.push_back(std::chrono::duration<double, std::micro>(Clock::now() - block.queued).count());
         }
     });
@@ -109,13 +128,16 @@ int main(int argc, char** argv) {
     { std::lock_guard<std::mutex> lock(mutex); done = true; }
     ready.notify_one(); // EOF notification is excluded from data-notification count.
     writer.join(); consumer.join();
+    if (parse && parser_error.empty()) {
+        try { parser.finish(); } catch (const std::exception& e) { parser_error = e.what(); }
+    }
     const double elapsed = std::chrono::duration<double>(Clock::now() - start).count();
     const double cpu = cpu_ms() - cpu_start;
     PROCESS_MEMORY_COUNTERS memory{}; memory.cb = sizeof(memory);
     if (!GetProcessMemoryInfo(GetCurrentProcess(), &memory, sizeof(memory))) return 4;
     std::sort(latencies.begin(), latencies.end());
     auto quantile = [&](double q) { return latencies.empty() ? 0 : latencies[static_cast<size_t>((latencies.size() - 1) * q)]; };
-    valid = valid && consumed == total && !writer_error && !reader_error && peak <= capacity;
+    valid = valid && consumed == total && !writer_error && !reader_error && peak <= capacity && parser_error.empty();
     std::cout << "{\"valid\":" << (valid ? "true" : "false")
         << ",\"chunk\":" << chunk << ",\"policy\":\"" << policy << "\",\"mode\":\"" << mode
         << "\",\"bytes\":" << total << ",\"consumed\":" << consumed << ",\"capacity\":" << capacity
@@ -127,6 +149,12 @@ int main(int argc, char** argv) {
         << ",\"mib_per_second\":" << total / 1048576.0 / elapsed
         << ",\"queue_to_validated_block_p50_us\":" << quantile(.5)
         << ",\"queue_to_validated_block_p95_us\":" << quantile(.95)
-        << ",\"writer_error\":" << writer_error << ",\"reader_error\":" << reader_error << "}\n";
+        << ",\"writer_error\":" << writer_error << ",\"reader_error\":" << reader_error;
+    if (parse) {
+        std::cout << ",\"parse_ms\":" << parse_ms << ",\"parser_error\":";
+        termforge::Screen::quoted(std::cout, parser_error);
+        if (parser_error.empty()) { std::cout << ",\"screen\":"; parser.screen.json(std::cout); }
+    }
+    std::cout << "}\n";
     return valid ? 0 : 1;
 }
