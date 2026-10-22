@@ -1,0 +1,36 @@
+{
+  "schema": "termforge-window-probe-v1",
+  "status": "complete",
+  "started_utc": "2026-10-22T18:01:14.378635+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "exe_sha256": "39b19df641065d9713eb059176b9c604db8a37df2c189914779da885794ad136",
+  "source_sha256": {
+    "presentation.cpp": "bc002219452648d3622fca4e61d02ee85cdaadbfe2aa76f59570a6442a8f0afb",
+    "desktop.hpp": "2efc54b1a23acbbc4877fd1b381d5a87e98395ddeed01b5159cbe78fa92a0ccf",
+    "render.hpp": "5e76aefab4e19c79e252c168287eaf3113721c6c2a487d029cac5b0aac24bdbd"
+  },
+  "runner_sha256": "86f1d051935f9bf2c2be908f3e716e379cc8bc569a3b67ddd5dea8188ae32a57",
+  "core_sources": {
+    "terminal.hpp": "892997bc2b869a8655d272e9ff049c4102bb1366f1ac709cff8c3d4a41657396",
+    "screen.hpp": "909aec301b64e2d5e52377167873bcb1dc124e28967ffd75d0c5c25b748ea20f",
+    "unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+  },
+  "font_family_requested": "Consolas",
+  "seed": 20261023,
+  "repeats": 5,
+  "capture_layer": "WM_PRINTCLIENT from WM_PAINT retained DIB",
+  "presented_done": null,
+  "physical_dpi_transition_verified": false,
+  "performance_ranking": false,
+  "limitations": [
+    "private non-input desktop",
+    "programmatic UpdateWindow paint trigger",
+    "GDI font fallback unobserved; its DirectWrite audit is a separate reference",
+    "HWND resize only, no terminal resize/reflow",
+    "bounded fixed-scene layout cache",
+    "instrumented draw/BitBlt durations, no observer-off calibration"
+  ],
+  "timeout_cleanup_passed": true,
+  "finished_utc": "2026-10-22T18:01:21.062372+00:00"
+}

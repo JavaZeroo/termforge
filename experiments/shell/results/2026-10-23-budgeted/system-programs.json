@@ -1,0 +1,14 @@
+{
+  "captured_utc": "2026-10-22T18:10:42.4544563Z",
+  "capture_after_batches": true,
+  "programs": {
+    "chcp.com": {
+      "version": "10.0.26100.1 (WinBuild.160101.0800)",
+      "sha256": "8d75e783f327f899a42927fc2927f0e3d1ec62c4ca1dc88de04dd67de9ae555d"
+    },
+    "cmd.exe": {
+      "version": "10.0.26100.8875 (WinBuild.160101.0800)",
+      "sha256": "97ac98b1a92c286054cce55239cfccdfc23a5517bd07fe693072c9ca96c7dabb"
+    }
+  }
+}

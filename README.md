@@ -6,7 +6,7 @@
 
 An independent, fully open-source terminal project driven by reproducible performance evidence. WindTerm is a comparison target, not an upstream product or affiliation.
 
-> 当前阶段：研究与有限核心原型。已有机制实验和状态回放，尚无可用客户端、正式 WindTerm 性能基线或性能等价声明。`TermForge` 是项目暂名。
+> 当前阶段：有限本地交互原型。已有固定 80×24 的 Windows shell 窗口、机制实验与状态回放；日常开发版、正式 WindTerm 性能基线和性能等价声明尚未完成。`TermForge` 是项目暂名。
 
 ## 项目原则
 
@@ -18,6 +18,8 @@ An independent, fully open-source terminal project driven by reproducible perfor
 - 先验证性能核心，再做到日常可用，最后扩展高级功能。
 
 ## 从这里开始
+
+已构建后可运行 `build/bin/Release/termforge_shell.exe`（Windows / Visual Studio），输入普通命令或 `exit`。构建、自动验证与支持边界见[本地 shell 原型](experiments/shell/README.md)。
 
 | 文档 | 内容 |
 |---|---|
@@ -34,6 +36,7 @@ An independent, fully open-source terminal project driven by reproducible perfor
 | [最小状态回放](experiments/core/README.md) | 分块解析、屏幕/历史状态和完整管道回放检查 |
 | [独立参考差分](experiments/differential/README.md) | 固定参考版本、逐检查点和随机拆包、六类已知差异 |
 | [ConPTY 生命周期](experiments/conpty/README.md) | 无窗口双向输入、resize、子进程取消和回收 |
+| [本地 shell 窗口](experiments/shell/README.md) | 固定网格交互入口、有界队列、输入/状态/帧端点与自动验收 |
 | [输入恢复策略](experiments/core/RECOVERY.md) | 严格/恢复模式、控制序列消费、UTF-8 与缓存上限 |
 | [连续区间计量](experiments/measure/README.md) / [自有窗口验证](experiments/presentation/README.md) | 时钟校准、窗口绘制/字体/光标与未知呈现端点 |
 | [架构决策 ADR-0001](docs/adr/0001-evidence-before-stack.md) | 性能基线先于技术栈 |

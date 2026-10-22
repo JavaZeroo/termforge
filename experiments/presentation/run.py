@@ -101,6 +101,8 @@ def execute(exe, backend, dpi, out, timeout=30, expect_timeout=False):
                 raise RuntimeError("Owned desktop remained after probe process exit")
             time.sleep(0.01)
         row["owned_desktop_gone"] = True
+        if not expect_timeout and (row["timed_out"] or row["exit_code"]):
+            raise RuntimeError("Window probe failed or timed out: " + row["stderr"].strip())
         result = json.loads(row["stdout"])
         if expect_timeout:
             if not row["timed_out"] or result != {"timeout_probe_ready": True, "window_painted": True}:
@@ -136,7 +138,7 @@ def main():
     args.out.mkdir(parents=True, exist_ok=False)
     metadata = dict(schema="termforge-window-probe-v1", status="running", started_utc=datetime.now(timezone.utc).isoformat(),
                     platform=platform.platform(), python=platform.python_version(), exe_sha256=sha(exe),
-                    source_sha256={p.name: sha(p) for p in Path(__file__).parent.glob("*.cpp")},
+                    source_sha256={p.name: sha(p) for suffix in ("*.cpp", "*.hpp") for p in Path(__file__).parent.glob(suffix)},
                     runner_sha256=sha(Path(__file__)),
                     core_sources={name: sha(ROOT / "experiments/core" / name) for name in ("terminal.hpp", "screen.hpp", "unicode_width.hpp")},
                     font_family_requested="Consolas", seed=20261023, repeats=args.repeats,

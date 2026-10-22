@@ -1,0 +1,20 @@
+{
+  "status": "complete",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "started_utc": "2026-10-22T18:02:07.428284+00:00",
+  "exe_sha256": "2ca4f34cf8a253a566203d184ae2cae9a933c30ba5741a104f8788c8b60e4b20",
+  "sources": {
+    "experiments/shell/shell.cpp": "b0bab9e9d1aa63876bc9a0ad99c6e5828b3af4bf9e08a36031d008cd19a5eee1",
+    "experiments/shell/queues.hpp": "a8e577947c30652ff16be1494a944a4c02f6fb0d320a8797d7988222a4f2dbd7",
+    "experiments/shell/run.py": "9c055232a9c6047787e9839811dd61dcd5203f493cd89b902aef36e94b0a46f8",
+    "experiments/conpty/session.hpp": "28b168d7bf1c725e7372e82df081872b04b3f3f14e5f4f62a658c6c701c1139b",
+    "experiments/presentation/render.hpp": "5e76aefab4e19c79e252c168287eaf3113721c6c2a487d029cac5b0aac24bdbd",
+    "experiments/presentation/desktop.hpp": "2efc54b1a23acbbc4877fd1b381d5a87e98395ddeed01b5159cbe78fa92a0ccf",
+    "experiments/core/terminal.hpp": "892997bc2b869a8655d272e9ff049c4102bb1366f1ac709cff8c3d4a41657396",
+    "experiments/core/screen.hpp": "909aec301b64e2d5e52377167873bcb1dc124e28967ffd75d0c5c25b748ea20f",
+    "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+  },
+  "input_endpoint": "scripted Ctrl-C WM_CHAR acceptance to TF_AFTER state and GDI submission; not physical keyboard",
+  "presented_done": null,
+  "finished_utc": "2026-10-22T18:02:23.070100+00:00"
+}

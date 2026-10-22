@@ -9,6 +9,9 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <functional>
+#include <string_view>
+#include <exception>
 
 namespace tf_conpty {
 inline void fail(const char* operation, DWORD error = GetLastError()) {
@@ -32,7 +35,8 @@ public:
 
 // Output has its own draining thread: ClosePseudoConsole must not block the
 // only reader. Input calls are deliberately small in this lifecycle probe.
-// This is not yet a general asynchronous input queue or terminal widget.
+// A1 supplies an external bounded streaming consumer and input worker. The
+// default capture path and --child invocation remain the T1 probe contract.
 class Session {
     Handle input_, output_, process_, job_;
     HPCON console_ = nullptr;
@@ -41,6 +45,7 @@ class Session {
     std::condition_variable changed_;
     std::string captured_;
     bool reader_done_ = false;
+    std::exception_ptr reader_failure_;
     static constexpr size_t capture_limit = 16 * 1024 * 1024;
 public:
     DWORD pid = 0, exit_code = STILL_ACTIVE, read_error = 0;
@@ -53,16 +58,27 @@ public:
     Session& operator=(const Session&) = delete;
     ~Session() { close(); }
 
-    void start(const std::wstring& executable) {
+    void start(const std::wstring& executable, const std::wstring& arguments = L"--child",
+               std::function<void(std::string_view)> consume = {}) {
         Handle child_input, child_output;
         if (!CreatePipe(child_input.put(), input_.put(), nullptr, 0)) fail("CreatePipe(input)");
         if (!CreatePipe(output_.put(), child_output.put(), nullptr, 0)) fail("CreatePipe(output)");
         const HRESULT hr = CreatePseudoConsole({80, 24}, child_input.get(), child_output.get(), 0, &console_);
         if (FAILED(hr)) fail("CreatePseudoConsole", static_cast<DWORD>(hr));
         child_input.reset(); child_output.reset();
-        reader_ = std::thread([this] {
+        reader_ = std::thread([this, consume = std::move(consume)] {
             char bytes[65536]; DWORD count = 0;
             while (ReadFile(output_.get(), bytes, sizeof(bytes), &count, nullptr) && count) {
+                if (consume) {
+                    try { if (!reader_failure_) consume(std::string_view(bytes, count)); }
+                    catch (...) {
+                        std::lock_guard<std::mutex> lock(mutex_);
+                        reader_failure_ = std::current_exception();
+                    }
+                    std::lock_guard<std::mutex> lock(mutex_);
+                    output_bytes += count;
+                    continue;
+                }
                 std::lock_guard<std::mutex> lock(mutex_);
                 output_bytes += count;
                 if (captured_.size() + count <= capture_limit) captured_.append(bytes, count);
@@ -96,7 +112,7 @@ public:
         // Null standard handles let the console create its own endpoints.
         startup.StartupInfo.dwFlags = STARTF_USESTDHANDLES;
         PROCESS_INFORMATION info{};
-        std::wstring command = L"\"" + executable + L"\" --child";
+        std::wstring command = L"\"" + executable + L"\" " + arguments;
         if (!CreateProcessW(executable.c_str(), command.data(), nullptr, nullptr, FALSE,
                             EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED, nullptr, nullptr,
                             &startup.StartupInfo, &info)) fail("CreateProcess");
@@ -117,6 +133,10 @@ public:
     }
     std::string output() const {
         std::lock_guard<std::mutex> lock(mutex_); return captured_;
+    }
+    void check_reader() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (reader_failure_) std::rethrow_exception(reader_failure_);
     }
     void send(const std::string& bytes) {
         // Keep this probe's blocking writes bounded to control-sized messages.

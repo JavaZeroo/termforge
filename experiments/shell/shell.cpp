@@ -1,0 +1,280 @@
+// A1 fixed-grid local shell. Original code; see README for the limited contract.
+#include "../presentation/render.hpp"
+#include "queues.hpp"
+#include "../presentation/desktop.hpp"
+#include <atomic>
+#include <sstream>
+
+static std::wstring system_cmd() {
+    wchar_t folder[MAX_PATH]{};
+    const UINT n = GetSystemDirectoryW(folder, MAX_PATH);
+    require(n && n < MAX_PATH, "system directory failed");
+    return std::wstring(folder) + L"\\cmd.exe";
+}
+struct Result {
+    size_t consumed = 0, output_high_water = 0, input_high_water = 0, input_rejected = 0, max_consumed_per_tick = 0;
+    int frames = 0, ticks = 0;
+    DWORD exit_code = STILL_ACTIVE, active_children = MAXDWORD;
+    bool complete = false, normal = false, unicode = false, edited = false, arrows = false, interrupted = false;
+    double input_to_state_ms = -1, input_to_submit_ms = -1, max_tick_ms = 0;
+    std::string screen;
+};
+class ShellWindow {
+    // Only the UI thread owns Parser, Snapshot, Renderer and HWND state.
+    OutputQueue output_;
+    tf_conpty::Session session_;
+    InputQueue input_{session_};
+    termforge::Parser parser_{24, 80, 100, termforge::ParseMode::recovery};
+    Renderer renderer_{"dwrite", 96};
+    std::shared_ptr<const Snapshot> snapshot_;
+    Bitmap surface_{960, 624};
+    HWND hwnd_{};
+    std::thread closer_;
+    std::atomic<bool> closed_{false};
+    bool closing_ = false, started_ = false;
+    std::string failure_, close_failure_, mode_, image_path_;
+    int revision_ = 0, stage_ = 0;
+    wchar_t high_surrogate_ = 0;
+    Clock::time_point start_ = Clock::now(), input_time_, flood_start_;
+    bool frame_after_ = false;
+    Result result_;
+
+    bool line_is(const std::string& expected) const {
+        for (const auto& row : snapshot_->lines) {
+            std::string text; for (const auto& cell : row) text += cell.text;
+            while (!text.empty() && text.back() == ' ') text.pop_back();
+            if (text == expected) return true;
+        }
+        return false;
+    }
+    bool has(const std::string& value) const {
+        for (const auto& row : snapshot_->lines) {
+            std::string text; for (const auto& cell : row) text += cell.text;
+            if (text.find(value) != std::string::npos) return true;
+        }
+        return false;
+    }
+    void character(wchar_t value) {
+        if (closing_) return;
+        if (value == 3 && stage_ == 5) input_time_ = Clock::now();
+        // WM_CHAR backspace is U+0008; the VT keyboard encoding is DEL.
+        if (value == L'\b') value = 0x7f;
+        std::wstring text;
+        if (value >= 0xd800 && value <= 0xdbff) { high_surrogate_ = value; return; }
+        if (high_surrogate_) {
+            if (value >= 0xdc00 && value <= 0xdfff) text += high_surrogate_;
+            else text += wchar_t(0xfffd);
+            high_surrogate_ = 0;
+        }
+        if (value >= 0xdc00 && value <= 0xdfff && text.empty()) value = 0xfffd;
+        text += value;
+        const auto bytes = utf8(text.c_str());
+        if (!bytes.empty() && !input_.send(bytes)) {
+            SetWindowTextW(hwnd_, L"TermForge — input queue full; key rejected"); MessageBeep(MB_ICONWARNING);
+        }
+    }
+    void type(const std::wstring& command) {
+        // Exercise the same WM_CHAR handler used by translated keyboard input.
+        // This is scripted message injection, not physical keyboard latency.
+        for (wchar_t c : command) require(PostMessageW(hwnd_, WM_CHAR, c, 1) != FALSE, "scripted input post failed");
+    }
+    void begin_close() {
+        if (closing_) return;
+        closing_ = true;
+        SetWindowTextW(hwnd_, L"TermForge — closing session");
+        closer_ = std::thread([this] {
+            try {
+                input_.stop();
+                // Kill only the session job, including descendants after shell exit.
+                session_.cancel(); session_.close();
+            } catch (const std::exception& e) { close_failure_ = e.what(); }
+            closed_.store(true);
+        });
+    }
+    void publish() {
+        auto next = std::make_shared<const Snapshot>(parser_.screen, ++revision_);
+        auto dirty = changed_rows(*snapshot_, *next); snapshot_ = std::move(next);
+        if (!dirty.empty()) {
+            RECT area{0, renderer_.y(dirty.front()), surface_.width, renderer_.y(dirty.back()+1)};
+            require(InvalidateRect(hwnd_, &area, FALSE) != FALSE, "invalidate failed");
+        }
+        if (stage_ >= 5 && result_.input_to_state_ms < 0 && line_is("TF_AFTER"))
+            result_.input_to_state_ms = ms(input_time_);
+    }
+    void scenario() {
+        if (mode_.empty() || closing_) return;
+        require(ms(start_) < 25000, "shell scenario timeout");
+        if (mode_ == "watchdog") {
+            if (!stage_ && result_.frames) { std::cout << "{\"watchdog_ready\":true}\n" << std::flush; stage_ = 1; }
+            return;
+        }
+        if (stage_ == 0 && has("TF>")) { type(L"echo TF_READY\r"); stage_ = 1; }
+        else if (stage_ == 1 && line_is("TF_READY")) {
+            result_.normal = true; type(L"echo \x4e2d\x6587\x00e9\r"); stage_ = 2;
+        } else if (stage_ == 2 && line_is("\xe4\xb8\xad\xe6\x96\x87\xc3\xa9")) {
+            result_.unicode = true; type(L"echo TF_EDITX\b\r"); stage_ = 3;
+        } else if (stage_ == 3 && line_is("TF_EDIT")) {
+            result_.edited = true;
+            type(L"echo TF_ARROX"); PostMessageW(hwnd_, WM_KEYDOWN, VK_LEFT, 1);
+            type(L"W"); PostMessageW(hwnd_, WM_KEYDOWN, VK_RIGHT, 1); type(L"\b\r"); stage_ = 30;
+        } else if (stage_ == 30 && line_is("TF_ARROW")) {
+            result_.arrows = true;
+            type(L"for /L %i in (1,1,1000000) do @echo TF_BUSY_%i\r"); stage_ = 4; flood_start_ = Clock::now();
+        } else if (stage_ == 4 && result_.consumed > 65536 && ms(flood_start_) >= 1000 && has("TF_BUSY_")) {
+            if (mode_ == "close") { begin_close(); return; }
+            type(std::wstring(1, 3));
+            type(L"echo TF_AFTER\r"); stage_ = 5;
+        } else if (stage_ == 5 && line_is("TF_AFTER") && frame_after_) {
+            result_.interrupted = true; type(L"exit 37\r"); stage_ = 6;
+        }
+    }
+    void tick() {
+        const auto began = Clock::now(); ++result_.ticks;
+        size_t batch = 0;
+        bool drained = false;
+        // Check time between small feeds; also retain a hard byte budget.
+        do {
+            const auto bytes = output_.take(8192);
+            if (bytes.empty()) { drained = true; break; }
+            parser_.feed(bytes); batch += bytes.size();
+        } while (batch < 65536 && ms(began) < 4);
+        result_.max_consumed_per_tick = (std::max)(result_.max_consumed_per_tick, batch);
+        if (batch) { result_.consumed += batch; publish(); }
+        session_.check_reader();
+        if (closing_ && closed_.load()) {
+            require(close_failure_.empty(), close_failure_.c_str());
+            if (drained) {
+                parser_.finish(); publish(); UpdateWindow(hwnd_);
+                if (!image_path_.empty()) surface_.save(image_path_);
+                DestroyWindow(hwnd_); hwnd_ = nullptr;
+            }
+        } else if (!closing_) {
+            scenario();
+            if (!closing_ && session_.wait_exit(0)) begin_close();
+        }
+        result_.max_tick_ms = (std::max)(result_.max_tick_ms, ms(began));
+    }
+    static LRESULT CALLBACK procedure(HWND hwnd, UINT message, WPARAM wp, LPARAM lp) {
+        auto* self = reinterpret_cast<ShellWindow*>(GetWindowLongPtrW(hwnd, GWLP_USERDATA));
+        if (message == WM_NCCREATE) {
+            self = static_cast<ShellWindow*>(reinterpret_cast<CREATESTRUCTW*>(lp)->lpCreateParams);
+            SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
+        }
+        if (!self) return DefWindowProcW(hwnd, message, wp, lp);
+        try {
+            if (message == WM_CLOSE) { self->begin_close(); return 0; }
+            if (message == WM_DESTROY) { PostQuitMessage(0); return 0; }
+            if (message == WM_CHAR) { self->character(static_cast<wchar_t>(wp)); return 0; }
+            if (message == WM_KEYDOWN && wp >= VK_LEFT && wp <= VK_DOWN && !self->closing_) {
+                const char* sequence = wp == VK_LEFT ? "\x1b[D" : wp == VK_RIGHT ? "\x1b[C" : wp == VK_UP ? "\x1b[A" : "\x1b[B";
+                if (!self->input_.send(sequence)) MessageBeep(MB_ICONWARNING);
+                return 0;
+            }
+            if (message == WM_TIMER && self->started_) { self->tick(); return 0; }
+            if (message == WM_ERASEBKGND) return 1;
+            if (message == WM_PAINT) {
+                PAINTSTRUCT paint{}; HDC dc = BeginPaint(hwnd, &paint);
+                try {
+                    const int first = (std::max)(0, int(paint.rcPaint.top)/26);
+                    const int last = (std::min)(24, (int(paint.rcPaint.bottom)+25)/26);
+                    self->renderer_.draw(self->surface_, *self->snapshot_, first, last);
+                    require(BitBlt(dc,0,0,960,624,self->surface_.dc,0,0,SRCCOPY) != FALSE, "shell frame blit failed");
+                    require(GdiFlush() != FALSE, "shell frame flush failed"); ++self->result_.frames;
+                    if (self->stage_ >= 5 && !self->frame_after_ && self->line_is("TF_AFTER")) {
+                        self->result_.input_to_submit_ms = ms(self->input_time_); self->frame_after_ = true;
+                    }
+                } catch (...) { EndPaint(hwnd, &paint); throw; }
+                EndPaint(hwnd, &paint); return 0;
+            }
+        } catch (const std::exception& e) {
+            self->failure_ = e.what(); self->output_.stop();
+            if (!self->closing_) self->begin_close();
+            else if (self->closed_.load()) { DestroyWindow(hwnd); self->hwnd_ = nullptr; }
+        }
+        return DefWindowProcW(hwnd, message, wp, lp);
+    }
+public:
+    ShellWindow(std::string mode, std::string image) : mode_(std::move(mode)), image_path_(std::move(image)) {
+        snapshot_ = std::make_shared<const Snapshot>(parser_.screen, 0);
+    }
+    ~ShellWindow() {
+        output_.stop();
+        if (closer_.joinable()) closer_.join();
+        input_.stop();
+        if (hwnd_) DestroyWindow(hwnd_);
+        UnregisterClassW(L"TermForgeShell", GetModuleHandleW(nullptr));
+    }
+    Result run() {
+        WNDCLASSW cls{}; cls.lpfnWndProc = procedure; cls.hInstance = GetModuleHandleW(nullptr);
+        cls.lpszClassName = L"TermForgeShell"; cls.hCursor = LoadCursorW(nullptr, IDC_IBEAM);
+        require(RegisterClassW(&cls) != 0, "shell window class failed");
+        const DWORD style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+        RECT size{0,0,960,624}; AdjustWindowRect(&size, style, FALSE);
+        hwnd_ = CreateWindowExW(0, cls.lpszClassName, L"TermForge — local shell prototype", style,
+            CW_USEDEFAULT,CW_USEDEFAULT,size.right-size.left,size.bottom-size.top,nullptr,nullptr,cls.hInstance,this);
+        require(hwnd_ != nullptr, "shell window creation failed");
+        const auto cmd = system_cmd();
+        const auto chcp = cmd.substr(0, cmd.find_last_of(L'\\') + 1) + L"chcp.com";
+        session_.start(cmd, L"/d /s /q /k \"\"" + chcp + L"\" 65001>nul&prompt TF$G&cls\"",
+            [this](std::string_view bytes) { output_.push(bytes); });
+        input_.start(); started_ = true;
+        require(SetTimer(hwnd_,1,16,nullptr) != 0, "shell timer failed");
+        ShowWindow(hwnd_, mode_.empty() ? SW_SHOW : SW_SHOWNOACTIVATE); UpdateWindow(hwnd_);
+        MSG message{}; BOOL status;
+        while ((status = GetMessageW(&message,nullptr,0,0)) > 0) { TranslateMessage(&message); DispatchMessageW(&message); }
+        require(status == 0, "message loop failed");
+        if (closer_.joinable()) closer_.join();
+        if (!failure_.empty() && !mode_.empty()) {
+            std::cerr << "stage=" << stage_ << " bytes=" << result_.consumed << " screen=";
+            parser_.screen.json(std::cerr); std::cerr << '\n';
+        }
+        require(failure_.empty(), failure_.c_str()); require(close_failure_.empty(), close_failure_.c_str());
+        result_.exit_code = session_.exit_code; result_.active_children = session_.active_after;
+        result_.complete = session_.cleanup_complete;
+        result_.output_high_water = output_.high_water; result_.input_high_water = input_.high_water;
+        result_.input_rejected = input_.rejected;
+        std::ostringstream state; parser_.screen.json(state); result_.screen = state.str();
+        return result_;
+    }
+};
+static int application(int argc, char** argv) {
+    try {
+        std::string mode, image;
+        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|watchdog frame.bmp]");
+        if (argc == 4) {
+            mode = argv[2]; image = argv[3];
+            require(mode == "normal" || mode == "close" || mode == "watchdog", "invalid shell test mode");
+            std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
+        }
+        require(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) != FALSE, "DPI awareness failed");
+        Result r;
+        if (mode.empty()) { ShellWindow window(mode,image); r = window.run(); }
+        else {
+            OwnedDesktop desktop(L"TermForgeShell-");
+            r = desktop.run([&] { ShellWindow window(mode,image); return window.run(); });
+        }
+        if (mode.empty()) return r.complete ? 0 : 1; // Never emit a user's screen to diagnostic stdout.
+        const bool valid = r.complete && r.active_children == 0 && r.frames > 0 && r.input_rejected == 0 &&
+            (mode.empty() || (r.normal && r.unicode && r.edited && r.arrows && (mode == "close" || (r.interrupted && r.exit_code == 37))));
+        std::cout << "{\"valid\":" << (valid ? "true" : "false") << ",\"mode\":\"" << mode << "\",\"consumed_bytes\":" << r.consumed
+            << ",\"frames\":" << r.frames << ",\"ticks\":" << r.ticks << ",\"output_queue_high_water\":" << r.output_high_water
+            << ",\"input_queue_high_water\":" << r.input_high_water << ",\"input_rejected\":" << r.input_rejected
+            << ",\"exit_code\":" << r.exit_code << ",\"active_children_after\":" << r.active_children
+            << ",\"cleanup_complete\":" << (r.complete?"true":"false") << ",\"command_verified\":" << (r.normal?"true":"false")
+            << ",\"unicode_verified\":" << (r.unicode?"true":"false") << ",\"backspace_verified\":" << (r.edited?"true":"false")
+            << ",\"arrows_verified\":" << (r.arrows?"true":"false")
+            << ",\"ctrl_c_verified\":" << (r.interrupted?"true":"false") << ",\"scripted_input_to_state_ms\":";
+        if (r.input_to_state_ms < 0) std::cout << "null"; else std::cout << r.input_to_state_ms;
+        std::cout << ",\"scripted_input_to_submit_ms\":";
+        if (r.input_to_submit_ms < 0) std::cout << "null"; else std::cout << r.input_to_submit_ms;
+        std::cout << ",\"max_tick_ms\":" << r.max_tick_ms
+            << ",\"max_consumed_per_tick\":" << r.max_consumed_per_tick
+            << ",\"presented_done\":null,\"screen\":" << r.screen << "}\n";
+        return valid ? 0 : 1;
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+        if (argc == 1) MessageBoxW(nullptr, utf16(e.what()).c_str(), L"TermForge", MB_OK | MB_ICONERROR);
+        return 2;
+    }
+}
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) { return application(__argc, __argv); }
