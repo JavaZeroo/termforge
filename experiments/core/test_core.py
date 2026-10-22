@@ -18,7 +18,7 @@ class CoreTests(unittest.TestCase):
     def replay(self, data, rows=3, columns=5, history=2, chunk=1):
         self.path.write_bytes(data)
         return subprocess.run([str(BIN / "replay.exe"), str(self.path), str(rows), str(columns), str(history), str(chunk)],
-                              capture_output=True, text=True, timeout=10)
+                              capture_output=True, text=True, encoding="utf-8", timeout=10)
 
     def expect(self, data, lines, row, column, wrap=False, history=(), discarded=0, limit=2):
         expected = dict(lines=lines, row=row, column=column, wrap_pending=wrap,
@@ -75,8 +75,8 @@ class CoreTests(unittest.TestCase):
         self.expect(b'"\\', ['"\\   '], 0, 2)
 
     def test_unsupported_and_truncated_fail(self):
-        for data in [b"\x1b", b"\x1b[12;", b"\x1b[31m", b"\x1b[?1049h", b"\x1b]title\x07",
-                     "中文".encode(), b"\0", b"\x1b[999999999A", b"\x1b[1;2;3H",
+        for data in [b"\x1b", b"\x1b[12;", b"\x1b[38;5;1m", b"\x1b[?1049h", b"\x1b]title\x07",
+                     b"\0", b"\x1b[999999999A", b"\x1b[1;2;3H",
                      b"\x1b[" + b"0" * 33 + b"A"]:
             for chunk in (1, 65536):
                 result = self.replay(data, chunk=chunk)
@@ -89,7 +89,7 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(self.replay(b"X", history=10001).returncode, 2)
 
     def test_pipe_parser_failure_drains_and_exits(self):
-        data = b"\x1b[31m" + b"A" * 131101
+        data = b"\x1b[38;5;1m" + b"A" * 131101
         self.path.write_bytes(data)
         p = subprocess.run([str(BIN / "receive.exe"), "512", "edge", "yield", str(len(data)), "512", str(self.path)],
                            capture_output=True, text=True, timeout=10)

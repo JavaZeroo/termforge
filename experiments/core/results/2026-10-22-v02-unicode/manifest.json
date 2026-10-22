@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "fixture": "unicode",
+  "unicode_version": "15.0.0",
+  "status": "complete",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "input_bytes": 800000,
+  "input_sha256": "4e589e2bd147d6affb2d24dabf135b4d729ed2da876205c1bf172a240984e70a",
+  "expected_sha256": "c14519317ee4c1635d9f88152e790473abd4095238ed229864539713482bde1d",
+  "sources": {
+    "experiments/core/terminal.hpp": "c4f8b5f2eef3567fce14825df77ba526609fa47e800a119d83081447da76790a",
+    "experiments/core/screen.hpp": "2f5c4a63b00f202efcc2921f343f00787e02439d312096b3818c4bf66307e9dc",
+    "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+    "experiments/core/replay.cpp": "4d34504f11659f859db6f253c04240abf5e1b8f4c1d57367e86c0ffa9cafd778",
+    "experiments/core/run.py": "51d3310ad7a2c06d7a7ca69188a10ffe4e551de93fc2b3b46b95dd981ff4cf89",
+    "experiments/receive/receive.cpp": "186b10392019c5ab392573cbd2fad9fa9b0e935e32ee8065d3745bd560ae4e87"
+  },
+  "binaries": {
+    "receive.exe": "54cceccff4cad3f8c30ab942f81974526b707ead4515187c887e6d641f588f0c",
+    "replay.exe": "f79f9e0e71c04531ed76d04382574fdd7da193f0772821e2facf2fc54bebdab8"
+  },
+  "checked_runs": 17
+}

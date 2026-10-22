@@ -9,3 +9,7 @@
 来源判断不得只凭“GitHub 上能看见”或“文件是文本”。对于 WindTerm，官方已发布自有源码、第三方依赖及发行包资源具有不同的许可边界。
 
 研究报告分别标记观察、推断和未知；公开结果应删除个人路径、账户、主机信息。测试优先采用隔离配置及合成数据。
+
+## 已使用的第三方数据
+
+- `experiments/core/unicode_width.hpp`：通过原创生成器从 Python 3.12.10 `unicodedata` 所带 Unicode 15.0.0 属性数据生成，含项目自己的宽度/拒绝策略。未复制 CPython 实现源码。Unicode 数据保留[官方许可](../experiments/core/UNICODE-LICENSE.txt)与归属，来源为 [Unicode](https://www.unicode.org/)；正常构建使用固定生成文件。此数据不归项目 MIT 许可覆盖。

@@ -21,23 +21,37 @@ def state_digest(state):
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--out", required=True, type=Path)
+    cli.add_argument("--fixture", choices=("ascii", "unicode"), default="ascii")
     args = cli.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
     # Each record overwrites and erases throwaway text, then leaves a numbered line.
     # Expected state is derived from record numbers, not another escape interpreter.
     count = 20000
     payload = b"".join(f"junk{i:06d}\rX\x1b[2K\rline{i:06d}\r\n".encode() for i in range(count))
+    if args.fixture == "unicode":
+        payload = b"".join(f"junk{i:06d}\rX\x1b[2K\r\x1b[31m中\x1b[0me\u0301{i:06d}\r\n".encode() for i in range(count))
     path = args.out / "input.bin"
     path.write_bytes(payload)
     line = lambda i: f"line{i:06d}".ljust(80)
+    if args.fixture == "unicode":
+        line = lambda i: f"中e\u0301{i:06d}" + " " * 71
     expected = dict(row=23, column=0, wrap_pending=False,
                     lines=[line(i) for i in range(count - 23, count)] + [" " * 80],
                     history=[line(i) for i in range(count - 123, count - 23)],
                     discarded_history_lines=count - 123)
+    if args.fixture == "unicode":
+        def details(rows):
+            result = []
+            for row in range(rows):
+                for column, text, width, fg in [(0, "中", 2, 1), (1, "", 0, 1), (2, "e\u0301", 1, -1)]:
+                    result.append(dict(row=row, column=column, text=text, width=width,
+                                       style=dict(fg=fg, bg=-1, bold=False)))
+            return result
+        expected.update(cell_details=details(23), history_cell_details=details(100))
     (args.out / "expected.json").write_text(json.dumps(expected, indent=2) + "\n")
-    sources = ["experiments/core/terminal.hpp", "experiments/core/replay.cpp",
+    sources = ["experiments/core/terminal.hpp", "experiments/core/screen.hpp", "experiments/core/unicode_width.hpp", "experiments/core/replay.cpp",
                "experiments/core/run.py", "experiments/receive/receive.cpp"]
-    meta = dict(schema_version=1, status="running", platform=platform.platform(),
+    meta = dict(schema_version=2, fixture=args.fixture, unicode_version="15.0.0", status="running", platform=platform.platform(),
                 python=platform.python_version(), input_bytes=len(payload), input_sha256=digest(payload),
                 expected_sha256=state_digest(expected),
                 sources={p: digest((ROOT / p).read_bytes()) for p in sources},
@@ -57,7 +71,7 @@ def main():
                     command = [str(BIN / "receive.exe"), str(chunk), policy, mode, str(len(payload)), str(chunk), str(path.resolve())]
                 record = dict(route=route, chunk=chunk, policy=policy, mode=mode)
                 try:
-                    result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+                    result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", timeout=30)
                     record.update(exit_code=result.returncode, stderr=result.stderr)
                     data = json.loads(result.stdout)
                     screen = data.pop("screen", None)
