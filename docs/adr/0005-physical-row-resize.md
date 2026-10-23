@@ -17,6 +17,8 @@
 
 窗口使用 12×26 像素单元格、96 逻辑 DPI。正面积 `WM_SIZE` 取整并钳制到核心上限，余数/超限区域画黑；最小化不提交 0 尺寸。实际 DPI/字体切换不在 C5 声明内。
 
+窗口最大跟踪尺寸显式设为核心上限对应的像素尺寸，避免系统默认的虚拟屏幕上限截短自动化请求。保留 DIB 的 dirty 行由快照更新独立累计；不能仅依赖 `BeginPaint` 的更新矩形，否则替换 DIB 或窗口部分不可见时可能留下未重画区域。依据：[MINMAXINFO](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-minmaxinfo)、[BeginPaint](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-beginpaint)。
+
 UI 独占核心 resize、只读快照与 DIB 替换；尺寸变化使所有新视口行失效。独立 resize worker 持有最多一个正在处理的请求和一个可覆盖的最新请求，不占用输入写线程。UI 持续排空输出，避免同步 resize 与输出背压形成互等。关闭先停止输入、停止并 join resize worker，再关闭 HPCON；UI 此时仍消费尾部字节。
 
 API 依据是 [Microsoft ResizePseudoConsole](https://learn.microsoft.com/en-us/windows/console/resizepseudoconsole)：它更新伪控制台缓冲区尺寸，CUI 程序可通过 console API 查询。测试使用独立 `shell_size_client` 查询 `GetConsoleScreenBufferInfo`，不把请求参数或 API 成功返回当作子进程尺寸证据。

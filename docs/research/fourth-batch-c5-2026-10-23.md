@@ -20,6 +20,14 @@ Windows 11 build 26200、MSVC Release、Python 3.12.10。根构建与完整 CTes
 
 公开[运行身份](../../experiments/shell/results/2026-10-23-resize/manifest.json)及 [13 条合成验证元数据](../../experiments/shell/results/2026-10-23-resize/samples.jsonl)。helper 的命令回显含本机绝对构建路径，因此 stdout/stderr、完整屏幕与 BMP **只保留本地** `local/experiments/c5-final`；公开记录排除这些字段，并保存本地完整记录的 SHA-256。未改写前批原始样本。公开元数据不是独立完整的屏幕重放证据，源码脚本可重新生成原始记录。
 
+## 远端发现与修复
+
+初版 `759e78f` 的 [CI 39885246240](https://github.com/JavaZeroo/termforge/actions/runs/39885246240) 中 Linux 成功、Windows shell 套件失败；文档归档提交 `0602524` 的 [CI 39885478028](https://github.com/JavaZeroo/termforge/actions/runs/39885478028) 再次失败。静态审查与本机成功没有代替这两次远端结果。失败产物下载至 `local/ci/<run-id>`，没有覆盖成成功记录。
+
+日志显示快速增大尺寸时停在 stage 42，实际网格 85 列而不是目标 100 列，并触发 `resized dirty frame differs from full redraw`。系统默认最大跟踪尺寸基于虚拟屏幕；初版同时把 `rcPaint` 当作 retained DIB 的全部 dirty 范围。修复显式设置核心上限对应的最大跟踪尺寸，并独立累计快照 dirty 行，resize 时强制整块新 DIB 更新。绘制仍检查局部结果与全量重绘一致，不放宽原断言。
+
+回归场景进一步把自有窗口移至私有 desktop 右边缘，令大部分窗口不可见。本机修复后 shell 七项测试通过，并另运行 13 场景；新[身份](../../experiments/shell/results/2026-10-23-resize-clipped/manifest.json)与[元数据](../../experiments/shell/results/2026-10-23-resize-clipped/samples.jsonl)独立保存。前一目录仍是初版本机结果，不代表修复后或远端结果。
+
 ## 结论与限制
 
 A1/C5 具备 G1 的基础闭环：从源码构建、打开本地 shell、输入/输出、缩放窗口与退出。核心尺寸变化不 flush 解析器；输出流没有 resize 世代边界，不能声称每个中间帧或历史都与 ConPTY 内部布局相同。物理行裁剪会丢弃缩窄后的右侧内容；没有 reflow、IME、选择复制/粘贴、备用屏/滚动区、完整 TUI、SSH 或产品安装包。

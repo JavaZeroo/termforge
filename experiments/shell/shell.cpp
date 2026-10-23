@@ -37,6 +37,7 @@ class ShellWindow {
     bool closing_ = false, started_ = false;
     std::string failure_, close_failure_, mode_, image_path_;
     int revision_ = 0, stage_ = 0;
+    int dirty_first_ = 0, dirty_last_ = 24;
     wchar_t high_surrogate_ = 0;
     Clock::time_point start_ = Clock::now(), input_time_, flood_start_;
     bool frame_after_ = false;
@@ -45,8 +46,11 @@ class ShellWindow {
     void resize_window(int columns, int rows) {
         RECT area{0, 0, columns*12, rows*26};
         require(AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE) != FALSE, "resize frame calculation failed");
-        require(SetWindowPos(hwnd_, nullptr, 0, 0, area.right-area.left, area.bottom-area.top,
-                            SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE) != FALSE, "scripted resize failed");
+        // Deliberately clip most of this owned test window off the desktop.
+        // Retained drawing must stay correct even when rcPaint is clipped.
+        require(SetWindowPos(hwnd_, nullptr, GetSystemMetrics(SM_CXSCREEN)-120, 0,
+                            area.right-area.left, area.bottom-area.top,
+                            SWP_NOZORDER|SWP_NOACTIVATE) != FALSE, "scripted resize failed");
     }
     void size_changed(int width, int height) {
         if (!started_ || closing_ || width <= 0 || height <= 0) return;
@@ -54,6 +58,7 @@ class ShellWindow {
         if (columns == parser_.screen.width() && rows == parser_.screen.height()) return;
         auto surface = std::make_unique<Bitmap>(columns*12, rows*26);
         parser_.screen.resize(rows, columns);
+        dirty_first_ = 0; dirty_last_ = rows;
         surface_ = std::move(surface); publish();
         resize_.request(rows, columns);
         require(InvalidateRect(hwnd_, nullptr, FALSE) != FALSE, "resize invalidate failed");
@@ -125,6 +130,8 @@ class ShellWindow {
         auto next = std::make_shared<const Snapshot>(parser_.screen, ++revision_);
         auto dirty = changed_rows(*snapshot_, *next); snapshot_ = std::move(next);
         if (!dirty.empty()) {
+            dirty_first_ = (std::min)(dirty_first_, dirty.front());
+            dirty_last_ = (std::max)(dirty_last_, dirty.back()+1);
             RECT area{0, renderer_.y(dirty.front()), surface_->width, renderer_.y(dirty.back()+1)};
             require(InvalidateRect(hwnd_, &area, FALSE) != FALSE, "invalidate failed");
         }
@@ -224,6 +231,10 @@ class ShellWindow {
                 auto* limits = reinterpret_cast<MINMAXINFO*>(lp);
                 RECT area{0,0,12,26}; AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE);
                 limits->ptMinTrackSize = {area.right-area.left, area.bottom-area.top};
+                // The default maximum tracks monitor size, which silently
+                // clamps scripted/off-screen windows on small CI desktops.
+                area = {0,0,500*12,200*26}; AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE);
+                limits->ptMaxTrackSize = {area.right-area.left, area.bottom-area.top};
                 return 0;
             }
             if (message == WM_CHAR) { self->character(static_cast<wchar_t>(wp)); return 0; }
@@ -237,8 +248,12 @@ class ShellWindow {
             if (message == WM_PAINT) {
                 PAINTSTRUCT paint{}; HDC dc = BeginPaint(hwnd, &paint);
                 try {
-                    const int first = (std::max)(0, int(paint.rcPaint.top)/26);
-                    const int last = (std::min)(self->snapshot_->rows(), (int(paint.rcPaint.bottom)+25)/26);
+                    // rcPaint is clipped by visible desktop/window regions.
+                    // Retained pixels must also incorporate off-screen dirty
+                    // rows, otherwise exposing them later reveals stale data.
+                    const int first = (std::min)(self->dirty_first_, (std::max)(0, int(paint.rcPaint.top)/26));
+                    const int last = (std::min)(self->snapshot_->rows(),
+                        (std::max)(self->dirty_last_, (int(paint.rcPaint.bottom)+25)/26));
                     FillRect(dc, &paint.rcPaint, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
                     self->renderer_.draw(*self->surface_, *self->snapshot_, first, last);
                     if (self->mode_ == "resize" || self->mode_ == "resize-close") {
@@ -248,6 +263,7 @@ class ShellWindow {
                     }
                     require(BitBlt(dc,0,0,self->surface_->width,self->surface_->height,self->surface_->dc,0,0,SRCCOPY) != FALSE, "shell frame blit failed");
                     require(GdiFlush() != FALSE, "shell frame flush failed"); ++self->result_.frames;
+                    self->dirty_first_ = self->snapshot_->rows(); self->dirty_last_ = 0;
                     if (self->stage_ >= 5 && !self->frame_after_ && self->line_is("TF_AFTER")) {
                         self->result_.input_to_submit_ms = ms(self->input_time_); self->frame_after_ = true;
                     }
