@@ -123,7 +123,9 @@ function Invoke-ExistingProviderSetup {
     $report.input_languages = @(foreach ($language in (Get-WinUserLanguageList)) {
         [pscustomobject]@{LanguageTag = $language.LanguageTag; InputMethodTips = @($language.InputMethodTips)}
     })
-    $matching = @($report.input_languages | Where-Object { $_.LanguageTag -eq 'zh-CN' -and
+    # This image returns zh-Hans-CN after requesting zh-CN. Accept only these
+    # observed Simplified Chinese tags, still requiring the exact fixed TIP.
+    $matching = @($report.input_languages | Where-Object { $_.LanguageTag -in @('zh-CN', 'zh-Hans-CN') -and
         $report.input_profile -in $_.InputMethodTips })
     $report.user_tip_listed = $matching.Count -eq 1
     if (-not $report.user_tip_listed) { throw 'Fixed Microsoft Pinyin profile was not retained in the disposable user language list.' }

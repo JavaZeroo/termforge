@@ -1,0 +1,64 @@
+{
+  "schema": "termforge-r1-ime-language-tag-reviewed-facts-v1",
+  "source": {
+    "commit": "2b5acb002cbda7b7e1c35eb4aa5e838a534bf9e4",
+    "workflow_run_id": 40007354097,
+    "workflow_run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40007354097",
+    "conclusion": "failure",
+    "artifact_id": 12524592935,
+    "artifact_zip_sha256": "18f36d9a5f88074192d7afd2eb52b4a309cc58d89a1cf60652ed635100c17ae5",
+    "allowlisted_json_count": 14
+  },
+  "inventory": {
+    "successful_queries": 6,
+    "owned_workers_reaped": 6,
+    "all_jobs_active_zero": true
+  },
+  "activation": {
+    "status": "unavailable",
+    "route": "existing-provider-activation",
+    "installation_attempted": false,
+    "failed_phase": "verify-user-tip-and-provider-identity",
+    "input_languages": [
+      {
+        "LanguageTag": "en-US",
+        "InputMethodTips": [
+          "0409:00000409"
+        ]
+      },
+      {
+        "LanguageTag": "zh-Hans-CN",
+        "InputMethodTips": [
+          "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}"
+        ]
+      }
+    ],
+    "reported_user_tip_listed": false,
+    "fixed_tip_present_in_observed_list": true,
+    "observed_language_tag": "zh-Hans-CN",
+    "requested_language_tag": "zh-CN",
+    "capability": {
+      "name": "Language.Basic~~~zh-CN~0.0.1.0",
+      "state": "NotPresent"
+    },
+    "ime_binary": {
+      "name": "ChsIME.exe",
+      "version": "10.0.26100.33648 (WinBuild.160101.0800)",
+      "sha256": "581362ddfb1230394900efee9a23194422b14b3ca8c111f00b90e23d3112c4b9"
+    },
+    "binary_after": null,
+    "capability_after": null
+  },
+  "interpretation": {
+    "explicit_collection_enumeration_hosted_verified": true,
+    "failed_check": "The script required LanguageTag == zh-CN; the actual returned tag was zh-Hans-CN with the exact fixed TIP.",
+    "actual_tip_setting_loss_proven": false,
+    "correction": "Allow only zh-CN and the observed zh-Hans-CN, still requiring exact fixed TIP, complete phases and later real probe.",
+    "tag_correction_hosted_verified": false
+  },
+  "real_probe": {
+    "executed": false,
+    "real_ime_workflow_verified": false
+  },
+  "r1_06_complete": false
+}

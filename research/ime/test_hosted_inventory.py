@@ -299,7 +299,7 @@ if ($body.Count -ne 1) { throw 'Expected one top-level worker operation boundary
         self.assertIn("kind", result["error"])
 
     def test_tip_inventory_enumerates_a_non_enumerated_cmdlet_collection(self):
-        result = self.pure_script(r"""
+        body = r"""
 $Operation = 'tip'; $phase = $Operation
 $report = [ordered]@{status = 'failed'; data = [ordered]@{}}
 function Save-Progress([string]$Phase, [string]$State, $ErrorInfo = $null) {}
@@ -307,7 +307,7 @@ function Test-Path { param($LiteralPath) return $LiteralPath.StartsWith('HKLM:')
 function Get-WinUserLanguageList {
     $languages = [Collections.Generic.List[object]]::new()
     $languages.Add([pscustomobject]@{LanguageTag='en-US'; InputMethodTips=@('0409:00000409')})
-    $languages.Add([pscustomobject]@{LanguageTag='zh-CN'; InputMethodTips=@(
+    $languages.Add([pscustomobject]@{LanguageTag='__ZH_TAG__'; InputMethodTips=@(
         '0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}')})
     return ,$languages
 }
@@ -315,10 +315,13 @@ $body = @($ast.EndBlock.Statements | Where-Object { $_ -is [Management.Automatio
 if ($body.Count -ne 1) { throw 'Expected one worker operation boundary' }
 . ([scriptblock]::Create($body[0].Extent.Text))
 $report | ConvertTo-Json -Depth 8 -Compress
-""")
-        self.assertEqual(result["status"], "complete")
-        self.assertTrue(result["data"]["user_listed"])
-        self.assertEqual(result["data"]["relevant_languages"], ["en-US", "zh-CN"])
+"""
+        for tag in ("zh-CN", "zh-Hans-CN"):
+            with self.subTest(tag=tag):
+                result = self.pure_script(body.replace("__ZH_TAG__", tag))
+                self.assertEqual(result["status"], "complete")
+                self.assertTrue(result["data"]["user_listed"])
+                self.assertEqual(result["data"]["relevant_languages"], ["en-US", tag])
 
     def test_file_hash_uses_stream_without_optional_powershell_commands(self):
         result = self.pure_script(r"""

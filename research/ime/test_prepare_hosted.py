@@ -90,6 +90,13 @@ function Set-WinUserLanguageList { param($LanguageList,[switch]$Force)
 }
 function Get-WinUserLanguageList {
     if ($script:failure -eq 'user-tip') { return [pscustomobject]@{LanguageTag='en-US'; InputMethodTips=@('0409:00000409')} }
+    if ($script:failure -in @('canonical-language-tag', 'wrong-language-tag')) {
+        foreach ($language in $script:setLanguages) {
+            if ($language.LanguageTag -eq 'zh-CN') {
+                $language.LanguageTag = if ($script:failure -eq 'canonical-language-tag') { 'zh-Hans-CN' } else { 'zh-TW' }
+            }
+        }
+    }
     if ($script:failure -eq 'wrapped-language-list') {
         $list = [Collections.Generic.List[object]]::new()
         foreach ($language in $script:setLanguages) { $list.Add($language) }
@@ -154,6 +161,19 @@ $saved = Get-Content -LiteralPath ([IO.Path]::Combine($outputPath, 'environment.
         ])
         self.assertTrue(report["user_tip_listed"])
         self.assertFalse(report["real_ime_workflow_verified"])
+
+    def test_fixed_tip_accepts_observed_simplified_chinese_tag_but_rejects_other_locale(self):
+        result = self.simulated("canonical-language-tag")
+        self.assertEqual(result["report"]["status"], "prepared-not-verified")
+        self.assertTrue(result["report"]["user_tip_listed"])
+        self.assertEqual(result["report"]["input_languages"][1], {
+            "LanguageTag": "zh-Hans-CN", "InputMethodTips": [PROFILE],
+        })
+        self.assertFalse(result["report"]["real_ime_workflow_verified"])
+        wrong = self.simulated("wrong-language-tag")
+        self.assertEqual(wrong["report"]["status"], "unavailable")
+        self.assertFalse(wrong["report"]["user_tip_listed"])
+        self.assertEqual(wrong["report"]["phases"][-1]["state"], "failed")
 
     def test_missing_provider_or_machine_tip_fails_before_user_setting(self):
         for failure in ("binary", "machine-tip"):

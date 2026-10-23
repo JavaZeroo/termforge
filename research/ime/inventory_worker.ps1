@@ -121,7 +121,7 @@ try {
             $languages = @(foreach ($language in (Get-WinUserLanguageList)) {
                 [pscustomobject]@{LanguageTag = $language.LanguageTag; InputMethodTips = @($language.InputMethodTips)}
             })
-            $report.data.relevant_languages = @($languages | Where-Object { $_.LanguageTag -in @('en-US', 'zh-CN') } |
+            $report.data.relevant_languages = @($languages | Where-Object { $_.LanguageTag -in @('en-US', 'zh-CN', 'zh-Hans-CN') } |
                 ForEach-Object { $_.LanguageTag })
             $report.data.user_listed = @($languages | Where-Object { $profile -in $_.InputMethodTips }).Count -gt 0
         }
