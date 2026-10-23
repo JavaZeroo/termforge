@@ -94,6 +94,16 @@ class ProductImeSyntheticSchemaTests(unittest.TestCase):
             with self.subTest(mode=mode):
                 self.assertTrue(validate_product_manifest(data, mode, captures)["raw_receiver_bytes_verified"])
 
+    def test_existing_ime_workflows_cannot_relabel_input_as_a_paste_prefix(self):
+        for mode in ("ui-ime-basic", "ui-ime-geometry", "ui-ime-focus", "ui-ime-close", "ui-ime-reading"):
+            original, captures = self.reading_fixture() if mode == "ui-ime-reading" else self.fixture(mode)
+            for prefix in ("51", None, "0"):
+                with self.subTest(mode=mode, prefix=prefix):
+                    data = copy.deepcopy(original)
+                    data["receivers"][0]["expected_prefix_hex"] = prefix
+                    with self.assertRaisesRegex(ValueError, "prefix"):
+                        validate_product_manifest(data, mode, captures)
+
     @classmethod
     def reading_fixture(cls):
         data, captures = cls.fixture("ui-ime-basic")

@@ -4,17 +4,34 @@
 #include "../conpty/session.hpp"
 class ResizeWorker {
     tf_conpty::Session& session_;
-    std::mutex mutex_;
+    mutable std::mutex mutex_;
     std::condition_variable ready_;
     std::thread thread_;
     int rows_ = 24, columns_ = 80;
     unsigned requested_ = 0, completed_ = 0;
-    bool stopping_ = false;
+    unsigned working_generation_ = 0;
+    bool working_ = false, stopping_ = false, started_ = false, joined_ = false;
     std::exception_ptr error_;
 public:
+    struct Snapshot {
+        // completed means ResizePseudoConsole returned successfully, not that
+        // a child observed the size, parser state changed or a frame appeared.
+        unsigned requested_generation = 0, completed_generation = 0, working_generation = 0, pending_generation = 0;
+        bool working = false, pending = false, stopping = false, started = false, joined = false, failed = false;
+    };
     explicit ResizeWorker(tf_conpty::Session& session) : session_(session) {}
     ~ResizeWorker() { stop(); }
+    Snapshot snapshot() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        // A generation difference is not a queue depth. At most one resize is
+        // working and one latest request remains after coalescing. Stopped or
+        // failed workers can leave uncompleted generations, never pending work.
+        const bool pending = !stopping_ && !error_ && requested_ != (working_ ? working_generation_ : completed_);
+        return {requested_, completed_, working_ ? working_generation_ : 0, pending ? requested_ : 0,
+                working_, pending, stopping_, started_, joined_, error_ != nullptr};
+    }
     void start() {
+        std::lock_guard<std::mutex> starting(mutex_);
         thread_ = std::thread([this] {
             try {
                 for (;;) {
@@ -23,11 +40,16 @@ public:
                     if (stopping_) return;
                     const auto generation = requested_;
                     const int rows = rows_, columns = columns_;
+                    working_ = true; working_generation_ = generation;
                     lock.unlock(); session_.resize(static_cast<short>(columns), static_cast<short>(rows));
-                    lock.lock(); completed_ = generation;
+                    lock.lock(); completed_ = generation; working_ = false; working_generation_ = 0;
                 }
-            } catch (...) { std::lock_guard<std::mutex> lock(mutex_); error_ = std::current_exception(); }
+            } catch (...) {
+                std::lock_guard<std::mutex> lock(mutex_);
+                working_ = false; working_generation_ = 0; error_ = std::current_exception();
+            }
         });
+        started_ = true;
     }
     void request(int rows, int columns) {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -41,6 +63,9 @@ public:
     }
     void stop() noexcept {
         { std::lock_guard<std::mutex> lock(mutex_); stopping_ = true; ready_.notify_one(); }
-        if (thread_.joinable()) thread_.join();
+        if (thread_.joinable()) {
+            thread_.join();
+            std::lock_guard<std::mutex> lock(mutex_); joined_ = true;
+        }
     }
 };

@@ -1,6 +1,7 @@
 // Independent raw console receiver. Test control uses named events, never keys.
 #include "hosted_ime_input.hpp"
 #include "raw_console_receiver.hpp"
+#include "workflow_fixture.hpp"
 
 namespace {
 using tf_conpty::Handle;
@@ -48,6 +49,10 @@ int run(const wchar_t* path,const wchar_t* events,unsigned generation) {
 }
 int wmain(int argc,wchar_t** argv) {
     try {
+        if(argc>1 && std::wstring(argv[1])==L"--workflow-v1") {
+            tf_shell_test::require_hosted_ime_input();
+            return tf_shell_test::run_workflow_fixture(tf_shell_test::workflow_options(argc,argv));
+        }
         ime_check(argc==7 && std::wstring(argv[1])==L"--capture" && std::wstring(argv[3])==L"--events" && std::wstring(argv[5])==L"--generation","usage: shell_ime_client --capture new.bin --events owned-prefix --generation N");
         unsigned generation=0;
         for(const wchar_t* p=argv[6];*p;++p) { ime_check(*p>=L'0' && *p<=L'9' && generation<100000,"IME receiver generation invalid"); generation=generation*10+static_cast<unsigned>(*p-L'0'); }

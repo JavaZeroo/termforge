@@ -6,14 +6,23 @@
 #include <memory>
 
 class OutputQueue {
-    std::mutex mutex_;
+    mutable std::mutex mutex_;
     std::condition_variable room_;
     std::deque<std::string> chunks_;
     size_t bytes_ = 0;
     bool stopped_ = false;
 public:
+    struct Snapshot {
+        size_t queued_bytes = 0, high_water_bytes = 0;
+        bool stopped = false;
+    };
     static constexpr size_t capacity = 256 * 1024;
+    // Legacy counters are safe to read only after the producer has joined.
     size_t high_water = 0;
+    Snapshot snapshot() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return {bytes_, high_water, stopped_};
+    }
     void push(std::string_view bytes) {
         if (bytes.size() > 65536) throw std::runtime_error("output chunk too large");
         std::unique_lock<std::mutex> lock(mutex_);
@@ -40,20 +49,35 @@ public:
 
 class InputQueue {
     tf_conpty::Session& session_;
-    std::mutex mutex_;
+    mutable std::mutex mutex_;
     std::condition_variable ready_;
     std::deque<std::string> chunks_;
     size_t bytes_ = 0;
-    bool stopping_ = false;
+    size_t in_flight_bytes_ = 0;
+    bool stopping_ = false, started_ = false, joined_ = false;
     std::exception_ptr error_;
     std::thread writer_;
     std::shared_ptr<tf_shell::PasteTransfer> paste_;
 public:
+    struct Snapshot {
+        size_t queued_bytes = 0, in_flight_bytes = 0, high_water_bytes = 0, rejected = 0;
+        bool stopping = false, started = false, joined = false, failed = false;
+    };
     static constexpr size_t capacity = 16 * 1024;
+    // The legacy high water is max(queued keystroke bytes, individual paste
+    // chunk bytes); it is not queued + in-flight or a total retained budget.
+    // Legacy counters are safe to read only after the writer has joined.
     size_t high_water = 0, rejected = 0;
     explicit InputQueue(tf_conpty::Session& session) : session_(session) {}
     ~InputQueue() { stop(); }
+    Snapshot snapshot() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        // in_flight_bytes is the worker-owned string payload, not the bytes
+        // remaining in WriteFile or any hidden console/kernel pipe buffering.
+        return {bytes_, in_flight_bytes_, high_water, rejected, stopping_, started_, joined_, error_ != nullptr};
+    }
     void start() {
+        std::lock_guard<std::mutex> starting(mutex_);
         writer_ = std::thread([this] {
             std::shared_ptr<tf_shell::PasteTransfer> writing_paste;
             try {
@@ -70,25 +94,31 @@ public:
                         writing_paste = paste_; bytes = writing_paste->take_chunk();
                         high_water = (std::max)(high_water, bytes.size());
                     }
+                    in_flight_bytes_ = bytes.size();
                     lock.unlock();
                     if (bytes.empty()) continue; // Cancelled between the predicate and take.
                     if (writing_paste) {
                         session_.send(bytes, [&](size_t written) { writing_paste->acknowledge_written(written); });
                         writing_paste->finish_chunk();
                     } else session_.send(bytes);
+                    bytes.clear(); // Payload is released; string allocation is not measured here.
+                    lock.lock(); in_flight_bytes_ = 0;
                 }
             } catch (const std::exception& error) {
                 if (writing_paste) writing_paste->fail(error.what());
                 std::lock_guard<std::mutex> lock(mutex_);
+                in_flight_bytes_ = 0;
                 if (!stopping_) error_ = std::current_exception();
                 if (paste_) paste_->fail(error.what());
             } catch (...) {
                 if (writing_paste) writing_paste->fail("unknown input writer failure");
                 std::lock_guard<std::mutex> lock(mutex_);
+                in_flight_bytes_ = 0;
                 if (!stopping_) error_ = std::current_exception();
                 if (paste_) paste_->fail("unknown input writer failure");
             }
         });
+        started_ = true;
     }
     bool send(const std::string& bytes) {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -116,6 +146,7 @@ public:
             while (WaitForSingleObject(writer_.native_handle(), 10) == WAIT_TIMEOUT)
                 CancelSynchronousIo(writer_.native_handle());
             writer_.join();
+            std::lock_guard<std::mutex> lock(mutex_); joined_ = true;
         }
     }
 };

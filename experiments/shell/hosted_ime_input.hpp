@@ -1,6 +1,7 @@
 // Test-only real input driver. No caller may opt out of the hosted/input guards.
 #pragma once
 #include "ime.hpp"
+#include "ime_input_expectation.hpp"
 #include "../conpty/session.hpp"
 #include <msctf.h>
 #include <wrl/client.h>
@@ -228,9 +229,10 @@ public:
     std::string name;
     unsigned generation;
     std::filesystem::path path;
+    ImeInputExpectation expected_input;
     bool stopped_by_close=false;
-    HostedImeReceiver(std::filesystem::path capture,std::string receiver,unsigned identity)
-        :name(std::move(receiver)),generation(identity),path(std::move(capture)) {
+    HostedImeReceiver(std::filesystem::path capture,std::string receiver,unsigned identity,std::string accepted_input_prefix={})
+        :name(std::move(receiver)),generation(identity),path(std::move(capture)),expected_input(std::move(accepted_input_prefix)) {
         require_hosted_ime_input(); ime_check(!std::filesystem::exists(path),"IME capture path already exists");
         prefix=L"Local\\TermForgeIme-"+std::to_wstring(GetCurrentProcessId())+L"-"+std::to_wstring(GetTickCount64())+L"-"+std::to_wstring(generation);
         event(ready_,prefix+L"-ready"); event(output_,prefix+L"-output"); event(output_done_,prefix+L"-output-done");
@@ -446,7 +448,8 @@ public:
             if(i) out<<','; const auto& row=*receivers[i]; const auto bytes=row.bytes();
             ime_check(row.process_signaled() && row.exit_code()!=STILL_ACTIVE && (row.stopped_by_close || row.finished()),"IME receiver cleanup is incomplete");
             out<<"{\"name\":"<<ime_quote(row.name)<<",\"generation\":"<<row.generation<<",\"capture\":"<<ime_quote(row.path.filename().string())
-               <<",\"bytes\":"<<bytes.size()<<",\"hex\":"<<ime_quote(ime_hex(bytes))<<",\"stopped_event\":"<<(row.stopped_event()?"true":"false")
+               <<",\"bytes\":"<<bytes.size()<<",\"hex\":"<<ime_quote(ime_hex(bytes))<<",\"expected_prefix_hex\":"<<ime_quote(ime_hex(row.expected_input.prefix()))
+               <<",\"stopped_event\":"<<(row.stopped_event()?"true":"false")
                <<",\"stopped_by_close\":"<<(row.stopped_by_close?"true":"false")<<",\"process_signaled\":true,\"exit_code\":"<<row.exit_code()<<'}';
         }
         out<<"],\"rename\":{\"preedit\":"<<ime_quote(rename_preedit)<<",\"text\":"<<ime_quote(rename_text)<<",\"candidates\":[";

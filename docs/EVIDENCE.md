@@ -8,6 +8,7 @@
 
 | 结论 | 实现/命令入口 | 已有结果与限制 |
 |---|---|---|
+| R1 组合验收的受控夹具 | [协议与边界](../experiments/shell/WORKFLOW.md)、[独立oracle](../experiments/shell/workflow_checks.py)、[自动两轮入口](../experiments/shell/test_workflow.py) | 每轮A680行/18360字节、B32字节直接Unicode、F1完整2048000字节、F2完整块中断及乱序拒绝；核对真实transport、原始接收、阶段哈希/顺序与回收。数据夹具层不算八会话、实际剪贴板/IME或呈现验收；源码身份与固定提交结果见 #18 |
 | R1 统一文字动作限定验收 | [逐项对照](research/r1-action-comparison.md)、[最终动作审计](../experiments/shell/results/2026-10-24-r1-actions-accepted/validation.json)、[合同覆盖复核](../experiments/shell/results/2026-10-24-r1-actions-accepted/contract-coverage.json)、[真实 IME 交叉](../research/ime/results/2026-10-24-product-ime-contexts/validation.json) | `6a165c8` / [主 CI 40029637769](https://github.com/JavaZeroo/termforge/actions/runs/40029637769)：local26/system36各两轮，Find实际CF/中文重选、默认Return、Paste v2四轮25021字节及取消/关闭前缀、日志/帧/Job0/desktop删除均独立重算；[IME verify 40029638833](https://github.com/JavaZeroo/termforge/actions/runs/40029638833)五模式28检查点、9组reading上下文和候选/字节/回收另审。二进制只有hosted记录哈希，未上传独立重哈希；单场景不代替合同覆盖复核或 #18 完整工作流 |
 | 干净检出可构建和回归 | [贡献指南](../CONTRIBUTING.md)、[根 CMake](../CMakeLists.txt)、[CI workflow](../.github/workflows/build.yml) | `2dc8d6d` 对应 [Actions 39930814167](https://github.com/JavaZeroo/termforge/actions/runs/39930814167)，Windows 2025 / Ubuntu 24.04 已有成功记录；Linux 未构建 Windows 客户端 |
 | R1 历史/键盘/粘贴窗口整合 | [源码、二进制、重复样本与跳过项](../experiments/shell/results/2026-10-23-r1-foundations/validation.json)、[运行入口](../experiments/shell/README.md) | `9b16acc` 对应实现的本地全量 19 个 CTest 套件通过；内部仍有 3 个跳过项。历史内容/原生拖动、键盘实际接收字节、粘贴途中取消/关闭各重复两轮；系统剪贴板与实际 IME 未据此验收，不是性能对照 |

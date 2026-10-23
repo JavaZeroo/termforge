@@ -225,6 +225,7 @@ def validate_product_manifest(data, mode, captures):
            "independent product IME receivers are missing")
     for generation, row in enumerate(receivers, 1):
         name = row["name"]; by_close = mode == MODES[3] and name == "bottom"
+        _check(row.get("expected_prefix_hex", "") == "", "existing IME cases must retain an empty input prefix")
         _check(type(row.get("generation")) is int and row["generation"] == generation and row.get("capture") == name + ".bin" and
                type(row.get("bytes")) is int and row["bytes"] == len(captures[name]) and _hex(row.get("hex")) == captures[name] and
                row.get("process_signaled") is True and row.get("stopped_by_close") is by_close and

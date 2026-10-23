@@ -1,5 +1,7 @@
 # 本地 shell 工作区
 
+完整组合验收的受控编号日志、洪流与接收端协议见 [WORKFLOW](WORKFLOW.md)。其数据回归不代替八会话或真实 Copy→Paste→IME 工作流验收；实时状态见 [#18](https://github.com/JavaZeroo/termforge/issues/18)。
+
 这是可从源码运行的 Windows 本地交互原型：真实 `cmd.exe` → ConPTY → 有界输出队列 → Recovery 核心 → 历史视口/只读快照 → DirectWrite/Direct2D → 自有 HWND；窗口输入经有界队列回到 ConPTY。核心、窗口与子进程尺寸同步，当前按 [R1 合同](../../docs/milestones/R1-local-text.md)推进基础文字交互，仍未达到日常开发版验收。
 
 ## 运行

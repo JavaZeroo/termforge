@@ -47,7 +47,7 @@ inline void Workspace::scenario_ime() {
                 const auto obs=shell(name)->ime_observation(); return obs.composing && !obs.preedit.empty();
             },350);
             evidence->add(checkpoint,[evidence,receiver,observe,name,checkpoint] {
-                ime_check(receiver(name).bytes().empty(),"preedit leaked to raw PTY receiver"); observe(name,checkpoint);
+                ime_check(receiver(name).expected_input.before_commit(receiver(name).bytes()),"preedit changed or lost the raw PTY prefix"); observe(name,checkpoint);
                 const auto& row=evidence->find(checkpoint);
                 bool visible=false; for(const auto& candidate:row.candidates) visible|=HostedCandidateObserver::candidate(candidate);
                 ime_check(visible && row.observation.result_events==0 && row.observation.committed.empty() && row.observation.character_units.empty(),"real product preedit/candidate was not observed without early commit");
@@ -55,7 +55,7 @@ inline void Workspace::scenario_ime() {
         };
         const auto committed=[evidence,shell,receiver,observe](const std::string& name,const std::string& checkpoint) {
             evidence->add("wait-"+checkpoint,[] {},[shell,receiver,name] {
-                return receiver(name).bytes()=="\xe4\xbd\xa0\xe5\xa5\xbd" && !shell(name)->composing();
+                return receiver(name).expected_input.after_commit(receiver(name).bytes()) && !shell(name)->composing();
             },300);
             evidence->add(checkpoint,[evidence,observe,name,checkpoint] {
                 observe(name,checkpoint); const auto& obs=evidence->find(checkpoint).observation;
@@ -69,7 +69,7 @@ inline void Workspace::scenario_ime() {
             evidence->add("wait-"+checkpoint,[] {},[evidence,shell,receiver,name,checkpoint] {
                 const auto obs=shell(name)->ime_observation();
                 if(obs.composing || !obs.preedit.empty()) return false;
-                ime_check(receiver(name).bytes()=="\xe4\xbd\xa0\xe5\xa5\xbd" && obs.result_events==1 && obs.committed=="\xe4\xbd\xa0\xe5\xa5\xbd" && obs.character_units.empty(),"cancel emitted extra PTY input");
+                ime_check(receiver(name).expected_input.after_commit(receiver(name).bytes()) && obs.result_events==1 && obs.committed=="\xe4\xbd\xa0\xe5\xa5\xbd" && obs.character_units.empty(),"cancel changed the raw PTY prefix or emitted extra input");
                 evidence->actions[checkpoint]=true; return true;
             },350);
             evidence->add(checkpoint,[observe,name,checkpoint] { observe(name,checkpoint); });

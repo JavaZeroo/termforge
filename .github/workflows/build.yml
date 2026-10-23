@@ -55,6 +55,13 @@ jobs:
             build/test-artifacts/selection-context/
             build/test-artifacts/text-actions/
             build/test-artifacts/raw-console-receiver/
+            build/test-artifacts/workflow-fixture/run-*/validation.json
+            build/test-artifacts/workflow-fixture/run-*/stdout.json
+            build/test-artifacts/workflow-fixture/run-*/cases/*/capture.bin
+            build/test-artifacts/workflow-fixture/run-*/cases/*/capture.bin.source.bin
+            build/test-artifacts/workflow-fixture/run-*/cases/*/capture.bin.workflow.json
+            build/test-artifacts/workflow-fixture/run-*/cases/*/capture.bin.receiver.json
+            build/test-artifacts/workflow-fixture/run-*/cases/*/capture.bin.progress.jsonl
       - name: Full ASCII state replay
         run: python -m experiments.core.run --out build/test-artifacts/replay-ascii
       - name: Full Unicode state replay
@@ -71,3 +78,6 @@ jobs:
             build/test-results.xml
             build/CMakeFiles/CMakeConfigureLog.yaml
             build/test-artifacts/
+            !build/test-artifacts/workflow-fixture/**/transport.bin
+            !build/test-artifacts/workflow-fixture/**/*.identity
+            !build/test-artifacts/workflow-fixture/**/stderr.txt

@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include "workflow_fixture.hpp"
 static void require(bool ok, const char* why) { if (!ok) throw std::runtime_error(why); }
 static void output(const std::string& value) {
     size_t offset = 0;
@@ -74,6 +75,8 @@ public:
 };
 int wmain(int argc, wchar_t** argv) {
     try {
+        if(argc>1 && std::wstring(argv[1])==L"--workflow-v1")
+            return tf_shell_test::run_workflow_fixture(tf_shell_test::workflow_options(argc,argv));
         require(argc == 2 && *argv[1], "usage: shell_text_client capture.bin");
         const auto input = GetStdHandle(STD_INPUT_HANDLE);
         require(SetConsoleCP(CP_UTF8) && SetConsoleOutputCP(CP_UTF8) &&
