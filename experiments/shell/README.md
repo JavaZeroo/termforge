@@ -89,7 +89,7 @@ resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子
 
 独立实现，接口语义核对 [Microsoft ConPTY 会话文档](https://learn.microsoft.com/en-us/windows/console/creating-a-pseudoconsole-session)、[CancelSynchronousIo](https://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-cancelsynchronousio) 和 [VT 输入序列](https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#input-sequences)。Windows 窗口退格消息的 U+0008 映射为 VT 的 DEL；首轮将其原样发送导致删词，已由真实 shell 编辑用例检出并修正。
 
-窗口场景按用户行为维护，入口在 `test_shell.py` / `test_selection_bytes.py`，不以历史批次命名表示完成程度：
+窗口场景按用户行为维护，入口在 `test_shell.py` / `test_selection_bytes.py` / `test_selection_context.py`，不以历史批次命名表示完成程度：
 
 | 场景 | 检查内容 | 独立结果与边界 |
 |---|---|---|
@@ -98,8 +98,9 @@ resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子
 | `ui-dpi` | 每会话缩放、隐藏标签、受控 DPI、边缘命中/拖动及长行保留 | `dpi.json` 区分受控 DPI 与系统 DPI；实际子进程尺寸及 dirty/full 图像比较；不替代真实跨屏 |
 | `ui-history` | 编号日志、滚轮/翻页/拖动、阅读锚点、隐藏输出、淘汰、缩放与输入回到底部 | `history.json` 与独立编号 oracle；`native-scroll.jsonl` 记录系统原生非客户区 tracker 的轨迹，使用队列鼠标消息，不移动用户鼠标 |
 | `ui-selection` | 正逆拖选、词/行、宽字/组合字符、缩放、双会话、后台追加及淘汰失效 | `selection.json` 与独立逐字预期；检查实际窗口高亮及回收，本场景不操作系统剪贴板 |
-| `ui-copy-system` | 选择后通过真实 Unicode 剪贴板复制并读回 | 复用选择场景，逐字比较 CF_UNICODETEXT；只在指定一次性 hosted 环境运行，本地跳过不算系统验收 |
+| `ui-copy-system` | 选择后实际 Copy 菜单/快捷键系统复制、占用失败反馈/保持CF/释放后重试 | 旧 v3/v4 只算各自覆盖；v5 必须真实 owner 握手、原始错误、sentinel/sequence、strict release/join 和成功重试。只在指定一次性 hosted 环境运行，本地跳过不算系统验收 |
 | `ui-selection-bytes` / `ui-copy-bytes-system` | 真实 ConPTY 软折行、硬 CRLF、中文/组合字符、显式带样式尾两空格和受控 96→144→192→96 | 独立 producer/transport/capture 文件与逐行 oracle；本地模式不访问剪贴板，system 模式仅 disposable hosted VM。普通尾空格在 ConPTY 中的规范化仍是缺口，不能据此宣称与 WindTerm 该行为等价 |
+| `ui-selection-context` / `ui-copy-context-system` | 3会话的同组标签隐藏/返回、live CR覆盖失效、rename EDIT、带选区关闭后的目标隔离 | 16阶段独立literal/journal/transport/raw；local不执行有效CF，system仅disposable hosted并要求真实EDIT Copy与选区CF。未知显式空白端点策略不据此裁决 |
 | `ui-find-stream` | 实际持续 CR 输出中导航、运行中替换查询、取消及关闭目标 | 10 阶段独立 oracle、两个原始接收文件和有限 worker/Job 回收；局部结果绝不冒充全局循环 |
 | `ui-find` | 多批搜索、方向/循环、大小写/中文/无结果、蓝黄高亮、后台追加、淘汰与 Escape | `find.json`、逐阶段记录及真实 `ReadConsoleW` 接收字节；查询在原生 EDIT 中操作，独立 oracle 检查稳定位置与焦点 |
 | `ui-keyboard` | 修饰键、编辑键、Unicode 与会话目标 | 真实 `ReadConsoleW` 接收端与独立字节预期；不替代真实 IME |

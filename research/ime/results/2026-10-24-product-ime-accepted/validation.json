@@ -1,0 +1,475 @@
+{
+  "status": "passed",
+  "head": "154dc48b5fc29e1cbca3908af6e091c3232e50c5",
+  "run_id": 40017974845,
+  "job_id": 120634864752,
+  "artifact_id": 12529780511,
+  "artifact_digest": "sha256:07a2e49a3ad3b05d079e8cb84dab15ef9ac3f9d777cdfef9389b7b13319fdcf9",
+  "oracle_sha256": "436eebedf91c53513187ca17966b99a57a28a3571f892c1a4454d47a047e1acb",
+  "environment": {
+    "image_os": "win25-vs2026",
+    "image_version": "20261021.278.1",
+    "os": {
+      "Caption": "Microsoft Windows Server 2025 Datacenter",
+      "Version": "10.0.26100",
+      "BuildNumber": "26100"
+    },
+    "input_profile": "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+    "ime_binary": {
+      "name": "ChsIME.exe",
+      "version": "10.0.26100.33648 (WinBuild.160101.0800)",
+      "sha256": "581362ddfb1230394900efee9a23194422b14b3ca8c111f00b90e23d3112c4b9"
+    },
+    "capability_after": {
+      "name": "Language.Basic~~~zh-CN~0.0.1.0",
+      "state": "NotPresent"
+    }
+  },
+  "binary_identities": {
+    "shell_test_launcher.exe": {
+      "bytes": 55296,
+      "sha256": "228bbf6aa8745e10c78068faeb8e67e2baca7615c60c3b9c7e6e07f9f51c2f4e"
+    },
+    "termforge_shell.exe": {
+      "bytes": 786432,
+      "sha256": "c47236e1d73f70adf7c74b33f060e4dc073661927949a8ef62c473837d84dd93"
+    },
+    "shell_ime_client.exe": {
+      "bytes": 74752,
+      "sha256": "f5db3df995b8b19a7726f97034f5e6c7504f8259304801ae81929c74004c5fb5"
+    }
+  },
+  "cases": [
+    {
+      "mode": "ui-ime-basic",
+      "checkpoints": 7,
+      "receivers": [
+        {
+          "name": "bottom",
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+          "exit_code": 0,
+          "receiver_sidecar": {
+            "schema": "termforge-raw-console-receiver-v1",
+            "state": "stopped",
+            "stop_requested": true,
+            "worker_joined": true,
+            "last_read_success": true,
+            "last_read_count": 0,
+            "last_read_error": 0,
+            "worker_error": 0,
+            "failure_step": "",
+            "zero_read_accepted": true,
+            "reads_entered": 2,
+            "reads_completed": 2,
+            "cancel_calls": 1,
+            "cancel_successes": 1,
+            "last_cancel_error": 0,
+            "received_units": 2,
+            "saved_bytes": 6,
+            "unexpected_cancel_observed": false,
+            "unexpected_cancel_error": 0,
+            "last_wait_result": 0,
+            "last_wait_error": 0
+          }
+        },
+        {
+          "name": "main",
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+          "exit_code": 0,
+          "receiver_sidecar": {
+            "schema": "termforge-raw-console-receiver-v1",
+            "state": "stopped",
+            "stop_requested": true,
+            "worker_joined": true,
+            "last_read_success": true,
+            "last_read_count": 0,
+            "last_read_error": 0,
+            "worker_error": 0,
+            "failure_step": "",
+            "zero_read_accepted": true,
+            "reads_entered": 2,
+            "reads_completed": 2,
+            "cancel_calls": 1,
+            "cancel_successes": 1,
+            "last_cancel_error": 0,
+            "received_units": 2,
+            "saved_bytes": 6,
+            "unexpected_cancel_observed": false,
+            "unexpected_cancel_error": 0,
+            "last_wait_result": 0,
+            "last_wait_error": 0
+          }
+        }
+      ],
+      "raw_receiver_bytes_verified": true,
+      "actual_candidates_verified": true,
+      "product_workflow_verified": true,
+      "inner_and_outer_job_zero_verified": true,
+      "inner_job_after": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "raw_capture_identities": {
+        "bottom.bin": {
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+        },
+        "main.bin": {
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+        }
+      },
+      "key_batches": 18,
+      "checkpoint_names": [
+        "bottom-preedit",
+        "bottom-moved",
+        "bottom-commit",
+        "bottom-cancel",
+        "main-preedit",
+        "main-commit",
+        "main-cancel"
+      ],
+      "step_count": 41,
+      "progress_order_and_snapshot_consistency": true,
+      "composing_checkpoints_absolute_anchor_verified": 3,
+      "outer_job_active_after": 0,
+      "actions": {
+        "bottom-cancel": true,
+        "candidate_followed_workspace": true,
+        "main-cancel": true
+      },
+      "frame_sha256": "f471aaad9758ac0d4a63d6ecd84f9cebd124c549867bdd5155b1e8eecb1c8dac"
+    },
+    {
+      "mode": "ui-ime-geometry",
+      "checkpoints": 7,
+      "receivers": [
+        {
+          "name": "bottom",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_code": 0,
+          "receiver_sidecar": {
+            "schema": "termforge-raw-console-receiver-v1",
+            "state": "stopped",
+            "stop_requested": true,
+            "worker_joined": true,
+            "last_read_success": true,
+            "last_read_count": 0,
+            "last_read_error": 0,
+            "worker_error": 0,
+            "failure_step": "",
+            "zero_read_accepted": true,
+            "reads_entered": 1,
+            "reads_completed": 1,
+            "cancel_calls": 1,
+            "cancel_successes": 1,
+            "last_cancel_error": 0,
+            "received_units": 0,
+            "saved_bytes": 0,
+            "unexpected_cancel_observed": false,
+            "unexpected_cancel_error": 0,
+            "last_wait_result": 0,
+            "last_wait_error": 0
+          }
+        },
+        {
+          "name": "main",
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+          "exit_code": 0,
+          "receiver_sidecar": {
+            "schema": "termforge-raw-console-receiver-v1",
+            "state": "stopped",
+            "stop_requested": true,
+            "worker_joined": true,
+            "last_read_success": true,
+            "last_read_count": 0,
+            "last_read_error": 0,
+            "worker_error": 0,
+            "failure_step": "",
+            "zero_read_accepted": true,
+            "reads_entered": 2,
+            "reads_completed": 2,
+            "cancel_calls": 1,
+            "cancel_successes": 1,
+            "last_cancel_error": 0,
+            "received_units": 2,
+            "saved_bytes": 6,
+            "unexpected_cancel_observed": false,
+            "unexpected_cancel_error": 0,
+            "last_wait_result": 0,
+            "last_wait_error": 0
+          }
+        }
+      ],
+      "raw_receiver_bytes_verified": true,
+      "actual_candidates_verified": true,
+      "product_workflow_verified": true,
+      "inner_and_outer_job_zero_verified": true,
+      "inner_job_after": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "raw_capture_identities": {
+        "bottom.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "main.bin": {
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+        }
+      },
+      "key_batches": 9,
+      "checkpoint_names": [
+        "before-output",
+        "after-output",
+        "after-resize",
+        "after-zoom",
+        "after-dpi",
+        "committed",
+        "cancelled"
+      ],
+      "step_count": 30,
+      "progress_order_and_snapshot_consistency": true,
+      "composing_checkpoints_absolute_anchor_verified": 5,
+      "outer_job_active_after": 0,
+      "actions": {
+        "cancelled": true,
+        "controlled_dpi_120": true,
+        "resize": true,
+        "twenty_output_rows": true,
+        "zoom_125": true
+      },
+      "frame_sha256": "541709edbaa586ac32b4ed9ba47942e6b8dd258a46d80db40074e9065a8c9817"
+    },
+    {
+      "mode": "ui-ime-focus",
+      "checkpoints": 5,
+      "receivers": [
+        {
+          "name": "bottom",
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+          "exit_code": 0,
+          "receiver_sidecar": {
+            "schema": "termforge-raw-console-receiver-v1",
+            "state": "stopped",
+            "stop_requested": true,
+            "worker_joined": true,
+            "last_read_success": true,
+            "last_read_count": 0,
+            "last_read_error": 0,
+            "worker_error": 0,
+            "failure_step": "",
+            "zero_read_accepted": true,
+            "reads_entered": 2,
+            "reads_completed": 2,
+            "cancel_calls": 1,
+            "cancel_successes": 1,
+            "last_cancel_error": 0,
+            "received_units": 2,
+            "saved_bytes": 6,
+            "unexpected_cancel_observed": false,
+            "unexpected_cancel_error": 0,
+            "last_wait_result": 0,
+            "last_wait_error": 0
+          }
+        },
+        {
+          "name": "main",
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+          "exit_code": 0,
+          "receiver_sidecar": {
+            "schema": "termforge-raw-console-receiver-v1",
+            "state": "stopped",
+            "stop_requested": true,
+            "worker_joined": true,
+            "last_read_success": true,
+            "last_read_count": 0,
+            "last_read_error": 0,
+            "worker_error": 0,
+            "failure_step": "",
+            "zero_read_accepted": true,
+            "reads_entered": 2,
+            "reads_completed": 2,
+            "cancel_calls": 1,
+            "cancel_successes": 1,
+            "last_cancel_error": 0,
+            "received_units": 2,
+            "saved_bytes": 6,
+            "unexpected_cancel_observed": false,
+            "unexpected_cancel_error": 0,
+            "last_wait_result": 0,
+            "last_wait_error": 0
+          }
+        },
+        {
+          "name": "hidden",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "exit_code": 0,
+          "receiver_sidecar": {
+            "schema": "termforge-raw-console-receiver-v1",
+            "state": "stopped",
+            "stop_requested": true,
+            "worker_joined": true,
+            "last_read_success": true,
+            "last_read_count": 0,
+            "last_read_error": 0,
+            "worker_error": 0,
+            "failure_step": "",
+            "zero_read_accepted": true,
+            "reads_entered": 1,
+            "reads_completed": 1,
+            "cancel_calls": 1,
+            "cancel_successes": 1,
+            "last_cancel_error": 0,
+            "received_units": 0,
+            "saved_bytes": 0,
+            "unexpected_cancel_observed": false,
+            "unexpected_cancel_error": 0,
+            "last_wait_result": 0,
+            "last_wait_error": 0
+          }
+        }
+      ],
+      "raw_receiver_bytes_verified": true,
+      "actual_candidates_verified": true,
+      "product_workflow_verified": true,
+      "inner_and_outer_job_zero_verified": true,
+      "inner_job_after": {
+        "active": 0,
+        "total": 13,
+        "terminated": 0
+      },
+      "raw_capture_identities": {
+        "bottom.bin": {
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+        },
+        "main.bin": {
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+        },
+        "hidden.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "key_batches": 25,
+      "checkpoint_names": [
+        "bottom-preedit",
+        "bottom-hidden",
+        "main-commit",
+        "bottom-resumed",
+        "hidden-preedit"
+      ],
+      "step_count": 49,
+      "progress_order_and_snapshot_consistency": true,
+      "composing_checkpoints_absolute_anchor_verified": 2,
+      "outer_job_active_after": 0,
+      "actions": {
+        "hidden_cancelled": true,
+        "rename_cancelled_old": true,
+        "rename_text_verified": true
+      },
+      "frame_sha256": "904a85084bf9966c666f6af39be73d32a0b88d7b7ea436968571c7b05c9a5f9a"
+    },
+    {
+      "mode": "ui-ime-close",
+      "checkpoints": 3,
+      "receivers": [
+        {
+          "name": "bottom",
+          "bytes": 0,
+          "exit_code": 91,
+          "closed_target_terminated": true,
+          "sidecar": "not expected after Job cancellation"
+        },
+        {
+          "name": "main",
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+          "exit_code": 0,
+          "receiver_sidecar": {
+            "schema": "termforge-raw-console-receiver-v1",
+            "state": "stopped",
+            "stop_requested": true,
+            "worker_joined": true,
+            "last_read_success": true,
+            "last_read_count": 0,
+            "last_read_error": 0,
+            "worker_error": 0,
+            "failure_step": "",
+            "zero_read_accepted": true,
+            "reads_entered": 2,
+            "reads_completed": 2,
+            "cancel_calls": 1,
+            "cancel_successes": 1,
+            "last_cancel_error": 0,
+            "received_units": 2,
+            "saved_bytes": 6,
+            "unexpected_cancel_observed": false,
+            "unexpected_cancel_error": 0,
+            "last_wait_result": 0,
+            "last_wait_error": 0
+          }
+        }
+      ],
+      "raw_receiver_bytes_verified": true,
+      "actual_candidates_verified": true,
+      "product_workflow_verified": true,
+      "inner_and_outer_job_zero_verified": true,
+      "inner_job_after": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "raw_capture_identities": {
+        "bottom.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "main.bin": {
+          "bytes": 6,
+          "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+        }
+      },
+      "key_batches": 14,
+      "checkpoint_names": [
+        "before-close",
+        "survivor-commit",
+        "survivor-cancel"
+      ],
+      "step_count": 30,
+      "progress_order_and_snapshot_consistency": true,
+      "composing_checkpoints_absolute_anchor_verified": 1,
+      "outer_job_active_after": 0,
+      "actions": {
+        "closed_candidate_gone": true,
+        "closed_receiver_reaped": true,
+        "closed_target_destroyed": true,
+        "survivor-cancel": true
+      },
+      "frame_sha256": "1a5ca406316f166d442417715a1ee9176d5a0e5823533a4994b4d70eb39002e2"
+    }
+  ],
+  "normal_receivers_verified": 8,
+  "close_cancelled_receivers_verified": 1,
+  "r1_06_real_ime_gate": "passed for fixed Microsoft Pinyin hosted environment and controlled DPI/zoom; prior keyboard byte regressions remain the complementary evidence",
+  "audit_method": "offline exact-head pure oracle; no hosted guard bypass, environment spoofing, clipboard API, IME or SendInput invoked",
+  "limitations": [
+    "single successful four-case product batch at this exact head",
+    "controlled DPI 120 and zoom125, not real cross-monitor transition",
+    "presented_done remains null",
+    "older c206 product failure remains failure; no retrospective reclassification",
+    "not all IMEs, full grapheme layout, R1-07/08 integration or product release"
+  ]
+}

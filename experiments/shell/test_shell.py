@@ -13,7 +13,7 @@ from experiments.build_paths import ROOT, binary
 from experiments.shell.run import execute, validate, validate_main_geometry, validate_dpi_geometry
 from experiments.shell.history_checks import validate_history, validate_native_scroll
 from experiments.shell.clipboard_checks import require_hosted_clipboard, validate_clipboard_workflow
-from experiments.shell.selection_checks import validate_selection, validate_selection_workflow, _validate_copy_popup
+from experiments.shell.selection_checks import validate_selection, validate_selection_workflow, _validate_copy_popup, _validate_copy_contention
 from experiments.shell.find_checks import (validate_find, validate_find_workflow,
                                            validate_find_stream, validate_find_stream_workflow)
 
@@ -201,8 +201,9 @@ class ShellTests(unittest.TestCase):
             out = self.out / f"copy-system-{repeat}"
             record = execute(self.exe, "ui-copy-system", out)
             data = json.loads((out / "selection.json").read_text(encoding="utf-8"))
-            self.assertEqual(data["schema"], "termforge-window-selection-v4")
+            self.assertEqual(data["schema"], "termforge-window-selection-v5")
             self.assertTrue(record["selection_workflow"]["interactions"]["actual_copy_popup"])
+            self.assertTrue(record["selection_workflow"]["interactions"]["copy_contention"])
             for field, wrong in (("actual_return_command", 15), ("target_command", 15),
                                  ("initial_state", 3), ("highlighted_state", 0), ("popup_closed", False)):
                 bad = copy.deepcopy(data); bad["copy_popup_menu"][field] = wrong
@@ -215,6 +216,12 @@ class ShellTests(unittest.TestCase):
                 with self.subTest(copy_target=field), self.assertRaises(ValueError):
                     validate_selection(bad, True, record)
             bad = copy.deepcopy(data); bad["copy_popup_sequence_after"] = bad["copy_popup_sequence_before"]
+            with self.assertRaises(ValueError): validate_selection(bad, True, record)
+            for field, wrong in (("native_error", 0), ("error_visible", False), ("owner_occupied_at_error", False),
+                                 ("error_status", "Selected text copied"), ("sequence_at_error", 0)):
+                bad = copy.deepcopy(data); bad["copy_contention"][field] = wrong
+                with self.subTest(copy_contention=field), self.assertRaises(ValueError): validate_selection(bad, True, record)
+            bad = copy.deepcopy(data); bad["copy_contention"]["owner_release"]["thread_exited"] = False
             with self.assertRaises(ValueError): validate_selection(bad, True, record)
 
     def test_real_history_scroll_anchor_eviction_and_hidden_sessions(self):
@@ -473,6 +480,58 @@ class SelectionCopyPopupSchemaTests(unittest.TestCase):
                                     (1, "raw_bottom", "x"), (1, "raw_main", "xx"), (1, "captured", True)):
             bad = copy.deepcopy(data); bad["interactions"][index][field] = wrong
             with self.subTest(row=index, field=field), self.assertRaises(ValueError): _validate_copy_popup(bad)
+
+    @classmethod
+    def contention_example(cls):
+        data = cls.example(); data["schema"] = "termforge-window-selection-v5"
+        failure = "Copy failed: OpenClipboard: 5"
+        data["copy_contention"] = {"schema": "termforge-product-copy-contention-v1", "entry": "queued-Ctrl-Shift-C", "target": "main",
+            "owner_occupied_before": True, "owner_occupied_at_error": True, "error_visible": True, "native_error": 5,
+            "failure_step": "OpenClipboard", "error_frame": "selection-copy-occupied-error.bmp", "error_status": failure,
+            "native_window_title": "TermForge — " + failure, "sequence_before": 200, "sequence_at_error": 200,
+            "sequence_after_owner_join": 200, "sequence_after_retry": 202,
+            "owner_release": {"reason": "ordinary", "proof": {field: False for field in
+                ("owner_entered", "requester_exited", "target_quiescent", "payload_unchanged")},
+                "publication_attempted": False, "publication_succeeded": False, "release_event": True, "thread_exited": True,
+                "native_error": 0, "worker_error": 0, "failure_step": "", "secondary_failure_step": "",
+                "secondary_native_error": 0, "secondary_worker_error": 0, "expected_requester_gone": False}}
+        for phase, action, cf, status in (
+                ("system-copy-occupied-prepared", "prepare-occupied-Copy", "TF_COPY_SENTINEL 中文 e\u0301", "Selected text copied"),
+                ("system-copy-occupied", "queued-Ctrl-Shift-C-occupied", None, failure),
+                ("system-copy-occupied-released", "release-and-join-occupied-owner", "TF_COPY_SENTINEL 中文 e\u0301", failure),
+                ("system-copy-occupied-retry", "queued-Ctrl-Shift-C-retry", data["interactions"][1]["clipboard"], "Selected text copied")):
+            row = copy.deepcopy(data["interactions"][1]); row.update(phase=phase, action=action, clipboard=cf, product_status=status)
+            data["interactions"].append(row)
+        return data
+
+    def test_occupied_product_copy_keeps_original_error_sentinel_target_and_strict_join(self):
+        data = self.contention_example()
+        self.assertTrue(_validate_copy_popup(data))
+        self.assertEqual(_validate_copy_contention(data)["native_error"], 5)
+        self.assertIsNone(_validate_copy_contention(self.example()))
+        bad = copy.deepcopy(data); bad["schema"] = "termforge-window-selection-v4"
+        with self.assertRaises(ValueError): _validate_copy_contention(bad)
+        for field, wrong in (("native_error", 0), ("native_error", True), ("error_status", "Copy failed: GlobalLock: 5"),
+                             ("native_window_title", "wrong native title"), ("owner_occupied_before", False),
+                             ("owner_occupied_at_error", False), ("error_visible", False), ("sequence_at_error", 201),
+                             ("sequence_after_owner_join", 201), ("sequence_after_retry", 200), ("entry", "direct-WM_COPY")):
+            bad = copy.deepcopy(data); bad["copy_contention"][field] = wrong
+            with self.subTest(contention=field), self.assertRaises(ValueError): _validate_copy_contention(bad)
+        for field, wrong in (("reason", "requester-cancelled"), ("release_event", False), ("thread_exited", False),
+                             ("native_error", 1418), ("worker_error", 1418), ("expected_requester_gone", True),
+                             ("secondary_native_error", 5), ("secondary_failure_step", "CloseClipboard-release")):
+            bad = copy.deepcopy(data); bad["copy_contention"]["owner_release"][field] = wrong
+            with self.subTest(owner_release=field), self.assertRaises(ValueError): _validate_copy_contention(bad)
+        for phase, field, wrong in (("system-copy-occupied", "product_status", "Copy failed: OpenClipboard: 0"),
+                                    ("system-copy-occupied", "clipboard", "unexpected read while owner held"),
+                                    ("system-copy-occupied-released", "clipboard", "changed sentinel"),
+                                    ("system-copy-occupied-released", "main_focused", False),
+                                    ("system-copy-occupied-retry", "clipboard", "wrong copied text"),
+                                    ("system-copy-occupied-retry", "raw_main", "xx"),
+                                    ("system-copy-occupied-retry", "raw_bottom", "x"),
+                                    ("system-copy-occupied-retry", "action", "workspace-command-copy")):
+            bad = copy.deepcopy(data); next(row for row in bad["interactions"] if row["phase"] == phase)[field] = wrong
+            with self.subTest(phase=phase, field=field), self.assertRaises(ValueError): _validate_copy_contention(bad)
 
 
 class ClipboardWindowGateTests(unittest.TestCase):

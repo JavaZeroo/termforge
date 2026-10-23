@@ -21,6 +21,12 @@ inline void Workspace::scenario_selection() {
     static std::string popup_evidence;
     static std::string copy_popup_evidence, copy_selection_before;
     static DWORD copy_sequence_before=0, copy_sequence_after=0;
+    static std::unique_ptr<tf_shell_test::ClipboardScenarioOwner> copy_owner;
+    static std::optional<tf_shell_test::ClipboardOwnerReleaseResult> copy_owner_release;
+    static DWORD occupied_sequence_before=0, occupied_sequence_error=0, occupied_sequence_joined=0, occupied_sequence_retry=0;
+    static DWORD copy_native_error=0;
+    static std::string copy_error_status, copy_error_title;
+    static bool owner_before=false, owner_at_error=false, copy_error_visible=false;
     if(restore_keys) { require(SetKeyboardState(saved_keys.data())!=FALSE,"selection keyboard state restoration failed"); restore_keys=false; }
     const auto line_text=[](const auto& line) {
         std::string value; for(const auto& cell:line) value+=cell.text;
@@ -171,6 +177,9 @@ inline void Workspace::scenario_selection() {
         interaction_samples.clear();
         popup_gesture.reset(); popup_evidence.clear(); copy_popup_evidence.clear(); copy_selection_before.clear();
         copy_sequence_before=copy_sequence_after=0;
+        copy_owner.reset(); copy_owner_release.reset(); copy_native_error=0; copy_error_status.clear(); copy_error_title.clear();
+        occupied_sequence_before=occupied_sequence_error=occupied_sequence_joined=occupied_sequence_retry=0;
+        owner_before=owner_at_error=copy_error_visible=false;
         if(system) tf_shell_test::require_hosted_clipboard();
         add(Group::main); stage_=1;
     } else if(stage_==1 && main && main->ready() && bottom->settled() && main->settled()) {
@@ -299,6 +308,55 @@ inline void Workspace::scenario_selection() {
                 cf==copy_selection_before && copy_sequence_after!=0 && copy_sequence_after!=copy_sequence_before &&
                 main->status_text()==L"Selected text copied","actual Copy popup did not replace its sentinel for the focused selected target");
         interaction("system-copy-popup","actual-Session-popup-Copy",false,cf);
+        sentinel(); require(clipboard()=="TF_COPY_SENTINEL 中文 e\xcc\x81","occupied Copy sentinel readback differs");
+        occupied_sequence_before=GetClipboardSequenceNumber(); require(occupied_sequence_before!=0,"occupied Copy clipboard sequence unavailable");
+        interaction("system-copy-occupied-prepared","prepare-occupied-Copy",false,clipboard());
+        copy_owner=std::make_unique<tf_shell_test::ClipboardScenarioOwner>(false);
+        owner_before=copy_owner->occupied();
+        require(owner_before && GetClipboardSequenceNumber()==occupied_sequence_before,"Copy fixture did not retain its real clipboard lock/sentinel");
+        queued_key('C',true,true); stage_=24;
+    } else if(stage_==24 && system && main->status_text().rfind(L"Copy failed: OpenClipboard: ",0)==0) {
+        const auto status=main->status_text(); const std::wstring prefix=L"Copy failed: OpenClipboard: ";
+        copy_error_status=utf8(status.c_str());
+        uint64_t error=0; require(status.size()>prefix.size(),"Copy failure omitted its actual native error");
+        for(size_t index=prefix.size();index<status.size();++index) {
+            require(status[index]>=L'0' && status[index]<=L'9' && error<=0xffffffffu/10,"Copy failure native error is malformed");
+            error=error*10+static_cast<unsigned>(status[index]-L'0'); require(error<=0xffffffffu,"Copy failure native error overflow");
+        }
+        copy_native_error=static_cast<DWORD>(error); owner_at_error=copy_owner && copy_owner->occupied();
+        occupied_sequence_error=GetClipboardSequenceNumber();
+        wchar_t title[2048]{}; const int length=GetWindowTextW(main->handle(),title,2048);
+        require(length>0 && length<2047,"Copy error native window title unavailable"); copy_error_title=utf8(title);
+        const auto selection_value=main->selected_text();
+        copy_error_visible=IsWindowVisible(main->handle()) && GetFocus()==main->handle() && active()==main;
+        interaction("system-copy-occupied","queued-Ctrl-Shift-C-occupied");
+        require(copy_native_error!=0 && owner_at_error && occupied_sequence_error==occupied_sequence_before && copy_error_visible &&
+                copy_error_title=="TermForge — "+copy_error_status && main->has_selection() &&
+                selection_value.status==termforge::SelectionCopyStatus::ok && selection_value.text==copy_selection_before,
+                "occupied product Copy failed without preserving its actual visible error, selected target or clipboard sequence");
+        Bitmap frame(physical_width_,physical_height_); paint(frame.dc);
+        for(const auto group:{Group::bottom,Group::main}) {
+            const RECT rect=physical(group==Group::main?main_terminal_:terminal_); selected(group)->render_to(frame.dc,rect.left,rect.top);
+        }
+        frame.save((directory/"selection-copy-occupied-error.bmp").string());
+        copy_owner->release(); stage_=25;
+    } else if(stage_==25 && system && copy_owner && copy_owner->released()) {
+        copy_owner_release=copy_owner->finish(); copy_owner.reset();
+        require(copy_owner_release->reason==tf_shell_test::ClipboardReleaseReason::ordinary && !copy_owner_release->expected_requester_gone,
+                "ordinary occupied Copy owner used a requester-exit exception");
+        const auto cf=clipboard(); occupied_sequence_joined=GetClipboardSequenceNumber();
+        require(cf=="TF_COPY_SENTINEL 中文 e\xcc\x81" && occupied_sequence_joined==occupied_sequence_before &&
+                GetFocus()==main->handle() && active()==main && main->has_selection() && main->selected_text().text==copy_selection_before,
+                "failed Copy changed the actual clipboard/selection/focus before its owner joined");
+        interaction("system-copy-occupied-released","release-and-join-occupied-owner",false,cf);
+        queued_key('C',true,true); stage_=26;
+    } else if(stage_==26 && system && main->status_text()==L"Selected text copied") {
+        const auto cf=clipboard(); occupied_sequence_retry=GetClipboardSequenceNumber();
+        require(!copy_owner && copy_owner_release && cf==copy_selection_before && occupied_sequence_retry!=0 &&
+                occupied_sequence_retry!=occupied_sequence_before && GetFocus()==main->handle() && active()==main &&
+                main->has_selection() && main->selected_text().text==copy_selection_before,
+                "queued Copy retry did not copy its original selected target after real owner release/join");
+        interaction("system-copy-occupied-retry","queued-Ctrl-Shift-C-retry",false,cf);
         queued_key(VK_ESCAPE); stage_=21;
     } else if(stage_==21 && !main->has_selection()) {
         interaction("select-all-popup-cleared","queued-Escape"); phase_tick=main->observed_tick_count(); stage_=22;
@@ -311,7 +369,7 @@ inline void Workspace::scenario_selection() {
         }
         frame.save(image_);
         std::ofstream out(std::filesystem::path(image_).parent_path()/"selection.json");
-        out<<"{\"schema\":\""<<(system?"termforge-window-selection-v4":"termforge-window-selection-v3")<<"\",\"system_clipboard\":"<<(system?"true":"false")
+        out<<"{\"schema\":\""<<(system?"termforge-window-selection-v5":"termforge-window-selection-v3")<<"\",\"system_clipboard\":"<<(system?"true":"false")
            <<",\"input_source\":\"physical-pixel-mouse-messages\",\"snapshots\":[";
         for(size_t i=0;i<geometry_samples_.size();++i) { if(i) out<<','; out<<geometry_samples_[i]; }
         out<<"],\"interaction_input\":\"queued-keys-through-workspace-loop-and-native-timer-capture\",\"menu_popup_verified\":true,\"popup_observer_idle\":"
@@ -320,6 +378,26 @@ inline void Workspace::scenario_selection() {
         if(system) out<<",\"copy_popup_verified\":true,\"copy_popup_observer_idle\":"
            <<(tf_shell_test::PopupMenuGesture::observer_idle()?"true":"false")<<",\"copy_popup_sequence_before\":"<<copy_sequence_before
            <<",\"copy_popup_sequence_after\":"<<copy_sequence_after<<",\"copy_popup_menu\":"<<copy_popup_evidence;
+        if(system) {
+            require(copy_owner_release.has_value() && !copy_owner,"occupied Copy owner was not joined before final evidence");
+            const auto& release=*copy_owner_release; const auto& observed=release.observation;
+            const auto flag=[&](const char* name,bool value) { out<<",\""<<name<<"\":"<<(value?"true":"false"); };
+            out<<",\"copy_contention\":{\"schema\":\"termforge-product-copy-contention-v1\",\"entry\":\"queued-Ctrl-Shift-C\",\"target\":\"main\"";
+            flag("owner_occupied_before",owner_before); flag("owner_occupied_at_error",owner_at_error); flag("error_visible",copy_error_visible);
+            out<<",\"native_error\":"<<copy_native_error<<",\"failure_step\":\"OpenClipboard\",\"error_status\":";
+            termforge::Screen::quoted(out,copy_error_status); out<<",\"native_window_title\":"; termforge::Screen::quoted(out,copy_error_title);
+            out<<",\"error_frame\":\"selection-copy-occupied-error.bmp\",\"sequence_before\":"<<occupied_sequence_before
+               <<",\"sequence_at_error\":"<<occupied_sequence_error<<",\"sequence_after_owner_join\":"<<occupied_sequence_joined
+               <<",\"sequence_after_retry\":"<<occupied_sequence_retry<<",\"owner_release\":{\"reason\":\"ordinary\",\"proof\":{\"owner_entered\":"
+               <<(release.proof.owner_entered?"true":"false")<<",\"requester_exited\":"<<(release.proof.requester_exited?"true":"false")
+               <<",\"target_quiescent\":"<<(release.proof.target_quiescent?"true":"false")<<",\"payload_unchanged\":"<<(release.proof.payload_unchanged?"true":"false")<<'}';
+            flag("publication_attempted",observed.publication_attempted); flag("publication_succeeded",observed.publication_succeeded);
+            flag("release_event",observed.release_event); flag("thread_exited",observed.thread_exited);
+            out<<",\"native_error\":"<<observed.native_error<<",\"worker_error\":"<<observed.worker_error<<",\"failure_step\":";
+            termforge::Screen::quoted(out,std::string(observed.failure_step)); out<<",\"secondary_native_error\":"<<observed.secondary_native_error
+               <<",\"secondary_worker_error\":"<<observed.secondary_worker_error<<",\"secondary_failure_step\":";
+            termforge::Screen::quoted(out,std::string(observed.secondary_failure_step)); flag("expected_requester_gone",release.expected_requester_gone); out<<"}}";
+        }
         out<<",\"interactions\":[";
         for(size_t i=0;i<interaction_samples.size();++i) { if(i) out<<','; out<<interaction_samples[i]; }
         out<<"]}\n"; out.close(); require(out.good(),"selection observations write failed");

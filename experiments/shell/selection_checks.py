@@ -1,8 +1,12 @@
 """Independent literal text/focus/clipboard oracles for the real selection UI."""
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
+import struct
+
+from experiments.shell.clipboard_checks import validate_owner_release
 
 
 PHASES = ("empty", "forward", "reverse", "word", "line", "zoom-before", "zoom-after", "main-selected",
@@ -49,7 +53,7 @@ def _validate_copy_popup(data: dict) -> bool:
         if any(field in data for field in fields):
             raise ValueError("actual Copy popup evidence requires its explicit v4 identity")
         return False
-    if (data.get("schema") != "termforge-window-selection-v4" or data.get("system_clipboard") is not True or
+    if (data.get("schema") not in ("termforge-window-selection-v4", "termforge-window-selection-v5") or data.get("system_clipboard") is not True or
             data.get("copy_popup_verified") is not True or data.get("copy_popup_observer_idle") is not True or
             any(type(data.get(field)) is not int or not 1 <= data[field] <= 0xffffffff for field in fields[2:4]) or
             data["copy_popup_sequence_before"] == data["copy_popup_sequence_after"]):
@@ -74,12 +78,56 @@ def _validate_copy_popup(data: dict) -> bool:
     return True
 
 
+def _validate_copy_contention(data: dict) -> dict | None:
+    if data.get("schema") in ("termforge-window-selection-v3", "termforge-window-selection-v4"):
+        if "copy_contention" in data:
+            raise ValueError("product Copy contention requires its explicit v5 identity")
+        return None
+    value = data.get("copy_contention")
+    if (data.get("schema") != "termforge-window-selection-v5" or data.get("system_clipboard") is not True or
+            not isinstance(value, dict) or value.get("schema") != "termforge-product-copy-contention-v1" or
+            value.get("entry") != "queued-Ctrl-Shift-C" or value.get("target") != "main" or
+            any(value.get(field) is not True for field in ("owner_occupied_before", "owner_occupied_at_error", "error_visible")) or
+            type(value.get("native_error")) is not int or not 1 <= value["native_error"] <= 0xffffffff or
+            value.get("failure_step") != "OpenClipboard" or value.get("error_frame") != "selection-copy-occupied-error.bmp"):
+        raise ValueError("real occupied product Copy entry, owner, visible original native error or error frame is missing")
+    status = f"Copy failed: OpenClipboard: {value['native_error']}"
+    if value.get("error_status") != status or value.get("native_window_title") != "TermForge — " + status:
+        raise ValueError("product Copy original OpenClipboard error was lost or relabelled")
+    sequence = ("sequence_before", "sequence_at_error", "sequence_after_owner_join", "sequence_after_retry")
+    if (any(type(value.get(field)) is not int or not 1 <= value[field] <= 0xffffffff for field in sequence) or
+            value["sequence_before"] != value["sequence_at_error"] or value["sequence_before"] != value["sequence_after_owner_join"] or
+            value["sequence_after_retry"] == value["sequence_before"]):
+        raise ValueError("failed product Copy changed the clipboard or retry did not replace it after owner join")
+    owner = validate_owner_release({"name": "occupied", "owner_release": value.get("owner_release")})
+    rows = data.get("interactions")
+    phases = ("system-copy-occupied-prepared", "system-copy-occupied", "system-copy-occupied-released", "system-copy-occupied-retry")
+    if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+        raise ValueError("product Copy contention lacks actual window observations")
+    observed = [row for row in rows if row.get("phase") in phases]
+    if [row.get("phase") for row in observed] != list(phases):
+        raise ValueError("product Copy failure/release/retry phases are missing, duplicated or reordered")
+    all_text = "\r\n".join([f"TF_FIND_{index:03d} needle 中文 e\u0301" for index in range(80)] + ["TF_FIND_READY 080", ""])
+    actions = ("prepare-occupied-Copy", "queued-Ctrl-Shift-C-occupied", "release-and-join-occupied-owner", "queued-Ctrl-Shift-C-retry")
+    for index, row in enumerate(observed):
+        cf = SENTINEL if index in (0, 2) else None if index == 1 else all_text
+        if (row.get("action") != actions[index] or row.get("clipboard") != cf or row.get("text") != all_text or
+                any(row.get(field) is not True for field in ("main_focused", "main_active", "selected", "frame_matches_full")) or
+                row.get("raw_bottom") != "" or row.get("raw_main") != "x" or row.get("status") != "ok" or
+                row.get("captured") is not False or type(row.get("overlay_cells")) is not int or row["overlay_cells"] <= 0 or
+                row.get("product_status") != (status if index in (1, 2) else "Selected text copied")):
+            raise ValueError("occupied Copy lost its selection/focus/target/raw bytes, sentinel or same-entry retry")
+    return {"native_error": value["native_error"], "error_status": status, "owner_release": owner, "retry_verified": True}
+
+
 def _validate_interactions(data: dict) -> dict:
     rows = data.get("interactions")
     system = data["system_clipboard"]
     actual_copy_popup = _validate_copy_popup(data)
+    copy_contention = _validate_copy_contention(data)
     phases = INTERACTIONS + ("empty-copy-shortcut", "select-all-popup") + (("system-copy-shortcut",) if system else ()) + (
         ("system-copy-popup-prepared", "system-copy-popup") if actual_copy_popup else ()) + (
+        ("system-copy-occupied-prepared", "system-copy-occupied", "system-copy-occupied-released", "system-copy-occupied-retry") if copy_contention else ()) + (
         "select-all-popup-cleared", "input-after-popup")
     if (data.get("interaction_input") != "queued-keys-through-workspace-loop-and-native-timer-capture" or
             data.get("menu_popup_verified") is not True or data.get("popup_observer_idle") is not True or
@@ -110,7 +158,8 @@ def _validate_interactions(data: dict) -> dict:
                 raise ValueError("autoscroll direction or drag anchor changed")
         else:
             expected_text = all_text if phase in ("select-all-shortcut", "select-all-command", "select-all-popup", "system-copy-shortcut",
-                                                  "system-copy-popup-prepared", "system-copy-popup") else ""
+                                                  "system-copy-popup-prepared", "system-copy-popup", "system-copy-occupied-prepared",
+                                                  "system-copy-occupied", "system-copy-occupied-released", "system-copy-occupied-retry") else ""
         held = phase.endswith(("-start", "-held"))
         main_focused = phase not in ("autoscroll-focus-release", "autoscroll-focus-stopped")
         action = {"autoscroll-up-release": "mouse-up", "autoscroll-focus-release": "focus-loss",
@@ -119,6 +168,8 @@ def _validate_interactions(data: dict) -> dict:
                   "select-all-command-cleared": "queued-Escape", "empty-copy-shortcut": "queued-Ctrl-Shift-C-empty",
                   "select-all-popup": "actual-Session-popup-Select-All", "system-copy-shortcut": "queued-Ctrl-Shift-C",
                   "system-copy-popup-prepared": "prepare-Copy-popup", "system-copy-popup": "actual-Session-popup-Copy",
+                  "system-copy-occupied-prepared": "prepare-occupied-Copy", "system-copy-occupied": "queued-Ctrl-Shift-C-occupied",
+                  "system-copy-occupied-released": "release-and-join-occupied-owner", "system-copy-occupied-retry": "queued-Ctrl-Shift-C-retry",
                   "select-all-popup-cleared": "queued-Escape"}.get(phase, "none")
         if (row["captured"] != held or row["capture_transferred"] != (phase == "autoscroll-capture-release") or
                 row["main_focused"] != main_focused or row["main_active"] != main_focused or row.get("action") != action or
@@ -126,8 +177,10 @@ def _validate_interactions(data: dict) -> dict:
                 row.get("text") != expected_text or bool(row["overlay_cells"]) != bool(expected_text) or
                 row.get("raw_bottom") != "" or row.get("raw_main") != ("x" if index >= 16 else "")):
             raise ValueError("selection interaction text/focus/capture/raw-byte oracle differs")
-        expected_cf = (SENTINEL if phase in ("empty-copy-shortcut", "system-copy-popup-prepared") else all_text) if system and phase in (
-            "empty-copy-shortcut", "system-copy-shortcut", "system-copy-popup-prepared", "system-copy-popup") else None
+        expected_cf = (SENTINEL if phase in ("empty-copy-shortcut", "system-copy-popup-prepared", "system-copy-occupied-prepared",
+                                           "system-copy-occupied-released") else all_text) if system and phase in (
+            "empty-copy-shortcut", "system-copy-shortcut", "system-copy-popup-prepared", "system-copy-popup",
+            "system-copy-occupied-prepared", "system-copy-occupied-released", "system-copy-occupied-retry") else None
         if row.get("clipboard") != expected_cf:
             raise ValueError("real queued Copy shortcut CF_UNICODETEXT differs from its exact independent oracle")
         if phase == "empty-copy-shortcut" and row.get("product_status") != "No selected text":
@@ -145,11 +198,12 @@ def _validate_interactions(data: dict) -> dict:
             raise ValueError("autoscroll moved outside its per-timer bound or continued after mouse/focus/capture release")
     return {"native_timer_autoscroll": True, "stop_reasons": ["mouse-up", "focus-loss", "capture-loss"],
             "select_all_shortcut": True, "select_all_command": True, "actual_menu_popup": True,
-            "empty_copy_shortcut": True, "system_copy_shortcut": system, "actual_copy_popup": actual_copy_popup, "phases": len(rows)}
+            "empty_copy_shortcut": True, "system_copy_shortcut": system, "actual_copy_popup": actual_copy_popup,
+            "copy_contention": copy_contention is not None, "copy_contention_observation": copy_contention, "phases": len(rows)}
 
 
 def validate_selection(data: dict, system_clipboard: bool, run_record: dict) -> dict:
-    if (not isinstance(data, dict) or data.get("schema") not in ("termforge-window-selection-v3", "termforge-window-selection-v4") or
+    if (not isinstance(data, dict) or data.get("schema") not in ("termforge-window-selection-v3", "termforge-window-selection-v4", "termforge-window-selection-v5") or
             type(data.get("system_clipboard")) is not bool or data["system_clipboard"] != system_clipboard or
             data.get("input_source") != "physical-pixel-mouse-messages" or
             not isinstance(data.get("snapshots"), list) or len(data["snapshots"]) != len(PHASES) or
@@ -240,6 +294,15 @@ def validate_selection_workflow(directory: Path, system_clipboard: bool, run_rec
         _validate_popup(menu, 14)
         if menu != data["copy_popup_menu"]:
             raise ValueError("actual native Copy popup journal differs from the final manifest")
+    if summary["interactions"]["copy_contention"]:
+        frame = (directory / "selection-copy-occupied-error.bmp").read_bytes()
+        if len(frame) != 54 + 1360 * 860 * 4 or frame[:2] != b"BM":
+            raise ValueError("actual occupied Copy visible error frame is missing or truncated")
+        size, offset, dib, width, height = struct.unpack_from("<IxxxxIIii", frame, 2)
+        planes, bits, compression = struct.unpack_from("<HHI", frame, 26)
+        if (size, offset, dib, width, height, planes, bits, compression) != (len(frame), 54, 40, 1360, -860, 1, 32, 0):
+            raise ValueError("actual occupied Copy error frame geometry or native format is wrong")
+        summary["copy_occupied_error_frame_sha256"] = hashlib.sha256(frame).hexdigest()
     if (directory / "selection-bottom.bin").read_bytes() != b"" or (directory / "selection-main.bin").read_bytes() != b"x":
         raise ValueError("queued Select All/Escape leaked bytes or input reached the wrong raw receiver")
     return summary

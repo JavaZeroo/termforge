@@ -1,6 +1,6 @@
 # R1 键盘与系统 IME 验证
 
-本目录提供 R1-06 的自动验证入口。原生 HWND/HIMC 生命周期和键盘字节合同已可独立运行；**独立真实 Microsoft Pinyin 探针已通过，产品窗口的四组交叉场景仍待 hosted 验收**。`real_ime_workflow_verified: false` 永远不是通过。探针通过后还需完成真实终端会话、切换、rename、输出、DPI/zoom 的交叉验收，不能单独关闭 #16。
+本目录提供 R1-06 的自动验证入口。原生 HWND/HIMC 生命周期和键盘字节合同已可独立运行；**固定 Microsoft Pinyin 的独立探针及四组产品窗口交叉场景均已通过限定 hosted 验收**，见[独立审计](results/2026-10-24-product-ime-accepted/validation.json)。`real_ime_workflow_verified: false` 永远不是通过。本次四场景覆盖真实终端会话、切换、rename、输出和受控 DPI/zoom；其他输入法、真实跨屏及完整动作矩阵不据此扩大。
 
 ## 可复现入口
 
@@ -55,7 +55,7 @@ gh workflow run r1-ime.yml --repo JavaZeroo/termforge -f mode=inventory
 python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_hosted -v
 ```
 
-只读盘点与独立真实 IME 探针已通过，产品交叉验收仍开放。显式 [verify 40008180684](https://github.com/JavaZeroo/termforge/actions/runs/40008180684) 的[脱敏事实](results/2026-10-24-real-ime-probe/validation.json) 固定 `68ad8d9`、Server 2025 Datacenter 26100、`win25-vs2026/20261021.278.1` 及拼音程序版本/哈希；17 个白名单文件与 ZIP 摘要一致，原始 stdout 与结果相同、stderr 为空。六项查询/六个准备阶段完成，固定 TIP 在 `zh-Hans-CN` 用户条目中，程序哈希前后不变；Basic 前后仍为 NotPresent，没有安装语言能力。真实预编辑 `ni'hao`、实际候选位移（+144,+96）、提交“你好”恰好一次及 Escape 取消均通过。probe 进程已回收、HIMC/自有窗口销毁；旧 probe collector 没有自有 Job，这一结果不证明产品终端、PTY、跨会话或资源矩阵通过。
+以下为早期独立探针的证据范围；产品交叉验收以末节的完整结果为准。显式 [verify 40008180684](https://github.com/JavaZeroo/termforge/actions/runs/40008180684) 的[脱敏事实](results/2026-10-24-real-ime-probe/validation.json) 固定 `68ad8d9`、Server 2025 Datacenter 26100、`win25-vs2026/20261021.278.1` 及拼音程序版本/哈希；17 个白名单文件与 ZIP 摘要一致，原始 stdout 与结果相同、stderr 为空。六项查询/六个准备阶段完成，固定 TIP 在 `zh-Hans-CN` 用户条目中，程序哈希前后不变；Basic 前后仍为 NotPresent，没有安装语言能力。真实预编辑 `ni'hao`、实际候选位移（+144,+96）、提交“你好”恰好一次及 Escape 取消均通过。probe 进程已回收、HIMC/自有窗口销毁；旧 probe collector 没有自有 Job，这一结果不证明产品终端、PTY、跨会话或资源矩阵通过。
 
 当前 `verify` 先盘点，再用 Windows PowerShell 执行现有 provider 用户激活；逐阶段保存失败，明确枚举 Generic.List 中每个语言值，只接受 `zh-CN`/实际返回的 `zh-Hans-CN` 与精确固定 TIP，完成前后身份校验后才进入真实探针。`prepared-not-verified` 只代表准备完成。更早的[盘点哈希失败](results/2026-10-24-hosted-inventory/validation.json)、[空读回](results/2026-10-24-hosted-activation-readback/validation.json)、[标签拒绝](results/2026-10-24-hosted-language-tag/validation.json) 保留原结论；[旧准备超时](https://github.com/JavaZeroo/termforge/actions/runs/39950720638) 也不改判成功。依据：[用户语言列表](https://learn.microsoft.com/en-us/powershell/module/international/get-winuserlanguagelist?view=windowsserver2025-ps)、[设置输入方法](https://learn.microsoft.com/en-us/powershell/module/international/set-winuserlanguagelist)、[Pinyin 标识](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs)。
 
@@ -76,8 +76,6 @@ python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_
 
 原生 launcher/产品分别等待外层与内层 GO；两个 kill-on-close Job 都必须归零。只查询现有 input desktop，不创建/切换/删除系统输入桌面。原始 stdout/stderr、阶段进度、独立接收文件和结果分别保存；已有目录拒绝覆盖，超时仍保留原始失败。候选既检查同一原生实例的相对移动，也按实测单元格/OS DPI/显示器工作区检查绝对锚定，允许向上排布和右边界夹紧。
 
-这些代码和本地 schema/清理测试不代表真实产品四场景已通过。每次显式 run 的 source identity 和 artifact 独立审计后，才可更新 #16；独立探针已有结果继续保持自己的范围。受控 DPI 不代表实际跨显示器。
+本地 schema/清理测试不代替真实输入。[154dc48 的显式 run 40017974845](results/2026-10-24-product-ime-accepted/validation.json)已独立复核四场景22检查点、字节/候选/画面和回收；8个正常receiver exit0，组合中关闭的目标由Job取消exit91且空接收。受控DPI不代表实际跨显示器，后续行为变更仍需重验。
 
-当前产品验证的[审核事实](results/2026-10-24-product-stop-failure/validation.json)：固定 c206324 的四场景均执行至最后提交/取消或 rename，原始接收字节已有局部正确观察；接收端 stop 握手共同失败，缺最终 manifest/frame。内外 Job0 只证明最终进程回收，不能代替正常停止。原始错误与缺失诊断保留；修复前不关闭 #16。
-
-[接收端停止修复的固定源码验证](results/2026-10-24-console-receiver-stop-fix/validation.json)：显式停止后 `ReadConsoleW` 可实测返回成功且零字符，原接收端误判为无效数据。共享 data-only receiver 仅接纳该停止结果，保留读取/取消/等待原错、3秒join门槛及正常停止事件；普通零读取仍拒绝。空输入/中文/重复停止真实 ConPTY 红→绿，相关4套件在独立检出通过；这不追认旧hosted缺失诊断，新的四产品场景仍待验收。
+历史失败与修复保留：[c206324 四场景 stop 失败](results/2026-10-24-product-stop-failure/validation.json)缺少最终manifest/frame，不能追认为通过；[data-only固定源码红→绿](results/2026-10-24-console-receiver-stop-fix/validation.json)接受显式停止的成功零字符读，保留正常零读拒绝、原始错误和3秒join。后续hosted产品成功有自己独立的完整证据，不改变旧失败。

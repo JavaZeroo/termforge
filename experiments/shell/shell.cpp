@@ -778,8 +778,8 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system", "invalid shell test mode");
-            if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system") tf_shell_test::require_hosted_clipboard();
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system", "invalid shell test mode");
+            if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system" || mode=="ui-copy-context-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
             }
@@ -791,7 +791,7 @@ static int application(int argc, char** argv) {
         wchar_t desktop_name[256]{}; DWORD desktop_size=0;
         require(GetUserObjectInformationW(GetThreadDesktop(GetCurrentThreadId()),UOI_NAME,desktop_name,sizeof(desktop_name),&desktop_size)!=FALSE &&
             std::wstring_view(desktop_name).find(L"TermForgeShell-")==0,"shell test requires the runner-owned desktop");
-        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system") {
             Workspace window(image,mode); return window.run();
         }
         Result r;

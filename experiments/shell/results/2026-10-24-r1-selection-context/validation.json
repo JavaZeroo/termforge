@@ -1,0 +1,97 @@
+{
+  "schema": "termforge-selection-ownership-local-integration-v1",
+  "base_commit": "154dc48b5fc29e1cbca3908af6e091c3232e50c5",
+  "source_identity_kind": "raw working-tree bytes for tested changes; base commit supplies unchanged files; Git newline normalization can differ",
+  "sources": {
+    "CMakeLists.txt": "3ece5a3be4b6770bae753987e424549393994cc34a1ccaa0bef5d55f9ff7194a",
+    ".github/workflows/build.yml": "5c96c57c3dc6745eb61ed1fefd99ceeeef7ad74a8728b01bf8a8ca11c0fcbf6a",
+    "experiments/shell/shell.cpp": "da94227f44a11e850d4dca1686a966dc708649ece4e4cbd75f294883f20c4f84",
+    "experiments/shell/workspace.hpp": "2321703390bbd0003d40623ea18874625d91624b64d648c423537bf1936beacb",
+    "experiments/shell/run.py": "f6ca9f5013b0d461820c706f1b07b77543214c260d83242bca0ff87d376f808b",
+    "experiments/shell/workspace_selection_context_scenario.hpp": "ff6cf60a516976c14a924364a98c8f8dff5acfbfbac0b3812829212d273de38f",
+    "experiments/shell/selection_context_checks.py": "18e51c400b93660bd5c88c220e9049f27af314c2e2de145ed9d218afc5bb9551",
+    "experiments/shell/test_selection_context.py": "19d141ffd7038bebe44c7f9431cd077149374b37ba82bcd9a7a01ba82eab848a",
+    "experiments/shell/workspace_selection_scenario.hpp": "a227a19f88438836533227d48112a2b82e006fcf1c625228894b72ea57daae46",
+    "experiments/shell/selection_checks.py": "1c9fc2a2411f8b2a58e370b28e62b125c2b0459f0b9718fe0e7f85da04f9150a",
+    "experiments/shell/test_shell.py": "539ec10c616d7eb4e29c6fcc2f5d5db104d46d3c655af02597d64458373f2b34"
+  },
+  "binaries": {
+    "termforge_shell.exe": {
+      "sha256": "b8cb41c83b5f054ffe020363ef3e794c49306ebad9f4905ab91cdda589b253d3",
+      "bytes": 797184
+    },
+    "shell_test_launcher.exe": {
+      "sha256": "ea48fddb58095fc377475367fc6415f2386f2bfacd52385a38e5c70bf27ea7d8",
+      "bytes": 46080
+    },
+    "shell_text_client.exe": {
+      "sha256": "d273d1adebd09064a45ef5e9e4ebd2c3ebe653717c9692fe0bf9a2f16f9c4585",
+      "bytes": 46080
+    }
+  },
+  "validation": {
+    "ctest_passed": 28,
+    "ctest_total": 28,
+    "seconds": 146.62,
+    "log_sha256": "cd301a4d21b2654b1d56bb6dffa6c668c60438e778e9b80dcc66d03940f88270",
+    "internal_skips": [
+      "opt-in pinned reference failure injection",
+      "system copy UI gate requires a disposable hosted VM",
+      "product clipboard read gate requires a disposable hosted VM",
+      "real system clipboard UI gate requires a disposable hosted VM",
+      "system CF requires a disposable hosted VM",
+      "real CF/EDIT Copy requires a disposable hosted VM",
+      "Private window station OpenClipboard denied (5); system API gate remains unverified"
+    ]
+  },
+  "local_context_rounds": [
+    {
+      "sample_sha256": "a298cc92e1857d93282b1bcd39cd88a7cd04932cc0578d4b2e8bc70153b868a1",
+      "manifest_sha256": "4dfb20aa23fb5fd633cd3b7bbfd181bdd8bfd7255884c3b57647dfe8a83bdc39",
+      "frame_sha256": "75ceae3fa7329c724fc7c93f83fd080896c75b29c6ed8c109bdfb3980ea0a114",
+      "summary": {
+        "system_clipboard": false,
+        "phases": 16,
+        "same_group_tab_restore": true,
+        "same_live_line_overwrite_invalidates": true,
+        "rename_edit_copy": false,
+        "selected_session_close_target_isolated": true,
+        "raw_input_isolated": true,
+        "cleanup_verified": true
+      }
+    },
+    {
+      "sample_sha256": "19dc0cead3ea36300b4539b8812d826568fc212e6bebbf8eba2d94bdf2757cd7",
+      "manifest_sha256": "f0aec1e07ff2bae6515fc28fc5d5d0c8a667796e94c1c86209bd97afa57db51d",
+      "frame_sha256": "75ceae3fa7329c724fc7c93f83fd080896c75b29c6ed8c109bdfb3980ea0a114",
+      "summary": {
+        "system_clipboard": false,
+        "phases": 16,
+        "same_group_tab_restore": true,
+        "same_live_line_overwrite_invalidates": true,
+        "rename_edit_copy": false,
+        "selected_session_close_target_isolated": true,
+        "raw_input_isolated": true,
+        "cleanup_verified": true
+      }
+    }
+  ],
+  "local_contention_implementation_tests": {
+    "system_schema": "termforge-window-selection-v5",
+    "actual_occupied_copy_and_retry_verified": false,
+    "local_schema_and_non_clipboard_regression": "passed"
+  },
+  "preserved_local_failure": {
+    "evidence_id": "r1-selection-context-20261024-01",
+    "reason": "Independent oracle expected EDIT spelling; actual standard control returned canonical Edit; all native stages completed and original failed record is retained."
+  },
+  "reviews": {
+    "context_spec_and_standards": "No blocking finding in scoped independent read-only review.",
+    "occupied_copy_spec_and_standards": "No blocking finding; product CF gate still requires hosted evidence."
+  },
+  "limitations": [
+    "Real system Copy/EDIT clipboard paths and occupied product Copy/retry remain unverified by these local tests.",
+    "Local positive schemas do not establish system API success; native/Python nonhosted refusals do not establish product CF acceptance.",
+    "Whole R1-07/08 action/reference/resource workflows remain separate; no performance or whole WindTerm equivalence claim."
+  ]
+}
