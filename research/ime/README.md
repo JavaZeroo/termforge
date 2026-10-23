@@ -77,6 +77,8 @@ python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_
 
 原生 launcher/产品分别等待外层与内层 GO；两个 kill-on-close Job 都必须归零。只查询现有 input desktop，不创建/切换/删除系统输入桌面。原始 stdout/stderr、阶段进度、独立接收文件和结果分别保存；已有目录拒绝覆盖，超时仍保留原始失败。候选既检查同一原生实例的相对移动，也按实测单元格/OS DPI/显示器工作区检查绝对锚定，允许向上排布和右边界夹紧。
 
+当前代码的回归见 [5235f17 / verify 40034133987](../../experiments/shell/results/2026-10-24-r1-workflow-foundation/ime-regression.json)：五模式28检查点、11个空输入前缀及回收已独立复核。它验证旧模式未退化，尚非新的Paste→IME组合。
+
 本地 schema/清理测试不代替真实输入。[6a165c8 / verify 40029638833](results/2026-10-24-product-ime-contexts/validation.json) 已独立重算五模式28检查点、9个 reading 上下文、精确接收字节/原始进度与内外 Job0，并核对 Find/rename 候选消失和双 Escape；[自有帧复核](results/2026-10-24-product-ime-contexts/visual-validation.json)仅代表最终 retained DIB，不是原生候选过程截图或实际上屏计时。该批不代替 #18 完整流程与八会话资源验收。[154dc48 的显式 run 40017974845](results/2026-10-24-product-ime-accepted/validation.json)已独立复核四场景22检查点、字节/候选/画面和回收；8个正常receiver exit0，组合中关闭的目标由Job取消exit91且空接收。受控DPI不代表实际跨显示器，后续行为变更仍需重验。
 
 历史失败与修复保留：[c206324 四场景 stop 失败](results/2026-10-24-product-stop-failure/validation.json)缺少最终manifest/frame，不能追认为通过；[data-only固定源码红→绿](results/2026-10-24-console-receiver-stop-fix/validation.json)接受显式停止的成功零字符读，保留正常零读拒绝、原始错误和3秒join。后续hosted产品成功有自己独立的完整证据，不改变旧失败。

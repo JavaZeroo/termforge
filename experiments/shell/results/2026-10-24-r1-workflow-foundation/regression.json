@@ -1,0 +1,280 @@
+{
+  "status": "passed",
+  "head": "5235f178c9900ebf7671b4609482a5d832807a81",
+  "run_id": 40034110925,
+  "artifact_id": 12536640946,
+  "artifact_digest": "sha256:81237030727c34b54f3a40bc3c6e01d0ca62c63605d7b7aac2b0983982d43517",
+  "source_oracle_sha256": {
+    "experiments/shell/action_checks.py": "c1235b0ed75fa90e9b7065b22e0101ad7ef5d061cbb20b442f17cea92dd079c6",
+    "experiments/shell/paste_checks.py": "f37db2ada88816e6936563d5155578a31276161cae11c99c27bc4f0253b053d6"
+  },
+  "source_identity_normalization": {
+    "experiments/shell/shell.cpp": "whole-file-checkout-CRLF",
+    "experiments/shell/workspace.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/text_actions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/text_interactions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/search_interactions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/workspace_interactions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/edit_actions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/find_bar.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/paste_prompt.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/workspace_actions_scenario.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/menu_gesture.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/text_client.cpp": "whole-file-checkout-CRLF",
+    "experiments/shell/test_launcher.cpp": "whole-file-checkout-CRLF",
+    "experiments/shell/action_checks.py": "git-blob-bytes",
+    "experiments/shell/test_actions.py": "git-blob-bytes",
+    "experiments/shell/run.py": "git-blob-bytes",
+    "CMakeLists.txt": "whole-file-checkout-CRLF",
+    ".github/workflows/build.yml": "git-blob-bytes"
+  },
+  "binary_sha256_recorded_by_hosted_test": {
+    "termforge_shell.exe": "0f8e98686505d909720249770ef8c50c1c4354cd6052ba5d990454c713026452",
+    "shell_test_launcher.exe": "ec54dd3483e57657aedebaebbd6c48f53933ceb5aaaa799a55eadf1f29ae9b15",
+    "shell_text_client.exe": "01c187421d6afbfb15cbb3a9b0b7a5f1c46fe7fca981f5082883c133c9b8a974",
+    "shell_clipboard_reader.exe": "a35572fbe696e0208459676e4f662c76ad2db2003639cb1cd30be09a5cb952db"
+  },
+  "binaries_available_for_independent_rehash": false,
+  "schema": "termforge-r108-existing-actions-paste-regression-audit-v1",
+  "downloaded_files_rechecked_against_digest_bound_zip": 85,
+  "scope": "Existing actions and Paste v2 regression only; excludes new workflow_fixture and real IME",
+  "actions": [
+    {
+      "case": "ui-actions",
+      "round": "local-0",
+      "phases": 26,
+      "system_clipboard": false,
+      "native_find_clipboard_verified": false,
+      "raw_main_hex": "7e2d78",
+      "raw_bottom_hex": "",
+      "journal_matches_manifest": true,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+      }
+    },
+    {
+      "case": "ui-actions",
+      "round": "local-1",
+      "phases": 26,
+      "system_clipboard": false,
+      "native_find_clipboard_verified": false,
+      "raw_main_hex": "7e2d78",
+      "raw_bottom_hex": "",
+      "journal_matches_manifest": true,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+      }
+    },
+    {
+      "case": "ui-actions-system",
+      "round": "system-0",
+      "phases": 36,
+      "system_clipboard": true,
+      "native_find_clipboard_verified": true,
+      "raw_main_hex": "534849465420e4b8ade696872065cc8144454641554c545f454e54455220e4b8ade696870d4e45585443545820e4b8ade696872065cc810d4e4558547e2d78",
+      "raw_bottom_hex": "",
+      "journal_matches_manifest": true,
+      "job_after": {
+        "active": 0,
+        "total": 17,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 17,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+      }
+    },
+    {
+      "case": "ui-actions-system",
+      "round": "system-1",
+      "phases": 36,
+      "system_clipboard": true,
+      "native_find_clipboard_verified": true,
+      "raw_main_hex": "534849465420e4b8ade696872065cc8144454641554c545f454e54455220e4b8ade696870d4e45585443545820e4b8ade696872065cc810d4e4558547e2d78",
+      "raw_bottom_hex": "",
+      "journal_matches_manifest": true,
+      "job_after": {
+        "active": 0,
+        "total": 17,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 17,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+      }
+    }
+  ],
+  "paste": [
+    {
+      "round": "paste-0",
+      "mode": "ui-paste",
+      "schema": "termforge-window-paste-v2",
+      "input_bytes": 25021,
+      "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+      "cases": {
+        "cancel": {
+          "sent": 206646,
+          "received": 206646,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 182094,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      },
+      "confirmation_frame": {
+        "width": 456,
+        "height": 184,
+        "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+      }
+    },
+    {
+      "round": "paste-1",
+      "mode": "ui-paste",
+      "schema": "termforge-window-paste-v2",
+      "input_bytes": 25021,
+      "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+      "cases": {
+        "cancel": {
+          "sent": 251658,
+          "received": 251658,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 161634,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      },
+      "confirmation_frame": {
+        "width": 456,
+        "height": 184,
+        "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+      }
+    },
+    {
+      "round": "paste-system-0",
+      "mode": "ui-paste-system",
+      "schema": "termforge-window-paste-v2",
+      "input_bytes": 25021,
+      "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+      "cases": {
+        "cancel": {
+          "sent": 259842,
+          "received": 259842,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 132990,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      },
+      "confirmation_frame": {
+        "width": 456,
+        "height": 184,
+        "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+      }
+    },
+    {
+      "round": "paste-system-1",
+      "mode": "ui-paste-system",
+      "schema": "termforge-window-paste-v2",
+      "input_bytes": 25021,
+      "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+      "cases": {
+        "cancel": {
+          "sent": 280302,
+          "received": 280302,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 165726,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      },
+      "confirmation_frame": {
+        "width": 456,
+        "height": 184,
+        "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+      }
+    }
+  ],
+  "limitations": [
+    "Bounded synthetic owned-window regression, not full R1-08 acceptance or performance equivalence",
+    "Product binaries were not uploaded; their hashes are hosted-recorded only",
+    "Original journals, raw receiver files and retained BMP structures were independently checked; no physical display timing",
+    "Original earlier evidence remains unchanged"
+  ],
+  "presented_done": null
+}

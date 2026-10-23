@@ -28,9 +28,9 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 - 滚轮和滚动条浏览历史，`Ctrl+Shift+Home` / `Ctrl+Shift+End` 到历史首/尾；回看时新输出保持阅读锚点，普通输入和开始粘贴回到底部。历史淘汰时钳制到仍保留的最早行。
 - `Ctrl+Shift+V`、`Shift+Insert` 或 Session → Paste 读取剪贴板。读取在独立有时限的自有 helper 中进行；多行文字先确认，默认焦点为 Paste，Enter 确认发送，Escape 取消；焦点移到 Cancel 后 Enter 取消。一次任务固定目标会话，切换标签不重定向剩余字节；Escape 或 Cancel paste 停止后续发送。
 - 当前独立粘贴策略：最多 1 Mi 个 UTF-16 单元、4 MiB UTF-8，换行规范化为 CR，拒绝不完整 UTF-16 和不支持的控制字符；不宣称已对齐 WindTerm 默认策略，也不无条件发送 bracketed-paste 包装。
-- 键盘处理包含 Tab/Shift+Tab、Home/End/Insert/Delete/Page、修饰键、AltGr 和跨消息 UTF-16。IME 采用每终端独立原生上下文，只发送已提交文字；候选位置使用物理网格。固定 Microsoft 拼音的组合、候选、提交/取消已有四组实际产品验收；其他输入法和真实跨屏仍未验收，见 [IME 工具](../../research/ime/README.md)。
+- 键盘处理包含 Tab/Shift+Tab、Home/End/Insert/Delete/Page、修饰键、AltGr 和跨消息 UTF-16。IME 采用每终端独立原生上下文，只发送已提交文字；候选位置使用物理网格。固定 Microsoft 拼音的组合、候选、提交/取消已有五组实际产品验收；其他输入法和真实跨屏仍未验收，见 [IME 工具](../../research/ime/README.md)。
 
-基础能力已按 [#12–#16 的各自限定合同](../../docs/milestones/R1-local-text.md)验收；当前能力与边界统一见[功能矩阵](../../docs/FEATURES.md)。接下来由 [#17](https://github.com/JavaZeroo/termforge/issues/17)统一菜单/快捷键/焦点与参考行为，再由 [#18](https://github.com/JavaZeroo/termforge/issues/18)验收完整工作流及多会话资源边界。
+基础能力与统一文字动作已按 [#12–#17 的各自限定合同](../../docs/milestones/R1-local-text.md)验收；当前能力与边界统一见[功能矩阵](../../docs/FEATURES.md)。目前由 [#18](https://github.com/JavaZeroo/termforge/issues/18)接起完整文字工作流及多会话资源边界，受控数据夹具和快照基础不代替整体验收。
 
 ## 工作区操作与已知差异
 
