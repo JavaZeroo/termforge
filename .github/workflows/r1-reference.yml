@@ -21,6 +21,7 @@ jobs:
         with:
           node-version: '22.21.1'
       - name: Prepare pinned official release and locked REA tool
+        id: prepare
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path local/r1-public -Force | Out-Null
@@ -44,14 +45,30 @@ jobs:
             if ($LASTEXITCODE) { $probeFailed = $true }
           }
           if ($probeFailed) { throw 'Reference evidence remains incomplete; inspect allowlisted diagnostics' }
+      - name: Observe raw VT wraps and actual menu actions in two fresh profiles
+        if: ${{ !cancelled() && steps.prepare.conclusion == 'success' }}
+        shell: pwsh
+        run: |
+          $probeFailed = $false
+          foreach ($runIndex in 1, 2) {
+            $runName = 'r1-menu-hosted-{0:d2}' -f $runIndex
+            $runDirectory = "local/ui-reference/$runName"
+            python research/ui/r1_launch.py --source local/windterm-official/WindTerm_2.7.0 --out $runDirectory --rea research/ui/r1-tools/node_modules/.bin/rea.cmd --scenario menu-wrap --hosted-ci --seconds 35
+            if ($LASTEXITCODE) { $probeFailed = $true }
+            python research/ui/r1_summarize.py $runDirectory --out "local/r1-public/$runName-summary.json" --require-menu-complete
+            if ($LASTEXITCODE) { $probeFailed = $true }
+          }
+          if ($probeFailed) { throw 'Raw VT or menu evidence remains incomplete; inspect allowlisted diagnostics' }
       - name: Produce allowlisted diagnostics only
         if: always()
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path local/r1-public -Force | Out-Null
-          foreach ($runIndex in 1, 2) {
-            $runName = 'r1-hosted-{0:d2}' -f $runIndex
-            python research/ui/r1_summarize.py "local/ui-reference/$runName" --out "local/r1-public/$runName-diagnostic.json" --diagnostic-only
+          foreach ($prefix in 'r1-hosted', 'r1-menu-hosted') {
+            foreach ($runIndex in 1, 2) {
+              $runName = '{0}-{1:d2}' -f $prefix, $runIndex
+              python research/ui/r1_summarize.py "local/ui-reference/$runName" --out "local/r1-public/$runName-diagnostic.json" --diagnostic-only
+            }
           }
       - name: Preserve original fact summaries
         if: always()
