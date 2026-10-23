@@ -36,7 +36,7 @@
 1. **先收尾三个独立切片。** [参考文字行为契约](https://github.com/JavaZeroo/termforge/issues/11)补实际入口和复制边界；[可靠粘贴](https://github.com/JavaZeroo/termforge/issues/14)完成系统边界与产品读取阶段验收；[键盘与真实 IME](https://github.com/JavaZeroo/termforge/issues/16)先查明自动环境，再验证真实输入。三项可以并行，涉及同一窗口/测试入口时串行合入。
 2. **前置完成后做选择和查找。** [历史浏览](https://github.com/JavaZeroo/termforge/issues/12)已按限定合同验收，继续作为回归基础；[选择复制](https://github.com/JavaZeroo/termforge/issues/13)和[历史查找](https://github.com/JavaZeroo/termforge/issues/15)仍等待参考契约，不重复开历史实现任务。
 3. **最后整合并关闭 R1。** [统一文字动作](https://github.com/JavaZeroo/termforge/issues/17)核对菜单/快捷键/焦点和参考行为；[完整工作流验收](https://github.com/JavaZeroo/termforge/issues/18)在最终源码与真实系统环境上验证全部流程。单个测试成功或系统测试跳过不能解除该门槛。
-4. **空闲容量用于可并行调查。** 优先[全量目标台账](https://github.com/JavaZeroo/termforge/issues/19)，防止遗漏远期范围；外部核心和测量工具先按下表拆小。Server 2022 专项可独立调查，但不挤占近期文字交互主线。
+4. **并行推进影响后续决策的调查。** [全量目标台账](https://github.com/JavaZeroo/termforge/issues/19)先冻结平台/架构/最低系统边界，作为 R2 核心与 GUI 产品路线决定的输入；候选构建可与范围调查并行。外部核心和测量工具先按下表拆小。Server 2022 专项可独立调查，但不挤占近期文字交互主线。
 
 未提交草稿和未完成的系统验收均不计入交付。开工前核对工作树，保留已有草稿并明确归属；文档整理本身不解除功能验收门槛。
 
@@ -44,7 +44,7 @@
 
 | 项目 | GitHub | 归属与处理 |
 |---|---|---|
-| 全量 2.7.0 目标/平台台账 | [#19](https://github.com/JavaZeroo/termforge/issues/19) | R5 的验收基础，现在即可开始；将声明、已观察和未知分开 |
+| 全量 2.7.0 目标/平台台账 | [#19](https://github.com/JavaZeroo/termforge/issues/19) | R5 的验收基础，现在并行推进；平台/架构/最低系统边界须在 R2 产品路线决定前冻结；将声明、已观察和未知分开 |
 | 实际外部核心候选与 ADR-0003 重审 | [#20](https://github.com/JavaZeroo/termforge/issues/20) | R1 可先细拆并行的候选构建/适配；R2 扩大模式与常用 TUI 实现投入前完成路线决定 |
 | Server 2022 ConPTY 稳态 +1 句柄问题 | [#21](https://github.com/JavaZeroo/termforge/issues/21) | R4，保留严格探针和已知失败，不扩大支持声明 |
 | 自动观测、开销校准、完整记录 Schema | [#3](https://github.com/JavaZeroo/termforge/issues/3) | R4 收敛，工具工作可提前推进；停止的手工批次不补跑 |

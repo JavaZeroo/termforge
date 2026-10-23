@@ -20,4 +20,4 @@
 
 用户最初只注意到 `TermForge diagnostic: producer_complete`，回看现有输出后明确确认看到了完整的 `TERMFORGE-END ascii 0000000100`。可见标记记录更新为 `confirmed_by_operator`。这是同一次运行的人工确认，不新增成功样本，也不产生呈现时间戳；完整文本正确性仍未验证。
 
-下一步核对实际 C0 设置，再按协议执行 8 MiB T01 交错 on/off 采样开销校准。烟测不能代替预热、重复、稳定等待或独立批次。
+本页只保留当次烟测结论。当前自动观测与正式基线分别由 [#3](https://github.com/JavaZeroo/termforge/issues/3) 和 [#4](https://github.com/JavaZeroo/termforge/issues/4) 维护；已停止的[手工校准批次](../../tools/CALIBRATION.md)不要求补跑。烟测不能代替预热、重复、稳定等待或独立批次。
