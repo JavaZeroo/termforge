@@ -1,0 +1,230 @@
+{
+  "schema": "termforge.r1-reference.v1",
+  "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "distribution_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "fixture_sha256": "f4a6b8e43b74813a32e5100eef35897a8e24be72a5ff32737fe78ffc133c17c2",
+  "template_sha256": "82ab4511e75fbeaa9f1bb360ace6b30d107ae8924b51de80cb7a094d093508d1",
+  "evidence_id": "ev_e976a140cb9c80edc437b5213697624b6605f9723b5927c100930c1ba4ac185e",
+  "complete": false,
+  "navigation_selection": {
+    "session": {
+      "focus": "ScintillaEditBase",
+      "scroll": 65,
+      "lines": 88,
+      "capacity": 23,
+      "caret": 2966,
+      "anchor": 2966,
+      "selection": ""
+    },
+    "select-all": {
+      "focus": "ScintillaEditBase",
+      "scroll": 0,
+      "lines": 88,
+      "capacity": 23,
+      "caret": 2966,
+      "anchor": 0,
+      "selection": "Y-078 alpha needle omega\nTF-HISTORY-079 alpha needle omega\nTF-TEXT-BEGIN\nALPHA  tail\nBETA 中文 é\nSOFT:ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss\nsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss\nsss:END\nTF-TEXT-END\n"
+    },
+    "find-open": {
+      "focus": "ComboBox",
+      "scroll": 0,
+      "lines": 88,
+      "capacity": 22,
+      "caret": 2966,
+      "anchor": 0,
+      "selection": "TF-HISTORY-000 alpha needle omega\nTF-HISTORY-001 alpha needle omega\nTF-HISTORY-002 alpha needle omega\nTF-HISTORY-003 alpha needle omega\nTF-HISTORY-004 alpha needle omega\nTF-HISTORY-005 alpha needle omega\nTF-HISTORY-006 alpha needle omega\nTF-HISTORY-007 alpha needle omega\nTF-HISTORY-008 alpha needle omega\nTF-HISTORY-009 alpha needle omega\nTF-HISTORY-010 alpha needle omega\nTF-HISTORY-011 alpha needle omega\nTF-HISTORY-012 alpha needle omega\nTF-HISTORY-013 alpha needle omega\nTF-HISTORY-014 alpha needle omega\nTF-HISTORY-015 alpha needle omega\nTF-HISTORY-016 alpha needle omega\nTF-HISTORY-017 alpha needle omega\nTF-HISTORY-018 alpha needle omega\nTF-HISTORY-019 alpha needle omega\nTF-HISTORY-020 alpha needle omega\nTF-HISTORY-021 alpha needle omega\nTF-HISTORY-022 alpha needle omega\nTF-HISTORY-023 alpha needle omega\nTF-HISTORY-024 alpha needle omega\nTF-HISTORY-025 alpha needle omega\nTF-HISTORY-026 alpha needle omega\nTF-HISTORY-027 alpha needle omega\nTF-HISTORY-028 alpha needle omega\nTF-HISTORY-029 alpha needle omega\nTF-HISTORY-030 alpha needle omega\nTF-HISTORY-031 alpha needle omega\nTF-HISTORY-032 alpha needle omega\nTF-HISTORY-033 alpha needle omega\nTF-HISTORY-034 alpha needle omega\nTF-HISTORY-035 alpha needle omega\nTF-HISTORY-036 alpha needle omega\nTF-HISTORY-037 alpha needle omega\nTF-HISTORY-038 alpha needle omega\nTF-HISTORY-039 alpha needle omega\nTF-HISTORY-040 alpha needle omega\nTF-HISTORY-041 alpha needle omega\nTF-HISTORY-042 alpha needle omega\nTF-HISTORY-043 alpha needle omega\nTF-HISTORY-044 alpha needle omega\nTF-HISTORY-045 alpha needle omega\nTF-HISTORY-046 alpha needle omega\nTF-HISTORY-047 alpha needle omega\nTF-HISTORY-048 alpha needle omega\nTF-HISTORY-049 alpha needle omega\nTF-HISTORY-050 alpha needle omega\nTF-HISTORY-051 alpha needle omega\nTF-HISTORY-052 alpha needle omega\nTF-HISTORY-053 alpha needle omega\nTF-HISTORY-054 alpha needle omega\nTF-HISTORY-055 alpha needle omega\nTF-HISTORY-056 alpha needle omega\nTF-HISTORY-057 alpha needle omega\nTF-HISTORY-058 alpha needle omega\nTF-HISTORY-059 alpha needle omega\nTF-HISTORY-060 alpha needle omega\nTF-HISTORY-061 alpha needle omega\nTF-HISTORY-062 alpha needle omega\nTF-HISTORY-063 alpha needle omega\nTF-HISTORY-064 alpha needle omega\nTF-HISTORY-065 alpha needle omega\nTF-HISTORY-066 alpha needle omega\nTF-HISTORY-067 alpha needle omega\nTF-HISTORY-068 alpha needle omega\nTF-HISTORY-069 alpha needle omega\nTF-HISTORY-070 alpha needle omega\nTF-HISTORY-071 alpha needle omega\nTF-HISTORY-072 alpha needle omega\nTF-HISTORY-073 alpha needle omega\nTF-HISTORY-074 alpha needle omega\nTF-HISTORY-075 alpha needle omega\nTF-HISTORY-076 alpha needle omega\nTF-HISTORY-077 alpha needle omega\nTF-HISTORY-078 alpha needle omega\nTF-HISTORY-079 alpha needle omega\nTF-TEXT-BEGIN\nALPHA  tail\nBETA 中文 é\nSOFT:ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss\nsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss\nsss:END\nTF-TEXT-END\n"
+    },
+    "find-typed": {
+      "focus": "ComboBox",
+      "scroll": 66,
+      "lines": 88,
+      "capacity": 22,
+      "caret": 2713,
+      "anchor": 2707,
+      "selection": "needle"
+    },
+    "find-needle-enter": {
+      "focus": "ComboBox",
+      "scroll": 66,
+      "lines": 88,
+      "capacity": 22,
+      "caret": 2679,
+      "anchor": 2673,
+      "selection": "needle"
+    },
+    "find-f3": {
+      "focus": "ComboBox",
+      "scroll": 66,
+      "lines": 88,
+      "capacity": 22,
+      "caret": 2713,
+      "anchor": 2707,
+      "selection": "needle"
+    },
+    "find-f3-wrap": {
+      "focus": "ComboBox",
+      "scroll": 0,
+      "lines": 88,
+      "capacity": 22,
+      "caret": 27,
+      "anchor": 21,
+      "selection": "needle"
+    },
+    "find-shift-f3": {
+      "focus": "ComboBox",
+      "scroll": 66,
+      "lines": 88,
+      "capacity": 22,
+      "caret": 2713,
+      "anchor": 2707,
+      "selection": "needle"
+    },
+    "find-escape": {
+      "focus": "ScintillaEditBase",
+      "scroll": 65,
+      "lines": 88,
+      "capacity": 23,
+      "caret": 2713,
+      "anchor": 2707,
+      "selection": "needle"
+    },
+    "history-home": {
+      "focus": "ScintillaEditBase",
+      "scroll": 0,
+      "lines": 88,
+      "capacity": 23,
+      "caret": 2713,
+      "anchor": 2707,
+      "selection": "needle"
+    },
+    "history-after-output": {
+      "focus": "ScintillaEditBase",
+      "scroll": 0,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 2713,
+      "anchor": 2707,
+      "selection": "needle"
+    },
+    "history-end": {
+      "focus": "ScintillaEditBase",
+      "scroll": 85,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 2713,
+      "anchor": 2707,
+      "selection": "needle"
+    },
+    "shift-page-up": {
+      "focus": "ScintillaEditBase",
+      "scroll": 85,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 2713,
+      "anchor": 2707,
+      "selection": "needle"
+    },
+    "shift-page-down": {
+      "focus": "ScintillaEditBase",
+      "scroll": 85,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 2713,
+      "anchor": 2707,
+      "selection": "needle"
+    },
+    "doubleclick-word": {
+      "focus": "ScintillaEditBase",
+      "scroll": 0,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 14,
+      "anchor": 0,
+      "selection": "TF-HISTORY-000"
+    },
+    "tripleclick-line": {
+      "focus": "ScintillaEditBase",
+      "scroll": 0,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 33,
+      "anchor": 0,
+      "selection": "TF-HISTORY-000 alpha needle omega"
+    },
+    "before-typing": {
+      "focus": "ScintillaEditBase",
+      "scroll": 0,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 33,
+      "anchor": 0,
+      "selection": "TF-HISTORY-000 alpha needle omega"
+    },
+    "after-typing": {
+      "focus": "ScintillaEditBase",
+      "scroll": 85,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 33,
+      "anchor": 0,
+      "selection": "TF-HISTORY-000 alpha needle omega"
+    },
+    "select-word-api": {
+      "focus": "ScintillaEditBase",
+      "scroll": 0,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 14,
+      "anchor": 0,
+      "selection": "TF-HISTORY-000"
+    },
+    "select-line-api": {
+      "focus": "ScintillaEditBase",
+      "scroll": 0,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 34,
+      "anchor": 0,
+      "selection": "TF-HISTORY-000 alpha needle omega\n"
+    },
+    "find-unicode": {
+      "focus": "ComboBox",
+      "scroll": 71,
+      "lines": 108,
+      "capacity": 22,
+      "caret": 2757,
+      "anchor": 2751,
+      "selection": "中文"
+    },
+    "drag-unicode": {
+      "focus": "ScintillaEditBase",
+      "scroll": 80,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 2761,
+      "anchor": 2734,
+      "selection": "ALPHA  tail\nBETA 中文 é"
+    },
+    "reverse-drag-unicode": {
+      "focus": "ScintillaEditBase",
+      "scroll": 80,
+      "lines": 108,
+      "capacity": 23,
+      "caret": 2734,
+      "anchor": 2761,
+      "selection": "ALPHA  tail\nBETA 中文 é"
+    }
+  },
+  "system_clipboard": {
+    "verified": false,
+    "reason": "requires-disposable-hosted-vm"
+  },
+  "cleanup": {
+    "owned_active": 0,
+    "only_synthetic_session": true
+  },
+  "limitations": [
+    "Controlled Qt event replay on an owned desktop; not physical input or performance evidence.",
+    "Shell fixture uses the reference local Windows transport; no claim about remote VT soft wraps."
+  ]
+}
