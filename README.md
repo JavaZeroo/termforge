@@ -31,6 +31,7 @@ An independent, fully open-source terminal project driven by reproducible perfor
 | [运行记录模板](benchmarks/run-template.json) | 不包含虚构结果的记录格式草案 |
 | [功能矩阵](docs/FEATURES.md) | 首版范围与高级能力 |
 | [WindTerm 调查](docs/research/windterm-audit.md) | 已公开/未公开内容和静态证据边界 |
+| [UI 直接取证](docs/research/windterm-ui-2026-10-23.md) | 资源、构造路径、隔离运行时控件树与下一批 UI 规格 |
 | [无界面定向分析](docs/research/windterm-headless-2026-10-22.md) | 官方 2.7.0 接收路径、证据与可重复执行入口 |
 | [接收机制实验](experiments/receive/README.md) | 自有管道、通知合并、有界队列与自动正确性检查 |
 | [最小状态回放](experiments/core/README.md) | 分块解析、屏幕/历史状态和完整管道回放检查 |

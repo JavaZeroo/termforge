@@ -1,5 +1,7 @@
 # 无界面定向研究
 
+新增独立的 [UI 运行时探测](ui/README.md)：会执行固定目标的自有副本；下文原有 headless 入口仍只做静态分析。
+
 入口仅分析固定官方 WindTerm 2.7.0 Windows x64，不执行目标。原始索引、数据库、反编译和汇编输出全部保留在 gitignored `local/`。公开结论见[首轮报告](../docs/research/windterm-headless-2026-10-22.md)。这不是客户端启动器，也不测量运行时性能。
 
 ## 固定环境
