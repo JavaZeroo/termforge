@@ -1,6 +1,6 @@
 # 当前能力与目标矩阵
 
-核对基点：`2dc8d6d`，2026-10-23。本文件是当前能力与已知差距的唯一矩阵；路标和执行顺序见[总体计划](PLAN.md)，运行结果与来源见[证据索引](EVIDENCE.md)。这里不记录逐批开发过程，也不以测试数量计算完成百分比。
+已交付实现基点：`2dc8d6d`，2026-10-23；`bb1227c` 整理了规划与文档。本文件是当前能力与已知差距的唯一矩阵；路标和执行顺序见[总体计划](PLAN.md)，运行结果与来源见[证据索引](EVIDENCE.md)。未提交、未集成或未达到验收条件的草稿不计为已交付能力，其状态只在对应 issue 维护。这里不记录逐批开发过程，也不以测试数量计算完成百分比。
 
 比较目标固定为 **WindTerm 2.7.0**。功能范围依据[固定提交的官方 README](https://github.com/kingToolbox/WindTerm/blob/a8336c1d1e3dd1a981500dae8ef9eb42066de95f/README.md)、[2.7.0 release](https://github.com/kingToolbox/WindTerm/releases/tag/2.7.0)及仓库内的发行物/运行时研究。官方声明说明目标包含什么，不证明已经在本机验证了其行为，更不证明 TermForge 已实现。各平台、版本限制和具体交互仍需逐项形成可重复场景。
 
@@ -37,7 +37,7 @@
 
 | 能力 | 当前状态与边界 | 目标差距 | 路标 |
 |---|---|---|---|
-| SSH 连接与安全身份 | **未实现** | 密码/密钥/keyboard-interactive/agent、主机指纹/变更、取消/超时/断线、凭据存储；GSSAPI、Windows ssh-agent 和 SSH signals 纳入目标清单 | R3；高级认证/信号 R4 |
+| SSH 连接与安全身份 | **未实现** | 密码/密钥/keyboard-interactive/agent、主机指纹/变更、取消/超时/断线、凭据存储；基础交互中断纳入 R3；GSSAPI、Windows ssh-agent 和 SSH signal 请求纳入高级目标 | R3；高级认证/SSH signal 请求 R4 |
 | SSH 连接编排 | **未实现** | 自动执行、ControlMaster、ProxyCommand/ProxyJump、jumpserver、HTTP/SOCKS5 代理、agent forwarding | R3 / R4 |
 | SSH 转发与 X11 | **未实现** | 本地/远程/动态转发与生命周期、X11 forwarding、失败和重连行为 | R4 |
 | SFTP/SCP 与文件管理 | **未实现** | 上传/下载/队列/完整性/取消/重试/覆盖、远程编辑冲突；本地/远程 Filer 与 WSL 文件访问 | R3 / R4 |

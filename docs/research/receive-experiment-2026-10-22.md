@@ -1,5 +1,7 @@
 # 接收机制实验：首轮自动闭环
 
+> 本文的“下一步”和工作包状态属于该历史批次。当前能力见 [FEATURES](../FEATURES.md)，剩余归因与性能任务见 [TRACKING](../TRACKING.md)；原始测量数据保持不变。
+
 2026-10-22，在 Windows 11 build 26200、Intel Core i7-9700（8 核 / 8 逻辑处理器）上，使用 MSVC 19.42.34433、Windows SDK 10.0.26100、x64 Release /O2 构建。不是隔离机器；未固定 CPU 亲和性、电源计划或系统后台负载。
 
 [源码与协议](../../experiments/receive/README.md)；[完整样本](../../experiments/receive/results/2026-10-22/samples.jsonl)；[汇总](../../experiments/receive/results/2026-10-22/summary.json)；[身份记录](../../experiments/receive/results/2026-10-22/manifest.json)。只发布自有合成数据，不含 WindTerm 二进制、私有配置或反编译输出。
