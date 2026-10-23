@@ -103,3 +103,6 @@ jobs:
             local/hosted-ime/product/*/bottom.bin
             local/hosted-ime/product/*/main.bin
             local/hosted-ime/product/*/hidden.bin
+            local/hosted-ime/product/*/bottom.bin.receiver.json
+            local/hosted-ime/product/*/main.bin.receiver.json
+            local/hosted-ime/product/*/hidden.bin.receiver.json

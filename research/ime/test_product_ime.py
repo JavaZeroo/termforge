@@ -231,7 +231,8 @@ class ProductImeGuardTests(unittest.TestCase):
         paths = {line.strip() for line in upload.splitlines() if line.strip().startswith("local/hosted-ime/product/")}
         self.assertEqual(paths, {"local/hosted-ime/product/manifest.json"} | {
             "local/hosted-ime/product/*/" + name for name in ("result.json", "product-ime.json", "progress.jsonl", "stdout.jsonl",
-                                                           "stderr.txt", "frame.bmp", "bottom.bin", "main.bin", "hidden.bin")})
+                                                           "stderr.txt", "frame.bmp", "bottom.bin", "main.bin", "hidden.bin",
+                                                           "bottom.bin.receiver.json", "main.bin.receiver.json", "hidden.bin.receiver.json")})
         self.assertNotIn(".identity", upload)
 
     def test_public_guard_precedes_every_directory_and_process_operation(self):

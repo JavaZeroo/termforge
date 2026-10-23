@@ -273,7 +273,25 @@ public:
     bool process_signaled() const { return process_.get() && signaled(process_.get()); }
     bool stopped_event() const { return signaled(stopped_.get()); }
     DWORD exit_code() const { DWORD code=STILL_ACTIVE; ime_check(process_.get() && GetExitCodeProcess(process_.get(),&code),"IME receiver exit code unavailable"); return code; }
-    bool finished() const { return process_signaled() && stopped_event() && exit_code()==0; }
+    bool finished() const {
+        if(!process_signaled()) return false;
+        const auto code=exit_code();
+        if(code!=0) {
+            std::string diagnostic="missing";
+            std::ifstream input(path.wstring()+L".receiver.json",std::ios::binary|std::ios::ate);
+            if(input.good()) {
+                const auto size=input.tellg();
+                if(size>=0 && size<=4096) {
+                    diagnostic.assign(static_cast<size_t>(size),0); input.seekg(0);
+                    if(!diagnostic.empty()) input.read(diagnostic.data(),static_cast<std::streamsize>(diagnostic.size()));
+                    if(!input.good()) diagnostic="read-failed";
+                } else diagnostic="invalid-size";
+            }
+            throw std::runtime_error("IME receiver "+name+" exited="+std::to_string(code)+" stopped_event="+
+                (stopped_event()?"true":"false")+" diagnostic="+diagnostic);
+        }
+        return stopped_event();
+    }
 };
 struct HostedImeCheckpoint {
     std::string name,session,received;
