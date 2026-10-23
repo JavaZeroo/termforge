@@ -13,7 +13,7 @@ python research/ime/run_probe.py --exe build/bin/Release/termforge_ime_probe.exe
 python research/ime/run_probe.py --exe build/bin/Release/termforge_ime_probe.exe --mode station --out local/ime-station
 ```
 
-`run_probe.py` 记录 EXE 哈希、UTC 时间、时限、退出码、原始 stdout/stderr 和解析后的 `result.json`。进程或 JSON 失败保留失败，超时返回 124；hosted 模式必须所有真实 IME 条件为真才返回 0。`desktop` 成功只表示原生上下文/请求坐标可用，`station` 可返回 2 表示环境不可用。
+`run_probe.py` 记录 EXE 哈希、UTC 时间、时限、退出码、原始 stdout/stderr 字节和解析后的 `result.json`。`--out` 必须是新的目录：任何已有目录（含空目录）均在启动 probe 前拒绝，并发运行最多一个取得该目录；重跑须另选目录，例如 `local/ime-desktop-02`，不会覆盖旧失败。进程或 JSON 失败保留失败，超时返回 124 并保留已捕获的部分输出；hosted 模式必须所有真实 IME 条件为真才返回 0。`desktop` 成功只表示原生上下文/请求坐标可用，`station` 可返回 2 表示环境不可用。
 
 ## 键盘和 IME 接口
 

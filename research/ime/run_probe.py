@@ -20,7 +20,12 @@ def main() -> int:
     if not 1 <= args.timeout <= 120:
         parser.error("timeout must be between 1 and 120 seconds")
     executable = args.exe.resolve(strict=True)
-    args.out.mkdir(parents=True, exist_ok=True)
+    # Claim a fresh directory atomically before starting any probe. Existence
+    # checks followed by mkdir would allow two collectors to own the same run.
+    try:
+        args.out.mkdir(parents=True, exist_ok=False)
+    except FileExistsError:
+        parser.error("evidence output already exists; choose a new --out directory")
     command = [str(executable)] + {"station": [], "desktop": ["--desktop-only"], "hosted": ["--hosted-input"]}[args.mode]
     record = {
         "schema": "termforge-ime-evidence-v1",
@@ -37,21 +42,22 @@ def main() -> int:
         "status": "failed",
     }
     started = time.perf_counter()
-    stdout = stderr = ""
+    stdout = stderr = b""
     try:
         completed = subprocess.run(command, capture_output=True, timeout=args.timeout)
         record["returncode"] = completed.returncode
-        stdout = completed.stdout.decode("utf-8", errors="replace")
-        stderr = completed.stderr.decode("utf-8", errors="replace")
+        stdout = completed.stdout
+        stderr = completed.stderr
     except subprocess.TimeoutExpired as error:
         record["timed_out"] = True
-        stdout = (error.stdout or b"").decode("utf-8", errors="replace")
-        stderr = (error.stderr or b"").decode("utf-8", errors="replace")
+        stdout = error.stdout or b""
+        stderr = error.stderr or b""
     except OSError as error:
-        stderr = str(error)
+        stderr = str(error).encode("utf-8")
     record["elapsed_seconds"] = time.perf_counter() - started
-    (args.out / "stdout.jsonl").write_text(stdout, encoding="utf-8")
-    (args.out / "stderr.txt").write_text(stderr, encoding="utf-8")
+    # Raw streams must survive invalid UTF-8 and Windows CRLF without rewriting.
+    (args.out / "stdout.jsonl").write_bytes(stdout)
+    (args.out / "stderr.txt").write_bytes(stderr)
     try:
         probe = json.loads(stdout)
         if not isinstance(probe, dict) or probe.get("schema") != "termforge-ime-probe-v1":
