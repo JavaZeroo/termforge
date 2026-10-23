@@ -1,0 +1,770 @@
+{
+  "schema": "termforge-r107-actions-hosted-audit-v1",
+  "status": "passed",
+  "head": "6a165c8c9311c62e0948a32d2cf92317ca80b547",
+  "run_id": 40029637769,
+  "artifact_id": 12534053616,
+  "artifact_digest": "sha256:aeb632d7ff5d3c37e6c18d8cbecaab2247b912ce7bb1fd31d6d2d174385daf9d",
+  "source_oracle_sha256": {
+    "experiments/shell/action_checks.py": "c1235b0ed75fa90e9b7065b22e0101ad7ef5d061cbb20b442f17cea92dd079c6",
+    "experiments/shell/paste_checks.py": "f37db2ada88816e6936563d5155578a31276161cae11c99c27bc4f0253b053d6"
+  },
+  "source_identity_normalization": {
+    "experiments/shell/shell.cpp": "whole-file-checkout-CRLF",
+    "experiments/shell/workspace.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/text_actions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/text_interactions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/search_interactions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/workspace_interactions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/edit_actions.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/find_bar.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/paste_prompt.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/workspace_actions_scenario.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/menu_gesture.hpp": "whole-file-checkout-CRLF",
+    "experiments/shell/text_client.cpp": "whole-file-checkout-CRLF",
+    "experiments/shell/test_launcher.cpp": "whole-file-checkout-CRLF",
+    "experiments/shell/action_checks.py": "git-blob-bytes",
+    "experiments/shell/test_actions.py": "git-blob-bytes",
+    "experiments/shell/run.py": "git-blob-bytes",
+    "CMakeLists.txt": "whole-file-checkout-CRLF",
+    ".github/workflows/build.yml": "git-blob-bytes"
+  },
+  "binary_sha256_recorded_by_hosted_test": {
+    "termforge_shell.exe": "a5f24cdfed1d42ace160e84da9a3b3488b4f9e3f4af11c71ce09ababc67d017d",
+    "shell_test_launcher.exe": "c792accea0f0aa71060a96b48f58b6a095000be65b34d6c36667d6e68f9aaa23",
+    "shell_text_client.exe": "acab095e0571be42e213328b27239485edf0281b13bad1af3e4bb791431b21be",
+    "shell_clipboard_reader.exe": "c65ccae38e7a296431c5b5b9f6f9051686df791a2f587eac86700c34a7f2280d"
+  },
+  "binaries_available_for_independent_rehash": false,
+  "rounds": [
+    {
+      "case": "ui-actions",
+      "round": "local-0",
+      "phases": 26,
+      "actual_terminal_popups": 4,
+      "actual_session_popups": 3,
+      "system_clipboard": false,
+      "raw_input_isolated": true,
+      "cleanup_verified": true,
+      "native_find_clipboard_verified": false,
+      "complete_r1_07": false,
+      "geometry_frames_sha256": {
+        "geometry-144": "4e0ecf88fc57aff5ba7d21295fdfccbf4adf28cf065b5a7c7f2f4699ca0211d4",
+        "geometry-192": "d4031e575237e2f3af66835a4c598639db5d94df613eec522d636be0b41c5300",
+        "geometry-96": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32",
+        "geometry-zoom75": "ac0e73b44246f12c68c7bf8336e7465450c1fd30cf46fd327ba1b0eaeb37a058",
+        "geometry-restored": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32"
+      },
+      "raw_main_hex": "7e2d78",
+      "raw_bottom_hex": "",
+      "journal_matches_manifest": true,
+      "native_find_clipboard": [],
+      "geometry": [
+        {
+          "phase": "geometry-144",
+          "display_dpi": 144,
+          "font_height": -18,
+          "current_range": {
+            "id": 95,
+            "version": 53,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-192",
+          "display_dpi": 192,
+          "font_height": -24,
+          "current_range": {
+            "id": 95,
+            "version": 79,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-96",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 106,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-zoom75",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 133,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-restored",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 160,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        }
+      ],
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+      }
+    },
+    {
+      "case": "ui-actions",
+      "round": "local-1",
+      "phases": 26,
+      "actual_terminal_popups": 4,
+      "actual_session_popups": 3,
+      "system_clipboard": false,
+      "raw_input_isolated": true,
+      "cleanup_verified": true,
+      "native_find_clipboard_verified": false,
+      "complete_r1_07": false,
+      "geometry_frames_sha256": {
+        "geometry-144": "4e0ecf88fc57aff5ba7d21295fdfccbf4adf28cf065b5a7c7f2f4699ca0211d4",
+        "geometry-192": "d4031e575237e2f3af66835a4c598639db5d94df613eec522d636be0b41c5300",
+        "geometry-96": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32",
+        "geometry-zoom75": "ac0e73b44246f12c68c7bf8336e7465450c1fd30cf46fd327ba1b0eaeb37a058",
+        "geometry-restored": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32"
+      },
+      "raw_main_hex": "7e2d78",
+      "raw_bottom_hex": "",
+      "journal_matches_manifest": true,
+      "native_find_clipboard": [],
+      "geometry": [
+        {
+          "phase": "geometry-144",
+          "display_dpi": 144,
+          "font_height": -18,
+          "current_range": {
+            "id": 95,
+            "version": 53,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-192",
+          "display_dpi": 192,
+          "font_height": -24,
+          "current_range": {
+            "id": 95,
+            "version": 79,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-96",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 106,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-zoom75",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 133,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-restored",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 160,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        }
+      ],
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+      }
+    },
+    {
+      "case": "ui-actions-system",
+      "round": "system-0",
+      "phases": 36,
+      "actual_terminal_popups": 7,
+      "actual_session_popups": 3,
+      "system_clipboard": true,
+      "raw_input_isolated": true,
+      "cleanup_verified": true,
+      "native_find_clipboard_verified": true,
+      "complete_r1_07": false,
+      "geometry_frames_sha256": {
+        "geometry-144": "4e0ecf88fc57aff5ba7d21295fdfccbf4adf28cf065b5a7c7f2f4699ca0211d4",
+        "geometry-192": "d4031e575237e2f3af66835a4c598639db5d94df613eec522d636be0b41c5300",
+        "geometry-96": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32",
+        "geometry-zoom75": "ac0e73b44246f12c68c7bf8336e7465450c1fd30cf46fd327ba1b0eaeb37a058",
+        "geometry-restored": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32"
+      },
+      "raw_main_hex": "534849465420e4b8ade696872065cc8144454641554c545f454e54455220e4b8ade696870d4e45585443545820e4b8ade696872065cc810d4e4558547e2d78",
+      "raw_bottom_hex": "",
+      "journal_matches_manifest": true,
+      "native_find_clipboard": [
+        {
+          "query": "q",
+          "selection": [
+            0,
+            1
+          ],
+          "selected": "q",
+          "focused_before_escape": true,
+          "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+          "clipboard_before_paste": null,
+          "refocus_before": null,
+          "raw_before": {
+            "bottom": "",
+            "main": ""
+          },
+          "returned_terminal": false,
+          "editor_gone": false,
+          "phase": "system-find-copy",
+          "entry": "queued-native-Find-EDIT-Ctrl-A-Ctrl-C",
+          "clipboard": "q",
+          "same_editor_identity": true
+        },
+        {
+          "query": "中文",
+          "selection": [
+            2,
+            2
+          ],
+          "selected": "",
+          "focused_before_escape": true,
+          "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+          "clipboard_before_paste": "中文",
+          "refocus_before": null,
+          "raw_before": {
+            "bottom": "",
+            "main": ""
+          },
+          "returned_terminal": false,
+          "editor_gone": false,
+          "phase": "system-find-paste",
+          "entry": "queued-native-Find-EDIT-Ctrl-V",
+          "clipboard": "中文",
+          "same_editor_identity": true
+        },
+        {
+          "query": "中文",
+          "selection": [
+            0,
+            2
+          ],
+          "selected": "中文",
+          "focused_before_escape": true,
+          "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+          "clipboard_before_paste": "中文",
+          "refocus_before": [
+            2,
+            2
+          ],
+          "raw_before": {
+            "bottom": "",
+            "main": ""
+          },
+          "returned_terminal": true,
+          "editor_gone": true,
+          "phase": "system-find-refocus",
+          "entry": "queued-Ctrl-Shift-F-Chinese-and-Escape",
+          "clipboard": "中文",
+          "same_editor_identity": true
+        }
+      ],
+      "geometry": [
+        {
+          "phase": "geometry-144",
+          "display_dpi": 144,
+          "font_height": -18,
+          "current_range": {
+            "id": 95,
+            "version": 53,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-192",
+          "display_dpi": 192,
+          "font_height": -24,
+          "current_range": {
+            "id": 95,
+            "version": 79,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-96",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 106,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-zoom75",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 133,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-restored",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 160,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        }
+      ],
+      "job_after": {
+        "active": 0,
+        "total": 17,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 17,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+      }
+    },
+    {
+      "case": "ui-actions-system",
+      "round": "system-1",
+      "phases": 36,
+      "actual_terminal_popups": 7,
+      "actual_session_popups": 3,
+      "system_clipboard": true,
+      "raw_input_isolated": true,
+      "cleanup_verified": true,
+      "native_find_clipboard_verified": true,
+      "complete_r1_07": false,
+      "geometry_frames_sha256": {
+        "geometry-144": "4e0ecf88fc57aff5ba7d21295fdfccbf4adf28cf065b5a7c7f2f4699ca0211d4",
+        "geometry-192": "d4031e575237e2f3af66835a4c598639db5d94df613eec522d636be0b41c5300",
+        "geometry-96": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32",
+        "geometry-zoom75": "ac0e73b44246f12c68c7bf8336e7465450c1fd30cf46fd327ba1b0eaeb37a058",
+        "geometry-restored": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32"
+      },
+      "raw_main_hex": "534849465420e4b8ade696872065cc8144454641554c545f454e54455220e4b8ade696870d4e45585443545820e4b8ade696872065cc810d4e4558547e2d78",
+      "raw_bottom_hex": "",
+      "journal_matches_manifest": true,
+      "native_find_clipboard": [
+        {
+          "query": "q",
+          "selection": [
+            0,
+            1
+          ],
+          "selected": "q",
+          "focused_before_escape": true,
+          "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+          "clipboard_before_paste": null,
+          "refocus_before": null,
+          "raw_before": {
+            "bottom": "",
+            "main": ""
+          },
+          "returned_terminal": false,
+          "editor_gone": false,
+          "phase": "system-find-copy",
+          "entry": "queued-native-Find-EDIT-Ctrl-A-Ctrl-C",
+          "clipboard": "q",
+          "same_editor_identity": true
+        },
+        {
+          "query": "中文",
+          "selection": [
+            2,
+            2
+          ],
+          "selected": "",
+          "focused_before_escape": true,
+          "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+          "clipboard_before_paste": "中文",
+          "refocus_before": null,
+          "raw_before": {
+            "bottom": "",
+            "main": ""
+          },
+          "returned_terminal": false,
+          "editor_gone": false,
+          "phase": "system-find-paste",
+          "entry": "queued-native-Find-EDIT-Ctrl-V",
+          "clipboard": "中文",
+          "same_editor_identity": true
+        },
+        {
+          "query": "中文",
+          "selection": [
+            0,
+            2
+          ],
+          "selected": "中文",
+          "focused_before_escape": true,
+          "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+          "clipboard_before_paste": "中文",
+          "refocus_before": [
+            2,
+            2
+          ],
+          "raw_before": {
+            "bottom": "",
+            "main": ""
+          },
+          "returned_terminal": true,
+          "editor_gone": true,
+          "phase": "system-find-refocus",
+          "entry": "queued-Ctrl-Shift-F-Chinese-and-Escape",
+          "clipboard": "中文",
+          "same_editor_identity": true
+        }
+      ],
+      "geometry": [
+        {
+          "phase": "geometry-144",
+          "display_dpi": 144,
+          "font_height": -18,
+          "current_range": {
+            "id": 95,
+            "version": 53,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-192",
+          "display_dpi": 192,
+          "font_height": -24,
+          "current_range": {
+            "id": 95,
+            "version": 79,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-96",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 106,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-zoom75",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 133,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        },
+        {
+          "phase": "geometry-restored",
+          "display_dpi": 96,
+          "font_height": -12,
+          "current_range": {
+            "id": 95,
+            "version": 160,
+            "begin": 0,
+            "end": 11
+          },
+          "selection_status": "ok"
+        }
+      ],
+      "job_after": {
+        "active": 0,
+        "total": 17,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 17,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+      }
+    }
+  ],
+  "paste_rounds": [
+    {
+      "round": "paste-0",
+      "mode": "ui-paste",
+      "schema": "termforge-window-paste-v2",
+      "keyboard": {
+        "default_enter_accept": true,
+        "default_escape_cancel": true,
+        "tab_enter_accept": true
+      },
+      "input_bytes": 25021,
+      "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+      "cases": {
+        "cancel": {
+          "sent": 145266,
+          "received": 145266,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 104346,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      },
+      "confirmation_frame": {
+        "width": 456,
+        "height": 184,
+        "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+      }
+    },
+    {
+      "round": "paste-1",
+      "mode": "ui-paste",
+      "schema": "termforge-window-paste-v2",
+      "keyboard": {
+        "default_enter_accept": true,
+        "default_escape_cancel": true,
+        "tab_enter_accept": true
+      },
+      "input_bytes": 25021,
+      "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+      "cases": {
+        "cancel": {
+          "sent": 153450,
+          "received": 153450,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 100254,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      },
+      "confirmation_frame": {
+        "width": 456,
+        "height": 184,
+        "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+      }
+    },
+    {
+      "round": "paste-system-0",
+      "mode": "ui-paste-system",
+      "schema": "termforge-window-paste-v2",
+      "keyboard": {
+        "default_enter_accept": true,
+        "default_escape_cancel": true,
+        "tab_enter_accept": true
+      },
+      "input_bytes": 25021,
+      "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+      "cases": {
+        "cancel": {
+          "sent": 153450,
+          "received": 153450,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 100254,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      },
+      "confirmation_frame": {
+        "width": 456,
+        "height": 184,
+        "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+      }
+    },
+    {
+      "round": "paste-system-1",
+      "mode": "ui-paste-system",
+      "schema": "termforge-window-paste-v2",
+      "keyboard": {
+        "default_enter_accept": true,
+        "default_escape_cancel": true,
+        "tab_enter_accept": true
+      },
+      "input_bytes": 25021,
+      "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+      "cases": {
+        "cancel": {
+          "sent": 153450,
+          "received": 153450,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 96162,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "width": 1360,
+        "height": 860,
+        "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      },
+      "confirmation_frame": {
+        "width": 456,
+        "height": 184,
+        "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+      }
+    }
+  ],
+  "audit_method": "Exact-head pure validators plus literal raw bytes, original journals, observed native popup/focus/geometry, frame format and owned cleanup; no local CF/IME or environment spoofing.",
+  "limitations": [
+    "Bounded synthetic workloads only; no actual cross-monitor DPI or presentation endpoint.",
+    "IME has a separate verification workflow.",
+    "These entries alone do not close R1-07 or R1-08; complete_r1_07 remains false.",
+    "Previous 80e7 evidence retains its 33-system-phase scope; this 6a165 audit verifies the added Find EDIT CF phases separately."
+  ],
+  "independent_additional_checks": {
+    "artifact_run_binding": true,
+    "source_identity_exact_18_file_set": true,
+    "default_enter_and_native_find": [
+      {
+        "round": "system-0",
+        "default_enter_before_hex": "534849465420e4b8ade696872065cc81",
+        "default_enter_after_hex": "534849465420e4b8ade696872065cc8144454641554c545f454e54455220e4b8ade696870d4e455854",
+        "find_copy_sentinel_changed": true,
+        "find_paste_replaced_query": true,
+        "find_refocus_collapsed_then_selected": true,
+        "find_escape_actual_edit_gone": true,
+        "both_peer_prefixes_unchanged": true
+      },
+      {
+        "round": "system-1",
+        "default_enter_before_hex": "534849465420e4b8ade696872065cc81",
+        "default_enter_after_hex": "534849465420e4b8ade696872065cc8144454641554c545f454e54455220e4b8ade696870d4e455854",
+        "find_copy_sentinel_changed": true,
+        "find_paste_replaced_query": true,
+        "find_refocus_collapsed_then_selected": true,
+        "find_escape_actual_edit_gone": true,
+        "both_peer_prefixes_unchanged": true
+      }
+    ],
+    "all_paste_input_bytes": 25021,
+    "helper_original_sha256": "dd09b3e29cc34348eb3d3e6854e3a342116f1d05554369c55158c88d7fadee6a",
+    "helper_used_sha256": "ec6872df88f471e2adcee0e56c14fcc4b7a20d705a6e25a9ca595f5a2b908b95",
+    "helper_modifications": [
+      "Renamed local editor HWND variable identity to editor_identity to prevent shadowing the source identity dictionary at final facts serialization; no oracle or acceptance gate changed."
+    ]
+  }
+}

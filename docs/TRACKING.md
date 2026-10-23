@@ -33,9 +33,9 @@
 
 以下为选题顺序；各项已做/待做和验收结果只在对应 issue 维护。`ready-for-agent` 表示可以开工，不代表全仓库所有 ready 项优先级相同。
 
-1. **开始统一文字动作与参考对照。** [参考契约](https://github.com/JavaZeroo/termforge/issues/11)、[历史](https://github.com/JavaZeroo/termforge/issues/12)、[选择复制](https://github.com/JavaZeroo/termforge/issues/13)、[粘贴](https://github.com/JavaZeroo/termforge/issues/14)、[查找](https://github.com/JavaZeroo/termforge/issues/15)、[固定拼音输入](https://github.com/JavaZeroo/termforge/issues/16)均已按限定合同验收。[统一文字动作](https://github.com/JavaZeroo/termforge/issues/17)的真实前置已解除，接着核对菜单/快捷键/焦点与参考行为；未知基础动作保持调查状态，自定策略单列。
-2. **保留基础能力的系统回归。** 选择复制、粘贴、查找及输入继续使用独立预期和真实系统证据；共用只读文本投影与稳定位置，不另建并行状态来源。完整组合由统一动作和工作流承接，底层 API、合成消息或本地跳过不替代系统验收。
-3. **最后验收完整工作流并关闭 R1。** [完整工作流验收](https://github.com/JavaZeroo/termforge/issues/18)在 #17 完成后，以最终源码和真实系统环境验证全部流程及多会话资源边界。基础事项关闭不等于组合流程通过；单个测试成功或系统测试跳过不能解除该门槛。
+1. **接起完整文字工作流。** 参考合同、历史、选择复制、粘贴、查找、固定拼音输入及[统一文字动作](https://github.com/JavaZeroo/termforge/issues/17)已按限定合同验收。接下来实现[完整工作流与八会话资源边界](https://github.com/JavaZeroo/termforge/issues/18)；详细切片、实际阻塞与执行状态只在 issue 维护。
+2. **保留基础能力的系统回归。** 选择复制、粘贴、查找及输入继续使用独立预期和真实系统证据；共用只读文本投影与稳定位置，不另建并行状态来源。完整组合由工作流验收承接，底层 API、合成消息或本地跳过不替代系统验收。
+3. **最后验收完整工作流并关闭 R1。** [完整工作流验收](https://github.com/JavaZeroo/termforge/issues/18)沿已验收的基础能力，以最终源码和真实系统环境验证全部流程及多会话资源边界。基础事项关闭不等于组合流程通过；单个测试成功或系统测试跳过不能解除该门槛。
 4. **并行推进影响后续决策的调查。** [全量目标台账](https://github.com/JavaZeroo/termforge/issues/19)先冻结平台/架构/最低系统边界，作为 R2 核心与 GUI 产品路线决定的输入；候选构建可与范围调查并行。外部核心和测量工具先按下表拆小。Server 2022 专项可独立调查，但不挤占近期文字交互主线。
 
 未提交草稿和未完成的系统验收均不计入交付。开工前核对工作树，保留已有草稿并明确归属；文档整理本身不解除功能验收门槛。

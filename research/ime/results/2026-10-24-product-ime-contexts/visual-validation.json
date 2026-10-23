@@ -1,0 +1,50 @@
+{
+  "head": "6a165c8c9311c62e0948a32d2cf92317ca80b547",
+  "run_id": 40029638833,
+  "scope": "Fresh exact-head five-mode IME audit; no reuse of 80e7 data",
+  "literal_checks": {
+    "all_input_desktops": "WinSta0/Default; thread=input; query_only",
+    "guarded_batches": [
+      18,
+      9,
+      29,
+      14,
+      28
+    ],
+    "checkpoints": 28,
+    "reading_contexts": 9,
+    "normal_receiver_sidecars": 10,
+    "cancelled_receiver": "close/bottom zero bytes exit91",
+    "reading_final_each_receiver_hex": "e4bda0e5a5bd",
+    "find_cancel_literal": "你好",
+    "find_cancel_and_closed_candidates": [],
+    "rename_cancel_preedit": "ni",
+    "rename_cancel_literal": "你好",
+    "rename_cancel_and_closed_candidates": [],
+    "outer_job_active_each": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "visual_review": [
+    {
+      "mode": "ui-ime-reading",
+      "sha256": "f569d1da9ef2c44f675f516ceff1dd5f2c3a2e34083a95fb6566bbd765336bfb",
+      "observation": "1360x860 retained own frame: numbered output 7..19/DONE visible in main; both sessions show completion; Find popup absent"
+    },
+    {
+      "mode": "ui-ime-focus",
+      "sha256": "904a85084bf9966c666f6af39be73d32a0b88d7b7ea436968571c7b05c9a5f9a",
+      "observation": "1360x860 retained own frame: Chinese 你好 renamed tab visible; native rename editor absent; two regions retained"
+    }
+  ],
+  "limitations": [
+    "One fresh five-mode batch at this exact commit",
+    "Does not audit the separate 36-phase CF action workflow",
+    "Candidate lifecycle from bounded raw reports, not final screenshots",
+    "Final own BMP is not physical presentation timing; presented_done null"
+  ]
+}

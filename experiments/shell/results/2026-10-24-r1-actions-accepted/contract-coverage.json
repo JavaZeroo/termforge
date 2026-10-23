@@ -1,0 +1,49 @@
+{
+  "schema": "termforge-r107-contract-coverage-review-v1",
+  "head": "6a165c8c9311c62e0948a32d2cf92317ca80b547",
+  "review_type": "contract mapping; action/paste artifact independently replayed by this reviewer; IME uses separately audited facts, not a second artifact audit",
+  "sources": [
+    "GitHub issue 17",
+    "docs/milestones/R1-local-text.md R1-07",
+    "docs/research/windterm-r1-text-contract.md",
+    "docs/research/r1-action-comparison.md"
+  ],
+  "coverage": [
+    {
+      "contract": "Basic observed history/selection/copy/paste/find entry points and target isolation",
+      "evidence": "R1-02/03/04/05 accepted bounded contracts plus 40029637769 terminal popup/shortcut phases and exact CF/raw",
+      "scope": "Current fixed basic contract; parser/application modes and arbitrary selection policies are not inferred."
+    },
+    {
+      "contract": "Find EDIT All/Copy/Paste/refocus/Escape and native rename ownership",
+      "evidence": "40029637769 system-find-copy/paste/refocus two rounds; existing R1-03 rename EDIT actual CF; 40029638833 separately audited rename real IME double-Escape",
+      "scope": "Synthetic literal query and fixed Microsoft Pinyin."
+    },
+    {
+      "contract": "Default multiline Return aligns with observed reference acceptance",
+      "evidence": "Reference40026676722 exact ordered replay; product40029637769 default-enter checkpoints and four paste-v2 rounds",
+      "scope": "Prior Cancel default and failed export remain historical results."
+    },
+    {
+      "contract": "No session/no selection/invalidated/busy/closing behavior and cross-session ownership",
+      "evidence": "40029637769 actual popup/feedback, prompt-target switch, invalidated copy, closing/no-session; accepted R1-03/04/05 ownership/cancel-close regressions",
+      "scope": "Explicit TermForge policy where complex WindTerm reference remains unobserved."
+    },
+    {
+      "contract": "History reading, Find, IME and controlled geometry interactions",
+      "evidence": "40029637769 five controlled geometry stages with exact selection/current-hit identities and frame checks; separately audited40029638833 reading9contexts/rename cancel and five IME cases",
+      "scope": "Controlled DPI/zoom, not actual cross-monitor; IME current head is one five-case batch."
+    }
+  ],
+  "remaining_required_basic_reference_unknowns_found": [],
+  "closure_assessment": "Fixed R1-07 contract evidence is sufficient after publishing the current action/IME audit facts and updating the comparison table/capability links to those fixed sources. No additional basic REA investigation is required by this review.",
+  "publication_conditions": [
+    "Bind the actual 36-stage action facts and separate five-case IME facts in the comparison table, capabilities and evidence index.",
+    "Retain unknown complex reference behavior as explicit project policies rather than equivalence.",
+    "Preserve prior failures, the old33-phase scope, runtime reference-script hash limitations, and recorded-only product binary hashes."
+  ],
+  "excluded": [
+    "R1-08 end-to-end complete workflow and eight-session resource acceptance",
+    "Full WindTerm parity, performance equivalence, cross-platform client, arbitrary input methods or actual cross-monitor DPI"
+  ]
+}
