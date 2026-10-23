@@ -9,6 +9,8 @@ from pathlib import Path
 EXPECTED_EXE = "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0"
 EXPECTED_FILES = "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
 SELECTION = "ALPHA  tail\nBETA 中文 e\u0301"
+SINGLE = "TF-SINGLE"
+MULTILINE = "TF-FIRST\rTF-SECOND\rTF-THIRD"
 
 
 def require(condition, message):
@@ -16,16 +18,46 @@ def require(condition, message):
         raise ValueError(message)
 
 
+def menu_action_id(text):
+    if not isinstance(text, str):
+        return None
+    label = re.sub(r"\(&.\)", "", text.split("\t")[0]).replace("&", "").strip().rstrip(".…").lower()
+    return {"copy": "copy", "复制": "copy", "paste": "paste", "粘贴": "paste",
+            "find": "find", "查找": "find", "select all": "select-all", "全选": "select-all"}.get(label)
+
+
 def r1_menu_actions(actions):
-    result = []
-    for action in actions:
-        label = re.sub(r"\(&.\)", "", action.get("text", "").split("\t")[0]).replace("&", "").strip().rstrip(".…")
-        if label.lower() in ("copy", "paste", "find", "select all", "复制", "粘贴", "查找", "全选"):
-            result.append({k: action.get(k) for k in ("text", "name", "enabled", "submenu")})
-    return result
+    return [{k: action.get(k) for k in ("text", "name", "enabled", "submenu")}
+            for action in actions if menu_action_id(action.get("text", ""))]
 
 
-def summarize(identity, evidence, cleanup, profile, script_digest):
+def validate_paste(phases, baseline, *, peer_field="received", encode=lambda text: text):
+    """Use the pre-action prefix, never a prefix sampled after opening a dialog."""
+    require(isinstance(baseline, str), "Missing pre-paste peer baseline")
+    expected = {
+        "paste-before": (baseline, None, "ScintillaEditBase"),
+        "paste-single-delivered": (baseline + encode(SINGLE), None, "ScintillaEditBase"),
+        "paste-single-after-escape": (baseline + encode(SINGLE), None, "ScintillaEditBase"),
+        "paste-multiline": (baseline + encode(SINGLE), "PasteDialog", "QPushButton"),
+        "paste-multiline-cancel": (baseline + encode(SINGLE), None, "ScintillaEditBase"),
+        "paste-multiline-confirm": (baseline + encode(SINGLE), "PasteDialog", "QPushButton"),
+        "paste-multiline-accepted": (baseline + encode(SINGLE + MULTILINE), None, "ScintillaEditBase"),
+    }
+    for key, (received, modal, focus) in expected.items():
+        require(key in phases and isinstance(phases[key].get("peer"), dict), "Missing paste outcome: " + key)
+        value = phases[key]
+        require(value["peer"].get(peer_field) == received, "Paste peer bytes differ: " + key)
+        require("modal" in value and value["modal"] == modal, "Paste confirmation state differs: " + key)
+        require(value.get("focus") == focus, "Paste focus differs: " + key)
+    order = [list(phases).index(key) for key in expected]
+    require(order == sorted(order), "Paste observation order differs")
+    return {"single_line_confirmation": False, "single_line_sent": SINGLE,
+            "single_line_escape_after_send": True, "multiline_confirmation": "PasteDialog",
+            "before_confirmation_preserved_peer": True, "cancel_preserved_peer": True,
+            "confirmation_closed": True, "paste_accepted": MULTILINE}
+
+
+def summarize(identity, evidence, cleanup, profile, script_digest, final_peer=None):
     require(identity.get("sha256") == EXPECTED_EXE, "Unpinned target")
     require(identity.get("files_sha256") == EXPECTED_FILES, "Unpinned distribution")
     require(identity.get("profile") == "synthetic-local-only", "Non-synthetic profile")
@@ -85,19 +117,12 @@ def summarize(identity, evidence, cleanup, profile, script_digest):
     if full:
         require(identity["clipboard"] == "hosted-disposable-vm", "Full clipboard run lacks controlled VM")
         copies = [p["system_clipboard"] for p in payloads if p.get("kind") == "copy-system"]
-        require(len(copies) == 1 and copies[0] in (SELECTION, SELECTION.replace("\n", "\r\n")), "CF_UNICODETEXT copy differs")
-        for key in ("paste-single", "paste-single-cancel", "paste-multiline", "paste-multiline-cancel", "paste-multiline-confirm", "paste-multiline-accepted"):
-            require(key in phases and phases[key].get("peer") is not None, "Missing paste outcome")
-        require(phases["paste-multiline"]["modal"] is not None, "Multiline confirmation missing")
-        before = phases["paste-multiline"]["peer"]["received"]
-        require(phases["paste-multiline-cancel"]["peer"]["received"] == before, "Canceled paste reached peer")
-        accepted = phases["paste-multiline-accepted"]["peer"]["received"]
-        require(accepted.startswith(before), "Peer prefix changed")
-        delta = accepted[len(before):]
-        require(delta in ("TF-FIRST\rTF-SECOND\rTF-THIRD", "TF-FIRST\nTF-SECOND\nTF-THIRD", "TF-FIRST\r\nTF-SECOND\r\nTF-THIRD"), "Confirmed paste bytes differ")
-        clipboard = {"verified": True, "copy": copies[0], "paste_accepted": delta,
-                     "single_line_confirmation": phases["paste-single"]["modal"] is not None,
-                     "multiline_confirmation": phases["paste-multiline"]["modal"], "cancel_preserved_peer": True}
+        require(len(copies) == 1 and copies[0] == SELECTION.replace("\n", "\r\n"), "CF_UNICODETEXT copy differs")
+        before = phases["reverse-drag-unicode"]["peer"]["received"]
+        require(before == peer_text, "Input leaked before paste")
+        clipboard = {"verified": True, "copy": copies[0], **validate_paste(phases, before)}
+        require(isinstance(final_peer, dict) and final_peer.get("received") == before + SINGLE + MULTILINE,
+                "Final peer has missing or late paste bytes")
     return {"schema": "termforge.r1-reference.v1", "target_sha256": EXPECTED_EXE,
             "distribution_sha256": EXPECTED_FILES, "fixture_sha256": identity.get("fixture_sha256"),
             "template_sha256": identity.get("template_sha256"), "evidence_id": record["evidence_id"],
@@ -114,7 +139,30 @@ def read_run(directory):
         return summarize_menu(read("run.json"), read("evidence.json"), read("cleanup.json"), read("profile-check.json"),
                               hashlib.sha256((directory / "probe.js").read_bytes()).hexdigest(), read("peer.json"))
     return summarize(read("run.json"), read("evidence.json"), read("cleanup.json"), read("profile-check.json"),
-                     hashlib.sha256((directory / "probe.js").read_bytes()).hexdigest())
+                     hashlib.sha256((directory / "probe.js").read_bytes()).hexdigest(), read("peer.json"))
+
+
+def compare_runs(first, second):
+    """Compare validated behavior, leaving run-specific history size/PIDs outside it."""
+    for key in ("schema", "target_sha256", "distribution_sha256", "fixture_sha256", "template_sha256"):
+        require(first.get(key) is not None and first.get(key) == second.get(key), "Repeat identity differs: " + key)
+    require(isinstance(first.get("evidence_id"), str) and isinstance(second.get("evidence_id"), str)
+            and first["evidence_id"] and second["evidence_id"] and first["evidence_id"] != second["evidence_id"],
+            "Repeat must use distinct observations")
+    require(first.get("system_clipboard", {}).get("verified") is True and second.get("system_clipboard", {}).get("verified") is True,
+            "Repeat lacks system clipboard coverage")
+    require(first["system_clipboard"] == second["system_clipboard"], "Repeated clipboard/paste behavior differs")
+    if first["schema"] == "termforge.r1-menu-wrap.v1":
+        require(first.get("menu_verified") is True and second.get("menu_verified") is True, "Repeat lacks all menu actions")
+        require(first["vt"] == second["vt"] and first["activations"] == second["activations"], "Repeated menu/VT behavior differs")
+    else:
+        require(first["schema"] == "termforge.r1-reference.v1" and first.get("complete") is True and second.get("complete") is True,
+                "Repeat lacks text contract")
+        for phase in ("find-typed", "find-needle-enter", "find-f3", "find-f3-wrap", "find-shift-f3", "find-unicode",
+                      "doubleclick-word", "tripleclick-line", "select-line-api", "drag-unicode", "reverse-drag-unicode"):
+            for field in ("selection", "anchor", "focus"):
+                require(first["navigation_selection"][phase][field] == second["navigation_selection"][phase][field], "Repeated text behavior differs")
+    return {"verified": True, "first_evidence_id": first["evidence_id"], "second_evidence_id": second["evidence_id"]}
 
 
 def summarize_menu(identity, evidence, cleanup, profile, script_digest, peer):
@@ -131,7 +179,9 @@ def summarize_menu(identity, evidence, cleanup, profile, script_digest, peer):
     require(not result.get("messages_truncated") and result.get("cleanup_error") is None, "Incomplete evidence")
     messages = result["messages"]
     payloads = [m["payload"] for m in messages if m.get("type") == "send"]
-    phases = {p["phase"]: p for p in payloads if p.get("kind") == "snapshot"}
+    snapshots = [p for p in payloads if p.get("kind") == "snapshot"]
+    phases = {p["phase"]: p for p in snapshots}
+    require(len(phases) == len(snapshots), "Duplicate scenario phase")
     require("vt-select-all" in phases, "No VT selection observation")
     columns = peer.get("sent_columns")
     require(peer.get("connected") and not peer.get("error") and isinstance(columns, int) and 40 <= columns <= 300, "Invalid peer observation")
@@ -142,32 +192,54 @@ def summarize_menu(identity, evidence, cleanup, profile, script_digest, peer):
     require(peer.get("sent_sha256") == hashlib.sha256(sent).hexdigest(), "Unexpected bytes sent to target")
     selection = json.loads(phases["vt-select-all"]["text_state"])["selection"]
     require(selection == expected, "VT soft/hard breaks, whitespace or Unicode differ")
-    require(peer.get("received_hex") == "", "Search/menu input leaked to peer")
     search = {}
     for phase in ("vt-soft-search", "vt-soft-search-wrap"):
         if phase in phases:
             state = json.loads(phases[phase]["text_state"])
             require(state["selection"] == "LEFTRIGHT" and state["anchor"] == columns - 4, "Soft-wrap search differs")
             search[phase] = state
-    actions = [{k: p[k] for k in ("text", "name", "input")} for p in payloads if p.get("kind") == "menu_activation"]
+    actions = [{k: p.get(k) for k in ("action", "text", "name", "input")} for p in payloads if p.get("kind") == "menu_activation"]
     menus = [{"phase": p["phase"], "actions": r1_menu_actions(p["actions"])} for p in payloads if p.get("kind") == "menu"]
-    successful = [p for p in payloads if p.get("kind") == "scenario_complete" and p.get("coverage") == "menu-wrap-only"]
+    successful = [p for p in payloads if p.get("kind") == "scenario_complete"]
     errors = any(m.get("type") == "error" or m.get("payload", {}).get("error") for m in messages)
-    menu_verified = len(successful) == 1 and not errors
-    if menu_verified:
-        require(len(actions) == 2 and len(search) == 2, "Incomplete menu actions")
+    selection_find_verified = len(successful) == 1 and not errors and successful[0].get("coverage") in ("menu-wrap-only", "menu-wrap-system-clipboard-paste")
+    full = selection_find_verified and successful[0].get("coverage") == "menu-wrap-system-clipboard-paste"
+    if selection_find_verified:
+        require(len(actions) >= 2 and len(search) == 2, "Incomplete menu actions")
+        require([menu_action_id(a["text"]) for a in actions[:2]] == ["select-all", "find"], "Wrong menu entries activated")
         require(json.loads(phases["before-context"]["text_state"])["selection"] != expected, "Menu test lacked a distinct initial selection")
         require(json.loads(phases["menu-select-all"]["text_state"])["selection"] == expected, "Menu selection differs")
         require(phases["menu-find-open"]["focus"] == "ComboBox", "Menu find focus differs")
         require(json.loads(phases["menu-find-result"]["text_state"])["selection"] == "LEFTRIGHT", "Menu find effect missing")
+    clipboard = {"verified": False}
+    if full:
+        require(identity.get("clipboard") == "hosted-disposable-vm", "Menu clipboard lacks controlled VM")
+        expected_actions = ["select-all", "find", "copy", "paste", "paste", "paste"]
+        require([a["action"] for a in actions] == expected_actions and [menu_action_id(a["text"]) for a in actions] == expected_actions,
+                "Incomplete menu Copy/Paste actions")
+        require(all(a["input"] == "QMenu active action plus queued Return key" for a in actions), "Menu input path differs")
+        require(json.loads(phases["menu-copy-before"]["text_state"])["selection"] == expected, "Menu Copy selection differs")
+        require(phases["menu-copy-before"]["peer"].get("received_hex") == "" and phases["menu-find-result"]["peer"].get("received_hex") == "", "Search/menu input leaked to peer")
+        writes = [p["system_clipboard"] for p in payloads if p.get("kind") == "clipboard_set"]
+        require(writes == ["TF-COPY-SENTINEL", SINGLE, "TF-FIRST\r\nTF-SECOND\nTF-THIRD"], "Clipboard fixture differs")
+        copies = [p["system_clipboard"] for p in payloads if p.get("kind") == "menu-copy-system"]
+        require(copies == [expected.replace("\n", "\r\n")], "VT CF_UNICODETEXT soft/hard breaks, whitespace or Unicode differ")
+        encoded = lambda value: value.encode("utf-8").hex()
+        clipboard = {"verified": True, "copy": copies[0], **validate_paste(phases, "", peer_field="received_hex", encode=encoded)}
+        final = encoded(SINGLE + MULTILINE)
+        require(phases.get("paste-settled", {}).get("peer", {}).get("received_hex") == final and peer.get("received_hex") == final,
+                "Final menu peer has missing or late paste bytes")
+    else:
+        require(peer.get("received_hex") == "", "Search/menu input leaked to peer")
     return {"schema": "termforge.r1-menu-wrap.v1", "target_sha256": EXPECTED_EXE, "distribution_sha256": EXPECTED_FILES,
             "fixture_sha256": identity.get("fixture_sha256"), "template_sha256": identity.get("template_sha256"),
-            "evidence_id": record["evidence_id"], "complete": False, "menu_verified": menu_verified,
+            "evidence_id": record["evidence_id"], "complete": False, "menu_verified": full,
+            "selection_find_verified": selection_find_verified,
             "vt": {"protocol": "Telnet-loopback", "columns": columns, "sent_sha256": peer["sent_sha256"],
                    "selection": selection, "soft_wrap_joins": True, "hard_break_lf": True, "trailing_spaces_preserved": True,
                    "search": search}, "menus": menus, "activations": actions,
-            "system_clipboard": {"verified": False}, "cleanup": {"owned_active": 0, "peer_closed": True},
-            "limitations": ["Qt context/key event replay; not physical mouse input.", "Text selection projection, not CF_UNICODETEXT verification."]}
+            "system_clipboard": clipboard, "cleanup": {"owned_active": 0, "peer_closed": True},
+            "limitations": ["Qt context/key event replay; not physical mouse input.", "Menu and VT scenario only; full R1-01 also requires the text contract."]}
 
 
 def diagnostic(directory):
@@ -221,12 +293,12 @@ def diagnostic(directory):
             item["text_state"] = json.loads(p["text_state"]) if p.get("text_state") else None
             item["buttons"] = [{k: w.get(k) for k in ("text", "default")} for w in p.get("widgets", []) if w.get("class") == "QPushButton"]
             data["snapshots"].append(item)
-        elif p.get("kind") in ("scenario_complete", "copy-system", "clipboard_set", "confirmation_action"):
+        elif p.get("kind") in ("scenario_complete", "copy-system", "menu-copy-system", "clipboard_set", "confirmation_action"):
             data.setdefault("outcomes", []).append({k: p[k] for k in ("kind", "coverage", "system_clipboard", "text") if k in p})
         elif p.get("kind") == "menu":
             data.setdefault("menus", []).append({"phase": p["phase"], "actions": r1_menu_actions(p["actions"])})
         elif p.get("kind") == "menu_activation":
-            data.setdefault("activations", []).append({k: p.get(k) for k in ("text", "name", "input")})
+            data.setdefault("activations", []).append({k: p.get(k) for k in ("action", "text", "name", "input")})
         elif p.get("kind") == "clipboard_entry":
             data.setdefault("clipboard_entries", []).append({"stage": p.get("stage")})
     return data
@@ -239,11 +311,14 @@ if __name__ == "__main__":
     parser.add_argument("--require-complete", action="store_true")
     parser.add_argument("--require-menu-complete", action="store_true")
     parser.add_argument("--diagnostic-only", action="store_true")
+    parser.add_argument("--compare-with", type=Path, help="Require repeat equality with the first validated summary")
     args = parser.parse_args()
     if args.diagnostic_only:
         args.out.write_text(json.dumps(diagnostic(args.run), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         raise SystemExit(0)
     result = read_run(args.run)
+    if args.compare_with:
+        result["repeat"] = compare_runs(json.loads(args.compare_with.read_text(encoding="utf-8")), result)
     args.out.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     require(not args.require_complete or result["complete"], "R1 reference still has missing clipboard/paste evidence")
     require(not args.require_menu_complete or result.get("menu_verified") is True, "Menu behavior is not verified")

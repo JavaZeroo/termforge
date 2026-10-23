@@ -2,6 +2,15 @@ name: R1 official reference behavior
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r1-reference.yml'
+      - 'research/ui/r1_*.py'
+      - 'research/ui/r1_*.js'
+      - 'research/ui/qt_r1_text.js'
+      - 'research/ui/r1-tools/package*.json'
+      - 'research/tests/test_ui_r1.py'
 
 permissions:
   contents: read
@@ -41,7 +50,9 @@ jobs:
             $runDirectory = "local/ui-reference/$runName"
             python research/ui/r1_launch.py --source local/windterm-official/WindTerm_2.7.0 --out $runDirectory --rea research/ui/r1-tools/node_modules/.bin/rea.cmd --hosted-ci --seconds 45
             if ($LASTEXITCODE) { $probeFailed = $true }
-            python research/ui/r1_summarize.py $runDirectory --out "local/r1-public/$runName-summary.json" --require-complete
+            $compareArgs = @()
+            if ($runIndex -eq 2) { $compareArgs = @('--compare-with', 'local/r1-public/r1-hosted-01-summary.json') }
+            python research/ui/r1_summarize.py $runDirectory --out "local/r1-public/$runName-summary.json" --require-complete @compareArgs
             if ($LASTEXITCODE) { $probeFailed = $true }
           }
           if ($probeFailed) { throw 'Reference evidence remains incomplete; inspect allowlisted diagnostics' }
@@ -53,9 +64,11 @@ jobs:
           foreach ($runIndex in 1, 2) {
             $runName = 'r1-menu-hosted-{0:d2}' -f $runIndex
             $runDirectory = "local/ui-reference/$runName"
-            python research/ui/r1_launch.py --source local/windterm-official/WindTerm_2.7.0 --out $runDirectory --rea research/ui/r1-tools/node_modules/.bin/rea.cmd --scenario menu-wrap --hosted-ci --seconds 35
+            python research/ui/r1_launch.py --source local/windterm-official/WindTerm_2.7.0 --out $runDirectory --rea research/ui/r1-tools/node_modules/.bin/rea.cmd --scenario menu-wrap --hosted-ci --seconds 45
             if ($LASTEXITCODE) { $probeFailed = $true }
-            python research/ui/r1_summarize.py $runDirectory --out "local/r1-public/$runName-summary.json" --require-menu-complete
+            $compareArgs = @()
+            if ($runIndex -eq 2) { $compareArgs = @('--compare-with', 'local/r1-public/r1-menu-hosted-01-summary.json') }
+            python research/ui/r1_summarize.py $runDirectory --out "local/r1-public/$runName-summary.json" --require-menu-complete @compareArgs
             if ($LASTEXITCODE) { $probeFailed = $true }
           }
           if ($probeFailed) { throw 'Raw VT or menu evidence remains incomplete; inspect allowlisted diagnostics' }

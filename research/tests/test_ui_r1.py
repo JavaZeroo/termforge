@@ -1,5 +1,6 @@
 """Evidence rejection and host boundary tests, independent of a vendor runtime."""
 import ctypes
+import copy
 import json
 import os
 import tempfile
@@ -46,6 +47,56 @@ def observation():
     evidence = {"ok": True, "data": {"evidence": {"operation": "instrument_with_frida", "evidence_id": "synthetic-test",
                 "normalized_result": {"source_sha256": "script", "pid": 101, "messages": snapshots}}}}
     return [identity, evidence, {"active": 0}, {"only_synthetic_session": True, "session_count": 1}, "script"]
+
+
+def clipboard_observation():
+    args = observation()
+    args[0]["clipboard"] = "hosted-disposable-vm"
+    result = args[1]["data"]["evidence"]["normalized_result"]
+    result["messages"][-1]["payload"]["coverage"] = "navigation-selection-system-clipboard-paste"
+    result["messages"].append({"type": "send", "payload": {"kind": "copy-system", "system_clipboard": summary.SELECTION.replace("\n", "\r\n")}})
+    for phase in ("paste-before", "paste-single-delivered", "paste-single-after-escape", "paste-multiline", "paste-multiline-cancel", "paste-multiline-confirm", "paste-multiline-accepted"):
+        received = "x" + ("TF-SINGLE" if phase != "paste-before" else "") + ("TF-FIRST\rTF-SECOND\rTF-THIRD" if phase.endswith("accepted") else "")
+        modal = "PasteDialog" if phase in ("paste-multiline", "paste-multiline-confirm") else None
+        result["messages"].append({"type": "send", "payload": {"kind": "snapshot", "phase": phase, "modal": modal, "focus": "QPushButton" if modal else "ScintillaEditBase", "peer": {"received": received}}})
+    args.append({"received": "xTF-SINGLETF-FIRST\rTF-SECOND\rTF-THIRD"})
+    return args
+
+
+def menu_observation():
+    args = observation()
+    args[0].update(scenario="menu-wrap", clipboard="hosted-disposable-vm")
+    text = "TF-SOFT:" + "s" * 28 + "LEFTRIGHT:END\nTF-HARD:" + "h" * 28 + "LEFT\nRIGHT:END\nTF-TAIL:two  \nTF-UNICODE:中文 e\u0301\nTF-VT-END\n"
+    messages = []
+    def add(payload):
+        messages.append({"type": "send", "payload": payload})
+    def snapshot(phase, selection="", focus="ScintillaEditBase", **state):
+        add({"kind": "snapshot", "phase": phase, "modal": None, "focus": focus,
+             "peer": {"received_hex": ""}, "text_state": json.dumps({"selection": selection, **state})})
+    snapshot("vt-select-all", text)
+    for phase in ("vt-soft-search", "vt-soft-search-wrap"):
+        snapshot(phase, "LEFTRIGHT", anchor=36)
+    snapshot("before-context")
+    snapshot("menu-select-all", text)
+    snapshot("menu-find-open", focus="ComboBox")
+    snapshot("menu-find-result", "LEFTRIGHT", focus="ComboBox")
+    snapshot("menu-copy-before", text)
+    for action, label in (("select-all", "Select &All"), ("find", "&Find..."), ("copy", "&Copy"), ("paste", "&Paste"), ("paste", "&Paste"), ("paste", "&Paste")):
+        add({"kind": "menu_activation", "action": action, "text": label, "name": "", "input": "QMenu active action plus queued Return key"})
+    for value in ("TF-COPY-SENTINEL", "TF-SINGLE", "TF-FIRST\r\nTF-SECOND\nTF-THIRD"):
+        add({"kind": "clipboard_set", "system_clipboard": value})
+    add({"kind": "menu-copy-system", "system_clipboard": text.replace("\n", "\r\n")})
+    for message in clipboard_observation()[1]["data"]["evidence"]["normalized_result"]["messages"]:
+        p = message["payload"]
+        if p.get("phase", "").startswith("paste-"):
+            p["peer"] = {"received_hex": p["peer"]["received"][1:].encode().hex()}
+            add(p)
+    add({"kind": "snapshot", "phase": "paste-settled", "peer": {"received_hex": (summary.SINGLE + summary.MULTILINE).encode().hex()}})
+    add({"kind": "scenario_complete", "coverage": "menu-wrap-system-clipboard-paste"})
+    args[1]["data"]["evidence"]["normalized_result"]["messages"] = messages
+    args.append({"closed": True, "connected": True, "sent_columns": 40, "received_hex": (summary.SINGLE + summary.MULTILINE).encode().hex(),
+                 "sent_sha256": hashlib.sha256(("\x1b[2J\x1b[H\x1b[?7h" + text.replace("\n", "\r\n")).encode()).hexdigest()})
+    return args
 
 
 class EvidenceBoundaryTests(unittest.TestCase):
@@ -169,22 +220,56 @@ class EvidenceBoundaryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "leaked"):
             summary.summarize_menu(*args, peer)
 
+    def test_menu_clipboard_requires_executed_actions_and_exact_vt_copy(self):
+        positive = summary.summarize_menu(*menu_observation())
+        self.assertTrue(positive["menu_verified"])
+        self.assertTrue(positive["system_clipboard"]["verified"])
+        self.assertIn("TF-TAIL:two  \r\n", positive["system_clipboard"]["copy"])
+        for change in ("copy-action", "label", "sentinel", "soft-break", "tail", "hard-break", "unicode", "host", "duplicate-phase", "early-bytes", "late-bytes", "old-coverage"):
+            with self.subTest(change=change):
+                args = menu_observation()
+                messages = args[1]["data"]["evidence"]["normalized_result"]["messages"]
+                payloads = [m["payload"] for m in messages]
+                copied = next(p for p in payloads if p.get("kind") == "menu-copy-system")
+                action = next(p for p in payloads if p.get("action") == "copy")
+                if change == "copy-action":
+                    action["kind"] = "menu-item-only"
+                elif change == "label":
+                    action["text"] = "&Paste"
+                elif change == "sentinel":
+                    copied["system_clipboard"] = "TF-COPY-SENTINEL"
+                elif change == "soft-break":
+                    copied["system_clipboard"] = copied["system_clipboard"].replace("LEFTRIGHT", "LEFT\r\nRIGHT")
+                elif change == "tail":
+                    copied["system_clipboard"] = copied["system_clipboard"].replace("two  ", "two")
+                elif change == "hard-break":
+                    copied["system_clipboard"] = copied["system_clipboard"].replace("\r\n", "\n")
+                elif change == "unicode":
+                    copied["system_clipboard"] = copied["system_clipboard"].replace("\u0301", "")
+                elif change == "host":
+                    args[0]["clipboard"] = "owned-window-station"
+                elif change == "duplicate-phase":
+                    messages.append(messages[0])
+                elif change == "early-bytes":
+                    next(p for p in payloads if p.get("phase") == "paste-multiline")["peer"]["received_hex"] += "78"
+                elif change == "late-bytes":
+                    args[5]["received_hex"] += "78"
+                else:
+                    payloads[-1]["coverage"] = "menu-wrap-only"
+                with self.assertRaises(ValueError):
+                    summary.summarize_menu(*args)
+
     def test_read_run_rejects_any_launcher_failure_even_with_complete_markers(self):
-        args = observation()
+        args = clipboard_observation()
         script = b"original synthetic validator test"
         digest = hashlib.sha256(script).hexdigest()
         args[0].update(clipboard="hosted-disposable-vm", script_sha256=digest)
         result = args[1]["data"]["evidence"]["normalized_result"]
         result["source_sha256"] = digest
-        result["messages"][-1]["payload"]["coverage"] = "navigation-selection-system-clipboard-paste"
-        result["messages"].append({"type": "send", "payload": {"kind": "copy-system", "system_clipboard": summary.SELECTION}})
-        for phase in ("paste-single", "paste-single-cancel", "paste-multiline", "paste-multiline-cancel", "paste-multiline-confirm", "paste-multiline-accepted"):
-            received = "x" + ("TF-FIRST\rTF-SECOND\rTF-THIRD" if phase.endswith("accepted") else "")
-            result["messages"].append({"type": "send", "payload": {"kind": "snapshot", "phase": phase, "modal": "QDialog", "peer": {"received": received}}})
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "probe.js").write_bytes(script)
-            for name, value in (("run", args[0]), ("evidence", args[1]), ("cleanup", args[2]), ("profile-check", args[3])):
+            for name, value in (("run", args[0]), ("evidence", args[1]), ("cleanup", args[2]), ("profile-check", args[3]), ("peer", args[5])):
                 (root / (name + ".json")).write_text(json.dumps(value), encoding="utf-8")
             self.assertTrue(summary.read_run(root)["complete"])
             for failure in ("rea-timeout", "rea-job-assignment-failed", "rea-exit-failed", "malformed-json"):
@@ -192,6 +277,87 @@ class EvidenceBoundaryTests(unittest.TestCase):
                     (root / "launcher-failure.json").write_text(json.dumps({"reason": failure}) if failure != "malformed-json" else "invalid", encoding="utf-8")
                     with self.assertRaisesRegex(ValueError, "Launcher failure"):
                         summary.read_run(root)
+
+    def test_rejects_paste_bytes_before_confirmation_even_if_later_prefix_is_consistent(self):
+        self.assertTrue(summary.summarize(*clipboard_observation())["complete"])
+        for start in ("paste-before", "paste-single-delivered", "paste-single-after-escape", "paste-multiline", "paste-multiline-cancel", "paste-multiline-confirm"):
+            with self.subTest(start=start):
+                args = clipboard_observation()
+                snapshots = [m["payload"] for m in args[1]["data"]["evidence"]["normalized_result"]["messages"] if m["payload"].get("kind") == "snapshot"]
+                leaked = False
+                for item in snapshots:
+                    leaked |= item["phase"] == start
+                    if leaked:
+                        item["peer"]["received"] = item["peer"]["received"].replace("x", "xTF-LEAKED", 1)
+                with self.assertRaisesRegex(ValueError, "Paste peer bytes differ"):
+                    summary.summarize(*args)
+
+    def test_paste_cancel_and_accept_close_confirmation(self):
+        for phase in ("paste-single-after-escape", "paste-multiline-cancel", "paste-multiline-accepted"):
+            with self.subTest(phase=phase):
+                args = clipboard_observation()
+                snapshots = [m["payload"] for m in args[1]["data"]["evidence"]["normalized_result"]["messages"] if m["payload"].get("kind") == "snapshot"]
+                next(p for p in snapshots if p["phase"] == phase)["modal"] = "QDialog"
+                with self.assertRaisesRegex(ValueError, "Paste confirmation state differs"):
+                    summary.summarize(*args)
+
+    def test_paste_rejects_wrong_newline_duplicate_late_bytes_and_focus(self):
+        for change in ("newline", "duplicate", "late", "focus", "copy-newline", "old-phase", "order"):
+            with self.subTest(change=change):
+                args = clipboard_observation()
+                payloads = [m["payload"] for m in args[1]["data"]["evidence"]["normalized_result"]["messages"]]
+                accepted = next(p for p in payloads if p.get("phase") == "paste-multiline-accepted")
+                if change == "newline":
+                    accepted["peer"]["received"] = accepted["peer"]["received"].replace("\r", "\n")
+                elif change == "duplicate":
+                    accepted["peer"]["received"] += summary.MULTILINE
+                elif change == "late":
+                    args[5]["received"] += "late"
+                elif change == "focus":
+                    accepted["focus"] = "ComboBox"
+                elif change == "copy-newline":
+                    next(p for p in payloads if p.get("kind") == "copy-system")["system_clipboard"] = summary.SELECTION
+                elif change == "old-phase":
+                    next(p for p in payloads if p.get("phase") == "paste-single-after-escape")["phase"] = "paste-single-cancel"
+                else:
+                    messages = args[1]["data"]["evidence"]["normalized_result"]["messages"]
+                    messages.append(messages.pop(next(i for i, m in enumerate(messages) if m["payload"].get("phase") == "paste-before")))
+                with self.assertRaises(ValueError):
+                    summary.summarize(*args)
+
+    def test_strict_paste_matches_retained_hosted_observations(self):
+        path = Path(__file__).resolve().parents[2] / "docs/research/r1-text/hosted-39954191554.json"
+        facts = json.loads(path.read_text(encoding="utf-8"))["text_observations"]
+        names = {"reverse-drag-unicode": "paste-before", "paste-single": "paste-single-delivered", "paste-single-cancel": "paste-single-after-escape"}
+        phases = {}
+        for name, received in facts["peer_delta_from_before_paste"].items():
+            modal = facts["modal_by_original_phase"][name]
+            phases[names.get(name, name)] = {"peer": {"received": received}, "modal": modal, "focus": "QPushButton" if modal else "ScintillaEditBase"}
+        self.assertEqual(summary.validate_paste(phases, "")["paste_accepted"], "TF-FIRST\rTF-SECOND\rTF-THIRD")
+
+    def test_repeat_requires_distinct_complete_equal_behavior(self):
+        for original in (summary.summarize(*clipboard_observation()), summary.summarize_menu(*menu_observation())):
+            original.update(fixture_sha256="fixture", template_sha256="template")
+            repeated = copy.deepcopy(original)
+            repeated["evidence_id"] = "different-observation"
+            self.assertTrue(summary.compare_runs(original, repeated)["verified"])
+            for change in ("same-evidence", "identity", "clipboard", "unverified", "behavior"):
+                with self.subTest(schema=original["schema"], change=change):
+                    broken = copy.deepcopy(repeated)
+                    if change == "same-evidence":
+                        broken["evidence_id"] = original["evidence_id"]
+                    elif change == "identity":
+                        broken["template_sha256"] = "changed"
+                    elif change == "clipboard":
+                        broken["system_clipboard"]["copy"] += "changed"
+                    elif change == "unverified":
+                        broken["system_clipboard"]["verified"] = False
+                    elif "vt" in broken:
+                        broken["vt"]["columns"] += 1
+                    else:
+                        broken["navigation_selection"]["drag-unicode"]["anchor"] += 1
+                    with self.assertRaises(ValueError):
+                        summary.compare_runs(original, broken)
 
     def test_local_success_never_claims_real_clipboard(self):
         result = summary.summarize(*observation())

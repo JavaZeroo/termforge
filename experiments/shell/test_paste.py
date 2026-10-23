@@ -56,6 +56,33 @@ def validate_transport(rows, directory):
     return summaries
 
 
+def validate_terminator_observation(rows, directory):
+    observations = [row for row in rows if "clipboard_terminator" in row]
+    if len(observations) != 1:
+        raise ValueError("missing or duplicate clipboard terminator observation")
+    row = observations[0]
+    before = (directory / "terminator-before.utf16le").read_bytes()
+    after = (directory / "terminator-after.utf16le").read_bytes()
+    if not (64 <= len(before) <= 512 and len(before) % 2 == 0
+            and type(row.get("before_units")) is int and row["before_units"] * 2 == len(before)
+            and type(row.get("after_units")) is int and row["after_units"] * 2 == len(after)):
+        raise ValueError("invalid raw clipboard allocation counters")
+    prefix = "no terminator".encode("utf-16-le")
+    if before != prefix + b"X\0" * ((len(before) - len(prefix)) // 2):
+        raise ValueError("malformed clipboard fixture was not entirely unterminated")
+    kind = row["clipboard_terminator"]
+    if kind == "system-terminated":
+        if after != before[:-2] + b"\0\0" or (directory / "terminator-reader.utf16le").read_bytes() != before[:-2]:
+            raise ValueError("system termination or exact reader result not established")
+    elif kind == "unterminated-rejected":
+        if after != before or (directory / "terminator-reader.utf16le").exists():
+            raise ValueError("unterminated rejection contradicts raw allocation")
+    else:
+        raise ValueError("unknown clipboard terminator behavior")
+    return {"behavior": kind, "before_sha256": hashlib.sha256(before).hexdigest(),
+            "after_sha256": hashlib.sha256(after).hexdigest()}
+
+
 def validate_clipboard(rows, directory):
     expected = "Unicode 汉字 e\u0301 🙂\r\nspace  \t".encode("utf-16-le")
     if (directory / "clipboard-written.utf16le").read_bytes() != expected + b"\0\0":
@@ -66,10 +93,11 @@ def validate_clipboard(rows, directory):
         raise ValueError("helper framed UTF16 oracle failed")
     cases = [row for row in rows if "clipboard_cases" in row]
     expected_cases = dict.fromkeys(("independent_write", "independent_read", "occupied_read", "occupied_write",
-                                   "invalid_utf16", "empty", "oversize_allocation", "text_limit", "unterminated", "missing_format"), True)
+                                   "invalid_utf16", "empty", "oversize_allocation", "text_limit", "terminator_observed", "missing_format"), True)
     expected_cases["clipboard_cases"] = "passed"
     if cases != [expected_cases]:
         raise ValueError("missing system clipboard case")
+    validate_terminator_observation(rows, directory)
     reader = {row["clipboard_reader"]: row for row in rows if "clipboard_reader" in row}
     if set(reader) != {"cancelled", "timed_out", "destroyed", "early-eof", "passed"}:
         raise ValueError("clipboard reader cancellation/timeout/EOF/destruction gate incomplete")
@@ -113,6 +141,31 @@ def execute(executable: Path, mode: str, directory: Path):
         job.close()
         directory.parent.mkdir(parents=True, exist_ok=True)
         directory.with_suffix(".json").write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+class TerminatorEvidenceTests(unittest.TestCase):
+    def test_exact_raw_observations_and_rejects_false_claims(self):
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp)
+            before = "no terminator".encode("utf-16-le") + b"X\0" * 19
+            (directory / "terminator-before.utf16le").write_bytes(before)
+            (directory / "terminator-after.utf16le").write_bytes(before)
+            row = {"clipboard_terminator": "unterminated-rejected", "before_units": 32, "after_units": 32}
+            self.assertEqual(validate_terminator_observation([row], directory)["behavior"], "unterminated-rejected")
+            with self.assertRaisesRegex(ValueError, "duplicate"):
+                validate_terminator_observation([row, row], directory)
+            row["clipboard_terminator"] = "system-terminated"
+            (directory / "terminator-reader.utf16le").write_bytes(before[:-2])
+            with self.assertRaisesRegex(ValueError, "not established"):
+                validate_terminator_observation([row], directory)
+            (directory / "terminator-after.utf16le").write_bytes(before[:-2] + b"\0\0")
+            self.assertEqual(validate_terminator_observation([row], directory)["behavior"], "system-terminated")
+            (directory / "terminator-reader.utf16le").write_bytes(before[:-4])
+            with self.assertRaisesRegex(ValueError, "not established"):
+                validate_terminator_observation([row], directory)
+            (directory / "terminator-before.utf16le").write_bytes(before[:-2] + b"\0\0")
+            with self.assertRaisesRegex(ValueError, "not entirely unterminated"):
+                validate_terminator_observation([row], directory)
 
 
 @unittest.skipUnless(os.name == "nt", "real clipboard/ConPTY requires Windows")

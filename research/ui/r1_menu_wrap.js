@@ -10,7 +10,7 @@ let stage=0,busy=false,finished=false,due=0;const started=Date.now(),CTRL=0x4000
 function openContext(next){const p=viewPort(),local=Memory.alloc(8),global=Memory.alloc(8);local.writeS32(180);local.add(4).writeS32(10);mapGlobal(p,global,local);const event=eventAlloc(128);if(event.isNull())throw Error('event allocation failed');contextCtor(event,0,local,global,0);observationStep='post-context';postEvent(p,event,0);stage=next;due=Date.now()+500;busy=false;}
 function menuActions(menu){const list=Memory.alloc(8);actionList(menu,list);const d=list.readPointer(),begin=d.add(8).readS32(),end=d.add(12).readS32();if(begin<0||end<begin||end>100)throw Error('menu bound');const result=[];for(let i=begin;i<end;i++){const p=d.add(16+8*i).readPointer();result.push({pointer:p,text:str(actionText,p),name:str(objectName,p),enabled:actionEnabled(p),submenu:!actionMenu(p).isNull()});}return result;}
 function menuSnapshot(label){const menu=popupWidget();if(menu.isNull())throw Error('no context popup');const actions=menuActions(menu);send({kind:'menu',phase:label,menu_class:typeOf(menu),actions:actions.map(({pointer,...a})=>a)});return {menu,actions};}
-function menuChoose(next,pattern){const {menu,actions}=menuSnapshot('before-activation');const action=actions.filter(x=>pattern.test(x.text.split('\t')[0].replace(/\(&.\)/g,'').replace(/&/g,'').replace(/…/g,'...').trim()));if(action.length!==1||!action[0].enabled)throw Error('menu choice guard');send({kind:'menu_activation',text:action[0].text,name:action[0].name,input:'QMenu active action plus queued Return key'});activeAction(menu,action[0].pointer);return modalKey(next,menu,0x1000004);}
+function menuChoose(next,id,pattern){const {menu,actions}=menuSnapshot('before-activation');const action=actions.filter(x=>pattern.test(x.text.split('\t')[0].replace(/\(&.\)/g,'').replace(/&/g,'').replace(/…/g,'...').trim()));if(action.length!==1||!action[0].enabled)throw Error('menu choice guard');send({kind:'menu_activation',action:id,text:action[0].text,name:action[0].name,input:'QMenu active action plus queued Return key'});activeAction(menu,action[0].pointer);return modalKey(next,menu,0x1000004);}
 send({kind:'probe_ready',station_isolated:true,scenario:'menu-wrap'});
 Interceptor.attach(gui.getExportByName('?clipboard@QGuiApplication@@SAPEAVQClipboard@@XZ'),{onEnter(){if(Process.getCurrentThreadId()===uiThread)send({kind:'clipboard_entry',stage});}});
 Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
@@ -26,11 +26,24 @@ Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
         else if(stage===5){sample('vt-soft-search');key(focused(),0x1000032);}
         else if(stage===6){sample('vt-soft-search-wrap');key(focused(),0x1000000);key(editor,0x1000000);evalText('window.activeText.gotoPosition(5); "selection setup"');}
         else if(stage===7){sample('before-context');return openContext(8);}
-        else if(stage===8){menuSnapshot('context-open');return menuChoose(9,/^(?:Select All|全选)$/i);}
+        else if(stage===8){menuSnapshot('context-open');return menuChoose(9,'select-all',/^(?:Select All|全选)$/i);}
         else if(stage===9){sample('menu-select-all');evalText('window.activeText.gotoPosition(5); "selection setup"');return openContext(10);}
-        else if(stage===10){return menuChoose(11,/^(?:Find|查找)(?:\.\.\.)?$/i);}
+        else if(stage===10){return menuChoose(11,'find',/^(?:Find|查找)(?:\.\.\.)?$/i);}
         else if(stage===11){sample('menu-find-open');key(focused(),65,CTRL);key(focused(),0,0,'LEFTRIGHT');}
-        else if(stage===12){sample('menu-find-result');key(focused(),0x1000000);finished=true;send({kind:'scenario_complete',coverage:'menu-wrap-only',clipboard:'requires-disposable-hosted-vm'});return;}
+        else if(stage===12){sample('menu-find-result');key(focused(),0x1000000);if(!hostedCI){finished=true;send({kind:'scenario_complete',coverage:'menu-wrap-only',clipboard:'requires-disposable-hosted-vm'});return;}focus(editor,7);key(editor,65,CTRL|SHIFT);}
+        else if(stage===13){observationStep='menu-copy';sample('menu-copy-before');writeClipboard('TF-COPY-SENTINEL');return openContext(14);}
+        else if(stage===14){return menuChoose(15,'copy',/^(?:Copy|复制)$/i);}
+        else if(stage===15){sample('menu-copy-result');send({kind:'menu-copy-system',system_clipboard:rawClipboard()});sample('paste-before');writeClipboard('TF-SINGLE');return openContext(16);}
+        else if(stage===16){observationStep='menu-paste-single';return menuChoose(17,'paste',/^(?:Paste|粘贴)$/i);}
+        else if(stage===17){sample('paste-single-delivered');return modalKey(18,focused(),0x1000000);}
+        else if(stage===18){sample('paste-single-after-escape');writeClipboard('TF-FIRST\r\nTF-SECOND\nTF-THIRD');return openContext(19);}
+        else if(stage===19){observationStep='menu-paste-multiline';return menuChoose(20,'paste',/^(?:Paste|粘贴)$/i);}
+        else if(stage===20){sample('paste-multiline');return modalKey(21,focused(),0x1000000);}
+        else if(stage===21){sample('paste-multiline-cancel');focus(editor,7);return openContext(22);}
+        else if(stage===22){return menuChoose(23,'paste',/^(?:Paste|粘贴)$/i);}
+        else if(stage===23){sample('paste-multiline-confirm');const buttons=cached.filter(x=>x.class==='QPushButton'&&x.default);if(buttons.length!==1)throw Error('expected one default confirmation button');send({kind:'confirmation_action',text:buttons[0].text});stage=24;due=Date.now()+600;busy=false;buttonClick(ptr(buttons[0].ptr));return;}
+        else if(stage===24){sample('paste-multiline-accepted');}
+        else if(stage===25){sample('paste-settled');finished=true;send({kind:'scenario_complete',coverage:'menu-wrap-system-clipboard-paste'});return;}
         stage++;due=Date.now()+(stage===3?2500:500);
     }catch(error){finished=true;send({error:String(error),stage,operation:observationStep,stack:error.stack});}finally{busy=false;}
 }});

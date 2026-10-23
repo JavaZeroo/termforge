@@ -1,4 +1,5 @@
 #include "paste.hpp"
+#include "clipboard_text.hpp"
 #include <iostream>
 #include <thread>
 
@@ -11,6 +12,30 @@ template<class F> static void rejects(F&& action, const char* detail) {
 }
 int main() {
     try {
+        // Exercise the exact parser used after GlobalLock. A malformed system
+        // fixture can be normalized by Windows before this parser ever sees it.
+        const auto length_rejects = [](auto&& action, const char* detail) {
+            bool rejected = false;
+            try { action(); } catch (const std::length_error&) { rejected = true; }
+            check(rejected, detail);
+        };
+        const char16_t bounded[] = {u'f', u'o', u'u', u'r', 0};
+        check(copy_bounded_clipboard_text(bounded, sizeof(bounded), 4) == u"four", "exact bounded clipboard text");
+        length_rejects([&] { copy_bounded_clipboard_text(bounded, sizeof(bounded), 3); }, "text beyond cap despite allocator slack");
+        length_rejects([&] { copy_bounded_clipboard_text(bounded, 4 * sizeof(char16_t), 4); }, "terminator outside allocation not read");
+        const char16_t no_terminator[] = {u'n', u'o'};
+        length_rejects([&] { copy_bounded_clipboard_text(no_terminator, sizeof(no_terminator)); }, "unterminated allocation rejected");
+        length_rejects([&] { copy_bounded_clipboard_text(bounded, 1); }, "partial UTF16 unit cannot supply terminator");
+        length_rejects([&] { copy_bounded_clipboard_text(nullptr, (PastePolicy::hard_utf16_units + 1) * 2 + 33); }, "oversize allocation rejected before access");
+        length_rejects([&] { copy_bounded_clipboard_text(bounded, 0); }, "zero allocation rejected");
+        length_rejects([&] { copy_bounded_clipboard_text(bounded, sizeof(bounded), PastePolicy::hard_utf16_units + 1); }, "hard text cap enforced");
+        const char16_t empty[] = {0};
+        check(copy_bounded_clipboard_text(empty, sizeof(empty), 0).empty(), "empty text at zero text cap");
+        char16_t rounded[20]{}; rounded[0] = u'x';
+        check(copy_bounded_clipboard_text(rounded, sizeof(rounded), 3) == u"x", "allocator rounding with bounded text");
+        std::u16string maximum(PastePolicy::hard_utf16_units, u'x'); maximum.push_back(0);
+        check(copy_bounded_clipboard_text(maximum.data(), maximum.size() * 2).size() == PastePolicy::hard_utf16_units,
+              "hard maximum text with in-bound terminator");
         check(prepare_paste(u"").bytes.empty(), "empty text");
         auto unicode = prepare_paste(u"a\u6c49e\u0301\U0001f642\t ");
         check(unicode.bytes == "a\xe6\xb1\x89" "e\xcc\x81\xf0\x9f\x99\x82\t ", "Unicode independent bytes");

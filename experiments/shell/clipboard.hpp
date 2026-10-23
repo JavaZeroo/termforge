@@ -1,6 +1,6 @@
 // CF_UNICODETEXT access. Clipboard ownership follows the calling window station.
 #pragma once
-#include "paste.hpp"
+#include "clipboard_text.hpp"
 #include <windows.h>
 #include <cstring>
 
@@ -27,19 +27,12 @@ inline std::u16string read_unicode_clipboard(HWND owner, size_t max_units = Past
     HANDLE memory = GetClipboardData(CF_UNICODETEXT);
     if (!memory) throw ClipboardError("GetClipboardData", GetLastError());
     const SIZE_T allocation = GlobalSize(memory);
-    // Check the system allocation BEFORE locking, scanning, or copying. Small
-    // allocator rounding is permitted, but can never make the copy unbounded.
-    constexpr size_t allocation_slack = 32;
-    if (!allocation || allocation > (max_units + 1) * sizeof(char16_t) + allocation_slack)
-        throw std::length_error("clipboard allocation exceeds limit");
+    // Validate BEFORE locking; the shared parser repeats the bound before scan.
+    clipboard_text_scan_limit(static_cast<size_t>(allocation), max_units);
     const auto* text = static_cast<const char16_t*>(GlobalLock(memory));
     if (!text) throw ClipboardError("GlobalLock", GetLastError());
     struct Unlock { HANDLE memory; ~Unlock() { GlobalUnlock(memory); } } unlock{memory};
-    const size_t scan_limit = (std::min)(static_cast<size_t>(allocation / sizeof(char16_t)), max_units + 1);
-    size_t length = 0;
-    while (length < scan_limit && text[length]) ++length;
-    if (length == scan_limit) throw std::length_error("clipboard text lacks bounded terminator");
-    return std::u16string(text, length);
+    return copy_bounded_clipboard_text(text, static_cast<size_t>(allocation), max_units);
 }
 inline void write_unicode_clipboard(HWND owner, std::u16string_view text) {
     if (!owner) throw std::invalid_argument("clipboard copy requires an owner window");

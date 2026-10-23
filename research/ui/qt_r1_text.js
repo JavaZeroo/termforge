@@ -155,9 +155,9 @@ Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
         else if(stage===53){const r=dragPoints();mouse(viewPort(),5,r.a.x+1,r.a.y+8,0,1);stage=54;due=Date.now()+200;return;}
         else if(stage===54){const r=dragPoints();mouse(viewPort(),3,r.a.x+1,r.a.y+8,1,0);stage=25;due=Date.now()+500;return;}
         else if(stage===25){sample('reverse-drag-unicode');send({kind:'text_api_guard',value:evalText('JSON.stringify({connected:window.activeText.isConnected(),protocol:window.activeText.protocolName(),mode:window.activeText.keyMode})')});if(!hostedCI){finished=true;send({kind:'scenario_complete',coverage:'navigation-selection-only',clipboard:'requires-disposable-hosted-vm'});return;}key(editor,67,CTRL|SHIFT);}
-        else if(stage===26){send({kind:'copy-system',system_clipboard:rawClipboard()});writeClipboard('TF-SINGLE');return modalKey(27,editor,86,CTRL|SHIFT);}
-        else if(stage===27){sample('paste-single');return modalKey(28,focused(),0x1000000);}
-        else if(stage===28){sample('paste-single-cancel');writeClipboard('TF-FIRST\r\nTF-SECOND\nTF-THIRD');return modalKey(29,editor,0x1000006,SHIFT);}
+        else if(stage===26){send({kind:'copy-system',system_clipboard:rawClipboard()});sample('paste-before');writeClipboard('TF-SINGLE');return modalKey(27,editor,86,CTRL|SHIFT);}
+        else if(stage===27){sample('paste-single-delivered');return modalKey(28,focused(),0x1000000);}
+        else if(stage===28){sample('paste-single-after-escape');writeClipboard('TF-FIRST\r\nTF-SECOND\nTF-THIRD');return modalKey(29,editor,0x1000006,SHIFT);}
         else if(stage===29){sample('paste-multiline');return modalKey(30,focused(),0x1000000);}
         else if(stage===30){sample('paste-multiline-cancel');focus(editor,7);return modalKey(31,editor,86,CTRL|SHIFT);}
         else if(stage===31){sample('paste-multiline-confirm');const buttons=cached.filter(x=>x.class==='QPushButton'&&x.default);if(buttons.length!==1)throw Error('expected one default confirmation button');send({kind:'confirmation_action',text:buttons[0].text});stage=32;due=Date.now()+600;busy=false;buttonClick(ptr(buttons[0].ptr));return;}

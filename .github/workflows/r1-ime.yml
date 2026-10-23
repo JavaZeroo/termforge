@@ -1,8 +1,26 @@
-name: R1 real Microsoft Pinyin gate (unverified environment)
+name: R1 hosted IME inventory and verification
 
 # Disposable VM only. Preparation or observation failures remain failed gates.
 on:
+  # Pushes collect facts only; installation/input requires explicit verify mode.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/r1-ime.yml'
+      - 'research/ime/inventory_hosted.py'
+      - 'research/ime/inventory_worker.ps1'
+      - 'research/ime/test_hosted_inventory.py'
+      - 'experiments/conpty/run.py'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Read-only inventory, or explicit preparation and real IME verification
+        type: choice
+        required: true
+        default: inventory
+        options:
+          - inventory
+          - verify
 
 permissions:
   contents: read
@@ -11,7 +29,7 @@ jobs:
   real-ime:
     if: github.repository == 'JavaZeroo/termforge'
     runs-on: windows-2025
-    timeout-minutes: 20
+    timeout-minutes: 35
     defaults:
       run:
         shell: pwsh
@@ -22,15 +40,26 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
+      - name: Check inventory guard, evidence and owned synthetic timeout
+        timeout-minutes: 2
+        run: python -m unittest research.ime.test_hosted_inventory -v
+      - name: Read-only bounded hosted IME inventory
+        timeout-minutes: 4
+        run: python -m research.ime.inventory_hosted --out local/hosted-ime/inventory --query-timeout 60
       - name: Configure probe
+        if: inputs.mode == 'verify'
+        timeout-minutes: 3
         run: cmake -S . -B build -DBUILD_TESTING=OFF
       - name: Build native IME probe
+        if: inputs.mode == 'verify'
         timeout-minutes: 5
         run: cmake --build build --config Release --target termforge_ime_probe --parallel 2
       - name: Prepare fixed Microsoft Pinyin in disposable hosted VM
+        if: inputs.mode == 'verify'
         timeout-minutes: 10
         run: ./research/ime/prepare_hosted.ps1 -Out "$env:GITHUB_WORKSPACE/local/hosted-ime/environment"
       - name: Require real composition, candidate position, commit and cancel
+        if: inputs.mode == 'verify'
         timeout-minutes: 2
         run: >-
           python research/ime/run_probe.py
@@ -44,6 +73,9 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
           path: |
+            local/hosted-ime/inventory/inventory.json
+            local/hosted-ime/inventory/*/phase.json
+            local/hosted-ime/inventory/*/progress.json
             local/hosted-ime/environment/environment.json
             local/hosted-ime/probe/result.json
             local/hosted-ime/probe/stdout.jsonl

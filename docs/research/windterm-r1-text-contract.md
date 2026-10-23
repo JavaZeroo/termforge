@@ -1,6 +1,6 @@
 # WindTerm 2.7.0：R1 文字交互契约
 
-**#11 尚未验收完成。** 已直接观察基础导航/选择、系统复制、键盘粘贴、全选/查找菜单及原始 VT 文本投影。复制/粘贴菜单的实际执行、软换行与尾空白的系统剪贴板结果，以及粘贴验收器补强仍未完成。以下记录行为事实，不代表完整等价或性能验收。
+**#11 尚未验收完成。** 已直接观察基础导航/选择、系统复制、键盘粘贴、全选/查找菜单及原始 VT 文本投影。严格粘贴验收器和 Copy/Paste 菜单探针已实现并通过局部测试；新增菜单操作、软换行与尾空白的系统剪贴板结果仍待最终 hosted 两轮验收。以下记录行为事实，不代表完整等价或性能验收。
 
 目标固定为官方 2.7.0 Windows x64，EXE SHA-256 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`；分发文件白名单摘要为 `e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203`。公开内容只有原创场景、工具和事实。
 
@@ -49,7 +49,7 @@
 | 同一多行剪贴板，Ctrl+Shift+V | 再次出现 `PasteDialog`；peer 在确认前仍不增加 |
 | 点击默认 Paste 按钮 | 弹窗关闭、焦点回终端；peer 仅追加一次 `TF-FIRST\rTF-SECOND\rTF-THIRD` |
 
-脚本阶段名 `paste-single-cancel` 有误导性：该阶段实际是**立即粘贴成功之后的 Escape**，没有可取消的单行确认框。它不能作为单行任务取消的证据。多行取消与确认的入口则有真实弹窗和接收端字节支持。
+旧证据中的阶段名 `paste-single-cancel` 有误导性：该阶段实际是**立即粘贴成功之后的 Escape**，没有可取消的单行确认框。它不能作为单行任务取消的证据。当前脚本改用 `paste-single-delivered` / `paste-single-after-escape`，并在操作前记录 `paste-before`；旧记录保持原名。多行取消与确认的入口有真实弹窗和接收端字节支持。
 
 这一系统复制样例没有尾空白或软换行；不能与下一节的选择模型结果拼接成“系统剪贴板也保留尾空白并合并软换行”的结论。不同传输、alt-screen、逐行发送及更大粘贴任务不在此样例的结论内。
 
@@ -69,22 +69,22 @@ Hosted 两次 `menu-wrap` 场景均协商为 63 列，发送字节 SHA-256、选
 
 ## 验收器限制与未完成项
 
-CI 成功说明 `d150fe4` 当时的脚本 gate 通过，不能直接解锁整个 #11。原 `text` 汇总器有明确漏洞：多行取消比较以弹窗出现后的 peer 内容为基线，可能漏掉打开弹窗前的提前发送；单行效果及取消/接受后弹窗关闭也未严格校验。新增反例已复现这些误通过条件，代码补强仍未完成。
+CI 成功说明 `d150fe4` 当时的脚本 gate 通过，不能直接解锁整个 #11。原 `text` 汇总器有明确漏洞：多行取消比较以弹窗出现后的 peer 内容为基线，可能漏掉打开弹窗前的提前发送；单行效果及取消/接受后弹窗关闭也未严格校验。当前验收器已用操作前基线检查各阶段的精确字节、modal 和焦点，并检查运行结束后的 peer，拒绝提前泄漏、重复发送及晚到尾部；反例和保留 hosted 观察的复核测试通过。这是源码与局部测试结果，最终探针尚须 hosted 验证。
 
-本次对两轮保留的白名单 diagnostic 另做了独立复核：以 `reverse-drag-unicode` 阶段的 peer 内容为粘贴前基线，确认单行只追加 `TF-SINGLE`；多行打开、取消和再次确认前均不再增加，确认后只追加一次精确 CR 分隔文本；取消/接受后 modal 均为 null、焦点回终端。两轮均满足这些更严格的条件。此复核支持本次观察，**并未修复自动验收器**。公开 JSON 将 `original_gate` 与 `independent_recheck` 分开，顶层 `issue_11_complete=false`。
+对两轮保留的白名单 diagnostic 所做的独立复核，以 `reverse-drag-unicode` 阶段的 peer 内容为粘贴前基线，确认单行只追加 `TF-SINGLE`；多行打开、取消和再次确认前均不再增加，确认后只追加一次精确 CR 分隔文本；取消/接受后 modal 均为 null、焦点回终端。两轮满足这些更严格的条件。该复核支持旧观察，**不替代新源码的运行**。公开 JSON 保持 `original_gate` 与 `independent_recheck` 分开，顶层 `issue_11_complete=false`。
 
-恢复增量工作后，#11 的剩余门槛是：
+当前源码已补的门槛及剩余验证：
 
-1. 修复粘贴验收器，使用真实粘贴前基线，按已观察到的单行立即发送策略和多行确认策略分别验证；加入提前泄漏、重复发送、取消后仍开窗等反例。澄清 `paste-single-cancel` 阶段名称或解释。
-2. 实际触发 Copy/Paste 菜单，验证正确选区、系统剪贴板、确认/取消和接收端结果。不能以菜单存在或其他动作成功代替。
-3. 将原始 VT 软换行、硬换行、尾两空格及 Unicode 样例接到实际 CF_UNICODETEXT 复制验证，保存两次新配置的精确结果。
-4. 在补强后的门槛下核对上述基础行为和回收，保留未观察项，完成整个合同后才关闭 #11。
+1. 严格粘贴校验与阶段重命名已实现。最终 `text` 两轮必须通过新门槛；不复用旧 `complete=true`。
+2. 新 `menu-wrap` 已加入实际 Copy/Paste action 触发，复制前写入系统哨兵，再检查 CF_UNICODETEXT；粘贴覆盖单行立即发送、多行取消与确认。菜单实际效果仍须运行证据。
+3. 新 CF 门槛逐字检查 VT 软换行合并、硬换行 CRLF、尾两空格、中文和 NFD；粘贴先按已观察到的 CR 行分隔设严格预期。此前这些系统语义只在 Shell 样例有部分证据，不能预先认定 Telnet 样例也满足；若有差异，必须保留真实失败并核对原因。
+4. 两组各重复一次新配置，并用 `--compare-with` 核对不同 Evidence ID、相同 fixture/template 和精确行为结果，检查回收。完成整个合同后才关闭 #11。
 
 仍仅有静态声明的内容包括默认主屏粘贴提示开关、alt-screen 提示关闭和选择后自动复制关闭；以上运行不能证明这些设置在所有上下文中的语义。更复杂 VT 模式、逻辑行重排、正则/跨会话搜索不由这些基本样例推出。
 
 ## 自动复现与隔离
 
-[r1-reference.yml](../../.github/workflows/r1-reference.yml) 仅 `workflow_dispatch`，由代理触发；下载并核验官方 ZIP/EXE、安装锁定 REA，串行运行两次 `text` 与两次 `menu-wrap`。`--require-complete` 当前只覆盖 `text` gate，且有上述待修漏洞；`--require-menu-complete` 只覆盖 Select All/Find 菜单及 VT 选择/搜索。两种标志都不等于整个 R1-01 完成。
+[r1-reference.yml](../../.github/workflows/r1-reference.yml) 是一次性 VM 自动入口：下载并核验官方 ZIP/EXE、安装锁定 REA，串行运行两次 `text` 与两次 `menu-wrap`。`--require-complete` 覆盖严格 `text` gate；`--require-menu-complete` 现在必须覆盖 Select All/Find/Copy/Paste 菜单、VT 选择/搜索和实际系统剪贴板。旧 `menu-wrap-only` 完成标记只能得到局部 `selection_find_verified`，不能通过新菜单门槛。每组第二轮应以 `--compare-with` 指向第一轮摘要；两种场景须合并核对整个 R1-01 合同。
 
 本机新建 window station 的实际 `OpenClipboard` 返回 error 5，因此不回退到用户剪贴板。仅显式 `--hosted-ci` 且同时满足 `GITHUB_ACTIONS=true` / `RUNNER_ENVIRONMENT=github-hosted` 时，允许使用一次性 VM 当前 station 的剪贴板，目标窗口仍在自有非输入 desktop。系统剪贴板任务串行执行。
 

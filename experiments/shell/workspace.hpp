@@ -4,6 +4,7 @@
 #include "layout_state.hpp"
 #include "ui_font.hpp"
 #include "paste_scenario_state.hpp"
+#include "clipboard_scenario_state.hpp"
 
 class Workspace {
     struct Tab { int id; std::wstring title; std::unique_ptr<ShellWindow> shell; };
@@ -31,6 +32,7 @@ class Workspace {
     std::vector<std::string> geometry_samples_;
     uint64_t history_anchor_ = 0;
     tf_shell_test::PasteScenarioState paste_scenario_;
+    tf_shell_test::ClipboardScenarioState clipboard_scenario_;
     int width_ = 1360, height_ = 860, dpi_ = 96;
     int physical_width_ = 1360, physical_height_ = 860;
     int left_ = 226, right_ = 226, left_middle_ = 289, right_middle_ = 289;
@@ -330,6 +332,7 @@ class Workspace {
     void scenario_history();
     void scenario_keyboard();
     void scenario_paste();
+    void scenario_clipboard();
     static std::string size_marker(int outer_width,int rows,ShellWindow* shell) {
         const int bar=GetSystemMetricsForDpi(SM_CXVSCROLL,GetDpiForWindow(shell->handle()));
         return "TF_SIZE_"+std::to_string((outer_width-bar)/12)+"x"+std::to_string(rows);
@@ -397,6 +400,7 @@ class Workspace {
                 else if(self->test_mode_=="ui-history") self->scenario_history();
                 else if(self->test_mode_=="ui-keyboard") self->scenario_keyboard();
                 else if(self->test_mode_=="ui-paste" || self->test_mode_=="ui-paste-system") self->scenario_paste();
+                else if(self->test_mode_=="ui-clipboard-system") self->scenario_clipboard();
                 else self->scenario();
                 return 0;
             }
@@ -477,11 +481,11 @@ public:
             require(stage_==100 && collected_==1,"workspace keyboard scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\"ui-keyboard\",\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && (test_mode_=="ui-paste" || test_mode_=="ui-paste-system")) {
+        if(!image_.empty() && (test_mode_=="ui-paste" || test_mode_=="ui-paste-system" || test_mode_=="ui-clipboard-system")) {
             require(stage_==100 && collected_==2,"workspace paste scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system") {
+        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system") {
             require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
@@ -495,3 +499,4 @@ public:
 #include "workspace_history_scenario.hpp"
 #include "workspace_keyboard_scenario.hpp"
 #include "workspace_paste_scenario.hpp"
+#include "workspace_clipboard_scenario.hpp"

@@ -96,6 +96,8 @@ resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子
 | `ui-paste` | 默认取消、Tab/Enter/Escape、隐藏目标、输出洪流、发送途中取消和关闭 | `paste-workflow.json` 与 `cancel.bin`/`close.bin`；接收端事件握手确保动作发生在发送途中；本场景不读取用户剪贴板 |
 | `ui-paste-system` | 真实 Unicode 系统剪贴板 → 快捷键 → 确认 → 接收端 | 只在指定一次性 hosted 环境运行；本地未运行/跳过不计系统验收 |
 
+系统剪贴板边界另由 `python -m unittest experiments.shell.test_paste -v` 验证。畸形终止符用例保留 `terminator-before/after/reader.utf16le`：先核对发布前确实没有 NUL，再独立捕获系统返回的完整分配。仅接受“原分配未变且读取器拒绝”或“最后一个单元被系统改为 NUL 且读取器精确返回其前缀”两种有字节证据的结果；其他转换仍失败并留存原始内容。跨平台 `paste_test` 直接测试生产读取器共用的有界解析逻辑，包括无终止符、超限、分配末端与字符上限，不能用系统可能规范化了夹具代替解析边界测试。
+
 原生 `layout_state` 测试覆盖严格读取、截断、非法数值、Unicode 路径和替换失败保留。`renderer_metrics` 覆盖 GDI/DirectWrite × 96/120/144/192 DPI × 50/100/125/200% 共 32 组，检查非整数边界、实际绘字与 dirty/full 一致。
 
 合成 `frame.bmp` 和 DPI 图片来自自有工作区/终端绘制，不含原生 EDIT 子控件；编辑器由实际 HWND/字体断言验证。这些图片不是用户桌面截图、像素等价或实际呈现完成证据。历史批次的测量与修复依据统一从[证据索引](../../docs/EVIDENCE.md)进入。

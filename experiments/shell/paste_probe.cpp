@@ -69,7 +69,8 @@ public:
 };
 // Deliberately independent from clipboard.hpp: construct malformed/boundary
 // global allocations directly, then test the public reader against them.
-static void raw_clipboard_fixture(HWND owner, std::u16string_view text, size_t units, bool terminate = true) {
+static void raw_clipboard_fixture(HWND owner, std::u16string_view text, size_t units, bool terminate = true,
+                                  std::u16string* before_publish = nullptr) {
     require(units > text.size() && units <= PastePolicy::hard_utf16_units + 128, "bounded raw clipboard fixture");
     HGLOBAL memory = GlobalAlloc(GMEM_MOVEABLE, units * sizeof(char16_t));
     require(memory != nullptr, "raw clipboard allocation");
@@ -79,12 +80,56 @@ static void raw_clipboard_fixture(HWND owner, std::u16string_view text, size_t u
     for (size_t i = 0; i < allocated_units; ++i) data[i] = u'X';
     for (size_t i = 0; i < text.size(); ++i) data[i] = text[i];
     if (terminate) data[text.size()] = 0;
+    if (before_publish) before_publish->assign(data, allocated_units);
     GlobalUnlock(memory);
     if (!OpenClipboard(owner)) { const auto error = GetLastError(); GlobalFree(memory); fail("raw clipboard open", error); }
     const bool emptied = EmptyClipboard() != FALSE;
     const bool published = emptied && SetClipboardData(CF_UNICODETEXT, memory) != nullptr;
     const auto error = GetLastError(); CloseClipboard();
     if (!published) { GlobalFree(memory); fail("raw clipboard publish", error); }
+}
+static void dump_units(const std::filesystem::path& path, std::u16string_view text) {
+    std::ofstream output(path, std::ios::binary);
+    output.write(reinterpret_cast<const char*>(text.data()), static_cast<std::streamsize>(text.size() * 2));
+    require(output.good(), "bounded raw UTF16 capture");
+}
+static std::u16string capture_raw_allocation(HWND owner, const std::filesystem::path& path) {
+    // Capture every returned unit, without the production scanner or string
+    // interpretation. Unexpected transformations remain inspectable on failure.
+    ClipboardAccess access(owner);
+    const HANDLE memory = GetClipboardData(CF_UNICODETEXT);
+    require(memory != nullptr, "raw observation clipboard handle");
+    const SIZE_T size = GlobalSize(memory);
+    require(size && size % 2 == 0 && size <= 256 * 2, "raw observation allocation bound");
+    const auto* data = static_cast<const char16_t*>(GlobalLock(memory));
+    require(data != nullptr, "raw observation clipboard lock");
+    struct Unlock { HANDLE memory; ~Unlock() { GlobalUnlock(memory); } } unlock{memory};
+    std::u16string captured(data, size / 2);
+    dump_units(path, captured);
+    return captured;
+}
+static void malformed_terminator_case(HWND owner, const std::filesystem::path& directory) {
+    std::u16string before;
+    raw_clipboard_fixture(owner, u"no terminator", 32, false, &before);
+    dump_units(directory / "terminator-before.utf16le", before);
+    require(before.size() >= 32 && before.find(u'\0') == std::u16string::npos,
+            "fixture really had no terminator before system ownership");
+    const auto after = capture_raw_allocation(owner, directory / "terminator-after.utf16le");
+    std::u16string normalized = before; normalized.back() = 0;
+    const bool system_terminated = after == normalized;
+    require(after == before || system_terminated, "unexpected clipboard terminator transformation; raw buffers retained");
+    if (system_terminated) {
+        const auto read = read_unicode_clipboard(owner);
+        dump_units(directory / "terminator-reader.utf16le", read);
+        require(read == before.substr(0, before.size() - 1), "reader must preserve exact system-normalized text");
+    } else {
+        bool rejected = false;
+        try { read_unicode_clipboard(owner); }
+        catch (const std::length_error&) { rejected = true; }
+        require(rejected, "unchanged unterminated system allocation rejected");
+    }
+    std::cout << "{\"clipboard_terminator\":\"" << (system_terminated ? "system-terminated" : "unterminated-rejected")
+              << "\",\"before_units\":" << before.size() << ",\"after_units\":" << after.size() << "}\n";
 }
 static void dump_raw_clipboard(HWND owner, const std::filesystem::path& path, size_t expected_units) {
     require(OpenClipboard(owner) != FALSE, "independent clipboard reader open");
@@ -175,8 +220,7 @@ static void clipboard_cases(IsolatedClipboard& isolated, const std::filesystem::
     // scanning/copying, independent of its early terminator.
     raw_clipboard_fixture(isolated.window, u"x", PastePolicy::hard_utf16_units + 64);
     rejects([&] { read_unicode_clipboard(isolated.window); }, "oversize system allocation rejected");
-    raw_clipboard_fixture(isolated.window, u"no terminator", 32, false);
-    rejects([&] { read_unicode_clipboard(isolated.window); }, "unterminated system text rejected");
+    malformed_terminator_case(isolated.window, directory);
     raw_clipboard_fixture(isolated.window, u"four", 5);
     require(read_unicode_clipboard(isolated.window, 4) == u"four", "exact text limit accepted");
     rejects([&] { read_unicode_clipboard(isolated.window, 3); }, "text limit rejected despite allocation slack");
@@ -187,7 +231,7 @@ static void clipboard_cases(IsolatedClipboard& isolated, const std::filesystem::
     write_unicode_clipboard(isolated.window, expected);
     std::cout << "{\"clipboard_cases\":\"passed\",\"independent_write\":true,\"independent_read\":true,\"occupied_read\":true,"
                  "\"occupied_write\":true,\"invalid_utf16\":true,\"empty\":true,\"oversize_allocation\":true,\"text_limit\":true,"
-                 "\"unterminated\":true,\"missing_format\":true}\n";
+                 "\"terminator_observed\":true,\"missing_format\":true}\n";
 }
 static ClipboardReadProgress await_reader(ClipboardReadJob& job, HWND window, unsigned& messages) {
     const ULONGLONG deadline = GetTickCount64() + 12000;

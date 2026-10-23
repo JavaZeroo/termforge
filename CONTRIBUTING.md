@@ -41,6 +41,6 @@ python -m experiments.core.run --fixture unicode --out local/experiments/core-un
 
 完整回放的输出目录必须不存在；默认在 Windows 验证文件与管道两条路径，在 Linux 只验证文件回放，也可显式使用 `--route replay`。自动回放与核心支持边界见[核心说明](experiments/core/README.md)。
 
-[GitHub Actions](.github/workflows/build.yml) 在干净检出上构建并执行相同检查及两套完整回放。Windows 剪贴板/窗口合成场景保留成功或失败产物；其余失败产物限于本次 CTest/CMake 日志和 `build/test-artifacts` 内的合成用例结果。主构建不上传仓库 `local/`、WindTerm、个人终端会话或完整工作目录。独立的 [R1 参考探针](.github/workflows/r1-reference.yml)与 [IME 探针](.github/workflows/r1-ime.yml)仅手动触发，分别上传白名单事实摘要和自有输入法探针记录。测试可通过 `TERMFORGE_TEST_ARTIFACTS` 指定合成记录目录。CI 的运行时间用于回归诊断，不是受控性能基准。
+[GitHub Actions](.github/workflows/build.yml) 在干净检出上构建并执行相同检查及两套完整回放。Windows 剪贴板/窗口合成场景保留成功或失败产物；其余失败产物限于本次 CTest/CMake 日志和 `build/test-artifacts` 内的合成用例结果。主构建不上传仓库 `local/`、WindTerm、个人终端会话或完整工作目录。[R1 参考探针](.github/workflows/r1-reference.yml)在相关探针文件进入 main 后自动运行，也保留手动入口；[IME 工作流](.github/workflows/r1-ime.yml)的自动入口只做有界只读盘点，语言准备与真实输入须显式选择 `verify`。两者仅上传白名单事实和自有探针记录。测试可通过 `TERMFORGE_TEST_ARTIFACTS` 指定合成记录目录。CI 的运行时间用于回归诊断，不是受控性能基准。
 
 Server 2022 的 ConPTY 稳态句柄增长尚未解决，未列入已验收平台。它保留为[按需兼容性探针](.github/workflows/conpty-compat.yml)，运行同样严格的断言，失败仍报告失败；[原因与证据](docs/research/conpty-platform-check-2026-10-22.md)独立保留，不能把现代 Windows 主 CI 通过解释为旧系统也通过。

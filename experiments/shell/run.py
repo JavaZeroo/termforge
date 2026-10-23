@@ -19,10 +19,11 @@ from experiments.build_paths import binary
 from experiments.conpty.run import OwnedJob
 from experiments.shell.history_checks import validate_history, validate_native_scroll
 from experiments.shell.paste_checks import validate_paste_workflow
+from experiments.shell.clipboard_checks import require_hosted_clipboard, validate_clipboard_workflow
 
 
 def validate(row, mode):
-    if mode in ("ui-paste", "ui-paste-system"):
+    if mode in ("ui-paste", "ui-paste-system", "ui-clipboard-system"):
         if row != {"valid": True, "mode": mode, "sessions_closed": 2, "active_children_after": 0, "presented_done": None}:
             raise ValueError("paste window workflow or cleanup failed")
         return
@@ -221,6 +222,8 @@ class OwnedTestDesktop:
 
 
 def execute(exe, mode, out, timeout=40, settings_source=None):
+    if mode in ("ui-paste-system", "ui-clipboard-system"):
+        require_hosted_clipboard(os.environ)
     out.mkdir(parents=True, exist_ok=False)
     job = desktop = None
     assigned = False
@@ -282,6 +285,9 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
                     raise ValueError("paste confirmation/target receiver differs from independent expectation")
                 record["system_clipboard"] = mode == "ui-paste-system"
                 record["paste_workflow"] = validate_paste_workflow(out)
+            if mode == "ui-clipboard-system":
+                record["system_clipboard"] = True
+                record["clipboard_workflow"] = validate_clipboard_workflow(out)
             record["result"] = result
             record["frame_sha256"] = hashlib.sha256((out / "frame.bmp").read_bytes()).hexdigest()
         record["status"] = "passed"

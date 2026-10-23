@@ -35,15 +35,28 @@ python research/ime/run_probe.py --exe build/bin/Release/termforge_ime_probe.exe
 
 ## 一次性 hosted Windows 门槛
 
-只在 `JavaZeroo/termforge` 的 GitHub-hosted Windows job 中运行（`win22`/`win25`）；设置脚本在任何修改之前检查环境、管理员身份和工作区内输出路径。本机守卫已实测拒绝且不创建输出目录。禁止在开发机伪造 CI 环境变量。
+只在 `JavaZeroo/termforge` 的 GitHub-hosted Windows job 中运行（`win22`/`win25`/`win25-vs2026`）。[独立 workflow](../../.github/workflows/r1-ime.yml) 对相关文件的 push 自动执行只读盘点；手动 dispatch 接受 `mode=inventory|verify`，默认 `inventory`。自动运行不会安装语言、修改用户语言或运行真实输入动作；只有显式 dispatch `mode=verify` 才进入准备和真实输入门槛。也可独立手动触发盘点：
 
-```powershell
-./research/ime/prepare_hosted.ps1 -Out "$env:GITHUB_WORKSPACE/local/hosted-ime/environment"
-python research/ime/run_probe.py --exe build/bin/Release/termforge_ime_probe.exe --mode hosted --out local/hosted-ime/probe
+```sh
+gh workflow run r1-ime.yml --repo JavaZeroo/termforge -f mode=inventory
 ```
 
-准备脚本查询/安装 `Language.Basic~~~zh-CN~0.0.1.0`，需要重启即失败；只修改该一次性 VM 的用户语言，固定官方 Microsoft Pinyin CLSID/profile，并记录 OS、镜像版本及 `ChsIME.exe` 版本/哈希。`prepared-not-verified` 不是输入法可用证明。[语言能力安装](https://learn.microsoft.com/en-us/powershell/module/dism/add-windowscapability)、[Microsoft Pinyin 标识](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs)
+`inventory_hosted.py` 在创建目录之前检查 hosted 身份、管理员权限及工作区内输出路径；已有目录一律拒绝，包括空目录。禁止在开发机伪造 CI 环境变量。它为 OS、PowerShell、DISM 参数元数据、拼音二进制、固定 TIP 和目标能力分别建立独占子目录；每项记录开始/结束、耗时、错误及子进程回收结果，子进程关键步骤另写原子 `progress.json`。实际镜像版本、InstallationType、模块版本、文件哈希及 TIP 注册/用户列表信息均来自本轮盘点。
+
+每项使用固定 Windows PowerShell、`-NoProfile -NonInteractive`，脚本收到 `GO` 前不执行环境查询；父进程先纳入自有 kill-on-close Job，再放行。非能力项上限 20 秒，能力查询默认 60 秒，另给进程与 Job 各最多 5 秒回收。单项查询失败或超时后，只有已确认自有进程退出且 Job 清空才继续其他独立盘点；回收失败或状态未知就停止。只要有一项失败，汇总仍是 `inventory-failed`。回收只覆盖自有进程树，不终止系统 servicing 服务；`active=0` 不代表系统全局空闲。GO 门控保证脚本业务探测在 Job 分配后开始，不声称 PowerShell 主机初始化从第一条指令即已纳管。
+
+能力查询先检查真实参数集是否同时包含 `Online/Name/LimitAccess/LogPath`；缺参即失败，不去掉参数重试。查询固定为 `Language.Basic~~~zh-CN~0.0.1.0`，使用 `-LimitAccess` 阻止联系 Windows Update/WSUS 获取能力来源，并写本项专用日志。能力不存在或 `NotPresent` 属于成功观察；`inventory-complete-ime-unverified`、文件存在、TIP 注册都不等于能实际输入。[查询参数](https://learn.microsoft.com/en-us/powershell/module/dism/get-windowscapability?view=windowsserver2025-ps)
+
+上传仅限白名单 `inventory.json`、各项 `phase.json/progress.json` 及明确的真实探针结果文件。DISM 只公开最多 64 KiB 日志尾部提取的 HRESULT、错误/警告计数与截断标记；不上传原始日志、私有 stdout/stderr、系统配置或安装文件。单项输出/摘要写入失败仍保留失败状态，不能把查询完成转换为整项通过。
+
+本地仅运行以下测试；它们检查守卫、原子报告、纯 PowerShell 参数合同/故障路径，以及真实合成子孙进程的超时回收，不执行系统能力或语言操作：
+
+```sh
+python -m unittest research.ime.test_hosted_inventory -v
+```
+
+首次真实预检尚未验收。[运行 39950720638](https://github.com/JavaZeroo/termforge/actions/runs/39950720638) 的准备步骤十分钟超时，只留下 `preparing`，不能定位具体命令或判定 Server 不支持中文；新预检用于补齐这个观测缺口。`verify` 会先完成相同盘点，再沿用 `prepare_hosted.ps1` 和真实探针，原安装时限没有增加。准备脚本查询/安装目标能力，需要重启即失败；只修改一次性 VM 的用户语言并固定官方 Microsoft Pinyin profile。库存盘点成功不代表安装路线已修复，`prepared-not-verified` 也不是输入法可用证明。[语言能力安装](https://learn.microsoft.com/en-us/powershell/module/dism/add-windowscapability)、[Microsoft Pinyin 标识](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs)
 
 探针再次验证 hosted 环境和真实 input desktop，在每次输入前确认自有窗口仍为 foreground/focus。实际按键 `NIHAO` 必须产生原生组合及可见候选窗口；同一候选 HWND 在光标移动时须产生匹配位移，Space 恰好提交一次“你好”，无额外 `WM_CHAR`；再输入 `NI` 并用 Escape 取消。只激活本进程 profile，不使用 `TF_IPPMF_ENABLEPROFILE` 隐式修改用户注册配置。[ActivateProfile](https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfinputprocessorprofilemgr-activateprofile)
 
-候选窗口类名、前后矩形、预编辑文字、提交内容和事件数均保存在 JSON。候选类无法识别、语言包缺失、没有 input desktop、焦点丢失或任何步骤未验证，门槛失败。[独立 workflow](../../.github/workflows/r1-ime.yml) 仅由 `workflow_dispatch` 触发，设置总时限，无论成功失败都上传自有环境 JSON、结果 JSON 与原始探针 stdout/stderr；不上传安装文件、系统配置或 DISM 日志。当前尚未验证 hosted 镜像的语言包和交互会话可用性；本地两个隔离模式中 profile 枚举为空，不能据此宣称实际系统 IME 已支持。
+候选窗口类名、前后矩形、预编辑文字、提交内容和事件数均保存在 JSON。候选类无法识别、语言包缺失、没有 input desktop、焦点丢失或任何步骤未验证，门槛失败。当前尚未验证 hosted 镜像的语言包和交互会话可用性；本地两个隔离模式中 profile 枚举为空，不能据此宣称实际系统 IME 已支持。

@@ -12,6 +12,7 @@ from unittest import mock
 from experiments.build_paths import ROOT, binary
 from experiments.shell.run import execute, validate, validate_main_geometry, validate_dpi_geometry
 from experiments.shell.history_checks import validate_history, validate_native_scroll
+from experiments.shell.clipboard_checks import require_hosted_clipboard, validate_clipboard_workflow
 
 
 @unittest.skipUnless(os.name == "nt", "ConPTY shell requires Windows")
@@ -56,6 +57,13 @@ class ShellTests(unittest.TestCase):
     def test_system_clipboard_shortcut_to_window_confirmation_and_receiver(self):
         for repeat in range(2):
             execute(self.exe, "ui-paste-system", self.out / f"paste-system-{repeat}")
+
+    @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and
+                         os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",
+                         "product clipboard read gate requires a disposable hosted VM")
+    def test_system_clipboard_product_read_errors_cancel_and_close(self):
+        for repeat in range(2):
+            execute(self.exe, "ui-clipboard-system", self.out / f"clipboard-system-{repeat}", timeout=60)
 
     def test_commands_unicode_editing_interrupt_and_normal_exit(self):
         for repeat in range(3):
@@ -220,6 +228,81 @@ class ShellTests(unittest.TestCase):
             broken["snapshots"].pop()
             with self.assertRaises(ValueError):
                 validate_dpi_geometry(broken)
+
+
+class ClipboardWindowGateTests(unittest.TestCase):
+    @unittest.skipUnless(os.name == "nt", "native clipboard guard requires the Windows binary")
+    def test_native_clipboard_mode_refuses_non_hosted_before_window_creation(self):
+        environment = os.environ.copy()
+        environment.pop("GITHUB_ACTIONS", None)
+        environment.pop("RUNNER_ENVIRONMENT", None)
+        with tempfile.TemporaryDirectory() as temporary:
+            frame = Path(temporary) / "must-not-create.bmp"
+            result = subprocess.run([str(binary("termforge_shell")), "--test-owned", "ui-clipboard-system", str(frame)],
+                                    env=environment, capture_output=True, timeout=5,
+                                    creationflags=subprocess.CREATE_NO_WINDOW)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn(b"requires a disposable GitHub-hosted VM", result.stderr)
+            self.assertFalse(frame.exists())
+
+    def test_hosted_guards_reject_missing_or_partial_identity_before_any_work(self):
+        for environment in ({}, {"GITHUB_ACTIONS": "true"}, {"RUNNER_ENVIRONMENT": "github-hosted"},
+                            {"GITHUB_ACTIONS": "true", "RUNNER_ENVIRONMENT": "self-hosted"}):
+            with self.subTest(environment=environment), self.assertRaises(ValueError):
+                require_hosted_clipboard(environment)
+            for mode in ("ui-paste-system", "ui-clipboard-system"):
+                with mock.patch.dict(os.environ, environment, clear=True), mock.patch.object(Path, "mkdir") as mkdir:
+                    with self.assertRaises(ValueError):
+                        execute(Path("unused.exe"), mode, Path("must-not-create"))
+                    mkdir.assert_not_called()
+        require_hosted_clipboard({"GITHUB_ACTIONS": "true", "RUNNER_ENVIRONMENT": "github-hosted"})
+
+    def test_clipboard_evidence_rejects_leaks_missing_phases_and_false_cleanup(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            cases = []
+            for name in ("occupied", "oversize", "cancel", "close"):
+                payload = b"B" * 256 + (b"" if name == "close" else b"RETRY_" + name.encode("ascii"))
+                (directory / f"{name}.bin").write_bytes(payload)
+                (directory / f"{name}-error.bmp").write_bytes(b"BM" + bytes(52))
+                cases.append(dict(name=name, action="product-paste-command", baseline_bytes=256, helper_pid=42,
+                    receiver_bytes=len(payload), owner_entered=name in ("cancel", "close"),
+                    prompt_seen=False, transfer_seen=False, other_during=True, other_after=True,
+                    error_visible=name in ("occupied", "oversize"), helper_exited=True, busy_cleared=True,
+                    target_closed=name == "close", retry_verified=name != "close"))
+            data = dict(schema="termforge-window-clipboard-v1", disposable_hosted=True, cases=cases)
+
+            def write(value):
+                (directory / "clipboard-workflow.json").write_text(json.dumps(value), encoding="utf-8")
+
+            write(data)
+            self.assertEqual(set(validate_clipboard_workflow(directory)), {"occupied", "oversize", "cancel", "close"})
+            mutations = [("action", "synthetic"), ("helper_pid", 0), ("helper_pid", True),
+                         ("baseline_bytes", 0), ("receiver_bytes", 256), ("prompt_seen", True),
+                         ("transfer_seen", True), ("other_during", False), ("other_after", False),
+                         ("helper_exited", False), ("busy_cleared", False), ("retry_verified", False)]
+            for field, value in mutations:
+                bad = copy.deepcopy(data); bad["cases"][0][field] = value; write(bad)
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate_clipboard_workflow(directory)
+            for index, field, value in ((0, "error_visible", False), (2, "owner_entered", False),
+                                        (3, "target_closed", False), (3, "retry_verified", True)):
+                bad = copy.deepcopy(data); bad["cases"][index][field] = value; write(bad)
+                with self.subTest(index=index, field=field), self.assertRaises(ValueError):
+                    validate_clipboard_workflow(directory)
+            bad = copy.deepcopy(data); bad["cases"].pop(); write(bad)
+            with self.assertRaises(ValueError):
+                validate_clipboard_workflow(directory)
+            write(data)
+            original = (directory / "cancel.bin").read_bytes()
+            for changed in (original + b"\x1b", original + b"LATE_MUST_NOT_SEND", original[:-1], original + b"RETRY_cancel"):
+                (directory / "cancel.bin").write_bytes(changed)
+                with self.subTest(payload=changed[-24:]), self.assertRaises(ValueError):
+                    validate_clipboard_workflow(directory)
+            (directory / "cancel.bin").write_bytes(original)
+            (directory / "occupied-error.bmp").write_bytes(b"")
+            with self.assertRaises(ValueError):
+                validate_clipboard_workflow(directory)
 
 
 if __name__ == "__main__":

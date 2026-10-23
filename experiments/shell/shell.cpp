@@ -527,6 +527,9 @@ public:
     }
     HWND handle() const { return hwnd_; }
     bool paste_busy() const { return clipboard_read_ || paste_prompt_ || paste_transfer_; }
+    std::optional<tf_shell::ClipboardReadProgress> observed_clipboard_read() const {
+        return clipboard_read_?std::optional<tf_shell::ClipboardReadProgress>(clipboard_read_->progress()):std::nullopt;
+    }
     std::shared_ptr<const tf_shell::PasteTransfer> observed_paste() const { return paste_transfer_; }
     bool composing() const { return ime_.composing(); }
     const std::wstring& status_text() const { return input_status_; }
@@ -648,7 +651,8 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system", "invalid shell test mode");
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system", "invalid shell test mode");
+            if(mode=="ui-clipboard-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
             }
@@ -660,7 +664,7 @@ static int application(int argc, char** argv) {
         wchar_t desktop_name[256]{}; DWORD desktop_size=0;
         require(GetUserObjectInformationW(GetThreadDesktop(GetCurrentThreadId()),UOI_NAME,desktop_name,sizeof(desktop_name),&desktop_size)!=FALSE &&
             std::wstring_view(desktop_name).find(L"TermForgeShell-")==0,"shell test requires the runner-owned desktop");
-        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system") {
             Workspace window(image,mode); return window.run();
         }
         Result r;
