@@ -2,6 +2,8 @@
 #include "unicode_width.hpp"
 #include <algorithm>
 #include <deque>
+#include <cstdint>
+#include <limits>
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -27,12 +29,38 @@ struct Cell {
     int width = 1; // 0 is the trailing cell of a width-2 scalar
     Style style;
     size_t marks = 0;
+    bool written = false; // Distinguish explicit spaces from unused terminal padding.
 };
-using Line = std::vector<Cell>;
+enum class LineEnding { none, hard_break, soft_wrap };
+// A value container: moving/copying a row preserves its identity and metadata.
+// Screen alone creates identities; callers must mutate through Screen.
+struct Line : std::vector<Cell> {
+    using std::vector<Cell>::vector;
+    uint64_t id = 0, version = 0;
+    LineEnding ending = LineEnding::none;
+    uint64_t next_id = 0; // Only an actual autowrap creates a continuation link.
+    // Used columns at the recorded autowrap, not a cap on later visible text.
+    // Cursor-addressed writes preserve this event and its successor; they may
+    // fill the old wrap gap or columns added by a later physical resize.
+    size_t wrap_columns = 0;
+    bool cropped = false; // Physical resize discarded cells; never implies reflow.
+};
 
 class Screen {
     int columns_;
+    uint64_t next_id_ = 1;
     int last_row = -1, last_column = -1;
+    static void changed(Line& line) {
+        if (line.version == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("line version exhausted");
+        ++line.version;
+    }
+    static Line make_line(int columns, const Cell& cell, uint64_t& identity) {
+        if (identity == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("line identities exhausted");
+        Line line(columns, cell); line.id = identity++; line.version = 1;
+        return line;
+    }
     Cell blank() const { return {" ", 1, style, 0}; }
     void break_glyph(Line& line, int col) {
         if (line[col].width == 0 && col > 0) line[col - 1] = blank();
@@ -40,7 +68,11 @@ class Screen {
         line[col] = blank();
     }
     void erase_range(Line& line, int first, int last) {
+        changed(line);
         for (int c = first; c < last; ++c) break_glyph(line, c);
+        // Erasing the end destroys a recorded continuation, even if the row
+        // happens to remain full of visible characters after later edits.
+        if (last == width()) { line.ending = LineEnding::none; line.next_id = 0; line.wrap_columns = 0; }
     }
     static std::string text(const Line& line) {
         std::string value;
@@ -70,10 +102,31 @@ public:
     Screen(int rows, int columns, size_t limit) : columns_(columns), history_limit(limit) {
         if (rows < 1 || rows > 200 || columns < 1 || columns > 500 || limit > 10000)
             throw std::invalid_argument("invalid screen dimensions or history limit");
-        lines.assign(rows, Line(columns));
+        lines.reserve(rows);
+        for (int i = 0; i < rows; ++i) lines.push_back(make_line(columns, Cell{}, next_id_));
     }
     int height() const { return static_cast<int>(lines.size()); }
     int width() const { return columns_; }
+    size_t retained_size() const { return history.size() + lines.size(); }
+    const Line& retained_line(size_t index) const {
+        if (index >= retained_size()) throw std::out_of_range("retained line index");
+        return index < history.size() ? history[index] : lines[index - history.size()];
+    }
+    // Rows remain ordered by their monotonically allocated id, including gaps
+    // after bottom-row clipping. Lower bound also resolves an evicted anchor.
+    size_t lower_bound_line(uint64_t identity) const {
+        size_t first = 0, last = retained_size();
+        while (first < last) {
+            const size_t middle = first + (last - first) / 2;
+            if (retained_line(middle).id < identity) first = middle + 1;
+            else last = middle;
+        }
+        return first;
+    }
+    const Line* find_line(uint64_t identity) const {
+        const auto index = lower_bound_line(identity);
+        return index < retained_size() && retained_line(index).id == identity ? &retained_line(index) : nullptr;
+    }
     // Physical-row policy: no reflow, no pulling old history into the viewport.
     // Prepare copies first so invalid sizes/allocation failure leave state intact.
     void resize(int rows, int columns) {
@@ -83,6 +136,7 @@ public:
         auto next = lines;
         auto past = history;
         auto lost = discarded;
+        auto identity = next_id_;
         const int shift = (std::max)(0, row - rows + 1);
         for (int i = 0; i < shift; ++i) {
             if (history_limit) {
@@ -91,15 +145,20 @@ public:
             } else ++lost;
         }
         next.erase(next.begin(), next.begin() + shift);
-        next.resize(rows, Line(columns)); // Bottom rows outside the new viewport are dropped.
+        // Bottom rows outside the new viewport are dropped. Never reuse their ids.
+        if (next.size() > static_cast<size_t>(rows)) next.resize(rows);
+        while (next.size() < static_cast<size_t>(rows)) next.push_back(make_line(columns, Cell{}, identity));
         const auto fit = [columns](Line& line) {
+            if (line.size() == static_cast<size_t>(columns)) return;
+            changed(line);
+            if (line.size() > static_cast<size_t>(columns)) line.cropped = true;
             line.resize(columns);
             // A truncated wide glyph must never leave a dangling leading cell.
             if (line.back().width == 2) line.back() = Cell{};
         };
         for (auto& line : next) fit(line);
         for (auto& line : past) fit(line);
-        lines.swap(next); history.swap(past); discarded = lost; columns_ = columns;
+        lines.swap(next); history.swap(past); discarded = lost; columns_ = columns; next_id_ = identity;
         row -= shift; column = (std::min)(column, columns - 1);
         wrap_pending = false; invalidate_attachment();
     }
@@ -108,14 +167,20 @@ public:
         row = std::clamp(r, 0, height() - 1); column = std::clamp(c, 0, width() - 1);
         wrap_pending = false; invalidate_attachment();
     }
-    void newline() {
+    void newline(bool automatic = false, size_t used_columns = 0) {
+        auto& previous = lines[row];
+        changed(previous);
+        previous.ending = automatic ? LineEnding::soft_wrap : LineEnding::hard_break;
+        previous.wrap_columns = automatic ? used_columns : 0;
+        // A newly allocated bottom row is known before moving its predecessor.
+        previous.next_id = automatic ? (row + 1 < height() ? lines[row + 1].id : next_id_) : 0;
         wrap_pending = false; invalidate_attachment();
         if (row + 1 < height()) { ++row; return; }
         if (history_limit) {
             history.push_back(std::move(lines.front()));
             if (history.size() > history_limit) { history.pop_front(); ++discarded; }
         } else ++discarded;
-        lines.erase(lines.begin()); lines.emplace_back(width(), blank());
+        lines.erase(lines.begin()); lines.push_back(make_line(width(), blank(), next_id_));
     }
     void put(uint32_t cp, const std::string& utf8) {
         const int cells = scalar_width(cp);
@@ -124,14 +189,18 @@ public:
             if (last_row != row || last_column < 0) throw InputError("combining mark without adjacent base");
             auto& base = lines[last_row][last_column];
             if (base.marks == 16) throw InputError("combining mark limit exceeded");
-            base.text += utf8; ++base.marks; return;
+            base.text += utf8; ++base.marks; changed(lines[last_row]); return;
         }
         if (cells > width()) throw InputError("wide scalar cannot fit screen");
-        if (wrap_pending || column + cells > width()) { column = 0; newline(); }
+        if (wrap_pending || column + cells > width()) {
+            const auto used = static_cast<size_t>(wrap_pending ? width() : column);
+            column = 0; newline(true, used);
+        }
         auto& line = lines[row];
+        changed(line);
         for (int c = column; c < column + cells; ++c) break_glyph(line, c);
-        line[column] = {utf8, cells, style, 0};
-        if (cells == 2) line[column + 1] = {"", 0, style, 0};
+        line[column] = {utf8, cells, style, 0, true};
+        if (cells == 2) line[column + 1] = {"", 0, style, 0, true};
         last_row = row; last_column = column;
         if (column + cells == width()) { column = width() - 1; wrap_pending = true; }
         else column += cells;
