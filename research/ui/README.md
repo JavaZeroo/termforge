@@ -58,7 +58,7 @@ QWidget 字体与 QPainter 文本绘制字体分别记录，后者仅读取 devi
 
 `action-context` 用于调查查找编辑框的 All/Copy/Paste/Find/Escape 目标，以及多行 PasteDialog 的实际 Return 结果。入口必须使用 `r1_launch.py --scenario action-context --hosted-ci`，仅指定的一次性 hosted 环境允许执行；本机在准备文件前拒绝。`r1_summarize.py --require-context-complete` 要求原始动作、编辑文字、焦点、系统剪贴板、精确 peer 字节及回收齐全。Return 只有在弹窗退出后精确无追加或完整追加一次时才分别记为 cancelled/accepted，不由默认按钮样式推断。
 
-新增探针与纯 schema 测试不构成运行观察；真实两轮结果独立审核后才更新参考合同。rename、busy 与关闭中的目标行为仍须单独取证，不能从普通查找框结果外推。
+新增探针与纯 schema 测试不构成运行观察；真实结果按保留字段范围独立审核后更新参考合同。`--export-context` 仅在原始 strict 门槛通过后导出安全有序事件，`replay_context` 可重算完整动作门槛；原始运行脚本字节不公开，记录的运行时 source digest 与独立重算的固定模板摘要分开说明。rename、busy 与关闭中的目标行为仍须单独取证，不能从普通查找框结果外推。
 
 ## 解释约束
 

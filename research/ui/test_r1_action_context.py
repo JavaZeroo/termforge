@@ -3,7 +3,7 @@ import copy
 import hashlib
 import json
 import unittest
-from research.ui.r1_action_context import ACTIONS, PHASES, summarize_context
+from research.ui.r1_action_context import ACTIONS, PHASES, summarize_context, export_context, replay_context
 from research.ui.r1_summarize import EXPECTED_EXE, EXPECTED_FILES, MULTILINE, compare_runs
 from research.ui.r1_vt_fixture import payload
 
@@ -33,11 +33,18 @@ def fixture():
     ordered = []
     for i, phase in enumerate(PHASES):
         ordered += [r for r in rows if r.get('phase') == phase]
+        if phase == 'find-copy':
+            ordered += [r for r in rows if r.get('kind') == 'clipboard_set' and r.get('system_clipboard') == '中文']
         if i < len(ACTIONS):
             ordered += [r for r in rows if r.get('action') == ACTIONS[i]]
+        if phase == 'context-session':
+            ordered += [r for r in rows if r.get('kind') == 'clipboard_set' and r.get('system_clipboard') == 'TF-FIND-SENTINEL']
+        if phase == 'paste-before':
+            ordered += [r for r in rows if r.get('kind') == 'clipboard_set' and r.get('system_clipboard') == 'TF-FIRST\r\nTF-SECOND\nTF-THIRD']
+            ordered += [r for r in rows if r.get('kind') == 'menu_activation']
         if phase == 'paste-confirm':
             ordered += [r for r in rows if r.get('kind') == 'confirmation_action']
-    ordered += [r for r in rows if r.get('kind') in ('clipboard_set', 'menu_activation', 'scenario_complete')]
+    ordered += [r for r in rows if r.get('kind') == 'scenario_complete']
     rows = ordered
     result = dict(pid=123, source_sha256='script', messages=[dict(type='send', payload=r) for r in rows])
     evidence = dict(ok=True, data=dict(evidence=dict(operation='instrument_with_frida', evidence_id='one', normalized_result=result)))
@@ -45,6 +52,57 @@ def fixture():
 
 
 class ContextEvidenceTests(unittest.TestCase):
+    def public_fixture(self):
+        args = fixture()
+        for key in ('script_sha256', 'fixture_sha256', 'template_sha256'): args[0][key] = 'a' * 64
+        args[4] = 'a' * 64
+        args[1]['data']['evidence']['normalized_result']['source_sha256'] = 'a' * 64
+        return args
+
+    def test_public_replay_and_private_fields_removed(self):
+        args = self.public_fixture()
+        args[0]['private_path'] = 'PRIVATE_MARKER'
+        result = args[1]['data']['evidence']['normalized_result']
+        result['private_dump'] = 'PRIVATE_MARKER'
+        for message in result['messages']:
+            message['payload']['widgets'] = [{'ptr': 'PRIVATE_MARKER', 'text': 'PRIVATE_MARKER'}]
+        result['messages'].insert(0, {'type': 'send', 'payload': {'kind': 'unlisted', 'value': 'PRIVATE_MARKER'}})
+        public = export_context(*args)
+        self.assertEqual(replay_context(public), summarize_context(*args))
+        serialized = json.dumps(public)
+        self.assertNotIn('PRIVATE_MARKER', serialized)
+        self.assertNotIn('"pid"', serialized)
+        self.assertNotIn('widgets', serialized)
+
+    def test_public_rejects_reordered_source_mismatch_and_capacity(self):
+        public = export_context(*self.public_fixture())
+        for mutation in ('order', 'digest', 'subject', 'capacity'):
+            with self.subTest(mutation=mutation):
+                value = copy.deepcopy(public)
+                result = value['evidence']['data']['evidence']['normalized_result']
+                if mutation == 'order':
+                    action = next(m for m in result['messages'] if m['payload'].get('action') == 'edit-copy')
+                    result['messages'].remove(action); result['messages'].append(action)
+                if mutation == 'digest': result['source_sha256'] = 'b' * 64
+                if mutation == 'subject': result['subject_sha256'] = 'b' * 64
+                if mutation == 'capacity': value['oversized'] = 'x' * 65536
+                with self.assertRaises(ValueError): replay_context(value)
+
+    def test_public_export_rejects_unexpected_free_text(self):
+        args = self.public_fixture()
+        # The core oracle does not require selected text at this phase. The
+        # public writer must still reject arbitrary user text there.
+        for message in args[1]['data']['evidence']['normalized_result']['messages']:
+            row = message['payload']
+            if row.get('kind') == 'find_edit' and row.get('phase') == 'find-typed': row['selected'] = 'PRIVATE_MARKER'
+        with self.assertRaisesRegex(ValueError, 'synthetic text'): export_context(*args)
+
+    def test_public_export_rejects_unknown_initial_modal_class(self):
+        args = self.public_fixture()
+        rows = args[1]['data']['evidence']['normalized_result']['messages']
+        next(row['payload'] for row in rows if row['payload'].get('phase') == 'context-session')['modal'] = 'PRIVATE_MARKER'
+        with self.assertRaisesRegex(ValueError, 'modal class'): export_context(*args)
+
     def test_context_refuses_local_launch_before_preparing_files(self):
         from pathlib import Path
         from research.ui.r1_launch import run

@@ -87,6 +87,8 @@ jobs:
             if ($runIndex -eq 2) { $compareArgs = @('--compare-with', 'local/r1-public/r1-context-hosted-01-summary.json') }
             python research/ui/r1_summarize.py $runDirectory --out "local/r1-public/$runName-summary.json" --require-context-complete @compareArgs
             if ($LASTEXITCODE) { $probeFailed = $true }
+            python research/ui/r1_summarize.py $runDirectory --out "local/r1-public/$runName-ordered-evidence.json" --export-context
+            if ($LASTEXITCODE) { $probeFailed = $true }
           }
           if ($probeFailed) { throw 'Action context evidence remains incomplete; inspect allowlisted diagnostics' }
       - name: Produce allowlisted diagnostics only

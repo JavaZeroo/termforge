@@ -325,8 +325,18 @@ if __name__ == "__main__":
     parser.add_argument("--require-menu-complete", action="store_true")
     parser.add_argument("--require-context-complete", action="store_true")
     parser.add_argument("--diagnostic-only", action="store_true")
+    parser.add_argument("--export-context", action="store_true", help="Export replayable allowlisted context evidence after full validation")
     parser.add_argument("--compare-with", type=Path, help="Require repeat equality with the first validated summary")
     args = parser.parse_args()
+    if args.export_context:
+        from research.ui.r1_action_context import export_context
+        require(not args.diagnostic_only and not args.compare_with, "Context export is a separate operation")
+        require(not (args.run / "launcher-failure.json").exists(), "Launcher failure invalidates the run")
+        read = lambda name: json.loads((args.run / name).read_text(encoding="utf-8"))
+        result = export_context(read("run.json"), read("evidence.json"), read("cleanup.json"), read("profile-check.json"),
+                                hashlib.sha256((args.run / "probe.js").read_bytes()).hexdigest(), read("peer.json"))
+        args.out.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        raise SystemExit(0)
     if args.diagnostic_only:
         args.out.write_text(json.dumps(diagnostic(args.run), indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         raise SystemExit(0)

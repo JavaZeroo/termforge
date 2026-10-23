@@ -70,6 +70,22 @@ Hosted 两次 `menu-wrap` 场景均协商为 63 列，发送字节 SHA-256、选
 
 菜单实际激活顺序为 Select All、Find、Copy、Paste、Paste、Paste。粘贴取消/确认后 modal 均为空、焦点返回 `ScintillaEditBase`；稳定阶段与运行结束后的 peer 检查排除重复或晚到字节。菜单可见标注为 Copy `Shift+Del`、Paste `Shift+Ins`、Find `Ctrl+Shift+F`、Select All `Ctrl+Shift+A`；Copy 的 `Shift+Del` 仍只是可见标注，已验证的复制入口是实际 Copy 菜单和 Ctrl+Shift+C。
 
+## 编辑框与实际 Return 的新增观察
+
+[40023107313 的限定独立审计](r1-text/hosted-context-40023107313.json)来自固定源码 `9f1bb8b` 的两个新 `action-context` 运行，目标身份与上述合同相同。以下是两轮保留阶段和精确字节一致的实际观察，不由按钮标注或内部 API 名称推断：
+
+| 前提 / 动作 | 实际结果 |
+|---|---|
+| Find 查询 `LEFTRIGHT`，Ctrl+A / Ctrl+C | 原生编辑框全选查询；实际系统 CF 为 `LEFTRIGHT`，peer 零字节 |
+| Find 编辑框 Ctrl+V 粘贴 `中文` | 查询和终端命中为 `中文`，输入不进入 peer |
+| Find 中再次 Ctrl+Shift+F，随后 Escape | 保留 `中文` 查询；Escape 返回 `ScintillaEditBase`，peer 仍为空 |
+| 返回后键入 `x`，实际菜单 Paste 多行 | 确认前 peer 精确为 `x`，无粘贴字节 |
+| PasteDialog 当前焦点 `QPushButton`，实际发送 Return | 弹窗退出；peer 精确为 `xTF-FIRST\rTF-SECOND\rTF-THIRD`，稳定阶段及最终均不再增加；两轮 outcome 均为 accepted |
+
+该 artifact 只含12个白名单 summary/diagnostic JSON。目标/运行/产物绑定、ZIP摘要、固定模板/fixture、逐阶段值和两轮比较已独立复核；没有原始 REA 事件总序、`probe.js` 或最终 `peer.json`，不能据此声称独立重跑了完整 `summarize_context` 或重算运行时替换后的脚本哈希。后续 `--export-context` 将导出安全有序事件供完整重算；本次局部证据不回写成那种更强的验收。
+
+以上足以明确原产品默认 Cancel/Enter 取消与已观察的参考 Return 不一致，R1-07 应对齐并重新验证；rename、busy/关闭及物理输入行为不由本观察推出。
+
 ## 验收门槛与合同边界
 
 本次两轮 `text.complete=true`、两轮 `menu_verified=true`，两组重复门槛均通过。`menu-wrap` 摘要的 `complete=false` 是有意保留的场景边界：单独菜单场景不含完整文字导航合同，必须与 `text` 合并验收。白名单 diagnostic 的 `validated=false` 表示其为观察导出，不是最终门槛结果；验收读取对应 strict summary。

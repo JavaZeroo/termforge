@@ -17,7 +17,10 @@ def summarize_context(identity, evidence, cleanup, profile, script_digest, peer)
     require(profile == {'only_synthetic_session': True, 'session_count': 1}, 'Profile scope changed')
     require(evidence.get('ok') is True and evidence.get('data', {}).get('cleanup_error') is None, 'REA failed')
     record = evidence['data']['evidence']; result = record['normalized_result']
-    require(record.get('operation') == 'instrument_with_frida' and result.get('pid') == identity.get('pid'), 'Wrong observation')
+    public = identity.get('schema') == 'termforge.r1-context-public-identity.v1'
+    subject = 'subject_sha256' if public else 'pid'
+    require(identity.get(subject) is not None and record.get('operation') == 'instrument_with_frida'
+            and result.get(subject) == identity.get(subject), 'Wrong observation')
     require(result.get('source_sha256') == identity.get('script_sha256') == script_digest, 'Script identity mismatch')
     require(not result.get('messages_truncated') and result.get('cleanup_error') is None, 'Incomplete evidence')
     messages = result['messages']
@@ -49,11 +52,18 @@ def summarize_context(identity, evidence, cleanup, profile, script_digest, peer)
         phase = phases[edit['phase']]
         require(phase.get('focus') == 'ComboBox' and phase.get('modal') is None, 'Find focus differs')
         require(json.loads(phase['text_state'])['selection'] == text, 'Find target differs')
+        index = PHASES.index(edit['phase'])
+        require(position('snapshot', edit['phase'], 'phase') < rows.index(edit) <
+                position('snapshot', PHASES[index + 1], 'phase'), 'Edit observation order differs')
     actions = [r for r in rows if r.get('kind') == 'context_action']
     require([r.get('action') for r in actions] == list(ACTIONS)
             and all(r.get('input') == 'Qt key press/release' for r in actions), 'Action route differs')
     require([r.get('system_clipboard') for r in rows if r.get('kind') == 'clipboard_set'] ==
             ['TF-FIND-SENTINEL', '中文', 'TF-FIRST\r\nTF-SECOND\nTF-THIRD'], 'Clipboard fixture differs')
+    require(position('context_action', 'terminal-find', 'action') < position('clipboard_set', 'TF-FIND-SENTINEL', 'system_clipboard') <
+            position('snapshot', 'find-typed', 'phase'), 'Find sentinel order differs')
+    require(position('find_edit', 'find-copy', 'phase') < position('clipboard_set', '中文', 'system_clipboard') <
+            position('context_action', 'edit-paste', 'action'), 'Find paste fixture order differs')
     require(phases['find-return'].get('focus') == 'ScintillaEditBase' and phases['find-return'].get('modal') is None, 'Escape did not return')
     for name in PHASES[:7]:
         require(phases[name].get('peer', {}).get('received_hex') == '', 'Edit input leaked to PTY')
@@ -69,6 +79,9 @@ def summarize_context(identity, evidence, cleanup, profile, script_digest, peer)
     menus = [r for r in rows if r.get('kind') == 'menu_activation']
     require(len(menus) == 1 and menus[0].get('action') == 'paste'
             and menus[0].get('input') == 'QMenu active action plus queued Return key', 'Paste entry differs')
+    require(position('snapshot', 'paste-before', 'phase') <
+            position('clipboard_set', 'TF-FIRST\r\nTF-SECOND\nTF-THIRD', 'system_clipboard') < rows.index(menus[0]) <
+            position('snapshot', 'paste-confirm', 'phase'), 'Paste entry order differs')
     # Measure Return's result; default-button metadata does not establish it.
     final = peer.get('received_hex')
     accepted = ('x' + MULTILINE).encode().hex()
@@ -78,6 +91,7 @@ def summarize_context(identity, evidence, cleanup, profile, script_digest, peer)
         require(phases[name].get('modal') is None and phases[name].get('peer', {}).get('received_hex') == final, 'Return paste differs')
     require(peer.get('received_hex') == final, 'Late or missing peer bytes')
     require([r.get('coverage') for r in rows if r.get('kind') == 'scenario_complete'] == ['action-context'], 'No completion')
+    require(position('snapshot', 'paste-settled', 'phase') < position('scenario_complete', 'action-context', 'coverage'), 'Premature completion')
     return {'schema': 'termforge.r1-action-context.v1', 'target_sha256': EXPECTED_EXE, 'distribution_sha256': EXPECTED_FILES,
             'fixture_sha256': identity.get('fixture_sha256'), 'template_sha256': identity.get('template_sha256'),
             'evidence_id': record['evidence_id'], 'complete': False, 'context_verified': True,
@@ -89,3 +103,78 @@ def summarize_context(identity, evidence, cleanup, profile, script_digest, peer)
             'cleanup': {'owned_active': 0, 'peer_closed': True},
             'limitations': ['Qt event replay, not physical input or performance evidence.',
                             'Rename, busy and closing contexts remain unobserved.']}
+
+
+def export_context(identity, evidence, cleanup, profile, script_digest, peer):
+    """Export only validated synthetic facts, retaining their original order.
+
+    The subject digest preserves run/observation equality without publishing a
+    PID. Source digest is the REA observed digest, not a reconstructed script.
+    Unknown message kinds, widgets, pointers, paths and stacks are omitted.
+    """
+    from research.ui.r1_summarize import require
+    summarize_context(identity, evidence, cleanup, profile, script_digest, peer)
+    record = evidence['data']['evidence']; result = record['normalized_result']
+    evidence_id = record.get('evidence_id')
+    require(isinstance(evidence_id, str) and len(evidence_id) <= 128 and
+            all(c in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-' for c in evidence_id), 'Unsafe evidence identity')
+    def digest(value):
+        require(isinstance(value, str) and len(value) == 64 and all(c in '0123456789abcdef' for c in value), 'Invalid public digest')
+        return value
+    subject = hashlib.sha256((str(identity['pid']) + ':' + evidence_id).encode()).hexdigest()
+    run = {key: digest(identity[key]) for key in ('sha256', 'files_sha256', 'script_sha256', 'fixture_sha256', 'template_sha256')}
+    run.update(schema='termforge.r1-context-public-identity.v1', subject_sha256=subject,
+               scenario='action-context', profile='synthetic-local-only', clipboard='hosted-disposable-vm')
+    safe = []
+    fields = {
+        'find_edit': ('phase', 'text', 'selected', 'system_clipboard'),
+        'context_action': ('action', 'input'),
+        'clipboard_set': ('system_clipboard',),
+        'confirmation_action': ('text', 'focus'),
+        'menu_activation': ('action', 'input'),
+        'scenario_complete': ('coverage',),
+    }
+    allowed_text = {'', 'LEFTRIGHT', '中文', 'TF-FIND-SENTINEL', 'TF-FIRST\r\nTF-SECOND\nTF-THIRD',
+                    'queued Return to actual focused widget', 'Qt key press/release',
+                    'QMenu active action plus queued Return key', 'action-context', 'paste',
+                    'ComboBox', 'ScintillaEditBase', 'QPushButton', *PHASES, *ACTIONS}
+    for message in result['messages']:
+        if message.get('type') != 'send':
+            continue
+        row = message['payload']; kind = row.get('kind')
+        if kind == 'snapshot':
+            require(row.get('focus') in ('ComboBox', 'ScintillaEditBase', 'QPushButton'), 'Unexpected public focus')
+            require(row.get('modal') in (None, 'PasteDialog'), 'Unexpected public modal class')
+            selection = json.loads(row['text_state'])['selection']
+            require(selection in ('', 'LEFTRIGHT', '中文'), 'Unexpected public terminal selection')
+            value = {k: row[k] for k in ('phase', 'focus', 'modal')}
+            value.update(kind=kind, text_state=json.dumps({'selection': selection}, ensure_ascii=False),
+                         peer={'received_hex': row['peer']['received_hex']})
+        elif kind in fields:
+            value = {'kind': kind, **{k: row[k] for k in fields[kind]}}
+            require(all(isinstance(value[k], str) and value[k] in allowed_text for k in fields[kind]), 'Unexpected public synthetic text')
+        else:
+            continue
+        safe.append({'type': 'send', 'payload': value})
+    observed = dict(subject_sha256=subject, source_sha256=digest(result['source_sha256']),
+                    messages_truncated=False, cleanup_error=None, messages=safe)
+    normalized = {'ok': True, 'data': {'cleanup_error': None, 'evidence': {
+        'operation': 'instrument_with_frida', 'evidence_id': evidence_id, 'normalized_result': observed}}}
+    cleaned = {'active': 0}
+    peer_public = {key: peer[key] for key in ('connected', 'closed', 'sent_columns', 'sent_sha256', 'received_hex')}
+    exported = {'schema': 'termforge.r1-context-ordered-evidence.v1', 'identity': run, 'evidence': normalized,
+                'cleanup': cleaned, 'profile': profile, 'script_digest': digest(script_digest), 'peer': peer_public,
+                'limitations': ['Subject digest binds the original run and observation without publishing its PID.',
+                                'Runtime script bytes are not published; source digests are recorded observations.']}
+    require(len(safe) <= 64 and len(json.dumps(exported, ensure_ascii=False).encode()) <= 65536, 'Public evidence exceeds bound')
+    replay_context(exported)
+    return exported
+
+
+def replay_context(data):
+    """Re-evaluate the complete action oracle from allowlisted ordered evidence."""
+    from research.ui.r1_summarize import require
+    require(isinstance(data, dict) and data.get('schema') == 'termforge.r1-context-ordered-evidence.v1'
+            and data.get('identity', {}).get('schema') == 'termforge.r1-context-public-identity.v1', 'Wrong public evidence schema')
+    require(len(json.dumps(data, ensure_ascii=False).encode()) <= 65536, 'Public evidence exceeds bound')
+    return summarize_context(*(data[key] for key in ('identity', 'evidence', 'cleanup', 'profile', 'script_digest', 'peer')))

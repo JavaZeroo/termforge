@@ -1,0 +1,97 @@
+{
+  "schema": "termforge-independent-reference-context-audit-v1",
+  "head_sha": "9f1bb8b31910ddb8d0a32929a92b158b8ae364f9",
+  "run_id": 40023107313,
+  "artifact_id": 12531368426,
+  "artifact_sha256": "cd9d1155417552366e2a13b73ad9670b49b30c518751ce339142ecc7f77a08e7",
+  "api_head_and_artifact_binding_verified": true,
+  "zip_exact_allowlist_verified": true,
+  "exact_commit_template_and_fixture_verified": true,
+  "context_rounds": [
+    {
+      "round": 1,
+      "evidence_id": "ev_bccbf80d4bc9a627f07a95965187ede7e4fd6296d89dc5695f6a0164a857b4f8",
+      "recorded_script_sha256": "5264a2ec4af8bd20e4ff36a1e6d7936f64d72b52b851e6244007e09e5ce6fdb5",
+      "template_sha256": "deadeb24a8c813d0bef9c28a87cdd30c1477884aab332a680db966c53e2f26c3",
+      "fixture_sha256": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "confirmation": {
+        "text": "queued Return to actual focused widget",
+        "focus": "QPushButton",
+        "outcome": "accepted"
+      },
+      "final_received_hex": "7854462d46495253540d54462d5345434f4e440d54462d5448495244",
+      "phase_count": 11,
+      "cleanup": {
+        "active": 0,
+        "total": 3,
+        "terminated": 0
+      }
+    },
+    {
+      "round": 2,
+      "evidence_id": "ev_50fa121a7088886247366a0262c58f685a426273494b805655f5d331bdf88af3",
+      "recorded_script_sha256": "148c1a6c61eb477463e890fd4c4f742a9cd85a33cadd692e8a77261bfefff138",
+      "template_sha256": "deadeb24a8c813d0bef9c28a87cdd30c1477884aab332a680db966c53e2f26c3",
+      "fixture_sha256": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "confirmation": {
+        "text": "queued Return to actual focused widget",
+        "focus": "QPushButton",
+        "outcome": "accepted"
+      },
+      "final_received_hex": "7854462d46495253540d54462d5345434f4e440d54462d5448495244",
+      "phase_count": 11,
+      "cleanup": {
+        "active": 0,
+        "total": 3,
+        "terminated": 0
+      }
+    }
+  ],
+  "context_repeat": {
+    "verified": true,
+    "first_evidence_id": "ev_bccbf80d4bc9a627f07a95965187ede7e4fd6296d89dc5695f6a0164a857b4f8",
+    "second_evidence_id": "ev_50fa121a7088886247366a0262c58f685a426273494b805655f5d331bdf88af3"
+  },
+  "literal_observations": {
+    "find_select_all": "LEFTRIGHT",
+    "find_copy_cf_unicode": "LEFTRIGHT",
+    "find_paste_query_and_match": "中文",
+    "find_again_selected_query": "中文",
+    "escape_focus": "ScintillaEditBase",
+    "find_input_peer_bytes": 0,
+    "return_outcome": "accepted",
+    "post_return_bytes": "7854462d46495253540d54462d5345434f4e440d54462d5448495244"
+  },
+  "legacy_groups_separate": [
+    {
+      "group": "r1-hosted",
+      "schema": "termforge.r1-reference.v1",
+      "repeat": {
+        "verified": true,
+        "first_evidence_id": "ev_f7ab1d2c73509a5f78ccb01fe146b7dc65ff91506ffd94161af47dcbbe0d9222",
+        "second_evidence_id": "ev_9e274b9ea73f57ccc2bb089e80365fe8e4663d77d116aeb58b9268c2cde62eab"
+      },
+      "complete": true,
+      "menu_verified": null
+    },
+    {
+      "group": "r1-menu-hosted",
+      "schema": "termforge.r1-menu-wrap.v1",
+      "repeat": {
+        "verified": true,
+        "first_evidence_id": "ev_37bb213f46a5739cf23fe7e61374fcb0d41ae40666d233c7a62bcf0863dc26fc",
+        "second_evidence_id": "ev_f5aa3e6ce41b0e00b2a6dc265cfeb7c7b82fe1f5a6c991155f295d04a835be87"
+      },
+      "complete": false,
+      "menu_verified": true
+    }
+  ],
+  "limitations": [
+    "Artifact contains only sanitized summaries/diagnostics, not raw REA message stream, run.json, probe.js or final peer.json.",
+    "Pinned compare_runs executed; complete summarize_context cannot be replayed from this lossy artifact.",
+    "Snapshot order and per-stage peer bytes independently checked; total action/snapshot interleaving and runtime substituted script hash cannot be independently recomputed.",
+    "Recorded script hashes preserved as reported; exact template/fixture hashes independently recomputed.",
+    "Qt key event replay on disposable hosted VM; no physical-input, rename/busy/closing or performance claim."
+  ],
+  "independent_literal_vt_payload_sha256_verified": true
+}
