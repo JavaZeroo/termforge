@@ -1,6 +1,6 @@
 # 证据索引
 
-本页回答“结论来自哪里、如何重新验证”。当前实现盘点基点为 `2dc8d6d`（2026-10-23）。以下是已有结果和复现入口，**此次文档整理没有重新运行这些测试或性能批次**；历史数据按各自 manifest 的源码/二进制身份解释，不拼成当前版本的新测量。
+本页回答“结论来自哪里、如何重新验证”。工作区已有能力的盘点基点为 `2dc8d6d`（2026-10-23），R1 整合的新增验证对应 `9b16acc`。各条记录以自己的源码/二进制身份和范围为准；历史数据不拼成当前版本的新测量。
 
 当前能力见[功能矩阵](FEATURES.md)，目标与路标见[总体计划](PLAN.md)。批次叙述不是当前状态清单。
 
@@ -9,6 +9,7 @@
 | 结论 | 实现/命令入口 | 已有结果与限制 |
 |---|---|---|
 | 干净检出可构建和回归 | [贡献指南](../CONTRIBUTING.md)、[根 CMake](../CMakeLists.txt)、[CI workflow](../.github/workflows/build.yml) | `2dc8d6d` 对应 [Actions 39930814167](https://github.com/JavaZeroo/termforge/actions/runs/39930814167)，Windows 2025 / Ubuntu 24.04 已有成功记录；Linux 未构建 Windows 客户端 |
+| R1 历史/键盘/粘贴窗口整合 | [源码、二进制、重复样本与跳过项](../experiments/shell/results/2026-10-23-r1-foundations/validation.json)、[运行入口](../experiments/shell/README.md) | `9b16acc` 对应实现的本地全量 19 个 CTest 套件通过；内部仍有 3 个跳过项。历史内容/原生拖动、键盘实际接收字节、粘贴途中取消/关闭各重复两轮；系统剪贴板与实际 IME 未据此验收，不是性能对照 |
 | 本地 shell、工作区与回收 | [操作和场景说明](../experiments/shell/README.md)、[自动测试](../experiments/shell/test_shell.py) | 真实 cmd、独立非输入 desktop、自有 Job、输出/关闭/resize/双区域焦点等；输入为脚本消息，不是物理键盘延迟实验 |
 | DPI 与会话缩放 | [审查和验证记录](archive/reviews/2026-10-23-ui-dpi-zoom.md)、[源/EXE 身份及回收](../experiments/shell/results/2026-10-23-dpi-zoom/validation.json)、[几何记录](../experiments/shell/results/2026-10-23-dpi-zoom/dpi.json) | 全量 CTest 14/14，最后边缘修复后 shell 11 项通过；32 组 renderer 度量组合。受控 DPI 96/144/192，系统窗口 DPI 为 96；真实跨屏未测 |
 | 核心有限子集与恢复 | [核心支持合同](../experiments/core/README.md)、[Recovery 合同](../experiments/core/RECOVERY.md)、[resize 决策](adr/0005-physical-row-resize.md) | 手写状态预期、随机/逐字节拆包、未知序列与超长输入；不等于完整 VT、Unicode 或 TUI 认证 |

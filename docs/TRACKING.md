@@ -29,7 +29,7 @@
 | R1-07 | [#17](https://github.com/JavaZeroo/termforge/issues/17) | 统一文字动作上下文并完成 WindTerm 交互对照 | [#11](https://github.com/JavaZeroo/termforge/issues/11)、[#13](https://github.com/JavaZeroo/termforge/issues/13)、[#14](https://github.com/JavaZeroo/termforge/issues/14)、[#15](https://github.com/JavaZeroo/termforge/issues/15)、[#16](https://github.com/JavaZeroo/termforge/issues/16) |
 | R1-08 | [#18](https://github.com/JavaZeroo/termforge/issues/18) | 验收完整文字工作流与多会话资源边界 | [#17](https://github.com/JavaZeroo/termforge/issues/17) |
 
-初始可并行执行：取证 [#11](https://github.com/JavaZeroo/termforge/issues/11)、历史视口 [#12](https://github.com/JavaZeroo/termforge/issues/12)、可靠粘贴 [#14](https://github.com/JavaZeroo/termforge/issues/14)、键盘/IME [#16](https://github.com/JavaZeroo/termforge/issues/16)。历史视口和交互合同完成后推进选择/查找，最后合并动作上下文与整体工作流验收。实现文件有冲突时按接口串行合入。
+可独立推进的切片：取证 [#11](https://github.com/JavaZeroo/termforge/issues/11)、历史视口 [#12](https://github.com/JavaZeroo/termforge/issues/12)、可靠粘贴 [#14](https://github.com/JavaZeroo/termforge/issues/14)、键盘/IME [#16](https://github.com/JavaZeroo/termforge/issues/16)，实时完成状态见对应 issue。历史视口和交互合同完成后推进选择/查找，最后合并动作上下文与整体工作流验收。实现文件有冲突时按接口串行合入。
 
 ## 并行调查与遗留门槛
 

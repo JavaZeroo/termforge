@@ -1,0 +1,390 @@
+{
+  "schema": "termforge-r1-foundations-v1",
+  "source_commit": "9b16acc7f5e33806a22802b0256b6918b28847f0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "source_hash_scope": "Local build input bytes; CTest completed before this integration commit with the same implementation; documentation subsequently cleaned up.",
+  "sources": {
+    ".github/workflows/build.yml": "2b85af158b3b1454950d32f9e3745d4a75bb067c2f24f1400930480b83fb83fb",
+    "CMakeLists.txt": "491c7a6f37e166afb871dd9c29a193c17735115e7cf85209442772fa3e1561b6",
+    "experiments/conpty/probe.cpp": "1d199896c9cffbb04b3deca2002644dcdfb9e37851e84b7c21f92ed748a62032",
+    "experiments/conpty/run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329",
+    "experiments/conpty/session.hpp": "d417e496e80fa7fd42b5b062787bf24a5542c45143c4fd3acd17fb8c10d73e81",
+    "experiments/conpty/test_conpty.py": "ad7bf27c5909ba7534b5d3c7b3c9b553aa5803dfb5f73ce2ac5e40cd231040d7",
+    "experiments/core/generate_width.py": "5f9322cf9ac2ac806a0e6ebb03aacae0fb27206699b4544bf4374740fffe3253",
+    "experiments/core/history_test.cpp": "bc8d6afffe6b70cee6d0252bd5ef924af17ec49cc638b3265fc7d7a2cfa849f8",
+    "experiments/core/history_view.hpp": "bc6218d05cc331ad3f39db545575faf0d100713dc8cb8ad09dbf3ee635c4696d",
+    "experiments/core/recovery_probe.cpp": "bab1898226ff775113475867d206e7cba02458026f2f9356dac229b2f5eb15de",
+    "experiments/core/replay.cpp": "4d34504f11659f859db6f253c04240abf5e1b8f4c1d57367e86c0ffa9cafd778",
+    "experiments/core/resize_test.cpp": "815b8e58299d928b1235d1f13f8f9d18d75b743122a6bbb5cb0fd1536b09a556",
+    "experiments/core/run.py": "c60ec670cfd53cd28b234bbacc7299cba7392e6863cbebc0308443d281c3ec5a",
+    "experiments/core/screen.hpp": "68b1add986b5c1ba6b28c0a7b343de48a93799c87207be55841bf3a228aa2777",
+    "experiments/core/terminal.hpp": "892997bc2b869a8655d272e9ff049c4102bb1366f1ac709cff8c3d4a41657396",
+    "experiments/core/test_core.py": "17cb0c858cbb8bd30a53728a2971e8eac6f530c0bec2ac674fe23961daff252c",
+    "experiments/core/test_recovery.py": "23615e640a687b4b76f279e8882c92c737335d650655ddee9ff5693d60f5a79e",
+    "experiments/core/test_unicode.py": "13771fe516389efbdfa2a4ad3d9ddbf3fae37a1eb43272e1b9dd0a398e2bab84",
+    "experiments/core/text_projection.hpp": "093300058775376b6b9b298c3d65cdcc22ab4cd5d3f12b1789afcd7c66405611",
+    "experiments/core/trace.cpp": "32fc5b22669d6ac880a06beed0203d627216b38555bad2e22bd4dcc9d0496b3b",
+    "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+    "experiments/presentation/desktop.hpp": "2efc54b1a23acbbc4877fd1b381d5a87e98395ddeed01b5159cbe78fa92a0ccf",
+    "experiments/presentation/presentation.cpp": "bc002219452648d3622fca4e61d02ee85cdaadbfe2aa76f59570a6442a8f0afb",
+    "experiments/presentation/render.hpp": "9786f12cdf6801a957bba2248cd91c75af6ef438075b9322fef804227ba67b87",
+    "experiments/presentation/renderer_metrics_test.cpp": "be8cafae90138fdd8c3e140b2896617eadff3fb82e4b03045e8f9c7544004f5a",
+    "experiments/presentation/run.py": "7bf7a972df7c6713c308ef5107a44df5f34c247b7b035e8e4b768ce4650ab231",
+    "experiments/presentation/test_presentation.py": "de0e6e88d0a75b733e97820403078c79d7e369aea71695b22f0d38a8a52e39ab",
+    "experiments/shell/clipboard.hpp": "b4782921f6c6623cbc4e87c9ba0214d3dbd9a2d8f3704fafff6f6f44a225cdaf",
+    "experiments/shell/clipboard_worker.cpp": "d1f45e20ea8b63e747c2cbd43d0b0dd3fda2f22502a90af6e1867ac9fc4075c7",
+    "experiments/shell/clipboard_worker.hpp": "7d883bd28f115f986ce07837b619e0985b0ddc8faa7395a8d3919415c889f4a2",
+    "experiments/shell/history_checks.py": "27366c9fe6c40e16c63f9afc2ae377cff4df2682c3b334d3894454b3f7be453c",
+    "experiments/shell/ime.hpp": "470d3e40a0962506ec58237af0593cf0510d6aa34cebb62bae383012d4652ee0",
+    "experiments/shell/ime_context_test.cpp": "b10c024a3f5651e4eb296a87a5578ea5c19a4061ed50642f10d1d53d76e1e96d",
+    "experiments/shell/ime_desktop_process.hpp": "ed5a6248cb74c190c04165fe864ac0ca41e0a96ba9945f7797b3f9b10c281161",
+    "experiments/shell/ime_probe.cpp": "78e3a7e8437960074814fab6417e3b0fff053976999e729802b7507791052a0b",
+    "experiments/shell/input_client.cpp": "67ebb343978ac6822f8feaafa7510f9ee325737fce91b3d2aed8385deea6a969",
+    "experiments/shell/keyboard.hpp": "0790ddd0a3b755de5fc22a7bff5c3421b91c19b78dcd7bc0af9de22fa471c3b3",
+    "experiments/shell/keyboard_test.cpp": "7a0f312d8ba63a7f403b4350acaa92b19041cfd8fb16fb6818bf98eb329154e8",
+    "experiments/shell/layout_state.hpp": "3162cec6cd78e14459427ed8768b7d5f6836ab5eaf05e98dad8cd6762f7f8274",
+    "experiments/shell/layout_state_test.cpp": "ae3ad7d272e9bdb839fafc2ff38a8859e9443e855816ba6cc6eb32a33123f37f",
+    "experiments/shell/native_scroll_gesture.hpp": "603c16f370882899b6954596b1a55dacca524a5a3be9d8e5b3be0b4a0374c241",
+    "experiments/shell/paste.hpp": "f905a693d840256ca7c6a8ffed2601bff41f74e549413f38822db7aceb1c7c82",
+    "experiments/shell/paste_checks.py": "889020c6a050acc7ddfab9b813db0adf159e380d5b53ec392b38c72df5ac296c",
+    "experiments/shell/paste_probe.cpp": "58b2f30a4d73d0d94eaf454f8c437ed16668364830277b4c5acccd6f26f6e4a1",
+    "experiments/shell/paste_prompt.hpp": "e32e4491daffec42bf6f8a80024b57891afdeae34c2d6ed842f11d434fb916be",
+    "experiments/shell/paste_scenario_state.hpp": "6bb69987e929be34cad64f6b909042444b131f5535db3b889897fdba711d174c",
+    "experiments/shell/paste_test.cpp": "5086423abb8da3dbb7c81b1477096739308452505212f7c4949330e837a42352",
+    "experiments/shell/queue_probe.cpp": "2fa24121d9af5ee9d84fecc7e7a6589a53df4c5ad4d8b65b2706b7f32eca833f",
+    "experiments/shell/queues.hpp": "c77a56e0e91facb4ba1bc9601ec246319c6018195c8f72f9fc59000d8a1dabc7",
+    "experiments/shell/resize.hpp": "ee7bcbf29bb347e11b4cfafd2a7bca288aeca7129154ceb969172ec96a3b2407",
+    "experiments/shell/run.py": "1ed083e36cd503e10ee7d73ae014165236a1ccdd4cb5a15e2c8a42911c1710ba",
+    "experiments/shell/shell.cpp": "20acee329bf4d38b8e81b6ab9b2f75dcc22ef280da8899917cd33ba0af157dc0",
+    "experiments/shell/size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4",
+    "experiments/shell/test_launcher.cpp": "e6b634cfdd71ec395c1611127a80e4acdc61b9df9a9d1a17e707cfd6983be3cd",
+    "experiments/shell/test_paste.py": "3c1b3e4e7f6434871b01384d26a0f05a15ceb2ab444ac9e13ce21e1821fca05f",
+    "experiments/shell/test_shell.py": "078ca07438d3c1a8e4a6e9d7af92684e5ffa825a40ec6e8220a91f356a7d420c",
+    "experiments/shell/ui_font.hpp": "2f5f7a5a447a765f316955086554b4a79371062d3604eb858fd6c62094beea58",
+    "experiments/shell/workspace.hpp": "0fdd73db16c3896b51caf72b026137d45460438ee01417842931f4096fcdc51d",
+    "experiments/shell/workspace_dpi_scenario.hpp": "ec076e8dd1bf456231b9858acf5e884fae0e9980a94102dddae5eef4a1116b2b",
+    "experiments/shell/workspace_history_scenario.hpp": "368cd1e9f9e0276f5ac83827ebbf02a301d877caa41399c64936e610f6d1f1e8",
+    "experiments/shell/workspace_interactions.hpp": "e3b17cdc625986438ec11857ba859007289df7c748597fa6c7bd4210ebdbb222",
+    "experiments/shell/workspace_keyboard_scenario.hpp": "f44ebd6a77e1e69b14218c43764b1e5ced6dfefc05252e076e2ce9374b90d900",
+    "experiments/shell/workspace_main_scenario.hpp": "82c9d3b01f152dd18b53656c48a116895e0cb83263f4de67ec853de2a1b432aa",
+    "experiments/shell/workspace_paste_scenario.hpp": "42a322efb0d8db25cec9f5de767221850e2f6a18a5103b882fba18bfd6d79c80",
+    "experiments/shell/workspace_scenarios.hpp": "19a1c6cfb73907223d1b7a811f5febd2c0a76d6828480b45f288c80aacbf79b2"
+  },
+  "executables": {
+    "termforge_shell.exe": "29adbb39e2ce68a18e9ceb24fa410b6fdb4e71242fe6eb793f919ea6cbe2a38f",
+    "shell_test_launcher.exe": "511f2653276251a1fffa0e0cca5f02a930d9adb2e8f4df9f701edbd2eb68dcb4",
+    "shell_input_client.exe": "3c476f55386b8e090dd0773ffc4a77feacb76db5955a174e77f12842e83c2090",
+    "shell_clipboard_reader.exe": "dad27b2037243cfb4bcfdf71a9215c6b83248d0ecd6e7d33b21d8f108dbd0de0",
+    "history_test.exe": "f774f1c3e9a73f4d9f435e2d9e9832d5332abb5ee11a261a1e37a62925e3f5ed"
+  },
+  "ctest": {
+    "command": "ctest --test-dir build -C Release --output-on-failure --output-junit r1-integration-results.xml",
+    "suites": [
+      {
+        "name": "renderer_metrics",
+        "status": "run"
+      },
+      {
+        "name": "ime_context",
+        "status": "run"
+      },
+      {
+        "name": "layout_state",
+        "status": "run"
+      },
+      {
+        "name": "resize_core",
+        "status": "run"
+      },
+      {
+        "name": "history_core",
+        "status": "run"
+      },
+      {
+        "name": "paste",
+        "status": "run"
+      },
+      {
+        "name": "keyboard",
+        "status": "run"
+      },
+      {
+        "name": "core",
+        "status": "run"
+      },
+      {
+        "name": "recovery",
+        "status": "run"
+      },
+      {
+        "name": "measure",
+        "status": "run"
+      },
+      {
+        "name": "binary_paths",
+        "status": "run"
+      },
+      {
+        "name": "benchmark_tools",
+        "status": "run"
+      },
+      {
+        "name": "differential",
+        "status": "run"
+      },
+      {
+        "name": "research_guards",
+        "status": "run"
+      },
+      {
+        "name": "receive",
+        "status": "run"
+      },
+      {
+        "name": "conpty",
+        "status": "run"
+      },
+      {
+        "name": "presentation",
+        "status": "run"
+      },
+      {
+        "name": "shell",
+        "status": "run"
+      },
+      {
+        "name": "paste_system",
+        "status": "run"
+      }
+    ],
+    "suite_passed": 19,
+    "suite_failed": 0,
+    "nested_skipped": [
+      {
+        "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver",
+        "reason": "requires disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_clipboard",
+        "reason": "private window station OpenClipboard denied with Win32 error 5"
+      }
+    ]
+  },
+  "samples": [
+    {
+      "mode": "ui-history",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 13,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "result": {
+        "valid": true,
+        "mode": "ui-history",
+        "sessions_closed": 3,
+        "history_verified": true,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "frame_sha256": "3c9f49310b0e489dac3612c54df1df14184e1f3466611a360bc3ccde0eef1a5b",
+      "repeat": 0,
+      "files": {
+        "history.json": "1c8fec849a0f6d2d2d9405b7ed82f070b6fd6b40209a3bfcd5cc6485b3661d67",
+        "native-scroll.jsonl": "d46a879fac54c911e01fa03e81d906e3ffb357270ecf263728e4e1404901adc0"
+      }
+    },
+    {
+      "mode": "ui-history",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 13,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "result": {
+        "valid": true,
+        "mode": "ui-history",
+        "sessions_closed": 3,
+        "history_verified": true,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "frame_sha256": "3c9f49310b0e489dac3612c54df1df14184e1f3466611a360bc3ccde0eef1a5b",
+      "repeat": 1,
+      "files": {
+        "history.json": "2f51595dca2b7561e0ec00a75cee39748b333167c49a4e37ec13879fa80c72c4",
+        "native-scroll.jsonl": "d46a879fac54c911e01fa03e81d906e3ffb357270ecf263728e4e1404901adc0"
+      }
+    },
+    {
+      "mode": "ui-keyboard",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "result": {
+        "valid": true,
+        "mode": "ui-keyboard",
+        "sessions_closed": 1,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "frame_sha256": "62e9cfc03fa86f3b6a840ab4491c946cc2ba2c19361404f2adaf88b33b41dda7",
+      "repeat": 0,
+      "receiver_files": {
+        "input.bin": {
+          "bytes": 66,
+          "sha256": "3c16d42e3db856c8a20f1c2b80d4b4d6d30d385a84612d50f1848ca96726a849"
+        }
+      }
+    },
+    {
+      "mode": "ui-keyboard",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "result": {
+        "valid": true,
+        "mode": "ui-keyboard",
+        "sessions_closed": 1,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "frame_sha256": "6733ece66b75d9e5c8cef1b10c16482112b8e172b233d917c494ba85356758ee",
+      "repeat": 1,
+      "receiver_files": {
+        "input.bin": {
+          "bytes": 66,
+          "sha256": "3c16d42e3db856c8a20f1c2b80d4b4d6d30d385a84612d50f1848ca96726a849"
+        }
+      }
+    },
+    {
+      "mode": "ui-paste",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 12,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "result": {
+        "valid": true,
+        "mode": "ui-paste",
+        "sessions_closed": 2,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "frame_sha256": "6e947f9d4d723f67da816440e3182629b4c4321a9ccb5876c87a4fa2ea06b9ce",
+      "repeat": 0,
+      "workflow": {
+        "cancel": {
+          "sent": 128898,
+          "received": 128898,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 141174,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "receiver_files": {
+        "input.bin": {
+          "bytes": 25000,
+          "sha256": "476d794947cb5d2439b8179f9637e78628e95755efd9fbaf52cf1c7373f52bc4"
+        },
+        "cancel.bin": {
+          "bytes": 128898,
+          "sha256": "1e7c53f2f3b2cc9ef0b25353048ed8aeed21841cf2ee9e7983c133fe041c66b3"
+        },
+        "close.bin": {
+          "bytes": 768,
+          "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+        }
+      }
+    },
+    {
+      "mode": "ui-paste",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 12,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "result": {
+        "valid": true,
+        "mode": "ui-paste",
+        "sessions_closed": 2,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "frame_sha256": "6e947f9d4d723f67da816440e3182629b4c4321a9ccb5876c87a4fa2ea06b9ce",
+      "repeat": 1,
+      "workflow": {
+        "cancel": {
+          "sent": 202554,
+          "received": 202554,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 141174,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "receiver_files": {
+        "input.bin": {
+          "bytes": 25000,
+          "sha256": "476d794947cb5d2439b8179f9637e78628e95755efd9fbaf52cf1c7373f52bc4"
+        },
+        "cancel.bin": {
+          "bytes": 202554,
+          "sha256": "83579fb80b3a7124e049954b120cdffcc32cb8cfce9189e2a11056daeb215824"
+        },
+        "close.bin": {
+          "bytes": 768,
+          "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+        }
+      }
+    }
+  ],
+  "system_clipboard_gate": "unverified",
+  "real_ime_gate": "unverified",
+  "controlled_messages": true,
+  "physical_input": false,
+  "presented_done": null,
+  "limits": [
+    "Bounded 100-row physical history; resize crops without reflow.",
+    "Window paste cancel and close validated against real ConPTY receiver; synthetic text injection does not prove system clipboard workflow.",
+    "Keyboard message-path byte checks do not prove actual IME composition or candidate UI.",
+    "This is correctness and cleanup evidence, not a WindTerm performance comparison."
+  ]
+}
