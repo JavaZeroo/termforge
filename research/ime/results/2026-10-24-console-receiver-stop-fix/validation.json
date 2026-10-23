@@ -1,0 +1,274 @@
+{
+  "schema": "termforge-fixed-commit-console-stop-verification-v1",
+  "source_commit": "5ed89e18cd8dba12bc80764e2f8d9a26a11b4fae",
+  "source_git_blob_sha256": {
+    "CMakeLists.txt": "bb4f1c0026f2880eeb7c0417102e8f00844df71e1133b00732bb322794ebc06b",
+    ".github/workflows/build.yml": "ccc08a022563a0eb63827c448090a6c0305525bed79850f31a89e5efd8f87d69",
+    ".github/workflows/r1-ime.yml": "b35339284fb7cd57e4a8f59c0cd36932f7ee0c4f2df0df4463c7eb7553a06846",
+    "experiments/shell/raw_console_receiver.hpp": "9ea35252c33a938a7dc76d4ea7c6db72d04a3fd010c1ce6b0289c9747e50afcc",
+    "experiments/shell/raw_console_receiver_test.cpp": "a2492a2a57462af6348c7d0b659b557d4fa1cc5c3838286d5bbae6958b904bc4",
+    "experiments/shell/test_raw_console_receiver.py": "b6d424f09e61edf8879b5336f66f8f1bfbbe3dee7f8b77ebb2b4bf30eaa907a5",
+    "experiments/shell/ime_client.cpp": "6d2f80c6d0c5fa64564f7b609e20c03ab5112fa2333b3619ae0b0b55f0339457",
+    "experiments/shell/hosted_ime_input.hpp": "1a27f307ed9d23bb6becc6de03bfde0c93bb560451abfa392198d5548794991d",
+    "research/ime/test_product_ime.py": "811e67da1fd12f182ad5907626fe262d446973b9b179c0ad557e4085464044d0"
+  },
+  "binaries": {
+    "termforge_shell.exe": {
+      "sha256": "c4779752ebc74a98a5a26e903be85df6720ceeae846a63277a8e26d356225659",
+      "bytes": 765952
+    },
+    "shell_test_launcher.exe": {
+      "sha256": "3e2daf5b298d72a43bdc6c7e806c8f0bee06c3f5e0593d52ba08367a121915f3",
+      "bytes": 46080
+    },
+    "shell_ime_client.exe": {
+      "sha256": "cb9ffe2eecb38c13d62fa5a9d4fdb31d1822d3f8c2ec03d94caf41502c65c143",
+      "bytes": 62976
+    },
+    "raw_console_receiver_test.exe": {
+      "sha256": "f41755f5f1fc2cb895cbdb3adca2934a8c8656e0d534715cab19adc086bebd5e",
+      "bytes": 92672
+    }
+  },
+  "isolated_checkout_validation": {
+    "configure_and_build": "passed",
+    "ctest_passed": 4,
+    "ctest_run": 4,
+    "suites": [
+      "ime_context",
+      "ime_inventory",
+      "shell",
+      "raw_console_receiver"
+    ],
+    "seconds": 80.76,
+    "internal_skips": [
+      "system copy UI gate requires a disposable hosted VM",
+      "product clipboard read gate requires a disposable hosted VM",
+      "real system clipboard UI gate requires a disposable hosted VM"
+    ],
+    "ctest_log_sha256": "22bfd251029cd8fd2ce2b60ad411b2fea1078578f422b476f569c6f19fe97a0b",
+    "raw_sample_sha256": "05b1676f7d87a2b687669edfc2318499f8a918ec638111a7bf6c440c24218444"
+  },
+  "original_red_reproduction": {
+    "policy_returncode": 18,
+    "lifecycle_returncode": 2,
+    "cases": [
+      {
+        "name": "empty",
+        "passed": false,
+        "child_signaled": true,
+        "exit_code": 18,
+        "stopped_event": false,
+        "capture_hex": "",
+        "inner_job_active_after": 0,
+        "cleanup_complete": true,
+        "receiver": {
+          "schema": "termforge-raw-console-receiver-v1",
+          "state": "failed",
+          "stop_requested": true,
+          "worker_joined": true,
+          "last_read_success": true,
+          "last_read_count": 0,
+          "last_read_error": 0,
+          "worker_error": 13,
+          "zero_read_accepted": false,
+          "reads_entered": 1,
+          "reads_completed": 1,
+          "cancel_calls": 1,
+          "cancel_successes": 1,
+          "last_cancel_error": 0,
+          "received_units": 0,
+          "saved_bytes": 0
+        }
+      },
+      {
+        "name": "unicode",
+        "passed": false,
+        "child_signaled": true,
+        "exit_code": 18,
+        "stopped_event": false,
+        "capture_hex": "e4bda0e5a5bd",
+        "inner_job_active_after": 0,
+        "cleanup_complete": true,
+        "receiver": {
+          "schema": "termforge-raw-console-receiver-v1",
+          "state": "failed",
+          "stop_requested": true,
+          "worker_joined": true,
+          "last_read_success": true,
+          "last_read_count": 0,
+          "last_read_error": 0,
+          "worker_error": 13,
+          "zero_read_accepted": false,
+          "reads_entered": 2,
+          "reads_completed": 2,
+          "cancel_calls": 1,
+          "cancel_successes": 1,
+          "last_cancel_error": 0,
+          "received_units": 2,
+          "saved_bytes": 6
+        }
+      },
+      {
+        "name": "repeat-stop",
+        "passed": false,
+        "child_signaled": true,
+        "exit_code": 18,
+        "stopped_event": false,
+        "capture_hex": "e4bda0e5a5bd",
+        "inner_job_active_after": 0,
+        "cleanup_complete": true,
+        "receiver": {
+          "schema": "termforge-raw-console-receiver-v1",
+          "state": "failed",
+          "stop_requested": true,
+          "worker_joined": true,
+          "last_read_success": true,
+          "last_read_count": 0,
+          "last_read_error": 0,
+          "worker_error": 13,
+          "zero_read_accepted": false,
+          "reads_entered": 2,
+          "reads_completed": 2,
+          "cancel_calls": 1,
+          "cancel_successes": 1,
+          "last_cancel_error": 0,
+          "received_units": 2,
+          "saved_bytes": 6
+        }
+      }
+    ],
+    "outer_job_after": {
+      "active": 0,
+      "total": 8,
+      "terminated": 0
+    }
+  },
+  "fixed_real_data_only_lifecycle": {
+    "schema": "termforge-raw-console-lifecycle-v1",
+    "data_only": true,
+    "ime_or_global_input_used": false,
+    "cases": [
+      {
+        "name": "empty",
+        "passed": true,
+        "child_signaled": true,
+        "exit_code": 0,
+        "stopped_event": true,
+        "capture_hex": "",
+        "inner_job_active_after": 0,
+        "cleanup_complete": true,
+        "receiver": {
+          "schema": "termforge-raw-console-receiver-v1",
+          "state": "stopped",
+          "stop_requested": true,
+          "worker_joined": true,
+          "last_read_success": true,
+          "last_read_count": 0,
+          "last_read_error": 0,
+          "worker_error": 0,
+          "failure_step": "",
+          "zero_read_accepted": true,
+          "reads_entered": 1,
+          "reads_completed": 1,
+          "cancel_calls": 1,
+          "cancel_successes": 1,
+          "last_cancel_error": 0,
+          "received_units": 0,
+          "saved_bytes": 0,
+          "unexpected_cancel_observed": false,
+          "unexpected_cancel_error": 0,
+          "last_wait_result": 0,
+          "last_wait_error": 0
+        }
+      },
+      {
+        "name": "unicode",
+        "passed": true,
+        "child_signaled": true,
+        "exit_code": 0,
+        "stopped_event": true,
+        "capture_hex": "e4bda0e5a5bd",
+        "inner_job_active_after": 0,
+        "cleanup_complete": true,
+        "receiver": {
+          "schema": "termforge-raw-console-receiver-v1",
+          "state": "stopped",
+          "stop_requested": true,
+          "worker_joined": true,
+          "last_read_success": true,
+          "last_read_count": 0,
+          "last_read_error": 0,
+          "worker_error": 0,
+          "failure_step": "",
+          "zero_read_accepted": true,
+          "reads_entered": 2,
+          "reads_completed": 2,
+          "cancel_calls": 1,
+          "cancel_successes": 1,
+          "last_cancel_error": 0,
+          "received_units": 2,
+          "saved_bytes": 6,
+          "unexpected_cancel_observed": false,
+          "unexpected_cancel_error": 0,
+          "last_wait_result": 0,
+          "last_wait_error": 0
+        }
+      },
+      {
+        "name": "repeat-stop",
+        "passed": true,
+        "child_signaled": true,
+        "exit_code": 0,
+        "stopped_event": true,
+        "capture_hex": "e4bda0e5a5bd",
+        "inner_job_active_after": 0,
+        "cleanup_complete": true,
+        "receiver": {
+          "schema": "termforge-raw-console-receiver-v1",
+          "state": "stopped",
+          "stop_requested": true,
+          "worker_joined": true,
+          "last_read_success": true,
+          "last_read_count": 0,
+          "last_read_error": 0,
+          "worker_error": 0,
+          "failure_step": "",
+          "zero_read_accepted": true,
+          "reads_entered": 2,
+          "reads_completed": 2,
+          "cancel_calls": 1,
+          "cancel_successes": 1,
+          "last_cancel_error": 0,
+          "received_units": 2,
+          "saved_bytes": 6,
+          "unexpected_cancel_observed": false,
+          "unexpected_cancel_error": 0,
+          "last_wait_result": 0,
+          "last_wait_error": 0
+        }
+      }
+    ],
+    "passed": true
+  },
+  "outer_job_after": {
+    "active": 0,
+    "total": 8,
+    "terminated": 0
+  },
+  "strict_cancel_policy_cases": [
+    "1168 NOT_FOUND is an expected request/completion race",
+    "First unexpected native error survives later failures and 1168",
+    "Existing worker error is preserved after join",
+    "Cancel FALSE with native error zero retains raw zero and yields explicit worker failure fallback 31"
+  ],
+  "unexpected_cancel_cases_are_pure_policy_tests_not_system_observations": true,
+  "real_ime_product_verified": false,
+  "limitations": [
+    "Only explicit-stop TRUE/count0 was newly accepted; ordinary zero reads, unrelated errors, worker failure and deadlines still fail.",
+    "This local reproduction does not retrospectively identify the unexported worker result in hosted c206 failure.",
+    "No IME, SendInput, clipboard or language changes were used in the data-only regression.",
+    "Product four-case hosted validation must run again; source review and local passes cannot replace it.",
+    "The four suites were scoped regression checks, not a claim that all 27 configured suites ran in this checkout."
+  ]
+}

@@ -79,3 +79,5 @@ python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_
 这些代码和本地 schema/清理测试不代表真实产品四场景已通过。每次显式 run 的 source identity 和 artifact 独立审计后，才可更新 #16；独立探针已有结果继续保持自己的范围。受控 DPI 不代表实际跨显示器。
 
 当前产品验证的[审核事实](results/2026-10-24-product-stop-failure/validation.json)：固定 c206324 的四场景均执行至最后提交/取消或 rename，原始接收字节已有局部正确观察；接收端 stop 握手共同失败，缺最终 manifest/frame。内外 Job0 只证明最终进程回收，不能代替正常停止。原始错误与缺失诊断保留；修复前不关闭 #16。
+
+[接收端停止修复的固定源码验证](results/2026-10-24-console-receiver-stop-fix/validation.json)：显式停止后 `ReadConsoleW` 可实测返回成功且零字符，原接收端误判为无效数据。共享 data-only receiver 仅接纳该停止结果，保留读取/取消/等待原错、3秒join门槛及正常停止事件；普通零读取仍拒绝。空输入/中文/重复停止真实 ConPTY 红→绿，相关4套件在独立检出通过；这不追认旧hosted缺失诊断，新的四产品场景仍待验收。

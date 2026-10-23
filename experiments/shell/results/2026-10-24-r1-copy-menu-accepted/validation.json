@@ -1,0 +1,60 @@
+{
+  "status": "passed",
+  "head": "f878c7be3bdf1829fc3fba4e1f1c834e94c7dbf2",
+  "run_id": 40015691651,
+  "artifact_id": 12527309805,
+  "artifact_digest": "sha256:bd041ca7a0fccee68858f6fbf8a533d1ead8f2625ce830eb4a08a30818f31f7c",
+  "oracle_sha256": "3c728faa13910a444782d42598612abd1533ea424a9cd0a4a4cd9b88b040f217",
+  "audit_method": "read-only exact-head pinned validator and independent journals/raw bytes/frame checks; no clipboard or IME API invoked",
+  "rounds": [
+    {
+      "round": "copy-system-0",
+      "schema": "termforge-window-selection-v4",
+      "base_phases": 12,
+      "interaction_phases": 24,
+      "actual_copy_popup": true,
+      "native_return_command": 14,
+      "clipboard_before": "synthetic sentinel",
+      "clipboard_after_characters": 2099,
+      "clipboard_after_utf8_bytes": 2499,
+      "clipboard_after_sha256_utf8": "d02b18d30baf87f899b290ee2f3cb7243e6b313f9cfdfb8dce58ac6d0aebc937",
+      "sequence_before": 60,
+      "sequence_after": 65,
+      "copy_observer_idle": true,
+      "selection_and_focus_preserved": true,
+      "raw_bottom_bytes": 0,
+      "raw_main_hex": "78",
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame_sha256": "9fd3d6c944590d696afe7b12c7446cb6f8480d3f4e61caa3ad64c81728bb9581",
+      "journals_match": true
+    },
+    {
+      "round": "copy-system-1",
+      "schema": "termforge-window-selection-v4",
+      "base_phases": 12,
+      "interaction_phases": 24,
+      "actual_copy_popup": true,
+      "native_return_command": 14,
+      "clipboard_before": "synthetic sentinel",
+      "clipboard_after_characters": 2099,
+      "clipboard_after_utf8_bytes": 2499,
+      "clipboard_after_sha256_utf8": "d02b18d30baf87f899b290ee2f3cb7243e6b313f9cfdfb8dce58ac6d0aebc937",
+      "sequence_before": 125,
+      "sequence_after": 130,
+      "copy_observer_idle": true,
+      "selection_and_focus_preserved": true,
+      "raw_bottom_bytes": 0,
+      "raw_main_hex": "78",
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame_sha256": "9fd3d6c944590d696afe7b12c7446cb6f8480d3f4e61caa3ad64c81728bb9581",
+      "journals_match": true
+    }
+  ],
+  "limits": [
+    "actual Copy14 popup verified separately from SelectAll15",
+    "queued owned popup navigation, not physical user keyboard",
+    "not full R1 or IME completion"
+  ]
+}
