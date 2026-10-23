@@ -62,6 +62,26 @@ jobs:
             build/test-artifacts/workflow-fixture/run-*/cases/*/capture.bin.workflow.json
             build/test-artifacts/workflow-fixture/run-*/cases/*/capture.bin.receiver.json
             build/test-artifacts/workflow-fixture/run-*/cases/*/capture.bin.progress.jsonl
+            build/test-artifacts/workflow-controller/run-*/validation.json
+            build/test-artifacts/workflow-controller/run-*/cases/*/capture.bin
+            build/test-artifacts/workflow-controller/run-*/cases/*/capture.bin.source.bin
+            build/test-artifacts/workflow-controller/run-*/cases/*/capture.bin.workflow.json
+            build/test-artifacts/workflow-controller/run-*/cases/*/capture.bin.receiver.json
+            build/test-artifacts/workflow-controller/run-*/cases/*/capture.bin.progress.jsonl
+            build/test-artifacts/workflow-sessions/run-*/validation.json
+            build/test-artifacts/workflow-sessions/run-*/sample.public.json
+            build/test-artifacts/workflow-sessions/run-*/sessions.json
+            build/test-artifacts/workflow-sessions/run-*/resource-phases.jsonl
+            build/test-artifacts/workflow-sessions/run-*/resource-observations.jsonl
+            build/test-artifacts/workflow-sessions/run-*/resource-summary.json
+            build/test-artifacts/workflow-sessions/run-*/frame.bmp
+            build/test-artifacts/workflow-sessions/run-*/cancel.bin
+            build/test-artifacts/workflow-sessions/run-*/close.bin
+            build/test-artifacts/workflow-sessions/run-*/fixtures/*/capture.bin
+            build/test-artifacts/workflow-sessions/run-*/fixtures/*/capture.bin.source.bin
+            build/test-artifacts/workflow-sessions/run-*/fixtures/*/capture.bin.workflow.json
+            build/test-artifacts/workflow-sessions/run-*/fixtures/*/capture.bin.receiver.json
+            build/test-artifacts/workflow-sessions/run-*/fixtures/*/capture.bin.progress.jsonl
       - name: Full ASCII state replay
         run: python -m experiments.core.run --out build/test-artifacts/replay-ascii
       - name: Full Unicode state replay
@@ -81,3 +101,10 @@ jobs:
             !build/test-artifacts/workflow-fixture/**/transport.bin
             !build/test-artifacts/workflow-fixture/**/*.identity
             !build/test-artifacts/workflow-fixture/**/stderr.txt
+            !build/test-artifacts/workflow-controller/**/transport.bin
+            !build/test-artifacts/workflow-controller/**/*.identity
+            !build/test-artifacts/workflow-controller/**/stderr.txt
+            !build/test-artifacts/workflow-controller/**/stdout.private.json
+            !build/test-artifacts/workflow-sessions/**/*.identity
+            !build/test-artifacts/workflow-sessions/**/sample.json
+            !build/test-artifacts/**/_resources-private/**

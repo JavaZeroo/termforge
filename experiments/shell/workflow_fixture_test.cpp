@@ -1,5 +1,6 @@
 // Real owned ConPTY fixture protocol probe. No UI, clipboard, or IME driver.
 #include "../conpty/session.hpp"
+#include "workflow_controller.hpp"
 #include <array>
 #include <filesystem>
 #include <fstream>
@@ -127,8 +128,83 @@ int host(const std::filesystem::path& directory) {
     passed=case_other(directory/L"F2-order",L"F2",5,false,true) && passed;
     std::cout<<"],\"passed\":"<<(passed?"true":"false")<<"}\n"; return passed?0:2;
 }
+bool controller_case(const std::filesystem::path& directory,const std::string& role,unsigned generation,bool close_target=false) {
+    check(std::filesystem::create_directory(directory),"controller case directory must be new");
+    const auto capture=directory/L"capture.bin";
+    tf_shell_test::WorkflowController controller(capture,role,generation); tf_conpty::Session session;
+    wchar_t system[32768]{}; const auto count=GetSystemDirectoryW(system,32768); check(count && count<32768,"controller system directory unavailable");
+    session.start((std::filesystem::path(system)/L"cmd.exe").wstring(),L"/D /Q /K \"prompt TF_CONTROLLER$G\"");
+    check(session.wait_text("TF_CONTROLLER>"),"controller cmd not ready");
+    const auto command=controller.command();
+    const auto size=WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,command.data(),static_cast<int>(command.size()),nullptr,0,nullptr,nullptr);
+    check(size>0 && size<=1024,"controller command exceeds native probe input bound");std::string encoded(static_cast<size_t>(size),0);
+    check(WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,command.data(),static_cast<int>(command.size()),encoded.data(),size,nullptr,nullptr)==size,"controller command encoding failed");
+    session.send(encoded); const auto deadline=GetTickCount64()+5000;
+    while(!controller.ready()) { check(GetTickCount64()<deadline,"controller ready deadline"); Sleep(1); }
+    const bool identity=controller.observed_generation()==generation && controller.process_id()!=0 && controller.creation_time()!=0;
+    check(controller.bytes().empty(),"controller startup polluted receiver");
+    const std::string expected=role=="B" && !close_target?std::string("TF_R108_PASTE \xe4\xb8\xad\xe6\x96\x87\rNEXT\r\xe4\xbd\xa0\xe5\xa5\xbd"):std::string();
+    bool phases=false,order_rejected=false;
+    if(role=="A") {
+        using tf_shell_test::WorkflowPhase;
+        check(!controller.done(WorkflowPhase::output) && !controller.done(WorkflowPhase::append) && !controller.done(WorkflowPhase::evict),"new controller completion was not empty");
+        try { controller.start(WorkflowPhase::append); } catch(const std::runtime_error&) { order_rejected=true; }
+        check(order_rejected,"parent controller allowed append before output");
+        for(const auto phase:{WorkflowPhase::output,WorkflowPhase::append,WorkflowPhase::evict}) {
+            controller.start(phase);
+            const auto phase_deadline=GetTickCount64()+5000;
+            while(!controller.done(phase)) { check(GetTickCount64()<phase_deadline,"controller phase completion deadline");Sleep(1); }
+        }
+        phases=true;
+    } else if(!close_target) {
+        session.send(expected);
+        while(controller.bytes()!=expected) { check(GetTickCount64()<deadline,"controller exact input deadline"); Sleep(1); }
+    }
+    bool finished=false,abnormal_rejected=false;
+    if(close_target) session.cancel();else controller.stop();
+    const bool joined=controller.join(3000);
+    if(close_target) {
+        try { finished=controller.finished(); } catch(const std::runtime_error&) { abnormal_rejected=true; }
+        controller.stop(); // Safe after the actual target died; only its owned event is signaled.
+    } else finished=controller.finished();
+    const DWORD child_exit=controller.exit_code();
+    if(!close_target) session.send("exit\r");
+    const bool cmd_exited=session.wait_exit(5000);session.close();save(directory/L"transport.bin",session.output());
+    bool payload=true;
+    if(role=="A") {
+        const auto source=read(capture.wstring()+L".source.bin");
+        payload=source.size()==18360 && std::count(source.begin(),source.end(),'\n')==680 && source.find("TF_R108_A_0679 ")!=std::string::npos;
+    }
+    const DWORD expected_exit=close_target?DWORD{91}:DWORD{0};
+    const bool passed=identity && joined && (close_target?abnormal_rejected && !finished && !controller.stopped_event():finished) && child_exit==expected_exit && cmd_exited &&
+        session.exit_code==expected_exit && session.cleanup_complete && !session.active_after && controller.bytes()==expected && payload;
+    std::cout<<"{\"name\":\""<<directory.filename().string()<<"\",\"role\":\""<<role<<"\",\"generation\":"<<generation
+        <<",\"launched_through_existing_cmd\":true,\"identity_verified\":"<<(identity?"true":"false")<<",\"child_joined\":"<<(joined?"true":"false")
+        <<",\"observed_generation\":"<<controller.observed_generation()<<",\"identity_pid\":"<<controller.process_id()<<",\"process_creation_time\":"<<controller.creation_time()
+        <<",\"phases_complete\":"<<(phases?"true":"false")<<",\"parent_order_rejected\":"<<(order_rejected?"true":"false")<<",\"target_job_cancelled\":"<<(close_target?"true":"false")
+        <<",\"abnormal_completion_rejected\":"<<(abnormal_rejected?"true":"false")<<",\"stopped_event\":"<<(controller.stopped_event()?"true":"false")
+        <<",\"child_finished\":"<<(finished?"true":"false")<<",\"child_exit_code\":"<<child_exit<<",\"cmd_exit_code\":"<<session.exit_code
+        <<",\"inner_job_active_after\":"<<session.active_after<<",\"cleanup_complete\":"<<(session.cleanup_complete?"true":"false")<<",\"passed\":"<<(passed?"true":"false")<<'}';
+    return passed;
+}
+int controller_host(const std::filesystem::path& directory) {
+    char gate[3]{};
+    for(size_t i=0;i<sizeof(gate);++i) { DWORD count=0; check(ReadFile(GetStdHandle(STD_INPUT_HANDLE),gate+i,1,&count,nullptr) && count==1,"controller outer GO gate closed"); }
+    check(std::string(gate,3)=="GO\n","controller outer GO gate invalid");
+    BOOL owned=FALSE; check(IsProcessInJob(GetCurrentProcess(),nullptr,&owned)!=FALSE && owned,"controller test requires outer Job");
+    check(std::filesystem::is_directory(directory) && std::filesystem::is_empty(directory),"controller directory must be fresh");
+    std::cout<<"{\"schema\":\"termforge-workflow-controller-test-v1\",\"data_only\":true,\"ime_or_global_input_used\":false,\"cases\":[";
+    bool passed=controller_case(directory/L"B graceful","B",21);std::cout<<',';
+    passed=controller_case(directory/L"A phases","A",22) && passed;std::cout<<',';
+    passed=controller_case(directory/L"B closed","B",23,true) && passed;
+    std::cout<<"],\"passed\":"<<(passed?"true":"false")<<"}\n";return passed?0:2;
+}
 }
 int wmain(int argc,wchar_t** argv) {
-    try { check(argc==3 && std::wstring(argv[1])==L"--host","usage: workflow_fixture_test --host fresh-directory"); return host(argv[2]); }
+    try {
+        check(argc==3,"usage: workflow_fixture_test --host|--controller-host fresh-directory");
+        if(std::wstring(argv[1])==L"--controller-host") return controller_host(argv[2]);
+        check(std::wstring(argv[1])==L"--host","unknown workflow probe mode");return host(argv[2]);
+    }
     catch(const std::exception& error) { std::cerr<<error.what()<<'\n'; return 18; }
 }

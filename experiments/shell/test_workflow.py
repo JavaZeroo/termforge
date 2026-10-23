@@ -3,6 +3,8 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
+import struct
 import subprocess
 import tempfile
 import unittest
@@ -184,6 +186,142 @@ class WorkflowOracleTest(unittest.TestCase):
 
 @unittest.skipUnless(os.name == 'nt', 'workflow fixture requires Windows ConPTY')
 class WorkflowFixtureTests(unittest.TestCase):
+    def test_two_fresh_controller_rounds(self):
+        from experiments.conpty.run import OwnedJob
+        executable, client = binary('workflow_fixture_test'), binary('shell_text_client')
+        parent = Path(os.environ.get('TERMFORGE_TEST_ARTIFACTS', ROOT / 'build/test-artifacts')) / 'workflow-controller'
+        parent.mkdir(parents=True, exist_ok=True)
+        for round_number in range(2):
+            directory = Path(tempfile.mkdtemp(prefix='run-', dir=parent))
+            cases = directory / 'cases'; cases.mkdir()
+            record = dict(schema='termforge-workflow-controller-validation-v1', round=round_number,
+                          data_only=True, ime_verified=False, clipboard_verified=False,
+                          executable_sha256=hashlib.sha256(executable.read_bytes()).hexdigest(),
+                          client_sha256=hashlib.sha256(client.read_bytes()).hexdigest(),
+                          source_sha256={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
+                              'experiments/shell/workflow_controller.hpp', 'experiments/shell/workflow_fixture_test.cpp',
+                              'experiments/shell/test_workflow.py', 'experiments/shell/workflow_checks.py')},
+                          returncode=None, outer_job_after=None, forced_cleanup=False, timed_out=False,
+                          process_reaped=False, error_kind=None, status='failed', cases=[])
+            job = OwnedJob(); process = None; stdout = stderr = b''
+            try:
+                process = subprocess.Popen([str(executable), '--controller-host', str(cases)], stdin=subprocess.PIPE,
+                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                           creationflags=subprocess.CREATE_NO_WINDOW)
+                job.assign(process.pid)
+                stdout, stderr = process.communicate(b'GO\n', timeout=25)
+                record['returncode'] = process.returncode
+                record['outer_job_after'] = job.drain(timeout=3)
+                self.assertEqual(process.returncode, 0, stderr.decode('utf-8', 'replace'))
+                self.assertEqual(stderr, b'')
+                self.assertEqual(record['outer_job_after']['active'], 0)
+                host = json.loads(stdout)
+                self.assertEqual(host['schema'], 'termforge-workflow-controller-test-v1')
+                self.assertIs(host['data_only'], True)
+                self.assertIs(host['ime_or_global_input_used'], False)
+                self.assertIs(host['passed'], True)
+                specifications = [('B graceful', 'B', 21), ('A phases', 'A', 22), ('B closed', 'B', 23)]
+                self.assertEqual([row['name'] for row in host['cases']], [row[0] for row in specifications])
+                identities = set()
+                for row, (name, role, generation) in zip(host['cases'], specifications):
+                    with self.subTest(round=round_number, case=name):
+                        self.assertEqual(row['role'], role)
+                        self.assertIs(type(row['generation']), int)
+                        self.assertEqual(row['generation'], generation)
+                        self.assertIs(type(row['observed_generation']), int)
+                        self.assertEqual(row['observed_generation'], generation)
+                        for flag in ('launched_through_existing_cmd', 'identity_verified', 'child_joined', 'cleanup_complete', 'passed'):
+                            self.assertIs(row[flag], True)
+                        self.assertIs(type(row['inner_job_active_after']), int)
+                        self.assertEqual(row['inner_job_active_after'], 0)
+                        self.assertIs(type(row['identity_pid']), int)
+                        self.assertGreater(row['identity_pid'], 0)
+                        self.assertIs(type(row['process_creation_time']), int)
+                        self.assertGreater(row['process_creation_time'], 0)
+                        case = cases/name
+                        identity = (case/'capture.bin.identity').read_bytes()
+                        self.assertEqual(len(identity), 8)
+                        self.assertEqual(struct.unpack('<II', identity), (row['identity_pid'], generation))
+                        token = hashlib.sha256(f"{row['identity_pid']}:{row['process_creation_time']}".encode()).hexdigest()
+                        self.assertNotIn(token, identities); identities.add(token)
+                        closed = name == 'B closed'
+                        for flag, expected in (('target_job_cancelled', closed), ('abnormal_completion_rejected', closed),
+                                               ('child_finished', not closed), ('stopped_event', not closed),
+                                               ('phases_complete', role == 'A'), ('parent_order_rejected', role == 'A')):
+                            self.assertIs(row[flag], expected)
+                        self.assertIs(type(row['child_exit_code']), int)
+                        self.assertIs(type(row['cmd_exit_code']), int)
+                        self.assertEqual(row['child_exit_code'], 91 if closed else 0)
+                        self.assertEqual(row['cmd_exit_code'], 91 if closed else 0)
+                        expected = (PREFIX+'你好').encode('utf-8') if name == 'B graceful' else b''
+                        if closed:
+                            # Job cancellation does not produce a normal receiver finish.
+                            self.assertEqual((case/'capture.bin').read_bytes(), b'')
+                            self.assertEqual((case/'capture.bin.source.bin').read_bytes(), b'')
+                            self.assertEqual((case/'capture.bin.workflow.json').read_bytes(), b'')
+                            self.assertFalse((case/'capture.bin.receiver.json').exists())
+                            events = [json.loads(line) for line in (case/'capture.bin.progress.jsonl').read_bytes().splitlines()]
+                            self.assertEqual(len(events), 1)
+                            event = events[0]
+                            self.assertEqual(event['schema'], 'termforge-workflow-progress-v1')
+                            self.assertIs(type(event['seq']), int); self.assertEqual(event['seq'], 1)
+                            self.assertEqual(event['event'], 'ready'); self.assertIsNone(event['phase'])
+                            for key in ('elapsed_ms', 'source_bytes', 'records'):
+                                self.assertIs(type(event[key]), int); self.assertGreaterEqual(event[key], 0)
+                            self.assertEqual(event['source_bytes'], 0); self.assertEqual(event['records'], 0)
+                            self.assertEqual(event['source_sha256'], hashlib.sha256(b'').hexdigest())
+                            verified = dict(graceful_fixture_completion=False, closed_target_exit=91,
+                                            empty_unfinished_manifest_verified=True, receiver_sidecar_absent=True)
+                        else:
+                            verified = validate_fixture_case(case, expected_role=role, expected_generation=generation,
+                                                             expected_input=expected)
+                        transport_path = case/'transport.bin'
+                        self.assertLessEqual(transport_path.stat().st_size, 4*1024*1024)
+                        transport = transport_path.read_bytes()
+                        markers = [f'TF_R108_{role}_READY'.encode()]
+                        if role == 'A':
+                            markers += [b'TF_R108_A_OUTPUT_DONE 0160', b'TF_R108_A_APPEND_DONE 0020', b'TF_R108_A_EVICT_DONE 0500']
+                        if not closed:
+                            markers += [f'TF_R108_{role}_STOPPED'.encode()]
+                        self.assertTrue(all(transport.count(marker) == 1 for marker in markers))
+                        self.assertEqual([transport.index(marker) for marker in markers], sorted(transport.index(marker) for marker in markers))
+                        if role == 'B':
+                            self.assertNotIn(b'_DONE ', transport)
+                        if closed:
+                            self.assertNotIn(b'TF_R108_B_STOPPED', transport)
+                        source = (case/'capture.bin.source.bin').read_bytes()
+                        observed = re.findall(rb'TF_R108_(?:A|B|F[1-5])_[0-9]{4,5} [^\r\n\x1b]*', transport)
+                        self.assertEqual(observed, source.splitlines())
+                        observation = {key:value for key,value in row.items() if key not in ('identity_pid', 'process_creation_time')}
+                        record['cases'].append(dict(observation=observation, process_identity_token=token,
+                                                    private_identity_verified=True, fixture=verified, transport_verified=True,
+                                                    transport_bytes=len(transport), transport_sha256=hashlib.sha256(transport).hexdigest()))
+                # unittest subTest retains the original failure and continues;
+                # partial case evidence must also leave the persisted run failed.
+                self.assertEqual(len(record['cases']), 3, 'one or more controller cases were rejected')
+                record['status'] = 'passed'
+            except subprocess.TimeoutExpired:
+                record.update(timed_out=True, error_kind='deadline-exceeded')
+                raise
+            except BaseException as error:
+                record['error_kind'] = type(error).__name__
+                raise
+            finally:
+                if process and process.poll() is None:
+                    record['forced_cleanup'] = True
+                    job.terminate(); process.kill()
+                    stdout, stderr = process.communicate(timeout=5)
+                if process:
+                    record['returncode'] = process.poll()
+                    record['process_reaped'] = process.poll() is not None
+                try:
+                    record['outer_job_after'] = job.drain(timeout=3)
+                finally:
+                    job.close()
+                    (directory/'stdout.private.json').write_bytes(stdout)
+                    (directory/'stderr.txt').write_bytes(stderr)
+                    (directory/'validation.json').write_text(json.dumps(record, indent=2)+'\n', encoding='utf-8')
+
     def test_two_fresh_owned_data_only_rounds(self):
         from experiments.conpty.run import OwnedJob
         executable = binary('workflow_fixture_test')

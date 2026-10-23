@@ -25,9 +25,14 @@ from experiments.shell.selection_bytes_checks import validate_selection_bytes_wo
 from experiments.shell.selection_context_checks import validate_selection_context_workflow
 from experiments.shell.action_checks import validate_actions_workflow
 from experiments.shell.find_checks import validate_find_workflow, validate_find_stream_workflow
+from experiments.shell.workflow_sessions_checks import validate_workflow_sessions
 
 
 def validate(row, mode):
+    if mode == "ui-workflow-sessions":
+        if row != {"valid": True, "mode": mode, "sessions_closed": 18, "active_children_after": 0, "presented_done": None}:
+            raise ValueError("eight-session workflow or cleanup failed")
+        return
     if mode in ("ui-selection-context", "ui-copy-context-system"):
         if row != {"valid": True, "mode": mode, "sessions_closed": 3, "active_children_after": 0, "presented_done": None}:
             raise ValueError("selection context workflow or cleanup failed")
@@ -230,13 +235,17 @@ class OwnedTestDesktop:
         return desktop_gone(self.name)
 
 
-def execute(exe, mode, out, timeout=40, settings_source=None):
+def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False):
     if mode in ("ui-paste-system", "ui-clipboard-system", "ui-copy-system", "ui-copy-bytes-system", "ui-copy-context-system", "ui-actions-system"):
         require_hosted_clipboard(os.environ)
+    if resources and mode != "ui-workflow-sessions":
+        raise ValueError("resource observation is limited to the bounded sessions workflow")
     out.mkdir(parents=True, exist_ok=False)
     job = desktop = None
     assigned = False
     process = None
+    resource_recorder = None
+    resource_started = False
     record = dict(mode=mode, status="failed")
     try:
         if settings_source is not None:
@@ -250,6 +259,12 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
                                    creationflags=subprocess.CREATE_NO_WINDOW)
         job.assign(process.pid)
         assigned = True
+        if resources:
+            from experiments.shell.workflow_resources import WorkflowResources
+            resource_recorder = WorkflowResources(process, out / "_resources-private", seconds=timeout + 10)
+            resource_recorder.start()
+            resource_started = True
+            resource_recorder.mark("launcher-go")
         try:
             stdout, stderr = process.communicate(b"GO\n", timeout=timeout)
             record["timed_out"] = False
@@ -258,6 +273,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
             record["job_at_timeout"] = job.accounting()
             job.terminate()
             stdout, stderr = process.communicate(timeout=10)
+        if resource_started:
+            resource_recorder.mark("launcher-exit")
         record.update(exit_code=process.returncode, stdout=stdout.decode("utf-8", "replace"),
                       stderr=stderr.decode("utf-8", "replace"), job_after=job.drain())
         if record["job_after"]["active"]:
@@ -309,6 +326,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
                 record["selection_context_workflow"] = validate_selection_context_workflow(out, mode == "ui-copy-context-system", record)
             if mode in ("ui-actions", "ui-actions-system"):
                 record["actions_workflow"] = validate_actions_workflow(out, mode == "ui-actions-system", record)
+            if mode == "ui-workflow-sessions":
+                record["sessions_workflow"] = validate_workflow_sessions(out, record)
             record["result"] = result
             record["frame_sha256"] = hashlib.sha256((out / "frame.bmp").read_bytes()).hexdigest()
         record["status"] = "passed"
@@ -352,6 +371,19 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
                     cleanup_errors.append("owned desktop remained after cleanup")
             except OSError as error:
                 cleanup_errors.append(str(error))
+        if resource_recorder is not None:
+            if resource_started:
+                try:
+                    resource_recorder.mark("cleanup-finished")
+                except BaseException as error:
+                    cleanup_errors.append("resource cleanup marker failed: " + str(error))
+            try:
+                summary = resource_recorder.finish(observations_path=out / "resource-observations.jsonl")
+                (out / "resource-summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+                record["resources"] = {"summary": "resource-summary.json", "scope": summary["scope"],
+                                       "performance_gate": summary["performance_gate"]}
+            except BaseException as error:
+                cleanup_errors.append("resource recording failed: " + str(error))
         if cleanup_errors:
             record["cleanup_errors"] = cleanup_errors
             record["status"] = "failed"
@@ -372,6 +404,10 @@ def main():
     args.out.mkdir(parents=True, exist_ok=False)
     files = ["experiments/shell/shell.cpp", "experiments/shell/workspace.hpp", "experiments/shell/queues.hpp", "experiments/shell/run.py",
              "experiments/shell/workspace_interactions.hpp", "experiments/shell/workspace_scenarios.hpp",
+             "experiments/shell/workspace_workflow_scenario.hpp", "experiments/shell/workflow_scenario_state.hpp",
+             "experiments/shell/workflow_controller.hpp", "experiments/shell/workflow_fixture.hpp",
+             "experiments/shell/runtime_observation.hpp", "experiments/shell/workflow_sessions_checks.py",
+             "experiments/shell/workflow_resources.py", "benchmarks/tools/sample.py", "benchmarks/tools/summarize_resources.py",
              "experiments/shell/workspace_main_scenario.hpp", "assets/fonts/RobotoMono-Regular.ttf",
              "experiments/shell/workspace_dpi_scenario.hpp",
              "experiments/shell/workspace_history_scenario.hpp", "experiments/shell/history_checks.py",

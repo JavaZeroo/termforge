@@ -150,12 +150,13 @@ int wmain(int argc, wchar_t** argv) {
         // Only the child owns these inherited writer handles after startup.
         output.reset(); error.reset(); null.reset();
 
-        const DWORD waited = WaitForSingleObject(process.get(), hosted?50000:45000);
+        const DWORD limit=hosted?50000:std::wstring_view(argv[2])==L"ui-workflow-sessions"?80000:45000;
+        const DWORD waited = WaitForSingleObject(process.get(), limit);
         if (waited == WAIT_TIMEOUT) {
             if (!TerminateJobObject(job.get(), 124)) fail("test launcher timeout termination");
             require(drain(job.get(), process.get(), 3000), "test launcher timed-out Job did not drain");
             if(hosted) hosted_summary(job.get(),process.get(),argv[2],124,true);
-            std::cerr << "test launcher child exceeded "<<(hosted?50:45)<<" seconds\n"; return 124;
+            std::cerr << "test launcher child exceeded "<<limit/1000<<" seconds\n"; return 124;
         }
         if (waited != WAIT_OBJECT_0) fail("test launcher child wait");
         DWORD exit_code = 0;

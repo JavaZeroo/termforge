@@ -90,6 +90,10 @@ inline void Workspace::collect_child(ShellWindow* child) {
                 const Result result=child->collect();
                 require(result.complete && result.active_children==0,"workspace child cleanup failed");
             } catch(const std::exception& error) { failure_=error.what(); }
+            if(workflow_) {
+                try { workflow_collected(child,tabs[i].id); }
+                catch(const std::exception& error) { failure_=error.what(); }
+            }
             int& index=selection(group);
             if(static_cast<int>(i)<index) --index;
             tabs.erase(tabs.begin()+i); ++collected_;

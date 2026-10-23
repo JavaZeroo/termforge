@@ -12,6 +12,7 @@
 #include "../core/text_search.hpp"
 #include "find_bar.hpp"
 #include "text_actions.hpp"
+#include "runtime_observation.hpp"
 #include <atomic>
 #include <optional>
 #include <sstream>
@@ -30,9 +31,11 @@ struct Result {
     bool complete = false, normal = false, unicode = false, edited = false, arrows = false, interrupted = false;
     double input_to_state_ms = -1, input_to_submit_ms = -1, max_tick_ms = 0;
     std::string screen;
+    std::optional<tf_shell::RuntimeSnapshot> runtime_before_close, runtime_final;
 };
 class ShellWindow {
     // Only the UI thread owns Parser, Snapshot, Renderer and HWND state.
+    const DWORD ui_thread_id_ = GetCurrentThreadId();
     OutputQueue output_;
     tf_conpty::Session session_;
     InputQueue input_{session_};
@@ -46,9 +49,13 @@ class ShellWindow {
     HWND parent_{};
     bool registered_ = false;
     inline static unsigned class_users_ = 0; // All instances belong to one UI thread.
+    inline static DWORD creation_thread_id_ = 0;
+    inline static uint64_t successful_window_creations_ = 0;
+    uint64_t window_creation_serial_ = 0;
     std::thread closer_;
     std::atomic<bool> closed_{false};
     bool closing_ = false, started_ = false, metrics_dirty_ = false;
+    bool closer_joined_ = false, session_closed_on_closer_ = false;
     std::string failure_, close_failure_, mode_, image_path_;
     int revision_ = 0, stage_ = 0;
     int dirty_first_ = 0, dirty_last_ = 24;
@@ -83,6 +90,25 @@ class ShellWindow {
     Clock::time_point start_ = Clock::now(), input_time_, flood_start_;
     bool frame_after_ = false;
     Result result_;
+    bool runtime_enabled_ = false;
+    Clock::time_point runtime_origin_;
+    std::optional<tf_shell::RuntimeSnapshot> runtime_before_close_, runtime_final_;
+    std::optional<tf_shell::RuntimeSnapshot::FinalSession> runtime_final_session_;
+    std::optional<tf_shell::RuntimeSnapshot::Paste> runtime_last_terminal_paste_;
+    std::optional<tf_shell::RuntimeSnapshot::Clipboard> runtime_last_terminal_clipboard_;
+    std::optional<size_t> runtime_paste_source_units_;
+    std::optional<termforge::ViewportState> runtime_published_viewport_;
+
+    void require_ui_thread() const {
+        require(GetCurrentThreadId() == ui_thread_id_, "runtime observation requires the owning UI thread");
+    }
+    tf_shell::RuntimeSnapshot::Paste runtime_paste_value(const tf_shell::PasteProgress& p) const {
+        return {p.target,p.state,p.total,p.accepted,p.sent,p.in_flight,p.retained_capacity,
+                runtime_paste_source_units_,!p.error.empty()};
+    }
+    static tf_shell::RuntimeSnapshot::Clipboard runtime_clipboard_value(const tf_shell::ClipboardReadProgress& p) {
+        return {p.state,p.bytes_received,p.input_units,p.win32_error,p.cleanup_complete,!p.error.empty(),std::nullopt};
+    }
 
     void selection_down(int x,int y,unsigned forced_clicks=0);
     void selection_move(int x,int y);
@@ -219,8 +245,10 @@ class ShellWindow {
         return std::nullopt;
     }
     void start_prepared_paste(tf_shell::PreparedPaste value) {
+        const auto observed_source=runtime_enabled_?std::optional<size_t>(value.source_units):std::nullopt;
         auto transfer=std::make_shared<tf_shell::PasteTransfer>(identity_,std::move(value),true);
         if(!input_.begin_paste(transfer)) { input_status(L"Input busy; paste not started"); return; }
+        if(runtime_enabled_) runtime_paste_source_units_=observed_source;
         viewport_.bottom(parser_.screen); publish();
         paste_transfer_=std::move(transfer); input_status(L"Pasting — Escape cancels");
     }
@@ -237,6 +265,7 @@ class ShellWindow {
             if(clipboard_read_) {
                 const auto progress=clipboard_read_->poll();
                 if(tf_shell::clipboard_read_terminal(progress.state)) {
+                    if(runtime_enabled_) runtime_last_terminal_clipboard_=runtime_clipboard_value(progress);
                     if(progress.state==tf_shell::ClipboardReadState::completed && !closing_) {
                         auto text=clipboard_read_->take_text(); clipboard_read_.reset();
                         prepare_paste_text(std::move(text));
@@ -261,7 +290,10 @@ class ShellWindow {
                     progress.state==State::failed?L"Paste failed":progress.state==State::cancelling?L"Cancelling paste":L"Pasting";
                 input_status(state+L": "+std::to_wstring(progress.sent)+L" / "+std::to_wstring(progress.total)+L" bytes"+
                     (progress.error.empty()?L"":L" — "+utf16(progress.error.c_str())));
-                if(tf_shell::paste_terminal(progress.state)) paste_transfer_.reset();
+                if(tf_shell::paste_terminal(progress.state)) {
+                    if(runtime_enabled_) runtime_last_terminal_paste_=runtime_paste_value(progress);
+                    paste_transfer_.reset();
+                }
             }
         } catch(const std::exception& error) {
             if(clipboard_read_) clipboard_read_->cancel();
@@ -280,7 +312,9 @@ class ShellWindow {
         for (wchar_t c : command) require(PostMessageW(hwnd_, WM_CHAR, c, 1) != FALSE, "scripted input post failed");
     }
     void begin_close() {
+        require_ui_thread();
         if (closing_) return;
+        if(runtime_enabled_) runtime_before_close_=runtime_snapshot();
         closing_ = true;
         selection_end();
         find_.reset(); search_.close(); find_current_.reset(); clear_find_resize_anchor();
@@ -293,7 +327,7 @@ class ShellWindow {
                 input_.stop();
                 resize_.stop();
                 // Kill only the session job, including descendants after shell exit.
-                session_.cancel(); session_.close();
+                session_.cancel(); session_.close(); session_closed_on_closer_=true;
             } catch (const std::exception& e) { close_failure_ = e.what(); }
             closed_.store(true);
         });
@@ -301,6 +335,7 @@ class ShellWindow {
     void publish() {
         selection_.reconcile(termforge::TextDocument(parser_.screen));
         auto view = viewport_.snapshot(parser_.screen);
+        if(runtime_enabled_) runtime_published_viewport_=view.viewport;
         search_overlay(view);
         selection_overlay(view);
         if (hwnd_) {
@@ -603,6 +638,8 @@ public:
         if (registered_ && --class_users_ == 0) UnregisterClassW(L"TermForgeShell", GetModuleHandleW(nullptr));
     }
     void create(HWND parent = nullptr) {
+        require_ui_thread();
+        require(!creation_thread_id_ || creation_thread_id_ == GetCurrentThreadId(), "shell windows require one UI thread");
         parent_ = parent;
         WNDCLASSW cls{}; cls.lpfnWndProc = procedure; cls.hInstance = GetModuleHandleW(nullptr);
         cls.lpszClassName = L"TermForgeShell"; cls.hCursor = LoadCursorW(nullptr, IDC_IBEAM);
@@ -615,6 +652,7 @@ public:
         hwnd_ = CreateWindowExW(0, cls.lpszClassName, L"TermForge — local shell prototype", style,
             parent ? 0 : CW_USEDEFAULT,parent ? 0 : CW_USEDEFAULT,size.right-size.left,size.bottom-size.top,parent,nullptr,cls.hInstance,this);
         require(hwnd_ != nullptr, "shell window creation failed");
+        creation_thread_id_=GetCurrentThreadId(); window_creation_serial_=++successful_window_creations_;
         ime_.attach(hwnd_);
         publish();
         const auto cmd = system_cmd();
@@ -627,6 +665,63 @@ public:
         require(SetTimer(hwnd_,1,16,nullptr) != 0, "shell timer failed");
     }
     HWND handle() const { return hwnd_; }
+    static uint64_t successful_window_creations() {
+        require(!creation_thread_id_ || creation_thread_id_ == GetCurrentThreadId(), "shell creation count requires the UI thread");
+        return successful_window_creations_;
+    }
+    void enable_runtime_observation() {
+        require_ui_thread();
+        require(!closing_, "runtime observation must be enabled before closing");
+        if(runtime_enabled_) return;
+        runtime_origin_=Clock::now(); runtime_enabled_=true;
+    }
+    bool runtime_observation_enabled() const { require_ui_thread(); return runtime_enabled_; }
+    std::optional<tf_shell::RuntimeSnapshot> runtime_before_close() const { require_ui_thread(); return runtime_before_close_; }
+    std::optional<tf_shell::RuntimeSnapshot> runtime_final() const { require_ui_thread(); return runtime_final_; }
+    tf_shell::RuntimeSnapshot runtime_snapshot() const {
+        require_ui_thread(); require(runtime_enabled_, "runtime observation is not enabled");
+        const auto timestamp=[&] {
+            return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-runtime_origin_).count());
+        };
+        tf_shell::RuntimeSnapshot value;
+        value.capture_begin_ns=timestamp();
+        value.session_id=identity_; value.window_creation_serial=window_creation_serial_;
+        value.published_revision=snapshot_->revision; value.rows=parser_.screen.height(); value.columns=parser_.screen.width();
+        value.started=started_; value.closing=closing_; value.final_after_join=closer_joined_;
+        if(closer_joined_) value.close_error_present=!close_failure_.empty();
+        value.window_exists=hwnd_ && IsWindow(hwnd_) &&
+            GetWindowLongPtrW(hwnd_,GWLP_USERDATA)==reinterpret_cast<LONG_PTR>(this);
+        value.visible=value.window_exists && IsWindowVisible(hwnd_)!=FALSE;
+        // Each worker takes and releases its own mutex. This is an interval
+        // observation, not an atomic snapshot across queues or paste progress.
+        value.output=output_.snapshot(); value.input=input_.snapshot(); value.resize=resize_.snapshot();
+        value.history_rows=parser_.screen.history.size(); value.history_limit=parser_.screen.history_limit;
+        value.retained_rows=parser_.screen.retained_size(); value.discarded_history_rows=parser_.screen.discarded;
+        value.viewport=runtime_published_viewport_;
+        value.consumed_bytes=result_.consumed; value.max_consumed_per_tick=result_.max_consumed_per_tick;
+        value.ticks=result_.ticks; value.frames=result_.frames; value.max_tick_ns=static_cast<uint64_t>(result_.max_tick_ms*1000000.0);
+        value.search.state=search_.status(); value.search.generation=search_.generation();
+        value.search.find_query_bytes=find_query_.size(); value.search.find_query_capacity=find_query_.capacity();
+        value.search.work_budget_units=search_work_budget_; value.search.result_count=search_.matches().size();
+        value.search.result_capacity=search_.matches().capacity(); value.search.retained_metadata_rows=search_.retained_rows();
+        value.search.pending_navigation_count=find_pending_directions_.size(); value.search.editor_present=bool(find_);
+        value.selection.range=selection_.range(); value.find_resize_anchor.range=find_resize_anchor_.range();
+        value.paste_busy=paste_busy(); value.pending_prepared_paste=pending_paste_.has_value(); value.paste_prompt_present=bool(paste_prompt_);
+        if(pending_paste_) {
+            value.pending_prepared_bytes=pending_paste_->bytes.size(); value.pending_prepared_capacity_bytes=pending_paste_->bytes.capacity();
+            value.pending_source_units=pending_paste_->source_units;
+        }
+        if(paste_transfer_) value.paste=runtime_paste_value(paste_transfer_->progress());
+        value.last_terminal_paste=runtime_last_terminal_paste_;
+        if(clipboard_read_) value.clipboard=runtime_clipboard_value(clipboard_read_->progress());
+        value.last_terminal_clipboard=runtime_last_terminal_clipboard_;
+        value.renderer_layout_count=renderer_->layout_count(); value.dpi=renderer_->dpi(); value.zoom_percent=renderer_->zoom_percent();
+        value.cell_width=renderer_->cell_width(); value.cell_height=renderer_->cell_height();
+        // Session's public fields are populated only into this UI-owned cache
+        // after actual closer join AND Session::close has returned.
+        value.final_session=runtime_final_session_;
+        value.capture_end_ns=timestamp(); return value;
+    }
     bool paste_busy() const { return clipboard_read_ || paste_prompt_ || paste_transfer_; }
     tf_shell::TextActionState text_action_state(tf_shell::TextAction action) const {
         return tf_shell::text_action_state(action,{true,closing_,false,ime_.composing(),paste_busy(),has_selection()});
@@ -811,7 +906,22 @@ public:
         return collect();
     }
     Result collect() {
-        if (closer_.joinable()) closer_.join();
+        require_ui_thread();
+        if (closer_.joinable()) { closer_.join(); closer_joined_=true; }
+        if(runtime_enabled_ && closer_joined_) {
+            if(session_closed_on_closer_) {
+                tf_shell::RuntimeSnapshot::FinalSession final;
+                if(session_.child_signaled) final.exit_code=session_.exit_code;
+                if(session_.active_after!=MAXDWORD) final.active_children=session_.active_after;
+                final.active_children_query_failed=session_.active_after==MAXDWORD;
+                final.read_error=session_.read_error; final.output_bytes=session_.output_bytes;
+                final.child_signaled=session_.child_signaled; final.cleanup_complete=session_.cleanup_complete;
+                final.capture_overflow=session_.capture_overflow; final.forced_reader_cancel=session_.forced_reader_cancel;
+                final.forced_process_cancel=session_.forced_process_cancel; runtime_final_session_=final;
+            }
+            runtime_final_=runtime_snapshot();
+            result_.runtime_before_close=runtime_before_close_; result_.runtime_final=runtime_final_;
+        }
         if (!failure_.empty() && !mode_.empty()) {
             std::cerr << "stage=" << stage_ << " bytes=" << result_.consumed << " screen=";
             parser_.screen.json(std::cerr); std::cerr << '\n';
@@ -842,7 +952,7 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system", "invalid shell test mode");
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
             if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system" || mode=="ui-copy-context-system" || mode=="ui-actions-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
@@ -855,7 +965,7 @@ static int application(int argc, char** argv) {
         wchar_t desktop_name[256]{}; DWORD desktop_size=0;
         require(GetUserObjectInformationW(GetThreadDesktop(GetCurrentThreadId()),UOI_NAME,desktop_name,sizeof(desktop_name),&desktop_size)!=FALSE &&
             std::wstring_view(desktop_name).find(L"TermForgeShell-")==0,"shell test requires the runner-owned desktop");
-        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions") {
             Workspace window(image,mode); return window.run();
         }
         Result r;

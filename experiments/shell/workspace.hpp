@@ -6,6 +6,7 @@
 #include "ui_font.hpp"
 #include "paste_scenario_state.hpp"
 #include "clipboard_scenario_state.hpp"
+#include "workflow_scenario_state.hpp"
 
 class Workspace {
     struct Tab { int id; std::wstring title; std::unique_ptr<ShellWindow> shell; };
@@ -35,6 +36,7 @@ class Workspace {
     tf_shell_test::PasteScenarioState paste_scenario_;
     tf_shell_test::ClipboardScenarioState clipboard_scenario_;
     std::unique_ptr<tf_shell_test::ProductImeScenarioState> ime_scenario_;
+    std::unique_ptr<tf_shell_test::WorkflowScenarioState> workflow_;
     int width_ = 1360, height_ = 860, dpi_ = 96;
     int physical_width_ = 1360, physical_height_ = 860;
     int left_ = 226, right_ = 226, left_middle_ = 289, right_middle_ = 289;
@@ -114,6 +116,7 @@ class Workspace {
         if (!closing_) SetFocus(active()->handle());
     }
     void add(Group group=Group::bottom) {
+        if(workflow_) ++workflow_->attempted_creations;
         if (closing_ || session_count()>=8) return;
         auto shell=std::make_unique<ShellWindow>("", ""); shell->set_dpi(dpi_); shell->create(window_);
         const int id=next_id_++;
@@ -360,6 +363,14 @@ class Workspace {
     void scenario_selection_context();
     void scenario_actions();
     void scenario_ime();
+    void scenario_workflow();
+    ShellWindow* workflow_shell(const std::string& name);
+    void workflow_select(const std::string& name);
+    void workflow_checkpoint(const char* phase,unsigned cycle=0,const std::vector<std::string>& names={});
+    void workflow_resource_mark(const char* phase,unsigned cycle);
+    void workflow_attach(const std::string& name,const std::string& role,Group group,bool create);
+    void workflow_collected(ShellWindow* child,int id);
+    void workflow_write();
     void scenario_find();
     void scenario_find_stream();
     static std::string size_marker(int outer_width,int rows,ShellWindow* shell) {
@@ -434,6 +445,7 @@ class Workspace {
                 else if(self->test_mode_=="ui-selection-bytes" || self->test_mode_=="ui-copy-bytes-system") self->scenario_selection_bytes();
                 else if(self->test_mode_=="ui-selection-context" || self->test_mode_=="ui-copy-context-system") self->scenario_selection_context();
                 else if(self->test_mode_=="ui-actions" || self->test_mode_=="ui-actions-system") self->scenario_actions();
+                else if(self->test_mode_=="ui-workflow-sessions") self->scenario_workflow();
                 else if(self->test_mode_=="ui-find") self->scenario_find();
                 else if(self->test_mode_=="ui-find-stream") self->scenario_find_stream();
                 else if(tf_shell_test::is_product_ime_mode(utf16(self->test_mode_.c_str()))) self->scenario_ime();
@@ -454,6 +466,7 @@ class Workspace {
     }
 public:
     explicit Workspace(std::string image="",std::string mode="ui"):test_mode_(std::move(mode)),image_(std::move(image)) {
+        if(test_mode_=="ui-workflow-sessions") workflow_=std::make_unique<tf_shell_test::WorkflowScenarioState>();
         if(!image_.empty()) settings_path_=std::filesystem::path(image_).parent_path()/"workspace.layout";
         else {
             wchar_t base[32768]{};
@@ -501,6 +514,11 @@ public:
             ShellWindow::dispatch_message(msg);
         }
         require(status==0,"workspace message loop failed"); require(failure_.empty(),failure_.c_str());
+        if(!image_.empty() && test_mode_=="ui-workflow-sessions") {
+            require(stage_==100 && collected_==18,"workflow sessions scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\"ui-workflow-sessions\",\"sessions_closed\":18,\"active_children_after\":0,\"presented_done\":null}\n";
+            return 0;
+        }
         if(!image_.empty() && test_mode_=="ui") {
             require(stage_==10 && collected_==3,"workspace scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\"ui\",\"sessions_closed\":3,\"isolation_verified\":true,\"resize_verified\":true,\"active_children_after\":0,\"presented_done\":null}\n";
@@ -559,3 +577,4 @@ public:
 #include "workspace_actions_scenario.hpp"
 #include "workspace_find_scenario.hpp"
 #include "workspace_ime_scenario.hpp"
+#include "workspace_workflow_scenario.hpp"
