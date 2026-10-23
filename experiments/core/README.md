@@ -78,17 +78,13 @@ build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 
 ## 历史回放结果与限制
 
-2026-10-22，Windows 11 build 26200 / i7-9700，MSVC 19.42.34433 x64 Release：v0.2 的 15 项原核心测试、15 项 Unicode/样式测试和 5 项接收测试通过；ASCII 与 Unicode 各 17 次完整回放通过。共 24 次管道运行均发生背压，全部字节、画面、历史和样式符合预期。ASCII 预期状态摘要与 v0.1 完全相同。
+2026-10-22 的 v0.2 ASCII/Unicode 回放满足当时的字节、画面、历史、样式及背压检查。结果按版本保留，不代表当前提交重新执行了同一批测量：
 
 - v0.2 ASCII：[身份](results/2026-10-22-v02-ascii/manifest.json)、[记录](results/2026-10-22-v02-ascii/samples.jsonl)、[期望](results/2026-10-22-v02-ascii/expected.json)
 - v0.2 Unicode：[身份](results/2026-10-22-v02-unicode/manifest.json)、[记录](results/2026-10-22-v02-unicode/samples.jsonl)、[期望](results/2026-10-22-v02-unicode/expected.json)
 
-v0.1 的历史结果保留，对应 commit `d15a1fc`：
-
-- [输入及源码身份](results/2026-10-22/manifest.json)
-- [完整预期屏幕/历史](results/2026-10-22/expected.json)
-- [17 次运行记录](results/2026-10-22/samples.jsonl)
+- v0.1（`d15a1fc`）：[输入及源码身份](results/2026-10-22/manifest.json)、[完整预期屏幕/历史](results/2026-10-22/expected.json)、[运行记录](results/2026-10-22/samples.jsonl)
 
 每个配置只跑一次，是正确性与计量端点烟测，没有预热和统计对照。`parse_ms` 在文件回放中是整个 feed 循环，在管道中是各块 feed 的墙钟耗时总和；后者包含计时开销及可能的线程抢占，排除队列等待和字节比较。它已经包含于整体运行时间，不能重复相加。解析、屏幕更新和历史维护尚未各自计量。管道原有的队列到校验延迟字段在解析模式下结束于 feed 之后，不能与旧的纯字节校验样本直接等同比较。
 
-以上 v0.2 历史样本未测显示或输入响应，也没有覆盖完整终端协议。单元格模型改变了成本，不能用历史单次计时声称性能改善。[pyte 参考差分](../differential/README.md)仍保留六类边界差异，[长批次计量](../measure/README.md)尚不足以完整归因或排名。当前窗口集成及其验证见[本地 shell 工作区](../shell/README.md)；备用屏幕、滚动区域、文字兼容性等剩余范围统一见[功能矩阵](../../docs/FEATURES.md)。
+以上 v0.2 历史样本未测显示或输入响应，也没有覆盖完整终端协议。单元格模型改变了成本，不能用历史单次计时声称性能改善。[pyte 参考差分](../differential/README.md)的六类边界差异与核心路线由 [#20](https://github.com/JavaZeroo/termforge/issues/20)承接；[长批次计量](../measure/README.md)尚不足以完整归因或排名。当前窗口集成及其验证见[本地 shell 工作区](../shell/README.md)；备用屏幕、滚动区域、文字兼容性等剩余范围见 [R2](https://github.com/JavaZeroo/termforge/issues/7)及[功能矩阵](../../docs/FEATURES.md)。

@@ -1,0 +1,387 @@
+{
+  "schema": "termforge-r1-system-boundaries-v1",
+  "overall_passed": false,
+  "issue14_complete": false,
+  "run": {
+    "id": 39960732398,
+    "attempt": 1,
+    "url": "https://github.com/JavaZeroo/termforge/actions/runs/39960732398",
+    "source_commit": "c386494587656faa3d8621f7ddbf43a6aa678255",
+    "workflow": "Build and synthetic regression",
+    "conclusion": "failure",
+    "windows_job_id": 120437766969,
+    "ubuntu_job_conclusion": "success"
+  },
+  "platform": "Windows-2025Server-10.0.26100-SP0",
+  "artifact_identity": [
+    {
+      "id": 12505150838,
+      "name": "r1-windows-input",
+      "bytes": 851914,
+      "sha256": "d49c50d89dba376cc05bed731b1fa85c216d8819466ade1a5d11c5c8559a9203",
+      "download_digest_matched": true
+    },
+    {
+      "id": 12503984276,
+      "name": "failure-windows-2025",
+      "bytes": 1222222,
+      "sha256": "8fae1ff1e59727e9e20b72bd8fc25fa5bb0eb768064d454ea386231d9902aefa",
+      "download_digest_matched": true
+    }
+  ],
+  "source_identity": {
+    "hash_scope": "Exact Git blob bytes at the run source_commit; excludes subsequent diagnostic edits.",
+    "sha256": {
+      ".github/workflows/build.yml": "2b85af158b3b1454950d32f9e3745d4a75bb067c2f24f1400930480b83fb83fb",
+      "experiments/shell/clipboard.hpp": "d90f103661f8a4a4fe45d678027a7c070232cdc8f4da80c59d218c3f29d93a2a",
+      "experiments/shell/clipboard_text.hpp": "b050e6da2fb92c080b054e3b1357e9a87484818fb8efdd43b388641f6ff256cd",
+      "experiments/shell/clipboard_worker.hpp": "7d883bd28f115f986ce07837b619e0985b0ddc8faa7395a8d3919415c889f4a2",
+      "experiments/shell/paste_probe.cpp": "eb06a1a2ba41013c740d183226f297ddbdc8fd4369a625f3e1d3f5356cdbee7e",
+      "experiments/shell/test_paste.py": "c0815385d0825f6d33985e0060da9ecb8b2281ae1d10c446706d3b3b9abc567a",
+      "experiments/shell/shell.cpp": "b969bf1c79c021d76fc02944bf7b10322dc3fac8b052323c28f0bed361effd2b",
+      "experiments/shell/run.py": "7d58e8d34941aec2306395d25f11d61a9321d92a065b222c715e1dc13e13297a",
+      "experiments/shell/workspace_clipboard_scenario.hpp": "936b6a4d195126a1c7cd1be83ca53c3df3194cf384098a41b9974e52dbea7215",
+      "experiments/shell/clipboard_scenario_state.hpp": "51b4ff8be82f0885bc1e80fa622fb5319246878026b9ae7a69bd104f19e761df",
+      "experiments/shell/clipboard_checks.py": "420612f7d8308b1fec379ee58ac1a0b06a627009025007676de291c0565328f7",
+      "experiments/shell/workspace_paste_scenario.hpp": "42a322efb0d8db25cec9f5de767221850e2f6a18a5103b882fba18bfd6d79c80",
+      "experiments/shell/paste_checks.py": "889020c6a050acc7ddfab9b813db0adf159e380d5b53ec392b38c72df5ac296c",
+      "experiments/shell/test_shell.py": "920c25ea332e9cc077530e5ac05e54ecd397d63a193f0f1260fc8828370558d7"
+    }
+  },
+  "executable_identity": {
+    "scope": "Hashes recorded by the hosted paste probe; window-shell binary hash was not recorded.",
+    "shell_paste_probe.exe": "9d1adf51bc51349f622778dc996b8760bfd43d857cd7348f435d2a2c23dc37f2",
+    "shell_clipboard_reader.exe": "66ed3df10853d63f4d791925a5be9106f387ddb14e150a5b7b161fab58f6bc74",
+    "termforge_shell.exe": null
+  },
+  "windows_ctest": {
+    "suites_passed": 19,
+    "suites_failed": 1,
+    "failed_suite": "shell",
+    "shell_tests_run": 21,
+    "shell_errors": 1,
+    "paste_system_passed": true,
+    "paste_system_tests_run": 4,
+    "paste_system_tests_skipped": 1,
+    "paste_system_skip": "Negative hosted-fallback guard is intentionally inapplicable on the authorized hosted VM; the real clipboard test ran."
+  },
+  "low_level_system_clipboard": {
+    "passed": true,
+    "mode": "--isolated",
+    "private_window_station": true,
+    "real_win32_clipboard_api": true,
+    "hosted_fallback_used": false,
+    "sample": {
+      "artifact_path": "paste/run-h6rjlawp/private-clipboard.json",
+      "bytes": 4625,
+      "sha256": "09f0317db846a0b3f919a8709b54adab2c724ff68c4a816c0aed8795276849bf"
+    },
+    "cases": {
+      "independent_write": true,
+      "independent_read": true,
+      "occupied_read": true,
+      "occupied_write": true,
+      "invalid_utf16": true,
+      "empty": true,
+      "oversize_allocation": true,
+      "text_limit": true,
+      "terminator_observed": true,
+      "missing_format": true
+    },
+    "reader_cases": [
+      {
+        "clipboard_reader": "cancelled",
+        "delayed_renderer_entered": true,
+        "messages": 2,
+        "cleanup": true
+      },
+      {
+        "clipboard_reader": "timed_out",
+        "delayed_renderer_entered": true,
+        "messages": 157,
+        "cleanup": true
+      },
+      {
+        "clipboard_reader": "destroyed",
+        "cleanup": true
+      },
+      {
+        "clipboard_reader": "early-eof",
+        "cleanup": true
+      },
+      {
+        "clipboard_reader": "passed",
+        "unicode_exact": true,
+        "messages": 4,
+        "cleanup": true
+      }
+    ],
+    "clipboard_bytes": {
+      "clipboard-written.utf16le": {
+        "artifact_path": "paste/run-h6rjlawp/private-clipboard/clipboard-written.utf16le",
+        "bytes": 54,
+        "sha256": "1cd01189cc155d34cf770b63a95b630cd040f75bd3c323090b47b4c714a3eaf0"
+      },
+      "clipboard-read.utf16le": {
+        "artifact_path": "paste/run-h6rjlawp/private-clipboard/clipboard-read.utf16le",
+        "bytes": 52,
+        "sha256": "352fcbb450aa9e9365497063202e0e3c908e3553c6804e74027e97797c9806af"
+      },
+      "clipboard-worker.utf16le": {
+        "artifact_path": "paste/run-h6rjlawp/private-clipboard/clipboard-worker.utf16le",
+        "bytes": 34,
+        "sha256": "ef21870b7e2c113bdba7a853d2f64cfe8d161ba4ed1d8fc1320ded16a210f192"
+      }
+    },
+    "transport_receivers": {
+      "complete": {
+        "bytes": 280000,
+        "sha256": "8cdb13024be3ecc43caeb08d3f5b93943ca23b9076ed5ecc79dc9ec99785209d"
+      },
+      "cancel": {
+        "bytes": 18397,
+        "sha256": "c308722b50e6f289ea314eafd57c4d7649f232d8fb6cb06cf33cc3686f217a9d"
+      },
+      "close": {
+        "bytes": 768,
+        "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+      },
+      "target-failure": {
+        "bytes": 768,
+        "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+      }
+    },
+    "standalone_transport_repeats": [
+      {
+        "artifact_path": "paste/run-h6rjlawp/transport-0.json",
+        "bytes": 2987,
+        "sha256": "6b2c66acacb9729212696b34f330b6726e921a71958d1a18c1883db9459c8118"
+      },
+      {
+        "artifact_path": "paste/run-h6rjlawp/transport-1.json",
+        "bytes": 2987,
+        "sha256": "090d05bdd37ec27004bd624822b8fdbff640f571b41908286fdf4643538a2b50"
+      },
+      {
+        "artifact_path": "paste/run-h6rjlawp/transport-2.json",
+        "bytes": 2987,
+        "sha256": "9b4be94c4bd81bb1863844c8cf6a39687d10ee0152091bba921d533ced0356c5"
+      }
+    ],
+    "cleanup": {
+      "active_children": 0,
+      "reported_cleanup": true
+    }
+  },
+  "unterminated_fixture_observation": {
+    "observed_behavior": "system-terminated",
+    "before": {
+      "artifact_path": "paste/run-h6rjlawp/private-clipboard/terminator-before.utf16le",
+      "bytes": 64,
+      "sha256": "c8aa69db12b8607abd5ebe102d17293e224fabccd9a193054e78f7ae8a329e10"
+    },
+    "after": {
+      "artifact_path": "paste/run-h6rjlawp/private-clipboard/terminator-after.utf16le",
+      "bytes": 64,
+      "sha256": "d7d171ee0ecd7ae146cc9e1dadb0b3d6a51abf3fbd2f4ba3a477161501a21500"
+    },
+    "reader": {
+      "artifact_path": "paste/run-h6rjlawp/private-clipboard/terminator-reader.utf16le",
+      "bytes": 62,
+      "sha256": "d0363424c5380f7aa27d7226b210e5d8a225c9acb07b1bf25493d2e1f8580820"
+    },
+    "utf16_units_before": 32,
+    "utf16_units_after": 32,
+    "changed_unit_indices_zero_based": [
+      31
+    ],
+    "changed_unit_before_hex": "0058",
+    "changed_unit_after_hex": "0000",
+    "all_other_units_unchanged": true,
+    "reader_equals_exact_after_prefix_without_terminator": true,
+    "interpretation": "This system normalized only the last UTF-16 unit to NUL. It does not prove that an unchanged unterminated system allocation was rejected on this runner."
+  },
+  "product_system_paste": {
+    "passed": true,
+    "repeats": [
+      {
+        "repeat": 0,
+        "passed": true,
+        "sample": {
+          "artifact_path": "shell/run-g62f_mm2/paste-system-0/sample.json",
+          "bytes": 1034,
+          "sha256": "14a7bd39dea02be29f4d66a985caa60a5872d36ec6556d2a3bc569d54ce302eb"
+        },
+        "workflow": {
+          "artifact_path": "shell/run-g62f_mm2/paste-system-0/paste-workflow.json",
+          "bytes": 621,
+          "sha256": "9eddf35d9c005162b628542abf39a64946353f60ecac45c62c161b41290580a5"
+        },
+        "confirmed_receiver": {
+          "artifact_path": "shell/run-g62f_mm2/paste-system-0/input.bin",
+          "bytes": 25000,
+          "sha256": "476d794947cb5d2439b8179f9637e78628e95755efd9fbaf52cf1c7373f52bc4"
+        },
+        "cancel": {
+          "sent": 173910,
+          "received": 173910,
+          "state": "cancelled",
+          "receiver": {
+            "artifact_path": "shell/run-g62f_mm2/paste-system-0/cancel.bin",
+            "bytes": 173910,
+            "sha256": "042001bdef9ee5f80640963ed8d4e78efba8e726c96a41d285ca87f7168d4999"
+          }
+        },
+        "close": {
+          "sent": 157542,
+          "received": 768,
+          "state": "cancelled",
+          "receiver": {
+            "artifact_path": "shell/run-g62f_mm2/paste-system-0/close.bin",
+            "bytes": 768,
+            "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+          }
+        },
+        "cleanup": {
+          "active_children": 0,
+          "sessions_closed": 2,
+          "desktop_gone": true
+        }
+      },
+      {
+        "repeat": 1,
+        "passed": true,
+        "sample": {
+          "artifact_path": "shell/run-g62f_mm2/paste-system-1/sample.json",
+          "bytes": 1034,
+          "sha256": "833e52b3b0deb08f56d3467aecdfea1bb98855a489856d6114c36edbc3f52d14"
+        },
+        "workflow": {
+          "artifact_path": "shell/run-g62f_mm2/paste-system-1/paste-workflow.json",
+          "bytes": 620,
+          "sha256": "bb1efeea0de75ab7a5901f14992254c3242af978899b6b73cc80965fe66cccae"
+        },
+        "confirmed_receiver": {
+          "artifact_path": "shell/run-g62f_mm2/paste-system-1/input.bin",
+          "bytes": 25000,
+          "sha256": "476d794947cb5d2439b8179f9637e78628e95755efd9fbaf52cf1c7373f52bc4"
+        },
+        "cancel": {
+          "sent": 186186,
+          "received": 186186,
+          "state": "cancelled",
+          "receiver": {
+            "artifact_path": "shell/run-g62f_mm2/paste-system-1/cancel.bin",
+            "bytes": 186186,
+            "sha256": "95ef6e9680a0baa83fc4f60c86c0fd608f45ad1c8939bd273b5eacaeede7d0b1"
+          }
+        },
+        "close": {
+          "sent": 100254,
+          "received": 768,
+          "state": "cancelled",
+          "receiver": {
+            "artifact_path": "shell/run-g62f_mm2/paste-system-1/close.bin",
+            "bytes": 768,
+            "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+          }
+        },
+        "cleanup": {
+          "active_children": 0,
+          "sessions_closed": 2,
+          "desktop_gone": true
+        }
+      }
+    ],
+    "confirmation_keyboard": {
+      "default_enter_cancel": true,
+      "tab_escape_cancel": true,
+      "tab_enter_accept": true
+    },
+    "byte_oracle": "Confirmed input is exactly UTF-8 P汉 followed by CR, repeated 5000 times; cancellation and closure use independently checked UTF-8 prefixes."
+  },
+  "product_clipboard_read": {
+    "passed": false,
+    "repeats_requested": 2,
+    "repeats_completed": 0,
+    "failed_repeat": 0,
+    "later_repeat": "not_run",
+    "sample": {
+      "artifact_path": "shell/run-g62f_mm2/clipboard-system-0/sample.json",
+      "bytes": 548,
+      "sha256": "029b9ce7b8669dc1d9ac0d1443f7a10edec1cc3ce002790db38b0f52287d542e"
+    },
+    "error": "clipboard owner failed its bounded ready handshake",
+    "failure_location": {
+      "case": "cancel",
+      "phase": "prepare-owner before product Paste",
+      "basis": "Inferred from fixed-source execution order, the emitted constructor error, and the retained receiver files.",
+      "exact_native_call": null,
+      "native_error_code": null
+    },
+    "cases": [
+      {
+        "name": "occupied",
+        "status": "observed_before_later_fixture_failure",
+        "receiver": {
+          "artifact_path": "shell/run-g62f_mm2/clipboard-system-0/occupied.bin",
+          "bytes": 270,
+          "sha256": "9f615f0bdc378d4c4e2da79a2e26fa7af210417fe308fa3fcbf889ae8b0161ed"
+        },
+        "baseline_bytes": 256,
+        "retry_bytes": 14,
+        "exact_expected_bytes": true,
+        "visible_error_frame_retained_privately": true
+      },
+      {
+        "name": "oversize",
+        "status": "observed_before_later_fixture_failure",
+        "receiver": {
+          "artifact_path": "shell/run-g62f_mm2/clipboard-system-0/oversize.bin",
+          "bytes": 270,
+          "sha256": "354428773256c35cbcd3ba123b31d8fc01a5fbaf0e5bf5cab34b2140157feb8a"
+        },
+        "baseline_bytes": 256,
+        "retry_bytes": 14,
+        "exact_expected_bytes": true,
+        "visible_error_frame_retained_privately": true
+      },
+      {
+        "name": "cancel",
+        "status": "fixture_initialization_failed_before_product_paste",
+        "receiver": {
+          "artifact_path": "shell/run-g62f_mm2/clipboard-system-0/cancel.bin",
+          "bytes": 256,
+          "sha256": "b0102e3e5f3ced3b4bd1e9d1a08ef35c5fce216b024beea399c4a51b95ece8e7"
+        },
+        "baseline_bytes": 256,
+        "bytes_beyond_baseline": 0,
+        "read_cancel_behavior_verified": false
+      },
+      {
+        "name": "close",
+        "status": "not_run",
+        "read_close_behavior_verified": false
+      }
+    ],
+    "complete_workflow_manifest_present": false,
+    "case_limit": "Occupied/oversize observations and retry bytes are retained, but the full four-case acceptance manifest was never produced. They do not close the product read gate.",
+    "cleanup": {
+      "exit_code": 2,
+      "outer_timeout": false,
+      "active_children_before_final_cleanup": 0,
+      "active_children_after_final_cleanup": 0,
+      "desktop_gone": true
+    }
+  },
+  "publication": {
+    "raw_zip_retained_privately": true,
+    "raw_windows_or_receiver_files_published": false,
+    "scope": "Sanitized identities, counters, hashes and conclusions only; no process IDs, workstation paths, window names or tokens."
+  },
+  "limits": [
+    "Controlled native window messages and real ConPTY receiver bytes; not physical keyboard or real IME acceptance.",
+    "No product read-cancel/read-close pass is established by lower-level helper cleanup tests.",
+    "No presentation-complete timing or WindTerm performance equivalence is measured."
+  ]
+}

@@ -1,6 +1,6 @@
 # 限定窗口呈现探针（V1 受限验收）
 
-当前核心生成 3×32 的固定场景，复制成带版本号的只读快照，再通过 GDI 或 DirectWrite/Direct2D 软件 DC target 绘制。程序创建自己的非输入 desktop 和真实 `WS_VISIBLE` HWND；从不切换用户的 desktop，不接收用户点击，不捕获用户桌面。`InvalidateRect → UpdateWindow → WM_PAINT → BeginPaint` 以及消息泵驱动绘制，结束后销毁窗口、注销窗口类，GUI 线程退出后由父线程关闭 desktop。这个探针仍是独立实验；共享的 `render.hpp` 另用于 [A1 shell](../shell/README.md)。
+当前核心生成 3×32 的固定场景，复制成带版本号的只读快照，再通过 GDI 或 DirectWrite/Direct2D 软件 DC target 绘制。程序创建自己的非输入 desktop 和真实 `WS_VISIBLE` HWND；从不切换用户的 desktop，不接收用户点击，不捕获用户桌面。`InvalidateRect → UpdateWindow → WM_PAINT → BeginPaint` 以及消息泵驱动绘制，结束后销毁窗口、注销窗口类，GUI 线程退出后由父线程关闭 desktop。这个探针仍是独立实验；共享的 `render.hpp` 另用于[本地 shell 工作区](../shell/README.md)。
 
 ```powershell
 # Windows；先按 CONTRIBUTING.md 从根目录构建。
@@ -27,7 +27,7 @@ python -m unittest experiments.presentation.test_presentation -v
 
 ## 已核验结果与计时
 
-2026-10-23（北京时间），Windows 11 build 26200 / MSVC 19.42.34433 Release：8 次运行全部通过，上述 client DC 对照均一致，4 项 unittest 通过，超时清理通过。请求字体为 Consolas，实测中文 fallback 为 Microsoft YaHei UI；`é` 使用 Consolas。19 个 glyph 均非缺字、宽度未超出对应格，组合重音与中文预览已查看。
+2026-10-23 历史样本通过上述固定场景与回收检查。请求字体为 Consolas，实测中文 fallback 为 Microsoft YaHei UI，`é` 使用 Consolas；该观察不扩展为其他文字或字体的验收。
 
 [运行身份](results/2026-10-23/manifest.json)、[完整原始样本](results/2026-10-23/samples.jsonl)、[计时分布](results/2026-10-23/summary.json)、[超时清理](results/2026-10-23/timeout.json)、[初始图](results/2026-10-23/dwrite-96-initial.png)、[最终 1.5× 图](results/2026-10-23/dwrite-144-final.png)。数据和图像只有本程序的合成内容；未分发系统字体文件。历史 [2026-10-22 离屏实验](results/2026-10-22/manifest.json) 保持原样，其 `window_verified=false` 只描述当时的实现。
 
@@ -40,8 +40,8 @@ python -m unittest experiments.presentation.test_presentation -v
 | `capture_ms` | 一次 WM_PRINTCLIENT 与 GdiFlush；捕获/文件写入不在 24 次绘制样本内 |
 | `timer_pair_samples_ms` | 128 对相邻时钟读数，观察计时粒度与读数成本；不是整个观察器的校准 |
 
-本批 draw 中位数约 1.27–3.30 ms；同一配置 min/max 跨度明显，原始分布保留。相邻计时器读数大量为零，p95 约 0.0001 ms；零不表示时钟调用没有成本。未完成无观察器对照、独立机器/批次或合成器端点校准，因而不根据这些短样本发布后端性能排名或 WindTerm 性能结论。
+原始分布保留同配置间的波动和相邻计时器的零读数；零不表示时钟调用没有成本。未完成无观察器对照、独立机器/批次或合成器端点校准，因而不根据这些短样本发布后端性能排名或 WindTerm 性能结论。
 
-按 [ADR-0004](../../docs/adr/0004-presentation-backend.md) 的 DWrite 路线已接入固定网格 A1。共享缓存新增 1,024 项上限；本探针的历史结果仍保留原始身份，不冒充当前构建。物理 DPI 切换、完整字体/字素/整形、长时资源与真实呈现测量继续保留为缺口。A1 集成时还复现了资源析构后切出桌面的 ERROR_BUSY；改为独立 GUI 线程完整退出再关闭 desktop，验证见[第三批记录](../../docs/archive/validation/third-batch-a1-2026-10-23.md)。
+按 [ADR-0004](../../docs/adr/0004-presentation-backend.md) 的 DWrite 路线已接入本地 shell，共享缓存上限为 1,024 项；[窗口集成历史验证](../../docs/archive/validation/third-batch-a1-2026-10-23.md)与本探针样本分别保留各自身份。物理 DPI、完整字体/字素/整形和长时资源由 [R2](https://github.com/JavaZeroo/termforge/issues/7)承接；真实呈现端点与校准由[观测工具 #3](https://github.com/JavaZeroo/termforge/issues/3)及[正式基线 #4](https://github.com/JavaZeroo/termforge/issues/4)承接。
 
 接口参考：[WM_PAINT](https://learn.microsoft.com/en-us/windows/win32/gdi/wm-paint)、[WM_PRINTCLIENT](https://learn.microsoft.com/en-us/windows/win32/gdi/wm-printclient)、[CreateDesktop](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createdesktopw)、[Direct2D DC render target](https://learn.microsoft.com/en-us/windows/win32/api/d2d1/nn-d2d1-id2d1dcrendertarget)、[DrawGlyphRun 回调](https://learn.microsoft.com/en-us/windows/win32/api/dwrite/nf-dwrite-idwritetextrenderer-drawglyphrun)。源码为按公开接口独立实现。

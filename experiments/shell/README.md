@@ -18,14 +18,14 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 
 默认 1360×860 逻辑内容区（以 96 DPI 为基准），底部真实 ShellPane，每会话保留最多 100 行历史；网格按扣除原生滚动条的客户区和实际单元格计算。窗口支持拖动缩放/最大化，网格范围为 1–500 列、1–200 行。采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄会截去右侧内容，增宽不会恢复，也没有逻辑行重排。选择/复制、搜索、SSH、备用屏或完整 TUI 尚未实现；真实系统剪贴板和中文 IME 工作流保持未验收。不实现终端查询回复，未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。逐格布局来自 [V1](../presentation/README.md)，布局缓存至多 1,024 项，满时清空重建；尚未做产品级缓存策略或性能对比。
 
-## R1 开发中的文字操作
+## 基础文字操作
 
 - 滚轮和滚动条浏览历史，`Ctrl+Shift+Home` / `Ctrl+Shift+End` 到历史首/尾；回看时新输出保持阅读锚点，普通输入和开始粘贴回到底部。历史淘汰时钳制到仍保留的最早行。
 - `Ctrl+Shift+V`、`Shift+Insert` 或 Session → Paste 读取剪贴板。读取在独立有时限的自有 helper 中进行；多行文字先确认，默认取消。一次任务固定目标会话，切换标签不重定向剩余字节；Escape 或 Cancel paste 停止后续发送。
 - 当前独立粘贴策略：最多 1 Mi 个 UTF-16 单元、4 MiB UTF-8，换行规范化为 CR，拒绝不完整 UTF-16 和不支持的控制字符；不宣称已对齐 WindTerm 默认策略，也不无条件发送 bracketed-paste 包装。
 - 键盘处理包含 Tab/Shift+Tab、Home/End/Insert/Delete/Page、修饰键、AltGr 和跨消息 UTF-16。IME 采用每终端独立原生上下文，只发送已提交文字；候选位置使用物理网格。实际系统 IME 的组合、候选、提交/取消仍需独立严格门槛，见 [IME 工具](../../research/ime/README.md)。
 
-上述功能已有开发实现和局部自动场景，完整验收进度分别见 [#12](https://github.com/JavaZeroo/termforge/issues/12)、[#14](https://github.com/JavaZeroo/termforge/issues/14)、[#16](https://github.com/JavaZeroo/termforge/issues/16)。
+历史浏览已按 [#12](https://github.com/JavaZeroo/termforge/issues/12) 的限定合同验收；粘贴与键盘/IME 已接入，完整系统验收仍分别由 [#14](https://github.com/JavaZeroo/termforge/issues/14)、[#16](https://github.com/JavaZeroo/termforge/issues/16) 跟踪。当前能力与边界统一见[功能矩阵](../../docs/FEATURES.md)。
 
 ## 工作区操作与已知差异
 
@@ -78,7 +78,7 @@ resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子
 
 测试的 `scripted_input_to_state_ms` 从 Ctrl-C 的 WM_CHAR 被处理开始，到后续 `TF_AFTER` 完整输出行进入快照；`scripted_input_to_submit_ms` 到包含该行的 WM_PAINT BitBlt/GdiFlush 完成。两者包含中断、后续命令和调度，不能当作单键延迟。自有 DIB 截图不是合成器呈现，`presented_done=null`。关闭场景没有该标记，相关字段为 null，不参与延迟统计。
 
-每个子进程限时 40 秒，原生基础场景限时 25 秒（DPI 为 30 秒），watchdog 场景 3 秒强制回收；stdout/stderr、失败状态、最终自有 BMP、身份与环境均保留。CTest 产物在 `TERMFORGE_TEST_ARTIFACTS/shell`，默认 `build/test-artifacts/shell`；runner 输出目录必须不存在。只有审核过的合成记录可公开，日常用户会话不会自动录制或上传。
+默认监督时限为 40 秒，原生基础场景为 25 秒，主区和 DPI 场景为 30 秒；`ui-clipboard-system` 的监督/原生场景分别为 60/45 秒，watchdog 场景在 3 秒后强制回收。stdout/stderr、失败状态、最终自有 BMP、身份与环境均保留。CTest 产物在 `TERMFORGE_TEST_ARTIFACTS/shell`，默认 `build/test-artifacts/shell`；runner 输出目录必须不存在。只有审核过的合成记录可公开，日常用户会话不会自动录制或上传。
 
 ## 依据
 
@@ -95,6 +95,7 @@ resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子
 | `ui-keyboard` | 修饰键、编辑键、Unicode 与会话目标 | 真实 `ReadConsoleW` 接收端与独立字节预期；不替代真实 IME |
 | `ui-paste` | 默认取消、Tab/Enter/Escape、隐藏目标、输出洪流、发送途中取消和关闭 | `paste-workflow.json` 与 `cancel.bin`/`close.bin`；接收端事件握手确保动作发生在发送途中；本场景不读取用户剪贴板 |
 | `ui-paste-system` | 真实 Unicode 系统剪贴板 → 快捷键 → 确认 → 接收端 | 只在指定一次性 hosted 环境运行；本地未运行/跳过不计系统验收 |
+| `ui-clipboard-system` | 经产品 Paste 验证占用/超限错误与重试、读取途中取消/关闭 | 延迟渲染 owner 握手、真实接收端字节、错误画面及 helper/Job 回收；仅一次性 hosted 环境运行；场景存在不等于整项通过，当前结果见 [#14](https://github.com/JavaZeroo/termforge/issues/14) |
 
 系统剪贴板边界另由 `python -m unittest experiments.shell.test_paste -v` 验证。畸形终止符用例保留 `terminator-before/after/reader.utf16le`：先核对发布前确实没有 NUL，再独立捕获系统返回的完整分配。仅接受“原分配未变且读取器拒绝”或“最后一个单元被系统改为 NUL 且读取器精确返回其前缀”两种有字节证据的结果；其他转换仍失败并留存原始内容。跨平台 `paste_test` 直接测试生产读取器共用的有界解析逻辑，包括无终止符、超限、分配末端与字符上限，不能用系统可能规范化了夹具代替解析边界测试。
 

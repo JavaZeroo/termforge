@@ -1,0 +1,249 @@
+{
+  "schema": "termforge.r1-hosted-reviewed-facts.v2",
+  "reference_contract_verified": true,
+  "acceptance_scope": "R1-01 fixed official Windows 2.7.0 text and menu-wrap reference contract; not product implementation or full WindTerm equivalence.",
+  "target": {
+    "version": "2.7.0 Windows x64 official",
+    "zip_sha256": "b05c3c7371340ff1302967247ffcd3a3ba27b237f72010e9157086143c453e50",
+    "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "distribution_files_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
+  },
+  "source": {
+    "run_id": 39960732305,
+    "url": "https://github.com/JavaZeroo/termforge/actions/runs/39960732305",
+    "head_sha": "c386494587656faa3d8621f7ddbf43a6aa678255",
+    "conclusion": "success",
+    "artifact_id": 12505390630,
+    "artifact_name": "r1-reference-facts",
+    "artifact_zip_sha256": "0ba5db5af77de70ad1c8a346cd1a56030962433fe8cc92bf60c8bc072e43a4ba",
+    "reviewed_json_count": 8,
+    "rea_version": "6.7.0"
+  },
+  "text": {
+    "scenario": "local-Windows-Shell",
+    "fixture_sha256": "f4a6b8e43b74813a32e5100eef35897a8e24be72a5ff32737fe78ffc133c17c2",
+    "template_sha256": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+    "runs": [
+      {
+        "run_name": "r1-hosted-01",
+        "evidence_id": "ev_76158ebaf980a9ef5cd13a09a0944c00f80dbd2b010b26e1b94dc8fb97e2a215",
+        "source_files": [
+          "r1-hosted-01-summary.json",
+          "r1-hosted-01-diagnostic.json"
+        ],
+        "gate": {
+          "complete": true
+        },
+        "diagnostic_validated": false,
+        "errors": 0,
+        "cleanup": {
+          "owned_active": 0,
+          "only_synthetic_session": true,
+          "session_count": 1
+        }
+      },
+      {
+        "run_name": "r1-hosted-02",
+        "evidence_id": "ev_8154f87551f3cabd0f4b078588f1fbe33f0aff7d4914c52b6170da80b54d3ad4",
+        "source_files": [
+          "r1-hosted-02-summary.json",
+          "r1-hosted-02-diagnostic.json"
+        ],
+        "gate": {
+          "complete": true
+        },
+        "diagnostic_validated": false,
+        "errors": 0,
+        "cleanup": {
+          "owned_active": 0,
+          "only_synthetic_session": true,
+          "session_count": 1
+        }
+      }
+    ],
+    "repeat": {
+      "verified": true,
+      "first_evidence_id": "ev_76158ebaf980a9ef5cd13a09a0944c00f80dbd2b010b26e1b94dc8fb97e2a215",
+      "second_evidence_id": "ev_8154f87551f3cabd0f4b078588f1fbe33f0aff7d4914c52b6170da80b54d3ad4"
+    },
+    "system_clipboard": {
+      "verified": true,
+      "copy": "ALPHA  tail\r\nBETA 中文 é",
+      "single_line_confirmation": false,
+      "single_line_sent": "TF-SINGLE",
+      "single_line_escape_after_send": true,
+      "multiline_confirmation": "PasteDialog",
+      "before_confirmation_preserved_peer": true,
+      "cancel_preserved_peer": true,
+      "confirmation_closed": true,
+      "paste_accepted": "TF-FIRST\rTF-SECOND\rTF-THIRD"
+    }
+  },
+  "menu_wrap": {
+    "scenario": "Telnet-loopback-63-columns",
+    "fixture_sha256": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+    "template_sha256": "1ce11839127b5901de3aa8ac5ecf0a3271fd99c7a082852e8555b01eb038a460",
+    "runs": [
+      {
+        "run_name": "r1-menu-hosted-01",
+        "evidence_id": "ev_487161e75f345b227b6e9efe31487fb1d7af265c0f5609bf47aaa9fbc5ccb2af",
+        "source_files": [
+          "r1-menu-hosted-01-summary.json",
+          "r1-menu-hosted-01-diagnostic.json"
+        ],
+        "gate": {
+          "complete": false,
+          "menu_verified": true,
+          "selection_find_verified": true
+        },
+        "diagnostic_validated": false,
+        "errors": 0,
+        "cleanup": {
+          "owned_active": 0,
+          "peer_closed": true,
+          "only_synthetic_session": true,
+          "session_count": 1
+        }
+      },
+      {
+        "run_name": "r1-menu-hosted-02",
+        "evidence_id": "ev_e2bb8c445e67c58ef85a78f6d8d739e71958004bd7ded21a638b1f2902a3e72b",
+        "source_files": [
+          "r1-menu-hosted-02-summary.json",
+          "r1-menu-hosted-02-diagnostic.json"
+        ],
+        "gate": {
+          "complete": false,
+          "menu_verified": true,
+          "selection_find_verified": true
+        },
+        "diagnostic_validated": false,
+        "errors": 0,
+        "cleanup": {
+          "owned_active": 0,
+          "peer_closed": true,
+          "only_synthetic_session": true,
+          "session_count": 1
+        }
+      }
+    ],
+    "repeat": {
+      "verified": true,
+      "first_evidence_id": "ev_487161e75f345b227b6e9efe31487fb1d7af265c0f5609bf47aaa9fbc5ccb2af",
+      "second_evidence_id": "ev_e2bb8c445e67c58ef85a78f6d8d739e71958004bd7ded21a638b1f2902a3e72b"
+    },
+    "system_clipboard": {
+      "verified": true,
+      "copy": "TF-SOFT:sssssssssssssssssssssssssssssssssssssssssssssssssssLEFTRIGHT:END\r\nTF-HARD:hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhLEFT\r\nRIGHT:END\r\nTF-TAIL:two  \r\nTF-UNICODE:中文 é\r\nTF-VT-END\r\n",
+      "single_line_confirmation": false,
+      "single_line_sent": "TF-SINGLE",
+      "single_line_escape_after_send": true,
+      "multiline_confirmation": "PasteDialog",
+      "before_confirmation_preserved_peer": true,
+      "cancel_preserved_peer": true,
+      "confirmation_closed": true,
+      "paste_accepted": "TF-FIRST\rTF-SECOND\rTF-THIRD"
+    },
+    "activated_actions": [
+      "select-all",
+      "find",
+      "copy",
+      "paste",
+      "paste",
+      "paste"
+    ],
+    "activation_input": "QMenu active action plus queued Return key",
+    "copy_before_sentinel": "TF-COPY-SENTINEL",
+    "vt": {
+      "protocol": "Telnet-loopback",
+      "columns": 63,
+      "sent_sha256": "6314155871fcdd041d7f3514ea6643c34b9f347ee59feefa44e89c25b430ae42",
+      "selection": "TF-SOFT:sssssssssssssssssssssssssssssssssssssssssssssssssssLEFTRIGHT:END\nTF-HARD:hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhLEFT\nRIGHT:END\nTF-TAIL:two  \nTF-UNICODE:中文 é\nTF-VT-END\n",
+      "soft_wrap_joins": true,
+      "hard_break_lf": true,
+      "trailing_spaces_preserved": true
+    },
+    "search": {
+      "selection": "LEFTRIGHT",
+      "anchor": 59,
+      "caret": 68,
+      "f3_returns_to_same_unique_match": true,
+      "peer_received_hex": ""
+    }
+  },
+  "paste_inputs": {
+    "single": "TF-SINGLE",
+    "multiline": "TF-FIRST\r\nTF-SECOND\nTF-THIRD",
+    "text_single_entry": "Ctrl+Shift+V",
+    "text_multiline_cancel_entry": "Shift+Insert",
+    "text_multiline_confirm_entry": "Ctrl+Shift+V",
+    "menu_entry": "Paste context-menu action",
+    "cancel": "Escape",
+    "accept": "Default Paste button"
+  },
+  "paste_observations_all_four_runs": [
+    {
+      "phase": "paste-before",
+      "peer_delta_from_before_paste": "",
+      "modal": null,
+      "focus": "ScintillaEditBase"
+    },
+    {
+      "phase": "paste-single-delivered",
+      "peer_delta_from_before_paste": "TF-SINGLE",
+      "modal": null,
+      "focus": "ScintillaEditBase"
+    },
+    {
+      "phase": "paste-single-after-escape",
+      "peer_delta_from_before_paste": "TF-SINGLE",
+      "modal": null,
+      "focus": "ScintillaEditBase"
+    },
+    {
+      "phase": "paste-multiline",
+      "peer_delta_from_before_paste": "TF-SINGLE",
+      "modal": "PasteDialog",
+      "focus": "QPushButton"
+    },
+    {
+      "phase": "paste-multiline-cancel",
+      "peer_delta_from_before_paste": "TF-SINGLE",
+      "modal": null,
+      "focus": "ScintillaEditBase"
+    },
+    {
+      "phase": "paste-multiline-confirm",
+      "peer_delta_from_before_paste": "TF-SINGLE",
+      "modal": "PasteDialog",
+      "focus": "QPushButton"
+    },
+    {
+      "phase": "paste-multiline-accepted",
+      "peer_delta_from_before_paste": "TF-SINGLETF-FIRST\rTF-SECOND\rTF-THIRD",
+      "modal": null,
+      "focus": "ScintillaEditBase"
+    }
+  ],
+  "independent_phase_review": {
+    "method": "Recomputed exact before-paste prefix/delta, focus and modal from all four allowlisted diagnostics; compared exact CF strings and menu/VT pairs.",
+    "status": "passed",
+    "no_early_multiline_bytes": true,
+    "cancel_preserved_peer": true,
+    "single_and_confirm_sent_once": true,
+    "modal_closed_and_terminal_focus_restored": true
+  },
+  "gate_semantics": {
+    "text_complete": "Full text-scene gate passed in both runs.",
+    "menu_complete_false": "Intentional: menu-wrap alone does not include the text scene; menu_verified is the menu gate.",
+    "diagnostic_validated_false": "Diagnostic exports are observations; acceptance flags come from the corresponding strict summary.",
+    "final_peer": "Both strict summaries additionally check final peer bytes after target completion; no launcher or REA cleanup failure is accepted."
+  },
+  "limitations": [
+    "Controlled Qt event replay on a fresh synthetic profile and owned non-input desktop, using the disposable hosted VM clipboard; not physical input or presentation performance.",
+    "Shell total lines differ (90/88 initially, 110/108 after output). Repeat compares specified behavior and identities, not all raw state.",
+    "Copy Shift+Del is a visible menu label only; actual copy entry points verified here are Ctrl+Shift+C and the Copy context-menu action.",
+    "Default main-screen basic samples only; no alt-screen, regex/cross-session search, large paste task, arbitrary Unicode, SSH, remote transport or product equivalence claim.",
+    "Old hosted facts remain limited to their original gates; this record does not revise them or close an issue automatically."
+  ]
+}

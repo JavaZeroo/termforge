@@ -1,14 +1,14 @@
 # WindTerm 2.7.0：R1 文字交互契约
 
-**#11 尚未验收完成。** 已直接观察基础导航/选择、系统复制、键盘粘贴、全选/查找菜单及原始 VT 文本投影。严格粘贴验收器和 Copy/Paste 菜单探针已实现并通过局部测试；新增菜单操作、软换行与尾空白的系统剪贴板结果仍待最终 hosted 两轮验收。以下记录行为事实，不代表完整等价或性能验收。
+**R1-01 的限定参考行为合同已通过两组各两轮 hosted 验收。** 范围包括基础导航/选择、系统复制、键盘粘贴、实际 Select All/Find/Copy/Paste 菜单，以及 VT 软折行、硬换行、尾空白的系统剪贴板结果。此合同可用于后续独立实现和对照；它不代表 TermForge 功能已经等价，也不是完整 WindTerm 或性能验收。
 
 目标固定为官方 2.7.0 Windows x64，EXE SHA-256 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`；分发文件白名单摘要为 `e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203`。公开内容只有原创场景、工具和事实。
 
 ## 证据与观察边界
 
-[Hosted 事实摘要](r1-text/hosted-39954191554.json) 来自 [CI 39954191554](https://github.com/JavaZeroo/termforge/actions/runs/39954191554)，源码为 `d150fe44b9fff058bcb5ed6aafe9ac0c34dacade`。在一次性 Windows 2025 runner 中，两个 Shell `text` 场景与两个 loopback `menu-wrap` 场景各使用新配置；每对使用相同 fixture/template。四轮自有 Job 均 `active=0`，两个 VT peer 均关闭，配置检查只含合成会话。两轮 Shell 的总行数不同，不能把相同的核心行为说成全部原始状态相同。
+[Hosted 事实摘要](r1-text/hosted-39960732305.json) 来自 [CI 39960732305](https://github.com/JavaZeroo/termforge/actions/runs/39960732305)，源码为 `c386494587656faa3d8621f7ddbf43a6aa678255`。在一次性 Windows 2025 runner 中，两个 Shell `text` 场景与两个 loopback `menu-wrap` 场景各使用新配置；每对使用相同 fixture/template、不同 Evidence ID，且第二轮 `repeat.verified=true`。四轮自有 Job 均 `active=0`，两个 VT peer 均关闭，配置检查各只有一个合成会话。两轮 Shell 初始总行数为 90/88，追加后为 110/108；重复门槛比较指定行为，不要求全部原始状态相同。
 
-该摘要保留来源 Evidence ID、原 gate 标志和独立复核，三者不混用。artifact `r1-reference-facts` 的 ZIP SHA-256 为 `e8c995357571f8416af6e9f9ff16a1b7ee81cdec75a36d07fe4a4357d969a0cf`。已核对八个 JSON 白名单文件；公开摘要没有用户配置、原始 widgets、句柄、路径、stack、下载令牌或私有提取物。
+该摘要保留四个 Evidence ID、原 gate 标志及独立逐阶段复核，三者不混用。artifact `r1-reference-facts`（ID `12505390630`）的 ZIP SHA-256 为 `0ba5db5af77de70ad1c8a346cd1a56030962433fe8cc92bf60c8bc072e43a4ba`。已核对八个 JSON 白名单文件；公开摘要没有用户配置、原始 widgets、句柄、路径、stack、下载令牌或私有提取物。[旧 hosted 摘要](r1-text/hosted-39954191554.json) 保留原先局部门槛及独立复核范围，不回写为本次验收结果。
 
 `r1_fixture.py` 生成编号日志、内空格/尾空格、中文、NFD 组合标记及长行，随后只记录输入，不执行粘贴内容。`r1_vt_fixture.py` 只监听 `127.0.0.1` 的临时端口，接受一个自有 Telnet 连接，按 [NAWS 规范](https://www.rfc-editor.org/rfc/rfc1073) 读取列数后发送原创 VT 字节，不使用账户或外部主机。
 
@@ -49,9 +49,9 @@
 | 同一多行剪贴板，Ctrl+Shift+V | 再次出现 `PasteDialog`；peer 在确认前仍不增加 |
 | 点击默认 Paste 按钮 | 弹窗关闭、焦点回终端；peer 仅追加一次 `TF-FIRST\rTF-SECOND\rTF-THIRD` |
 
-旧证据中的阶段名 `paste-single-cancel` 有误导性：该阶段实际是**立即粘贴成功之后的 Escape**，没有可取消的单行确认框。它不能作为单行任务取消的证据。当前脚本改用 `paste-single-delivered` / `paste-single-after-escape`，并在操作前记录 `paste-before`；旧记录保持原名。多行取消与确认的入口有真实弹窗和接收端字节支持。
+单行阶段为 `paste-single-delivered` / `paste-single-after-escape`，操作前单独记录 `paste-before`。旧证据中的 `paste-single-cancel` 实际也是**立即粘贴成功之后的 Escape**，没有可取消的单行确认框，不能作为单行任务取消证据；旧记录保持原名。多行取消与确认则有真实弹窗和接收端字节支持。
 
-这一系统复制样例没有尾空白或软换行；不能与下一节的选择模型结果拼接成“系统剪贴板也保留尾空白并合并软换行”的结论。不同传输、alt-screen、逐行发送及更大粘贴任务不在此样例的结论内。
+这一 Shell 复制样例只覆盖基本硬换行与 Unicode；软折行和尾空白由下一节同一 VT 样例的实际系统复制独立验证。alt-screen、逐行发送及更大粘贴任务不在此合同内。
 
 ## 原始 VT 换行与实际菜单
 
@@ -59,26 +59,29 @@ Hosted 两次 `menu-wrap` 场景均协商为 63 列，发送字节 SHA-256、选
 
 | 输入 / 操作 | 直接观察 | 系统剪贴板覆盖 |
 |---|---|---|
-| `LEFT` 写至最后一列，紧接 `RIGHT`，中间无换行字节 | 选择投影为连续 `LEFTRIGHT`；可跨显示折行查找，F3 回到同一唯一匹配 | 未验证 |
-| 相同位置显式发送 CRLF | 选择投影为 `LEFT\nRIGHT`，不合并硬换行 | 未验证 |
-| `TF-TAIL:two␠␠`、中文、NFD `e` + U+0301 | 选择投影保留两格尾空白、中文和组合标记 | 未验证 |
+| `LEFT` 写至最后一列，紧接 `RIGHT`，中间无换行字节 | 选择投影为连续 `LEFTRIGHT`；可跨显示折行查找，F3 回到同一唯一匹配 | 实际 Copy 菜单所得 CF 中也是连续 `LEFTRIGHT` |
+| 相同位置显式发送 CRLF | 选择投影为 `LEFT\nRIGHT`，不合并硬换行 | CF 精确为 `LEFT\r\nRIGHT` |
+| `TF-TAIL:two␠␠`、中文、NFD `e` + U+0301 | 选择投影保留两格尾空白、中文和组合标记 | CF 保留 `TF-TAIL:two␠␠\r\n`、中文及 NFD；末行也以 CRLF 结束 |
 | 实际上下文菜单 → Select All | 从不同的初始选区变为完整合成 VT 文本 | 不涉及复制 |
 | 实际上下文菜单 → Find | 焦点进入 ComboBox，输入 `LEFTRIGHT` 后选中该匹配；输入未泄漏到 peer | 不涉及复制 |
+| 实际上下文菜单 → Copy | 事先写入 `TF-COPY-SENTINEL`，激活后系统 CF 替换为整份 VT 文本 | 两轮逐字相同；精确全文见事实 JSON |
+| 实际上下文菜单 → Paste，单行输入 | 无确认框，peer 只增加一次 `TF-SINGLE`；随后 Escape 不撤销已发送内容 | 使用 VM 系统剪贴板 |
+| 实际上下文菜单 → Paste，多行输入 | 弹出 `PasteDialog`；确认前及 Escape 取消后均不增加字节 | 再次 Paste 并确认后，只增加一次 `TF-FIRST\rTF-SECOND\rTF-THIRD` |
 
-菜单可见标注为 Copy `Shift+Del`、Paste `Shift+Ins`、Find `Ctrl+Shift+F`、Select All `Ctrl+Shift+A`。其中 **Copy/Paste 菜单只是读取条目，尚未激活**；Copy 的 `Shift+Del` 也只是可见标注。实际键盘复制证据来自上一节的 Ctrl+Shift+C，不能自动证明另一键位。
+菜单实际激活顺序为 Select All、Find、Copy、Paste、Paste、Paste。粘贴取消/确认后 modal 均为空、焦点返回 `ScintillaEditBase`；稳定阶段与运行结束后的 peer 检查排除重复或晚到字节。菜单可见标注为 Copy `Shift+Del`、Paste `Shift+Ins`、Find `Ctrl+Shift+F`、Select All `Ctrl+Shift+A`；Copy 的 `Shift+Del` 仍只是可见标注，已验证的复制入口是实际 Copy 菜单和 Ctrl+Shift+C。
 
-## 验收器限制与未完成项
+## 验收门槛与合同边界
 
-CI 成功说明 `d150fe4` 当时的脚本 gate 通过，不能直接解锁整个 #11。原 `text` 汇总器有明确漏洞：多行取消比较以弹窗出现后的 peer 内容为基线，可能漏掉打开弹窗前的提前发送；单行效果及取消/接受后弹窗关闭也未严格校验。当前验收器已用操作前基线检查各阶段的精确字节、modal 和焦点，并检查运行结束后的 peer，拒绝提前泄漏、重复发送及晚到尾部；反例和保留 hosted 观察的复核测试通过。这是源码与局部测试结果，最终探针尚须 hosted 验证。
+本次两轮 `text.complete=true`、两轮 `menu_verified=true`，两组重复门槛均通过。`menu-wrap` 摘要的 `complete=false` 是有意保留的场景边界：单独菜单场景不含完整文字导航合同，必须与 `text` 合并验收。白名单 diagnostic 的 `validated=false` 表示其为观察导出，不是最终门槛结果；验收读取对应 strict summary。
 
-对两轮保留的白名单 diagnostic 所做的独立复核，以 `reverse-drag-unicode` 阶段的 peer 内容为粘贴前基线，确认单行只追加 `TF-SINGLE`；多行打开、取消和再次确认前均不再增加，确认后只追加一次精确 CR 分隔文本；取消/接受后 modal 均为 null、焦点回终端。两轮满足这些更严格的条件。该复核支持旧观察，**不替代新源码的运行**。公开 JSON 保持 `original_gate` 与 `independent_recheck` 分开，顶层 `issue_11_complete=false`。
+严格粘贴校验从 `paste-before` 的 peer 内容建立基线，同时检查精确增量、modal、焦点及结束后的 peer。独立复核又从四轮白名单快照重算相同转换，确认单行只发送一次，多行在确认前没有泄漏，取消不发送，确认仅发送一次；四轮结果一致。旧汇总器以弹窗出现后内容作取消基线、可能遗漏提前发送的缺陷已修复；旧运行和旧 JSON 仍只代表其原覆盖范围。
 
-当前源码已补的门槛及剩余验证：
+本次支持的验收条件：
 
-1. 严格粘贴校验与阶段重命名已实现。最终 `text` 两轮必须通过新门槛；不复用旧 `complete=true`。
-2. 新 `menu-wrap` 已加入实际 Copy/Paste action 触发，复制前写入系统哨兵，再检查 CF_UNICODETEXT；粘贴覆盖单行立即发送、多行取消与确认。菜单实际效果仍须运行证据。
-3. 新 CF 门槛逐字检查 VT 软换行合并、硬换行 CRLF、尾两空格、中文和 NFD；粘贴先按已观察到的 CR 行分隔设严格预期。此前这些系统语义只在 Shell 样例有部分证据，不能预先认定 Telnet 样例也满足；若有差异，必须保留真实失败并核对原因。
-4. 两组各重复一次新配置，并用 `--compare-with` 核对不同 Evidence ID、相同 fixture/template 和精确行为结果，检查回收。完成整个合同后才关闭 #11。
+1. 默认 Shell 的历史跟随、选择单位、正反向拖选、当前保留历史内查找方向与循环，以及快捷键焦点。
+2. 键盘和实际菜单入口的系统复制/粘贴；单行立即发送、多行确认、取消和接受后的焦点与字节。
+3. 原始 VT 样例在同一次实际 Copy 中保留软折行合并、硬换行 CRLF、尾两空格、中文和 NFD；精确 CF 字符串两轮一致。
+4. 固定目标与工具身份、每轮全新合成配置、两组不同 Evidence ID 的重复比较，以及目标/CLI/peer 回收和失败拒绝门槛。
 
 仍仅有静态声明的内容包括默认主屏粘贴提示开关、alt-screen 提示关闭和选择后自动复制关闭；以上运行不能证明这些设置在所有上下文中的语义。更复杂 VT 模式、逻辑行重排、正则/跨会话搜索不由这些基本样例推出。
 
