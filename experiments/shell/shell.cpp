@@ -226,6 +226,10 @@ class ShellWindow {
         if (!self) return DefWindowProcW(hwnd, message, wp, lp);
         try {
             if (message == WM_CLOSE) { self->begin_close(); return 0; }
+            if (message == WM_LBUTTONDOWN) { SetFocus(hwnd); return 0; }
+            if (message == WM_SETFOCUS && self->parent_) {
+                SendMessageW(self->parent_,WM_APP+2,0,reinterpret_cast<LPARAM>(self)); return 0;
+            }
             if (message == WM_DESTROY) {
                 if (self->parent_) PostMessageW(self->parent_, WM_APP+1, 0, reinterpret_cast<LPARAM>(self));
                 else PostQuitMessage(0);
@@ -354,15 +358,15 @@ public:
 static int application(int argc, char** argv) {
     try {
         std::string mode, image;
-        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|resize|resize-close|watchdog|ui|ui-edit|ui-restore frame.bmp]");
+        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|resize|resize-close|watchdog|ui|ui-edit|ui-restore|ui-main frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore", "invalid shell test mode");
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main", "invalid shell test mode");
             std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
         }
         require(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) != FALSE, "DPI awareness failed");
         if (mode.empty()) { Workspace window; return window.run(); }
-        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main") {
             OwnedDesktop desktop(L"TermForgeShell-");
             return desktop.run([&] { Workspace window(image,mode); return window.run(); });
         }

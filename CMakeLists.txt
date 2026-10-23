@@ -49,6 +49,16 @@ if(WIN32)
   termforge_warnings(termforge_shell)
   target_compile_definitions(termforge_shell PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
   target_link_libraries(termforge_shell PRIVATE termforge_core d2d1 dwrite gdi32 user32)
+  # Always repair the runtime bundle, including builds that need no C++ relink.
+  add_custom_target(termforge_shell_assets
+    COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:termforge_shell>/assets/fonts"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+      "${PROJECT_SOURCE_DIR}/assets/fonts/RobotoMono-Regular.ttf"
+      "${PROJECT_SOURCE_DIR}/assets/fonts/OFL.txt"
+      "${PROJECT_SOURCE_DIR}/assets/fonts/README.md"
+      "$<TARGET_FILE_DIR:termforge_shell>/assets/fonts"
+    VERBATIM)
+  add_dependencies(termforge_shell termforge_shell_assets)
   add_executable(shell_queue_probe experiments/shell/queue_probe.cpp)
   add_executable(shell_size_client experiments/shell/size_client.cpp)
   termforge_warnings(shell_size_client)

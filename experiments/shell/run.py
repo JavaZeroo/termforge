@@ -19,6 +19,15 @@ from experiments.conpty.run import OwnedJob
 
 
 def validate(row, mode):
+    if mode == "ui-main":
+        if (row.get("valid") is not True or row.get("mode") != mode or
+                any(row.get(field) is not True for field in
+                    ("main_sessions_verified", "focus_verified", "geometry_verified")) or
+                type(row.get("sessions_closed")) is not int or row["sessions_closed"] != 5 or
+                row.get("active_children_after") != 0 or row.get("presented_done", 1) is not None or
+                row.get("ui_font_family") != "Roboto Mono"):
+            raise ValueError("main workspace session, focus, font or cleanup gate failed")
+        return
     if mode in ("ui-edit", "ui-restore"):
         if (row.get("valid") is not True or row.get("mode") != mode or
                 row.get("interactions_verified") is not True or row.get("sessions_closed") != 1 or
@@ -54,6 +63,34 @@ def validate(row, mode):
             raise ValueError("incorrect state/submission timing")
     elif row["scripted_input_to_state_ms"] is not None or row["scripted_input_to_submit_ms"] is not None:
         raise ValueError("unobserved input endpoints must be null")
+
+
+def validate_main_geometry(data):
+    """Independent 96-unit reference, measured before this implementation.
+
+    Compare both workspace layout and actual HWND placement. This does not
+    establish inner text-grid, pixel, physical-DPI or performance equivalence.
+    """
+    phases = ("empty-1360", "session-1360", "session-2048")
+    if (not isinstance(data, dict) or data.get("ui_font_family") != "Roboto Mono" or
+            not isinstance(data.get("snapshots"), list) or
+            [row.get("phase") for row in data["snapshots"] if isinstance(row, dict)] != list(phases) or
+            len(data["snapshots"]) != 3):
+        raise ValueError("missing main workspace geometry phases or font identity")
+    expected = (
+        ([1360, 860], [227, 33, 906, 19], [227, 52, 906, 36], None),
+        ([1360, 860], [227, 33, 906, 26], [227, 59, 906, 34], [227, 93, 906, 453]),
+        ([2048, 1120], [342, 33, 1364, 26], [342, 59, 1364, 34], [342, 93, 1364, 626]),
+    )
+    for row, (window, group, toolbar, terminal) in zip(data["snapshots"], expected):
+        fields = {"window": window, "main_group": group, "main_child": terminal, "main_toolbar": toolbar}
+        if terminal is not None:
+            fields.update(main_terminal=terminal)
+        for field, wanted in fields.items():
+            value = row.get(field)
+            if value != wanted or (wanted is not None and
+                                   (not isinstance(value, list) or any(type(n) is not int for n in value))):
+                raise ValueError(f"main geometry mismatch: {row['phase']} {field}")
 
 
 def desktop_gone(pid):
@@ -107,6 +144,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
             if record["timed_out"] or record["exit_code"]:
                 raise ValueError("shell probe execution failed")
             validate(result, mode)
+            if mode == "ui-main":
+                validate_main_geometry(json.loads((out / "geometry.json").read_text(encoding="utf-8")))
             record["result"] = result
             record["frame_sha256"] = hashlib.sha256((out / "frame.bmp").read_bytes()).hexdigest()
         record["status"] = "passed"
@@ -134,7 +173,8 @@ def main():
     args.out.mkdir(parents=True, exist_ok=False)
     files = ["experiments/shell/shell.cpp", "experiments/shell/workspace.hpp", "experiments/shell/queues.hpp", "experiments/shell/run.py",
              "experiments/shell/workspace_interactions.hpp", "experiments/shell/workspace_scenarios.hpp",
-             "experiments/shell/layout_state.hpp",
+             "experiments/shell/workspace_main_scenario.hpp", "assets/fonts/RobotoMono-Regular.ttf",
+             "experiments/shell/layout_state.hpp", "experiments/shell/ui_font.hpp",
              "experiments/shell/resize.hpp", "experiments/shell/size_client.cpp",
              "experiments/conpty/session.hpp", "experiments/presentation/render.hpp", "experiments/presentation/desktop.hpp",
              "experiments/core/terminal.hpp", "experiments/core/screen.hpp", "experiments/core/unicode_width.hpp"]
@@ -145,7 +185,7 @@ def main():
                 input_endpoint="scripted Ctrl-C WM_CHAR acceptance to TF_AFTER state and GDI submission; not physical keyboard", presented_done=None)
     try:
         for repeat in range(args.repeats):
-            for mode in ("normal", "close", "resize", "resize-close", "ui", "ui-edit"):
+            for mode in ("normal", "close", "resize", "resize-close", "ui", "ui-edit", "ui-main"):
                 execute(exe, mode, args.out / f"{repeat}-{mode}")
                 print(f"{repeat} {mode}: passed", flush=True)
             execute(exe, "ui-restore", args.out / f"{repeat}-ui-restore",

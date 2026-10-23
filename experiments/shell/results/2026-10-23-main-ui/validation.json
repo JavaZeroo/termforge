@@ -1,0 +1,40 @@
+{
+  "scope": "synthetic_main_workspace_correctness",
+  "exe_sha256": "89c8d1d61deaf93ed2b85f5a3c5bb5b44dd6258fb14627391758de22724d374d",
+  "sources": {
+    "experiments/shell/workspace.hpp": "d394627a7e042593c3916f4be4cde3ee07b3055b4b83fa621d6ed02ca28a0c97",
+    "experiments/shell/workspace_interactions.hpp": "15cbf0095bfd483cb7daec4471afdce5ea51440260cd93c51f47357055c97630",
+    "experiments/shell/workspace_main_scenario.hpp": "ef749e8696045ecc543aee630d851c62b98c70f4e915259fa1b7e47a53a78d9e",
+    "experiments/shell/ui_font.hpp": "b0b85c45ea4aa1589d657707946a1e3ddf248031b3019cc0d190afccd0df1f0c",
+    "experiments/shell/shell.cpp": "ea463dde2f03e5a02e379e609fe97011046b46082d587e7d5241fecae4b8c053",
+    "experiments/shell/run.py": "f0c516fd569cefb0ba4184cbb4215e4620fbf946918205a6b9698ab0ab12dc67",
+    "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+  },
+  "geometry_repeats_identical": true,
+  "samples": [
+    {
+      "valid": true,
+      "mode": "ui-main",
+      "main_sessions_verified": true,
+      "focus_verified": true,
+      "geometry_verified": true,
+      "ui_font_family": "Roboto Mono",
+      "sessions_closed": 5,
+      "active_children_after": 0,
+      "presented_done": null
+    },
+    {
+      "valid": true,
+      "mode": "ui-main",
+      "main_sessions_verified": true,
+      "focus_verified": true,
+      "geometry_verified": true,
+      "ui_font_family": "Roboto Mono",
+      "sessions_closed": 5,
+      "active_children_after": 0,
+      "presented_done": null
+    }
+  ],
+  "presented_done": null,
+  "source_hash_scope": "Local build input bytes, without line-ending normalization"
+}

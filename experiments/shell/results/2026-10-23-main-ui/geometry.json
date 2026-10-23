@@ -1,0 +1,129 @@
+{
+  "ui_font_family": "Roboto Mono",
+  "snapshots": [
+    {
+      "phase": "empty-1360",
+      "window": [
+        1360,
+        860
+      ],
+      "main_group": [
+        227,
+        33,
+        906,
+        19
+      ],
+      "main_toolbar": [
+        227,
+        52,
+        906,
+        36
+      ],
+      "main_address": [
+        330,
+        56,
+        773,
+        28
+      ],
+      "main_terminal": [
+        227,
+        88,
+        906,
+        458
+      ],
+      "main_child": null,
+      "shell_terminal": [
+        0,
+        597,
+        1360,
+        206
+      ]
+    },
+    {
+      "phase": "session-1360",
+      "window": [
+        1360,
+        860
+      ],
+      "main_group": [
+        227,
+        33,
+        906,
+        26
+      ],
+      "main_toolbar": [
+        227,
+        59,
+        906,
+        34
+      ],
+      "main_address": [
+        330,
+        63,
+        773,
+        26
+      ],
+      "main_terminal": [
+        227,
+        93,
+        906,
+        453
+      ],
+      "main_child": [
+        227,
+        93,
+        906,
+        453
+      ],
+      "shell_terminal": [
+        0,
+        597,
+        1360,
+        206
+      ]
+    },
+    {
+      "phase": "session-2048",
+      "window": [
+        2048,
+        1120
+      ],
+      "main_group": [
+        342,
+        33,
+        1364,
+        26
+      ],
+      "main_toolbar": [
+        342,
+        59,
+        1364,
+        34
+      ],
+      "main_address": [
+        445,
+        63,
+        1231,
+        26
+      ],
+      "main_terminal": [
+        342,
+        93,
+        1364,
+        626
+      ],
+      "main_child": [
+        342,
+        93,
+        1364,
+        626
+      ],
+      "shell_terminal": [
+        0,
+        770,
+        2048,
+        293
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 """Real shell messages/output/frame/lifecycle regression; all windows are owned."""
 import copy
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -8,7 +9,7 @@ import tempfile
 import unittest
 
 from experiments.build_paths import ROOT, binary
-from experiments.shell.run import execute, validate
+from experiments.shell.run import execute, validate, validate_main_geometry
 
 
 @unittest.skipUnless(os.name == "nt", "ConPTY shell requires Windows")
@@ -86,6 +87,30 @@ class ShellTests(unittest.TestCase):
             execute(self.exe, "ui-edit", first)
             execute(self.exe, "ui-restore", self.out / f"restore-{repeat}",
                     settings_source=first / "workspace.layout")
+
+    def test_main_and_bottom_sessions_focus_geometry_and_cleanup(self):
+        for repeat in range(2):
+            out = self.out / f"main-{repeat}"
+            row = execute(self.exe, "ui-main", out)["result"]
+            for field, wrong in (("main_sessions_verified", False), ("focus_verified", False),
+                                 ("geometry_verified", False), ("sessions_closed", 3),
+                                 ("ui_font_family", "Consolas"), ("presented_done", 1)):
+                broken = copy.deepcopy(row)
+                broken[field] = wrong
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate(broken, "ui-main")
+            geometry = json.loads((out / "geometry.json").read_text(encoding="utf-8"))
+            validate_main_geometry(geometry)
+            for index, field in ((0, "main_group"), (1, "main_toolbar"),
+                                 (1, "main_child"), (2, "main_terminal")):
+                broken = copy.deepcopy(geometry)
+                broken["snapshots"][index][field][2] += 1
+                with self.subTest(phase=index, field=field), self.assertRaises(ValueError):
+                    validate_main_geometry(broken)
+            broken = copy.deepcopy(geometry)
+            broken["snapshots"].pop()
+            with self.assertRaises(ValueError):
+                validate_main_geometry(broken)
 
 
 if __name__ == "__main__":

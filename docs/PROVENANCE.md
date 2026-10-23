@@ -12,6 +12,8 @@
 
 ## 已使用的第三方数据
 
+- `assets/fonts/RobotoMono-Regular.ttf`：从 Google Fonts 的 RobotoMono 官方仓库固定提交独立取得，未修改；适用 SIL Open Font License 1.1，完整版权与许可证随字体分发。字体源码、固定版本、原始链接、字节数和 SHA-256 见[字体来源](../assets/fonts/README.md)。只在 TermForge 进程内作为工作区 UI 字体加载；不是从 WindTerm 提取的资源，不受项目 MIT 许可证覆盖。
+
 - 差分测试依赖 `pyte 0.8.2`（LGPLv3）和 `wcwidth 0.2.13`（MIT），固定 wheel 哈希并保留原包许可；没有复制其源码或将其作为产品组件。版本、官方来源与适配边界见[差分说明](../experiments/differential/README.md)。原创项目许可证不替代这些依赖的许可证。
 
 - `experiments/core/unicode_width.hpp`：通过原创生成器从 Python 3.12.10 `unicodedata` 所带 Unicode 15.0.0 属性数据生成，含项目自己的宽度/拒绝策略。未复制 CPython 实现源码。Unicode 数据保留[官方许可](../experiments/core/UNICODE-LICENSE.txt)与归属，来源为 [Unicode](https://www.unicode.org/)；正常构建使用固定生成文件。此数据不归项目 MIT 许可覆盖。

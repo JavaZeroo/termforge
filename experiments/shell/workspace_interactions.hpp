@@ -31,13 +31,15 @@ inline void Workspace::end_drag(bool commit) {
     else { state_=drag_start_; layout(); }
 }
 
-inline void Workspace::begin_rename(int index) {
-    if(closing_ || index<0 || index>=static_cast<int>(tabs_.size()) || tabs_[index].shell->closing()) return;
-    select(index);
-    rename_id_=tabs_[index].id;
-    rename_=CreateWindowExW(0,L"EDIT",tabs_[index].title.c_str(),
-        WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL,index*tab_width()+4,tab_bar_.top+2,
-        tab_width()-32,22,window_,reinterpret_cast<HMENU>(100),GetModuleHandleW(nullptr),nullptr);
+inline void Workspace::begin_rename(int index,Group group) {
+    auto& tabs=group_tabs(group);
+    if(closing_ || index<0 || index>=static_cast<int>(tabs.size()) || tabs[index].shell->closing()) return;
+    select(index,group);
+    rename_group_=group; rename_id_=tabs[index].id;
+    const RECT rect=tab_rect(group,index);
+    rename_=CreateWindowExW(0,L"EDIT",tabs[index].title.c_str(),
+        WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL,rect.left+4,rect.top+2,
+        std::max<LONG>(8,rect.right-rect.left-32),22,window_,reinterpret_cast<HMENU>(100),GetModuleHandleW(nullptr),nullptr);
     require(rename_!=nullptr,"rename editor creation failed");
     SendMessageW(rename_,WM_SETFONT,reinterpret_cast<WPARAM>(font_),TRUE);
     SendMessageW(rename_,EM_SETLIMITTEXT,64,0);
@@ -45,7 +47,7 @@ inline void Workspace::begin_rename(int index) {
     SetFocus(rename_);
 }
 
-inline void Workspace::end_rename(bool commit) {
+inline void Workspace::end_rename(bool commit,bool restore_focus) {
     if(!rename_) return;
     wchar_t buffer[65]{};
     if(commit) GetWindowTextW(rename_,buffer,65);
@@ -62,14 +64,46 @@ inline void Workspace::end_rename(bool commit) {
         bool valid=!title.empty() && title.size()<=64 &&
             std::none_of(title.begin(),title.end(),[](wchar_t c){return c<32 || c==127;});
         if(valid) valid=WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,title.data(),static_cast<int>(title.size()),nullptr,0,nullptr,nullptr)>0;
-        if(valid) for(auto& tab:tabs_) if(tab.id==id && !tab.shell->closing()) tab.title=title;
+        if(valid) for(auto& tab:group_tabs(rename_group_)) if(tab.id==id && !tab.shell->closing()) tab.title=title;
     }
     if(window_) InvalidateRect(window_,nullptr,FALSE);
-    if(active() && !closing_) SetFocus(active()->handle());
+    if(restore_focus && active() && !closing_) SetFocus(active()->handle());
 }
 
 inline bool Workspace::edit_key(const MSG& msg) {
     if(!rename_ || msg.hwnd!=rename_ || msg.message!=WM_KEYDOWN) return false;
     if(msg.wParam==VK_RETURN || msg.wParam==VK_ESCAPE) { end_rename(msg.wParam==VK_RETURN); return true; }
     return false;
+}
+
+inline void Workspace::collect_child(ShellWindow* child) {
+    for(const auto group:{Group::bottom,Group::main}) {
+        auto& tabs=group_tabs(group);
+        for(size_t i=0;i<tabs.size();++i) if(tabs[i].shell.get()==child) {
+            const bool removed_focused=group==focused_ && static_cast<int>(i)==selection(group);
+            if(rename_id_==tabs[i].id) end_rename(false);
+            try {
+                const Result result=child->collect();
+                require(result.complete && result.active_children==0,"workspace child cleanup failed");
+            } catch(const std::exception& error) { failure_=error.what(); }
+            int& index=selection(group);
+            if(static_cast<int>(i)<index) --index;
+            tabs.erase(tabs.begin()+i); ++collected_;
+            index=tabs.empty()?-1:std::clamp(index,0,static_cast<int>(tabs.size())-1);
+            if(!failure_.empty() && !closing_) close_all();
+            else if(closing_ && session_count()==0) DestroyWindow(window_);
+            else {
+                if(removed_focused && !active()) {
+                    focused_=group==Group::main?Group::bottom:Group::main;
+                    if(active() && focused_==Group::main && state_.focus) { state_.focus=false; save_layout(); }
+                }
+                layout();
+                // A background exit never changes the other area's keyboard
+                // target, nor commits/cancels an unrelated rename editor.
+                if(rename_) SetFocus(rename_);
+                else if(removed_focused && !closing_) SetFocus(active()?active()->handle():window_);
+            }
+            return;
+        }
+    }
 }
