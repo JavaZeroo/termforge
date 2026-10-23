@@ -19,7 +19,7 @@ An independent, fully open-source terminal project driven by reproducible perfor
 
 ## 从这里开始
 
-已构建后可运行 `build/bin/Release/termforge_shell.exe`（Windows / Visual Studio），`Ctrl+T` 新建本地标签，`F11` 扩大 Shell 区域，输入普通命令或 `exit`。构建、自动验证与支持边界见[本地 shell 原型](experiments/shell/README.md)。
+已构建后可运行 `build/bin/Release/termforge_shell.exe`（Windows / Visual Studio），`Ctrl+T` 新建本地标签，`F2` 重命名，`F11` 扩大 Shell 区域；五条分隔线可拖动，布局自动保存。输入普通命令或 `exit`。构建、自动验证与支持边界见[本地 shell 原型](experiments/shell/README.md)。
 
 | 文档 | 内容 |
 |---|---|

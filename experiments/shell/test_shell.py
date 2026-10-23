@@ -80,6 +80,13 @@ class ShellTests(unittest.TestCase):
                 b, g, r = data[offset + (y * 1360 + x) * 4:][:3]
                 self.assertEqual((r, g, b), rgb, (x, y))
 
+    def test_workspace_rename_drag_and_fresh_process_restore(self):
+        for repeat in range(2):
+            first = self.out / f"edit-{repeat}"
+            execute(self.exe, "ui-edit", first)
+            execute(self.exe, "ui-restore", self.out / f"restore-{repeat}",
+                    settings_source=first / "workspace.layout")
+
 
 if __name__ == "__main__":
     unittest.main()

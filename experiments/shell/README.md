@@ -1,4 +1,4 @@
-# 本地 shell 工作区：A1 / C5 / UI-A 首个切片
+# 本地 shell 工作区：A1 / C5 / UI-A / UI-B
 
 这是可从源码运行的 Windows 本地交互原型：真实 `cmd.exe` → ConPTY → 有界输出队列 → Recovery 核心 → 只读快照 → DirectWrite/Direct2D → 自有 HWND；字符/方向键从窗口回到 ConPTY。C5 新增核心、窗口与 ConPTY 尺寸同步，仍不是日常开发版。
 
@@ -19,11 +19,21 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 ## 工作区操作与已知差异
 
 - `Ctrl+T` 或底部 `+` 新建本地 cmd，最多 8 个；`Ctrl+Tab` 切换，`Ctrl+W` 或活动标签 `x` 关闭。也可点击标签和右侧 Sessions 列表。
+- `F2`、标签中键或 Session → Rename shell 重命名；支持 Unicode，Enter 提交、Esc 取消，切换焦点时提交。空白、控制字符或不完整 UTF-16 不接受，最多 64 个 UTF-16 单元；标签与 Sessions 列表同步，标题不写入终端。
 - `F11` / View → Focus shell 扩大终端；View → Side panels 显示/隐藏两侧区域。Session 菜单可新建、关闭和退出。
+- 拖动左右两列、底部 Shell、左侧与右侧上下区域的五条分隔线调整布局。线宽 1，命中宽 5；拖出窗口仍限于比例边界，Esc 或丢失鼠标捕获取消本次拖动。
 - 三列约 1:4:1、上下约 2:1、24 高面板标题、26 高 Shell 标签、27 高底栏、29 高状态栏来自 [直接取证](../../docs/research/windterm-ui-2026-10-23.md)。主区域没有连接标签，底部接入现有真实 shell。
 - Explorer/Filer/Outline 暂为空布局区域，没有文件浏览/大纲功能。当前菜单只暴露已实现动作；底栏是原创新建快捷入口，没有复刻 WindTerm QuickBar 配置。
-- UI 字体暂用系统 Consolas 12px，终端保留原来的 12×26 网格与调色板。非 96 DPI、字体/像素等价、拖动分隔线、标签重命名/排序/持久化、主连接标签、SSH/SFTP 均未验收。
+- UI 字体暂用系统 Consolas 12px，终端保留原来的 12×26 网格与调色板。非 96 DPI、字体/像素等价、标签排序/会话持久化、主连接标签、SSH/SFTP 均未验收。重命名、取消和关闭后的选择采用 TermForge 自身策略，未声明与 WindTerm 行为完全相同。
 - 主窗口是既有 Win32/DirectWrite 实验的有限扩展，不锁定未来产品 GUI 框架；没有复制 WindTerm 主题、图标或反编译实现。
+
+## 布局保存
+
+拖动提交、显隐/焦点模式切换及 View → Reset layout 后，自动保存到 `%LOCALAPPDATA%\TermForge\workspace-v1.layout`。下一次启动恢复五个分割比例及侧栏/焦点模式；焦点模式保留原分割比例。仅保存布局，不保存窗口位置/尺寸、标签标题、命令或会话。
+
+左右列宽各限于工作区的 10%–35%，上部限于 25%–80%，左右列内部上半部限于 20%–80%，另保留标题所需最小空间。这些是独立实现的可用性边界。配置为版本 1 的严格文本格式，读取最多 1 KiB；文件缺失、损坏、截断、版本未知或数值越界时整体使用默认布局。保存使用同目录独占临时文件与原子替换，失败保留旧文件，状态栏显示 `Layout could not be saved`。不承诺断电持久性；多进程同时操作采用最后成功保存的布局。
+
+自动测试仅读写各自结果目录下的 `workspace.layout`，不会读取或修改上述用户配置。
 
 ## 所有权与调度
 
@@ -61,3 +71,5 @@ resize 脚本会将自有窗口移至私有 desktop 右下边缘，让大部分�
 独立实现，接口语义核对 [Microsoft ConPTY 会话文档](https://learn.microsoft.com/en-us/windows/console/creating-a-pseudoconsole-session)、[CancelSynchronousIo](https://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-cancelsynchronousio) 和 [VT 输入序列](https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#input-sequences)。Windows 窗口退格消息的 U+0008 映射为 VT 的 DEL；首轮将其原样发送导致删词，已由真实 shell 编辑用例检出并修正。
 
 UI 自动场景另测两个真实 cmd 的独立输出、隐藏标签继续消费新输出、Sessions 列表点击、通过窗口命令新建/关闭和鼠标消息切换、F11 布局往返、2048×1120 放大及侧栏显隐。子进程独立查询 113×27、113×7、170×11；关闭最后标签后重新创建第三个会话并执行命令，再关闭主窗口，全部回收归零。合成 frame.bmp 由同一工作区绘制函数与终端 DIB 合成，核验参考坐标的分隔线/标题/活动标签颜色；它不是用户桌面截图，也不是像素等价或实际呈现完成证据。
+
+UI-B 新增五条分隔线的两端越界、capture 丢失/Esc 回滚、Unicode 输入重命名及空白/取消、后台标签退出期间编辑焦点与身份保持、不可见 Sessions 行不可点击。拖动后由子进程独立查询 113×12；另启新进程加载保存文件，检查比例/显隐与实际网格恢复，确认不恢复标题。三个 UI 场景各重复两次；独立跨平台 `layout_state` 测试覆盖严格读取、所有截断前缀、非法数值、Unicode 路径和替换失败保留。完整 runner 同样运行 UI 与新进程恢复场景。

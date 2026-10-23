@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import shutil
 import subprocess
 import sys
 
@@ -18,6 +19,12 @@ from experiments.conpty.run import OwnedJob
 
 
 def validate(row, mode):
+    if mode in ("ui-edit", "ui-restore"):
+        if (row.get("valid") is not True or row.get("mode") != mode or
+                row.get("interactions_verified") is not True or row.get("sessions_closed") != 1 or
+                row.get("active_children_after") != 0 or row.get("presented_done", 1) is not None):
+            raise ValueError("workspace edit/restore gate failed")
+        return
     if mode == "ui":
         if (row.get("valid") is not True or row.get("isolation_verified") is not True or
                 row.get("resize_verified") is not True or row.get("sessions_closed") != 3 or
@@ -63,8 +70,10 @@ def desktop_gone(pid):
     return True
 
 
-def execute(exe, mode, out, timeout=40):
+def execute(exe, mode, out, timeout=40, settings_source=None):
     out.mkdir(parents=True, exist_ok=False)
+    if settings_source is not None:
+        shutil.copyfile(settings_source, out / "workspace.layout")
     job = OwnedJob()
     process = None
     record = dict(mode=mode, status="failed")
@@ -124,6 +133,8 @@ def main():
     exe = binary("termforge_shell", args.bin_dir)
     args.out.mkdir(parents=True, exist_ok=False)
     files = ["experiments/shell/shell.cpp", "experiments/shell/workspace.hpp", "experiments/shell/queues.hpp", "experiments/shell/run.py",
+             "experiments/shell/workspace_interactions.hpp", "experiments/shell/workspace_scenarios.hpp",
+             "experiments/shell/layout_state.hpp",
              "experiments/shell/resize.hpp", "experiments/shell/size_client.cpp",
              "experiments/conpty/session.hpp", "experiments/presentation/render.hpp", "experiments/presentation/desktop.hpp",
              "experiments/core/terminal.hpp", "experiments/core/screen.hpp", "experiments/core/unicode_width.hpp"]
@@ -134,9 +145,12 @@ def main():
                 input_endpoint="scripted Ctrl-C WM_CHAR acceptance to TF_AFTER state and GDI submission; not physical keyboard", presented_done=None)
     try:
         for repeat in range(args.repeats):
-            for mode in ("normal", "close", "resize", "resize-close"):
+            for mode in ("normal", "close", "resize", "resize-close", "ui", "ui-edit"):
                 execute(exe, mode, args.out / f"{repeat}-{mode}")
                 print(f"{repeat} {mode}: passed", flush=True)
+            execute(exe, "ui-restore", args.out / f"{repeat}-ui-restore",
+                    settings_source=args.out / f"{repeat}-ui-edit" / "workspace.layout")
+            print(f"{repeat} ui-restore: passed", flush=True)
         execute(exe, "watchdog", args.out / "watchdog", timeout=3)
         meta["status"] = "complete"
     except BaseException as error:

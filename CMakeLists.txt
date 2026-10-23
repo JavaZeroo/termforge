@@ -58,6 +58,12 @@ if(WIN32)
 endif()
 
 if(BUILD_TESTING)
+  add_executable(layout_state_test experiments/shell/layout_state_test.cpp)
+  termforge_warnings(layout_state_test)
+  if(WIN32)
+    target_compile_definitions(layout_state_test PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+  endif()
+  add_test(NAME layout_state COMMAND layout_state_test)
   add_test(NAME resize_core COMMAND resize_test)
   find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
   # New experiment suites can register ordinary Python module invocations here.

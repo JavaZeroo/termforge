@@ -1,35 +1,56 @@
-// Independent UI-A workspace. Measurements: docs/research/windterm-ui-2026-10-23.md.
+// Independent workspace. Measurements: docs/research/windterm-ui-2026-10-23.md.
 #pragma once
 #include <cmath>
+#include "layout_state.hpp"
 
 class Workspace {
-    struct Tab { int id; std::unique_ptr<ShellWindow> shell; };
+    struct Tab { int id; std::wstring title; std::unique_ptr<ShellWindow> shell; };
+    enum class Divider { none, left, right, bottom, left_middle, right_middle };
     HWND window_{};
     HFONT font_{};
     std::vector<Tab> tabs_;
     int active_ = -1, next_id_ = 1, stage_ = 0, collected_ = 0;
-    bool closing_ = false, focus_ = false, sides_ = true;
+    bool closing_ = false, settings_failed_ = false;
+    tf_workspace::LayoutState state_, drag_start_;
+    Divider dragging_ = Divider::none;
+    std::filesystem::path settings_path_;
+    HWND rename_{};
+    int rename_id_ = -1;
+    std::string test_mode_;
     std::string image_, failure_;
     Clock::time_point started_ = Clock::now();
     RECT terminal_{}, tab_bar_{};
     int width_ = 1360, height_ = 860;
-    int side_ = 226, middle_ = 289;
+    int left_ = 226, right_ = 226, left_middle_ = 289, right_middle_ = 289;
     static constexpr COLORREF background = RGB(28,28,28), foreground = RGB(187,187,187), accent = RGB(0,122,204);
     static bool inside(RECT r, int x, int y) { return x>=r.left && x<r.right && y>=r.top && y<r.bottom; }
     ShellWindow* active() { return active_>=0 ? tabs_[active_].shell.get() : nullptr; }
     int tab_width() const { return std::min(140,width_/static_cast<int>(tabs_.size()+1)); }
+    Divider divider_at(int x, int y) const;
+    void drag_to(int x, int y);
+    void end_drag(bool commit);
+    void begin_rename(int index);
+    void end_rename(bool commit);
+    bool edit_key(const MSG& msg);
+    void save_layout() {
+        settings_failed_ = settings_path_.empty() || !tf_workspace::save_layout(settings_path_,state_);
+        InvalidateRect(window_,nullptr,FALSE);
+    }
     void select(int index) {
         if (index<0 || index>=static_cast<int>(tabs_.size())) return;
+        end_rename(true);
         active_=index; layout();
         if (!closing_) SetFocus(active()->handle());
     }
     void add() {
         if (closing_ || tabs_.size()>=8) return;
         auto shell=std::make_unique<ShellWindow>("", ""); shell->create(window_);
-        tabs_.push_back({next_id_++, std::move(shell)}); select(static_cast<int>(tabs_.size())-1);
+        const int id=next_id_++;
+        tabs_.push_back({id,L"cmd "+std::to_wstring(id),std::move(shell)}); select(static_cast<int>(tabs_.size())-1);
     }
     void close_all() {
         if (closing_) return;
+        end_rename(false); end_drag(false);
         closing_=true;
         for (auto& tab:tabs_) tab.shell->close();
         if (tabs_.empty()) DestroyWindow(window_);
@@ -38,18 +59,23 @@ class Workspace {
         if (closing_) return;
         if (id==1) add();
         if (id==2 && active()) active()->close();
-        if (id==3) { focus_=!focus_; layout(); }
-        if (id==4) { sides_=!sides_; layout(); }
+        if (id==3) { end_drag(false); state_.focus=!state_.focus; layout(); save_layout(); }
+        if (id==4) { end_drag(false); state_.sides=!state_.sides; layout(); save_layout(); }
         if (id==5) close_all();
+        if (id==6) begin_rename(active_);
+        if (id==7) { end_rename(false); end_drag(false); state_={}; layout(); save_layout(); }
     }
     void layout() {
         RECT area{}; GetClientRect(window_,&area); width_=area.right; height_=area.bottom;
         // Reference geometry at 96 logical units. Physical DPI parity is not claimed.
         int work=std::max(100,height_-90);
-        int upper=static_cast<int>(std::lround((work-1)*2.0/3.0));
-        side_=sides_?static_cast<int>(std::lround((width_-2)/6.0)):0;
-        middle_=33+static_cast<int>(std::lround((upper-1)/2.0));
-        int bottom=focus_?33:34+upper;
+        int upper=static_cast<int>(std::lround((work-1)*state_.upper));
+        left_=state_.sides?static_cast<int>(std::lround((width_-2)*state_.left)):0;
+        right_=state_.sides?static_cast<int>(std::lround((width_-2)*state_.right)):0;
+        const int pane_min=std::min(48,(upper-1)/2);
+        left_middle_=33+std::clamp(static_cast<int>(std::lround((upper-1)*state_.left_top)),pane_min,upper-1-pane_min);
+        right_middle_=33+std::clamp(static_cast<int>(std::lround((upper-1)*state_.right_top)),pane_min,upper-1-pane_min);
+        int bottom=state_.focus?33:34+upper;
         tab_bar_={0,bottom+24,width_,bottom+50};
         terminal_={0,tab_bar_.bottom,width_,std::max<LONG>(tab_bar_.bottom+26,height_-57)};
         for(size_t i=0;i<tabs_.size();++i) {
@@ -57,6 +83,10 @@ class Workspace {
             if (!handle) continue;
             MoveWindow(handle,terminal_.left,terminal_.top,terminal_.right,terminal_.bottom-terminal_.top,TRUE);
             ShowWindow(handle,static_cast<int>(i)==active_?SW_SHOWNA:SW_HIDE);
+        }
+        if(rename_) {
+            for(size_t i=0;i<tabs_.size();++i) if(tabs_[i].id==rename_id_)
+                MoveWindow(rename_,static_cast<int>(i)*tab_width()+4,tab_bar_.top+2,tab_width()-32,22,TRUE);
         }
         InvalidateRect(window_,nullptr,FALSE);
     }
@@ -76,26 +106,24 @@ class Workspace {
         fill(dc,{0,0,width_,height_},background);
         label(dc,{0,0,82,33},L"Session"); label(dc,{82,0,150,33},L"View");
         fill(dc,{0,32,width_,33},RGB(68,68,68));
-        if (!focus_) {
-            const int side=side_;
-            const int center_left=sides_?side+1:0, center_right=sides_?width_-side-1:width_;
-            const int middle=middle_;
+        if (!state_.focus) {
+            const int center_left=state_.sides?left_+1:0, center_right=state_.sides?width_-right_-1:width_;
             fill(dc,{0,33,width_,tab_bar_.top-24},RGB(68,68,68));
             fill(dc,{center_left,33,center_right,tab_bar_.top-25},background);
             fill(dc,{center_left,52,center_right,86},RGB(35,35,35));
             label(dc,{center_left+8,52,center_right-8,86},L"TermForge");
             label(dc,{center_left+24,110,center_right-24,146},L"Local shells are available in the Shell pane below.");
             label(dc,{center_left+24,146,center_right-24,178},L"Ctrl+T  New shell     Ctrl+Tab  Switch shell     F11  Focus shell");
-            if(sides_) {
-                pane(dc,{0,33,side,middle},L"Explorer");
-                pane(dc,{0,middle+1,side,tab_bar_.top-25},L"Filer");
-                pane(dc,{width_-side,33,width_,middle},L"Sessions");
-                pane(dc,{width_-side,middle+1,width_,tab_bar_.top-25},L"Outline");
+            if(state_.sides) {
+                pane(dc,{0,33,left_,left_middle_},L"Explorer");
+                pane(dc,{0,left_middle_+1,left_,tab_bar_.top-25},L"Filer");
+                pane(dc,{width_-right_,33,width_,right_middle_},L"Sessions");
+                pane(dc,{width_-right_,right_middle_+1,width_,tab_bar_.top-25},L"Outline");
                 for(size_t i=0;i<tabs_.size();++i) {
-                    RECT row{width_-side,57+static_cast<int>(i)*26,width_,83+static_cast<int>(i)*26};
-                    if(row.bottom>middle) break;
+                    RECT row{width_-right_,57+static_cast<int>(i)*26,width_,83+static_cast<int>(i)*26};
+                    if(row.bottom>right_middle_) break;
                     if(static_cast<int>(i)==active_) fill(dc,row,RGB(42,55,65));
-                    label(dc,row,L"cmd "+std::to_wstring(tabs_[i].id));
+                    label(dc,row,tabs_[i].title);
                 }
             }
         }
@@ -103,7 +131,8 @@ class Workspace {
         for(size_t i=0;i<tabs_.size();++i) {
             RECT tab{static_cast<LONG>(i)*tab_width(),tab_bar_.top,static_cast<LONG>(i+1)*tab_width(),tab_bar_.bottom};
             fill(dc,tab,static_cast<int>(i)==active_?background:RGB(51,51,51));
-            label(dc,tab,L"cmd "+std::to_wstring(tabs_[i].id)+(tabs_[i].shell->closing()?L" ...":L""));
+            RECT title=tab; if(static_cast<int>(i)==active_) title.right-=25;
+            label(dc,title,tabs_[i].title+(tabs_[i].shell->closing()?L" ...":L""));
             if(static_cast<int>(i)==active_) {
                 fill(dc,{tab.left,tab.bottom-2,tab.right,tab.bottom},accent);
                 label(dc,{tab.right-25,tab.top,tab.right,tab.bottom},L"x");
@@ -113,14 +142,14 @@ class Workspace {
         fill(dc,{0,height_-56,width_,height_-29},RGB(35,35,35));
         label(dc,{0,height_-56,width_,height_-29},L"+ New shell");
         fill(dc,{0,height_-29,width_,height_},RGB(38,38,38));
-        label(dc,{0,height_-29,width_,height_},closing_?L"Closing sessions...":L"LOCAL     "+std::to_wstring(tabs_.size())+L" sessions");
+        label(dc,{0,height_-29,width_,height_},closing_?L"Closing sessions...":settings_failed_?L"Layout could not be saved":L"LOCAL     "+std::to_wstring(tabs_.size())+L" sessions");
         SelectObject(dc,old);
     }
     void click(int x,int y) {
         if(y<33) {
             HMENU menu=CreatePopupMenu();
-            if(x<82) { AppendMenuW(menu,MF_STRING,1,L"New shell\tCtrl+T"); AppendMenuW(menu,MF_STRING,2,L"Close shell\tCtrl+W"); AppendMenuW(menu,MF_STRING,5,L"Exit"); }
-            else { AppendMenuW(menu,MF_STRING|(focus_?MF_CHECKED:0),3,L"Focus shell\tF11"); AppendMenuW(menu,MF_STRING|(sides_?MF_CHECKED:0),4,L"Side panels"); }
+            if(x<82) { AppendMenuW(menu,MF_STRING,1,L"New shell\tCtrl+T"); AppendMenuW(menu,MF_STRING,2,L"Close shell\tCtrl+W"); AppendMenuW(menu,MF_STRING,6,L"Rename shell\tF2"); AppendMenuW(menu,MF_STRING,5,L"Exit"); }
+            else { AppendMenuW(menu,MF_STRING|(state_.focus?MF_CHECKED:0),3,L"Focus shell\tF11"); AppendMenuW(menu,MF_STRING|(state_.sides?MF_CHECKED:0),4,L"Side panels"); AppendMenuW(menu,MF_STRING,7,L"Reset layout"); }
             POINT at{x,33}; ClientToScreen(window_,&at);
             const int selected=TrackPopupMenu(menu,TPM_RETURNCMD,at.x,at.y,0,window_,nullptr);
             DestroyMenu(menu); action(selected); return;
@@ -131,56 +160,14 @@ class Workspace {
             else if(index==active_ && x%tab_width()>=tab_width()-25) action(2);
             else select(index);
         } else if(y>=height_-56 && y<height_-29 && x<140) add();
-        else if(sides_ && !focus_ && x>=width_-side_ && y>=57) {
-            if(y<middle_) select((y-57)/26);
+        else if(state_.sides && !state_.focus && x>=width_-right_ && y>=57) {
+            const int index=(y-57)/26;
+            if(83+index*26<=right_middle_) select(index);
         }
     }
-    void scenario() {
-        if(image_.empty() || closing_) return;
-        if(ms(started_)>=20000) throw std::runtime_error("workspace scenario timeout: stage="+std::to_string(stage_)+
-            " client="+std::to_string(width_)+"x"+std::to_string(height_));
-        if(stage_==0 && active() && active()->ready()) { active()->command(L"echo TF_UI_FIRST\r"); stage_=1; }
-        else if(stage_==1 && active()->contains_line("TF_UI_FIRST")) {
-            // Queued WM_CHAR is dispatched only after add() hides this child.
-            active()->command(L"echo TF_UI_BACKGROUND\r");
-            SendMessageW(window_,WM_COMMAND,1,0); stage_=2;
-        }
-        else if(stage_==2 && active()->ready()) { active()->command(L"echo TF_UI_SECOND\r"); stage_=3; }
-        else if(stage_==3 && active()->contains_line("TF_UI_SECOND") && tabs_[0].shell->contains_line("TF_UI_BACKGROUND")) {
-            require(!active()->contains_line("TF_UI_FIRST"),"session state leaked");
-            require(tabs_[0].shell->contains_line("TF_UI_BACKGROUND"),"hidden session stopped consuming output");
-            SendMessageW(window_,WM_LBUTTONDOWN,0,MAKELPARAM(width_-20,65));
-            require(active_==0,"session list selection failed");
-            SendMessageW(window_,WM_LBUTTONDOWN,0,MAKELPARAM(160,tab_bar_.top+10));
-            require(active_==1,"tab selection failed");
-            SendMessageW(window_,WM_LBUTTONDOWN,0,MAKELPARAM(20,tab_bar_.top+10));
-            require(active()->contains_line("TF_UI_FIRST"),"first session lost state");
-            SendMessageW(window_,WM_COMMAND,3,0); stage_=4;
-        } else if(stage_==4 && active()->settled()) { active()->check_size(); stage_=40;
-        } else if(stage_==40 && active()->contains_line("TF_SIZE_113x27")) {
-            SendMessageW(window_,WM_COMMAND,3,0); stage_=5;
-        } else if(stage_==5 && active()->settled()) { active()->check_size(); stage_=50;
-        } else if(stage_==50 && active()->contains_line("TF_SIZE_113x7")) {
-            Bitmap frame(width_,height_); paint(frame.dc); active()->render_to(frame.dc,terminal_.left,terminal_.top);
-            frame.save(image_);
-            RECT size{0,0,2048,1120}; AdjustWindowRect(&size,WS_OVERLAPPEDWINDOW,FALSE);
-            require(SetWindowPos(window_,nullptr,0,0,size.right-size.left,size.bottom-size.top,SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"workspace resize failed");
-            stage_=51;
-        } else if(stage_==51 && active()->settled()) { active()->check_size(); stage_=52;
-        } else if(stage_==52 && active()->contains_line("TF_SIZE_170x11")) {
-            SendMessageW(window_,WM_COMMAND,4,0); require(!sides_,"panel toggle failed");
-            SendMessageW(window_,WM_COMMAND,4,0); require(sides_,"panel restore failed");
-            SendMessageW(window_,WM_COMMAND,2,0); stage_=6;
-        } else if(stage_==6 && tabs_.size()==1) {
-            require(active()->contains_line("TF_UI_SECOND"),"remaining session lost state");
-            SendMessageW(window_,WM_COMMAND,2,0); stage_=7;
-        } else if(stage_==7 && tabs_.empty()) {
-            SendMessageW(window_,WM_COMMAND,1,0); stage_=8;
-        } else if(stage_==8 && active()->ready()) { active()->command(L"echo TF_UI_REOPEN\r"); stage_=9;
-        } else if(stage_==9 && active()->contains_line("TF_UI_REOPEN")) {
-            stage_=10; SendMessageW(window_,WM_CLOSE,0,0);
-        }
-    }
+    void scenario();
+    void scenario_edit();
+    void scenario_restore();
     static LRESULT CALLBACK procedure(HWND hwnd,UINT message,WPARAM wp,LPARAM lp) {
         auto self=reinterpret_cast<Workspace*>(GetWindowLongPtrW(hwnd,GWLP_USERDATA));
         if(message==WM_NCCREATE) { self=static_cast<Workspace*>(reinterpret_cast<CREATESTRUCTW*>(lp)->lpCreateParams); self->window_=hwnd; SetWindowLongPtrW(hwnd,GWLP_USERDATA,reinterpret_cast<LONG_PTR>(self)); }
@@ -191,11 +178,37 @@ class Workspace {
             if(message==WM_SIZE && wp!=SIZE_MINIMIZED) { self->layout(); return 0; }
             if(message==WM_GETMINMAXINFO) { auto m=reinterpret_cast<MINMAXINFO*>(lp); m->ptMinTrackSize={1000,650}; m->ptMaxTrackSize={6020,5300}; return 0; }
             if(message==WM_SETFOCUS && self->active()) { SetFocus(self->active()->handle()); return 0; }
-            if(message==WM_COMMAND) { self->action(LOWORD(wp)); return 0; }
-            if(message==WM_LBUTTONDOWN) { self->click(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp))); return 0; }
-            if(message==WM_TIMER) { self->scenario(); return 0; }
+            if(message==WM_COMMAND) {
+                if(reinterpret_cast<HWND>(lp)==self->rename_ && self->rename_ && HIWORD(wp)==EN_KILLFOCUS) self->end_rename(true);
+                else self->action(LOWORD(wp));
+                return 0;
+            }
+            if(message==WM_LBUTTONDOWN) {
+                const int x=static_cast<short>(LOWORD(lp)), y=static_cast<short>(HIWORD(lp));
+                const auto divider=self->divider_at(x,y);
+                self->end_rename(true);
+                if(divider!=Divider::none && !self->closing_) { self->drag_start_=self->state_; self->dragging_=divider; SetCapture(hwnd); }
+                else self->click(x,y);
+                return 0;
+            }
+            if(message==WM_MOUSEMOVE && self->dragging_!=Divider::none) { self->drag_to(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp))); return 0; }
+            if(message==WM_LBUTTONUP && self->dragging_!=Divider::none) { self->drag_to(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp))); self->end_drag(true); return 0; }
+            if(message==WM_CAPTURECHANGED) { self->end_drag(false); return 0; }
+            if(message==WM_MBUTTONDOWN && inside(self->tab_bar_,static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp)))) { self->begin_rename(static_cast<short>(LOWORD(lp))/self->tab_width()); return 0; }
+            if(message==WM_SETCURSOR && LOWORD(lp)==HTCLIENT) {
+                POINT point{}; GetCursorPos(&point); ScreenToClient(hwnd,&point);
+                const auto divider=self->divider_at(point.x,point.y);
+                if(divider!=Divider::none) { SetCursor(LoadCursorW(nullptr,divider==Divider::left || divider==Divider::right?IDC_SIZEWE:IDC_SIZENS)); return TRUE; }
+            }
+            if(message==WM_TIMER) {
+                if(self->test_mode_=="ui-edit") self->scenario_edit();
+                else if(self->test_mode_=="ui-restore") self->scenario_restore();
+                else self->scenario();
+                return 0;
+            }
             if(message==WM_APP+1) {
                 for(size_t i=0;i<self->tabs_.size();++i) if(self->tabs_[i].shell.get()==reinterpret_cast<ShellWindow*>(lp)) {
+                    if(self->rename_id_==self->tabs_[i].id) self->end_rename(false);
                     try {
                         const Result result=self->tabs_[i].shell->collect();
                         require(result.complete && result.active_children==0,"workspace child cleanup failed");
@@ -205,7 +218,7 @@ class Workspace {
                     self->active_=self->tabs_.empty()?-1:std::max(0,std::min(self->active_,static_cast<int>(self->tabs_.size())-1));
                     if(!self->failure_.empty() && !self->closing_) self->close_all();
                     else if(self->closing_ && self->tabs_.empty()) DestroyWindow(hwnd);
-                    else { self->layout(); if(self->active()) SetFocus(self->active()->handle()); }
+                    else { self->layout(); if(self->rename_) SetFocus(self->rename_); else if(self->active()) SetFocus(self->active()->handle()); }
                     return 0;
                 }
             }
@@ -219,8 +232,16 @@ class Workspace {
         return DefWindowProcW(hwnd,message,wp,lp);
     }
 public:
-    explicit Workspace(std::string image=""):image_(std::move(image)) {}
-    ~Workspace() { tabs_.clear(); if(window_) DestroyWindow(window_); if(font_) DeleteObject(font_); UnregisterClassW(L"TermForgeWorkspace",GetModuleHandleW(nullptr)); }
+    explicit Workspace(std::string image="",std::string mode="ui"):test_mode_(std::move(mode)),image_(std::move(image)) {
+        if(!image_.empty()) settings_path_=std::filesystem::path(image_).parent_path()/"workspace.layout";
+        else {
+            wchar_t base[32768]{};
+            DWORD n=GetEnvironmentVariableW(L"LOCALAPPDATA",base,32768);
+            if(n && n<32768) settings_path_=std::filesystem::path(base)/L"TermForge"/L"workspace-v1.layout";
+        }
+        state_=tf_workspace::load_layout(settings_path_);
+    }
+    ~Workspace() { end_rename(false); tabs_.clear(); if(window_) DestroyWindow(window_); if(font_) DeleteObject(font_); UnregisterClassW(L"TermForgeWorkspace",GetModuleHandleW(nullptr)); }
     int run() {
         WNDCLASSW cls{}; cls.lpfnWndProc=procedure; cls.hInstance=GetModuleHandleW(nullptr); cls.lpszClassName=L"TermForgeWorkspace"; cls.hCursor=LoadCursorW(nullptr,IDC_ARROW);
         require(RegisterClassW(&cls)!=0,"workspace class failed");
@@ -240,7 +261,10 @@ public:
         ShowWindow(window_,image_.empty()?SW_SHOW:SW_SHOWNOACTIVATE);
         MSG msg{}; BOOL status;
         while((status=GetMessageW(&msg,nullptr,0,0))>0) {
-            if(msg.message==WM_KEYDOWN && !closing_) {
+            if(edit_key(msg)) continue;
+            if(msg.message==WM_KEYDOWN && !closing_ && !rename_) {
+                if(msg.wParam==VK_ESCAPE && dragging_!=Divider::none) { end_drag(false); continue; }
+                if(msg.wParam==VK_F2) { action(6); continue; }
                 bool ctrl=(GetKeyState(VK_CONTROL)&0x8000)!=0;
                 if(ctrl && msg.wParam=='T') { action(1); continue; }
                 if(ctrl && msg.wParam=='W') { action(2); continue; }
@@ -250,10 +274,16 @@ public:
             TranslateMessage(&msg); DispatchMessageW(&msg);
         }
         require(status==0,"workspace message loop failed"); require(failure_.empty(),failure_.c_str());
-        if(!image_.empty()) {
+        if(!image_.empty() && test_mode_=="ui") {
             require(stage_==10 && collected_==3,"workspace scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\"ui\",\"sessions_closed\":3,\"isolation_verified\":true,\"resize_verified\":true,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && test_mode_!="ui") {
+            require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
         return 0;
     }
 };
+#include "workspace_interactions.hpp"
+#include "workspace_scenarios.hpp"

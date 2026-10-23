@@ -354,17 +354,17 @@ public:
 static int application(int argc, char** argv) {
     try {
         std::string mode, image;
-        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|resize|resize-close|watchdog|ui frame.bmp]");
+        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|resize|resize-close|watchdog|ui|ui-edit|ui-restore frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui", "invalid shell test mode");
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore", "invalid shell test mode");
             std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
         }
         require(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) != FALSE, "DPI awareness failed");
         if (mode.empty()) { Workspace window; return window.run(); }
-        if (mode == "ui") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore") {
             OwnedDesktop desktop(L"TermForgeShell-");
-            return desktop.run([&] { Workspace window(image); return window.run(); });
+            return desktop.run([&] { Workspace window(image,mode); return window.run(); });
         }
         Result r;
         {
