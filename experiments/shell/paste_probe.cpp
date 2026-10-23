@@ -97,6 +97,61 @@ static void dump_raw_clipboard(HWND owner, const std::filesystem::path& path, si
     const bool complete = output.good();
     GlobalUnlock(memory); CloseClipboard(); require(complete, "independent UTF16 clipboard capture");
 }
+static void clipboard_contention(HWND reader) {
+    // OpenClipboard associates the open clipboard with a window, not merely
+    // the calling thread. Reusing reader in both threads can reopen it.
+    // https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-openclipboard
+    std::promise<HWND> opened; auto opening = opened.get_future();
+    std::promise<void> release; auto released = release.get_future();
+    std::exception_ptr holder_error;
+    const HDESK desktop = GetThreadDesktop(GetCurrentThreadId());
+    std::thread holder([&] {
+        HWND window = nullptr;
+        bool announced = false;
+        try {
+            if (!SetThreadDesktop(desktop)) fail("clipboard holder desktop");
+            window = CreateWindowExW(0, L"STATIC", L"Owned clipboard contention holder", 0,
+                                     0, 0, 8, 8, nullptr, nullptr, GetModuleHandleW(nullptr), nullptr);
+            if (!window) fail("clipboard holder window");
+            require(window != reader && GetWindowThreadProcessId(window, nullptr) == GetCurrentThreadId(),
+                    "clipboard holder owns an independent window");
+            {
+                ClipboardAccess access(window);
+                require(GetOpenClipboardWindow() == window, "clipboard holder is the actual open window");
+                opened.set_value(window); announced = true;
+                require(released.wait_for(std::chrono::seconds(10)) == std::future_status::ready,
+                        "clipboard holder release deadline");
+            }
+        } catch (...) { holder_error = std::current_exception(); }
+        if (window && !DestroyWindow(window) && !holder_error)
+            holder_error = std::make_exception_ptr(std::runtime_error("destroy clipboard holder window"));
+        if (!announced) opened.set_exception(holder_error);
+    });
+    try {
+        require(opening.wait_for(std::chrono::seconds(5)) == std::future_status::ready,
+                "clipboard holder opening deadline");
+        const HWND window = opening.get();
+        require(window != reader && GetWindowThreadProcessId(window, nullptr) != GetCurrentThreadId(),
+                "clipboard contention uses another window and thread");
+        const auto rejects_open = [&](auto&& action, const char* detail) {
+            require(GetOpenClipboardWindow() == window, "clipboard holder stays open before access");
+            bool denied = false;
+            try { action(); }
+            catch (const ClipboardError& error) {
+                // A later format/allocation error must not masquerade as
+                // rejected access to the occupied clipboard.
+                if (std::string(error.what()).find("OpenClipboard: ") != 0) throw;
+                denied = true;
+            }
+            require(denied, detail);
+            require(GetOpenClipboardWindow() == window, "rejected access preserves clipboard holder");
+        };
+        rejects_open([&] { read_unicode_clipboard(reader); }, "clipboard ownership contention reported");
+        rejects_open([&] { write_unicode_clipboard(reader, u"must not replace"); }, "clipboard occupied write reported");
+    } catch (...) { release.set_value(); holder.join(); throw; }
+    release.set_value(); holder.join();
+    if (holder_error) std::rethrow_exception(holder_error);
+}
 static void clipboard_cases(IsolatedClipboard& isolated, const std::filesystem::path& directory) {
     isolated.verify();
     const std::u16string expected = u"Unicode \u6c49\u5b57 e\u0301 \U0001f642\r\nspace  \t";
@@ -110,22 +165,8 @@ static void clipboard_cases(IsolatedClipboard& isolated, const std::filesystem::
     input_capture.write(reinterpret_cast<const char*>(independently_published.data()), static_cast<std::streamsize>(independently_published.size() * 2));
     require(input_capture.good(), "clipboard reader capture"); input_capture.close();
     rejects([&] { read_unicode_clipboard(isolated.window, 3); }, "clipboard allocation rejected before copying");
-    std::promise<void> opened, release; auto released = release.get_future();
-    const HDESK clipboard_desktop = GetThreadDesktop(GetCurrentThreadId());
-    std::thread holder([&] {
-        try {
-            if (!SetThreadDesktop(clipboard_desktop)) fail("clipboard holder desktop");
-            ClipboardAccess access(isolated.window); opened.set_value(); released.wait();
-        }
-        catch (...) { opened.set_exception(std::current_exception()); }
-    });
-    try {
-        opened.get_future().get();
-        rejects([&] { read_unicode_clipboard(isolated.window); }, "clipboard ownership contention reported");
-        rejects([&] { write_unicode_clipboard(isolated.window, u"must not replace"); }, "clipboard occupied write reported");
-        release.set_value(); holder.join();
-    } catch (...) { release.set_value(); holder.join(); throw; }
-    require(read_unicode_clipboard(isolated.window) == expected, "clipboard survives occupied read");
+    clipboard_contention(isolated.window);
+    require(read_unicode_clipboard(isolated.window) == expected, "clipboard survives occupied read and write");
     write_unicode_clipboard(isolated.window, u"");
     require(read_unicode_clipboard(isolated.window).empty(), "empty system clipboard text");
     raw_clipboard_fixture(isolated.window, std::u16string(1, 0xd800), 2);
