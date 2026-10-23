@@ -117,7 +117,12 @@ function Invoke-ExistingProviderSetup {
     Complete-SetupPhase
 
     Start-SetupPhase 'verify-user-tip-and-provider-identity'
-    $report.input_languages = @(Get-WinUserLanguageList | Select-Object LanguageTag, InputMethodTips)
+    # The cmdlet can emit its typed collection as one pipeline object. Select-
+    # Object on that wrapper produces null fields; foreach enumerates the
+    # collection before projecting each actual language value.
+    $report.input_languages = @(foreach ($language in (Get-WinUserLanguageList)) {
+        [pscustomobject]@{LanguageTag = $language.LanguageTag; InputMethodTips = @($language.InputMethodTips)}
+    })
     $matching = @($report.input_languages | Where-Object { $_.LanguageTag -eq 'zh-CN' -and
         $report.input_profile -in $_.InputMethodTips })
     $report.user_tip_listed = $matching.Count -eq 1

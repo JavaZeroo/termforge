@@ -90,6 +90,11 @@ function Set-WinUserLanguageList { param($LanguageList,[switch]$Force)
 }
 function Get-WinUserLanguageList {
     if ($script:failure -eq 'user-tip') { return [pscustomobject]@{LanguageTag='en-US'; InputMethodTips=@('0409:00000409')} }
+    if ($script:failure -eq 'wrapped-language-list') {
+        $list = [Collections.Generic.List[object]]::new()
+        foreach ($language in $script:setLanguages) { $list.Add($language) }
+        return ,$list
+    }
     return $script:setLanguages
 }
 function Add-WindowsCapability { throw 'Forbidden servicing call reached the pure setup test' }
@@ -138,6 +143,17 @@ $saved = Get-Content -LiteralPath ([IO.Path]::Combine($outputPath, 'environment.
             self.assertIsNotNone(phase["ended_utc"])
             self.assertGreaterEqual(phase["elapsed_seconds"], 0)
         self.assertFalse(result["temporary_exists"])
+
+    def test_non_enumerated_cmdlet_collection_preserves_all_language_and_tip_values(self):
+        result = self.simulated("wrapped-language-list")
+        report = result["report"]
+        self.assertEqual(report["status"], "prepared-not-verified")
+        self.assertEqual(report["input_languages"], [
+            {"LanguageTag": "en-US", "InputMethodTips": ["synthetic-default-tip"]},
+            {"LanguageTag": "zh-CN", "InputMethodTips": [PROFILE]},
+        ])
+        self.assertTrue(report["user_tip_listed"])
+        self.assertFalse(report["real_ime_workflow_verified"])
 
     def test_missing_provider_or_machine_tip_fails_before_user_setting(self):
         for failure in ("binary", "machine-tip"):

@@ -1,0 +1,85 @@
+{
+  "schema": "termforge-r1-hosted-ime-activation-reviewed-facts-v1",
+  "source": {
+    "commit": "98303f30962c430d664de6de0cddb296375919c8",
+    "workflow_run_id": 40005751477,
+    "workflow_run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40005751477",
+    "conclusion": "failure",
+    "artifact_id": 12524590993,
+    "artifact_zip_sha256": "e68a432a7537b0fccc2f9ec3214940b9338fd365d3f06b217295098aacbd04df",
+    "allowlisted_json_count": 14
+  },
+  "read_only_inventory": {
+    "complete": true,
+    "successful_queries": 6,
+    "owned_workers_reaped": 6,
+    "all_jobs_active_zero": true
+  },
+  "activation": {
+    "route": "existing-provider-activation",
+    "status": "unavailable",
+    "installation_attempted": false,
+    "observed_phases": [
+      {
+        "name": "read-host-environment",
+        "state": "ended",
+        "elapsed_seconds": 0.15152520000000003
+      },
+      {
+        "name": "read-local-capability",
+        "state": "ended",
+        "elapsed_seconds": 0.545228
+      },
+      {
+        "name": "identify-existing-provider",
+        "state": "ended",
+        "elapsed_seconds": 0.028972100000000056
+      },
+      {
+        "name": "set-fixed-user-language-tip",
+        "state": "ended",
+        "elapsed_seconds": 0.4148638
+      },
+      {
+        "name": "verify-user-tip-and-provider-identity",
+        "state": "failed",
+        "elapsed_seconds": 0.025302200000000052
+      }
+    ],
+    "machine_tip_registered": true,
+    "capability": {
+      "name": "Language.Basic~~~zh-CN~0.0.1.0",
+      "state": "NotPresent"
+    },
+    "ime_binary": {
+      "name": "ChsIME.exe",
+      "version": "10.0.26100.33648 (WinBuild.160101.0800)",
+      "sha256": "581362ddfb1230394900efee9a23194422b14b3ca8c111f00b90e23d3112c4b9"
+    },
+    "input_language_report": [
+      {
+        "LanguageTag": null,
+        "InputMethodTips": null
+      }
+    ],
+    "user_tip_listed_reported": false,
+    "binary_after": null,
+    "capability_after": null
+  },
+  "real_probe": {
+    "executed": false,
+    "reason": "Skipped after preparation failure",
+    "real_ime_workflow_verified": false
+  },
+  "interpretation": {
+    "failed_observation": "Language readback projected null fields before rejecting the fixed profile.",
+    "root_cause_support": "PowerShell cmdlet documents a Generic.List result. A local pure non-enumerated collection fixture reproduces null fields in direct Select-Object projection, and mixed-language filtering loss in the inventory path.",
+    "not_proven": [
+      "Whether the hosted user actually retained the fixed TIP",
+      "Whether existing Microsoft Pinyin can compose or show candidates on this image"
+    ],
+    "correction": "Enumerate each language value explicitly in preparation and inventory; keep strict TIP, binary identity, real probe and cleanup gates.",
+    "correction_hosted_verified": false
+  },
+  "r1_06_complete": false
+}
