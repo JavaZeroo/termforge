@@ -170,9 +170,12 @@ static void transfer_case(IsolatedClipboard& isolated, const std::filesystem::pa
     const auto other_capture = directory / (mode + "-other.bin");
     other.start(executable(), L"--child \"" + other_capture.wstring() + L"\" fast quiet");
     require(other.wait_text("TFPASTEREADY"), "other session ready");
-    InputQueue input(target), other_input(other); input.start(); other_input.start();
+    InputQueue input(target), other_input(other);
     require(input.begin_paste(job), "begin bound paste");
     require(!other_input.begin_paste(job), "transfer cannot be rebound to another queue");
+    require(!input.send("interleaved") && !job->progress().accepted && !job->progress().sent,
+            "accepted paste cannot mix keystrokes or claim unsent bytes");
+    input.start(); other_input.start();
     require(other_input.send("OTHER"), "independent session input");
     // The UI's active session can change immediately. The original queue and
     // immutable target id still own the job's complete stream.
