@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 EXPECTED_EXE = "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0"
@@ -13,6 +14,15 @@ SELECTION = "ALPHA  tail\nBETA 中文 e\u0301"
 def require(condition, message):
     if not condition:
         raise ValueError(message)
+
+
+def r1_menu_actions(actions):
+    result = []
+    for action in actions:
+        label = re.sub(r"\(&.\)", "", action.get("text", "").split("\t")[0]).replace("&", "").strip().rstrip(".…")
+        if label.lower() in ("copy", "paste", "find", "select all", "复制", "粘贴", "查找", "全选"):
+            result.append({k: action.get(k) for k in ("text", "name", "enabled", "submenu")})
+    return result
 
 
 def summarize(identity, evidence, cleanup, profile, script_digest):
@@ -99,8 +109,63 @@ def summarize(identity, evidence, cleanup, profile, script_digest):
 
 def read_run(directory):
     read = lambda name: json.loads((directory / name).read_text(encoding="utf-8"))
+    if read("run.json").get("scenario") == "menu-wrap":
+        return summarize_menu(read("run.json"), read("evidence.json"), read("cleanup.json"), read("profile-check.json"),
+                              hashlib.sha256((directory / "probe.js").read_bytes()).hexdigest(), read("peer.json"))
     return summarize(read("run.json"), read("evidence.json"), read("cleanup.json"), read("profile-check.json"),
                      hashlib.sha256((directory / "probe.js").read_bytes()).hexdigest())
+
+
+def summarize_menu(identity, evidence, cleanup, profile, script_digest, peer):
+    require(identity.get("sha256") == EXPECTED_EXE and identity.get("files_sha256") == EXPECTED_FILES, "Unpinned target")
+    require(identity.get("profile") == "synthetic-local-only" and identity.get("scenario") == "menu-wrap", "Unexpected scenario")
+    require(cleanup.get("active") == 0 and peer.get("closed") is True, "Owned resources remain")
+    require(profile == {"only_synthetic_session": True, "session_count": 1}, "Profile scope changed")
+    require(evidence.get("ok") is True, "REA invocation failed")
+    record = evidence["data"]["evidence"]
+    result = record["normalized_result"]
+    require(record.get("operation") == "instrument_with_frida" and result.get("pid") == identity.get("pid"), "Wrong observation")
+    require(result.get("source_sha256") == identity.get("script_sha256") == script_digest, "Script identity mismatch")
+    require(not result.get("messages_truncated") and result.get("cleanup_error") is None, "Incomplete evidence")
+    messages = result["messages"]
+    payloads = [m["payload"] for m in messages if m.get("type") == "send"]
+    phases = {p["phase"]: p for p in payloads if p.get("kind") == "snapshot"}
+    require("vt-select-all" in phases, "No VT selection observation")
+    columns = peer.get("sent_columns")
+    require(peer.get("connected") and not peer.get("error") and isinstance(columns, int) and 40 <= columns <= 300, "Invalid peer observation")
+    soft = "TF-SOFT:" + "s" * (columns - 12) + "LEFTRIGHT:END"
+    hard = "TF-HARD:" + "h" * (columns - 12) + "LEFT\nRIGHT:END"
+    expected = soft + "\n" + hard + "\nTF-TAIL:two  \nTF-UNICODE:中文 e\u0301\nTF-VT-END\n"
+    sent = ("\x1b[2J\x1b[H\x1b[?7h" + expected.replace("\n", "\r\n")).encode("utf-8")
+    require(peer.get("sent_sha256") == hashlib.sha256(sent).hexdigest(), "Unexpected bytes sent to target")
+    selection = json.loads(phases["vt-select-all"]["text_state"])["selection"]
+    require(selection == expected, "VT soft/hard breaks, whitespace or Unicode differ")
+    require(peer.get("received_hex") == "", "Search/menu input leaked to peer")
+    search = {}
+    for phase in ("vt-soft-search", "vt-soft-search-wrap"):
+        if phase in phases:
+            state = json.loads(phases[phase]["text_state"])
+            require(state["selection"] == "LEFTRIGHT" and state["anchor"] == columns - 4, "Soft-wrap search differs")
+            search[phase] = state
+    actions = [{k: p[k] for k in ("text", "name", "input")} for p in payloads if p.get("kind") == "menu_activation"]
+    menus = [{"phase": p["phase"], "actions": r1_menu_actions(p["actions"])} for p in payloads if p.get("kind") == "menu"]
+    successful = [p for p in payloads if p.get("kind") == "scenario_complete" and p.get("coverage") == "menu-wrap-only"]
+    errors = any(m.get("type") == "error" or m.get("payload", {}).get("error") for m in messages)
+    menu_verified = len(successful) == 1 and not errors
+    if menu_verified:
+        require(len(actions) == 2 and len(search) == 2, "Incomplete menu actions")
+        require(json.loads(phases["before-context"]["text_state"])["selection"] != expected, "Menu test lacked a distinct initial selection")
+        require(json.loads(phases["menu-select-all"]["text_state"])["selection"] == expected, "Menu selection differs")
+        require(phases["menu-find-open"]["focus"] == "ComboBox", "Menu find focus differs")
+        require(json.loads(phases["menu-find-result"]["text_state"])["selection"] == "LEFTRIGHT", "Menu find effect missing")
+    return {"schema": "termforge.r1-menu-wrap.v1", "target_sha256": EXPECTED_EXE, "distribution_sha256": EXPECTED_FILES,
+            "fixture_sha256": identity.get("fixture_sha256"), "template_sha256": identity.get("template_sha256"),
+            "evidence_id": record["evidence_id"], "complete": False, "menu_verified": menu_verified,
+            "vt": {"protocol": "Telnet-loopback", "columns": columns, "sent_sha256": peer["sent_sha256"],
+                   "selection": selection, "soft_wrap_joins": True, "hard_break_lf": True, "trailing_spaces_preserved": True,
+                   "search": search}, "menus": menus, "activations": actions,
+            "system_clipboard": {"verified": False}, "cleanup": {"owned_active": 0, "peer_closed": True},
+            "limitations": ["Qt context/key event replay; not physical mouse input.", "Text selection projection, not CF_UNICODETEXT verification."]}
 
 
 def diagnostic(directory):
@@ -119,9 +184,15 @@ def diagnostic(directory):
             keys = ("active", "total", "terminated") if name == "cleanup" else ("only_synthetic_session", "session_count")
             data[name] = {k: value.get(k) for k in keys}
     evidence_path = directory / "evidence.json"
+    launcher_failure = directory / "launcher-failure.json"
+    if launcher_failure.exists() and json.loads(launcher_failure.read_text(encoding="utf-8")).get("reason") == "rea-timeout":
+        data["failure"] = "rea-timeout"
     if not evidence_path.exists():
         return {**data, "failure": "no-evidence"}
-    evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    try:
+        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {**data, "failure": data.get("failure", "incomplete-rea-json")}
     record = evidence.get("data", {}).get("evidence", {})
     result = record.get("normalized_result", {})
     data["evidence_id"] = record.get("evidence_id")
@@ -133,9 +204,14 @@ def diagnostic(directory):
             allowed_errors = ("OpenClipboard failed", "OpenClipboard write failed", "GlobalLock failed",
                               "EmptyClipboard failed", "GlobalAlloc failed", "SetClipboardData failed",
                               "clipboard bound", "scenario timeout", "first run guard", "no editor",
-                              "expected one default confirmation button")
+                              "expected one default confirmation button", "system error", "no context popup", "menu choice guard", "menu bound", "event allocation failed")
             reason = next((s for s in allowed_errors if p.get("error") == "Error: " + s), "unclassified")
-            data["errors"].append({"stage": p.get("stage"), "category": "probe-error" if p.get("error") else "frida-error", "reason": reason})
+            error = {"stage": p.get("stage"), "category": "probe-error" if p.get("error") else "frida-error", "reason": reason}
+            if p.get("operation") in ("ui-ready", "resize-main", "shell-ready", "vt-ready", "context-construct", "context-send", "context-destroy", "post-context"):
+                error["operation"] = p["operation"]
+            data["errors"].append(error)
+        if p.get("kind") == "readiness":
+            data.setdefault("readiness", []).append({k: p.get(k) for k in ("phase", "ready", "has_tree", "has_engine", "has_editor", "peer_ready")})
         if p.get("kind") == "snapshot":
             item = {k: p.get(k) for k in ("phase", "focus", "modal", "peer")}
             item["text_state"] = json.loads(p["text_state"]) if p.get("text_state") else None
@@ -143,6 +219,12 @@ def diagnostic(directory):
             data["snapshots"].append(item)
         elif p.get("kind") in ("scenario_complete", "copy-system", "clipboard_set", "confirmation_action"):
             data.setdefault("outcomes", []).append({k: p[k] for k in ("kind", "coverage", "system_clipboard", "text") if k in p})
+        elif p.get("kind") == "menu":
+            data.setdefault("menus", []).append({"phase": p["phase"], "actions": r1_menu_actions(p["actions"])})
+        elif p.get("kind") == "menu_activation":
+            data.setdefault("activations", []).append({k: p.get(k) for k in ("text", "name", "input")})
+        elif p.get("kind") == "clipboard_entry":
+            data.setdefault("clipboard_entries", []).append({"stage": p.get("stage")})
     return data
 
 
@@ -151,6 +233,7 @@ if __name__ == "__main__":
     parser.add_argument("run", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--require-complete", action="store_true")
+    parser.add_argument("--require-menu-complete", action="store_true")
     parser.add_argument("--diagnostic-only", action="store_true")
     args = parser.parse_args()
     if args.diagnostic_only:
@@ -159,4 +242,5 @@ if __name__ == "__main__":
     result = read_run(args.run)
     args.out.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     require(not args.require_complete or result["complete"], "R1 reference still has missing clipboard/paste evidence")
+    require(not args.require_menu_complete or result.get("menu_verified") is True, "Menu behavior is not verified")
     print(json.dumps({"complete": result["complete"], "evidence_id": result["evidence_id"]}))

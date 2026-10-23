@@ -8,7 +8,9 @@ import argparse
 import ctypes as c
 from ctypes import wintypes as w
 import json
+import hashlib
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -24,7 +26,40 @@ def require_hosted_environment(environment):
         raise ValueError("Current-station clipboard is allowed only on an explicitly requested disposable GitHub-hosted VM")
 
 
-def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = False):
+def cli_command(rea):
+    rea = rea.resolve()
+    if rea.suffix.lower() != ".cmd":
+        return [str(rea)]
+    package = rea.parent.parent / "rea-agents"
+    metadata = json.loads((package / "package.json").read_text(encoding="utf-8"))
+    if metadata.get("name") != "rea-agents" or metadata.get("version") != "6.7.0":
+        raise ValueError("Expected locked REA public CLI entry")
+    node = shutil.which("node")
+    if not node:
+        raise ValueError("Node.js CLI is unavailable")
+    return [node, str(package / "scripts/rea.mjs")]
+
+
+def run_cli(command, out, job, timeout):
+    """Files cannot keep communicate() waiting after a Windows wrapper exits."""
+    with (out / "evidence.json").open("w", encoding="utf-8") as stdout, (out / "stderr.txt").open("w", encoding="utf-8") as stderr:
+        process = subprocess.Popen(command, stdout=stdout, stderr=stderr)
+        try:
+            job.assign(process.pid)
+            try:
+                return process.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                (out / "launcher-failure.json").write_text(json.dumps({"reason": "rea-timeout"}), encoding="utf-8")
+                job.terminate()
+                process.wait(timeout=5)
+                raise RuntimeError("REA observation timed out; owned Job terminated")
+        finally:
+            if process.poll() is None:
+                process.kill()
+                process.wait(timeout=5)
+
+
+def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = False, scenario: str = "text"):
     if hosted_ci:
         require_hosted_environment(os.environ)
     out = out.resolve()
@@ -33,7 +68,12 @@ def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = Fals
     session = out / "profile/.wind/profiles/default.v10/terminal/user.sessions"
     rows = json.loads(session.read_text(encoding="utf-8"))
     fixture = Path(__file__).with_name("r1_fixture.py").resolve()
-    rows[0]["process.arguments"] = f'/d /q /c ""{sys.executable}" -X utf8 "{fixture}" "{out}""'
+    peer = None
+    if scenario == "menu-wrap":
+        from research.ui.r1_vt_fixture import Peer
+        fixture = Path(__file__).with_name("r1_vt_fixture.py").resolve()
+    else:
+        rows[0]["process.arguments"] = f'/d /q /c ""{sys.executable}" -X utf8 "{fixture}" "{out}""'
     session.write_text(json.dumps(rows), encoding="utf-8")
     block = c.create_unicode_buffer("\0".join(f"{k}={v}" for k, v in sorted(environment.items())) + "\0")
     user, kernel = c.WinDLL("user32", use_last_error=True), c.WinDLL("kernel32", use_last_error=True)
@@ -67,6 +107,12 @@ def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = Fals
         desktop = user.CreateDesktopW(desktop_name, None, None, 0, 0x1ff, None)
         check(desktop)
         job = OwnedJob()
+        if scenario == "menu-wrap":
+            peer = Peer(out)
+            rows = [{"session.group": "TermForge Lab", "session.label": "TF_R1_LOOPBACK",
+                     "session.protocol": "Telnet", "session.target": "127.0.0.1", "session.port": peer.port,
+                     "session.uuid": "00000000-0000-4000-8000-000000000001"}]
+            session.write_text(json.dumps(rows), encoding="utf-8")
         start = StartupInfo()
         start.cb, start.desktop = c.sizeof(start), station_name.value + "\\" + desktop_name
         binary = app / "WindTerm.exe"
@@ -75,6 +121,9 @@ def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = Fals
         job.assign(info.pid)
         check(user.SetProcessWindowStation(original))
         script = Path(__file__).with_name("qt_r1_text.js").read_text(encoding="utf-8")
+        if scenario == "menu-wrap":
+            script = script.split("// Scenario driver", 1)[0] + Path(__file__).with_name("r1_menu_wrap.js").read_text(encoding="utf-8")
+        template_sha256 = hashlib.sha256(script.encode("utf-8")).hexdigest()
         script = script.replace("__UI_THREAD_ID__", str(info.tid)).replace("__OWNED_STATION__", station_name.value)
         script = script.replace("__RUN_DIRECTORY_JSON__", json.dumps(out.as_posix()))
         script = script.replace("__HOSTED_CI__", "true" if hosted_ci else "false")
@@ -84,23 +133,22 @@ def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = Fals
             raise c.WinError(c.get_last_error())
         identity = {"pid": info.pid, "tid": info.tid, "sha256": digest(binary), "files_sha256": EXPECTED_FILES,
                     "script_sha256": digest(out / "probe.js"), "fixture_sha256": digest(fixture),
-                    "template_sha256": digest(Path(__file__).with_name("qt_r1_text.js")),
+                    "template_sha256": template_sha256, "scenario": scenario,
                     "profile": "synthetic-local-only", "window_station": station_name.value,
                     "clipboard": "hosted-disposable-vm" if hosted_ci else "owned-window-station"}
         (out / "run.json").write_text(json.dumps(identity, indent=2), encoding="utf-8")
         print(json.dumps(identity), flush=True)
         time.sleep(2)
-        result = subprocess.run([str(rea), "instrument-with-frida", "attach", str(info.pid), "--script-file", str(out / "probe.js"),
-                                 "--duration-ms", str(seconds * 1000), "--format", "json", "--full-output"],
-                                capture_output=True, timeout=seconds + 25, encoding="utf-8", errors="replace")
-        (out / "evidence.json").write_text(result.stdout, encoding="utf-8")
-        (out / "stderr.txt").write_text(result.stderr, encoding="utf-8")
-        print(json.dumps({"rea_exit": result.returncode, "evidence_bytes": len(result.stdout)}), flush=True)
-        if result.returncode:
+        code = run_cli(cli_command(rea) + ["instrument-with-frida", "attach", str(info.pid), "--script-file", str(out / "probe.js"),
+                                          "--duration-ms", str(seconds * 1000), "--format", "json", "--full-output"], out, job, seconds + 15)
+        print(json.dumps({"rea_exit": code, "evidence_bytes": (out / "evidence.json").stat().st_size}), flush=True)
+        if code:
             raise RuntimeError("REA invocation failed; inspect local stderr")
     finally:
         restored = user.SetProcessWindowStation(original)
         try:
+            if peer:
+                peer.close()
             # A failed Job assignment leaves a suspended process outside the Job.
             # Its explicit owned handle must still be terminated and waited out.
             if info.process and kernel.WaitForSingleObject(info.process, 0) == 258:
@@ -114,7 +162,14 @@ def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = Fals
                 print(json.dumps({"job_after": remaining}), flush=True)
                 if remaining["active"]:
                     raise RuntimeError("Owned Job did not drain")
-                check_profile_scope(out)
+                if peer:
+                    saved = json.loads(session.read_text(encoding="utf-8"))
+                    valid = len(saved) == 1 and all(saved[0].get(k) == v for k, v in rows[0].items())
+                    (out / "profile-check.json").write_text(json.dumps({"only_synthetic_session": valid, "session_count": len(saved)}), encoding="utf-8")
+                    if not valid:
+                        raise RuntimeError("Owned loopback profile changed scope")
+                else:
+                    check_profile_scope(out)
         finally:
             if job: job.close()
             if info.thread: kernel.CloseHandle(info.thread)
@@ -131,5 +186,6 @@ if __name__ == "__main__":
     parser.add_argument("--rea", type=Path, required=True)
     parser.add_argument("--seconds", type=int, choices=range(1, 181), default=35)
     parser.add_argument("--hosted-ci", action="store_true", help="Use the disposable GitHub-hosted VM clipboard; forbidden on normal hosts")
+    parser.add_argument("--scenario", choices=("text", "menu-wrap"), default="text")
     args = parser.parse_args()
-    run(args.source, args.out, args.rea, args.seconds, args.hosted_ci)
+    run(args.source, args.out, args.rea, args.seconds, args.hosted_ci, args.scenario)

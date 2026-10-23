@@ -3,6 +3,9 @@ import ctypes
 import json
 import os
 import tempfile
+import sys
+import hashlib
+import socket
 from pathlib import Path
 import unittest
 import uuid
@@ -45,6 +48,73 @@ def observation():
 
 
 class EvidenceBoundaryTests(unittest.TestCase):
+    def test_public_menu_allowlist_keeps_only_r1_entries(self):
+        rows = [{"text": text, "enabled": True} for text in ("全选(&A)\tCtrl+Shift+A", "查找...(&F)\tCtrl+Shift+F", "复制(&C)\tShift+Del", "粘贴(&P)\tShift+Ins", "传输二进制(&T)")]
+        self.assertEqual(len(summary.r1_menu_actions(rows)), 4)
+        self.assertNotIn("传输", json.dumps(summary.r1_menu_actions(rows), ensure_ascii=False))
+
+    @unittest.skipUnless(os.name == "nt", "Windows exclusive loopback socket")
+    def test_owned_telnet_peer_accepts_fragmented_naws_and_closes(self):
+        from research.ui.r1_vt_fixture import Peer
+        with tempfile.TemporaryDirectory() as directory:
+            peer = Peer(Path(directory))
+            try:
+                with socket.create_connection(("127.0.0.1", peer.port), timeout=2) as client:
+                    client.settimeout(2)
+                    negotiation = b""
+                    while len(negotiation) < 9:
+                        negotiation += client.recv(9 - len(negotiation))
+                    self.assertTrue(negotiation.startswith(bytes([255, 251, 1])))
+                    for part in (bytes([255, 251]), bytes([31, 255, 250, 31, 0]), bytes([80, 0, 25, 255]), bytes([240])):
+                        client.sendall(part)
+                    received = b""
+                    while b"TF-VT-END\r\n" not in received and len(received) < 4096:
+                        received += client.recv(4096)
+                    self.assertIn(b"LEFTRIGHT:END\r\n", received)
+                    self.assertIn(b"LEFT\r\nRIGHT:END\r\n", received)
+                    self.assertIn(b"TF-TAIL:two  \r\n", received)
+            finally:
+                peer.close()
+            self.assertEqual(peer.state["sent_columns"], 80)
+            self.assertFalse(peer.thread.is_alive())
+            self.assertTrue(peer.state["closed"])
+
+    @unittest.skipUnless(os.name == "nt", "Windows Job integration")
+    def test_cli_timeout_reclaims_process_and_inherited_child(self):
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory)
+            job = launch.OwnedJob()
+            program = "import subprocess,sys,time,pathlib; p=subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']); pathlib.Path(sys.argv[1]).write_text(str(p.pid)); time.sleep(60)"
+            try:
+                with self.assertRaisesRegex(RuntimeError, "timed out"):
+                    launch.run_cli([sys.executable, "-c", program, str(out / "child.pid")], out, job, 1.5)
+                state = job.drain()
+                self.assertEqual(state["active"], 0)
+                self.assertGreaterEqual(state["total"], 2)  # venv Windows redirectors add processes.
+                self.assertGreater(int((out / "child.pid").read_text()), 0)
+                self.assertEqual(json.loads((out / "launcher-failure.json").read_text()), {"reason": "rea-timeout"})
+            finally:
+                job.terminate()
+                job.close()
+
+    def test_menu_summary_preserves_partial_vt_evidence_without_passing_menus(self):
+        columns = 40
+        text = "TF-SOFT:" + "s" * 28 + "LEFTRIGHT:END\nTF-HARD:" + "h" * 28 + "LEFT\nRIGHT:END\nTF-TAIL:two  \nTF-UNICODE:中文 e\u0301\nTF-VT-END\n"
+        args = observation()
+        args[0]["scenario"] = "menu-wrap"
+        result = args[1]["data"]["evidence"]["normalized_result"]
+        result["messages"] = [{"type": "send", "payload": {"kind": "snapshot", "phase": "vt-select-all", "text_state": json.dumps({"selection": text})}},
+                              {"type": "send", "payload": {"error": "Error: system error", "stage": 8}}]
+        peer = {"closed": True, "connected": True, "sent_columns": columns, "received_hex": "",
+                "sent_sha256": hashlib.sha256(("\x1b[2J\x1b[H\x1b[?7h" + text.replace("\n", "\r\n")).encode()).hexdigest()}
+        value = summary.summarize_menu(*args, peer)
+        self.assertFalse(value["menu_verified"])
+        self.assertFalse(value["complete"])
+        self.assertTrue(value["vt"]["trailing_spaces_preserved"])
+        peer["received_hex"] = "78"
+        with self.assertRaisesRegex(ValueError, "leaked"):
+            summary.summarize_menu(*args, peer)
+
     def test_local_success_never_claims_real_clipboard(self):
         result = summary.summarize(*observation())
         self.assertFalse(result["complete"])

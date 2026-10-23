@@ -20,13 +20,13 @@ const objectName = fn(core,'?objectName@QObject@@QEBA?AVQString@@XZ','pointer',[
 const constData = fn(core,'?constData@QString@@QEBAPEBVQChar@@XZ','pointer',['pointer']);
 const destroyString = fn(core,'??1QString@@QEAA@XZ','void',['pointer']);
 const stringCtor = fn(core,'??0QString@@QEAA@PEBVQChar@@H@Z','pointer',['pointer','pointer','int']);
-const resize = fn(widgets,'?resize@QWidget@@QEAAXHH@Z','void',['pointer','int','int']);
+const resize = new NativeFunction(widgets.getExportByName('?resize@QWidget@@QEAAXHH@Z'),'void',['pointer','int','int'],{exceptions:'propagate'});
 const focus = fn(widgets,'?setFocus@QWidget@@QEAAXW4FocusReason@Qt@@@Z','void',['pointer','int']);
 const focused = fn(widgets,'?focusWidget@QApplication@@SAPEAVQWidget@@XZ','pointer',[]);
 const expandAll = fn(widgets,'?expandAll@QTreeView@@QEAAXXZ','void',['pointer']);
 const keyCtor = fn(gui,'??0QKeyEvent@@QEAA@W4Type@QEvent@@HV?$QFlags@W4KeyboardModifier@Qt@@@@AEBVQString@@_NG@Z','pointer',['pointer','int','int','int','pointer','bool','uint16']);
 const keyDestroy = fn(gui,'??1QKeyEvent@@UEAA@XZ','void',['pointer']);
-const sendEvent = fn(core,'?sendEvent@QCoreApplication@@SA_NPEAVQObject@@PEAVQEvent@@@Z','bool',['pointer','pointer']);
+const sendEvent = new NativeFunction(core.getExportByName('?sendEvent@QCoreApplication@@SA_NPEAVQObject@@PEAVQEvent@@@Z'),'bool',['pointer','pointer'],{exceptions:'propagate'});
 const getClipboard = fn(gui,'?clipboard@QGuiApplication@@SAPEAVQClipboard@@XZ','pointer',[]);
 let clipboard = null;
 const clipText = fn(gui,'?text@QClipboard@@QEBA?AVQString@@W4Mode@1@@Z','pointer',['pointer','pointer','int']);
@@ -45,7 +45,7 @@ let engine = null, evaluating = false;
 for(const ex of qml.enumerateExports().filter(e=>/^\?call.*@QJSValue@@/.test(e.name)))Interceptor.attach(ex.address,{onEnter(args){if(!evaluating&&Process.getCurrentThreadId()===uiThread){const e=jsEngine(args[0]);if(!e.isNull())engine=e;}}});
 Interceptor.attach(qml.getExportByName('?evaluate@QJSEngine@@QEAA?AVQJSValue@@AEBVQString@@0H@Z'),{onEnter(args){if(!evaluating&&Process.getCurrentThreadId()===uiThread)engine=args[0];}});
 function evalText(source){if(engine===null)return null;evaluating=true;try{return withString(source,s=>withString('TermForgeR1',file=>{const value=Memory.alloc(16);jsEvaluate(engine,value,s,file,1);try{return str(jsText,value);}finally{jsDestroy(value);}}));}finally{evaluating=false;}}
-function textState(){return evalText(`JSON.stringify((function(){var t=window.activeText;function get(k){try{return typeof t[k]==='function'?t[k]():t[k];}catch(e){return String(e);}}return {top:get('topLine'),scroll:get('scrollTop'),lines:get('visibleLineCount'),capacity:get('screenLineCapacity'),caret:get('selectionCaretP'),anchor:get('selectionAnchorP'),selection:get('selectionText')};})())`);}
+function textState(){return evalText(`JSON.stringify((function(){var t=window.activeText;if(!t)return null;function get(k){try{return typeof t[k]==='function'?t[k]():t[k];}catch(e){return String(e);}}return {top:get('topLine'),scroll:get('scrollTop'),lines:get('visibleLineCount'),capacity:get('screenLineCapacity'),caret:get('selectionCaretP'),anchor:get('selectionAnchorP'),selection:get('selectionText')};})())`);}
 const inherits = fn(core,'?inherits@QObject@@QEBA_NPEBD@Z','bool',['pointer','pointer']);
 const labelText = fn(widgets,'?text@QLabel@@QEBA?AVQString@@XZ','pointer',['pointer','pointer']);
 const buttonText = fn(widgets,'?text@QAbstractButton@@QEBA?AVQString@@XZ','pointer',['pointer','pointer']);
@@ -103,7 +103,20 @@ function click(p,x,y){mouse(p,2,x,y);mouse(p,3,x,y,1,0);}
 function viewPort(){return ptr(cached.find(x=>x.name==='qt_scrollarea_viewport'&&x.parent===editor.toString()).ptr);}
 function dragPoints(){return JSON.parse(evalText('JSON.stringify({a:window.activeText.visibleRectFromPosition(window.activeText.lineStart(81)),b:window.activeText.visibleRectFromPosition(window.activeText.lineEnd(82))})'));}
 function dragText(reverse){const r=dragPoints();const a=reverse?r.b:r.a,b=reverse?r.a:r.b,vp=viewPort();mouse(vp,2,a.x+1,a.y+8);mouse(vp,5,b.x+1,b.y+8,0,1);mouse(vp,3,b.x+1,b.y+8,1,0);}
-function modalKey(next,p,k,mods=0){stage=next;due=Date.now()+500;busy=false;return key(p,k,mods);}
+const postEvent=fn(core,'?postEvent@QCoreApplication@@SAXPEAVQObject@@PEAVQEvent@@H@Z','void',['pointer','pointer','int']);
+const eventAlloc=fn(Process.getModuleByName('ucrtbase.dll'),'malloc','pointer',['uint64']);
+// This pinned Qt/MSVC distribution deletes posted events through the shared UCRT.
+function queuedKey(p,k,mods=0,text=''){withString(text,s=>{for(const t of [6,7]){const e=eventAlloc(256);if(e.isNull())throw Error('event allocation failed');keyCtor(e,t,k,mods,s,0,1);postEvent(p,e,0);}});}
+function modalKey(next,p,k,mods=0){stage=next;due=Date.now()+500;busy=false;return queuedKey(p,k,mods);}
+const treeModel=fn(widgets,'?model@QAbstractItemView@@QEBAPEAVQAbstractItemModel@@XZ','pointer',['pointer']);
+const indexCtor=fn(core,'??0QModelIndex@@QEAA@XZ','pointer',['pointer']);
+const hasIndex=fn(core,'?hasIndex@QAbstractItemModel@@QEBA_NHHAEBVQModelIndex@@@Z','bool',['pointer','int','int','pointer']);
+let readinessLast='',readinessTick=0,readySamples=0,observationStep='initializing';
+const postThreadMessage=fn(user,'PostThreadMessageW','bool',['uint32','uint32','uint64','int64']);
+// An owned WM_NULL heartbeat keeps idle/modal event loops observable without input.
+setInterval(()=>{if(!finished)postThreadMessage(uiThread,0,0,0);},100);
+function ready(kind){scan();let ok=false;const state=textState(),p=peerState();if(kind==='ui'){const invalid=Memory.alloc(32);indexCtor(invalid);ok=!!tree&&engine!==null&&!treeModel(tree).isNull()&&hasIndex(treeModel(tree),0,0,invalid);readySamples=ok?readySamples+1:0;ok=readySamples>=2;}else{const t=state&&JSON.parse(state);ok=!!editor&&!!p&&!!t&&typeof t.lines==='number'&&(kind==='shell'?t.lines>=80&&typeof p.received==='string':p.connected&&!!p.sent_sha256&&t.lines>=6);}const value=JSON.stringify({phase:kind,ready:!!ok,has_tree:!!tree,has_engine:engine!==null,has_editor:!!editor,peer_ready:!!p});if(value!==readinessLast||Date.now()-readinessTick>2000){send({kind:'readiness',...JSON.parse(value)});readinessLast=value;readinessTick=Date.now();}if(!ok)due=Date.now()+200;return ok;}
+// Scenario driver (the menu/wrap companion reuses only the original helpers above).
 let stage=0,busy=false,finished=false,due=0;const started=Date.now(),CTRL=0x4000000,SHIFT=0x2000000;
 send({kind:'probe_ready',station_isolated:true,exports:gui.enumerateExports().filter(x=>/QMouseEvent.*QEAA/.test(x.name)).map(x=>x.name)});
 Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
@@ -111,10 +124,10 @@ Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
     try{
         if(wind.base.add(0xc29394).readU8()!==0)throw Error('first run guard');
         if(Date.now()-started>__SCENARIO_TIMEOUT_MS__)throw Error('scenario timeout');
-        if(stage===0){sample('initial');resize(main,1360,860);}
+        if(stage===0){observationStep='ui-ready';if(!ready('ui'))return;sample('initial');observationStep='resize-main';resize(main,1360,860);}
         else if(stage===1){scan();expandAll(tree);focus(tree,7);key(tree,0x1000011);}
         else if(stage===2){key(tree,0x1000004);}
-        else if(stage===3){sample('session');if(!editor)throw Error('no editor');focus(editor,7);key(editor,0x1000010,CTRL|SHIFT);key(editor,65,CTRL|SHIFT);}
+        else if(stage===3){observationStep='shell-ready';if(!ready('shell'))return;sample('session');if(!editor)throw Error('no editor');focus(editor,7);key(editor,0x1000010,CTRL|SHIFT);key(editor,65,CTRL|SHIFT);}
         else if(stage===4){sample('select-all');key(editor,0x1000000);key(editor,70,CTRL|SHIFT);}
         else if(stage===5){sample('find-open');key(focused(),78,0,'needle');stage=50;due=Date.now()+500;return;}
         else if(stage===50){sample('find-typed');stage=6;due=Date.now()+500;key(focused(),0x1000004);return;}
@@ -150,5 +163,5 @@ Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
         else if(stage===31){sample('paste-multiline-confirm');const buttons=cached.filter(x=>x.class==='QPushButton'&&x.default);if(buttons.length!==1)throw Error('expected one default confirmation button');send({kind:'confirmation_action',text:buttons[0].text});stage=32;due=Date.now()+600;busy=false;buttonClick(ptr(buttons[0].ptr));return;}
         else if(stage===32){sample('paste-multiline-accepted');send({kind:'scenario_complete',coverage:'navigation-selection-system-clipboard-paste',system_clipboard:rawClipboard()});finished=true;}
         stage++;due=Date.now()+(stage===3?1800:((stage===16||stage===24)?doubleClickInterval+150:450));
-    }catch(error){finished=true;send({error:String(error),stack:error.stack,stage});}finally{busy=false;}
+    }catch(error){finished=true;send({error:String(error),stack:error.stack,stage,operation:observationStep});}finally{busy=false;}
 }});

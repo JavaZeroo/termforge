@@ -1,0 +1,109 @@
+{
+  "schema": "termforge.r1-menu-wrap.v1",
+  "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "distribution_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "fixture_sha256": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+  "template_sha256": "4cbf5484b9f64af1c338e24eecccefb9d5ae16ed16da5346549ef4371b2af5e6",
+  "evidence_id": "ev_7bb79521c15ffb83fb5b081b9e4e7e031b36e4d88ffbf3bc95f0fc32e70772cf",
+  "complete": false,
+  "menu_verified": false,
+  "vt": {
+    "protocol": "Telnet-loopback",
+    "columns": 91,
+    "sent_sha256": "ce17690df8bd72b28b4d13586e1313eb56d1858fa64ced8bdf0068d303d1b1e0",
+    "selection": "TF-SOFT:sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssLEFTRIGHT:END\nTF-HARD:hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhLEFT\nRIGHT:END\nTF-TAIL:two  \nTF-UNICODE:中文 é\nTF-VT-END\n",
+    "soft_wrap_joins": true,
+    "hard_break_lf": true,
+    "trailing_spaces_preserved": true,
+    "search": {
+      "vt-soft-search": {
+        "scroll": 0,
+        "lines": 8,
+        "capacity": 23,
+        "caret": 96,
+        "anchor": 87,
+        "selection": "LEFTRIGHT"
+      },
+      "vt-soft-search-wrap": {
+        "scroll": 0,
+        "lines": 8,
+        "capacity": 23,
+        "caret": 96,
+        "anchor": 87,
+        "selection": "LEFTRIGHT"
+      }
+    }
+  },
+  "menus": [
+    {
+      "phase": "context-open",
+      "actions": [
+        {
+          "text": "复制(&C)\tShift+Del",
+          "name": "",
+          "enabled": 1,
+          "submenu": false
+        },
+        {
+          "text": "粘贴(&P)\tShift+Ins",
+          "name": "",
+          "enabled": 1,
+          "submenu": false
+        },
+        {
+          "text": "查找...(&F)\tCtrl+Shift+F",
+          "name": "",
+          "enabled": 1,
+          "submenu": false
+        },
+        {
+          "text": "全选(&A)\tCtrl+Shift+A",
+          "name": "",
+          "enabled": 1,
+          "submenu": false
+        }
+      ]
+    },
+    {
+      "phase": "before-activation",
+      "actions": [
+        {
+          "text": "复制(&C)\tShift+Del",
+          "name": "",
+          "enabled": 1,
+          "submenu": false
+        },
+        {
+          "text": "粘贴(&P)\tShift+Ins",
+          "name": "",
+          "enabled": 1,
+          "submenu": false
+        },
+        {
+          "text": "查找...(&F)\tCtrl+Shift+F",
+          "name": "",
+          "enabled": 1,
+          "submenu": false
+        },
+        {
+          "text": "全选(&A)\tCtrl+Shift+A",
+          "name": "",
+          "enabled": 1,
+          "submenu": false
+        }
+      ]
+    }
+  ],
+  "activations": [],
+  "system_clipboard": {
+    "verified": false
+  },
+  "cleanup": {
+    "owned_active": 0,
+    "peer_closed": true
+  },
+  "limitations": [
+    "Qt context/key event replay; not physical mouse input.",
+    "Text selection projection, not CF_UNICODETEXT verification."
+  ]
+}

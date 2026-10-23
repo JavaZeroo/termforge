@@ -29,7 +29,16 @@
 | 正向 / 逆向跨行拖选 | `ALPHA␠␠tail\nBETA 中文 é` | 内空格、中文、组合标记保留；逆向事件分帧发送 |
 | 输入 `ALPHA␠␠tail␠␠␠` | 本地目标文本模型读回不含尾空格 | 尚不能归因到复制层 |
 
-长行在参考本地 Windows 传输中变为物理行。本样例不能回答远端 VT 的逻辑软换行复制策略。
+### 原始 VT、软换行与菜单补充
+
+`r1_vt_fixture.py` 只监听 `127.0.0.1` 的一个临时端口，接受一个自有 Telnet 连接，按 [NAWS 规范](https://www.rfc-editor.org/rfc/rfc1073) 读取实际列数后发送原创 VT 字节，不使用 WinPTY、账户或外部主机。两轮 [VT 记录一](r1-text/vt-menu-01.json)、[VT 记录二](r1-text/vt-menu-02.json) 的 fixture、发送字节 SHA-256、91 列和 VT 结果一致，peer 均关闭、Job `active=0`。两轮菜单尝试不同，不宣称同一完整脚本已重复通过。
+
+- 在第 91 列写满 `LEFT` 后继续写 `RIGHT`，原始字节没有换行。目标选择文本为连续 `LEFTRIGHT`，并能跨显示折行查找该文字；再次 F3 回到同一唯一匹配。
+- 相同位置显式发送 CRLF，目标选择文本保留 `LEFT\nRIGHT`，不会合并。
+- `TF-TAIL:two␠␠` 的两格尾空格在 VT 选择文本中保留；中文及 NFD `e` + U+0301 保留。因此，上表本地 Shell 的尾空格消失不能推广为目标的统一复制策略。
+- 此处验证选择文本投影与搜索，实际 Windows CF_UNICODETEXT 是否再转换 CR/LF 仍须 hosted 证据。
+
+排队的 Qt context 事件已打开真实终端上下文菜单。只公开 R1 条目：菜单显示复制 `Shift+Del`、粘贴 `Shift+Ins`、查找 `Ctrl+Shift+F`、全选 `Ctrl+Shift+A`。这是实际可见入口和标注，尚未等同于执行这些键位。最后一轮在中文菜单标签匹配处停止；实际全选/查找的菜单触发效果仍未验收，`menu_verified=false`。选择器已按观察到的中文/英文标签修正，待下一次受控运行。
 
 ## 静态声明与未完成项
 
@@ -37,10 +46,21 @@
 
 本机新建 window station 的实际 `OpenClipboard` 返回 error 5；Qt 缓存中的文字不能代替系统剪贴板。只有 `--hosted-ci` 且同时为 `GITHUB_ACTIONS=true` / `RUNNER_ENVIRONMENT=github-hosted` 时，允许使用一次性 GitHub-hosted VM 当前 station 的剪贴板，窗口仍在自有非输入 desktop。不提供普通本机当前 station 回退。
 
-当前缺口：实际 CF_UNICODETEXT 的 CR/LF、粘贴两个键盘入口与取消/确认、完整两次重复运行待 hosted 执行。菜单入口和真正 VT 软换行未在本轮声称通过。保持 #11 开放直到基础核心语义获得证据。
+当前缺口：实际 CF_UNICODETEXT 的 CR/LF、粘贴两个键盘入口与取消/确认、完整两次重复运行待 hosted 执行；菜单真实触发效果仍未观察。基础 VT 软/硬换行投影已有直接证据，更复杂 VT 模式、重排和实际剪贴板转换不在该样例结论内。保持 #11 开放直到基础核心语义获得证据。
 
 ## 自动复现与判定
 
 `.github/workflows/r1-reference.yml` 仅手动 dispatch，由代理触发即可。Windows 2025 disposable job 下载并核验官方 ZIP/EXE，安装锁定 REA，串行执行两次新的合成配置。系统剪贴板不可与产品剪贴板测试并行。`r1_summarize.py --require-complete` 检查身份、阶段、独立内容预期、实际系统剪贴板、peer 字节及回收；任何缺口保持失败。
 
-`python -m unittest research.tests.test_ui_r1 -v` 验证证据拒绝与 hosted 安全边界。设置 `TERMFORGE_R1_FAILURE_SOURCE` 为已校验的官方目录后，还会运行真实 suspended 进程的 Job 分配失败注入；本机 5 项测试全部通过，目标句柄已终止，空 Job 的 `active=0`。公开 artifact 仅 `local/r1-public/*.json` 白名单：原始 widgets、句柄、路径、stack、分发文件、配置和私有提取物都不上传。
+`python -m unittest research.tests.test_ui_r1 -v` 验证证据拒绝、hosted 安全边界、原始 VT peer 和真实 Job 超时清理。设置 `TERMFORGE_R1_FAILURE_SOURCE` 为已校验的官方目录后，还会运行真实 suspended 进程的 Job 分配失败注入。REA 使用锁定包的公开 Node CLI 入口，自己及子进程加入自有 Job，输出直接落盘；超时终止整个 Job，避免 Windows `.cmd` wrapper 退出但后代仍持有 stdout 的无界等待。公开 artifact 仅 `local/r1-public/*.json` 白名单：原始 widgets、句柄、路径、stack、分发文件、配置和私有提取物都不上传。
+
+就绪判定检查真实 session tree model、JS engine、peer 数据和活动文本，受总观察时限约束；不将固定延时当成就绪成功。可能进入模态循环的事件通过 Qt 队列发送。`resize`/同步事件保留目标自己的原生异常处理，避免 Frida 默认 `steal` 提前展开目标栈；该区别见 [Frida NativeFunction 文档](https://frida.re/docs/javascript-api/#nativefunction)。这些改动仍需要新的 hosted 运行，不能把首次 hosted 在 resize 阶段失败改判通过。
+
+补充场景命令（同一已校验源目录、全新输出目录）：
+
+```powershell
+python research/ui/r1_launch.py --source local/windterm-official/WindTerm_2.7.0 --out local/ui-reference/r1-menu-hosted-01 --rea research/ui/r1-tools/node_modules/.bin/rea.cmd --scenario menu-wrap --hosted-ci --seconds 35
+python research/ui/r1_summarize.py local/ui-reference/r1-menu-hosted-01 --out local/r1-public/r1-menu-hosted-01-summary.json --require-menu-complete
+```
+
+`--require-menu-complete` 只判定此补充场景的入口与 VT 契约；完整 R1 系统剪贴板依然需要原 `text` 场景的 `--require-complete`。两种场景都要新目录重复运行，不能共用一次成功标记。
