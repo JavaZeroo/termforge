@@ -386,5 +386,12 @@
     "Window paste cancel and close validated against real ConPTY receiver; synthetic text injection does not prove system clipboard workflow.",
     "Keyboard message-path byte checks do not prove actual IME composition or candidate UI.",
     "This is correctness and cleanup evidence, not a WindTerm performance comparison."
-  ]
+  ],
+  "sample_artifact_hash_scope": "Original local output bytes; published text is normalized to LF by Git.",
+  "published_text_sha256_lf": {
+    "history-0-history.json": "a895484758586225f888821dd513f57c534b3de60ecfba2590b42b1350237a44",
+    "history-0-native-scroll.jsonl": "023aab1a89f9bf6f7f4796557ff7de75c11e8694d1935273d13a68edb71cdccd",
+    "history-1-history.json": "3d3d9d7c285956bb797e2ccd61ff7d25dd746693bf879e274406562e66c9e354",
+    "history-1-native-scroll.jsonl": "023aab1a89f9bf6f7f4796557ff7de75c11e8694d1935273d13a68edb71cdccd"
+  }
 }
