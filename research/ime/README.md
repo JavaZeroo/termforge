@@ -4,13 +4,13 @@
 
 ## 可复现入口
 
-仓库配置并构建后执行；实际构建目录可替换 `build/Release`：
+仓库配置并构建后执行；实际构建目录可替换 `build/bin/Release`：
 
 ```powershell
 cmake --build build --config Release --target keyboard_test ime_context_test termforge_ime_probe
 ctest --test-dir build -C Release -R '^(keyboard|ime_context)$' --output-on-failure
-python research/ime/run_probe.py --exe build/Release/termforge_ime_probe.exe --mode desktop --out local/ime-desktop
-python research/ime/run_probe.py --exe build/Release/termforge_ime_probe.exe --mode station --out local/ime-station
+python research/ime/run_probe.py --exe build/bin/Release/termforge_ime_probe.exe --mode desktop --out local/ime-desktop
+python research/ime/run_probe.py --exe build/bin/Release/termforge_ime_probe.exe --mode station --out local/ime-station
 ```
 
 `run_probe.py` 记录 EXE 哈希、UTC 时间、时限、退出码、原始 stdout/stderr 和解析后的 `result.json`。进程或 JSON 失败保留失败，超时返回 124；hosted 模式必须所有真实 IME 条件为真才返回 0。`desktop` 成功只表示原生上下文/请求坐标可用，`station` 可返回 2 表示环境不可用。
@@ -39,11 +39,11 @@ python research/ime/run_probe.py --exe build/Release/termforge_ime_probe.exe --m
 
 ```powershell
 ./research/ime/prepare_hosted.ps1 -Out "$env:GITHUB_WORKSPACE/local/hosted-ime/environment"
-python research/ime/run_probe.py --exe build/Release/termforge_ime_probe.exe --mode hosted --out local/hosted-ime/probe
+python research/ime/run_probe.py --exe build/bin/Release/termforge_ime_probe.exe --mode hosted --out local/hosted-ime/probe
 ```
 
 准备脚本查询/安装 `Language.Basic~~~zh-CN~0.0.1.0`，需要重启即失败；只修改该一次性 VM 的用户语言，固定官方 Microsoft Pinyin CLSID/profile，并记录 OS、镜像版本及 `ChsIME.exe` 版本/哈希。`prepared-not-verified` 不是输入法可用证明。[语言能力安装](https://learn.microsoft.com/en-us/powershell/module/dism/add-windowscapability)、[Microsoft Pinyin 标识](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs)
 
 探针再次验证 hosted 环境和真实 input desktop，在每次输入前确认自有窗口仍为 foreground/focus。实际按键 `NIHAO` 必须产生原生组合及可见候选窗口；同一候选 HWND 在光标移动时须产生匹配位移，Space 恰好提交一次“你好”，无额外 `WM_CHAR`；再输入 `NI` 并用 Escape 取消。只激活本进程 profile，不使用 `TF_IPPMF_ENABLEPROFILE` 隐式修改用户注册配置。[ActivateProfile](https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfinputprocessorprofilemgr-activateprofile)
 
-候选窗口类名、前后矩形、预编辑文字、提交内容和事件数均保存在 JSON。候选类无法识别、语言包缺失、没有 input desktop、焦点丢失或任何步骤未验证，门槛失败。workflow 应设置总时限并在失败时上传整个 evidence 目录。当前尚未验证 hosted 镜像的语言包和交互会话可用性；本地两个隔离模式中 profile 枚举为空，不能据此宣称实际系统 IME 已支持。
+候选窗口类名、前后矩形、预编辑文字、提交内容和事件数均保存在 JSON。候选类无法识别、语言包缺失、没有 input desktop、焦点丢失或任何步骤未验证，门槛失败。[独立 workflow](../../.github/workflows/r1-ime.yml) 仅由 `workflow_dispatch` 触发，设置总时限，无论成功失败都上传自有环境 JSON、结果 JSON 与原始探针 stdout/stderr；不上传安装文件、系统配置或 DISM 日志。当前尚未验证 hosted 镜像的语言包和交互会话可用性；本地两个隔离模式中 profile 枚举为空，不能据此宣称实际系统 IME 已支持。

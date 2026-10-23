@@ -40,7 +40,7 @@ static int run() {
         HWND a=CreateWindowExW(0,cls.lpszClassName,L"first",WS_OVERLAPPEDWINDOW,0,0,600,400,nullptr,nullptr,cls.hInstance,&first);
         HWND b=CreateWindowExW(0,cls.lpszClassName,L"second",WS_OVERLAPPEDWINDOW,0,0,600,400,nullptr,nullptr,cls.hInstance,&second);
         require(a && b,"test window creation failed");
-        first.ime.attach(a); second.ime.attach(b); 
+        first.ime.attach(a); second.ime.attach(b);
         require(first.ime.native_context()!=second.ime.native_context(),"terminal windows must not share HIMC");
         ShowWindow(a,SW_SHOWNOACTIVATE); ShowWindow(b,SW_SHOWNOACTIVATE); SetActiveWindow(a); SetFocus(a); pump();
         first.ime.handle(WM_IME_STARTCOMPOSITION,0,0);
