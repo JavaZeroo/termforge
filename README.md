@@ -4,7 +4,7 @@
 
 An independent, fully open-source terminal project targeting WindTerm 2.7.0 feature, interaction and performance parity. Not affiliated with WindTerm or KingToolbox.
 
-当前是有限 Windows 本地终端原型：已有真实 cmd/ConPTY 输入输出、主区与底部共最多 8 个会话、标签操作、可保存的布局、每会话缩放和受控 DPI 回归。R1 有界历史浏览已按限定合同验收；有界粘贴和历史字面量查找已有重复验收；固定 Microsoft 拼音的产品中文输入已有四组实际验收；选择复制已接入，最终错误/上下文边界和完整文字工作流仍待验收。常用 TUI、SSH/SFTP 和日常开发包尚未完成；尚无与 WindTerm 性能等价的结论。`TermForge` 是暂名。
+当前是有限 Windows 本地终端原型：已有真实 cmd/ConPTY 输入输出、主区与底部共最多 8 个会话、标签操作、可保存的布局、每会话缩放和受控 DPI 回归。R1 有界历史浏览已按限定合同验收；有界粘贴和历史字面量查找已有重复验收；固定 Microsoft 拼音的产品中文输入已有四组实际验收；选择复制的精确文本、占用重试和基本选区归属已有重复系统验收。统一动作对照和完整文字工作流仍待验收。常用 TUI、SSH/SFTP 和日常开发包尚未完成；尚无与 WindTerm 性能等价的结论。`TermForge` 是暂名。
 
 ## 开始使用
 

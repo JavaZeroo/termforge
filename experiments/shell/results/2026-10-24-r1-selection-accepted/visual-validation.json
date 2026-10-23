@@ -1,0 +1,16 @@
+{
+  "scope": "owned synthetic hosted window DIB, lossless BMP-to-PNG conversion with System.Drawing; no live desktop capture",
+  "image_availability": "PNG filenames identify local review conversions, not files published beside this JSON. Original selection-copy-occupied-error.bmp files are in artifact 12530460976 of Actions run 40019418276; their source hashes are in validation.json.",
+  "frames": [
+    {
+      "file": "error-frame-0.png",
+      "sha256": "2fb4884469879d9305fc96c40065d16a344ea41c415ee3e3b62270cad73779e4",
+      "visually_verified": "Main selection remains highlighted; footer visibly states Copy failed: OpenClipboard: 5"
+    },
+    {
+      "file": "error-frame-1.png",
+      "sha256": "2fb4884469879d9305fc96c40065d16a344ea41c415ee3e3b62270cad73779e4",
+      "visually_verified": "Main selection remains highlighted; footer visibly states Copy failed: OpenClipboard: 5"
+    }
+  ]
+}

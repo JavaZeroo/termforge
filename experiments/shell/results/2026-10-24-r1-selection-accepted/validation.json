@@ -1,0 +1,224 @@
+{
+  "status": "passed",
+  "head": "ac1efba3367a37f76852f72803438455d830280e",
+  "run_id": 40019418276,
+  "artifact_id": 12530460976,
+  "artifact_digest": "sha256:95480c6794dfec92e33038d3407dba051533eab4228bf0a470b297692c6a0ee8",
+  "pinned_source_sha256": {
+    "experiments/shell/clipboard_checks.py": "cca669e9a08b32c4285260443165364ac75b1d7a057d8f371e06bc4e9f54c696",
+    "experiments/shell/selection_checks.py": "1c9fc2a2411f8b2a58e370b28e62b125c2b0459f0b9718fe0e7f85da04f9150a",
+    "experiments/shell/selection_context_checks.py": "18e51c400b93660bd5c88c220e9049f27af314c2e2de145ed9d218afc5bb9551"
+  },
+  "rounds": [
+    {
+      "case": "ui-copy-system",
+      "round": "copy-system-0",
+      "schema": "termforge-window-selection-v5",
+      "base_phases": 12,
+      "interaction_phases": 28,
+      "actual_copy_command": 14,
+      "contention": {
+        "schema": "termforge-product-copy-contention-v1",
+        "entry": "queued-Ctrl-Shift-C",
+        "target": "main",
+        "owner_occupied_before": true,
+        "owner_occupied_at_error": true,
+        "error_visible": true,
+        "native_error": 5,
+        "failure_step": "OpenClipboard",
+        "error_status": "Copy failed: OpenClipboard: 5",
+        "native_window_title": "TermForge — Copy failed: OpenClipboard: 5",
+        "error_frame": "selection-copy-occupied-error.bmp",
+        "sequence_before": 70,
+        "sequence_at_error": 70,
+        "sequence_after_owner_join": 70,
+        "sequence_after_retry": 75,
+        "owner_release": {
+          "reason": "ordinary",
+          "proof": {
+            "owner_entered": false,
+            "requester_exited": false,
+            "target_quiescent": false,
+            "payload_unchanged": false
+          },
+          "publication_attempted": false,
+          "publication_succeeded": false,
+          "release_event": true,
+          "thread_exited": true,
+          "native_error": 0,
+          "worker_error": 0,
+          "failure_step": "",
+          "secondary_native_error": 0,
+          "secondary_worker_error": 0,
+          "secondary_failure_step": "",
+          "expected_requester_gone": false
+        }
+      },
+      "retry_cf_utf8_bytes": 2499,
+      "raw_bottom_hex": "",
+      "raw_main_hex": "78",
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "journals_match": true,
+      "frame": {
+        "sha256": "9fd3d6c944590d696afe7b12c7446cb6f8480d3f4e61caa3ad64c81728bb9581",
+        "width": 1360,
+        "height": 860
+      },
+      "occupied_error_frame": {
+        "sha256": "8f2997746ce9398e9ad44dfd1c200fb37f3e5b737979e84edd5f6866800ba352",
+        "width": 1360,
+        "height": 860
+      }
+    },
+    {
+      "case": "ui-copy-system",
+      "round": "copy-system-1",
+      "schema": "termforge-window-selection-v5",
+      "base_phases": 12,
+      "interaction_phases": 28,
+      "actual_copy_command": 14,
+      "contention": {
+        "schema": "termforge-product-copy-contention-v1",
+        "entry": "queued-Ctrl-Shift-C",
+        "target": "main",
+        "owner_occupied_before": true,
+        "owner_occupied_at_error": true,
+        "error_visible": true,
+        "native_error": 5,
+        "failure_step": "OpenClipboard",
+        "error_status": "Copy failed: OpenClipboard: 5",
+        "native_window_title": "TermForge — Copy failed: OpenClipboard: 5",
+        "error_frame": "selection-copy-occupied-error.bmp",
+        "sequence_before": 145,
+        "sequence_at_error": 145,
+        "sequence_after_owner_join": 145,
+        "sequence_after_retry": 150,
+        "owner_release": {
+          "reason": "ordinary",
+          "proof": {
+            "owner_entered": false,
+            "requester_exited": false,
+            "target_quiescent": false,
+            "payload_unchanged": false
+          },
+          "publication_attempted": false,
+          "publication_succeeded": false,
+          "release_event": true,
+          "thread_exited": true,
+          "native_error": 0,
+          "worker_error": 0,
+          "failure_step": "",
+          "secondary_native_error": 0,
+          "secondary_worker_error": 0,
+          "secondary_failure_step": "",
+          "expected_requester_gone": false
+        }
+      },
+      "retry_cf_utf8_bytes": 2499,
+      "raw_bottom_hex": "",
+      "raw_main_hex": "78",
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "journals_match": true,
+      "frame": {
+        "sha256": "9fd3d6c944590d696afe7b12c7446cb6f8480d3f4e61caa3ad64c81728bb9581",
+        "width": 1360,
+        "height": 860
+      },
+      "occupied_error_frame": {
+        "sha256": "8f2997746ce9398e9ad44dfd1c200fb37f3e5b737979e84edd5f6866800ba352",
+        "width": 1360,
+        "height": 860
+      }
+    },
+    {
+      "case": "ui-copy-context-system",
+      "round": "system-0",
+      "system_clipboard": true,
+      "phases": 16,
+      "same_group_tab_restore": true,
+      "same_live_line_overwrite_invalidates": true,
+      "rename_edit_copy": true,
+      "selected_session_close_target_isolated": true,
+      "raw_input_isolated": true,
+      "cleanup_verified": true,
+      "before_overwrite": {
+        "before_id": 90,
+        "before_version": 47,
+        "after_id": 0,
+        "after_version": 0
+      },
+      "after_overwrite": {
+        "before_id": 90,
+        "before_version": 47,
+        "after_id": 90,
+        "after_version": 89
+      },
+      "rename_cf": "Context rename 中文",
+      "remaining_cf": "TF_FIND_075",
+      "raw_hex": {
+        "A": "",
+        "B": "7e2d78",
+        "C": ""
+      },
+      "transport_sha256": "c0391e15ed0b92546f734a9b53c58c4bfc790e507559fc4a8acd46a47f83746c",
+      "transport_bytes": 113,
+      "journal_matches": true,
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "sha256": "b9ece4a03dc4fda6eb508826598703e5787171dc4a85a24e0cd36abb8aeb3ff2",
+        "width": 1360,
+        "height": 860
+      }
+    },
+    {
+      "case": "ui-copy-context-system",
+      "round": "system-1",
+      "system_clipboard": true,
+      "phases": 16,
+      "same_group_tab_restore": true,
+      "same_live_line_overwrite_invalidates": true,
+      "rename_edit_copy": true,
+      "selected_session_close_target_isolated": true,
+      "raw_input_isolated": true,
+      "cleanup_verified": true,
+      "before_overwrite": {
+        "before_id": 90,
+        "before_version": 24,
+        "after_id": 0,
+        "after_version": 0
+      },
+      "after_overwrite": {
+        "before_id": 90,
+        "before_version": 24,
+        "after_id": 90,
+        "after_version": 112
+      },
+      "rename_cf": "Context rename 中文",
+      "remaining_cf": "TF_FIND_075",
+      "raw_hex": {
+        "A": "",
+        "B": "7e2d78",
+        "C": ""
+      },
+      "transport_sha256": "7572f8a5a50e42cf5c90f99b41620d5550ec085881d6043a01ebd1c5bce7f565",
+      "transport_bytes": 137,
+      "journal_matches": true,
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame": {
+        "sha256": "b9ece4a03dc4fda6eb508826598703e5787171dc4a85a24e0cd36abb8aeb3ff2",
+        "width": 1360,
+        "height": 860
+      }
+    }
+  ],
+  "audit_method": "read-only exact-head pinned pure oracles plus raw files, journals, frame format and cleanup checks; no CF/IME or hosted environment spoofing",
+  "limits": [
+    "controlled fixture and Windows hosted environment only",
+    "plain trailing spaces normalized by ConPTY remain explicitly limited; styled-tail-v1 has separate evidence",
+    "not R1-07/08 integration or general WindTerm parity"
+  ]
+}
