@@ -1,6 +1,6 @@
-# 无窗口 ConPTY 生命周期实验（T1）
+# 无窗口 ConPTY 生命周期实验
 
-本实验启动项目自己的受控 console child，通过真实 Windows ConPTY 验证双向输入、尺寸变化、输出与资源回收。无需用户打开窗口、输入确认，也不连接个人 shell、会话或配置。它尚未接入解析器、窗口或通用交互输入队列。
+本探针启动项目自己的受控 console child，通过真实 Windows ConPTY 独立验证双向输入、尺寸变化、输出与资源回收。无需用户打开窗口、输入确认，也不连接个人 shell、会话或配置。探针直接核验字节和生命周期；使用同一传输实现的解析器、输入队列和窗口集成见[本地 shell 工作区](../shell/README.md)。
 
 ## 构建与自动执行
 
@@ -33,7 +33,7 @@ ConPTY 输出包含系统生成的 VT 序列，不能视为 child 的原样 stdo
 
 监督器先启动等待 `GO` 的宿主，将其放入有 `KILL_ON_JOB_CLOSE` 的匿名 Job，才允许创建 ConPTY。宿主、系统 console host、child 和孙进程都在这个任务拥有的树内；超时只终止此 Job。child 在 suspended 状态加入内层 Job 后才恢复执行。所有过程不枚举或关闭用户的无关进程。
 
-输出线程持续排空管道直至关闭，诊断捕获上限 16 MiB，超过后仍排空并报告失败；避免关闭伪终端时无人读取输出造成死锁。资源检查包括 child 信号/退出码、内层 Job 活跃数、输出线程结束、宿主句柄/线程数，以及宿主退出后的外层 Job 活跃数。输入仅发送不超过 1 KiB 的控制命令；通用异步输入、慢消费者队列和输入取消还属于后续整合工作。
+输出线程持续排空管道直至关闭，诊断捕获上限 16 MiB，超过后仍排空并报告失败；避免关闭伪终端时无人读取输出造成死锁。资源检查包括 child 信号/退出码、内层 Job 活跃数、输出线程结束、宿主句柄/线程数，以及宿主退出后的外层 Job 活跃数。探针只发送不超过 1 KiB 的控制命令；工作区另有异步输入和有界输出队列，其调度与关闭行为须由 shell 集成测试验证。
 
 每个宿主先记录一次 `startup` 会话，再执行重复场景。本机 Windows 11 首次会话观察到**宿主句柄总数增加 6**；具体归属尚未定位，不能称为零初始化开销。后续各次会话要求句柄数和线程数回到已建立的基线；宿主最终退出后，外层 Job 必须为零活跃进程。这个证据只支持短批次的稳态回收，不能代替长时泄漏检测或其他 Windows 版本验证。
 
@@ -45,7 +45,7 @@ ConPTY 输出包含系统生成的 VT 序列，不能视为 child 的原样 stdo
 
 代码为独立实现；API 使用依据为 Microsoft 的 [ConPTY 会话文档](https://learn.microsoft.com/en-us/windows/console/creating-a-pseudoconsole-session)、[CreatePseudoConsole](https://learn.microsoft.com/en-us/windows/console/createpseudoconsole) 和 [关闭语义](https://learn.microsoft.com/en-us/windows/console/closepseudoconsole)。关闭期间保持独立输出线程，适用于旧 Windows 上可能阻塞的关闭路径；本机测试系统是 Windows 11 build 26200。
 
-审阅后的纯合成运行记录位于 [results/2026-10-22](results/2026-10-22/manifest.json)。本批使用 MSVC 19.42.34433.0、Windows SDK 10.0.26100.0、x64 Release 构建：20 个重复会话、5 个首次初始化会话和 1 个故意超时场景全部通过；另有 5 项自动测试通过。结果保存源文件/二进制哈希、操作系统版本、各次退出状态及资源计数。`elapsed_ms` 是含启动/同步/关闭的诊断耗时，不是吞吐、输入延迟或 WindTerm 对照结果。下一步由 T1 的字节传输边界接入核心与窗口，再补真实 shell 和大量输入的调度验证。
+审阅后的纯合成运行记录位于 [results/2026-10-22](results/2026-10-22/manifest.json)。该历史批次使用 MSVC 19.42.34433.0、Windows SDK 10.0.26100.0、x64 Release 构建：20 个重复会话、5 个首次初始化会话和 1 个故意超时场景全部通过；另有 5 项自动测试通过。结果保存源文件/二进制哈希、操作系统版本、各次退出状态及资源计数。`elapsed_ms` 是含启动/同步/关闭的诊断耗时，不是吞吐、输入延迟或 WindTerm 对照结果。
 
 上述历史批次保留当时的实现身份，后续 Unicode console 输入和资源诊断修复不回写它的源码哈希或结果；远端系统的通过/失败须独立记录。
 

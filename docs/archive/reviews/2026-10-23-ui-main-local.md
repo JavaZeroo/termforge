@@ -1,6 +1,8 @@
 # 主区本地会话审查与验证
 
-固定起点：`99fbecba2053fefed37bc5d50194f725413f6390`。需求见 [UI-main-local](../milestones/UI-main-local.md)；测量依据为[字体与主连接区报告](../research/windterm-ui-typography-2026-10-23.md)。独立 Standards/Spec 代理只读审查，实施代理与主代理运行测试。
+> 历史归档：保留当时的范围、结论和限制，不作为当前待办。当前能力见[矩阵](../../FEATURES.md)，后续任务见[路标](../../PLAN.md)。
+
+固定起点：`99fbecba2053fefed37bc5d50194f725413f6390`。需求见 [UI-main-local](../milestones/UI-main-local.md)；测量依据为[字体与主连接区报告](../../research/windterm-ui-typography-2026-10-23.md)。独立 Standards/Spec 代理只读审查，实施代理与主代理运行测试。
 
 ## Standards
 
@@ -18,7 +20,7 @@
 
 - Windows Release 全量构建与 CTest **13/13** 通过（72.71 秒）。最后增加已有主会话 F11 场景、修正空状态工具栏高 36 后，重新构建并运行受影响的完整 shell 套件：**10 项通过**（26.17 秒）。这些耗时只是回归记录，不是性能基准。
 - 四类工作区场景各重复两次；新增 `ui-main` 每次创建并回收五个真实 cmd。验证两区域独立输出、隐藏标签消费、重命名/后台退出焦点、关闭目标、F11、空主区重开和双区域整体回收。自有 Job active=0，非输入 desktop 已销毁。
-- 两种窗口尺寸下，主区实际 HWND 位置/大小与独立测量常量一致；子进程查询网格验证 resize。两次最终[几何摘要](../../experiments/shell/results/2026-10-23-main-ui/geometry.json)一致，[精简验证记录](../../experiments/shell/results/2026-10-23-main-ui/validation.json)只含合成结果、源哈希和未知呈现端点。
+- 两种窗口尺寸下，主区实际 HWND 位置/大小与独立测量常量一致；子进程查询网格验证 resize。两次最终[几何摘要](../../../experiments/shell/results/2026-10-23-main-ui/geometry.json)一致，[精简验证记录](../../../experiments/shell/results/2026-10-23-main-ui/validation.json)只含合成结果、源哈希和未知呈现端点。
 - 独立字体 helper 三次构造/销毁均解析为 Roboto Mono，字符高度 12；无关 CWD 启动、缺字体拒绝、构建补回缺失资产均已验证。字体及许可的原始字节在提交前再次核对。
 - 合成工作区位图已查看：中文标签、主工具栏和两区域终端均可见；截图含本机构建路径，仅保留在本地，不公开。此位图不是系统合成器实际呈现证据。
 

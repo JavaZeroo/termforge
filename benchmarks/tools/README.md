@@ -1,4 +1,4 @@
-# 工具 v0.1
+# 合成负载与资源测量工具
 
 Python 3.12 已验证。生成器/播放器仅用标准库；资源采样与校准限 Windows。测试数据目录必须不存在，工具不覆盖旧结果。
 
@@ -26,11 +26,11 @@ python -m venv .venv
 .venv\Scripts\python benchmarks/tools/play.py benchmarks/generated/ascii-8m --result benchmarks/local-results/play.json --chunk 65536
 ```
 
-先手动创建 `benchmarks/local-results/`。stdout 仅输出 payload，JSON 写独立文件，避免 shell 管道转码。`--chunk 1/7/4096/65536` 用于写入边界实验。Win32/PTY 可能再次合并或拆分块，因此这不保证接收端同样的分块。
+运行器需先创建 `benchmarks/local-results/`。stdout 仅输出 payload，JSON 写独立文件，避免 shell 管道转码。`--chunk 1/7/4096/65536` 用于写入边界实验。Win32/PTY 可能再次合并或拆分块，因此这不保证接收端同样的分块。
 
 播放器在计时前预加载并核对文件哈希；该内存属于 producer，不应算进“纯终端内存”。它用 [os.write](https://docs.python.org/3/library/os.html#os.write) 循环处理部分写入。数据写完不意味着终端解析/呈现完成，相关结果保持 `null`。失败时部分写入块的实际字节数未知，只报告完整写入块数。
 
-本版没有节流播放器、PTY 驱动或 SFTP 工具；不能直接执行所有协议场景。
+本工具集没有节流播放器、完整终端交互驱动或 SFTP 工具，不能直接执行所有协议场景。独立 ConPTY 和 shell 自动场景位于 [experiments/conpty](../../experiments/conpty/README.md) 与 [experiments/shell](../../experiments/shell/README.md)，尚不组成正式 WindTerm 对照驱动。
 
 ## 资源采样
 
@@ -65,12 +65,12 @@ JSONL 有 metadata、sample、schedule_gap、end 类型。采样包含 root、de
 
 ## 完成边界
 
-新增 [官方 WindTerm 隔离环境与单次诊断入口](WINDTERM-LAB.md)：固定发行物哈希、独立 profile-home、祖先进程核验、可选采样、超时保留。首次人工运行的真实终端生产端烟测已核验；画面正确性和正式校准仍待完成。
+[官方 WindTerm 隔离环境与单次诊断入口](WINDTERM-LAB.md)固定发行物哈希、独立 profile-home、祖先进程核验、可选采样和超时保留。历史真实终端生产端烟测已核验；完整画面正确性和正式校准仍待完成。
 
-[可续接的采样开/关诊断](CALIBRATION.md)提供 2 次预热、5 对交错测试、会话退出检查及汇总；当前 D0 配置尚非 C0，真实批次待人工运行。
+[旧采样开/关诊断](CALIBRATION.md)在 5/12 步后停止，D0 配置不是正式 C0，记录不能用于正式性能结论。该手工路径已停用，不要求用户补跑；后续执行遵循 [ADR-0002](../../docs/adr/0002-automation-first-investigation.md)，由代理推进自动会话、端点和扰动验证。
 
 - 已实现：确定性数据、逻辑文本 oracle、字节播放器、Windows 进程树资源 JSONL、合成负载校准。
 - 已实现视觉诊断：[自建窗口捕获、序列标记匹配、F13 注入、时钟往返校准](VISUAL.md)，另有实验性的固定像素模板录制/等待工具。
 - 已实现资源汇总与语义校验：观察到的分组 CPU、同时采样内存峰值、缺失与调度质量、来源哈希。
 - 待完成：WindTerm 实际文本标记/输入驱动验证、T01 捕获/采样开销校准、完整运行记录 JSON Schema、节流/交互驱动。
-- #3 保持进行中；任何工具校准均不代表 WindTerm 基线或性能达标。
+- 剩余任务统一见[路线图](../../docs/PLAN.md)；任何工具校准均不代表 WindTerm 基线或性能达标。

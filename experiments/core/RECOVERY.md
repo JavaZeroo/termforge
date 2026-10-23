@@ -1,6 +1,6 @@
-# C2：有界输入恢复策略
+# 有界输入恢复策略
 
-本实验在原有严格解析之外提供显式 `ParseMode::recovery`。它让未实现或损坏的输入不再终止消费，但不会扩充成完整 VT 模拟器；不实现 OSC 副作用、剪贴板、查询回复、备用屏幕或滚动区域。所有规则是 TermForge 当前有限核心的契约。
+核心在默认严格解析之外提供显式 `ParseMode::recovery`，[本地 shell 工作区](../shell/README.md)使用此模式消费真实输出。它让未实现或损坏的输入不再终止消费；支持范围仍是有限 VT 子集，不实现 OSC 副作用、剪贴板、查询回复、备用屏幕或滚动区域。以下是当前核心的输入处理契约。
 
 ```cpp
 termforge::Parser parser(24, 80, 100, termforge::ParseMode::recovery);
@@ -9,7 +9,7 @@ parser.finish();
 const auto& diagnostics = parser.diagnostics();
 ```
 
-默认构造仍选择 `strict`。已有 replay/receive/trace 不自动改为 Recovery；共同子集差分仍使用严格模式。严格模式保持支持范围、成功快照与错误退出合同，抛错后对象不得继续使用。`finish()` 现在是非 const，因为 Recovery 的 EOF 处理会更新状态。
+默认构造选择 `strict`。replay/receive/trace 和共同子集差分使用严格模式。严格模式保持支持范围、成功快照与错误退出合同，抛错后对象不得继续使用。`finish()` 会更新 EOF 处理状态。
 
 ## 消费和同步规则
 
@@ -62,4 +62,4 @@ build/bin/Release/recovery_probe.exe input.bin 24 80 100 1,7,2,4096 recovery
 - [XTerm Control Sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html) 给出 ESC/CSI/字符串的语法及 OSC/BEL/ST 行为，也明确错误恢复策略由实现决定。本实验选择持续丢弃和显式屏障，不声称复制 xterm 的完整恢复行为。
 - [Unicode 17.0 第 3.9.5–3.9.6 节](https://www.unicode.org/versions/Unicode17.0.0/core-spec/chapter-3/) 说明恢复时不得吞掉合法后继子段，并描述 maximal-subpart 替换。宽度表仍固定 Unicode 15.0；本次不升级字符布局数据。
 
-此处的恢复计数证明错误路径发生，逻辑缓存高水位与实现结构共同检查上限；它们不是整机内存采样、兼容性百分比或性能测量。真实 shell 窗口、回复查询、备用屏幕、滚动区域和 resize 仍由后续任务验证。
+恢复计数证明错误路径发生，逻辑缓存高水位与实现结构共同检查上限；它们不是整机内存采样、兼容性百分比或性能测量。真实 shell 和 resize 的集成验证见[工作区说明](../shell/README.md)；回复查询、备用屏幕和滚动区域等缺口见[功能矩阵](../../docs/FEATURES.md)。

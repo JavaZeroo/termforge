@@ -1,16 +1,16 @@
 # 最小终端状态回放与有界恢复
 
-目的：把固定字节流变成可检查的屏幕、光标和有界历史状态，并作为接收实验的实际消费负载。独立 C++17 实现，不依赖 WindTerm、Qt 或私有实现；不是完整 VT 模拟器或可用客户端，也不据此锁定产品技术栈。
+本组件把分块字节流变成可检查的屏幕、光标和有界历史状态，供离线回放、接收实验和[本地 shell 工作区](../shell/README.md)使用。独立 C++17 实现，不依赖 WindTerm、Qt 或私有实现；支持范围仍是有限 VT 子集，产品核心路线见 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)。
 
-2026-10-23 C2 新增显式 `ParseMode::recovery`，未知控制序列、非法 UTF-8 和超长输入有有界消费/恢复规则；默认 `strict`、既有 replay/receive/trace 和共同子集差分保持严格合同。[完整恢复策略和验证入口](RECOVERY.md) 包含字符串终止、取消、EOF 屏障、SGR 原子性及诊断含义。下文 v0.2 表格描述已支持行为，未支持输入的失败规则适用于严格模式。
+解析器提供默认 `strict` 和显式 `ParseMode::recovery` 两种模式。replay/receive/trace 和共同子集差分使用严格模式，本地 shell 选择恢复模式。[恢复策略](RECOVERY.md)定义未知控制序列、非法 UTF-8、超长输入、取消及 EOF 的有界处理；下表未支持输入的失败规则适用于严格模式。
 
-2026-10-23 C5 新增 `Screen::resize`，采用[物理行裁剪契约](../../docs/adr/0005-physical-row-resize.md)。`resize_test` 通过根 CTest 在 Windows/Linux 检查内容、历史、宽字符与字节流边界；已有 replay CLI 不增加隐式 resize 操作。
+`Screen::resize` 采用[物理行裁剪契约](../../docs/adr/0005-physical-row-resize.md)。`resize_test` 通过根 CTest 在 Windows/Linux 检查内容、历史、宽字符与字节流边界；本地 shell 将它与窗口/ConPTY 尺寸同步，replay CLI 不执行隐式 resize。
 
 ## 支持范围和约定
 
 控制序列的名称与基本行为参考 [XTerm Control Sequences](https://invisible-island.net/xterm/ctlseqs/ctlseqs.html)。本实验只实现下表子集；限制和失败策略是本项目的实验约定，不是对 xterm 全部行为的声明。
 
-| 输入 | v0.2 行为 |
+| 输入 | 当前行为 |
 |---|---|
 | ASCII `0x20..0x7e` | 单列写入和覆盖；写到最右列时置待换行标志，下一个可打印字符才换行 |
 | CR / LF | CR 回到本行第 0 列；LF 下移并保持列号，底部时全屏向上滚动；清除待换行 |
@@ -76,7 +76,7 @@ build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 
 `--fixture unicode` 使用 800,000 字节的中文、组合标记、红色前景和编号记录；期望格位及样式同样直接构造，不调用待测解析器。
 
-## 本轮结果与限制
+## 历史回放结果与限制
 
 2026-10-22，Windows 11 build 26200 / i7-9700，MSVC 19.42.34433 x64 Release：v0.2 的 15 项原核心测试、15 项 Unicode/样式测试和 5 项接收测试通过；ASCII 与 Unicode 各 17 次完整回放通过。共 24 次管道运行均发生背压，全部字节、画面、历史和样式符合预期。ASCII 预期状态摘要与 v0.1 完全相同。
 
@@ -91,4 +91,4 @@ v0.1 的历史结果保留，对应 commit `d15a1fc`：
 
 每个配置只跑一次，是正确性与计量端点烟测，没有预热和统计对照。`parse_ms` 在文件回放中是整个 feed 循环，在管道中是各块 feed 的墙钟耗时总和；后者包含计时开销及可能的线程抢占，排除队列等待和字节比较。它已经包含于整体运行时间，不能重复相加。解析、屏幕更新和历史维护尚未各自计量。管道原有的队列到校验延迟字段在解析模式下结束于 feed 之后，不能与旧的纯字节校验样本直接等同比较。
 
-以上 v0.2 历史样本未测显示或输入响应，也没有覆盖完整终端协议。新单元格模型改变了成本，不能用历史单次计时声称性能改善。后续已加入 [pyte 参考差分](../differential/README.md)、[有界恢复](RECOVERY.md) 与 [初步长批次计量](../measure/README.md)：六类边界差异明确保留，计量尚不足以归因或排名。下一步完成窗口整合和备用屏幕/滚动区域等行为。完整客户端、WindTerm 正式基线和自动会话探针仍未完成。
+以上 v0.2 历史样本未测显示或输入响应，也没有覆盖完整终端协议。单元格模型改变了成本，不能用历史单次计时声称性能改善。[pyte 参考差分](../differential/README.md)仍保留六类边界差异，[长批次计量](../measure/README.md)尚不足以完整归因或排名。当前窗口集成及其验证见[本地 shell 工作区](../shell/README.md)；备用屏幕、滚动区域、文字兼容性等剩余范围统一见[功能矩阵](../../docs/FEATURES.md)。

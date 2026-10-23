@@ -87,4 +87,4 @@ UI-B 新增五条分隔线的两端越界、capture 丢失/Esc 回滚、Unicode 
 
 同一场景另外检查不足一个字符格的 resize 仍产生子窗口更新区域，以及 168 DPI / 2001×1406 的实际右/下边缘覆盖、贴边子窗口和鼠标端点。布局始终以实际客户区端点收尾，避免逻辑尺寸来回取整漏掉一像素；此项不冒充真实跨屏或四阶段外的子进程尺寸验收。
 
-独立 `renderer_metrics` 原生测试覆盖 GDI/DirectWrite × 96/120/144/192 DPI × 50/100/125/200% 的 32 组组合，核验非整数缩放边界、实际绘字、光标、背景覆盖及 dirty/full 一致。规格见 [UI-dpi-zoom](../../docs/milestones/UI-dpi-zoom.md)。
+独立 `renderer_metrics` 原生测试覆盖 GDI/DirectWrite × 96/120/144/192 DPI × 50/100/125/200% 的 32 组组合，核验非整数缩放边界、实际绘字、光标、背景覆盖及 dirty/full 一致。规格见 [UI-dpi-zoom](../../docs/archive/milestones/UI-dpi-zoom.md)。

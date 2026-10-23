@@ -1,7 +1,7 @@
 # Working on TermForge
 
-- Read README.md, docs/PLAN.md and the active milestone before making architecture decisions.
-- The project is in research/baseline stage. Do not imply that a client exists or that parity has been measured.
+- Read README.md, docs/PLAN.md, docs/FEATURES.md and the active milestone before making architecture decisions.
+- The project has a limited Windows local-shell prototype. Do not claim a daily-use release, Linux/macOS client, complete WindTerm parity or measured performance equivalence.
 - Do not lock the stack or add a large application skeleton before benchmark evidence supports it.
 - Every performance claim needs workload identity, environment, correctness checks, raw samples and limitations.
 - Separate observed facts, hypotheses and design decisions. Static symbols do not prove runtime behavior.
@@ -12,5 +12,8 @@
 - Prefer focused changes with validation appropriate to the work. Do not invent measurements or percentage-complete estimates.
 - Keep the roadmap and known differences current when scope changes.
 - Follow docs/adr/0002-automation-first-investigation.md: prefer unattended CLI/test workflows; do not turn automation blockers into repeated user clicks, commands or per-run confirmations. Preserve unresolved evidence gaps and continue independent investigation/prototype work.
-- M0 investigation and small M1 experiments may proceed iteratively; a complete WindTerm baseline is required for supported performance claims, not for beginning an independently testable prototype.
+- R1–R5 in docs/PLAN.md are the current product milestones. Legacy M0–M4 and G1–G3 names appear only in historical evidence. Investigation and independently testable implementation may proceed in parallel; a complete baseline is required for supported performance claims.
+- docs/FEATURES.md owns current capabilities and limits; docs/PLAN.md owns milestone scope; the active milestone owns acceptance contracts; GitHub issues own execution status and blockers. Do not append batch diaries to current planning documents.
+- Start only an issue whose real blockers are resolved. Record source observations separately from TermForge policies, implement independently, and validate the complete user-visible behavior. An unknown target behavior is an investigation item, not a passed comparison.
+- Before claiming common TUI support, complete ADR-0003's actual external-core comparison. Before product backend selection, revisit ADR-0004. Do not silently turn experimental choices into permanent architecture.
 - Documentation is primarily Chinese; technical identifiers and concise English summaries are welcome.

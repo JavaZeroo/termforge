@@ -42,6 +42,6 @@ python -m unittest experiments.presentation.test_presentation -v
 
 本批 draw 中位数约 1.27–3.30 ms；同一配置 min/max 跨度明显，原始分布保留。相邻计时器读数大量为零，p95 约 0.0001 ms；零不表示时钟调用没有成本。未完成无观察器对照、独立机器/批次或合成器端点校准，因而不根据这些短样本发布后端性能排名或 WindTerm 性能结论。
 
-按 [ADR-0004](../../docs/adr/0004-presentation-backend.md) 的 DWrite 路线已接入固定网格 A1。共享缓存新增 1,024 项上限；本探针的历史结果仍保留原始身份，不冒充当前构建。物理 DPI 切换、完整字体/字素/整形、长时资源与真实呈现测量继续保留为缺口。A1 集成时还复现了资源析构后切出桌面的 ERROR_BUSY；改为独立 GUI 线程完整退出再关闭 desktop，验证见[第三批记录](../../docs/research/third-batch-a1-2026-10-23.md)。
+按 [ADR-0004](../../docs/adr/0004-presentation-backend.md) 的 DWrite 路线已接入固定网格 A1。共享缓存新增 1,024 项上限；本探针的历史结果仍保留原始身份，不冒充当前构建。物理 DPI 切换、完整字体/字素/整形、长时资源与真实呈现测量继续保留为缺口。A1 集成时还复现了资源析构后切出桌面的 ERROR_BUSY；改为独立 GUI 线程完整退出再关闭 desktop，验证见[第三批记录](../../docs/archive/validation/third-batch-a1-2026-10-23.md)。
 
 接口参考：[WM_PAINT](https://learn.microsoft.com/en-us/windows/win32/gdi/wm-paint)、[WM_PRINTCLIENT](https://learn.microsoft.com/en-us/windows/win32/gdi/wm-printclient)、[CreateDesktop](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-createdesktopw)、[Direct2D DC render target](https://learn.microsoft.com/en-us/windows/win32/api/d2d1/nn-d2d1-id2d1dcrendertarget)、[DrawGlyphRun 回调](https://learn.microsoft.com/en-us/windows/win32/api/dwrite/nf-dwrite-idwritetextrenderer-drawglyphrun)。源码为按公开接口独立实现。

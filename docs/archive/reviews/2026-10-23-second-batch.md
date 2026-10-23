@@ -1,6 +1,8 @@
 # 第二批实现审查
 
-范围：`git diff 51b50ef...a37e358`，唯一实现提交 `a37e358`。两个独立审查轴并行执行；规范为 AGENTS、CONTRIBUTING、PROVENANCE；需求为基点版本 STATUS-AND-BACKLOG 的 C2、V1 与 P1 计量修正。完整 P1 分层和 A1 不在本批范围内。审查不替代测试，验证见[批次记录](../research/second-batch-2026-10-23.md)。
+> 历史归档：保留当时的范围、结论和限制，不作为当前待办。当前能力见[矩阵](../../FEATURES.md)，后续任务见[路标](../../PLAN.md)。
+
+范围：`git diff 51b50ef...a37e358`，唯一实现提交 `a37e358`。两个独立审查轴并行执行；规范为 AGENTS、CONTRIBUTING、PROVENANCE；需求为基点版本 STATUS-AND-BACKLOG 的 C2、V1 与 P1 计量修正。完整 P1 分层和 A1 不在本批范围内。审查不替代测试，验证见[批次记录](../validation/second-batch-2026-10-23.md)。
 
 ## Standards
 

@@ -1,5 +1,7 @@
 # 工作区 DPI 与会话文字缩放审查
 
+> 历史归档：保留当时的范围、结论和限制，不作为当前待办。当前能力见[矩阵](../../FEATURES.md)，后续任务见[路标](../../PLAN.md)。
+
 固定起点：`1a3e3dfb5fbadf975450298dac5e8cfe25bd9e8e`。需求见 [UI-dpi-zoom](../milestones/UI-dpi-zoom.md)。Standards / Spec 由独立代理只读审查，实施代理运行实际构建和测试；未重新提取或复制 WindTerm 资源。
 
 ## Standards
@@ -22,7 +24,7 @@
 - 最后修复分数 DPI 边缘后重新构建，并复测完整 shell 套件：**11 项通过**（29.71 秒）。其他代码未再改变；远端干净检出以本批最终提交的 GitHub Actions 为准。
 - 新增 `renderer_metrics`：GDI / DirectWrite × 96/120/144/192 DPI × 50/100/125/200%，共 32 组组合，核验实际绘字、缺字负例、物理网格无累积漂移、光标/背景覆盖和 dirty/full 一致；既有默认呈现场景也通过。
 - `ui-dpi` 每次创建并回收三个真实 cmd，两次重复，通过 96→144→192→96、缩放上下限/重置、隐藏标签长行、重命名与拖动、150% 命中边缘、独立子进程尺寸和全量重绘比较。Python 按独立参考几何验算，篡改数据负例必须被拒绝。
-- 两次最终[几何记录](../../experiments/shell/results/2026-10-23-dpi-zoom/dpi.json)一致；[精简验证记录](../../experiments/shell/results/2026-10-23-dpi-zoom/validation.json)保留当前源/EXE 哈希、环境、真实回收结果和未知呈现端点。系统 `GetDpiForWindow` 在这批四阶段始终为 96，受控值明确单列。
+- 两次最终[几何记录](../../../experiments/shell/results/2026-10-23-dpi-zoom/dpi.json)一致；[精简验证记录](../../../experiments/shell/results/2026-10-23-dpi-zoom/validation.json)保留当前源/EXE 哈希、环境、真实回收结果和未知呈现端点。系统 `GetDpiForWindow` 在这批四阶段始终为 96，受控值明确单列。
 - 已查看 144/192 DPI 的合成工作区位图；图像含本机构建路径，仅留本地。原生 EDIT 不在该合成图中，其实际窗口矩形、HFONT 和焦点由原生断言覆盖。
 
 真实跨显示器移动仍未验证，受控消息不会改变系统显示设置。本批终端字体仍为 Consolas；未验收 WindTerm 字形、逐字形 fallback、实际呈现时延或性能等价。文字缩放改变可用行列时仍遵循物理行裁剪，无 reflow，比例不跨进程保存。

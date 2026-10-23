@@ -1,65 +1,35 @@
 # TermForge
 
-**以性能证据驱动的完整开源终端项目。**
+**独立、完整开源地复刻 WindTerm 2.7.0，以可复现证据验证功能、交互和性能。**
 
-目标是在核心日常场景中达到 WindTerm 的速度、响应和内存效率，同时提供可构建、可测试、可长期维护的完整源码。
+An independent, fully open-source terminal project targeting WindTerm 2.7.0 feature, interaction and performance parity. Not affiliated with WindTerm or KingToolbox.
 
-An independent, fully open-source terminal project driven by reproducible performance evidence. WindTerm is a comparison target, not an upstream product or affiliation.
+当前是有限 Windows 本地终端原型：已有真实 cmd/ConPTY 输入输出、主区与底部共最多 8 个会话、标签操作、可保存的布局、每会话缩放和受控 DPI 回归。历史浏览、选择复制、粘贴、搜索、IME、常用 TUI、SSH/SFTP 和日常开发包仍待完成；尚无与 WindTerm 性能等价的结论。`TermForge` 是暂名。
 
-> 当前阶段：有限本地交互原型。已有多标签工作区和可缩放的 Windows shell 窗口（物理行裁剪，无 reflow）、机制实验与状态回放；日常开发版、正式 WindTerm 性能基线和性能等价声明尚未完成。`TermForge` 是项目暂名。
+## 开始使用
 
-## 项目原则
+按照[贡献与构建指南](CONTRIBUTING.md)构建后，Windows / Visual Studio 入口为 `build/bin/Release/termforge_shell.exe`；分发时保留旁边的 `assets/fonts`。
 
-- 先定义正确性与性能目标，再通过原型选择技术栈；目前不锁定语言、GUI 框架或渲染后端。
-- 性能同时包含吞吐、交互延迟、CPU、内存、稳定性与多会话公平性。
-- 不以丢数据、关闭必要功能、无界缓冲或延迟呈现换取漂亮跑分。
-- 优先复用维护中的开源协议与基础库，独立实现产品整合。
-- 所有产品源码、测试、资源和构建流程都应可获得；不依赖 WindTerm 二进制或专有资源。
-- 先验证性能核心，再做到日常可用，最后扩展高级功能。
+- `Ctrl+Shift+T` 新建主区会话，`Ctrl+T` 新建底部会话。
+- `F2` 重命名当前区域标签，`F11` 扩大底部 Shell；五条分隔线可拖动。
+- `Ctrl++` / `Ctrl+-` 调整当前会话文字大小，`Ctrl+0` 恢复 100%，范围 50%–200%。
 
-## 从这里开始
+完整操作、自动验证与限制见[本地 shell 说明](experiments/shell/README.md)。当前 resize 按物理行裁剪，无 reflow；受控 DPI 测试不等于实际跨显示器验证。
 
-已构建后可运行 `build/bin/Release/termforge_shell.exe`（Windows / Visual Studio）。`Ctrl+Shift+T` 新建主区本地会话，`Ctrl+T` 新建底部 shell；两个区域可同时使用，`F2` 重命名当前区域的标签，`F11` 扩大底部 Shell。五条分隔线可拖动，布局自动保存。分发时保留 EXE 旁的 `assets/fonts`。构建、自动验证与支持边界见[本地 shell 原型](experiments/shell/README.md)。
+## 项目地图
 
-`Ctrl++` / `Ctrl+-` 调整当前会话文字大小，`Ctrl+0` 恢复 100%，范围 50%–200%；状态栏显示当前比例。工作区已接入 DPI 更新，受控 100% / 150% / 200% 切换已有自动回归，真实跨显示器移动仍待验收。
-
-| 文档 | 内容 |
+| 要了解什么 | 唯一入口 |
 |---|---|
-| [总体计划](docs/PLAN.md) | 分阶段交付与决策关卡 |
-| [当前现状与任务拆解](docs/STATUS-AND-BACKLOG.md) | 目标差距、交付关卡、近期任务与依赖 |
-| [首个里程碑](docs/milestones/M0-baseline.md) | WindTerm 基线工具、实验及原型规格 |
-| [任务跟踪](docs/TRACKING.md) | GitHub 里程碑及有依赖关系的实施任务 |
-| [性能测量规范](benchmarks/README.md) | 场景、指标、环境控制与正确性 |
-| [运行记录模板](benchmarks/run-template.json) | 不包含虚构结果的记录格式草案 |
-| [功能矩阵](docs/FEATURES.md) | 首版范围与高级能力 |
-| [WindTerm 调查](docs/research/windterm-audit.md) | 已公开/未公开内容和静态证据边界 |
-| [UI 直接取证](docs/research/windterm-ui-2026-10-23.md) | 资源、构造路径、隔离运行时控件树与下一批 UI 规格 |
-| [无界面定向分析](docs/research/windterm-headless-2026-10-22.md) | 官方 2.7.0 接收路径、证据与可重复执行入口 |
-| [接收机制实验](experiments/receive/README.md) | 自有管道、通知合并、有界队列与自动正确性检查 |
-| [最小状态回放](experiments/core/README.md) | 分块解析、屏幕/历史状态和完整管道回放检查 |
-| [独立参考差分](experiments/differential/README.md) | 固定参考版本、逐检查点和随机拆包、六类已知差异 |
-| [ConPTY 生命周期](experiments/conpty/README.md) | 无窗口双向输入、resize、子进程取消和回收 |
-| [本地 shell 窗口](experiments/shell/README.md) | 固定网格交互入口、有界队列、输入/状态/帧端点与自动验收 |
-| [输入恢复策略](experiments/core/RECOVERY.md) | 严格/恢复模式、控制序列消费、UTF-8 与缓存上限 |
-| [连续区间计量](experiments/measure/README.md) / [自有窗口验证](experiments/presentation/README.md) | 时钟校准、窗口绘制/字体/光标与未知呈现端点 |
-| [架构决策 ADR-0001](docs/adr/0001-evidence-before-stack.md) | 性能基线先于技术栈 |
-| [执行决策 ADR-0002](docs/adr/0002-automation-first-investigation.md) | 自动执行优先，定向逆向与原型交替推进 |
-| [核心路线 ADR-0003](docs/adr/0003-core-reference-and-reuse.md) | 临时保留受限自研核心，产品复用路线保留重审 |
-| [呈现路线 ADR-0004](docs/adr/0004-presentation-backend.md) | G1 暂用 DirectWrite，实际呈现与产品后端仍待验证 |
-| [贡献指南](CONTRIBUTING.md) | 如何提交可验证的工作 |
+| 已经做了什么、还缺什么 | [当前能力与目标矩阵](docs/FEATURES.md) |
+| 最终目标与五个路标（从远到近） | [总体计划](docs/PLAN.md) |
+| 下一路标的具体事项、依赖和验收 | [R1 基础文字交互](docs/milestones/R1-local-text.md) |
+| GitHub milestones、issues 和执行顺序 | [任务跟踪](docs/TRACKING.md) |
+| 结论依据、复现命令和全部文档 | [证据索引](docs/EVIDENCE.md) · [文档导航](docs/README.md) |
 
-## 路线
+交付主线：**基础文字交互 → 可靠本地终端 → SSH/SFTP 远程日常版 → 高级功能/跨平台/性能 → 完整 2.7.0 复刻验收**。性能工程和定向逆向贯穿各路标，不把远期整块调查当作近期开发的前置。
 
-1. **M0 — 基线与原型规格**：可复现输入、测量工具、WindTerm 结果、瓶颈假设。
-2. **M1 — 最小终端核心**：完整输入输出路径，模块独立计量，候选架构实验。
-3. **M2 — 核心性能达标**：正确性与性能共同通过，明确选型。
-4. **M3 — 日常可用**：本地终端、SSH/SFTP、会话、多标签分屏、配置与安装包。
-5. **M4 — 高级功能与发布**：兼容性扩展、跨平台验证和持续回归。
+## 工程原则与来源
 
-阶段 0 优先在 Windows 上建立基线；其他平台的支持范围由测量和工程验证决定。各阶段的名称不代表当前已经实现相关能力。
+功能先通过正确性验证；性能同时衡量吞吐、交互延迟、CPU、内存、稳定性和多会话公平性。不以丢数据、无界缓冲或积压呈现换取跑分，不预设某种语言或框架必然达标。优先复用许可明确的组件，以测量和可维护性决定产品架构。
 
-## 许可证与来源
-
-原创代码和文档采用 [MIT](LICENSE)。第三方组件保留其自身许可证与归属。
-
-本项目与 WindTerm/KingToolbox 无隶属关系。研究中的公开协议、功能观察、源码事实和推断须区分；不将专有代码、主题、协议定义资源或反编译结果自动视为可复用源码。详见 [来源规则](docs/PROVENANCE.md)。
+原创代码和文档采用 [MIT](LICENSE)，第三方组件保留自身许可。实现不依赖 WindTerm 二进制或专有资源；观察、静态线索和推断分别记录。详见[来源规则](docs/PROVENANCE.md)与[性能规范](benchmarks/README.md)。

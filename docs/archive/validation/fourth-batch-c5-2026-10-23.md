@@ -1,6 +1,8 @@
 # 第四批：C5 resize 与 G1 基础闭环
 
-日期：2026-10-23。实施基点 `8e77b0d`。规格来源为 STATUS-AND-BACKLOG 的 C5、G1；[ADR-0005](../adr/0005-physical-row-resize.md) 固定具体内容、光标、历史与同步规则。
+> 历史归档：保留当时的范围、结论和限制，不作为当前待办。当前能力见[矩阵](../../FEATURES.md)，后续任务见[路标](../../PLAN.md)。
+
+日期：2026-10-23。实施基点 `8e77b0d`。规格来源为 STATUS-AND-BACKLOG 的 C5、G1；[ADR-0005](../../adr/0005-physical-row-resize.md) 固定具体内容、光标、历史与同步规则。
 
 实施提交 `759e78f` 已完成[独立审查](../reviews/2026-10-23-c5.md)：Standards 与 Spec 均无实质发现。远端执行链接保留在审查记录中。
 
@@ -18,7 +20,7 @@ Windows 11 build 26200、MSVC Release、Python 3.12.10。根构建与完整 CTes
 
 已检查自有最终 DIB：72×18、洪流之后的 `TF_AFTER`、`TF_SIZE_72x18`、退出命令与光标可见。该图不是用户桌面截屏或实际合成器呈现证据。
 
-公开[运行身份](../../experiments/shell/results/2026-10-23-resize/manifest.json)及 [13 条合成验证元数据](../../experiments/shell/results/2026-10-23-resize/samples.jsonl)。helper 的命令回显含本机绝对构建路径，因此 stdout/stderr、完整屏幕与 BMP **只保留本地** `local/experiments/c5-final`；公开记录排除这些字段，并保存本地完整记录的 SHA-256。未改写前批原始样本。公开元数据不是独立完整的屏幕重放证据，源码脚本可重新生成原始记录。
+公开[运行身份](../../../experiments/shell/results/2026-10-23-resize/manifest.json)及 [13 条合成验证元数据](../../../experiments/shell/results/2026-10-23-resize/samples.jsonl)。helper 的命令回显含本机绝对构建路径，因此 stdout/stderr、完整屏幕与 BMP **只保留本地** `local/experiments/c5-final`；公开记录排除这些字段，并保存本地完整记录的 SHA-256。未改写前批原始样本。公开元数据不是独立完整的屏幕重放证据，源码脚本可重新生成原始记录。
 
 ## 远端发现与修复
 
@@ -26,9 +28,9 @@ Windows 11 build 26200、MSVC Release、Python 3.12.10。根构建与完整 CTes
 
 日志显示快速增大尺寸时停在 stage 42，实际网格 85 列而不是目标 100 列，并触发 `resized dirty frame differs from full redraw`。系统默认最大跟踪尺寸基于虚拟屏幕；初版同时把 `rcPaint` 当作 retained DIB 的全部 dirty 范围。修复显式设置核心上限对应的最大跟踪尺寸，并独立累计快照 dirty 行，resize 时强制整块新 DIB 更新。绘制仍检查局部结果与全量重绘一致，不放宽原断言。
 
-回归场景进一步把自有窗口移至私有 desktop 右边缘，令大部分窗口不可见。本机修复后 shell 七项测试通过，并另运行 13 场景；新[身份](../../experiments/shell/results/2026-10-23-resize-clipped/manifest.json)与[元数据](../../experiments/shell/results/2026-10-23-resize-clipped/samples.jsonl)独立保存。前一目录仍是初版本机结果，不代表修复后或远端结果。
+回归场景进一步把自有窗口移至私有 desktop 右边缘，令大部分窗口不可见。本机修复后 shell 七项测试通过，并另运行 13 场景；新[身份](../../../experiments/shell/results/2026-10-23-resize-clipped/manifest.json)与[元数据](../../../experiments/shell/results/2026-10-23-resize-clipped/samples.jsonl)独立保存。前一目录仍是初版本机结果，不代表修复后或远端结果。
 
-追加 Spec 审查指出只移出右边缘不保证覆盖纵向缺行。最终改为右下边缘，强制大部分行列都在桌面外；shell 七项测试与独立 13 场景再次通过。[最终几何身份](../../experiments/shell/results/2026-10-23-resize-bottom-edge/manifest.json)、[元数据](../../experiments/shell/results/2026-10-23-resize-bottom-edge/samples.jsonl)单独保存；前两目录保持历史原样。追加发现和处理见审查记录。
+追加 Spec 审查指出只移出右边缘不保证覆盖纵向缺行。最终改为右下边缘，强制大部分行列都在桌面外；shell 七项测试与独立 13 场景再次通过。[最终几何身份](../../../experiments/shell/results/2026-10-23-resize-bottom-edge/manifest.json)、[元数据](../../../experiments/shell/results/2026-10-23-resize-bottom-edge/samples.jsonl)单独保存；前两目录保持历史原样。追加发现和处理见审查记录。
 
 ## 结论与限制
 

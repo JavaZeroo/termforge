@@ -1,5 +1,7 @@
 # 第一批实现审查
 
+> 历史归档：保留当时的范围、结论和限制，不作为当前待办。当前能力见[矩阵](../../FEATURES.md)，后续任务见[路标](../../PLAN.md)。
+
 范围：`git diff acc38c3...15aa1f1`。两个独立审查轴并行执行；需求为 `acc38c3` 版本的 STATUS-AND-BACKLOG，规范为 AGENTS、CONTRIBUTING、PROVENANCE。后续修复与 CI 结果另记录，不改写历史实验身份。
 
 ## Standards
@@ -16,4 +18,4 @@
 
 V1/P1 是规格允许独立开始的任务，并未宣称完成；没有实际窗口、产品核心选型或性能对等的越界声明。短批次资源回收不代表长期无泄漏。
 
-审查发现：Standards 1 项（显式目录回退），Spec 0 项。最终修复与远端验收见[状态表](../STATUS-AND-BACKLOG.md)。
+审查发现：Standards 1 项（显式目录回退），Spec 0 项。最终修复与远端验收见[状态表](../../STATUS-AND-BACKLOG.md)。
