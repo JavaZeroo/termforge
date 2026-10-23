@@ -56,7 +56,7 @@ class PreparationTests(unittest.TestCase):
                 self.assertEqual(sessions[0]["session.protocol"], "Shell")
                 self.assertEqual(sessions[0]["session.label"], "TF_UI_CMD")
                 self.assertEqual(sessions[0]["process.arguments"], "/d /q")
-                self.assertEqual(sessions[0]["process.workingDirectory"], (out / "host-home").as_posix())
+                self.assertEqual(sessions[0]["process.workingDirectory"], (out.resolve() / "host-home").as_posix())
                 self.assertTrue(launch.check_profile_scope(out)["only_synthetic_session"])
                 sessions.append({"session.protocol": "SSH", "session.label": "synthetic-unexpected"})
                 session_file = out / "profile/.wind/profiles/default.v10/terminal/user.sessions"
