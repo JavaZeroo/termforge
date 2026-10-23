@@ -119,6 +119,8 @@ def run_cli(command, out, job, timeout):
 
 
 def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = False, scenario: str = "text"):
+    if scenario == "action-context" and not hosted_ci:
+        raise ValueError("Action context requires disposable hosted VM")
     if hosted_ci:
         require_hosted_environment(os.environ)
     out = out.resolve()
@@ -128,7 +130,7 @@ def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = Fals
     rows = json.loads(session.read_text(encoding="utf-8"))
     fixture = Path(__file__).with_name("r1_fixture.py").resolve()
     peer = None
-    if scenario == "menu-wrap":
+    if scenario in ("menu-wrap", "action-context"):
         from research.ui.r1_vt_fixture import Peer
         fixture = Path(__file__).with_name("r1_vt_fixture.py").resolve()
     else:
@@ -166,7 +168,7 @@ def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = Fals
         desktop = user.CreateDesktopW(desktop_name, None, None, 0, 0x1ff, None)
         check(desktop)
         job = OwnedJob()
-        if scenario == "menu-wrap":
+        if scenario in ("menu-wrap", "action-context"):
             peer = Peer(out)
             rows = [{"session.group": "TermForge Lab", "session.label": "TF_R1_LOOPBACK",
                      "session.protocol": "Telnet", "session.target": "127.0.0.1", "session.port": peer.port,
@@ -180,8 +182,10 @@ def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = Fals
         job.assign(info.pid)
         check(user.SetProcessWindowStation(original))
         script = Path(__file__).with_name("qt_r1_text.js").read_text(encoding="utf-8")
-        if scenario == "menu-wrap":
+        if scenario in ("menu-wrap", "action-context"):
             script = script.split("// Scenario driver", 1)[0] + Path(__file__).with_name("r1_menu_wrap.js").read_text(encoding="utf-8")
+        if scenario == "action-context":
+            script = script.split("send({kind:'probe_ready'", 1)[0] + Path(__file__).with_name("r1_action_context.js").read_text(encoding="utf-8")
         template_sha256 = hashlib.sha256(script.encode("utf-8")).hexdigest()
         script = script.replace("__UI_THREAD_ID__", str(info.tid)).replace("__OWNED_STATION__", station_name.value)
         script = script.replace("__RUN_DIRECTORY_JSON__", json.dumps(out.as_posix()))
@@ -245,6 +249,6 @@ if __name__ == "__main__":
     parser.add_argument("--rea", type=Path, required=True)
     parser.add_argument("--seconds", type=int, choices=range(1, 181), default=35)
     parser.add_argument("--hosted-ci", action="store_true", help="Use the disposable GitHub-hosted VM clipboard; forbidden on normal hosts")
-    parser.add_argument("--scenario", choices=("text", "menu-wrap"), default="text")
+    parser.add_argument("--scenario", choices=("text", "menu-wrap", "action-context"), default="text")
     args = parser.parse_args()
     run(args.source, args.out, args.rea, args.seconds, args.hosted_ci, args.scenario)

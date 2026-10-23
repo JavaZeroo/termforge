@@ -4,7 +4,10 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 EXPECTED_EXE = "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0"
 EXPECTED_FILES = "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
@@ -135,6 +138,10 @@ def summarize(identity, evidence, cleanup, profile, script_digest, final_peer=No
 def read_run(directory):
     require(not (directory / "launcher-failure.json").exists(), "Launcher failure invalidates the run")
     read = lambda name: json.loads((directory / name).read_text(encoding="utf-8"))
+    if read("run.json").get("scenario") == "action-context":
+        from research.ui.r1_action_context import summarize_context
+        return summarize_context(read("run.json"), read("evidence.json"), read("cleanup.json"), read("profile-check.json"),
+                                 hashlib.sha256((directory / "probe.js").read_bytes()).hexdigest(), read("peer.json"))
     if read("run.json").get("scenario") == "menu-wrap":
         return summarize_menu(read("run.json"), read("evidence.json"), read("cleanup.json"), read("profile-check.json"),
                               hashlib.sha256((directory / "probe.js").read_bytes()).hexdigest(), read("peer.json"))
@@ -152,7 +159,11 @@ def compare_runs(first, second):
     require(first.get("system_clipboard", {}).get("verified") is True and second.get("system_clipboard", {}).get("verified") is True,
             "Repeat lacks system clipboard coverage")
     require(first["system_clipboard"] == second["system_clipboard"], "Repeated clipboard/paste behavior differs")
-    if first["schema"] == "termforge.r1-menu-wrap.v1":
+    if first["schema"] == "termforge.r1-action-context.v1":
+        require(first.get("context_verified") is True and second.get("context_verified") is True, "Repeat lacks action context")
+        for key in ("find_edits", "actions", "confirmation", "vt"):
+            require(first[key] == second[key], "Repeated action context differs: " + key)
+    elif first["schema"] == "termforge.r1-menu-wrap.v1":
         require(first.get("menu_verified") is True and second.get("menu_verified") is True, "Repeat lacks all menu actions")
         require(first["vt"] == second["vt"] and first["activations"] == second["activations"], "Repeated menu/VT behavior differs")
     else:
@@ -295,6 +306,8 @@ def diagnostic(directory):
             data["snapshots"].append(item)
         elif p.get("kind") in ("scenario_complete", "copy-system", "menu-copy-system", "clipboard_set", "confirmation_action"):
             data.setdefault("outcomes", []).append({k: p[k] for k in ("kind", "coverage", "system_clipboard", "text") if k in p})
+        elif p.get("kind") in ("find_edit", "context_action"):
+            data.setdefault("context_observations", []).append({k: p[k] for k in ("kind", "phase", "text", "selected", "system_clipboard", "action", "input") if k in p})
         elif p.get("kind") == "menu":
             data.setdefault("menus", []).append({"phase": p["phase"], "actions": r1_menu_actions(p["actions"])})
         elif p.get("kind") == "menu_activation":
@@ -310,6 +323,7 @@ if __name__ == "__main__":
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--require-complete", action="store_true")
     parser.add_argument("--require-menu-complete", action="store_true")
+    parser.add_argument("--require-context-complete", action="store_true")
     parser.add_argument("--diagnostic-only", action="store_true")
     parser.add_argument("--compare-with", type=Path, help="Require repeat equality with the first validated summary")
     args = parser.parse_args()
@@ -322,4 +336,5 @@ if __name__ == "__main__":
     args.out.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     require(not args.require_complete or result["complete"], "R1 reference still has missing clipboard/paste evidence")
     require(not args.require_menu_complete or result.get("menu_verified") is True, "Menu behavior is not verified")
+    require(not args.require_context_complete or result.get("context_verified") is True, "Action context is not verified")
     print(json.dumps({"complete": result["complete"], "evidence_id": result["evidence_id"]}))

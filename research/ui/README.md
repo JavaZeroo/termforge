@@ -52,6 +52,14 @@ QWidget 字体与 QPainter 文本绘制字体分别记录，后者仅读取 devi
 
 摘要需通过脚本/目标身份、阶段完整性、错误/截断、父链、主区域矩形及回收/配置门槛；只输出白名单几何/字体及证据元数据。审核后才可提交摘要，不提交整个证据包、截图、profile 或复制发行物。
 
+## R1 文字动作参考
+
+已有文字导航与实际菜单证据见 [R1 参考合同](../../docs/research/windterm-r1-text-contract.md)。[r1-reference.yml](../../.github/workflows/r1-reference.yml) 串行运行 `text`、`menu-wrap` 和 `action-context`，各使用两次新合成配置；各自的完成门槛和跨轮比较独立保留。
+
+`action-context` 用于调查查找编辑框的 All/Copy/Paste/Find/Escape 目标，以及多行 PasteDialog 的实际 Return 结果。入口必须使用 `r1_launch.py --scenario action-context --hosted-ci`，仅指定的一次性 hosted 环境允许执行；本机在准备文件前拒绝。`r1_summarize.py --require-context-complete` 要求原始动作、编辑文字、焦点、系统剪贴板、精确 peer 字节及回收齐全。Return 只有在弹窗退出后精确无追加或完整追加一次时才分别记为 cancelled/accepted，不由默认按钮样式推断。
+
+新增探针与纯 schema 测试不构成运行观察；真实两轮结果独立审核后才更新参考合同。rename、busy 与关闭中的目标行为仍须单独取证，不能从普通查找框结果外推。
+
 ## 解释约束
 
 - `rect` 是父控件坐标系下的 Qt QRect `[x1,y1,x2,y2]`，右下端包含在内。尺寸是 `x2-x1+1`、`y2-y1+1`，允许零尺寸；不要把主窗口桌面坐标当成子控件偏移。
