@@ -88,6 +88,8 @@ Hosted 两次 `menu-wrap` 场景均协商为 63 列，发送字节 SHA-256、选
 
 增强导出的 [40025079604](https://github.com/JavaZeroo/termforge/actions/runs/40025079604) 仍记失败，见[独立失败事实](r1-text/hosted-context-40025079604-failure.json)：两轮原行为门槛通过，但安全导出将菜单操作改变的非 Find 选区误列为额外要求，未产出有序事件。修复仅保留五个 Find 检查点实际需要的选区，省略其他阶段的无关文本；行为及事件顺序门槛不变，新运行通过前不扩大上述验收范围。
 
+后续 [40026676722 的有序独立审计](r1-text/hosted-context-40026676722.json)固定 `33f890a`，核验14个白名单文件及产物摘要。两轮各29个安全事件、11个检查点用该提交的 `replay_context` 完整重算，与原 summary 逐字段一致，重复比较通过；实际 Return 均接受且最终 peer 精确相同。Find 内再次 Ctrl+Shift+F 的实际选区为完整 `中文`，Escape 返回终端，查询操作不进入 peer。两轮 Job 活跃数归零且 peer 关闭。安全导出只保留 oracle 所需事件；运行时替换后的脚本字节未公开，其记录哈希一致不等于独立重算脚本，Qt 事件也不代表物理输入或性能测量。该次成功有自己的证据，不改变前一轮失败。
+
 ## 验收门槛与合同边界
 
 本次两轮 `text.complete=true`、两轮 `menu_verified=true`，两组重复门槛均通过。`menu-wrap` 摘要的 `complete=false` 是有意保留的场景边界：单独菜单场景不含完整文字导航合同，必须与 `text` 合并验收。白名单 diagnostic 的 `validated=false` 表示其为观察导出，不是最终门槛结果；验收读取对应 strict summary。

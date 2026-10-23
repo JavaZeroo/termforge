@@ -1,0 +1,91 @@
+{
+  "schema": "termforge-independent-reference-ordered-context-audit-v1",
+  "run_id": 40026676722,
+  "head_sha": "33f890a54a849e5c3e992e9409b315f729f8ac00",
+  "conclusion": "success",
+  "artifact_id": 12533421949,
+  "artifact_sha256": "0bc53dde56a33ce29f9d20c1a5cecc0facb8d25685fc0d2c0a95680ed82649bb",
+  "api_binding_and_digest_verified": true,
+  "exact_14_file_allowlist_verified": true,
+  "pinned_complete_context_oracle_replayed": true,
+  "replay_equals_published_summary": true,
+  "template_sha256": "deadeb24a8c813d0bef9c28a87cdd30c1477884aab332a680db966c53e2f26c3",
+  "fixture_sha256": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+  "independent_literal_vt_and_peer_bytes_verified": true,
+  "rounds": [
+    {
+      "round": 1,
+      "evidence_id": "ev_0d3d7c8a694c0b7d34e8efa4449c0fd7685052b2bdaf5bd69930a5eced9c4393",
+      "ordered_events": 29,
+      "snapshots": 11,
+      "ordered_evidence_sha256": "1ea591fbe4e82373d5540bd2737cf22d0eaf2635173d24d590bc952512c9ba9e",
+      "recorded_runtime_script_sha256": "69af2d00af2cd7f30ab2e2aa9e14bc8f282ce63f7791d4dcdc9f500e0e164c00",
+      "confirmation": {
+        "text": "queued Return to actual focused widget",
+        "focus": "QPushButton",
+        "outcome": "accepted"
+      },
+      "final_peer_hex": "7854462d46495253540d54462d5345434f4e440d54462d5448495244",
+      "cleanup": {
+        "active": 0,
+        "total": 3,
+        "terminated": 0
+      },
+      "peer_closed": true
+    },
+    {
+      "round": 2,
+      "evidence_id": "ev_72b2f2c5c75ee2d04b2b6a73d535ae462607455c2823e8af972ef8988312ffa3",
+      "ordered_events": 29,
+      "snapshots": 11,
+      "ordered_evidence_sha256": "52d65d8e681f4d3dbf1cd6401d20223146cefb5c3abc3be33f309a08e4c87c86",
+      "recorded_runtime_script_sha256": "317acf4375c5cb3848d5802aab9be5cd982f061ca42494d16735618f95524ea7",
+      "confirmation": {
+        "text": "queued Return to actual focused widget",
+        "focus": "QPushButton",
+        "outcome": "accepted"
+      },
+      "final_peer_hex": "7854462d46495253540d54462d5345434f4e440d54462d5448495244",
+      "cleanup": {
+        "active": 0,
+        "total": 3,
+        "terminated": 0
+      },
+      "peer_closed": true
+    }
+  ],
+  "repeat": {
+    "verified": true,
+    "first_evidence_id": "ev_0d3d7c8a694c0b7d34e8efa4449c0fd7685052b2bdaf5bd69930a5eced9c4393",
+    "second_evidence_id": "ev_72b2f2c5c75ee2d04b2b6a73d535ae462607455c2823e8af972ef8988312ffa3"
+  },
+  "legacy_summary_groups_separate": [
+    {
+      "group": "r1-hosted",
+      "repeat": {
+        "verified": true,
+        "first_evidence_id": "ev_58521248c15a016ac74c4bf3cd06105152bef6da3a7ba98d60009d7207658b4a",
+        "second_evidence_id": "ev_850aea5bb0fb2014d8cb4acdd8d970d83392167665ff5531944d7e5fa4c684b0"
+      },
+      "complete": true,
+      "menu_verified": null
+    },
+    {
+      "group": "r1-menu-hosted",
+      "repeat": {
+        "verified": true,
+        "first_evidence_id": "ev_d70bd8f144c9fbfcbfdd5391f98903eed3739a74d4fb7d91f378af9fa765fcd9",
+        "second_evidence_id": "ev_33a2c771e5a5c2086d84cb98540e639b7fe67facccf7bc57585c2ff31d9537f3"
+      },
+      "complete": false,
+      "menu_verified": true
+    }
+  ],
+  "limitations": [
+    "Runtime substituted script bytes are not published; matching recorded script/REA source digests are verified, not independently recomputed.",
+    "Subject digest is a privacy-preserving binding reported by the exporter; original process identifiers are not exported.",
+    "Only allowlisted ordered events needed by the strict oracle are replayed, not the entire raw REA stream.",
+    "Controlled Qt events, not physical-input or performance equivalence; rename/busy/closing remain outside this reference case.",
+    "Earlier failed run 40025079604 remains failed; no retrospective success."
+  ]
+}
