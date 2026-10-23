@@ -137,7 +137,8 @@ class Workspace {
     }
     void scenario() {
         if(image_.empty() || closing_) return;
-        require(ms(started_)<20000,"workspace scenario timeout");
+        if(ms(started_)>=20000) throw std::runtime_error("workspace scenario timeout: stage="+std::to_string(stage_)+
+            " client="+std::to_string(width_)+"x"+std::to_string(height_));
         if(stage_==0 && active() && active()->ready()) { active()->command(L"echo TF_UI_FIRST\r"); stage_=1; }
         else if(stage_==1 && active()->contains_line("TF_UI_FIRST")) {
             // Queued WM_CHAR is dispatched only after add() hides this child.
@@ -224,8 +225,16 @@ public:
         WNDCLASSW cls{}; cls.lpfnWndProc=procedure; cls.hInstance=GetModuleHandleW(nullptr); cls.lpszClassName=L"TermForgeWorkspace"; cls.hCursor=LoadCursorW(nullptr,IDC_ARROW);
         require(RegisterClassW(&cls)!=0,"workspace class failed");
         font_=CreateFontW(-12,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,0,0,CLEARTYPE_QUALITY,0,L"Consolas"); require(font_!=nullptr,"workspace font failed");
-        RECT rect{0,0,1360,860}; AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
+        // The test starts smaller, reproducing creation-time size clamping.
+        RECT rect{0,0,image_.empty()?1360:1000,image_.empty()?860:650}; AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
         require(CreateWindowExW(0,cls.lpszClassName,L"TermForge",WS_OVERLAPPEDWINDOW|WS_CLIPCHILDREN,0,0,rect.right-rect.left,rect.bottom-rect.top,nullptr,nullptr,cls.hInstance,this)!=nullptr,"workspace creation failed");
+        // Creation can query track limits before WM_NCCREATE installs `self`.
+        // Apply the desired size once our window procedure owns the HWND.
+        rect={0,0,1360,860}; AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
+        require(SetWindowPos(window_,nullptr,0,0,rect.right-rect.left,rect.bottom-rect.top,
+                            SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"workspace initial resize failed");
+        layout();
+        require(width_==1360 && height_==860,"workspace initial client size mismatch");
         add();
         if(!image_.empty()) require(SetTimer(window_,1,30,nullptr)!=0,"workspace timer failed");
         ShowWindow(window_,image_.empty()?SW_SHOW:SW_SHOWNOACTIVATE);
