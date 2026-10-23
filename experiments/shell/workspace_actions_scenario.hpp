@@ -16,6 +16,11 @@ inline void Workspace::scenario_actions() {
     static std::array<DWORD,2> refocus_before{},refocus_after{};
     static std::wstring refocus_query,refocus_selected;
     static bool refocus_focused=false;
+    static HWND clipboard_edit=nullptr;
+    static std::wstring clipboard_query,clipboard_selected,clipboard_class;
+    static std::string clipboard_sentinel,clipboard_paste_source,clipboard_raw_bottom,clipboard_raw_main;
+    static std::array<DWORD,2> clipboard_selection{},clipboard_refocus_before{};
+    static bool clipboard_edit_focused=false,clipboard_returned=false;
     if(restore_keys) { require(SetKeyboardState(original_keys.data())!=FALSE,"actions modifiers restore failed"); restore_keys=false; }
     if(gesture && gesture->complete()) {
         gesture->validate(); last_popup=gesture->json(); gesture.reset();
@@ -70,6 +75,19 @@ inline void Workspace::scenario_actions() {
         return utf8(std::wstring(reinterpret_cast<const wchar_t*>(text.data()),text.size()).c_str());
     };
     const auto write_cf=[&](std::u16string_view text) { require(system,"local actions must never write system clipboard"); tf_shell_test::require_hosted_clipboard(); tf_shell::write_unicode_clipboard(window_,text); };
+    const auto observe_clipboard_edit=[&] {
+        require(system && bottom && bottom->find_edit_handle(),"system Find EDIT observation requires its actual owner");
+        const HWND editor=bottom->find_edit_handle();
+        require(!clipboard_edit || clipboard_edit==editor,"system Find clipboard changed its native editor"); clipboard_edit=editor;
+        wchar_t text[4097]{},name[32]{};
+        require(GetClassNameW(editor,name,32)>0,"system Find EDIT class observation failed"); clipboard_class=name;
+        require(GetWindowTextLengthW(editor)<=4096,"system Find EDIT query exceeded observation bound");
+        GetWindowTextW(editor,text,4097); clipboard_query=text;
+        SendMessageW(editor,EM_GETSEL,reinterpret_cast<WPARAM>(&clipboard_selection[0]),reinterpret_cast<LPARAM>(&clipboard_selection[1]));
+        require(clipboard_selection[0]<=clipboard_selection[1] && clipboard_selection[1]<=clipboard_query.size(),"system Find EDIT selection is outside query");
+        clipboard_selected=clipboard_query.substr(clipboard_selection[0],clipboard_selection[1]-clipboard_selection[0]);
+        clipboard_edit_focused=GetFocus()==editor;
+    };
     const auto record=[&](const char* phase,const char* entry="none",bool with_popup=false,bool with_clipboard=false) {
         RECT parent{}; require(GetClientRect(window_,&parent),"actions physical client query failed");
         std::ostringstream out; out<<"{\"phase\":\""<<phase<<"\",\"entry\":\""<<entry<<"\",\"native_stage\":"<<stage_<<",\"session_count\":"<<session_count()
@@ -91,6 +109,19 @@ inline void Workspace::scenario_actions() {
                 <<"],\"after\":["<<refocus_after[0]<<','<<refocus_after[1]<<"],\"query_before\":";
             termforge::Screen::quoted(out,utf8(refocus_query.c_str())); out<<",\"selected\":"; termforge::Screen::quoted(out,utf8(refocus_selected.c_str()));
             out<<",\"focused\":"<<(refocus_focused?"true":"false")<<'}';
+        } else out<<"null";
+        out<<",\"find_edit_clipboard\":";
+        if(std::string_view(phase).rfind("system-find-",0)==0) {
+            require(system,"local actions cannot publish system Find clipboard observations");
+            out<<"{\"editor_hwnd\":"<<reinterpret_cast<uintptr_t>(clipboard_edit)<<",\"editor_class\":";
+            termforge::Screen::quoted(out,utf8(clipboard_class.c_str())); out<<",\"query\":"; termforge::Screen::quoted(out,utf8(clipboard_query.c_str()));
+            out<<",\"selection\":["<<clipboard_selection[0]<<','<<clipboard_selection[1]<<"],\"selected\":";
+            termforge::Screen::quoted(out,utf8(clipboard_selected.c_str())); out<<",\"focused_before_escape\":"<<(clipboard_edit_focused?"true":"false")
+                <<",\"clipboard_before_copy\":"; termforge::Screen::quoted(out,clipboard_sentinel);
+            out<<",\"clipboard_before_paste\":"; if(clipboard_paste_source.empty()) out<<"null"; else termforge::Screen::quoted(out,clipboard_paste_source);
+            out<<",\"refocus_before\":"; if(std::string_view(phase)=="system-find-refocus") out<<'['<<clipboard_refocus_before[0]<<','<<clipboard_refocus_before[1]<<']'; else out<<"null";
+            out<<",\"raw_before\":{\"bottom\":"; termforge::Screen::quoted(out,clipboard_raw_bottom); out<<",\"main\":"; termforge::Screen::quoted(out,clipboard_raw_main);
+            out<<"},\"returned_terminal\":"<<(clipboard_returned?"true":"false")<<",\"editor_gone\":"<<(!IsWindow(clipboard_edit)?"true":"false")<<'}';
         } else out<<"null";
         out<<",\"popup\":"; if(with_popup) { require(!last_popup.empty(),"actions actual popup evidence missing"); out<<last_popup; last_popup.clear(); } else out<<"null";
         out<<",\"sessions\":["; first=true;
@@ -149,6 +180,8 @@ inline void Workspace::scenario_actions() {
     if(stage_==0 && bottom && bottom->ready()) {
         gesture.reset(); last_popup.clear(); geometry_samples_.clear(); before_id=before_version=after_id=after_version=0;
         refocus_before={}; refocus_after={}; refocus_query.clear(); refocus_selected.clear(); refocus_focused=false;
+        clipboard_edit=nullptr; clipboard_query.clear(); clipboard_selected.clear(); clipboard_class.clear(); clipboard_sentinel.clear(); clipboard_paste_source.clear();
+        clipboard_raw_bottom.clear(); clipboard_raw_main.clear(); clipboard_selection={}; clipboard_refocus_before={}; clipboard_edit_focused=clipboard_returned=false;
         if(system) tf_shell_test::require_hosted_clipboard(); transition(96); add(Group::main); stage_=1;
     } else if(stage_==1 && main && main->ready() && bottom->settled() && main->settled()) {
         bottom->start_text_receiver(directory/"actions-bottom.bin"); main->start_text_receiver(directory/"actions-main.bin"); stage_=2;
@@ -193,8 +226,42 @@ inline void Workspace::scenario_actions() {
         }
         require(PostMessageW(bottom->find_edit_handle(),WM_CHAR,'q',1)!=FALSE,"actions refocus replacement character queue failed"); stage_=86;
     } else if(stage_==86) {
-        record("find-editor","native-edit-Ctrl-A-char-and-Ctrl-Shift-F-refocus"); key(bottom->find_edit_handle(),VK_ESCAPE); stage_=9;
+        record("find-editor","native-edit-Ctrl-A-char-and-Ctrl-Shift-F-refocus");
+        if(system) {
+            clipboard_raw_bottom=capture("bottom"); clipboard_raw_main=capture("main");
+            require(clipboard_raw_bottom.empty() && clipboard_raw_main.empty(),"system Find clipboard baseline already leaked input");
+            write_cf(u"TF_FIND_EDIT_SENTINEL 中文"); clipboard_sentinel=clipboard();
+            require(clipboard_sentinel=="TF_FIND_EDIT_SENTINEL 中文","system Find clipboard sentinel readback differs");
+            key(bottom->find_edit_handle(),'A',true); stage_=87;
+        } else { key(bottom->find_edit_handle(),VK_ESCAPE); stage_=9; }
+    } else if(stage_==87) {
+        observe_clipboard_edit();
+        require(clipboard_edit_focused && clipboard_query==L"q" && clipboard_selection==std::array<DWORD,2>{0,1},"system Find Ctrl+A did not select the query before Copy");
+        key(clipboard_edit,'C',true); stage_=88;
+    } else if(stage_==88) {
+        observe_clipboard_edit();
+        require(clipboard()=="q" && clipboard_query==L"q" && clipboard_selected==L"q" && capture("bottom").empty() && capture("main").empty(),"system Find native Copy changed target, text or raw input");
+        record("system-find-copy","queued-native-Find-EDIT-Ctrl-A-Ctrl-C",false,true);
+        write_cf(u"中文"); clipboard_paste_source=clipboard(); require(clipboard_paste_source=="中文","system Find Paste source readback differs");
+        key(clipboard_edit,'V',true); stage_=89;
+    } else if(stage_==89) {
+        observe_clipboard_edit();
+        require(clipboard_query==L"中文" && clipboard_edit_focused && capture("bottom").empty() && capture("main").empty(),"system Find native Paste changed target or leaked input");
+        record("system-find-paste","queued-native-Find-EDIT-Ctrl-V",false,true);
+        SendMessageW(clipboard_edit,EM_SETSEL,2,2);
+        SendMessageW(clipboard_edit,EM_GETSEL,reinterpret_cast<WPARAM>(&clipboard_refocus_before[0]),reinterpret_cast<LPARAM>(&clipboard_refocus_before[1]));
+        key(clipboard_edit,'F',true,true); stage_=90;
+    } else if(stage_==90) {
+        observe_clipboard_edit();
+        require(clipboard_query==L"中文" && clipboard_selection==std::array<DWORD,2>{0,2} && clipboard_selected==L"中文" && clipboard_edit_focused,
+            "system Find Chinese refocus did not select the complete pasted query");
+        key(clipboard_edit,VK_ESCAPE); stage_=91;
+    } else if(stage_==91 && !bottom->find_handle()) {
+        clipboard_returned=GetFocus()==bottom->handle();
+        require(clipboard_returned && !IsWindow(clipboard_edit) && capture("bottom").empty() && capture("main").empty(),"system Find Escape did not restore its terminal without raw leakage");
+        record("system-find-refocus","queued-Ctrl-Shift-F-Chinese-and-Escape",false,true); stage_=9;
     } else if(stage_==9 && !bottom->find_handle()) {
+        require(GetFocus()==bottom->handle(),"actions Find Escape did not return to its owning terminal");
         select(0,Group::main); key(main->handle(),'F',true,true); stage_=10;
     } else if(stage_==10 && main->find_edit_handle()) {
         SetWindowTextW(main->find_edit_handle(),L"TF_FIND_075"); stage_=11;

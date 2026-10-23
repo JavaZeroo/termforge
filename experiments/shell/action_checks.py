@@ -10,12 +10,14 @@ BASE_COMMON = ("ready", "terminal-empty", "empty-copy-rejected", "context-all", 
           "busy-session", "busy-cancelled")
 GEOMETRY = ("geometry-144", "geometry-192", "geometry-96", "geometry-zoom75", "geometry-restored")
 COMMON = BASE_COMMON[:5] + GEOMETRY + BASE_COMMON[5:]
+FIND_SYSTEM = ("system-find-copy", "system-find-paste", "system-find-refocus")
 SYSTEM = ("system-copy", "system-shift-insert", "system-default-enter-prompt", "system-default-enter-accepted", "system-paste-prompt", "system-target-switched", "system-confirmed")
 FINAL = ("live-selected", "invalidated-copy-rejected", "ordinary-input", "closing", "no-session", "empty-session-menu")
 ALL_TEXT = "".join(f"TF_FIND_{index:03d} needle 中文 e\u0301\r\n" for index in range(80)) + "TF_FIND_READY 080\r\n"
 SHIFT = "SHIFT 中文 e\u0301"
 DEFAULT = "DEFAULT_ENTER 中文\rNEXT"
 PASTE = "CTX 中文 e\u0301\rNEXT"
+FIND_SENTINEL = "TF_FIND_EDIT_SENTINEL 中文"
 ACTIONS = {"copy", "paste", "all", "find", "top", "bottom", "cancel"}
 ENTRIES = dict(zip(BASE_COMMON, ("none", "terminal-context-inspect", "queued-Ctrl-Shift-C-empty", "terminal-context-all",
     "terminal-context-find", "native-edit-Ctrl-A-char-and-Ctrl-Shift-F-refocus", "queued-Ctrl-Shift-F", "queued-Ctrl-Shift-Home",
@@ -24,6 +26,7 @@ ENTRIES = dict(zip(BASE_COMMON, ("none", "terminal-context-inspect", "queued-Ctr
     "terminal-context-default-paste", "queued-default-Enter", "terminal-context-paste", "tab-switch-during-prompt", "queued-prompt-Tab-Enter"))) | dict(zip(FINAL, (
     "mouse-drag-live-prefix", "public-copy-invalidated", "queued-plain-character", "close-focused-session", "none", "session-menu-inspect")))
 ENTRIES.update({phase: "controlled-DPI-with-Find-selection" if phase in GEOMETRY[:3] else "session-zoom-with-Find-selection" for phase in GEOMETRY})
+ENTRIES.update(dict(zip(FIND_SYSTEM, ("queued-native-Find-EDIT-Ctrl-A-Ctrl-C", "queued-native-Find-EDIT-Ctrl-V", "queued-Ctrl-Shift-F-Chinese-and-Escape"))))
 
 
 def _check(condition, message):
@@ -72,13 +75,15 @@ def validate_actions(data, system, record):
            record.get("timed_out") is False and type(record.get("exit_code")) is int and record["exit_code"] == 0 and
            record.get("desktop_gone") is True and type(record.get("job_after", {}).get("active")) is int and record["job_after"]["active"] == 0 and not record.get("cleanup_errors"),
            "action session, native result, owned Job or desktop cleanup failed")
-    phases = COMMON + (SYSTEM if system else ()) + FINAL
+    find_end = COMMON.index("find-editor") + 1
+    phases = COMMON[:find_end] + (FIND_SYSTEM if system else ()) + COMMON[find_end:] + (SYSTEM if system else ()) + FINAL
     rows = data.get("snapshots")
     _check(isinstance(rows, list) and all(isinstance(row, dict) for row in rows) and
            [row.get("phase") for row in rows] == list(phases), "action snapshots are incomplete or reordered")
     previous_ticks = {}
     previous_generations = {}
     baseline_find = baseline_cell = None
+    find_editor_identity = None
     for index, row in enumerate(rows):
         phase = row["phase"]
         _check(row.get("entry") == ENTRIES[phase], "action entry path differs from its original observation")
@@ -97,7 +102,7 @@ def validate_actions(data, system, record):
                "public action availability was not observed")
         block = "no-session" if not count else "closing" if phase == "closing" else "native-editor" if phase == "rename-editor" else None
         for action in ACTIONS:
-            reason = block or ("no-selection" if action == "copy" and phase not in ("context-all", "context-find", "find-editor", "system-copy", "system-target-switched", "system-confirmed", "live-selected") + GEOMETRY else
+            reason = block or ("no-selection" if action == "copy" and phase not in ("context-all", "context-find", "find-editor", "system-copy", "system-target-switched", "system-confirmed", "live-selected") + GEOMETRY + FIND_SYSTEM else
                                "paste-busy" if action == "paste" and phase in ("busy-prompt", "busy-shortcut-rejected", "busy-terminal", "busy-session", "system-default-enter-prompt", "system-paste-prompt") else
                                "no-paste" if action == "cancel" and phase not in ("busy-prompt", "busy-shortcut-rejected", "busy-terminal", "busy-session", "system-default-enter-prompt", "system-paste-prompt") else "none")
             _check(state[action] == {"enabled": reason == "none", "reason": reason}, f"action availability reason differs: {phase}/{action}")
@@ -107,13 +112,38 @@ def validate_actions(data, system, record):
         if phase in FINAL:
             expected_main += "~" if phase == "live-selected" else "~-" if phase == "invalidated-copy-rejected" else "~-x"
         _check(row.get("raw") == {"bottom": "", "main": expected_main}, "action key, rename, selection or paste bytes leaked to a different PTY")
-        cf = ALL_TEXT if phase == "system-copy" else SHIFT if phase == "system-shift-insert" else "DEFAULT_ENTER 中文\r\nNEXT" if phase in ("system-default-enter-prompt", "system-default-enter-accepted") else "CTX 中文 e\u0301\r\nNEXT" if phase == "system-paste-prompt" else None
+        cf = "q" if phase == "system-find-copy" else "中文" if phase in FIND_SYSTEM[1:] else ALL_TEXT if phase == "system-copy" else SHIFT if phase == "system-shift-insert" else "DEFAULT_ENTER 中文\r\nNEXT" if phase in ("system-default-enter-prompt", "system-default-enter-accepted") else "CTX 中文 e\u0301\r\nNEXT" if phase == "system-paste-prompt" else None
         _check(row.get("clipboard") == cf, "actual system clipboard or local CF isolation differs")
-        expected_focus = ("other" if not count else "rename" if phase == "rename-editor" else "bottom-find" if phase in ("context-find", "find-editor") else
+        expected_focus = ("other" if not count else "rename" if phase == "rename-editor" else "bottom-find" if phase in ("context-find", "find-editor") + FIND_SYSTEM[:2] else
                           "main-find" if phase == "shortcut-find" else "main-prompt" if phase in ("busy-prompt", "system-default-enter-prompt", "system-paste-prompt") else
-                          "bottom" if phase in ("ready", "terminal-empty", "empty-copy-rejected", "context-all", "system-copy", "system-target-switched", "system-confirmed") else "bottom-find" if phase in GEOMETRY else "main")
+                          "bottom" if phase in ("ready", "terminal-empty", "empty-copy-rejected", "context-all", "system-copy", "system-target-switched", "system-confirmed", "system-find-refocus") else "bottom-find" if phase in GEOMETRY else "main")
         _check(row.get("focus") == expected_focus and row.get("rename_text") == ("R" if phase == "rename-editor" else None),
                "native EDIT, prompt or terminal focus was stolen")
+        if phase in FIND_SYSTEM:
+            edit = row.get("find_edit_clipboard")
+            _check(isinstance(edit, dict) and type(edit.get("editor_hwnd")) is int and edit["editor_hwnd"] > 0 and
+                   isinstance(edit.get("editor_class"), str) and edit["editor_class"].lower() == "edit" and
+                   edit.get("focused_before_escape") is True and edit.get("clipboard_before_copy") == FIND_SENTINEL and
+                   edit.get("clipboard_before_paste") == (None if phase == "system-find-copy" else "中文") and
+                   edit.get("raw_before") == {"bottom": "", "main": ""}, "actual native Find EDIT focus, sentinel or raw baseline is missing")
+            if find_editor_identity is None:
+                find_editor_identity = edit["editor_hwnd"]
+            _check(edit["editor_hwnd"] == find_editor_identity, "Find clipboard phases changed their native target")
+            selection = edit.get("selection")
+            _check(isinstance(selection, list) and len(selection) == 2 and all(type(value) is int for value in selection) and
+                   0 <= selection[0] <= selection[1] <= (1 if phase == "system-find-copy" else 2),
+                   "native Find EDIT selection is outside its literal query")
+            expected_selection = [0, 1] if phase == "system-find-copy" else [0, 2]
+            _check(edit.get("query") == ("q" if phase == "system-find-copy" else "中文") and
+                   (phase == "system-find-paste" or selection == expected_selection) and
+                   edit.get("selected") == ("中文"[selection[0]:selection[1]] if phase == "system-find-paste" else "q" if phase == "system-find-copy" else "中文") and
+                   edit.get("returned_terminal") is (phase == "system-find-refocus") and
+                   edit.get("editor_gone") is (phase == "system-find-refocus"), "Find EDIT clipboard, selection or Escape did not match its independent literal contract")
+            before = edit.get("refocus_before")
+            _check((before == [2, 2] and all(type(value) is int for value in before)) if phase == "system-find-refocus" else before is None,
+                   "Chinese refocus did not start from the actual collapsed endpoint")
+        else:
+            _check(row.get("find_edit_clipboard") is None, "another phase borrowed native Find clipboard observations")
         for session_index, session in enumerate(row["sessions"]):
             group = ("bottom", "main")[session_index]
             _check(session.get("group") == group and all(type(session.get(flag)) is bool for flag in
@@ -162,7 +192,7 @@ def validate_actions(data, system, record):
                 _check(session["top"] == 0 and session["maximum"] > 0, "Ctrl-Shift-Home did not reach retained history top")
             if group == "main" and phase == "history-bottom":
                 _check(session["top"] == session["maximum"] and session["maximum"] > 0, "Ctrl-Shift-End did not reach actual bottom")
-            query = "TF_FIND_077" if group == "bottom" and phase in ("context-find",) + GEOMETRY else "q" if group == "bottom" and phase == "find-editor" else "TF_FIND_075" if group == "main" and phase == "shortcut-find" else None
+            query = "TF_FIND_077" if group == "bottom" and phase in ("context-find",) + GEOMETRY else "q" if group == "bottom" and phase in ("find-editor", "system-find-copy") else "中文" if group == "bottom" and phase == "system-find-paste" else "TF_FIND_075" if group == "main" and phase == "shortcut-find" else None
             _check(session.get("query") == query and session["find"] is (query is not None), "Find shortcut/editor used a different session/query")
             if group == "bottom" and phase == "find-editor":
                 refocus = row.get("find_refocus")
@@ -228,6 +258,7 @@ def validate_actions(data, system, record):
             _check(not any(overwrite.values()), "action reused an unrelated overwrite identity")
     return {"phases": len(phases), "actual_terminal_popups": 7 if system else 4, "actual_session_popups": 3,
             "system_clipboard": system, "raw_input_isolated": True, "cleanup_verified": True,
+            "native_find_clipboard_verified": system,
             "complete_r1_07": False}
 
 

@@ -25,6 +25,7 @@ GEOMETRY_PHASES = ("geometry-144", "geometry-192", "geometry-96", "geometry-zoom
 LOCAL_PHASES = BASIC_LOCAL_PHASES[:5] + GEOMETRY_PHASES + BASIC_LOCAL_PHASES[5:]
 TAIL_PHASES = BASIC_LOCAL_PHASES[-6:]
 SYSTEM_PHASES = ("system-copy", "system-shift-insert", "system-default-enter-prompt", "system-default-enter-accepted", "system-paste-prompt", "system-target-switched", "system-confirmed")
+SYSTEM_FIND_PHASES = ("system-find-copy", "system-find-paste", "system-find-refocus")
 ENTRIES = ("none", "terminal-context-inspect", "queued-Ctrl-Shift-C-empty", "terminal-context-all", "terminal-context-find",
            "native-edit-Ctrl-A-char-and-Ctrl-Shift-F-refocus", "queued-Ctrl-Shift-F", "queued-Ctrl-Shift-Home", "queued-Ctrl-Shift-End",
            "native-rename-Ctrl-A-and-char", "synthetic-prompt-state-fixture", "queued-Ctrl-Shift-V-busy", "terminal-context-inspect", "session-menu-inspect",
@@ -47,10 +48,13 @@ def popup(command, terminal, enabled):
 
 
 def synthetic_actions(system=False):
-    phases = BASIC_LOCAL_PHASES[:5] + GEOMETRY_PHASES + BASIC_LOCAL_PHASES[5:-6] + (SYSTEM_PHASES if system else ()) + TAIL_PHASES
+    common = BASIC_LOCAL_PHASES[:5] + GEOMETRY_PHASES + BASIC_LOCAL_PHASES[5:-6]
+    find_end = common.index("find-editor") + 1
+    phases = common[:find_end] + (SYSTEM_FIND_PHASES if system else ()) + common[find_end:] + (SYSTEM_PHASES if system else ()) + TAIL_PHASES
     entries = dict(zip(BASIC_LOCAL_PHASES, ENTRIES)) | dict(zip(SYSTEM_PHASES, (
         "terminal-context-copy", "queued-Shift-Insert", "terminal-context-default-paste", "queued-default-Enter", "terminal-context-paste", "tab-switch-during-prompt", "queued-prompt-Tab-Enter")))
     entries.update({phase: "controlled-DPI-with-Find-selection" if phase in GEOMETRY_PHASES[:3] else "session-zoom-with-Find-selection" for phase in GEOMETRY_PHASES})
+    entries.update(dict(zip(SYSTEM_FIND_PHASES, ("queued-native-Find-EDIT-Ctrl-A-Ctrl-C", "queued-native-Find-EDIT-Ctrl-V", "queued-Ctrl-Shift-F-Chinese-and-Escape"))))
     # These tables express the externally required observations, independent of
     # the product availability implementation and of the native scenario's IDs.
     actual_popups = {
@@ -67,10 +71,10 @@ def synthetic_actions(system=False):
     for index, phase in enumerate(phases):
         empty = phase in ("no-session", "empty-session-menu")
         focus = ("other" if empty else "rename" if phase == "rename-editor" else
-                 "bottom-find" if phase in ("context-find", "find-editor") + GEOMETRY_PHASES else "main-find" if phase == "shortcut-find" else
+                 "bottom-find" if phase in ("context-find", "find-editor") + GEOMETRY_PHASES + SYSTEM_FIND_PHASES[:2] else "main-find" if phase == "shortcut-find" else
                  "main-prompt" if phase in ("busy-prompt", "system-default-enter-prompt", "system-paste-prompt") else
-                 "bottom" if phase in ("ready", "terminal-empty", "empty-copy-rejected", "context-all", "system-copy", "system-target-switched", "system-confirmed") else "main")
-        selected_copy = phase in ("context-all", "context-find", "find-editor", "system-copy", "system-target-switched", "system-confirmed", "live-selected") + GEOMETRY_PHASES
+                 "bottom" if phase in ("ready", "terminal-empty", "empty-copy-rejected", "context-all", "system-copy", "system-target-switched", "system-confirmed", "system-find-refocus") else "main")
+        selected_copy = phase in ("context-all", "context-find", "find-editor", "system-copy", "system-target-switched", "system-confirmed", "live-selected") + GEOMETRY_PHASES + SYSTEM_FIND_PHASES
         busy_active = phase in ("busy-prompt", "busy-shortcut-rejected", "busy-terminal", "busy-session", "system-default-enter-prompt", "system-paste-prompt")
         states = {}
         for action in ("copy", "paste", "all", "find", "top", "bottom", "cancel"):
@@ -84,15 +88,15 @@ def synthetic_actions(system=False):
         sessions = []
         for group in (() if empty else ("bottom", "main")):
             selected = group == "bottom" and index >= phases.index("context-all") or group == "main" and phase == "live-selected"
-            query = "TF_FIND_077" if group == "bottom" and phase in ("context-find",) + GEOMETRY_PHASES else "q" if group == "bottom" and phase == "find-editor" else "TF_FIND_075" if group == "main" and phase == "shortcut-find" else None
+            query = "TF_FIND_077" if group == "bottom" and phase in ("context-find",) + GEOMETRY_PHASES else "q" if group == "bottom" and phase in ("find-editor", "system-find-copy") else "中文" if group == "bottom" and phase == "system-find-paste" else "TF_FIND_075" if group == "main" and phase == "shortcut-find" else None
             busy = group == "main" and phase in ("busy-prompt", "busy-shortcut-rejected", "busy-terminal", "busy-session", "system-default-enter-prompt", "system-paste-prompt", "system-target-switched")
             sessions.append({"group": group, "closing": group == "main" and phase == "closing", "active": focus.startswith(group),
                              "focused": focus == group, "selected": selected,
                              "selection": ALL_TEXT if selected and group == "bottom" else "TF_STREAM_TICK_" if selected else "",
                              "selection_status": "ok" if selected else "invalidated" if group == "main" and phase in TAIL_PHASES[1:] else "empty",
                              "paste_busy": busy, "prompt": busy, "prompt_focus": 1 if group == "main" and phase in ("busy-prompt", "system-default-enter-prompt", "system-paste-prompt") else 0, "find": query is not None, "query": query,
-                             "find_line": query + " needle 中文 e\u0301" if query and phase != "find-editor" else None,
-                             "find_range": {"id": 78 if group == "bottom" else 1076, "version": 10 + index, "begin": 0, "end": 11} if query and phase != "find-editor" else None,
+                             "find_line": query + " needle 中文 e\u0301" if query and phase not in ("find-editor",) + SYSTEM_FIND_PHASES else None,
+                             "find_range": {"id": 78 if group == "bottom" else 1076, "version": 10 + index, "begin": 0, "end": 11} if query and phase not in ("find-editor",) + SYSTEM_FIND_PHASES else None,
                              "find_geometry": {"window": [10, 10, 560, 120], "edit": [20, 20, 250, 45], "font_height": -18 if phase == "geometry-144" else -24 if phase == "geometry-192" else -12, "os_dpi": 96} if query else None,
                              "display_dpi": 144 if phase == "geometry-144" else 192 if phase == "geometry-192" else 96,
                              "zoom_percent": 75 if group == "bottom" and phase == "geometry-zoom75" else 100,
@@ -115,8 +119,17 @@ def synthetic_actions(system=False):
             "focus": focus, "rename_text": "R" if phase == "rename-editor" else None,
             "find_refocus": {"input_path": "queued-Ctrl-Shift-F-in-Find-EDIT", "before": [1, 1], "after": [0, 1],
                              "query_before": "z", "selected": "z", "focused": True} if phase == "find-editor" else None,
+            "find_edit_clipboard": {"editor_hwnd": 321, "editor_class": "Edit", "focused_before_escape": True,
+                                    "query": "q" if phase == "system-find-copy" else "中文",
+                                    "selection": [0, 1] if phase == "system-find-copy" else [2, 2] if phase == "system-find-paste" else [0, 2],
+                                    "selected": "q" if phase == "system-find-copy" else "" if phase == "system-find-paste" else "中文",
+                                    "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+                                    "clipboard_before_paste": None if phase == "system-find-copy" else "中文",
+                                    "refocus_before": [2, 2] if phase == "system-find-refocus" else None,
+                                    "raw_before": {"bottom": "", "main": ""},
+                                    "returned_terminal": phase == "system-find-refocus", "editor_gone": phase == "system-find-refocus"} if phase in SYSTEM_FIND_PHASES else None,
             "raw": {"bottom": "", "main": raw}, "overwrite": overwrite,
-            "clipboard": ALL_TEXT if phase == "system-copy" else SHIFT if phase == "system-shift-insert" else "DEFAULT_ENTER 中文\r\nNEXT" if phase in ("system-default-enter-prompt", "system-default-enter-accepted") else "CTX 中文 e\u0301\r\nNEXT" if phase == "system-paste-prompt" else None,
+            "clipboard": "q" if phase == "system-find-copy" else "中文" if phase in SYSTEM_FIND_PHASES[1:] else ALL_TEXT if phase == "system-copy" else SHIFT if phase == "system-shift-insert" else "DEFAULT_ENTER 中文\r\nNEXT" if phase in ("system-default-enter-prompt", "system-default-enter-accepted") else "CTX 中文 e\u0301\r\nNEXT" if phase == "system-paste-prompt" else None,
             "popup": popup(*actual_popups[phase]) if phase in actual_popups else None, "sessions": sessions})
     record = {"result": {"valid": True, "mode": "ui-actions-system" if system else "ui-actions", "sessions_closed": 2,
                          "active_children_after": 0, "presented_done": None}, "timed_out": False, "exit_code": 0,
@@ -126,11 +139,25 @@ def synthetic_actions(system=False):
 
 class ActionOracleTest(unittest.TestCase):
     def test_literal_local_and_system_contracts(self):
-        for system, count in ((False, 26), (True, 33)):
+        for system, count in ((False, 26), (True, 36)):
             data, record = synthetic_actions(system)
             summary = validate_actions(data, system, record)
             self.assertEqual(summary["phases"], count)
+            self.assertIs(summary["native_find_clipboard_verified"], system)
             self.assertFalse(summary["complete_r1_07"])
+
+    def test_old_system_33_phases_do_not_cover_find_editor_clipboard(self):
+        data, record = synthetic_actions(True)
+        data["snapshots"] = [row for row in data["snapshots"] if row["phase"] not in SYSTEM_FIND_PHASES]
+        self.assertEqual(len(data["snapshots"]), 33)
+        with self.assertRaisesRegex(ValueError, "incomplete or reordered"):
+            validate_actions(data, True, record)
+
+    def test_paste_selection_is_observed_before_explicit_refocus_caret_preparation(self):
+        data, record = synthetic_actions(True)
+        pasted = next(row for row in data["snapshots"] if row["phase"] == "system-find-paste")
+        pasted["find_edit_clipboard"].update(selection=[0, 2], selected="中文")
+        self.assertEqual(validate_actions(data, True, record)["phases"], 36)
 
     def test_independent_counterexamples(self):
         data, record = synthetic_actions(True)
@@ -153,6 +180,24 @@ class ActionOracleTest(unittest.TestCase):
             "find_refocus_no_full_replacement": lambda d, r: row(d, "find-editor")["sessions"][0].__setitem__("query", "zq"),
             "find_refocus_control_character": lambda d, r: row(d, "find-editor")["sessions"][0].__setitem__("query", "q\x06"),
             "find_refocus_pty_leak": lambda d, r: row(d, "find-editor")["raw"].__setitem__("bottom", "\x06"),
+            "native_find_copy_kept_sentinel": lambda d, r: row(d, "system-find-copy").__setitem__("clipboard", "TF_FIND_EDIT_SENTINEL 中文"),
+            "native_find_copy_borrowed_terminal": lambda d, r: row(d, "system-find-copy").__setitem__("clipboard", ALL_TEXT),
+            "native_find_copy_preexisting_q": lambda d, r: row(d, "system-find-copy")["find_edit_clipboard"].__setitem__("clipboard_before_copy", "q"),
+            "native_find_copy_not_selected": lambda d, r: row(d, "system-find-copy")["find_edit_clipboard"].update(selection=[1, 1], selected=""),
+            "native_find_editor_wrong_focus": lambda d, r: row(d, "system-find-copy")["find_edit_clipboard"].__setitem__("focused_before_escape", False),
+            "native_find_editor_changed": lambda d, r: row(d, "system-find-paste")["find_edit_clipboard"].__setitem__("editor_hwnd", 322),
+            "native_find_editor_not_edit": lambda d, r: row(d, "system-find-copy")["find_edit_clipboard"].__setitem__("editor_class", "TermForgeShell"),
+            "native_find_copy_boolean_range": lambda d, r: row(d, "system-find-copy")["find_edit_clipboard"].__setitem__("selection", [False, True]),
+            "native_find_paste_appended": lambda d, r: row(d, "system-find-paste")["sessions"][0].__setitem__("query", "q中文"),
+            "native_find_paste_wrong_source": lambda d, r: row(d, "system-find-paste")["find_edit_clipboard"].__setitem__("clipboard_before_paste", "wrong"),
+            "native_find_paste_selection_outside_query": lambda d, r: row(d, "system-find-paste")["find_edit_clipboard"].__setitem__("selection", [0, 3]),
+            "native_find_paste_selection_inconsistent": lambda d, r: row(d, "system-find-paste")["find_edit_clipboard"].update(selection=[0, 1], selected="文"),
+            "native_find_copy_raw_before": lambda d, r: row(d, "system-find-copy")["find_edit_clipboard"]["raw_before"].__setitem__("main", "q"),
+            "native_find_paste_raw_after": lambda d, r: row(d, "system-find-paste")["raw"].__setitem__("bottom", "中文\x16"),
+            "native_find_chinese_not_selected": lambda d, r: row(d, "system-find-refocus")["find_edit_clipboard"].update(selection=[2, 2], selected=""),
+            "native_find_refocus_was_already_selected": lambda d, r: row(d, "system-find-refocus")["find_edit_clipboard"].__setitem__("refocus_before", [0, 2]),
+            "native_find_escape_not_returned": lambda d, r: row(d, "system-find-refocus")["find_edit_clipboard"].__setitem__("returned_terminal", False),
+            "native_find_escape_editor_left": lambda d, r: row(d, "system-find-refocus")["find_edit_clipboard"].__setitem__("editor_gone", False),
             "home_not_top": lambda d, r: row(d, "history-top")["sessions"][1].__setitem__("top", 1),
             "native_editor_block_lost": lambda d, r: row(d, "rename-editor")["workspace_actions"]["find"].update(enabled=True, reason="none"),
             "ctrl_a_not_selecting_all": lambda d, r: row(d, "find-editor")["sessions"][0].__setitem__("query", "zTF_FIND_077"),
@@ -260,6 +305,7 @@ class ActionWindowTest(unittest.TestCase):
                 record = execute(self.exe, "ui-actions", self.out / f"local-{repeat}")
                 self.assertEqual(record["actions_workflow"]["phases"], 26)
                 self.assertFalse(record["actions_workflow"]["system_clipboard"])
+                self.assertFalse(record["actions_workflow"]["native_find_clipboard_verified"])
 
     @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",
                          "actual system Copy/Paste requires a disposable hosted VM")
@@ -267,8 +313,9 @@ class ActionWindowTest(unittest.TestCase):
         for repeat in range(2):
             with self.subTest(repeat=repeat):
                 record = execute(self.exe, "ui-actions-system", self.out / f"system-{repeat}")
-                self.assertEqual(record["actions_workflow"]["phases"], 33)
+                self.assertEqual(record["actions_workflow"]["phases"], 36)
                 self.assertTrue(record["actions_workflow"]["system_clipboard"])
+                self.assertTrue(record["actions_workflow"]["native_find_clipboard_verified"])
 
     @unittest.skipIf(os.environ.get("GITHUB_ACTIONS") == "true" and os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",
                      "hosted VM is authorized for actual clipboard")
