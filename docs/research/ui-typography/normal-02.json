@@ -1,0 +1,1525 @@
+{
+  "schema_version": 1,
+  "scope": "ui_geometry_and_font_observation",
+  "coordinates": "TerminalWindow_origin_xywh_Qt_logical",
+  "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "files_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "script_sha256": "511343385a11af768130fb9dd47a3855a3aa2267d383af17a908167a5d7b38e5",
+  "evidence_id": "ev_d8c3c7453675c7764e61bfff4ed31fc02cd1d2d73550e6c4b67b1800f4b022cc",
+  "qt_scale_factor": null,
+  "observed_process_names": [
+    "cmd.exe",
+    "conhost.exe",
+    "winpty-agent.exe"
+  ],
+  "phases": [
+    {
+      "phase": "initial",
+      "screen": {
+        "dpr": 1,
+        "logical_dpi_x": 96,
+        "physical_dpi_x": 108.91792294807368
+      },
+      "roles": {
+        "MainWindow": {
+          "class": "MainWindow",
+          "name": "",
+          "rect": [
+            0,
+            0,
+            2048,
+            1120
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalWindow": {
+          "class": "TerminalWindow",
+          "name": "TerminalWindow",
+          "rect": [
+            0,
+            0,
+            2048,
+            1120
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "ViewGroup": {
+          "class": "TabGroup",
+          "name": "ViewGroup",
+          "rect": [
+            342,
+            33,
+            1364,
+            19
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MainTabBar": {
+          "class": "TabBar",
+          "name": "",
+          "rect": [
+            342,
+            42,
+            1302,
+            0
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          },
+          "tab_rects": []
+        },
+        "MainToolbar": {
+          "class": "QToolBar",
+          "name": "ToolBar",
+          "rect": [
+            342,
+            52,
+            1364,
+            36
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MainAddressBar": {
+          "class": "AddressBar",
+          "name": "AddressBar",
+          "rect": [
+            445,
+            56,
+            1231,
+            28
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "ShellPane": {
+          "class": "ShellPane",
+          "name": "ShellPane",
+          "rect": [
+            0,
+            744,
+            2048,
+            319
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MenuBar": {
+          "class": "QMenuBar",
+          "name": "MenuBar",
+          "rect": [
+            0,
+            0,
+            2048,
+            33
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "QuickBar": {
+          "class": "QuickBar",
+          "name": "QuickBar",
+          "rect": [
+            0,
+            1064,
+            2048,
+            27
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "StatusBar": {
+          "class": "StatusBar",
+          "name": "StatusBar",
+          "rect": [
+            0,
+            1091,
+            2048,
+            29
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        }
+      }
+    },
+    {
+      "phase": "empty-1360",
+      "screen": {
+        "dpr": 1,
+        "logical_dpi_x": 96,
+        "physical_dpi_x": 108.91792294807368
+      },
+      "roles": {
+        "MainWindow": {
+          "class": "MainWindow",
+          "name": "",
+          "rect": [
+            0,
+            0,
+            1360,
+            860
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalWindow": {
+          "class": "TerminalWindow",
+          "name": "TerminalWindow",
+          "rect": [
+            0,
+            0,
+            1360,
+            860
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "ViewGroup": {
+          "class": "TabGroup",
+          "name": "ViewGroup",
+          "rect": [
+            227,
+            33,
+            906,
+            19
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MainTabBar": {
+          "class": "TabBar",
+          "name": "",
+          "rect": [
+            227,
+            42,
+            844,
+            0
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          },
+          "tab_rects": []
+        },
+        "MainToolbar": {
+          "class": "QToolBar",
+          "name": "ToolBar",
+          "rect": [
+            227,
+            52,
+            906,
+            36
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MainAddressBar": {
+          "class": "AddressBar",
+          "name": "AddressBar",
+          "rect": [
+            330,
+            56,
+            773,
+            28
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "ShellPane": {
+          "class": "ShellPane",
+          "name": "ShellPane",
+          "rect": [
+            0,
+            571,
+            1360,
+            232
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MenuBar": {
+          "class": "QMenuBar",
+          "name": "MenuBar",
+          "rect": [
+            0,
+            0,
+            1360,
+            33
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "QuickBar": {
+          "class": "QuickBar",
+          "name": "QuickBar",
+          "rect": [
+            0,
+            804,
+            1360,
+            27
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "StatusBar": {
+          "class": "StatusBar",
+          "name": "StatusBar",
+          "rect": [
+            0,
+            831,
+            1360,
+            29
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        }
+      }
+    },
+    {
+      "phase": "session-1360",
+      "screen": {
+        "dpr": 1,
+        "logical_dpi_x": 96,
+        "physical_dpi_x": 108.91792294807368
+      },
+      "roles": {
+        "MainWindow": {
+          "class": "MainWindow",
+          "name": "",
+          "rect": [
+            0,
+            0,
+            1360,
+            860
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalWindow": {
+          "class": "TerminalWindow",
+          "name": "TerminalWindow",
+          "rect": [
+            0,
+            0,
+            1360,
+            860
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "ViewGroup": {
+          "class": "TabGroup",
+          "name": "ViewGroup",
+          "rect": [
+            227,
+            33,
+            906,
+            26
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MainTabBar": {
+          "class": "TabBar",
+          "name": "",
+          "rect": [
+            227,
+            33,
+            844,
+            26
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          },
+          "tab_rects": [
+            [
+              227,
+              33,
+              117,
+              26
+            ]
+          ]
+        },
+        "MainToolbar": {
+          "class": "QToolBar",
+          "name": "ToolBar",
+          "rect": [
+            227,
+            59,
+            906,
+            34
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MainAddressBar": {
+          "class": "AddressBar",
+          "name": "AddressBar",
+          "rect": [
+            330,
+            63,
+            773,
+            26
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "ShellPane": {
+          "class": "ShellPane",
+          "name": "ShellPane",
+          "rect": [
+            0,
+            571,
+            1360,
+            232
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MenuBar": {
+          "class": "QMenuBar",
+          "name": "MenuBar",
+          "rect": [
+            0,
+            0,
+            1360,
+            33
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "QuickBar": {
+          "class": "QuickBar",
+          "name": "QuickBar",
+          "rect": [
+            0,
+            804,
+            1360,
+            27
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "StatusBar": {
+          "class": "StatusBar",
+          "name": "StatusBar",
+          "rect": [
+            0,
+            831,
+            1360,
+            29
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalView": {
+          "class": "TerminalView",
+          "name": "TerminalView",
+          "rect": [
+            227,
+            93,
+            906,
+            453
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalEditor": {
+          "class": "ScintillaEditBase",
+          "name": "",
+          "rect": [
+            227,
+            93,
+            906,
+            429
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalViewport": {
+          "class": "QWidget",
+          "name": "qt_scrollarea_viewport",
+          "rect": [
+            228,
+            94,
+            888,
+            427
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          },
+          "text_draw_fonts": [
+            {
+              "family": "Consolas",
+              "resolved_family": "RobotoMono Nerd Font",
+              "point_size": 10,
+              "pixel_size": -1,
+              "resolved_point_size": 9.75,
+              "resolved_pixel_size": 13,
+              "bold": false,
+              "exact_match": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "phase": "session-2048",
+      "screen": {
+        "dpr": 1,
+        "logical_dpi_x": 96,
+        "physical_dpi_x": 108.91792294807368
+      },
+      "roles": {
+        "MainWindow": {
+          "class": "MainWindow",
+          "name": "",
+          "rect": [
+            0,
+            0,
+            2048,
+            1120
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalWindow": {
+          "class": "TerminalWindow",
+          "name": "TerminalWindow",
+          "rect": [
+            0,
+            0,
+            2048,
+            1120
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "ViewGroup": {
+          "class": "TabGroup",
+          "name": "ViewGroup",
+          "rect": [
+            342,
+            33,
+            1364,
+            26
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MainTabBar": {
+          "class": "TabBar",
+          "name": "",
+          "rect": [
+            342,
+            33,
+            1302,
+            26
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          },
+          "tab_rects": [
+            [
+              342,
+              33,
+              117,
+              26
+            ]
+          ]
+        },
+        "MainToolbar": {
+          "class": "QToolBar",
+          "name": "ToolBar",
+          "rect": [
+            342,
+            59,
+            1364,
+            34
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MainAddressBar": {
+          "class": "AddressBar",
+          "name": "AddressBar",
+          "rect": [
+            445,
+            63,
+            1231,
+            26
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "ShellPane": {
+          "class": "ShellPane",
+          "name": "ShellPane",
+          "rect": [
+            0,
+            744,
+            2048,
+            319
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "MenuBar": {
+          "class": "QMenuBar",
+          "name": "MenuBar",
+          "rect": [
+            0,
+            0,
+            2048,
+            33
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "QuickBar": {
+          "class": "QuickBar",
+          "name": "QuickBar",
+          "rect": [
+            0,
+            1064,
+            2048,
+            27
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "StatusBar": {
+          "class": "StatusBar",
+          "name": "StatusBar",
+          "rect": [
+            0,
+            1091,
+            2048,
+            29
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalView": {
+          "class": "TerminalView",
+          "name": "TerminalView",
+          "rect": [
+            342,
+            93,
+            1364,
+            626
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalEditor": {
+          "class": "ScintillaEditBase",
+          "name": "",
+          "rect": [
+            342,
+            93,
+            1364,
+            602
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          }
+        },
+        "TerminalViewport": {
+          "class": "QWidget",
+          "name": "qt_scrollarea_viewport",
+          "rect": [
+            343,
+            94,
+            1346,
+            600
+          ],
+          "dpi": {
+            "dpr": 1,
+            "logical": [
+              96,
+              96
+            ],
+            "physical": [
+              109,
+              109
+            ]
+          },
+          "font": {
+            "family": "Roboto Mono",
+            "resolved_family": "Roboto Mono",
+            "point_size": 9,
+            "pixel_size": -1,
+            "resolved_point_size": 9,
+            "resolved_pixel_size": 12,
+            "bold": false,
+            "exact_match": false
+          },
+          "text_draw_fonts": [
+            {
+              "family": "Consolas",
+              "resolved_family": "RobotoMono Nerd Font",
+              "point_size": 10,
+              "pixel_size": -1,
+              "resolved_point_size": 9.75,
+              "resolved_pixel_size": 13,
+              "bold": false,
+              "exact_match": false
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

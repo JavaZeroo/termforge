@@ -21,9 +21,9 @@ sys.path.insert(0, str(ROOT))
 from experiments.conpty.run import OwnedJob
 
 EXPECTED = "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0"
-# Canonical path->SHA256 manifest of the 4,046 copied files, independently
+# Canonical path->SHA256 manifest of the 4,047 copied files, independently
 # checked against the pinned official ZIP. Includes DLLs, plugins and themes.
-EXPECTED_FILES = "b5b18ab1ca7f9843d58a6496e5ce191f1cec48d16f5c697e62a4dcaf5f5fe3e8"
+EXPECTED_FILES = "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
 
 
 class StartupInfo(c.Structure):
@@ -61,7 +61,7 @@ def prepare(source: Path, out: Path):
     app = out / "app"
     app.mkdir()
     # Explicit distribution subset: no profiles, dumps, history or vendor tools.
-    files = [source / "WindTerm.exe", source / "qt.conf", *source.glob("*.dll")]
+    files = [source / "WindTerm.exe", source / "winpty-agent.exe", source / "qt.conf", *source.glob("*.dll")]
     for directory in ("global", "plugins", "terminal"):
         files.extend(p for p in (source / directory).rglob("*") if p.is_file())
     manifest = {}
@@ -77,7 +77,18 @@ def prepare(source: Path, out: Path):
         raise ValueError("Copied executable changed identity")
     if manifest_digest(manifest) != EXPECTED_FILES:
         raise ValueError("Distribution DLL, plugin or resource manifest differs from the pinned package")
-    (out / "profile").mkdir()
+    # The pinned binary treats a missing .wind/profiles directory as first run
+    # and imports host OpenSSH/PuTTY sessions. Precreate it and supply exactly
+    # one synthetic local shell; never copy an existing user's profile.
+    sessions = out / "profile" / ".wind" / "profiles" / "default.v10" / "terminal"
+    sessions.mkdir(parents=True)
+    (sessions / "user.sessions").write_text(json.dumps([{
+        "session.group": "TermForge Lab", "session.label": "TF_UI_CMD",
+        "session.protocol": "Shell", "session.system": "cmd",
+        "session.target": (Path(os.environ.get("SystemRoot", "C:/Windows")) / "System32" / "cmd.exe").as_posix(),
+        "session.uuid": "00000000-0000-4000-8000-000000000001",
+        "process.arguments": "/d /q", "process.workingDirectory": (out / "host-home").as_posix()
+    }], indent=2), encoding="utf-8")
     (app / "profiles.config").write_text(json.dumps({
         "path": str(out / "profile").replace("\\", "/")
     }), encoding="utf-8")
@@ -85,9 +96,44 @@ def prepare(source: Path, out: Path):
     return app
 
 
-def launch(source: Path, out: Path, seconds: int):
+def isolated_environment(out: Path, scale_factor: str | None = None):
+    """Redirect home/cache discovery for the owned copy; not a filesystem sandbox."""
+    home = out / "host-home"
+    roaming, local = home / "AppData" / "Roaming", home / "AppData" / "Local"
+    for folder in (home / ".ssh", roaming, local):
+        folder.mkdir(parents=True, exist_ok=False)
+    env = dict(os.environ)
+    for name in ("QT_SCALE_FACTOR", "QT_SCREEN_SCALE_FACTORS", "QT_AUTO_SCREEN_SCALE_FACTOR",
+                 "QT_ENABLE_HIGHDPI_SCALING", "QT_FONT_DPI", "QT_DEVICE_PIXEL_RATIO"):
+        env.pop(name, None)
+    env.update(HOME=str(home), USERPROFILE=str(home), HOMEDRIVE=home.drive,
+               HOMEPATH=str(home)[len(home.drive):], APPDATA=str(roaming), LOCALAPPDATA=str(local))
+    if scale_factor is not None:
+        if scale_factor not in ("1", "1.5"):
+            raise ValueError("Only controlled scale factors 1 and 1.5 are supported")
+        env["QT_SCALE_FACTOR"] = scale_factor
+    return env
+
+
+def check_profile_scope(out: Path):
+    """Record only the gate result, never unexpected imported session details."""
+    path = out / "profile/.wind/profiles/default.v10/terminal/user.sessions"
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    valid = (isinstance(rows, list) and len(rows) == 1 and isinstance(rows[0], dict) and
+             rows[0].get("session.protocol") == "Shell" and rows[0].get("session.label") == "TF_UI_CMD" and
+             rows[0].get("session.uuid") == "00000000-0000-4000-8000-000000000001")
+    result = {"only_synthetic_session": valid, "session_count": len(rows) if isinstance(rows, list) else None}
+    (out / "profile-check.json").write_text(json.dumps(result), encoding="utf-8")
+    if not valid:
+        raise RuntimeError("Owned profile contains unexpected session metadata")
+    return result
+
+
+def launch(source: Path, out: Path, seconds: int, probe="widgets", scale_factor=None):
     app = prepare(source, out)
     out = out.resolve()
+    environment = isolated_environment(out, scale_factor)
+    environment_block = c.create_unicode_buffer("\0".join(f"{key}={value}" for key, value in sorted(environment.items())) + "\0")
     kernel = c.WinDLL("kernel32", use_last_error=True)
     user = c.WinDLL("user32", use_last_error=True)
     user.CreateDesktopW.argtypes = [w.LPCWSTR, w.LPCWSTR, c.c_void_p, w.DWORD, w.DWORD, c.c_void_p]
@@ -111,17 +157,18 @@ def launch(source: Path, out: Path, seconds: int):
         start.cb, start.desktop = c.sizeof(start), "TermForgeUI-" + str(os.getpid())
         binary = app / "WindTerm.exe"
         command = c.create_unicode_buffer('"' + str(binary) + '"')
-        check(kernel.CreateProcessW(str(binary), command, None, None, False, 4, None,
+        check(kernel.CreateProcessW(str(binary), command, None, None, False, 4 | 0x400, environment_block,
                                     str(app), c.byref(start), c.byref(info)))
         job.assign(info.pid)  # Suspended until containment succeeds.
-        script = Path(__file__).with_name("qt_widgets.js").read_text(encoding="utf-8")
+        script = Path(__file__).with_name("qt_" + probe + ".js").read_text(encoding="utf-8")
         script = script.replace("__UI_THREAD_ID__", str(info.tid))
         (out / "probe.js").write_text(script, encoding="utf-8")
         if kernel.ResumeThread(info.thread) == 0xffffffff:
             raise c.WinError(c.get_last_error())
         identity = {"pid": info.pid, "tid": info.tid, "sha256": digest(binary), "files_sha256": EXPECTED_FILES,
                     "script_sha256": digest(out / "probe.js"), "seconds": seconds,
-                    "profile": "fresh", "desktop": "owned-non-input", "probe": str(out / "probe.js")}
+                    "home": "owned-empty", "qt_scale_factor": scale_factor, "probe_kind": probe,
+                    "profile": "synthetic-local-only", "desktop": "owned-non-input", "probe": str(out / "probe.js")}
         (out / "run.json").write_text(json.dumps(identity, indent=2), encoding="utf-8")
         print(json.dumps(identity), flush=True)
         deadline = time.monotonic() + seconds
@@ -144,6 +191,7 @@ def launch(source: Path, out: Path, seconds: int):
                 print(json.dumps({"job_after": remaining}), flush=True)
                 if remaining["active"]:
                     raise RuntimeError("Owned Job did not drain")
+                check_profile_scope(out)
         finally:
             if job:
                 job.close()
@@ -159,7 +207,9 @@ if __name__ == "__main__":
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--seconds", type=int, choices=range(1, 301), default=120, metavar="1..300")
+    parser.add_argument("--probe", choices=("widgets", "typography"), default="widgets")
+    parser.add_argument("--scale-factor", choices=("1", "1.5"))
     args = parser.parse_args()
     if sys.platform != "win32":
         parser.error("Windows is required")
-    launch(args.source, args.out, args.seconds)
+    launch(args.source, args.out, args.seconds, args.probe, args.scale_factor)
