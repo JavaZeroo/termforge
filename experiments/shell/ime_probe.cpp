@@ -49,7 +49,8 @@ static std::wstring object_name(HANDLE object) {
 static void require_hosted_input() {
     require(environment_is("GITHUB_ACTIONS","true") && environment_is("RUNNER_ENVIRONMENT","github-hosted") &&
             environment_is("RUNNER_OS","Windows") && environment_is("GITHUB_REPOSITORY","JavaZeroo/termforge") &&
-            (environment_is("ImageOS","win22") || environment_is("ImageOS","win25")),
+            (environment_is("ImageOS","win22") || environment_is("ImageOS","win25") ||
+             environment_is("ImageOS","win25-vs2026")),
             "input-desktop mode is restricted to the disposable hosted Windows test VM");
     HDESK input=OpenInputDesktop(0,FALSE,DESKTOP_READOBJECTS);
     require(input!=nullptr,"hosted VM has no accessible input desktop");

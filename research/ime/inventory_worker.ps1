@@ -23,7 +23,9 @@ function Save-Progress([string]$Phase, [string]$State, $ErrorInfo = $null) {
     $temporary = $progressPath + '.tmp'
     [IO.File]::WriteAllText($temporary, ($progress | ConvertTo-Json -Depth 5), [Text.UTF8Encoding]::new($false))
     if ([IO.File]::Exists($progressPath)) {
-        [IO.File]::Replace($temporary, $progressPath, $null)
+        # Windows PowerShell converts $null to an empty string for this .NET
+        # string argument; Replace rejects that backup path. Pass a CLR null.
+        [IO.File]::Replace($temporary, $progressPath, [NullString]::Value)
     } else { [IO.File]::Move($temporary, $progressPath) }
 }
 

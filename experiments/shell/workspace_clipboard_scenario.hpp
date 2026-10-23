@@ -47,11 +47,16 @@ inline void Workspace::scenario_clipboard() {
     } else if(stage_==3 && evidence.receiver->checkpoint()) {
         require(captured()==evidence.baseline(),"clipboard receiver baseline differs");
         evidence.receiver->release();
-        if(evidence.index==0) {
-            tf_shell::write_unicode_clipboard(window_,u"OCCUPIED_MUST_NOT_SEND");
-            evidence.owner=std::make_unique<tf_shell_test::ClipboardScenarioOwner>(false);
-        } else if(evidence.index==1) tf_shell_test::write_oversized_clipboard(window_);
-        else evidence.owner=std::make_unique<tf_shell_test::ClipboardScenarioOwner>(true);
+        try {
+            if(evidence.index==0) {
+                tf_shell::write_unicode_clipboard(window_,u"OCCUPIED_MUST_NOT_SEND");
+                evidence.owner=std::make_unique<tf_shell_test::ClipboardScenarioOwner>(false);
+            } else if(evidence.index==1) tf_shell_test::write_oversized_clipboard(window_);
+            else evidence.owner=std::make_unique<tf_shell_test::ClipboardScenarioOwner>(true);
+        } catch(const std::exception& error) {
+            throw std::runtime_error(std::string("clipboard case=")+evidence.name()+
+                " phase=prepare-owner before-product-paste: "+error.what());
+        }
         select(0); SendMessageW(window_,WM_COMMAND,12,0);
         const auto progress=first->observed_clipboard_read();
         require(progress && progress->state==tf_shell::ClipboardReadState::running && first->paste_busy(),

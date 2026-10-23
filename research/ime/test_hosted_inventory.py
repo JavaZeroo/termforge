@@ -297,6 +297,26 @@ $body = $ast.Find({param($node) $node -is [Management.Automation.Language.TrySta
         self.assertEqual(result["states"], ["started", "ended", "failed"])
         self.assertIn("kind", result["error"])
 
+    def test_real_progress_file_can_be_replaced_in_windows_powershell(self):
+        result = self.pure_script(r"""
+$definition = $ast.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+    $node.Name -eq 'Save-Progress'}, $true)
+. ([scriptblock]::Create($definition.Extent.Text))
+$progressPath = [IO.Path]::Combine($PSScriptRoot, 'progress.json')
+$started = [Diagnostics.Stopwatch]::StartNew()
+Save-Progress 'synthetic-file-only' 'started'
+$first = Get-Content -LiteralPath $progressPath -Raw | ConvertFrom-Json
+Save-Progress 'synthetic-file-only' 'ended'
+$second = Get-Content -LiteralPath $progressPath -Raw | ConvertFrom-Json
+@{first=$first; second=$second; temporary_exists=[IO.File]::Exists($progressPath + '.tmp');
+  powershell_major=$PSVersionTable.PSVersion.Major} | ConvertTo-Json -Depth 8 -Compress
+""")
+        self.assertEqual(result["powershell_major"], 5)
+        self.assertEqual(result["first"]["state"], "started")
+        self.assertEqual(result["second"]["state"], "ended")
+        self.assertEqual(result["second"]["phase"], "synthetic-file-only")
+        self.assertFalse(result["temporary_exists"])
+
     def test_worker_rejects_eof_or_nonhosted_go_before_operations(self):
         with tempfile.TemporaryDirectory() as directory:
             out = Path(directory) / "must-not-exist"

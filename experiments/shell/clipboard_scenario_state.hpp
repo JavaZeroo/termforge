@@ -28,9 +28,28 @@ class ClipboardScenarioOwner {
     tf_conpty::Handle release_{CreateEventW(nullptr,TRUE,FALSE,nullptr)};
     tf_conpty::Handle released_{CreateEventW(nullptr,TRUE,FALSE,nullptr)};
     std::atomic<DWORD> error_{0};
+    std::atomic<DWORD> native_error_{0};
+    std::atomic<DWORD> registration_error_{0};
+    std::atomic<const char*> step_{"thread-not-started"};
     std::atomic<HWND> window_{nullptr};
     bool delayed_;
     std::thread thread_;
+    void step(const char* name) noexcept { step_=name; SetLastError(ERROR_SUCCESS); }
+    void check(bool passed) {
+        if(passed) return;
+        const DWORD native_error=GetLastError();
+        native_error_=native_error;
+        error_=native_error?native_error:ERROR_GEN_FAILURE;
+        throw std::runtime_error("clipboard owner native step failed");
+    }
+    std::string ready_failure(DWORD wait_status) const {
+        return std::string("clipboard owner failed its bounded ready handshake: mode=")+
+            (delayed_?"delayed":"occupied")+" step="+step_.load()+
+            " win32_error="+std::to_string(native_error_.load())+
+            " worker_error="+std::to_string(error_.load())+
+            " registration_last_error="+std::to_string(registration_error_.load())+
+            " wait_status="+std::to_string(wait_status);
+    }
     static LRESULT CALLBACK procedure(HWND window,UINT message,WPARAM wp,LPARAM lp) {
         auto* owner=reinterpret_cast<ClipboardScenarioOwner*>(GetWindowLongPtrW(window,GWLP_USERDATA));
         if(message==WM_NCCREATE) {
@@ -63,7 +82,11 @@ class ClipboardScenarioOwner {
         if(window_) PostMessageW(window_,WM_CLOSE,0,0);
         // Never detach a fixture thread that still refers to this owner. On a
         // native teardown failure the outer test Job reclaims this process.
-        if(WaitForSingleObject(thread_.native_handle(),3000)!=WAIT_OBJECT_0) std::_Exit(92);
+        if(WaitForSingleObject(thread_.native_handle(),3000)!=WAIT_OBJECT_0) {
+            std::cerr<<"[TF-CLIPBOARD-OWNER] teardown deadline: step="<<step_.load()
+                     <<" win32_error="<<native_error_.load()<<" worker_error="<<error_.load()<<std::endl;
+            std::_Exit(92);
+        }
         try { thread_.join(); } catch(...) { std::_Exit(92); }
     }
 public:
@@ -74,38 +97,48 @@ public:
         thread_=std::thread([this,desktop] {
             bool opened=false;
             try {
-                paste_check(SetThreadDesktop(desktop)!=FALSE,"clipboard owner desktop failed");
+                step("SetThreadDesktop"); check(SetThreadDesktop(desktop)!=FALSE);
                 WNDCLASSW cls{}; cls.lpfnWndProc=procedure; cls.hInstance=GetModuleHandleW(nullptr);
                 cls.lpszClassName=L"TermForgeProductClipboardOwner";
-                paste_check(RegisterClassW(&cls)!=0 || GetLastError()==ERROR_CLASS_ALREADY_EXISTS,"clipboard owner class failed");
+                step("RegisterClassW"); check(RegisterClassW(&cls)!=0 || GetLastError()==ERROR_CLASS_ALREADY_EXISTS);
+                step("CreateWindowExW");
                 window_=CreateWindowExW(0,cls.lpszClassName,L"Synthetic product clipboard owner",0,
                     0,0,8,8,nullptr,nullptr,cls.hInstance,this);
-                paste_check(window_!=nullptr,"clipboard owner window failed");
-                paste_check(OpenClipboard(window_)!=FALSE,"clipboard owner open failed"); opened=true;
+                check(window_!=nullptr);
+                step("OpenClipboard"); check(OpenClipboard(window_)!=FALSE); opened=true;
                 if(delayed_) {
-                    paste_check(EmptyClipboard()!=FALSE,"delayed clipboard empty failed");
+                    step("EmptyClipboard"); check(EmptyClipboard()!=FALSE);
+                    step("SetClipboardData-delayed");
                     SetClipboardData(CF_UNICODETEXT,nullptr);
-                    paste_check(IsClipboardFormatAvailable(CF_UNICODETEXT)!=FALSE,"delayed clipboard registration failed");
-                    paste_check(CloseClipboard()!=FALSE,"delayed clipboard release failed"); opened=false;
-                } else paste_check(GetOpenClipboardWindow()==window_,"clipboard contention has no independent owner");
-                SetEvent(ready_.get());
+                    registration_error_=GetLastError();
+                    step("IsClipboardFormatAvailable"); check(IsClipboardFormatAvailable(CF_UNICODETEXT)!=FALSE);
+                    step("CloseClipboard-ready"); check(CloseClipboard()!=FALSE); opened=false;
+                } else { step("GetOpenClipboardWindow"); check(GetOpenClipboardWindow()==window_); }
+                step("SetEvent-ready"); check(SetEvent(ready_.get())!=FALSE);
                 if(!delayed_) {
+                    step("Wait-release");
                     paste_check(WaitForSingleObject(release_.get(),12000)==WAIT_OBJECT_0,"clipboard contention release timeout");
-                    paste_check(CloseClipboard()!=FALSE,"clipboard contention close failed"); opened=false;
+                    step("CloseClipboard-release"); check(CloseClipboard()!=FALSE); opened=false;
                     SetEvent(released_.get());
                 }
+                step("GetMessageW");
                 MSG message{}; BOOL status;
                 while((status=GetMessageW(&message,nullptr,0,0))>0) DispatchMessageW(&message);
-                paste_check(status==0,"clipboard owner message loop failed");
+                check(status==0);
             } catch(...) {
-                error_=ERROR_GEN_FAILURE;
+                if(!error_) error_=ERROR_GEN_FAILURE;
                 if(opened) CloseClipboard();
                 if(window_ && IsWindow(window_)) DestroyWindow(window_);
                 SetEvent(ready_.get()); SetEvent(released_.get());
             }
         });
-        if(WaitForSingleObject(ready_.get(),3000)!=WAIT_OBJECT_0 || error_) {
-            stop(); throw std::runtime_error("clipboard owner failed its bounded ready handshake");
+        const DWORD ready_status=WaitForSingleObject(ready_.get(),3000);
+        if(ready_status!=WAIT_OBJECT_0 || error_) {
+            const auto detail=ready_failure(ready_status);
+            // Preserve the original blocked/failed call even if bounded stop
+            // must terminate the fixture process before an exception escapes.
+            std::cerr<<"[TF-CLIPBOARD-OWNER] "<<detail<<std::endl;
+            stop(); throw std::runtime_error(detail);
         }
     }
     ~ClipboardScenarioOwner() { stop(); }
