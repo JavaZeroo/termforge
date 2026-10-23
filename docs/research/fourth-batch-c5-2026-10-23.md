@@ -2,6 +2,8 @@
 
 日期：2026-10-23。实施基点 `8e77b0d`。规格来源为 STATUS-AND-BACKLOG 的 C5、G1；[ADR-0005](../adr/0005-physical-row-resize.md) 固定具体内容、光标、历史与同步规则。
 
+实施提交 `759e78f` 已完成[独立审查](../reviews/2026-10-23-c5.md)：Standards 与 Spec 均无实质发现。远端执行链接保留在审查记录中。
+
 ## 交付
 
 `Screen::resize` 支持物理行裁剪和补空白、宽字符边界修复、光标保持、有界历史；不做逻辑行重排。窗口支持普通缩放和最大化，将新尺寸提交给核心、快照和独立 ConPTY resize worker。worker 只保留一个在途请求和一个最新请求，UI 持续排空字节。关闭先 join worker，再回收伪控制台；不与 `ClosePseudoConsole` 并发使用 HPCON。
