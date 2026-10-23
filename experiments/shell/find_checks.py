@@ -151,3 +151,138 @@ def validate_find_workflow(directory: Path, run_record: dict) -> dict:
     if (directory / "find-bottom.bin").read_bytes() != b"+#" or (directory / "find-main.bin").read_bytes() != b"x":
         raise ValueError("actual raw ConPTY receiver bytes contain leaked find text, navigation, Escape or duplicate input")
     return result
+
+
+STREAM_PHASES = ("running-before-navigation", "partial-next-0", "partial-no-wrap", "partial-next-1",
+                 "replaced-running-empty", "partial-chinese-0", "cancelled-output-continues", "explicitly-stopped",
+                 "target-closing-running", "target-closed-other-input")
+
+
+def validate_find_stream(data: dict, run_record: dict) -> dict:
+    if (not isinstance(data, dict) or data.get("schema") != "termforge-window-find-stream-v1" or
+            data.get("input_path") != "queued-WM_KEYDOWN-through-workspace-loop" or
+            type(data.get("search_work_budget")) is not int or data["search_work_budget"] != 64 or
+            type(data.get("worker_deadline_ms")) is not int or data["worker_deadline_ms"] != 5000 or
+            not isinstance(data.get("snapshots"), list) or len(data["snapshots"]) != len(STREAM_PHASES) or
+            any(not isinstance(row, dict) for row in data["snapshots"]) or
+            [row.get("phase") for row in data["snapshots"]] != list(STREAM_PHASES)):
+        raise ValueError("continuous find phases, actual queued path or bounded worker identity missing")
+    if not isinstance(run_record, dict):
+        raise ValueError("continuous find needs actual process cleanup")
+    result = run_record.get("result")
+    if result is None:
+        try:
+            result = json.loads(run_record.get("stdout", ""))
+        except (ValueError, TypeError):
+            raise ValueError("continuous find result missing") from None
+    if (not isinstance(result, dict) or result.get("valid") is not True or result.get("mode") != "ui-find-stream" or
+            type(result.get("sessions_closed")) is not int or result["sessions_closed"] != 2 or
+            type(result.get("active_children_after")) is not int or result["active_children_after"] != 0 or
+            "presented_done" not in result or result["presented_done"] is not None or
+            run_record.get("timed_out") is not False or type(run_record.get("exit_code")) is not int or
+            run_record["exit_code"] != 0 or run_record.get("desktop_gone") is not True or
+            not isinstance(run_record.get("job_after"), dict) or type(run_record["job_after"].get("active")) is not int or
+            run_record["job_after"]["active"] != 0 or run_record.get("cleanup_errors")):
+        raise ValueError("continuous find target/worker/session closure, Job or desktop gate failed")
+    first_identity = cancelled_tail_id = initial_tail = None
+    for index, row in enumerate(data["snapshots"]):
+        bottom_bytes = "~" if index < 6 else "~y" if index == 6 else "~y-" if index == 7 else "~y-~"
+        if row.get("captures") != {"bottom": bottom_bytes, "main": "x" if index == 9 else ""}:
+            raise ValueError("partial query/navigation/cancel leaked into the real console receiver")
+        if (type(row.get("closed_find_hwnd_gone")) is not bool or row["closed_find_hwnd_gone"] != (index == 9) or
+                type(row.get("closed_terminal_hwnd_gone")) is not bool or row["closed_terminal_hwnd_gone"] != (index == 9)):
+            raise ValueError("closing an active query did not destroy its actual native HWNDs")
+        sessions = row.get("sessions")
+        if (not isinstance(sessions, list) or len(sessions) != 2 or any(not isinstance(s, dict) for s in sessions) or
+                [s.get("group") for s in sessions] != ["bottom", "main"]):
+            raise ValueError("continuous find needs both independently observed session regions")
+        for session in sessions:
+            bottom = session["group"] == "bottom"
+            if type(session.get("exists")) is not bool or session["exists"] != (not bottom or index != 9):
+                raise ValueError("continuous find session existence observation differs from its closure phase")
+            if bottom and index == 9:
+                continue
+            finding = bottom and index not in (6, 7)
+            active = bottom if index != 9 else not bottom
+            terminal_focus = bottom and index in (6, 7) or not bottom and index == 9
+            fields = ("find_exists", "edit_focused", "terminal_focused", "workspace_active", "frame_matches_full",
+                      "running", "cancelled", "source_tick_seen")
+            if (any(type(session.get(field)) is not bool for field in fields) or
+                    session["find_exists"] != finding or session["edit_focused"] != finding or
+                    session["terminal_focused"] != terminal_focus or session["workspace_active"] != active or
+                    session["frame_matches_full"] is not True or session["running"] != finding or
+                    session["cancelled"] != (bottom and index in (6, 7)) or session["source_tick_seen"] != bottom):
+                raise ValueError("continuous find actual focus/running/cancel/output observation failed")
+            query = "中文" if bottom and index in (4, 5) else "needle" if finding else None
+            if session.get("query") != query:
+                raise ValueError("an in-flight query was not actually replaced or cancelled")
+            status = session.get("status_label")
+            if (not isinstance(status, str) or finding and ("Searching" not in status or "wrapped" in status) or
+                    not finding and status != ""):
+                raise ValueError("incomplete search was advertised as a full-document end or wrap")
+            if bottom and index in (1, 3, 5) and ("partial" not in status or "no wrap" not in status):
+                raise ValueError("explicit incomplete navigation lacks its partial/no-wrap scope")
+            if bottom and index == 2 and ("no known" not in status or "no wrap" not in status):
+                raise ValueError("partial prefix boundary falsely wrapped or lost its pending direction")
+            for field in ("needle_highlight_cells", "chinese_highlight_cells"):
+                if type(session.get(field)) is not int or not 0 <= session[field] <= 100000:
+                    raise ValueError("continuous find overlay bound failed")
+            if (not bottom or index >= 4) and session["needle_highlight_cells"] != 0:
+                raise ValueError("old needle query retained visible highlights after replacement/cancel")
+            if (not bottom or index != 5) and index != 4 and session["chinese_highlight_cells"] != 0:
+                raise ValueError("cancel/old query retained unexpected Chinese highlights")
+            if bottom and (index in (1, 2, 3) and session["needle_highlight_cells"] < 6 or
+                           index == 5 and session["chinese_highlight_cells"] < 4):
+                raise ValueError("the actual partial current match has no visible search highlight")
+            number = 0 if bottom and index in (1, 2, 5) else 1 if bottom and index == 3 else None
+            current = session.get("current")
+            lines = session.get("lines")
+            if (not isinstance(lines, list) or not lines or len(lines) > 200 or
+                    any(not isinstance(line, dict) or type(line.get("id")) is not int or line["id"] <= 0 or
+                        type(line.get("version")) is not int or line["version"] <= 0 or
+                        not isinstance(line.get("text"), str) for line in lines)):
+                raise ValueError("continuous find lacks independent actual visible lines")
+            if number is None:
+                if current is not None:
+                    raise ValueError("cancelled/replaced/other session acquired an old current match")
+            else:
+                begin, end = (19, 23) if index == 5 else (12, 18)
+                if (not isinstance(current, dict) or
+                        any(type(current.get(field)) is not int or current[field] <= 0 for field in
+                            ("line_id", "version", "end_line_id", "end_version")) or
+                        current["line_id"] != current["end_line_id"] or current["version"] != current["end_version"] or
+                        type(current.get("begin")) is not int or current["begin"] != begin or
+                        type(current.get("end")) is not int or current["end"] != end or current.get("line") != _line(number) or
+                        not any(line == {"id": current["line_id"], "version": current["version"], "text": _line(number)} for line in lines)):
+                    raise ValueError("partial match location is stale or its revealed literal content is wrong")
+                if number == 0:
+                    identity = current["line_id"], current["version"]
+                    if first_identity is not None and identity != first_identity:
+                        raise ValueError("stable history changed during continuous live overwrite")
+                    first_identity = identity
+            if not isinstance(session.get("tail"), dict) or session["tail"] != lines[-1]:
+                raise ValueError("actual current output row observation missing")
+        if index == 0:
+            initial_tail = sessions[0]["tail"]
+        if index == 6 and (not sessions[0]["tail"]["text"].startswith("TF_STREAM_TICK_") or
+                           sessions[0]["tail"]["id"] != initial_tail["id"] or
+                           sessions[0]["tail"]["version"] <= initial_tail["version"] or
+                           sessions[0]["tail"]["text"] == initial_tail["text"]):
+            raise ValueError("cancellation was not checked while real output continued")
+        if index == 6:
+            cancelled_tail_id = sessions[0]["tail"]["id"]
+        if index == 7 and not any(line["text"] == "TF_STREAM_STOPPED" for line in sessions[0]["lines"]):
+            raise ValueError("explicit stop lacks the joined output worker's actual completion marker")
+        if index == 8 and (not sessions[0]["tail"]["text"].startswith("TF_STREAM_TICK_") or
+                           sessions[0]["tail"]["id"] <= cancelled_tail_id):
+            raise ValueError("target close was not checked against a new active output worker")
+    return {"phases": len(STREAM_PHASES), "sessions_closed": 2, "partial_navigation_verified": True,
+            "in_flight_replace_cancel_close_verified": True, "raw_inputs_verified": True, "cleanup_verified": True}
+
+
+def validate_find_stream_workflow(directory: Path, run_record: dict) -> dict:
+    directory = Path(directory)
+    result = validate_find_stream(json.loads((directory / "find-stream.json").read_text(encoding="utf-8")), run_record)
+    if (directory / "stream-bottom.bin").read_bytes() != b"~y-~" or (directory / "stream-main.bin").read_bytes() != b"x":
+        raise ValueError("continuous find real receiver contains old queries, control keys or duplicate input")
+    return result

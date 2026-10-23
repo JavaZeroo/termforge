@@ -92,8 +92,19 @@ inline void Workspace::scenario_clipboard() {
         no_payload(); evidence.pending.helper_exited=true; evidence.pending.busy_cleared=true;
         evidence.pending.target_closed=target_gone;
         if(evidence.index==2) require(first->status_text()==L"clipboard read cancelled","Escape did not cancel the product read");
-        if(evidence.owner) evidence.owner->release(); stage_=6;
+        if(evidence.owner) {
+            if(evidence.index<2) evidence.owner->release();
+            else {
+                tf_shell_test::ClipboardReleaseProof proof;
+                proof.target_quiescent=target_gone?(collected_==1 && !IsWindow(evidence.target)):!first->paste_busy();
+                proof.payload_unchanged=!evidence.pending.prompt_seen && !evidence.pending.transfer_seen && captured()==evidence.baseline();
+                evidence.owner->release_after_requester_exit(evidence.helper.get(),target_gone?
+                    tf_shell_test::ClipboardReleaseReason::target_closed:tf_shell_test::ClipboardReleaseReason::requester_cancelled,proof);
+            }
+        }
+        stage_=6;
     } else if(stage_==6 && (!evidence.owner || evidence.owner->released())) {
+        if(evidence.owner) evidence.pending.owner_release=evidence.owner->finish();
         evidence.owner.reset();
         select(target_gone?0:1); ordinary(other,"echo "+evidence.marker(true)+"\r"); stage_=7;
     } else if(stage_==7 && other->live_contains_line(evidence.marker(true))) {

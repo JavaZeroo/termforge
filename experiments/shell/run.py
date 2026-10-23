@@ -21,11 +21,11 @@ from experiments.shell.history_checks import validate_history, validate_native_s
 from experiments.shell.paste_checks import validate_paste_workflow
 from experiments.shell.clipboard_checks import require_hosted_clipboard, validate_clipboard_workflow
 from experiments.shell.selection_checks import validate_selection_workflow
-from experiments.shell.find_checks import validate_find_workflow
+from experiments.shell.find_checks import validate_find_workflow, validate_find_stream_workflow
 
 
 def validate(row, mode):
-    if mode in ("ui-paste", "ui-paste-system", "ui-clipboard-system", "ui-selection", "ui-copy-system", "ui-find"):
+    if mode in ("ui-paste", "ui-paste-system", "ui-clipboard-system", "ui-selection", "ui-copy-system", "ui-find", "ui-find-stream"):
         if row != {"valid": True, "mode": mode, "sessions_closed": 2, "active_children_after": 0, "presented_done": None}:
             raise ValueError("paste window workflow or cleanup failed")
         return
@@ -294,6 +294,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
                 record["selection_workflow"] = validate_selection_workflow(out, mode == "ui-copy-system", record)
             if mode == "ui-find":
                 record["find_workflow"] = validate_find_workflow(out, record)
+            if mode == "ui-find-stream":
+                record["find_stream_workflow"] = validate_find_stream_workflow(out, record)
             record["result"] = result
             record["frame_sha256"] = hashlib.sha256((out / "frame.bmp").read_bytes()).hexdigest()
         record["status"] = "passed"

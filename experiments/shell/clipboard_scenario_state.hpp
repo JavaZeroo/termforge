@@ -3,8 +3,10 @@
 #include "clipboard.hpp"
 #include "paste_scenario_state.hpp"
 #include "sent_message_wait.hpp"
+#include "clipboard_owner_policy.hpp"
 #include <atomic>
 #include <cstdlib>
+#include <optional>
 
 namespace tf_shell_test {
 inline void require_hosted_clipboard() {
@@ -33,14 +35,25 @@ class ClipboardScenarioOwner {
     std::atomic<DWORD> registration_error_{0};
     std::atomic<const char*> step_{"thread-not-started"};
     std::atomic<const char*> failure_step_{nullptr};
+    std::atomic<DWORD> secondary_error_{0}, secondary_native_error_{0};
+    std::atomic<const char*> secondary_failure_step_{nullptr};
+    std::atomic<bool> publication_attempted_{false}, publication_succeeded_{false};
     std::atomic<HWND> window_{nullptr};
     bool delayed_;
+    bool thread_exited_ = false;
+    ClipboardOwnerPolicy policy_;
     std::thread thread_;
     void step(const char* name) noexcept { step_=name; SetLastError(ERROR_SUCCESS); }
     void record_failure(const char* name,DWORD native_error,DWORD fallback=ERROR_GEN_FAILURE) noexcept {
         // Only the fixture worker writes failures. Publish error_ last so the
         // observer sees the original call and error before teardown APIs run.
-        if(error_) return;
+        if(error_) {
+            if(!secondary_error_) {
+                secondary_failure_step_=name; secondary_native_error_=native_error;
+                secondary_error_=native_error?native_error:fallback;
+            }
+            return;
+        }
         failure_step_=name; native_error_=native_error;
         error_=native_error?native_error:fallback;
     }
@@ -63,7 +76,33 @@ class ClipboardScenarioOwner {
         return std::string("clipboard owner worker failed: mode=")+(delayed_?"delayed":"occupied")+
             " step="+(failed?failed:step_.load())+
             " win32_error="+std::to_string(native_error_.load())+
-            " worker_error="+std::to_string(error_.load());
+            " worker_error="+std::to_string(error_.load())+
+            " secondary_step="+(secondary_failure_step_.load()?secondary_failure_step_.load():"none")+
+            " secondary_native_error="+std::to_string(secondary_native_error_.load())+
+            " secondary_worker_error="+std::to_string(secondary_error_.load());
+    }
+    ClipboardOwnerObservation observation() const {
+        ClipboardOwnerObservation result;
+        result.release_event=clipboard_event(released_.get()); result.thread_exited=thread_exited_;
+        result.publication_attempted=publication_attempted_; result.publication_succeeded=publication_succeeded_;
+        // error_ and secondary_error_ publish the remaining error fields last;
+        // do not inspect partially written details before that publication.
+        result.worker_error=error_.load();
+        if(result.worker_error) {
+            result.native_error=native_error_.load();
+            if(const auto name=failure_step_.load()) result.failure_step=name;
+        }
+        result.secondary_worker_error=secondary_error_.load();
+        if(result.secondary_worker_error) {
+            result.secondary_native_error=secondary_native_error_.load();
+            if(const auto name=secondary_failure_step_.load()) result.secondary_failure_step=name;
+        }
+        return result;
+    }
+    void reject_worker() const {
+        const auto detail=worker_failure();
+        std::cerr<<"[TF-CLIPBOARD-OWNER] "<<detail<<std::endl;
+        throw std::runtime_error(detail);
     }
     static LRESULT CALLBACK procedure(HWND window,UINT message,WPARAM wp,LPARAM lp) {
         auto* owner=reinterpret_cast<ClipboardScenarioOwner*>(GetWindowLongPtrW(window,GWLP_USERDATA));
@@ -101,10 +140,11 @@ class ClipboardScenarioOwner {
                         GlobalUnlock(memory);
                         // WM_RENDERFORMAT must supply data without OpenClipboard.
                         owner->step("SetClipboardData-render");
+                        owner->publication_attempted_=true;
                         if(!SetClipboardData(CF_UNICODETEXT,memory)) {
                             owner->record_failure("SetClipboardData-render",GetLastError());
                             GlobalFree(memory);
-                        }
+                        } else owner->publication_succeeded_=true;
                     }
                 }
             }
@@ -112,7 +152,11 @@ class ClipboardScenarioOwner {
             if(!SetEvent(owner->released_.get())) owner->record_failure("SetEvent-render-released",GetLastError());
             return 0;
         }
-        if(message==WM_CLOSE) { DestroyWindow(window); return 0; }
+        if(message==WM_CLOSE) {
+            if(owner) owner->step("DestroyWindow-close");
+            if(!DestroyWindow(window) && owner) owner->record_failure("DestroyWindow-close",GetLastError());
+            return 0;
+        }
         if(message==WM_DESTROY) { if(owner) owner->window_=nullptr; PostQuitMessage(0); return 0; }
         return DefWindowProcW(window,message,wp,lp);
     }
@@ -127,10 +171,11 @@ class ClipboardScenarioOwner {
                      <<" win32_error="<<native_error_.load()<<" worker_error="<<error_.load()<<std::endl;
             std::_Exit(92);
         }
-        try { thread_.join(); } catch(...) { std::_Exit(92); }
+        try { thread_.join(); thread_exited_=true; } catch(...) { std::_Exit(92); }
     }
 public:
-    explicit ClipboardScenarioOwner(bool delayed):delayed_(delayed) {
+    explicit ClipboardScenarioOwner(bool delayed):delayed_(delayed),policy_(delayed) {
+        static_assert(ERROR_CLIPBOARD_NOT_OPEN==1418,"fixture policy uses the Windows clipboard error identity");
         require_hosted_clipboard();
         paste_check(ready_.get() && entered_.get() && release_.get() && released_.get(),"clipboard fixture events failed");
         const HDESK desktop=GetThreadDesktop(GetCurrentThreadId());
@@ -170,8 +215,14 @@ public:
                 }
             } catch(...) {
                 if(!error_) record_failure(step_.load(),GetLastError());
-                if(opened) CloseClipboard();
-                if(window_ && IsWindow(window_)) DestroyWindow(window_);
+                if(opened) {
+                    step("CloseClipboard-cleanup");
+                    if(!CloseClipboard()) record_failure("CloseClipboard-cleanup",GetLastError());
+                }
+                if(window_ && IsWindow(window_)) {
+                    step("DestroyWindow-cleanup");
+                    if(!DestroyWindow(window_)) record_failure("DestroyWindow-cleanup",GetLastError());
+                }
                 SetEvent(ready_.get()); SetEvent(released_.get());
             }
         });
@@ -187,15 +238,33 @@ public:
     ~ClipboardScenarioOwner() { stop(); }
     bool entered() const { return clipboard_event(entered_.get()); }
     bool released() const {
-        if(error_) {
-            const auto detail=worker_failure();
-            std::cerr<<"[TF-CLIPBOARD-OWNER] "<<detail<<std::endl;
-            throw std::runtime_error(detail);
-        }
-        return clipboard_event(released_.get());
+        // The individual atomics do not form a coherent publication tuple
+        // while WM_RENDERFORMAT is still writing it. Its release event is the
+        // handshake; finish() additionally joins before the final strict check.
+        if(!clipboard_event(released_.get())) return false;
+        const auto value=observation();
+        if(policy_.decide(value)==ClipboardOwnerDecision::rejected) reject_worker();
+        return value.release_event;
     }
     bool occupied() const { return !delayed_ && GetOpenClipboardWindow()==window_; }
-    void release() { paste_check(SetEvent(release_.get())!=FALSE,"clipboard owner release failed"); }
+    void release() {
+        policy_.request_ordinary();
+        paste_check(SetEvent(release_.get())!=FALSE,"clipboard owner release failed");
+    }
+    void release_after_requester_exit(HANDLE requester,ClipboardReleaseReason reason,ClipboardReleaseProof proof) {
+        proof.owner_entered=entered();
+        proof.requester_exited=requester && clipboard_event(requester);
+        policy_.request_after_exit(reason,proof);
+        paste_check(SetEvent(release_.get())!=FALSE,"clipboard owner requester-exit release failed");
+    }
+    ClipboardOwnerReleaseResult finish() {
+        stop();
+        const auto value=observation();
+        const auto decision=policy_.decide(value);
+        if(decision!=ClipboardOwnerDecision::accepted && decision!=ClipboardOwnerDecision::expected_requester_gone)
+            reject_worker();
+        return {policy_.reason(),policy_.proof(),value,decision==ClipboardOwnerDecision::expected_requester_gone};
+    }
 };
 
 inline void write_oversized_clipboard(HWND window) {
@@ -220,6 +289,7 @@ struct ClipboardWindowCase {
     bool owner_entered=false, prompt_seen=false, transfer_seen=false;
     bool other_during=false, other_after=false, error_visible=false;
     bool helper_exited=false, busy_cleared=false, target_closed=false, retry_verified=false;
+    std::optional<ClipboardOwnerReleaseResult> owner_release;
     size_t receiver_bytes=0;
 };
 struct ClipboardScenarioState {
@@ -249,7 +319,25 @@ struct ClipboardScenarioState {
             flag("owner_entered",row.owner_entered); flag("prompt_seen",row.prompt_seen); flag("transfer_seen",row.transfer_seen);
             flag("other_during",row.other_during); flag("other_after",row.other_after); flag("error_visible",row.error_visible);
             flag("helper_exited",row.helper_exited); flag("busy_cleared",row.busy_cleared); flag("target_closed",row.target_closed);
-            flag("retry_verified",row.retry_verified); out<<'}';
+            flag("retry_verified",row.retry_verified);
+            out<<",\"owner_release\":";
+            if(!row.owner_release) out<<"null";
+            else {
+                const auto& release=*row.owner_release; const auto& value=release.observation;
+                const char* reason=release.reason==ClipboardReleaseReason::ordinary?"ordinary":
+                    release.reason==ClipboardReleaseReason::requester_cancelled?"requester-cancelled":"target-closed";
+                out<<"{\"reason\":\""<<reason<<"\",\"proof\":{\"owner_entered\":"<<(release.proof.owner_entered?"true":"false")
+                   <<",\"requester_exited\":"<<(release.proof.requester_exited?"true":"false")
+                   <<",\"target_quiescent\":"<<(release.proof.target_quiescent?"true":"false")
+                   <<",\"payload_unchanged\":"<<(release.proof.payload_unchanged?"true":"false")<<'}';
+                flag("publication_attempted",value.publication_attempted); flag("publication_succeeded",value.publication_succeeded);
+                flag("release_event",value.release_event); flag("thread_exited",value.thread_exited);
+                out<<",\"failure_step\":\""<<value.failure_step<<"\",\"native_error\":"<<value.native_error
+                   <<",\"worker_error\":"<<value.worker_error<<",\"secondary_failure_step\":\""<<value.secondary_failure_step
+                   <<"\",\"secondary_native_error\":"<<value.secondary_native_error<<",\"secondary_worker_error\":"<<value.secondary_worker_error;
+                flag("expected_requester_gone",release.expected_requester_gone); out<<'}';
+            }
+            out<<'}';
         }
         out<<"]}\n"; out.close(); paste_check(out.good(),"clipboard workflow evidence write failed");
     }

@@ -1,0 +1,241 @@
+{
+  "schema": "termforge-r1-window-boundaries-reviewed-facts-v1",
+  "source_snapshot": {
+    "base_commit": "68ad8d9435ba846dcf7371336ce701bd56434c61",
+    "working_tree_sources": true,
+    "committed_source_sha": null,
+    "hash_scope": "Raw working-tree bytes used by the local build; Git text checkout normalization can change byte representation.",
+    "sha256_by_path": {
+      "CMakeLists.txt": "534b1e1d3d1db5a1084d7d747f1a3068f9a79a2d478dd508a1df934b7bdc6e06",
+      "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
+      "experiments/conpty/session.hpp": "d417e496e80fa7fd42b5b062787bf24a5542c45143c4fd3acd17fb8c10d73e81",
+      "experiments/core/history_view.hpp": "bc6218d05cc331ad3f39db545575faf0d100713dc8cb8ad09dbf3ee635c4696d",
+      "experiments/core/screen.hpp": "ce0811aeab1c0b4acbc9a3cf1bfa4c58d71dfa86d847450e23d8f7ac7089e51a",
+      "experiments/core/search_test.cpp": "55470661af792f26d3326ca89d5f89611dbb5d558a9a576f1f5341b80fea5d19",
+      "experiments/core/terminal.hpp": "892997bc2b869a8655d272e9ff049c4102bb1366f1ac709cff8c3d4a41657396",
+      "experiments/core/text_document.hpp": "87efae9d6a9fccb88dd353cdd1be6a570480b6942fabbdf3c9dac2c6370e026a",
+      "experiments/core/text_projection.hpp": "093300058775376b6b9b298c3d65cdcc22ab4cd5d3f12b1789afcd7c66405611",
+      "experiments/core/text_search.hpp": "dfbed596e6ac20fa79b1644b398cbaca0318ebe842dd1e98f850a8d5ac9a3993",
+      "experiments/core/text_selection.hpp": "02757bae73fe196299fcf3f587e2c8e7b5a2b498c56771e181f8778f3062adb3",
+      "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "experiments/presentation/render.hpp": "9786f12cdf6801a957bba2248cd91c75af6ef438075b9322fef804227ba67b87",
+      "experiments/shell/clipboard.hpp": "d90f103661f8a4a4fe45d678027a7c070232cdc8f4da80c59d218c3f29d93a2a",
+      "experiments/shell/clipboard_checks.py": "cca669e9a08b32c4285260443165364ac75b1d7a057d8f371e06bc4e9f54c696",
+      "experiments/shell/clipboard_owner_policy.hpp": "5bfc713790d302b48266a583614db3e9b43be8c59bb74b2e531595c8898e5f0c",
+      "experiments/shell/clipboard_policy_test.cpp": "8a5a6af011c25eeb8301d3f6c89bcfb9b20240e6533a00da4d8cc44a7ea6bc25",
+      "experiments/shell/clipboard_scenario_state.hpp": "0824d44ff250ff9f4d62468aa710f07833ac4b48e5c496b5c750cc39a15aa408",
+      "experiments/shell/clipboard_text.hpp": "b050e6da2fb92c080b054e3b1357e9a87484818fb8efdd43b388641f6ff256cd",
+      "experiments/shell/clipboard_worker.hpp": "7d883bd28f115f986ce07837b619e0985b0ddc8faa7395a8d3919415c889f4a2",
+      "experiments/shell/find_bar.hpp": "ab5c24cd1669850985ea7d3912c837c720c4bb2343bcae788606141c5097b191",
+      "experiments/shell/find_checks.py": "cf1463a67c33ce367b72cb79aaadda9197ea66fb75fea7163a527f22fd363301",
+      "experiments/shell/ime.hpp": "470d3e40a0962506ec58237af0593cf0510d6aa34cebb62bae383012d4652ee0",
+      "experiments/shell/keyboard.hpp": "0790ddd0a3b755de5fc22a7bff5c3421b91c19b78dcd7bc0af9de22fa471c3b3",
+      "experiments/shell/layout_state.hpp": "3162cec6cd78e14459427ed8768b7d5f6836ab5eaf05e98dad8cd6762f7f8274",
+      "experiments/shell/menu_gesture.hpp": "c688ac7bd6a1713cf7a86eecfd6fb6dc0555747af83a86ab7386e062d11a358e",
+      "experiments/shell/native_scroll_gesture.hpp": "603c16f370882899b6954596b1a55dacca524a5a3be9d8e5b3be0b4a0374c241",
+      "experiments/shell/paste.hpp": "f905a693d840256ca7c6a8ffed2601bff41f74e549413f38822db7aceb1c7c82",
+      "experiments/shell/paste_prompt.hpp": "e32e4491daffec42bf6f8a80024b57891afdeae34c2d6ed842f11d434fb916be",
+      "experiments/shell/paste_scenario_state.hpp": "6bb69987e929be34cad64f6b909042444b131f5535db3b889897fdba711d174c",
+      "experiments/shell/queues.hpp": "c77a56e0e91facb4ba1bc9601ec246319c6018195c8f72f9fc59000d8a1dabc7",
+      "experiments/shell/resize.hpp": "ee7bcbf29bb347e11b4cfafd2a7bca288aeca7129154ceb969172ec96a3b2407",
+      "experiments/shell/run.py": "d0cfbcd24626582158da46f0a0f5556f0a6c2ecd485cbf3dbe0e0bdb6ce03c62",
+      "experiments/shell/search_interactions.hpp": "9c9bc0aae5c74d26d3d992844ec58895d36cee5e060c6d0abe133691d8641440",
+      "experiments/shell/selection_checks.py": "6808f6140428db37a6dd8bd16258e5520bf0cd9dc3378e4f6d4233028e7c5a40",
+      "experiments/shell/sent_message_wait.hpp": "b40558ecb8652695ce8c81b2bda85b7956a5a19a060839e27a406f9ee955293d",
+      "experiments/shell/shell.cpp": "6e44cac7c00cb43dfd88b6f4751ef2489529b19c1a0cb615de3e648d95a86bd7",
+      "experiments/shell/test_launcher.cpp": "e6b634cfdd71ec395c1611127a80e4acdc61b9df9a9d1a17e707cfd6983be3cd",
+      "experiments/shell/test_shell.py": "a4c9e269dcaecf3b781023593dcfa4976b4f1421edfe8950e0a1f6a970a1cd2b",
+      "experiments/shell/text_client.cpp": "0ea8581b76821e79a0cf9c575810ab3f5de169a3af7895652efcdcd41006e4a2",
+      "experiments/shell/text_interactions.hpp": "7a119c243be3051540bcf59fa67de34efc641bdcfee474843fcf53a0143fe5b2",
+      "experiments/shell/ui_font.hpp": "2f5f7a5a447a765f316955086554b4a79371062d3604eb858fd6c62094beea58",
+      "experiments/shell/workspace.hpp": "cd51a2867a9341f22a994a25be9e7a029653373e89ca3066fa593b000699576e",
+      "experiments/shell/workspace_clipboard_scenario.hpp": "a017e206283afdfee4965bfd793049de4bb9d026d9a6afabfafa92a105e307ed",
+      "experiments/shell/workspace_dpi_scenario.hpp": "ec076e8dd1bf456231b9858acf5e884fae0e9980a94102dddae5eef4a1116b2b",
+      "experiments/shell/workspace_find_scenario.hpp": "c394e7876e9439b9a99f1fd63903e16a74b1ede0b7150be1a7a575974834b42c",
+      "experiments/shell/workspace_history_scenario.hpp": "368cd1e9f9e0276f5ac83827ebbf02a301d877caa41399c64936e610f6d1f1e8",
+      "experiments/shell/workspace_interactions.hpp": "e3b17cdc625986438ec11857ba859007289df7c748597fa6c7bd4210ebdbb222",
+      "experiments/shell/workspace_keyboard_scenario.hpp": "f44ebd6a77e1e69b14218c43764b1e5ced6dfefc05252e076e2ce9374b90d900",
+      "experiments/shell/workspace_main_scenario.hpp": "82c9d3b01f152dd18b53656c48a116895e0cb83263f4de67ec853de2a1b432aa",
+      "experiments/shell/workspace_paste_scenario.hpp": "42a322efb0d8db25cec9f5de767221850e2f6a18a5103b882fba18bfd6d79c80",
+      "experiments/shell/workspace_scenarios.hpp": "19a1c6cfb73907223d1b7a811f5febd2c0a76d6828480b45f288c80aacbf79b2",
+      "experiments/shell/workspace_selection_scenario.hpp": "6177e899e9b472860c308700034f1288e84ef9f2df5a0b474afcc13dc9260570"
+    }
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "local_regression": {
+    "command": "ctest --test-dir build -C Release --output-on-failure",
+    "ctest_passed": 25,
+    "ctest_total": 25,
+    "elapsed_seconds": 138.51,
+    "last_test_log_sha256": "c82832c3e10a3f37696a52a4c15060a8d199fc7e0919dff089cff747eb8fe714",
+    "internal_skips": [
+      {
+        "suite": "shell",
+        "count": 3,
+        "scope": "Hosted system-copy, product clipboard-read and normal system-paste UI"
+      },
+      {
+        "suite": "paste_system",
+        "count": 1,
+        "scope": "Private station OpenClipboard denied (5)"
+      },
+      {
+        "suite": "research_guards",
+        "count": 1,
+        "scope": "Opt-in pinned reference failure injection"
+      }
+    ]
+  },
+  "binaries": {
+    "termforge_shell": "acb38c7751160c403f47f3542bbcfb6e6e429b8726a5ffa265d5c0f58c635f83",
+    "shell_text_client": "d273d1adebd09064a45ef5e9e4ebd2c3ebe653717c9692fe0bf9a2f16f9c4585",
+    "shell_test_launcher": "511f2653276251a1fffa0e0cca5f02a930d9adb2e8f4df9f701edbd2eb68dcb4",
+    "clipboard_policy_test": "32336af2ed9dde2641bb69ee9b17ce3db56d2b4f40bb1a9a5f4e7581e295470c",
+    "search_test": "206a2bf35dd03a26cf0ab4e16391fc682c3bc6d6c951b7ae99de6a38b688ea7b"
+  },
+  "window_samples": [
+    {
+      "mode": "selection",
+      "round": 0,
+      "record_sha256": "3470790ede9784384b1d410cab555320c1c5bea16a4d0dc80c5a251f6faa6f19",
+      "workflow_sha256": "b9e9170423614e1e4395e94790af4969aeacb829417422054ec25cd293757a5a",
+      "frame_sha256": "3e328a499ed1bf4aa221396957c0c2ae8275790bd2a66b5d05c7b879fa87a5c4",
+      "sessions_closed": 2,
+      "job_active_after": 0,
+      "desktop_gone": true,
+      "base_phases": 12,
+      "additional_phases": 21,
+      "popup_command": 15,
+      "popup_highlighted": true,
+      "popup_closed": true,
+      "observer_idle": true,
+      "navigation_keys": 9,
+      "raw_bottom_hex": "",
+      "raw_main_hex": "78"
+    },
+    {
+      "mode": "selection",
+      "round": 1,
+      "record_sha256": "b23aaa4cbdbac8aa9acb42ca5d9f0754dfc1db02ae27bee43ead8d9814bb0356",
+      "workflow_sha256": "ed31f663f49672cb28804af78254961fc00db7bd7c8a9558a3b9148ec2bc6dc5",
+      "frame_sha256": "3e328a499ed1bf4aa221396957c0c2ae8275790bd2a66b5d05c7b879fa87a5c4",
+      "sessions_closed": 2,
+      "job_active_after": 0,
+      "desktop_gone": true,
+      "base_phases": 12,
+      "additional_phases": 21,
+      "popup_command": 15,
+      "popup_highlighted": true,
+      "popup_closed": true,
+      "observer_idle": true,
+      "navigation_keys": 9,
+      "raw_bottom_hex": "",
+      "raw_main_hex": "78"
+    },
+    {
+      "mode": "find",
+      "round": 0,
+      "record_sha256": "b49ab465ab0b1e71985ee28293b42612e82e81113573e017b2bbf04a33e99482",
+      "workflow_sha256": "18f435d7c67b65a05f554652215cb60f435e8631bc683e22e1680a79a2569e60",
+      "frame_sha256": "d7753c3826ff54230abc136a16c2ae75fac8a08870e4cde1641d2bdb880760cd",
+      "sessions_closed": 2,
+      "job_active_after": 0,
+      "desktop_gone": true,
+      "phases": 15,
+      "raw_bottom_hex": "2b23",
+      "raw_main_hex": "78"
+    },
+    {
+      "mode": "find",
+      "round": 1,
+      "record_sha256": "aa1b4f6beeed23800ca69114016e7d3a2009ca29111c8494fe87b16eb7e75498",
+      "workflow_sha256": "2392c9a7040b70ae91ce42e0cbba6cbd533904951b0e8e37765de43dd6289d63",
+      "frame_sha256": "d7753c3826ff54230abc136a16c2ae75fac8a08870e4cde1641d2bdb880760cd",
+      "sessions_closed": 2,
+      "job_active_after": 0,
+      "desktop_gone": true,
+      "phases": 15,
+      "raw_bottom_hex": "2b23",
+      "raw_main_hex": "78"
+    },
+    {
+      "mode": "find-stream",
+      "round": 0,
+      "record_sha256": "d1f26e36a7d8c473aa62478b5d2258767d5c3790c3f86d1e6c4587d5f37839e6",
+      "workflow_sha256": "a7d95645262e7b5d5f20bfab72844bfa7042330494b4e88eb3cc82c6bdbff280",
+      "frame_sha256": "f7f67c974e305617cd1b44309ce4ddaafe4e42a122383a7272a2b6ea11a8b93c",
+      "sessions_closed": 2,
+      "job_active_after": 0,
+      "desktop_gone": true,
+      "phases": 10,
+      "raw_bottom_hex": "7e792d7e",
+      "raw_main_hex": "78"
+    },
+    {
+      "mode": "find-stream",
+      "round": 1,
+      "record_sha256": "d38cc6ca988fef725e14b6241e372edf2f1515a0d41334f566ba2026862c4fdb",
+      "workflow_sha256": "17bb6bf35f8ea49ce4853c2fe6fb222ad5bea547847d4e29ff2943f44e0c186c",
+      "frame_sha256": "f7f67c974e305617cd1b44309ce4ddaafe4e42a122383a7272a2b6ea11a8b93c",
+      "sessions_closed": 2,
+      "job_active_after": 0,
+      "desktop_gone": true,
+      "phases": 10,
+      "raw_bottom_hex": "7e792d7e",
+      "raw_main_hex": "78"
+    }
+  ],
+  "selection": {
+    "verified": [
+      "Per-tick bounded autoscroll up/down",
+      "Mouse-up, focus loss and capture transfer stop scrolling",
+      "Queued Select All/Escape/empty Copy shortcut with exact raw receiver bytes",
+      "Actual enabled/highlighted Select All popup and TrackPopupMenu return",
+      "Popup timer/window/class/observer cleanup"
+    ],
+    "system_nonempty_copy_shortcut_verified": false,
+    "dpi_soft_wrap_explicit_trailing_space_window_gate": false
+  },
+  "search": {
+    "verified": [
+      "Original 15-phase reference-limited direction/wrap/query/focus workflow repeated",
+      "Actual continuing CR output with partial no-wrap navigation",
+      "Query replacement while running, Escape while output continues, and closing a running target",
+      "Independent 250-tick append/eviction pure-core workload at 4096 work per tick"
+    ],
+    "partial_policy": "Explicit user navigation can use live-validated partial results without wrap; automatic last-match selection waits for complete/capped. This continuous-output policy is project-specific."
+  },
+  "clipboard_owner_fixture": {
+    "pure_policy_verified": true,
+    "release_event_required_before_sampling_publication_tuple": true,
+    "final_join_and_strict_primary_secondary_checks": true,
+    "exact_1418_after_proven_requester_exit_is_preserved_as_unsuccessful_late_publication": true,
+    "new_hosted_four_case_gate_verified": false
+  },
+  "preserved_failed_attempts": [
+    {
+      "id": "local-full-01",
+      "accepted": false,
+      "ctest_passed": 24,
+      "ctest_total": 25,
+      "log_sha256": "446ff75e8e6eb5926cc18d4d2296c1e1cb15a6e1dc56b28dba842a5516aaf3f0",
+      "test_source_sha256": "ac540afb59274566c5d02dd80cbce3633b738acc2fbbe001d6e8673285a5cec1",
+      "classification": "Negative raw-byte fixtures omitted the newly required selection-popup.json file; all six actual window rounds passed. Corrected by copying the unmodified real popup evidence into each negative-byte directory."
+    },
+    {
+      "id": "independent-popup-initial",
+      "accepted": false,
+      "classification": "Visible enabled popup did not reach target highlight with a batch of queued navigation keys; preserved before switching to observed-highlight single-step navigation, original deadline retained."
+    }
+  ],
+  "limitations": [
+    "Local system clipboard/real IME not exercised by this run",
+    "Previous hosted copy and standalone real IME facts retain separate source identities",
+    "Pending system-copy shortcut and four-case read-workflow validation remain open",
+    "Controlled-DPI, soft-wrap/trailing-space copy and product IME cross cases remain open",
+    "DIB/full-frame consistency is not compositor presentation or WindTerm pixel/performance equivalence"
+  ]
+}

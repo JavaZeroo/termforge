@@ -277,16 +277,23 @@ public:
         return hit;
     }
     std::optional<SearchNavigation> navigate(const TextDocument& doc, SearchDirection direction,
-                                             std::optional<TextPosition> anchor = {}) const {
+                                             std::optional<TextPosition> anchor = {}, bool allow_wrap = true) const {
         if (anchor && !doc.valid(*anchor)) return {};
         const bool next = direction == SearchDirection::next;
-        for (int pass = 0; pass < 2; ++pass) for (size_t offset = 0; offset < matches_.size(); ++offset) {
+        for (int pass = 0; pass < (allow_wrap ? 2 : 1); ++pass) for (size_t offset = 0; offset < matches_.size(); ++offset) {
             const auto index = next ? offset : matches_.size() - 1 - offset;
             const auto hit = match(doc, index); if (!hit) continue;
             const bool beyond = !anchor || (next ? before(*anchor, hit->range.begin) : before(hit->range.begin, *anchor));
             if ((pass == 0 && beyond) || (pass == 1 && !beyond)) return SearchNavigation{*hit, index, pass == 1};
         }
         return {};
+    }
+    // Explicit user navigation may inspect live-validated partial results.
+    // Absence means "no currently known hit in this direction", never a
+    // global document boundary, and must not wrap within a partial prefix.
+    std::optional<SearchNavigation> navigate_no_wrap(const TextDocument& doc, SearchDirection direction,
+                                                     std::optional<TextPosition> anchor = {}) const {
+        return navigate(doc, direction, anchor, false);
     }
 };
 } // namespace termforge

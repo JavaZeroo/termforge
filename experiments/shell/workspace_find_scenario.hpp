@@ -195,3 +195,138 @@ inline void Workspace::scenario_find() {
         out << "]}\n"; out.close(); require(out.good(), "find observations write failed"); stage_ = 100; close_all();
     }
 }
+
+// Separate lifecycle/continuous-output gate. The original 15-phase fixture and
+// its exact captures remain unchanged. This explicitly exercises partial UI
+// policy, not a claim about unobserved WindTerm flood-search semantics.
+inline void Workspace::scenario_find_stream() {
+    if(image_.empty() || closing_) return;
+    require(ms(started_)<30000,("find stream timeout at stage "+std::to_string(stage_)).c_str());
+    auto* bottom=tabs_.empty()?nullptr:tabs_.front().shell.get(); auto* main=selected(Group::main);
+    const auto directory=std::filesystem::path(image_).parent_path();
+    static std::array<BYTE,256> saved_keys{}; static bool restore_keys=false, cancel_baseline=false;
+    static uint64_t cancelled_tail_id=0; static HWND closing_find=nullptr, closing_terminal=nullptr;
+    if(restore_keys) { require(SetKeyboardState(saved_keys.data()),"stream keyboard state restore failed"); restore_keys=false; }
+    const auto text=[](const auto& row) { std::string result; for(const auto& cell:row) result+=cell.text;
+        while(!result.empty() && result.back()==' ') result.pop_back(); return result; };
+    const auto capture=[&](const char* name) { const auto path=directory/name;
+        if(!std::filesystem::exists(path)) return std::string{};
+        require(std::filesystem::file_size(path)<=4096,"stream raw capture exceeded diagnostic bound");
+        std::ifstream in(path,std::ios::binary); require(bool(in),"stream capture read failed");
+        return std::string(std::istreambuf_iterator<char>(in),{}); };
+    const auto current_line=[&](ShellWindow* shell) { if(!shell) return std::string{};
+        const auto range=shell->current_find_range(); if(!range) return std::string{};
+        for(const auto& row:shell->visible_snapshot().lines) if(row.id==range->begin.line_id) return text(row);
+        return std::string{}; };
+    const auto label=[](ShellWindow* shell) { if(!shell || !shell->find_handle()) return std::string{};
+        for(HWND child=GetWindow(shell->find_handle(),GW_CHILD);child;child=GetWindow(child,GW_HWNDNEXT)) {
+            wchar_t name[32]{}; GetClassNameW(child,name,32);
+            if(_wcsicmp(name,L"Static")==0) { wchar_t value[512]{}; GetWindowTextW(child,value,512); return utf8(value); }
+        } return std::string{}; };
+    const auto running=[](ShellWindow* shell) { return shell && shell->search_status()==termforge::SearchStatus::running; };
+    const auto query=[](ShellWindow* shell,const wchar_t* value) {
+        require(shell && shell->find_edit_handle() && SetWindowTextW(shell->find_edit_handle(),value),"stream query update failed"); };
+    const auto key=[](ShellWindow* shell,WPARAM value) {
+        require(shell && shell->find_edit_handle(),"stream key requires native find edit");
+        require(PostMessageW(shell->find_edit_handle(),WM_KEYDOWN,value,1),"stream key post failed");
+        require(PostMessageW(shell->find_edit_handle(),WM_KEYUP,value,static_cast<LPARAM>(0xc0000001u)),"stream key release failed"); };
+    const auto record=[&](const char* phase) {
+        std::ostringstream out; out<<"{\"phase\":\""<<phase<<"\",\"captures\":{\"bottom\":";
+        termforge::Screen::quoted(out,capture("stream-bottom.bin")); out<<",\"main\":";
+        termforge::Screen::quoted(out,capture("stream-main.bin"));
+        out<<"},\"closed_find_hwnd_gone\":"<<(closing_find && !IsWindow(closing_find)?"true":"false")
+           <<",\"closed_terminal_hwnd_gone\":"<<(closing_terminal && !IsWindow(closing_terminal)?"true":"false")<<",\"sessions\":[";
+        bool first=true;
+        for(const auto group:{Group::bottom,Group::main}) {
+            auto* shell=group==Group::bottom?bottom:main;
+            if(!first) out<<','; first=false;
+            out<<"{\"group\":\""<<(group==Group::bottom?"bottom":"main")<<"\",\"exists\":"<<(shell?"true":"false");
+            if(!shell) { out<<'}'; continue; }
+            require(shell->frame_matches_full(),"stream retained frame differs from full redraw");
+            const auto range=shell->current_find_range(); const auto& view=shell->visible_snapshot();
+            size_t needle_cells=0,chinese_cells=0;
+            for(const auto& row:view.lines) if(text(row).rfind("TF_FIND_",0)==0) for(size_t c=0;c<row.size();++c)
+                if((row[c].style.bg==3 || row[c].style.bg==11) && row[c].style.fg==0) {
+                    if(c>=12 && c<18) ++needle_cells;
+                    if(c>=19 && c<23) ++chinese_cells;
+                }
+            out<<",\"find_exists\":"<<(shell->find_handle()?"true":"false")
+               <<",\"edit_focused\":"<<(shell->find_edit_handle() && GetFocus()==shell->find_edit_handle()?"true":"false")
+               <<",\"terminal_focused\":"<<(GetFocus()==shell->handle()?"true":"false")
+               <<",\"workspace_active\":"<<(active()==shell?"true":"false")
+               <<",\"frame_matches_full\":true,\"running\":"<<(running(shell)?"true":"false")
+               <<",\"cancelled\":"<<(shell->search_status()==termforge::SearchStatus::cancelled?"true":"false")
+               <<",\"needle_highlight_cells\":"<<needle_cells<<",\"chinese_highlight_cells\":"<<chinese_cells
+               <<",\"source_tick_seen\":"<<(shell->observed_output().find("TF_STREAM_TICK_")!=std::string::npos?"true":"false")
+               <<",\"status_label\":"; termforge::Screen::quoted(out,label(shell)); out<<",\"query\":";
+            if(shell->find_edit_handle()) { wchar_t value[4097]{}; GetWindowTextW(shell->find_edit_handle(),value,4097); termforge::Screen::quoted(out,utf8(value)); }
+            else out<<"null";
+            out<<",\"current\":";
+            if(range) { out<<"{\"line_id\":"<<range->begin.line_id<<",\"version\":"<<range->begin.version
+                <<",\"begin\":"<<range->begin.column<<",\"end_line_id\":"<<range->end.line_id
+                <<",\"end_version\":"<<range->end.version<<",\"end\":"<<range->end.column<<",\"line\":";
+                termforge::Screen::quoted(out,current_line(shell)); out<<'}'; }
+            else out<<"null";
+            out<<",\"tail\":{\"id\":"<<view.lines.back().id<<",\"version\":"<<view.lines.back().version<<",\"text\":";
+            termforge::Screen::quoted(out,text(view.lines.back())); out<<"},\"lines\":[";
+            for(size_t i=0;i<view.lines.size();++i) { if(i) out<<','; out<<"{\"id\":"<<view.lines[i].id<<",\"version\":"<<view.lines[i].version<<",\"text\":";
+                termforge::Screen::quoted(out,text(view.lines[i])); out<<'}'; }
+            out<<"]}";
+        }
+        out<<"]}"; geometry_samples_.push_back(out.str());
+        std::ofstream stages(directory/"find-stream-stages.jsonl",std::ios::app); stages<<out.str()<<'\n';
+        stages.close(); require(stages.good(),"stream observations write failed");
+    };
+    if(stage_==0 && bottom && bottom->ready()) { add(Group::main); stage_=1; }
+    else if(stage_==1 && main && main->ready() && bottom && bottom->settled() && main->settled()) {
+        bottom->start_text_receiver(directory/L"stream-bottom.bin"); main->start_text_receiver(directory/L"stream-main.bin");
+        bottom->begin_output_observation(); bottom->set_search_work_budget(64); stage_=2;
+    } else if(stage_==2 && bottom->live_contains_line("TF_FIND_READY 080") && main->live_contains_line("TF_FIND_READY 080")) {
+        select(0,Group::bottom); SendMessageW(window_,WM_COMMAND,16,0); query(bottom,L"needle"); bottom->fixture_command(L"~"); stage_=3;
+    } else if(stage_==3 && running(bottom) && !bottom->current_find_range() && capture("stream-bottom.bin")=="~" &&
+              bottom->observed_output().find("TF_STREAM_TICK_")!=std::string::npos) {
+        record("running-before-navigation"); key(bottom,VK_F3); stage_=4;
+    } else if(stage_==4 && running(bottom) && current_line(bottom)=="TF_FIND_000 needle 中文 e\xcc\x81") {
+        require(label(bottom).find("partial")!=std::string::npos,"running navigation did not mark partial scope");
+        record("partial-next-0"); require(GetKeyboardState(saved_keys.data()),"stream Shift state read failed");
+        auto shifted=saved_keys; shifted[VK_SHIFT]|=0x80; require(SetKeyboardState(shifted.data()),"stream Shift setup failed");
+        restore_keys=true; key(bottom,VK_F3); stage_=5;
+    } else if(stage_==5 && running(bottom) && label(bottom).find("no known")!=std::string::npos &&
+              current_line(bottom)=="TF_FIND_000 needle 中文 e\xcc\x81") {
+        record("partial-no-wrap"); key(bottom,VK_F3); stage_=6;
+    } else if(stage_==6 && running(bottom) && current_line(bottom)=="TF_FIND_001 needle 中文 e\xcc\x81") {
+        record("partial-next-1"); query(bottom,L"中文"); stage_=7;
+    } else if(stage_==7 && running(bottom) && !bottom->current_find_range()) {
+        record("replaced-running-empty"); key(bottom,VK_F3); stage_=8;
+    } else if(stage_==8 && running(bottom) && current_line(bottom)=="TF_FIND_000 needle 中文 e\xcc\x81" &&
+              bottom->current_find_range()->begin.column==19) {
+        record("partial-chinese-0"); key(bottom,VK_ESCAPE); stage_=9;
+    } else if(stage_==9 && !bottom->find_handle() && GetFocus()==bottom->handle()) {
+        require(!bottom->current_find_range(),"cancel left a current result");
+        require(PostMessageW(bottom->handle(),WM_CHAR,L'y',1),"cancelled stream terminal input post failed"); stage_=10;
+    } else if(stage_==10 && capture("stream-bottom.bin")=="~y" &&
+              text(bottom->visible_snapshot().lines.back()).find("TF_STREAM_TICK_")==0) {
+        const auto& tail=bottom->visible_snapshot().lines.back();
+        if(!cancel_baseline) { cancelled_tail_id=tail.id; history_anchor_=tail.version; cancel_baseline=true; }
+        else if(tail.id==cancelled_tail_id && tail.version>history_anchor_) {
+            record("cancelled-output-continues"); bottom->fixture_command(L"-"); stage_=11;
+        }
+    } else if(stage_==11 && bottom->live_contains_line("TF_STREAM_STOPPED")) {
+        record("explicitly-stopped"); bottom->request_find(); query(bottom,L"needle"); bottom->fixture_command(L"~"); stage_=12;
+    } else if(stage_==12 && running(bottom) && !bottom->current_find_range() && capture("stream-bottom.bin")=="~y-~" &&
+              bottom->visible_snapshot().lines.back().id>cancelled_tail_id &&
+              text(bottom->visible_snapshot().lines.back()).find("TF_STREAM_TICK_")==0) {
+        record("target-closing-running"); closing_find=bottom->find_handle(); closing_terminal=bottom->handle(); bottom->close(); stage_=13;
+    } else if(stage_==13 && !bottom && main && !main->closing()) {
+        require(!IsWindow(closing_find) && !IsWindow(closing_terminal),"query target HWND survived session closure");
+        select(0,Group::main); require(PostMessageW(main->handle(),WM_CHAR,L'x',1),"other terminal input after close failed"); stage_=14;
+    } else if(stage_==14 && capture("stream-main.bin")=="x") {
+        record("target-closed-other-input"); Bitmap frame(physical_width_,physical_height_); paint(frame.dc);
+        const auto rect=physical(main_terminal_); main->render_to(frame.dc,rect.left,rect.top); frame.save(image_);
+        std::ofstream out(directory/"find-stream.json");
+        out<<"{\"schema\":\"termforge-window-find-stream-v1\",\"input_path\":\"queued-WM_KEYDOWN-through-workspace-loop\","
+             "\"search_work_budget\":64,\"worker_deadline_ms\":5000,\"snapshots\":[";
+        for(size_t i=0;i<geometry_samples_.size();++i) { if(i) out<<','; out<<geometry_samples_[i]; }
+        out<<"]}\n"; out.close(); require(out.good(),"stream manifest write failed"); stage_=100; close_all();
+    }
+}

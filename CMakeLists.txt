@@ -47,6 +47,8 @@ termforge_warnings(search_test)
 
 add_executable(paste_test experiments/shell/paste_test.cpp)
 termforge_warnings(paste_test)
+add_executable(clipboard_policy_test experiments/shell/clipboard_policy_test.cpp)
+termforge_warnings(clipboard_policy_test)
 add_executable(keyboard_test experiments/shell/keyboard_test.cpp)
 termforge_warnings(keyboard_test)
 
@@ -147,6 +149,7 @@ if(BUILD_TESTING)
   add_test(NAME selection_core COMMAND selection_test)
   add_test(NAME search_core COMMAND search_test)
   add_test(NAME paste COMMAND paste_test)
+  add_test(NAME clipboard_policy COMMAND clipboard_policy_test)
   add_test(NAME keyboard COMMAND keyboard_test)
   find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
   # New experiment suites can register ordinary Python module invocations here.

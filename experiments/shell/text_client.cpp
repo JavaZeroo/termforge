@@ -2,6 +2,8 @@
 // Owned test Job controls its lifetime. It never executes received commands.
 #include <windows.h>
 #include <algorithm>
+#include <atomic>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -9,6 +11,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 static void require(bool ok, const char* why) { if (!ok) throw std::runtime_error(why); }
 static void output(const std::string& value) {
     size_t offset = 0;
@@ -29,6 +32,46 @@ static std::string rows(unsigned first, unsigned count, bool matches) {
     }
     return out.str();
 }
+class StreamOutput {
+    HANDLE stop_ = nullptr;
+    std::thread thread_;
+    std::atomic<bool> failed_{false};
+public:
+    static constexpr DWORD deadline_ms = 5000;
+    StreamOutput() : stop_(CreateEventW(nullptr, TRUE, FALSE, nullptr)) {
+        require(stop_ != nullptr, "stream fixture stop event failed");
+    }
+    void stop() noexcept {
+        if (!thread_.joinable()) return;
+        SetEvent(stop_);
+        const auto deadline = GetTickCount64() + 3000;
+        while (WaitForSingleObject(thread_.native_handle(), 5) != WAIT_OBJECT_0) {
+            CancelSynchronousIo(thread_.native_handle());
+            if (GetTickCount64() >= deadline) std::_Exit(11);
+        }
+        try { thread_.join(); } catch (...) { std::_Exit(11); }
+    }
+    void start() {
+        stop(); require(ResetEvent(stop_) != FALSE, "stream fixture reset failed"); failed_ = false;
+        output("TF_STREAM_STARTED\r\n");
+        thread_ = std::thread([this] {
+            try {
+                const auto deadline = GetTickCount64() + deadline_ms;
+                for (unsigned tick = 0; GetTickCount64() < deadline; ++tick) {
+                    if (WaitForSingleObject(stop_, 0) == WAIT_OBJECT_0) return;
+                    std::ostringstream out; out << "\rTF_STREAM_TICK_" << std::setw(8) << std::setfill('0') << tick;
+                    output(out.str());
+                    if (WaitForSingleObject(stop_, 4) == WAIT_OBJECT_0) return;
+                }
+                output("\r\x1b[2KTF_STREAM_DEADLINE\r\n");
+            } catch (...) { if (WaitForSingleObject(stop_, 0) != WAIT_OBJECT_0) failed_ = true; }
+        });
+    }
+    void stop_and_mark() {
+        stop(); require(!failed_, "stream fixture output worker failed"); output("\r\x1b[2KTF_STREAM_STOPPED\r\n");
+    }
+    ~StreamOutput() { stop(); if (stop_) CloseHandle(stop_); }
+};
 int wmain(int argc, wchar_t** argv) {
     try {
         require(argc == 2 && *argv[1], "usage: shell_text_client capture.bin");
@@ -38,6 +81,7 @@ int wmain(int argc, wchar_t** argv) {
         std::ofstream capture(std::filesystem::path(argv[1]), std::ios::binary | std::ios::trunc);
         require(bool(capture), "text fixture capture creation failed");
         output("\x1b[2J\x1b[H" + rows(0, 80, true) + "TF_FIND_READY 080\r\n");
+        StreamOutput stream;
         wchar_t pending = 0; size_t captured = 0;
         for (;;) {
             wchar_t units[256]{}; DWORD count = 0;
@@ -60,6 +104,8 @@ int wmain(int argc, wchar_t** argv) {
             for (const auto unit : text) {
                 if (unit == L'+') output(rows(80, 20, true) + "TF_FIND_APPEND_READY 100\r\n");
                 if (unit == L'#') output(rows(0, 500, false) + "TF_FIND_EVICT_READY 500\r\n");
+                if (unit == L'~') stream.start();
+                if (unit == L'-') stream.stop_and_mark();
             }
         }
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 2; }

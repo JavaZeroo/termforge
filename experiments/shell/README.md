@@ -21,7 +21,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 ## 基础文字操作
 
 - 鼠标拖选文字，双击选词、三击选物理行（不含行末换行）；`Ctrl+Shift+C` 或 Copy 菜单复制，`Ctrl+Shift+A` 全选，Escape 清除选区。选区快照最多 8 MiB，复制上限为 4 MiB UTF-8，系统 Unicode 剪贴板另受 1 Mi UTF-16 单元限制；超限明确拒绝。首版词规则将 ASCII 字母/数字/下划线/连字符及非 ASCII 基字归为词，空格成组，其余 ASCII 标点单格；这是本项目策略。
-- `Ctrl+Shift+F` 打开当前会话查找窗口；字面量查询默认区分大小写，关闭 Match case 只折叠 ASCII 大小写。Enter/Shift+F3 向前，F3 向后并循环；Escape 关闭查找并恢复终端焦点。查询上限 4096 UTF-8 字节，结果最多 1024 项；复杂 Unicode 不做规范化，正则/跨会话属于后续范围。
+- `Ctrl+Shift+F` 打开当前会话查找窗口；字面量查询默认区分大小写，关闭 Match case 只折叠 ASCII 大小写。静止内容的 Enter/Shift+F3 向前、F3 向后并循环；持续扫描时显式操作可跳到当前已验证的局部命中，提示仍在搜索且不循环，静默末尾初选仍等本轮完成。结果截断明确提示只在有限结果内循环；这是洪流状态的本项目策略。Escape 关闭查找并恢复终端焦点。查询上限 4096 UTF-8 字节，结果最多 1024 项；复杂 Unicode 不做规范化，正则/跨会话属于后续范围。
 
 - 滚轮和滚动条浏览历史，`Ctrl+Shift+Home` / `Ctrl+Shift+End` 到历史首/尾；回看时新输出保持阅读锚点，普通输入和开始粘贴回到底部。历史淘汰时钳制到仍保留的最早行。
 - `Ctrl+Shift+V`、`Shift+Insert` 或 Session → Paste 读取剪贴板。读取在独立有时限的自有 helper 中进行；多行文字先确认，默认取消。一次任务固定目标会话，切换标签不重定向剩余字节；Escape 或 Cancel paste 停止后续发送。
@@ -97,6 +97,7 @@ resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子
 | `ui-history` | 编号日志、滚轮/翻页/拖动、阅读锚点、隐藏输出、淘汰、缩放与输入回到底部 | `history.json` 与独立编号 oracle；`native-scroll.jsonl` 记录系统原生非客户区 tracker 的轨迹，使用队列鼠标消息，不移动用户鼠标 |
 | `ui-selection` | 正逆拖选、词/行、宽字/组合字符、缩放、双会话、后台追加及淘汰失效 | `selection.json` 与独立逐字预期；检查实际窗口高亮及回收，本场景不操作系统剪贴板 |
 | `ui-copy-system` | 选择后通过真实 Unicode 剪贴板复制并读回 | 复用选择场景，逐字比较 CF_UNICODETEXT；只在指定一次性 hosted 环境运行，本地跳过不算系统验收 |
+| `ui-find-stream` | 实际持续 CR 输出中导航、运行中替换查询、取消及关闭目标 | 10 阶段独立 oracle、两个原始接收文件和有限 worker/Job 回收；局部结果绝不冒充全局循环 |
 | `ui-find` | 多批搜索、方向/循环、大小写/中文/无结果、蓝黄高亮、后台追加、淘汰与 Escape | `find.json`、逐阶段记录及真实 `ReadConsoleW` 接收字节；查询在原生 EDIT 中操作，独立 oracle 检查稳定位置与焦点 |
 | `ui-keyboard` | 修饰键、编辑键、Unicode 与会话目标 | 真实 `ReadConsoleW` 接收端与独立字节预期；不替代真实 IME |
 | `ui-paste` | 默认取消、Tab/Enter/Escape、隐藏目标、输出洪流、发送途中取消和关闭 | `paste-workflow.json` 与 `cancel.bin`/`close.bin`；接收端事件握手确保动作发生在发送途中；本场景不读取用户剪贴板 |

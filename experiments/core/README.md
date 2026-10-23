@@ -88,7 +88,7 @@ build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 
 `text_search.hpp` 在同一文本投影上执行 UTF-8 字面量匹配，软折行直接相连，硬行边界为 LF。大小写选项仅折叠 ASCII，不做 Unicode 规范化；匹配不重叠，命中组合字符的一部分时高亮整个单元格。这些是首版明确策略，不能外推为完整 WindTerm 或正则语义。
 
-查询最多 4096 UTF-8 字节，模块结果硬上限 4096，窗口使用 1024。调用者以 `step` 分批推进，在屏幕改变后调用 `notify_change`；模块保留稳定前缀进度，分批检查内容版本、相邻行和淘汰，查询替换或关闭会使旧 generation 失效。结果快照必须经 `match(document, index)` 对当前内容重新验证。`work_used` 约束扫描/元数据工作单元，单行投影、结果过滤和窗口绘制仍有成本，不是整个 UI tick 的硬截止保证。
+查询最多 4096 UTF-8 字节，模块结果硬上限 4096，窗口使用 1024。调用者以 `step` 分批推进，在屏幕改变后调用 `notify_change`；模块保留稳定前缀进度，分批检查内容版本、相邻行和淘汰，查询替换或关闭会使旧 generation 失效。结果快照必须经 `match(document, index)` 对当前内容重新验证。 `navigate_no_wrap` 只导航当前可验证命中，不补全未知范围、不报告全局循环；窗口在仍运行的扫描中仅对用户显式请求采用此策略，并明确提示局部结果。`work_used` 约束扫描/元数据工作单元，单行投影、结果过滤和窗口绘制仍有成本，不是整个 UI tick 的硬截止保证。
 
 复验入口为 `ctest --test-dir build -C Release -R '^search_core$' --output-on-failure`。窗口方向、循环、焦点与持续输出的完整验收由 [#15](https://github.com/JavaZeroo/termforge/issues/15) 承接。
 

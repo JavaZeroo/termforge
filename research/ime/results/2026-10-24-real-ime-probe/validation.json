@@ -1,0 +1,262 @@
+{
+  "schema": "termforge.r1-real-ime-probe-reviewed-facts.v1",
+  "source": {
+    "repository": "JavaZeroo/termforge",
+    "commit": "68ad8d9435ba846dcf7371336ce701bd56434c61",
+    "workflow_run_id": 40008180684,
+    "workflow_run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40008180684",
+    "workflow_event": "workflow_dispatch",
+    "workflow_run_conclusion": "success",
+    "job_id": 120601377889,
+    "artifact_id": 12523934919,
+    "artifact_name": "r1-ime-windows-2025",
+    "artifact_zip_sha256": "76f63d7f3d17ba1255323662a2af7f9034550da016a0f27eca01d3d75282f922",
+    "reviewed_allowlisted_file_count": 17,
+    "raw_stdout_matches_result_probe": true,
+    "raw_stderr_empty": true,
+    "probe_executable_sha256": "350a07b7d088cfc518ee335dbb6c043bcfb8cdddc1361bcd2b1c4ad8ce024fdf"
+  },
+  "environment": {
+    "image_os": "win25-vs2026",
+    "image_version": "20261021.278.1",
+    "os": {
+      "caption": "Microsoft Windows Server 2025 Datacenter",
+      "version": "10.0.26100",
+      "build": "26100",
+      "installation_type": "Server",
+      "edition": "ServerDatacenter",
+      "ubr": 33650
+    },
+    "powershell": {
+      "version": "5.1.26100.33648",
+      "edition": "Desktop",
+      "process_bitness": 64,
+      "clr_version": "4.0.30319.42000"
+    },
+    "inventory_complete": true,
+    "setup_status": "prepared-not-verified",
+    "setup_route": "existing-provider-activation",
+    "language_capability_before": {
+      "name": "Language.Basic~~~zh-CN~0.0.1.0",
+      "state": "NotPresent"
+    },
+    "language_capability_after": {
+      "name": "Language.Basic~~~zh-CN~0.0.1.0",
+      "state": "NotPresent"
+    },
+    "capability_installation_attempted": false,
+    "ime_binary": {
+      "name": "ChsIME.exe",
+      "version": "10.0.26100.33648 (WinBuild.160101.0800)",
+      "sha256": "581362ddfb1230394900efee9a23194422b14b3ca8c111f00b90e23d3112c4b9"
+    },
+    "ime_binary_identity_unchanged": true,
+    "machine_tip_registered": true,
+    "user_tip_listed": true,
+    "input_profile": "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+    "input_languages": [
+      {
+        "LanguageTag": "en-US",
+        "InputMethodTips": [
+          "0409:00000409"
+        ]
+      },
+      {
+        "LanguageTag": "zh-Hans-CN",
+        "InputMethodTips": [
+          "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}"
+        ]
+      }
+    ]
+  },
+  "inventory_operations": [
+    {
+      "name": "os",
+      "status": "complete",
+      "returncode": 0,
+      "elapsed_seconds": 0.672,
+      "timeout_seconds": 20,
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "error": null
+    },
+    {
+      "name": "powershell",
+      "status": "complete",
+      "returncode": 0,
+      "elapsed_seconds": 0.344,
+      "timeout_seconds": 20,
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "error": null
+    },
+    {
+      "name": "dism",
+      "status": "complete",
+      "returncode": 0,
+      "elapsed_seconds": 0.531,
+      "timeout_seconds": 20,
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "error": null
+    },
+    {
+      "name": "ime-binary",
+      "status": "complete",
+      "returncode": 0,
+      "elapsed_seconds": 0.547,
+      "timeout_seconds": 20,
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "error": null
+    },
+    {
+      "name": "tip",
+      "status": "complete",
+      "returncode": 0,
+      "elapsed_seconds": 0.781,
+      "timeout_seconds": 20,
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "error": null
+    },
+    {
+      "name": "capability",
+      "status": "complete",
+      "returncode": 0,
+      "elapsed_seconds": 5.563,
+      "timeout_seconds": 60,
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "error": null
+    }
+  ],
+  "preparation_phases": [
+    {
+      "name": "read-host-environment",
+      "state": "ended",
+      "elapsed_seconds": 0.15,
+      "error": null
+    },
+    {
+      "name": "read-local-capability",
+      "state": "ended",
+      "elapsed_seconds": 0.552,
+      "error": null
+    },
+    {
+      "name": "identify-existing-provider",
+      "state": "ended",
+      "elapsed_seconds": 0.029,
+      "error": null
+    },
+    {
+      "name": "set-fixed-user-language-tip",
+      "state": "ended",
+      "elapsed_seconds": 0.409,
+      "error": null
+    },
+    {
+      "name": "verify-user-tip-and-provider-identity",
+      "state": "ended",
+      "elapsed_seconds": 0.027,
+      "error": null
+    },
+    {
+      "name": "record-capability-after-activation",
+      "state": "ended",
+      "elapsed_seconds": 0.406,
+      "error": null
+    }
+  ],
+  "real_ime_probe_verified": true,
+  "product_ime_workflow_verified": false,
+  "r1_06_complete": false,
+  "probe": {
+    "mode": "hosted",
+    "isolation": "disposable-hosted-input-desktop",
+    "elapsed_seconds": 3.662,
+    "timeout_seconds": 55.0,
+    "returncode": 0,
+    "timed_out": false,
+    "language_hresult": 0,
+    "activation_hresult": 0,
+    "composition_events": 10,
+    "observed_preedit": "ni'hao",
+    "committed": "你好",
+    "result_events": 1,
+    "unexpected_character_commits": "",
+    "ime_error": "",
+    "candidate_events": 0,
+    "visible_candidate_windows": 2,
+    "candidate_classes": [
+      "Microsoft.IME.UIManager.CandidateWindow.Host",
+      "MSCTFIME Composition"
+    ],
+    "candidate_rectangles": [
+      [
+        201,
+        272,
+        826,
+        343
+      ],
+      [
+        204,
+        251,
+        246,
+        269
+      ]
+    ],
+    "moved_candidate_rectangles": [
+      [
+        345,
+        368,
+        970,
+        439
+      ],
+      [
+        348,
+        347,
+        390,
+        365
+      ]
+    ],
+    "observed_rectangle_deltas": [
+      [
+        144,
+        96
+      ],
+      [
+        144,
+        96
+      ]
+    ],
+    "profile_enabled": true,
+    "composition_observed": true,
+    "requested_position_roundtrip": true,
+    "actual_candidate_position_verified": true,
+    "commit_verified": true,
+    "cancel_verified": true,
+    "real_ime_workflow_verified": true,
+    "context_cancelled": true,
+    "owned_window_destroyed": true
+  },
+  "cleanup": {
+    "inventory_workers_reaped": 6,
+    "inventory_jobs_active_after_cleanup": 0,
+    "probe_process_exited": true,
+    "probe_owned_window_destroyed": true,
+    "himc_destroyed_runtime_gate": true,
+    "probe_job_containment_verified": false,
+    "probe_job_active_after_cleanup": null,
+    "input_desktop_is_shared_and_was_not_deleted": true
+  },
+  "review": {
+    "candidate_identity_scope": "The fixed native gate compared the same HWND and class at both caret locations. Raw HWND identities were not exported; this review independently recomputed the exported rectangle deltas and checked the native gate source, without inventing raw handle observations.",
+    "cancel_scope": "The native gate required NI preedit, then Escape ended composition and left the committed string unchanged. The final result-event count is one and unexpected WM_CHAR text is empty; post-cancel candidate-window visibility was not separately exported.",
+    "cleanup_scope": "The collector reaped the native probe process and the native gate required HIMC/window/class cleanup. Its hosted run used subprocess.run without an owned Job; only the six inventory workers have Job-zero evidence.",
+    "capability_scope": "Existing Microsoft Pinyin worked in this disposable image while Language.Basic zh-CN remained NotPresent; no language capability was installed and this does not certify another image.",
+    "product_scope": "This is one standalone native probe run. Actual ShellWindow/ConPTY bytes, two areas, hidden tabs, rename, focus loss, output, close and DPI/zoom product scenarios remain unverified.",
+    "timing_scope": "These diagnostic timings are not terminal input latency or WindTerm performance evidence."
+  }
+}

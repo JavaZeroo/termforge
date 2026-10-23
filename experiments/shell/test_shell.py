@@ -13,8 +13,9 @@ from experiments.build_paths import ROOT, binary
 from experiments.shell.run import execute, validate, validate_main_geometry, validate_dpi_geometry
 from experiments.shell.history_checks import validate_history, validate_native_scroll
 from experiments.shell.clipboard_checks import require_hosted_clipboard, validate_clipboard_workflow
-from experiments.shell.selection_checks import validate_selection
-from experiments.shell.find_checks import validate_find, validate_find_workflow
+from experiments.shell.selection_checks import validate_selection, validate_selection_workflow
+from experiments.shell.find_checks import (validate_find, validate_find_workflow,
+                                           validate_find_stream, validate_find_stream_workflow)
 
 
 @unittest.skipUnless(os.name == "nt", "ConPTY shell requires Windows")
@@ -40,6 +41,42 @@ class ShellTests(unittest.TestCase):
                 bad_record = copy.deepcopy(record); bad_record[field] = value
                 with self.subTest(cleanup=field), self.assertRaises(ValueError):
                     validate_selection(data, False, bad_record)
+            for phase, field, value in (("autoscroll-up-held", "ticks", 0),
+                                        ("autoscroll-up-stopped", "top", 0),
+                                        ("autoscroll-focus-stopped", "main_focused", True),
+                                        ("autoscroll-capture-release", "capture_transferred", False),
+                                        ("autoscroll-capture-stopped", "captured", True),
+                                        ("select-all-shortcut", "text", "missing Unicode"),
+                                        ("select-all-command", "action", "actual-popup-unobserved"),
+                                        ("input-after-select-all", "raw_main", "x\x01")):
+                bad = copy.deepcopy(data)
+                next(row for row in bad["interactions"] if row["phase"] == phase)[field] = value
+                with self.subTest(interaction=phase, field=field), self.assertRaises(ValueError):
+                    validate_selection(bad, False, record)
+            for field, value in (("interaction_input", "direct-business-callback"), ("menu_popup_verified", False),
+                                 ("popup_observer_idle", False)):
+                bad = copy.deepcopy(data); bad[field] = value
+                with self.subTest(interaction_contract=field), self.assertRaises(ValueError):
+                    validate_selection(bad, False, record)
+            for field, value in (("actual_return_command", 14), ("highlighted_state", 0), ("popup_hwnd", 0),
+                                 ("timed_out", True), ("navigation_keys", 0), ("last_highlighted_command", 12),
+                                 ("item_rect", [0, 0, 0, 0])):
+                bad = copy.deepcopy(data); bad["popup_menu"][field] = value
+                with self.subTest(actual_popup=field), self.assertRaises(ValueError):
+                    validate_selection(bad, False, record)
+            bad = copy.deepcopy(data); del bad["popup_menu"]
+            with self.assertRaises(ValueError):
+                validate_selection(bad, False, record)
+            bad = copy.deepcopy(data); bad["interactions"].pop()
+            with self.assertRaises(ValueError):
+                validate_selection(bad, False, record)
+            for index, (bottom, main) in enumerate(((b"x", b""), (b"", b"x\x01"), (b"", b"\x1bx"), (b"", b"xx"))):
+                rejected = out / f"negative-selection-bytes-{index}"; rejected.mkdir()
+                (rejected / "selection.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+                (rejected / "selection-popup.json").write_bytes((out / "selection-popup.json").read_bytes())
+                (rejected / "selection-bottom.bin").write_bytes(bottom); (rejected / "selection-main.bin").write_bytes(main)
+                with self.subTest(raw_selection_bytes=index), self.assertRaises(ValueError):
+                    validate_selection_workflow(rejected, False, record)
 
     def test_find_real_edit_navigation_unicode_output_isolation_and_cancel(self):
         for repeat in range(2):
@@ -89,6 +126,72 @@ class ShellTests(unittest.TestCase):
                 (bad_out / "find-bottom.bin").write_bytes(bottom); (bad_out / "find-main.bin").write_bytes(main)
                 with self.subTest(raw_bytes=index), self.assertRaises(ValueError):
                     validate_find_workflow(bad_out, record)
+
+    def test_find_continuous_output_partial_navigation_replace_cancel_and_target_close(self):
+        for repeat in range(2):
+            out = self.out / f"find-stream-{repeat}"
+            record = execute(self.exe, "ui-find-stream", out, timeout=40)
+            data = json.loads((out / "find-stream.json").read_text(encoding="utf-8"))
+            # Mutate actual window/receiver observations: a partial result must
+            # never masquerade as a global end, survive replacement/cancel, or
+            # keep the closed target's native windows and worker alive.
+            for phase, session, field, wrong in (
+                    (0, 0, "current", copy.deepcopy(data["snapshots"][1]["sessions"][0]["current"])),
+                    (1, 0, "status_label", "Searching… 1 / 80 — wrapped"),
+                    (2, 0, "status_label", "Searching… partial match (no wrap)"),
+                    (3, 0, "current", copy.deepcopy(data["snapshots"][1]["sessions"][0]["current"])),
+                    (4, 0, "query", "needle"),
+                    (4, 0, "current", copy.deepcopy(data["snapshots"][3]["sessions"][0]["current"])),
+                    (4, 0, "needle_highlight_cells", 6),
+                    (5, 0, "chinese_highlight_cells", 0),
+                    (6, 0, "cancelled", False),
+                    (6, 0, "source_tick_seen", False),
+                    (6, 0, "terminal_focused", False),
+                    (8, 0, "running", False),
+                    (9, 0, "exists", True),
+                    (9, 1, "terminal_focused", False)):
+                bad = copy.deepcopy(data); bad["snapshots"][phase]["sessions"][session][field] = wrong
+                with self.subTest(phase=phase, field=field), self.assertRaises(ValueError):
+                    validate_find_stream(bad, record)
+            for phase, field, wrong in ((1, "begin", 11), (5, "end", 22), (5, "version", 99999)):
+                bad = copy.deepcopy(data); bad["snapshots"][phase]["sessions"][0]["current"][field] = wrong
+                with self.subTest(current_phase=phase, field=field), self.assertRaises(ValueError):
+                    validate_find_stream(bad, record)
+            for field, wrong in (("input_path", "direct-business-callback"), ("search_work_budget", 4096),
+                                 ("worker_deadline_ms", 0)):
+                bad = copy.deepcopy(data); bad[field] = wrong
+                with self.subTest(contract=field), self.assertRaises(ValueError):
+                    validate_find_stream(bad, record)
+            for field in ("closed_find_hwnd_gone", "closed_terminal_hwnd_gone"):
+                bad = copy.deepcopy(data); bad["snapshots"][9][field] = False
+                with self.subTest(native_closure=field), self.assertRaises(ValueError):
+                    validate_find_stream(bad, record)
+            for phase, replacement in ((6, copy.deepcopy(data["snapshots"][0]["sessions"][0]["tail"])),
+                                        (7, {"id": 1, "version": 1, "text": "TF_STREAM_TICK_00000000"}),
+                                        (8, copy.deepcopy(data["snapshots"][6]["sessions"][0]["tail"]))):
+                bad = copy.deepcopy(data); target = bad["snapshots"][phase]["sessions"][0]
+                if phase == 7:
+                    target["lines"] = [line for line in target["lines"] if line["text"] != "TF_STREAM_STOPPED"]
+                else:
+                    target["tail"] = replacement; target["lines"][-1] = replacement
+                with self.subTest(worker_phase=phase), self.assertRaises(ValueError):
+                    validate_find_stream(bad, record)
+            bad = copy.deepcopy(data); bad["snapshots"].pop()
+            with self.assertRaises(ValueError):
+                validate_find_stream(bad, record)
+            for field, wrong in (("desktop_gone", False), ("job_after", {"active": 1}),
+                                 ("cleanup_errors", ["injected output worker leak"]), ("timed_out", True)):
+                bad_record = copy.deepcopy(record); bad_record[field] = wrong
+                with self.subTest(cleanup=field), self.assertRaises(ValueError):
+                    validate_find_stream(data, bad_record)
+            for index, (bottom, main) in enumerate(((b"~y-~needle", b"x"), (b"~y-~\r", b"x"),
+                                                    (b"~y-~\x1b", b"x"), (b"~yy-~", b"x"),
+                                                    (b"~y-~", b"xx"), (b"~y-~", b"x\x1b"))):
+                bad_out = out / f"negative-stream-bytes-{index}"; bad_out.mkdir()
+                (bad_out / "find-stream.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+                (bad_out / "stream-bottom.bin").write_bytes(bottom); (bad_out / "stream-main.bin").write_bytes(main)
+                with self.subTest(raw_stream_bytes=index), self.assertRaises(ValueError):
+                    validate_find_stream_workflow(bad_out, record)
 
     @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and
                          os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",
@@ -338,18 +441,31 @@ class ClipboardWindowGateTests(unittest.TestCase):
                 payload = b"B" * 256 + (b"" if name == "close" else b"RETRY_" + name.encode("ascii"))
                 (directory / f"{name}.bin").write_bytes(payload)
                 (directory / f"{name}-error.bmp").write_bytes(b"BM" + bytes(52))
+                delayed = name in ("cancel", "close")
+                owner = None if name == "oversize" else dict(
+                    reason="requester-cancelled" if name == "cancel" else "target-closed" if name == "close" else "ordinary",
+                    proof={field: delayed for field in ("owner_entered", "requester_exited", "target_quiescent", "payload_unchanged")},
+                    publication_attempted=delayed, publication_succeeded=name == "close",
+                    release_event=True, thread_exited=True, failure_step="SetClipboardData-render" if name == "cancel" else "",
+                    native_error=1418 if name == "cancel" else 0, worker_error=1418 if name == "cancel" else 0,
+                    secondary_failure_step="", secondary_native_error=0, secondary_worker_error=0,
+                    expected_requester_gone=name == "cancel")
                 cases.append(dict(name=name, action="product-paste-command", baseline_bytes=256, helper_pid=42,
                     receiver_bytes=len(payload), owner_entered=name in ("cancel", "close"),
                     prompt_seen=False, transfer_seen=False, other_during=True, other_after=True,
                     error_visible=name in ("occupied", "oversize"), helper_exited=True, busy_cleared=True,
-                    target_closed=name == "close", retry_verified=name != "close"))
+                    target_closed=name == "close", retry_verified=name != "close", owner_release=owner))
             data = dict(schema="termforge-window-clipboard-v1", disposable_hosted=True, cases=cases)
 
             def write(value):
                 (directory / "clipboard-workflow.json").write_text(json.dumps(value), encoding="utf-8")
 
             write(data)
-            self.assertEqual(set(validate_clipboard_workflow(directory)), {"occupied", "oversize", "cancel", "close"})
+            summary = validate_clipboard_workflow(directory)
+            self.assertEqual(set(summary), {"occupied", "oversize", "cancel", "close"})
+            self.assertFalse(summary["cancel"]["owner_release"]["publication_succeeded"])
+            self.assertTrue(summary["cancel"]["owner_release"]["expected_requester_gone"])
+            self.assertTrue(summary["close"]["owner_release"]["publication_succeeded"])
             mutations = [("action", "synthetic"), ("helper_pid", 0), ("helper_pid", True),
                          ("baseline_bytes", 0), ("receiver_bytes", 256), ("prompt_seen", True),
                          ("transfer_seen", True), ("other_during", False), ("other_after", False),
@@ -363,6 +479,25 @@ class ClipboardWindowGateTests(unittest.TestCase):
                 bad = copy.deepcopy(data); bad["cases"][index][field] = value; write(bad)
                 with self.subTest(index=index, field=field), self.assertRaises(ValueError):
                     validate_clipboard_workflow(directory)
+            for field, value in (("reason", "ordinary"), ("release_event", False), ("thread_exited", False),
+                                 ("publication_attempted", False), ("publication_succeeded", True),
+                                 ("failure_step", "GlobalLock-render"), ("native_error", 5), ("native_error", True),
+                                 ("worker_error", 0), ("expected_requester_gone", False),
+                                 ("secondary_failure_step", "GetMessageW"), ("secondary_native_error", 6),
+                                 ("secondary_worker_error", 6)):
+                bad = copy.deepcopy(data); bad["cases"][2]["owner_release"][field] = value; write(bad)
+                with self.subTest(owner_field=field), self.assertRaises(ValueError):
+                    validate_clipboard_workflow(directory)
+            for field in ("owner_entered", "requester_exited", "target_quiescent", "payload_unchanged"):
+                bad = copy.deepcopy(data); bad["cases"][2]["owner_release"]["proof"][field] = False; write(bad)
+                with self.subTest(missing_proof=field), self.assertRaises(ValueError):
+                    validate_clipboard_workflow(directory)
+            bad = copy.deepcopy(data); bad["cases"][0]["owner_release"] = copy.deepcopy(data["cases"][2]["owner_release"]); write(bad)
+            with self.assertRaises(ValueError):
+                validate_clipboard_workflow(directory)
+            bad = copy.deepcopy(data); del bad["cases"][2]["owner_release"]; write(bad)
+            with self.assertRaises(ValueError):
+                validate_clipboard_workflow(directory)
             bad = copy.deepcopy(data); bad["cases"].pop(); write(bad)
             with self.assertRaises(ValueError):
                 validate_clipboard_workflow(directory)

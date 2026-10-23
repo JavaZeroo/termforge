@@ -1,5 +1,6 @@
 // Independent workspace. Measurements: docs/research/windterm-ui-2026-10-23.md.
 #pragma once
+#include "menu_gesture.hpp"
 #include <cmath>
 #include "layout_state.hpp"
 #include "ui_font.hpp"
@@ -299,7 +300,9 @@ class Workspace {
                 AppendMenuW(menu,enabled,16,L"Find\tCtrl+Shift+F");
             }
             POINT at{physical(x),physical(33)}; ClientToScreen(window_,&at);
+            tf_shell_test::observe_popup_open(window_,menu);
             const int selected=TrackPopupMenu(menu,TPM_RETURNCMD,at.x,at.y,0,window_,nullptr);
+            tf_shell_test::observe_popup_result(window_,menu,selected);
             DestroyMenu(menu); action(selected); return;
         }
         if(!state_.focus && inside(main_group_,x,y)) {
@@ -341,6 +344,7 @@ class Workspace {
     void scenario_clipboard();
     void scenario_selection();
     void scenario_find();
+    void scenario_find_stream();
     static std::string size_marker(int outer_width,int rows,ShellWindow* shell) {
         const int bar=GetSystemMetricsForDpi(SM_CXVSCROLL,GetDpiForWindow(shell->handle()));
         return "TF_SIZE_"+std::to_string((outer_width-bar)/12)+"x"+std::to_string(rows);
@@ -411,6 +415,7 @@ class Workspace {
                 else if(self->test_mode_=="ui-clipboard-system") self->scenario_clipboard();
                 else if(self->test_mode_=="ui-selection" || self->test_mode_=="ui-copy-system") self->scenario_selection();
                 else if(self->test_mode_=="ui-find") self->scenario_find();
+                else if(self->test_mode_=="ui-find-stream") self->scenario_find_stream();
                 else self->scenario();
                 return 0;
             }
@@ -499,11 +504,11 @@ public:
             require(stage_==100 && collected_==2,"workspace paste scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && (test_mode_=="ui-selection" || test_mode_=="ui-copy-system" || test_mode_=="ui-find")) {
+        if(!image_.empty() && (test_mode_=="ui-selection" || test_mode_=="ui-copy-system" || test_mode_=="ui-find" || test_mode_=="ui-find-stream")) {
             require(stage_==100 && collected_==2,"workspace selection scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find") {
+        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find" && test_mode_!="ui-find-stream") {
             require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }

@@ -226,10 +226,37 @@ static void growing_retained_document_adds_separator() {
     finish(search, doc, search.start(doc, "ONE\nTWO"), 1);
     check(search.matches().size() == 1, "grown document has the explicit physical-row LF boundary");
 }
+static void explicit_partial_navigation_during_continuous_append() {
+    Parser parser(7, 112, 100); const TextDocument doc(parser.screen); TextSearch search;
+    search.start(doc, "needle", {true, 1024});
+    for (int tick = 0; tick < 250; ++tick) {
+        std::string bytes;
+        for (int row = 0; row < 64; ++row) bytes += "TF_FLOOD needle " + std::string(75, 'x') + "\r\n";
+        parser.feed(bytes); search.notify_change(doc);
+        const auto progress = search.step(doc, search.generation(), 4096);
+        check(progress.status == SearchStatus::running && progress.work_used <= 4096,
+              "continuous append remains an explicitly incomplete scan within the work budget");
+        const auto first = search.navigate_no_wrap(doc, SearchDirection::next);
+        const auto last = search.navigate_no_wrap(doc, SearchDirection::previous);
+        check(first && last && !first->wrapped && !last->wrapped,
+              "explicit navigation can use live partial hits before continuous output stops");
+        check(first->match.range.begin.column == 9 && first->match.range.end.column == 15 &&
+              doc.valid(first->match.range.begin), "partial hit maps to the literal known live cells");
+        check(!search.navigate_no_wrap(doc, SearchDirection::previous, first->match.range.begin) &&
+              !search.navigate_no_wrap(doc, SearchDirection::next, last->match.range.begin),
+              "partial prefix boundaries do not masquerade as a full-document wrap");
+    }
+    finish(search, doc, search.generation(), 4096);
+    const auto last = search.navigate(doc, SearchDirection::previous);
+    const auto wrapped = last ? search.navigate(doc, SearchDirection::next, last->match.range.begin) : std::nullopt;
+    check(last && wrapped && wrapped->wrapped,
+          "completed search keeps the separately verified normal wrapping contract");
+}
 int main() {
     try { basic_matches(); wraps_newlines_and_unicode(); options_and_navigation(); generations_and_bounds();
           changing_text_and_eviction(); continuous_output_keeps_progress(); incremental_non_overlap_phase();
           long_query_and_partial_row_replacement(); growing_retained_document_adds_separator();
+          explicit_partial_navigation_during_continuous_append();
           std::cout << "search core checks passed\n"; return 0; }
     catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
 }

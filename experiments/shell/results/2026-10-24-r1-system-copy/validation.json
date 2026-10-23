@@ -1,0 +1,135 @@
+{
+  "schema": "termforge.r1-system-copy-reviewed-facts.v1",
+  "source": {
+    "repository": "JavaZeroo/termforge",
+    "commit": "98303f30962c430d664de6de0cddb296375919c8",
+    "workflow_run_id": 40005747353,
+    "workflow_run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40005747353",
+    "workflow_run_status": "completed",
+    "workflow_run_conclusion": "failure",
+    "artifacts": [
+      {
+        "id": 12523853673,
+        "name": "r1-windows-input",
+        "zip_sha256": "f55d0c84e0586d9e0f78799d059e6514f630ec0cc8e6a5d985db33b1786de0a7"
+      },
+      {
+        "id": 12523778981,
+        "name": "failure-windows-2025",
+        "zip_sha256": "03861c827bab0ec81cb0979f76cfbcfdf71fbb53837c574b2a3fea17bd7aee02"
+      }
+    ],
+    "reviewed_allowlisted_files": 12,
+    "focused_files_identical_across_artifacts": true
+  },
+  "ubuntu": {
+    "job_id": 120593072201,
+    "status": "success",
+    "ctest_passed": 15,
+    "ctest_total": 15,
+    "ascii_replay": "success",
+    "unicode_replay": "success"
+  },
+  "windows": {
+    "job_id": 120593072659,
+    "status": "failure",
+    "ctest_passed": 23,
+    "ctest_total": 24,
+    "failed_suite": "shell",
+    "failed_test": "test_system_clipboard_product_read_errors_cancel_and_close"
+  },
+  "system_copy_verified": true,
+  "system_copy_rounds": [
+    {
+      "round": 0,
+      "phases": 12,
+      "system_clipboard": true,
+      "job_active_after_cleanup": 0,
+      "desktop_gone": true,
+      "sessions_closed": 2,
+      "selection_sha256": "d332532dfe0b1137667f217382ee33ae0cf90ecfb171ea4d884d1144987c8618"
+    },
+    {
+      "round": 1,
+      "phases": 12,
+      "system_clipboard": true,
+      "job_active_after_cleanup": 0,
+      "desktop_gone": true,
+      "sessions_closed": 2,
+      "selection_sha256": "d332532dfe0b1137667f217382ee33ae0cf90ecfb171ea4d884d1144987c8618"
+    }
+  ],
+  "copy_observations_identical_across_rounds": true,
+  "copy_observations_each_round": [
+    {
+      "phase": "empty",
+      "entry": "WM_COPY",
+      "cf_unicode_text": "TF_COPY_SENTINEL 中文 é"
+    },
+    {
+      "phase": "forward",
+      "entry": "WM_COPY",
+      "cf_unicode_text": "ALPHA  tail\r\nBETA 中文 é"
+    },
+    {
+      "phase": "reverse",
+      "entry": "workspace-command-copy",
+      "cf_unicode_text": "ALPHA  tail\r\nBETA 中文 é"
+    },
+    {
+      "phase": "word",
+      "entry": "WM_COPY",
+      "cf_unicode_text": "tail"
+    },
+    {
+      "phase": "line",
+      "entry": "workspace-command-copy",
+      "cf_unicode_text": "ALPHA  tail"
+    },
+    {
+      "phase": "main-selected",
+      "entry": "WM_COPY",
+      "cf_unicode_text": "OTHER  text"
+    },
+    {
+      "phase": "bottom-restored",
+      "entry": "workspace-command-copy",
+      "cf_unicode_text": "ALPHA  tail"
+    },
+    {
+      "phase": "invalid-copy",
+      "entry": "WM_COPY",
+      "cf_unicode_text": "TF_COPY_SENTINEL 中文 é"
+    }
+  ],
+  "copy_scope": "Exact CF_UNICODETEXT is verified through WM_COPY and workspace Copy commands in two actual hosted window runs; nonempty Ctrl+Shift+C and actual popup activation are not covered.",
+  "clipboard_read_failure": {
+    "case": "cancel",
+    "mode": "delayed",
+    "failure_step": "SetClipboardData-render",
+    "win32_error": 1418,
+    "worker_error": 1418,
+    "error_name": "ERROR_CLIPBOARD_NOT_OPEN",
+    "native_call_and_code_are_direct_observation": true,
+    "baseline_bytes": 256,
+    "cancel_received_bytes": 256,
+    "cancel_has_only_exact_baseline": true,
+    "occupied_exact_retry_received_bytes": 270,
+    "oversize_exact_retry_received_bytes": 270,
+    "close_capture_present": false,
+    "workflow_manifest_present": false,
+    "job_active_after_cleanup": 0,
+    "desktop_gone": true,
+    "requester_exited_before_release": "Fixed-source control-flow inference from stage 5/6, not separately persisted in this failed run.",
+    "late_publication_succeeded": false
+  },
+  "r1_03_complete": false,
+  "r1_04_complete": false,
+  "review": {
+    "basis": "ZIP digests matched GitHub artifact metadata; the 12 focused allowlisted files are byte-identical in both artifacts. The exact source-revision selection verifier was independently rerun against both system-copy rounds, including literal clipboard contents, frame digests, session closure, Job and desktop cleanup.",
+    "future_fixture_change_verified": false,
+    "limit": "The build run failed. Successful limited copy evidence does not close the remaining selection, copy-shortcut, actual-popup, autoscroll, Select All or DPI gates. The observed render error remains a failed read-workflow result; no requester-exit exception policy had been applied to this run.",
+    "official_error_code_source": "https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-",
+    "official_render_contract_source": "https://learn.microsoft.com/en-us/windows/win32/dataxchg/wm-renderformat"
+  }
+}

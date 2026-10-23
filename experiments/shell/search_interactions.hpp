@@ -23,27 +23,27 @@ inline void ShellWindow::search_changed() {
 
 inline void ShellWindow::navigate_find(termforge::SearchDirection direction) {
     if(closing_ || find_query_.empty()) return;
-    if(search_.status()==termforge::SearchStatus::running) {
-        if(find_pending_directions_.size()<64) find_pending_directions_.push_back(direction);
-        find_initial_=false;
-        if(find_) find_->set_status(L"Searching…");
-        return;
-    }
+    const bool partial=search_.status()==termforge::SearchStatus::running;
     termforge::TextDocument document(parser_.screen);
     std::optional<termforge::TextPosition> anchor;
     if(find_current_) {
         const auto live=search_.match(document,find_current_->index);
         if(live && live->range.begin==find_current_->match.range.begin) anchor=live->range.begin;
     }
-    const auto found=search_.navigate(document,direction,anchor);
+    const auto found=partial?search_.navigate_no_wrap(document,direction,anchor):search_.navigate(document,direction,anchor);
     if(!found) {
-        if(find_) find_->set_status(search_.status()==termforge::SearchStatus::running?L"Searching…":L"No matches");
+        find_pending_directions_.clear();
+        if(partial) { find_pending_directions_.push_back(direction); find_initial_=false; }
+        if(find_) find_->set_status(partial?L"Searching… no known match in this direction (no wrap)":
+            search_.status()==termforge::SearchStatus::capped?L"No matches — result limit reached":L"No matches");
         return;
     }
-    find_current_=found; find_initial_=false;
+    find_current_=found; find_initial_=false; find_pending_directions_.clear();
     viewport_.reveal(parser_.screen,found->match.range.begin.line_id);
-    if(find_) find_->set_status(std::to_wstring(found->index+1)+L" / "+std::to_wstring(search_.matches().size())+
-        (found->wrapped?L" — wrapped":L""));
+    if(find_) find_->set_status(partial?L"Searching… partial match (no wrap)":
+        std::to_wstring(found->index+1)+L" / "+std::to_wstring(search_.matches().size())+
+        (search_.status()==termforge::SearchStatus::capped?L" — result limit reached":L"")+
+        (found->wrapped?(search_.status()==termforge::SearchStatus::capped?L" — wrapped within limited results":L" — wrapped"):L""));
     publish();
 }
 
@@ -61,7 +61,7 @@ inline void ShellWindow::poll_find() {
                 find_->set_status(find_query_.empty()?L"":L"Searching…"); publish();
             }
         } catch(const std::exception& error) {
-            search_.cancel(); find_current_.reset(); find_query_.clear(); find_initial_=false;
+            search_.cancel(); find_current_.reset(); find_query_.clear(); find_initial_=false; find_pending_directions_.clear();
             find_->set_status(L"Find: "+utf16(error.what())); publish();
         }
         // Bound key repeat work separately from the search scan budget.
@@ -77,8 +77,8 @@ inline void ShellWindow::poll_find() {
         }
     }
     if(search_.status()!=termforge::SearchStatus::running) {
-        for(int count=0;count<4 && !find_pending_directions_.empty();++count) {
-            const auto direction=find_pending_directions_.front(); find_pending_directions_.pop_front();
+        if(!find_pending_directions_.empty()) {
+            const auto direction=find_pending_directions_.back(); find_pending_directions_.clear();
             navigate_find(direction);
         }
         return;
@@ -89,19 +89,25 @@ inline void ShellWindow::poll_find() {
         if(!live || live->range.begin!=find_current_->match.range.begin ||
            live->range.end!=find_current_->match.range.end) find_current_.reset();
     }
-    if(progress.status!=termforge::SearchStatus::running && !find_pending_directions_.empty()) {
-        for(int count=0;count<4 && !find_pending_directions_.empty();++count) {
-            const auto direction=find_pending_directions_.front(); find_pending_directions_.pop_front();
-            navigate_find(direction);
-        }
+    if(!find_pending_directions_.empty()) {
+        const auto direction=find_pending_directions_.back(); find_pending_directions_.clear();
+        navigate_find(direction);
     }
     else if(progress.status!=termforge::SearchStatus::running && find_initial_ && !search_.matches().empty())
         navigate_find(termforge::SearchDirection::previous);
     else if(find_ && !find_current_) {
-        find_->set_status(search_.matches().empty()?
-            (progress.status==termforge::SearchStatus::running?L"Searching…":L"No matches"):
+        find_->set_status(progress.status==termforge::SearchStatus::running?
+            (search_.matches().empty()?L"Searching…":L"Searching… partial results (no current match)"):
+            search_.matches().empty()?L"No matches":
             std::to_wstring(search_.matches().size())+L" matches"+
             (progress.status==termforge::SearchStatus::capped?L" — result limit reached":L""));
+    }
+    if(find_ && find_current_ && find_pending_directions_.empty()) {
+        const auto& found=*find_current_;
+        find_->set_status(progress.status==termforge::SearchStatus::running?L"Searching… partial match (no wrap)":
+            std::to_wstring(found.index+1)+L" / "+std::to_wstring(search_.matches().size())+
+            (progress.status==termforge::SearchStatus::capped?L" — result limit reached":L"")+
+            (found.wrapped?(progress.status==termforge::SearchStatus::capped?L" — wrapped within limited results":L" — wrapped"):L""));
     }
     if(progress.work_used) publish();
 }
