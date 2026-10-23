@@ -10,6 +10,8 @@
 |---|---|---|
 | 干净检出可构建和回归 | [贡献指南](../CONTRIBUTING.md)、[根 CMake](../CMakeLists.txt)、[CI workflow](../.github/workflows/build.yml) | `2dc8d6d` 对应 [Actions 39930814167](https://github.com/JavaZeroo/termforge/actions/runs/39930814167)，Windows 2025 / Ubuntu 24.04 已有成功记录；Linux 未构建 Windows 客户端 |
 | R1 历史/键盘/粘贴窗口整合 | [源码、二进制、重复样本与跳过项](../experiments/shell/results/2026-10-23-r1-foundations/validation.json)、[运行入口](../experiments/shell/README.md) | `9b16acc` 对应实现的本地全量 19 个 CTest 套件通过；内部仍有 3 个跳过项。历史内容/原生拖动、键盘实际接收字节、粘贴途中取消/关闭各重复两轮；系统剪贴板与实际 IME 未据此验收，不是性能对照 |
+| R1 系统剪贴板集成与剩余失败 | [Actions 39954190927](https://github.com/JavaZeroo/termforge/actions/runs/39954190927)、[可靠粘贴任务](https://github.com/JavaZeroo/termforge/issues/14) | `d150fe4`：Ubuntu 通过；Windows shell 18 项通过，包含正常系统剪贴板窗口流程两轮。独立 `paste_system` 在缺少终止符用例失败，总 run 失败；占用用例已越过。尚需区分系统返回数据、夹具假设和读取器行为，并补产品读取阶段错误/取消验收 |
+| 真实 IME 环境门槛 | [Actions 39950720638](https://github.com/JavaZeroo/termforge/actions/runs/39950720638)、[输入任务](https://github.com/JavaZeroo/termforge/issues/16) | 原生探针构建通过；Server 2025 输入准备 10 分钟超时，真实组合/候选测试未执行。现存日志不足以定位具体操作，不能解释为 IME 不可用，也不能以键盘测试代替 |
 | 本地 shell、工作区与回收 | [操作和场景说明](../experiments/shell/README.md)、[自动测试](../experiments/shell/test_shell.py) | 真实 cmd、独立非输入 desktop、自有 Job、输出/关闭/resize/双区域焦点等；输入为脚本消息，不是物理键盘延迟实验 |
 | DPI 与会话缩放 | [审查和验证记录](archive/reviews/2026-10-23-ui-dpi-zoom.md)、[源/EXE 身份及回收](../experiments/shell/results/2026-10-23-dpi-zoom/validation.json)、[几何记录](../experiments/shell/results/2026-10-23-dpi-zoom/dpi.json) | 全量 CTest 14/14，最后边缘修复后 shell 11 项通过；32 组 renderer 度量组合。受控 DPI 96/144/192，系统窗口 DPI 为 96；真实跨屏未测 |
 | 核心有限子集与恢复 | [核心支持合同](../experiments/core/README.md)、[Recovery 合同](../experiments/core/RECOVERY.md)、[resize 决策](adr/0005-physical-row-resize.md) | 手写状态预期、随机/逐字节拆包、未知序列与超长输入；不等于完整 VT、Unicode 或 TUI 认证 |
@@ -40,6 +42,7 @@ python -m unittest experiments.shell.test_shell -v
 | 接收路径静态线索 | [接收路径报告](research/windterm-headless-2026-10-22.md)、[headless 工具入口](../research/README.md) | 指定路径 64 KiB ReadFile 请求上限、空→非空通知条件；不能推出完整线程/背压策略或性能收益 |
 | 工作区结构/几何 | [首轮 UI 报告](research/windterm-ui-2026-10-23.md)、[主标签/字体报告](research/windterm-ui-typography-2026-10-23.md)、[探针与准备守卫](../research/ui/README.md) | 发行资源、定向二进制和隔离运行时交叉核对；默认缩放两次及 Qt 1.5 倍一次。旧首启自动导入和错误状态样本已明确排除，不能混作最终纯合成证据 |
 | 可公开的 UI 精简结果 | [默认样本 1](research/ui-typography/normal-01.json)、[默认样本 2](research/ui-typography/normal-02.json)、[Qt 1.5 倍样本](research/ui-typography/scale-150.json) | 白名单矩形、字体、DPI 和身份；不是完整像素、逐字形 fallback、真实跨屏或性能证明 |
+| 基础文字交互 | [行为合同](research/windterm-r1-text-contract.md)、[hosted 事实摘要](research/r1-text/hosted-39954191554.json)、[Actions 39954191554](https://github.com/JavaZeroo/termforge/actions/runs/39954191554) | `d150fe4` 的 text/menu-wrap 各两轮：系统 CRLF 复制、单行直接粘贴、多行确认/取消、全选/查找菜单及 VT 投影有证据。独立复核补查粘贴前基线；自动验收器仍有漏检待修，Copy/Paste 菜单及 VT 的系统复制边界仍缺，#11 不因此关闭 |
 
 主对照为官方 Windows x64 2.7.0：ZIP SHA-256 `b05c3c7371340ff1302967247ffcd3a3ba27b237f72010e9157086143c453e50`，EXE SHA-256 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`。最初本机安装的 EXE 身份不同；其历史静态报告不得冒充官方包结果。其他目标平台仍需各自固定包身份。
 

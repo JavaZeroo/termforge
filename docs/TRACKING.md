@@ -29,7 +29,16 @@
 | R1-07 | [#17](https://github.com/JavaZeroo/termforge/issues/17) | 统一文字动作上下文并完成 WindTerm 交互对照 | [#11](https://github.com/JavaZeroo/termforge/issues/11)、[#13](https://github.com/JavaZeroo/termforge/issues/13)、[#14](https://github.com/JavaZeroo/termforge/issues/14)、[#15](https://github.com/JavaZeroo/termforge/issues/15)、[#16](https://github.com/JavaZeroo/termforge/issues/16) |
 | R1-08 | [#18](https://github.com/JavaZeroo/termforge/issues/18) | 验收完整文字工作流与多会话资源边界 | [#17](https://github.com/JavaZeroo/termforge/issues/17) |
 
-可独立推进的切片：取证 [#11](https://github.com/JavaZeroo/termforge/issues/11)、历史视口 [#12](https://github.com/JavaZeroo/termforge/issues/12)、可靠粘贴 [#14](https://github.com/JavaZeroo/termforge/issues/14)、键盘/IME [#16](https://github.com/JavaZeroo/termforge/issues/16)，实时完成状态见对应 issue。历史视口和交互合同完成后推进选择/查找，最后合并动作上下文与整体工作流验收。实现文件有冲突时按接口串行合入。
+## 从当前状态接着做
+
+以下为选题顺序；各项已做/待做和验收结果只在对应 issue 维护。`ready-for-agent` 表示可以开工，不代表全仓库所有 ready 项优先级相同。
+
+1. **先收尾三个独立切片。** [参考文字行为契约](https://github.com/JavaZeroo/termforge/issues/11)补实际入口和复制边界；[可靠粘贴](https://github.com/JavaZeroo/termforge/issues/14)完成系统边界与产品读取阶段验收；[键盘与真实 IME](https://github.com/JavaZeroo/termforge/issues/16)先查明自动环境，再验证真实输入。三项可以并行，涉及同一窗口/测试入口时串行合入。
+2. **前置完成后做选择和查找。** [历史浏览](https://github.com/JavaZeroo/termforge/issues/12)已按限定合同验收，继续作为回归基础；[选择复制](https://github.com/JavaZeroo/termforge/issues/13)和[历史查找](https://github.com/JavaZeroo/termforge/issues/15)仍等待参考契约，不重复开历史实现任务。
+3. **最后整合并关闭 R1。** [统一文字动作](https://github.com/JavaZeroo/termforge/issues/17)核对菜单/快捷键/焦点和参考行为；[完整工作流验收](https://github.com/JavaZeroo/termforge/issues/18)在最终源码与真实系统环境上验证全部流程。单个测试成功或系统测试跳过不能解除该门槛。
+4. **空闲容量用于可并行调查。** 优先[全量目标台账](https://github.com/JavaZeroo/termforge/issues/19)，防止遗漏远期范围；外部核心和测量工具先按下表拆小。Server 2022 专项可独立调查，但不挤占近期文字交互主线。
+
+未提交草稿和未完成的系统验收均不计入交付。开工前核对工作树，保留已有草稿并明确归属；文档整理本身不解除功能验收门槛。
 
 ## 并行调查与遗留门槛
 

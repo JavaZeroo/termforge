@@ -1,0 +1,185 @@
+{
+  "schema": "termforge.r1-hosted-reviewed-facts.v1",
+  "issue_11_complete": false,
+  "target": {
+    "version": "2.7.0 Windows x64 official",
+    "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "distribution_files_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
+  },
+  "source": {
+    "run_id": 39954191554,
+    "url": "https://github.com/JavaZeroo/termforge/actions/runs/39954191554",
+    "head_sha": "d150fe44b9fff058bcb5ed6aafe9ac0c34dacade",
+    "conclusion": "success",
+    "artifact_id": 12502331202,
+    "artifact_name": "r1-reference-facts",
+    "artifact_zip_sha256": "e8c995357571f8416af6e9f9ff16a1b7ee81cdec75a36d07fe4a4357d969a0cf"
+  },
+  "text_runs": [
+    {
+      "run_name": "r1-hosted-01",
+      "source_evidence_id": "ev_2b661ac6c83465cf3f82072eddd402dfcaa8ed16048d985c386d65e3578f5ded",
+      "source_summary": "r1-hosted-01-summary.json",
+      "source_diagnostic": "r1-hosted-01-diagnostic.json",
+      "fixture_sha256": "f4a6b8e43b74813a32e5100eef35897a8e24be72a5ff32737fe78ffc133c17c2",
+      "template_sha256": "8353467a0ba97e86d828f715b9c7f50d82ba747892756d4f7a31bd7633af186d",
+      "original_gate": {
+        "complete": true
+      },
+      "independent_phase_recheck": true,
+      "cleanup": {
+        "owned_active": 0,
+        "only_synthetic_session": true
+      }
+    },
+    {
+      "run_name": "r1-hosted-02",
+      "source_evidence_id": "ev_f2ca98820762e10aa63ffc2a573c34422c9651cc1c5f9b8d24aefbc1629cd2a5",
+      "source_summary": "r1-hosted-02-summary.json",
+      "source_diagnostic": "r1-hosted-02-diagnostic.json",
+      "fixture_sha256": "f4a6b8e43b74813a32e5100eef35897a8e24be72a5ff32737fe78ffc133c17c2",
+      "template_sha256": "8353467a0ba97e86d828f715b9c7f50d82ba747892756d4f7a31bd7633af186d",
+      "original_gate": {
+        "complete": true
+      },
+      "independent_phase_recheck": true,
+      "cleanup": {
+        "owned_active": 0,
+        "only_synthetic_session": true
+      }
+    }
+  ],
+  "text_observations_equal": true,
+  "text_observations": {
+    "copy_cf_unicode_text": "ALPHA  tail\r\nBETA 中文 é",
+    "peer_delta_from_before_paste": {
+      "reverse-drag-unicode": "",
+      "paste-single": "TF-SINGLE",
+      "paste-single-cancel": "TF-SINGLE",
+      "paste-multiline": "TF-SINGLE",
+      "paste-multiline-cancel": "TF-SINGLE",
+      "paste-multiline-confirm": "TF-SINGLE",
+      "paste-multiline-accepted": "TF-SINGLETF-FIRST\rTF-SECOND\rTF-THIRD"
+    },
+    "modal_by_original_phase": {
+      "reverse-drag-unicode": null,
+      "paste-single": null,
+      "paste-single-cancel": null,
+      "paste-multiline": "PasteDialog",
+      "paste-multiline-cancel": null,
+      "paste-multiline-confirm": "PasteDialog",
+      "paste-multiline-accepted": null
+    },
+    "focus_after_multiline_cancel": "ScintillaEditBase",
+    "focus_after_multiline_accept": "ScintillaEditBase"
+  },
+  "paste_inputs": {
+    "single": {
+      "clipboard": "TF-SINGLE",
+      "entry": "Ctrl+Shift+V"
+    },
+    "multiline_cancel": {
+      "clipboard": "TF-FIRST\r\nTF-SECOND\nTF-THIRD",
+      "entry": "Shift+Insert",
+      "cancel": "Escape"
+    },
+    "multiline_accept": {
+      "clipboard": "TF-FIRST\r\nTF-SECOND\nTF-THIRD",
+      "entry": "Ctrl+Shift+V",
+      "accept": "Default Paste button"
+    }
+  },
+  "independent_recheck": {
+    "method": "Recomputed exact peer prefix/delta and modal transitions from both allowlisted diagnostics; no new target execution.",
+    "single_line_sent_immediately_once": true,
+    "multiline_no_bytes_before_confirmation": true,
+    "multiline_cancel_preserved_peer_and_closed_dialog": true,
+    "multiline_accept_sent_once_and_closed_dialog": true,
+    "status": "passed_for_retained_observations_only"
+  },
+  "menu_runs": [
+    {
+      "run_name": "r1-menu-hosted-01",
+      "source_evidence_id": "ev_2edaca874a1157f2e250fa913640b0ca0513fe93d0b072b3748c1cad5f79953f",
+      "source_summary": "r1-menu-hosted-01-summary.json",
+      "fixture_sha256": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "template_sha256": "c7c730a8f373a344fa5b275b1524b3e8ef5a2ea46d9b36ffb0c5253df73dc1c2",
+      "original_gate": {
+        "complete": false,
+        "menu_verified": true
+      },
+      "activated_actions": [
+        "Select All",
+        "Find"
+      ],
+      "system_clipboard_verified": false,
+      "cleanup": {
+        "owned_active": 0,
+        "peer_closed": true
+      }
+    },
+    {
+      "run_name": "r1-menu-hosted-02",
+      "source_evidence_id": "ev_4cd316cc0b23bd7ab8d5d95c48b7a74b9d8e11dc4c2087825bf1a0faa2b8ea17",
+      "source_summary": "r1-menu-hosted-02-summary.json",
+      "fixture_sha256": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "template_sha256": "c7c730a8f373a344fa5b275b1524b3e8ef5a2ea46d9b36ffb0c5253df73dc1c2",
+      "original_gate": {
+        "complete": false,
+        "menu_verified": true
+      },
+      "activated_actions": [
+        "Select All",
+        "Find"
+      ],
+      "system_clipboard_verified": false,
+      "cleanup": {
+        "owned_active": 0,
+        "peer_closed": true
+      }
+    }
+  ],
+  "vt_observations_equal": true,
+  "vt_observations": {
+    "protocol": "Telnet-loopback",
+    "columns": 63,
+    "sent_sha256": "6314155871fcdd041d7f3514ea6643c34b9f347ee59feefa44e89c25b430ae42",
+    "selection": "TF-SOFT:sssssssssssssssssssssssssssssssssssssssssssssssssssLEFTRIGHT:END\nTF-HARD:hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhLEFT\nRIGHT:END\nTF-TAIL:two  \nTF-UNICODE:中文 é\nTF-VT-END\n",
+    "soft_wrap_joins": true,
+    "hard_break_lf": true,
+    "trailing_spaces_preserved": true,
+    "search": {
+      "vt-soft-search": {
+        "scroll": 0,
+        "lines": 8,
+        "capacity": 19,
+        "caret": 68,
+        "anchor": 59,
+        "selection": "LEFTRIGHT"
+      },
+      "vt-soft-search-wrap": {
+        "scroll": 0,
+        "lines": 8,
+        "capacity": 19,
+        "caret": 68,
+        "anchor": 59,
+        "selection": "LEFTRIGHT"
+      }
+    }
+  },
+  "visible_menu_shortcut_labels": {
+    "Copy": "Shift+Del",
+    "Paste": "Shift+Ins",
+    "Find": "Ctrl+Shift+F",
+    "Select All": "Ctrl+Shift+A"
+  },
+  "limitations": [
+    "Original complete/menu_verified flags describe existing script gates, not issue #11 acceptance.",
+    "Existing text validator starts multiline cancellation comparison after paste opens; it can miss earlier leakage and does not validate single-line effects or dialog dismissal. Retained observations were checked independently against the before-paste prefix.",
+    "Original phase paste-single-cancel is Escape after immediate successful paste, not cancellation of an active paste.",
+    "Only Select All and Find were actually activated through context menus. Copy and Paste menu entries were enumerated, not activated.",
+    "CF_UNICODETEXT hard-break copy is observed in the Shell fixture. VT soft-wrap joins and trailing spaces are observed only in selection projection; their system clipboard result remains unknown.",
+    "Controlled Qt event replay on disposable hosted Windows, not physical input or presentation performance.",
+    "The two Shell runs have different total line counts; text_observations_equal compares the listed copy/paste facts, not all raw state."
+  ]
+}

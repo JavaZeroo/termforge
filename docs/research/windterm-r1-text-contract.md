@@ -1,66 +1,93 @@
 # WindTerm 2.7.0：R1 文字交互契约
 
-这是受控本地 Shell 的行为取证，不是完整等价或性能验收。目标是官方 2.7.0 Windows x64，EXE SHA-256 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`；分发文件白名单摘要为 `e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203`。公开内容只包含原创场景、工具和事实。
+**#11 尚未验收完成。** 已直接观察基础导航/选择、系统复制、键盘粘贴、全选/查找菜单及原始 VT 文本投影。复制/粘贴菜单的实际执行、软换行与尾空白的系统剪贴板结果，以及粘贴验收器补强仍未完成。以下记录行为事实，不代表完整等价或性能验收。
 
-## 观察方法
+目标固定为官方 2.7.0 Windows x64，EXE SHA-256 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`；分发文件白名单摘要为 `e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203`。公开内容只有原创场景、工具和事实。
 
-`research/ui/r1_fixture.py` 生成 80 行编号日志、内空格/尾空格、中文、NFD 组合标记及长行；随后只记录键盘输入，不执行粘贴命令。`r1_launch.py` 复用已有官方包哈希、fresh profile 和防止初次导入用户配置的检查；只启动新的副本，Job 在恢复主线程之前分配。即使 Job 分配失败，已创建的 suspended 进程仍通过自有句柄终止并等待。
+## 证据与观察边界
 
-原创 `qt_r1_text.js` 通过 REA 6.7.0 的公开 Frida 入口，在目标 UI 线程重放 Qt 事件，读出受控文本状态、焦点及 peer 接收结果。双击/三击使用鼠标事件；`selectWord()` / `selectLine()` API 的观察单独命名。所有调用只针对新建的合成配置，不附着用户程序。此方法不能代表物理输入或呈现性能。
+[Hosted 事实摘要](r1-text/hosted-39954191554.json) 来自 [CI 39954191554](https://github.com/JavaZeroo/termforge/actions/runs/39954191554)，源码为 `d150fe44b9fff058bcb5ed6aafe9ac0c34dacade`。在一次性 Windows 2025 runner 中，两个 Shell `text` 场景与两个 loopback `menu-wrap` 场景各使用新配置；每对使用相同 fixture/template。四轮自有 Job 均 `active=0`，两个 VT peer 均关闭，配置检查只含合成会话。两轮 Shell 的总行数不同，不能把相同的核心行为说成全部原始状态相同。
 
-## 已直接观察
+该摘要保留来源 Evidence ID、原 gate 标志和独立复核，三者不混用。artifact `r1-reference-facts` 的 ZIP SHA-256 为 `e8c995357571f8416af6e9f9ff16a1b7ee81cdec75a36d07fe4a4357d969a0cf`。已核对八个 JSON 白名单文件；公开摘要没有用户配置、原始 widgets、句柄、路径、stack、下载令牌或私有提取物。
 
-同一最终脚本的两次本地 fresh profile 运行 `r1-local-05/06` 均通过导航/选择严格验证，Job `active=0`，配置检查只含一个合成会话。公开白名单记录：[第一次](r1-text/local-01.json)、[第二次](r1-text/local-02.json)。两次导航/选择记录逐项一致，系统剪贴板均明确为 `verified=false`、完整状态为 `complete=false`。原始记录保留在忽略的 `local/ui-reference/`。此前探索运行只帮助修正探针，不作为完整 R1-01 验收。
+`r1_fixture.py` 生成编号日志、内空格/尾空格、中文、NFD 组合标记及长行，随后只记录输入，不执行粘贴内容。`r1_vt_fixture.py` 只监听 `127.0.0.1` 的临时端口，接受一个自有 Telnet 连接，按 [NAWS 规范](https://www.rfc-editor.org/rfc/rfc1073) 读取列数后发送原创 VT 字节，不使用账户或外部主机。
 
-| 操作 / 前提 | 观察结果 | 适用边界 |
+`qt_r1_text.js` / `r1_menu_wrap.js` 经 REA 6.7.0 公开 Frida 入口，在自有目标 UI 线程重放 Qt 键盘、鼠标及 context 事件，读取受控文本状态、焦点和 peer 结果。菜单通过实际 popup、选定 action 与排队 Return 执行；不是直接调用 QAction 的业务槽。`selectWord()` / `selectLine()` API 观察单独标明，不代替鼠标选择。本方法不证明物理输入或实际呈现性能。
+
+## 历史、查找与选择
+
+以下行为在两次本地新配置中有逐项相同的记录：[本地一](r1-text/local-01.json)、[本地二](r1-text/local-02.json)。Hosted 两次 `text` 场景也通过相应内容和状态检查。本地记录的系统剪贴板仍为 `verified=false`，不能用后来的 hosted 结果改变原记录的覆盖范围。
+
+| 操作 / 前提 | 直接观察 | 适用边界 |
 |---|---|---|
 | Ctrl+Shift+Home / End | 滚动到历史顶部 / 底部 | 默认 local Shell；焦点在终端 |
 | 历史顶部暂停后外部追加 20 行 | 可保留行数增加 20，视口保持 0 | 无键盘输入 |
 | 暂停后输入普通 `x` | 无新增输出，视口回到末尾；peer 收到 `x` | 键入恢复跟随 |
-| Shift+PgUp / PgDn | 视口不动，peer 收到 MSVCRT 扩展键码 | 不能列作默认历史快捷键 |
+| Shift+PgUp / PgDn | 视口不动，peer 收到 MSVCRT 扩展键码 | 不是已观察到的默认历史快捷键 |
 | Ctrl+Shift+F / Escape | 焦点进入查找 ComboBox / 返回终端 | 查找文字未进入 peer |
 | 文档末尾输入 `needle` 后等待 | 增量查找自动选第 79 行匹配 | 80 行独立已知 oracle |
-| 接着 Enter / F3 | Enter 到第 78 行；F3 到第 79 行 | Enter 默认向前，F3 向后 |
-| F3 越过最后命中 / Shift+F3 | 循环到首个 / 从首个回到末个 | 单个会话保留历史 |
-| 查找 `中文` | 选中两字，不损坏文本 | 字面量基本样例；不是全 Unicode 规范 |
+| 接着 Enter / F3 | Enter 到第 78 行；F3 到第 79 行 | Enter 朝较小文本位置，F3 朝较大位置 |
+| F3 越过最后命中 / Shift+F3 | 循环到首个 / 从首个回到末个 | 当前会话的保留历史 |
+| 查找 `中文` | 选中两字，不损坏文本 | 字面量基本样例，不是全 Unicode 规范 |
 | 正文双击 `TF-HISTORY-000` | 选中完整词，保留连字符 | 无修饰键鼠标事件 |
 | 同点三击 | 选中整行，不包含末尾 LF | 与 `selectLine()` API 不同 |
-| `selectLine()` API | 选择相同行，并包含末尾 LF | 不能用此 API 冒充三击 |
-| 正向 / 逆向跨行拖选 | `ALPHA␠␠tail\nBETA 中文 é` | 内空格、中文、组合标记保留；逆向事件分帧发送 |
-| 输入 `ALPHA␠␠tail␠␠␠` | 本地目标文本模型读回不含尾空格 | 尚不能归因到复制层 |
+| `selectLine()` API | 选择相同行，并包含末尾 LF | 不等于三击行为 |
+| 正向 / 逆向跨行拖选 | `ALPHA␠␠tail\nBETA 中文 é` | 内空格、中文、组合标记保留 |
+| 输入 `ALPHA␠␠tail␠␠␠` | 本地目标文本模型读回不含尾空格 | 不能归因到复制层 |
 
-### 原始 VT、软换行与菜单补充
+## 系统复制与键盘粘贴
 
-`r1_vt_fixture.py` 只监听 `127.0.0.1` 的一个临时端口，接受一个自有 Telnet 连接，按 [NAWS 规范](https://www.rfc-editor.org/rfc/rfc1073) 读取实际列数后发送原创 VT 字节，不使用 WinPTY、账户或外部主机。两轮 [VT 记录一](r1-text/vt-menu-01.json)、[VT 记录二](r1-text/vt-menu-02.json) 的 fixture、发送字节 SHA-256、91 列和 VT 结果一致，peer 均关闭、Job `active=0`。两轮菜单尝试不同，不宣称同一完整脚本已重复通过。
+以下是 hosted 两次 `text` 场景一致的实际系统剪贴板与接收端结果。复制通过 `OpenClipboard` / `GetClipboardData(CF_UNICODETEXT)` 读取，不使用 Qt 文本缓存代替。粘贴输入先写入受控 VM 的系统剪贴板，再触发相应入口。
 
-- 在第 91 列写满 `LEFT` 后继续写 `RIGHT`，原始字节没有换行。目标选择文本为连续 `LEFTRIGHT`，并能跨显示折行查找该文字；再次 F3 回到同一唯一匹配。
-- 相同位置显式发送 CRLF，目标选择文本保留 `LEFT\nRIGHT`，不会合并。
-- `TF-TAIL:two␠␠` 的两格尾空格在 VT 选择文本中保留；中文及 NFD `e` + U+0301 保留。因此，上表本地 Shell 的尾空格消失不能推广为目标的统一复制策略。
-- 此处验证选择文本投影与搜索，实际 Windows CF_UNICODETEXT 是否再转换 CR/LF 仍须 hosted 证据。
+| 输入 / 操作 | 直接观察 |
+|---|---|
+| 选中 `ALPHA␠␠tail\nBETA 中文 é`，Ctrl+Shift+C | 系统 CF_UNICODETEXT 精确为 `ALPHA␠␠tail\r\nBETA 中文 é`；硬换行转 CRLF，中文和 NFD 保留 |
+| 剪贴板 `TF-SINGLE`，Ctrl+Shift+V | 无确认框；peer 立即收到完整 `TF-SINGLE`，仅一次 |
+| 单行粘贴后 Escape | peer 不再增加，但已发送内容不会撤销；终端保有焦点 |
+| 剪贴板 `TF-FIRST\r\nTF-SECOND\nTF-THIRD`，Shift+Insert | 出现 `PasteDialog`；peer 在确认前没有增加 |
+| 上述多行弹窗中 Escape | 弹窗关闭、焦点回终端、peer 不增加 |
+| 同一多行剪贴板，Ctrl+Shift+V | 再次出现 `PasteDialog`；peer 在确认前仍不增加 |
+| 点击默认 Paste 按钮 | 弹窗关闭、焦点回终端；peer 仅追加一次 `TF-FIRST\rTF-SECOND\rTF-THIRD` |
 
-排队的 Qt context 事件已打开真实终端上下文菜单。只公开 R1 条目：菜单显示复制 `Shift+Del`、粘贴 `Shift+Ins`、查找 `Ctrl+Shift+F`、全选 `Ctrl+Shift+A`。这是实际可见入口和标注，尚未等同于执行这些键位。最后一轮在中文菜单标签匹配处停止；实际全选/查找的菜单触发效果仍未验收，`menu_verified=false`。选择器已按观察到的中文/英文标签修正，待下一次受控运行。
+脚本阶段名 `paste-single-cancel` 有误导性：该阶段实际是**立即粘贴成功之后的 Escape**，没有可取消的单行确认框。它不能作为单行任务取消的证据。多行取消与确认的入口则有真实弹窗和接收端字节支持。
 
-## 静态声明与未完成项
+这一系统复制样例没有尾空白或软换行；不能与下一节的选择模型结果拼接成“系统剪贴板也保留尾空白并合并软换行”的结论。不同传输、alt-screen、逐行发送及更大粘贴任务不在此样例的结论内。
 
-已读官方分发声明指向 Ctrl+Shift+C 复制、Ctrl+Shift+V / Shift+Insert 粘贴、右键显示菜单；默认主屏粘贴提示开启、alt-screen 提示关闭、选择后自动复制关闭。它们是静态线索，实际入口、确认以及系统 CF_UNICODETEXT 必须单独观察。
+## 原始 VT 换行与实际菜单
 
-本机新建 window station 的实际 `OpenClipboard` 返回 error 5；Qt 缓存中的文字不能代替系统剪贴板。只有 `--hosted-ci` 且同时为 `GITHUB_ACTIONS=true` / `RUNNER_ENVIRONMENT=github-hosted` 时，允许使用一次性 GitHub-hosted VM 当前 station 的剪贴板，窗口仍在自有非输入 desktop。不提供普通本机当前 station 回退。
+Hosted 两次 `menu-wrap` 场景均协商为 63 列，发送字节 SHA-256、选择与搜索结果相同。较早的 [91 列记录一](r1-text/vt-menu-01.json)、[91 列记录二](r1-text/vt-menu-02.json) 也保留为独立的局部证据，不将它们的菜单失败改判为通过。
 
-当前缺口：实际 CF_UNICODETEXT 的 CR/LF、粘贴两个键盘入口与取消/确认、完整两次重复运行待 hosted 执行；菜单真实触发效果仍未观察。基础 VT 软/硬换行投影已有直接证据，更复杂 VT 模式、重排和实际剪贴板转换不在该样例结论内。保持 #11 开放直到基础核心语义获得证据。
+| 输入 / 操作 | 直接观察 | 系统剪贴板覆盖 |
+|---|---|---|
+| `LEFT` 写至最后一列，紧接 `RIGHT`，中间无换行字节 | 选择投影为连续 `LEFTRIGHT`；可跨显示折行查找，F3 回到同一唯一匹配 | 未验证 |
+| 相同位置显式发送 CRLF | 选择投影为 `LEFT\nRIGHT`，不合并硬换行 | 未验证 |
+| `TF-TAIL:two␠␠`、中文、NFD `e` + U+0301 | 选择投影保留两格尾空白、中文和组合标记 | 未验证 |
+| 实际上下文菜单 → Select All | 从不同的初始选区变为完整合成 VT 文本 | 不涉及复制 |
+| 实际上下文菜单 → Find | 焦点进入 ComboBox，输入 `LEFTRIGHT` 后选中该匹配；输入未泄漏到 peer | 不涉及复制 |
 
-## 自动复现与判定
+菜单可见标注为 Copy `Shift+Del`、Paste `Shift+Ins`、Find `Ctrl+Shift+F`、Select All `Ctrl+Shift+A`。其中 **Copy/Paste 菜单只是读取条目，尚未激活**；Copy 的 `Shift+Del` 也只是可见标注。实际键盘复制证据来自上一节的 Ctrl+Shift+C，不能自动证明另一键位。
 
-`.github/workflows/r1-reference.yml` 仅手动 dispatch，由代理触发即可。Windows 2025 disposable job 下载并核验官方 ZIP/EXE，安装锁定 REA，串行执行两次新的合成配置。系统剪贴板不可与产品剪贴板测试并行。`r1_summarize.py --require-complete` 检查身份、阶段、独立内容预期、实际系统剪贴板、peer 字节及回收；任何缺口保持失败。
+## 验收器限制与未完成项
 
-`python -m unittest research.tests.test_ui_r1 -v` 验证证据拒绝、hosted 安全边界、原始 VT peer 和真实 Job 超时清理。设置 `TERMFORGE_R1_FAILURE_SOURCE` 为已校验的官方目录后，还会运行真实 suspended 进程的 Job 分配失败注入。REA 使用锁定包的公开 Node CLI 入口，先以原生 suspended 状态创建、加入自有 Job 后再恢复，后代进程继承 Job，输出直接落盘；超时终止整个 Job，避免 Windows `.cmd` wrapper 退出但后代仍持有 stdout 的无界等待。合成进程测试覆盖延迟分配时禁止提前执行、分配失败回收、失败记录写入异常时仍回收及恢复后立即生子的整树回收。任何 `launcher-failure.json` 或两层 REA `cleanup_error` 都禁止验收通过，即使已留下完整场景标记。公开 artifact 仅 `local/r1-public/*.json` 白名单：原始 widgets、句柄、路径、stack、分发文件、配置和私有提取物都不上传。
+CI 成功说明 `d150fe4` 当时的脚本 gate 通过，不能直接解锁整个 #11。原 `text` 汇总器有明确漏洞：多行取消比较以弹窗出现后的 peer 内容为基线，可能漏掉打开弹窗前的提前发送；单行效果及取消/接受后弹窗关闭也未严格校验。新增反例已复现这些误通过条件，代码补强仍未完成。
 
-就绪判定检查真实 session tree model、JS engine、peer 数据和活动文本，受总观察时限约束；不将固定延时当成就绪成功。可能进入模态循环的事件通过 Qt 队列发送。`resize`/同步事件保留目标自己的原生异常处理，避免 Frida 默认 `steal` 提前展开目标栈；该区别见 [Frida NativeFunction 文档](https://frida.re/docs/javascript-api/#nativefunction)。这些改动仍需要新的 hosted 运行，不能把首次 hosted 在 resize 阶段失败改判通过。
+本次对两轮保留的白名单 diagnostic 另做了独立复核：以 `reverse-drag-unicode` 阶段的 peer 内容为粘贴前基线，确认单行只追加 `TF-SINGLE`；多行打开、取消和再次确认前均不再增加，确认后只追加一次精确 CR 分隔文本；取消/接受后 modal 均为 null、焦点回终端。两轮均满足这些更严格的条件。此复核支持本次观察，**并未修复自动验收器**。公开 JSON 将 `original_gate` 与 `independent_recheck` 分开，顶层 `issue_11_complete=false`。
 
-补充场景命令（同一已校验源目录、全新输出目录）：
+恢复增量工作后，#11 的剩余门槛是：
 
-```powershell
-python research/ui/r1_launch.py --source local/windterm-official/WindTerm_2.7.0 --out local/ui-reference/r1-menu-hosted-01 --rea research/ui/r1-tools/node_modules/.bin/rea.cmd --scenario menu-wrap --hosted-ci --seconds 35
-python research/ui/r1_summarize.py local/ui-reference/r1-menu-hosted-01 --out local/r1-public/r1-menu-hosted-01-summary.json --require-menu-complete
-```
+1. 修复粘贴验收器，使用真实粘贴前基线，按已观察到的单行立即发送策略和多行确认策略分别验证；加入提前泄漏、重复发送、取消后仍开窗等反例。澄清 `paste-single-cancel` 阶段名称或解释。
+2. 实际触发 Copy/Paste 菜单，验证正确选区、系统剪贴板、确认/取消和接收端结果。不能以菜单存在或其他动作成功代替。
+3. 将原始 VT 软换行、硬换行、尾两空格及 Unicode 样例接到实际 CF_UNICODETEXT 复制验证，保存两次新配置的精确结果。
+4. 在补强后的门槛下核对上述基础行为和回收，保留未观察项，完成整个合同后才关闭 #11。
 
-`--require-menu-complete` 只判定此补充场景的入口与 VT 契约；完整 R1 系统剪贴板依然需要原 `text` 场景的 `--require-complete`。两种场景都要新目录重复运行，不能共用一次成功标记。
+仍仅有静态声明的内容包括默认主屏粘贴提示开关、alt-screen 提示关闭和选择后自动复制关闭；以上运行不能证明这些设置在所有上下文中的语义。更复杂 VT 模式、逻辑行重排、正则/跨会话搜索不由这些基本样例推出。
+
+## 自动复现与隔离
+
+[r1-reference.yml](../../.github/workflows/r1-reference.yml) 仅 `workflow_dispatch`，由代理触发；下载并核验官方 ZIP/EXE、安装锁定 REA，串行运行两次 `text` 与两次 `menu-wrap`。`--require-complete` 当前只覆盖 `text` gate，且有上述待修漏洞；`--require-menu-complete` 只覆盖 Select All/Find 菜单及 VT 选择/搜索。两种标志都不等于整个 R1-01 完成。
+
+本机新建 window station 的实际 `OpenClipboard` 返回 error 5，因此不回退到用户剪贴板。仅显式 `--hosted-ci` 且同时满足 `GITHUB_ACTIONS=true` / `RUNNER_ENVIRONMENT=github-hosted` 时，允许使用一次性 VM 当前 station 的剪贴板，目标窗口仍在自有非输入 desktop。系统剪贴板任务串行执行。
+
+目标与 REA 公开 Node CLI 都先以原生 suspended 状态创建、加入自有 Job 后再恢复；分配失败通过自有句柄终止并等待，超时终止整树。合成进程测试覆盖分配前不执行、分配失败、失败记录写入异常及恢复后立即生子的回收。任何 `launcher-failure.json` 或两层 REA `cleanup_error` 都禁止验收通过，即使已有完整场景标记。
+
+就绪判定检查真实 session tree model、JS engine、peer 数据和活动文本，受总观察时限约束。可能进入模态循环的事件排队发送；`resize`/同步事件保留目标原生异常处理，见 [Frida NativeFunction 文档](https://frida.re/docs/javascript-api/#nativefunction)。这些探针方法已用于上述 hosted 成功观察，仍不代表普通用户输入或性能测量。
