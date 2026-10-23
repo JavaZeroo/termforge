@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 from experiments.build_paths import ROOT, binary
-from experiments.shell.run import execute, validate, validate_main_geometry
+from experiments.shell.run import execute, validate, validate_main_geometry, validate_dpi_geometry
 
 
 @unittest.skipUnless(os.name == "nt", "ConPTY shell requires Windows")
@@ -111,6 +111,37 @@ class ShellTests(unittest.TestCase):
             broken["snapshots"].pop()
             with self.assertRaises(ValueError):
                 validate_main_geometry(broken)
+
+    def test_per_session_zoom_and_controlled_dpi_transitions(self):
+        for repeat in range(2):
+            out = self.out / f"dpi-{repeat}"
+            row = execute(self.exe, "ui-dpi", out)["result"]
+            for field, wrong in (("dpi_and_zoom_verified", False), ("sessions_closed", 1),
+                                 ("active_children_after", 1), ("presented_done", 1)):
+                broken = copy.deepcopy(row)
+                broken[field] = wrong
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate(broken, "ui-dpi")
+            geometry = json.loads((out / "dpi.json").read_text(encoding="utf-8"))
+            for field, wrong in (("controlled_messages", False), ("real_monitor_transition", True)):
+                broken = copy.deepcopy(geometry)
+                broken[field] = wrong
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate_dpi_geometry(broken)
+            for phase, session, field in ((1, 0, "physical_rect"), (1, 2, "cell_pixels"),
+                                           (2, 1, "grid"), (3, 2, "logical_rect")):
+                broken = copy.deepcopy(geometry)
+                broken["snapshots"][phase]["sessions"][session][field][-1] += 1
+                with self.subTest(phase=phase, field=field), self.assertRaises(ValueError):
+                    validate_dpi_geometry(broken)
+            broken = copy.deepcopy(geometry)
+            broken["snapshots"][1]["sessions"][0]["display_dpi"] = 96
+            with self.assertRaises(ValueError):
+                validate_dpi_geometry(broken)
+            broken = copy.deepcopy(geometry)
+            broken["snapshots"].pop()
+            with self.assertRaises(ValueError):
+                validate_dpi_geometry(broken)
 
 
 if __name__ == "__main__":

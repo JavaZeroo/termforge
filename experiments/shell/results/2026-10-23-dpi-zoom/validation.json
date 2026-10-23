@@ -1,0 +1,49 @@
+{
+  "scope": "synthetic_workspace_controlled_dpi_and_session_zoom",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "exe_sha256": "796d2a7eecef2b309d73df5951aa281be75c33b5d9fe17de3ed62a93740a3373",
+  "sources": {
+    "CMakeLists.txt": "502de3069340e2f23bf6c5a8ec7287015540d6a62bd2848c4918591d3f8fda9e",
+    "experiments/shell/shell.cpp": "aa3196ac671c6eb60f436ccf847f35cb7a06816c107c7acf3ef9ff34864b8036",
+    "experiments/shell/workspace.hpp": "4de4a5a388d51f4306a3697d6c286b2c84f4ed7806cf56a33d1af3b5a30f54e2",
+    "experiments/shell/workspace_interactions.hpp": "e3b17cdc625986438ec11857ba859007289df7c748597fa6c7bd4210ebdbb222",
+    "experiments/shell/workspace_dpi_scenario.hpp": "b51066b167eda30615bf5325d37cb8a0f117f0b9d70d19cf7b2c6a686ed8e5f4",
+    "experiments/shell/ui_font.hpp": "2f5f7a5a447a765f316955086554b4a79371062d3604eb858fd6c62094beea58",
+    "experiments/shell/run.py": "f4345ecce93ddff8c8daa57d08d53d4e24facb3ac9b408f92c313a63edcf30ea",
+    "experiments/shell/test_shell.py": "19443ae945e34e05ebce38838eb091081cafea4b6d89b183b822ae54d633b027",
+    "experiments/presentation/render.hpp": "da56b6677c89baccccaa7ad4a75774d0b24a56cc3b312aab0c07e4eadfde7b25",
+    "experiments/presentation/renderer_metrics_test.cpp": "be8cafae90138fdd8c3e140b2896617eadff3fb82e4b03045e8f9c7544004f5a",
+    "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+  },
+  "geometry_repeats_identical": true,
+  "samples": [
+    {
+      "result": {
+        "valid": true,
+        "mode": "ui-dpi",
+        "dpi_and_zoom_verified": true,
+        "sessions_closed": 3,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "job_active_after": 0,
+      "desktop_gone": true
+    },
+    {
+      "result": {
+        "valid": true,
+        "mode": "ui-dpi",
+        "dpi_and_zoom_verified": true,
+        "sessions_closed": 3,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "job_active_after": 0,
+      "desktop_gone": true
+    }
+  ],
+  "controlled_messages": true,
+  "real_monitor_transition": false,
+  "presented_done": null,
+  "source_hash_scope": "Local build input bytes, without line-ending normalization"
+}

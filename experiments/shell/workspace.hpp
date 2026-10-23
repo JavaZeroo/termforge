@@ -28,10 +28,51 @@ class Workspace {
     RECT terminal_{}, tab_bar_{};
     RECT main_group_{}, main_toolbar_{}, main_address_{}, main_terminal_{};
     std::vector<std::string> geometry_samples_;
-    int width_ = 1360, height_ = 860;
+    int width_ = 1360, height_ = 860, dpi_ = 96;
+    int physical_width_ = 1360, physical_height_ = 860;
     int left_ = 226, right_ = 226, left_middle_ = 289, right_middle_ = 289;
     static constexpr COLORREF background = RGB(28,28,28), foreground = RGB(187,187,187), accent = RGB(0,122,204);
     static bool inside(RECT r, int x, int y) { return x>=r.left && x<r.right && y>=r.top && y<r.bottom; }
+    int physical(int value) const { return MulDiv(value,dpi_,96); }
+    int logical(int value) const { return MulDiv(value,96,dpi_); }
+    int physical_edge(int value,int logical_end,int physical_end) const {
+        // An arbitrary physical client may not round-trip through whole DIPs.
+        // Anchor flush edges to the measured client endpoint, including its
+        // last fractional-DIP pixel, while internal edges share one rounding.
+        return value==logical_end?physical_end:physical(value);
+    }
+    int hit_logical(int value,int logical_end,int physical_end) const {
+        // Invert the rounded rectangle edges, not just their scale factor.
+        // At 144 DPI, logical x=227 begins at physical x=341, not x=340.
+        int result=logical(value);
+        while(physical_edge(result,logical_end,physical_end)>value) --result;
+        while(physical_edge(result+1,logical_end,physical_end)<=value) ++result;
+        return result;
+    }
+    int hit_x(int value) const { return hit_logical(value,width_,physical_width_); }
+    int hit_y(int value) const { return hit_logical(value,height_,physical_height_); }
+    RECT physical(RECT value) const {
+        return {physical_edge(value.left,width_,physical_width_),physical_edge(value.top,height_,physical_height_),
+            physical_edge(value.right,width_,physical_width_),physical_edge(value.bottom,height_,physical_height_)};
+    }
+    void place(HWND child,RECT logical_rect,bool repaint=true) {
+        const RECT rect=physical(logical_rect);
+        require(MoveWindow(child,rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top,repaint?TRUE:FALSE)!=FALSE,"workspace child placement failed");
+    }
+    RECT rename_rect(Group group,int index) const {
+        const RECT rect=tab_rect(group,index);
+        return {rect.left+4,rect.top+2,std::max<LONG>(rect.left+12,rect.right-28),rect.top+24};
+    }
+    void set_dpi(int dpi) {
+        require(dpi>=48 && dpi<=768,"unsupported workspace DPI");
+        if(dpi_==dpi) return;
+        end_drag(false);
+        auto next=std::make_unique<WorkspaceFont>(dpi);
+        // The edit control must release the old HFONT before its owner dies.
+        if(rename_) SendMessageW(rename_,WM_SETFONT,reinterpret_cast<WPARAM>(next->handle()),TRUE);
+        font_=next->handle(); ui_font_=std::move(next); dpi_=dpi;
+        for(const auto group:{Group::bottom,Group::main}) for(auto& tab:group_tabs(group)) tab.shell->set_dpi(dpi_,true);
+    }
     std::vector<Tab>& group_tabs(Group group) { return group==Group::main?main_tabs_:tabs_; }
     int& selection(Group group) { return group==Group::main?main_active_:active_; }
     ShellWindow* selected(Group group) { const int index=selection(group); return index>=0?group_tabs(group)[index].shell.get():nullptr; }
@@ -67,7 +108,7 @@ class Workspace {
     }
     void add(Group group=Group::bottom) {
         if (closing_ || session_count()>=8) return;
-        auto shell=std::make_unique<ShellWindow>("", ""); shell->create(window_);
+        auto shell=std::make_unique<ShellWindow>("", ""); shell->set_dpi(dpi_); shell->create(window_);
         const int id=next_id_++;
         auto& tabs=group_tabs(group);
         tabs.push_back({id,L"cmd "+std::to_wstring(id),std::move(shell)}); select(static_cast<int>(tabs.size())-1,group);
@@ -90,6 +131,10 @@ class Workspace {
         if (id==6) begin_rename(selection(focused_),focused_);
         if (id==7) { end_rename(false); end_drag(false); state_={}; layout(); save_layout(); }
         if (id==8) add(Group::main);
+        if (!rename_ && active() && id>=9 && id<=11) {
+            if(id==11) active()->reset_zoom(); else active()->change_zoom(id==9?25:-25);
+            InvalidateRect(window_,nullptr,FALSE);
+        }
     }
     bool shortcut(WPARAM key,bool ctrl,bool shift=false) {
         if(closing_ || rename_) return false;
@@ -97,6 +142,9 @@ class Workspace {
         if(key==VK_F2) { action(6); return true; }
         if(ctrl && key=='T') { action(shift?8:1); return true; }
         if(ctrl && key=='W') { action(2); return true; }
+        if(ctrl && (key==VK_OEM_PLUS || key==VK_ADD)) { action(9); return true; }
+        if(ctrl && (key==VK_OEM_MINUS || key==VK_SUBTRACT)) { action(10); return true; }
+        if(ctrl && key=='0') { action(11); return true; }
         if(ctrl && key==VK_TAB && !group_tabs(focused_).empty()) {
             const int count=static_cast<int>(group_tabs(focused_).size());
             select((selection(focused_)+(shift?count-1:1))%count,focused_); return true;
@@ -105,8 +153,10 @@ class Workspace {
         return false;
     }
     void layout() {
-        RECT area{}; GetClientRect(window_,&area); width_=area.right; height_=area.bottom;
-        // Reference geometry at 96 logical units. Physical DPI parity is not claimed.
+        RECT area{}; GetClientRect(window_,&area); physical_width_=area.right; physical_height_=area.bottom;
+        width_=logical(physical_width_); height_=logical(physical_height_);
+        // Layout and hit testing share 96-DIP coordinates; round rectangle edges
+        // once when crossing the HWND/GDI boundary, avoiding cumulative gaps.
         int work=std::max(100,height_-90);
         int upper=static_cast<int>(std::lround((work-1)*state_.upper));
         left_=state_.sides?static_cast<int>(std::lround((width_-2)*state_.left)):0;
@@ -125,30 +175,31 @@ class Workspace {
         for(size_t i=0;i<tabs_.size();++i) {
             auto handle=tabs_[i].shell->handle();
             if (!handle) continue;
-            MoveWindow(handle,terminal_.left,terminal_.top,terminal_.right-terminal_.left,terminal_.bottom-terminal_.top,TRUE);
+            place(handle,terminal_,false);
+            tabs_[i].shell->sync_client_size();
             ShowWindow(handle,static_cast<int>(i)==active_?SW_SHOWNA:SW_HIDE);
         }
         for(size_t i=0;i<main_tabs_.size();++i) {
             auto handle=main_tabs_[i].shell->handle();
             if(!handle) continue;
-            MoveWindow(handle,main_terminal_.left,main_terminal_.top,main_terminal_.right-main_terminal_.left,
-                       main_terminal_.bottom-main_terminal_.top,TRUE);
+            place(handle,main_terminal_,false);
+            main_tabs_[i].shell->sync_client_size();
             ShowWindow(handle,!state_.focus && static_cast<int>(i)==main_active_?SW_SHOWNA:SW_HIDE);
         }
         if(rename_) {
             auto& tabs=group_tabs(rename_group_);
             for(size_t i=0;i<tabs.size();++i) if(tabs[i].id==rename_id_) {
-                const RECT rect=tab_rect(rename_group_,static_cast<int>(i));
-                MoveWindow(rename_,rect.left+4,rect.top+2,std::max<LONG>(8,rect.right-rect.left-32),22,TRUE);
+                place(rename_,rename_rect(rename_group_,static_cast<int>(i)));
             }
         }
         InvalidateRect(window_,nullptr,FALSE);
     }
-    static void fill(HDC dc, RECT r, COLORREF color) {
+    void fill(HDC dc, RECT r, COLORREF color) const {
+        r=physical(r);
         HBRUSH brush=CreateSolidBrush(color); FillRect(dc,&r,brush); DeleteObject(brush);
     }
-    static void label(HDC dc, RECT r, const std::wstring& text, COLORREF color=foreground) {
-        SetTextColor(dc,color); r.left+=8;
+    void label(HDC dc, RECT r, const std::wstring& text, COLORREF color=foreground) const {
+        SetTextColor(dc,color); r.left+=8; r=physical(r);
         DrawTextW(dc,text.c_str(),static_cast<int>(text.size()),&r,DT_LEFT|DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS|DT_NOPREFIX);
     }
     void pane(HDC dc, RECT r, const std::wstring& title) {
@@ -220,15 +271,15 @@ class Workspace {
         fill(dc,{0,height_-56,width_,height_-29},RGB(35,35,35));
         label(dc,{0,height_-56,width_,height_-29},L"+ New shell");
         fill(dc,{0,height_-29,width_,height_},RGB(38,38,38));
-        label(dc,{0,height_-29,width_,height_},closing_?L"Closing sessions...":settings_failed_?L"Layout could not be saved":L"LOCAL     "+std::to_wstring(session_count())+L" sessions     Focus: "+(focused_==Group::main?L"Main":L"Shell"));
+        label(dc,{0,height_-29,width_,height_},closing_?L"Closing sessions...":settings_failed_?L"Layout could not be saved":L"LOCAL     "+std::to_wstring(session_count())+L" sessions     Focus: "+(focused_==Group::main?L"Main":L"Shell")+L"     Zoom: "+std::to_wstring(active()?active()->zoom_percent():100)+L"%");
         SelectObject(dc,old);
     }
     void click(int x,int y) {
         if(y<33) {
             HMENU menu=CreatePopupMenu();
             if(x<82) { AppendMenuW(menu,MF_STRING,8,L"New main session\tCtrl+Shift+T"); AppendMenuW(menu,MF_STRING,1,L"New shell\tCtrl+T"); AppendMenuW(menu,MF_STRING,2,L"Close focused session\tCtrl+W"); AppendMenuW(menu,MF_STRING,6,L"Rename focused session\tF2"); AppendMenuW(menu,MF_STRING,5,L"Exit"); }
-            else { AppendMenuW(menu,MF_STRING|(state_.focus?MF_CHECKED:0),3,L"Focus shell\tF11"); AppendMenuW(menu,MF_STRING|(state_.sides?MF_CHECKED:0),4,L"Side panels"); AppendMenuW(menu,MF_STRING,7,L"Reset layout"); }
-            POINT at{x,33}; ClientToScreen(window_,&at);
+            else { AppendMenuW(menu,MF_STRING|(state_.focus?MF_CHECKED:0),3,L"Focus shell\tF11"); AppendMenuW(menu,MF_STRING|(state_.sides?MF_CHECKED:0),4,L"Side panels"); AppendMenuW(menu,MF_STRING,7,L"Reset layout"); AppendMenuW(menu,MF_SEPARATOR,0,nullptr); const UINT enabled=active()&&!rename_?MF_STRING:MF_STRING|MF_GRAYED; AppendMenuW(menu,enabled,9,L"Zoom in\tCtrl++"); AppendMenuW(menu,enabled,10,L"Zoom out\tCtrl+-"); AppendMenuW(menu,enabled,11,L"Reset zoom\tCtrl+0"); }
+            POINT at{physical(x),physical(33)}; ClientToScreen(window_,&at);
             const int selected=TrackPopupMenu(menu,TPM_RETURNCMD,at.x,at.y,0,window_,nullptr);
             DestroyMenu(menu); action(selected); return;
         }
@@ -264,6 +315,7 @@ class Workspace {
     void scenario_edit();
     void scenario_restore();
     void scenario_main();
+    void scenario_dpi();
     void record_geometry(const char* phase);
     void collect_child(ShellWindow* child);
     static LRESULT CALLBACK procedure(HWND hwnd,UINT message,WPARAM wp,LPARAM lp) {
@@ -274,7 +326,17 @@ class Workspace {
             if(message==WM_CLOSE) { self->close_all(); return 0; }
             if(message==WM_DESTROY) { self->window_=nullptr; PostQuitMessage(0); return 0; }
             if(message==WM_SIZE && wp!=SIZE_MINIMIZED) { self->layout(); return 0; }
-            if(message==WM_GETMINMAXINFO) { auto m=reinterpret_cast<MINMAXINFO*>(lp); m->ptMinTrackSize={1000,650}; m->ptMaxTrackSize={6020,5300}; return 0; }
+            if(message==WM_DPICHANGED) {
+                const HWND focus=GetFocus();
+                self->set_dpi(LOWORD(wp));
+                const RECT& suggested=*reinterpret_cast<const RECT*>(lp);
+                require(SetWindowPos(hwnd,nullptr,suggested.left,suggested.top,suggested.right-suggested.left,
+                    suggested.bottom-suggested.top,SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"workspace DPI resize failed");
+                self->layout();
+                if(focus && IsWindow(focus) && IsChild(hwnd,focus)) SetFocus(focus);
+                return 0;
+            }
+            if(message==WM_GETMINMAXINFO) { auto m=reinterpret_cast<MINMAXINFO*>(lp); m->ptMinTrackSize={std::min(6020,self->physical(1000)),std::min(5300,self->physical(650))}; m->ptMaxTrackSize={6020,5300}; return 0; }
             if(message==WM_SETFOCUS && self->active()) { SetFocus(self->active()->handle()); return 0; }
             if(message==WM_APP+2) { self->note_focus(reinterpret_cast<ShellWindow*>(lp)); return 0; }
             if(message==WM_COMMAND) {
@@ -283,29 +345,33 @@ class Workspace {
                 return 0;
             }
             if(message==WM_LBUTTONDOWN) {
-                const int x=static_cast<short>(LOWORD(lp)), y=static_cast<short>(HIWORD(lp));
+                const int x=self->hit_x(static_cast<short>(LOWORD(lp))), y=self->hit_y(static_cast<short>(HIWORD(lp)));
                 const auto divider=self->divider_at(x,y);
                 self->end_rename(true);
                 if(divider!=Divider::none && !self->closing_) { self->drag_start_=self->state_; self->dragging_=divider; SetCapture(hwnd); }
                 else self->click(x,y);
                 return 0;
             }
-            if(message==WM_MOUSEMOVE && self->dragging_!=Divider::none) { self->drag_to(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp))); return 0; }
-            if(message==WM_LBUTTONUP && self->dragging_!=Divider::none) { self->drag_to(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp))); self->end_drag(true); return 0; }
+            if(message==WM_MOUSEMOVE && self->dragging_!=Divider::none) { self->drag_to(self->hit_x(static_cast<short>(LOWORD(lp))),self->hit_y(static_cast<short>(HIWORD(lp)))); return 0; }
+            if(message==WM_LBUTTONUP && self->dragging_!=Divider::none) { self->drag_to(self->hit_x(static_cast<short>(LOWORD(lp))),self->hit_y(static_cast<short>(HIWORD(lp)))); self->end_drag(true); return 0; }
             if(message==WM_CAPTURECHANGED) { self->end_drag(false); return 0; }
-            if(message==WM_MBUTTONDOWN && inside(self->tab_bar_,static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp)))) { self->begin_rename(static_cast<short>(LOWORD(lp))/self->tab_width()); return 0; }
-            if(message==WM_MBUTTONDOWN && !self->state_.focus && inside(self->main_group_,static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp)))) {
-                self->begin_rename((static_cast<short>(LOWORD(lp))-self->main_group_.left)/self->main_tab_width(),Group::main); return 0;
+            if(message==WM_MBUTTONDOWN) {
+                const int x=self->hit_x(static_cast<short>(LOWORD(lp))), y=self->hit_y(static_cast<short>(HIWORD(lp)));
+                if(inside(self->tab_bar_,x,y)) self->begin_rename(x/self->tab_width());
+                else if(!self->state_.focus && inside(self->main_group_,x,y))
+                    self->begin_rename((x-self->main_group_.left)/self->main_tab_width(),Group::main);
+                return 0;
             }
             if(message==WM_SETCURSOR && LOWORD(lp)==HTCLIENT) {
                 POINT point{}; GetCursorPos(&point); ScreenToClient(hwnd,&point);
-                const auto divider=self->divider_at(point.x,point.y);
+                const auto divider=self->divider_at(self->hit_x(point.x),self->hit_y(point.y));
                 if(divider!=Divider::none) { SetCursor(LoadCursorW(nullptr,divider==Divider::left || divider==Divider::right?IDC_SIZEWE:IDC_SIZENS)); return TRUE; }
             }
             if(message==WM_TIMER) {
                 if(self->test_mode_=="ui-edit") self->scenario_edit();
                 else if(self->test_mode_=="ui-restore") self->scenario_restore();
                 else if(self->test_mode_=="ui-main") self->scenario_main();
+                else if(self->test_mode_=="ui-dpi") self->scenario_dpi();
                 else self->scenario();
                 return 0;
             }
@@ -335,13 +401,18 @@ public:
     int run() {
         WNDCLASSW cls{}; cls.lpfnWndProc=procedure; cls.hInstance=GetModuleHandleW(nullptr); cls.lpszClassName=L"TermForgeWorkspace"; cls.hCursor=LoadCursorW(nullptr,IDC_ARROW);
         require(RegisterClassW(&cls)!=0,"workspace class failed");
-        ui_font_=std::make_unique<WorkspaceFont>(); font_=ui_font_->handle();
+        dpi_=static_cast<int>(GetDpiForSystem()); if(!dpi_) dpi_=96;
+        ui_font_=std::make_unique<WorkspaceFont>(dpi_); font_=ui_font_->handle();
         // The test starts smaller, reproducing creation-time size clamping.
-        RECT rect{0,0,image_.empty()?1360:1000,image_.empty()?860:650}; AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
+        RECT rect{0,0,physical(image_.empty()?1360:1000),physical(image_.empty()?860:650)};
+        require(AdjustWindowRectExForDpi(&rect,WS_OVERLAPPEDWINDOW,FALSE,0,dpi_)!=FALSE,"workspace frame calculation failed");
         require(CreateWindowExW(0,cls.lpszClassName,L"TermForge",WS_OVERLAPPEDWINDOW|WS_CLIPCHILDREN,0,0,rect.right-rect.left,rect.bottom-rect.top,nullptr,nullptr,cls.hInstance,this)!=nullptr,"workspace creation failed");
         // Creation can query track limits before WM_NCCREATE installs `self`.
         // Apply the desired size once our window procedure owns the HWND.
-        rect={0,0,1360,860}; AdjustWindowRect(&rect,WS_OVERLAPPEDWINDOW,FALSE);
+        const UINT actual_dpi=GetDpiForWindow(window_); require(actual_dpi!=0,"workspace DPI query failed");
+        set_dpi(static_cast<int>(actual_dpi));
+        rect={0,0,physical(1360),physical(860)};
+        require(AdjustWindowRectExForDpi(&rect,WS_OVERLAPPEDWINDOW,FALSE,0,dpi_)!=FALSE,"workspace initial frame calculation failed");
         require(SetWindowPos(window_,nullptr,0,0,rect.right-rect.left,rect.bottom-rect.top,
                             SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"workspace initial resize failed");
         layout();
@@ -364,7 +435,11 @@ public:
             require(stage_==100 && collected_==5,"workspace main scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\"ui-main\",\"main_sessions_verified\":true,\"focus_verified\":true,\"geometry_verified\":true,\"ui_font_family\":\""<<utf8(ui_font_->face().c_str())<<"\",\"sessions_closed\":5,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main") {
+        if(!image_.empty() && test_mode_=="ui-dpi") {
+            require(stage_==100 && collected_==3,"workspace DPI scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\"ui-dpi\",\"dpi_and_zoom_verified\":true,\"sessions_closed\":3,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi") {
             require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
@@ -374,3 +449,4 @@ public:
 #include "workspace_interactions.hpp"
 #include "workspace_scenarios.hpp"
 #include "workspace_main_scenario.hpp"
+#include "workspace_dpi_scenario.hpp"

@@ -27,7 +27,8 @@ class WorkspaceFont {
         if (registered_) { RemoveFontResourceExW(path_.c_str(), FR_PRIVATE, nullptr); registered_ = false; }
     }
 public:
-    WorkspaceFont() : path_(bundled_path()) {
+    explicit WorkspaceFont(int dpi = 96) : path_(bundled_path()) {
+        if (dpi < 48 || dpi > 768) throw std::runtime_error("UI font: unsupported DPI");
         std::error_code error;
         if (!std::filesystem::is_regular_file(path_, error))
             throw std::runtime_error("UI font missing: assets/fonts/RobotoMono-Regular.ttf beside the executable");
@@ -35,8 +36,8 @@ public:
             throw std::runtime_error("UI font: bundled Roboto Mono could not be loaded privately");
         registered_ = true;
         try {
-            // 9pt at the current prototype's 96 logical DPI; not terminal metrics.
-            font_ = CreateFontW(-12, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+            // 9pt UI text, expressed in physical pixels for a MM_TEXT DC.
+            font_ = CreateFontW(-MulDiv(9, dpi, 72), 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
                 DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
                 CLEARTYPE_QUALITY, FIXED_PITCH | FF_MODERN, L"Roboto Mono");
             if (!font_) throw std::runtime_error("UI font: CreateFontW failed");

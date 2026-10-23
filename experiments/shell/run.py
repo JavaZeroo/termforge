@@ -19,6 +19,14 @@ from experiments.conpty.run import OwnedJob
 
 
 def validate(row, mode):
+    if mode == "ui-dpi":
+        if (row.get("valid") is not True or row.get("mode") != mode or
+                row.get("dpi_and_zoom_verified") is not True or
+                type(row.get("sessions_closed")) is not int or row["sessions_closed"] != 3 or
+                type(row.get("active_children_after")) is not int or row["active_children_after"] != 0 or
+                row.get("presented_done", 1) is not None):
+            raise ValueError("workspace DPI, zoom or cleanup gate failed")
+        return
     if mode == "ui-main":
         if (row.get("valid") is not True or row.get("mode") != mode or
                 any(row.get(field) is not True for field in
@@ -93,6 +101,54 @@ def validate_main_geometry(data):
                 raise ValueError(f"main geometry mismatch: {row['phase']} {field}")
 
 
+def validate_dpi_geometry(data):
+    """Check physical HWND and cell measurements against the reference layout.
+
+    OS DPI is recorded separately: these controlled messages do not move the
+    window between monitors or establish physical display presentation.
+    """
+    phases = ("96-baseline", "144-renaming", "192-drag-cancelled", "96-restored")
+    if (not isinstance(data, dict) or data.get("schema") != "termforge-ui-dpi-v1" or
+            data.get("controlled_messages") is not True or data.get("real_monitor_transition") is not False or
+            not isinstance(data.get("snapshots"), list) or len(data["snapshots"]) != 4 or
+            any(not isinstance(row, dict) for row in data["snapshots"]) or
+            [row.get("phase") for row in data["snapshots"]] != list(phases)):
+        raise ValueError("missing controlled DPI evidence or phases")
+
+    def vector(value, expected):
+        return isinstance(value, list) and all(type(n) is int for n in value) and value == expected
+
+    zooms = ([100, 100, 100], [100, 100, 125], [125, 100, 125], [100, 100, 100])
+    for phase, (row, dpi, zoom) in enumerate(zip(data["snapshots"], (96, 144, 192, 96), zooms)):
+        scale = lambda n: (n * dpi + 48) // 96
+        if (type(row.get("controlled_dpi")) is not int or row["controlled_dpi"] != dpi or
+                type(row.get("os_window_dpi")) is not int or not 48 <= row["os_window_dpi"] <= 768 or
+                not vector(row.get("logical_client"), [1360, 860]) or
+                not vector(row.get("physical_client"), [scale(1360), scale(860)]) or
+                row.get("rename_active") is not (phase == 1) or
+                not isinstance(row.get("sessions"), list) or len(row["sessions"]) != 3):
+            raise ValueError("DPI client, editor or session evidence mismatch")
+        reference = ([0, 597, 1360, 206], [0, 597, 1360, 206],
+                     [301, 93, 832, 453] if phase == 3 else [227, 93, 906, 453])
+        visible = [False, True, True] if phase < 2 else [True, False, True]
+        for index, (session, rect, percent) in enumerate(zip(row["sessions"], reference, zoom)):
+            if not isinstance(session, dict):
+                raise ValueError("invalid DPI session measurement")
+            x, y, width, height = rect
+            physical = [scale(x), scale(y), scale(x + width) - scale(x), scale(y + height) - scale(y)]
+            cells = [(base * dpi * percent + 4800) // 9600 for base in (12, 26)]
+            grid = [physical[2] // cells[0], physical[3] // cells[1]]
+            if (session.get("group") != ("main" if index == 2 else "bottom") or
+                    type(session.get("index")) is not int or session["index"] != (0 if index == 2 else index) or
+                    session.get("visible") is not visible[index] or
+                    type(session.get("zoom_percent")) is not int or session["zoom_percent"] != percent or
+                    type(session.get("display_dpi")) is not int or session["display_dpi"] != dpi or
+                    not vector(session.get("logical_rect"), rect) or
+                    not vector(session.get("physical_rect"), physical) or
+                    not vector(session.get("cell_pixels"), cells) or not vector(session.get("grid"), grid)):
+                raise ValueError(f"DPI session geometry mismatch: {row['phase']} session {index}")
+
+
 def desktop_gone(pid):
     api = ctypes.WinDLL("user32", use_last_error=True)
     api.OpenDesktopW.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
@@ -146,6 +202,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
             validate(result, mode)
             if mode == "ui-main":
                 validate_main_geometry(json.loads((out / "geometry.json").read_text(encoding="utf-8")))
+            if mode == "ui-dpi":
+                validate_dpi_geometry(json.loads((out / "dpi.json").read_text(encoding="utf-8")))
             record["result"] = result
             record["frame_sha256"] = hashlib.sha256((out / "frame.bmp").read_bytes()).hexdigest()
         record["status"] = "passed"
@@ -174,6 +232,7 @@ def main():
     files = ["experiments/shell/shell.cpp", "experiments/shell/workspace.hpp", "experiments/shell/queues.hpp", "experiments/shell/run.py",
              "experiments/shell/workspace_interactions.hpp", "experiments/shell/workspace_scenarios.hpp",
              "experiments/shell/workspace_main_scenario.hpp", "assets/fonts/RobotoMono-Regular.ttf",
+             "experiments/shell/workspace_dpi_scenario.hpp",
              "experiments/shell/layout_state.hpp", "experiments/shell/ui_font.hpp",
              "experiments/shell/resize.hpp", "experiments/shell/size_client.cpp",
              "experiments/conpty/session.hpp", "experiments/presentation/render.hpp", "experiments/presentation/desktop.hpp",
@@ -185,7 +244,7 @@ def main():
                 input_endpoint="scripted Ctrl-C WM_CHAR acceptance to TF_AFTER state and GDI submission; not physical keyboard", presented_done=None)
     try:
         for repeat in range(args.repeats):
-            for mode in ("normal", "close", "resize", "resize-close", "ui", "ui-edit", "ui-main"):
+            for mode in ("normal", "close", "resize", "resize-close", "ui", "ui-edit", "ui-main", "ui-dpi"):
                 execute(exe, mode, args.out / f"{repeat}-{mode}")
                 print(f"{repeat} {mode}: passed", flush=True)
             execute(exe, "ui-restore", args.out / f"{repeat}-ui-restore",

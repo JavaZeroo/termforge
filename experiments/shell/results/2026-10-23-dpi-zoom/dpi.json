@@ -1,0 +1,395 @@
+{
+  "schema": "termforge-ui-dpi-v1",
+  "controlled_messages": true,
+  "real_monitor_transition": false,
+  "snapshots": [
+    {
+      "phase": "96-baseline",
+      "controlled_dpi": 96,
+      "os_window_dpi": 96,
+      "logical_client": [
+        1360,
+        860
+      ],
+      "physical_client": [
+        1360,
+        860
+      ],
+      "sessions": [
+        {
+          "group": "bottom",
+          "index": 0,
+          "visible": false,
+          "zoom_percent": 100,
+          "display_dpi": 96,
+          "logical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "physical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "grid": [
+            113,
+            7
+          ],
+          "cell_pixels": [
+            12,
+            26
+          ]
+        },
+        {
+          "group": "bottom",
+          "index": 1,
+          "visible": true,
+          "zoom_percent": 100,
+          "display_dpi": 96,
+          "logical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "physical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "grid": [
+            113,
+            7
+          ],
+          "cell_pixels": [
+            12,
+            26
+          ]
+        },
+        {
+          "group": "main",
+          "index": 0,
+          "visible": true,
+          "zoom_percent": 100,
+          "display_dpi": 96,
+          "logical_rect": [
+            227,
+            93,
+            906,
+            453
+          ],
+          "physical_rect": [
+            227,
+            93,
+            906,
+            453
+          ],
+          "grid": [
+            75,
+            17
+          ],
+          "cell_pixels": [
+            12,
+            26
+          ]
+        }
+      ],
+      "rename_active": false
+    },
+    {
+      "phase": "144-renaming",
+      "controlled_dpi": 144,
+      "os_window_dpi": 96,
+      "logical_client": [
+        1360,
+        860
+      ],
+      "physical_client": [
+        2040,
+        1290
+      ],
+      "sessions": [
+        {
+          "group": "bottom",
+          "index": 0,
+          "visible": false,
+          "zoom_percent": 100,
+          "display_dpi": 144,
+          "logical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "physical_rect": [
+            0,
+            896,
+            2040,
+            309
+          ],
+          "grid": [
+            113,
+            7
+          ],
+          "cell_pixels": [
+            18,
+            39
+          ]
+        },
+        {
+          "group": "bottom",
+          "index": 1,
+          "visible": true,
+          "zoom_percent": 100,
+          "display_dpi": 144,
+          "logical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "physical_rect": [
+            0,
+            896,
+            2040,
+            309
+          ],
+          "grid": [
+            113,
+            7
+          ],
+          "cell_pixels": [
+            18,
+            39
+          ]
+        },
+        {
+          "group": "main",
+          "index": 0,
+          "visible": true,
+          "zoom_percent": 125,
+          "display_dpi": 144,
+          "logical_rect": [
+            227,
+            93,
+            906,
+            453
+          ],
+          "physical_rect": [
+            341,
+            140,
+            1359,
+            679
+          ],
+          "grid": [
+            59,
+            13
+          ],
+          "cell_pixels": [
+            23,
+            49
+          ]
+        }
+      ],
+      "rename_active": true
+    },
+    {
+      "phase": "192-drag-cancelled",
+      "controlled_dpi": 192,
+      "os_window_dpi": 96,
+      "logical_client": [
+        1360,
+        860
+      ],
+      "physical_client": [
+        2720,
+        1720
+      ],
+      "sessions": [
+        {
+          "group": "bottom",
+          "index": 0,
+          "visible": true,
+          "zoom_percent": 125,
+          "display_dpi": 192,
+          "logical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "physical_rect": [
+            0,
+            1194,
+            2720,
+            412
+          ],
+          "grid": [
+            90,
+            6
+          ],
+          "cell_pixels": [
+            30,
+            65
+          ]
+        },
+        {
+          "group": "bottom",
+          "index": 1,
+          "visible": false,
+          "zoom_percent": 100,
+          "display_dpi": 192,
+          "logical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "physical_rect": [
+            0,
+            1194,
+            2720,
+            412
+          ],
+          "grid": [
+            113,
+            7
+          ],
+          "cell_pixels": [
+            24,
+            52
+          ]
+        },
+        {
+          "group": "main",
+          "index": 0,
+          "visible": true,
+          "zoom_percent": 125,
+          "display_dpi": 192,
+          "logical_rect": [
+            227,
+            93,
+            906,
+            453
+          ],
+          "physical_rect": [
+            454,
+            186,
+            1812,
+            906
+          ],
+          "grid": [
+            60,
+            13
+          ],
+          "cell_pixels": [
+            30,
+            65
+          ]
+        }
+      ],
+      "rename_active": false
+    },
+    {
+      "phase": "96-restored",
+      "controlled_dpi": 96,
+      "os_window_dpi": 96,
+      "logical_client": [
+        1360,
+        860
+      ],
+      "physical_client": [
+        1360,
+        860
+      ],
+      "sessions": [
+        {
+          "group": "bottom",
+          "index": 0,
+          "visible": true,
+          "zoom_percent": 100,
+          "display_dpi": 96,
+          "logical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "physical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "grid": [
+            113,
+            7
+          ],
+          "cell_pixels": [
+            12,
+            26
+          ]
+        },
+        {
+          "group": "bottom",
+          "index": 1,
+          "visible": false,
+          "zoom_percent": 100,
+          "display_dpi": 96,
+          "logical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "physical_rect": [
+            0,
+            597,
+            1360,
+            206
+          ],
+          "grid": [
+            113,
+            7
+          ],
+          "cell_pixels": [
+            12,
+            26
+          ]
+        },
+        {
+          "group": "main",
+          "index": 0,
+          "visible": true,
+          "zoom_percent": 100,
+          "display_dpi": 96,
+          "logical_rect": [
+            301,
+            93,
+            832,
+            453
+          ],
+          "physical_rect": [
+            301,
+            93,
+            832,
+            453
+          ],
+          "grid": [
+            69,
+            17
+          ],
+          "cell_pixels": [
+            12,
+            26
+          ]
+        }
+      ],
+      "rename_active": false
+    }
+  ]
+}

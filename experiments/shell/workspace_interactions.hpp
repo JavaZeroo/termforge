@@ -36,10 +36,10 @@ inline void Workspace::begin_rename(int index,Group group) {
     if(closing_ || index<0 || index>=static_cast<int>(tabs.size()) || tabs[index].shell->closing()) return;
     select(index,group);
     rename_group_=group; rename_id_=tabs[index].id;
-    const RECT rect=tab_rect(group,index);
+    const RECT rect=physical(rename_rect(group,index));
     rename_=CreateWindowExW(0,L"EDIT",tabs[index].title.c_str(),
-        WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL,rect.left+4,rect.top+2,
-        std::max<LONG>(8,rect.right-rect.left-32),22,window_,reinterpret_cast<HMENU>(100),GetModuleHandleW(nullptr),nullptr);
+        WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL,rect.left,rect.top,
+        rect.right-rect.left,rect.bottom-rect.top,window_,reinterpret_cast<HMENU>(100),GetModuleHandleW(nullptr),nullptr);
     require(rename_!=nullptr,"rename editor creation failed");
     SendMessageW(rename_,WM_SETFONT,reinterpret_cast<WPARAM>(font_),TRUE);
     SendMessageW(rename_,EM_SETLIMITTEXT,64,0);

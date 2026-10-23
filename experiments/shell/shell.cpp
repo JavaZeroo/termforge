@@ -28,7 +28,7 @@ class ShellWindow {
     InputQueue input_{session_};
     ResizeWorker resize_{session_};
     termforge::Parser parser_{24, 80, 100, termforge::ParseMode::recovery};
-    Renderer renderer_{"dwrite", 96};
+    std::unique_ptr<Renderer> renderer_ = std::make_unique<Renderer>("dwrite", 96);
     std::shared_ptr<const Snapshot> snapshot_;
     std::unique_ptr<Bitmap> surface_ = std::make_unique<Bitmap>(960, 624);
     HWND hwnd_{};
@@ -37,7 +37,7 @@ class ShellWindow {
     inline static unsigned class_users_ = 0; // All instances belong to one UI thread.
     std::thread closer_;
     std::atomic<bool> closed_{false};
-    bool closing_ = false, started_ = false;
+    bool closing_ = false, started_ = false, metrics_dirty_ = false;
     std::string failure_, close_failure_, mode_, image_path_;
     int revision_ = 0, stage_ = 0;
     int dirty_first_ = 0, dirty_last_ = 24;
@@ -47,24 +47,41 @@ class ShellWindow {
     Result result_;
 
     void resize_window(int columns, int rows) {
-        RECT area{0, 0, columns*12, rows*26};
-        require(AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE) != FALSE, "resize frame calculation failed");
+        RECT area{0, 0, renderer_->x(columns), renderer_->y(rows)};
+        require(AdjustWindowRectExForDpi(&area, WS_OVERLAPPEDWINDOW, FALSE, 0, renderer_->dpi()) != FALSE, "resize frame calculation failed");
         // Deliberately clip most of this owned test window off the desktop.
         // Retained drawing must stay correct even when rcPaint is clipped.
         require(SetWindowPos(hwnd_, nullptr, GetSystemMetrics(SM_CXSCREEN)-120, GetSystemMetrics(SM_CYSCREEN)-120,
                             area.right-area.left, area.bottom-area.top,
                             SWP_NOZORDER|SWP_NOACTIVATE) != FALSE, "scripted resize failed");
     }
-    void size_changed(int width, int height) {
+    void size_changed(int width, int height, bool force = false) {
         if (!started_ || closing_ || width <= 0 || height <= 0) return;
-        const int columns = std::clamp(width/12, 1, 500), rows = std::clamp(height/26, 1, 200);
-        if (columns == parser_.screen.width() && rows == parser_.screen.height()) return;
-        auto surface = std::make_unique<Bitmap>(columns*12, rows*26);
+        const int columns = std::clamp(width/renderer_->cell_width(), 1, 500);
+        const int rows = std::clamp(height/renderer_->cell_height(), 1, 200);
+        if (!force && !metrics_dirty_ && columns == parser_.screen.width() && rows == parser_.screen.height()) return;
+        auto surface = std::make_unique<Bitmap>(renderer_->x(columns), renderer_->y(rows));
         parser_.screen.resize(rows, columns);
         dirty_first_ = 0; dirty_last_ = rows;
-        surface_ = std::move(surface); publish();
+        surface_ = std::move(surface); metrics_dirty_ = false; publish();
         resize_.request(rows, columns);
         require(InvalidateRect(hwnd_, nullptr, FALSE) != FALSE, "resize invalidate failed");
+    }
+    void change_metrics(int dpi, int zoom, bool defer_resize = false) {
+        if (closing_ || (dpi == renderer_->dpi() && zoom == renderer_->zoom_percent())) return;
+        auto next = std::make_unique<Renderer>("dwrite", dpi, zoom);
+        renderer_ = std::move(next);
+        metrics_dirty_ = true;
+        // A DPI message supplies a new pixel rectangle too. Resize the grid
+        // once, after that rectangle is applied, so an interim narrow grid
+        // cannot irreversibly crop physical rows.
+        if (defer_resize) return;
+        if (started_) {
+            RECT client{}; require(GetClientRect(hwnd_, &client) != FALSE, "font resize client query failed");
+            size_changed(client.right, client.bottom, true);
+        } else {
+            surface_ = std::make_unique<Bitmap>(renderer_->x(parser_.screen.width()), renderer_->y(parser_.screen.height()));
+        }
     }
     void query_size() {
         wchar_t path[32768]{};
@@ -135,7 +152,7 @@ class ShellWindow {
         if (!dirty.empty()) {
             dirty_first_ = (std::min)(dirty_first_, dirty.front());
             dirty_last_ = (std::max)(dirty_last_, dirty.back()+1);
-            RECT area{0, renderer_.y(dirty.front()), surface_->width, renderer_.y(dirty.back()+1)};
+            RECT area{0, renderer_->y(dirty.front()), surface_->width, renderer_->y(dirty.back()+1)};
             require(InvalidateRect(hwnd_, &area, FALSE) != FALSE, "invalidate failed");
         }
         if (stage_ >= 5 && result_.input_to_state_ms < 0 && line_is("TF_AFTER"))
@@ -238,13 +255,23 @@ class ShellWindow {
             if (message == WM_SIZE && wp != SIZE_MINIMIZED) {
                 self->size_changed(LOWORD(lp), HIWORD(lp)); return 0;
             }
+            if (message == WM_DPICHANGED && !self->parent_) {
+                require(lp != 0, "missing suggested DPI rectangle");
+                self->set_dpi(LOWORD(wp), true);
+                const auto& rect = *reinterpret_cast<const RECT*>(lp);
+                require(SetWindowPos(hwnd, nullptr, rect.left, rect.top, rect.right-rect.left, rect.bottom-rect.top,
+                                     SWP_NOZORDER|SWP_NOACTIVATE) != FALSE, "shell DPI resize failed");
+                self->sync_client_size();
+                return 0;
+            }
             if (message == WM_GETMINMAXINFO && !self->parent_) {
                 auto* limits = reinterpret_cast<MINMAXINFO*>(lp);
-                RECT area{0,0,12,26}; AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE);
+                RECT area{0,0,self->renderer_->cell_width(),self->renderer_->cell_height()};
+                AdjustWindowRectExForDpi(&area, WS_OVERLAPPEDWINDOW, FALSE, 0, self->renderer_->dpi());
                 limits->ptMinTrackSize = {area.right-area.left, area.bottom-area.top};
                 // The default maximum tracks monitor size, which silently
                 // clamps scripted/off-screen windows on small CI desktops.
-                area = {0,0,500*12,200*26}; AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE);
+                area = {0,0,6000,5200}; AdjustWindowRectExForDpi(&area, WS_OVERLAPPEDWINDOW, FALSE, 0, self->renderer_->dpi());
                 limits->ptMaxTrackSize = {area.right-area.left, area.bottom-area.top};
                 return 0;
             }
@@ -262,14 +289,15 @@ class ShellWindow {
                     // rcPaint is clipped by visible desktop/window regions.
                     // Retained pixels must also incorporate off-screen dirty
                     // rows, otherwise exposing them later reveals stale data.
-                    const int first = (std::min)(self->dirty_first_, (std::max)(0, int(paint.rcPaint.top)/26));
+                    const int cell_height = self->renderer_->cell_height();
+                    const int first = (std::min)(self->dirty_first_, (std::max)(0, int(paint.rcPaint.top)/cell_height));
                     const int last = (std::min)(self->snapshot_->rows(),
-                        (std::max)(self->dirty_last_, (int(paint.rcPaint.bottom)+25)/26));
+                        (std::max)(self->dirty_last_, (int(paint.rcPaint.bottom)+cell_height-1)/cell_height));
                     FillRect(dc, &paint.rcPaint, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
-                    self->renderer_.draw(*self->surface_, *self->snapshot_, first, last);
+                    self->renderer_->draw(*self->surface_, *self->snapshot_, first, last);
                     if (self->mode_ == "resize" || self->mode_ == "resize-close") {
                         Bitmap expected(self->surface_->width, self->surface_->height);
-                        self->renderer_.draw(expected, *self->snapshot_, 0, self->snapshot_->rows());
+                        self->renderer_->draw(expected, *self->snapshot_, 0, self->snapshot_->rows());
                         require(self->surface_->equals(expected), "resized dirty frame differs from full redraw");
                     }
                     require(BitBlt(dc,0,0,self->surface_->width,self->surface_->height,self->surface_->dc,0,0,SRCCOPY) != FALSE, "shell frame blit failed");
@@ -306,7 +334,8 @@ public:
         if (!class_users_) require(RegisterClassW(&cls) != 0, "shell window class failed");
         ++class_users_; registered_ = true;
         const DWORD style = parent ? WS_CHILD : WS_OVERLAPPEDWINDOW;
-        RECT size{0,0,960,624}; AdjustWindowRect(&size, style, FALSE);
+        RECT size{0,0,renderer_->x(80),renderer_->y(24)};
+        AdjustWindowRectExForDpi(&size, style, FALSE, 0, renderer_->dpi());
         hwnd_ = CreateWindowExW(0, cls.lpszClassName, L"TermForge — local shell prototype", style,
             parent ? 0 : CW_USEDEFAULT,parent ? 0 : CW_USEDEFAULT,size.right-size.left,size.bottom-size.top,parent,nullptr,cls.hInstance,this);
         require(hwnd_ != nullptr, "shell window creation failed");
@@ -315,6 +344,7 @@ public:
         session_.start(cmd, L"/d /s /q /k \"\"" + chcp + L"\" 65001>nul&prompt TF$G&cls\"",
             [this](std::string_view bytes) { output_.push(bytes); });
         input_.start(); resize_.start(); started_ = true;
+        if (!parent_) set_dpi(static_cast<int>(GetDpiForWindow(hwnd_)));
         RECT client{}; GetClientRect(hwnd_, &client); size_changed(client.right, client.bottom);
         require(SetTimer(hwnd_,1,16,nullptr) != 0, "shell timer failed");
     }
@@ -326,8 +356,34 @@ public:
     void close() { begin_close(); }
     void command(const std::wstring& text) { type(text); }
     void check_size() { query_size(); }
+    void set_dpi(int dpi, bool defer_resize = false) { change_metrics(dpi, renderer_->zoom_percent(), defer_resize); }
+    void sync_client_size() {
+        RECT client{}; require(GetClientRect(hwnd_, &client) != FALSE, "shell layout client query failed");
+        size_changed(client.right, client.bottom);
+        // Workspace places children without synchronous paint while DPI and
+        // geometry change together. Even a sub-cell move/resize must expose
+        // fresh pixels when the terminal grid itself stays unchanged.
+        require(InvalidateRect(hwnd_, nullptr, FALSE) != FALSE, "shell layout invalidate failed");
+    }
+    void change_zoom(int delta) { change_metrics(renderer_->dpi(), std::clamp(renderer_->zoom_percent()+std::clamp(delta,-150,150),50,200)); }
+    void reset_zoom() { change_metrics(renderer_->dpi(),100); }
+    int zoom_percent() const { return renderer_->zoom_percent(); }
+    int display_dpi() const { return renderer_->dpi(); }
+    std::pair<int,int> grid_dimensions() const { return {parser_.screen.width(),parser_.screen.height()}; }
+    std::pair<int,int> pixel_cell_size() const { return {renderer_->cell_width(),renderer_->cell_height()}; }
+    bool frame_matches_full() {
+        // Retained dirty drawing must agree with an independent full redraw,
+        // including hidden tabs whose WM_PAINT may not be dispatched.
+        if (surface_->width != renderer_->x(snapshot_->columns()) ||
+            surface_->height != renderer_->y(snapshot_->rows())) return false;
+        renderer_->draw(*surface_, *snapshot_, dirty_first_, dirty_last_);
+        dirty_first_=snapshot_->rows(); dirty_last_=0;
+        Bitmap expected(surface_->width,surface_->height);
+        renderer_->draw(expected,*snapshot_,0,snapshot_->rows());
+        return surface_->equals(expected);
+    }
     void render_to(HDC dc, int x, int y) {
-        renderer_.draw(*surface_, *snapshot_, 0, snapshot_->rows());
+        renderer_->draw(*surface_, *snapshot_, 0, snapshot_->rows());
         require(BitBlt(dc,x,y,surface_->width,surface_->height,surface_->dc,0,0,SRCCOPY) != FALSE, "workspace terminal capture failed");
     }
     Result run() {
@@ -358,15 +414,15 @@ public:
 static int application(int argc, char** argv) {
     try {
         std::string mode, image;
-        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|resize|resize-close|watchdog|ui|ui-edit|ui-restore|ui-main frame.bmp]");
+        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|resize|resize-close|watchdog|ui|ui-edit|ui-restore|ui-main|ui-dpi frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main", "invalid shell test mode");
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi", "invalid shell test mode");
             std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
         }
         require(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) != FALSE, "DPI awareness failed");
         if (mode.empty()) { Workspace window; return window.run(); }
-        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi") {
             OwnedDesktop desktop(L"TermForgeShell-");
             return desktop.run([&] { Workspace window(image,mode); return window.run(); });
         }

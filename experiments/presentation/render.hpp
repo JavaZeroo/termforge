@@ -140,7 +140,7 @@ struct Layout {
 };
 class Renderer {
     std::string backend_;
-    int dpi_;
+    int dpi_, zoom_percent_, cell_width_ = 0, cell_height_ = 0;
     HFONT normal_{}, bold_{};
     std::map<unsigned,HBRUSH> brushes_;
     ComPtr<ID2D1Factory> factory_;
@@ -149,17 +149,27 @@ class Renderer {
     ComPtr<ID2D1SolidColorBrush> brush_;
     ComPtr<IDWriteTextFormat> formats_[2];
     std::map<std::pair<std::string,bool>,Layout> layouts_;
+    // Round the cell once, then use its physical size throughout the grid. This
+    // keeps hit testing, dirty rows, clips and glyph origins on the same pixels.
+    int scaled_pixels(int value) const { return (value*dpi_*zoom_percent_+4800)/9600; }
+    float logical_x(int cell) const { return float(x(cell))*96.0f/dpi_; }
+    float logical_y(int row) const { return float(y(row))*96.0f/dpi_; }
     HBRUSH brush(unsigned value) {
         auto it = brushes_.find(value);
         if (it == brushes_.end()) { HBRUSH b = CreateSolidBrush(gdi_color(value)); require(b != nullptr, "brush failed"); it = brushes_.emplace(value,b).first; }
         return it->second;
     }
 public:
-    Renderer(const std::string& backend, int dpi) : backend_(backend), dpi_(dpi) {
+    Renderer(const std::string& backend, int dpi, int zoom_percent = 100)
+        : backend_(backend), dpi_(dpi), zoom_percent_(zoom_percent) {
+        require(backend == "gdi" || backend == "dwrite", "invalid renderer backend");
+        require(dpi >= 48 && dpi <= 768, "renderer DPI out of range");
+        require(zoom_percent >= 50 && zoom_percent <= 200, "renderer zoom out of range");
+        cell_width_ = scaled_pixels(12); cell_height_ = scaled_pixels(26);
         check(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(IDWriteFactory),reinterpret_cast<IUnknown**>(write_.GetAddressOf())));
         for (int bold = 0; bold < 2; ++bold) {
             check(write_->CreateTextFormat(L"Consolas",nullptr,bold ? DWRITE_FONT_WEIGHT_BOLD : DWRITE_FONT_WEIGHT_NORMAL,
-                DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,18,L"zh-CN",formats_[bold].GetAddressOf()));
+                DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,18.0f*zoom_percent_/100.0f,L"zh-CN",formats_[bold].GetAddressOf()));
             check(formats_[bold]->SetWordWrapping(DWRITE_WORD_WRAPPING_NO_WRAP));
         }
         if (backend == "dwrite") {
@@ -170,9 +180,9 @@ public:
             target_->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
             check(target_->CreateSolidColorBrush(D2D1::ColorF(0),brush_.GetAddressOf()));
         } else {
-            normal_ = CreateFontW(-18*dpi/96,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+            normal_ = CreateFontW(-scaled_pixels(18),0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
                                  CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,FIXED_PITCH,L"Consolas");
-            bold_ = CreateFontW(-18*dpi/96,0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
+            bold_ = CreateFontW(-scaled_pixels(18),0,0,0,FW_BOLD,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,
                                CLIP_DEFAULT_PRECIS,ANTIALIASED_QUALITY,FIXED_PITCH,L"Consolas");
             if (!normal_ || !bold_) {
                 if (normal_) DeleteObject(normal_);
@@ -183,14 +193,19 @@ public:
     }
     ~Renderer() { for (const auto& b : brushes_) DeleteObject(b.second); if (normal_) DeleteObject(normal_); if (bold_) DeleteObject(bold_); }
     Renderer(const Renderer&) = delete;
-    int x(int cell) const { return cell*12*dpi_/96; }
-    int y(int row) const { return row*26*dpi_/96; }
+    int dpi() const { return dpi_; }
+    int zoom_percent() const { return zoom_percent_; }
+    int cell_width() const { return cell_width_; }
+    int cell_height() const { return cell_height_; }
+    int x(int cell) const { return cell*cell_width_; }
+    int y(int row) const { return row*cell_height_; }
     const Layout& layout(const std::string& text, bool bold) {
         const auto key = std::make_pair(text,bold); auto found = layouts_.find(key);
         if (found != layouts_.end()) return found->second;
         if (layouts_.size() >= 1024) layouts_.clear(); // Fixed memory budget for live streams.
         Layout result; const auto wide = utf16(text);
-        check(write_->CreateTextLayout(wide.data(),static_cast<UINT32>(wide.size()),formats_[bold].Get(),64,26,result.text.GetAddressOf()));
+        check(write_->CreateTextLayout(wide.data(),static_cast<UINT32>(wide.size()),formats_[bold].Get(),
+            64.0f*zoom_percent_/100.0f,logical_y(1),result.text.GetAddressOf()));
         ComPtr<GlyphAudit> audit; audit.Attach(new GlyphAudit(write_.Get())); check(result.text->Draw(nullptr,audit.Get(),0,0));
         result.glyphs = audit->glyphs; result.missing = audit->missing; result.faces = audit->faces;
         DWRITE_TEXT_METRICS metrics{}; check(result.text->GetMetrics(&metrics)); result.width = metrics.widthIncludingTrailingWhitespace;
@@ -211,17 +226,17 @@ public:
             RECT area{0,0,bitmap.width,bitmap.height}; check(target_->BindDC(bitmap.dc,&area)); target_->BeginDraw();
             for (int r = first; r < last; ++r) for (int c = 0; c < snapshot.columns(); ++c) {
                 const auto& cell = snapshot.lines[r][c]; if (cell.width == 0) continue;
-                const auto rect = D2D1::RectF(float(c*12),float(r*26),float((c+cell.width)*12),float((r+1)*26));
+                const auto rect = D2D1::RectF(logical_x(c),logical_y(r),logical_x(c+cell.width),logical_y(r+1));
                 brush_->SetColor(D2D1::ColorF(color(cell.style.bg,true))); target_->FillRectangle(rect,brush_.Get());
                 const auto& text = layout(cell.text,cell.style.bold); brush_->SetColor(D2D1::ColorF(color(cell.style.fg,false)));
                 target_->PushAxisAlignedClip(rect,D2D1_ANTIALIAS_MODE_ALIASED);
-                target_->DrawTextLayout(D2D1::Point2F(float(c*12),float(r*26)),text.text.Get(),brush_.Get(),D2D1_DRAW_TEXT_OPTIONS_CLIP);
+                target_->DrawTextLayout(D2D1::Point2F(logical_x(c),logical_y(r)),text.text.Get(),brush_.Get(),D2D1_DRAW_TEXT_OPTIONS_CLIP);
                 target_->PopAxisAlignedClip();
             }
             check(target_->EndDraw());
         }
         if (cursor && snapshot.cursor_row >= first && snapshot.cursor_row < last) {
-            RECT caret{x(snapshot.cursor_column),y(snapshot.cursor_row+1)-std::max(2,2*dpi_/96),x(snapshot.cursor_column+1),y(snapshot.cursor_row+1)};
+            RECT caret{x(snapshot.cursor_column),y(snapshot.cursor_row+1)-std::max(2,scaled_pixels(2)),x(snapshot.cursor_column+1),y(snapshot.cursor_row+1)};
             require(FillRect(bitmap.dc,&caret,brush(0xffd050)) != 0,"cursor fill failed");
         }
         require(GdiFlush() != FALSE,"GDI flush failed");
