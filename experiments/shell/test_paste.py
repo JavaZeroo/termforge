@@ -20,8 +20,9 @@ from experiments.conpty.run import OwnedJob
 
 
 def validate_transport(rows, directory):
-    by_mode = {row["mode"]: row for row in rows if "mode" in row}
-    if set(by_mode) != {"complete", "cancel", "close", "target-failure", "unavailable"}:
+    mode_rows = [row for row in rows if "mode" in row]
+    by_mode = {row["mode"]: row for row in mode_rows}
+    if len(mode_rows) != 5 or set(by_mode) != {"complete", "cancel", "close", "target-failure", "unavailable"}:
         raise ValueError("missing or unexpected transport result")
     summaries = {}
     for name in ("complete", "cancel", "close", "target-failure"):
@@ -55,10 +56,37 @@ def validate_transport(rows, directory):
     return summaries
 
 
+def validate_clipboard(rows, directory):
+    expected = "Unicode 汉字 e\u0301 🙂\r\nspace  \t".encode("utf-16-le")
+    if (directory / "clipboard-written.utf16le").read_bytes() != expected + b"\0\0":
+        raise ValueError("independent system clipboard write oracle failed")
+    if (directory / "clipboard-read.utf16le").read_bytes() != expected:
+        raise ValueError("independent system clipboard read oracle failed")
+    if (directory / "clipboard-worker.utf16le").read_bytes() != "Reader 汉字 🙂 e\u0301\r\n".encode("utf-16-le"):
+        raise ValueError("helper framed UTF16 oracle failed")
+    cases = [row for row in rows if "clipboard_cases" in row]
+    expected_cases = dict.fromkeys(("independent_write", "independent_read", "occupied_read", "occupied_write",
+                                   "invalid_utf16", "empty", "oversize_allocation", "text_limit", "unterminated", "missing_format"), True)
+    expected_cases["clipboard_cases"] = "passed"
+    if cases != [expected_cases]:
+        raise ValueError("missing system clipboard case")
+    reader = {row["clipboard_reader"]: row for row in rows if "clipboard_reader" in row}
+    if set(reader) != {"cancelled", "timed_out", "destroyed", "early-eof", "passed"}:
+        raise ValueError("clipboard reader cancellation/timeout/EOF/destruction gate incomplete")
+    if any(row.get("cleanup") is not True for row in reader.values()):
+        raise ValueError("clipboard helper resource cleanup failed")
+    for name in ("cancelled", "timed_out"):
+        if reader[name].get("delayed_renderer_entered") is not True or reader[name].get("messages", 0) <= 0:
+            raise ValueError("blocked renderer did not leave the UI processing messages")
+
+
 def execute(executable: Path, mode: str, directory: Path):
-    job = OwnedJob()
     process = None
-    record = {"mode": mode, "platform": platform.platform(), "exe_sha256": hashlib.sha256(executable.read_bytes()).hexdigest()}
+    record = {"mode": mode, "platform": platform.platform(), "exe_sha256": hashlib.sha256(executable.read_bytes()).hexdigest(),
+              "helper_sha256": hashlib.sha256(executable.with_name("shell_clipboard_reader.exe").read_bytes()).hexdigest(),
+              "github_sha": os.environ.get("GITHUB_SHA"),
+              "timed_out": False}
+    job = OwnedJob()
     try:
         process = subprocess.Popen([str(executable), "--supervised", mode, str(directory)],
                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -101,6 +129,7 @@ class PasteTests(unittest.TestCase):
             directory = self.out / f"transport-{repeat}"
             record = execute(self.executable, "--transport", directory)
             self.assertEqual(record["exit_code"], 0, record)
+            self.assertFalse(record["timed_out"], record)
             self.assertEqual(record["rows"][-1], {"clipboard": "not-run", "private_station": True, "transport": "passed", "cleanup": True})
             hashes = validate_transport(record["rows"], directory)
             (directory / "hashes.json").write_text(json.dumps(hashes, indent=2), encoding="utf-8")
@@ -113,12 +142,16 @@ class PasteTests(unittest.TestCase):
             denied = record["rows"] == [{"clipboard": "failed", "win32_error": 5, "private_station": True, "cleanup": True}]
             self.assertTrue(denied, record)
             if not hosted:
+                if os.environ.get("GITHUB_ACTIONS") == "true" or os.environ.get("TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD") == "1":
+                    self.fail(f"Required real system clipboard gate cannot use the current environment: {record}")
                 self.skipTest(f"Private window station OpenClipboard denied (5); system API gate remains unverified. Evidence: {directory.with_suffix('.json')}")
             directory = self.out / "hosted-clipboard"
             record = execute(self.executable, "--hosted-ci", directory)
         self.assertEqual(record["exit_code"], 0, record)
+        self.assertFalse(record["timed_out"], record)
         self.assertEqual(record["rows"][-1]["clipboard"], "passed")
         self.assertTrue(record["rows"][-1]["cleanup"])
+        validate_clipboard(record["rows"], directory)
         hashes = validate_transport(record["rows"], directory)
         (directory / "hashes.json").write_text(json.dumps(hashes, indent=2), encoding="utf-8")
 

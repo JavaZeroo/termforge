@@ -1,6 +1,7 @@
-// Real CF_UNICODETEXT and ConPTY tests. The clipboard is a private window
-// station's clipboard, never the interactive user's window station.
+// Real CF_UNICODETEXT and ConPTY tests. A private window station is the local
+// default; current-station access is gated to a disposable hosted CI VM.
 #include "clipboard.hpp"
+#include "clipboard_worker.hpp"
 #include "queues.hpp"
 #include <atomic>
 #include <filesystem>
@@ -66,11 +67,48 @@ public:
         }
     }
 };
-static void clipboard_cases(IsolatedClipboard& isolated) {
+// Deliberately independent from clipboard.hpp: construct malformed/boundary
+// global allocations directly, then test the public reader against them.
+static void raw_clipboard_fixture(HWND owner, std::u16string_view text, size_t units, bool terminate = true) {
+    require(units > text.size() && units <= PastePolicy::hard_utf16_units + 128, "bounded raw clipboard fixture");
+    HGLOBAL memory = GlobalAlloc(GMEM_MOVEABLE, units * sizeof(char16_t));
+    require(memory != nullptr, "raw clipboard allocation");
+    auto* data = static_cast<char16_t*>(GlobalLock(memory));
+    if (!data) { GlobalFree(memory); fail("raw clipboard lock"); }
+    const size_t allocated_units = GlobalSize(memory) / sizeof(char16_t);
+    for (size_t i = 0; i < allocated_units; ++i) data[i] = u'X';
+    for (size_t i = 0; i < text.size(); ++i) data[i] = text[i];
+    if (terminate) data[text.size()] = 0;
+    GlobalUnlock(memory);
+    if (!OpenClipboard(owner)) { const auto error = GetLastError(); GlobalFree(memory); fail("raw clipboard open", error); }
+    const bool emptied = EmptyClipboard() != FALSE;
+    const bool published = emptied && SetClipboardData(CF_UNICODETEXT, memory) != nullptr;
+    const auto error = GetLastError(); CloseClipboard();
+    if (!published) { GlobalFree(memory); fail("raw clipboard publish", error); }
+}
+static void dump_raw_clipboard(HWND owner, const std::filesystem::path& path, size_t expected_units) {
+    require(OpenClipboard(owner) != FALSE, "independent clipboard reader open");
+    const HANDLE memory = GetClipboardData(CF_UNICODETEXT);
+    if (!memory || GlobalSize(memory) < (expected_units + 1) * 2) { CloseClipboard(); throw std::runtime_error("independent clipboard allocation"); }
+    const void* data = GlobalLock(memory);
+    if (!data) { CloseClipboard(); fail("independent clipboard lock"); }
+    std::ofstream output(path, std::ios::binary);
+    output.write(static_cast<const char*>(data), static_cast<std::streamsize>((expected_units + 1) * 2));
+    const bool complete = output.good();
+    GlobalUnlock(memory); CloseClipboard(); require(complete, "independent UTF16 clipboard capture");
+}
+static void clipboard_cases(IsolatedClipboard& isolated, const std::filesystem::path& directory) {
     isolated.verify();
     const std::u16string expected = u"Unicode \u6c49\u5b57 e\u0301 \U0001f642\r\nspace  \t";
     write_unicode_clipboard(isolated.window, expected);
+    dump_raw_clipboard(isolated.window, directory / "clipboard-written.utf16le", expected.size());
     require(read_unicode_clipboard(isolated.window) == expected, "system clipboard exact Unicode round trip");
+    raw_clipboard_fixture(isolated.window, expected, expected.size() + 1);
+    const auto independently_published = read_unicode_clipboard(isolated.window);
+    require(independently_published == expected, "reader matches independently published CF_UNICODETEXT");
+    std::ofstream input_capture(directory / "clipboard-read.utf16le", std::ios::binary);
+    input_capture.write(reinterpret_cast<const char*>(independently_published.data()), static_cast<std::streamsize>(independently_published.size() * 2));
+    require(input_capture.good(), "clipboard reader capture"); input_capture.close();
     rejects([&] { read_unicode_clipboard(isolated.window, 3); }, "clipboard allocation rejected before copying");
     std::promise<void> opened, release; auto released = release.get_future();
     const HDESK clipboard_desktop = GetThreadDesktop(GetCurrentThreadId());
@@ -84,23 +122,148 @@ static void clipboard_cases(IsolatedClipboard& isolated) {
     try {
         opened.get_future().get();
         rejects([&] { read_unicode_clipboard(isolated.window); }, "clipboard ownership contention reported");
+        rejects([&] { write_unicode_clipboard(isolated.window, u"must not replace"); }, "clipboard occupied write reported");
         release.set_value(); holder.join();
     } catch (...) { release.set_value(); holder.join(); throw; }
     require(read_unicode_clipboard(isolated.window) == expected, "clipboard survives occupied read");
     write_unicode_clipboard(isolated.window, u"");
     require(read_unicode_clipboard(isolated.window).empty(), "empty system clipboard text");
-    write_unicode_clipboard(isolated.window, std::u16string(1, 0xd800));
+    raw_clipboard_fixture(isolated.window, std::u16string(1, 0xd800), 2);
     rejects([&] { prepare_paste(read_unicode_clipboard(isolated.window)); }, "invalid system UTF16 rejected by preparation");
     // Allocation over the cap with a tiny string must still be rejected before
     // scanning/copying, independent of its early terminator.
-    {
-        ClipboardAccess access(isolated.window); require(EmptyClipboard() != FALSE, "empty private clipboard");
-        HGLOBAL memory = GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, (PastePolicy::hard_utf16_units + 64) * 2);
-        require(memory != nullptr, "oversize clipboard fixture");
-        if (!SetClipboardData(CF_UNICODETEXT, memory)) { GlobalFree(memory); fail("oversize clipboard fixture publish"); }
-    }
+    raw_clipboard_fixture(isolated.window, u"x", PastePolicy::hard_utf16_units + 64);
     rejects([&] { read_unicode_clipboard(isolated.window); }, "oversize system allocation rejected");
+    raw_clipboard_fixture(isolated.window, u"no terminator", 32, false);
+    rejects([&] { read_unicode_clipboard(isolated.window); }, "unterminated system text rejected");
+    raw_clipboard_fixture(isolated.window, u"four", 5);
+    require(read_unicode_clipboard(isolated.window, 4) == u"four", "exact text limit accepted");
+    rejects([&] { read_unicode_clipboard(isolated.window, 3); }, "text limit rejected despite allocation slack");
+    {
+        ClipboardAccess access(isolated.window); require(EmptyClipboard() != FALSE, "clear formats fixture");
+    }
+    rejects([&] { read_unicode_clipboard(isolated.window); }, "missing Unicode format reported");
     write_unicode_clipboard(isolated.window, expected);
+    std::cout << "{\"clipboard_cases\":\"passed\",\"independent_write\":true,\"independent_read\":true,\"occupied_read\":true,"
+                 "\"occupied_write\":true,\"invalid_utf16\":true,\"empty\":true,\"oversize_allocation\":true,\"text_limit\":true,"
+                 "\"unterminated\":true,\"missing_format\":true}\n";
+}
+static ClipboardReadProgress await_reader(ClipboardReadJob& job, HWND window, unsigned& messages) {
+    const ULONGLONG deadline = GetTickCount64() + 12000;
+    while (!clipboard_read_terminal(job.progress().state) && GetTickCount64() < deadline) {
+        PostMessageW(window, WM_APP + 19, 0, 0);
+        MSG message{};
+        while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) { ++messages; DispatchMessageW(&message); }
+        job.poll(); Sleep(1);
+    }
+    const auto progress = job.progress();
+    require(clipboard_read_terminal(progress.state) && progress.cleanup_complete && !progress.active_processes,
+            "clipboard helper reaches reclaimed terminal state");
+    return progress;
+}
+struct DelayedOwner {
+    tf_conpty::Handle entered{CreateEventW(nullptr, TRUE, FALSE, nullptr)};
+    tf_conpty::Handle release{CreateEventW(nullptr, TRUE, FALSE, nullptr)};
+    std::thread thread;
+    HWND window = nullptr;
+    static LRESULT CALLBACK procedure(HWND window, UINT message, WPARAM wparam, LPARAM lparam) {
+        auto* owner = reinterpret_cast<DelayedOwner*>(GetWindowLongPtrW(window, GWLP_USERDATA));
+        if (message == WM_NCCREATE) {
+            owner = static_cast<DelayedOwner*>(reinterpret_cast<CREATESTRUCTW*>(lparam)->lpCreateParams);
+            SetWindowLongPtrW(window, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(owner));
+        }
+        if (message == WM_RENDERFORMAT && owner) {
+            SetEvent(owner->entered.get()); WaitForSingleObject(owner->release.get(), 10000); return 0;
+        }
+        if (message == WM_CLOSE) { DestroyWindow(window); return 0; }
+        if (message == WM_DESTROY) { PostQuitMessage(0); return 0; }
+        return DefWindowProcW(window, message, wparam, lparam);
+    }
+    explicit DelayedOwner(HDESK desktop) {
+        std::promise<HWND> ready; auto result = ready.get_future();
+        thread = std::thread([this, desktop, ready = std::move(ready)]() mutable {
+            try {
+                require(SetThreadDesktop(desktop) != FALSE, "delayed owner desktop");
+                WNDCLASSW cls{}; cls.lpfnWndProc = procedure; cls.hInstance = GetModuleHandleW(nullptr); cls.lpszClassName = L"TermForgeDelayedClipboard";
+                if (!RegisterClassW(&cls) && GetLastError() != ERROR_CLASS_ALREADY_EXISTS) fail("delayed owner class");
+                HWND own = CreateWindowExW(0, cls.lpszClassName, L"Synthetic delayed owner", 0, 0, 0, 8, 8, nullptr, nullptr, cls.hInstance, this);
+                require(own != nullptr, "delayed owner window");
+                {
+                    ClipboardAccess access(own); require(EmptyClipboard() != FALSE, "delayed owner empty");
+                    SetLastError(ERROR_SUCCESS); SetClipboardData(CF_UNICODETEXT, nullptr);
+                    require(IsClipboardFormatAvailable(CF_UNICODETEXT) != FALSE, "delayed owner format registered");
+                }
+                ready.set_value(own);
+                MSG message{}; while (GetMessageW(&message, nullptr, 0, 0) > 0) DispatchMessageW(&message);
+            } catch (...) { ready.set_exception(std::current_exception()); }
+        });
+        try { window = result.get(); } catch (...) { if (thread.joinable()) thread.join(); throw; }
+    }
+    ~DelayedOwner() {
+        SetEvent(release.get()); if (window) PostMessageW(window, WM_CLOSE, 0, 0);
+        if (thread.joinable()) thread.join();
+    }
+};
+static void reader_cases(IsolatedClipboard& isolated, const std::filesystem::path& directory, bool system_clipboard) {
+    if (!system_clipboard) {
+        ClipboardReadJob job; unsigned messages = 0; const auto progress = await_reader(job, isolated.window, messages);
+        require(progress.state == ClipboardReadState::failed && progress.win32_error != 0 && messages > 0,
+                "unavailable clipboard reader fails without blocking UI");
+        std::cout << "{\"clipboard_reader\":\"unavailable-cleanup\",\"messages\":" << messages << ",\"cleanup\":true}\n";
+        return;
+    }
+    const std::u16string expected = u"Reader \u6c49\u5b57 \U0001f642 e\u0301\r\n";
+    write_unicode_clipboard(isolated.window, expected);
+    ClipboardReadJob normal; unsigned normal_messages = 0;
+    require(await_reader(normal, isolated.window, normal_messages).state == ClipboardReadState::completed, "clipboard helper complete frame");
+    const auto result = normal.take_text(); require(result == expected, "clipboard helper UTF16 exact");
+    rejects([&] { normal.take_text(); }, "clipboard helper text is taken once");
+    std::ofstream captured(directory / "clipboard-worker.utf16le", std::ios::binary);
+    captured.write(reinterpret_cast<const char*>(result.data()), static_cast<std::streamsize>(result.size() * 2)); captured.close();
+    for (const bool cancel : {true, false}) {
+        DelayedOwner owner(GetThreadDesktop(GetCurrentThreadId()));
+        ClipboardReadJob job(cancel ? 5000 : 2000); unsigned messages = 0;
+        const auto deadline = GetTickCount64() + 4000;
+        while (WaitForSingleObject(owner.entered.get(), 0) != WAIT_OBJECT_0 && GetTickCount64() < deadline) {
+            job.poll(); Sleep(1);
+        }
+        require(WaitForSingleObject(owner.entered.get(), 0) == WAIT_OBJECT_0, "real delayed renderer was called");
+        const auto closing_started = GetTickCount64();
+        if (cancel) job.cancel();
+        const auto progress = await_reader(job, isolated.window, messages);
+        require(progress.state == (cancel ? ClipboardReadState::cancelled : ClipboardReadState::timed_out) && messages > 0,
+                "blocked system clipboard can be cancelled or timed out with messages running");
+        require(GetTickCount64() - closing_started < (cancel ? 2000u : 4000u), "delayed clipboard helper shutdown deadline");
+        std::cout << "{\"clipboard_reader\":\"" << (cancel ? "cancelled" : "timed_out")
+                  << "\",\"delayed_renderer_entered\":true,\"messages\":" << messages << ",\"cleanup\":true}\n";
+    }
+    for (const bool destroy : {true, false}) {
+        DelayedOwner owner(GetThreadDesktop(GetCurrentThreadId()));
+        auto job = std::make_unique<ClipboardReadJob>();
+        tf_conpty::Handle child_process(OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, job->progress().process_id));
+        require(child_process.get() != nullptr, "clipboard helper owned process handle");
+        const auto deadline = GetTickCount64() + 4000;
+        while (WaitForSingleObject(owner.entered.get(), 0) != WAIT_OBJECT_0 && GetTickCount64() < deadline) { job->poll(); Sleep(1); }
+        require(WaitForSingleObject(owner.entered.get(), 0) == WAIT_OBJECT_0, "blocked helper established before forced exit");
+        unsigned messages = 0;
+        if (destroy) {
+            const auto started = GetTickCount64(); job.reset();
+            require(GetTickCount64() - started < 250, "clipboard reader destructor does not wait on owner");
+            while (WaitForSingleObject(child_process.get(), 0) != WAIT_OBJECT_0 && GetTickCount64() < deadline) {
+                PostMessageW(isolated.window, WM_APP + 20, 0, 0); MSG message{};
+                while (PeekMessageW(&message, nullptr, 0, 0, PM_REMOVE)) { ++messages; DispatchMessageW(&message); }
+                Sleep(1);
+            }
+            require(WaitForSingleObject(child_process.get(), 0) == WAIT_OBJECT_0, "destructor killed owned clipboard helper");
+        } else {
+            require(TerminateProcess(child_process.get(), 123) != FALSE, "forced owned helper failure");
+            require(await_reader(*job, isolated.window, messages).state == ClipboardReadState::failed, "early EOF is rejected");
+            rejects([&] { job->take_text(); }, "failed helper has no result");
+        }
+        std::cout << "{\"clipboard_reader\":\"" << (destroy ? "destroyed" : "early-eof") << "\",\"cleanup\":true}\n";
+    }
+    write_unicode_clipboard(isolated.window, expected);
+    std::cout << "{\"clipboard_reader\":\"passed\",\"unicode_exact\":true,\"messages\":" << normal_messages << ",\"cleanup\":true}\n";
 }
 static void child_output(std::string_view text) {
     size_t offset = 0;
@@ -281,7 +444,7 @@ int wmain(int argc, wchar_t** argv) {
         require(std::filesystem::create_directory(directory), "output directory must be new");
         IsolatedClipboard isolated(hosted ? object_name(GetProcessWindowStation()) : std::wstring{});
         if (clipboard) {
-            try { clipboard_cases(isolated); }
+            try { clipboard_cases(isolated, directory); }
             catch (const ClipboardError& error) {
                 isolated.close_checked();
                 std::cout << "{\"clipboard\":\"failed\",\"win32_error\":" << error.code
@@ -289,6 +452,7 @@ int wmain(int argc, wchar_t** argv) {
                 throw;
             }
         }
+        reader_cases(isolated, directory, clipboard);
         transfer_case(isolated, directory, "complete", clipboard);
         transfer_case(isolated, directory, "cancel", clipboard);
         closing_case(directory, false); closing_case(directory, true);
