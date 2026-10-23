@@ -1,0 +1,1025 @@
+{
+  "schema": "termforge-reviewed-hosted-product-ime-failure-v1",
+  "source": {
+    "commit": "c2063246ab59646a3b56f62b1b7a19e3957bc22b",
+    "run_id": 40014193059,
+    "run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40014193059",
+    "event": "workflow_dispatch"
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "job_id": 120621928118,
+      "conclusion": "failure",
+      "failed_step": "Check inventory guard, evidence and owned synthetic timeout",
+      "error": "subprocess.TimeoutExpired after 10 seconds",
+      "failed_test": "test_failed_final_progress_cannot_return_complete",
+      "inventory_or_language_or_input_steps_executed": false,
+      "artifact_uploaded": false
+    },
+    {
+      "attempt": 2,
+      "job_id": 120622943085,
+      "conclusion": "failure",
+      "pure_tests": {
+        "count": 45,
+        "passed": true
+      },
+      "inventory_preparation_build_and_standalone_probe_steps": "success",
+      "failed_step": "Require four real product IME workflows and owned cleanup"
+    }
+  ],
+  "artifact": {
+    "id": 12526764934,
+    "name": "r1-ime-windows-2025",
+    "bytes": 23365,
+    "zip_sha256": "dcff3b687a483809712e756a2362a047cebfca0116f4b54bdf1ffa3db403f5ce",
+    "metadata_digest_matched": true,
+    "allowlisted_members": 43,
+    "raw_identity_files_included": false
+  },
+  "inventory": {
+    "status": "inventory-complete-ime-unverified",
+    "operations": [
+      {
+        "name": "os",
+        "status": "complete",
+        "returncode": 0,
+        "elapsed_seconds": 0.75,
+        "error": null,
+        "process_reaped": true,
+        "job_active_after": 0
+      },
+      {
+        "name": "powershell",
+        "status": "complete",
+        "returncode": 0,
+        "elapsed_seconds": 0.39100000000001955,
+        "error": null,
+        "process_reaped": true,
+        "job_active_after": 0
+      },
+      {
+        "name": "dism",
+        "status": "complete",
+        "returncode": 0,
+        "elapsed_seconds": 0.5310000000000059,
+        "error": null,
+        "process_reaped": true,
+        "job_active_after": 0
+      },
+      {
+        "name": "ime-binary",
+        "status": "complete",
+        "returncode": 0,
+        "elapsed_seconds": 1.593999999999994,
+        "error": null,
+        "process_reaped": true,
+        "job_active_after": 0
+      },
+      {
+        "name": "tip",
+        "status": "complete",
+        "returncode": 0,
+        "elapsed_seconds": 0.6399999999999864,
+        "error": null,
+        "process_reaped": true,
+        "job_active_after": 0
+      },
+      {
+        "name": "capability",
+        "status": "complete",
+        "returncode": 0,
+        "elapsed_seconds": 5.75,
+        "error": null,
+        "process_reaped": true,
+        "job_active_after": 0
+      }
+    ],
+    "real_ime_workflow_verified": false
+  },
+  "environment": {
+    "image_os": "win25-vs2026",
+    "image_version": "20261021.278.1",
+    "os": {
+      "Caption": "Microsoft Windows Server 2025 Datacenter",
+      "Version": "10.0.26100",
+      "BuildNumber": "26100"
+    },
+    "status": "prepared-not-verified",
+    "setup_route": "existing-provider-activation",
+    "machine_tip_registered": true,
+    "user_tip_listed": true,
+    "capability": {
+      "name": "Language.Basic~~~zh-CN~0.0.1.0",
+      "state": "NotPresent"
+    },
+    "capability_after": {
+      "name": "Language.Basic~~~zh-CN~0.0.1.0",
+      "state": "NotPresent"
+    },
+    "installation_attempted": false,
+    "provider": {
+      "name": "ChsIME.exe",
+      "version": "10.0.26100.33648 (WinBuild.160101.0800)",
+      "sha256": "581362ddfb1230394900efee9a23194422b14b3ca8c111f00b90e23d3112c4b9"
+    },
+    "all_six_preparation_phases_ended": true
+  },
+  "standalone_probe": {
+    "status": "real-ime-probe-passed",
+    "raw_stdout_matches_result": true,
+    "returncode": 0,
+    "elapsed_seconds": 3.759360000000015,
+    "preedit": "ni'hao",
+    "committed": "你好",
+    "result_events": 1,
+    "candidate_classes": [
+      "Microsoft.IME.UIManager.CandidateWindow.Host",
+      "MSCTFIME Composition"
+    ],
+    "candidate_rectangles": [
+      [
+        201,
+        272,
+        826,
+        343
+      ],
+      [
+        204,
+        251,
+        246,
+        269
+      ]
+    ],
+    "moved_candidate_rectangles": [
+      [
+        345,
+        368,
+        970,
+        439
+      ],
+      [
+        348,
+        347,
+        390,
+        365
+      ]
+    ],
+    "cancel_verified": true,
+    "context_cancelled": true,
+    "owned_window_destroyed": true,
+    "job_containment_verified": false
+  },
+  "product": {
+    "status": "failed",
+    "elapsed_seconds": 51.170999999999964,
+    "binaries": {
+      "shell_test_launcher.exe": {
+        "bytes": 55296,
+        "sha256": "673927c8ec0c012cc688a313b90899e1522d15bc5651b90cf3b54859cf7d9439"
+      },
+      "termforge_shell.exe": {
+        "bytes": 781824,
+        "sha256": "ab064a71e3a413a3bfe30211843f68686b8dd0e37d682b41a50336a0fd87193f"
+      },
+      "shell_ime_client.exe": {
+        "bytes": 45568,
+        "sha256": "d5d2d5b3474aa0a96f46a7c3753babebbfdfe1ef8536fd427e94a2de2d2c3c56"
+      }
+    },
+    "cases": [
+      {
+        "mode": "ui-ime-basic",
+        "status": "failed",
+        "elapsed_seconds": 13.405999999999977,
+        "native_returncode": 2,
+        "outer_timed_out": false,
+        "failure_stage": "stop-raw-receivers",
+        "stderr": "product IME step timed out: stop-raw-receivers",
+        "last_completed_step": "main-cancel",
+        "checkpoint_names": [
+          "bottom-preedit",
+          "bottom-moved",
+          "bottom-commit",
+          "bottom-cancel",
+          "main-preedit",
+          "main-commit",
+          "main-cancel"
+        ],
+        "raw_receiver_bytes": {
+          "bottom": {
+            "bytes": 6,
+            "hex": "e4bda0e5a5bd",
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          },
+          "main": {
+            "bytes": 6,
+            "hex": "e4bda0e5a5bd",
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          }
+        },
+        "checkpoint_commit_and_preedit": [
+          {
+            "name": "bottom-preedit",
+            "session": "bottom",
+            "generation": 1,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              8,
+              654,
+              20,
+              680
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  5,
+                  607,
+                  669,
+                  651
+                ]
+              },
+              {
+                "instance": 2,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  8,
+                  654,
+                  50,
+                  672
+                ]
+              }
+            ]
+          },
+          {
+            "name": "bottom-moved",
+            "session": "bottom",
+            "generation": 1,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              40,
+              675,
+              52,
+              701
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  37,
+                  628,
+                  701,
+                  672
+                ]
+              },
+              {
+                "instance": 2,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  40,
+                  675,
+                  82,
+                  693
+                ]
+              }
+            ]
+          },
+          {
+            "name": "bottom-commit",
+            "session": "bottom",
+            "generation": 1,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              40,
+              675,
+              52,
+              701
+            ],
+            "candidates": []
+          },
+          {
+            "name": "bottom-cancel",
+            "session": "bottom",
+            "generation": 1,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              40,
+              675,
+              52,
+              701
+            ],
+            "candidates": []
+          },
+          {
+            "name": "main-preedit",
+            "session": "main",
+            "generation": 2,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              265,
+              182,
+              277,
+              208
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  262,
+                  203,
+                  926,
+                  247
+                ]
+              },
+              {
+                "instance": 3,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  265,
+                  182,
+                  307,
+                  200
+                ]
+              }
+            ]
+          },
+          {
+            "name": "main-commit",
+            "session": "main",
+            "generation": 2,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              265,
+              182,
+              277,
+              208
+            ],
+            "candidates": []
+          },
+          {
+            "name": "main-cancel",
+            "session": "main",
+            "generation": 2,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              265,
+              182,
+              277,
+              208
+            ],
+            "candidates": []
+          }
+        ],
+        "child_signaled": true,
+        "inner_job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "outer_job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "forced_outer_job_termination": false,
+        "cleanup_errors": [],
+        "product_manifest_present": false,
+        "frame_present": false,
+        "pinned_full_case_oracle_passed": false,
+        "pinned_full_case_oracle_error": "product IME process/outer Job cleanup did not pass",
+        "receiver_stop_event_exit_diagnostics_present": false,
+        "receiver_stop_root_cause": "unknown; missing per-receiver event/process/worker error evidence"
+      },
+      {
+        "mode": "ui-ime-geometry",
+        "status": "failed",
+        "elapsed_seconds": 11.813000000000017,
+        "native_returncode": 2,
+        "outer_timed_out": false,
+        "failure_stage": "stop-raw-receivers",
+        "stderr": "product IME step timed out: stop-raw-receivers",
+        "last_completed_step": "cancelled",
+        "checkpoint_names": [
+          "before-output",
+          "after-output",
+          "after-resize",
+          "after-zoom",
+          "after-dpi",
+          "committed",
+          "cancelled"
+        ],
+        "raw_receiver_bytes": {
+          "bottom": {
+            "bytes": 0,
+            "hex": "",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "main": {
+            "bytes": 6,
+            "hex": "e4bda0e5a5bd",
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          }
+        },
+        "checkpoint_commit_and_preedit": [
+          {
+            "name": "before-output",
+            "session": "main",
+            "generation": 2,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              235,
+              150,
+              247,
+              176
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  232,
+                  171,
+                  896,
+                  215
+                ]
+              },
+              {
+                "instance": 2,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  235,
+                  150,
+                  277,
+                  168
+                ]
+              }
+            ]
+          },
+          {
+            "name": "after-output",
+            "session": "main",
+            "generation": 2,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              235,
+              540,
+              247,
+              566
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  232,
+                  561,
+                  896,
+                  605
+                ]
+              },
+              {
+                "instance": 2,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  235,
+                  540,
+                  277,
+                  558
+                ]
+              }
+            ]
+          },
+          {
+            "name": "after-resize",
+            "session": "main",
+            "generation": 2,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              246,
+              504,
+              258,
+              530
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  243,
+                  525,
+                  907,
+                  569
+                ]
+              },
+              {
+                "instance": 2,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  246,
+                  504,
+                  288,
+                  522
+                ]
+              }
+            ]
+          },
+          {
+            "name": "after-zoom",
+            "session": "main",
+            "generation": 2,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              246,
+              503,
+              261,
+              536
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  243,
+                  524,
+                  907,
+                  568
+                ]
+              },
+              {
+                "instance": 2,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  246,
+                  503,
+                  288,
+                  521
+                ]
+              }
+            ]
+          },
+          {
+            "name": "after-dpi",
+            "session": "main",
+            "generation": 2,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              246,
+              491,
+              265,
+              532
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  243,
+                  512,
+                  907,
+                  556
+                ]
+              },
+              {
+                "instance": 2,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  246,
+                  491,
+                  288,
+                  509
+                ]
+              }
+            ]
+          },
+          {
+            "name": "committed",
+            "session": "main",
+            "generation": 2,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              246,
+              491,
+              265,
+              532
+            ],
+            "candidates": []
+          },
+          {
+            "name": "cancelled",
+            "session": "main",
+            "generation": 2,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              246,
+              491,
+              265,
+              532
+            ],
+            "candidates": []
+          }
+        ],
+        "child_signaled": true,
+        "inner_job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "outer_job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "forced_outer_job_termination": false,
+        "cleanup_errors": [],
+        "product_manifest_present": false,
+        "frame_present": false,
+        "pinned_full_case_oracle_passed": false,
+        "pinned_full_case_oracle_error": "product IME process/outer Job cleanup did not pass",
+        "receiver_stop_event_exit_diagnostics_present": false,
+        "receiver_stop_root_cause": "unknown; missing per-receiver event/process/worker error evidence"
+      },
+      {
+        "mode": "ui-ime-focus",
+        "status": "failed",
+        "elapsed_seconds": 15.09299999999999,
+        "native_returncode": 2,
+        "outer_timed_out": false,
+        "failure_stage": "stop-raw-receivers",
+        "stderr": "product IME step timed out: stop-raw-receivers",
+        "last_completed_step": "rename-commit",
+        "checkpoint_names": [
+          "bottom-preedit",
+          "bottom-hidden",
+          "main-commit",
+          "bottom-resumed",
+          "hidden-preedit"
+        ],
+        "raw_receiver_bytes": {
+          "bottom": {
+            "bytes": 6,
+            "hex": "e4bda0e5a5bd",
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          },
+          "main": {
+            "bytes": 6,
+            "hex": "e4bda0e5a5bd",
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          },
+          "hidden": {
+            "bytes": 0,
+            "hex": "",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "checkpoint_commit_and_preedit": [
+          {
+            "name": "bottom-preedit",
+            "session": "bottom",
+            "generation": 1,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              8,
+              654,
+              20,
+              680
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  5,
+                  607,
+                  669,
+                  651
+                ]
+              },
+              {
+                "instance": 2,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  8,
+                  654,
+                  50,
+                  672
+                ]
+              }
+            ]
+          },
+          {
+            "name": "bottom-hidden",
+            "session": "bottom",
+            "generation": 1,
+            "composing": false,
+            "preedit": "",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              8,
+              654,
+              20,
+              680
+            ],
+            "candidates": []
+          },
+          {
+            "name": "main-commit",
+            "session": "main",
+            "generation": 2,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              235,
+              150,
+              247,
+              176
+            ],
+            "candidates": []
+          },
+          {
+            "name": "bottom-resumed",
+            "session": "bottom",
+            "generation": 1,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              8,
+              654,
+              20,
+              680
+            ],
+            "candidates": []
+          },
+          {
+            "name": "hidden-preedit",
+            "session": "hidden",
+            "generation": 3,
+            "composing": true,
+            "preedit": "ni",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              8,
+              654,
+              20,
+              680
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  5,
+                  607,
+                  471,
+                  651
+                ]
+              },
+              {
+                "instance": 3,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  8,
+                  654,
+                  22,
+                  672
+                ]
+              }
+            ]
+          }
+        ],
+        "child_signaled": true,
+        "inner_job_after": {
+          "active": 0,
+          "total": 13,
+          "terminated": 0
+        },
+        "outer_job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "forced_outer_job_termination": false,
+        "cleanup_errors": [],
+        "product_manifest_present": false,
+        "frame_present": false,
+        "pinned_full_case_oracle_passed": false,
+        "pinned_full_case_oracle_error": "product IME process/outer Job cleanup did not pass",
+        "receiver_stop_event_exit_diagnostics_present": false,
+        "receiver_stop_root_cause": "unknown; missing per-receiver event/process/worker error evidence"
+      },
+      {
+        "mode": "ui-ime-close",
+        "status": "failed",
+        "elapsed_seconds": 10.85899999999998,
+        "native_returncode": 2,
+        "outer_timed_out": false,
+        "failure_stage": "stop-raw-receivers",
+        "stderr": "product IME step timed out: stop-raw-receivers",
+        "last_completed_step": "survivor-cancel",
+        "checkpoint_names": [
+          "before-close",
+          "survivor-commit",
+          "survivor-cancel"
+        ],
+        "raw_receiver_bytes": {
+          "bottom": {
+            "bytes": 0,
+            "hex": "",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "main": {
+            "bytes": 6,
+            "hex": "e4bda0e5a5bd",
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          }
+        },
+        "checkpoint_commit_and_preedit": [
+          {
+            "name": "before-close",
+            "session": "bottom",
+            "generation": 1,
+            "composing": true,
+            "preedit": "ni'hao",
+            "result_events": 0,
+            "committed": "",
+            "received_hex": "",
+            "caret_screen": [
+              8,
+              654,
+              20,
+              680
+            ],
+            "candidates": [
+              {
+                "instance": 1,
+                "class": "Microsoft.IME.UIManager.CandidateWindow.Host",
+                "rect": [
+                  5,
+                  607,
+                  669,
+                  651
+                ]
+              },
+              {
+                "instance": 2,
+                "class": "MSCTFIME Composition",
+                "rect": [
+                  8,
+                  654,
+                  50,
+                  672
+                ]
+              }
+            ]
+          },
+          {
+            "name": "survivor-commit",
+            "session": "main",
+            "generation": 2,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              235,
+              150,
+              247,
+              176
+            ],
+            "candidates": []
+          },
+          {
+            "name": "survivor-cancel",
+            "session": "main",
+            "generation": 2,
+            "composing": false,
+            "preedit": "",
+            "result_events": 1,
+            "committed": "你好",
+            "received_hex": "e4bda0e5a5bd",
+            "caret_screen": [
+              235,
+              150,
+              247,
+              176
+            ],
+            "candidates": []
+          }
+        ],
+        "child_signaled": true,
+        "inner_job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "outer_job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "forced_outer_job_termination": false,
+        "cleanup_errors": [],
+        "product_manifest_present": false,
+        "frame_present": false,
+        "pinned_full_case_oracle_passed": false,
+        "pinned_full_case_oracle_error": "product IME process/outer Job cleanup did not pass",
+        "receiver_stop_event_exit_diagnostics_present": false,
+        "receiver_stop_root_cause": "unknown; missing per-receiver event/process/worker error evidence"
+      }
+    ],
+    "real_ime_product_verified": false,
+    "r1_06_complete": false
+  },
+  "pinned_oracle": {
+    "source_sha256": {
+      "experiments/shell/hosted_ime_input.hpp": "ecebca687baa0c1b7e90c85b61d0d3555e52a268db24d4bb259af731124ae805",
+      "experiments/shell/ime_client.cpp": "29554ff8a747812b14f234cc411c40f2bc28fa02e1b7d4569b197ff0d1c18cc5",
+      "experiments/shell/workspace_ime_scenario.hpp": "2ccb937d1389b539d340ecb3f98d5a25a1b06bec8c4d1617270b4a3f2bef174e",
+      "research/ime/product_checks.py": "436eebedf91c53513187ca17966b99a57a28a3571f892c1a4454d47a047e1acb",
+      "research/ime/product_runner.py": "e1c2770f0af19586f4717e241fc9233cdc150f6945cab973e51fdb4d17aa8583"
+    },
+    "all_four_actual_cases_rejected": true
+  },
+  "limitations": [
+    "Partial checkpoints demonstrate actual preedit/candidate observations and literal raw receiver bytes, but none is a complete product acceptance.",
+    "Missing final product manifests and frames prevent independent full-matrix validation of metrics, rename/output snapshots and receiver stop exits.",
+    "Job zero is actual final containment cleanup; it does not prove the intended raw-receiver stop handshake succeeded.",
+    "Stop-worker cancellation/count/error/exit cause remains unknown pending a separate data-only lifecycle reproduction.",
+    "No workstation language settings, SendInput or real IME were invoked during this read-only audit."
+  ]
+}

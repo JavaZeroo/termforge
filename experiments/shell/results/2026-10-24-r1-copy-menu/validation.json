@@ -1,0 +1,56 @@
+{
+  "schema": "termforge-r1-copy-popup-local-development-v1",
+  "base_commit": "c2063246ab59646a3b56f62b1b7a19e3957bc22b",
+  "source_identity_kind": "raw working-tree bytes before commit",
+  "sources": {
+    "experiments/shell/workspace_selection_scenario.hpp": "9cb76aadad1856bc2f5198f8c03fb3e2905f3dc440e6ee2b79f79f883e9bc348",
+    "experiments/shell/selection_checks.py": "3c728faa13910a444782d42598612abd1533ea424a9cd0a4a4cd9b88b040f217",
+    "experiments/shell/test_shell.py": "6267b48cfd256ab6fbb1f4e9dc067ef7983d3344d280862328908d80c6531882"
+  },
+  "binary_sha256": "c453a57fc60b193ea8780420269637c2a779fc2428160d78672962c6a9c4e94c",
+  "validation": {
+    "unittest_total": 4,
+    "unittest_passed": 3,
+    "unittest_skipped": 1,
+    "seconds": 4.02,
+    "skip_reason": "real system clipboard requires designated disposable hosted VM"
+  },
+  "local_non_clipboard_rounds": [
+    {
+      "sample_sha256": "760b531ab2945891f5e36ef8cd91c09c1f6407a9e3917348299fb9968d551fa9",
+      "manifest_sha256": "1b971c7a7a63c4f2c47724382cbf9c7e5333414c9500ac2e493754c32b7be6ed",
+      "frame_sha256": "3e328a499ed1bf4aa221396957c0c2ae8275790bd2a66b5d05c7b879fa87a5c4",
+      "base_phases": 12,
+      "interaction_phases": 21,
+      "sessions_closed": 2,
+      "job_active_after": 0,
+      "desktop_gone": true,
+      "raw_bottom_hex": "",
+      "raw_main_hex": "78"
+    },
+    {
+      "sample_sha256": "4d4a6c9d0d897381e1be53b657f5138c537d3d742053069f4f91e5285b00b6ff",
+      "manifest_sha256": "eb5cc181ae287b062314209c5163a62dd0f4942d105bee433ba041b752bee18b",
+      "frame_sha256": "3e328a499ed1bf4aa221396957c0c2ae8275790bd2a66b5d05c7b879fa87a5c4",
+      "base_phases": 12,
+      "interaction_phases": 21,
+      "sessions_closed": 2,
+      "job_active_after": 0,
+      "desktop_gone": true,
+      "raw_bottom_hex": "",
+      "raw_main_hex": "78"
+    }
+  ],
+  "system_copy_popup_verified": false,
+  "evidence_contract": {
+    "new_system_schema": "termforge-window-selection-v4",
+    "actual_return_command": 14,
+    "native_popup_and_cf_replacement_required": true,
+    "legacy_v3_actual_copy_popup": false
+  },
+  "limitations": [
+    "Local positive schema examples are synthetic; actual Copy14 plus real CF must pass hosted tests.",
+    "Two local window rounds retain Select All15 and never touch the developer clipboard.",
+    "Old v3 evidence is readable but never accepted as the new popup gate."
+  ]
+}

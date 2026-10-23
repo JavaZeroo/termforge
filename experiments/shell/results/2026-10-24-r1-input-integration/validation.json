@@ -180,7 +180,7 @@
       "product clipboard read gate requires a disposable hosted VM",
       "real system clipboard UI gate requires a disposable hosted VM",
       "system CF requires a disposable hosted VM",
-      "Private window station OpenClipboard denied (5); system API gate remains unverified. Evidence: D:\\\\Code\\\\termforge\\\\build\\\\test-artifacts\\\\paste\\\\run-nrw39tny\\\\private-clipboard.json"
+      "Private window station OpenClipboard denied (5); system API gate remains unverified"
     ],
     "developer_real_ime_input_attempted": false,
     "product_hosted_ime_verified": false,

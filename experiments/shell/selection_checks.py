@@ -22,29 +22,64 @@ INTERACTIONS = ("autoscroll-up-start", "autoscroll-up-held", "autoscroll-up-rele
                 "input-after-select-all")
 
 
-def _validate_popup(menu: dict) -> None:
+def _validate_popup(menu: dict, command: int = 15) -> None:
+    expected_index = 8 if command == 14 else 9
+    expected_enabled = [8, 1, 2, 6, 5, 12, 14, 15, 16] if command == 14 else [8, 1, 2, 6, 5, 12, 15, 16]
     if (not isinstance(menu, dict) or menu.get("schema") != "termforge-owned-popup-menu-v1" or
             menu.get("input_path") != "queued-owner-mouse-and-popup-keys" or menu.get("owned_non_input_desktop") is not True or
             any(type(menu.get(key)) is not int for key in ("target_command", "target_index", "initial_state", "highlighted_state",
                                                           "actual_return_command", "popup_hwnd", "navigation_keys", "last_highlighted_command")) or
-            menu["target_command"] != 15 or menu["target_index"] != 9 or menu["actual_return_command"] != 15 or
+            command not in (14, 15) or menu["target_command"] != command or menu["target_index"] != expected_index or menu["actual_return_command"] != command or
             menu["popup_hwnd"] <= 0 or menu.get("popup_class") != "#32768" or menu["initial_state"] & 3 or
             menu["highlighted_state"] & 128 != 128 or menu["highlighted_state"] & 3 or
-            menu["last_highlighted_command"] != 15 or not 1 <= menu["navigation_keys"] <= 9 or
-            menu.get("enabled_commands") != [8, 1, 2, 6, 5, 12, 15, 16] or
+            menu["last_highlighted_command"] != command or not 1 <= menu["navigation_keys"] <= len(expected_enabled) + 1 or
+            menu.get("enabled_commands") != expected_enabled or
             any(menu.get(key) is not True for key in ("popup_visible_observed", "highlighted", "returned", "popup_closed")) or
             any(menu.get(key) is not False for key in ("timed_out", "escape_cleanup", "endmenu_cleanup")) or menu.get("failure") is not None):
-        raise ValueError("actual product popup HWND, enabled/highlighted Select All, returned command or cleanup is unverified")
+        raise ValueError("actual product popup HWND, enabled/highlighted target, returned command or cleanup is unverified")
     popup, item = menu.get("popup_rect"), menu.get("item_rect")
     if (any(not isinstance(rect, list) or len(rect) != 4 or any(type(n) is not int for n in rect) for rect in (popup, item)) or
             not popup[0] <= item[0] < item[2] <= popup[2] or not popup[1] <= item[1] < item[3] <= popup[3]):
         raise ValueError("target menu item was not observed inside the actual visible popup")
 
 
+def _validate_copy_popup(data: dict) -> bool:
+    fields = ("copy_popup_verified", "copy_popup_observer_idle", "copy_popup_sequence_before", "copy_popup_sequence_after", "copy_popup_menu")
+    if data.get("schema") == "termforge-window-selection-v3":
+        if any(field in data for field in fields):
+            raise ValueError("actual Copy popup evidence requires its explicit v4 identity")
+        return False
+    if (data.get("schema") != "termforge-window-selection-v4" or data.get("system_clipboard") is not True or
+            data.get("copy_popup_verified") is not True or data.get("copy_popup_observer_idle") is not True or
+            any(type(data.get(field)) is not int or not 1 <= data[field] <= 0xffffffff for field in fields[2:4]) or
+            data["copy_popup_sequence_before"] == data["copy_popup_sequence_after"]):
+        raise ValueError("actual Copy popup clipboard replacement or observer cleanup is unverified")
+    _validate_popup(data.get("copy_popup_menu"), 14)
+    rows = data.get("interactions")
+    if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+        raise ValueError("actual Copy popup lacks native before/after target observations")
+    before = [row for row in rows if row.get("phase") == "system-copy-popup-prepared"]
+    after = [row for row in rows if row.get("phase") == "system-copy-popup"]
+    if len(before) != 1 or len(after) != 1:
+        raise ValueError("actual Copy popup before/after phases are missing or repeated")
+    all_text = "\r\n".join([f"TF_FIND_{index:03d} needle 中文 e\u0301" for index in range(80)] + ["TF_FIND_READY 080", ""])
+    for row, action, cf in ((before[0], "prepare-Copy-popup", SENTINEL), (after[0], "actual-Session-popup-Copy", all_text)):
+        if (row.get("action") != action or row.get("clipboard") != cf or row.get("text") != all_text or
+                any(row.get(field) is not True for field in ("main_focused", "main_active", "selected", "frame_matches_full")) or
+                row.get("raw_bottom") != "" or row.get("raw_main") != "x" or row.get("status") != "ok" or
+                row.get("captured") is not False or type(row.get("overlay_cells")) is not int or row["overlay_cells"] <= 0):
+            raise ValueError("actual Copy popup changed selection/focus/target/raw input or copied the wrong literal CF")
+    if after[0].get("product_status") != "Selected text copied":
+        raise ValueError("native Copy popup did not complete the actual product copy action")
+    return True
+
+
 def _validate_interactions(data: dict) -> dict:
     rows = data.get("interactions")
     system = data["system_clipboard"]
+    actual_copy_popup = _validate_copy_popup(data)
     phases = INTERACTIONS + ("empty-copy-shortcut", "select-all-popup") + (("system-copy-shortcut",) if system else ()) + (
+        ("system-copy-popup-prepared", "system-copy-popup") if actual_copy_popup else ()) + (
         "select-all-popup-cleared", "input-after-popup")
     if (data.get("interaction_input") != "queued-keys-through-workspace-loop-and-native-timer-capture" or
             data.get("menu_popup_verified") is not True or data.get("popup_observer_idle") is not True or
@@ -74,7 +109,8 @@ def _validate_interactions(data: dict) -> dict:
             if row["anchor_line"] != anchor or row["direction"] != direction:
                 raise ValueError("autoscroll direction or drag anchor changed")
         else:
-            expected_text = all_text if phase in ("select-all-shortcut", "select-all-command", "select-all-popup", "system-copy-shortcut") else ""
+            expected_text = all_text if phase in ("select-all-shortcut", "select-all-command", "select-all-popup", "system-copy-shortcut",
+                                                  "system-copy-popup-prepared", "system-copy-popup") else ""
         held = phase.endswith(("-start", "-held"))
         main_focused = phase not in ("autoscroll-focus-release", "autoscroll-focus-stopped")
         action = {"autoscroll-up-release": "mouse-up", "autoscroll-focus-release": "focus-loss",
@@ -82,6 +118,7 @@ def _validate_interactions(data: dict) -> dict:
                   "select-all-shortcut-cleared": "queued-Escape", "select-all-command": "workspace-command-15",
                   "select-all-command-cleared": "queued-Escape", "empty-copy-shortcut": "queued-Ctrl-Shift-C-empty",
                   "select-all-popup": "actual-Session-popup-Select-All", "system-copy-shortcut": "queued-Ctrl-Shift-C",
+                  "system-copy-popup-prepared": "prepare-Copy-popup", "system-copy-popup": "actual-Session-popup-Copy",
                   "select-all-popup-cleared": "queued-Escape"}.get(phase, "none")
         if (row["captured"] != held or row["capture_transferred"] != (phase == "autoscroll-capture-release") or
                 row["main_focused"] != main_focused or row["main_active"] != main_focused or row.get("action") != action or
@@ -89,8 +126,8 @@ def _validate_interactions(data: dict) -> dict:
                 row.get("text") != expected_text or bool(row["overlay_cells"]) != bool(expected_text) or
                 row.get("raw_bottom") != "" or row.get("raw_main") != ("x" if index >= 16 else "")):
             raise ValueError("selection interaction text/focus/capture/raw-byte oracle differs")
-        expected_cf = (SENTINEL if phase == "empty-copy-shortcut" else all_text) if system and phase in (
-            "empty-copy-shortcut", "system-copy-shortcut") else None
+        expected_cf = (SENTINEL if phase in ("empty-copy-shortcut", "system-copy-popup-prepared") else all_text) if system and phase in (
+            "empty-copy-shortcut", "system-copy-shortcut", "system-copy-popup-prepared", "system-copy-popup") else None
         if row.get("clipboard") != expected_cf:
             raise ValueError("real queued Copy shortcut CF_UNICODETEXT differs from its exact independent oracle")
         if phase == "empty-copy-shortcut" and row.get("product_status") != "No selected text":
@@ -108,11 +145,11 @@ def _validate_interactions(data: dict) -> dict:
             raise ValueError("autoscroll moved outside its per-timer bound or continued after mouse/focus/capture release")
     return {"native_timer_autoscroll": True, "stop_reasons": ["mouse-up", "focus-loss", "capture-loss"],
             "select_all_shortcut": True, "select_all_command": True, "actual_menu_popup": True,
-            "empty_copy_shortcut": True, "system_copy_shortcut": system, "phases": len(rows)}
+            "empty_copy_shortcut": True, "system_copy_shortcut": system, "actual_copy_popup": actual_copy_popup, "phases": len(rows)}
 
 
 def validate_selection(data: dict, system_clipboard: bool, run_record: dict) -> dict:
-    if (not isinstance(data, dict) or data.get("schema") != "termforge-window-selection-v3" or
+    if (not isinstance(data, dict) or data.get("schema") not in ("termforge-window-selection-v3", "termforge-window-selection-v4") or
             type(data.get("system_clipboard")) is not bool or data["system_clipboard"] != system_clipboard or
             data.get("input_source") != "physical-pixel-mouse-messages" or
             not isinstance(data.get("snapshots"), list) or len(data["snapshots"]) != len(PHASES) or
@@ -195,8 +232,14 @@ def validate_selection(data: dict, system_clipboard: bool, run_record: dict) -> 
 
 def validate_selection_workflow(directory: Path, system_clipboard: bool, run_record: dict) -> dict:
     directory = Path(directory)
-    summary = validate_selection(json.loads((directory / "selection.json").read_text(encoding="utf-8")), system_clipboard, run_record)
+    data = json.loads((directory / "selection.json").read_text(encoding="utf-8"))
+    summary = validate_selection(data, system_clipboard, run_record)
     _validate_popup(json.loads((directory / "selection-popup.json").read_text(encoding="utf-8")))
+    if summary["interactions"]["actual_copy_popup"]:
+        menu = json.loads((directory / "selection-copy-popup.json").read_text(encoding="utf-8"))
+        _validate_popup(menu, 14)
+        if menu != data["copy_popup_menu"]:
+            raise ValueError("actual native Copy popup journal differs from the final manifest")
     if (directory / "selection-bottom.bin").read_bytes() != b"" or (directory / "selection-main.bin").read_bytes() != b"x":
         raise ValueError("queued Select All/Escape leaked bytes or input reached the wrong raw receiver")
     return summary

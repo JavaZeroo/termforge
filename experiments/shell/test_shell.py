@@ -13,7 +13,7 @@ from experiments.build_paths import ROOT, binary
 from experiments.shell.run import execute, validate, validate_main_geometry, validate_dpi_geometry
 from experiments.shell.history_checks import validate_history, validate_native_scroll
 from experiments.shell.clipboard_checks import require_hosted_clipboard, validate_clipboard_workflow
-from experiments.shell.selection_checks import validate_selection, validate_selection_workflow
+from experiments.shell.selection_checks import validate_selection, validate_selection_workflow, _validate_copy_popup
 from experiments.shell.find_checks import (validate_find, validate_find_workflow,
                                            validate_find_stream, validate_find_stream_workflow)
 
@@ -198,7 +198,24 @@ class ShellTests(unittest.TestCase):
                          "system copy UI gate requires a disposable hosted VM")
     def test_mouse_selection_to_real_system_clipboard(self):
         for repeat in range(2):
-            execute(self.exe, "ui-copy-system", self.out / f"copy-system-{repeat}")
+            out = self.out / f"copy-system-{repeat}"
+            record = execute(self.exe, "ui-copy-system", out)
+            data = json.loads((out / "selection.json").read_text(encoding="utf-8"))
+            self.assertEqual(data["schema"], "termforge-window-selection-v4")
+            self.assertTrue(record["selection_workflow"]["interactions"]["actual_copy_popup"])
+            for field, wrong in (("actual_return_command", 15), ("target_command", 15),
+                                 ("initial_state", 3), ("highlighted_state", 0), ("popup_closed", False)):
+                bad = copy.deepcopy(data); bad["copy_popup_menu"][field] = wrong
+                with self.subTest(actual_copy_popup=field), self.assertRaises(ValueError):
+                    validate_selection(bad, True, record)
+            for field, wrong in (("clipboard", "wrong copied text"), ("main_focused", False),
+                                 ("raw_main", "xx"), ("raw_bottom", "x")):
+                bad = copy.deepcopy(data)
+                next(row for row in bad["interactions"] if row["phase"] == "system-copy-popup")[field] = wrong
+                with self.subTest(copy_target=field), self.assertRaises(ValueError):
+                    validate_selection(bad, True, record)
+            bad = copy.deepcopy(data); bad["copy_popup_sequence_after"] = bad["copy_popup_sequence_before"]
+            with self.assertRaises(ValueError): validate_selection(bad, True, record)
 
     def test_real_history_scroll_anchor_eviction_and_hidden_sessions(self):
         for repeat in range(2):
@@ -404,6 +421,58 @@ class ShellTests(unittest.TestCase):
             broken["snapshots"].pop()
             with self.assertRaises(ValueError):
                 validate_dpi_geometry(broken)
+
+
+class SelectionCopyPopupSchemaTests(unittest.TestCase):
+    """Pure schema examples do not constitute actual system clipboard evidence."""
+    @staticmethod
+    def example():
+        text = "\r\n".join([f"TF_FIND_{index:03d} needle 中文 e\u0301" for index in range(80)] + ["TF_FIND_READY 080", ""])
+        def row(phase, action, cf):
+            return {"phase": phase, "action": action, "clipboard": cf, "text": text,
+                    "main_focused": True, "main_active": True, "selected": True, "frame_matches_full": True,
+                    "raw_bottom": "", "raw_main": "x", "status": "ok", "captured": False, "overlay_cells": 100,
+                    "product_status": "Selected text copied"}
+        return {"schema": "termforge-window-selection-v4", "system_clipboard": True,
+                "copy_popup_verified": True, "copy_popup_observer_idle": True,
+                "copy_popup_sequence_before": 100, "copy_popup_sequence_after": 102,
+                "copy_popup_menu": {"schema": "termforge-owned-popup-menu-v1", "input_path": "queued-owner-mouse-and-popup-keys",
+                    "owned_non_input_desktop": True, "target_command": 14, "target_index": 8, "initial_state": 0,
+                    "highlighted_state": 128, "actual_return_command": 14, "popup_hwnd": 42, "navigation_keys": 7,
+                    "last_highlighted_command": 14, "popup_class": "#32768", "enabled_commands": [8, 1, 2, 6, 5, 12, 14, 15, 16],
+                    "popup_visible_observed": True, "highlighted": True, "returned": True, "popup_closed": True,
+                    "timed_out": False, "escape_cleanup": False, "endmenu_cleanup": False, "failure": None,
+                    "popup_rect": [10, 10, 300, 500], "item_rect": [10, 300, 300, 320]},
+                "interactions": [row("system-copy-popup-prepared", "prepare-Copy-popup", "TF_COPY_SENTINEL 中文 e\u0301"),
+                                 row("system-copy-popup", "actual-Session-popup-Copy", text)]}
+
+    def test_old_v3_is_readable_but_never_claims_the_new_copy_popup_gate(self):
+        self.assertFalse(_validate_copy_popup({"schema": "termforge-window-selection-v3", "system_clipboard": True}))
+        changed = self.example(); changed["schema"] = "termforge-window-selection-v3"
+        with self.assertRaises(ValueError): _validate_copy_popup(changed)
+        changed = self.example(); changed["system_clipboard"] = False
+        with self.assertRaises(ValueError): _validate_copy_popup(changed)
+
+    def test_native_copy_return_highlight_cf_and_target_are_independent_gates(self):
+        data = self.example(); self.assertTrue(_validate_copy_popup(data))
+        for field, wrong in (("target_command", 15), ("target_index", 9), ("actual_return_command", 15),
+                             ("initial_state", 3), ("highlighted_state", 0), ("last_highlighted_command", 15),
+                             ("popup_hwnd", 0), ("timed_out", True), ("popup_closed", False),
+                             ("enabled_commands", [8, 1, 2, 6, 5, 12, 15, 16])):
+            bad = copy.deepcopy(data); bad["copy_popup_menu"][field] = wrong
+            with self.subTest(popup=field), self.assertRaises(ValueError): _validate_copy_popup(bad)
+        for field, wrong in (("copy_popup_verified", False), ("copy_popup_observer_idle", False),
+                             ("copy_popup_sequence_before", 0), ("copy_popup_sequence_after", 100),
+                             ("copy_popup_sequence_after", True)):
+            bad = copy.deepcopy(data); bad[field] = wrong
+            with self.subTest(observation=field), self.assertRaises(ValueError): _validate_copy_popup(bad)
+        for index, field, wrong in ((0, "clipboard", data["interactions"][1]["clipboard"]),
+                                    (1, "clipboard", "TF_COPY_SENTINEL 中文 e\u0301"), (1, "clipboard", "你好"),
+                                    (1, "action", "workspace-command-copy"), (1, "main_focused", False),
+                                    (1, "main_active", False), (1, "text", ""), (1, "selected", False),
+                                    (1, "raw_bottom", "x"), (1, "raw_main", "xx"), (1, "captured", True)):
+            bad = copy.deepcopy(data); bad["interactions"][index][field] = wrong
+            with self.subTest(row=index, field=field), self.assertRaises(ValueError): _validate_copy_popup(bad)
 
 
 class ClipboardWindowGateTests(unittest.TestCase):

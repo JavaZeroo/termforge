@@ -77,3 +77,5 @@ python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_
 原生 launcher/产品分别等待外层与内层 GO；两个 kill-on-close Job 都必须归零。只查询现有 input desktop，不创建/切换/删除系统输入桌面。原始 stdout/stderr、阶段进度、独立接收文件和结果分别保存；已有目录拒绝覆盖，超时仍保留原始失败。候选既检查同一原生实例的相对移动，也按实测单元格/OS DPI/显示器工作区检查绝对锚定，允许向上排布和右边界夹紧。
 
 这些代码和本地 schema/清理测试不代表真实产品四场景已通过。每次显式 run 的 source identity 和 artifact 独立审计后，才可更新 #16；独立探针已有结果继续保持自己的范围。受控 DPI 不代表实际跨显示器。
+
+当前产品验证的[审核事实](results/2026-10-24-product-stop-failure/validation.json)：固定 c206324 的四场景均执行至最后提交/取消或 rename，原始接收字节已有局部正确观察；接收端 stop 握手共同失败，缺最终 manifest/frame。内外 Job0 只证明最终进程回收，不能代替正常停止。原始错误与缺失诊断保留；修复前不关闭 #16。

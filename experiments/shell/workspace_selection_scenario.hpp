@@ -19,6 +19,8 @@ inline void Workspace::scenario_selection() {
     static int scroll_direction=0;
     static std::unique_ptr<tf_shell_test::PopupMenuGesture> popup_gesture;
     static std::string popup_evidence;
+    static std::string copy_popup_evidence, copy_selection_before;
+    static DWORD copy_sequence_before=0, copy_sequence_after=0;
     if(restore_keys) { require(SetKeyboardState(saved_keys.data())!=FALSE,"selection keyboard state restoration failed"); restore_keys=false; }
     const auto line_text=[](const auto& line) {
         std::string value; for(const auto& cell:line) value+=cell.text;
@@ -167,7 +169,8 @@ inline void Workspace::scenario_selection() {
     const auto entry=[&](bool workspace) { return system?(workspace?"workspace-command-copy":"WM_COPY"):"none"; };
     if(stage_==0 && bottom->ready()) {
         interaction_samples.clear();
-        popup_gesture.reset(); popup_evidence.clear();
+        popup_gesture.reset(); popup_evidence.clear(); copy_popup_evidence.clear(); copy_selection_before.clear();
+        copy_sequence_before=copy_sequence_after=0;
         if(system) tf_shell_test::require_hosted_clipboard();
         add(Group::main); stage_=1;
     } else if(stage_==1 && main && main->ready() && bottom->settled() && main->settled()) {
@@ -274,6 +277,28 @@ inline void Workspace::scenario_selection() {
         else { queued_key(VK_ESCAPE); stage_=21; }
     } else if(stage_==20 && system && main->status_text()==L"Selected text copied") {
         interaction("system-copy-shortcut","queued-Ctrl-Shift-C",false,clipboard());
+        require(GetFocus()==main->handle() && active()==main && main->has_selection(),"actual Copy popup lost its selected target");
+        const auto selected=main->selected_text();
+        require(selected.status==termforge::SelectionCopyStatus::ok && !selected.text.empty(),"actual Copy popup requires nonempty valid text");
+        copy_selection_before=selected.text;
+        sentinel(); require(clipboard()=="TF_COPY_SENTINEL 中文 e\xcc\x81","actual Copy popup sentinel readback differs");
+        copy_sequence_before=GetClipboardSequenceNumber(); require(copy_sequence_before!=0,"actual Copy popup clipboard sequence unavailable");
+        interaction("system-copy-popup-prepared","prepare-Copy-popup",false,clipboard());
+        popup_gesture=std::make_unique<tf_shell_test::PopupMenuGesture>(window_,POINT{physical(30),physical(15)},14);
+        stage_=23;
+    } else if(stage_==23 && system && popup_gesture && popup_gesture->complete()) {
+        copy_popup_evidence=popup_gesture->json();
+        std::ofstream observed(directory/"selection-copy-popup.json",std::ios::binary); observed<<copy_popup_evidence<<'\n'; observed.close();
+        require(observed.good(),"actual Copy popup observations write failed");
+        try { popup_gesture->validate(); } catch(...) { popup_gesture.reset(); throw; }
+        popup_gesture.reset(); require(tf_shell_test::PopupMenuGesture::observer_idle(),"Copy popup observer survived its actual menu workflow");
+        const auto selected=main->selected_text(); const auto cf=clipboard();
+        copy_sequence_after=GetClipboardSequenceNumber();
+        require(GetFocus()==main->handle() && active()==main && main->has_selection() &&
+                selected.status==termforge::SelectionCopyStatus::ok && selected.text==copy_selection_before &&
+                cf==copy_selection_before && copy_sequence_after!=0 && copy_sequence_after!=copy_sequence_before &&
+                main->status_text()==L"Selected text copied","actual Copy popup did not replace its sentinel for the focused selected target");
+        interaction("system-copy-popup","actual-Session-popup-Copy",false,cf);
         queued_key(VK_ESCAPE); stage_=21;
     } else if(stage_==21 && !main->has_selection()) {
         interaction("select-all-popup-cleared","queued-Escape"); phase_tick=main->observed_tick_count(); stage_=22;
@@ -286,12 +311,16 @@ inline void Workspace::scenario_selection() {
         }
         frame.save(image_);
         std::ofstream out(std::filesystem::path(image_).parent_path()/"selection.json");
-        out<<"{\"schema\":\"termforge-window-selection-v3\",\"system_clipboard\":"<<(system?"true":"false")
+        out<<"{\"schema\":\""<<(system?"termforge-window-selection-v4":"termforge-window-selection-v3")<<"\",\"system_clipboard\":"<<(system?"true":"false")
            <<",\"input_source\":\"physical-pixel-mouse-messages\",\"snapshots\":[";
         for(size_t i=0;i<geometry_samples_.size();++i) { if(i) out<<','; out<<geometry_samples_[i]; }
         out<<"],\"interaction_input\":\"queued-keys-through-workspace-loop-and-native-timer-capture\",\"menu_popup_verified\":true,\"popup_observer_idle\":"
            <<(tf_shell_test::PopupMenuGesture::observer_idle()?"true":"false")<<",\"popup_menu\":"
-           <<popup_evidence<<",\"interactions\":[";
+           <<popup_evidence;
+        if(system) out<<",\"copy_popup_verified\":true,\"copy_popup_observer_idle\":"
+           <<(tf_shell_test::PopupMenuGesture::observer_idle()?"true":"false")<<",\"copy_popup_sequence_before\":"<<copy_sequence_before
+           <<",\"copy_popup_sequence_after\":"<<copy_sequence_after<<",\"copy_popup_menu\":"<<copy_popup_evidence;
+        out<<",\"interactions\":[";
         for(size_t i=0;i<interaction_samples.size();++i) { if(i) out<<','; out<<interaction_samples[i]; }
         out<<"]}\n"; out.close(); require(out.good(),"selection observations write failed");
         stage_=100; close_all();

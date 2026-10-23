@@ -1,0 +1,94 @@
+{
+  "status": "passed",
+  "head": "c2063246ab59646a3b56f62b1b7a19e3957bc22b",
+  "run_id": 40014166528,
+  "windows_job": 120621831977,
+  "artifact_id": 12527258644,
+  "artifact_digest": "sha256:6a78dfe0b01bf79b2800a741225b448c23e047f10a912075ded6425b5b97f278",
+  "oracle_sha256": "f24f8e4c80e2677eea1e238d4ac4c775d0b92211ed9c0930bea951fc3191d555",
+  "audit_method": "read-only pinned pure validators plus independent raw artifact checks; no hosted guard bypass or environment spoofing; no clipboard or IME APIs invoked",
+  "rounds": [
+    {
+      "round": "system-0",
+      "system_clipboard": true,
+      "phases": 9,
+      "fixture_style": "styled-tail-v1",
+      "soft_wrap_join": true,
+      "hard_crlf": true,
+      "explicit_trailing_spaces": 2,
+      "controlled_dpi": [
+        96,
+        144,
+        192,
+        96
+      ],
+      "dpi_selection_preserved": true,
+      "raw_input_isolated": true,
+      "cleanup_verified": true,
+      "evidence": {
+        "bottom": {
+          "producer_sha256": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+          "transport_sha256": "00727bd04d70d9735613df1e98ac045770a7d6c5f309b40f67742a15ac54dc13",
+          "transport_bytes": 1607,
+          "literal_styled_tail_occurrences": 8,
+          "raw_bytes": 0
+        },
+        "main": {
+          "producer_sha256": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+          "transport_sha256": "412dcfebe93193e9ec807312f035dca9db24b22df77b6ec5a5e471b46722458d",
+          "transport_bytes": 1651,
+          "literal_styled_tail_occurrences": 8,
+          "raw_bytes": 1
+        }
+      },
+      "journal_matches": true,
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame_sha256": "f24abb53b0fcf3ce76e4a4bb1b2810638fbfc3b5a1cc27ddfd8d319116a0c0a0"
+    },
+    {
+      "round": "system-1",
+      "system_clipboard": true,
+      "phases": 9,
+      "fixture_style": "styled-tail-v1",
+      "soft_wrap_join": true,
+      "hard_crlf": true,
+      "explicit_trailing_spaces": 2,
+      "controlled_dpi": [
+        96,
+        144,
+        192,
+        96
+      ],
+      "dpi_selection_preserved": true,
+      "raw_input_isolated": true,
+      "cleanup_verified": true,
+      "evidence": {
+        "bottom": {
+          "producer_sha256": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+          "transport_sha256": "50227f7d3419fe118dd23eb5371948bd3e7a2778795732cf0334930511e79a87",
+          "transport_bytes": 1607,
+          "literal_styled_tail_occurrences": 8,
+          "raw_bytes": 0
+        },
+        "main": {
+          "producer_sha256": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+          "transport_sha256": "0f8a7fee0650fa52fa8948ef9e669d4b46664ba6d5f5dc51e91ca6e0bd18703f",
+          "transport_bytes": 1651,
+          "literal_styled_tail_occurrences": 8,
+          "raw_bytes": 1
+        }
+      },
+      "journal_matches": true,
+      "job_after_cleanup_active": 0,
+      "desktop_gone": true,
+      "frame_sha256": "f24abb53b0fcf3ce76e4a4bb1b2810638fbfc3b5a1cc27ddfd8d319116a0c0a0"
+    }
+  ],
+  "limits": [
+    "styled-tail-v1 only; original plain ConPTY samples retain EL normalization; producer-written provenance is unavailable after normalization and no reconstruction is claimed",
+    "controlled DPI 96/144/192/96, not physical monitor transition",
+    "queued Ctrl-Shift-C; this evidence does not establish Copy menu action",
+    "not R1-03 or R1-06 completion"
+  ]
+}
