@@ -86,6 +86,11 @@ struct Snapshot {
 };
 static std::vector<int> changed_rows(const Snapshot& a, const Snapshot& b) {
     std::set<int> changed;
+    if (a.rows() != b.rows() || a.columns() != b.columns()) {
+        std::vector<int> all;
+        for (int r = 0; r < b.rows(); ++r) all.push_back(r);
+        return all;
+    }
     for (int r = 0; r < b.rows(); ++r) for (int c = 0; c < b.columns(); ++c) {
         const auto& x = a.lines[r][c]; const auto& y = b.lines[r][c];
         if (x.text != y.text || x.width != y.width || x.style.fg != y.style.fg || x.style.bg != y.style.bg || x.style.bold != y.style.bold) changed.insert(r);

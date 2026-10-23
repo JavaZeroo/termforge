@@ -35,6 +35,18 @@ class ShellTests(unittest.TestCase):
         for repeat in range(3):
             execute(self.exe, "close", self.out / f"close-{repeat}")
 
+    def test_resize_child_dimensions_and_interrupt(self):
+        for repeat in range(3):
+            row = execute(self.exe, "resize", self.out / f"resize-{repeat}")["result"]
+            for field, wrong in (("resize_verified", 2), ("columns", 80), ("rows", 24)):
+                broken = copy.deepcopy(row); broken[field] = wrong
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate(broken, "resize")
+
+    def test_close_while_resizing_continuous_output(self):
+        for repeat in range(3):
+            execute(self.exe, "resize-close", self.out / f"resize-close-{repeat}")
+
     def test_watchdog_contains_real_shell_tree(self):
         execute(self.exe, "watchdog", self.out / "watchdog", timeout=3)
 

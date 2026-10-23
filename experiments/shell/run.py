@@ -29,7 +29,12 @@ def validate(row, mode):
         raise ValueError("missing output/frame or invented endpoint")
     if not 0 < row["max_consumed_per_tick"] <= 65536:
         raise ValueError("UI byte budget violated")
-    if mode == "normal":
+    if mode in ("resize", "resize-close"):
+        if row.get("resize_verified") != (3 if mode == "resize" else 2) or (row.get("columns"), row.get("rows")) != (72, 18):
+            raise ValueError("resize dimensions were not independently verified")
+        if len(row["screen"]["lines"]) != 18:
+            raise ValueError("resized screen height mismatch")
+    if mode in ("normal", "resize"):
         if row["exit_code"] != 37 or not row["ctrl_c_verified"]:
             raise ValueError("shell interruption or normal exit not verified")
         if not 0 <= row["scripted_input_to_state_ms"] <= row["scripted_input_to_submit_ms"]:
@@ -113,15 +118,17 @@ def main():
     exe = binary("termforge_shell", args.bin_dir)
     args.out.mkdir(parents=True, exist_ok=False)
     files = ["experiments/shell/shell.cpp", "experiments/shell/queues.hpp", "experiments/shell/run.py",
+             "experiments/shell/resize.hpp", "experiments/shell/size_client.cpp",
              "experiments/conpty/session.hpp", "experiments/presentation/render.hpp", "experiments/presentation/desktop.hpp",
              "experiments/core/terminal.hpp", "experiments/core/screen.hpp", "experiments/core/unicode_width.hpp"]
     meta = dict(status="running", platform=platform.platform(), started_utc=datetime.now(timezone.utc).isoformat(),
                 exe_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),
+                size_client_sha256=hashlib.sha256((exe.parent / "shell_size_client.exe").read_bytes()).hexdigest(),
                 sources={f: hashlib.sha256((ROOT/f).read_bytes()).hexdigest() for f in files},
                 input_endpoint="scripted Ctrl-C WM_CHAR acceptance to TF_AFTER state and GDI submission; not physical keyboard", presented_done=None)
     try:
         for repeat in range(args.repeats):
-            for mode in ("normal", "close"):
+            for mode in ("normal", "close", "resize", "resize-close"):
                 execute(exe, mode, args.out / f"{repeat}-{mode}")
                 print(f"{repeat} {mode}: passed", flush=True)
         execute(exe, "watchdog", args.out / "watchdog", timeout=3)

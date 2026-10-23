@@ -74,6 +74,35 @@ public:
     }
     int height() const { return static_cast<int>(lines.size()); }
     int width() const { return columns_; }
+    // Physical-row policy: no reflow, no pulling old history into the viewport.
+    // Prepare copies first so invalid sizes/allocation failure leave state intact.
+    void resize(int rows, int columns) {
+        if (rows < 1 || rows > 200 || columns < 1 || columns > 500)
+            throw std::invalid_argument("invalid screen dimensions");
+        if (rows == height() && columns == width()) return;
+        auto next = lines;
+        auto past = history;
+        auto lost = discarded;
+        const int shift = (std::max)(0, row - rows + 1);
+        for (int i = 0; i < shift; ++i) {
+            if (history_limit) {
+                past.push_back(std::move(next[i]));
+                if (past.size() > history_limit) { past.pop_front(); ++lost; }
+            } else ++lost;
+        }
+        next.erase(next.begin(), next.begin() + shift);
+        next.resize(rows, Line(columns)); // Bottom rows outside the new viewport are dropped.
+        const auto fit = [columns](Line& line) {
+            line.resize(columns);
+            // A truncated wide glyph must never leave a dangling leading cell.
+            if (line.back().width == 2) line.back() = Cell{};
+        };
+        for (auto& line : next) fit(line);
+        for (auto& line : past) fit(line);
+        lines.swap(next); history.swap(past); discarded = lost; columns_ = columns;
+        row -= shift; column = (std::min)(column, columns - 1);
+        wrap_pending = false; invalidate_attachment();
+    }
     void invalidate_attachment() { last_row = last_column = -1; }
     void move(int r, int c) {
         row = std::clamp(r, 0, height() - 1); column = std::clamp(c, 0, width() - 1);

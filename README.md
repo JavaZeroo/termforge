@@ -6,7 +6,7 @@
 
 An independent, fully open-source terminal project driven by reproducible performance evidence. WindTerm is a comparison target, not an upstream product or affiliation.
 
-> 当前阶段：有限本地交互原型。已有固定 80×24 的 Windows shell 窗口、机制实验与状态回放；日常开发版、正式 WindTerm 性能基线和性能等价声明尚未完成。`TermForge` 是项目暂名。
+> 当前阶段：有限本地交互原型。已有可缩放的 Windows shell 窗口（物理行裁剪，无 reflow）、机制实验与状态回放；日常开发版、正式 WindTerm 性能基线和性能等价声明尚未完成。`TermForge` 是项目暂名。
 
 ## 项目原则
 

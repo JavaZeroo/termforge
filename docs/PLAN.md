@@ -17,7 +17,7 @@
 
 ## 工作流
 
-当前执行切片以[现状与任务拆解](STATUS-AND-BACKLOG.md)为准：E1/C1/T1/C2/V1 已完成受限验收，A1 已连接固定网格本地 shell。下一步 C5 核心 resize 与窗口尺寸同步，随后完成 G1 验收；C3/C4 和性能分层持续推进，不把普通 shell 交互视为完整 TUI 兼容性。
+当前执行切片以[现状与任务拆解](STATUS-AND-BACKLOG.md)为准：E1/C1/T1/C2/V1 已完成受限验收，A1/C5 已连接可缩放本地 shell 并完成 G1 基础闭环。下一步 C3/C4 状态兼容性与 U1 基础输入，推进 G2；C3/C4 和性能分层持续推进，不把普通 shell 交互视为完整 TUI 兼容性。
 
 2026-10-22 起按 [ADR-0002](adr/0002-automation-first-investigation.md) 调整：默认由代理自动执行，M0 调查与 M1 小型原型交替推进。完整基线不再阻塞原型启动，但仍是正式性能达标判断所需的证据。停止扩展要求用户反复新建标签页、执行命令、输入确认的测试路线。
 
@@ -39,6 +39,8 @@
 M0 完成前不承诺整个项目工期。根据基线与原型结果拆分后续任务。完整开源意味着独立可构建，不意味着第一版一次性交付所有 WindTerm 功能。
 
 ## 当前进度
+
+- 2026-10-23 第四批 C5：[物理行 resize](adr/0005-physical-row-resize.md)、窗口与 ConPTY 尺寸同步、独立子进程尺寸查询与缩放后画面验证；A1/C5 合流完成 G1 基础本地交互验收。无逻辑行 reflow/IME/粘贴/完整 TUI/SSH，验证与限制见[第四批记录](research/fourth-batch-c5-2026-10-23.md)。
 
 - 2026-10-23 第三批 A1：[本地 shell 窗口](../experiments/shell/README.md)连接真实 cmd、ConPTY、有界队列、Recovery 与 DirectWrite；支持普通输入、中文消息、退格/方向键、Ctrl-C 和退出回收。固定 80×24，无核心 resize/IME/粘贴/SSH；G1 尚需 C5，性能差距仍未知。
 

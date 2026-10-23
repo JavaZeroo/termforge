@@ -1,6 +1,7 @@
-// A1 fixed-grid local shell. Original code; see README for the limited contract.
+// Local shell with physical-row resize. See README for the limited contract.
 #include "../presentation/render.hpp"
 #include "queues.hpp"
+#include "resize.hpp"
 #include "../presentation/desktop.hpp"
 #include <atomic>
 #include <sstream>
@@ -12,6 +13,7 @@ static std::wstring system_cmd() {
     return std::wstring(folder) + L"\\cmd.exe";
 }
 struct Result {
+    int resize_verified = 0, rows = 24, columns = 80;
     size_t consumed = 0, output_high_water = 0, input_high_water = 0, input_rejected = 0, max_consumed_per_tick = 0;
     int frames = 0, ticks = 0;
     DWORD exit_code = STILL_ACTIVE, active_children = MAXDWORD;
@@ -24,10 +26,11 @@ class ShellWindow {
     OutputQueue output_;
     tf_conpty::Session session_;
     InputQueue input_{session_};
+    ResizeWorker resize_{session_};
     termforge::Parser parser_{24, 80, 100, termforge::ParseMode::recovery};
     Renderer renderer_{"dwrite", 96};
     std::shared_ptr<const Snapshot> snapshot_;
-    Bitmap surface_{960, 624};
+    std::unique_ptr<Bitmap> surface_ = std::make_unique<Bitmap>(960, 624);
     HWND hwnd_{};
     std::thread closer_;
     std::atomic<bool> closed_{false};
@@ -38,6 +41,32 @@ class ShellWindow {
     Clock::time_point start_ = Clock::now(), input_time_, flood_start_;
     bool frame_after_ = false;
     Result result_;
+
+    void resize_window(int columns, int rows) {
+        RECT area{0, 0, columns*12, rows*26};
+        require(AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE) != FALSE, "resize frame calculation failed");
+        require(SetWindowPos(hwnd_, nullptr, 0, 0, area.right-area.left, area.bottom-area.top,
+                            SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE) != FALSE, "scripted resize failed");
+    }
+    void size_changed(int width, int height) {
+        if (!started_ || closing_ || width <= 0 || height <= 0) return;
+        const int columns = std::clamp(width/12, 1, 500), rows = std::clamp(height/26, 1, 200);
+        if (columns == parser_.screen.width() && rows == parser_.screen.height()) return;
+        auto surface = std::make_unique<Bitmap>(columns*12, rows*26);
+        parser_.screen.resize(rows, columns);
+        surface_ = std::move(surface); publish();
+        resize_.request(rows, columns);
+        require(InvalidateRect(hwnd_, nullptr, FALSE) != FALSE, "resize invalidate failed");
+    }
+    void query_size() {
+        wchar_t path[32768]{};
+        const DWORD n = GetModuleFileNameW(nullptr, path, 32768);
+        require(n && n < 32768, "size client path failed");
+        std::wstring file(path, n);
+        file = file.substr(0, file.find_last_of(L'\\')+1) + L"shell_size_client.exe";
+        // Absolute synthetic helper; it independently queries the child console.
+        type(L"\"" + file + L"\"\r");
+    }
 
     bool line_is(const std::string& expected) const {
         for (const auto& row : snapshot_->lines) {
@@ -85,6 +114,7 @@ class ShellWindow {
         closer_ = std::thread([this] {
             try {
                 input_.stop();
+                resize_.stop();
                 // Kill only the session job, including descendants after shell exit.
                 session_.cancel(); session_.close();
             } catch (const std::exception& e) { close_failure_ = e.what(); }
@@ -95,7 +125,7 @@ class ShellWindow {
         auto next = std::make_shared<const Snapshot>(parser_.screen, ++revision_);
         auto dirty = changed_rows(*snapshot_, *next); snapshot_ = std::move(next);
         if (!dirty.empty()) {
-            RECT area{0, renderer_.y(dirty.front()), surface_.width, renderer_.y(dirty.back()+1)};
+            RECT area{0, renderer_.y(dirty.front()), surface_->width, renderer_.y(dirty.back()+1)};
             require(InvalidateRect(hwnd_, &area, FALSE) != FALSE, "invalidate failed");
         }
         if (stage_ >= 5 && result_.input_to_state_ms < 0 && line_is("TF_AFTER"))
@@ -119,13 +149,35 @@ class ShellWindow {
             type(L"W"); PostMessageW(hwnd_, WM_KEYDOWN, VK_RIGHT, 1); type(L"\b\r"); stage_ = 30;
         } else if (stage_ == 30 && line_is("TF_ARROW")) {
             result_.arrows = true;
+            if (mode_ == "resize" || mode_ == "resize-close") {
+                resize_window(60, 12); stage_ = 40; return;
+            }
+            type(L"for /L %i in (1,1,1000000) do @echo TF_BUSY_%i\r"); stage_ = 4; flood_start_ = Clock::now();
+        } else if (stage_ == 40 && resize_.settled()) {
+            query_size(); stage_ = 41;
+        } else if (stage_ == 41 && line_is("TF_SIZE_60x12")) {
+            require(parser_.screen.width() == 60 && parser_.screen.height() == 12, "core size mismatch");
+            ++result_.resize_verified;
+            // Coalesce rapid requests without a queue of allocated surfaces.
+            resize_window(90, 30); resize_window(50, 10); resize_window(100, 28); stage_ = 42;
+        } else if (stage_ == 42 && resize_.settled()) {
+            query_size(); stage_ = 43;
+        } else if (stage_ == 43 && line_is("TF_SIZE_100x28")) {
+            require(parser_.screen.width() == 100 && parser_.screen.height() == 28, "grown core size mismatch");
+            ++result_.resize_verified;
             type(L"for /L %i in (1,1,1000000) do @echo TF_BUSY_%i\r"); stage_ = 4; flood_start_ = Clock::now();
         } else if (stage_ == 4 && result_.consumed > 65536 && ms(flood_start_) >= 1000 && has("TF_BUSY_")) {
-            if (mode_ == "close") { begin_close(); return; }
+            if (mode_ == "resize" || mode_ == "resize-close") resize_window(72, 18);
+            if (mode_ == "close" || mode_ == "resize-close") { begin_close(); return; }
             type(std::wstring(1, 3));
             type(L"echo TF_AFTER\r"); stage_ = 5;
         } else if (stage_ == 5 && line_is("TF_AFTER") && frame_after_) {
-            result_.interrupted = true; type(L"exit 37\r"); stage_ = 6;
+            result_.interrupted = true;
+            if (mode_ == "resize") { if (!resize_.settled()) return; query_size(); stage_ = 44; }
+            else { type(L"exit 37\r"); stage_ = 6; }
+        } else if (stage_ == 44 && line_is("TF_SIZE_72x18")) {
+            require(parser_.screen.width() == 72 && parser_.screen.height() == 18, "flood resize mismatch");
+            ++result_.resize_verified; type(L"exit 37\r"); stage_ = 6;
         }
     }
     void tick() {
@@ -141,11 +193,12 @@ class ShellWindow {
         result_.max_consumed_per_tick = (std::max)(result_.max_consumed_per_tick, batch);
         if (batch) { result_.consumed += batch; publish(); }
         session_.check_reader();
+        resize_.settled(); // Propagate worker failures even without test scenarios.
         if (closing_ && closed_.load()) {
             require(close_failure_.empty(), close_failure_.c_str());
             if (drained) {
                 parser_.finish(); publish(); UpdateWindow(hwnd_);
-                if (!image_path_.empty()) surface_.save(image_path_);
+                if (!image_path_.empty()) surface_->save(image_path_);
                 DestroyWindow(hwnd_); hwnd_ = nullptr;
             }
         } else if (!closing_) {
@@ -164,6 +217,15 @@ class ShellWindow {
         try {
             if (message == WM_CLOSE) { self->begin_close(); return 0; }
             if (message == WM_DESTROY) { PostQuitMessage(0); return 0; }
+            if (message == WM_SIZE && wp != SIZE_MINIMIZED) {
+                self->size_changed(LOWORD(lp), HIWORD(lp)); return 0;
+            }
+            if (message == WM_GETMINMAXINFO) {
+                auto* limits = reinterpret_cast<MINMAXINFO*>(lp);
+                RECT area{0,0,12,26}; AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE);
+                limits->ptMinTrackSize = {area.right-area.left, area.bottom-area.top};
+                return 0;
+            }
             if (message == WM_CHAR) { self->character(static_cast<wchar_t>(wp)); return 0; }
             if (message == WM_KEYDOWN && wp >= VK_LEFT && wp <= VK_DOWN && !self->closing_) {
                 const char* sequence = wp == VK_LEFT ? "\x1b[D" : wp == VK_RIGHT ? "\x1b[C" : wp == VK_UP ? "\x1b[A" : "\x1b[B";
@@ -176,9 +238,15 @@ class ShellWindow {
                 PAINTSTRUCT paint{}; HDC dc = BeginPaint(hwnd, &paint);
                 try {
                     const int first = (std::max)(0, int(paint.rcPaint.top)/26);
-                    const int last = (std::min)(24, (int(paint.rcPaint.bottom)+25)/26);
-                    self->renderer_.draw(self->surface_, *self->snapshot_, first, last);
-                    require(BitBlt(dc,0,0,960,624,self->surface_.dc,0,0,SRCCOPY) != FALSE, "shell frame blit failed");
+                    const int last = (std::min)(self->snapshot_->rows(), (int(paint.rcPaint.bottom)+25)/26);
+                    FillRect(dc, &paint.rcPaint, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
+                    self->renderer_.draw(*self->surface_, *self->snapshot_, first, last);
+                    if (self->mode_ == "resize" || self->mode_ == "resize-close") {
+                        Bitmap expected(self->surface_->width, self->surface_->height);
+                        self->renderer_.draw(expected, *self->snapshot_, 0, self->snapshot_->rows());
+                        require(self->surface_->equals(expected), "resized dirty frame differs from full redraw");
+                    }
+                    require(BitBlt(dc,0,0,self->surface_->width,self->surface_->height,self->surface_->dc,0,0,SRCCOPY) != FALSE, "shell frame blit failed");
                     require(GdiFlush() != FALSE, "shell frame flush failed"); ++self->result_.frames;
                     if (self->stage_ >= 5 && !self->frame_after_ && self->line_is("TF_AFTER")) {
                         self->result_.input_to_submit_ms = ms(self->input_time_); self->frame_after_ = true;
@@ -208,7 +276,7 @@ public:
         WNDCLASSW cls{}; cls.lpfnWndProc = procedure; cls.hInstance = GetModuleHandleW(nullptr);
         cls.lpszClassName = L"TermForgeShell"; cls.hCursor = LoadCursorW(nullptr, IDC_IBEAM);
         require(RegisterClassW(&cls) != 0, "shell window class failed");
-        const DWORD style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+        const DWORD style = WS_OVERLAPPEDWINDOW;
         RECT size{0,0,960,624}; AdjustWindowRect(&size, style, FALSE);
         hwnd_ = CreateWindowExW(0, cls.lpszClassName, L"TermForge — local shell prototype", style,
             CW_USEDEFAULT,CW_USEDEFAULT,size.right-size.left,size.bottom-size.top,nullptr,nullptr,cls.hInstance,this);
@@ -217,7 +285,8 @@ public:
         const auto chcp = cmd.substr(0, cmd.find_last_of(L'\\') + 1) + L"chcp.com";
         session_.start(cmd, L"/d /s /q /k \"\"" + chcp + L"\" 65001>nul&prompt TF$G&cls\"",
             [this](std::string_view bytes) { output_.push(bytes); });
-        input_.start(); started_ = true;
+        input_.start(); resize_.start(); started_ = true;
+        RECT client{}; GetClientRect(hwnd_, &client); size_changed(client.right, client.bottom);
         require(SetTimer(hwnd_,1,16,nullptr) != 0, "shell timer failed");
         ShowWindow(hwnd_, mode_.empty() ? SW_SHOW : SW_SHOWNOACTIVATE); UpdateWindow(hwnd_);
         MSG message{}; BOOL status;
@@ -233,6 +302,7 @@ public:
         result_.complete = session_.cleanup_complete;
         result_.output_high_water = output_.high_water; result_.input_high_water = input_.high_water;
         result_.input_rejected = input_.rejected;
+        result_.rows = parser_.screen.height(); result_.columns = parser_.screen.width();
         std::ostringstream state; parser_.screen.json(state); result_.screen = state.str();
         return result_;
     }
@@ -240,10 +310,10 @@ public:
 static int application(int argc, char** argv) {
     try {
         std::string mode, image;
-        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|watchdog frame.bmp]");
+        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|resize|resize-close|watchdog frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog", "invalid shell test mode");
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close", "invalid shell test mode");
             std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
         }
         require(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) != FALSE, "DPI awareness failed");
@@ -255,7 +325,9 @@ static int application(int argc, char** argv) {
         }
         if (mode.empty()) return r.complete ? 0 : 1; // Never emit a user's screen to diagnostic stdout.
         const bool valid = r.complete && r.active_children == 0 && r.frames > 0 && r.input_rejected == 0 &&
-            (mode.empty() || (r.normal && r.unicode && r.edited && r.arrows && (mode == "close" || (r.interrupted && r.exit_code == 37))));
+            (r.normal && r.unicode && r.edited && r.arrows &&
+             (mode == "close" || mode == "resize-close" || (r.interrupted && r.exit_code == 37))) &&
+            (mode != "resize" || r.resize_verified == 3) && (mode != "resize-close" || r.resize_verified == 2);
         std::cout << "{\"valid\":" << (valid ? "true" : "false") << ",\"mode\":\"" << mode << "\",\"consumed_bytes\":" << r.consumed
             << ",\"frames\":" << r.frames << ",\"ticks\":" << r.ticks << ",\"output_queue_high_water\":" << r.output_high_water
             << ",\"input_queue_high_water\":" << r.input_high_water << ",\"input_rejected\":" << r.input_rejected
@@ -268,6 +340,7 @@ static int application(int argc, char** argv) {
         std::cout << ",\"scripted_input_to_submit_ms\":";
         if (r.input_to_submit_ms < 0) std::cout << "null"; else std::cout << r.input_to_submit_ms;
         std::cout << ",\"max_tick_ms\":" << r.max_tick_ms
+            << ",\"resize_verified\":" << r.resize_verified << ",\"rows\":" << r.rows << ",\"columns\":" << r.columns
             << ",\"max_consumed_per_tick\":" << r.max_consumed_per_tick
             << ",\"presented_done\":null,\"screen\":" << r.screen << "}\n";
         return valid ? 0 : 1;
