@@ -138,14 +138,18 @@ public:
         std::lock_guard<std::mutex> lock(mutex_);
         if (reader_failure_) std::rethrow_exception(reader_failure_);
     }
-    void send(const std::string& bytes) {
+    void send(const std::string& bytes, const std::function<void(size_t)>& written_progress = {}) {
         // Keep this probe's blocking writes bounded to control-sized messages.
         if (bytes.empty() || bytes.size() > 1024) throw std::runtime_error("input command size invalid");
         size_t offset = 0;
         while (offset < bytes.size()) {
             DWORD written = 0;
-            if (!WriteFile(input_.get(), bytes.data() + offset,
-                           static_cast<DWORD>(bytes.size() - offset), &written, nullptr) || !written) fail("WriteFile(input)");
+            const BOOL success = WriteFile(input_.get(), bytes.data() + offset,
+                                           static_cast<DWORD>(bytes.size() - offset), &written, nullptr);
+            const DWORD error = success ? ERROR_SUCCESS : GetLastError();
+            if (written > bytes.size() - offset) throw std::runtime_error("invalid WriteFile(input) byte count");
+            if (written && written_progress) written_progress(written);
+            if (!success || !written) fail("WriteFile(input)", error ? error : ERROR_WRITE_FAULT);
             offset += written;
         }
     }

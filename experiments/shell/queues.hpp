@@ -1,7 +1,9 @@
 // Bounded queues: output applies backpressure; UI input rejects visibly when full.
 #pragma once
 #include "../conpty/session.hpp"
+#include "paste.hpp"
 #include <deque>
+#include <memory>
 
 class OutputQueue {
     std::mutex mutex_;
@@ -45,6 +47,7 @@ class InputQueue {
     bool stopping_ = false;
     std::exception_ptr error_;
     std::thread writer_;
+    std::shared_ptr<tf_shell::PasteTransfer> paste_;
 public:
     static constexpr size_t capacity = 16 * 1024;
     size_t high_water = 0, rejected = 0;
@@ -52,29 +55,62 @@ public:
     ~InputQueue() { stop(); }
     void start() {
         writer_ = std::thread([this] {
+            std::shared_ptr<tf_shell::PasteTransfer> writing_paste;
             try {
                 for (;;) {
                     std::unique_lock<std::mutex> lock(mutex_);
-                    ready_.wait(lock, [&] { return stopping_ || !chunks_.empty(); });
+                    ready_.wait(lock, [&] { return stopping_ || !chunks_.empty() ||
+                        (paste_ && !tf_shell::paste_terminal(paste_->progress().state)); });
                     if (stopping_) break;
-                    auto bytes = std::move(chunks_.front()); chunks_.pop_front(); bytes_ -= bytes.size();
-                    lock.unlock(); session_.send(bytes);
+                    std::string bytes;
+                    writing_paste.reset();
+                    if (!chunks_.empty()) {
+                        bytes = std::move(chunks_.front()); chunks_.pop_front(); bytes_ -= bytes.size();
+                    } else {
+                        writing_paste = paste_; bytes = writing_paste->take_chunk();
+                        high_water = (std::max)(high_water, bytes.size());
+                    }
+                    lock.unlock();
+                    if (bytes.empty()) continue; // Cancelled between the predicate and take.
+                    if (writing_paste) {
+                        session_.send(bytes, [&](size_t written) { writing_paste->acknowledge_written(written); });
+                        writing_paste->finish_chunk();
+                    } else session_.send(bytes);
                 }
-            } catch (...) {
+            } catch (const std::exception& error) {
+                if (writing_paste) writing_paste->fail(error.what());
                 std::lock_guard<std::mutex> lock(mutex_);
                 if (!stopping_) error_ = std::current_exception();
+                if (paste_) paste_->fail(error.what());
+            } catch (...) {
+                if (writing_paste) writing_paste->fail("unknown input writer failure");
+                std::lock_guard<std::mutex> lock(mutex_);
+                if (!stopping_) error_ = std::current_exception();
+                if (paste_) paste_->fail("unknown input writer failure");
             }
         });
     }
     bool send(const std::string& bytes) {
         std::lock_guard<std::mutex> lock(mutex_);
         if (error_) std::rethrow_exception(error_);
-        if (stopping_ || bytes.empty() || bytes.size() > 1024 || bytes_ + bytes.size() > capacity) { ++rejected; return false; }
+        if (stopping_ || bytes.empty() || bytes.size() > 1024 || bytes_ + bytes.size() > capacity ||
+            (paste_ && !tf_shell::paste_terminal(paste_->progress().state))) { ++rejected; return false; }
         chunks_.push_back(bytes); bytes_ += bytes.size(); high_water = (std::max)(high_water, bytes_);
         ready_.notify_one(); return true;
     }
+    // The queue is already bound to one Session. The UI retains the transfer
+    // handle and target identity; later tab switches never retarget this queue.
+    // Previously accepted keystrokes drain first. New keystrokes are rejected
+    // while pasting, so they cannot interleave with clipboard bytes.
+    bool begin_paste(const std::shared_ptr<tf_shell::PasteTransfer>& paste) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (error_) std::rethrow_exception(error_);
+        if (stopping_ || !paste || (paste_ && !tf_shell::paste_terminal(paste_->progress().state)) || !paste->claim_writer()) return false;
+        paste_ = paste; ready_.notify_one(); return true;
+    }
     void stop() noexcept {
-        { std::lock_guard<std::mutex> lock(mutex_); stopping_ = true; chunks_.clear(); bytes_ = 0; ready_.notify_all(); }
+        { std::lock_guard<std::mutex> lock(mutex_); stopping_ = true; chunks_.clear(); bytes_ = 0;
+          if (paste_) paste_->cancel(); ready_.notify_all(); }
         if (writer_.joinable()) {
             // Retry covers the race where cancellation runs just before WriteFile.
             while (WaitForSingleObject(writer_.native_handle(), 10) == WAIT_TIMEOUT)
