@@ -32,6 +32,9 @@ class ShellWindow {
     std::shared_ptr<const Snapshot> snapshot_;
     std::unique_ptr<Bitmap> surface_ = std::make_unique<Bitmap>(960, 624);
     HWND hwnd_{};
+    HWND parent_{};
+    bool registered_ = false;
+    inline static unsigned class_users_ = 0; // All instances belong to one UI thread.
     std::thread closer_;
     std::atomic<bool> closed_{false};
     bool closing_ = false, started_ = false;
@@ -223,11 +226,15 @@ class ShellWindow {
         if (!self) return DefWindowProcW(hwnd, message, wp, lp);
         try {
             if (message == WM_CLOSE) { self->begin_close(); return 0; }
-            if (message == WM_DESTROY) { PostQuitMessage(0); return 0; }
+            if (message == WM_DESTROY) {
+                if (self->parent_) PostMessageW(self->parent_, WM_APP+1, 0, reinterpret_cast<LPARAM>(self));
+                else PostQuitMessage(0);
+                return 0;
+            }
             if (message == WM_SIZE && wp != SIZE_MINIMIZED) {
                 self->size_changed(LOWORD(lp), HIWORD(lp)); return 0;
             }
-            if (message == WM_GETMINMAXINFO) {
+            if (message == WM_GETMINMAXINFO && !self->parent_) {
                 auto* limits = reinterpret_cast<MINMAXINFO*>(lp);
                 RECT area{0,0,12,26}; AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE);
                 limits->ptMinTrackSize = {area.right-area.left, area.bottom-area.top};
@@ -286,16 +293,18 @@ public:
         if (closer_.joinable()) closer_.join();
         input_.stop();
         if (hwnd_) DestroyWindow(hwnd_);
-        UnregisterClassW(L"TermForgeShell", GetModuleHandleW(nullptr));
+        if (registered_ && --class_users_ == 0) UnregisterClassW(L"TermForgeShell", GetModuleHandleW(nullptr));
     }
-    Result run() {
+    void create(HWND parent = nullptr) {
+        parent_ = parent;
         WNDCLASSW cls{}; cls.lpfnWndProc = procedure; cls.hInstance = GetModuleHandleW(nullptr);
         cls.lpszClassName = L"TermForgeShell"; cls.hCursor = LoadCursorW(nullptr, IDC_IBEAM);
-        require(RegisterClassW(&cls) != 0, "shell window class failed");
-        const DWORD style = WS_OVERLAPPEDWINDOW;
+        if (!class_users_) require(RegisterClassW(&cls) != 0, "shell window class failed");
+        ++class_users_; registered_ = true;
+        const DWORD style = parent ? WS_CHILD : WS_OVERLAPPEDWINDOW;
         RECT size{0,0,960,624}; AdjustWindowRect(&size, style, FALSE);
         hwnd_ = CreateWindowExW(0, cls.lpszClassName, L"TermForge — local shell prototype", style,
-            CW_USEDEFAULT,CW_USEDEFAULT,size.right-size.left,size.bottom-size.top,nullptr,nullptr,cls.hInstance,this);
+            parent ? 0 : CW_USEDEFAULT,parent ? 0 : CW_USEDEFAULT,size.right-size.left,size.bottom-size.top,parent,nullptr,cls.hInstance,this);
         require(hwnd_ != nullptr, "shell window creation failed");
         const auto cmd = system_cmd();
         const auto chcp = cmd.substr(0, cmd.find_last_of(L'\\') + 1) + L"chcp.com";
@@ -304,10 +313,28 @@ public:
         input_.start(); resize_.start(); started_ = true;
         RECT client{}; GetClientRect(hwnd_, &client); size_changed(client.right, client.bottom);
         require(SetTimer(hwnd_,1,16,nullptr) != 0, "shell timer failed");
+    }
+    HWND handle() const { return hwnd_; }
+    bool contains_line(const std::string& text) const { return line_is(text); }
+    bool ready() const { return has("TF>"); }
+    bool settled() { return resize_.settled(); }
+    bool closing() const { return closing_; }
+    void close() { begin_close(); }
+    void command(const std::wstring& text) { type(text); }
+    void check_size() { query_size(); }
+    void render_to(HDC dc, int x, int y) {
+        renderer_.draw(*surface_, *snapshot_, 0, snapshot_->rows());
+        require(BitBlt(dc,x,y,surface_->width,surface_->height,surface_->dc,0,0,SRCCOPY) != FALSE, "workspace terminal capture failed");
+    }
+    Result run() {
+        create();
         ShowWindow(hwnd_, mode_.empty() ? SW_SHOW : SW_SHOWNOACTIVATE); UpdateWindow(hwnd_);
         MSG message{}; BOOL status;
         while ((status = GetMessageW(&message,nullptr,0,0)) > 0) { TranslateMessage(&message); DispatchMessageW(&message); }
         require(status == 0, "message loop failed");
+        return collect();
+    }
+    Result collect() {
         if (closer_.joinable()) closer_.join();
         if (!failure_.empty() && !mode_.empty()) {
             std::cerr << "stage=" << stage_ << " bytes=" << result_.consumed << " screen=";
@@ -323,23 +350,27 @@ public:
         return result_;
     }
 };
+#include "workspace.hpp"
 static int application(int argc, char** argv) {
     try {
         std::string mode, image;
-        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|resize|resize-close|watchdog frame.bmp]");
+        require(argc == 1 || (argc == 4 && std::string(argv[1]) == "--test"), "termforge_shell [--test normal|close|resize|resize-close|watchdog|ui frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close", "invalid shell test mode");
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui", "invalid shell test mode");
             std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
         }
         require(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) != FALSE, "DPI awareness failed");
+        if (mode.empty()) { Workspace window; return window.run(); }
+        if (mode == "ui") {
+            OwnedDesktop desktop(L"TermForgeShell-");
+            return desktop.run([&] { Workspace window(image); return window.run(); });
+        }
         Result r;
-        if (mode.empty()) { ShellWindow window(mode,image); r = window.run(); }
-        else {
+        {
             OwnedDesktop desktop(L"TermForgeShell-");
             r = desktop.run([&] { ShellWindow window(mode,image); return window.run(); });
         }
-        if (mode.empty()) return r.complete ? 0 : 1; // Never emit a user's screen to diagnostic stdout.
         const bool valid = r.complete && r.active_children == 0 && r.frames > 0 && r.input_rejected == 0 &&
             (r.normal && r.unicode && r.edited && r.arrows &&
              (mode == "close" || mode == "resize-close" || (r.interrupted && r.exit_code == 37))) &&

@@ -18,6 +18,12 @@ from experiments.conpty.run import OwnedJob
 
 
 def validate(row, mode):
+    if mode == "ui":
+        if (row.get("valid") is not True or row.get("isolation_verified") is not True or
+                row.get("resize_verified") is not True or row.get("sessions_closed") != 3 or
+                row.get("active_children_after") != 0 or row.get("presented_done", 1) is not None):
+            raise ValueError("workspace isolation, resize or cleanup gate failed")
+        return
     for field in ("valid", "cleanup_complete", "command_verified", "unicode_verified", "backspace_verified", "arrows_verified"):
         if row.get(field) is not True:
             raise ValueError(f"failed shell gate: {field}")
@@ -117,7 +123,7 @@ def main():
         cli.error("repeats must be 1..10")
     exe = binary("termforge_shell", args.bin_dir)
     args.out.mkdir(parents=True, exist_ok=False)
-    files = ["experiments/shell/shell.cpp", "experiments/shell/queues.hpp", "experiments/shell/run.py",
+    files = ["experiments/shell/shell.cpp", "experiments/shell/workspace.hpp", "experiments/shell/queues.hpp", "experiments/shell/run.py",
              "experiments/shell/resize.hpp", "experiments/shell/size_client.cpp",
              "experiments/conpty/session.hpp", "experiments/presentation/render.hpp", "experiments/presentation/desktop.hpp",
              "experiments/core/terminal.hpp", "experiments/core/screen.hpp", "experiments/core/unicode_width.hpp"]

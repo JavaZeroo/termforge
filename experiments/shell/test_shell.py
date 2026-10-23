@@ -3,6 +3,7 @@ import copy
 import os
 from pathlib import Path
 import subprocess
+import struct
 import tempfile
 import unittest
 
@@ -59,6 +60,25 @@ class ShellTests(unittest.TestCase):
                                 capture_output=True, timeout=10, creationflags=subprocess.CREATE_NO_WINDOW)
         self.assertEqual(result.returncode, 2)
         self.assertIn(b"invalid shell test mode", result.stderr)
+
+    def test_workspace_sessions_resize_and_cleanup(self):
+        for repeat in range(2):
+            row = execute(self.exe, "ui", self.out / f"ui-{repeat}")["result"]
+            for field, wrong in (("isolation_verified", False), ("resize_verified", False),
+                                 ("sessions_closed", 1), ("active_children_after", 1)):
+                broken = copy.deepcopy(row); broken[field] = wrong
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate(broken, "ui")
+            data = (self.out / f"ui-{repeat}" / "frame.bmp").read_bytes()
+            offset = struct.unpack_from("<I", data, 10)[0]
+            self.assertEqual(struct.unpack_from("<ii", data, 18), (1360, -860))
+            # Independently recorded reference coordinates, not values read from
+            # workspace layout code. Check separators, pane header and active tab.
+            for x, y, rgb in ((226, 100, (68, 68, 68)), (1133, 100, (68, 68, 68)),
+                              (500, 546, (68, 68, 68)), (500, 548, (51, 51, 51)),
+                              (10, 596, (0, 122, 204)), (500, 832, (38, 38, 38))):
+                b, g, r = data[offset + (y * 1360 + x) * 4:][:3]
+                self.assertEqual((r, g, b), rgb, (x, y))
 
 
 if __name__ == "__main__":

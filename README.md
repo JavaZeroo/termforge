@@ -6,7 +6,7 @@
 
 An independent, fully open-source terminal project driven by reproducible performance evidence. WindTerm is a comparison target, not an upstream product or affiliation.
 
-> 当前阶段：有限本地交互原型。已有可缩放的 Windows shell 窗口（物理行裁剪，无 reflow）、机制实验与状态回放；日常开发版、正式 WindTerm 性能基线和性能等价声明尚未完成。`TermForge` 是项目暂名。
+> 当前阶段：有限本地交互原型。已有多标签工作区和可缩放的 Windows shell 窗口（物理行裁剪，无 reflow）、机制实验与状态回放；日常开发版、正式 WindTerm 性能基线和性能等价声明尚未完成。`TermForge` 是项目暂名。
 
 ## 项目原则
 
@@ -19,7 +19,7 @@ An independent, fully open-source terminal project driven by reproducible perfor
 
 ## 从这里开始
 
-已构建后可运行 `build/bin/Release/termforge_shell.exe`（Windows / Visual Studio），输入普通命令或 `exit`。构建、自动验证与支持边界见[本地 shell 原型](experiments/shell/README.md)。
+已构建后可运行 `build/bin/Release/termforge_shell.exe`（Windows / Visual Studio），`Ctrl+T` 新建本地标签，`F11` 扩大 Shell 区域，输入普通命令或 `exit`。构建、自动验证与支持边界见[本地 shell 原型](experiments/shell/README.md)。
 
 | 文档 | 内容 |
 |---|---|

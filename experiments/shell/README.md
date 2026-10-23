@@ -1,4 +1,4 @@
-# 本地 shell 窗口：A1 与 C5
+# 本地 shell 工作区：A1 / C5 / UI-A 首个切片
 
 这是可从源码运行的 Windows 本地交互原型：真实 `cmd.exe` → ConPTY → 有界输出队列 → Recovery 核心 → 只读快照 → DirectWrite/Direct2D → 自有 HWND；字符/方向键从窗口回到 ConPTY。C5 新增核心、窗口与 ConPTY 尺寸同步，仍不是日常开发版。
 
@@ -12,9 +12,18 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 .\build\bin\Release\termforge_shell.exe
 ```
 
-程序为 Windows GUI 子系统，不额外打开宿主控制台。默认打开真实可见窗口，在启动目录运行系统 `cmd.exe /d /q`，关闭 AutoRun，设置 UTF-8 code page 与固定 `TF>` 提示符。支持普通字符、中文字符消息、回车、退格、方向键和 Ctrl-C。输入 `exit` 或关闭窗口会结束本会话并回收其自有子树。用户启动的进程仍可访问用户自己的文件；这里是本地 shell，不是沙箱。
+程序为 Windows GUI 子系统，不额外打开宿主控制台。默认打开真实可见窗口，在启动目录运行系统 `cmd.exe /d /q`，关闭 AutoRun，设置 UTF-8 code page 与固定 `TF>` 提示符。支持普通字符、中文字符消息、回车、退格、方向键和 Ctrl-C。输入 `exit` 或关闭标签会结束本会话并回收其自有子树；关闭主窗口回收全部标签。最后一个标签关闭后工作区保留，可以继续新建。用户启动的进程仍可访问用户自己的文件；这里是本地 shell，不是沙箱。
 
-初始 80×24、100 行内部历史、96 逻辑 DPI；窗口支持拖动缩放/最大化，网格范围为 1–500 列、1–200 行。采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄会截去右侧内容，增宽不会恢复，也没有逻辑行重排。没有历史浏览、选择/复制/粘贴、IME 支持声明、标签页、SSH、备用屏或完整 TUI 兼容性。不实现终端查询回复，未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。固定字体网格与逐格布局来自 [V1](../presentation/README.md)，布局缓存至多 1,024 项，满时清空重建；尚未做产品级缓存策略或性能对比。
+默认 1360×860 内容区，底部真实 ShellPane，初始约 113×7；每会话 100 行内部历史、96 逻辑 DPI；窗口支持拖动缩放/最大化，网格范围为 1–500 列、1–200 行。采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄会截去右侧内容，增宽不会恢复，也没有逻辑行重排。没有历史浏览、选择/复制/粘贴、IME 支持声明、SSH、备用屏或完整 TUI 兼容性。不实现终端查询回复，未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。固定字体网格与逐格布局来自 [V1](../presentation/README.md)，布局缓存至多 1,024 项，满时清空重建；尚未做产品级缓存策略或性能对比。
+
+## 工作区操作与已知差异
+
+- `Ctrl+T` 或底部 `+` 新建本地 cmd，最多 8 个；`Ctrl+Tab` 切换，`Ctrl+W` 或活动标签 `x` 关闭。也可点击标签和右侧 Sessions 列表。
+- `F11` / View → Focus shell 扩大终端；View → Side panels 显示/隐藏两侧区域。Session 菜单可新建、关闭和退出。
+- 三列约 1:4:1、上下约 2:1、24 高面板标题、26 高 Shell 标签、27 高底栏、29 高状态栏来自 [直接取证](../../docs/research/windterm-ui-2026-10-23.md)。主区域没有连接标签，底部接入现有真实 shell。
+- Explorer/Filer/Outline 暂为空布局区域，没有文件浏览/大纲功能。当前菜单只暴露已实现动作；底栏是原创新建快捷入口，没有复刻 WindTerm QuickBar 配置。
+- UI 字体暂用系统 Consolas 12px，终端保留原来的 12×26 网格与调色板。非 96 DPI、字体/像素等价、拖动分隔线、标签重命名/排序/持久化、主连接标签、SSH/SFTP 均未验收。
+- 主窗口是既有 Win32/DirectWrite 实验的有限扩展，不锁定未来产品 GUI 框架；没有复制 WindTerm 主题、图标或反编译实现。
 
 ## 所有权与调度
 
@@ -50,3 +59,5 @@ resize 脚本会将自有窗口移至私有 desktop 右下边缘，让大部分�
 ## 依据
 
 独立实现，接口语义核对 [Microsoft ConPTY 会话文档](https://learn.microsoft.com/en-us/windows/console/creating-a-pseudoconsole-session)、[CancelSynchronousIo](https://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-cancelsynchronousio) 和 [VT 输入序列](https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#input-sequences)。Windows 窗口退格消息的 U+0008 映射为 VT 的 DEL；首轮将其原样发送导致删词，已由真实 shell 编辑用例检出并修正。
+
+UI 自动场景另测两个真实 cmd 的独立输出、隐藏标签继续消费新输出、Sessions 列表点击、通过窗口命令新建/关闭和鼠标消息切换、F11 布局往返、2048×1120 放大及侧栏显隐。子进程独立查询 113×27、113×7、170×11；关闭最后标签后重新创建第三个会话并执行命令，再关闭主窗口，全部回收归零。合成 frame.bmp 由同一工作区绘制函数与终端 DIB 合成，核验参考坐标的分隔线/标题/活动标签颜色；它不是用户桌面截图，也不是像素等价或实际呈现完成证据。
