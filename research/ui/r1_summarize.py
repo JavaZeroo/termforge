@@ -108,6 +108,7 @@ def summarize(identity, evidence, cleanup, profile, script_digest):
 
 
 def read_run(directory):
+    require(not (directory / "launcher-failure.json").exists(), "Launcher failure invalidates the run")
     read = lambda name: json.loads((directory / name).read_text(encoding="utf-8"))
     if read("run.json").get("scenario") == "menu-wrap":
         return summarize_menu(read("run.json"), read("evidence.json"), read("cleanup.json"), read("profile-check.json"),
@@ -122,6 +123,7 @@ def summarize_menu(identity, evidence, cleanup, profile, script_digest, peer):
     require(cleanup.get("active") == 0 and peer.get("closed") is True, "Owned resources remain")
     require(profile == {"only_synthetic_session": True, "session_count": 1}, "Profile scope changed")
     require(evidence.get("ok") is True, "REA invocation failed")
+    require(evidence.get("data", {}).get("cleanup_error") is None, "REA cleanup failed")
     record = evidence["data"]["evidence"]
     result = record["normalized_result"]
     require(record.get("operation") == "instrument_with_frida" and result.get("pid") == identity.get("pid"), "Wrong observation")
@@ -185,8 +187,10 @@ def diagnostic(directory):
             data[name] = {k: value.get(k) for k in keys}
     evidence_path = directory / "evidence.json"
     launcher_failure = directory / "launcher-failure.json"
-    if launcher_failure.exists() and json.loads(launcher_failure.read_text(encoding="utf-8")).get("reason") == "rea-timeout":
-        data["failure"] = "rea-timeout"
+    if launcher_failure.exists():
+        reason = json.loads(launcher_failure.read_text(encoding="utf-8")).get("reason")
+        allowed = ("rea-timeout", "rea-create-failed", "rea-job-assignment-failed", "rea-resume-failed", "rea-wait-failed", "rea-exit-failed")
+        data["failure"] = reason if reason in allowed else "launcher-failed"
     if not evidence_path.exists():
         return {**data, "failure": "no-evidence"}
     try:

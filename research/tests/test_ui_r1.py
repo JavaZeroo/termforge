@@ -6,6 +6,7 @@ import tempfile
 import sys
 import hashlib
 import socket
+import time
 from pathlib import Path
 import unittest
 import uuid
@@ -85,8 +86,13 @@ class EvidenceBoundaryTests(unittest.TestCase):
             out = Path(directory)
             job = launch.OwnedJob()
             program = "import subprocess,sys,time,pathlib; p=subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']); pathlib.Path(sys.argv[1]).write_text(str(p.pid)); time.sleep(60)"
+            assign = job.assign
+            def delayed_assignment(pid):
+                time.sleep(.25)
+                self.assertFalse((out / "child.pid").exists(), "CLI executed before Job assignment")
+                assign(pid)
             try:
-                with self.assertRaisesRegex(RuntimeError, "timed out"):
+                with patch.object(job, "assign", side_effect=delayed_assignment), self.assertRaisesRegex(RuntimeError, "timed out"):
                     launch.run_cli([sys.executable, "-c", program, str(out / "child.pid")], out, job, 1.5)
                 state = job.drain()
                 self.assertEqual(state["active"], 0)
@@ -96,6 +102,49 @@ class EvidenceBoundaryTests(unittest.TestCase):
             finally:
                 job.terminate()
                 job.close()
+
+    @unittest.skipUnless(os.name == "nt", "Windows suspended process failure integration")
+    def test_cli_assignment_failure_never_runs_or_spawns_and_reclaims_handle(self):
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.OpenProcess.argtypes = [ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32]
+        kernel.OpenProcess.restype = ctypes.c_void_p
+        kernel.WaitForSingleObject.argtypes = [ctypes.c_void_p, ctypes.c_uint32]
+        kernel.CloseHandle.argtypes = [ctypes.c_void_p]
+        handles = []
+        with tempfile.TemporaryDirectory() as directory:
+            out, job = Path(directory), launch.OwnedJob()
+            marker = out / "executed.txt"
+            program = "import pathlib,subprocess,sys,time;pathlib.Path(sys.argv[1]).write_text('started');subprocess.Popen([sys.executable,'-c','import time;time.sleep(60)']);time.sleep(60)"
+            def failed_assignment(pid):
+                handle = kernel.OpenProcess(0x100000, False, pid)
+                self.assertTrue(handle)
+                handles.append(handle)
+                time.sleep(.25)
+                self.assertFalse(marker.exists())
+                self.assertEqual(kernel.WaitForSingleObject(handle, 0), 258)
+                raise RuntimeError("injected-cli-assignment-failure")
+            try:
+                with patch.object(job, "assign", side_effect=failed_assignment), self.assertRaisesRegex(RuntimeError, "injected-cli-assignment-failure"):
+                    launch.run_cli([sys.executable, "-c", program, str(marker)], out, job, 2)
+                self.assertEqual(len(handles), 1)
+                self.assertEqual(kernel.WaitForSingleObject(handles[0], 0), 0)
+                self.assertFalse(marker.exists())
+                self.assertEqual(job.accounting()["total"], 0)
+                self.assertEqual(job.drain()["active"], 0)
+                self.assertEqual(json.loads((out / "launcher-failure.json").read_text())["reason"], "rea-job-assignment-failed")
+                (out / "launcher-failure.json").unlink()
+                with patch.object(job, "assign", side_effect=failed_assignment), patch.object(Path, "write_text", side_effect=OSError("injected-marker-write-failure")):
+                    with self.assertRaisesRegex(OSError, "injected-marker-write-failure"):
+                        launch.run_cli([sys.executable, "-c", program, str(marker)], out, job, 2)
+                self.assertEqual(len(handles), 2)
+                self.assertEqual(kernel.WaitForSingleObject(handles[1], 0), 0)
+                self.assertFalse(marker.exists())
+                self.assertEqual(job.drain()["active"], 0)
+            finally:
+                job.terminate()
+                job.close()
+                for handle in handles:
+                    kernel.CloseHandle(handle)
 
     def test_menu_summary_preserves_partial_vt_evidence_without_passing_menus(self):
         columns = 40
@@ -111,9 +160,38 @@ class EvidenceBoundaryTests(unittest.TestCase):
         self.assertFalse(value["menu_verified"])
         self.assertFalse(value["complete"])
         self.assertTrue(value["vt"]["trailing_spaces_preserved"])
+        for cleanup_owner in (args[1]["data"], result):
+            cleanup_owner["cleanup_error"] = "injected-cleanup-failure"
+            with self.assertRaisesRegex(ValueError, "cleanup|Incomplete evidence"):
+                summary.summarize_menu(*args, peer)
+            del cleanup_owner["cleanup_error"]
         peer["received_hex"] = "78"
         with self.assertRaisesRegex(ValueError, "leaked"):
             summary.summarize_menu(*args, peer)
+
+    def test_read_run_rejects_any_launcher_failure_even_with_complete_markers(self):
+        args = observation()
+        script = b"original synthetic validator test"
+        digest = hashlib.sha256(script).hexdigest()
+        args[0].update(clipboard="hosted-disposable-vm", script_sha256=digest)
+        result = args[1]["data"]["evidence"]["normalized_result"]
+        result["source_sha256"] = digest
+        result["messages"][-1]["payload"]["coverage"] = "navigation-selection-system-clipboard-paste"
+        result["messages"].append({"type": "send", "payload": {"kind": "copy-system", "system_clipboard": summary.SELECTION}})
+        for phase in ("paste-single", "paste-single-cancel", "paste-multiline", "paste-multiline-cancel", "paste-multiline-confirm", "paste-multiline-accepted"):
+            received = "x" + ("TF-FIRST\rTF-SECOND\rTF-THIRD" if phase.endswith("accepted") else "")
+            result["messages"].append({"type": "send", "payload": {"kind": "snapshot", "phase": phase, "modal": "QDialog", "peer": {"received": received}}})
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "probe.js").write_bytes(script)
+            for name, value in (("run", args[0]), ("evidence", args[1]), ("cleanup", args[2]), ("profile-check", args[3])):
+                (root / (name + ".json")).write_text(json.dumps(value), encoding="utf-8")
+            self.assertTrue(summary.read_run(root)["complete"])
+            for failure in ("rea-timeout", "rea-job-assignment-failed", "rea-exit-failed", "malformed-json"):
+                with self.subTest(failure=failure):
+                    (root / "launcher-failure.json").write_text(json.dumps({"reason": failure}) if failure != "malformed-json" else "invalid", encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, "Launcher failure"):
+                        summary.read_run(root)
 
     def test_local_success_never_claims_real_clipboard(self):
         result = summary.summarize(*observation())

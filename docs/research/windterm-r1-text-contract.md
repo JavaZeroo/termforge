@@ -52,7 +52,7 @@
 
 `.github/workflows/r1-reference.yml` 仅手动 dispatch，由代理触发即可。Windows 2025 disposable job 下载并核验官方 ZIP/EXE，安装锁定 REA，串行执行两次新的合成配置。系统剪贴板不可与产品剪贴板测试并行。`r1_summarize.py --require-complete` 检查身份、阶段、独立内容预期、实际系统剪贴板、peer 字节及回收；任何缺口保持失败。
 
-`python -m unittest research.tests.test_ui_r1 -v` 验证证据拒绝、hosted 安全边界、原始 VT peer 和真实 Job 超时清理。设置 `TERMFORGE_R1_FAILURE_SOURCE` 为已校验的官方目录后，还会运行真实 suspended 进程的 Job 分配失败注入。REA 使用锁定包的公开 Node CLI 入口，自己及子进程加入自有 Job，输出直接落盘；超时终止整个 Job，避免 Windows `.cmd` wrapper 退出但后代仍持有 stdout 的无界等待。公开 artifact 仅 `local/r1-public/*.json` 白名单：原始 widgets、句柄、路径、stack、分发文件、配置和私有提取物都不上传。
+`python -m unittest research.tests.test_ui_r1 -v` 验证证据拒绝、hosted 安全边界、原始 VT peer 和真实 Job 超时清理。设置 `TERMFORGE_R1_FAILURE_SOURCE` 为已校验的官方目录后，还会运行真实 suspended 进程的 Job 分配失败注入。REA 使用锁定包的公开 Node CLI 入口，先以原生 suspended 状态创建、加入自有 Job 后再恢复，后代进程继承 Job，输出直接落盘；超时终止整个 Job，避免 Windows `.cmd` wrapper 退出但后代仍持有 stdout 的无界等待。合成进程测试覆盖延迟分配时禁止提前执行、分配失败回收、失败记录写入异常时仍回收及恢复后立即生子的整树回收。任何 `launcher-failure.json` 或两层 REA `cleanup_error` 都禁止验收通过，即使已留下完整场景标记。公开 artifact 仅 `local/r1-public/*.json` 白名单：原始 widgets、句柄、路径、stack、分发文件、配置和私有提取物都不上传。
 
 就绪判定检查真实 session tree model、JS engine、peer 数据和活动文本，受总观察时限约束；不将固定延时当成就绪成功。可能进入模态循环的事件通过 Qt 队列发送。`resize`/同步事件保留目标自己的原生异常处理，避免 Frida 默认 `steal` 提前展开目标栈；该区别见 [Frida NativeFunction 文档](https://frida.re/docs/javascript-api/#nativefunction)。这些改动仍需要新的 hosted 运行，不能把首次 hosted 在 resize 阶段失败改判通过。
 

@@ -41,22 +41,81 @@ def cli_command(rea):
 
 
 def run_cli(command, out, job, timeout):
-    """Files cannot keep communicate() waiting after a Windows wrapper exits."""
-    with (out / "evidence.json").open("w", encoding="utf-8") as stdout, (out / "stderr.txt").open("w", encoding="utf-8") as stderr:
-        process = subprocess.Popen(command, stdout=stdout, stderr=stderr)
+    """Create suspended, assign the whole future tree, then resume the public CLI."""
+    import msvcrt
+    kernel = c.WinDLL("kernel32", use_last_error=True)
+    kernel.CreateProcessW.argtypes = [w.LPCWSTR, w.LPWSTR, c.c_void_p, c.c_void_p, w.BOOL, w.DWORD,
+                                     c.c_void_p, w.LPCWSTR, c.POINTER(StartupInfo), c.POINTER(ProcessInfo)]
+    kernel.CreateProcessW.restype = w.BOOL
+    kernel.ResumeThread.argtypes = [w.HANDLE]
+    kernel.ResumeThread.restype = w.DWORD
+    kernel.WaitForSingleObject.argtypes = [w.HANDLE, w.DWORD]
+    kernel.WaitForSingleObject.restype = w.DWORD
+    kernel.GetExitCodeProcess.argtypes = [w.HANDLE, c.POINTER(w.DWORD)]
+    kernel.GetExitCodeProcess.restype = w.BOOL
+    kernel.TerminateProcess.argtypes = [w.HANDLE, w.UINT]
+    kernel.TerminateProcess.restype = w.BOOL
+    kernel.CloseHandle.argtypes = [w.HANDLE]
+    info, phase = ProcessInfo(), "create"
+    check = OwnedJob.check
+    with (out / "evidence.json").open("wb") as stdout, (out / "stderr.txt").open("wb") as stderr, open(os.devnull, "rb") as stdin:
+        handles = [msvcrt.get_osfhandle(f.fileno()) for f in (stdin, stdout, stderr)]
         try:
-            job.assign(process.pid)
-            try:
-                return process.wait(timeout=timeout)
-            except subprocess.TimeoutExpired:
-                (out / "launcher-failure.json").write_text(json.dumps({"reason": "rea-timeout"}), encoding="utf-8")
-                job.terminate()
-                process.wait(timeout=5)
+            for handle in handles:
+                os.set_handle_inheritable(handle, True)
+            start = StartupInfo()
+            start.cb, start.flags = c.sizeof(start), 0x100  # STARTF_USESTDHANDLES
+            start.input, start.output, start.error = handles
+            arguments = c.create_unicode_buffer(subprocess.list2cmdline([str(arg) for arg in command]))
+            # CREATE_SUSPENDED | CREATE_NO_WINDOW: no target code can spawn yet.
+            check(kernel.CreateProcessW(str(command[0]), arguments, None, None, True, 4 | 0x08000000,
+                                        None, None, c.byref(start), c.byref(info)))
+            phase = "job-assignment"
+            job.assign(info.pid)
+            phase = "resume"
+            if kernel.ResumeThread(info.thread) == 0xffffffff:
+                raise c.WinError(c.get_last_error())
+            phase = "wait"
+            wait = kernel.WaitForSingleObject(info.process, max(1, int(timeout * 1000)))
+            if wait == 258:
+                phase = "timeout"
                 raise RuntimeError("REA observation timed out; owned Job terminated")
+            if wait != 0:
+                raise c.WinError(c.get_last_error())
+            code = w.DWORD()
+            check(kernel.GetExitCodeProcess(info.process, c.byref(code)))
+            if code.value:
+                (out / "launcher-failure.json").write_text(json.dumps({"reason": "rea-exit-failed"}), encoding="utf-8")
+            return code.value
+        except BaseException:
+            reason = "rea-timeout" if phase == "timeout" else "rea-" + phase + "-failed"
+            try:
+                (out / "launcher-failure.json").write_text(json.dumps({"reason": reason}), encoding="utf-8")
+            finally:
+                # Recording failures must never bypass owned-process cleanup.
+                try:
+                    job.terminate()
+                finally:
+                    # Assignment failure leaves this owned suspended handle outside Job.
+                    if info.process and kernel.WaitForSingleObject(info.process, 0) == 258:
+                        terminated = kernel.TerminateProcess(info.process, 99)
+                        terminate_error = c.get_last_error()
+                        # Job termination may already be completing (ERROR_ACCESS_DENIED).
+                        # Only a signaled owned handle can make that race acceptable.
+                        if not terminated and kernel.WaitForSingleObject(info.process, 5000) != 0:
+                            raise c.WinError(terminate_error)
+                    if info.process and kernel.WaitForSingleObject(info.process, 5000) != 0:
+                        raise RuntimeError("Owned CLI process did not terminate")
+                if job.drain()["active"]:
+                    raise RuntimeError("Owned CLI Job did not drain")
+            raise
         finally:
-            if process.poll() is None:
-                process.kill()
-                process.wait(timeout=5)
+            if info.thread:
+                kernel.CloseHandle(info.thread)
+            if info.process:
+                kernel.CloseHandle(info.process)
+            for handle in handles:
+                os.set_handle_inheritable(handle, False)
 
 
 def run(source: Path, out: Path, rea: Path, seconds: int, hosted_ci: bool = False, scenario: str = "text"):
