@@ -1,5 +1,6 @@
 // Independent expected-content checks for the documented physical-row policy.
 #include "terminal.hpp"
+#include "text_selection.hpp"
 #include <iostream>
 #include <sstream>
 using termforge::Parser;
@@ -23,8 +24,38 @@ static void invariant(const termforge::Screen& s) {
     lines(s.lines); lines(s.history);
     check(s.history.size() <= s.history_limit, "history bound");
 }
+static std::string first_two_rows(termforge::Parser& parser, size_t end_column) {
+    termforge::TextDocument document(parser.screen);
+    const auto begin = document.position(0, 0), end = document.position(1, end_column);
+    check(begin && end, "resize selection fixture positions exist");
+    termforge::TextSelection selection;
+    check(selection.set(document, {*begin, *end}), "resize selection fixture has valid positions");
+    const auto value = selection.copy(document, 128);
+    check(value.status == termforge::SelectionCopyStatus::ok, "resize selection fixture copies actual text");
+    return value.text;
+}
+static void complete_erasure_removes_only_obsolete_crop_provenance() {
+    // Independently authored bytes: a new four-cell row really wraps into xy.
+    // No runtime transport is used to generate this literal expected result.
+    for (const auto clear : {"\x1b[2J\x1b[H", "\x1b[1;1H\x1b[2K",
+                             "\x1b[1;1H\x1b[K", "\x1b[1;4H\x1b[1K\x1b[1;1H"}) {
+        Parser fresh(3, 6, 0); fresh.feed("OLDxyz"); fresh.screen.resize(3, 4);
+        fresh.feed(clear); fresh.feed("ABCDxy");
+        check(first_two_rows(fresh, 2) == "ABCDxy", "full row erasure must restore subsequent real soft-wrap copy");
+    }
+    for (const auto partial : {"\x1b[1;2H\x1b[K", "\x1b[1;2H\x1b[1K"}) {
+        Parser remains(3, 6, 0); remains.feed("OLDxyz"); remains.screen.resize(3, 4);
+        remains.feed(partial); remains.feed("\x1b[1;1HABCDxy");
+        check(first_two_rows(remains, 2) == "ABCD\r\nxy", "partial row erasure must keep crop provenance conservative");
+    }
+    Parser cropped(3, 6, 0); cropped.feed("ABCDEFgh"); cropped.screen.resize(3, 4);
+    check(first_two_rows(cropped, 2) == "ABCD\r\ngh", "retained clipped content must not silently rejoin");
+    Parser hard(3, 6, 0); hard.screen.resize(3, 4); hard.feed("\x1b[2J\x1b[HABCD\r\nxy");
+    check(first_two_rows(hard, 2) == "ABCD\r\nxy", "full erasure must not infer a soft wrap from full columns");
+}
 int main() {
     try {
+        complete_erasure_removes_only_obsolete_crop_provenance();
         Parser p(3, 4, 2); p.feed("abcdEF\r\nGH");
         p.screen.resize(3, 3);
         check(text(p.screen.lines[0]) == "abc" && text(p.screen.lines[1]) == "EF " &&

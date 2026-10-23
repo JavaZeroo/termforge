@@ -1,0 +1,577 @@
+{
+  "schema": "termforge-r1-clipboard-reviewed-facts-v1",
+  "source": {
+    "repository": "JavaZeroo/termforge",
+    "commit": "6efe3e26d5ca673ca2440c9d91e7de602f3fabd6",
+    "workflow_run_id": 40010995723,
+    "workflow_run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40010995723",
+    "ubuntu_job_id": 120611032190,
+    "windows_job_id": 120611032460,
+    "both_jobs_success": true,
+    "artifact_id": 12525549198,
+    "artifact_sha256": "11d82cb0d8ee3fe4c9ab6da19d3eab9306e597ff30f8bcb9517748b5b746c86a",
+    "reviewed_initial_allowlisted_files": 34,
+    "reviewed_additional_normal_files": 12
+  },
+  "read_errors_cancel_close_rounds": [
+    {
+      "kind": "clipboard",
+      "round": 0,
+      "summary": {
+        "occupied": {
+          "received": 270,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": {
+            "reason": "ordinary",
+            "publication_succeeded": false,
+            "expected_requester_gone": false,
+            "native_error": 0,
+            "release_event": true,
+            "thread_exited": true
+          }
+        },
+        "oversize": {
+          "received": 270,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": null
+        },
+        "cancel": {
+          "received": 268,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": {
+            "reason": "requester-cancelled",
+            "publication_succeeded": false,
+            "expected_requester_gone": true,
+            "native_error": 1418,
+            "release_event": true,
+            "thread_exited": true
+          }
+        },
+        "close": {
+          "received": 256,
+          "helper_exited": true,
+          "retry": false,
+          "owner_release": {
+            "reason": "target-closed",
+            "publication_succeeded": false,
+            "expected_requester_gone": true,
+            "native_error": 1418,
+            "release_event": true,
+            "thread_exited": true
+          }
+        }
+      },
+      "details": [
+        {
+          "name": "occupied",
+          "received_bytes": 270,
+          "helper_exited": true,
+          "busy_cleared": true,
+          "other_during": true,
+          "other_after": true,
+          "owner_release": {
+            "reason": "ordinary",
+            "proof": {
+              "owner_entered": false,
+              "requester_exited": false,
+              "target_quiescent": false,
+              "payload_unchanged": false
+            },
+            "publication_attempted": false,
+            "publication_succeeded": false,
+            "release_event": true,
+            "thread_exited": true,
+            "failure_step": "",
+            "native_error": 0,
+            "worker_error": 0,
+            "secondary_failure_step": "",
+            "secondary_native_error": 0,
+            "secondary_worker_error": 0,
+            "expected_requester_gone": false
+          }
+        },
+        {
+          "name": "oversize",
+          "received_bytes": 270,
+          "helper_exited": true,
+          "busy_cleared": true,
+          "other_during": true,
+          "other_after": true,
+          "owner_release": null
+        },
+        {
+          "name": "cancel",
+          "received_bytes": 268,
+          "helper_exited": true,
+          "busy_cleared": true,
+          "other_during": true,
+          "other_after": true,
+          "owner_release": {
+            "reason": "requester-cancelled",
+            "proof": {
+              "owner_entered": true,
+              "requester_exited": true,
+              "target_quiescent": true,
+              "payload_unchanged": true
+            },
+            "publication_attempted": true,
+            "publication_succeeded": false,
+            "release_event": true,
+            "thread_exited": true,
+            "failure_step": "SetClipboardData-render",
+            "native_error": 1418,
+            "worker_error": 1418,
+            "secondary_failure_step": "",
+            "secondary_native_error": 0,
+            "secondary_worker_error": 0,
+            "expected_requester_gone": true
+          }
+        },
+        {
+          "name": "close",
+          "received_bytes": 256,
+          "helper_exited": true,
+          "busy_cleared": true,
+          "other_during": true,
+          "other_after": true,
+          "owner_release": {
+            "reason": "target-closed",
+            "proof": {
+              "owner_entered": true,
+              "requester_exited": true,
+              "target_quiescent": true,
+              "payload_unchanged": true
+            },
+            "publication_attempted": true,
+            "publication_succeeded": false,
+            "release_event": true,
+            "thread_exited": true,
+            "failure_step": "SetClipboardData-render",
+            "native_error": 1418,
+            "worker_error": 1418,
+            "secondary_failure_step": "",
+            "secondary_native_error": 0,
+            "secondary_worker_error": 0,
+            "expected_requester_gone": true
+          }
+        }
+      ],
+      "job_after": 0,
+      "desktop_gone": true,
+      "frame_sha256": "254cc9361a6c942011e288ff42d5ad548b0b21a2ab32fdacc8b606d7f338015d"
+    },
+    {
+      "kind": "clipboard",
+      "round": 1,
+      "summary": {
+        "occupied": {
+          "received": 270,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": {
+            "reason": "ordinary",
+            "publication_succeeded": false,
+            "expected_requester_gone": false,
+            "native_error": 0,
+            "release_event": true,
+            "thread_exited": true
+          }
+        },
+        "oversize": {
+          "received": 270,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": null
+        },
+        "cancel": {
+          "received": 268,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": {
+            "reason": "requester-cancelled",
+            "publication_succeeded": false,
+            "expected_requester_gone": true,
+            "native_error": 1418,
+            "release_event": true,
+            "thread_exited": true
+          }
+        },
+        "close": {
+          "received": 256,
+          "helper_exited": true,
+          "retry": false,
+          "owner_release": {
+            "reason": "target-closed",
+            "publication_succeeded": false,
+            "expected_requester_gone": true,
+            "native_error": 1418,
+            "release_event": true,
+            "thread_exited": true
+          }
+        }
+      },
+      "details": [
+        {
+          "name": "occupied",
+          "received_bytes": 270,
+          "helper_exited": true,
+          "busy_cleared": true,
+          "other_during": true,
+          "other_after": true,
+          "owner_release": {
+            "reason": "ordinary",
+            "proof": {
+              "owner_entered": false,
+              "requester_exited": false,
+              "target_quiescent": false,
+              "payload_unchanged": false
+            },
+            "publication_attempted": false,
+            "publication_succeeded": false,
+            "release_event": true,
+            "thread_exited": true,
+            "failure_step": "",
+            "native_error": 0,
+            "worker_error": 0,
+            "secondary_failure_step": "",
+            "secondary_native_error": 0,
+            "secondary_worker_error": 0,
+            "expected_requester_gone": false
+          }
+        },
+        {
+          "name": "oversize",
+          "received_bytes": 270,
+          "helper_exited": true,
+          "busy_cleared": true,
+          "other_during": true,
+          "other_after": true,
+          "owner_release": null
+        },
+        {
+          "name": "cancel",
+          "received_bytes": 268,
+          "helper_exited": true,
+          "busy_cleared": true,
+          "other_during": true,
+          "other_after": true,
+          "owner_release": {
+            "reason": "requester-cancelled",
+            "proof": {
+              "owner_entered": true,
+              "requester_exited": true,
+              "target_quiescent": true,
+              "payload_unchanged": true
+            },
+            "publication_attempted": true,
+            "publication_succeeded": false,
+            "release_event": true,
+            "thread_exited": true,
+            "failure_step": "SetClipboardData-render",
+            "native_error": 1418,
+            "worker_error": 1418,
+            "secondary_failure_step": "",
+            "secondary_native_error": 0,
+            "secondary_worker_error": 0,
+            "expected_requester_gone": true
+          }
+        },
+        {
+          "name": "close",
+          "received_bytes": 256,
+          "helper_exited": true,
+          "busy_cleared": true,
+          "other_during": true,
+          "other_after": true,
+          "owner_release": {
+            "reason": "target-closed",
+            "proof": {
+              "owner_entered": true,
+              "requester_exited": true,
+              "target_quiescent": true,
+              "payload_unchanged": true
+            },
+            "publication_attempted": true,
+            "publication_succeeded": false,
+            "release_event": true,
+            "thread_exited": true,
+            "failure_step": "SetClipboardData-render",
+            "native_error": 1418,
+            "worker_error": 1418,
+            "secondary_failure_step": "",
+            "secondary_native_error": 0,
+            "secondary_worker_error": 0,
+            "expected_requester_gone": true
+          }
+        }
+      ],
+      "job_after": 0,
+      "desktop_gone": true,
+      "frame_sha256": "687e75bba2bc2490544bc480e03245a98d037aa5f9f9378712ea8b04201b25fc"
+    }
+  ],
+  "system_copy_rounds": [
+    {
+      "kind": "copy",
+      "round": 0,
+      "summary": {
+        "system_clipboard": true,
+        "phases": 12,
+        "sessions_closed": 2,
+        "cleanup_verified": true,
+        "observations": {
+          "empty": {
+            "bottom": "",
+            "main": "",
+            "focus": "bottom"
+          },
+          "forward": {
+            "bottom": "ALPHA  tail\r\nBETA 中文 é",
+            "main": "",
+            "focus": "bottom"
+          },
+          "reverse": {
+            "bottom": "ALPHA  tail\r\nBETA 中文 é",
+            "main": "",
+            "focus": "bottom"
+          },
+          "word": {
+            "bottom": "tail",
+            "main": "",
+            "focus": "bottom"
+          },
+          "line": {
+            "bottom": "ALPHA  tail",
+            "main": "",
+            "focus": "bottom"
+          },
+          "zoom-before": {
+            "bottom": "ALPHA  tail",
+            "main": "",
+            "focus": "bottom"
+          },
+          "zoom-after": {
+            "bottom": "ALPHA  tail",
+            "main": "",
+            "focus": "bottom"
+          },
+          "main-selected": {
+            "bottom": "ALPHA  tail",
+            "main": "OTHER  text",
+            "focus": "main"
+          },
+          "bottom-restored": {
+            "bottom": "ALPHA  tail",
+            "main": "OTHER  text",
+            "focus": "bottom"
+          },
+          "append-retained": {
+            "bottom": "ALPHA  tail",
+            "main": "OTHER  text",
+            "focus": "main"
+          },
+          "evicted": {
+            "bottom": "",
+            "main": "OTHER  text",
+            "focus": "main"
+          },
+          "invalid-copy": {
+            "bottom": "",
+            "main": "OTHER  text",
+            "focus": "bottom"
+          }
+        },
+        "interactions": {
+          "native_timer_autoscroll": true,
+          "stop_reasons": [
+            "mouse-up",
+            "focus-loss",
+            "capture-loss"
+          ],
+          "select_all_shortcut": true,
+          "select_all_command": true,
+          "actual_menu_popup": true,
+          "empty_copy_shortcut": true,
+          "system_copy_shortcut": true,
+          "phases": 22
+        }
+      },
+      "details": {
+        "base_phases": 12,
+        "additional_phases": 22,
+        "system_shortcut_clipboard_utf8_bytes": 2499,
+        "actual_menu_return": 15,
+        "observer_idle": true
+      },
+      "job_after": 0,
+      "desktop_gone": true,
+      "frame_sha256": "9fd3d6c944590d696afe7b12c7446cb6f8480d3f4e61caa3ad64c81728bb9581"
+    },
+    {
+      "kind": "copy",
+      "round": 1,
+      "summary": {
+        "system_clipboard": true,
+        "phases": 12,
+        "sessions_closed": 2,
+        "cleanup_verified": true,
+        "observations": {
+          "empty": {
+            "bottom": "",
+            "main": "",
+            "focus": "bottom"
+          },
+          "forward": {
+            "bottom": "ALPHA  tail\r\nBETA 中文 é",
+            "main": "",
+            "focus": "bottom"
+          },
+          "reverse": {
+            "bottom": "ALPHA  tail\r\nBETA 中文 é",
+            "main": "",
+            "focus": "bottom"
+          },
+          "word": {
+            "bottom": "tail",
+            "main": "",
+            "focus": "bottom"
+          },
+          "line": {
+            "bottom": "ALPHA  tail",
+            "main": "",
+            "focus": "bottom"
+          },
+          "zoom-before": {
+            "bottom": "ALPHA  tail",
+            "main": "",
+            "focus": "bottom"
+          },
+          "zoom-after": {
+            "bottom": "ALPHA  tail",
+            "main": "",
+            "focus": "bottom"
+          },
+          "main-selected": {
+            "bottom": "ALPHA  tail",
+            "main": "OTHER  text",
+            "focus": "main"
+          },
+          "bottom-restored": {
+            "bottom": "ALPHA  tail",
+            "main": "OTHER  text",
+            "focus": "bottom"
+          },
+          "append-retained": {
+            "bottom": "ALPHA  tail",
+            "main": "OTHER  text",
+            "focus": "main"
+          },
+          "evicted": {
+            "bottom": "",
+            "main": "OTHER  text",
+            "focus": "main"
+          },
+          "invalid-copy": {
+            "bottom": "",
+            "main": "OTHER  text",
+            "focus": "bottom"
+          }
+        },
+        "interactions": {
+          "native_timer_autoscroll": true,
+          "stop_reasons": [
+            "mouse-up",
+            "focus-loss",
+            "capture-loss"
+          ],
+          "select_all_shortcut": true,
+          "select_all_command": true,
+          "actual_menu_popup": true,
+          "empty_copy_shortcut": true,
+          "system_copy_shortcut": true,
+          "phases": 22
+        }
+      },
+      "details": {
+        "base_phases": 12,
+        "additional_phases": 22,
+        "system_shortcut_clipboard_utf8_bytes": 2499,
+        "actual_menu_return": 15,
+        "observer_idle": true
+      },
+      "job_after": 0,
+      "desktop_gone": true,
+      "frame_sha256": "9fd3d6c944590d696afe7b12c7446cb6f8480d3f4e61caa3ad64c81728bb9581"
+    }
+  ],
+  "normal_system_paste_rounds": [
+    {
+      "round": 0,
+      "confirmed_bytes": 25000,
+      "verified": {
+        "cancel": {
+          "sent": 145266,
+          "received": 145266,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 231198,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_active": 0,
+      "desktop_gone": true,
+      "hashes": {
+        "sample.json": "8e0c2cd17d3685ce006208078e0d7da1bc4f346f9103fa3bbdc3a603dca13054",
+        "paste-workflow.json": "40f08c15438213dc309c6ef33d3a494e95b70473b43e06564531af93653fe4ef",
+        "input.bin": "476d794947cb5d2439b8179f9637e78628e95755efd9fbaf52cf1c7373f52bc4",
+        "cancel.bin": "55604efa235655fb397c6e0c9fdf74852a437a8a45d1f1abbd1f5a2f3790ad43",
+        "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "frame.bmp": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      }
+    },
+    {
+      "round": 1,
+      "confirmed_bytes": 25000,
+      "verified": {
+        "cancel": {
+          "sent": 276210,
+          "received": 276210,
+          "state": "cancelled"
+        },
+        "close": {
+          "sent": 178002,
+          "received": 768,
+          "state": "cancelled"
+        }
+      },
+      "job_active": 0,
+      "desktop_gone": true,
+      "hashes": {
+        "sample.json": "dac9ddce2aa7ccd9b28c0b1481c4e8be4116ed446b8c80d861af4ca6a05c6466",
+        "paste-workflow.json": "6f8d3df8432d11dd1febf7f46987e6784ddb0f4a4044840c34a3c1b027d30e0f",
+        "input.bin": "476d794947cb5d2439b8179f9637e78628e95755efd9fbaf52cf1c7373f52bc4",
+        "cancel.bin": "eb68c9baedb9dde64ee8be38c22200cf39ac1ffae1fdfbc7c7ad8bb752edde0c",
+        "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "frame.bmp": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+      }
+    }
+  ],
+  "clipboard_read_workflow_verified": true,
+  "oracle_source_git_blob_sha256": {
+    "experiments/shell/clipboard_checks.py": "cca669e9a08b32c4285260443165364ac75b1d7a057d8f371e06bc4e9f54c696",
+    "experiments/shell/selection_checks.py": "6808f6140428db37a6dd8bd16258e5520bf0cd9dc3378e4f6d4233028e7c5a40",
+    "experiments/shell/paste_checks.py": "889020c6a050acc7ddfab9b813db0adf159e380d5b53ec392b38c72df5ac296c"
+  },
+  "limitations": [
+    "This is bounded functional validation, not presentation latency or WindTerm performance equivalence.",
+    "A late publication after confirmed requester exit remains unsuccessful with its original SetClipboardData-render error1418; the fixture accepts only the separately proved cancellation/close outcome.",
+    "The copy samples establish inner spaces and CRLF, not plain or styled trailing spaces, new selection DPI tests, or an actual Copy popup.",
+    "Clipboard actions used disposable hosted VM; no developer clipboard was changed.",
+    "Bracketed paste and application keyboard modes remain in R2; global action/reference comparison and whole workflows remain in R1-07/08."
+  ]
+}

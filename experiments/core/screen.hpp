@@ -73,6 +73,9 @@ class Screen {
         // Erasing the end destroys a recorded continuation, even if the row
         // happens to remain full of visible characters after later edits.
         if (last == width()) { line.ending = LineEnding::none; line.next_id = 0; line.wrap_columns = 0; }
+        // A complete erasure replaces every remnant of the clipped row.
+        // Later real wraps describe new content at the current width.
+        if (first == 0 && last == width()) line.cropped = false;
     }
     static std::string text(const Line& line) {
         std::string value;

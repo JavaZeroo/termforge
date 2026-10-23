@@ -1,0 +1,465 @@
+{
+  "schema": "termforge-r1-find-hosted-artifact-audit-v1",
+  "head_sha": "6efe3e26d5ca673ca2440c9d91e7de602f3fabd6",
+  "run": {
+    "id": 40010995723,
+    "url": "https://github.com/JavaZeroo/termforge/actions/runs/40010995723",
+    "attempt": 1,
+    "workflow": ".github/workflows/build.yml",
+    "event": "push",
+    "metadata_head_binding_rechecked": true
+  },
+  "artifact": {
+    "id": 12525549198,
+    "name": "r1-windows-input",
+    "sha256": "11d82cb0d8ee3fe4c9ab6da19d3eab9306e597ff30f8bcb9517748b5b746c86a",
+    "zip_bytes": 1350028,
+    "api_digest_and_head_binding_rechecked": true
+  },
+  "audit_method": {
+    "pinned_source_oracle": true,
+    "raw_receiver_rechecked": true,
+    "stage_journal_rechecked": true,
+    "frame_header_full_size_and_digest_rechecked": true,
+    "not_inferred_from_ci_green": true,
+    "zip_path_link_duplicate_encryption_and_size_checks": true,
+    "extracted_entries": 96,
+    "extracted_bytes": 20505588
+  },
+  "pinned_source_identities": {
+    "experiments/shell/find_checks.py": {
+      "sha256": "cf1463a67c33ce367b72cb79aaadda9197ea66fb75fea7163a527f22fd363301",
+      "git_blob": "9094ea0714d834d8dd4f8ca548d8d31ea7cff8e4"
+    },
+    "experiments/core/text_search.hpp": {
+      "sha256": "dfbed596e6ac20fa79b1644b398cbaca0318ebe842dd1e98f850a8d5ac9a3993",
+      "git_blob": "2d093edcd7709e5a9ab50ef3033b4937ace5850d"
+    },
+    "experiments/core/search_test.cpp": {
+      "sha256": "55470661af792f26d3326ca89d5f89611dbb5d558a9a576f1f5341b80fea5d19",
+      "git_blob": "f4cca9416028bcfbb82b1bff43eb91e90031ccc7"
+    },
+    "experiments/shell/search_interactions.hpp": {
+      "sha256": "9c9bc0aae5c74d26d3d992844ec58895d36cee5e060c6d0abe133691d8641440",
+      "git_blob": "fef1fa50f65351f695c303b44c146fe06d7fd2c9"
+    },
+    "experiments/shell/workspace_find_scenario.hpp": {
+      "sha256": "c394e7876e9439b9a99f1fd63903e16a74b1ede0b7150be1a7a575974834b42c",
+      "git_blob": "090f592e15a1cda522f1591c3c435176462ceb32"
+    },
+    "experiments/shell/test_shell.py": {
+      "sha256": "a4c9e269dcaecf3b781023593dcfa4976b4f1421edfe8950e0a1f6a970a1cd2b",
+      "git_blob": "d2bb7b9fd55d874bfaf7769c09ed554212a39f30"
+    },
+    "docs/milestones/R1-local-text.md": {
+      "sha256": "aaa14f922e948623b4e6e8a73c190b608337a6af0ee8f524b72ed2956bc56b79",
+      "git_blob": "aaa946b56d52ebab2a0166c7c493229f5054b989"
+    },
+    "docs/research/windterm-r1-text-contract.md": {
+      "sha256": "b91818377cb33c4c9594de6c438cbd8fe7fc6e6e7abc4c30d0c4a4267a2db9b2",
+      "git_blob": "6ce8ab5cc2710da6aeb81a9034991f0b10b7b13e"
+    },
+    ".github/workflows/build.yml": {
+      "sha256": "2b85af158b3b1454950d32f9e3745d4a75bb067c2f24f1400930480b83fb83fb",
+      "git_blob": "481408b5cdde046b98aacd0b3ceff6ad794c5747"
+    }
+  },
+  "rounds": [
+    {
+      "round": "find-0",
+      "mode": "ui-find",
+      "oracle_passed": true,
+      "stages": 15,
+      "sessions_closed": 2,
+      "active_children_after": 0,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "timed_out": false,
+      "exit_code": 0,
+      "presented_done": null,
+      "stages_match_manifest": true,
+      "frame": {
+        "sha256": "860780a0d11b7ead2fa95bcc8284b1456ce4f0e035c1348a04938110968ada47",
+        "bytes": 4678454,
+        "width": 1360,
+        "height": -860,
+        "full_bitmap_verified": true
+      },
+      "raw_inputs": {
+        "find-bottom.bin": {
+          "hex": "2b23",
+          "sha256": "2d61fabd29d5513853c68358cfefdff2fe06f59fd17cc85894126b647b1392cd"
+        },
+        "find-main.bin": {
+          "hex": "78",
+          "sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881"
+        }
+      },
+      "artifact_sha256": {
+        "find.json": "6b0b4aedc2e1db16c9c7af18402a8ce4b93cbde03f70d14f69fdfdbdd1fd5a52",
+        "find-stages.jsonl": "0cb541f9a40575c5974e0b9643f7dad04ca3ab5949a2af16494895754f657dcf",
+        "sample.json": "ca88ad36525e06d1357e4944dd294d16746e7ac8331b9940f44399859ea56e8b"
+      },
+      "raw_negative_fixtures_rejected": 6,
+      "observed": {
+        "initial_running_checks": 31,
+        "navigation_rows": [
+          "TF_FIND_079 needle 中文 é",
+          "TF_FIND_078 needle 中文 é",
+          "TF_FIND_079 needle 中文 é",
+          "TF_FIND_000 needle 中文 é",
+          "TF_FIND_079 needle 中文 é"
+        ],
+        "chinese_columns": [
+          19,
+          23
+        ],
+        "independent_selection_and_search_highlights": true,
+        "case_sensitive_and_ascii_fold": true,
+        "background_append_preserved_match_and_reading_anchor": true,
+        "eviction_invalidated_match_and_selection": true,
+        "escape_restored_terminal_focus": true,
+        "terminal_input_after_escape": "x"
+      }
+    },
+    {
+      "round": "find-1",
+      "mode": "ui-find",
+      "oracle_passed": true,
+      "stages": 15,
+      "sessions_closed": 2,
+      "active_children_after": 0,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "timed_out": false,
+      "exit_code": 0,
+      "presented_done": null,
+      "stages_match_manifest": true,
+      "frame": {
+        "sha256": "860780a0d11b7ead2fa95bcc8284b1456ce4f0e035c1348a04938110968ada47",
+        "bytes": 4678454,
+        "width": 1360,
+        "height": -860,
+        "full_bitmap_verified": true
+      },
+      "raw_inputs": {
+        "find-bottom.bin": {
+          "hex": "2b23",
+          "sha256": "2d61fabd29d5513853c68358cfefdff2fe06f59fd17cc85894126b647b1392cd"
+        },
+        "find-main.bin": {
+          "hex": "78",
+          "sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881"
+        }
+      },
+      "artifact_sha256": {
+        "find.json": "6b0b4aedc2e1db16c9c7af18402a8ce4b93cbde03f70d14f69fdfdbdd1fd5a52",
+        "find-stages.jsonl": "0cb541f9a40575c5974e0b9643f7dad04ca3ab5949a2af16494895754f657dcf",
+        "sample.json": "ec6c2171f4cf131eb3c30e34165b355cba6f89c266dcfa3fac449b25a093112f"
+      },
+      "raw_negative_fixtures_rejected": 6,
+      "observed": {
+        "initial_running_checks": 31,
+        "navigation_rows": [
+          "TF_FIND_079 needle 中文 é",
+          "TF_FIND_078 needle 中文 é",
+          "TF_FIND_079 needle 中文 é",
+          "TF_FIND_000 needle 中文 é",
+          "TF_FIND_079 needle 中文 é"
+        ],
+        "chinese_columns": [
+          19,
+          23
+        ],
+        "independent_selection_and_search_highlights": true,
+        "case_sensitive_and_ascii_fold": true,
+        "background_append_preserved_match_and_reading_anchor": true,
+        "eviction_invalidated_match_and_selection": true,
+        "escape_restored_terminal_focus": true,
+        "terminal_input_after_escape": "x"
+      }
+    },
+    {
+      "round": "find-stream-0",
+      "mode": "ui-find-stream",
+      "oracle_passed": true,
+      "stages": 10,
+      "sessions_closed": 2,
+      "active_children_after": 0,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "timed_out": false,
+      "exit_code": 0,
+      "presented_done": null,
+      "stages_match_manifest": true,
+      "frame": {
+        "sha256": "c4230b60f2441d3dd41aa410c8742e08060b1258f2df97cc9fe96b7bb8483f5d",
+        "bytes": 4678454,
+        "width": 1360,
+        "height": -860,
+        "full_bitmap_verified": true
+      },
+      "raw_inputs": {
+        "stream-bottom.bin": {
+          "hex": "7e792d7e",
+          "sha256": "001212299e0936096cc748a673dda5641a0e8c6611384fc4c069d36bd8dca025"
+        },
+        "stream-main.bin": {
+          "hex": "78",
+          "sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881"
+        }
+      },
+      "artifact_sha256": {
+        "find-stream.json": "895bd1067d83983fe79841f9b19019141a5ffbe0d06d1b946a2686af67a898ee",
+        "find-stream-stages.jsonl": "8b27e5d87280cddee9e9ae4a87f500e83daa745d14c636ca868bab4049134771",
+        "sample.json": "e49fcbdba33bea3c3c81b21950087e38e3e6de8dff97f5399eb4d715791f04ab"
+      },
+      "raw_negative_fixtures_rejected": 6,
+      "observed": {
+        "search_work_budget": 64,
+        "worker_deadline_ms": 5000,
+        "partial_navigation_rows": [
+          "TF_FIND_000 needle 中文 é",
+          "TF_FIND_000 needle 中文 é",
+          "TF_FIND_001 needle 中文 é",
+          "TF_FIND_000 needle 中文 é"
+        ],
+        "running_query_replaced": true,
+        "partial_scope_and_no_wrap": true,
+        "cancelled_tail_id": 100,
+        "actual_output_version_before": 24,
+        "actual_output_version_after_cancel": 392,
+        "actual_output_text_before": "TF_STREAM_TICK_00000000",
+        "actual_output_text_after_cancel": "TF_STREAM_TICK_00000021",
+        "explicit_stop_marker_observed": true,
+        "new_output_worker_before_close": true,
+        "target_find_and_terminal_hwnds_gone": true,
+        "other_terminal_input_after_close": "x"
+      }
+    },
+    {
+      "round": "find-stream-1",
+      "mode": "ui-find-stream",
+      "oracle_passed": true,
+      "stages": 10,
+      "sessions_closed": 2,
+      "active_children_after": 0,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "timed_out": false,
+      "exit_code": 0,
+      "presented_done": null,
+      "stages_match_manifest": true,
+      "frame": {
+        "sha256": "c4230b60f2441d3dd41aa410c8742e08060b1258f2df97cc9fe96b7bb8483f5d",
+        "bytes": 4678454,
+        "width": 1360,
+        "height": -860,
+        "full_bitmap_verified": true
+      },
+      "raw_inputs": {
+        "stream-bottom.bin": {
+          "hex": "7e792d7e",
+          "sha256": "001212299e0936096cc748a673dda5641a0e8c6611384fc4c069d36bd8dca025"
+        },
+        "stream-main.bin": {
+          "hex": "78",
+          "sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881"
+        }
+      },
+      "artifact_sha256": {
+        "find-stream.json": "828d438256b76a41c8b5d7a1d095bd802e5de04ac1f6cb5a9a1087231c3b92f4",
+        "find-stream-stages.jsonl": "a86ca7ac2f5bddfd5455eb72c89cb36148b9d25ed60267ba88238534c07bcb03",
+        "sample.json": "706b4fa5991451bef4c4aed5f3d2f1c621d2874441f3dfc4c172dd7956411a45"
+      },
+      "raw_negative_fixtures_rejected": 6,
+      "observed": {
+        "search_work_budget": 64,
+        "worker_deadline_ms": 5000,
+        "partial_navigation_rows": [
+          "TF_FIND_000 needle 中文 é",
+          "TF_FIND_000 needle 中文 é",
+          "TF_FIND_001 needle 中文 é",
+          "TF_FIND_000 needle 中文 é"
+        ],
+        "running_query_replaced": true,
+        "partial_scope_and_no_wrap": true,
+        "cancelled_tail_id": 100,
+        "actual_output_version_before": 24,
+        "actual_output_version_after_cancel": 461,
+        "actual_output_text_before": "TF_STREAM_TICK_00000001",
+        "actual_output_text_after_cancel": "TF_STREAM_TICK_00000023",
+        "explicit_stop_marker_observed": true,
+        "new_output_worker_before_close": true,
+        "target_find_and_terminal_hwnds_gone": true,
+        "other_terminal_input_after_close": "x"
+      }
+    }
+  ],
+  "artifact_audit_passed": true,
+  "limitations": [
+    "The artifact does not include executable files or their hashes; source binding is through GitHub workflow/artifact metadata and the exact-head oracle.",
+    "Frames and retained-render equality do not establish WindTerm pixel parity or display presentation timing.",
+    "Continuous-output partial navigation is an explicit TermForge policy, not an observed WindTerm flood behavior.",
+    "Common text-action/rename/DPI integration and multi-session resource matrices remain #17/#18 scope."
+  ],
+  "ci_windows_evidence": {
+    "job_id": 120611032460,
+    "job_url": "https://github.com/JavaZeroo/termforge/actions/runs/40010995723/job/120611032460",
+    "checkout_sha_rechecked": "6efe3e26d5ca673ca2440c9d91e7de602f3fabd6",
+    "os": "Microsoft Windows Server 2025 10.0.26100",
+    "image": "windows-2025-vs2026",
+    "image_version": "20261021.278.1",
+    "python": "3.12.10",
+    "compiler": "MSVC 19.51.36260.0",
+    "actual_test_log_rows_rechecked": {
+      "find_bar": {
+        "passed": true,
+        "seconds": 0.45
+      },
+      "search_core": {
+        "passed": true,
+        "seconds": 0.07
+      },
+      "shell": {
+        "passed": true,
+        "seconds": 47.41
+      }
+    },
+    "full_ctest_log_summary": {
+      "passed": 25,
+      "total": 25,
+      "elapsed_seconds": 111.97
+    },
+    "use": "Selected actual checkout/build/test/upload log rows support source/test provenance; window facts are independently revalidated from artifacts."
+  },
+  "core_and_policy_review": {
+    "pinned_core_test_groups": 10,
+    "ci_search_core_test_passed": true,
+    "query_max_utf8_bytes": 4096,
+    "ui_result_cap": 1024,
+    "core_result_limit_hard_bound": 4096,
+    "matching_policy": {
+      "literal": true,
+      "case_sensitive_default": true,
+      "optional_ascii_case_fold": true,
+      "unicode_normalization": false,
+      "overlapping_matches": false,
+      "soft_wrap_separator": "",
+      "hard_row_separator": "LF"
+    },
+    "source_assertions_reviewed": [
+      "known CJK/combining full-cell coordinates",
+      "soft wrap versus hard LF and trailing spaces",
+      "old generation rejection after replace/cancel/notify",
+      "zero and tiny work budgets",
+      "explicit result cap and oversized-query rejection",
+      "immediate live version/interior/successor/eviction validation",
+      "growth of the former terminal document end",
+      "250 continuous-append ticks, 64 rows per tick, 4096 work, live partial no-wrap navigation, then complete wrapping"
+    ],
+    "work_budget_scope": "Bounded search units and retained state are checked. No complete UI latency or million-line performance bound is claimed."
+  },
+  "frame_visual_review": {
+    "all_four_hashes_and_complete_bmp_layout_rechecked": true,
+    "representative_distinct_final_frames_viewed": 2,
+    "normal_final": "Main terminal is active; bottom displays synthetic eviction rows.",
+    "stream_final": "Closed bottom target is absent; the surviving main terminal is active.",
+    "windterm_pixel_equivalence_claim": false
+  },
+  "r1_05_closure_review": {
+    "recommendation": "close_after_publishing_reviewed_evidence_and_syncing_docs_issue",
+    "remaining_product_blockers_within_fixed_issue_scope": [],
+    "acceptance": [
+      {
+        "clause": "Independent literal, Chinese, repeat/no-result/boundary/eviction matches and exact revealed rows",
+        "met": true,
+        "evidence": [
+          "pinned search_core assertions plus actual pass log",
+          "ui-find 15-stage artifacts, two rounds"
+        ]
+      },
+      {
+        "clause": "Continuous output and replacement invalidate old work; cancel/target close do not write old text and foreground input remains usable",
+        "met": true,
+        "evidence": [
+          "ui-find-stream 10-stage artifacts, two rounds",
+          "actual post-cancel tail version/text advanced",
+          "raw bottom ~y-~ and main x",
+          "target Find and terminal HWNDs destroyed before other input"
+        ]
+      },
+      {
+        "clause": "Bounded results/work/retained state and complete close/worker/process/Job/desktop cleanup",
+        "met": true,
+        "evidence": [
+          "pinned bounded core assertions plus actual pass log",
+          "all four result children0 and sessions_closed2",
+          "all four Job after/after_cleanup0, desktop_gone true, exit0 and no timeout"
+        ]
+      }
+    ],
+    "administrative_actions_remaining": [
+      "Publish this reviewed synthetic facts record and repeatable pinned entry points.",
+      "Update #15 current implementation/streaming checklist and replace the obsolete final-run pointer with 40010995723.",
+      "Update docs/FEATURES, evidence matrix and known differences consistently; retain prior failed/partial records unchanged."
+    ],
+    "separate_followups": {
+      "17": "Unified actions, rename/history/find/IME context and controlled DPI integration.",
+      "18": "Whole text workflow, multi-session resource and lifecycle matrix.",
+      "R4": "Regex/preview/cross-session/full Unicode caseless and large-history performance."
+    },
+    "scope_note": "The two original static-navigation rounds still auto-select 79 only after completion. Explicit running navigation uses live partial hits with no global wrap or end claim; this is TermForge policy because the frozen WindTerm flood behavior is unknown."
+  },
+  "reproduction": {
+    "source": "https://github.com/JavaZeroo/termforge/tree/6efe3e26d5ca673ca2440c9d91e7de602f3fabd6",
+    "core": "ctest --test-dir build -C Release -R search_core --output-on-failure",
+    "window_tests": "python -m unittest experiments.shell.test_shell.ShellTests.test_find_real_edit_navigation_unicode_output_isolation_and_cancel experiments.shell.test_shell.ShellTests.test_find_continuous_output_partial_navigation_replace_cancel_and_target_close -v",
+    "artifact_revalidation": "Use exact-head experiments/shell/find_checks.py validate_find_workflow / validate_find_stream_workflow on each extracted round with its sample.json; separately check the stage journal, raw bytes, complete BMP/hash, and post-cleanup Job accounting."
+  },
+  "publication_review": {
+    "synthetic_terminal_text_only": true,
+    "local_paths_excluded": true,
+    "desktop_names_and_pids_excluded": true,
+    "private_raw_logs_excluded": true,
+    "proprietary_windterm_artifacts_excluded": true,
+    "binary_hash_available_in_this_artifact": false,
+    "prior_evidence_overwritten": false
+  }
+}

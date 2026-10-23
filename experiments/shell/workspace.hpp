@@ -34,6 +34,7 @@ class Workspace {
     uint64_t history_anchor_ = 0;
     tf_shell_test::PasteScenarioState paste_scenario_;
     tf_shell_test::ClipboardScenarioState clipboard_scenario_;
+    std::unique_ptr<tf_shell_test::ProductImeScenarioState> ime_scenario_;
     int width_ = 1360, height_ = 860, dpi_ = 96;
     int physical_width_ = 1360, physical_height_ = 860;
     int left_ = 226, right_ = 226, left_middle_ = 289, right_middle_ = 289;
@@ -343,6 +344,8 @@ class Workspace {
     void scenario_paste();
     void scenario_clipboard();
     void scenario_selection();
+    void scenario_selection_bytes();
+    void scenario_ime();
     void scenario_find();
     void scenario_find_stream();
     static std::string size_marker(int outer_width,int rows,ShellWindow* shell) {
@@ -414,8 +417,10 @@ class Workspace {
                 else if(self->test_mode_=="ui-paste" || self->test_mode_=="ui-paste-system") self->scenario_paste();
                 else if(self->test_mode_=="ui-clipboard-system") self->scenario_clipboard();
                 else if(self->test_mode_=="ui-selection" || self->test_mode_=="ui-copy-system") self->scenario_selection();
+                else if(self->test_mode_=="ui-selection-bytes" || self->test_mode_=="ui-copy-bytes-system") self->scenario_selection_bytes();
                 else if(self->test_mode_=="ui-find") self->scenario_find();
                 else if(self->test_mode_=="ui-find-stream") self->scenario_find_stream();
+                else if(tf_shell_test::is_product_ime_mode(utf16(self->test_mode_.c_str()))) self->scenario_ime();
                 else self->scenario();
                 return 0;
             }
@@ -504,11 +509,16 @@ public:
             require(stage_==100 && collected_==2,"workspace paste scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && (test_mode_=="ui-selection" || test_mode_=="ui-copy-system" || test_mode_=="ui-find" || test_mode_=="ui-find-stream")) {
+        if(!image_.empty() && (test_mode_=="ui-selection" || test_mode_=="ui-copy-system" || test_mode_=="ui-find" || test_mode_=="ui-find-stream" || test_mode_=="ui-selection-bytes" || test_mode_=="ui-copy-bytes-system")) {
             require(stage_==100 && collected_==2,"workspace selection scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find" && test_mode_!="ui-find-stream") {
+        if(!image_.empty() && tf_shell_test::is_product_ime_mode(utf16(test_mode_.c_str()))) {
+            const int expected=test_mode_=="ui-ime-focus"?3:2;
+            require(stage_==100 && collected_==expected,"workspace IME scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":"<<expected<<",\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && !tf_shell_test::is_product_ime_mode(utf16(test_mode_.c_str())) && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find" && test_mode_!="ui-find-stream" && test_mode_!="ui-selection-bytes" && test_mode_!="ui-copy-bytes-system") {
             require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
@@ -524,4 +534,6 @@ public:
 #include "workspace_paste_scenario.hpp"
 #include "workspace_clipboard_scenario.hpp"
 #include "workspace_selection_scenario.hpp"
+#include "workspace_selection_bytes_scenario.hpp"
 #include "workspace_find_scenario.hpp"
+#include "workspace_ime_scenario.hpp"

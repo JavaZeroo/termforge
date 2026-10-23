@@ -4,6 +4,7 @@
 #include "resize.hpp"
 #include "keyboard.hpp"
 #include "ime.hpp"
+#include "hosted_ime_input.hpp"
 #include "clipboard_worker.hpp"
 #include "clipboard.hpp"
 #include "paste_prompt.hpp"
@@ -52,6 +53,7 @@ class ShellWindow {
     int dirty_first_ = 0, dirty_last_ = 24;
     tf_shell::KeyboardEncoder keyboard_;
     tf_shell::ImeContext ime_;
+    tf_shell_test::HostedImeObservation ime_observation_;
     inline static uint64_t next_identity_ = 0;
     const uint64_t identity_ = ++next_identity_;
     std::unique_ptr<tf_shell::ClipboardReadJob> clipboard_read_;
@@ -299,7 +301,9 @@ class ShellWindow {
     void update_ime_caret() {
         if(!hwnd_ || GetFocus()!=hwnd_ || snapshot_->cursor_row<0) return;
         const int x=renderer_->x(snapshot_->cursor_column), y=renderer_->y(snapshot_->cursor_row);
-        ime_.set_caret({x,y,x+renderer_->cell_width(),y+renderer_->cell_height()});
+        const RECT caret{x,y,x+renderer_->cell_width(),y+renderer_->cell_height()};
+        const bool positioned=ime_.set_caret(caret);
+        ime_observation_.caret(hwnd_,caret,positioned);
     }
     void history_wheel(short delta) {
         if (closing_) return;
@@ -408,6 +412,7 @@ class ShellWindow {
                 self->viewport_.bottom(self->parser_.screen); self->publish();
             }
             const auto ime=self->ime_.handle(message,wp,lp);
+            self->ime_observation_.message(message,wp,lp,ime);
             if(!ime.committed.empty()) self->send_input(ime.committed);
             if(!ime.error.empty()) self->input_status(L"Input method: "+utf16(ime.error.c_str()));
             if(ime.handled) return ime.result;
@@ -600,6 +605,25 @@ public:
     }
     std::shared_ptr<const tf_shell::PasteTransfer> observed_paste() const { return paste_transfer_; }
     bool composing() const { return ime_.composing(); }
+    void begin_ime_observation(unsigned generation) {
+        ime_observation_.begin(generation); update_ime_caret();
+    }
+    tf_shell_test::HostedImeObservation ime_observation() const {
+        return ime_observation_.snapshot(ime_,hwnd_);
+    }
+    std::vector<std::string> ime_retained_lines() const {
+        require(ime_observation_.enabled,"IME observation is not enabled");
+        const termforge::TextDocument document(parser_.screen);
+        require(document.size()<=300,"IME retained line bound exceeded");
+        std::vector<std::string> lines;
+        size_t bytes=0;
+        for(size_t i=0;i<document.size();++i) {
+            auto text=document.line(i).projection.text;
+            bytes+=text.size(); require(bytes<=32768,"IME retained text bound exceeded");
+            lines.push_back(std::move(text));
+        }
+        return lines;
+    }
     bool has_selection() const { return !selection_.empty(); }
     void request_copy();
     void select_all_text();
@@ -744,11 +768,18 @@ public:
 static int application(int argc, char** argv) {
     try {
         std::string mode, image;
+        if(argc==4 && std::string_view(argv[1])=="--test-owned-hosted-ime") {
+            tf_shell_test::require_hosted_ime_child_gate();
+            mode=argv[2]; image=argv[3];
+            require(tf_shell_test::is_product_ime_mode(utf16(mode.c_str())) && !image.empty(),"invalid explicit hosted IME case");
+            require(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)!=FALSE,"DPI awareness failed");
+            Workspace window(image,mode); return window.run();
+        }
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream", "invalid shell test mode");
-            if(mode=="ui-clipboard-system" || mode=="ui-copy-system") tf_shell_test::require_hosted_clipboard();
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system", "invalid shell test mode");
+            if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
             }
@@ -760,7 +791,7 @@ static int application(int argc, char** argv) {
         wchar_t desktop_name[256]{}; DWORD desktop_size=0;
         require(GetUserObjectInformationW(GetThreadDesktop(GetCurrentThreadId()),UOI_NAME,desktop_name,sizeof(desktop_name),&desktop_size)!=FALSE &&
             std::wstring_view(desktop_name).find(L"TermForgeShell-")==0,"shell test requires the runner-owned desktop");
-        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system") {
             Workspace window(image,mode); return window.run();
         }
         Result r;

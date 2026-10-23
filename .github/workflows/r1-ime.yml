@@ -44,7 +44,7 @@ jobs:
           python-version: '3.12'
       - name: Check inventory guard, evidence and owned synthetic timeout
         timeout-minutes: 2
-        run: python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_hosted -v
+        run: python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_hosted research.ime.test_product_ime -v
       - name: Read-only bounded hosted IME inventory
         timeout-minutes: 4
         run: python -m research.ime.inventory_hosted --out local/hosted-ime/inventory --query-timeout 60
@@ -52,10 +52,10 @@ jobs:
         if: inputs.mode == 'verify'
         timeout-minutes: 3
         run: cmake -S . -B build -DBUILD_TESTING=OFF
-      - name: Build native IME probe
+      - name: Build native IME probe and product receiver
         if: inputs.mode == 'verify'
         timeout-minutes: 5
-        run: cmake --build build --config Release --target termforge_ime_probe --parallel 2
+        run: cmake --build build --config Release --target termforge_ime_probe shell_test_launcher shell_ime_client --parallel 2
       - name: Activate existing fixed Microsoft Pinyin in disposable hosted VM
         if: inputs.mode == 'verify'
         timeout-minutes: 10
@@ -71,6 +71,13 @@ jobs:
           python research/ime/run_probe.py
           --exe build/bin/Release/termforge_ime_probe.exe
           --mode hosted --timeout 55 --out local/hosted-ime/probe
+      - name: Require four real product IME workflows and owned cleanup
+        if: inputs.mode == 'verify'
+        timeout-minutes: 5
+        run: >-
+          python -m research.ime.product_runner
+          --launcher build/bin/Release/shell_test_launcher.exe
+          --timeout 60 --out local/hosted-ime/product
       - name: Preserve bounded IME evidence on success or failure
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -86,3 +93,13 @@ jobs:
             local/hosted-ime/probe/result.json
             local/hosted-ime/probe/stdout.jsonl
             local/hosted-ime/probe/stderr.txt
+            local/hosted-ime/product/manifest.json
+            local/hosted-ime/product/*/result.json
+            local/hosted-ime/product/*/product-ime.json
+            local/hosted-ime/product/*/progress.jsonl
+            local/hosted-ime/product/*/stdout.jsonl
+            local/hosted-ime/product/*/stderr.txt
+            local/hosted-ime/product/*/frame.bmp
+            local/hosted-ime/product/*/bottom.bin
+            local/hosted-ime/product/*/main.bin
+            local/hosted-ime/product/*/hidden.bin

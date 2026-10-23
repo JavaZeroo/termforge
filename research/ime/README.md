@@ -1,6 +1,6 @@
 # R1 键盘与系统 IME 验证
 
-本目录提供 R1-06 的自动验证入口。原生 HWND/HIMC 生命周期和键盘字节合同已可独立运行；**真实 Microsoft Pinyin 组合、候选 UI、提交及取消尚待受控 hosted 环境实测**。`real_ime_workflow_verified: false` 永远不是通过。探针通过后还需完成真实终端会话、切换、rename、输出、DPI/zoom 的交叉验收，不能单独关闭 #16。
+本目录提供 R1-06 的自动验证入口。原生 HWND/HIMC 生命周期和键盘字节合同已可独立运行；**独立真实 Microsoft Pinyin 探针已通过，产品窗口的四组交叉场景仍待 hosted 验收**。`real_ime_workflow_verified: false` 永远不是通过。探针通过后还需完成真实终端会话、切换、rename、输出、DPI/zoom 的交叉验收，不能单独关闭 #16。
 
 ## 可复现入口
 
@@ -62,3 +62,18 @@ python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_
 探针再次验证 hosted 环境和真实 input desktop，在每次输入前确认自有窗口仍为 foreground/focus。实际按键 `NIHAO` 必须产生原生组合及可见候选窗口；同一候选 HWND 在光标移动时须产生匹配位移，Space 恰好提交一次“你好”，无额外 `WM_CHAR`；再输入 `NI` 并用 Escape 取消。只激活本进程 profile，不使用 `TF_IPPMF_ENABLEPROFILE` 隐式修改用户注册配置。[ActivateProfile](https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfinputprocessorprofilemgr-activateprofile)
 
 候选窗口类名、前后矩形、预编辑文字、提交内容和事件数均保存在 JSON。候选类无法识别、语言包缺失、没有 input desktop、焦点丢失或任何步骤未验证，门槛失败。上述固定镜像的独立探针已通过，仍不能外推其他镜像/版本或产品交叉场景。本地两个隔离模式的 profile 枚举为空也只代表其原隔离范围。
+
+## 产品真实输入的四组交叉验收
+
+`r1-ime.yml` 的显式 `mode=verify` 先完成固定环境准备与独立探针，再运行 `python -m research.ime.product_runner --launcher build/bin/Release/shell_test_launcher.exe --timeout 60 --out local/hosted-ime/product`。普通 push 仅盘点。开发机在创建证据目录、窗口或改变输入法前拒绝；无需用户逐轮点击。
+
+| 场景 | 独立验收 |
+|---|---|
+| `ui-ime-basic` | 两区域真实预编辑不发送、“你好”恰好一次、Escape 取消、候选随工作区移动 |
+| `ui-ime-geometry` | 预编辑中 20 行真实输出、resize、125% zoom、受控 120 DPI；候选和实际物理 caret、保留行逐字检查 |
+| `ui-ime-focus` | 隐藏标签、失焦/重入及原生 rename EDIT 的真实组合；PTY 接收端不串会话 |
+| `ui-ime-close` | 组合中关闭目标、候选消失、接收进程退出，另一会话仍可提交/取消 |
+
+原生 launcher/产品分别等待外层与内层 GO；两个 kill-on-close Job 都必须归零。只查询现有 input desktop，不创建/切换/删除系统输入桌面。原始 stdout/stderr、阶段进度、独立接收文件和结果分别保存；已有目录拒绝覆盖，超时仍保留原始失败。候选既检查同一原生实例的相对移动，也按实测单元格/OS DPI/显示器工作区检查绝对锚定，允许向上排布和右边界夹紧。
+
+这些代码和本地 schema/清理测试不代表真实产品四场景已通过。每次显式 run 的 source identity 和 artifact 独立审计后，才可更新 #16；独立探针已有结果继续保持自己的范围。受控 DPI 不代表实际跨显示器。

@@ -1,0 +1,215 @@
+{
+  "schema": "termforge-local-selection-bytes-facts-v1",
+  "base_commit": "6efe3e26d5ca673ca2440c9d91e7de602f3fabd6",
+  "working_tree_draft": true,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "binary_sha256": {
+    "termforge_shell.exe": "888d9c17fde600eb435a1ac6a44beb4cd446408fa9e6a9ff55e44bdb0cccf955",
+    "shell_selection_text_client.exe": "7fc230d7f7934087f41e56ab3480cffdd7c42ac7acb632c15cd1347832ae2465",
+    "shell_test_launcher.exe": "44a7f59c56a344e9f1349e99c681924094f6502c73aeb1b02026ad3169375a6c"
+  },
+  "frozen_source_sha256": {
+    "experiments/core/screen.hpp": "51a2edad878d297ad0fbd2f1a735dd753585299219860bba1412a4322ddc5b95",
+    "experiments/core/resize_test.cpp": "46c8a6a45c18c5994b9aa58673957f05226eba026287f8f3ea1e1354fc1e092b",
+    "experiments/shell/shell_selection_text_client.cpp": "e4efe9d634839c491fca51219b6d249193d0dc770082d63149ebbe472a642b9a",
+    "experiments/shell/workspace_selection_bytes_scenario.hpp": "d9810d9eaa566ab983a8f95a3b47c51359d3a60e6b5b75e4373f0fbeded51b0d",
+    "experiments/shell/selection_bytes_checks.py": "f24f8e4c80e2677eea1e238d4ac4c775d0b92211ed9c0930bea951fc3191d555",
+    "experiments/shell/test_selection_bytes.py": "f0b1eafebc2cf0d22bd1524d2aa99cc3c7cc3a238cb980429a737cc8a0b12229"
+  },
+  "native_source_hashes_changed_during_build": [],
+  "source_snapshot_directory": "local/r1-selection-bytes-build-20261024-03",
+  "core_validation": {
+    "original_red_exit": 1,
+    "original_red_message": "full row erasure must restore subsequent real soft-wrap copy",
+    "green_targets": [
+      "resize_test",
+      "selection_test",
+      "history_test",
+      "search_test"
+    ]
+  },
+  "focused_unittest": {
+    "tests": 9,
+    "passed": 8,
+    "skipped": 1,
+    "skip_reason": "hosted system clipboard mode unavailable on local machine",
+    "pure_oracle_tests": 6,
+    "real_local_window_rounds": 2,
+    "native_and_python_guard_verified": true
+  },
+  "samples": [
+    {
+      "directory": "local/r1-selection-bytes-focused-20261024-02/selection-bytes/run-9ig3vxxb/local-0",
+      "sample_sha256": "cb512ac5f65f27693137a4a12d6b3323b5c2ef46b2502f6446f4a59389604f50",
+      "manifest_sha256": "3967477d368bf465b4c8f62305ab35ebe21a1f9b7526de42bf38aae13348e30d",
+      "status": "passed",
+      "native_exit_code": 0,
+      "native_timed_out": false,
+      "sessions_closed": 2,
+      "job_active": 0,
+      "desktop_gone": true,
+      "summary": {
+        "system_clipboard": false,
+        "phases": 9,
+        "fixture_style": "styled-tail-v1",
+        "soft_wrap_join": true,
+        "hard_crlf": true,
+        "explicit_trailing_spaces": 2,
+        "controlled_dpi": [
+          96,
+          144,
+          192,
+          96
+        ],
+        "dpi_selection_preserved": true,
+        "raw_input_isolated": true,
+        "cleanup_verified": true,
+        "evidence": {
+          "bottom": {
+            "producer_sha256": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+            "transport_sha256": "e13f2a32279d5595c38961ebaf1c906c14ee8e5696e3bae6d24618c0a11a7a96",
+            "transport_bytes": 1729,
+            "transport_equals_producer": false,
+            "literal_styled_tail_occurrences": 8,
+            "raw_bytes": 0
+          },
+          "main": {
+            "producer_sha256": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+            "transport_sha256": "d1a2effd3f85f99b0af6a0b1fc5f62056c8d280cf0a65de1f586a29ddd9a40a2",
+            "transport_bytes": 1773,
+            "transport_equals_producer": false,
+            "literal_styled_tail_occurrences": 8,
+            "raw_bytes": 1
+          }
+        }
+      },
+      "main_dpi_selection_text": [
+        "HARD 中文 é  ",
+        "HARD 中文 é  ",
+        "HARD 中文 é  ",
+        "HARD 中文 é  "
+      ],
+      "main_grid": [
+        [
+          74,
+          17
+        ],
+        [
+          74,
+          17
+        ],
+        [
+          74,
+          17
+        ],
+        [
+          74,
+          17
+        ]
+      ],
+      "bottom_columns": [
+        111,
+        112,
+        112,
+        111
+      ]
+    },
+    {
+      "directory": "local/r1-selection-bytes-focused-20261024-02/selection-bytes/run-9ig3vxxb/local-1",
+      "sample_sha256": "dc00ef890a14d1e8a993e90d4a62fea310afec542d109e0cf56eaeee974ff994",
+      "manifest_sha256": "317a81ebb44c94e3f498508d3761d43ad411194af2bf1e67adaa3f572a15a0f2",
+      "status": "passed",
+      "native_exit_code": 0,
+      "native_timed_out": false,
+      "sessions_closed": 2,
+      "job_active": 0,
+      "desktop_gone": true,
+      "summary": {
+        "system_clipboard": false,
+        "phases": 9,
+        "fixture_style": "styled-tail-v1",
+        "soft_wrap_join": true,
+        "hard_crlf": true,
+        "explicit_trailing_spaces": 2,
+        "controlled_dpi": [
+          96,
+          144,
+          192,
+          96
+        ],
+        "dpi_selection_preserved": true,
+        "raw_input_isolated": true,
+        "cleanup_verified": true,
+        "evidence": {
+          "bottom": {
+            "producer_sha256": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+            "transport_sha256": "1c4bbc268638595d90f6b191baef77703e51f59b7346b6be70bfe33baa234c12",
+            "transport_bytes": 1729,
+            "transport_equals_producer": false,
+            "literal_styled_tail_occurrences": 8,
+            "raw_bytes": 0
+          },
+          "main": {
+            "producer_sha256": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+            "transport_sha256": "fa1c4a8d38c60e22ef26c6be4c481fe08d286c14066d6a1cdd8a995c816bb172",
+            "transport_bytes": 1773,
+            "transport_equals_producer": false,
+            "literal_styled_tail_occurrences": 8,
+            "raw_bytes": 1
+          }
+        }
+      },
+      "main_dpi_selection_text": [
+        "HARD 中文 é  ",
+        "HARD 中文 é  ",
+        "HARD 中文 é  ",
+        "HARD 中文 é  "
+      ],
+      "main_grid": [
+        [
+          74,
+          17
+        ],
+        [
+          74,
+          17
+        ],
+        [
+          74,
+          17
+        ],
+        [
+          74,
+          17
+        ]
+      ],
+      "bottom_columns": [
+        111,
+        112,
+        112,
+        111
+      ]
+    }
+  ],
+  "preserved_failed_samples": [
+    {
+      "directory": "local/r1-selection-bytes-20261024-01",
+      "cause": "Creation width shrink left stale cropped provenance after complete erasure; default-style trailing spaces serialized as EL."
+    },
+    {
+      "directory": "local/r1-selection-bytes-20261024-02",
+      "cause": "Soft join fixed; default-style trailing spaces still serialized as EL, strict v1 oracle rejects."
+    },
+    {
+      "directory": "local/r1-selection-bytes-styled-20261024-03-0",
+      "cause": "Styled copied text correct; initial oracle incorrectly assumed background ConPTY rows do not rewrap at width111-to112. Original failure record retained."
+    }
+  ],
+  "limitations": [
+    "Passing tail fixture has explicit nondefault SGR43 background; it does not prove plain-default tail spaces survive ConPTY.",
+    "Original plain default tail loss remains visible in v1 failures.",
+    "System CF mode compiled and native/Python local guards verified; hosted real CtrlShiftC/CF roundtrip remains pending.",
+    "DPI transitions are controlled WM_DPICHANGED on owned windows; not actual monitor/display changes.",
+    "R1-03 and complete R1 are not closed by this incremental evidence."
+  ]
+}

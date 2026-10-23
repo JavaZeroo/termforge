@@ -33,8 +33,8 @@
 
 以下为选题顺序；各项已做/待做和验收结果只在对应 issue 维护。`ready-for-agent` 表示可以开工，不代表全仓库所有 ready 项优先级相同。
 
-1. **开始选择复制和查找。** [参考文字行为契约](https://github.com/JavaZeroo/termforge/issues/11)与[历史浏览](https://github.com/JavaZeroo/termforge/issues/12)已按限定合同验收；[选择复制](https://github.com/JavaZeroo/termforge/issues/13)和[历史查找](https://github.com/JavaZeroo/termforge/issues/15)的前置已解除。两项共用只读文本投影，独立模块可并行，窗口/渲染入口串行整合；已有历史实现继续作为回归基础。
-2. **并行收尾粘贴和真实输入。** [可靠粘贴](https://github.com/JavaZeroo/termforge/issues/14)完成产品读取阶段错误/取消/关闭验收；[键盘与真实 IME](https://github.com/JavaZeroo/termforge/issues/16)先取得有效环境事实，再验证真实组合、候选和产品交叉场景。不得用已通过的底层 API 或合成消息替代窗口与系统验收。
+1. **收尾选择复制和查找。** [参考文字行为契约](https://github.com/JavaZeroo/termforge/issues/11)与[历史浏览](https://github.com/JavaZeroo/termforge/issues/12)已按限定合同验收；[选择复制](https://github.com/JavaZeroo/termforge/issues/13)和[历史查找](https://github.com/JavaZeroo/termforge/issues/15)的前置已解除。两项共用只读文本投影，独立模块可并行，窗口/渲染入口串行整合；已有历史实现继续作为回归基础。
+2. **完成真实输入。** [可靠粘贴](https://github.com/JavaZeroo/termforge/issues/14)的最终产品读取阶段验收已有独立证据；[键盘与真实 IME](https://github.com/JavaZeroo/termforge/issues/16)已有固定环境和独立真实探针，继续验收产品多会话、候选定位和几何/焦点/关闭场景。不得用已通过的底层 API 或合成消息替代窗口与系统验收。
 3. **最后整合并关闭 R1。** [统一文字动作](https://github.com/JavaZeroo/termforge/issues/17)核对菜单/快捷键/焦点和参考行为；[完整工作流验收](https://github.com/JavaZeroo/termforge/issues/18)在最终源码与真实系统环境上验证全部流程。单个测试成功或系统测试跳过不能解除该门槛。
 4. **并行推进影响后续决策的调查。** [全量目标台账](https://github.com/JavaZeroo/termforge/issues/19)先冻结平台/架构/最低系统边界，作为 R2 核心与 GUI 产品路线决定的输入；候选构建可与范围调查并行。外部核心和测量工具先按下表拆小。Server 2022 专项可独立调查，但不挤占近期文字交互主线。
 

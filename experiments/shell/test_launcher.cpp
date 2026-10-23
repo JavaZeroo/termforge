@@ -1,5 +1,6 @@
 // Native desktop binding for the Python-owned shell integration tests.
 #include "../conpty/session.hpp"
+#include "hosted_ime_input.hpp"
 #include <filesystem>
 #include <iostream>
 
@@ -77,27 +78,45 @@ static bool drain(HANDLE job, HANDLE process, unsigned timeout_ms) {
     return (!process || WaitForSingleObject(process, 0) == WAIT_OBJECT_0) &&
            (!job || active_processes(job) == 0);
 }
+static void hosted_summary(HANDLE job,HANDLE process,const std::wstring& mode,DWORD code,bool timed_out) {
+    JOBOBJECT_BASIC_ACCOUNTING_INFORMATION info{};
+    if(!QueryInformationJobObject(job,JobObjectBasicAccountingInformation,&info,sizeof(info),nullptr)) fail("hosted IME inner Job summary");
+    std::cout<<"{\"schema\":\"termforge-hosted-ime-launcher-v1\",\"mode\":\""<<tf_shell_test::ime_utf8(mode)
+        <<"\",\"child_exit_code\":"<<code<<",\"child_signaled\":"<<(WaitForSingleObject(process,0)==WAIT_OBJECT_0?"true":"false")
+        <<",\"timed_out\":"<<(timed_out?"true":"false")<<",\"inner_job_after\":{\"active\":"<<info.ActiveProcesses
+        <<",\"total\":"<<info.TotalProcesses<<",\"terminated\":"<<info.TotalTerminatedProcesses<<"}}\n"<<std::flush;
+}
 int wmain(int argc, wchar_t** argv) {
     Handle job, process;
     try {
         require(argc == 4, "usage: shell_test_launcher station\\TermForgeShell-name mode frame.bmp");
         read_gate();
-        auto desktop = validate_desktop(argv[1]);
+        const bool hosted=std::wstring_view(argv[1])==L"--hosted-ime";
+        std::wstring desktop;
+        if(hosted) {
+            const auto input=tf_shell_test::require_hosted_ime_input();
+            require(tf_shell_test::is_product_ime_mode(argv[2]),"invalid explicit hosted IME case");
+            desktop=tf_shell_test::ime_object_name(GetProcessWindowStation())+L"\\"+input;
+        } else desktop=validate_desktop(argv[1]);
         require(*argv[2] && *argv[3], "test launcher mode and frame path are required");
         std::wstring executable(32768, 0);
         const DWORD count = GetModuleFileNameW(nullptr, executable.data(), static_cast<DWORD>(executable.size()));
         if (!count || count == executable.size()) fail("test launcher executable path");
         executable.resize(count);
         executable = (std::filesystem::path(executable).parent_path() / L"termforge_shell.exe").wstring();
-        auto command = quote_argument(executable) + L" --test-owned " + quote_argument(argv[2]) + L" " + quote_argument(argv[3]);
+        auto command = quote_argument(executable) + (hosted?L" --test-owned-hosted-ime ":L" --test-owned ") + quote_argument(argv[2]) + L" " + quote_argument(argv[3]);
         require(command.size() < 32767, "test launcher command is too long");
 
-        Handle output, error, null;
+        Handle output, error, null,child_input,child_gate;
         duplicate_output(STD_OUTPUT_HANDLE, output); duplicate_output(STD_ERROR_HANDLE, error);
         SECURITY_ATTRIBUTES security{sizeof(security), nullptr, TRUE};
         null.reset(CreateFileW(L"NUL", GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
                                &security, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr));
         if (null.get() == INVALID_HANDLE_VALUE) fail("test launcher null input");
+        if(hosted) {
+            if(!CreatePipe(child_input.put(),child_gate.put(),&security,0)) fail("hosted IME inner GO pipe");
+            if(!SetHandleInformation(child_gate.get(),HANDLE_FLAG_INHERIT,0)) fail("hosted IME private GO writer");
+        }
         job.reset(CreateJobObjectW(nullptr, nullptr));
         if (!job.get()) fail("test launcher Job creation");
         JOBOBJECT_EXTENDED_LIMIT_INFORMATION limits{};
@@ -110,12 +129,12 @@ int wmain(int argc, wchar_t** argv) {
         auto attributes = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(storage.data());
         if (!InitializeProcThreadAttributeList(attributes, 1, 0, &size)) fail("test launcher attributes");
         struct Cleanup { LPPROC_THREAD_ATTRIBUTE_LIST value; ~Cleanup() { DeleteProcThreadAttributeList(value); } } cleanup{attributes};
-        const HANDLE inherited[] = {output.get(), error.get(), null.get()};
+        const HANDLE inherited[] = {output.get(), error.get(), hosted?child_input.get():null.get()};
         if (!UpdateProcThreadAttribute(attributes, 0, PROC_THREAD_ATTRIBUTE_HANDLE_LIST,
                 const_cast<HANDLE*>(inherited), sizeof(inherited), nullptr, nullptr)) fail("test launcher handle allowlist");
         STARTUPINFOEXW startup{}; startup.StartupInfo.cb = sizeof(startup); startup.lpAttributeList = attributes;
         startup.StartupInfo.lpDesktop = desktop.data(); startup.StartupInfo.dwFlags = STARTF_USESTDHANDLES;
-        startup.StartupInfo.hStdInput = null.get(); startup.StartupInfo.hStdOutput = output.get(); startup.StartupInfo.hStdError = error.get();
+        startup.StartupInfo.hStdInput = inherited[2]; startup.StartupInfo.hStdOutput = output.get(); startup.StartupInfo.hStdError = error.get();
         PROCESS_INFORMATION info{};
         if (!CreateProcessW(executable.c_str(), command.data(), nullptr, nullptr, TRUE,
                 EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED | CREATE_NO_WINDOW, nullptr, nullptr,
@@ -123,19 +142,26 @@ int wmain(int argc, wchar_t** argv) {
         process.reset(info.hProcess); Handle thread(info.hThread);
         if (!AssignProcessToJobObject(job.get(), process.get())) fail("test launcher child Job assignment");
         if (ResumeThread(thread.get()) == static_cast<DWORD>(-1)) fail("test launcher child resume");
+        if(hosted) {
+            DWORD written=0;
+            if(!WriteFile(child_gate.get(),"GO\n",3,&written,nullptr) || written!=3) fail("hosted IME inner Job GO release");
+            child_gate.reset(); child_input.reset();
+        }
         // Only the child owns these inherited writer handles after startup.
         output.reset(); error.reset(); null.reset();
 
-        const DWORD waited = WaitForSingleObject(process.get(), 45000);
+        const DWORD waited = WaitForSingleObject(process.get(), hosted?50000:45000);
         if (waited == WAIT_TIMEOUT) {
             if (!TerminateJobObject(job.get(), 124)) fail("test launcher timeout termination");
             require(drain(job.get(), process.get(), 3000), "test launcher timed-out Job did not drain");
-            std::cerr << "test launcher child exceeded 45 seconds\n"; return 124;
+            if(hosted) hosted_summary(job.get(),process.get(),argv[2],124,true);
+            std::cerr << "test launcher child exceeded "<<(hosted?50:45)<<" seconds\n"; return 124;
         }
         if (waited != WAIT_OBJECT_0) fail("test launcher child wait");
         DWORD exit_code = 0;
         if (!GetExitCodeProcess(process.get(), &exit_code)) fail("test launcher child exit code");
         require(drain(job.get(), process.get(), 3000), "test launcher child left live Job descendants");
+        if(hosted) hosted_summary(job.get(),process.get(),argv[2],exit_code,false);
         return static_cast<int>(exit_code);
     } catch (const std::exception& error) {
         // Covers assignment failure too: a suspended child may not be in Job.
