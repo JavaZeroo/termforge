@@ -1,0 +1,81 @@
+{
+  "schema": "termforge.r1-clipboard-render-reviewed-facts.v1",
+  "source": {
+    "repository": "JavaZeroo/termforge",
+    "commit": "cc377d43ee7d7f24d628a4ecd034977ca1ef2768",
+    "workflow_run_id": 40000823469,
+    "workflow_run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40000823469",
+    "workflow_run_conclusion": "failure",
+    "windows_job_id": 120576114823,
+    "input_artifact_id": 12521383834,
+    "input_artifact_name": "r1-windows-input",
+    "input_zip_sha256": "b641ef92e5278fb18a0b4537e028380b235658e8c610e0215eaa0d171243de78",
+    "failure_artifact_id": 12521707654,
+    "failure_artifact_name": "failure-windows-2025",
+    "failure_zip_sha256": "9aeef0dcdd3e42a9212208770fdaac21c72d1813a5e828a403a616b0f9d939c2"
+  },
+  "windows_ctest": {
+    "passed": 21,
+    "total": 22,
+    "failed_suite": "shell",
+    "failed_test": "test_system_clipboard_product_read_errors_cancel_and_close",
+    "low_level_paste_system_suite": "passed"
+  },
+  "product_clipboard_read_complete": false,
+  "r1_04_complete": false,
+  "observed_read_case_evidence": {
+    "occupied": {
+      "received_bytes": 270,
+      "exact_256_byte_baseline_plus_retry": true,
+      "error_frame_present": true
+    },
+    "oversize": {
+      "received_bytes": 270,
+      "exact_256_byte_baseline_plus_retry": true,
+      "error_frame_present": true
+    },
+    "cancel": {
+      "received_bytes": 256,
+      "exact_baseline_only": true,
+      "late_or_escape_bytes_in_capture": false,
+      "retry_not_reached": true
+    },
+    "close_capture_present": false,
+    "workflow_manifest_present": false,
+    "stderr": "clipboard owner worker failed",
+    "native_error_code": null,
+    "native_failure_step": null,
+    "timed_out": false,
+    "job_active_after_cleanup": 0,
+    "desktop_gone": true
+  },
+  "source_path_inference": {
+    "classification": "Inferred from the unique error string and fixed-commit control flow; the run did not persist a stage trace.",
+    "case": "cancel",
+    "stage": 6,
+    "preceding_program_gates": [
+      "Delayed owner entered",
+      "Product read was cancelled",
+      "Helper exited and busy cleared",
+      "Receiver remained at the baseline"
+    ],
+    "failing_check": "ClipboardScenarioOwner::released rejected a nonzero worker error before checking the release event.",
+    "cause_unverified": [
+      "WM_RENDERFORMAT release wait timeout",
+      "Render allocation or lock failure",
+      "Late SetClipboardData failure",
+      "Worker message-loop failure"
+    ]
+  },
+  "other_verified_evidence": {
+    "normal_product_paste_rounds": 2,
+    "literal_confirmed_payload_and_cancel_close_prefix_checks": true,
+    "normal_rounds_job_active_after_cleanup": 0,
+    "normal_rounds_desktop_gone": true
+  },
+  "review": {
+    "diagnostic_change_hosted_verified": false,
+    "next_gate": "Record the original native render step and GetLastError, report them when released() rejects, and rerun the same strict product workflow.",
+    "limit": "The source-path inference and unchanged baseline do not prove the complete cancellation workflow, successful late owner publication, the close case, or an explained Win32 failure. No failure has been waived."
+  }
+}

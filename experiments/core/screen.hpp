@@ -234,7 +234,11 @@ public:
     }
     static void quoted(std::ostream& out, const std::string& value) {
         out << '"';
-        for (char c : value) { if (c == '"' || c == '\\') out << '\\'; out << c; }
+        static constexpr char hex[] = "0123456789abcdef";
+        for (unsigned char c : value) {
+            if (c < 32) out << "\\u00" << hex[c >> 4] << hex[c & 15];
+            else { if (c == '"' || c == '\\') out << '\\'; out << static_cast<char>(c); }
+        }
         out << '"';
     }
     void json(std::ostream& out) const {

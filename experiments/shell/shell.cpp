@@ -5,7 +5,11 @@
 #include "keyboard.hpp"
 #include "ime.hpp"
 #include "clipboard_worker.hpp"
+#include "clipboard.hpp"
 #include "paste_prompt.hpp"
+#include "../core/text_selection.hpp"
+#include "../core/text_search.hpp"
+#include "find_bar.hpp"
 #include <atomic>
 #include <optional>
 #include <sstream>
@@ -56,11 +60,36 @@ class ShellWindow {
     std::shared_ptr<tf_shell::PasteTransfer> paste_transfer_;
     std::wstring input_status_;
     int wheel_remainder_ = 0;
+    termforge::TextSelection selection_;
+    std::optional<termforge::TextPosition> selection_anchor_;
+    POINT selection_pointer_{}, last_click_point_{};
+    DWORD last_click_time_ = 0;
+    unsigned click_count_ = 0;
+    bool selecting_ = false;
+    termforge::TextSearch search_;
+    std::unique_ptr<tf_shell::FindBar> find_;
+    std::optional<termforge::SearchNavigation> find_current_;
+    std::deque<termforge::SearchDirection> find_pending_directions_;
+    size_t search_work_budget_ = 4096;
+    std::string find_query_;
+    bool find_initial_ = false, find_terminal_visible_ = true;
     bool observe_output_ = false;
     std::string observed_output_; // Opt-in synthetic probe, capped independently of queue size.
     Clock::time_point start_ = Clock::now(), input_time_, flood_start_;
     bool frame_after_ = false;
     Result result_;
+
+    void selection_down(int x,int y,unsigned forced_clicks=0);
+    void selection_move(int x,int y);
+    void selection_end();
+    void selection_autoscroll();
+    std::optional<termforge::TextPosition> selection_position(int x,int y,bool nearest) const;
+    void selection_overlay(termforge::ViewSnapshot& view);
+    void selection_menu(int x,int y);
+    void poll_find();
+    void navigate_find(termforge::SearchDirection direction);
+    void search_overlay(termforge::ViewSnapshot& view);
+    void search_changed();
 
     void resize_window(int columns, int rows) {
         RECT area{0, 0, renderer_->x(columns), renderer_->y(rows)};
@@ -78,7 +107,9 @@ class ShellWindow {
         const int rows = std::clamp(height/renderer_->cell_height(), 1, 200);
         if (!force && !metrics_dirty_ && columns == parser_.screen.width() && rows == parser_.screen.height()) return;
         auto surface = std::make_unique<Bitmap>(renderer_->x(columns), renderer_->y(rows));
+        selection_end();
         parser_.screen.resize(rows, columns);
+        search_changed();
         dirty_first_ = 0; dirty_last_ = rows;
         surface_ = std::move(surface); metrics_dirty_ = false; publish();
         resize_.request(rows, columns);
@@ -204,6 +235,8 @@ class ShellWindow {
     void begin_close() {
         if (closing_) return;
         closing_ = true;
+        selection_end();
+        find_.reset(); search_.close(); find_current_.reset();
         keyboard_.reset();
         ime_.focus_lost();
         cancel_paste();
@@ -219,7 +252,10 @@ class ShellWindow {
         });
     }
     void publish() {
+        selection_.reconcile(termforge::TextDocument(parser_.screen));
         auto view = viewport_.snapshot(parser_.screen);
+        search_overlay(view);
+        selection_overlay(view);
         if (hwnd_) {
             // Keep the disabled bar allocated too: output must not resize and
             // crop the terminal merely because the first history row arrived.
@@ -329,6 +365,7 @@ class ShellWindow {
     void tick() {
         const auto began = Clock::now(); ++result_.ticks;
         poll_paste();
+        selection_autoscroll();
         size_t batch = 0;
         bool drained = false;
         // Check time between small feeds; also retain a hard byte budget.
@@ -342,13 +379,14 @@ class ShellWindow {
             parser_.feed(bytes); batch += bytes.size();
         } while (batch < 65536 && ms(began) < 4);
         result_.max_consumed_per_tick = (std::max)(result_.max_consumed_per_tick, batch);
-        if (batch) { result_.consumed += batch; publish(); }
+        if (batch) { result_.consumed += batch; search_changed(); publish(); }
+        poll_find();
         session_.check_reader();
         resize_.settled(); // Propagate worker failures even without test scenarios.
         if (closing_ && closed_.load()) {
             require(close_failure_.empty(), close_failure_.c_str());
             if (drained && !clipboard_read_) {
-                parser_.finish(); publish(); UpdateWindow(hwnd_);
+                parser_.finish(); search_changed(); publish(); UpdateWindow(hwnd_);
                 if (!image_path_.empty()) surface_->save(image_path_);
                 DestroyWindow(hwnd_); hwnd_ = nullptr;
             }
@@ -374,10 +412,24 @@ class ShellWindow {
             if(!ime.error.empty()) self->input_status(L"Input method: "+utf16(ime.error.c_str()));
             if(ime.handled) return ime.result;
             if (message == WM_CLOSE) { self->begin_close(); return 0; }
-            if (message == WM_LBUTTONDOWN) { SetFocus(hwnd); return 0; }
+            if (message == WM_LBUTTONDOWN || message == WM_LBUTTONDBLCLK) {
+                self->selection_down(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp)),
+                                     message==WM_LBUTTONDBLCLK?2:0); return 0;
+            }
+            if (message == WM_MOUSEMOVE && self->selecting_) {
+                self->selection_move(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp))); return 0;
+            }
+            if (message == WM_LBUTTONUP && self->selecting_) {
+                self->selection_move(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp)));
+                self->selection_end(); return 0;
+            }
+            if (message == WM_CAPTURECHANGED || message == WM_CANCELMODE) self->selection_end();
+            if (message == WM_CONTEXTMENU) {
+                self->selection_menu(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp))); return 0;
+            }
             if (message == WM_VSCROLL) { self->history_scroll(LOWORD(wp)); return 0; }
             if (message == WM_MOUSEWHEEL) { self->history_wheel(static_cast<short>(HIWORD(wp))); return 0; }
-            if (message == WM_KILLFOCUS) self->keyboard_.reset();
+            if (message == WM_KILLFOCUS) { self->keyboard_.reset(); self->selection_end(); }
             if (message == WM_SETFOCUS && self->parent_) {
                 self->update_ime_caret();
                 SendMessageW(self->parent_,WM_APP+2,0,reinterpret_cast<LPARAM>(self)); return 0;
@@ -414,6 +466,9 @@ class ShellWindow {
             }
             if (message == WM_CHAR) { self->character(static_cast<wchar_t>(wp)); return 0; }
             if (message == WM_PASTE) { self->request_paste(); return 0; }
+            if (message == WM_COPY) { self->request_copy(); return 0; }
+            if (message == WM_MOVE && self->find_) self->find_->reposition();
+            if (message == WM_SHOWWINDOW && !wp && self->find_) self->find_->show(false);
             if (message == WM_SYSCHAR) {
                 const auto mods=key_modifiers();
                 self->character(static_cast<wchar_t>(wp),mods.alt && !mods.alt_graph); return 0;
@@ -422,6 +477,15 @@ class ShellWindow {
                 if(self->ime_.composing()) return DefWindowProcW(hwnd,message,wp,lp);
                 const auto mods=key_modifiers();
                 if(wp==VK_ESCAPE && self->paste_busy()) { self->cancel_paste(); return 0; }
+                if(wp==VK_ESCAPE && !self->selection_.empty()) {
+                    self->selection_end(); self->selection_.clear(); self->publish(); return 0;
+                }
+                if(mods.control && mods.shift && !mods.alt && wp=='C') { self->request_copy(); return 0; }
+                if(mods.control && mods.shift && !mods.alt && wp=='A') { self->select_all_text(); return 0; }
+                if(mods.control && mods.shift && !mods.alt && wp=='F') { self->request_find(); return 0; }
+                if(!mods.control && !mods.alt && wp==VK_F3) {
+                    self->navigate_find(mods.shift?termforge::SearchDirection::previous:termforge::SearchDirection::next); return 0;
+                }
                 if(!mods.alt && ((mods.control && mods.shift && wp=='V') || (mods.shift && !mods.control && wp==VK_INSERT))) {
                     self->request_paste(); return 0;
                 }
@@ -481,7 +545,10 @@ public:
                 const bool paste_key=!mods.alt && ((mods.control && mods.shift && message.wParam=='V') ||
                     (mods.shift && !mods.control && message.wParam==VK_INSERT));
                 const bool cancel_key=message.wParam==VK_ESCAPE && self && self->paste_busy();
-                translate=(self && self->ime_.composing()) || (!paste_key && !cancel_key &&
+                const bool text_key=!mods.alt && mods.control && mods.shift &&
+                    (message.wParam=='C' || message.wParam=='A' || message.wParam=='F');
+                const bool selection_escape=message.wParam==VK_ESCAPE && self && !self->selection_.empty();
+                translate=(self && self->ime_.composing()) || (!paste_key && !cancel_key && !text_key && !selection_escape &&
                     !tf_shell::KeyboardEncoder::key_down(static_cast<uint32_t>(message.wParam),mods).skip_translate);
             }
         }
@@ -493,6 +560,7 @@ public:
     }
     ~ShellWindow() {
         ime_.detach();
+        find_.reset();
         paste_prompt_.reset();
         if(clipboard_read_) clipboard_read_->cancel();
         output_.stop();
@@ -532,6 +600,25 @@ public:
     }
     std::shared_ptr<const tf_shell::PasteTransfer> observed_paste() const { return paste_transfer_; }
     bool composing() const { return ime_.composing(); }
+    bool has_selection() const { return !selection_.empty(); }
+    void request_copy();
+    void select_all_text();
+    void request_find();
+    bool route_find_message(MSG& message) { return find_ && find_->route(message); }
+    HWND find_handle() const { return find_?find_->handle():nullptr; }
+    HWND find_edit_handle() const { return find_?find_->edit_handle():nullptr; }
+    std::optional<termforge::TextRange> current_find_range() const {
+        if(!find_current_) return std::nullopt;
+        const auto value=search_.match(termforge::TextDocument(parser_.screen),find_current_->index);
+        return value?std::optional<termforge::TextRange>(value->range):std::nullopt;
+    }
+    termforge::SearchStatus search_status() const { return search_.status(); }
+    void set_search_work_budget(size_t units) {
+        require(units>=1 && units<=4096,"search work budget outside testable bound"); search_work_budget_=units;
+    }
+    termforge::SelectionCopy selected_text() {
+        return selection_.copy(termforge::TextDocument(parser_.screen),4*1024*1024);
+    }
     const std::wstring& status_text() const { return input_status_; }
     HWND paste_prompt_handle() const { return paste_prompt_?paste_prompt_->handle():nullptr; }
     bool route_paste_message(MSG& message) { return paste_prompt_ && paste_prompt_->route(message); }
@@ -561,6 +648,12 @@ public:
         wchar_t path[32768]{}; const auto count=GetModuleFileNameW(nullptr,path,32768);
         require(count && count<32768,"input receiver location failed");
         const auto client=std::filesystem::path(path).parent_path()/L"shell_input_client.exe";
+        command(L"\""+client.wstring()+L"\" \""+capture.wstring()+L"\"\r");
+    }
+    void start_text_receiver(const std::filesystem::path& capture) {
+        wchar_t path[32768]{}; const auto count=GetModuleFileNameW(nullptr,path,32768);
+        require(count && count<32768,"text receiver location failed");
+        const auto client=std::filesystem::path(path).parent_path()/L"shell_text_client.exe";
         command(L"\""+client.wstring()+L"\" \""+capture.wstring()+L"\"\r");
     }
     bool contains_line(const std::string& text) const { return line_is(text); }
@@ -623,7 +716,7 @@ public:
         ShowWindow(hwnd_, mode_.empty() ? SW_SHOW : SW_SHOWNOACTIVATE); UpdateWindow(hwnd_);
         MSG message{}; BOOL status;
         while ((status = GetMessageW(&message,nullptr,0,0)) > 0) {
-            if(!route_paste_message(message)) dispatch_message(message);
+            if(!route_find_message(message) && !route_paste_message(message)) dispatch_message(message);
         }
         require(status == 0, "message loop failed");
         return collect();
@@ -644,6 +737,8 @@ public:
         return result_;
     }
 };
+#include "text_interactions.hpp"
+#include "search_interactions.hpp"
 #include "workspace.hpp"
 static int application(int argc, char** argv) {
     try {
@@ -651,8 +746,8 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system", "invalid shell test mode");
-            if(mode=="ui-clipboard-system") tf_shell_test::require_hosted_clipboard();
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find", "invalid shell test mode");
+            if(mode=="ui-clipboard-system" || mode=="ui-copy-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
             }
@@ -664,7 +759,7 @@ static int application(int argc, char** argv) {
         wchar_t desktop_name[256]{}; DWORD desktop_size=0;
         require(GetUserObjectInformationW(GetThreadDesktop(GetCurrentThreadId()),UOI_NAME,desktop_name,sizeof(desktop_name),&desktop_size)!=FALSE &&
             std::wstring_view(desktop_name).find(L"TermForgeShell-")==0,"shell test requires the runner-owned desktop");
-        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find") {
             Workspace window(image,mode); return window.run();
         }
         Result r;

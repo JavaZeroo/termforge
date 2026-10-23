@@ -138,6 +138,9 @@ class Workspace {
         if (id==8) add(Group::main);
         if (!rename_ && active() && id==12) active()->request_paste();
         if (!rename_ && active() && id==13) active()->cancel_paste();
+        if (!rename_ && active() && id==14) active()->request_copy();
+        if (!rename_ && active() && id==15) active()->select_all_text();
+        if (!rename_ && active() && id==16) active()->request_find();
         if (!rename_ && active() && id>=9 && id<=11) {
             if(id==11) active()->reset_zoom(); else active()->change_zoom(id==9?25:-25);
             InvalidateRect(window_,nullptr,FALSE);
@@ -291,6 +294,9 @@ class Workspace {
                 const UINT enabled=active() && !rename_ && !active()->closing()?MF_STRING:MF_STRING|MF_GRAYED;
                 AppendMenuW(menu,enabled,12,L"Paste\tCtrl+Shift+V");
                 AppendMenuW(menu,enabled|((!active() || !active()->paste_busy())?MF_GRAYED:0),13,L"Cancel paste\tEscape");
+                AppendMenuW(menu,enabled|((!active() || !active()->has_selection())?MF_GRAYED:0),14,L"Copy\tCtrl+Shift+C");
+                AppendMenuW(menu,enabled,15,L"Select All\tCtrl+Shift+A");
+                AppendMenuW(menu,enabled,16,L"Find\tCtrl+Shift+F");
             }
             POINT at{physical(x),physical(33)}; ClientToScreen(window_,&at);
             const int selected=TrackPopupMenu(menu,TPM_RETURNCMD,at.x,at.y,0,window_,nullptr);
@@ -333,6 +339,8 @@ class Workspace {
     void scenario_keyboard();
     void scenario_paste();
     void scenario_clipboard();
+    void scenario_selection();
+    void scenario_find();
     static std::string size_marker(int outer_width,int rows,ShellWindow* shell) {
         const int bar=GetSystemMetricsForDpi(SM_CXVSCROLL,GetDpiForWindow(shell->handle()));
         return "TF_SIZE_"+std::to_string((outer_width-bar)/12)+"x"+std::to_string(rows);
@@ -401,6 +409,8 @@ class Workspace {
                 else if(self->test_mode_=="ui-keyboard") self->scenario_keyboard();
                 else if(self->test_mode_=="ui-paste" || self->test_mode_=="ui-paste-system") self->scenario_paste();
                 else if(self->test_mode_=="ui-clipboard-system") self->scenario_clipboard();
+                else if(self->test_mode_=="ui-selection" || self->test_mode_=="ui-copy-system") self->scenario_selection();
+                else if(self->test_mode_=="ui-find") self->scenario_find();
                 else self->scenario();
                 return 0;
             }
@@ -451,6 +461,10 @@ public:
         ShowWindow(window_,image_.empty()?SW_SHOW:SW_SHOWNOACTIVATE);
         MSG msg{}; BOOL status;
         while((status=GetMessageW(&msg,nullptr,0,0))>0) {
+            bool find_message=false;
+            for(const auto group:{Group::bottom,Group::main}) for(auto& tab:group_tabs(group))
+                if(tab.shell->route_find_message(msg)) find_message=true;
+            if(find_message) continue;
             bool paste_message=false;
             for(const auto group:{Group::bottom,Group::main}) for(auto& tab:group_tabs(group))
                 if(tab.shell->route_paste_message(msg)) paste_message=true;
@@ -485,7 +499,11 @@ public:
             require(stage_==100 && collected_==2,"workspace paste scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system") {
+        if(!image_.empty() && (test_mode_=="ui-selection" || test_mode_=="ui-copy-system" || test_mode_=="ui-find")) {
+            require(stage_==100 && collected_==2,"workspace selection scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find") {
             require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
@@ -500,3 +518,5 @@ public:
 #include "workspace_keyboard_scenario.hpp"
 #include "workspace_paste_scenario.hpp"
 #include "workspace_clipboard_scenario.hpp"
+#include "workspace_selection_scenario.hpp"
+#include "workspace_find_scenario.hpp"

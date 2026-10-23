@@ -3,6 +3,7 @@
 #include "text_document.hpp"
 #include "text_selection.hpp"
 #include <iostream>
+#include <sstream>
 using namespace termforge;
 static void check(bool value, const char* why) { if (!value) throw std::runtime_error(why); }
 
@@ -126,6 +127,10 @@ static void empty_stale_and_capacity_boundaries() {
 }
 int main() {
     try {
+        std::ostringstream json;
+        Screen::quoted(json,std::string("A\r\n\t\0\"\\",7));
+        check(json.str()=="\"A\\u000d\\u000a\\u0009\\u0000\\\"\\\\\"",
+              "copied multi-line/control strings remain valid JSON without changing text bytes");
         projected_rows_are_owned_and_join_only_real_wraps();
         forward_reverse_copy_and_glyph_boundaries();
         wrap_boundaries_history_and_copy_budget();

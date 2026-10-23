@@ -32,15 +32,22 @@ class ClipboardScenarioOwner {
     std::atomic<DWORD> native_error_{0};
     std::atomic<DWORD> registration_error_{0};
     std::atomic<const char*> step_{"thread-not-started"};
+    std::atomic<const char*> failure_step_{nullptr};
     std::atomic<HWND> window_{nullptr};
     bool delayed_;
     std::thread thread_;
     void step(const char* name) noexcept { step_=name; SetLastError(ERROR_SUCCESS); }
+    void record_failure(const char* name,DWORD native_error,DWORD fallback=ERROR_GEN_FAILURE) noexcept {
+        // Only the fixture worker writes failures. Publish error_ last so the
+        // observer sees the original call and error before teardown APIs run.
+        if(error_) return;
+        failure_step_=name; native_error_=native_error;
+        error_=native_error?native_error:fallback;
+    }
     void check(bool passed) {
         if(passed) return;
         const DWORD native_error=GetLastError();
-        native_error_=native_error;
-        error_=native_error?native_error:ERROR_GEN_FAILURE;
+        record_failure(step_.load(),native_error);
         throw std::runtime_error("clipboard owner native step failed");
     }
     std::string ready_failure(DWORD wait_status) const {
@@ -51,6 +58,13 @@ class ClipboardScenarioOwner {
             " registration_last_error="+std::to_string(registration_error_.load())+
             " wait_status="+std::to_string(wait_status);
     }
+    std::string worker_failure() const {
+        const auto failed=failure_step_.load();
+        return std::string("clipboard owner worker failed: mode=")+(delayed_?"delayed":"occupied")+
+            " step="+(failed?failed:step_.load())+
+            " win32_error="+std::to_string(native_error_.load())+
+            " worker_error="+std::to_string(error_.load());
+    }
     static LRESULT CALLBACK procedure(HWND window,UINT message,WPARAM wp,LPARAM lp) {
         auto* owner=reinterpret_cast<ClipboardScenarioOwner*>(GetWindowLongPtrW(window,GWLP_USERDATA));
         if(message==WM_NCCREATE) {
@@ -58,20 +72,45 @@ class ClipboardScenarioOwner {
             SetWindowLongPtrW(window,GWLP_USERDATA,reinterpret_cast<LONG_PTR>(owner));
         }
         if(message==WM_RENDERFORMAT && owner) {
-            SetEvent(owner->entered_.get());
-            if(WaitForSingleObject(owner->release_.get(),12000)!=WAIT_OBJECT_0) owner->error_=WAIT_TIMEOUT;
+            // No exceptions may escape this WNDPROC. Capture native errors
+            // immediately, before GlobalFree/SetEvent can replace LastError.
+            owner->step("SetEvent-render-entered");
+            if(!SetEvent(owner->entered_.get())) owner->record_failure("SetEvent-render-entered",GetLastError());
+            owner->step("WaitForSingleObject-render-release");
+            const DWORD wait_status=WaitForSingleObject(owner->release_.get(),12000);
+            if(wait_status!=WAIT_OBJECT_0) {
+                const DWORD native_error=wait_status==WAIT_FAILED?GetLastError():ERROR_SUCCESS;
+                owner->record_failure(wait_status==WAIT_TIMEOUT?"WaitForSingleObject-render-release-timeout":
+                    "WaitForSingleObject-render-release-failed",native_error,
+                    wait_status==WAIT_TIMEOUT?WAIT_TIMEOUT:ERROR_GEN_FAILURE);
+            }
             else {
                 constexpr wchar_t late[]=L"LATE_MUST_NOT_SEND";
+                owner->step("GlobalAlloc-render");
                 HGLOBAL memory=GlobalAlloc(GMEM_MOVEABLE,sizeof(late));
-                void* bytes=memory?GlobalLock(memory):nullptr;
-                if(!bytes) { if(memory) GlobalFree(memory); owner->error_=ERROR_NOT_ENOUGH_MEMORY; }
+                if(!memory) owner->record_failure("GlobalAlloc-render",GetLastError(),ERROR_NOT_ENOUGH_MEMORY);
                 else {
-                    std::memcpy(bytes,late,sizeof(late)); GlobalUnlock(memory);
-                    // WM_RENDERFORMAT must supply data without OpenClipboard.
-                    if(!SetClipboardData(CF_UNICODETEXT,memory)) { owner->error_=GetLastError(); GlobalFree(memory); }
+                    owner->step("GlobalLock-render");
+                    void* bytes=GlobalLock(memory);
+                    if(!bytes) {
+                        owner->record_failure("GlobalLock-render",GetLastError(),ERROR_NOT_ENOUGH_MEMORY);
+                        GlobalFree(memory);
+                    } else {
+                        std::memcpy(bytes,late,sizeof(late));
+                        owner->step("GlobalUnlock-render");
+                        GlobalUnlock(memory);
+                        // WM_RENDERFORMAT must supply data without OpenClipboard.
+                        owner->step("SetClipboardData-render");
+                        if(!SetClipboardData(CF_UNICODETEXT,memory)) {
+                            owner->record_failure("SetClipboardData-render",GetLastError());
+                            GlobalFree(memory);
+                        }
+                    }
                 }
             }
-            SetEvent(owner->released_.get()); return 0;
+            owner->step("SetEvent-render-released");
+            if(!SetEvent(owner->released_.get())) owner->record_failure("SetEvent-render-released",GetLastError());
+            return 0;
         }
         if(message==WM_CLOSE) { DestroyWindow(window); return 0; }
         if(message==WM_DESTROY) { if(owner) owner->window_=nullptr; PostQuitMessage(0); return 0; }
@@ -122,12 +161,15 @@ public:
                     step("CloseClipboard-release"); check(CloseClipboard()!=FALSE); opened=false;
                     SetEvent(released_.get());
                 }
-                step("GetMessageW");
-                MSG message{}; BOOL status;
-                while((status=GetMessageW(&message,nullptr,0,0))>0) DispatchMessageW(&message);
-                check(status==0);
+                MSG message{};
+                while(true) {
+                    step("GetMessageW");
+                    const BOOL status=GetMessageW(&message,nullptr,0,0);
+                    if(status<=0) { check(status==0); break; }
+                    DispatchMessageW(&message);
+                }
             } catch(...) {
-                if(!error_) error_=ERROR_GEN_FAILURE;
+                if(!error_) record_failure(step_.load(),GetLastError());
                 if(opened) CloseClipboard();
                 if(window_ && IsWindow(window_)) DestroyWindow(window_);
                 SetEvent(ready_.get()); SetEvent(released_.get());
@@ -145,7 +187,11 @@ public:
     ~ClipboardScenarioOwner() { stop(); }
     bool entered() const { return clipboard_event(entered_.get()); }
     bool released() const {
-        paste_check(!error_,"clipboard owner worker failed");
+        if(error_) {
+            const auto detail=worker_failure();
+            std::cerr<<"[TF-CLIPBOARD-OWNER] "<<detail<<std::endl;
+            throw std::runtime_error(detail);
+        }
         return clipboard_event(released_.get());
     }
     bool occupied() const { return !delayed_ && GetOpenClipboardWindow()==window_; }

@@ -84,7 +84,7 @@ class InventoryReports(unittest.TestCase):
         self.assertIn("- inventory", workflow)
         self.assertIn("- verify", workflow)
         verify_steps = ("Configure probe", "Build native IME probe",
-                        "Prepare fixed Microsoft Pinyin in disposable hosted VM",
+                        "Activate existing fixed Microsoft Pinyin in disposable hosted VM",
                         "Require real composition, candidate position, commit and cancel")
         for name in verify_steps:
             step = workflow.split("- name: " + name, 1)[1].split("- name:", 1)[0]

@@ -13,6 +13,8 @@ from experiments.build_paths import ROOT, binary
 from experiments.shell.run import execute, validate, validate_main_geometry, validate_dpi_geometry
 from experiments.shell.history_checks import validate_history, validate_native_scroll
 from experiments.shell.clipboard_checks import require_hosted_clipboard, validate_clipboard_workflow
+from experiments.shell.selection_checks import validate_selection
+from experiments.shell.find_checks import validate_find, validate_find_workflow
 
 
 @unittest.skipUnless(os.name == "nt", "ConPTY shell requires Windows")
@@ -23,6 +25,77 @@ class ShellTests(unittest.TestCase):
         parent = Path(os.environ.get("TERMFORGE_TEST_ARTIFACTS", ROOT / "build/test-artifacts")) / "shell"
         parent.mkdir(parents=True, exist_ok=True)
         cls.out = Path(tempfile.mkdtemp(prefix="run-", dir=parent))
+
+    def test_mouse_selection_copy_model_zoom_sessions_and_eviction(self):
+        for repeat in range(2):
+            out = self.out / f"selection-{repeat}"
+            record = execute(self.exe, "ui-selection", out)
+            data = json.loads((out / "selection.json").read_text(encoding="utf-8"))
+            for phase, field, value in ((1, "text", "missing"), (2, "focused", False),
+                                        (6, "zoom", 100), (10, "status", "ok")):
+                bad = copy.deepcopy(data); bad["snapshots"][phase]["sessions"][0][field] = value
+                with self.subTest(phase=phase, field=field), self.assertRaises(ValueError):
+                    validate_selection(bad, False, record)
+            for field, value in (("desktop_gone", False), ("job_after", {"active": 1})):
+                bad_record = copy.deepcopy(record); bad_record[field] = value
+                with self.subTest(cleanup=field), self.assertRaises(ValueError):
+                    validate_selection(data, False, bad_record)
+
+    def test_find_real_edit_navigation_unicode_output_isolation_and_cancel(self):
+        for repeat in range(2):
+            out = self.out / f"find-{repeat}"
+            record = execute(self.exe, "ui-find", out)
+            data = json.loads((out / "find.json").read_text(encoding="utf-8"))
+            # These mutations start from actual green HWND/ConPTY evidence.
+            # Internal flags cannot hide wrong revealed text, cell geometry,
+            # focus, stale results or a cleanup failure.
+            for phase, field, wrong in ((0, "query", "wrong"), (7, "case_sensitive", True),
+                                        (7, "focus_control", 4101), (8, "query", "needle"),
+                                        (9, "yellow_cells", 1), (11, "anchor", 1),
+                                        (12, "current", {"line_id": 1}), (13, "terminal_focused", False)):
+                bad = copy.deepcopy(data); bad["snapshots"][phase]["sessions"][0 if phase != 13 else 1][field] = wrong
+                with self.subTest(phase=phase, field=field), self.assertRaises(ValueError):
+                    validate_find(bad, record)
+            for phase, field, wrong in ((0, "line", "TF_FIND_078 needle 中文 e\u0301"),
+                                        (2, "begin", 11), (8, "end", 22), (11, "version", 99999)):
+                bad = copy.deepcopy(data); bad["snapshots"][phase]["sessions"][0]["current"][field] = wrong
+                with self.subTest(current_phase=phase, field=field), self.assertRaises(ValueError):
+                    validate_find(bad, record)
+            bad = copy.deepcopy(data); bad["snapshots"][1]["sessions"][0]["blue_cells"] = 0
+            with self.assertRaises(ValueError):
+                validate_find(bad, record)
+            bad = copy.deepcopy(data); bad["snapshots"][0]["sessions"][0]["current_cells"][12]["bg"] = 4
+            with self.assertRaises(ValueError):
+                validate_find(bad, record)
+            for field, wrong in (("initial_running_checks", 0), ("input_path", "direct-business-callback")):
+                bad = copy.deepcopy(data); bad[field] = wrong
+                with self.subTest(contract=field), self.assertRaises(ValueError):
+                    validate_find(bad, record)
+            bad = copy.deepcopy(data); bad["snapshots"].pop()
+            with self.assertRaises(ValueError):
+                validate_find(bad, record)
+            for field, wrong in (("desktop_gone", False), ("job_after", {"active": 1}),
+                                 ("cleanup_errors", ["injected worker leak"]), ("timed_out", True)):
+                bad_record = copy.deepcopy(record); bad_record[field] = wrong
+                with self.subTest(cleanup=field), self.assertRaises(ValueError):
+                    validate_find(data, bad_record)
+            # Preserve the real samples. Alter copied artifacts to prove that
+            # the raw receiver, not the JSON's accepted-input flags, is checked.
+            for index, (bottom, main) in enumerate(((b"+#", b"needle"), (b"+#", b"x\r"),
+                                                    (b"+#", b"x\x1b"), (b"+#", b"xx"),
+                                                    (b"+#needle", b"x"), (b"# +", b"x"))):
+                bad_out = out / f"negative-bytes-{index}"; bad_out.mkdir()
+                (bad_out / "find.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+                (bad_out / "find-bottom.bin").write_bytes(bottom); (bad_out / "find-main.bin").write_bytes(main)
+                with self.subTest(raw_bytes=index), self.assertRaises(ValueError):
+                    validate_find_workflow(bad_out, record)
+
+    @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and
+                         os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",
+                         "system copy UI gate requires a disposable hosted VM")
+    def test_mouse_selection_to_real_system_clipboard(self):
+        for repeat in range(2):
+            execute(self.exe, "ui-copy-system", self.out / f"copy-system-{repeat}")
 
     def test_real_history_scroll_anchor_eviction_and_hidden_sessions(self):
         for repeat in range(2):
@@ -250,7 +323,7 @@ class ClipboardWindowGateTests(unittest.TestCase):
                             {"GITHUB_ACTIONS": "true", "RUNNER_ENVIRONMENT": "self-hosted"}):
             with self.subTest(environment=environment), self.assertRaises(ValueError):
                 require_hosted_clipboard(environment)
-            for mode in ("ui-paste-system", "ui-clipboard-system"):
+            for mode in ("ui-paste-system", "ui-clipboard-system", "ui-copy-system"):
                 with mock.patch.dict(os.environ, environment, clear=True), mock.patch.object(Path, "mkdir") as mkdir:
                     with self.assertRaises(ValueError):
                         execute(Path("unused.exe"), mode, Path("must-not-create"))

@@ -2,7 +2,7 @@ name: R1 hosted IME inventory and verification
 
 # Disposable VM only. Preparation or observation failures remain failed gates.
 on:
-  # Pushes collect facts only; installation/input requires explicit verify mode.
+  # Pushes collect facts only; activation/input requires explicit verify mode.
   push:
     branches: [main]
     paths:
@@ -10,6 +10,8 @@ on:
       - 'research/ime/inventory_hosted.py'
       - 'research/ime/inventory_worker.ps1'
       - 'research/ime/test_hosted_inventory.py'
+      - 'research/ime/prepare_hosted.ps1'
+      - 'research/ime/test_prepare_hosted.py'
       - 'experiments/conpty/run.py'
   workflow_dispatch:
     inputs:
@@ -42,7 +44,7 @@ jobs:
           python-version: '3.12'
       - name: Check inventory guard, evidence and owned synthetic timeout
         timeout-minutes: 2
-        run: python -m unittest research.ime.test_hosted_inventory -v
+        run: python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_hosted -v
       - name: Read-only bounded hosted IME inventory
         timeout-minutes: 4
         run: python -m research.ime.inventory_hosted --out local/hosted-ime/inventory --query-timeout 60
@@ -54,10 +56,14 @@ jobs:
         if: inputs.mode == 'verify'
         timeout-minutes: 5
         run: cmake --build build --config Release --target termforge_ime_probe --parallel 2
-      - name: Prepare fixed Microsoft Pinyin in disposable hosted VM
+      - name: Activate existing fixed Microsoft Pinyin in disposable hosted VM
         if: inputs.mode == 'verify'
         timeout-minutes: 10
-        run: ./research/ime/prepare_hosted.ps1 -Out "$env:GITHUB_WORKSPACE/local/hosted-ime/environment"
+        run: >-
+          & "$env:SystemRoot/System32/WindowsPowerShell/v1.0/powershell.exe"
+          -NoProfile -NonInteractive -ExecutionPolicy Bypass
+          -File ./research/ime/prepare_hosted.ps1
+          -Out "$env:GITHUB_WORKSPACE/local/hosted-ime/environment"
       - name: Require real composition, candidate position, commit and cancel
         if: inputs.mode == 'verify'
         timeout-minutes: 2

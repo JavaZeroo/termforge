@@ -1,0 +1,286 @@
+{
+  "schema": "termforge-r1-selection-find-review-v1",
+  "scope": "Local controlled Windows selection/find integration evidence; shared-build full regression is recorded separately.",
+  "source_snapshot": {
+    "git_base_sha": "cc377d43ee7d7f24d628a4ecd034977ca1ef2768",
+    "includes_uncommitted_sources": true,
+    "committed_source_sha": null,
+    "sha256_by_path": {
+      "CMakeLists.txt": "4b1ef91c1bf962f9be94f5de58b93905821951e7a733c4fbe9621e8bb0e69e50",
+      "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
+      "experiments/conpty/session.hpp": "d417e496e80fa7fd42b5b062787bf24a5542c45143c4fd3acd17fb8c10d73e81",
+      "experiments/core/history_view.hpp": "bc6218d05cc331ad3f39db545575faf0d100713dc8cb8ad09dbf3ee635c4696d",
+      "experiments/core/screen.hpp": "ce0811aeab1c0b4acbc9a3cf1bfa4c58d71dfa86d847450e23d8f7ac7089e51a",
+      "experiments/core/terminal.hpp": "892997bc2b869a8655d272e9ff049c4102bb1366f1ac709cff8c3d4a41657396",
+      "experiments/core/text_document.hpp": "87efae9d6a9fccb88dd353cdd1be6a570480b6942fabbdf3c9dac2c6370e026a",
+      "experiments/core/text_projection.hpp": "093300058775376b6b9b298c3d65cdcc22ab4cd5d3f12b1789afcd7c66405611",
+      "experiments/core/text_search.hpp": "52fd215ab228b1f124c8deb5c06a601c48bdcffdcb4cc44025406ec37779ffb5",
+      "experiments/core/text_selection.hpp": "02757bae73fe196299fcf3f587e2c8e7b5a2b498c56771e181f8778f3062adb3",
+      "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "experiments/presentation/render.hpp": "9786f12cdf6801a957bba2248cd91c75af6ef438075b9322fef804227ba67b87",
+      "experiments/shell/clipboard.hpp": "d90f103661f8a4a4fe45d678027a7c070232cdc8f4da80c59d218c3f29d93a2a",
+      "experiments/shell/clipboard_scenario_state.hpp": "9c285ecac55fb6b87b57dd8b48dc270691511ae7abc313188f0de3c374715618",
+      "experiments/shell/clipboard_text.hpp": "b050e6da2fb92c080b054e3b1357e9a87484818fb8efdd43b388641f6ff256cd",
+      "experiments/shell/clipboard_worker.cpp": "d1f45e20ea8b63e747c2cbd43d0b0dd3fda2f22502a90af6e1867ac9fc4075c7",
+      "experiments/shell/clipboard_worker.hpp": "7d883bd28f115f986ce07837b619e0985b0ddc8faa7395a8d3919415c889f4a2",
+      "experiments/shell/find_bar.hpp": "ab5c24cd1669850985ea7d3912c837c720c4bb2343bcae788606141c5097b191",
+      "experiments/shell/find_checks.py": "17214f5a9b6a55f58966f774d4a66fafbb6550a739ab124e3cb7b3f6c6fdd839",
+      "experiments/shell/ime.hpp": "470d3e40a0962506ec58237af0593cf0510d6aa34cebb62bae383012d4652ee0",
+      "experiments/shell/keyboard.hpp": "0790ddd0a3b755de5fc22a7bff5c3421b91c19b78dcd7bc0af9de22fa471c3b3",
+      "experiments/shell/layout_state.hpp": "3162cec6cd78e14459427ed8768b7d5f6836ab5eaf05e98dad8cd6762f7f8274",
+      "experiments/shell/native_scroll_gesture.hpp": "603c16f370882899b6954596b1a55dacca524a5a3be9d8e5b3be0b4a0374c241",
+      "experiments/shell/paste.hpp": "f905a693d840256ca7c6a8ffed2601bff41f74e549413f38822db7aceb1c7c82",
+      "experiments/shell/paste_prompt.hpp": "e32e4491daffec42bf6f8a80024b57891afdeae34c2d6ed842f11d434fb916be",
+      "experiments/shell/paste_scenario_state.hpp": "6bb69987e929be34cad64f6b909042444b131f5535db3b889897fdba711d174c",
+      "experiments/shell/queues.hpp": "c77a56e0e91facb4ba1bc9601ec246319c6018195c8f72f9fc59000d8a1dabc7",
+      "experiments/shell/resize.hpp": "ee7bcbf29bb347e11b4cfafd2a7bca288aeca7129154ceb969172ec96a3b2407",
+      "experiments/shell/run.py": "7ee0be2da54a9cba742b14d43f329ac66c98cc2ea4d14aae3536d9a98212021f",
+      "experiments/shell/search_interactions.hpp": "695e52d7d3e677404a0da41862769f0b215694fd47e00b2855fc76c3bd2f1f29",
+      "experiments/shell/sent_message_wait.hpp": "b40558ecb8652695ce8c81b2bda85b7956a5a19a060839e27a406f9ee955293d",
+      "experiments/shell/shell.cpp": "af4bba4fb2eab57afc30961aeba409a62d4fb9c617edb0421dccc919ebb89aca",
+      "experiments/shell/test_launcher.cpp": "e6b634cfdd71ec395c1611127a80e4acdc61b9df9a9d1a17e707cfd6983be3cd",
+      "experiments/shell/test_shell.py": "d1883a5696d6a90b5db133254145cab4fc0f84bdf708a78cc4461b33c9c5dce6",
+      "experiments/shell/text_client.cpp": "cac31c376ecc02539a9679ee9a936d3b9d7329d2ff7ce34361d3ba0dc660bd35",
+      "experiments/shell/text_interactions.hpp": "7a119c243be3051540bcf59fa67de34efc641bdcfee474843fcf53a0143fe5b2",
+      "experiments/shell/ui_font.hpp": "2f5f7a5a447a765f316955086554b4a79371062d3604eb858fd6c62094beea58",
+      "experiments/shell/workspace.hpp": "c9827b4455e53a07d25f04fa5dc67dbb6564697237a31cf55a573fb5790e204c",
+      "experiments/shell/workspace_clipboard_scenario.hpp": "9fb6fe8a5b6f74b28d04628e1a8712d4971258d3da049255c84156c1ea537f12",
+      "experiments/shell/workspace_dpi_scenario.hpp": "ec076e8dd1bf456231b9858acf5e884fae0e9980a94102dddae5eef4a1116b2b",
+      "experiments/shell/workspace_find_scenario.hpp": "b71d820ddddd3c83b5540c68d6ba25e6397aede5379d1da5569979cf32d87101",
+      "experiments/shell/workspace_history_scenario.hpp": "368cd1e9f9e0276f5ac83827ebbf02a301d877caa41399c64936e610f6d1f1e8",
+      "experiments/shell/workspace_interactions.hpp": "e3b17cdc625986438ec11857ba859007289df7c748597fa6c7bd4210ebdbb222",
+      "experiments/shell/workspace_keyboard_scenario.hpp": "f44ebd6a77e1e69b14218c43764b1e5ced6dfefc05252e076e2ce9374b90d900",
+      "experiments/shell/workspace_main_scenario.hpp": "82c9d3b01f152dd18b53656c48a116895e0cb83263f4de67ec853de2a1b432aa",
+      "experiments/shell/workspace_paste_scenario.hpp": "42a322efb0d8db25cec9f5de767221850e2f6a18a5103b882fba18bfd6d79c80",
+      "experiments/shell/workspace_scenarios.hpp": "19a1c6cfb73907223d1b7a811f5febd2c0a76d6828480b45f288c80aacbf79b2",
+      "experiments/shell/workspace_selection_scenario.hpp": "0a87e2104a4263fcc60476b69e58dd245ac76d94c06e466527b10c497adbe376"
+    },
+    "hashing": "SHA256 of raw source working-tree bytes used by the local builds; Git text checkout normalization may change byte representation."
+  },
+  "find_independent_build": {
+    "configuration": "Release",
+    "compiler": "MSVC 19.42.34433",
+    "os": "Windows-11-10.0.26200-SP0",
+    "architecture": "AMD64",
+    "sha256_by_executable": {
+      "termforge_shell.exe": "f3a390e1bd0a86f8e664dbe35fc9119ba9b8379e66706619f4c34066e8067512",
+      "shell_text_client.exe": "4c9ec10fb2e46b231645a5a9e8d3238d0f93f193974dcabd0a14d3d34419f604",
+      "shell_test_launcher.exe": "0bcaea64033ab65920fc83c73d85330873dc96f3450fb42d88932664cd2760b2",
+      "shell_clipboard_reader.exe": "203eaff9d7adc3c8dbca500a11e978d510cd2beef4f37d086ffd760260371b16"
+    }
+  },
+  "find_product": {
+    "mode": "ui-find",
+    "rounds_passed": 3,
+    "unittest_rounds": 2,
+    "negative_mutations_per_unittest_round": 27,
+    "input_path": "PostMessage WM_KEYDOWN/WM_KEYUP to actual native EDIT through the Workspace message loop; native EN_CHANGE and BM_CLICK controls",
+    "fixture": {
+      "initial": {
+        "first": 0,
+        "count": 80,
+        "format": "TF_FIND_{number:03d} needle 中文 é"
+      },
+      "append": {
+        "input": "+",
+        "first": 80,
+        "count": 20
+      },
+      "evict": {
+        "input": "#",
+        "count": 500,
+        "format": "TF_EVICT_{number:03d}"
+      },
+      "input_echo": false,
+      "lifetime": "Owned ConPTY Job; no received command execution"
+    },
+    "literal_oracles": {
+      "initial_current": 79,
+      "Enter": 78,
+      "F3": 79,
+      "F3_wrap": 0,
+      "Shift_F3_wrap": 79,
+      "needle_cell_range": [
+        12,
+        18
+      ],
+      "Chinese_cell_range": [
+        19,
+        23
+      ],
+      "other_session_current": 5,
+      "other_session_query": "TF_FIND_005",
+      "selection": "TF_FIND_079",
+      "selection_style": {
+        "bg": 4,
+        "fg": 15
+      },
+      "current_search_style": {
+        "bg": 11,
+        "fg": 0
+      },
+      "raw_bottom_receiver_hex": "2b23",
+      "raw_main_receiver_hex": "78"
+    },
+    "verified": [
+      "Initial budget 64 exercised multiple batches with no premature current match; then budget 4096",
+      "Case-sensitive no-result and native Match case toggle to ASCII folding",
+      "Immediate replacement by Chinese query and no-result removal of search overlays",
+      "Independent blue selection and yellow search overlay; retained frame equals full redraw",
+      "Actual one-line scroll pauses reading before background append; stable anchor/current and independent other session retained",
+      "500-row output evicts old matches/selection within the 100-history-row cap",
+      "Escape closes the target find controls and restores terminal focus; x delivered exactly once without search/navigation leakage",
+      "Two real sessions and all owned processes/windows closed; Job active zero and desktop deletion"
+    ],
+    "samples": [
+      {
+        "id": "independent-window",
+        "find_json_sha256": "a11aaf72764cbb3e2dd376ac824e374282598ebd13a69aa6610309d8c1062775",
+        "frame_sha256": "d7753c3826ff54230abc136a16c2ae75fac8a08870e4cde1641d2bdb880760cd",
+        "initial_running_current_empty_checks": 33,
+        "phases": 15,
+        "sessions_closed": 2,
+        "job_active_after": 0,
+        "desktop_gone": true
+      },
+      {
+        "id": "unittest-round-0",
+        "find_json_sha256": "20aa56d0a7ae7732df96d7e6b8142655e73814f26db9acd10cd9a74738db859f",
+        "frame_sha256": "d7753c3826ff54230abc136a16c2ae75fac8a08870e4cde1641d2bdb880760cd",
+        "initial_running_current_empty_checks": 33,
+        "phases": 15,
+        "sessions_closed": 2,
+        "job_active_after": 0,
+        "desktop_gone": true
+      },
+      {
+        "id": "unittest-round-1",
+        "find_json_sha256": "fa3dd0c58d34efcbac3d7d97fad4deba782c4d6527691fe47d986e0da87e5c2a",
+        "frame_sha256": "d7753c3826ff54230abc136a16c2ae75fac8a08870e4cde1641d2bdb880760cd",
+        "initial_running_current_empty_checks": 32,
+        "phases": 15,
+        "sessions_closed": 2,
+        "job_active_after": 0,
+        "desktop_gone": true
+      }
+    ],
+    "failed_attempts": [
+      {
+        "id": "initial-window-attempt",
+        "accepted": false,
+        "find_json_sha256": "450c6f9ca5452ce20a997da8505a90541686f2711402559ee413077161b3d0ba",
+        "native_exit_code": 0,
+        "failure": "Verifier assumed EDIT retained focus after native Match case checkbox click",
+        "additional_fixture_precondition_found_by_review": "Last-row find can remain following; explicit scroll pause was required before asserting retained-reading visibility",
+        "classification": "Fixture oracle/precondition corrected; original failed sample preserved without reclassification",
+        "job_active_after_cleanup": 0,
+        "desktop_gone": true
+      }
+    ]
+  },
+  "selection": {
+    "status": "passed-local-window-only",
+    "repeated_window_rounds": 2,
+    "phases_per_round": 12,
+    "system_clipboard": false,
+    "expected_forward_reverse": "ALPHA  tail\r\nBETA 中文 é",
+    "verified": [
+      "Forward/reverse drag and exact Unicode CRLF copy model",
+      "Word/physical-line selection and view-only blue overlay",
+      "Zoom preserves exact selected text",
+      "Independent selection in bottom and main sessions",
+      "Background append retains selection; 500-row history eviction invalidates it",
+      "Invalid copy reports changed text without reading or writing system clipboard",
+      "Two real sessions close, Job zero, owned desktop deleted"
+    ],
+    "samples": [
+      {
+        "id": "shared-full-regression-round-0",
+        "workflow_sha256": "b2156f06430b5661f018e390998ffb2384d0f0d4187411af85304d9c0b48db17",
+        "sample_sha256": "55c0f3aaec67402e73a29589d6e5553f1a67634be9fbd685cb2b6c6a0d824b27",
+        "phases": 12,
+        "sessions_closed": 2,
+        "job_active_after": 0,
+        "desktop_gone": true,
+        "frame_sha256": "188b9b55bee51c1f06502725cfd71044c009c64b3998b5c2153dde7f509bc70e"
+      },
+      {
+        "id": "shared-full-regression-round-1",
+        "workflow_sha256": "b2156f06430b5661f018e390998ffb2384d0f0d4187411af85304d9c0b48db17",
+        "sample_sha256": "7cfb36190074154af6d1353b07d994b27ac5349b1382ac3ce85055ca11009629",
+        "phases": 12,
+        "sessions_closed": 2,
+        "job_active_after": 0,
+        "desktop_gone": true,
+        "frame_sha256": "188b9b55bee51c1f06502725cfd71044c009c64b3998b5c2153dde7f509bc70e"
+      }
+    ],
+    "remaining_gates": [
+      "System CF_UNICODETEXT round trip",
+      "Drag outside viewport with automatic scrolling",
+      "Full shortcut/menu and DPI/context cross validation"
+    ]
+  },
+  "shared_build_full_regression": {
+    "status": "passed",
+    "command": "ctest --test-dir build -C Release --output-on-failure",
+    "ctest_suites_passed": 24,
+    "ctest_suites_total": 24,
+    "wall_seconds": 127.34,
+    "last_test_log_sha256": "d9d4034becc4f319902d1404cdf7b67ad6a30c4e38d735f441bff0670f92d206",
+    "source_snapshot": "same sha256_by_path content as independent build; documentation/result additions excluded",
+    "binaries": {
+      "termforge_shell.exe": "11049b9ade15141e89b14e2cc6893641ce556bd81d3614eacbeb63fd73173ecc",
+      "shell_text_client.exe": "80bc8ee68862dfb559f03b8060a1cd9d45239bdfd36677a70938a02ecee0239e",
+      "shell_test_launcher.exe": "511f2653276251a1fffa0e0cca5f02a930d9adb2e8f4df9f701edbd2eb68dcb4"
+    },
+    "shell_unittest_count": 24,
+    "internal_skips": [
+      {
+        "suite": "shell",
+        "count": 3,
+        "reason": "Disposable-hosted system copy, product clipboard read, and normal system paste UI gates"
+      },
+      {
+        "suite": "paste_system",
+        "count": 1,
+        "reason": "Private window station OpenClipboard denied with Win32 error 5"
+      },
+      {
+        "suite": "research_guards",
+        "count": 1,
+        "reason": "Opt-in pinned-reference failure injection"
+      }
+    ],
+    "find_samples": [
+      {
+        "id": "shared-full-regression-round-0",
+        "workflow_sha256": "14de91f641fb74485813fb047950b4e64c3c3ce7da0de1beda8a2022d183189b",
+        "sample_sha256": "eff3c62be1ff8c725f6f6715d208da20434eb2826256c57ffd2e18edeebaedd3",
+        "phases": 15,
+        "sessions_closed": 2,
+        "job_active_after": 0,
+        "desktop_gone": true,
+        "frame_sha256": "d7753c3826ff54230abc136a16c2ae75fac8a08870e4cde1641d2bdb880760cd"
+      },
+      {
+        "id": "shared-full-regression-round-1",
+        "workflow_sha256": "14de91f641fb74485813fb047950b4e64c3c3ce7da0de1beda8a2022d183189b",
+        "sample_sha256": "201767b41ce6e841bd39279b9d4f0effc69a9df5f3d4d3a98b6a8bbd8a371a88",
+        "phases": 15,
+        "sessions_closed": 2,
+        "job_active_after": 0,
+        "desktop_gone": true,
+        "frame_sha256": "d7753c3826ff54230abc136a16c2ae75fac8a08870e4cde1641d2bdb880760cd"
+      }
+    ]
+  },
+  "limitations": [
+    "Controlled local Windows HWND/ConPTY paths; not physical keyboard or compositor presentation",
+    "No clipboard used by the find scenario; real system copy has a separate gate",
+    "No actual system IME composition/candidates verified by this scenario",
+    "ASCII case folding, no Unicode normalization and non-overlap are explicit initial project policies",
+    "Work units are bounded byte/row operations with bounded rewind/result filtering; not a hard latency or WindTerm performance claim",
+    "This evidence does not close R1 as a whole or establish complete WindTerm/pixel equivalence"
+  ]
+}
