@@ -29,6 +29,20 @@ function Save-Progress([string]$Phase, [string]$State, $ErrorInfo = $null) {
     } else { [IO.File]::Move($temporary, $progressPath) }
 }
 
+function Get-FileSha256([string]$LiteralPath) {
+    # A hosted Windows PowerShell child may not resolve Get-FileHash through
+    # its inherited module path. Stream through the CLR without loading a module.
+    $algorithm = [Security.Cryptography.SHA256]::Create()
+    $stream = $null
+    try {
+        $stream = [IO.File]::OpenRead($LiteralPath)
+        return [BitConverter]::ToString($algorithm.ComputeHash($stream)).Replace('-', '').ToLowerInvariant()
+    } finally {
+        if ($null -ne $stream) { $stream.Dispose() }
+        $algorithm.Dispose()
+    }
+}
+
 function Get-QueryContract($Command) {
     $required = @('Online', 'Name', 'LimitAccess', 'LogPath')
     $candidate = [ordered]@{online_parameter_set = $null; online_parameters = @(); missing_parameters = $required}
@@ -90,7 +104,7 @@ try {
             $report.data = [ordered]@{name = 'ChsIME.exe'; present = [IO.File]::Exists($binary); version = $null; sha256 = $null}
             if ($report.data.present) {
                 $report.data.version = [Diagnostics.FileVersionInfo]::GetVersionInfo($binary).FileVersion
-                $report.data.sha256 = (Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash
+                $report.data.sha256 = Get-FileSha256 $binary
             }
         }
         'tip' {

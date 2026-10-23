@@ -1,0 +1,207 @@
+{
+  "schema": "termforge.r1-hosted-ime-inventory-reviewed-facts.v1",
+  "source": {
+    "repository": "JavaZeroo/termforge",
+    "commit": "a4a03e560c0490afb9848709cecf9243b4db3a14",
+    "workflow_run_id": 39998729460,
+    "workflow_run_url": "https://github.com/JavaZeroo/termforge/actions/runs/39998729460",
+    "artifact_id": 12521436324,
+    "artifact_name": "r1-ime-windows-2025",
+    "artifact_zip_sha256": "bfd2934e7c82a6013f3325d2f43e79ccd98316b8a7a9870c0217a5add13a6151",
+    "reviewed_allowlisted_json_count": 13,
+    "summary_matches_phase_files": true,
+    "local_parsed_json_matches_archive": true
+  },
+  "status": "inventory-failed",
+  "read_only": true,
+  "inventory_complete": false,
+  "environment_prepared": false,
+  "real_ime_workflow_verified": false,
+  "r1_06_complete": false,
+  "successful_query_count": 5,
+  "failed_query_count": 1,
+  "environment": {
+    "image_os": "win25-vs2026",
+    "image_version": "20261021.278.1",
+    "os": {
+      "caption": "Microsoft Windows Server 2025 Datacenter",
+      "version": "10.0.26100",
+      "build": "26100",
+      "installation_type": "Server",
+      "edition": "ServerDatacenter",
+      "ubr": 33650
+    },
+    "powershell": {
+      "version": "5.1.26100.33648",
+      "edition": "Desktop",
+      "process_bitness": 64,
+      "clr_version": "4.0.30319.42000"
+    }
+  },
+  "observations": {
+    "dism_query_contract": {
+      "online_parameter_set": "Online",
+      "online_parameters": [
+        "Online",
+        "Name",
+        "LimitAccess",
+        "LogPath"
+      ],
+      "missing_parameters": [],
+      "module_version": "3.0"
+    },
+    "ime_binary": {
+      "name": "ChsIME.exe",
+      "present": true,
+      "version": "10.0.26100.33648 (WinBuild.160101.0800)",
+      "sha256": null,
+      "error": {
+        "kind": "CommandNotFoundException",
+        "hresult": -2146233087
+      }
+    },
+    "tip": {
+      "input_profile": "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+      "machine_registered": true,
+      "user_registered": false,
+      "user_listed": false
+    },
+    "capability": {
+      "online_parameter_set": "Online",
+      "online_parameters": [
+        "Online",
+        "Name",
+        "LimitAccess",
+        "LogPath"
+      ],
+      "missing_parameters": [],
+      "module_version": "3.0",
+      "capabilities": [
+        {
+          "name": "Language.Basic~~~zh-CN~0.0.1.0",
+          "state": "NotPresent"
+        }
+      ],
+      "exposed": true
+    }
+  },
+  "operations": [
+    {
+      "operation": "os",
+      "status": "complete",
+      "elapsed_seconds": 0.797,
+      "timeout_seconds": 20,
+      "returncode": 0,
+      "error": null,
+      "worker_progress": {
+        "phase": "os",
+        "state": "ended",
+        "error": null
+      },
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "cleanup_error_count": 0,
+      "evidence_error_count": 0
+    },
+    {
+      "operation": "powershell",
+      "status": "complete",
+      "elapsed_seconds": 0.328,
+      "timeout_seconds": 20,
+      "returncode": 0,
+      "error": null,
+      "worker_progress": {
+        "phase": "powershell",
+        "state": "ended",
+        "error": null
+      },
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "cleanup_error_count": 0,
+      "evidence_error_count": 0
+    },
+    {
+      "operation": "dism",
+      "status": "complete",
+      "elapsed_seconds": 1.14,
+      "timeout_seconds": 20,
+      "returncode": 0,
+      "error": null,
+      "worker_progress": {
+        "phase": "resolve-dism-command",
+        "state": "ended",
+        "error": null
+      },
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "cleanup_error_count": 0,
+      "evidence_error_count": 0
+    },
+    {
+      "operation": "ime-binary",
+      "status": "failed",
+      "elapsed_seconds": 0.562,
+      "timeout_seconds": 20,
+      "returncode": 1,
+      "error": {
+        "kind": "worker-failed",
+        "code": 1
+      },
+      "worker_progress": {
+        "phase": "ime-binary",
+        "state": "failed",
+        "error": {
+          "kind": "CommandNotFoundException",
+          "hresult": -2146233087
+        }
+      },
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "cleanup_error_count": 0,
+      "evidence_error_count": 0
+    },
+    {
+      "operation": "tip",
+      "status": "complete",
+      "elapsed_seconds": 0.813,
+      "timeout_seconds": 20,
+      "returncode": 0,
+      "error": null,
+      "worker_progress": {
+        "phase": "read-user-language-list",
+        "state": "ended",
+        "error": null
+      },
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "cleanup_error_count": 0,
+      "evidence_error_count": 0
+    },
+    {
+      "operation": "capability",
+      "status": "complete",
+      "elapsed_seconds": 7.062,
+      "timeout_seconds": 60,
+      "returncode": 0,
+      "error": null,
+      "worker_progress": {
+        "phase": "query-local-zh-CN-basic",
+        "state": "ended",
+        "error": null
+      },
+      "process_reaped": true,
+      "job_active_after_cleanup": 0,
+      "cleanup_error_count": 0,
+      "evidence_error_count": 0
+    }
+  ],
+  "review": {
+    "stream_hash_fix_hosted_verified": false,
+    "scope": "Read-only inventory; no language installation, activation, composition, candidate UI, commit, or cancel was performed.",
+    "hash_failure": "ChsIME.exe presence and version were observed before the hash operation failed with CommandNotFoundException; its SHA-256 remains unknown.",
+    "fix_under_validation": "The source change replaces Get-FileHash with a bounded CLR stream and disposes the stream and SHA256 instance; local synthetic abc-file hashing and file-release tests pass, with hosted validation still pending.",
+    "readiness_limit": "Machine TIP registration and a present binary do not establish current-user registration or a usable IME; Language.Basic zh-CN is NotPresent.",
+    "cleanup_limit": "All six owned workers were reaped and each Job reported zero active processes; this does not establish global servicing idleness.",
+    "timing_limit": "Elapsed times identify query diagnostics only and are not terminal performance measurements."
+  }
+}

@@ -76,6 +76,14 @@ build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 
 `--fixture unicode` 使用 800,000 字节的中文、组合标记、红色前景和编号记录；期望格位及样式同样直接构造，不调用待测解析器。
 
+## 文字投影与选择
+
+`text_document.hpp` 提供同线程、短生命周期的只读适配；返回行文本与跨度均按值持有，以行身份/版本和物理半开列范围表达位置，不向消费方暴露可变行引用。`text_selection.hpp` 为每个会话独立持有选区，合并真实软折行、以 CRLF 复制硬行边界并保留显式空格；不拆开宽字和有限组合标记。
+
+选择快照最多 8 MiB，调用者另设复制字节上限；超限全拒绝、不返回截断 UTF-8，纯未写 padding 返回空选择结果。首版词规则将 ASCII 字母/数字/下划线/连字符及非 ASCII 基字归为词，空格成组，其他 ASCII 标点单独选择；这是项目策略，不是完整 Unicode 分词或 WindTerm 所有词边界的证明。非破坏性尺寸变化仅在投影、跨度和换行完全相同后刷新版本；覆盖、裁剪和淘汰使选区失效。
+
+复验入口为 `ctest --test-dir build -C Release -R '^selection_core$' --output-on-failure`。纯模块通过不代替 [#13](https://github.com/JavaZeroo/termforge/issues/13) 的鼠标、窗口、系统剪贴板和跨会话验收。
+
 ## 历史回放结果与限制
 
 2026-10-22 的 v0.2 ASCII/Unicode 回放满足当时的字节、画面、历史、样式及背压检查。结果按版本保留，不代表当前提交重新执行了同一批测量：

@@ -289,13 +289,28 @@ function Save-Progress([string]$Phase, [string]$State, $ErrorInfo = $null) {
     $script:states += $State
     if ($State -eq 'ended') { throw 'Synthetic final progress write failure' }
 }
-$body = $ast.Find({param($node) $node -is [Management.Automation.Language.TryStatementAst]}, $true)
-. ([scriptblock]::Create($body.Extent.Text))
+$body = @($ast.EndBlock.Statements | Where-Object { $_ -is [Management.Automation.Language.TryStatementAst] })
+if ($body.Count -ne 1) { throw 'Expected one top-level worker operation boundary' }
+. ([scriptblock]::Create($body[0].Extent.Text))
 @{status=$report.status; error=$report.data.error; states=$script:states} | ConvertTo-Json -Depth 8 -Compress
 """)
         self.assertEqual(result["status"], "failed")
         self.assertEqual(result["states"], ["started", "ended", "failed"])
         self.assertIn("kind", result["error"])
+
+    def test_file_hash_uses_stream_without_optional_powershell_commands(self):
+        result = self.pure_script(r"""
+$definition = $ast.Find({param($node) $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+    $node.Name -eq 'Get-FileSha256'}, $true)
+. ([scriptblock]::Create($definition.Extent.Text))
+$path = [IO.Path]::Combine($PSScriptRoot, 'synthetic.bin')
+[IO.File]::WriteAllBytes($path, [byte[]]@(97,98,99))
+$hash = Get-FileSha256 $path
+[IO.File]::Move($path, $path + '.moved')
+@{hash=$hash; released=[IO.File]::Exists($path + '.moved')} | ConvertTo-Json -Compress
+""")
+        self.assertEqual(result["hash"], "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
+        self.assertTrue(result["released"])
 
     def test_real_progress_file_can_be_replaced_in_windows_powershell(self):
         result = self.pure_script(r"""

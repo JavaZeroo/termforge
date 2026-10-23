@@ -1,0 +1,57 @@
+{
+  "schema": "termforge-r1-clipboard-hosted-review-v1",
+  "source_sha": "a4a03e560c0490afb9848709cecf9243b4db3a14",
+  "run_id": 39998729453,
+  "run_url": "https://github.com/JavaZeroo/termforge/actions/runs/39998729453",
+  "windows_job_id": 120568963234,
+  "conclusion": "failure",
+  "ctest": {
+    "passed": 19,
+    "total": 20,
+    "failed_suite": "shell"
+  },
+  "artifact": {
+    "id": 12521900163,
+    "name": "r1-windows-input",
+    "size_bytes": 854053,
+    "sha256": "41f82b7646a8d52248f680c995c1e0761a0fe2428356b28a7cd95af592267f94"
+  },
+  "low_level": {
+    "system_clipboard_private_station": true,
+    "transport_oracles_verified": true,
+    "clipboard_oracles_verified": true,
+    "job_active_after": 0
+  },
+  "normal_product_paste": {
+    "rounds_verified": 2,
+    "receiver_prefix_oracles_verified": true,
+    "job_active_after_each": 0,
+    "desktop_gone_each": true
+  },
+  "read_phase_product": {
+    "complete": false,
+    "occupied_receiver": "256 B + RETRY_occupied",
+    "oversize_receiver": "256 B + RETRY_oversize",
+    "cancel_receiver": "256 B baseline only",
+    "close_executed": false,
+    "final_manifest_present": false,
+    "failed_phase": "prepare-owner before-product-paste",
+    "owner": {
+      "mode": "delayed",
+      "step": "EmptyClipboard",
+      "win32_error": 0,
+      "worker_error": 0,
+      "registration_last_error": 0,
+      "wait_status": 258
+    },
+    "exit_code": 2,
+    "timed_out": false,
+    "job_active_after_cleanup": 0,
+    "desktop_gone": true
+  },
+  "hypothesis": {
+    "status": "not_yet_proven_by_clipboard_runtime",
+    "mechanism": "UI thread waits for worker ready while worker EmptyClipboard synchronously notifies previous UI clipboard owner via WM_DESTROYCLIPBOARD"
+  },
+  "issue_14_complete": false
+}

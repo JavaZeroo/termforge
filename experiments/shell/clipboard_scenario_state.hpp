@@ -2,6 +2,7 @@
 #pragma once
 #include "clipboard.hpp"
 #include "paste_scenario_state.hpp"
+#include "sent_message_wait.hpp"
 #include <atomic>
 #include <cstdlib>
 
@@ -132,7 +133,7 @@ public:
                 SetEvent(ready_.get()); SetEvent(released_.get());
             }
         });
-        const DWORD ready_status=WaitForSingleObject(ready_.get(),3000);
+        const DWORD ready_status=wait_event_with_sent_messages(ready_.get(),3000);
         if(ready_status!=WAIT_OBJECT_0 || error_) {
             const auto detail=ready_failure(ready_status);
             // Preserve the original blocked/failed call even if bounded stop
