@@ -86,6 +86,8 @@ Hosted 两次 `menu-wrap` 场景均协商为 63 列，发送字节 SHA-256、选
 
 以上足以明确原产品默认 Cancel/Enter 取消与已观察的参考 Return 不一致，R1-07 应对齐并重新验证；rename、busy/关闭及物理输入行为不由本观察推出。
 
+增强导出的 [40025079604](https://github.com/JavaZeroo/termforge/actions/runs/40025079604) 仍记失败，见[独立失败事实](r1-text/hosted-context-40025079604-failure.json)：两轮原行为门槛通过，但安全导出将菜单操作改变的非 Find 选区误列为额外要求，未产出有序事件。修复仅保留五个 Find 检查点实际需要的选区，省略其他阶段的无关文本；行为及事件顺序门槛不变，新运行通过前不扩大上述验收范围。
+
 ## 验收门槛与合同边界
 
 本次两轮 `text.complete=true`、两轮 `menu_verified=true`，两组重复门槛均通过。`menu-wrap` 摘要的 `complete=false` 是有意保留的场景边界：单独菜单场景不含完整文字导航合同，必须与 `text` 合并验收。白名单 diagnostic 的 `validated=false` 表示其为观察导出，不是最终门槛结果；验收读取对应 strict summary。

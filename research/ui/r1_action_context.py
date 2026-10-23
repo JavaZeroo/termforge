@@ -145,11 +145,15 @@ def export_context(identity, evidence, cleanup, profile, script_digest, peer):
         if kind == 'snapshot':
             require(row.get('focus') in ('ComboBox', 'ScintillaEditBase', 'QPushButton'), 'Unexpected public focus')
             require(row.get('modal') in (None, 'PasteDialog'), 'Unexpected public modal class')
-            selection = json.loads(row['text_state'])['selection']
-            require(selection in ('', 'LEFTRIGHT', '中文'), 'Unexpected public terminal selection')
             value = {k: row[k] for k in ('phase', 'focus', 'modal')}
-            value.update(kind=kind, text_state=json.dumps({'selection': selection}, ensure_ascii=False),
-                         peer={'received_hex': row['peer']['received_hex']})
+            value.update(kind=kind, peer={'received_hex': row['peer']['received_hex']})
+            # Only Find checkpoints consume terminal selection in the oracle.
+            # Context-menu gestures can change other selections; do not export
+            # unnecessary text or invent an extra behavior requirement for it.
+            if row['phase'] in PHASES[1:6]:
+                selection = json.loads(row['text_state'])['selection']
+                require(selection in ('LEFTRIGHT', '中文'), 'Unexpected public terminal selection')
+                value['text_state'] = json.dumps({'selection': selection}, ensure_ascii=False)
         elif kind in fields:
             value = {'kind': kind, **{k: row[k] for k in fields[kind]}}
             require(all(isinstance(value[k], str) and value[k] in allowed_text for k in fields[kind]), 'Unexpected public synthetic text')

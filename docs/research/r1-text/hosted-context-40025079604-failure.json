@@ -1,0 +1,51 @@
+{
+  "schema": "termforge-reference-export-failure-audit-v1",
+  "run_id": 40025079604,
+  "head_sha": "bf4c2af8a410fc20f1b2261f405a61f04a400d32",
+  "workflow_conclusion": "failure",
+  "artifact_id": 12532572013,
+  "artifact_sha256": "sha256:cbb7147b2bbf7ce3adf69a41ecb2ad1b951f5dfdec9af4deb35e82a222d8e316",
+  "api_binding_digest_and_exact_12_file_allowlist_verified": true,
+  "original_error": "ValueError: Unexpected public terminal selection",
+  "classification": "export allowlist omitted non-Find terminal selection changed by the context-menu gesture",
+  "rounds": [
+    {
+      "round": 1,
+      "evidence_id": "ev_db3d944652fc16f56da7e477038c1306217e14c2e196306b86c6606051992ff3",
+      "summary_context_verified_reported": true,
+      "export_result": "failed",
+      "affected_phases": [
+        "paste-confirm",
+        "paste-enter",
+        "paste-settled"
+      ],
+      "selection_is_literal_fixture_first_physical_row": true,
+      "owned_active": 0
+    },
+    {
+      "round": 2,
+      "evidence_id": "ev_261667e6645a32e0b97fc36e24c8baec8ca32939019ea531c5ed19e07a527664",
+      "summary_context_verified_reported": true,
+      "export_result": "failed",
+      "affected_phases": [
+        "paste-confirm",
+        "paste-enter",
+        "paste-settled"
+      ],
+      "selection_is_literal_fixture_first_physical_row": true,
+      "owned_active": 0
+    }
+  ],
+  "minimal_fix": "Export terminal selection only for five Find checkpoints consumed by the oracle; omit unconsumed text_state for other checkpoints. No behavior oracle weakened.",
+  "regression": {
+    "red_log": "export-selection-red.log",
+    "green_log": "export-selection-green.log",
+    "tests": 30,
+    "skipped": 1
+  },
+  "limitations": [
+    "This run remains failed; no ordered evidence was published.",
+    "No reconstruction of raw message interleaving or runtime script bytes from the 12 sanitized files.",
+    "Previous accepted Return conclusion remains limited to its separately audited run; no replacement success is claimed here."
+  ]
+}

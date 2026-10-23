@@ -97,6 +97,24 @@ class ContextEvidenceTests(unittest.TestCase):
             if row.get('kind') == 'find_edit' and row.get('phase') == 'find-typed': row['selected'] = 'PRIVATE_MARKER'
         with self.assertRaisesRegex(ValueError, 'synthetic text'): export_context(*args)
 
+    def test_public_export_omits_unconsumed_paste_terminal_selection(self):
+        args = self.public_fixture()
+        # CI 40025079604 observed the menu gesture selecting the first physical
+        # fixture row. These phases' oracle uses modal/focus/peer, not selection.
+        selected = 'TF-SOFT:' + 's' * (63 - 12) + 'LEFT\r\n'
+        for message in args[1]['data']['evidence']['normalized_result']['messages']:
+            row = message['payload']
+            if row.get('kind') == 'snapshot' and row.get('phase') in ('paste-confirm', 'paste-enter', 'paste-settled'):
+                row['text_state'] = json.dumps({'selection': selected})
+        expected = summarize_context(*args)
+        public = export_context(*args)
+        self.assertEqual(replay_context(public), expected)
+        self.assertNotIn('TF-SOFT:', json.dumps(public))
+        for message in public['evidence']['data']['evidence']['normalized_result']['messages']:
+            row = message['payload']
+            if row.get('kind') == 'snapshot' and row['phase'] not in PHASES[1:6]:
+                self.assertNotIn('text_state', row)
+
     def test_public_export_rejects_unknown_initial_modal_class(self):
         args = self.public_fixture()
         rows = args[1]['data']['evidence']['normalized_result']['messages']
