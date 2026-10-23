@@ -1,0 +1,1971 @@
+{
+  "schema": "termforge-r1-eight-session-regression-evidence-v1",
+  "status": "passed",
+  "source_commit": "72fe231b5a8a36ee5ce963e11622d959721dd7d4",
+  "scope": "Existing bounded single-feature regressions at the same source; cannot be spliced into E3 acceptance.",
+  "main_ci_run": 40040980384,
+  "action_and_paste": {
+    "schema": "termforge-r107-actions-hosted-audit-v1",
+    "status": "passed",
+    "head": "72fe231b5a8a36ee5ce963e11622d959721dd7d4",
+    "run_id": 40040980384,
+    "artifact_id": 12539273203,
+    "artifact_digest": "sha256:547006b7272bd53deffa32eed81106823038d0a89ba321b2165397b3bdb49153",
+    "source_oracle_sha256": {
+      "experiments/shell/action_checks.py": "c1235b0ed75fa90e9b7065b22e0101ad7ef5d061cbb20b442f17cea92dd079c6",
+      "experiments/shell/paste_checks.py": "f37db2ada88816e6936563d5155578a31276161cae11c99c27bc4f0253b053d6"
+    },
+    "source_identity_normalization": {
+      "experiments/shell/shell.cpp": "whole-file-checkout-CRLF",
+      "experiments/shell/workspace.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/text_actions.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/text_interactions.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/search_interactions.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/workspace_interactions.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/edit_actions.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/find_bar.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/paste_prompt.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/workspace_actions_scenario.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/menu_gesture.hpp": "whole-file-checkout-CRLF",
+      "experiments/shell/text_client.cpp": "whole-file-checkout-CRLF",
+      "experiments/shell/test_launcher.cpp": "whole-file-checkout-CRLF",
+      "experiments/shell/action_checks.py": "git-blob-bytes",
+      "experiments/shell/test_actions.py": "git-blob-bytes",
+      "experiments/shell/run.py": "git-blob-bytes",
+      "CMakeLists.txt": "whole-file-checkout-CRLF",
+      ".github/workflows/build.yml": "git-blob-bytes"
+    },
+    "binary_sha256_recorded_by_hosted_test": {
+      "termforge_shell.exe": "02de7c649c6982283b91dc8f03f6592580b1f597a0e9ca4c3e21963e0b252eb5",
+      "shell_test_launcher.exe": "08c0616e528fcc84715cee06ea747f767d217766eab3cc2b7e9121a8c4c3dbb2",
+      "shell_text_client.exe": "f3e97cac8a2750e191ea47125a54086401af97265d31730a7d4bbcd838a96096",
+      "shell_clipboard_reader.exe": "c443a70ae3c8154efbaaaa486ece6c298f775b2897606d1f327c6031ec27edac"
+    },
+    "binaries_available_for_independent_rehash": false,
+    "rounds": [
+      {
+        "case": "ui-actions",
+        "round": "local-0",
+        "phases": 26,
+        "actual_terminal_popups": 4,
+        "actual_session_popups": 3,
+        "system_clipboard": false,
+        "raw_input_isolated": true,
+        "cleanup_verified": true,
+        "native_find_clipboard_verified": false,
+        "complete_r1_07": false,
+        "geometry_frames_sha256": {
+          "geometry-144": "4e0ecf88fc57aff5ba7d21295fdfccbf4adf28cf065b5a7c7f2f4699ca0211d4",
+          "geometry-192": "d4031e575237e2f3af66835a4c598639db5d94df613eec522d636be0b41c5300",
+          "geometry-96": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32",
+          "geometry-zoom75": "ac0e73b44246f12c68c7bf8336e7465450c1fd30cf46fd327ba1b0eaeb37a058",
+          "geometry-restored": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32"
+        },
+        "raw_main_hex": "7e2d78",
+        "raw_bottom_hex": "",
+        "journal_matches_manifest": true,
+        "native_find_clipboard": [],
+        "geometry": [
+          {
+            "phase": "geometry-144",
+            "display_dpi": 144,
+            "font_height": -18,
+            "current_range": {
+              "id": 95,
+              "version": 53,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-192",
+            "display_dpi": 192,
+            "font_height": -24,
+            "current_range": {
+              "id": 95,
+              "version": 79,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-96",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 106,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-zoom75",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 133,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-restored",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 160,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          }
+        ],
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "frame": {
+          "width": 1360,
+          "height": 860,
+          "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+        }
+      },
+      {
+        "case": "ui-actions",
+        "round": "local-1",
+        "phases": 26,
+        "actual_terminal_popups": 4,
+        "actual_session_popups": 3,
+        "system_clipboard": false,
+        "raw_input_isolated": true,
+        "cleanup_verified": true,
+        "native_find_clipboard_verified": false,
+        "complete_r1_07": false,
+        "geometry_frames_sha256": {
+          "geometry-144": "4e0ecf88fc57aff5ba7d21295fdfccbf4adf28cf065b5a7c7f2f4699ca0211d4",
+          "geometry-192": "d4031e575237e2f3af66835a4c598639db5d94df613eec522d636be0b41c5300",
+          "geometry-96": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32",
+          "geometry-zoom75": "ac0e73b44246f12c68c7bf8336e7465450c1fd30cf46fd327ba1b0eaeb37a058",
+          "geometry-restored": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32"
+        },
+        "raw_main_hex": "7e2d78",
+        "raw_bottom_hex": "",
+        "journal_matches_manifest": true,
+        "native_find_clipboard": [],
+        "geometry": [
+          {
+            "phase": "geometry-144",
+            "display_dpi": 144,
+            "font_height": -18,
+            "current_range": {
+              "id": 95,
+              "version": 53,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-192",
+            "display_dpi": 192,
+            "font_height": -24,
+            "current_range": {
+              "id": 95,
+              "version": 79,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-96",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 106,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-zoom75",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 133,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-restored",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 160,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          }
+        ],
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "frame": {
+          "width": 1360,
+          "height": 860,
+          "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+        }
+      },
+      {
+        "case": "ui-actions-system",
+        "round": "system-0",
+        "phases": 36,
+        "actual_terminal_popups": 7,
+        "actual_session_popups": 3,
+        "system_clipboard": true,
+        "raw_input_isolated": true,
+        "cleanup_verified": true,
+        "native_find_clipboard_verified": true,
+        "complete_r1_07": false,
+        "geometry_frames_sha256": {
+          "geometry-144": "4e0ecf88fc57aff5ba7d21295fdfccbf4adf28cf065b5a7c7f2f4699ca0211d4",
+          "geometry-192": "d4031e575237e2f3af66835a4c598639db5d94df613eec522d636be0b41c5300",
+          "geometry-96": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32",
+          "geometry-zoom75": "ac0e73b44246f12c68c7bf8336e7465450c1fd30cf46fd327ba1b0eaeb37a058",
+          "geometry-restored": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32"
+        },
+        "raw_main_hex": "534849465420e4b8ade696872065cc8144454641554c545f454e54455220e4b8ade696870d4e45585443545820e4b8ade696872065cc810d4e4558547e2d78",
+        "raw_bottom_hex": "",
+        "journal_matches_manifest": true,
+        "native_find_clipboard": [
+          {
+            "query": "q",
+            "selection": [
+              0,
+              1
+            ],
+            "selected": "q",
+            "focused_before_escape": true,
+            "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+            "clipboard_before_paste": null,
+            "refocus_before": null,
+            "raw_before": {
+              "bottom": "",
+              "main": ""
+            },
+            "returned_terminal": false,
+            "editor_gone": false,
+            "phase": "system-find-copy",
+            "entry": "queued-native-Find-EDIT-Ctrl-A-Ctrl-C",
+            "clipboard": "q",
+            "same_editor_identity": true
+          },
+          {
+            "query": "中文",
+            "selection": [
+              2,
+              2
+            ],
+            "selected": "",
+            "focused_before_escape": true,
+            "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+            "clipboard_before_paste": "中文",
+            "refocus_before": null,
+            "raw_before": {
+              "bottom": "",
+              "main": ""
+            },
+            "returned_terminal": false,
+            "editor_gone": false,
+            "phase": "system-find-paste",
+            "entry": "queued-native-Find-EDIT-Ctrl-V",
+            "clipboard": "中文",
+            "same_editor_identity": true
+          },
+          {
+            "query": "中文",
+            "selection": [
+              0,
+              2
+            ],
+            "selected": "中文",
+            "focused_before_escape": true,
+            "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+            "clipboard_before_paste": "中文",
+            "refocus_before": [
+              2,
+              2
+            ],
+            "raw_before": {
+              "bottom": "",
+              "main": ""
+            },
+            "returned_terminal": true,
+            "editor_gone": true,
+            "phase": "system-find-refocus",
+            "entry": "queued-Ctrl-Shift-F-Chinese-and-Escape",
+            "clipboard": "中文",
+            "same_editor_identity": true
+          }
+        ],
+        "geometry": [
+          {
+            "phase": "geometry-144",
+            "display_dpi": 144,
+            "font_height": -18,
+            "current_range": {
+              "id": 95,
+              "version": 53,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-192",
+            "display_dpi": 192,
+            "font_height": -24,
+            "current_range": {
+              "id": 95,
+              "version": 79,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-96",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 106,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-zoom75",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 133,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-restored",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 160,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          }
+        ],
+        "job_after": {
+          "active": 0,
+          "total": 17,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 17,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "frame": {
+          "width": 1360,
+          "height": 860,
+          "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+        }
+      },
+      {
+        "case": "ui-actions-system",
+        "round": "system-1",
+        "phases": 36,
+        "actual_terminal_popups": 7,
+        "actual_session_popups": 3,
+        "system_clipboard": true,
+        "raw_input_isolated": true,
+        "cleanup_verified": true,
+        "native_find_clipboard_verified": true,
+        "complete_r1_07": false,
+        "geometry_frames_sha256": {
+          "geometry-144": "4e0ecf88fc57aff5ba7d21295fdfccbf4adf28cf065b5a7c7f2f4699ca0211d4",
+          "geometry-192": "d4031e575237e2f3af66835a4c598639db5d94df613eec522d636be0b41c5300",
+          "geometry-96": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32",
+          "geometry-zoom75": "ac0e73b44246f12c68c7bf8336e7465450c1fd30cf46fd327ba1b0eaeb37a058",
+          "geometry-restored": "50c1f86cf906f4b8d6de3cf5015dfd9b9ffc93633f9233854c83131fb9c8ea32"
+        },
+        "raw_main_hex": "534849465420e4b8ade696872065cc8144454641554c545f454e54455220e4b8ade696870d4e45585443545820e4b8ade696872065cc810d4e4558547e2d78",
+        "raw_bottom_hex": "",
+        "journal_matches_manifest": true,
+        "native_find_clipboard": [
+          {
+            "query": "q",
+            "selection": [
+              0,
+              1
+            ],
+            "selected": "q",
+            "focused_before_escape": true,
+            "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+            "clipboard_before_paste": null,
+            "refocus_before": null,
+            "raw_before": {
+              "bottom": "",
+              "main": ""
+            },
+            "returned_terminal": false,
+            "editor_gone": false,
+            "phase": "system-find-copy",
+            "entry": "queued-native-Find-EDIT-Ctrl-A-Ctrl-C",
+            "clipboard": "q",
+            "same_editor_identity": true
+          },
+          {
+            "query": "中文",
+            "selection": [
+              2,
+              2
+            ],
+            "selected": "",
+            "focused_before_escape": true,
+            "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+            "clipboard_before_paste": "中文",
+            "refocus_before": null,
+            "raw_before": {
+              "bottom": "",
+              "main": ""
+            },
+            "returned_terminal": false,
+            "editor_gone": false,
+            "phase": "system-find-paste",
+            "entry": "queued-native-Find-EDIT-Ctrl-V",
+            "clipboard": "中文",
+            "same_editor_identity": true
+          },
+          {
+            "query": "中文",
+            "selection": [
+              0,
+              2
+            ],
+            "selected": "中文",
+            "focused_before_escape": true,
+            "clipboard_before_copy": "TF_FIND_EDIT_SENTINEL 中文",
+            "clipboard_before_paste": "中文",
+            "refocus_before": [
+              2,
+              2
+            ],
+            "raw_before": {
+              "bottom": "",
+              "main": ""
+            },
+            "returned_terminal": true,
+            "editor_gone": true,
+            "phase": "system-find-refocus",
+            "entry": "queued-Ctrl-Shift-F-Chinese-and-Escape",
+            "clipboard": "中文",
+            "same_editor_identity": true
+          }
+        ],
+        "geometry": [
+          {
+            "phase": "geometry-144",
+            "display_dpi": 144,
+            "font_height": -18,
+            "current_range": {
+              "id": 95,
+              "version": 53,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-192",
+            "display_dpi": 192,
+            "font_height": -24,
+            "current_range": {
+              "id": 95,
+              "version": 79,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-96",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 106,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-zoom75",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 133,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          },
+          {
+            "phase": "geometry-restored",
+            "display_dpi": 96,
+            "font_height": -12,
+            "current_range": {
+              "id": 95,
+              "version": 160,
+              "begin": 0,
+              "end": 11
+            },
+            "selection_status": "ok"
+          }
+        ],
+        "job_after": {
+          "active": 0,
+          "total": 17,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 17,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "frame": {
+          "width": 1360,
+          "height": 860,
+          "sha256": "3955d589ba27b557a6adb62d87d62419a78191d82b22f8cd6880976845a97108"
+        }
+      }
+    ],
+    "paste_rounds": [
+      {
+        "round": "paste-0",
+        "mode": "ui-paste",
+        "schema": "termforge-window-paste-v2",
+        "keyboard": {
+          "default_enter_accept": true,
+          "default_escape_cancel": true,
+          "tab_enter_accept": true
+        },
+        "input_bytes": 25021,
+        "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+        "cases": {
+          "cancel": {
+            "sent": 178002,
+            "received": 178002,
+            "state": "cancelled"
+          },
+          "close": {
+            "sent": 116622,
+            "received": 768,
+            "state": "cancelled"
+          }
+        },
+        "job_after_cleanup_active": 0,
+        "desktop_gone": true,
+        "frame": {
+          "width": 1360,
+          "height": 860,
+          "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+        },
+        "confirmation_frame": {
+          "width": 456,
+          "height": 184,
+          "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+        }
+      },
+      {
+        "round": "paste-1",
+        "mode": "ui-paste",
+        "schema": "termforge-window-paste-v2",
+        "keyboard": {
+          "default_enter_accept": true,
+          "default_escape_cancel": true,
+          "tab_enter_accept": true
+        },
+        "input_bytes": 25021,
+        "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+        "cases": {
+          "cancel": {
+            "sent": 178002,
+            "received": 178002,
+            "state": "cancelled"
+          },
+          "close": {
+            "sent": 112530,
+            "received": 768,
+            "state": "cancelled"
+          }
+        },
+        "job_after_cleanup_active": 0,
+        "desktop_gone": true,
+        "frame": {
+          "width": 1360,
+          "height": 860,
+          "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+        },
+        "confirmation_frame": {
+          "width": 456,
+          "height": 184,
+          "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+        }
+      },
+      {
+        "round": "paste-system-0",
+        "mode": "ui-paste-system",
+        "schema": "termforge-window-paste-v2",
+        "keyboard": {
+          "default_enter_accept": true,
+          "default_escape_cancel": true,
+          "tab_enter_accept": true
+        },
+        "input_bytes": 25021,
+        "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+        "cases": {
+          "cancel": {
+            "sent": 178002,
+            "received": 178002,
+            "state": "cancelled"
+          },
+          "close": {
+            "sent": 116622,
+            "received": 768,
+            "state": "cancelled"
+          }
+        },
+        "job_after_cleanup_active": 0,
+        "desktop_gone": true,
+        "frame": {
+          "width": 1360,
+          "height": 860,
+          "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+        },
+        "confirmation_frame": {
+          "width": 456,
+          "height": 184,
+          "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+        }
+      },
+      {
+        "round": "paste-system-1",
+        "mode": "ui-paste-system",
+        "schema": "termforge-window-paste-v2",
+        "keyboard": {
+          "default_enter_accept": true,
+          "default_escape_cancel": true,
+          "tab_enter_accept": true
+        },
+        "input_bytes": 25021,
+        "input_sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+        "cases": {
+          "cancel": {
+            "sent": 210738,
+            "received": 210738,
+            "state": "cancelled"
+          },
+          "close": {
+            "sent": 108438,
+            "received": 768,
+            "state": "cancelled"
+          }
+        },
+        "job_after_cleanup_active": 0,
+        "desktop_gone": true,
+        "frame": {
+          "width": 1360,
+          "height": 860,
+          "sha256": "4cafe9e703984a793326e0366f3853685e8268f77f6fbd01ac1f9d4b3594b3df"
+        },
+        "confirmation_frame": {
+          "width": 456,
+          "height": 184,
+          "sha256": "806f447794af3ba0908f3aed6ceec3125162f3a4d2f62c5ce9487aa598f7ea15"
+        }
+      }
+    ],
+    "audit_method": "Exact-head pure validators plus literal raw bytes, original journals, observed native popup/focus/geometry, frame format and owned cleanup; no local CF/IME or environment spoofing.",
+    "limitations": [
+      "Bounded synthetic workloads only; no actual cross-monitor DPI or presentation endpoint.",
+      "IME has a separate verification workflow.",
+      "These entries alone do not close R1-07 or R1-08; complete_r1_07 remains false."
+    ]
+  },
+  "five_mode_real_ime": {
+    "schema": "termforge-r108-e2-ime-regression-audit-v1",
+    "status": "passed",
+    "source_commit": "72fe231b5a8a36ee5ce963e11622d959721dd7d4",
+    "run_id": 40040994121,
+    "run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40040994121",
+    "job_ids": [
+      120711783020
+    ],
+    "run_attempt": 1,
+    "workflow_step_states": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check inventory guard, evidence and owned synthetic timeout",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Read-only bounded hosted IME inventory",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Configure probe",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build native IME probe and product receiver",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Activate existing fixed Microsoft Pinyin in disposable hosted VM",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Require real composition, candidate position, commit and cancel",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Require five real product IME workflows and owned cleanup",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve bounded IME evidence on success or failure",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "artifact_id": 12539760207,
+    "artifact_digest": "sha256:aaa46d3f0ca24ad65252a64f9b3d4f37e18dbab6db76801a08ddb9b71dfaa916",
+    "artifact_bytes": 144541,
+    "zip_sha256_independently_verified": true,
+    "archive_files": 69,
+    "exact_workflow_archive_allowlist_verified": true,
+    "product_and_environment_audit_files": 53,
+    "product_files": 52,
+    "oracle_sha256": "2f2a37995e154cd0b35c2b8f0d2f863c0bc054f16d0f38f4aef81e4f7dd1b441",
+    "runner_sha256": "5ed059663d6e91ba5568932059096e59d097472024457f4a0c990a182ce4b2b2",
+    "workflow_sha256": "182abf8144ad1ffc335dd40ad040f62858c317f9bb1f1a9bf2274046dcf2b84f",
+    "environment": {
+      "image_os": "win25-vs2026",
+      "image_version": "20261021.278.1",
+      "os": {
+        "Caption": "Microsoft Windows Server 2025 Datacenter",
+        "Version": "10.0.26100",
+        "BuildNumber": "26100"
+      },
+      "input_profile": "0804:{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+      "ime_binary": {
+        "name": "ChsIME.exe",
+        "version": "10.0.26100.33648 (WinBuild.160101.0800)",
+        "sha256": "581362ddfb1230394900efee9a23194422b14b3ca8c111f00b90e23d3112c4b9"
+      },
+      "capability_after": {
+        "name": "Language.Basic~~~zh-CN~0.0.1.0",
+        "state": "NotPresent"
+      }
+    },
+    "provider_unchanged_after_activation": true,
+    "existing_provider_no_installation": true,
+    "environment_phase_states": [
+      {
+        "name": "read-host-environment",
+        "state": "ended",
+        "elapsed_seconds": 0.10618319999999999,
+        "error": null
+      },
+      {
+        "name": "read-local-capability",
+        "state": "ended",
+        "elapsed_seconds": 0.31668719999999995,
+        "error": null
+      },
+      {
+        "name": "identify-existing-provider",
+        "state": "ended",
+        "elapsed_seconds": 0.01933969999999996,
+        "error": null
+      },
+      {
+        "name": "set-fixed-user-language-tip",
+        "state": "ended",
+        "elapsed_seconds": 0.2441139,
+        "error": null
+      },
+      {
+        "name": "verify-user-tip-and-provider-identity",
+        "state": "ended",
+        "elapsed_seconds": 0.01857350000000002,
+        "error": null
+      },
+      {
+        "name": "record-capability-after-activation",
+        "state": "ended",
+        "elapsed_seconds": 0.2112737,
+        "error": null
+      }
+    ],
+    "machine_tip_registered": true,
+    "user_tip_listed_after_activation": true,
+    "read_only_inventory": {
+      "status": "inventory-complete-ime-unverified",
+      "real_ime_verified": false,
+      "operations": [
+        {
+          "phase": "os",
+          "status": "complete",
+          "returncode": 0,
+          "process_reaped": true,
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "error": null,
+          "cleanup_errors": [],
+          "evidence_errors": []
+        },
+        {
+          "phase": "powershell",
+          "status": "complete",
+          "returncode": 0,
+          "process_reaped": true,
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "error": null,
+          "cleanup_errors": [],
+          "evidence_errors": []
+        },
+        {
+          "phase": "dism",
+          "status": "complete",
+          "returncode": 0,
+          "process_reaped": true,
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "error": null,
+          "cleanup_errors": [],
+          "evidence_errors": []
+        },
+        {
+          "phase": "ime-binary",
+          "status": "complete",
+          "returncode": 0,
+          "process_reaped": true,
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "error": null,
+          "cleanup_errors": [],
+          "evidence_errors": []
+        },
+        {
+          "phase": "tip",
+          "status": "complete",
+          "returncode": 0,
+          "process_reaped": true,
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "error": null,
+          "cleanup_errors": [],
+          "evidence_errors": []
+        },
+        {
+          "phase": "capability",
+          "status": "complete",
+          "returncode": 0,
+          "process_reaped": true,
+          "job_after": {
+            "active": 0,
+            "total": 3,
+            "terminated": 0
+          },
+          "error": null,
+          "cleanup_errors": [],
+          "evidence_errors": []
+        }
+      ]
+    },
+    "binary_identities": {
+      "shell_test_launcher.exe": {
+        "bytes": 55296,
+        "sha256": "ffae83fda139aacde70c9caea244faeda125fb8f90ed7d18f203591d098ad1e8"
+      },
+      "termforge_shell.exe": {
+        "bytes": 1028608,
+        "sha256": "99ec8cb7c6bcd6ff29881c080e4a92d0993132b28fe68fbc4498a5ac5855b3ae"
+      },
+      "shell_ime_client.exe": {
+        "bytes": 129536,
+        "sha256": "be8f63fc80e07999e70b8f4bb624a602d77095934506a2245745a495fdeb8956"
+      }
+    },
+    "binary_identity_provenance": "Hosted-recorded hashes only. Executable binaries are absent from this artifact and were not independently rehashed.",
+    "probe": {
+      "status": "real-ime-probe-passed",
+      "raw_stdout_matches_report": true,
+      "raw_commit_hex": "e4bda0e5a5bd",
+      "single_commit_and_cancel_verified": true,
+      "visible_candidate_windows": 2,
+      "executable_sha256_hosted_recorded": "a1badf52dbd015294e5f8cc9851062536af5e6fcb2b83de26814f82a3480de83"
+    },
+    "cases": [
+      {
+        "mode": "ui-ime-basic",
+        "checkpoints": 7,
+        "receivers": [
+          {
+            "name": "bottom",
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 2,
+              "reads_completed": 2,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 2,
+              "saved_bytes": 6,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          },
+          {
+            "name": "main",
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 2,
+              "reads_completed": 2,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 2,
+              "saved_bytes": 6,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          }
+        ],
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "product_workflow_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "inner_job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "raw_capture_identities": {
+          "bottom.bin": {
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          },
+          "main.bin": {
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          }
+        },
+        "key_batches": 18,
+        "checkpoint_names": [
+          "bottom-preedit",
+          "bottom-moved",
+          "bottom-commit",
+          "bottom-cancel",
+          "main-preedit",
+          "main-commit",
+          "main-cancel"
+        ],
+        "step_count": 41,
+        "progress_order_and_snapshot_consistency": true,
+        "composing_checkpoints_absolute_anchor_verified": 3,
+        "outer_job_active_after": 0,
+        "actions": {
+          "bottom-cancel": true,
+          "candidate_followed_workspace": true,
+          "main-cancel": true
+        },
+        "frame_sha256": "f471aaad9758ac0d4a63d6ecd84f9cebd124c549867bdd5155b1e8eecb1c8dac",
+        "progress_sha256": "6e52a20600804ffa8c7793a98b67f2e24e6c5d430f2ce2a6fea63460988d1256",
+        "expected_prefix_verified_empty": true
+      },
+      {
+        "mode": "ui-ime-geometry",
+        "checkpoints": 7,
+        "receivers": [
+          {
+            "name": "bottom",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 1,
+              "reads_completed": 1,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 0,
+              "saved_bytes": 0,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          },
+          {
+            "name": "main",
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 2,
+              "reads_completed": 2,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 2,
+              "saved_bytes": 6,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          }
+        ],
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "product_workflow_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "inner_job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "raw_capture_identities": {
+          "bottom.bin": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "main.bin": {
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          }
+        },
+        "key_batches": 9,
+        "checkpoint_names": [
+          "before-output",
+          "after-output",
+          "after-resize",
+          "after-zoom",
+          "after-dpi",
+          "committed",
+          "cancelled"
+        ],
+        "step_count": 30,
+        "progress_order_and_snapshot_consistency": true,
+        "composing_checkpoints_absolute_anchor_verified": 5,
+        "outer_job_active_after": 0,
+        "actions": {
+          "cancelled": true,
+          "controlled_dpi_120": true,
+          "resize": true,
+          "twenty_output_rows": true,
+          "zoom_125": true
+        },
+        "frame_sha256": "541709edbaa586ac32b4ed9ba47942e6b8dd258a46d80db40074e9065a8c9817",
+        "progress_sha256": "212378f0dc421e817fe9c825cc054f733637cca295d54eb4c0ebdf18b1cfb927",
+        "expected_prefix_verified_empty": true
+      },
+      {
+        "mode": "ui-ime-focus",
+        "checkpoints": 5,
+        "receivers": [
+          {
+            "name": "bottom",
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 2,
+              "reads_completed": 2,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 2,
+              "saved_bytes": 6,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          },
+          {
+            "name": "main",
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 2,
+              "reads_completed": 2,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 2,
+              "saved_bytes": 6,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          },
+          {
+            "name": "hidden",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 1,
+              "reads_completed": 1,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 0,
+              "saved_bytes": 0,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          }
+        ],
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "product_workflow_verified": true,
+        "rename_cancel_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "inner_job_after": {
+          "active": 0,
+          "total": 13,
+          "terminated": 0
+        },
+        "raw_capture_identities": {
+          "bottom.bin": {
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          },
+          "main.bin": {
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          },
+          "hidden.bin": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "key_batches": 29,
+        "checkpoint_names": [
+          "bottom-preedit",
+          "bottom-hidden",
+          "main-commit",
+          "bottom-resumed",
+          "hidden-preedit"
+        ],
+        "step_count": 60,
+        "progress_order_and_snapshot_consistency": true,
+        "composing_checkpoints_absolute_anchor_verified": 2,
+        "outer_job_active_after": 0,
+        "actions": {
+          "hidden_cancelled": true,
+          "rename_cancelled_old": true,
+          "rename_first_escape_cancels_ime": true,
+          "rename_second_escape_closes": true,
+          "rename_text_verified": true
+        },
+        "frame_sha256": "904a85084bf9966c666f6af39be73d32a0b88d7b7ea436968571c7b05c9a5f9a",
+        "progress_sha256": "44a0bddf7755989d597fbd722d7c0541ea16cccd86521417af65857946b15c0e",
+        "expected_prefix_verified_empty": true
+      },
+      {
+        "mode": "ui-ime-close",
+        "checkpoints": 3,
+        "receivers": [
+          {
+            "name": "bottom",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "expected_prefix_hex": "",
+            "exit_code": 91,
+            "closed_target_terminated": true,
+            "receiver_sidecar": null
+          },
+          {
+            "name": "main",
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 2,
+              "reads_completed": 2,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 2,
+              "saved_bytes": 6,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          }
+        ],
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "product_workflow_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "inner_job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "raw_capture_identities": {
+          "bottom.bin": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "main.bin": {
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          }
+        },
+        "key_batches": 14,
+        "checkpoint_names": [
+          "before-close",
+          "survivor-commit",
+          "survivor-cancel"
+        ],
+        "step_count": 30,
+        "progress_order_and_snapshot_consistency": true,
+        "composing_checkpoints_absolute_anchor_verified": 1,
+        "outer_job_active_after": 0,
+        "actions": {
+          "closed_candidate_gone": true,
+          "closed_receiver_reaped": true,
+          "closed_target_destroyed": true,
+          "survivor-cancel": true
+        },
+        "frame_sha256": "1a5ca406316f166d442417715a1ee9176d5a0e5823533a4994b4d70eb39002e2",
+        "progress_sha256": "80633f80f41f443316729534d4175ec6fb78e9d425695d9096d540393aa69cd2",
+        "expected_prefix_verified_empty": true
+      },
+      {
+        "mode": "ui-ime-reading",
+        "checkpoints": 6,
+        "receivers": [
+          {
+            "name": "bottom",
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 2,
+              "reads_completed": 2,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 2,
+              "saved_bytes": 6,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          },
+          {
+            "name": "main",
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e",
+            "expected_prefix_hex": "",
+            "exit_code": 0,
+            "closed_target_terminated": false,
+            "receiver_sidecar": {
+              "schema": "termforge-raw-console-receiver-v1",
+              "state": "stopped",
+              "stop_requested": true,
+              "worker_joined": true,
+              "last_read_success": true,
+              "last_read_count": 0,
+              "last_read_error": 0,
+              "worker_error": 0,
+              "failure_step": "",
+              "zero_read_accepted": true,
+              "reads_entered": 2,
+              "reads_completed": 2,
+              "cancel_calls": 1,
+              "cancel_successes": 1,
+              "last_cancel_error": 0,
+              "received_units": 2,
+              "saved_bytes": 6,
+              "unexpected_cancel_observed": false,
+              "unexpected_cancel_error": 0,
+              "last_wait_result": 0,
+              "last_wait_error": 0
+            }
+          }
+        ],
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "product_workflow_verified": true,
+        "reading_contexts": 9,
+        "history_find_ime_verified": true,
+        "reading_progress_identity": {
+          "bytes": 15767,
+          "sha256": "d89b32eb5410298f4292804b70760e8f5ee819c7c27624b93c162d3a05c107d8"
+        },
+        "reading_progress_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "inner_job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "raw_capture_identities": {
+          "bottom.bin": {
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          },
+          "main.bin": {
+            "bytes": 6,
+            "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+          }
+        },
+        "key_batches": 28,
+        "checkpoint_names": [
+          "reading-preedit",
+          "reading-commit",
+          "reading-cancel",
+          "bottom-preedit",
+          "bottom-commit",
+          "bottom-cancel"
+        ],
+        "step_count": 64,
+        "progress_order_and_snapshot_consistency": true,
+        "composing_checkpoints_absolute_anchor_verified": 2,
+        "outer_job_active_after": 0,
+        "actions": {
+          "bottom-cancel": true,
+          "composition_restored_live": true,
+          "find_cancel": true,
+          "find_closed": true,
+          "find_commit": true,
+          "find_preedit": true,
+          "history_reading": true,
+          "reading-cancel": true,
+          "twenty_output_rows": true,
+          "two_regions_isolated": true
+        },
+        "frame_sha256": "f569d1da9ef2c44f675f516ceff1dd5f2c3a2e34083a95fb6566bbd765336bfb",
+        "progress_sha256": "d89b32eb5410298f4292804b70760e8f5ee819c7c27624b93c162d3a05c107d8",
+        "expected_prefix_verified_empty": true
+      }
+    ],
+    "normal_receivers_verified": 10,
+    "close_cancelled_receivers_verified": 1,
+    "expected_empty_prefix_receivers": 11,
+    "checkpoints": 28,
+    "scope": "One exact-head five-mode fixed Microsoft Pinyin regression batch; no new Paste+IME workflow, E2/E3, eight-session resource or performance acceptance.",
+    "audit_method": "Offline exact-head pure oracle plus independent raw/progress/receiver/provider/Job checks. No clipboard, IME, SendInput, hosted guard bypass or environment spoofing executed locally.",
+    "visual_audit": {
+      "status": "reviewed-five-final-synthetic-frames",
+      "issues_detected": [],
+      "observations": [
+        "Basic final frame contains two terminal regions and completed synthetic receiver markers.",
+        "Geometry final frame visibly uses zoom125 and preserves the final numbered output/DONE lines.",
+        "Focus final frame contains three sessions and the committed Chinese rename label.",
+        "Close final frame contains one surviving main session and an empty bottom region.",
+        "Reading final frame contains the retained output tail and both final receiver completion markers."
+      ],
+      "limitations": [
+        "Final DIB frames are not a capture of native candidate or EDIT child windows.",
+        "Candidate HWND anchoring and editor focus are established by the raw measured checkpoints, not the final DIB.",
+        "These five final frames do not establish compositor presentation completion, every intermediate state or pixel equivalence."
+      ]
+    },
+    "file_identities": [
+      {
+        "entry": "environment/environment.json",
+        "bytes": 5279,
+        "sha256": "1ed58908cb4cad6559b73384c20b8570e2aec38939d5858a35455599080b5fbe"
+      },
+      {
+        "entry": "inventory/capability/phase.json",
+        "bytes": 1866,
+        "sha256": "2fb78a0c5d461e2b1d81fe48c2589561e977d0529832efb85de9b773be29d13c"
+      },
+      {
+        "entry": "inventory/capability/progress.json",
+        "bytes": 171,
+        "sha256": "67528163648db64714b4784ddd36af003f009aa8ac335ea56a424b00602eb2b6"
+      },
+      {
+        "entry": "inventory/dism/phase.json",
+        "bytes": 1486,
+        "sha256": "fddd4a905db13d2001e6e7ced25bb8fd909ed6e6ce50f88312e689816ea5e7d5"
+      },
+      {
+        "entry": "inventory/dism/progress.json",
+        "bytes": 168,
+        "sha256": "d5f9b666a5dd61c2e7da7b73806671dbf3b3edeaca5cde109946a42efa283235"
+      },
+      {
+        "entry": "inventory/ime-binary/phase.json",
+        "bytes": 1530,
+        "sha256": "824991cabe28742e4462c260b73c1e6a0334c5476a3e72ca5bf081753e5aede0"
+      },
+      {
+        "entry": "inventory/ime-binary/progress.json",
+        "bytes": 168,
+        "sha256": "27ede0d7bcbe966442e3db9c3e8ec41ac23828f5857910e26da54981a4874628"
+      },
+      {
+        "entry": "inventory/inventory.json",
+        "bytes": 11263,
+        "sha256": "0584c00afe3bd39fbcbc5aaff99bc2f7eb6336c4ec439ad0188acc06d6bf4d39"
+      },
+      {
+        "entry": "inventory/os/phase.json",
+        "bytes": 1503,
+        "sha256": "9ff3142759b1bcb873537da01253f86b0947c7df8df8e821e02f205e99422704"
+      },
+      {
+        "entry": "inventory/os/progress.json",
+        "bytes": 150,
+        "sha256": "57ba1937de098f0873e10b19ea0a21418b55fedaf826a3c9c64e8068c883df23"
+      },
+      {
+        "entry": "inventory/powershell/phase.json",
+        "bytes": 1389,
+        "sha256": "bc2231bb2da712cc7763d23a40c99aab9848b6d74e8896ff53df3c21ef735d89"
+      },
+      {
+        "entry": "inventory/powershell/progress.json",
+        "bytes": 169,
+        "sha256": "2e7ec617720ad4c73c1f004abbfd44177a6d3fcbc2b334dd7b7d85ca24f0028b"
+      },
+      {
+        "entry": "inventory/tip/phase.json",
+        "bytes": 1528,
+        "sha256": "f12782403d754293fa80d7c17c147d9a2a2a12bc9731d8db8b9a960cc24e3bd2"
+      },
+      {
+        "entry": "inventory/tip/progress.json",
+        "bytes": 181,
+        "sha256": "052a433d6a9b565e98d1d412e46b807208d96542db8a67a52bdea74ff67ca447"
+      },
+      {
+        "entry": "probe/result.json",
+        "bytes": 2139,
+        "sha256": "c3c255e70315a1f34fd46011539e111d982ca49b12fffea4abfd9be608c9dd2c"
+      },
+      {
+        "entry": "probe/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "entry": "probe/stdout.jsonl",
+        "bytes": 1129,
+        "sha256": "9e17f1f6fa9330d3a3780bccfb7745b82ee916f1a738175a85fd1213fe83b363"
+      },
+      {
+        "entry": "product/manifest.json",
+        "bytes": 14688,
+        "sha256": "29b7ff21f03d9b5332d1f0c7b2629d735cb2bf645ea332212c61e369a863ca0e"
+      },
+      {
+        "entry": "product/ui-ime-basic/bottom.bin",
+        "bytes": 6,
+        "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+      },
+      {
+        "entry": "product/ui-ime-basic/bottom.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "2848231db7dd9732d919b5e3fb3f21f02a47a9149370d5d3569457a813b2b9d0"
+      },
+      {
+        "entry": "product/ui-ime-basic/frame.bmp",
+        "bytes": 4537398,
+        "sha256": "f471aaad9758ac0d4a63d6ecd84f9cebd124c549867bdd5155b1e8eecb1c8dac"
+      },
+      {
+        "entry": "product/ui-ime-basic/main.bin",
+        "bytes": 6,
+        "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+      },
+      {
+        "entry": "product/ui-ime-basic/main.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "2848231db7dd9732d919b5e3fb3f21f02a47a9149370d5d3569457a813b2b9d0"
+      },
+      {
+        "entry": "product/ui-ime-basic/product-ime.json",
+        "bytes": 5322,
+        "sha256": "d8a794fb726d0843fd53e6befaf9b139e38d821f12c9eddf66550d850855e7a4"
+      },
+      {
+        "entry": "product/ui-ime-basic/progress.jsonl",
+        "bytes": 8070,
+        "sha256": "6e52a20600804ffa8c7793a98b67f2e24e6c5d430f2ce2a6fea63460988d1256"
+      },
+      {
+        "entry": "product/ui-ime-basic/result.json",
+        "bytes": 2261,
+        "sha256": "f6703e17f3e23896a9a376eb7e005da4763ac1005c93d3797dd24fec2d130269"
+      },
+      {
+        "entry": "product/ui-ime-basic/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "entry": "product/ui-ime-basic/stdout.jsonl",
+        "bytes": 291,
+        "sha256": "8e45dba76c81d7524214c512c69403b1e00de3383555a875f49788367b7b9a71"
+      },
+      {
+        "entry": "product/ui-ime-close/bottom.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "entry": "product/ui-ime-close/frame.bmp",
+        "bytes": 4678454,
+        "sha256": "1a5ca406316f166d442417715a1ee9176d5a0e5823533a4994b4d70eb39002e2"
+      },
+      {
+        "entry": "product/ui-ime-close/main.bin",
+        "bytes": 6,
+        "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+      },
+      {
+        "entry": "product/ui-ime-close/main.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "2848231db7dd9732d919b5e3fb3f21f02a47a9149370d5d3569457a813b2b9d0"
+      },
+      {
+        "entry": "product/ui-ime-close/product-ime.json",
+        "bytes": 2820,
+        "sha256": "a9b5a955337c9ee084286ded178727b3e8983c4a9d5a05ea55fa7281a4582f98"
+      },
+      {
+        "entry": "product/ui-ime-close/progress.jsonl",
+        "bytes": 5285,
+        "sha256": "80633f80f41f443316729534d4175ec6fb78e9d425695d9096d540393aa69cd2"
+      },
+      {
+        "entry": "product/ui-ime-close/result.json",
+        "bytes": 2261,
+        "sha256": "2d97c7ecf5b0a51d41f789cc68dcacedbc8ebb0228daeac67d3f6e65e088560b"
+      },
+      {
+        "entry": "product/ui-ime-close/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "entry": "product/ui-ime-close/stdout.jsonl",
+        "bytes": 291,
+        "sha256": "8357e1afd60e00bdfb59b7211575142528dd7f14f24c9f5822aa25462dd79164"
+      },
+      {
+        "entry": "product/ui-ime-focus/bottom.bin",
+        "bytes": 6,
+        "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+      },
+      {
+        "entry": "product/ui-ime-focus/bottom.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "2848231db7dd9732d919b5e3fb3f21f02a47a9149370d5d3569457a813b2b9d0"
+      },
+      {
+        "entry": "product/ui-ime-focus/frame.bmp",
+        "bytes": 4678454,
+        "sha256": "904a85084bf9966c666f6af39be73d32a0b88d7b7ea436968571c7b05c9a5f9a"
+      },
+      {
+        "entry": "product/ui-ime-focus/hidden.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "entry": "product/ui-ime-focus/hidden.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+      },
+      {
+        "entry": "product/ui-ime-focus/main.bin",
+        "bytes": 6,
+        "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+      },
+      {
+        "entry": "product/ui-ime-focus/main.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "2848231db7dd9732d919b5e3fb3f21f02a47a9149370d5d3569457a813b2b9d0"
+      },
+      {
+        "entry": "product/ui-ime-focus/product-ime.json",
+        "bytes": 4666,
+        "sha256": "a8954519ac10fc6b6f8fc71b4f4eb8c9981fead0484a598c55c1112a59f8836d"
+      },
+      {
+        "entry": "product/ui-ime-focus/progress.jsonl",
+        "bytes": 10403,
+        "sha256": "44a0bddf7755989d597fbd722d7c0541ea16cccd86521417af65857946b15c0e"
+      },
+      {
+        "entry": "product/ui-ime-focus/result.json",
+        "bytes": 2487,
+        "sha256": "2ab68889b4c8c0becfaf979e6323476f86ff2b12b3e69b383d20e204f2a97fb4"
+      },
+      {
+        "entry": "product/ui-ime-focus/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "entry": "product/ui-ime-focus/stdout.jsonl",
+        "bytes": 292,
+        "sha256": "b5903528dcc7a73e642f381d5f933b9205529f30b0424b89105bfecdadae63c5"
+      },
+      {
+        "entry": "product/ui-ime-geometry/bottom.bin",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "entry": "product/ui-ime-geometry/bottom.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+      },
+      {
+        "entry": "product/ui-ime-geometry/frame.bmp",
+        "bytes": 4075574,
+        "sha256": "541709edbaa586ac32b4ed9ba47942e6b8dd258a46d80db40074e9065a8c9817"
+      },
+      {
+        "entry": "product/ui-ime-geometry/main.bin",
+        "bytes": 6,
+        "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+      },
+      {
+        "entry": "product/ui-ime-geometry/main.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "2848231db7dd9732d919b5e3fb3f21f02a47a9149370d5d3569457a813b2b9d0"
+      },
+      {
+        "entry": "product/ui-ime-geometry/product-ime.json",
+        "bytes": 8158,
+        "sha256": "25a524b76eb30feff528fcd34aa46b3649f2d8470c5fe704d205f0b206ebf4e9"
+      },
+      {
+        "entry": "product/ui-ime-geometry/progress.jsonl",
+        "bytes": 6734,
+        "sha256": "212378f0dc421e817fe9c825cc054f733637cca295d54eb4c0ebdf18b1cfb927"
+      },
+      {
+        "entry": "product/ui-ime-geometry/result.json",
+        "bytes": 2264,
+        "sha256": "94862d9b8c7ef78965e7643d04243fef2243b738cf2fbef08c8d148483adc083"
+      },
+      {
+        "entry": "product/ui-ime-geometry/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "entry": "product/ui-ime-geometry/stdout.jsonl",
+        "bytes": 297,
+        "sha256": "fd8c8e70575944d4bf18abdb77404cab45d5f5d23f480e160c1085780dcb9f7f"
+      },
+      {
+        "entry": "product/ui-ime-reading/bottom.bin",
+        "bytes": 6,
+        "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+      },
+      {
+        "entry": "product/ui-ime-reading/bottom.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "2848231db7dd9732d919b5e3fb3f21f02a47a9149370d5d3569457a813b2b9d0"
+      },
+      {
+        "entry": "product/ui-ime-reading/frame.bmp",
+        "bytes": 4678454,
+        "sha256": "f569d1da9ef2c44f675f516ceff1dd5f2c3a2e34083a95fb6566bbd765336bfb"
+      },
+      {
+        "entry": "product/ui-ime-reading/main.bin",
+        "bytes": 6,
+        "sha256": "670d9743542cae3ea7ebe36af56bd53648b0a1126162e78d81a32934a711302e"
+      },
+      {
+        "entry": "product/ui-ime-reading/main.bin.receiver.json",
+        "bytes": 471,
+        "sha256": "2848231db7dd9732d919b5e3fb3f21f02a47a9149370d5d3569457a813b2b9d0"
+      },
+      {
+        "entry": "product/ui-ime-reading/product-ime.json",
+        "bytes": 9680,
+        "sha256": "f0cb21017c2038232634dedc9ec531dc9280e1ba6ece9648b6ec918fce4e634a"
+      },
+      {
+        "entry": "product/ui-ime-reading/progress.jsonl",
+        "bytes": 15767,
+        "sha256": "d89b32eb5410298f4292804b70760e8f5ee819c7c27624b93c162d3a05c107d8"
+      },
+      {
+        "entry": "product/ui-ime-reading/result.json",
+        "bytes": 2517,
+        "sha256": "d30290c6fd87af550af060c9de13359e301c15ca4895b59e0e2127f71663c19f"
+      },
+      {
+        "entry": "product/ui-ime-reading/stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "entry": "product/ui-ime-reading/stdout.jsonl",
+        "bytes": 295,
+        "sha256": "0cae93c87ea510990153689e975cc163b81822d05e9efdd8ca1c5ce4b93cbdd6"
+      }
+    ],
+    "limitations": [
+      "One successful five-mode batch at this exact head; no claim of repeated fresh five-mode runs here.",
+      "Controlled DPI 120 and zoom125 do not establish real cross-monitor transitions.",
+      "No executable binaries uploaded; all binary hashes are hosted-recorded, not independently rehashed.",
+      "Presentation completion remains null.",
+      "Previous failed artifacts and accepted facts are unchanged.",
+      "Direct Unicode E1 fixture verification and this empty-prefix regression do not establish a combined Paste followed by real IME workflow."
+    ]
+  },
+  "presented_done": null,
+  "complete_r1_08": false,
+  "performance_gate": "not_evaluated",
+  "limitations": [
+    "One exact-head five-mode IME batch, not two complete E3 rounds.",
+    "No executable uploads for independent binary rehash.",
+    "Prior failed records remain unchanged.",
+    "Passing main suites do not make local or hosted internal skips into system passes."
+  ]
+}

@@ -1,0 +1,2325 @@
+{
+  "schema": "termforge-r1-eight-session-ci-audit-v1",
+  "status": "passed",
+  "source_commit": "72fe231b5a8a36ee5ce963e11622d959721dd7d4",
+  "run_id": 40040980384,
+  "run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40040980384",
+  "artifact": {
+    "id": 12539273203,
+    "digest": "sha256:547006b7272bd53deffa32eed81106823038d0a89ba321b2165397b3bdb49153",
+    "zip_sha256_verified": true,
+    "audited_files": {
+      "workflow-fixture": 54,
+      "workflow-controller": 30,
+      "workflow-sessions": 182
+    }
+  },
+  "scope": "E2 data-only eight-session workflow and E4 resource recording seam; R1-08 remains open",
+  "fixture_regression": [
+    {
+      "round": 1,
+      "cases": [
+        {
+          "name": "A",
+          "content": {
+            "role": "A",
+            "generation": 1,
+            "records": 680,
+            "source_bytes": 18360,
+            "source_sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2",
+            "received_bytes": 0,
+            "received_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "events": 9,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "runner_transport_sha256": "86d333d11f366ee3aa5cfe02b7f50e5cf4d0464ae923345b90bf9889ab77c686",
+          "transport_recomputed_from_download": false
+        },
+        {
+          "name": "B",
+          "content": {
+            "role": "B",
+            "generation": 2,
+            "records": 0,
+            "source_bytes": 0,
+            "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "received_bytes": 32,
+            "received_sha256": "ebdddc513596b1850a94bc79ad8c6f50017d760794cb5ba5bfcdc020f96b0b6f",
+            "events": 3,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "runner_transport_sha256": "4f0faf9e77315892d5aa23f6b4a665ea088724b9a97178dd90c521a03171d5cf",
+          "transport_recomputed_from_download": false
+        },
+        {
+          "name": "F1",
+          "content": {
+            "role": "F1",
+            "generation": 3,
+            "records": 32000,
+            "source_bytes": 2048000,
+            "source_sha256": "c0d35b68ed7d8147bfa42eb9ea7e8a64ddafef8a786b1b1f42b0b85f179057a4",
+            "received_bytes": 0,
+            "received_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "events": 5,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "runner_transport_sha256": "c2485bf3a02c0806078f8def33ccc5fb7d5847be279a29d1472e1297d6ec89a6",
+          "transport_recomputed_from_download": false
+        },
+        {
+          "name": "F2-stop",
+          "content": {
+            "role": "F2",
+            "generation": 4,
+            "records": 64,
+            "source_bytes": 4096,
+            "source_sha256": "677fc7f881d2ae836d8f8fd1c3c68afdfac02a386b0ee0910ace71c538b60b4e",
+            "received_bytes": 0,
+            "received_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "events": 4,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": false
+          },
+          "runner_transport_sha256": "b10095a698f231510b5ed9d392bbfffee0aa856c42dd9e8b24e8f062f07b1bff",
+          "transport_recomputed_from_download": false
+        },
+        {
+          "name": "F2-order",
+          "content": {
+            "role": "F2",
+            "generation": 5,
+            "expected_rejection": true,
+            "reason": "workflow command order invalid",
+            "normal_completion": false
+          },
+          "runner_transport_sha256": "4cc4506b7ebdcbea8cf4841ca2507606757d41fd09671ac6f79c76ae6945bcb6",
+          "transport_recomputed_from_download": false
+        }
+      ],
+      "job": {
+        "active": 0,
+        "total": 12,
+        "terminated": 0
+      }
+    },
+    {
+      "round": 0,
+      "cases": [
+        {
+          "name": "A",
+          "content": {
+            "role": "A",
+            "generation": 1,
+            "records": 680,
+            "source_bytes": 18360,
+            "source_sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2",
+            "received_bytes": 0,
+            "received_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "events": 9,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "runner_transport_sha256": "86d333d11f366ee3aa5cfe02b7f50e5cf4d0464ae923345b90bf9889ab77c686",
+          "transport_recomputed_from_download": false
+        },
+        {
+          "name": "B",
+          "content": {
+            "role": "B",
+            "generation": 2,
+            "records": 0,
+            "source_bytes": 0,
+            "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "received_bytes": 32,
+            "received_sha256": "ebdddc513596b1850a94bc79ad8c6f50017d760794cb5ba5bfcdc020f96b0b6f",
+            "events": 3,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "runner_transport_sha256": "4f0faf9e77315892d5aa23f6b4a665ea088724b9a97178dd90c521a03171d5cf",
+          "transport_recomputed_from_download": false
+        },
+        {
+          "name": "F1",
+          "content": {
+            "role": "F1",
+            "generation": 3,
+            "records": 32000,
+            "source_bytes": 2048000,
+            "source_sha256": "c0d35b68ed7d8147bfa42eb9ea7e8a64ddafef8a786b1b1f42b0b85f179057a4",
+            "received_bytes": 0,
+            "received_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "events": 5,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "runner_transport_sha256": "c2485bf3a02c0806078f8def33ccc5fb7d5847be279a29d1472e1297d6ec89a6",
+          "transport_recomputed_from_download": false
+        },
+        {
+          "name": "F2-stop",
+          "content": {
+            "role": "F2",
+            "generation": 4,
+            "records": 64,
+            "source_bytes": 4096,
+            "source_sha256": "677fc7f881d2ae836d8f8fd1c3c68afdfac02a386b0ee0910ace71c538b60b4e",
+            "received_bytes": 0,
+            "received_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "events": 4,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": false
+          },
+          "runner_transport_sha256": "b10095a698f231510b5ed9d392bbfffee0aa856c42dd9e8b24e8f062f07b1bff",
+          "transport_recomputed_from_download": false
+        },
+        {
+          "name": "F2-order",
+          "content": {
+            "role": "F2",
+            "generation": 5,
+            "expected_rejection": true,
+            "reason": "workflow command order invalid",
+            "normal_completion": false
+          },
+          "runner_transport_sha256": "4cc4506b7ebdcbea8cf4841ca2507606757d41fd09671ac6f79c76ae6945bcb6",
+          "transport_recomputed_from_download": false
+        }
+      ],
+      "job": {
+        "active": 0,
+        "total": 12,
+        "terminated": 0
+      }
+    }
+  ],
+  "controller_regression": [
+    {
+      "round": 0,
+      "job": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "source_binding": {
+        "experiments/shell/workflow_controller.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_fixture_test.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/test_workflow.py": "git-blob-bytes",
+        "experiments/shell/workflow_checks.py": "git-blob-bytes"
+      },
+      "cases": [
+        {
+          "observation": {
+            "name": "B graceful",
+            "role": "B",
+            "generation": 21,
+            "launched_through_existing_cmd": true,
+            "identity_verified": true,
+            "child_joined": true,
+            "observed_generation": 21,
+            "phases_complete": false,
+            "parent_order_rejected": false,
+            "target_job_cancelled": false,
+            "abnormal_completion_rejected": false,
+            "stopped_event": true,
+            "child_finished": true,
+            "child_exit_code": 0,
+            "cmd_exit_code": 0,
+            "inner_job_active_after": 0,
+            "cleanup_complete": true,
+            "passed": true
+          },
+          "process_identity_token": "20428955ac39371278dc4ce74ae953068591b244a43ceb5fc394314fa3c429c7",
+          "private_identity_verified": true,
+          "fixture": {
+            "role": "B",
+            "generation": 21,
+            "records": 0,
+            "source_bytes": 0,
+            "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "received_bytes": 32,
+            "received_sha256": "ebdddc513596b1850a94bc79ad8c6f50017d760794cb5ba5bfcdc020f96b0b6f",
+            "events": 3,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "transport_verified": true,
+          "transport_bytes": 1027,
+          "transport_sha256": "e3ae7071255641c6f635a183e086b8936c558717c5d28e425b10fd029dc5a6ce"
+        },
+        {
+          "observation": {
+            "name": "A phases",
+            "role": "A",
+            "generation": 22,
+            "launched_through_existing_cmd": true,
+            "identity_verified": true,
+            "child_joined": true,
+            "observed_generation": 22,
+            "phases_complete": true,
+            "parent_order_rejected": true,
+            "target_job_cancelled": false,
+            "abnormal_completion_rejected": false,
+            "stopped_event": true,
+            "child_finished": true,
+            "child_exit_code": 0,
+            "cmd_exit_code": 0,
+            "inner_job_active_after": 0,
+            "cleanup_complete": true,
+            "passed": true
+          },
+          "process_identity_token": "c1ebd6ca1342d0aa31a26991e599e6522d9b7025d63ac523b2b36bdcb0682e58",
+          "private_identity_verified": true,
+          "fixture": {
+            "role": "A",
+            "generation": 22,
+            "records": 680,
+            "source_bytes": 18360,
+            "source_sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2",
+            "received_bytes": 0,
+            "received_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "events": 9,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "transport_verified": true,
+          "transport_bytes": 19498,
+          "transport_sha256": "8dbf8596e77d848484d8fa0b82ec39af643564deffea044b21a9714da6ef3e76"
+        },
+        {
+          "observation": {
+            "name": "B closed",
+            "role": "B",
+            "generation": 23,
+            "launched_through_existing_cmd": true,
+            "identity_verified": true,
+            "child_joined": true,
+            "observed_generation": 23,
+            "phases_complete": false,
+            "parent_order_rejected": false,
+            "target_job_cancelled": true,
+            "abnormal_completion_rejected": true,
+            "stopped_event": false,
+            "child_finished": false,
+            "child_exit_code": 91,
+            "cmd_exit_code": 91,
+            "inner_job_active_after": 0,
+            "cleanup_complete": true,
+            "passed": true
+          },
+          "process_identity_token": "ac2a7acb748ef62c35eeb70dca60f694c385142130659e5a9fa5dfcc8e30fb24",
+          "private_identity_verified": true,
+          "fixture": {
+            "graceful_fixture_completion": false,
+            "closed_target_exit": 91,
+            "empty_unfinished_manifest_verified": true,
+            "receiver_sidecar_absent": true
+          },
+          "transport_verified": true,
+          "transport_bytes": 936,
+          "transport_sha256": "258c435a45dc34b901881f5f4836eb1e47d4c0c106f96e5e30c51ec8b7d14f5b"
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "job": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "source_binding": {
+        "experiments/shell/workflow_controller.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_fixture_test.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/test_workflow.py": "git-blob-bytes",
+        "experiments/shell/workflow_checks.py": "git-blob-bytes"
+      },
+      "cases": [
+        {
+          "observation": {
+            "name": "B graceful",
+            "role": "B",
+            "generation": 21,
+            "launched_through_existing_cmd": true,
+            "identity_verified": true,
+            "child_joined": true,
+            "observed_generation": 21,
+            "phases_complete": false,
+            "parent_order_rejected": false,
+            "target_job_cancelled": false,
+            "abnormal_completion_rejected": false,
+            "stopped_event": true,
+            "child_finished": true,
+            "child_exit_code": 0,
+            "cmd_exit_code": 0,
+            "inner_job_active_after": 0,
+            "cleanup_complete": true,
+            "passed": true
+          },
+          "process_identity_token": "818900fb188b164af25c20e8c54b49643326c0baa086dd1636d8ca4829b1ebe7",
+          "private_identity_verified": true,
+          "fixture": {
+            "role": "B",
+            "generation": 21,
+            "records": 0,
+            "source_bytes": 0,
+            "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "received_bytes": 32,
+            "received_sha256": "ebdddc513596b1850a94bc79ad8c6f50017d760794cb5ba5bfcdc020f96b0b6f",
+            "events": 3,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "transport_verified": true,
+          "transport_bytes": 1027,
+          "transport_sha256": "70b9ef8bbdfa561d391423cd1d3665477e481ebc31e6342b90ff8233cff44e42"
+        },
+        {
+          "observation": {
+            "name": "A phases",
+            "role": "A",
+            "generation": 22,
+            "launched_through_existing_cmd": true,
+            "identity_verified": true,
+            "child_joined": true,
+            "observed_generation": 22,
+            "phases_complete": true,
+            "parent_order_rejected": true,
+            "target_job_cancelled": false,
+            "abnormal_completion_rejected": false,
+            "stopped_event": true,
+            "child_finished": true,
+            "child_exit_code": 0,
+            "cmd_exit_code": 0,
+            "inner_job_active_after": 0,
+            "cleanup_complete": true,
+            "passed": true
+          },
+          "process_identity_token": "5c8edf455e4ff0aef220bf644ffacfaf111d30265c17da7ff97de90b5c06347c",
+          "private_identity_verified": true,
+          "fixture": {
+            "role": "A",
+            "generation": 22,
+            "records": 680,
+            "source_bytes": 18360,
+            "source_sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2",
+            "received_bytes": 0,
+            "received_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "events": 9,
+            "ime_verified": false,
+            "clipboard_verified": false,
+            "transport_verified": false,
+            "complete": true
+          },
+          "transport_verified": true,
+          "transport_bytes": 19498,
+          "transport_sha256": "0755ab227e09e5d5fda655306e01220662dd21a46238b8d2b3a0cbf40c32c500"
+        },
+        {
+          "observation": {
+            "name": "B closed",
+            "role": "B",
+            "generation": 23,
+            "launched_through_existing_cmd": true,
+            "identity_verified": true,
+            "child_joined": true,
+            "observed_generation": 23,
+            "phases_complete": false,
+            "parent_order_rejected": false,
+            "target_job_cancelled": true,
+            "abnormal_completion_rejected": true,
+            "stopped_event": false,
+            "child_finished": false,
+            "child_exit_code": 91,
+            "cmd_exit_code": 91,
+            "inner_job_active_after": 0,
+            "cleanup_complete": true,
+            "passed": true
+          },
+          "process_identity_token": "84f6299100f7119c3b410b11f94dee237ce855bca706a5991dc6ccf1f523bc7e",
+          "private_identity_verified": true,
+          "fixture": {
+            "graceful_fixture_completion": false,
+            "closed_target_exit": 91,
+            "empty_unfinished_manifest_verified": true,
+            "receiver_sidecar_absent": true
+          },
+          "transport_verified": true,
+          "transport_bytes": 936,
+          "transport_sha256": "c720c5cd5933a1f5520478b0e333016a04f470e93b799b3cd8fac436f41de69a"
+        }
+      ]
+    }
+  ],
+  "eight_session_rounds": [
+    {
+      "round": 0,
+      "workflow": {
+        "schema": "termforge-workflow-sessions-identity-validation-v1",
+        "live_sessions": 8,
+        "checkpoints": 26,
+        "rejected_ninth": true,
+        "load_foreground_verified": true,
+        "data_workflow_verified": true,
+        "complete_workflow_verified": false,
+        "system_clipboard_verified": false,
+        "ime_verified": false
+      },
+      "checkpoints": 26,
+      "closed_entities": 18,
+      "observations": 235,
+      "source_checkout_binding": {
+        "CMakeLists.txt": "whole-file-checkout-CRLF",
+        "experiments/build_paths.py": "git-blob-bytes",
+        "experiments/shell/shell.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace_interactions.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace_workflow_scenario.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_scenario_state.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_controller.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_fixture.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/runtime_observation.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/queues.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/resize.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/raw_console_receiver.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/text_client.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/input_client.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/test_launcher.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/paste.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/paste_scenario_state.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/find_bar.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/run.py": "git-blob-bytes",
+        "experiments/shell/workflow_checks.py": "git-blob-bytes",
+        "experiments/shell/workflow_sessions_checks.py": "git-blob-bytes",
+        "experiments/shell/test_workflow_sessions.py": "git-blob-bytes",
+        "experiments/shell/workflow_resources.py": "git-blob-bytes",
+        "experiments/conpty/session.hpp": "whole-file-checkout-CRLF",
+        "experiments/presentation/render.hpp": "whole-file-checkout-CRLF",
+        "experiments/presentation/desktop.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/history_view.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/text_projection.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/terminal.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/screen.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/unicode_width.hpp": "whole-file-checkout-CRLF",
+        "benchmarks/tools/sample.py": "git-blob-bytes",
+        "benchmarks/tools/summarize_resources.py": "git-blob-bytes",
+        "assets/fonts/RobotoMono-Regular.ttf": "git-blob-bytes"
+      },
+      "hosted_recorded_binary_sha256": {
+        "termforge_shell": "02de7c649c6982283b91dc8f03f6592580b1f597a0e9ca4c3e21963e0b252eb5",
+        "shell_test_launcher": "08c0616e528fcc84715cee06ea747f767d217766eab3cc2b7e9121a8c4c3dbb2",
+        "shell_text_client": "f3e97cac8a2750e191ea47125a54086401af97265d31730a7d4bbcd838a96096",
+        "shell_input_client": "731ac388bf6166c491260a445608691cf4a717098f56ba72a14b8df35177e37d"
+      },
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "private_desktop_gone": true,
+      "foreground_final_received_bytes": 27,
+      "cancel_received_bytes": 108438,
+      "close_received_bytes": 768,
+      "sessions_sha256": "40774a19d6587b0badde1ea76f9afdb00e7ddde8075c7a651dc13322a3fc2d73",
+      "frame_sha256": "ee213bae6b3bcf903b83266ca5a28c113cca07f62477a1874dc0c99656b33f35",
+      "resources": {
+        "schema": "termforge-workflow-resource-observations-v1",
+        "scope": "launcher-tree",
+        "validation_status": "valid",
+        "performance_gate": "not_evaluated",
+        "source_sha256": "1c0ad4597ae09308d73b7800d9d49f056d94500ef0ba1d5883ee4b054af04eea",
+        "observations_sha256": "4fc97af0af0a024c42b342526940b6174532815f32f64298c76007219c252df0",
+        "sample_count": 179,
+        "sampling_span_ns": 17799790100,
+        "trace_elapsed_ns": 17900050500,
+        "groups": {
+          "root": {
+            "observed_processes": 1,
+            "observed_samples": 174,
+            "unavailable_rows": 1,
+            "observed_cpu_seconds": 0.015625,
+            "observed_cpu_core_equivalents": 0.0008778193401280614,
+            "sampled_peak_observed_private_bytes": 1028096,
+            "sampled_peak_observed_working_set_bytes": 5439488,
+            "sampled_peak_observed_handles": 63
+          },
+          "descendant": {
+            "observed_processes": 35,
+            "observed_samples": 174,
+            "unavailable_rows": 35,
+            "observed_cpu_seconds": 3.046875,
+            "observed_cpu_core_equivalents": 0.17117477132497197,
+            "sampled_peak_observed_private_bytes": 95518720,
+            "sampled_peak_observed_working_set_bytes": 223186944,
+            "sampled_peak_observed_handles": 2548
+          },
+          "sampler": {
+            "observed_processes": 1,
+            "observed_samples": 179,
+            "unavailable_rows": 0,
+            "observed_cpu_seconds": 1.390625,
+            "observed_cpu_core_equivalents": 0.07812592127139747,
+            "sampled_peak_observed_private_bytes": 25174016,
+            "sampled_peak_observed_working_set_bytes": 34930688,
+            "sampled_peak_observed_handles": 242
+          }
+        },
+        "launcher_tree": {
+          "observed_cpu_seconds": 3.0625,
+          "observed_cpu_core_equivalents": 0.17205259066510004,
+          "sampled_peak_observed_private_bytes": 96546816,
+          "sampled_peak_observed_working_set_bytes": 228626432,
+          "sampled_peak_observed_handles": 2611
+        },
+        "quality": {
+          "collection_ns_max": 56344200,
+          "actual_interval_ns_max": 106271700,
+          "schedule_lateness_ns_max": 9471100,
+          "skipped_ticks": 0,
+          "discovery_errors": 0,
+          "samples_with_unavailable_processes": 9
+        }
+      },
+      "resource_phase_windows": null,
+      "raw_resource_projection_verification_provenance": "verified within CI runner; private trace absent from download"
+    },
+    {
+      "round": 1,
+      "workflow": {
+        "schema": "termforge-workflow-sessions-identity-validation-v1",
+        "live_sessions": 8,
+        "checkpoints": 26,
+        "rejected_ninth": true,
+        "load_foreground_verified": true,
+        "data_workflow_verified": true,
+        "complete_workflow_verified": false,
+        "system_clipboard_verified": false,
+        "ime_verified": false
+      },
+      "checkpoints": 26,
+      "closed_entities": 18,
+      "observations": 235,
+      "source_checkout_binding": {
+        "CMakeLists.txt": "whole-file-checkout-CRLF",
+        "experiments/build_paths.py": "git-blob-bytes",
+        "experiments/shell/shell.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace_interactions.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace_workflow_scenario.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_scenario_state.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_controller.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_fixture.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/runtime_observation.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/queues.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/resize.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/raw_console_receiver.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/text_client.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/input_client.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/test_launcher.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/paste.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/paste_scenario_state.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/find_bar.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/run.py": "git-blob-bytes",
+        "experiments/shell/workflow_checks.py": "git-blob-bytes",
+        "experiments/shell/workflow_sessions_checks.py": "git-blob-bytes",
+        "experiments/shell/test_workflow_sessions.py": "git-blob-bytes",
+        "experiments/shell/workflow_resources.py": "git-blob-bytes",
+        "experiments/conpty/session.hpp": "whole-file-checkout-CRLF",
+        "experiments/presentation/render.hpp": "whole-file-checkout-CRLF",
+        "experiments/presentation/desktop.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/history_view.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/text_projection.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/terminal.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/screen.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/unicode_width.hpp": "whole-file-checkout-CRLF",
+        "benchmarks/tools/sample.py": "git-blob-bytes",
+        "benchmarks/tools/summarize_resources.py": "git-blob-bytes",
+        "assets/fonts/RobotoMono-Regular.ttf": "git-blob-bytes"
+      },
+      "hosted_recorded_binary_sha256": {
+        "termforge_shell": "02de7c649c6982283b91dc8f03f6592580b1f597a0e9ca4c3e21963e0b252eb5",
+        "shell_test_launcher": "08c0616e528fcc84715cee06ea747f767d217766eab3cc2b7e9121a8c4c3dbb2",
+        "shell_text_client": "f3e97cac8a2750e191ea47125a54086401af97265d31730a7d4bbcd838a96096",
+        "shell_input_client": "731ac388bf6166c491260a445608691cf4a717098f56ba72a14b8df35177e37d"
+      },
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "private_desktop_gone": true,
+      "foreground_final_received_bytes": 27,
+      "cancel_received_bytes": 112530,
+      "close_received_bytes": 768,
+      "sessions_sha256": "b3ebe896f81440acd811997a9f932378dd3da62d70604a6642d2dd5926633302",
+      "frame_sha256": "ee213bae6b3bcf903b83266ca5a28c113cca07f62477a1874dc0c99656b33f35",
+      "resources": {
+        "schema": "termforge-workflow-resource-observations-v1",
+        "scope": "launcher-tree",
+        "validation_status": "valid",
+        "performance_gate": "not_evaluated",
+        "source_sha256": "e169eb0d6aa6db967f3fa378aa88abddccafce674d6f93ba7cb9c253ce1945be",
+        "observations_sha256": "fd8e7ee4c181840f5c9bd191d78381f3fcd83255aaa8d58b20a531e407fe81ae",
+        "sample_count": 178,
+        "sampling_span_ns": 17707622700,
+        "trace_elapsed_ns": 17800133200,
+        "groups": {
+          "root": {
+            "observed_processes": 1,
+            "observed_samples": 173,
+            "unavailable_rows": 1,
+            "observed_cpu_seconds": 0.0,
+            "observed_cpu_core_equivalents": 0.0,
+            "sampled_peak_observed_private_bytes": 1036288,
+            "sampled_peak_observed_working_set_bytes": 5439488,
+            "sampled_peak_observed_handles": 63
+          },
+          "descendant": {
+            "observed_processes": 32,
+            "observed_samples": 173,
+            "unavailable_rows": 32,
+            "observed_cpu_seconds": 3.453125,
+            "observed_cpu_core_equivalents": 0.19500782564110086,
+            "sampled_peak_observed_private_bytes": 95985664,
+            "sampled_peak_observed_working_set_bytes": 217792512,
+            "sampled_peak_observed_handles": 2546
+          },
+          "sampler": {
+            "observed_processes": 1,
+            "observed_samples": 178,
+            "unavailable_rows": 0,
+            "observed_cpu_seconds": 1.125,
+            "observed_cpu_core_equivalents": 0.06353196129483829,
+            "sampled_peak_observed_private_bytes": 30863360,
+            "sampled_peak_observed_working_set_bytes": 38838272,
+            "sampled_peak_observed_handles": 241
+          }
+        },
+        "launcher_tree": {
+          "observed_cpu_seconds": 3.453125,
+          "observed_cpu_core_equivalents": 0.19500782564110086,
+          "sampled_peak_observed_private_bytes": 97021952,
+          "sampled_peak_observed_working_set_bytes": 223232000,
+          "sampled_peak_observed_handles": 2609
+        },
+        "quality": {
+          "collection_ns_max": 49812300,
+          "actual_interval_ns_max": 107080100,
+          "schedule_lateness_ns_max": 11743100,
+          "skipped_ticks": 0,
+          "discovery_errors": 0,
+          "samples_with_unavailable_processes": 7
+        }
+      },
+      "resource_phase_windows": null,
+      "raw_resource_projection_verification_provenance": "verified within CI runner; private trace absent from download"
+    }
+  ],
+  "downloaded_file_sha256": [
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/A/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/A/capture.bin.progress.jsonl",
+      "bytes": 1984,
+      "sha256": "293a339763ded8fbda587b76a86af649494a783f0b1cbf546a65219d483c6a62"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/A/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/A/capture.bin.source.bin",
+      "bytes": 18360,
+      "sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/A/capture.bin.workflow.json",
+      "bytes": 1330,
+      "sha256": "2a1c52aeb58ddf6e13ee02cdc7aeac344bf31f9d1913121ea7e50a5c3e394f9a"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/B/capture.bin",
+      "bytes": 32,
+      "sha256": "ebdddc513596b1850a94bc79ad8c6f50017d760794cb5ba5bfcdc020f96b0b6f"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/B/capture.bin.progress.jsonl",
+      "bytes": 627,
+      "sha256": "b6738f6c66fe44ad12e294148e06f328f988650793d7e0fd7deb04c43f42d5cd"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/B/capture.bin.receiver.json",
+      "bytes": 473,
+      "sha256": "e23c8979a42f3dd3254d28ddf42de82ff9455316d08bb37f389432b707810d39"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/B/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/B/capture.bin.workflow.json",
+      "bytes": 409,
+      "sha256": "16ae4127c3680e707e4c6a88af9c8d92c762859b563f0c563d630bbcb6ce00b0"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F1/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F1/capture.bin.progress.jsonl",
+      "bytes": 1104,
+      "sha256": "0959089e0fd50fc078eb026776c49d4337fb7f8f3c580f234329cba7a44c54ce"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F1/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F1/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "c0d35b68ed7d8147bfa42eb9ea7e8a64ddafef8a786b1b1f42b0b85f179057a4"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F1/capture.bin.workflow.json",
+      "bytes": 738,
+      "sha256": "3a166678e0f9168f3af1e5ed8a8a74bbfc47196152a322db7ad6cd4064f25aa2"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-order/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-order/capture.bin.progress.jsonl",
+      "bytes": 639,
+      "sha256": "01f50689a302190b78ade472d81201ce167c5dcab65aa8deaa5c3afebdac0d37"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-order/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-order/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-order/capture.bin.workflow.json",
+      "bytes": 437,
+      "sha256": "e31bb0f5b4cf32b8cb55b62893676a35d8b856f12a4fa6d6351b07b523418510"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-stop/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-stop/capture.bin.progress.jsonl",
+      "bytes": 853,
+      "sha256": "49a4b006fe0dbfa8c87c851360984d577ea7e616bed96bcf6376215d802c97a3"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-stop/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-stop/capture.bin.source.bin",
+      "bytes": 4096,
+      "sha256": "677fc7f881d2ae836d8f8fd1c3c68afdfac02a386b0ee0910ace71c538b60b4e"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/cases/F2-stop/capture.bin.workflow.json",
+      "bytes": 718,
+      "sha256": "ec9a16bf2bac5c4d029f0faddc5fb459b5b194abc7a3c3d14bcdb75673937290"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/stdout.json",
+      "bytes": 1282,
+      "sha256": "4b2dc407fa973c1d8c204f6c8dd85340ada8c07ecdde06d7e350a16e933b3812"
+    },
+    {
+      "entry": "workflow-fixture/run-7fj5en57/validation.json",
+      "bytes": 3617,
+      "sha256": "d3a4200516b35c6045512acecf716e71e2a7390ea6ee0fd974693e61521fd8d9"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/A/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/A/capture.bin.progress.jsonl",
+      "bytes": 1988,
+      "sha256": "aef8d6f03cac666f7f8ecb8cb00b3b7079458d991c88617eccd34b330c29c8a4"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/A/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/A/capture.bin.source.bin",
+      "bytes": 18360,
+      "sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/A/capture.bin.workflow.json",
+      "bytes": 1334,
+      "sha256": "07bf6a60c7813118d1e7c4a26d4ffd9f18d6b8cf9d8fde5755006baf4ac8a1dd"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/B/capture.bin",
+      "bytes": 32,
+      "sha256": "ebdddc513596b1850a94bc79ad8c6f50017d760794cb5ba5bfcdc020f96b0b6f"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/B/capture.bin.progress.jsonl",
+      "bytes": 627,
+      "sha256": "b6738f6c66fe44ad12e294148e06f328f988650793d7e0fd7deb04c43f42d5cd"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/B/capture.bin.receiver.json",
+      "bytes": 473,
+      "sha256": "e23c8979a42f3dd3254d28ddf42de82ff9455316d08bb37f389432b707810d39"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/B/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/B/capture.bin.workflow.json",
+      "bytes": 409,
+      "sha256": "16ae4127c3680e707e4c6a88af9c8d92c762859b563f0c563d630bbcb6ce00b0"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F1/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F1/capture.bin.progress.jsonl",
+      "bytes": 1104,
+      "sha256": "1a140b4d596cdeaba8aa976f5924fd0615edea9426ee176c07737e892b88d14d"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F1/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F1/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "c0d35b68ed7d8147bfa42eb9ea7e8a64ddafef8a786b1b1f42b0b85f179057a4"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F1/capture.bin.workflow.json",
+      "bytes": 738,
+      "sha256": "a96b385cd4e957eea4768cca86ee85c75699237da1cfc879e4abfcf630c46a2a"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-order/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-order/capture.bin.progress.jsonl",
+      "bytes": 639,
+      "sha256": "01f50689a302190b78ade472d81201ce167c5dcab65aa8deaa5c3afebdac0d37"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-order/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-order/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-order/capture.bin.workflow.json",
+      "bytes": 437,
+      "sha256": "e31bb0f5b4cf32b8cb55b62893676a35d8b856f12a4fa6d6351b07b523418510"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-stop/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-stop/capture.bin.progress.jsonl",
+      "bytes": 853,
+      "sha256": "0826fb4069afa887f29ae880974a022953acd659f8b6168ed2af07bd4670cd5b"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-stop/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-stop/capture.bin.source.bin",
+      "bytes": 4096,
+      "sha256": "677fc7f881d2ae836d8f8fd1c3c68afdfac02a386b0ee0910ace71c538b60b4e"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/cases/F2-stop/capture.bin.workflow.json",
+      "bytes": 718,
+      "sha256": "17ad527f95aa8a60a9aeca5459bd0eade7471595607f2f5b0f096de6569c9125"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/validation.json",
+      "bytes": 3617,
+      "sha256": "cb9af640e5b015f030c93b2573d19274c15c4d3e58337bfb18b40bcb3a3bdc6b"
+    },
+    {
+      "entry": "workflow-fixture/run-qt9gwj53/stdout.json",
+      "bytes": 1282,
+      "sha256": "4b2dc407fa973c1d8c204f6c8dd85340ada8c07ecdde06d7e350a16e933b3812"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/A phases/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/A phases/capture.bin.progress.jsonl",
+      "bytes": 1988,
+      "sha256": "38bb172c13740c1d04f2d85cc301cdf40235c315917b6ae95984cbfbefdd1740"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/A phases/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/A phases/capture.bin.source.bin",
+      "bytes": 18360,
+      "sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/A phases/capture.bin.workflow.json",
+      "bytes": 1335,
+      "sha256": "c712434570ba18ac9b223f2a72bdaa3bfc9a0b70b8c895afc4a23796cb5eb2a7"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/B closed/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/B closed/capture.bin.progress.jsonl",
+      "bytes": 208,
+      "sha256": "f1728320366bdb836fa159313f75e403c07963f650b816b288fe32f45aac21e6"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/B closed/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/B closed/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/B graceful/capture.bin",
+      "bytes": 32,
+      "sha256": "ebdddc513596b1850a94bc79ad8c6f50017d760794cb5ba5bfcdc020f96b0b6f"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/B graceful/capture.bin.progress.jsonl",
+      "bytes": 626,
+      "sha256": "85d96e50cd8356fdc6e0541e897ae7d8ac2ebdd5d807a4d1edd6f41374dc0d62"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/B graceful/capture.bin.receiver.json",
+      "bytes": 473,
+      "sha256": "e23c8979a42f3dd3254d28ddf42de82ff9455316d08bb37f389432b707810d39"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/B graceful/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/cases/B graceful/capture.bin.workflow.json",
+      "bytes": 410,
+      "sha256": "2768d403095e2a8d5acbd12d864f82e287b6d5903f7c36dd1cb042b474216277"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/A phases/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-82jppyvj/validation.json",
+      "bytes": 5210,
+      "sha256": "6c38800c92371c64541aff23dae71949b4ea6737cb11517c9682e6b1b88aac6a"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/A phases/capture.bin.progress.jsonl",
+      "bytes": 1989,
+      "sha256": "33986d9d846a7e69c648880546383f0ec40b9c3c697aa5cee073c134ce8afdbf"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/A phases/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/A phases/capture.bin.source.bin",
+      "bytes": 18360,
+      "sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/A phases/capture.bin.workflow.json",
+      "bytes": 1336,
+      "sha256": "7ec971e021c8ca4354b5338125f17d08507447423ff70a5520895b513ea6fd4e"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/B closed/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/B closed/capture.bin.progress.jsonl",
+      "bytes": 208,
+      "sha256": "f1728320366bdb836fa159313f75e403c07963f650b816b288fe32f45aac21e6"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/B closed/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/B closed/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/B graceful/capture.bin",
+      "bytes": 32,
+      "sha256": "ebdddc513596b1850a94bc79ad8c6f50017d760794cb5ba5bfcdc020f96b0b6f"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/B graceful/capture.bin.progress.jsonl",
+      "bytes": 627,
+      "sha256": "b6738f6c66fe44ad12e294148e06f328f988650793d7e0fd7deb04c43f42d5cd"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/B graceful/capture.bin.receiver.json",
+      "bytes": 473,
+      "sha256": "e23c8979a42f3dd3254d28ddf42de82ff9455316d08bb37f389432b707810d39"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/B graceful/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/cases/B graceful/capture.bin.workflow.json",
+      "bytes": 410,
+      "sha256": "2768d403095e2a8d5acbd12d864f82e287b6d5903f7c36dd1cb042b474216277"
+    },
+    {
+      "entry": "workflow-controller/run-ghsc7ek7/validation.json",
+      "bytes": 5210,
+      "sha256": "0f30c1797a474e476cc6717d9374fdb9f0b42c16b0f64baa0f0fa0a69ccff0c4"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/cancel.bin",
+      "bytes": 108438,
+      "sha256": "0400bf56392ac20f5f936a40087e14221e63057fcb550d6912e8d46a05fd06ef"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/close.bin",
+      "bytes": 768,
+      "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/A-2/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/A-2/capture.bin.progress.jsonl",
+      "bytes": 2002,
+      "sha256": "7e9488cb5198b3a6a77d979b3ae8aa255aea13eaf1ac9a4d15dce13fe67e300c"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/A-2/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/A-2/capture.bin.source.bin",
+      "bytes": 18360,
+      "sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/A-2/capture.bin.workflow.json",
+      "bytes": 1341,
+      "sha256": "26334360b07503e0361db38519d33905d5be141fecc73d31019f8cd9727837b3"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/B-3/capture.bin",
+      "bytes": 27,
+      "sha256": "38a3a75344ea28610727e701f2fdff564438429d128c4cd2e057deefb80eddf9"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/B-3/capture.bin.progress.jsonl",
+      "bytes": 633,
+      "sha256": "df82a12d3d5fcb0516ec9f36ae3590347c2b7567badc0bcfcd4045c944a7f35e"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/B-3/capture.bin.receiver.json",
+      "bytes": 473,
+      "sha256": "22079bdfe3795e702912a84701659a994bf7c90dfa12887909c5746be5f2fe26"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/B-3/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/B-3/capture.bin.workflow.json",
+      "bytes": 409,
+      "sha256": "3d65882add7fb038b018f024b366442da673d6cf2ffbeba9143d6a1e88b2a0ce"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/C-1/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/C-1/capture.bin.progress.jsonl",
+      "bytes": 632,
+      "sha256": "7a402023cfc2976f151d9d33250c06ca107d0186efbe2377897de5f145df3326"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/C-1/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/C-1/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/C-1/capture.bin.workflow.json",
+      "bytes": 407,
+      "sha256": "bdfdeb244a5aa6971d7f07336f7f9818338328307c4952ea18b8160e37058bed"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F1-4/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F1-4/capture.bin.progress.jsonl",
+      "bytes": 1108,
+      "sha256": "f53d3d6cd4c4739148561dae01b2ac202e074b4d74300e6d35f44e0c49931d1a"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F1-4/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F1-4/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "c0d35b68ed7d8147bfa42eb9ea7e8a64ddafef8a786b1b1f42b0b85f179057a4"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F1-4/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "4ee3e618d72fe62ea90e5ee53b63a873eb1a824fdaf7b382fa5229e0bec24741"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F2-5/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F2-5/capture.bin.progress.jsonl",
+      "bytes": 1108,
+      "sha256": "f267e506854d8766e1abb6852fd87ae1fc17f7eb14397511a56cf22e5bb2c63f"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F2-5/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F2-5/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "3333c3b86f8709c319f73b112f2f548936631e235b7a41e2781212b205c5c117"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F3-6/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F2-5/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "7e900de71bc5876fc52158b55ada3ef8047cfa328ab7cab87074c595041851f3"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F3-6/capture.bin.progress.jsonl",
+      "bytes": 1109,
+      "sha256": "ca69396977cf9ff4cd6ef2c803bc6b2888ec0ab470c68595591fb24648a25742"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F3-6/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F3-6/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "7a3345ac62b60b40e46a71d105bcb2aea14c562ed07db4c39a91f888b787c53f"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F3-6/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "08076dd4258d3156fab72981565feddf1f078220a23416e4e9c422156c79c4ca"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-11/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-11/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "5a85ccbef9a9f118f5162ea73533a8c2376f6435e080f5af6f6f3ced88c8d2f1"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-11/capture.bin.source.bin",
+      "bytes": 28672,
+      "sha256": "3b0f6bda8f4723a08324498aa5d1d53f654e2de6ef7b168e44648a339934a7bc"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-11/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-13/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-13/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "6995ca94e6e85a82da402abe8d5b4c6645bdcfe97dd92a1915aab2ba518021f4"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-13/capture.bin.source.bin",
+      "bytes": 20480,
+      "sha256": "e4ba51e9e603d0ac69eb86b05ac2bcd922b3f736edc32627a00517a4d6477ca8"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-13/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-15/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-15/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "5c54cd112ed80936e4a16e76873a029daf9a8d3530a67f9dc274140b3753c5f4"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-15/capture.bin.source.bin",
+      "bytes": 20480,
+      "sha256": "e4ba51e9e603d0ac69eb86b05ac2bcd922b3f736edc32627a00517a4d6477ca8"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-15/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-17/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-17/capture.bin.progress.jsonl",
+      "bytes": 860,
+      "sha256": "57b063b4907ef1209ee01ae4b68dff26c1c901e751c2df71dea6a8a4354d7f15"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-17/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-17/capture.bin.source.bin",
+      "bytes": 49152,
+      "sha256": "a9d6e52a870a9d09a6cc1edbd6e8f995a16a803ced35492333705657a429b591"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-17/capture.bin.workflow.json",
+      "bytes": 726,
+      "sha256": "ec2509d690da14b9e45d647362efbd8b355bfd08d18b23a25bc1c1926d606297"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-7/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-7/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-7/capture.bin.progress.jsonl",
+      "bytes": 1108,
+      "sha256": "56795345c3a819cee46b4c4aa2371f7be0b1fff9f309904124edc593e9824481"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-7/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "91088f3e3d31b00284d9662717f29519f278b8ef8127cd0f375a442cca3a74bf"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-7/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "a54bdb48bfcb70cf84f843eee3c288c24718b5bf3587c50f78108eeffedca601"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-9/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-9/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "75f22e8f5528fc627b8abc3368d0436867647afa1a23a11818d9fc68da2d1fe2"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-9/capture.bin.source.bin",
+      "bytes": 20480,
+      "sha256": "e4ba51e9e603d0ac69eb86b05ac2bcd922b3f736edc32627a00517a4d6477ca8"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F4-9/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-10/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-10/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "75f22e8f5528fc627b8abc3368d0436867647afa1a23a11818d9fc68da2d1fe2"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-10/capture.bin.source.bin",
+      "bytes": 20480,
+      "sha256": "c31e75d72e049b1096dbe06e63e14bba517aea0b0aaa29c05304509b2c17132f"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-12/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-10/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-12/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "5a85ccbef9a9f118f5162ea73533a8c2376f6435e080f5af6f6f3ced88c8d2f1"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-12/capture.bin.source.bin",
+      "bytes": 28672,
+      "sha256": "50beb62b38926f5adfc7befc5f17b87764dc5adf381e8cd0719766b44103ce5f"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-12/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-14/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-14/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "6995ca94e6e85a82da402abe8d5b4c6645bdcfe97dd92a1915aab2ba518021f4"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-14/capture.bin.source.bin",
+      "bytes": 20480,
+      "sha256": "c31e75d72e049b1096dbe06e63e14bba517aea0b0aaa29c05304509b2c17132f"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-14/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-16/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-16/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "5c54cd112ed80936e4a16e76873a029daf9a8d3530a67f9dc274140b3753c5f4"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-16/capture.bin.source.bin",
+      "bytes": 20480,
+      "sha256": "c31e75d72e049b1096dbe06e63e14bba517aea0b0aaa29c05304509b2c17132f"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-16/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-18/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-18/capture.bin.progress.jsonl",
+      "bytes": 860,
+      "sha256": "4a7d1eecbb1237e417f8ca9e115ed853561e7f437dace1dce089ec4c167f65c6"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-18/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-18/capture.bin.source.bin",
+      "bytes": 49152,
+      "sha256": "f3f6ad1fa284a8eb9604eebb470d3105ab3cec704d7e7ecdf9f50026081c3680"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-18/capture.bin.workflow.json",
+      "bytes": 727,
+      "sha256": "3582f241bbf01d1de5bb943b982a25bfcb5693fba2108d44a4545f79500fef67"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-8/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-8/capture.bin.progress.jsonl",
+      "bytes": 1108,
+      "sha256": "342a1854e6a8a7e805fede5883990fef0d3687e36aa8942ad53b6132a9a91137"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-8/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-8/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "86c2d67d4ea4fec205cc8d4b945464e96a9ab20766ca8616c232f4fc8eea11ac"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/fixtures/F5-8/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "065e28fcea106d33b2f03399558d5fe242722c4037b5015756e6a23451fa1742"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/frame.bmp",
+      "bytes": 4678454,
+      "sha256": "ee213bae6b3bcf903b83266ca5a28c113cca07f62477a1874dc0c99656b33f35"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/resource-observations.jsonl",
+      "bytes": 1112481,
+      "sha256": "4fc97af0af0a024c42b342526940b6174532815f32f64298c76007219c252df0"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/resource-phases.jsonl",
+      "bytes": 3440,
+      "sha256": "822af5b40d814cfb6e9cce3e37daf3eb3df48bbc215fe9980797e057f709d68a"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/resource-summary.json",
+      "bytes": 6900,
+      "sha256": "4ab0e9408f0fb22e7d91f8e72604450e9406f09ed7eb2e9876e42bab4b2c3149"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/sample.public.json",
+      "bytes": 1079,
+      "sha256": "bb5ed6209f9f1e8279f09f27a5561b921165c8d07261077d720190e117e08d8d"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/sessions.json",
+      "bytes": 724547,
+      "sha256": "40774a19d6587b0badde1ea76f9afdb00e7ddde8075c7a651dc13322a3fc2d73"
+    },
+    {
+      "entry": "workflow-sessions/run-9efbf79ec72d4e14a62c226a48412f39/validation.json",
+      "bytes": 7288,
+      "sha256": "0a031a5125bf79a0315cf1e4647f58012ed8b2bf771fad039abbe7606cd67730"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/close.bin",
+      "bytes": 768,
+      "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/cancel.bin",
+      "bytes": 112530,
+      "sha256": "e59f36cb9c088145acfbcbf7ed6e034f81f1ac65b6ef7c3e691520253a89d411"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/A-2/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/A-2/capture.bin.progress.jsonl",
+      "bytes": 2003,
+      "sha256": "29fd7eca36ca79893351f7881df669b888a4bece0853c49256bb9a60e4781cc1"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/A-2/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/A-2/capture.bin.source.bin",
+      "bytes": 18360,
+      "sha256": "f8cdc24a5cfe2e5bdc707faaf4754bba80280808dfa51b1dd8770bdaeef119a2"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/A-2/capture.bin.workflow.json",
+      "bytes": 1342,
+      "sha256": "4adbdf714b9700c48f051a862088084f707cceb8c9683432be0e1caa34448fa3"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/B-3/capture.bin",
+      "bytes": 27,
+      "sha256": "38a3a75344ea28610727e701f2fdff564438429d128c4cd2e057deefb80eddf9"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/B-3/capture.bin.progress.jsonl",
+      "bytes": 634,
+      "sha256": "775a7cbf6f44c9f073d6a9b07fb6821650c7722c87faca3e7be0f627214e5518"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/B-3/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/B-3/capture.bin.receiver.json",
+      "bytes": 473,
+      "sha256": "22079bdfe3795e702912a84701659a994bf7c90dfa12887909c5746be5f2fe26"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/B-3/capture.bin.workflow.json",
+      "bytes": 409,
+      "sha256": "3d65882add7fb038b018f024b366442da673d6cf2ffbeba9143d6a1e88b2a0ce"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/C-1/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/C-1/capture.bin.progress.jsonl",
+      "bytes": 631,
+      "sha256": "e8865889d10c1d52e7aaf073fdf692b42fa3616b66c422fc5257978f6bde8d62"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/C-1/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/C-1/capture.bin.source.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/C-1/capture.bin.workflow.json",
+      "bytes": 407,
+      "sha256": "bdfdeb244a5aa6971d7f07336f7f9818338328307c4952ea18b8160e37058bed"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F1-4/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F1-4/capture.bin.progress.jsonl",
+      "bytes": 1108,
+      "sha256": "d3dc28c2823f24ca2f56259a4b777781424e2624ad3c71afe720103195d4c61b"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F1-4/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "c0d35b68ed7d8147bfa42eb9ea7e8a64ddafef8a786b1b1f42b0b85f179057a4"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F1-4/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F1-4/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "ddb186c5ead8f3160ecbe6773b582298852959bfe58c0e6d6d65c322db4fb934"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F2-5/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F2-5/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F2-5/capture.bin.progress.jsonl",
+      "bytes": 1108,
+      "sha256": "0333249c3180cb48de05cd3bed70f951280b1f56d6637ee68b2af7c635d232f7"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F2-5/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "3333c3b86f8709c319f73b112f2f548936631e235b7a41e2781212b205c5c117"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F2-5/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "e52081b91922df8302529d4e76a46aa58803410566493ffddf820ac1fe897317"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F3-6/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F3-6/capture.bin.progress.jsonl",
+      "bytes": 1108,
+      "sha256": "f0b6fc133103a9fa08ec955750f31325c5ee2c24fe9b23ec9577740e8ace0547"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F3-6/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F3-6/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "7a3345ac62b60b40e46a71d105bcb2aea14c562ed07db4c39a91f888b787c53f"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F3-6/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "3aab9c9e1d8c6977f703732d66fd8a9a9fb0be9f15970d473b03e40f6b50cdee"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-11/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-11/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "5a85ccbef9a9f118f5162ea73533a8c2376f6435e080f5af6f6f3ced88c8d2f1"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-11/capture.bin.source.bin",
+      "bytes": 24576,
+      "sha256": "ccb587a7509d3aa4b2a8585f19eb162f4914cc99c9f3eed6b14ec41d4f733955"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-11/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-13/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-13/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "5c54cd112ed80936e4a16e76873a029daf9a8d3530a67f9dc274140b3753c5f4"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-13/capture.bin.source.bin",
+      "bytes": 28672,
+      "sha256": "3b0f6bda8f4723a08324498aa5d1d53f654e2de6ef7b168e44648a339934a7bc"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-13/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-15/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-15/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "75f22e8f5528fc627b8abc3368d0436867647afa1a23a11818d9fc68da2d1fe2"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-15/capture.bin.source.bin",
+      "bytes": 24576,
+      "sha256": "ccb587a7509d3aa4b2a8585f19eb162f4914cc99c9f3eed6b14ec41d4f733955"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-15/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-17/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-17/capture.bin.progress.jsonl",
+      "bytes": 860,
+      "sha256": "fc8c1ed141130f387dbfaa34af8cf1d1f96d4ef4a3768118271bfcf699b5d4da"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-17/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-17/capture.bin.source.bin",
+      "bytes": 53248,
+      "sha256": "43492748a0809fe1eceb5043920966be4bc322753daf97457a5822427eb01396"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-17/capture.bin.workflow.json",
+      "bytes": 727,
+      "sha256": "dbc0138fcbbe971bcc4f446bf34e8989ae70ea144a0dd0d8643bd0c597931c25"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-7/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-7/capture.bin.progress.jsonl",
+      "bytes": 1109,
+      "sha256": "d091a597316a153826c22a4e5d77f656ee6fc916b47c6f302712630f9ac617ce"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-7/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-7/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "91088f3e3d31b00284d9662717f29519f278b8ef8127cd0f375a442cca3a74bf"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-7/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "6f445a1ed0dea2075a2fe2f3ed39d2f97d9b63961a52b6c02572e2d07cb99c60"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-9/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-9/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "8e5d6a5b354f2190a1607c4ba83c400bc4d85e7ada4c6b3d4a972008dd019ea0"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-9/capture.bin.source.bin",
+      "bytes": 24576,
+      "sha256": "ccb587a7509d3aa4b2a8585f19eb162f4914cc99c9f3eed6b14ec41d4f733955"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F4-9/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-10/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-10/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "8e5d6a5b354f2190a1607c4ba83c400bc4d85e7ada4c6b3d4a972008dd019ea0"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-10/capture.bin.source.bin",
+      "bytes": 24576,
+      "sha256": "3e35dee258c169d17bf8caa1cbd7f55fa4707d2cc0a3cf9d99b4c2901c8f14ec"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-10/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-12/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-12/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "5a85ccbef9a9f118f5162ea73533a8c2376f6435e080f5af6f6f3ced88c8d2f1"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-12/capture.bin.source.bin",
+      "bytes": 24576,
+      "sha256": "3e35dee258c169d17bf8caa1cbd7f55fa4707d2cc0a3cf9d99b4c2901c8f14ec"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-14/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-12/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-14/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "5c54cd112ed80936e4a16e76873a029daf9a8d3530a67f9dc274140b3753c5f4"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-14/capture.bin.source.bin",
+      "bytes": 32768,
+      "sha256": "f6ce8c319da05065c23886619515341d7656ce26fc5bf4c456ea8407f2c4e234"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-14/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-16/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-16/capture.bin.progress.jsonl",
+      "bytes": 427,
+      "sha256": "75f22e8f5528fc627b8abc3368d0436867647afa1a23a11818d9fc68da2d1fe2"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-16/capture.bin.source.bin",
+      "bytes": 24576,
+      "sha256": "3e35dee258c169d17bf8caa1cbd7f55fa4707d2cc0a3cf9d99b4c2901c8f14ec"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-16/capture.bin.workflow.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-18/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-18/capture.bin.progress.jsonl",
+      "bytes": 860,
+      "sha256": "1a36ed4fe217278122367bf19ca06be5fd49e0153184f84c4b8c53554429629b"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-18/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-18/capture.bin.source.bin",
+      "bytes": 53248,
+      "sha256": "d2c406928f3f0831591d01696a20450bbe000a6a1d4e7b143ce1e14119bc9a3c"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-18/capture.bin.workflow.json",
+      "bytes": 727,
+      "sha256": "3a9c3c5a77777bbf1ea1f48749241a8d373b00c00d09ff747605d32317f952e5"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-8/capture.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-8/capture.bin.progress.jsonl",
+      "bytes": 1108,
+      "sha256": "64fbcf59fbf176a3c6eb749acd116efc6d6224f1328b9b156ac87cd4b84f7b3e"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-8/capture.bin.receiver.json",
+      "bytes": 471,
+      "sha256": "5a1a9dded35fa6c0a4607c784586ed079f0ac9439ad76a25d42030513b7e1003"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-8/capture.bin.source.bin",
+      "bytes": 2048000,
+      "sha256": "86c2d67d4ea4fec205cc8d4b945464e96a9ab20766ca8616c232f4fc8eea11ac"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/fixtures/F5-8/capture.bin.workflow.json",
+      "bytes": 740,
+      "sha256": "21f6fb5bd3802216e16f07274862089a000b69e7bad167ed4f9c59566c548cc4"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/frame.bmp",
+      "bytes": 4678454,
+      "sha256": "ee213bae6b3bcf903b83266ca5a28c113cca07f62477a1874dc0c99656b33f35"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/resource-observations.jsonl",
+      "bytes": 1114156,
+      "sha256": "fd8e7ee4c181840f5c9bd191d78381f3fcd83255aaa8d58b20a531e407fe81ae"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/resource-phases.jsonl",
+      "bytes": 3440,
+      "sha256": "79d0b2871af70bbee2c809ce2f73bc1804027992f2006337c4c20dd57e97f9da"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/resource-summary.json",
+      "bytes": 6855,
+      "sha256": "2cbadfbc06538c3b3925acd29b40d8485e1afe28b58dba00e20e813517b90f3a"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/sample.public.json",
+      "bytes": 1079,
+      "sha256": "bb5ed6209f9f1e8279f09f27a5561b921165c8d07261077d720190e117e08d8d"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/sessions.json",
+      "bytes": 721916,
+      "sha256": "b3ebe896f81440acd811997a9f932378dd3da62d70604a6642d2dd5926633302"
+    },
+    {
+      "entry": "workflow-sessions/run-f2808e59a1344c30a93ec4ea7e3597bb/validation.json",
+      "bytes": 7265,
+      "sha256": "7a4565ce4b16a6c93d3cc1df928f601d4a203187fd2ca283c8a0f2904971c460"
+    }
+  ],
+  "source_pinned_to_successful_clean_ci": true,
+  "binary_independently_rehashed": false,
+  "system_clipboard_in_new_scenario": false,
+  "real_ime_in_new_scenario": false,
+  "operation_state_submit_endpoints": false,
+  "presented_done": null,
+  "limitations": [
+    "Native resource phase clock mapping is not calibrated; initialization and short trends remain unknown.",
+    "Launcher tree is not UI-only cost; sampler group is the full supervising Python process, not isolated sampler-thread CPU.",
+    "Requested sampling interval is not achieved scheduling; overhead, unavailable rows and skipped ticks are retained.",
+    "Private process identities, original resource traces and transport are absent from the artifact; runner reports cannot be independently rehashed here.",
+    "No uploaded executables: binary SHA256 values are hosted-recorded only.",
+    "No combined actual Copy/Paste/IME workflow, WindTerm performance equivalence or long-duration leak claim."
+  ],
+  "local_validation": {
+    "ctest_suites_passed": 35,
+    "ctest_internal_skips": 8,
+    "skip_count_source": "complete LastTest.log; passing suites do not mean skipped system cases passed",
+    "ctest_log_sha256": "de4e0473ed77cddde2670c7d5046c3f421cead125246049982d1aa023c5df94b",
+    "ctest_last_test_sha256": "54a544520d1dd41b324df4d9683c6c37a7e481c6cfa6643b2f17b46666c1410e",
+    "runtime_observation_lifecycle": {
+      "runtime_snapshot": "public-window-lifecycle",
+      "default_off": true,
+      "thread_guard": true,
+      "window_creations": 1,
+      "preclose_preserved": true,
+      "session_job_active_after": 0,
+      "final_after_join": true
+    },
+    "eight_session_rounds": [
+      {
+        "round": 1,
+        "status": "passed",
+        "source_files_current_verified": 35,
+        "binary_files_current_verified": 4,
+        "source_to_binary_binding": "not_independently_verified",
+        "phases": 26,
+        "observations": 235,
+        "distinct_entities_closed": 18,
+        "cycles_8_6_8": 5,
+        "rejected_ninth": true,
+        "full_flood_source_bytes_per_role": 2048000,
+        "consumer_marker_and_final_blank_verified": true,
+        "foreground_raw_bytes_final": 27,
+        "cancel_prefix_bytes": 87978,
+        "close_prefix_bytes": 768,
+        "six_resident_seconds": [
+          1.0115951,
+          1.0233487,
+          1.0203289,
+          1.0079496,
+          1.0328013
+        ],
+        "outer_job_active_after": 0,
+        "desktop_gone": true,
+        "public_sample_whitelist_verified": true,
+        "strict_P2_actual_negative_replays_rejected": [
+          "search_capacity",
+          "search_metadata",
+          "navigation",
+          "paste_capacity",
+          "paste_error"
+        ],
+        "resources": {
+          "samples": 149,
+          "raw_public_rows_compared": 166,
+          "same_sample_tree_peaks": {
+            "private_bytes": 123777024,
+            "working_set_bytes": 270626816,
+            "handles": 3059
+          },
+          "observed_cpu_seconds": 4.21875,
+          "quality": {
+            "collection_ns_max": 421307700,
+            "actual_interval_ns_max": 499684300,
+            "schedule_lateness_ns_max": 14672100,
+            "skipped_ticks": 39,
+            "discovery_errors": 0,
+            "samples_with_unavailable_processes": 8
+          },
+          "first_root_sample_before_GO": true,
+          "phase_windows": null
+        }
+      },
+      {
+        "round": 0,
+        "status": "passed",
+        "source_files_current_verified": 35,
+        "binary_files_current_verified": 4,
+        "source_to_binary_binding": "not_independently_verified",
+        "phases": 26,
+        "observations": 235,
+        "distinct_entities_closed": 18,
+        "cycles_8_6_8": 5,
+        "rejected_ninth": true,
+        "full_flood_source_bytes_per_role": 2048000,
+        "consumer_marker_and_final_blank_verified": true,
+        "foreground_raw_bytes_final": 27,
+        "cancel_prefix_bytes": 83886,
+        "close_prefix_bytes": 768,
+        "six_resident_seconds": [
+          1.018283,
+          1.0195793,
+          1.026094,
+          1.0156768,
+          1.0064475
+        ],
+        "outer_job_active_after": 0,
+        "desktop_gone": true,
+        "public_sample_whitelist_verified": true,
+        "strict_P2_actual_negative_replays_rejected": [
+          "search_capacity",
+          "search_metadata",
+          "navigation",
+          "paste_capacity",
+          "paste_error"
+        ],
+        "resources": {
+          "samples": 149,
+          "raw_public_rows_compared": 166,
+          "same_sample_tree_peaks": {
+            "private_bytes": 121356288,
+            "working_set_bytes": 271106048,
+            "handles": 3061
+          },
+          "observed_cpu_seconds": 4.75,
+          "quality": {
+            "collection_ns_max": 444315200,
+            "actual_interval_ns_max": 499967500,
+            "schedule_lateness_ns_max": 10834300,
+            "skipped_ticks": 39,
+            "discovery_errors": 0,
+            "samples_with_unavailable_processes": 6
+          },
+          "first_root_sample_before_GO": true,
+          "phase_windows": null
+        }
+      }
+    ],
+    "private_resource_projection_verified_on_local_originals": true
+  },
+  "ci_suites": {
+    "windows": 35,
+    "ubuntu_core_and_tools": 21,
+    "internal_skip_counts": null,
+    "log_archive": {
+      "zip_sha256": "efdc3b753e7fa184042df82818d67879189a10464ca95373ac5bb747e2bb8e21",
+      "findings": [
+        {
+          "entry": "0_regression (ubuntu-24.04, build_bin).txt",
+          "line": "2026-10-23T23:40:51.6530090Z 100% tests passed, 0 tests failed out of 21"
+        },
+        {
+          "entry": "0_regression (ubuntu-24.04, build_bin).txt",
+          "line": "2026-10-23T23:40:51.6530346Z Total Test time (real) =   8.86 sec"
+        },
+        {
+          "entry": "regression (ubuntu-24.04, build_bin)/7_Test.txt",
+          "line": "2026-10-23T23:40:51.6530088Z 100% tests passed, 0 tests failed out of 21"
+        },
+        {
+          "entry": "regression (ubuntu-24.04, build_bin)/7_Test.txt",
+          "line": "2026-10-23T23:40:51.6530343Z Total Test time (real) =   8.86 sec"
+        },
+        {
+          "entry": "1_regression (windows-2025, build_bin_Release).txt",
+          "line": "2026-10-23T23:45:35.1770955Z 100% tests passed out of 35"
+        },
+        {
+          "entry": "1_regression (windows-2025, build_bin_Release).txt",
+          "line": "2026-10-23T23:45:35.1774707Z Total Test time (real) = 202.25 sec"
+        },
+        {
+          "entry": "regression (windows-2025, build_bin_Release)/7_Test.txt",
+          "line": "2026-10-23T23:45:35.1770951Z 100% tests passed out of 35"
+        },
+        {
+          "entry": "regression (windows-2025, build_bin_Release)/7_Test.txt",
+          "line": "2026-10-23T23:45:35.1774697Z Total Test time (real) = 202.25 sec"
+        }
+      ]
+    }
+  },
+  "independent_review": {
+    "standards_unresolved": 0,
+    "spec_unresolved": 0,
+    "fixed_spec_gap": "Enforce observed query/result allocations, metadata/navigation and active/terminal paste capacity/error relationships.",
+    "actual_artifact_mutations_rejected_during_spec_review": 32,
+    "final_ci_artifacts_independently_reviewed": true,
+    "final_ci_review_report_sha256": "59c04da9be3f777a63059a1f163a2d53ccb4de7596a8b199bfa9ffb8dfcb6b2d"
+  },
+  "retained_failures": [
+    {
+      "stage": 21,
+      "outcome": "timeout; Job0 and private desktop gone",
+      "cause": "Isolated launcher build omitted shell_input_client dependency.",
+      "resolution": "Explicit dependency; real same-cmd missing/present helper red/green retained."
+    },
+    {
+      "stage": 26,
+      "outcome": "timeout; Job0 and private desktop gone",
+      "cause": "Scenario awaited TF_PASTE_DONE but actual producer writes TF_KEY_DONE.",
+      "resolution": "Use the actual producer endpoint."
+    },
+    {
+      "suite_result": {
+        "passed": 34,
+        "failed": 1
+      },
+      "outcome": "Native returned success; independent consumer oracle rejected missing final newline.",
+      "cause": "Producer completion plus visible marker text preceded terminal consumption of terminating CRLF.",
+      "resolution": "Require actual document marker plus final empty line; strict oracle unchanged."
+    },
+    {
+      "outcome": "Initial acceptance checker accepted five oversized/error mutations on real originals.",
+      "cause": "Result/query size checks did not enforce observed capacities and error fields.",
+      "resolution": "Declared scenario allocation budgets and counter/error relationships; independent negatives now rejected."
+    }
+  ],
+  "resource_budget_scope": {
+    "query_logical_bytes": 4096,
+    "query_observed_capacity_bytes": 8192,
+    "result_count": 1024,
+    "result_observed_capacity_items": 2048,
+    "metadata_physical_rows": 300,
+    "pending_navigation_items": 1,
+    "active_paste_allocation_bytes": 4194336,
+    "meaning": "Fixed Windows scenario observation budgets, not portable allocator guarantees or performance thresholds.",
+    "history_and_selection_byte_capacity": null,
+    "actual_search_work_units": null
+  },
+  "remaining": [
+    "E1 actual Copy/Paste prefix plus real IME combined contract",
+    "E3 two fresh complete actual CF/IME workflows in the same eight-session process",
+    "E4 actual operation/state/WM_PAINT submission endpoints and calibrated phase resource windows",
+    "R1-08 and R1 final exit audit",
+    "Actual clipboard worker participation and recovery in the same eight-session E3 workflow; E2 only observed no clipboard task."
+  ],
+  "active_system_clipboard_worker_in_e2": false
+}

@@ -8,7 +8,9 @@
 
 | 结论 | 实现/命令入口 | 已有结果与限制 |
 |---|---|---|
-| R1 组合验收基础与既有能力复验 | [夹具协议](../experiments/shell/WORKFLOW.md)、[固定源码数据审计](../experiments/shell/results/2026-10-24-r1-workflow-foundation/validation.json)、[动作/Paste复验](../experiments/shell/results/2026-10-24-r1-workflow-foundation/regression.json)、[真实IME复验](../experiments/shell/results/2026-10-24-r1-workflow-foundation/ime-regression.json) | `5235f17` / [主CI 40034110925](https://github.com/JavaZeroo/termforge/actions/runs/40034110925)：Windows32/Ubuntu19套件，五场景两轮的54个公开文件重算；[verify 40034133987](https://github.com/JavaZeroo/termforge/actions/runs/40034133987)复核旧五模式28检查点、11空前缀。夹具不算真实Paste/IME或完整E1；八会话与组合流程仍待 #18。私有transport、未上传EXE无法从公开产物独立重哈希；无呈现/性能结论 |
+| R1 八会话 E2 数据工作流与运行观测 | [协议/自动入口](../experiments/shell/WORKFLOW.md)、[固定源码审计](../experiments/shell/results/2026-10-24-r1-eight-sessions/validation.json)、[既有能力复验](../experiments/shell/results/2026-10-24-r1-eight-sessions/regression.json) | 固定源码与独立复核：`72fe231` / [主CI](https://github.com/JavaZeroo/termforge/actions/runs/40040980384)，本地及同源码hosted各两轮。本地35/35（内部8项skip），主CI Windows35/Ubuntu21；[同源码真实IME复验](https://github.com/JavaZeroo/termforge/actions/runs/40040994121)为五模式28检查点。验收范围为每轮26检查点、18会话身份、235/256有界观测，覆盖五路洪流、阅读/Find/输入/缩放/淘汰、5次8→6→8和合成粘贴取消/关闭；实际窗口创建、字节/日志、worker/Job及非输入desktop回收分别复核。data-only不等于同次真实CF/IME完整工作流，#18仍开放 |
+| E2 launcher-tree 资源接缝 | [复用采样器的adapter](../experiments/shell/workflow_resources.py)、[同一固定源码审计](../experiments/shell/results/2026-10-24-r1-eight-sessions/validation.json) | 首个实际launcher样本在GO前取得；原始采样与脱敏observations逐条比对，公开记录可离线重算同时样本内存/handles峰值和CPU，sampler另组。scope为launcher-tree，不是UI-root；短命后代可能漏采、unknown保留。当前观测开销显著且有调度缺口，100ms仅为请求间隔，不能宣称低扰动；native阶段尚未与采样时钟校准，phase_windows=null，不据此比较性能或证明长期无泄漏 |
+| R1 组合验收基础与既有能力复验 | [夹具协议](../experiments/shell/WORKFLOW.md)、[固定源码数据审计](../experiments/shell/results/2026-10-24-r1-workflow-foundation/validation.json)、[动作/Paste复验](../experiments/shell/results/2026-10-24-r1-workflow-foundation/regression.json)、[真实IME复验](../experiments/shell/results/2026-10-24-r1-workflow-foundation/ime-regression.json) | `5235f17` / [主CI 40034110925](https://github.com/JavaZeroo/termforge/actions/runs/40034110925)：Windows32/Ubuntu19套件，五场景两轮的54个公开文件重算；[verify 40034133987](https://github.com/JavaZeroo/termforge/actions/runs/40034133987)复核旧五模式28检查点、11空前缀。此项夹具不算真实Paste/IME、八会话或完整E1；E2独立证据见本表，完整组合流程仍待 #18。私有transport、未上传EXE无法从公开产物独立重哈希；无呈现/性能结论 |
 | R1 统一文字动作限定验收 | [逐项对照](research/r1-action-comparison.md)、[最终动作审计](../experiments/shell/results/2026-10-24-r1-actions-accepted/validation.json)、[合同覆盖复核](../experiments/shell/results/2026-10-24-r1-actions-accepted/contract-coverage.json)、[真实 IME 交叉](../research/ime/results/2026-10-24-product-ime-contexts/validation.json) | `6a165c8` / [主 CI 40029637769](https://github.com/JavaZeroo/termforge/actions/runs/40029637769)：local26/system36各两轮，Find实际CF/中文重选、默认Return、Paste v2四轮25021字节及取消/关闭前缀、日志/帧/Job0/desktop删除均独立重算；[IME verify 40029638833](https://github.com/JavaZeroo/termforge/actions/runs/40029638833)五模式28检查点、9组reading上下文和候选/字节/回收另审。二进制只有hosted记录哈希，未上传独立重哈希；单场景不代替合同覆盖复核或 #18 完整工作流 |
 | 干净检出可构建和回归 | [贡献指南](../CONTRIBUTING.md)、[根 CMake](../CMakeLists.txt)、[CI workflow](../.github/workflows/build.yml) | `2dc8d6d` 对应 [Actions 39930814167](https://github.com/JavaZeroo/termforge/actions/runs/39930814167)，Windows 2025 / Ubuntu 24.04 已有成功记录；Linux 未构建 Windows 客户端 |
 | R1 历史/键盘/粘贴窗口整合 | [源码、二进制、重复样本与跳过项](../experiments/shell/results/2026-10-23-r1-foundations/validation.json)、[运行入口](../experiments/shell/README.md) | `9b16acc` 对应实现的本地全量 19 个 CTest 套件通过；内部仍有 3 个跳过项。历史内容/原生拖动、键盘实际接收字节、粘贴途中取消/关闭各重复两轮；系统剪贴板与实际 IME 未据此验收，不是性能对照 |
@@ -37,6 +39,10 @@ ctest --test-dir build -C Release --output-on-failure
 # Windows 定向 shell 回归；根构建需包含全部 helper。
 $env:TERMFORGE_BIN_DIR = (Resolve-Path build/bin/Release).Path
 python -m unittest experiments.shell.test_shell -v
+
+# Windows E2 data-only八会话；驱动启用资源采样，需已有依赖及全量helper。
+$env:TERMFORGE_TEST_ARTIFACTS = Join-Path (Get-Location) 'local/workflow-check'
+python -m unittest experiments.shell.test_workflow_sessions -v
 ```
 
 回放/实验 runner 的输出目录必须不存在。根 CTest 指向当前构建；单独执行时必须显式选择二进制，不借旧产物证明新提交通过。测试失败保留合成原始输出及身份；日常用户会话不自动录制或上传。

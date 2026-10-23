@@ -53,7 +53,9 @@
 
 | 能力 | 当前状态与边界 | 目标差距 | 路标 |
 |---|---|---|---|
-| 组合验收基础 | **已验证（有限）**：[固定源码审计](../experiments/shell/results/2026-10-24-r1-workflow-foundation/validation.json)覆盖基础数据与快照；[受控夹具](../experiments/shell/WORKFLOW.md)分离编号日志、ConPTY传输、原始接收与阶段日志；固定输入前缀保持4096 UTF-16容量；队列/resize可锁内按值观察，旧IME模式仍要求空前缀 | 数据回归不等于真实Copy→Paste→IME；八会话/五次循环/前台操作、UI状态及资源采样仍由 #18 验收 | R1 |
+| 组合验收基础 | **已验证（有限）**：[固定源码审计](../experiments/shell/results/2026-10-24-r1-workflow-foundation/validation.json)覆盖基础数据与快照；[受控夹具](../experiments/shell/WORKFLOW.md)分离编号日志、ConPTY传输、原始接收与阶段日志；固定输入前缀保持4096 UTF-16容量，旧IME模式仍要求空前缀 | 该基础证据不单独验收八会话或真实Copy→Paste→IME；组合出口仍由 #18 验收 | R1 |
+| 八会话受控工作流 | **已验证（有限，data-only）**：E2场景覆盖实际8会话/拒绝第9个、五路有限洪流、前台阅读/Find/输入/缩放/淘汰、合成粘贴取消/关闭及5次8→6→8循环；26检查点、18会话身份，按值快照/原始字节/日志/回收独立核对。[审计入口](../experiments/shell/results/2026-10-24-r1-eight-sessions/validation.json)、源码与最终重复轮数见[证据索引](EVIDENCE.md) | 本场景不读取剪贴板、不调用真实IME；同次实际Copy→Paste→中文完整流程、操作到状态/提交端点和最终R1出口仍未验收 | R1 |
+| 活体资源观测 | **部分**：E2专用驱动按实际launcher PID及创建身份复用既有sampler；[同一审计](../experiments/shell/results/2026-10-24-r1-eight-sessions/validation.json)保留可重算的脱敏观测、同时样本内存/handles峰值、CPU与unknown，launcher树和sampler分列；普通启动默认关闭 | launcher树不是UI专属归因；短命后代可能漏采，当前观测开销与调度缺口明显，100ms仅为请求间隔。native阶段时钟尚未校准，初始化/稳态趋势及操作端点未完成，不构成性能通过或长期无泄漏结论 | R1；扩展 R4 / R5 |
 | 自动正确性与构建 | **已验证（有限）**：Windows shell/ConPTY/呈现及 Windows/Linux 核心 CI、差分/恢复/队列/生命周期场景 | 产品打包、干净机器使用、依赖升级、长期回归和更广平台矩阵 | R2 / R4 |
 | Windows 产品交付 | **部分**：源码构建后可运行有限原型 | 便携/安装包、完整资源许可、配置升级和持续运行；Server 2022 已知资源门槛未过，不能扩大支持声明 | R2 / R3 |
 | Linux/macOS 与其他架构 | **未实现**客户端；Linux 核心 CI 已有 | 各平台 PTY/输入/字体/UI/安装与架构覆盖。官方包的平台/架构/旧系统范围须显式冻结，不能由核心 CI 推断产品支持 | R4 / R5 |
