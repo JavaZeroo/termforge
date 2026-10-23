@@ -38,7 +38,19 @@ jobs:
       - name: Build
         run: cmake --build build --config Release --parallel 2
       - name: Test
+        env:
+          TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD: ${{ runner.os == 'Windows' && '1' || '0' }}
         run: ctest --test-dir build -C Release --output-on-failure --output-junit test-results.xml
+      - name: Preserve clipboard and window integration evidence
+        if: always() && runner.os == 'Windows'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: r1-windows-input
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            build/test-artifacts/paste/
+            build/test-artifacts/shell/
       - name: Full ASCII state replay
         run: python -m experiments.core.run --out build/test-artifacts/replay-ascii
       - name: Full Unicode state replay

@@ -3,6 +3,7 @@
 #include <cmath>
 #include "layout_state.hpp"
 #include "ui_font.hpp"
+#include "paste_scenario_state.hpp"
 
 class Workspace {
     struct Tab { int id; std::wstring title; std::unique_ptr<ShellWindow> shell; };
@@ -28,6 +29,8 @@ class Workspace {
     RECT terminal_{}, tab_bar_{};
     RECT main_group_{}, main_toolbar_{}, main_address_{}, main_terminal_{};
     std::vector<std::string> geometry_samples_;
+    uint64_t history_anchor_ = 0;
+    tf_shell_test::PasteScenarioState paste_scenario_;
     int width_ = 1360, height_ = 860, dpi_ = 96;
     int physical_width_ = 1360, physical_height_ = 860;
     int left_ = 226, right_ = 226, left_middle_ = 289, right_middle_ = 289;
@@ -131,6 +134,8 @@ class Workspace {
         if (id==6) begin_rename(selection(focused_),focused_);
         if (id==7) { end_rename(false); end_drag(false); state_={}; layout(); save_layout(); }
         if (id==8) add(Group::main);
+        if (!rename_ && active() && id==12) active()->request_paste();
+        if (!rename_ && active() && id==13) active()->cancel_paste();
         if (!rename_ && active() && id>=9 && id<=11) {
             if(id==11) active()->reset_zoom(); else active()->change_zoom(id==9?25:-25);
             InvalidateRect(window_,nullptr,FALSE);
@@ -271,7 +276,7 @@ class Workspace {
         fill(dc,{0,height_-56,width_,height_-29},RGB(35,35,35));
         label(dc,{0,height_-56,width_,height_-29},L"+ New shell");
         fill(dc,{0,height_-29,width_,height_},RGB(38,38,38));
-        label(dc,{0,height_-29,width_,height_},closing_?L"Closing sessions...":settings_failed_?L"Layout could not be saved":L"LOCAL     "+std::to_wstring(session_count())+L" sessions     Focus: "+(focused_==Group::main?L"Main":L"Shell")+L"     Zoom: "+std::to_wstring(active()?active()->zoom_percent():100)+L"%");
+        label(dc,{0,height_-29,width_,height_},closing_?L"Closing sessions...":settings_failed_?L"Layout could not be saved":L"LOCAL     "+std::to_wstring(session_count())+L" sessions     Focus: "+(focused_==Group::main?L"Main":L"Shell")+L"     Zoom: "+std::to_wstring(active()?active()->zoom_percent():100)+L"%     "+(active()?active()->status_text():L""));
         SelectObject(dc,old);
     }
     void click(int x,int y) {
@@ -279,6 +284,12 @@ class Workspace {
             HMENU menu=CreatePopupMenu();
             if(x<82) { AppendMenuW(menu,MF_STRING,8,L"New main session\tCtrl+Shift+T"); AppendMenuW(menu,MF_STRING,1,L"New shell\tCtrl+T"); AppendMenuW(menu,MF_STRING,2,L"Close focused session\tCtrl+W"); AppendMenuW(menu,MF_STRING,6,L"Rename focused session\tF2"); AppendMenuW(menu,MF_STRING,5,L"Exit"); }
             else { AppendMenuW(menu,MF_STRING|(state_.focus?MF_CHECKED:0),3,L"Focus shell\tF11"); AppendMenuW(menu,MF_STRING|(state_.sides?MF_CHECKED:0),4,L"Side panels"); AppendMenuW(menu,MF_STRING,7,L"Reset layout"); AppendMenuW(menu,MF_SEPARATOR,0,nullptr); const UINT enabled=active()&&!rename_?MF_STRING:MF_STRING|MF_GRAYED; AppendMenuW(menu,enabled,9,L"Zoom in\tCtrl++"); AppendMenuW(menu,enabled,10,L"Zoom out\tCtrl+-"); AppendMenuW(menu,enabled,11,L"Reset zoom\tCtrl+0"); }
+            if(x<82) {
+                AppendMenuW(menu,MF_SEPARATOR,0,nullptr);
+                const UINT enabled=active() && !rename_ && !active()->closing()?MF_STRING:MF_STRING|MF_GRAYED;
+                AppendMenuW(menu,enabled,12,L"Paste\tCtrl+Shift+V");
+                AppendMenuW(menu,enabled|((!active() || !active()->paste_busy())?MF_GRAYED:0),13,L"Cancel paste\tEscape");
+            }
             POINT at{physical(x),physical(33)}; ClientToScreen(window_,&at);
             const int selected=TrackPopupMenu(menu,TPM_RETURNCMD,at.x,at.y,0,window_,nullptr);
             DestroyMenu(menu); action(selected); return;
@@ -316,6 +327,13 @@ class Workspace {
     void scenario_restore();
     void scenario_main();
     void scenario_dpi();
+    void scenario_history();
+    void scenario_keyboard();
+    void scenario_paste();
+    static std::string size_marker(int outer_width,int rows,ShellWindow* shell) {
+        const int bar=GetSystemMetricsForDpi(SM_CXVSCROLL,GetDpiForWindow(shell->handle()));
+        return "TF_SIZE_"+std::to_string((outer_width-bar)/12)+"x"+std::to_string(rows);
+    }
     void record_geometry(const char* phase);
     void collect_child(ShellWindow* child);
     static LRESULT CALLBACK procedure(HWND hwnd,UINT message,WPARAM wp,LPARAM lp) {
@@ -339,6 +357,10 @@ class Workspace {
             if(message==WM_GETMINMAXINFO) { auto m=reinterpret_cast<MINMAXINFO*>(lp); m->ptMinTrackSize={std::min(6020,self->physical(1000)),std::min(5300,self->physical(650))}; m->ptMaxTrackSize={6020,5300}; return 0; }
             if(message==WM_SETFOCUS && self->active()) { SetFocus(self->active()->handle()); return 0; }
             if(message==WM_APP+2) { self->note_focus(reinterpret_cast<ShellWindow*>(lp)); return 0; }
+            if(message==WM_APP+4) {
+                if(!self->closing_) SetFocus(self->rename_?self->rename_:(self->active()?self->active()->handle():hwnd));
+                return 0;
+            }
             if(message==WM_COMMAND) {
                 if(reinterpret_cast<HWND>(lp)==self->rename_ && self->rename_ && HIWORD(wp)==EN_KILLFOCUS) self->end_rename(true,false);
                 else self->action(LOWORD(wp));
@@ -372,6 +394,9 @@ class Workspace {
                 else if(self->test_mode_=="ui-restore") self->scenario_restore();
                 else if(self->test_mode_=="ui-main") self->scenario_main();
                 else if(self->test_mode_=="ui-dpi") self->scenario_dpi();
+                else if(self->test_mode_=="ui-history") self->scenario_history();
+                else if(self->test_mode_=="ui-keyboard") self->scenario_keyboard();
+                else if(self->test_mode_=="ui-paste" || self->test_mode_=="ui-paste-system") self->scenario_paste();
                 else self->scenario();
                 return 0;
             }
@@ -422,9 +447,14 @@ public:
         ShowWindow(window_,image_.empty()?SW_SHOW:SW_SHOWNOACTIVATE);
         MSG msg{}; BOOL status;
         while((status=GetMessageW(&msg,nullptr,0,0))>0) {
+            bool paste_message=false;
+            for(const auto group:{Group::bottom,Group::main}) for(auto& tab:group_tabs(group))
+                if(tab.shell->route_paste_message(msg)) paste_message=true;
+            if(paste_message) continue;
             if(edit_key(msg)) continue;
-            if(msg.message==WM_KEYDOWN && shortcut(msg.wParam,(GetKeyState(VK_CONTROL)&0x8000)!=0,(GetKeyState(VK_SHIFT)&0x8000)!=0)) continue;
-            TranslateMessage(&msg); DispatchMessageW(&msg);
+            const auto mods=ShellWindow::key_modifiers();
+            if(msg.message==WM_KEYDOWN && !mods.alt && !(active() && active()->composing()) && shortcut(msg.wParam,mods.control,mods.shift)) continue;
+            ShellWindow::dispatch_message(msg);
         }
         require(status==0,"workspace message loop failed"); require(failure_.empty(),failure_.c_str());
         if(!image_.empty() && test_mode_=="ui") {
@@ -439,7 +469,19 @@ public:
             require(stage_==100 && collected_==3,"workspace DPI scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\"ui-dpi\",\"dpi_and_zoom_verified\":true,\"sessions_closed\":3,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi") {
+        if(!image_.empty() && test_mode_=="ui-history") {
+            require(stage_==100 && collected_==3,"workspace history scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\"ui-history\",\"sessions_closed\":3,\"history_verified\":true,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && test_mode_=="ui-keyboard") {
+            require(stage_==100 && collected_==1,"workspace keyboard scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\"ui-keyboard\",\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && (test_mode_=="ui-paste" || test_mode_=="ui-paste-system")) {
+            require(stage_==100 && collected_==2,"workspace paste scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system") {
             require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
@@ -450,3 +492,6 @@ public:
 #include "workspace_scenarios.hpp"
 #include "workspace_main_scenario.hpp"
 #include "workspace_dpi_scenario.hpp"
+#include "workspace_history_scenario.hpp"
+#include "workspace_keyboard_scenario.hpp"
+#include "workspace_paste_scenario.hpp"

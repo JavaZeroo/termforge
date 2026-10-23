@@ -1,6 +1,6 @@
-# 本地 shell 工作区：A1 / C5 / UI-A / UI-B / 主区会话 / DPI
+# 本地 shell 工作区
 
-这是可从源码运行的 Windows 本地交互原型：真实 `cmd.exe` → ConPTY → 有界输出队列 → Recovery 核心 → 只读快照 → DirectWrite/Direct2D → 自有 HWND；字符/方向键从窗口回到 ConPTY。C5 新增核心、窗口与 ConPTY 尺寸同步，仍不是日常开发版。
+这是可从源码运行的 Windows 本地交互原型：真实 `cmd.exe` → ConPTY → 有界输出队列 → Recovery 核心 → 历史视口/只读快照 → DirectWrite/Direct2D → 自有 HWND；窗口输入经有界队列回到 ConPTY。核心、窗口与子进程尺寸同步，当前按 [R1 合同](../../docs/milestones/R1-local-text.md)推进基础文字交互，仍未达到日常开发版验收。
 
 ## 运行
 
@@ -14,9 +14,18 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 
 程序为 Windows GUI 子系统，不额外打开宿主控制台。默认打开真实可见窗口，在启动目录运行系统 `cmd.exe /d /q`，关闭 AutoRun，设置 UTF-8 code page 与固定 `TF>` 提示符。支持普通字符、中文字符消息、回车、退格、方向键和 Ctrl-C。输入 `exit` 或关闭标签会结束本会话并回收其自有子树；关闭主窗口回收全部标签。最后一个标签关闭后工作区保留，可以继续新建。用户启动的进程仍可访问用户自己的文件；这里是本地 shell，不是沙箱。
 
-构建会自动复制独立开源的 Roboto Mono UI 字体及许可到 EXE 旁的 `assets/fonts/`；移动或分发 EXE 时保留此目录。字体从可执行文件目录私有加载，不依赖当前工作目录，不安装到系统。缺失或实际字体不匹配时明确失败。来源、固定哈希及 OFL 许可见[字体说明](../../assets/fonts/README.md)。
+构建会自动复制独立开源的 Roboto Mono UI 字体及许可到 EXE 旁的 `assets/fonts/`；移动或分发 EXE 时保留此目录及同目录的 `shell_clipboard_reader.exe`。字体从可执行文件目录私有加载，不依赖当前工作目录，不安装到系统。缺失或实际字体不匹配时明确失败。来源、固定哈希及 OFL 许可见[字体说明](../../assets/fonts/README.md)。
 
-默认 1360×860 逻辑内容区（以 96 DPI 为基准），底部真实 ShellPane，100% 文字缩放时初始约 113×7；每会话 100 行内部历史。窗口支持拖动缩放/最大化，网格范围为 1–500 列、1–200 行。采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄会截去右侧内容，增宽不会恢复，也没有逻辑行重排。没有历史浏览、选择/复制/粘贴、IME 支持声明、SSH、备用屏或完整 TUI 兼容性。不实现终端查询回复，未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。逐格布局来自 [V1](../presentation/README.md)，布局缓存至多 1,024 项，满时清空重建；尚未做产品级缓存策略或性能对比。
+默认 1360×860 逻辑内容区（以 96 DPI 为基准），底部真实 ShellPane，每会话保留最多 100 行历史；网格按扣除原生滚动条的客户区和实际单元格计算。窗口支持拖动缩放/最大化，网格范围为 1–500 列、1–200 行。采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄会截去右侧内容，增宽不会恢复，也没有逻辑行重排。选择/复制、搜索、SSH、备用屏或完整 TUI 尚未实现；真实系统剪贴板和中文 IME 工作流保持未验收。不实现终端查询回复，未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。逐格布局来自 [V1](../presentation/README.md)，布局缓存至多 1,024 项，满时清空重建；尚未做产品级缓存策略或性能对比。
+
+## R1 开发中的文字操作
+
+- 滚轮和滚动条浏览历史，`Ctrl+Shift+Home` / `Ctrl+Shift+End` 到历史首/尾；回看时新输出保持阅读锚点，普通输入和开始粘贴回到底部。历史淘汰时钳制到仍保留的最早行。
+- `Ctrl+Shift+V`、`Shift+Insert` 或 Session → Paste 读取剪贴板。读取在独立有时限的自有 helper 中进行；多行文字先确认，默认取消。一次任务固定目标会话，切换标签不重定向剩余字节；Escape 或 Cancel paste 停止后续发送。
+- 当前独立粘贴策略：最多 1 Mi 个 UTF-16 单元、4 MiB UTF-8，换行规范化为 CR，拒绝不完整 UTF-16 和不支持的控制字符；不宣称已对齐 WindTerm 默认策略，也不无条件发送 bracketed-paste 包装。
+- 键盘处理包含 Tab/Shift+Tab、Home/End/Insert/Delete/Page、修饰键、AltGr 和跨消息 UTF-16。IME 采用每终端独立原生上下文，只发送已提交文字；候选位置使用物理网格。实际系统 IME 的组合、候选、提交/取消仍需独立严格门槛，见 [IME 工具](../../research/ime/README.md)。
+
+上述功能已有开发实现和局部自动场景，完整验收进度分别见 [#12](https://github.com/JavaZeroo/termforge/issues/12)、[#14](https://github.com/JavaZeroo/termforge/issues/14)、[#16](https://github.com/JavaZeroo/termforge/issues/16)。
 
 ## 工作区操作与已知差异
 
@@ -43,7 +52,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 ## 所有权与调度
 
 - ConPTY 输出线程将最多 64 KiB 的读取块放入 256 KiB 队列；满时等待窗口消费，正常运行不丢弃字节。
-- UI 每个 16 ms 定时消息以 8 KiB 小块消费，最多 64 KiB；块间检查 4 ms 预算，随后发布一次快照。单次 feed、快照和绘制仍可能超过预算，它不是硬实时保证。解析和快照发布同属 UI 线程；dirty 范围包含内容与旧/新光标行，多次失效可合并为一次 WM_PAINT。最初每 tick 仅取 8 KiB 导致合成洪流积压，修正依据见批次记录。
+- UI 每个 16 ms 定时消息以 8 KiB 小块消费，最多 64 KiB；块间检查 4 ms 预算，随后发布一次快照。单次 feed、快照和绘制仍可能超过预算，它不是硬实时保证。解析和快照发布同属 UI 线程；dirty 范围包含内容与旧/新光标行，多次失效可合并为一次 WM_PAINT。
 - 输入写线程独立服务至多 16 KiB 的队列，每条消息不超过 1 KiB。UI 不等待 WriteFile；容量满时拒绝该次输入并发出提示，不宣称输入已成功。关闭期间停止接收新输入。
 - resize 由独立 worker 执行，最多一个在途和一个合并请求；UI 先更新核心与快照并继续消费字节。关闭在回收 ConPTY 之前 join 此 worker。字节流没有 resize 世代边界，不保证所有中间帧及历史与 ConPTY 自身重排完全一致。
 - 关闭工作在后台执行，UI 继续消费尾部输出；停止输入写入并反复取消该线程的同步 I/O，终止本会话 Job，关闭 ConPTY，等待读取线程退出。队列排空后执行 `finish()`、提交最终画面并销毁窗口。只终止自有 Job 内的进程，包括 shell 留下的后代。
@@ -61,9 +70,9 @@ python experiments/shell/run.py --bin-dir build/bin/Release --out local/experime
 
 测试启动真实 cmd，不使用假 shell；窗口放在独立非输入 desktop，从不切换用户桌面。输入通过队列化 `PostMessage(WM_CHAR/WM_KEYDOWN)` 进入同一个窗口处理路径，不冒充物理键盘操作。断言匹配完整独立输出行，不能用输入命令中的标记冒充执行结果。
 
-测试需先完成根目录全量构建（包括 `shell_size_client`、`shell_queue_probe`）。resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子进程查询实际尺寸；包括快速连续请求、洪流中缩放、随后 Ctrl-C 或关闭。正常 resize 验证 60×12、100×28、72×18；关闭场景只查询前两个尺寸，不声称已验证关闭中的最终子进程尺寸。每次绘制与全量重绘进行 RGB 对比，这些带检查的样本不能作为低开销延迟数据。
+测试需先完成根目录全量构建，包括 `shell_test_launcher`、`shell_size_client`、`shell_input_client`、`shell_queue_probe` 和 `shell_clipboard_reader`。原生 launcher 在收到 `GO` 后才在指定 desktop 创建子进程，并由自有 Job 限定整个进程树。启动、Job 分配失败和超时也保留证据并检查回收。
 
-resize 脚本会将自有窗口移至私有 desktop 右下边缘，让大部分行列不可见，验证 retained DIB 不依赖可见更新矩形也保持完整。正常用户窗口不做该测试移动。初版 CI 曾检出尺寸钳制和残留画面，失败与修复记录见第四批报告。
+resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子进程查询实际尺寸；包括快速连续请求、洪流中缩放、随后 Ctrl-C 或关闭。正常 resize 验证 60×12、100×28、72×18；关闭场景只查询前两个尺寸。脚本还将自有窗口移至非输入 desktop 右下边缘，验证 retained DIB 不依赖可见更新矩形。每次绘制与全量重绘作 RGB 对比；这些带检查的样本不能作为低开销延迟数据。
 
 每次运行依次验证普通命令、中文、退格、左右方向键编辑，再运行一百万轮的输出命令。至少持续一秒且消费 64 KiB 后发送 Ctrl-C，再执行 `echo TF_AFTER`；确认对应状态与已提交帧后 `exit 37`。另测输出中关闭，正常/关闭各重复三次，检查 Job 活跃进程归零与自有 desktop 消失。监督器用真实存活 shell 验证超时清理。独立队列探针验证容量、背压、顺序、停止唤醒与输入拒绝。短回归不代表长时无泄漏。
 
@@ -75,16 +84,18 @@ resize 脚本会将自有窗口移至私有 desktop 右下边缘，让大部分�
 
 独立实现，接口语义核对 [Microsoft ConPTY 会话文档](https://learn.microsoft.com/en-us/windows/console/creating-a-pseudoconsole-session)、[CancelSynchronousIo](https://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-cancelsynchronousio) 和 [VT 输入序列](https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#input-sequences)。Windows 窗口退格消息的 U+0008 映射为 VT 的 DEL；首轮将其原样发送导致删词，已由真实 shell 编辑用例检出并修正。
 
-UI 自动场景另测两个真实 cmd 的独立输出、隐藏标签继续消费新输出、Sessions 列表点击、通过窗口命令新建/关闭和鼠标消息切换、F11 布局往返、2048×1120 放大及侧栏显隐。子进程独立查询 113×27、113×7、170×11；关闭最后标签后重新创建第三个会话并执行命令，再关闭主窗口，全部回收归零。合成 frame.bmp 由同一工作区绘制函数与终端 DIB 合成，核验参考坐标的分隔线/标题/活动标签颜色；它不是用户桌面截图，也不是像素等价或实际呈现完成证据。
+窗口场景按用户行为维护，当前入口均在 `test_shell.py`，不以历史批次命名表示完成程度：
 
-UI-B 新增五条分隔线的两端越界、capture 丢失/Esc 回滚、Unicode 输入重命名及空白/取消、后台标签退出期间编辑焦点与身份保持、不可见 Sessions 行不可点击。拖动后由子进程独立查询 113×12；另启新进程加载保存文件，检查比例/显隐与实际网格恢复，确认不恢复标题。三个 UI 场景各重复两次；独立跨平台 `layout_state` 测试覆盖严格读取、所有截断前缀、非法数值、Unicode 路径和替换失败保留。完整 runner 同样运行 UI 与新进程恢复场景。
+| 场景 | 检查内容 | 独立结果与边界 |
+|---|---|---|
+| `ui` / `ui-edit` / `ui-restore` | 多标签、五处分隔线、重命名、捕获/Escape 回滚、新进程恢复布局 | 真实子进程尺寸、保存文件、焦点与回收；不恢复会话进程或标题 |
+| `ui-main` | 主区/底部隔离、隐藏输出、焦点模式、空区域与关闭目标 | `geometry.json` 按固定参考常量检查 HWND/字体/矩形；内部网格由实际客户区扣除系统滚动条后计算 |
+| `ui-dpi` | 每会话缩放、隐藏标签、受控 DPI、边缘命中/拖动及长行保留 | `dpi.json` 区分受控 DPI 与系统 DPI；实际子进程尺寸及 dirty/full 图像比较；不替代真实跨屏 |
+| `ui-history` | 编号日志、滚轮/翻页/拖动、阅读锚点、隐藏输出、淘汰、缩放与输入回到底部 | `history.json` 与独立编号 oracle；`native-scroll.jsonl` 记录系统原生非客户区 tracker 的轨迹，使用队列鼠标消息，不移动用户鼠标 |
+| `ui-keyboard` | 修饰键、编辑键、Unicode 与会话目标 | 真实 `ReadConsoleW` 接收端与独立字节预期；不替代真实 IME |
+| `ui-paste` | 默认取消、Tab/Enter/Escape、隐藏目标、输出洪流、发送途中取消和关闭 | `paste-workflow.json` 与 `cancel.bin`/`close.bin`；接收端事件握手确保动作发生在发送途中；本场景不读取用户剪贴板 |
+| `ui-paste-system` | 真实 Unicode 系统剪贴板 → 快捷键 → 确认 → 接收端 | 只在指定一次性 hosted 环境运行；本地未运行/跳过不计系统验收 |
 
-`ui-main` 场景每次创建并回收五个真实会话，重复两次：主区两个标签与底部输出隔离，隐藏标签继续消费；点击两区切换焦点，重命名失焦不抢焦点，后台退出不打断另一区域编辑；验证焦点模式下的主区隐藏/恢复、空底部时焦点落到父窗口、点击底部关闭按钮不误关主区，以及两个区域均有活会话时整体关闭。快捷键场景调用与真实消息循环共用的派发函数，鼠标/编辑器消息仍走窗口过程；不是物理键鼠输入证明。
+原生 `layout_state` 测试覆盖严格读取、截断、非法数值、Unicode 路径和替换失败保留。`renderer_metrics` 覆盖 GDI/DirectWrite × 96/120/144/192 DPI × 50/100/125/200% 共 32 组，检查非整数边界、实际绘字与 dirty/full 一致。
 
-`geometry.json` 保留空状态及两种连接窗口尺寸的矩形、实际 HWND 位置与字体 face。Python 按独立测量常量比较，并对改错矩形/遗漏阶段/伪造字体等负例拒绝。子进程另查询主区 75×17 / 113×24、底部 113×7 / 170×11；这些网格只验证当前终端 resize，不是 WindTerm 文本网格等价。
-
-`ui-dpi` 每次创建三个真实会话，重复两次，验证独立缩放、上下限、重置、隐藏标签传播、长行在等比 DPI 切换时保留、编辑器字体/焦点、150% 边缘命中和 200% 拖动；每个阶段由子进程重新查询尺寸，并比较保留位图与全量重绘。`dpi.json` 分开记录受控 DPI 与系统窗口 DPI，以及逻辑矩形、实际 HWND 矩形、单元物理尺寸和行列数；Python 根据固定参考几何独立验算并拒绝篡改数据。`frame-144.bmp` / `frame-192.bmp` 是工作区与终端的合成检查图，不含原生 EDIT 子控件；编辑器由实际 HWND/字体断言验证。
-
-同一场景另外检查不足一个字符格的 resize 仍产生子窗口更新区域，以及 168 DPI / 2001×1406 的实际右/下边缘覆盖、贴边子窗口和鼠标端点。布局始终以实际客户区端点收尾，避免逻辑尺寸来回取整漏掉一像素；此项不冒充真实跨屏或四阶段外的子进程尺寸验收。
-
-独立 `renderer_metrics` 原生测试覆盖 GDI/DirectWrite × 96/120/144/192 DPI × 50/100/125/200% 的 32 组组合，核验非整数缩放边界、实际绘字、光标、背景覆盖及 dirty/full 一致。规格见 [UI-dpi-zoom](../../docs/archive/milestones/UI-dpi-zoom.md)。
+合成 `frame.bmp` 和 DPI 图片来自自有工作区/终端绘制，不含原生 EDIT 子控件；编辑器由实际 HWND/字体断言验证。这些图片不是用户桌面截图、像素等价或实际呈现完成证据。历史批次的测量与修复依据统一从[证据索引](../../docs/EVIDENCE.md)进入。

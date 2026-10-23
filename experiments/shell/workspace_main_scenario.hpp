@@ -5,12 +5,12 @@ inline void Workspace::record_geometry(const char* phase) {
         std::to_string(r.right-r.left)+","+std::to_string(r.bottom-r.top)+"]"; };
     std::string child="null";
     if(selected(Group::main)) {
-        RECT actual{}; require(GetClientRect(selected(Group::main)->handle(),&actual)!=FALSE,"main client query failed");
-        // Child client origin and extents are measured from HWND, not copied
-        // from the expected rectangle passed to MoveWindow.
-        POINT origin{0,0}; require(ClientToScreen(selected(Group::main)->handle(),&origin)!=FALSE,"main origin query failed");
+        RECT actual{}; require(GetWindowRect(selected(Group::main)->handle(),&actual)!=FALSE,"main window query failed");
+        // The outer child includes its native history scrollbar. Its bounds
+        // remain the measured workspace rectangle, independently of the grid.
+        POINT origin{actual.left,actual.top};
         require(ScreenToClient(window_,&origin)!=FALSE,"main origin conversion failed");
-        OffsetRect(&actual,origin.x,origin.y); child=rect(actual);
+        OffsetRect(&actual,origin.x-actual.left,origin.y-actual.top); child=rect(actual);
         require(EqualRect(&actual,&main_terminal_)!=FALSE,"main child geometry differs from assigned view");
     }
     geometry_samples_.push_back("{\"phase\":\""+std::string(phase)+"\",\"window\":["+std::to_string(width_)+","+
@@ -68,7 +68,7 @@ inline void Workspace::scenario_main() {
         require(main_tabs_[1].title==L"\x4e3b\x4f1a\x8bdd cmd" && tabs_[0].title==L"cmd 1","main rename affected another group");
         require(GetFocus()==selected(Group::main)->handle(),"main rename did not restore focus");
         selected(Group::main)->check_size(); selected(Group::bottom)->check_size(); stage_=5;
-    } else if(stage_==5 && selected(Group::main)->contains_line("TF_SIZE_75x17") && selected(Group::bottom)->contains_line("TF_SIZE_113x7")) {
+    } else if(stage_==5 && selected(Group::main)->contains_line(size_marker(906,17,selected(Group::main))) && selected(Group::bottom)->contains_line(size_marker(1360,7,selected(Group::bottom)))) {
         record_geometry("session-1360");
         Bitmap frame(width_,height_); paint(frame.dc);
         selected(Group::main)->render_to(frame.dc,main_terminal_.left,main_terminal_.top);
@@ -77,7 +77,7 @@ inline void Workspace::scenario_main() {
         require(SetWindowPos(window_,nullptr,0,0,size.right-size.left,size.bottom-size.top,SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"main resize failed"); stage_=6;
     } else if(stage_==6 && selected(Group::main)->settled() && selected(Group::bottom)->settled()) {
         selected(Group::main)->check_size(); selected(Group::bottom)->check_size(); stage_=7;
-    } else if(stage_==7 && selected(Group::main)->contains_line("TF_SIZE_113x24") && selected(Group::bottom)->contains_line("TF_SIZE_170x11")) {
+    } else if(stage_==7 && selected(Group::main)->contains_line(size_marker(1364,24,selected(Group::main))) && selected(Group::bottom)->contains_line(size_marker(2048,11,selected(Group::bottom)))) {
         record_geometry("session-2048");
         click_child(selected(Group::bottom));
         main_tabs_[0].shell->command(L"exit 0\r"); stage_=8;

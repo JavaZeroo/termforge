@@ -11,14 +11,31 @@ import platform
 import shutil
 import subprocess
 import sys
+import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from experiments.build_paths import binary
 from experiments.conpty.run import OwnedJob
+from experiments.shell.history_checks import validate_history, validate_native_scroll
+from experiments.shell.paste_checks import validate_paste_workflow
 
 
 def validate(row, mode):
+    if mode in ("ui-paste", "ui-paste-system"):
+        if row != {"valid": True, "mode": mode, "sessions_closed": 2, "active_children_after": 0, "presented_done": None}:
+            raise ValueError("paste window workflow or cleanup failed")
+        return
+    if mode == "ui-keyboard":
+        if row != {"valid": True, "mode": mode, "sessions_closed": 1, "active_children_after": 0, "presented_done": None}:
+            raise ValueError("keyboard workflow or cleanup failed")
+        return
+    if mode == "ui-history":
+        if (row.get("valid") is not True or row.get("mode") != mode or
+                row.get("history_verified") is not True or row.get("sessions_closed") != 3 or
+                row.get("active_children_after") != 0 or row.get("presented_done", 1) is not None):
+            raise ValueError("workspace history or cleanup gate failed")
+        return
     if mode == "ui-dpi":
         if (row.get("valid") is not True or row.get("mode") != mode or
                 row.get("dpi_and_zoom_verified") is not True or
@@ -108,7 +125,7 @@ def validate_dpi_geometry(data):
     window between monitors or establish physical display presentation.
     """
     phases = ("96-baseline", "144-renaming", "192-drag-cancelled", "96-restored")
-    if (not isinstance(data, dict) or data.get("schema") != "termforge-ui-dpi-v1" or
+    if (not isinstance(data, dict) or data.get("schema") != "termforge-ui-dpi-v2" or
             data.get("controlled_messages") is not True or data.get("real_monitor_transition") is not False or
             not isinstance(data.get("snapshots"), list) or len(data["snapshots"]) != 4 or
             any(not isinstance(row, dict) for row in data["snapshots"]) or
@@ -137,7 +154,11 @@ def validate_dpi_geometry(data):
             x, y, width, height = rect
             physical = [scale(x), scale(y), scale(x + width) - scale(x), scale(y + height) - scale(y)]
             cells = [(base * dpi * percent + 4800) // 9600 for base in (12, 26)]
-            grid = [physical[2] // cells[0], physical[3] // cells[1]]
+            bar = session.get("native_scrollbar_width")
+            if type(bar) is not int or not 1 <= bar <= 256:
+                raise ValueError("missing native OS scrollbar measurement")
+            client = [physical[2] - bar, physical[3]]
+            grid = [client[0] // cells[0], client[1] // cells[1]]
             if (session.get("group") != ("main" if index == 2 else "bottom") or
                     type(session.get("index")) is not int or session["index"] != (0 if index == 2 else index) or
                     session.get("visible") is not visible[index] or
@@ -145,16 +166,17 @@ def validate_dpi_geometry(data):
                     type(session.get("display_dpi")) is not int or session["display_dpi"] != dpi or
                     not vector(session.get("logical_rect"), rect) or
                     not vector(session.get("physical_rect"), physical) or
+                    not vector(session.get("client_pixels"), client) or
                     not vector(session.get("cell_pixels"), cells) or not vector(session.get("grid"), grid)):
                 raise ValueError(f"DPI session geometry mismatch: {row['phase']} session {index}")
 
 
-def desktop_gone(pid):
+def desktop_gone(name):
     api = ctypes.WinDLL("user32", use_last_error=True)
     api.OpenDesktopW.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
     api.OpenDesktopW.restype = wintypes.HANDLE
     api.CloseDesktop.argtypes = [wintypes.HANDLE]
-    handle = api.OpenDesktopW(f"TermForgeShell-{pid}", 0, False, 1)
+    handle = api.OpenDesktopW(name, 0, False, 1)
     if handle:
         api.CloseDesktop(handle)
         return False
@@ -163,18 +185,59 @@ def desktop_gone(pid):
     return True
 
 
+class OwnedTestDesktop:
+    """Parent owns the desktop until the complete child process has exited.
+
+    Windows text services can retain process-scoped threads. Ending only the
+    UI thread is insufficient once actual IME APIs are used.
+    """
+    def __init__(self):
+        self.api = ctypes.WinDLL("user32", use_last_error=True)
+        self.api.CreateDesktopW.argtypes = [wintypes.LPCWSTR, wintypes.LPCWSTR, ctypes.c_void_p,
+                                            wintypes.DWORD, wintypes.DWORD, ctypes.c_void_p]
+        self.api.CreateDesktopW.restype = wintypes.HANDLE
+        self.api.CloseDesktop.argtypes = [wintypes.HANDLE]
+        self.api.CloseDesktop.restype = wintypes.BOOL
+        self.api.GetProcessWindowStation.restype = wintypes.HANDLE
+        self.api.GetUserObjectInformationW.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p,
+                                                      wintypes.DWORD, ctypes.POINTER(wintypes.DWORD)]
+        self.name = f"TermForgeShell-{os.getpid()}-{uuid.uuid4().hex}"
+        station = ctypes.create_unicode_buffer(256)
+        needed = wintypes.DWORD()
+        if not self.api.GetUserObjectInformationW(self.api.GetProcessWindowStation(), 2, station,
+                                                  ctypes.sizeof(station), ctypes.byref(needed)):
+            raise ctypes.WinError(ctypes.get_last_error())
+        self.full_name = station.value + "\\" + self.name
+        self.handle = self.api.CreateDesktopW(self.name, None, None, 0, 0x10000000, None)
+        if not self.handle:
+            raise ctypes.WinError(ctypes.get_last_error())
+
+    def close(self):
+        if self.handle:
+            if not self.api.CloseDesktop(self.handle):
+                raise ctypes.WinError(ctypes.get_last_error())
+            self.handle = None
+        return desktop_gone(self.name)
+
+
 def execute(exe, mode, out, timeout=40, settings_source=None):
     out.mkdir(parents=True, exist_ok=False)
-    if settings_source is not None:
-        shutil.copyfile(settings_source, out / "workspace.layout")
-    job = OwnedJob()
+    job = desktop = None
+    assigned = False
     process = None
     record = dict(mode=mode, status="failed")
     try:
-        process = subprocess.Popen([str(exe.resolve()), "--test", mode, str((out / "frame.bmp").resolve())],
+        if settings_source is not None:
+            shutil.copyfile(settings_source, out / "workspace.layout")
+        job = OwnedJob()
+        desktop = OwnedTestDesktop()
+        record["desktop_name"] = desktop.name
+        process = subprocess.Popen([str(exe.with_name("shell_test_launcher.exe").resolve()), desktop.full_name,
+                                    mode, str((out / "frame.bmp").resolve())],
                                    cwd=out, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    creationflags=subprocess.CREATE_NO_WINDOW)
         job.assign(process.pid)
+        assigned = True
         try:
             stdout, stderr = process.communicate(b"GO\n", timeout=timeout)
             record["timed_out"] = False
@@ -187,7 +250,7 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
                       stderr=stderr.decode("utf-8", "replace"), job_after=job.drain())
         if record["job_after"]["active"]:
             raise ValueError("owned processes remained")
-        record["desktop_gone"] = desktop_gone(process.pid)
+        record["desktop_gone"] = desktop.close()
         if not record["desktop_gone"]:
             raise ValueError("owned desktop remained")
         if mode != "watchdog" and (record["timed_out"] or record["exit_code"]):
@@ -204,6 +267,21 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
                 validate_main_geometry(json.loads((out / "geometry.json").read_text(encoding="utf-8")))
             if mode == "ui-dpi":
                 validate_dpi_geometry(json.loads((out / "dpi.json").read_text(encoding="utf-8")))
+            if mode == "ui-history":
+                validate_history(json.loads((out / "history.json").read_text(encoding="utf-8")))
+                validate_native_scroll([json.loads(line) for line in (out / "native-scroll.jsonl").read_text(encoding="utf-8").splitlines()])
+            if mode == "ui-keyboard":
+                expected = ("A汉e\u0301🙂".encode("utf-8") + b"\t\x1b[Z\x00\x1b[1;5D\x1b[3;4~\x1bx" +
+                            "é".encode("utf-8") + b"\x00\x7f\x1b[H\x1b[F\x1b[2~\x1b[3~\x1b[5~\x1b[6~" +
+                            "\ufffd🙂\ufffd".encode("utf-8"))
+                if (out / "input.bin").read_bytes() != expected:
+                    raise ValueError("real keyboard receiver bytes differ from independent expectation")
+            if mode in ("ui-paste", "ui-paste-system"):
+                expected = b"P\xe6\xb1\x89\r" * 5000
+                if (out / "input.bin").read_bytes() != expected:
+                    raise ValueError("paste confirmation/target receiver differs from independent expectation")
+                record["system_clipboard"] = mode == "ui-paste-system"
+                record["paste_workflow"] = validate_paste_workflow(out)
             record["result"] = result
             record["frame_sha256"] = hashlib.sha256((out / "frame.bmp").read_bytes()).hexdigest()
         record["status"] = "passed"
@@ -212,11 +290,47 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
         record["error"] = str(error)
         raise
     finally:
+        cleanup_errors = []
+        # Keep the original failure and evidence even if a later cleanup fails.
+        # Before GO, an unassigned launcher cannot have created a shell tree.
         if process is not None and process.poll() is None:
-            job.terminate()
-            process.communicate(timeout=10)
-        job.close()
+            if assigned:
+                try:
+                    job.terminate()
+                except OSError as error:
+                    cleanup_errors.append(str(error))
+            try:
+                if process.poll() is None:
+                    process.kill()
+                stdout, stderr = process.communicate(timeout=10)
+                record.setdefault("stdout", stdout.decode("utf-8", "replace"))
+                record.setdefault("stderr", stderr.decode("utf-8", "replace"))
+                record.setdefault("exit_code", process.returncode)
+            except (OSError, subprocess.TimeoutExpired) as error:
+                cleanup_errors.append(str(error))
+        if job is not None:
+            try:
+                if assigned:
+                    record["job_after_cleanup"] = job.drain()
+                    if record["job_after_cleanup"]["active"]:
+                        cleanup_errors.append("owned processes remained after cleanup")
+            except OSError as error:
+                cleanup_errors.append(str(error))
+            finally:
+                job.close()
+        if desktop is not None and desktop.handle:
+            try:
+                record["desktop_gone"] = desktop.close()
+                if not record["desktop_gone"]:
+                    cleanup_errors.append("owned desktop remained after cleanup")
+            except OSError as error:
+                cleanup_errors.append(str(error))
+        if cleanup_errors:
+            record["cleanup_errors"] = cleanup_errors
+            record["status"] = "failed"
         (out / "sample.json").write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if cleanup_errors and "error" not in record:
+            raise RuntimeError("; ".join(cleanup_errors))
 
 
 def main():
@@ -233,18 +347,29 @@ def main():
              "experiments/shell/workspace_interactions.hpp", "experiments/shell/workspace_scenarios.hpp",
              "experiments/shell/workspace_main_scenario.hpp", "assets/fonts/RobotoMono-Regular.ttf",
              "experiments/shell/workspace_dpi_scenario.hpp",
+             "experiments/shell/workspace_history_scenario.hpp", "experiments/shell/history_checks.py",
+             "experiments/shell/native_scroll_gesture.hpp",
+             "experiments/shell/workspace_keyboard_scenario.hpp", "experiments/shell/input_client.cpp",
+             "experiments/shell/workspace_paste_scenario.hpp", "experiments/shell/paste_prompt.hpp",
+             "experiments/shell/paste_scenario_state.hpp", "experiments/shell/paste_checks.py",
+             "experiments/shell/ime.hpp", "experiments/shell/test_launcher.cpp",
+             "experiments/shell/clipboard_worker.hpp", "experiments/shell/clipboard_worker.cpp",
+             "experiments/shell/keyboard.hpp", "experiments/shell/paste.hpp",
              "experiments/shell/layout_state.hpp", "experiments/shell/ui_font.hpp",
              "experiments/shell/resize.hpp", "experiments/shell/size_client.cpp",
              "experiments/conpty/session.hpp", "experiments/presentation/render.hpp", "experiments/presentation/desktop.hpp",
+             "experiments/core/history_view.hpp", "experiments/core/text_projection.hpp",
              "experiments/core/terminal.hpp", "experiments/core/screen.hpp", "experiments/core/unicode_width.hpp"]
     meta = dict(status="running", platform=platform.platform(), started_utc=datetime.now(timezone.utc).isoformat(),
                 exe_sha256=hashlib.sha256(exe.read_bytes()).hexdigest(),
                 size_client_sha256=hashlib.sha256((exe.parent / "shell_size_client.exe").read_bytes()).hexdigest(),
+                helpers={name: hashlib.sha256((exe.parent / name).read_bytes()).hexdigest() for name in
+                         ("shell_test_launcher.exe", "shell_input_client.exe", "shell_clipboard_reader.exe")},
                 sources={f: hashlib.sha256((ROOT/f).read_bytes()).hexdigest() for f in files},
                 input_endpoint="scripted Ctrl-C WM_CHAR acceptance to TF_AFTER state and GDI submission; not physical keyboard", presented_done=None)
     try:
         for repeat in range(args.repeats):
-            for mode in ("normal", "close", "resize", "resize-close", "ui", "ui-edit", "ui-main", "ui-dpi"):
+            for mode in ("normal", "close", "resize", "resize-close", "ui", "ui-edit", "ui-main", "ui-dpi", "ui-history", "ui-keyboard", "ui-paste"):
                 execute(exe, mode, args.out / f"{repeat}-{mode}")
                 print(f"{repeat} {mode}: passed", flush=True)
             execute(exe, "ui-restore", args.out / f"{repeat}-ui-restore",

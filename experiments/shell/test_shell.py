@@ -7,9 +7,11 @@ import subprocess
 import struct
 import tempfile
 import unittest
+from unittest import mock
 
 from experiments.build_paths import ROOT, binary
 from experiments.shell.run import execute, validate, validate_main_geometry, validate_dpi_geometry
+from experiments.shell.history_checks import validate_history, validate_native_scroll
 
 
 @unittest.skipUnless(os.name == "nt", "ConPTY shell requires Windows")
@@ -20,6 +22,40 @@ class ShellTests(unittest.TestCase):
         parent = Path(os.environ.get("TERMFORGE_TEST_ARTIFACTS", ROOT / "build/test-artifacts")) / "shell"
         parent.mkdir(parents=True, exist_ok=True)
         cls.out = Path(tempfile.mkdtemp(prefix="run-", dir=parent))
+
+    def test_real_history_scroll_anchor_eviction_and_hidden_sessions(self):
+        for repeat in range(2):
+            out = self.out / f"history-{repeat}"
+            execute(self.exe, "ui-history", out)
+            data = json.loads((out / "history.json").read_text(encoding="utf-8"))
+            gestures = [json.loads(line) for line in (out / "native-scroll.jsonl").read_text(encoding="utf-8").splitlines()]
+            for field, value in (("native_command", False), ("final", 49), ("initial", 50),
+                                 ("tracks", 0), ("physical_mouse", True), ("tracked", [50, 50])):
+                bad = copy.deepcopy(gestures); bad[0][field] = value
+                with self.subTest(gesture=field), self.assertRaises(ValueError):
+                    validate_native_scroll(bad)
+            # An internal success flag must not hide incorrect copied content,
+            # a wrong viewport, a live caret in history, or an invalid bound.
+            for index, field, value in ((0, "lines", ["wrong"]), (1, "top", 1),
+                                        (5, "cursor_row", 0), (6, "anchor", 0), (8, "maximum", 101)):
+                bad = copy.deepcopy(data); bad["snapshots"][index][field] = value
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate_history(bad)
+
+    def test_keyboard_message_path_to_real_console_bytes(self):
+        for repeat in range(2):
+            execute(self.exe, "ui-keyboard", self.out / f"keyboard-{repeat}")
+
+    def test_paste_confirmation_and_hidden_target_preserve_visible_focus(self):
+        for repeat in range(2):
+            execute(self.exe, "ui-paste", self.out / f"paste-{repeat}")
+
+    @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and
+                         os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",
+                         "real system clipboard UI gate requires a disposable hosted VM")
+    def test_system_clipboard_shortcut_to_window_confirmation_and_receiver(self):
+        for repeat in range(2):
+            execute(self.exe, "ui-paste-system", self.out / f"paste-system-{repeat}")
 
     def test_commands_unicode_editing_interrupt_and_normal_exit(self):
         for repeat in range(3):
@@ -51,6 +87,48 @@ class ShellTests(unittest.TestCase):
 
     def test_watchdog_contains_real_shell_tree(self):
         execute(self.exe, "watchdog", self.out / "watchdog", timeout=3)
+
+    def test_assignment_failure_reaps_gated_launcher_and_preserves_failure(self):
+        launched = []
+        popen = subprocess.Popen
+
+        def launch(*args, **kwargs):
+            process = popen(*args, **kwargs)
+            launched.append(process)
+            return process
+
+        out = self.out / "assignment-failure"
+        with mock.patch("experiments.shell.run.subprocess.Popen", side_effect=launch), \
+                mock.patch("experiments.shell.run.OwnedJob.assign", side_effect=OSError("injected assignment failure")):
+            with self.assertRaisesRegex(OSError, "injected assignment failure"):
+                execute(self.exe, "normal", out)
+        self.assertEqual(len(launched), 1)
+        self.assertIsNotNone(launched[0].poll(), "unassigned gated launcher survived")
+        record = json.loads((out / "sample.json").read_text(encoding="utf-8"))
+        self.assertEqual(record["status"], "failed")
+        self.assertEqual(record["error"], "injected assignment failure")
+        self.assertTrue(record["desktop_gone"])
+        self.assertNotIn("cleanup_errors", record)
+
+    def test_desktop_creation_failure_closes_job_and_keeps_evidence(self):
+        from experiments.conpty.run import OwnedJob
+        jobs = []
+
+        def create_job():
+            job = OwnedJob()
+            jobs.append(job)
+            return job
+
+        out = self.out / "desktop-failure"
+        with mock.patch("experiments.shell.run.OwnedJob", side_effect=create_job), \
+                mock.patch("experiments.shell.run.OwnedTestDesktop", side_effect=OSError("injected desktop failure")):
+            with self.assertRaisesRegex(OSError, "injected desktop failure"):
+                execute(self.exe, "normal", out)
+        self.assertEqual(len(jobs), 1)
+        self.assertIsNone(jobs[0].handle)
+        record = json.loads((out / "sample.json").read_text(encoding="utf-8"))
+        self.assertEqual(record["status"], "failed")
+        self.assertEqual(record["error"], "injected desktop failure")
 
     def test_queues_apply_bounded_backpressure_and_reject_input(self):
         result = subprocess.run([str(binary("shell_queue_probe"))], capture_output=True, timeout=10)

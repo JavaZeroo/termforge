@@ -59,7 +59,7 @@ inline void Workspace::scenario_edit() {
     } else if(stage_==60 && dragging_==Divider::none) {
         require(std::abs(state_.upper-387.0/769)<1e-12,"Escape did not cancel drag"); stage_=6;
     } else if(stage_==6 && active()->settled()) { active()->check_size(); stage_=7;
-    } else if(stage_==7 && active()->contains_line("TF_SIZE_113x12")) {
+    } else if(stage_==7 && active()->contains_line(size_marker(1360,12,active()))) {
         Bitmap frame(width_,height_); paint(frame.dc); active()->render_to(frame.dc,terminal_.left,terminal_.top); frame.save(image_);
         SendMessageW(window_,WM_COMMAND,4,0); require(!state_.sides,"side hide failed");
         const auto stored=tf_workspace::load_layout(settings_path_);
@@ -79,7 +79,7 @@ inline void Workspace::scenario_restore() {
         require(tabs_.size()==1 && tabs_[0].title==L"cmd 1","session names unexpectedly restored");
         SendMessageW(window_,WM_COMMAND,4,0); stage_=1;
     } else if(stage_==1 && active()->settled()) { active()->check_size(); stage_=2;
-    } else if(stage_==2 && active()->contains_line("TF_SIZE_113x12")) {
+    } else if(stage_==2 && active()->contains_line(size_marker(1360,12,active()))) {
         require(left_==300 && right_==280 && left_middle_==180 && right_middle_==250,"restored geometry mismatch");
         Bitmap frame(width_,height_); paint(frame.dc); active()->render_to(frame.dc,terminal_.left,terminal_.top); frame.save(image_);
         stage_=100; SendMessageW(window_,WM_CLOSE,0,0);
@@ -121,17 +121,17 @@ inline void Workspace::scenario() {
             require(active()->contains_line("TF_UI_FIRST"),"first session lost state");
             SendMessageW(window_,WM_COMMAND,3,0); stage_=4;
         } else if(stage_==4 && active()->settled()) { active()->check_size(); stage_=40;
-        } else if(stage_==40 && active()->contains_line("TF_SIZE_113x27")) {
+        } else if(stage_==40 && active()->contains_line(size_marker(1360,27,active()))) {
             SendMessageW(window_,WM_COMMAND,3,0); stage_=5;
         } else if(stage_==5 && active()->settled()) { active()->check_size(); stage_=50;
-        } else if(stage_==50 && active()->contains_line("TF_SIZE_113x7")) {
+        } else if(stage_==50 && active()->contains_line(size_marker(1360,7,active()))) {
             Bitmap frame(width_,height_); paint(frame.dc); active()->render_to(frame.dc,terminal_.left,terminal_.top);
             frame.save(image_);
             RECT size{0,0,2048,1120}; AdjustWindowRect(&size,WS_OVERLAPPEDWINDOW,FALSE);
             require(SetWindowPos(window_,nullptr,0,0,size.right-size.left,size.bottom-size.top,SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"workspace resize failed");
             stage_=51;
         } else if(stage_==51 && active()->settled()) { active()->check_size(); stage_=52;
-        } else if(stage_==52 && active()->contains_line("TF_SIZE_170x11")) {
+        } else if(stage_==52 && active()->contains_line(size_marker(2048,11,active()))) {
             SendMessageW(window_,WM_COMMAND,4,0); require(!state_.sides,"panel toggle failed");
             SendMessageW(window_,WM_COMMAND,4,0); require(state_.sides,"panel restore failed");
             SendMessageW(window_,WM_MBUTTONDOWN,0,MAKELPARAM(160,tab_bar_.top+10));

@@ -33,9 +33,9 @@ inline void Workspace::scenario_dpi() {
             std::to_string(rect.right-rect.left)+","+std::to_string(rect.bottom-rect.top)+"]";
     };
     auto actual_rect=[&](HWND child) {
-        RECT rect{}; require(GetClientRect(child,&rect)!=FALSE,"DPI child client query failed");
-        POINT origin{}; require(ClientToScreen(child,&origin)!=FALSE && ScreenToClient(window_,&origin)!=FALSE,"DPI child position query failed");
-        OffsetRect(&rect,origin.x,origin.y); return rect;
+        RECT rect{}; require(GetWindowRect(child,&rect)!=FALSE,"DPI child window query failed");
+        POINT origin{rect.left,rect.top}; require(ScreenToClient(window_,&origin)!=FALSE,"DPI child position query failed");
+        OffsetRect(&rect,origin.x-rect.left,origin.y-rect.top); return rect;
     };
     auto editor_check=[&]() {
         require(rename_ && GetFocus()==rename_,"DPI transition lost rename focus");
@@ -67,7 +67,10 @@ inline void Workspace::scenario_dpi() {
             require(shell->display_dpi()==dpi_,"DPI did not reach a hidden or visible session");
             const auto [columns,rows]=shell->grid_dimensions();
             const auto [cell_width,cell_height]=shell->pixel_cell_size();
-            require(columns==(measured.right-measured.left)/cell_width && rows==(measured.bottom-measured.top)/cell_height,"DPI grid does not fit measured child");
+            RECT client{}; require(GetClientRect(shell->handle(),&client)!=FALSE,"DPI text client query failed");
+            const int native_bar=GetSystemMetricsForDpi(SM_CXVSCROLL,GetDpiForWindow(shell->handle()));
+            require(client.right==measured.right-measured.left-native_bar && client.bottom==measured.bottom-measured.top,"DPI native scrollbar allocation differs");
+            require(columns==client.right/cell_width && rows==client.bottom/cell_height,"DPI grid does not fit measured text client");
             require(shell->contains_line("TF_SIZE_"+std::to_string(columns)+"x"+std::to_string(rows)),"DPI child-reported ConPTY size differs");
             require(shell->frame_matches_full(),"DPI retained terminal frame differs from a full redraw");
             if(!first) sample+=','; first=false;
@@ -75,7 +78,8 @@ inline void Workspace::scenario_dpi() {
                 ",\"visible\":"+(IsWindowVisible(shell->handle())?"true":"false")+",\"zoom_percent\":"+std::to_string(shell->zoom_percent())+
                 ",\"display_dpi\":"+std::to_string(shell->display_dpi())+",\"logical_rect\":"+rect_text(logical_rect)+
                 ",\"physical_rect\":"+rect_text(measured)+",\"grid\":["+std::to_string(columns)+","+std::to_string(rows)+
-                "],\"cell_pixels\":["+std::to_string(cell_width)+","+std::to_string(cell_height)+"]}";
+                "],\"cell_pixels\":["+std::to_string(cell_width)+","+std::to_string(cell_height)+
+                "],\"client_pixels\":["+std::to_string(client.right)+","+std::to_string(client.bottom)+"],\"native_scrollbar_width\":"+std::to_string(native_bar)+"}";
         }
         sample+="],\"rename_active\":"+std::string(rename_?"true":"false")+"}";
         geometry_samples_.push_back(std::move(sample));
@@ -116,7 +120,10 @@ inline void Workspace::scenario_dpi() {
         const auto old_grid=visible->grid_dimensions();
         const RECT area=actual_rect(visible->handle());
         require(ValidateRect(visible->handle(),nullptr)!=FALSE,"DPI test validate failed");
-        require(MoveWindow(visible->handle(),area.left,area.top,area.right-area.left+1,area.bottom-area.top,FALSE)!=FALSE,"sub-cell test resize failed");
+        RECT text_client{}; require(GetClientRect(visible->handle(),&text_client)!=FALSE,"sub-cell client query failed");
+        // A native scrollbar changes the remainder: +1 may cross a cell edge.
+        const int delta=text_client.right%visible->pixel_cell_size().first? -1:1;
+        require(MoveWindow(visible->handle(),area.left,area.top,area.right-area.left+delta,area.bottom-area.top,FALSE)!=FALSE,"sub-cell test resize failed");
         visible->sync_client_size();
         require(visible->grid_dimensions()==old_grid && GetUpdateRect(visible->handle(),nullptr,FALSE)!=FALSE,"same-grid client resize lost repaint");
         layout();
@@ -127,12 +134,24 @@ inline void Workspace::scenario_dpi() {
         SendMessageW(window_,WM_COMMAND,9,0);
         require(selected(Group::main)->zoom_percent()==125,"rename allowed terminal menu zoom");
         const auto state=state_;
+        // Controlled WM_DPICHANGED does not scale the OS-owned scrollbar.
+        // Prepare the bottom grids to the independently expected 144-DPI
+        // width so the transition still exercises a same-grid font change.
+        const int bar=GetSystemMetricsForDpi(SM_CXVSCROLL,GetDpiForWindow(visible->handle()));
+        const std::pair<int,int> stable_grid{(MulDiv(1360,144,96)-bar)/18,old_grid.second};
+        for(auto& tab:tabs_) {
+            const RECT before=actual_rect(tab.shell->handle());
+            require(MoveWindow(tab.shell->handle(),before.left,before.top,stable_grid.first*12+bar,
+                before.bottom-before.top,FALSE)!=FALSE,"same-grid DPI preparation failed");
+            tab.shell->sync_client_size();
+            require(tab.shell->grid_dimensions()==stable_grid,"same-grid DPI preparation mismatch");
+        }
         transition(144); editor_check();
         require(tabs_[0].shell->contains_line(keep_line),"DPI transition transiently clipped a hidden terminal line");
         // Check before cls/query can dirty the whole screen and hide a stale
         // surface bug. Both bottom tabs retain exactly the same grid.
         for(auto& tab:tabs_) {
-            require(tab.shell->grid_dimensions()==old_grid,"equal-scale DPI changed bottom grid");
+            require(tab.shell->grid_dimensions()==stable_grid,"equal-scale DPI changed prepared bottom grid");
             require(tab.shell->frame_matches_full(),"same-grid DPI retained frame mismatch before new output");
         }
         require(selected(Group::main)->frame_matches_full(),"DPI main retained frame mismatch before new output");
@@ -183,7 +202,7 @@ inline void Workspace::scenario_dpi() {
         selected(Group::main)->render_to(frame.dc,main.left,main.top);
         selected(Group::bottom)->render_to(frame.dc,bottom.left,bottom.top); frame.save(image_);
         std::ofstream out(std::filesystem::path(image_).parent_path()/"dpi.json");
-        out<<"{\"schema\":\"termforge-ui-dpi-v1\",\"controlled_messages\":true,\"real_monitor_transition\":false,\"snapshots\":[";
+        out<<"{\"schema\":\"termforge-ui-dpi-v2\",\"controlled_messages\":true,\"real_monitor_transition\":false,\"snapshots\":[";
         for(size_t i=0;i<geometry_samples_.size();++i) { if(i) out<<','; out<<geometry_samples_[i]; }
         out<<"]}\n"; require(bool(out),"DPI geometry report write failed");
         // Odd physical extents at a fractional scale do not round-trip through
