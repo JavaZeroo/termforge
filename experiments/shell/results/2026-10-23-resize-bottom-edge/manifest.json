@@ -1,0 +1,24 @@
+{
+  "status": "complete",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "started_utc": "2026-10-23T01:47:38.018001+00:00",
+  "exe_sha256": "0b28d582bde56b5d55be12ff70bd56fec4341f5199f4fb873c8498524b0a0193",
+  "size_client_sha256": "5d20cd8a0a08db83c5235597a90cfe76dc52e543f3110f47a8b1afd203327581",
+  "sources": {
+    "experiments/shell/shell.cpp": "660881b8804ee44801bb30a14692e6bf1733c56fae358eb76f1c3bc3a4c8e1c3",
+    "experiments/shell/queues.hpp": "a8e577947c30652ff16be1494a944a4c02f6fb0d320a8797d7988222a4f2dbd7",
+    "experiments/shell/run.py": "213e0033fef86c4cd8f1a2c39b1c460ba7520deb097265ec70518cab174b2fd7",
+    "experiments/shell/resize.hpp": "ee7bcbf29bb347e11b4cfafd2a7bca288aeca7129154ceb969172ec96a3b2407",
+    "experiments/shell/size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4",
+    "experiments/conpty/session.hpp": "28b168d7bf1c725e7372e82df081872b04b3f3f14e5f4f62a658c6c701c1139b",
+    "experiments/presentation/render.hpp": "55f6f3a483ec3f5d89614d94f5b9cbada3cfc50029b10bef266acd739fe7036a",
+    "experiments/presentation/desktop.hpp": "2efc54b1a23acbbc4877fd1b381d5a87e98395ddeed01b5159cbe78fa92a0ccf",
+    "experiments/core/terminal.hpp": "892997bc2b869a8655d272e9ff049c4102bb1366f1ac709cff8c3d4a41657396",
+    "experiments/core/screen.hpp": "2ad8b19f8512a668629cbb2e7014b2c11fec14ea7184e621bbab3e6b3e6a2173",
+    "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+  },
+  "input_endpoint": "scripted Ctrl-C WM_CHAR acceptance to TF_AFTER state and GDI submission; not physical keyboard",
+  "presented_done": null,
+  "finished_utc": "2026-10-23T01:47:58.824425+00:00",
+  "publication": "Synthetic metadata only; screen, stdout, stderr and bitmaps remain local because helper command echoes absolute build path."
+}

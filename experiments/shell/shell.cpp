@@ -48,7 +48,7 @@ class ShellWindow {
         require(AdjustWindowRect(&area, WS_OVERLAPPEDWINDOW, FALSE) != FALSE, "resize frame calculation failed");
         // Deliberately clip most of this owned test window off the desktop.
         // Retained drawing must stay correct even when rcPaint is clipped.
-        require(SetWindowPos(hwnd_, nullptr, GetSystemMetrics(SM_CXSCREEN)-120, 0,
+        require(SetWindowPos(hwnd_, nullptr, GetSystemMetrics(SM_CXSCREEN)-120, GetSystemMetrics(SM_CYSCREEN)-120,
                             area.right-area.left, area.bottom-area.top,
                             SWP_NOZORDER|SWP_NOACTIVATE) != FALSE, "scripted resize failed");
     }

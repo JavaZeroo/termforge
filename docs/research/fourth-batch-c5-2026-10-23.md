@@ -28,6 +28,8 @@ Windows 11 build 26200、MSVC Release、Python 3.12.10。根构建与完整 CTes
 
 回归场景进一步把自有窗口移至私有 desktop 右边缘，令大部分窗口不可见。本机修复后 shell 七项测试通过，并另运行 13 场景；新[身份](../../experiments/shell/results/2026-10-23-resize-clipped/manifest.json)与[元数据](../../experiments/shell/results/2026-10-23-resize-clipped/samples.jsonl)独立保存。前一目录仍是初版本机结果，不代表修复后或远端结果。
 
+追加 Spec 审查指出只移出右边缘不保证覆盖纵向缺行。最终改为右下边缘，强制大部分行列都在桌面外；shell 七项测试与独立 13 场景再次通过。[最终几何身份](../../experiments/shell/results/2026-10-23-resize-bottom-edge/manifest.json)、[元数据](../../experiments/shell/results/2026-10-23-resize-bottom-edge/samples.jsonl)单独保存；前两目录保持历史原样。追加发现和处理见审查记录。
+
 ## 结论与限制
 
 A1/C5 具备 G1 的基础闭环：从源码构建、打开本地 shell、输入/输出、缩放窗口与退出。核心尺寸变化不 flush 解析器；输出流没有 resize 世代边界，不能声称每个中间帧或历史都与 ConPTY 内部布局相同。物理行裁剪会丢弃缩窄后的右侧内容；没有 reflow、IME、选择复制/粘贴、备用屏/滚动区、完整 TUI、SSH 或产品安装包。
