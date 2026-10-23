@@ -89,6 +89,37 @@ static void invalidation_and_geometry() {
     check(!retained.index_of(999999) && !retained.position(retained.size(), 0) && !retained.position(0, 5),
           "nonexistent ids and columns are rejected");
 }
+static void half_open_endpoint_boundary() {
+    Parser parser(4,20,2); parser.feed("ONE\r\nTWO\r\n");
+    TextDocument document(parser.screen); TextSelection selection;
+    check(selection.set(document,{at(document,0,0),at(document,2,0)}),"select through an excluded blank endpoint row");
+    check(selection.copy(document,100).text=="ONE\r\nTWO\r\n","literal half-open text excludes the last row's own break");
+    parser.feed("\r\n");
+    check(selection.reconcile(document) && selection.copy(document,100).text=="ONE\r\nTWO\r\n",
+          "an appended break on the excluded zero-column endpoint preserves exact selected bytes");
+    Parser excluded(4,3,2); excluded.feed("ONE\r\nTWO\r\nEND\r\nNEX");
+    TextDocument outside(excluded.screen);
+    check(selection.set(outside,{at(outside,0,0),at(outside,2,0)}),"select before excluded-row wrap change");
+    excluded.feed("\x1b[3;3HDN");
+    check(outside.meta(2).joins_next && selection.reconcile(outside) && selection.copy(outside,100).text=="ONE\r\nTWO\r\n",
+          "excluded endpoint row's own soft-wrap link does not join text outside the range");
+    Parser inside(4,3,2); inside.feed("ONE\r\nTWO\r\nEND\r\nNEX");
+    TextDocument selected(inside.screen);
+    check(selection.set(selected,{at(selected,0,0),at(selected,2,0)}),"select before an included break changes");
+    inside.feed("\x1b[1;3HET");
+    check(selected.meta(0).joins_next && !selection.reconcile(selected) && selection.empty(),
+          "hard-to-soft changes inside the selected range still invalidate atomically");
+    Parser changed(4,20,2); changed.feed("ONE\r\nTWO\r\n");
+    TextDocument changed_document(changed.screen);
+    check(selection.set(changed_document,{at(changed_document,0,0),at(changed_document,2,0)}),"select before endpoint row text changes");
+    changed.feed("X");
+    check(!selection.reconcile(changed_document),"excluded endpoint still requires identical text and spans");
+    Parser nonzero(4,20,2); nonzero.feed("ONE\r\nTWO\r\n");
+    TextDocument padding(nonzero.screen);
+    check(selection.set(padding,{at(padding,0,0),at(padding,2,1)}),"select a nonzero final column");
+    nonzero.feed("\r\n");
+    check(!selection.reconcile(padding),"nonzero endpoint is not granted the excluded-zero-column boundary exception");
+}
 static void word_line_policy() {
     Parser p(3, 32, 2); p.feed("TF-HISTORY-000  \xe4\xb8\xad\xe6\x96\x87 e\xcc\x81,ok\r\nNEXT  ");
     TextDocument document(p.screen); TextSelection selection;
@@ -135,8 +166,9 @@ int main() {
         forward_reverse_copy_and_glyph_boundaries();
         wrap_boundaries_history_and_copy_budget();
         invalidation_and_geometry();
+        half_open_endpoint_boundary();
         word_line_policy();
         empty_stale_and_capacity_boundaries();
-        std::cout << "selection contracts passed (6 independent groups)\n";
+        std::cout << "selection contracts passed (7 independent groups)\n";
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

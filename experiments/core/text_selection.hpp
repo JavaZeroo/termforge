@@ -13,9 +13,9 @@ class TextSelection {
     std::optional<TextRange> range_;
     std::vector<DocumentLine> saved_;
     bool invalidated_ = false;
-    static bool same_text(const DocumentLine& a, const DocumentLine& b) {
-        if (a.projection.text != b.projection.text || a.joins_next != b.joins_next ||
-            a.ending != b.ending || a.projection.spans.size() != b.projection.spans.size()) return false;
+    static bool same_text(const DocumentLine& a, const DocumentLine& b, bool compare_boundary) {
+        if (a.projection.text != b.projection.text || a.projection.spans.size() != b.projection.spans.size() ||
+            (compare_boundary && (a.joins_next != b.joins_next || a.ending != b.ending))) return false;
         for (size_t i = 0; i < a.projection.spans.size(); ++i) {
             const auto x = a.projection.spans[i], y = b.projection.spans[i];
             if (x.byte_begin != y.byte_begin || x.byte_end != y.byte_end ||
@@ -71,7 +71,10 @@ public:
             if (meta.id != saved.projection.id) return invalidate();
             if (meta.version != saved.projection.version || meta.joins_next != saved.joins_next) {
                 auto current = document.line(*begin + i);
-                if (!same_text(saved, current)) return invalidate();
+                // The last row at column zero is an excluded half-open
+                // endpoint. Its own following break is outside the copy.
+                const bool compare_boundary = i + 1 != saved_.size() || range_->end.column != 0;
+                if (!same_text(saved, current, compare_boundary)) return invalidate();
                 saved = std::move(current);
             }
         }

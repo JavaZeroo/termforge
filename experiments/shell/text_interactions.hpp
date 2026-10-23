@@ -1,5 +1,6 @@
 // Per-session mouse selection, view-only highlights and actual Unicode copy.
 #pragma once
+#include "menu_gesture.hpp"
 
 inline std::optional<termforge::TextPosition> ShellWindow::selection_position(int x,int y,bool nearest) const {
     if(!snapshot_ || snapshot_->lines.empty()) return std::nullopt;
@@ -75,12 +76,10 @@ inline void ShellWindow::selection_overlay(termforge::ViewSnapshot& view) {
 }
 
 inline void ShellWindow::request_copy() {
-    if(closing_) return;
+    if(!allow_text_action(tf_shell::TextAction::copy)) return;
     const auto value=selected_text();
-    if(value.status==termforge::SelectionCopyStatus::empty) { input_status(L"No selected text"); return; }
     if(value.status!=termforge::SelectionCopyStatus::ok) {
-        input_status(value.status==termforge::SelectionCopyStatus::limit_exceeded?
-            L"Selected text exceeds the copy limit":L"Selected text changed; select it again"); publish(); return;
+        report_copy_unavailable(value.status); return;
     }
     try {
         const auto wide=utf16(value.text);
@@ -90,7 +89,7 @@ inline void ShellWindow::request_copy() {
 }
 
 inline void ShellWindow::select_all_text() {
-    if(closing_) return;
+    if(!allow_text_action(tf_shell::TextAction::select_all)) return;
     selection_end();
     termforge::TextDocument document(parser_.screen);
     for(size_t end=document.size();end>0;--end) {
@@ -108,16 +107,19 @@ inline void ShellWindow::selection_menu(int x,int y) {
     if(closing_ || ime_.composing()) return;
     selection_end(); SetFocus(hwnd_);
     HMENU menu=CreatePopupMenu(); require(menu!=nullptr,"text menu creation failed");
-    AppendMenuW(menu,MF_STRING|(has_selection()?0:MF_GRAYED),1,L"Copy\tCtrl+Shift+C");
-    AppendMenuW(menu,MF_STRING|(paste_busy()?MF_GRAYED:0),2,L"Paste\tCtrl+Shift+V");
-    AppendMenuW(menu,MF_STRING,3,L"Select All\tCtrl+Shift+A");
-    AppendMenuW(menu,MF_STRING,4,L"Find\tCtrl+Shift+F");
+    const auto flags=[&](tf_shell::TextAction action) { return MF_STRING|(text_action_state(action).enabled?0:MF_GRAYED); };
+    AppendMenuW(menu,flags(tf_shell::TextAction::copy),1,L"Copy\tCtrl+Shift+C");
+    AppendMenuW(menu,flags(tf_shell::TextAction::paste),2,L"Paste\tCtrl+Shift+V");
+    AppendMenuW(menu,flags(tf_shell::TextAction::select_all),3,L"Select All\tCtrl+Shift+A");
+    AppendMenuW(menu,flags(tf_shell::TextAction::find),4,L"Find\tCtrl+Shift+F");
     POINT point{x,y};
     if(x==-1 && y==-1) { point={0,0}; ClientToScreen(hwnd_,&point); }
+    tf_shell_test::observe_popup_open(hwnd_,menu);
     const int selected=TrackPopupMenu(menu,TPM_RETURNCMD|TPM_RIGHTBUTTON,point.x,point.y,0,hwnd_,nullptr);
+    tf_shell_test::observe_popup_result(hwnd_,menu,selected);
     DestroyMenu(menu);
-    if(selected==1) request_copy();
-    if(selected==2) request_paste();
-    if(selected==3) select_all_text();
-    if(selected==4) request_find();
+    if(selected==1) perform_text_action(tf_shell::TextAction::copy);
+    if(selected==2) perform_text_action(tf_shell::TextAction::paste);
+    if(selected==3) perform_text_action(tf_shell::TextAction::select_all);
+    if(selected==4) perform_text_action(tf_shell::TextAction::find);
 }

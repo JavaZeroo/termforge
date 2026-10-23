@@ -42,14 +42,14 @@ class ProductImeSyntheticSchemaTests(unittest.TestCase):
                 "provider": {"clsid": "{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}",
                              "profile": "{FA550B04-5AD7-411F-A5AC-CA038EC515D7}", "langid": 2052,
                              "language_hresult": 0, "activation_hresult": 0},
-                "key_batches": {"ui-ime-basic": 18, "ui-ime-geometry": 9, "ui-ime-focus": 25, "ui-ime-close": 14}[mode],
+                "key_batches": {"ui-ime-basic": 18, "ui-ime-geometry": 9, "ui-ime-focus": 29, "ui-ime-close": 14}[mode],
                 "checkpoints": [], "receivers": [], "after_close_candidates": [], "terminal_output": {name: "" for name in names},
                 "output_screen_lines": [],
                 "rename": {"preedit": "", "text": "", "candidates": []},
                 "actions": {name: True for name in {
                     "ui-ime-basic": ("candidate_followed_workspace", "bottom-cancel", "main-cancel"),
                     "ui-ime-geometry": ("twenty_output_rows", "resize", "zoom_125", "controlled_dpi_120", "cancelled"),
-                    "ui-ime-focus": ("hidden_cancelled", "rename_cancelled_old", "rename_text_verified"),
+                    "ui-ime-focus": ("hidden_cancelled", "rename_cancelled_old", "rename_text_verified", "rename_first_escape_cancels_ime", "rename_second_escape_closes"),
                     "ui-ime-close": ("closed_target_destroyed", "closed_receiver_reaped", "closed_candidate_gone", "survivor-cancel"),
                 }[mode]}}
         data["guarded_key_batches"] = data["key_batches"]
@@ -78,7 +78,10 @@ class ProductImeSyntheticSchemaTests(unittest.TestCase):
                 "stopped_event": not close, "process_signaled": True, "exit_code": 99 if close else 0})
         if mode == "ui-ime-focus":
             data["rename"] = {"preedit": "ni'hao", "text": "你好", "candidates": [
-                {"instance": 4, "class": "MSCandUIWindow_Candidate", "rect": [300, 300, 500, 380]}]}
+                {"instance": 4, "class": "MSCandUIWindow_Candidate", "rect": [300, 300, 500, 380]}],
+                "cancel_preedit": "ni", "cancelled_text": "你好", "first_escape_kept_editor": True, "second_escape_closed_editor": True,
+                "cancel_candidates": [{"instance": 9, "class": "MSCandUIWindow_Candidate", "rect": [300, 300, 500, 380]}],
+                "after_cancel_candidates": []}
         if mode == "ui-ime-geometry":
             data["output_screen_lines"] = ["TF_IME_OUTPUT " + str(index) for index in range(20)] + ["TF_IME_OUTPUT_DONE"]
             data["terminal_output"]["main"] = (b"".join(b"TF_IME_OUTPUT " + str(index).encode("ascii") + b"\r\n" for index in range(20)) +
@@ -90,6 +93,134 @@ class ProductImeSyntheticSchemaTests(unittest.TestCase):
             data, captures = self.fixture(mode)
             with self.subTest(mode=mode):
                 self.assertTrue(validate_product_manifest(data, mode, captures)["raw_receiver_bytes_verified"])
+
+    @classmethod
+    def reading_fixture(cls):
+        data, captures = cls.fixture("ui-ime-basic")
+        data["mode"] = "ui-ime-reading"
+        data["key_batches"] = data["guarded_key_batches"] = 28
+        old = {row["name"]: row for row in data["checkpoints"]}
+        data["checkpoints"] = []
+        for source, name in (("main-preedit", "reading-preedit"), ("main-commit", "reading-commit"),
+                             ("main-cancel", "reading-cancel"), ("bottom-preedit", "bottom-preedit"),
+                             ("bottom-commit", "bottom-commit"), ("bottom-cancel", "bottom-cancel")):
+            row = old[source]; row["name"] = name; data["checkpoints"].append(row)
+        data["actions"] = dict.fromkeys(("twenty_output_rows", "history_reading", "composition_restored_live",
+                                        "reading-cancel", "find_preedit", "find_commit", "find_cancel",
+                                        "find_closed", "bottom-cancel", "two_regions_isolated"), True)
+        data["output_screen_lines"] = ["TF_IME_OUTPUT " + str(index) for index in range(20)] + ["TF_IME_OUTPUT_DONE"]
+        data["terminal_output"]["main"] = ("\r\n".join(data["output_screen_lines"]) + "\r\n").encode().hex()
+        data["reading_context"] = []
+        for name in ("history-before", "reading-preedit", "reading-commit", "find-preedit", "find-commit",
+                     "find-cancel-preedit", "find-cancel", "find-closed", "bottom-complete"):
+            history = name == "history-before"
+            editing = name in ("find-preedit", "find-commit", "find-cancel-preedit", "find-cancel")
+            candidate = {"instance": 8 if name == "find-cancel-preedit" else 7,
+                         "class": "MSCandUIWindow_Candidate", "rect": [120, 110, 400, 180]}
+            data["reading_context"].append({"name": name,
+                "focus": "find" if editing else "bottom" if name == "bottom-complete" else "main",
+                "main_view": {"top": 0 if history else 12, "maximum": 12, "following": not history,
+                              "cursor_row": -1 if history else 6, "rows": 7, "columns": 80,
+                              "first_line_id": 1 if history else 13},
+                "main_received_hex": "" if name in ("history-before", "reading-preedit") else "e4bda0e5a5bd",
+                "bottom_received_hex": "e4bda0e5a5bd" if name == "bottom-complete" else "",
+                "find": {"present": editing, "visible": editing, "focused": editing,
+                         "edit_destroyed": name in ("find-closed", "bottom-complete"),
+                         "class": "Edit" if editing else "", "text": "你好" if name in ("find-commit", "find-cancel") else "",
+                         "preedit": "ni'hao" if name in ("find-preedit", "find-cancel-preedit") else "",
+                         "has_match": False, "search_complete": name in ("find-commit", "find-cancel")},
+                "visible_candidates": [candidate] if name in ("reading-preedit", "find-preedit", "find-cancel-preedit") else []})
+        return data, captures
+
+    def test_history_and_find_native_ime_have_independent_receiver_expectations(self):
+        data, captures = self.reading_fixture()
+        result = validate_product_manifest(data, "ui-ime-reading", captures)
+        self.assertTrue(result["history_find_ime_verified"])
+        self.assertEqual(result["reading_contexts"], 9)
+
+    def test_rename_escape_cancels_composition_before_closing_the_actual_edit(self):
+        data, captures = self.fixture("ui-ime-focus")
+        data["key_batches"] = data["guarded_key_batches"] = 29
+        data["rename"].update(cancel_preedit="ni", cancelled_text="你好", first_escape_kept_editor=True,
+                             second_escape_closed_editor=True, cancel_candidates=[
+                                 {"instance": 9, "class": "MSCandUIWindow_Candidate", "rect": [300, 300, 500, 380]}],
+                             after_cancel_candidates=[])
+        data["actions"].update(rename_first_escape_cancels_ime=True, rename_second_escape_closes=True)
+        self.assertTrue(validate_product_manifest(data, "ui-ime-focus", captures)["rename_cancel_verified"])
+        for field, value in (("cancel_preedit", ""), ("cancelled_text", "你好ni"), ("first_escape_kept_editor", False),
+                             ("second_escape_closed_editor", False), ("cancel_candidates", []),
+                             ("after_cancel_candidates", [{"instance": 999, "class": "MSCandUIWindow_Candidate", "rect": [300, 300, 500, 380]}])):
+            modified = copy.deepcopy(data); modified["rename"][field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError): validate_product_manifest(modified, "ui-ime-focus", captures)
+
+    def test_reading_find_ime_rejects_hidden_caret_edit_leaks_and_escape_priority_errors(self):
+        data, captures = self.reading_fixture()
+        mutations = {
+            "no_reading_state": lambda d: d["reading_context"][0]["main_view"].update(top=12, following=True),
+            "preedit_kept_hidden_caret": lambda d: d["reading_context"][1]["main_view"].update(top=0, following=False, cursor_row=-1),
+            "preedit_wrote_pty": lambda d: d["reading_context"][1].__setitem__("main_received_hex", "6e69"),
+            "find_wrote_pty": lambda d: d["reading_context"][3].__setitem__("main_received_hex", "e4bda0e5a5bd6e69"),
+            "find_wrong_target": lambda d: d["reading_context"][3].__setitem__("focus", "main"),
+            "no_real_edit_composition": lambda d: d["reading_context"][3]["find"].__setitem__("preedit", ""),
+            "no_real_candidate": lambda d: d["reading_context"][3].__setitem__("visible_candidates", []),
+            "edit_commit_duplicate": lambda d: d["reading_context"][4]["find"].__setitem__("text", "你好你好"),
+            "cancel_closed_find_too_early": lambda d: d["reading_context"][6]["find"].__setitem__("present", False),
+            "cancel_committed_latin": lambda d: d["reading_context"][6]["find"].__setitem__("text", "你好ni"),
+            "cancel_left_candidate": lambda d: d["reading_context"][6].__setitem__("visible_candidates", d["reading_context"][5]["visible_candidates"]),
+            "cancel_left_new_candidate": lambda d: d["reading_context"][6].__setitem__("visible_candidates", [
+                {"instance": 999, "class": "MSCandUIWindow_Candidate", "rect": [120, 110, 400, 180]}]),
+            "second_preedit_missing": lambda d: d["reading_context"][5]["find"].__setitem__("preedit", ""),
+            "close_left_new_candidate": lambda d: d["reading_context"][7].__setitem__("visible_candidates", d["reading_context"][5]["visible_candidates"]),
+            "second_escape_left_edit": lambda d: d["reading_context"][7]["find"].__setitem__("edit_destroyed", False),
+            "second_escape_lost_focus": lambda d: d["reading_context"][7].__setitem__("focus", "find"),
+            "cross_session_input": lambda d: d["reading_context"][7].__setitem__("bottom_received_hex", "1b"),
+            "missing_output": lambda d: d["output_screen_lines"].pop(4),
+            "context_missing": lambda d: d["reading_context"].pop(3),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                changed = copy.deepcopy(data); mutate(changed)
+                with self.assertRaises(ValueError):
+                    validate_product_manifest(changed, "ui-ime-reading", captures)
+
+    def test_reading_artifact_rejects_changed_or_unfinished_native_context_journal(self):
+        mode = "ui-ime-reading"; data, captures = self.reading_fixture()
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            (directory / "product-ime.json").write_text(json.dumps(data), encoding="utf-8")
+            for name, value in captures.items(): (directory / (name + ".bin")).write_bytes(value)
+            bitmap = bytearray(58)
+            struct.pack_into("<2sIHHI", bitmap, 0, b"BM", 58, 0, 0, 54)
+            struct.pack_into("<IiiHHIIiiII", bitmap, 14, 40, 1, -1, 1, 32, 0, 4, 0, 0, 0, 0)
+            (directory / "frame.bmp").write_bytes(bitmap)
+            shell = {"valid": True, "mode": mode, "sessions_closed": 2, "active_children_after": 0, "presented_done": None}
+            launcher = {"schema": "termforge-hosted-ime-launcher-v1", "mode": mode, "child_exit_code": 0,
+                        "child_signaled": True, "timed_out": False, "inner_job_after": {"active": 0, "total": 1, "terminated": 0}}
+            (directory / "stdout.jsonl").write_text(json.dumps(shell) + "\n" + json.dumps(launcher) + "\n", encoding="utf-8")
+            (directory / "stderr.txt").write_bytes(b"")
+            record = {"mode": mode, "status": "collected", "assigned": True, "gate_released": True, "process_reaped": True,
+                      "timed_out": False, "returncode": 0, "forced_job_termination": False, "cleanup_errors": [],
+                      "evidence_errors": [], "error": None, "outer_job_before_cleanup": {"active": 0, "total": 1, "terminated": 0},
+                      "outer_job_after": {"active": 0, "total": 1, "terminated": 0},
+                      "lifecycle": [{"stage": s} for s in ("starting", "awaiting-go", "job-assigned", "releasing-go", "finished")],
+                      "streams": {name: runner.file_identity(directory / name) for name in ("stdout.jsonl", "stderr.txt")}}
+            fields = ("name", "session", "generation", "composing", "preedit", "result_events", "committed", "received_hex", "caret_screen", "candidates")
+            observations = [dict(kind="checkpoint", **{key: row[key] for key in fields}) for row in data["checkpoints"]]
+            observations += [dict(kind="text-context", observation=row) for row in data["reading_context"]]
+            rows = [dict(kind="step", state="started", name="sessions-ready", elapsed_ms=0),
+                    dict(kind="step", state="ended", name="sessions-ready", elapsed_ms=100),
+                    dict(kind="step", state="started", name="preserve-independent-evidence", elapsed_ms=200)]
+            rows += observations + [dict(kind="step", state="ended", name="preserve-independent-evidence", elapsed_ms=300)]
+            def journal(value):
+                (directory / "progress.jsonl").write_text("\n".join(json.dumps(row) for row in value) + "\n", encoding="utf-8")
+            journal(rows)
+            self.assertTrue(validate_product_case(directory, mode, record)["reading_progress_verified"])
+            changes = [rows[:-1], rows + [rows[-1]], list(reversed(rows))]
+            modified = copy.deepcopy(rows); modified[3]["received_hex"] = "6e69"; changes.append(modified)
+            modified = copy.deepcopy(rows); modified[-2]["observation"]["main_received_hex"] = ""; changes.append(modified)
+            for index, changed in enumerate(changes):
+                journal(changed)
+                with self.subTest(index=index), self.assertRaises(ValueError): validate_product_case(directory, mode, record)
 
     def test_schema_rejects_preedit_duplicates_stale_generation_and_forged_geometry(self):
         data, captures = self.fixture("ui-ime-basic")
@@ -217,12 +348,12 @@ class ProductImeGuardTests(unittest.TestCase):
         for name in ("Configure probe", "Build native IME probe and product receiver",
                      "Activate existing fixed Microsoft Pinyin in disposable hosted VM",
                      "Require real composition, candidate position, commit and cancel",
-                     "Require four real product IME workflows and owned cleanup"):
+                     "Require five real product IME workflows and owned cleanup"):
             with self.subTest(step=name): self.assertIn("if: inputs.mode == 'verify'", step(name))
         build = step("Build native IME probe and product receiver")
         self.assertIn("shell_test_launcher shell_ime_client", build)
-        product = step("Require four real product IME workflows and owned cleanup")
-        self.assertIn("timeout-minutes: 5", product)
+        product = step("Require five real product IME workflows and owned cleanup")
+        self.assertIn("timeout-minutes: 6", product)
         self.assertIn("python -m research.ime.product_runner", product)
         self.assertIn("--timeout 60 --out local/hosted-ime/product", product)
         self.assertNotIn("product_runner", workflow.split("  workflow_dispatch:", 1)[0])

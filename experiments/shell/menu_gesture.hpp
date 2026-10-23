@@ -15,6 +15,7 @@ class PopupMenuGesture {
     HWND owner_=nullptr, timer_=nullptr, popup_=nullptr;
     HMENU menu_=nullptr;
     UINT target_=0;
+    UINT open_message_=WM_LBUTTONDOWN;
     DWORD thread_=0;
     int target_index_=-1, returned_command_=-1;
     unsigned navigation_keys_=0;
@@ -71,6 +72,10 @@ class PopupMenuGesture {
         if(!menu_ || target_index_<0 || !owned_menu_active()) return;
         if(!popup_) EnumThreadWindows(thread_,find_popup,reinterpret_cast<LPARAM>(this));
         if(!popup_) return;
+        if(!target_) {
+            if(!queued_) { queued_=true; if(!key(VK_ESCAPE)) fail("owned popup inspection could not queue Escape"); }
+            return;
+        }
         if(!highlighted_) {
             for(const auto command:enabled_commands_) {
                 MENUITEMINFOW observed{}; observed.cbSize=sizeof(observed); observed.fMask=MIIM_STATE;
@@ -116,7 +121,8 @@ class PopupMenuGesture {
         }
     }
 public:
-    PopupMenuGesture(HWND owner,POINT open,UINT target,DWORD timeout_ms=2000):owner_(owner),target_(target),thread_(GetCurrentThreadId()) {
+    PopupMenuGesture(HWND owner,POINT open,UINT target,DWORD timeout_ms=2000,UINT open_message=WM_LBUTTONDOWN)
+        :owner_(owner),target_(target),open_message_(open_message),thread_(GetCurrentThreadId()) {
         DWORD process=0;
         require(!observing_ && IsWindow(owner_) && GetWindowThreadProcessId(owner_,&process)==thread_ && process==GetCurrentProcessId(),
                 "popup gesture requires one same-thread owned window");
@@ -134,6 +140,7 @@ public:
             require(input_name!=name,"popup gesture must not drive the input desktop");
         }
         require(timeout_ms>=100 && timeout_ms<=5000,"popup gesture deadline outside bounded range");
+        require(open_message_==WM_LBUTTONDOWN || open_message_==WM_CONTEXTMENU,"unknown owned popup opening message");
         deadline_=GetTickCount64()+timeout_ms;
         try {
             cleanup_ok_=true;
@@ -142,9 +149,11 @@ public:
             require(RegisterClassW(&cls)!=0,"popup observer class creation failed"); registered_=true;
             timer_=CreateWindowExW(0,class_name_,L"owned popup timer",0,0,0,0,0,HWND_MESSAGE,nullptr,cls.hInstance,this);
             require(timer_ && SetTimer(timer_,1,10,nullptr),"popup observer timer creation failed"); timer_armed_=true; observing_=this;
-            require(PostMessageW(owner_,WM_LBUTTONDOWN,MK_LBUTTON,MAKELPARAM(open.x,open.y))!=FALSE &&
-                    PostMessageW(owner_,WM_LBUTTONUP,0,MAKELPARAM(open.x,open.y))!=FALSE,
-                    "product popup opening mouse messages could not be queued");
+            if(open_message_==WM_CONTEXTMENU)
+                require(PostMessageW(owner_,WM_CONTEXTMENU,reinterpret_cast<WPARAM>(owner_),MAKELPARAM(open.x,open.y))!=FALSE,"product terminal context-menu gesture could not be queued");
+            else require(PostMessageW(owner_,WM_LBUTTONDOWN,MK_LBUTTON,MAKELPARAM(open.x,open.y))!=FALSE &&
+                         PostMessageW(owner_,WM_LBUTTONUP,0,MAKELPARAM(open.x,open.y))!=FALSE,
+                         "product popup opening mouse messages could not be queued");
         } catch(...) { release(); throw; }
     }
     ~PopupMenuGesture() { release(); }
@@ -158,7 +167,8 @@ public:
         for(int index=0;index<count;++index) {
             MENUITEMINFOW item{}; item.cbSize=sizeof(item); item.fMask=MIIM_STATE|MIIM_ID|MIIM_FTYPE;
             if(!GetMenuItemInfoW(menu,static_cast<UINT>(index),TRUE,&item)) { self->fail("actual popup item observation failed"); return; }
-            if(item.wID==self->target_) {
+            if(!self->target_ && self->target_index_<0 && !(item.fType&MFT_SEPARATOR)) self->target_index_=index;
+            if(self->target_ && item.wID==self->target_) {
                 self->target_index_=index; self->initial_state_=item.fState;
                 if(item.fType&MFT_SEPARATOR || item.fState&(MFS_DISABLED|MFS_GRAYED)) self->fail("actual popup target is disabled");
             }
@@ -177,13 +187,15 @@ public:
     bool complete() const noexcept { return done_; }
     static bool observer_idle() noexcept { return observing_==nullptr && cleanup_ok_; }
     void validate() const {
-        require(done_ && returned_ && !failure_ && !timed_out_ && popup_ && visible_ && queued_ && highlighted_ &&
-                returned_command_==static_cast<int>(target_) && !IsWindowVisible(popup_),
+        require(done_ && returned_ && !failure_ && !timed_out_ && popup_ && visible_ && queued_ &&
+                (!target_ || highlighted_) && returned_command_==static_cast<int>(target_) && !IsWindowVisible(popup_),
                 "actual popup did not visibly highlight and return its requested command with bounded cleanup");
     }
     std::string json() const {
         std::ostringstream out;
-        out<<"{\"schema\":\"termforge-owned-popup-menu-v1\",\"input_path\":\"queued-owner-mouse-and-popup-keys\","
+        out<<"{\"schema\":\"termforge-owned-popup-menu-v1\",\"input_path\":\""
+           <<(open_message_==WM_CONTEXTMENU?"queued-context-message-and-popup-keys":"queued-owner-mouse-and-popup-keys")<<"\","
+           <<"\"opening_message\":\""<<(open_message_==WM_CONTEXTMENU?"WM_CONTEXTMENU":"WM_LBUTTONDOWN")<<"\",\"inspection_only\":"<<(!target_?"true":"false")<<','
            <<"\"owned_non_input_desktop\":true,\"target_command\":"<<target_<<",\"target_index\":"<<target_index_
            <<",\"initial_state\":"<<initial_state_<<",\"highlighted_state\":"<<highlighted_state_
            <<",\"last_highlighted_command\":"<<last_highlighted_command_

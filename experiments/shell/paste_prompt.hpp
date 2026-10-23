@@ -47,13 +47,13 @@ public:
                 L" bytes. Pasting can execute commands.\r\nSend it to this session?";
             const auto label=CreateWindowExW(0,L"STATIC",text.c_str(),WS_CHILD|WS_VISIBLE,
                 px(16),px(14),px(408),px(70),window_,nullptr,cls.hInstance,nullptr);
-            const auto yes=CreateWindowExW(0,L"BUTTON",L"Paste",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_PUSHBUTTON,
+            const auto yes=CreateWindowExW(0,L"BUTTON",L"Paste",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_DEFPUSHBUTTON,
                 px(242),px(100),px(84),px(28),window_,reinterpret_cast<HMENU>(IDOK),cls.hInstance,nullptr);
-            const auto no=CreateWindowExW(0,L"BUTTON",L"Cancel",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_DEFPUSHBUTTON,
+            const auto no=CreateWindowExW(0,L"BUTTON",L"Cancel",WS_CHILD|WS_VISIBLE|WS_TABSTOP|BS_PUSHBUTTON,
                 px(338),px(100),px(84),px(28),window_,reinterpret_cast<HMENU>(IDCANCEL),cls.hInstance,nullptr);
             if(!label || !yes || !no) throw std::runtime_error("paste confirmation controls failed");
             for(HWND control:{label,yes,no}) SendMessageW(control,WM_SETFONT,reinterpret_cast<WPARAM>(GetStockObject(DEFAULT_GUI_FONT)),TRUE);
-            ShowWindow(window_,SW_SHOWNORMAL); SetFocus(no);
+            ShowWindow(window_,SW_SHOWNORMAL); SetFocus(yes);
         } catch(...) { if(window_) DestroyWindow(window_); if(--users_==0) UnregisterClassW(cls.lpszClassName,cls.hInstance); registered_=false; throw; }
     }
     ~PastePrompt() {
@@ -65,7 +65,7 @@ public:
     bool route(MSG& message) {
         if(!window_ || (message.hwnd!=window_ && !IsChild(window_,message.hwnd))) return false;
         if(message.message==WM_KEYDOWN && (message.wParam==VK_ESCAPE || message.wParam==VK_RETURN)) {
-            const auto target=message.wParam==VK_RETURN && GetDlgCtrlID(GetFocus())==IDOK?IDOK:IDCANCEL;
+            const auto target=message.wParam==VK_RETURN && GetDlgCtrlID(GetFocus())!=IDCANCEL?IDOK:IDCANCEL;
             SendMessageW(window_,WM_COMMAND,target,0); return true;
         }
         if(!IsDialogMessageW(window_,&message)) { TranslateMessage(&message); DispatchMessageW(&message); }

@@ -249,7 +249,13 @@ class ShellTests(unittest.TestCase):
 
     def test_paste_confirmation_and_hidden_target_preserve_visible_focus(self):
         for repeat in range(2):
-            execute(self.exe, "ui-paste", self.out / f"paste-{repeat}")
+            out = self.out / f"paste-{repeat}"
+            execute(self.exe, "ui-paste", out)
+            data = json.loads((out / "paste-workflow.json").read_text(encoding="utf-8"))
+            self.assertEqual(data["schema"], "termforge-window-paste-v2")
+            self.assertEqual(data["keyboard"], {"default_enter_accept": True, "default_escape_cancel": True,
+                                                "tab_enter_accept": True})
+            self.assertEqual((out / "input.bin").read_bytes(), b"DEFAULT_ENTER_ACCEPT\r" + b"P\xe6\xb1\x89\r" * 5000)
 
     @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and
                          os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",

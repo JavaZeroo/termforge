@@ -8,6 +8,7 @@
 
 | 结论 | 实现/命令入口 | 已有结果与限制 |
 |---|---|---|
+| R1 统一文字动作（未结项） | [逐项对照与差异处置](research/r1-action-comparison.md)、[参考探针](../research/ui/README.md)、[产品 IME 场景](../research/ime/README.md) | 新入口/上下文规则、实际右键菜单/快捷键与历史/Find IME 组合仍须固定源码的真实系统验证；纯 schema、控件或本地跳过不计 #17 通过。参考 Return 及编辑框的新观察与既有合同分开审核 |
 | 干净检出可构建和回归 | [贡献指南](../CONTRIBUTING.md)、[根 CMake](../CMakeLists.txt)、[CI workflow](../.github/workflows/build.yml) | `2dc8d6d` 对应 [Actions 39930814167](https://github.com/JavaZeroo/termforge/actions/runs/39930814167)，Windows 2025 / Ubuntu 24.04 已有成功记录；Linux 未构建 Windows 客户端 |
 | R1 历史/键盘/粘贴窗口整合 | [源码、二进制、重复样本与跳过项](../experiments/shell/results/2026-10-23-r1-foundations/validation.json)、[运行入口](../experiments/shell/README.md) | `9b16acc` 对应实现的本地全量 19 个 CTest 套件通过；内部仍有 3 个跳过项。历史内容/原生拖动、键盘实际接收字节、粘贴途中取消/关闭各重复两轮；系统剪贴板与实际 IME 未据此验收，不是性能对照 |
 | R1 系统剪贴板完整粘贴及有限复制 | [最终独立审核事实](../experiments/shell/results/2026-10-24-r1-clipboard-accepted/validation.json)、[Actions 40010995723](https://github.com/JavaZeroo/termforge/actions/runs/40010995723)、[原 1418 失败](../experiments/shell/results/2026-10-24-r1-system-copy/validation.json) | `6efe3e2`：正常系统粘贴和读取占用/超限/取消/关闭均两轮通过；独立核对基线/重试/前缀、无迟到/Escape 字节、其他会话和 Job0/desktop 删除。晚发布仍记录真实 1418，未冒充成功。复制每轮另有 22 阶段与真实非空 Ctrl+Shift+C 2499 字节往返；软硬行/尾空白/DPI 和 Copy 弹出菜单不在该证据内 |

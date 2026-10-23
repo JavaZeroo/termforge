@@ -63,7 +63,7 @@ python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_
 
 候选窗口类名、前后矩形、预编辑文字、提交内容和事件数均保存在 JSON。候选类无法识别、语言包缺失、没有 input desktop、焦点丢失或任何步骤未验证，门槛失败。上述固定镜像的独立探针已通过，仍不能外推其他镜像/版本或产品交叉场景。本地两个隔离模式的 profile 枚举为空也只代表其原隔离范围。
 
-## 产品真实输入的四组交叉验收
+## 产品真实输入场景
 
 `r1-ime.yml` 的显式 `mode=verify` 先完成固定环境准备与独立探针，再运行 `python -m research.ime.product_runner --launcher build/bin/Release/shell_test_launcher.exe --timeout 60 --out local/hosted-ime/product`。普通 push 仅盘点。开发机在创建证据目录、窗口或改变输入法前拒绝；无需用户逐轮点击。
 
@@ -71,8 +71,9 @@ python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_
 |---|---|
 | `ui-ime-basic` | 两区域真实预编辑不发送、“你好”恰好一次、Escape 取消、候选随工作区移动 |
 | `ui-ime-geometry` | 预编辑中 20 行真实输出、resize、125% zoom、受控 120 DPI；候选和实际物理 caret、保留行逐字检查 |
-| `ui-ime-focus` | 隐藏标签、失焦/重入及原生 rename EDIT 的真实组合；PTY 接收端不串会话 |
+| `ui-ime-focus` | 隐藏标签、失焦/重入及原生 rename EDIT 的真实组合；PTY 接收端不串会话。新增第一次 Escape 取消组合、第二次关闭 rename 的路径待当前源码托管重验 |
 | `ui-ime-close` | 组合中关闭目标、候选消失、接收进程退出，另一会话仍可提交/取消 |
+| `ui-ime-reading` | 新增、待真实托管验收：历史阅读→终端中文组合恢复可见光标→Find EDIT 中文组合/提交；第一次 Escape 只取消新组合，第二次关闭 Find；两区域独立接收、9组上下文与实际候选消失 |
 
 原生 launcher/产品分别等待外层与内层 GO；两个 kill-on-close Job 都必须归零。只查询现有 input desktop，不创建/切换/删除系统输入桌面。原始 stdout/stderr、阶段进度、独立接收文件和结果分别保存；已有目录拒绝覆盖，超时仍保留原始失败。候选既检查同一原生实例的相对移动，也按实测单元格/OS DPI/显示器工作区检查绝对锚定，允许向上排布和右边界夹紧。
 

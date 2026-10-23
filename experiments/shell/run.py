@@ -23,6 +23,7 @@ from experiments.shell.clipboard_checks import require_hosted_clipboard, validat
 from experiments.shell.selection_checks import validate_selection_workflow
 from experiments.shell.selection_bytes_checks import validate_selection_bytes_workflow
 from experiments.shell.selection_context_checks import validate_selection_context_workflow
+from experiments.shell.action_checks import validate_actions_workflow
 from experiments.shell.find_checks import validate_find_workflow, validate_find_stream_workflow
 
 
@@ -31,7 +32,7 @@ def validate(row, mode):
         if row != {"valid": True, "mode": mode, "sessions_closed": 3, "active_children_after": 0, "presented_done": None}:
             raise ValueError("selection context workflow or cleanup failed")
         return
-    if mode in ("ui-paste", "ui-paste-system", "ui-clipboard-system", "ui-selection", "ui-copy-system", "ui-find", "ui-find-stream", "ui-selection-bytes", "ui-copy-bytes-system"):
+    if mode in ("ui-paste", "ui-paste-system", "ui-clipboard-system", "ui-selection", "ui-copy-system", "ui-find", "ui-find-stream", "ui-selection-bytes", "ui-copy-bytes-system", "ui-actions", "ui-actions-system"):
         if row != {"valid": True, "mode": mode, "sessions_closed": 2, "active_children_after": 0, "presented_done": None}:
             raise ValueError("paste window workflow or cleanup failed")
         return
@@ -230,7 +231,7 @@ class OwnedTestDesktop:
 
 
 def execute(exe, mode, out, timeout=40, settings_source=None):
-    if mode in ("ui-paste-system", "ui-clipboard-system", "ui-copy-system", "ui-copy-bytes-system", "ui-copy-context-system"):
+    if mode in ("ui-paste-system", "ui-clipboard-system", "ui-copy-system", "ui-copy-bytes-system", "ui-copy-context-system", "ui-actions-system"):
         require_hosted_clipboard(os.environ)
     out.mkdir(parents=True, exist_ok=False)
     job = desktop = None
@@ -288,7 +289,7 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
                 if (out / "input.bin").read_bytes() != expected:
                     raise ValueError("real keyboard receiver bytes differ from independent expectation")
             if mode in ("ui-paste", "ui-paste-system"):
-                expected = b"P\xe6\xb1\x89\r" * 5000
+                expected = b"DEFAULT_ENTER_ACCEPT\r" + b"P\xe6\xb1\x89\r" * 5000
                 if (out / "input.bin").read_bytes() != expected:
                     raise ValueError("paste confirmation/target receiver differs from independent expectation")
                 record["system_clipboard"] = mode == "ui-paste-system"
@@ -306,6 +307,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None):
                 record["selection_bytes_workflow"] = validate_selection_bytes_workflow(out, mode == "ui-copy-bytes-system", record)
             if mode in ("ui-selection-context", "ui-copy-context-system"):
                 record["selection_context_workflow"] = validate_selection_context_workflow(out, mode == "ui-copy-context-system", record)
+            if mode in ("ui-actions", "ui-actions-system"):
+                record["actions_workflow"] = validate_actions_workflow(out, mode == "ui-actions-system", record)
             record["result"] = result
             record["frame_sha256"] = hashlib.sha256((out / "frame.bmp").read_bytes()).hexdigest()
         record["status"] = "passed"

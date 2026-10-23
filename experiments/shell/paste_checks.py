@@ -6,11 +6,11 @@ from pathlib import Path
 def validate_paste_workflow(directory: Path) -> dict:
     directory = Path(directory)
     data = json.loads((directory / "paste-workflow.json").read_text(encoding="utf-8"))
-    if data.get("schema") != "termforge-window-paste-v1" or data.get("keyboard") != {
-        "default_enter_cancel": True, "tab_escape_cancel": True, "tab_enter_accept": True
+    if data.get("schema") != "termforge-window-paste-v2" or data.get("keyboard") != {
+        "default_enter_accept": True, "default_escape_cancel": True, "tab_enter_accept": True
     }:
         raise ValueError("window paste keyboard confirmation coverage is incomplete")
-    if (directory / "input.bin").read_bytes() != b"P\xe6\xb1\x89\r" * 5000:
+    if (directory / "input.bin").read_bytes() != b"DEFAULT_ENTER_ACCEPT\r" + b"P\xe6\xb1\x89\r" * 5000:
         raise ValueError("confirmed receiver bytes differ or rejected text leaked")
     cases = data.get("cases")
     if (not isinstance(cases, list) or len(cases) != 2 or any(not isinstance(row, dict) for row in cases) or

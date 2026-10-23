@@ -2,7 +2,7 @@
 #pragma once
 
 inline void ShellWindow::request_find() {
-    if(closing_ || ime_.composing()) return;
+    if(!allow_text_action(tf_shell::TextAction::find)) return;
     selection_end(); SetFocus(hwnd_);
     if(!find_) {
         find_=std::make_unique<tf_shell::FindBar>(hwnd_,renderer_->dpi());
@@ -13,7 +13,9 @@ inline void ShellWindow::request_find() {
 }
 
 inline void ShellWindow::search_changed() {
-    search_.notify_change(termforge::TextDocument(parser_.screen));
+    const termforge::TextDocument document(parser_.screen);
+    search_.notify_change(document);
+    if(find_resize_pending_ && !find_resize_anchor_.reconcile(document)) clear_find_resize_anchor();
     if(find_current_) {
         const auto live=search_.match(termforge::TextDocument(parser_.screen),find_current_->index);
         if(!live || live->range.begin!=find_current_->match.range.begin ||
@@ -21,8 +23,25 @@ inline void ShellWindow::search_changed() {
     }
 }
 
+inline void ShellWindow::restore_resized_find_current() {
+    if(!find_resize_pending_) return;
+    const termforge::TextDocument document(parser_.screen);
+    if(!find_resize_anchor_.reconcile(document)) { clear_find_resize_anchor(); return; }
+    const auto range=*find_resize_anchor_.range();
+    for(size_t index=0;index<search_.matches().size();++index) {
+        const auto& candidate=search_.matches()[index].range;
+        if(candidate.begin!=range.begin || candidate.end!=range.end) continue;
+        if(const auto live=search_.match(document,index)) {
+            find_current_=termforge::SearchNavigation{*live,index,find_resize_wrapped_};
+            clear_find_resize_anchor(); return;
+        }
+    }
+    if(search_.status()!=termforge::SearchStatus::running) clear_find_resize_anchor();
+}
+
 inline void ShellWindow::navigate_find(termforge::SearchDirection direction) {
     if(closing_ || find_query_.empty()) return;
+    clear_find_resize_anchor();
     const bool partial=search_.status()==termforge::SearchStatus::running;
     termforge::TextDocument document(parser_.screen);
     std::optional<termforge::TextPosition> anchor;
@@ -57,11 +76,11 @@ inline void ShellWindow::poll_find() {
             if(find_->query_changed()) {
                 find_query_=utf8(find_->query().c_str());
                 search_.start(document,find_query_,{find_->case_sensitive(),1024});
-                find_current_.reset(); find_pending_directions_.clear(); find_initial_=!find_query_.empty();
+                find_current_.reset(); clear_find_resize_anchor(); find_pending_directions_.clear(); find_initial_=!find_query_.empty();
                 find_->set_status(find_query_.empty()?L"":L"Searching…"); publish();
             }
         } catch(const std::exception& error) {
-            search_.cancel(); find_current_.reset(); find_query_.clear(); find_initial_=false; find_pending_directions_.clear();
+            search_.cancel(); find_current_.reset(); clear_find_resize_anchor(); find_query_.clear(); find_initial_=false; find_pending_directions_.clear();
             find_->set_status(L"Find: "+utf16(error.what())); publish();
         }
         // Bound key repeat work separately from the search scan budget.
@@ -69,7 +88,7 @@ inline void ShellWindow::poll_find() {
             const auto action=find_->take_action();
             if(action==tf_shell::FindAction::none) break;
             if(action==tf_shell::FindAction::close) {
-                find_.reset(); search_.cancel(); find_current_.reset(); find_initial_=false;
+                find_.reset(); search_.cancel(); find_current_.reset(); clear_find_resize_anchor(); find_initial_=false;
                 find_pending_directions_.clear(); restore_input_focus(); publish(); return;
             }
             navigate_find(action==tf_shell::FindAction::previous?termforge::SearchDirection::previous:
@@ -89,6 +108,7 @@ inline void ShellWindow::poll_find() {
         if(!live || live->range.begin!=find_current_->match.range.begin ||
            live->range.end!=find_current_->match.range.end) find_current_.reset();
     }
+    restore_resized_find_current();
     if(!find_pending_directions_.empty()) {
         const auto direction=find_pending_directions_.back(); find_pending_directions_.clear();
         navigate_find(direction);

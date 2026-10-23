@@ -1,6 +1,7 @@
 // Independent workspace interactions; no WindTerm code or assets.
 #pragma once
 #include <cwctype>
+#include "edit_actions.hpp"
 
 inline Workspace::Divider Workspace::divider_at(int x,int y) const {
     if(state_.focus || closing_) return Divider::none;
@@ -72,7 +73,10 @@ inline void Workspace::end_rename(bool commit,bool restore_focus) {
 
 inline bool Workspace::edit_key(const MSG& msg) {
     if(!rename_ || msg.hwnd!=rename_ || msg.message!=WM_KEYDOWN) return false;
-    if(msg.wParam==VK_RETURN || msg.wParam==VK_ESCAPE) { end_rename(msg.wParam==VK_RETURN); return true; }
+    if(tf_shell::route_edit_select_all(msg,rename_)) return true;
+    if((msg.wParam==VK_RETURN || msg.wParam==VK_ESCAPE) && !tf_shell::native_edit_composing(rename_)) {
+        end_rename(msg.wParam==VK_RETURN); return true;
+    }
     return false;
 }
 

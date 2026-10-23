@@ -182,6 +182,158 @@ inline void Workspace::scenario_ime() {
                 ime_check(evidence->rename_text=="\xe4\xbd\xa0\xe5\xa5\xbd" && receiver("bottom").bytes()=="\xe4\xbd\xa0\xe5\xa5\xbd" && receiver("main").bytes()=="\xe4\xbd\xa0\xe5\xa5\xbd" && receiver("hidden").bytes().empty(),"rename text leaked/duplicated into PTY receivers");
                 end_rename(true); evidence->actions["rename_text_verified"]=true;
             });
+            evidence->add("rename-cancel-start",[this,evidence] {
+                begin_rename(1,Group::bottom); evidence->rename_cancel_editor=rename_;
+                ime_check(rename_!=nullptr,"second rename EDIT was not created");
+                SendMessageW(rename_,EM_SETSEL,2,2); // Append composition after the known two-character title.
+                HostedPinyin::focus(rename_);
+            },[] { return true; },300);
+            for(char code:std::string("NI")) evidence->add("rename-cancel-key",[this,evidence,code] {
+                ime_check(rename_ && rename_==evidence->rename_cancel_editor,"rename cancel input target changed");
+                evidence->key(rename_,5,5,static_cast<WORD>(code));
+            },[] { return true; },150);
+            evidence->add("wait-rename-cancel-preedit",[] {},[this] { return rename_ && tf_shell::native_edit_composing(rename_); },300);
+            evidence->add("rename-cancel-preedit",[this,evidence] {
+                HIMC context=ImmGetContext(rename_); ime_check(context!=nullptr,"second rename composition context missing");
+                const LONG size=ImmGetCompositionStringW(context,GCS_COMPSTR,nullptr,0);
+                if(size<=0 || size>512 || size%2) { ImmReleaseContext(rename_,context); throw std::runtime_error("second rename composition invalid"); }
+                std::wstring text(static_cast<size_t>(size)/2,0);
+                const LONG read=ImmGetCompositionStringW(context,GCS_COMPSTR,text.data(),size); const bool released=ImmReleaseContext(rename_,context)!=FALSE;
+                ime_check(read==size && released,"second rename composition read failed");
+                evidence->rename_cancel_preedit=ime_utf8(text); evidence->rename_cancel_candidates=evidence->candidate_observer.sample();
+            });
+            evidence->add("rename-first-escape",[this,evidence] {
+                ime_check(rename_ && rename_==evidence->rename_cancel_editor,"first rename Escape lost editor"); evidence->key(rename_,5,5,VK_ESCAPE);
+            },[] { return true; },250);
+            evidence->add("wait-rename-cancelled",[] {},[this,evidence] {
+                return rename_ && rename_==evidence->rename_cancel_editor && GetFocus()==rename_ && !tf_shell::native_edit_composing(rename_);
+            },350);
+            evidence->add("rename-cancelled",[this,evidence,receiver] {
+                wchar_t text[65]{}; const int count=GetWindowTextW(rename_,text,65);
+                evidence->rename_cancelled_text=ime_utf8(std::wstring(text,static_cast<size_t>(count)));
+                ime_check(evidence->rename_cancelled_text=="\xe4\xbd\xa0\xe5\xa5\xbd" && receiver("hidden").bytes().empty(),"rename cancel committed preedit or leaked to PTY");
+                evidence->rename_first_escape_kept_editor=true; evidence->rename_after_cancel_candidates=evidence->candidate_observer.sample();
+                evidence->actions["rename_first_escape_cancels_ime"]=true;
+            });
+            evidence->add("rename-second-escape",[this,evidence] { evidence->key(rename_,5,5,VK_ESCAPE); },[] { return true; },250);
+            evidence->add("wait-rename-closed",[] {},[this,evidence,shell] {
+                return !rename_ && !IsWindow(evidence->rename_cancel_editor) && GetFocus()==shell("hidden")->handle();
+            },350);
+            evidence->add("rename-closed",[evidence] {
+                evidence->rename_second_escape_closed_editor=true; evidence->after_close_candidates=evidence->candidate_observer.sample();
+                evidence->actions["rename_second_escape_closes"]=true;
+            });
+        } else if(test_mode_=="ui-ime-reading") {
+            const auto edit_preedit=[](HWND edit) {
+                HIMC context=ImmGetContext(edit); ime_check(context!=nullptr,"Find EDIT IME context missing");
+                const LONG size=ImmGetCompositionStringW(context,GCS_COMPSTR,nullptr,0);
+                if(size<0 || size>512 || size%2) { ImmReleaseContext(edit,context); throw std::runtime_error("Find EDIT composition exceeds bound"); }
+                std::wstring value(static_cast<size_t>(size)/2,0);
+                const LONG read=size?ImmGetCompositionStringW(context,GCS_COMPSTR,value.data(),size):0;
+                const bool released=ImmReleaseContext(edit,context)!=FALSE;
+                ime_check(read==size && released,"Find EDIT composition read failed");
+                return ime_utf8(value);
+            };
+            const auto context=[evidence,shell,receiver,edit_preedit](const std::string& name) {
+                auto* main=shell("main"); const auto state=main->history_state(); const auto& view=main->visible_snapshot();
+                HostedImeTextContext row; row.name=name;
+                row.focus=GetFocus()==main->handle()?"main":GetFocus()==shell("bottom")->handle()?"bottom":
+                    main->find_edit_handle() && GetFocus()==main->find_edit_handle()?"find":"other";
+                row.main_received=receiver("main").bytes(); row.bottom_received=receiver("bottom").bytes();
+                row.top=state.top; row.maximum=state.maximum_top; row.following=state.following;
+                row.rows=view.rows(); row.columns=view.columns(); row.cursor_row=view.cursor_row;
+                row.first_line_id=view.lines.empty()?0:view.lines.front().id;
+                row.find_present=main->find_handle() && IsWindow(main->find_handle());
+                row.edit_destroyed=evidence->reading_edit && !IsWindow(evidence->reading_edit);
+                row.has_match=bool(main->current_find_range()); row.search_complete=main->search_status()==termforge::SearchStatus::complete;
+                row.candidates=evidence->candidate_observer.sample();
+                if(row.find_present) {
+                    const HWND edit=main->find_edit_handle(); ime_check(edit && IsWindow(edit),"Find frame has no live EDIT");
+                    wchar_t cls[64]{},text[4097]{};
+                    ime_check(GetClassNameW(edit,cls,64)>0,"Find EDIT class unavailable");
+                    const int count=GetWindowTextW(edit,text,4097); ime_check(count>=0 && count<=4096,"Find EDIT text exceeds bound");
+                    row.edit_class=ime_utf8(cls); row.edit_text=ime_utf8(std::wstring(text,static_cast<size_t>(count)));
+                    row.edit_preedit=edit_preedit(edit); row.find_visible=IsWindowVisible(main->find_handle())!=FALSE;
+                    row.find_focused=GetFocus()==edit;
+                }
+                evidence->text_context(std::move(row));
+            };
+            const auto edit_key=[evidence,shell](WORD code) {
+                evidence->add("find-native-key",[evidence,shell,code] {
+                    const HWND edit=shell("main")->find_edit_handle();
+                    ime_check(edit && edit==evidence->reading_edit,"Find IME input target was replaced");
+                    evidence->key(edit,3,3,code);
+                },[] { return true; },150);
+            };
+            evidence->add("reading-output",[focus,receiver] { focus("main"); receiver("main").emit_output(); },[shell,receiver] {
+                return receiver("main").output_done() && shell("main")->observed_output().find("TF_IME_OUTPUT_DONE")!=std::string::npos;
+            },400);
+            evidence->add("read-history",[evidence,shell,context] {
+                for(auto text:shell("main")->ime_retained_lines()) {
+                    while(!text.empty() && text.back()==' ') text.pop_back();
+                    if(text.rfind("TF_IME_OUTPUT",0)==0) evidence->output_screen_lines.push_back(std::move(text));
+                }
+                std::vector<std::string> expected;
+                for(int i=0;i<20;++i) expected.push_back("TF_IME_OUTPUT "+std::to_string(i)); expected.push_back("TF_IME_OUTPUT_DONE");
+                ime_check(evidence->output_screen_lines==expected,"reading case actual output rows missing/reordered");
+                SendMessageW(shell("main")->handle(),WM_VSCROLL,SB_TOP,0);
+                const auto state=shell("main")->history_state();
+                ime_check(state.top==0 && state.maximum_top>0 && !state.following && shell("main")->visible_snapshot().cursor_row<0,
+                          "reading case did not leave the live caret outside its viewport");
+                context("history-before"); evidence->actions["twenty_output_rows"]=true; evidence->actions["history_reading"]=true;
+            });
+            type("main","NIHAO"); preedit("main","reading-preedit");
+            evidence->add("reading-preedit-context",[evidence,shell,context] {
+                const auto state=shell("main")->history_state();
+                ime_check(state.following && state.top==state.maximum_top && shell("main")->visible_snapshot().cursor_row>=0,
+                          "actual composition did not restore the visible live caret");
+                context("reading-preedit"); evidence->actions["composition_restored_live"]=true;
+            });
+            key("main",VK_SPACE); committed("main","reading-commit");
+            evidence->add("reading-commit-context",[context] { context("reading-commit"); });
+            cancel("main","reading-cancel");
+            evidence->add("open-find-for-ime",[evidence,shell] {
+                shell("main")->request_find(); evidence->reading_edit=shell("main")->find_edit_handle();
+                ime_check(evidence->reading_edit && GetFocus()==evidence->reading_edit,"Find did not focus its actual EDIT");
+                HostedPinyin::focus(evidence->reading_edit);
+            },[] { return true; },350);
+            for(char code:std::string("NIHAO")) edit_key(static_cast<WORD>(code));
+            evidence->add("wait-find-preedit",[] {},[evidence,edit_preedit] {
+                return !edit_preedit(evidence->reading_edit).empty();
+            },350);
+            evidence->add("find-preedit-context",[evidence,context,receiver] {
+                ime_check(receiver("main").bytes()=="\xe4\xbd\xa0\xe5\xa5\xbd" && receiver("bottom").bytes().empty(),"Find EDIT preedit leaked into a terminal");
+                context("find-preedit"); evidence->actions["find_preedit"]=true;
+            });
+            edit_key(VK_SPACE);
+            evidence->add("wait-find-commit",[] {},[evidence,shell,edit_preedit] {
+                wchar_t text[64]{}; GetWindowTextW(evidence->reading_edit,text,64);
+                return std::wstring(text)==L"你好" && edit_preedit(evidence->reading_edit).empty() &&
+                    shell("main")->search_status()==termforge::SearchStatus::complete && !shell("main")->current_find_range();
+            },350);
+            evidence->add("find-commit-context",[evidence,context] { context("find-commit"); evidence->actions["find_commit"]=true; });
+            edit_key('N'); edit_key('I');
+            evidence->add("wait-find-cancel-preedit",[] {},[evidence,edit_preedit] { return !edit_preedit(evidence->reading_edit).empty(); },250);
+            evidence->add("find-cancel-preedit-context",[context] { context("find-cancel-preedit"); });
+            edit_key(VK_ESCAPE);
+            evidence->add("wait-find-cancel",[] {},[evidence,shell,edit_preedit] {
+                return shell("main")->find_edit_handle()==evidence->reading_edit && IsWindowVisible(shell("main")->find_handle()) &&
+                    edit_preedit(evidence->reading_edit).empty() && shell("main")->search_status()==termforge::SearchStatus::complete;
+            },350);
+            evidence->add("find-cancel-context",[evidence,context] { context("find-cancel"); evidence->actions["find_cancel"]=true; });
+            edit_key(VK_ESCAPE);
+            evidence->add("wait-find-closed",[] {},[evidence,shell] {
+                return !shell("main")->find_handle() && !IsWindow(evidence->reading_edit) && GetFocus()==shell("main")->handle();
+            },350);
+            evidence->add("find-closed-context",[evidence,context] { context("find-closed"); evidence->actions["find_closed"]=true; });
+            evidence->add("focus-bottom",[focus] { focus("bottom"); });
+            type("bottom","NIHAO"); preedit("bottom","bottom-preedit"); key("bottom",VK_SPACE);
+            committed("bottom","bottom-commit"); cancel("bottom","bottom-cancel");
+            evidence->add("two-regions-isolated",[evidence,receiver,context] {
+                ime_check(receiver("main").bytes()=="\xe4\xbd\xa0\xe5\xa5\xbd" && receiver("bottom").bytes()=="\xe4\xbd\xa0\xe5\xa5\xbd",
+                          "reading/find IME altered a terminal receiver or target isolation");
+                context("bottom-complete"); evidence->actions["two_regions_isolated"]=true;
+            });
         } else if(test_mode_=="ui-ime-close") {
             evidence->add("focus-bottom",[focus] { focus("bottom"); }); type("bottom","NIHAO"); preedit("bottom","before-close");
             evidence->add("close-composing-target",[this,evidence,shell,receiver] {

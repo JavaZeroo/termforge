@@ -17,7 +17,7 @@ if str(ROOT) not in sys.path:
 from experiments.conpty.run import OwnedJob
 from research.ime.inventory_hosted import claim_directory, error_identity, require_hosted, write_json
 
-MODES = ("ui-ime-basic", "ui-ime-geometry", "ui-ime-focus", "ui-ime-close")
+MODES = ("ui-ime-basic", "ui-ime-geometry", "ui-ime-focus", "ui-ime-close", "ui-ime-reading")
 ENVIRONMENT_KEYS = ("GITHUB_ACTIONS", "RUNNER_ENVIRONMENT", "RUNNER_OS", "GITHUB_REPOSITORY", "ImageOS", "ImageVersion")
 
 

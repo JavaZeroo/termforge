@@ -46,7 +46,7 @@ struct PasteScenarioState {
     std::vector<PasteWindowResult> results;
     PasteWindowResult pending;
     HWND target=nullptr;
-    bool default_enter=false, tab_escape=false, tab_enter=false;
+    bool default_enter=false, escape_cancel=false, tab_enter=false;
     std::array<BYTE,256> original_keys{};
     bool keys_saved=false;
     ~PasteScenarioState() { if(keys_saved) SetKeyboardState(original_keys.data()); }
@@ -100,10 +100,10 @@ struct PasteScenarioState {
         results.push_back(pending);
     }
     void save(const std::filesystem::path& path) const {
-        paste_check(default_enter && tab_escape && tab_enter && results.size()==2,"paste keyboard/transfer scenarios incomplete");
+        paste_check(default_enter && escape_cancel && tab_enter && results.size()==2,"paste keyboard/transfer scenarios incomplete");
         std::ofstream out(path,std::ios::binary);
-        out<<"{\"schema\":\"termforge-window-paste-v1\",\"keyboard\":{\"default_enter_cancel\":true,"
-             "\"tab_escape_cancel\":true,\"tab_enter_accept\":true},\"cases\":[";
+        out<<"{\"schema\":\"termforge-window-paste-v2\",\"keyboard\":{\"default_enter_accept\":true,"
+             "\"default_escape_cancel\":true,\"tab_enter_accept\":true},\"cases\":[";
         for(size_t i=0;i<results.size();++i) {
             if(i) out<<',';
             const auto& row=results[i]; const auto& progress=row.after;

@@ -24,7 +24,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 - `Ctrl+Shift+F` 打开当前会话查找窗口；字面量查询默认区分大小写，关闭 Match case 只折叠 ASCII 大小写。静止内容的 Enter/Shift+F3 向前、F3 向后并循环；持续扫描时显式操作可跳到当前已验证的局部命中，提示仍在搜索且不循环，静默末尾初选仍等本轮完成。结果截断明确提示只在有限结果内循环；这是洪流状态的本项目策略。Escape 关闭查找并恢复终端焦点。查询上限 4096 UTF-8 字节，结果最多 1024 项；复杂 Unicode 不做规范化，正则/跨会话属于后续范围。
 
 - 滚轮和滚动条浏览历史，`Ctrl+Shift+Home` / `Ctrl+Shift+End` 到历史首/尾；回看时新输出保持阅读锚点，普通输入和开始粘贴回到底部。历史淘汰时钳制到仍保留的最早行。
-- `Ctrl+Shift+V`、`Shift+Insert` 或 Session → Paste 读取剪贴板。读取在独立有时限的自有 helper 中进行；多行文字先确认，默认取消。一次任务固定目标会话，切换标签不重定向剩余字节；Escape 或 Cancel paste 停止后续发送。
+- `Ctrl+Shift+V`、`Shift+Insert` 或 Session → Paste 读取剪贴板。读取在独立有时限的自有 helper 中进行；多行文字先确认，默认焦点为 Paste，Enter 确认发送，Escape 取消；焦点移到 Cancel 后 Enter 取消。一次任务固定目标会话，切换标签不重定向剩余字节；Escape 或 Cancel paste 停止后续发送。
 - 当前独立粘贴策略：最多 1 Mi 个 UTF-16 单元、4 MiB UTF-8，换行规范化为 CR，拒绝不完整 UTF-16 和不支持的控制字符；不宣称已对齐 WindTerm 默认策略，也不无条件发送 bracketed-paste 包装。
 - 键盘处理包含 Tab/Shift+Tab、Home/End/Insert/Delete/Page、修饰键、AltGr 和跨消息 UTF-16。IME 采用每终端独立原生上下文，只发送已提交文字；候选位置使用物理网格。固定 Microsoft 拼音的组合、候选、提交/取消已有四组实际产品验收；其他输入法和真实跨屏仍未验收，见 [IME 工具](../../research/ime/README.md)。
 
@@ -79,7 +79,7 @@ resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子
 
 每次运行依次验证普通命令、中文、退格、左右方向键编辑，再运行一百万轮的输出命令。至少持续一秒且消费 64 KiB 后发送 Ctrl-C，再执行 `echo TF_AFTER`；确认对应状态与已提交帧后 `exit 37`。另测输出中关闭，正常/关闭各重复三次，检查 Job 活跃进程归零与自有 desktop 消失。监督器用真实存活 shell 验证超时清理。独立队列探针验证容量、背压、顺序、停止唤醒与输入拒绝。短回归不代表长时无泄漏。
 
-产品真实 IME 单独由 [`research.ime.product_runner`](../../research/ime/README.md) 显式托管运行，使用严格受控的真实 `SendInput`，不在这些私有 desktop 场景中合成 IME 消息。四个 `ui-ime-*` 场景有独立输入桌面/焦点/代次检查和内外 Job/GO 门控，开发机拒绝运行。
+产品真实 IME 单独由 [`research.ime.product_runner`](../../research/ime/README.md) 显式托管运行，使用严格受控的真实 `SendInput`，不在这些私有 desktop 场景中合成 IME 消息。五个 `ui-ime-*` 场景有独立输入桌面/焦点/代次检查和内外 Job/GO 门控，开发机拒绝运行；新增历史/Find 与 rename 双 Escape 路径仍待当前源码的托管验收。
 
 测试的 `scripted_input_to_state_ms` 从 Ctrl-C 的 WM_CHAR 被处理开始，到后续 `TF_AFTER` 完整输出行进入快照；`scripted_input_to_submit_ms` 到包含该行的 WM_PAINT BitBlt/GdiFlush 完成。两者包含中断、后续命令和调度，不能当作单键延迟。自有 DIB 截图不是合成器呈现，`presented_done=null`。关闭场景没有该标记，相关字段为 null，不参与延迟统计。
 
@@ -101,10 +101,11 @@ resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子
 | `ui-copy-system` | 选择后实际 Copy 菜单/快捷键系统复制、占用失败反馈/保持CF/释放后重试 | 旧 v3/v4 只算各自覆盖；v5 必须真实 owner 握手、原始错误、sentinel/sequence、strict release/join 和成功重试。[两轮最终系统审计](results/2026-10-24-r1-selection-accepted/validation.json)通过；只在指定一次性 hosted 环境运行，本地跳过不算系统验收 |
 | `ui-selection-bytes` / `ui-copy-bytes-system` | 真实 ConPTY 软折行、硬 CRLF、中文/组合字符、显式带样式尾两空格和受控 96→144→192→96 | 独立 producer/transport/capture 文件与逐行 oracle；本地模式不访问剪贴板，system 模式仅 disposable hosted VM。普通尾空格在 ConPTY 中的规范化仍是缺口，不能据此宣称与 WindTerm 该行为等价 |
 | `ui-selection-context` / `ui-copy-context-system` | 3会话的同组标签隐藏/返回、live CR覆盖失效、rename EDIT、带选区关闭后的目标隔离 | 16阶段独立literal/journal/transport/raw；local不执行有效CF，system仅disposable hosted并要求真实EDIT Copy与选区CF。实际system两轮已通过[独立审计](results/2026-10-24-r1-selection-accepted/validation.json)；未知显式空白端点策略不据此裁决 |
+| `ui-actions` / `ui-actions-system` | 真实终端右键菜单、快捷键、Find/rename 原生编辑、busy/closing/无会话反馈，以及命中和选区跨受控 DPI/zoom | local 每轮26阶段且不执行有效CF；system 每轮33阶段，另验实际 Copy/Paste、Shift+Insert、默认 Return 及目标切换。系统模式仅一次性 hosted；本机两轮不能代替其验收，逐项范围见[动作对照](../../docs/research/r1-action-comparison.md) |
 | `ui-find-stream` | 实际持续 CR 输出中导航、运行中替换查询、取消及关闭目标 | 10 阶段独立 oracle、两个原始接收文件和有限 worker/Job 回收；局部结果绝不冒充全局循环 |
 | `ui-find` | 多批搜索、方向/循环、大小写/中文/无结果、蓝黄高亮、后台追加、淘汰与 Escape | `find.json`、逐阶段记录及真实 `ReadConsoleW` 接收字节；查询在原生 EDIT 中操作，独立 oracle 检查稳定位置与焦点 |
 | `ui-keyboard` | 修饰键、编辑键、Unicode 与会话目标 | 真实 `ReadConsoleW` 接收端与独立字节预期；不替代真实 IME |
-| `ui-paste` | 默认取消、Tab/Enter/Escape、隐藏目标、输出洪流、发送途中取消和关闭 | `paste-workflow.json` 与 `cancel.bin`/`close.bin`；接收端事件握手确保动作发生在发送途中；本场景不读取用户剪贴板 |
+| `ui-paste` | 默认 Paste/Enter 发送一次、默认 Escape 取消、Tab/Enter、隐藏目标、输出洪流、发送途中取消和关闭 | v2 `paste-workflow.json` 与 `input.bin`/`cancel.bin`/`close.bin`；接收端事件握手确保动作发生在发送途中；本场景不读取用户剪贴板；旧 v1 默认 Cancel 证据保留且不计作新默认验收 |
 | `ui-paste-system` | 真实 Unicode 系统剪贴板 → 快捷键 → 确认 → 接收端 | 只在指定一次性 hosted 环境运行；本地未运行/跳过不计系统验收 |
 | `ui-clipboard-system` | 经产品 Paste 验证占用/超限错误与重试、读取途中取消/关闭 | 延迟渲染 owner 握手、真实接收端字节、错误画面及 helper/Job 回收；仅一次性 hosted 环境运行；场景存在不等于整项通过，当前结果见 [#14](https://github.com/JavaZeroo/termforge/issues/14) |
 

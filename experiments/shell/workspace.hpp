@@ -128,6 +128,18 @@ class Workspace {
         for (auto& tab:main_tabs_) tab.shell->close();
         if (session_count()==0) DestroyWindow(window_);
     }
+    tf_shell::TextActionState text_action_state(tf_shell::TextAction action) {
+        const auto* shell=active();
+        return tf_shell::text_action_state(action,{shell!=nullptr,closing_ || (shell && shell->closing()),
+            rename_!=nullptr,shell && shell->composing(),shell && shell->paste_busy(),shell && shell->has_selection()});
+    }
+    bool perform_text_action(tf_shell::TextAction action) {
+        // Explicit workspace commands retain the focused session target. A
+        // native rename editor and a closing workspace never borrow a PTY.
+        // Find EDIT keyboard input is consumed by route_find_message first.
+        if(closing_ || rename_ || !active()) return false;
+        return active()->perform_text_action(action);
+    }
     void action(int id) {
         if (closing_) return;
         if (id==1) add();
@@ -138,11 +150,11 @@ class Workspace {
         if (id==6) begin_rename(selection(focused_),focused_);
         if (id==7) { end_rename(false); end_drag(false); state_={}; layout(); save_layout(); }
         if (id==8) add(Group::main);
-        if (!rename_ && active() && id==12) active()->request_paste();
-        if (!rename_ && active() && id==13) active()->cancel_paste();
-        if (!rename_ && active() && id==14) active()->request_copy();
-        if (!rename_ && active() && id==15) active()->select_all_text();
-        if (!rename_ && active() && id==16) active()->request_find();
+        if (id==12) perform_text_action(tf_shell::TextAction::paste);
+        if (id==13) perform_text_action(tf_shell::TextAction::cancel_paste);
+        if (id==14) perform_text_action(tf_shell::TextAction::copy);
+        if (id==15) perform_text_action(tf_shell::TextAction::select_all);
+        if (id==16) perform_text_action(tf_shell::TextAction::find);
         if (!rename_ && active() && id>=9 && id<=11) {
             if(id==11) active()->reset_zoom(); else active()->change_zoom(id==9?25:-25);
             InvalidateRect(window_,nullptr,FALSE);
@@ -293,12 +305,12 @@ class Workspace {
             else { AppendMenuW(menu,MF_STRING|(state_.focus?MF_CHECKED:0),3,L"Focus shell\tF11"); AppendMenuW(menu,MF_STRING|(state_.sides?MF_CHECKED:0),4,L"Side panels"); AppendMenuW(menu,MF_STRING,7,L"Reset layout"); AppendMenuW(menu,MF_SEPARATOR,0,nullptr); const UINT enabled=active()&&!rename_?MF_STRING:MF_STRING|MF_GRAYED; AppendMenuW(menu,enabled,9,L"Zoom in\tCtrl++"); AppendMenuW(menu,enabled,10,L"Zoom out\tCtrl+-"); AppendMenuW(menu,enabled,11,L"Reset zoom\tCtrl+0"); }
             if(x<82) {
                 AppendMenuW(menu,MF_SEPARATOR,0,nullptr);
-                const UINT enabled=active() && !rename_ && !active()->closing()?MF_STRING:MF_STRING|MF_GRAYED;
-                AppendMenuW(menu,enabled,12,L"Paste\tCtrl+Shift+V");
-                AppendMenuW(menu,enabled|((!active() || !active()->paste_busy())?MF_GRAYED:0),13,L"Cancel paste\tEscape");
-                AppendMenuW(menu,enabled|((!active() || !active()->has_selection())?MF_GRAYED:0),14,L"Copy\tCtrl+Shift+C");
-                AppendMenuW(menu,enabled,15,L"Select All\tCtrl+Shift+A");
-                AppendMenuW(menu,enabled,16,L"Find\tCtrl+Shift+F");
+                const auto flags=[&](tf_shell::TextAction action) { return MF_STRING|(text_action_state(action).enabled?0:MF_GRAYED); };
+                AppendMenuW(menu,flags(tf_shell::TextAction::paste),12,L"Paste\tCtrl+Shift+V");
+                AppendMenuW(menu,flags(tf_shell::TextAction::cancel_paste),13,L"Cancel paste\tEscape");
+                AppendMenuW(menu,flags(tf_shell::TextAction::copy),14,L"Copy\tCtrl+Shift+C");
+                AppendMenuW(menu,flags(tf_shell::TextAction::select_all),15,L"Select All\tCtrl+Shift+A");
+                AppendMenuW(menu,flags(tf_shell::TextAction::find),16,L"Find\tCtrl+Shift+F");
             }
             POINT at{physical(x),physical(33)}; ClientToScreen(window_,&at);
             tf_shell_test::observe_popup_open(window_,menu);
@@ -346,6 +358,7 @@ class Workspace {
     void scenario_selection();
     void scenario_selection_bytes();
     void scenario_selection_context();
+    void scenario_actions();
     void scenario_ime();
     void scenario_find();
     void scenario_find_stream();
@@ -420,6 +433,7 @@ class Workspace {
                 else if(self->test_mode_=="ui-selection" || self->test_mode_=="ui-copy-system") self->scenario_selection();
                 else if(self->test_mode_=="ui-selection-bytes" || self->test_mode_=="ui-copy-bytes-system") self->scenario_selection_bytes();
                 else if(self->test_mode_=="ui-selection-context" || self->test_mode_=="ui-copy-context-system") self->scenario_selection_context();
+                else if(self->test_mode_=="ui-actions" || self->test_mode_=="ui-actions-system") self->scenario_actions();
                 else if(self->test_mode_=="ui-find") self->scenario_find();
                 else if(self->test_mode_=="ui-find-stream") self->scenario_find_stream();
                 else if(tf_shell_test::is_product_ime_mode(utf16(self->test_mode_.c_str()))) self->scenario_ime();
@@ -511,7 +525,7 @@ public:
             require(stage_==100 && collected_==2,"workspace paste scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && (test_mode_=="ui-selection" || test_mode_=="ui-copy-system" || test_mode_=="ui-find" || test_mode_=="ui-find-stream" || test_mode_=="ui-selection-bytes" || test_mode_=="ui-copy-bytes-system")) {
+        if(!image_.empty() && (test_mode_=="ui-selection" || test_mode_=="ui-copy-system" || test_mode_=="ui-find" || test_mode_=="ui-find-stream" || test_mode_=="ui-selection-bytes" || test_mode_=="ui-copy-bytes-system" || test_mode_=="ui-actions" || test_mode_=="ui-actions-system")) {
             require(stage_==100 && collected_==2,"workspace selection scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
         }
@@ -524,7 +538,7 @@ public:
             require(stage_==100 && collected_==3,"workspace selection context incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":3,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && !tf_shell_test::is_product_ime_mode(utf16(test_mode_.c_str())) && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find" && test_mode_!="ui-find-stream" && test_mode_!="ui-selection-bytes" && test_mode_!="ui-copy-bytes-system" && test_mode_!="ui-selection-context" && test_mode_!="ui-copy-context-system") {
+        if(!image_.empty() && !tf_shell_test::is_product_ime_mode(utf16(test_mode_.c_str())) && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find" && test_mode_!="ui-find-stream" && test_mode_!="ui-selection-bytes" && test_mode_!="ui-copy-bytes-system" && test_mode_!="ui-selection-context" && test_mode_!="ui-copy-context-system" && test_mode_!="ui-actions" && test_mode_!="ui-actions-system") {
             require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
@@ -542,5 +556,6 @@ public:
 #include "workspace_selection_scenario.hpp"
 #include "workspace_selection_bytes_scenario.hpp"
 #include "workspace_selection_context_scenario.hpp"
+#include "workspace_actions_scenario.hpp"
 #include "workspace_find_scenario.hpp"
 #include "workspace_ime_scenario.hpp"

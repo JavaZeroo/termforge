@@ -36,17 +36,20 @@ inline void Workspace::scenario_paste() {
     if(stage_==0 && first->ready()) {
         first->start_input_receiver(directory/L"input.bin"); stage_=1;
     } else if(stage_==1 && first->live_contains_line("TF_KEY_READY")) {
-        request(u"DEFAULT_ENTER_MUST_CANCEL\r"); stage_=2;
+        request(u"DEFAULT_ENTER_ACCEPT\r"); stage_=2;
     } else if(stage_==2 && first->paste_prompt_handle()) {
-        prompt_key(IDCANCEL,VK_RETURN); stage_=3;
+        require(!first->observed_paste(),"default Paste started a transfer before confirmation");
+        require((GetWindowLongPtrW(GetDlgItem(first->paste_prompt_handle(),IDOK),GWL_STYLE)&BS_TYPEMASK)==BS_DEFPUSHBUTTON,
+            "Paste is not the default confirmation button");
+        prompt_key(IDOK,VK_RETURN); stage_=3;
     } else if(stage_==3 && !first->paste_busy()) {
+        require(first->status_text().find(L"Paste sent: 21 / 21 bytes")==0,"default Enter did not complete its single literal paste");
         evidence.default_enter=true; request(u"ESCAPE_MUST_CANCEL\r"); stage_=4;
     } else if(stage_==4 && first->paste_prompt_handle()) {
-        prompt_key(IDCANCEL,VK_TAB); stage_=5;
-    } else if(stage_==5 && GetFocus()==GetDlgItem(first->paste_prompt_handle(),IDOK)) {
         prompt_key(IDOK,VK_ESCAPE); stage_=6;
     } else if(stage_==6 && !first->paste_busy()) {
-        evidence.tab_escape=true;
+        require(first->status_text()==L"Paste cancelled before sending","default Escape did not cancel its confirmation");
+        evidence.escape_cancel=true;
         std::u16string text; for(int i=0;i<5000;++i) text+=u"P\u6c49\r\n";
         request(std::move(text)); stage_=7;
     } else if(stage_==7 && first->paste_prompt_handle()) {

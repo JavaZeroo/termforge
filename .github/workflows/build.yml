@@ -53,6 +53,7 @@ jobs:
             build/test-artifacts/shell/
             build/test-artifacts/selection-bytes/
             build/test-artifacts/selection-context/
+            build/test-artifacts/text-actions/
             build/test-artifacts/raw-console-receiver/
       - name: Full ASCII state replay
         run: python -m experiments.core.run --out build/test-artifacts/replay-ascii

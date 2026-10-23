@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 #include <initializer_list>
+#include "edit_actions.hpp"
 
 namespace tf_shell {
 enum class FindAction { none, previous, next, close };
@@ -142,8 +143,7 @@ public:
         require(dpi >= 48 && dpi <= 768, "find bar DPI outside supported range");
         owner_ = GetAncestor(terminal_, GA_ROOT);
         require(owner_ != nullptr, "find bar owner window unavailable");
-        const auto actual_dpi = GetDpiForWindow(terminal_);
-        dpi_ = actual_dpi ? static_cast<int>(actual_dpi) : dpi;
+        dpi_ = dpi;
         acquire_class();
         try {
             const DWORD style = WS_POPUP | WS_CAPTION | WS_SYSMENU;
@@ -174,6 +174,10 @@ public:
     FindBar(const FindBar&) = delete;
     FindBar& operator=(const FindBar&) = delete;
     HWND handle() const noexcept { return window_; }
+    void set_display_dpi(int dpi) {
+        require(set_dpi(dpi),"find bar owner DPI font update failed");
+        if(window_) reposition();
+    }
     HWND edit_handle() const noexcept { return edit_; }
     bool case_sensitive() const noexcept { return !case_ || SendMessageW(case_, BM_GETCHECK, 0, 0) == BST_CHECKED; }
     std::wstring query() const {
@@ -194,8 +198,13 @@ public:
     }
     bool route(MSG& message) {
         if (!contains(message.hwnd)) return false;
+        if (route_edit_select_all(message,edit_)) return true;
         if (message.message == WM_KEYDOWN || message.message == WM_SYSKEYDOWN) {
             const auto key = message.wParam;
+            if(key=='F' && (GetKeyState(VK_CONTROL)&0x8000) && (GetKeyState(VK_SHIFT)&0x8000) &&
+                !(GetKeyState(VK_MENU)&0x8000) && contains(GetFocus()) && !native_composition()) {
+                focus_query(); return true; // No TranslateMessage: do not manufacture WM_CHAR 6.
+            }
             const bool composing = (key == VK_RETURN || key == VK_ESCAPE) && native_composition();
             if (composing) {
                 // IsDialogMessage would consume Return/Escape as dialog keys;
@@ -221,8 +230,6 @@ public:
     void reposition() {
         if (!window_) return;
         RECT terminal{}; require(GetWindowRect(terminal_, &terminal) != FALSE, "find terminal rectangle unavailable");
-        const auto actual = GetDpiForWindow(terminal_);
-        if (actual) require(set_dpi(static_cast<int>(actual)), "find bar DPI font update failed");
         RECT bounds{0, 0, px(540), px(68)};
         const DWORD style = static_cast<DWORD>(GetWindowLongPtrW(window_, GWL_STYLE));
         require(AdjustWindowRectExForDpi(&bounds, style, FALSE, WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, dpi_) != FALSE,

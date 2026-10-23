@@ -71,9 +71,9 @@ jobs:
           python research/ime/run_probe.py
           --exe build/bin/Release/termforge_ime_probe.exe
           --mode hosted --timeout 55 --out local/hosted-ime/probe
-      - name: Require four real product IME workflows and owned cleanup
+      - name: Require five real product IME workflows and owned cleanup
         if: inputs.mode == 'verify'
-        timeout-minutes: 5
+        timeout-minutes: 6
         run: >-
           python -m research.ime.product_runner
           --launcher build/bin/Release/shell_test_launcher.exe

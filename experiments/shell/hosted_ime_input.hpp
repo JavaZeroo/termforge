@@ -61,7 +61,7 @@ inline std::wstring require_hosted_ime_input() {
     return name;
 }
 inline bool is_product_ime_mode(const std::wstring& mode) {
-    return mode==L"ui-ime-basic" || mode==L"ui-ime-geometry" || mode==L"ui-ime-focus" || mode==L"ui-ime-close";
+    return mode==L"ui-ime-basic" || mode==L"ui-ime-geometry" || mode==L"ui-ime-focus" || mode==L"ui-ime-close" || mode==L"ui-ime-reading";
 }
 inline void require_hosted_ime_child_gate() {
     // The launcher resumes us only after inner Job assignment. No IME/profile
@@ -302,6 +302,17 @@ struct HostedImeCheckpoint {
     RECT monitor_work{};
     UINT os_dpi=0;
 };
+struct HostedImeTextContext {
+    std::string name,focus,main_received,bottom_received;
+    size_t top=0,maximum=0;
+    bool following=false;
+    int cursor_row=-1,rows=0,columns=0;
+    uint64_t first_line_id=0;
+    bool find_present=false,find_visible=false,find_focused=false,edit_destroyed=false;
+    std::string edit_class,edit_text,edit_preedit;
+    std::vector<HostedCandidate> candidates;
+    bool has_match=false,search_complete=false;
+};
 class ProductImeScenarioState {
     struct Step { std::string name; std::function<void()> action; std::function<bool()> ready; unsigned minimum_ms; ULONGLONG begun=0; };
     std::vector<Step> steps_;
@@ -312,6 +323,22 @@ class ProductImeScenarioState {
         std::ofstream out(progress_path,std::ios::binary|std::ios::app); out<<record<<'\n'; out.close();
         ime_check(out.good(),"IME progress evidence write failed");
     }
+    static void write_context(std::ostream& out,const HostedImeTextContext& row) {
+        out<<"{\"name\":"<<ime_quote(row.name)<<",\"focus\":"<<ime_quote(row.focus)
+           <<",\"main_view\":{\"top\":"<<row.top<<",\"maximum\":"<<row.maximum<<",\"following\":"<<(row.following?"true":"false")
+           <<",\"cursor_row\":"<<row.cursor_row<<",\"rows\":"<<row.rows<<",\"columns\":"<<row.columns<<",\"first_line_id\":"<<row.first_line_id<<'}'
+           <<",\"main_received_hex\":"<<ime_quote(ime_hex(row.main_received))<<",\"bottom_received_hex\":"<<ime_quote(ime_hex(row.bottom_received))
+           <<",\"find\":{\"present\":"<<(row.find_present?"true":"false")<<",\"visible\":"<<(row.find_visible?"true":"false")
+           <<",\"focused\":"<<(row.find_focused?"true":"false")<<",\"edit_destroyed\":"<<(row.edit_destroyed?"true":"false")
+           <<",\"class\":"<<ime_quote(row.edit_class)<<",\"text\":"<<ime_quote(row.edit_text)<<",\"preedit\":"<<ime_quote(row.edit_preedit)
+           <<",\"has_match\":"<<(row.has_match?"true":"false")<<",\"search_complete\":"<<(row.search_complete?"true":"false")<<"},\"visible_candidates\":[";
+        for(size_t i=0;i<row.candidates.size();++i) {
+            if(i) out<<','; const auto& candidate=row.candidates[i];
+            out<<"{\"instance\":"<<candidate.instance<<",\"class\":"<<ime_quote(candidate.class_name)<<",\"rect\":";
+            ime_rect(out,candidate.rectangle); out<<'}';
+        }
+        out<<"]}";
+    }
 public:
     std::filesystem::path progress_path;
     std::unique_ptr<HostedPinyin> provider;
@@ -321,7 +348,13 @@ public:
     std::map<std::string,bool> actions;
     std::map<std::string,std::string> terminal_output;
     std::vector<std::string> output_screen_lines;
+    std::vector<HostedImeTextContext> reading_context;
+    HWND reading_edit=nullptr;
     std::string rename_preedit,rename_text;
+    std::string rename_cancel_preedit,rename_cancelled_text;
+    HWND rename_cancel_editor=nullptr;
+    bool rename_first_escape_kept_editor=false,rename_second_escape_closed_editor=false;
+    std::vector<HostedCandidate> rename_cancel_candidates,rename_after_cancel_candidates;
     std::vector<HostedCandidate> rename_candidates;
     std::vector<HostedCandidate> after_close_candidates;
     unsigned key_batches=0;
@@ -348,6 +381,13 @@ public:
         return false;
     }
     void key(HWND target,unsigned generation,unsigned actual,WORD code) { HostedPinyin::key(target,generation,actual,code); ++key_batches; }
+    void text_context(HostedImeTextContext row) {
+        ime_check(reading_context.size()<16 && row.name.size()<=64 && row.edit_text.size()<=4096 && row.edit_preedit.size()<=4096 &&
+                  row.main_received.size()<=4096 && row.bottom_received.size()<=4096 && row.candidates.size()<=32,
+                  "IME text context evidence exceeds bound");
+        std::ostringstream out; out<<"{\"kind\":\"text-context\",\"observation\":"; write_context(out,row); out<<'}';
+        progress(out.str()); reading_context.push_back(std::move(row));
+    }
     void checkpoint(std::string name,HostedImeReceiver& receiver,HostedImeObservation observation,int dpi,int zoom,std::pair<int,int> cell,HWND window) {
         ime_check(checkpoints.size()<32 && observation.enabled && observation.generation==receiver.generation,"IME checkpoint generation mismatch/budget exceeded");
         ime_check(observation.error.empty(),"product IME reported an error");
@@ -413,6 +453,16 @@ public:
         for(size_t i=0;i<rename_candidates.size();++i) {
             if(i) out<<','; const auto& row=rename_candidates[i]; out<<"{\"instance\":"<<row.instance<<",\"class\":"<<ime_quote(row.class_name)<<",\"rect\":"; ime_rect(out,row.rectangle); out<<'}';
         }
+        out<<"],\"cancel_preedit\":"<<ime_quote(rename_cancel_preedit)<<",\"cancelled_text\":"<<ime_quote(rename_cancelled_text)
+           <<",\"first_escape_kept_editor\":"<<(rename_first_escape_kept_editor?"true":"false")
+           <<",\"second_escape_closed_editor\":"<<(rename_second_escape_closed_editor?"true":"false")<<",\"cancel_candidates\":[";
+        for(size_t i=0;i<rename_cancel_candidates.size();++i) {
+            if(i) out<<','; const auto& row=rename_cancel_candidates[i]; out<<"{\"instance\":"<<row.instance<<",\"class\":"<<ime_quote(row.class_name)<<",\"rect\":"; ime_rect(out,row.rectangle); out<<'}';
+        }
+        out<<"],\"after_cancel_candidates\":[";
+        for(size_t i=0;i<rename_after_cancel_candidates.size();++i) {
+            if(i) out<<','; const auto& row=rename_after_cancel_candidates[i]; out<<"{\"instance\":"<<row.instance<<",\"class\":"<<ime_quote(row.class_name)<<",\"rect\":"; ime_rect(out,row.rectangle); out<<'}';
+        }
         out<<"]},\"after_close_candidates\":[";
         for(size_t i=0;i<after_close_candidates.size();++i) {
             if(i) out<<','; const auto& row=after_close_candidates[i]; out<<"{\"instance\":"<<row.instance<<",\"class\":"<<ime_quote(row.class_name)<<",\"rect\":"; ime_rect(out,row.rectangle); out<<'}';
@@ -424,6 +474,8 @@ public:
         }
         out<<"},\"output_screen_lines\":[";
         for(size_t i=0;i<output_screen_lines.size();++i) { if(i) out<<','; out<<ime_quote(output_screen_lines[i]); }
+        out<<"],\"reading_context\":[";
+        for(size_t i=0;i<reading_context.size();++i) { if(i) out<<','; write_context(out,reading_context[i]); }
         out<<"],\"actions\":{"; first=true;
         for(const auto& action:actions) { if(!first) out<<','; first=false; out<<ime_quote(action.first)<<':'<<(action.second?"true":"false"); }
         out<<"}}\n"; out.close(); ime_check(out.good(),"product IME manifest write failed");
