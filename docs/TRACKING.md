@@ -31,7 +31,7 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 
 ## Alpha 交付切片
 
-[#22](https://github.com/JavaZeroo/termforge/issues/22)跟踪首个 `v0.1.0-alpha.1` Windows x64 免安装预发布包、静态运行库、精确清单、最终 ZIP 启动验证与发布下载核验。它交付 R1 体验包；R2 的完整开发版出口保持不变。发布说明见 [Alpha 1](releases/v0.1.0-alpha.1.md)。
+[#22](https://github.com/JavaZeroo/termforge/issues/22)已交付首个 [v0.1.0-alpha.1](https://github.com/JavaZeroo/termforge/releases/tag/v0.1.0-alpha.1) Windows x64 免安装预发布包；静态运行库、精确清单、最终 ZIP 启动与发布下载均已[核验](releases/v0.1.0-alpha.1-validation.json)。它交付 R1 体验包；R2 的完整开发版出口保持不变。发布说明见 [Alpha 1](releases/v0.1.0-alpha.1.md)。
 
 ## 从当前状态接着做
 

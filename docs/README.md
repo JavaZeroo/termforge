@@ -10,6 +10,7 @@
 | 已验收的基础文字交互合同是什么？ | [R1 基础文字交互](milestones/R1-local-text.md) |
 | 哪项可开工，谁阻塞谁？ | [GitHub 跟踪索引](TRACKING.md) |
 | 已完成结论由什么支持？ | [证据索引](EVIDENCE.md) |
+| 当前可下载什么版本？ | [Alpha 1 发布说明](releases/v0.1.0-alpha.1.md)、[发行验证](releases/v0.1.0-alpha.1-validation.json) |
 | 如何构建、运行与贡献？ | [贡献指南](../CONTRIBUTING.md)、[本地 shell](../experiments/shell/README.md) |
 | 逆向什么、如何测量？ | [研究工具](../research/README.md)、[UI 探针](../research/ui/README.md)、[性能协议](../benchmarks/PROTOCOL.md) |
 | 为什么采用当前技术和限制？ | [ADR-0001](adr/0001-evidence-before-stack.md)、[ADR-0002](adr/0002-automation-first-investigation.md)、[ADR-0003](adr/0003-core-reference-and-reuse.md)、[ADR-0004](adr/0004-presentation-backend.md)、[ADR-0005](adr/0005-physical-row-resize.md) |

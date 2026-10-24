@@ -1,0 +1,299 @@
+{
+  "schema": "termforge-alpha-published-validation-v1",
+  "status": "passed",
+  "scope": "R1 Windows x64 Alpha distribution; not R2 acceptance or performance equivalence",
+  "release": {
+    "status": "passed",
+    "release_url": "https://github.com/JavaZeroo/termforge/releases/tag/v0.1.0-alpha.1",
+    "release_id": 422497236,
+    "tag": "v0.1.0-alpha.1",
+    "tag_object": "37709de9db8cb520d1f46600552b27f11f79c296",
+    "source_commit": "9f10912774cf3a156af638341f289a80f00e7ee0",
+    "prerelease": true,
+    "draft": false,
+    "published_at": "2026-10-24T03:44:46Z",
+    "downloaded_assets_equal_verified_hosted_inputs": true,
+    "assets": {
+      "SHA256SUMS.txt": {
+        "bytes": 189,
+        "sha256": "152cf1dd048a242209c3bb2872b5431f5bfd0a0d9081ef204b168006ccbaf590"
+      },
+      "TermForge-v0.1.0-alpha.1-windows-x64.zip": {
+        "bytes": 759430,
+        "sha256": "bd12f6bcbfd881e55280bed889ee07f7fb442dc330693adeb7398ff2ae610b9e"
+      },
+      "build-info.json": {
+        "bytes": 1924,
+        "sha256": "dd78a356bcbd604f7f3201f03c9f73b41dbbe328b993333c04e48f4066dfd460"
+      }
+    }
+  },
+  "hosted_build": {
+    "run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40058943741",
+    "schema": "termforge-alpha-release-verification-v1",
+    "source_commit": "9f10912774cf3a156af638341f289a80f00e7ee0",
+    "runner": "windows-2025",
+    "architecture": "x64",
+    "configuration": "Release",
+    "cxx_runtime": "static",
+    "gates": {
+      "policy": "success",
+      "ctest": "success",
+      "ascii": "success",
+      "unicode": "success",
+      "package": "success",
+      "smoke": "success",
+      "probe": "success",
+      "ime": "success",
+      "workflow": "success"
+    },
+    "ctest_counts": {
+      "tests": 38,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "ctest_count_scope": "CTest registrations; internal framework skips are not counted",
+    "internal_framework_skips": null,
+    "performance_equivalence_verified": false,
+    "presented_done": null
+  },
+  "same_source_ci": {
+    "run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40058930462",
+    "windows-2025": "success",
+    "ubuntu-24.04": "success"
+  },
+  "independent_package_audit": {
+    "status": "passed",
+    "exact_zip_file_count": 8,
+    "manifest_sha256": "dd78a356bcbd604f7f3201f03c9f73b41dbbe328b993333c04e48f4066dfd460",
+    "source_clean": true,
+    "release_eligible": true,
+    "all_file_hashes_and_source_resources_verified": true,
+    "exact_bundle_smoke": true,
+    "dumpbin_imports": {
+      "termforge_shell.exe": [
+        "bcrypt.dll",
+        "d2d1.dll",
+        "dwrite.dll",
+        "gdi32.dll",
+        "imm32.dll",
+        "kernel32.dll",
+        "ole32.dll",
+        "user32.dll"
+      ],
+      "shell_clipboard_reader.exe": [
+        "kernel32.dll",
+        "user32.dll"
+      ]
+    }
+  },
+  "independent_hosted_system_audit": {
+    "status": "passed",
+    "source_to_binary_binding": "hosted-build-record-not-independent-attestation",
+    "source_files_verified": 58,
+    "source_checkout_policy_counts": {
+      "git_blob_bytes": 16,
+      "crlf_checkout_bytes": 42
+    },
+    "workflow_runtime_matches_exact_zip": true,
+    "product_app_matches_exact_zip": true,
+    "product_cases": [
+      {
+        "mode": "ui-ime-basic",
+        "status": "passed",
+        "checkpoints": 7,
+        "receivers": 2,
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "history_find_ime_verified": null,
+        "rename_cancel_verified": null
+      },
+      {
+        "mode": "ui-ime-geometry",
+        "status": "passed",
+        "checkpoints": 7,
+        "receivers": 2,
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "history_find_ime_verified": null,
+        "rename_cancel_verified": null
+      },
+      {
+        "mode": "ui-ime-focus",
+        "status": "passed",
+        "checkpoints": 5,
+        "receivers": 3,
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "history_find_ime_verified": null,
+        "rename_cancel_verified": true
+      },
+      {
+        "mode": "ui-ime-close",
+        "status": "passed",
+        "checkpoints": 3,
+        "receivers": 2,
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "history_find_ime_verified": null,
+        "rename_cancel_verified": null
+      },
+      {
+        "mode": "ui-ime-reading",
+        "status": "passed",
+        "checkpoints": 6,
+        "receivers": 2,
+        "raw_receiver_bytes_verified": true,
+        "actual_candidates_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "history_find_ime_verified": true,
+        "rename_cancel_verified": null
+      }
+    ],
+    "workflow_cases": [
+      {
+        "round": 0,
+        "status": "passed",
+        "snapshots": 13,
+        "ordered_events": 28,
+        "guarded_key_batches": 9,
+        "native_shortcuts": 4,
+        "companion_observations": 172,
+        "combined_observations": 409,
+        "frame_sha256": "32b2c910666fe2a67767df26aac63f664d56619355767258152f984441b64bc3",
+        "sessions_verified": true,
+        "system_clipboard_verified": true,
+        "ime_verified": true,
+        "public_host_and_streams_verified": true,
+        "resources_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "resource_sample_count": 184
+      },
+      {
+        "round": 1,
+        "status": "passed",
+        "snapshots": 13,
+        "ordered_events": 28,
+        "guarded_key_batches": 9,
+        "native_shortcuts": 4,
+        "companion_observations": 172,
+        "combined_observations": 409,
+        "frame_sha256": "32b2c910666fe2a67767df26aac63f664d56619355767258152f984441b64bc3",
+        "sessions_verified": true,
+        "system_clipboard_verified": true,
+        "ime_verified": true,
+        "public_host_and_streams_verified": true,
+        "resources_verified": true,
+        "inner_and_outer_job_zero_verified": true,
+        "resource_sample_count": 185
+      }
+    ]
+  },
+  "windows11_exact_bundle_smoke": {
+    "status": "passed",
+    "platform": "Windows 11 build 26200",
+    "scope": "Windows owned non-input desktops; exact no-argument bundle entry and copied scripted harness",
+    "system_clipboard": false,
+    "effective_ime": false,
+    "bundle_files_match_published_zip": true,
+    "normal_entry": {
+      "schema": "termforge-alpha-normal-smoke-v1",
+      "no_arguments": true,
+      "private_state": true,
+      "workspace_visible": true,
+      "terminal_visible": true,
+      "real_system_cmd": true,
+      "command_verified": true,
+      "workspace_client_before": [
+        1360,
+        860
+      ],
+      "terminal_client_before": [
+        1343,
+        206
+      ],
+      "workspace_client_after": [
+        1460,
+        940
+      ],
+      "resize_verified": true,
+      "active_at_ready": 4,
+      "gui_exit_code": 0,
+      "inner_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "presented_done": null,
+      "outer_job_after": {
+        "active": 0,
+        "total": 6,
+        "terminated": 0
+      },
+      "desktop_gone": true
+    },
+    "scripted_scenarios": [
+      {
+        "mode": "normal",
+        "status": "passed",
+        "exit_code": 0,
+        "desktop_gone": true,
+        "outer_job_after": {
+          "active": 0,
+          "total": 6,
+          "terminated": 0
+        }
+      },
+      {
+        "mode": "resize",
+        "status": "passed",
+        "exit_code": 0,
+        "desktop_gone": true,
+        "outer_job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        }
+      },
+      {
+        "mode": "close",
+        "status": "passed",
+        "exit_code": 0,
+        "desktop_gone": true,
+        "outer_job_after": {
+          "active": 0,
+          "total": 6,
+          "terminated": 0
+        }
+      },
+      {
+        "mode": "ui-main",
+        "status": "passed",
+        "exit_code": 0,
+        "desktop_gone": true,
+        "outer_job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        }
+      }
+    ],
+    "bundle_unchanged": true,
+    "harness_product_bytes_unchanged": true
+  },
+  "limitations": [
+    "Unsigned Alpha; Windows 10 and Server 2022 are not accepted platforms.",
+    "CTest counts registrations; internal framework skip count remains unknown.",
+    "Hosted build records are not independent source-to-binary attestation or reproducible-binary proof.",
+    "Hosted IME and clipboard tests are restricted to the designated disposable VM; local smoke uses owned non-input desktops.",
+    "Input-to-presented latency, long-term resource stability and WindTerm performance equivalence are not verified.",
+    "Actions evidence artifacts have 30-day retention; this file preserves audited release facts."
+  ],
+  "presented_done": null,
+  "performance_equivalence_verified": false
+}

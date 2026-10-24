@@ -46,9 +46,13 @@ $env:TERMFORGE_TEST_ARTIFACTS = Join-Path (Get-Location) 'local/workflow-check'
 python -m unittest experiments.shell.test_workflow_sessions -v
 ```
 
-真实CF/IME组合只由指定一次性GitHub托管环境的显式`r1-ime.yml mode=verify`运行；普通本机入口拒绝，不设置伪hosted环境标志。下载`r1-workflow-system-windows-2025`白名单产物后，`research.ime.workflow_system_checks.validate_workflow_system_public(case_directory)`可逐case离线重算实际GO/native流、raw内容、动作、滚动和校准资源；不依赖上次runner的verified布尔值。
+真实CF/IME组合只由指定一次性GitHub托管环境的显式`r1-ime.yml mode=verify`或`alpha-release.yml workflow_dispatch`运行；普通本机入口拒绝，不设置伪hosted环境标志。下载`r1-workflow-system-windows-2025`白名单产物后，`research.ime.workflow_system_checks.validate_workflow_system_public(case_directory)`可逐case离线重算实际GO/native流、raw内容、动作、滚动和校准资源；不依赖上次runner的verified布尔值。
 
 回放/实验 runner 的输出目录必须不存在。根 CTest 指向当前构建；单独执行时必须显式选择二进制，不借旧产物证明新提交通过。测试失败保留合成原始输出及身份；日常用户会话不自动录制或上传。
+
+## 首个 Alpha 发行物
+
+[v0.1.0-alpha.1](https://github.com/JavaZeroo/termforge/releases/tag/v0.1.0-alpha.1)的[发行验证](releases/v0.1.0-alpha.1-validation.json)固定源码、annotated tag、三个发布资产的重新下载哈希、/MT依赖审计、hosted门槛和Windows 11同一ZIP复验。它交付R1体验包，未验收R2开发版、长期稳定或WindTerm性能等价。原始hosted合成证据保留在对应Actions白名单产物，保留期30天。
 
 ## WindTerm 目标与逆向事实
 
