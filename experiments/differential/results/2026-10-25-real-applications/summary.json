@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "candidate": "alacritty_terminal",
+  "version": "0.26.0",
+  "applications": {
+    "shell": "Windows cmd.exe",
+    "pager": "Windows more.com",
+    "editor": "VIM - Vi IMproved 9.1 (2024 Jan 02, compiled Jul 09 2024 07:07:42)"
+  },
+  "capture_sha256": "e1e0bfdb1750b75680cfa948c17e282098e6cfd88bbd1c35cfdbc5545cdb9109",
+  "core_trace_sha256": "216692104651dfe1881ba99471f2ec78da035cfba20f61ba616e9ac18c433e99",
+  "candidate_trace_sha256": "d5825e4a0abff3df226b219c4f39550d1dc51d4b3ff7aa618072445f27cdc205",
+  "source_sha256": {
+    "experiments/conpty/real_app_capture.cpp": "959bc9cdc6bcbac98e6a5f535c4f11b72cd7d4d724ace77b371b4ceec3725164",
+    "experiments/conpty/session.hpp": "f143a858df22302a2bc4a794263ff7769f4d0cfd9537307d916feb8ad638c6b6",
+    "experiments/core/trace.cpp": "d77b41acb0cfc261c47d9972d7b3170bc0049bc8001e2e0e1cf55ec15b19a9ec",
+    "experiments/differential/real_app_matrix.py": "30cf3f7d97f90bf6e2e5768ba0da831d4cb7588c2b164d4f2683568516cb3140",
+    "experiments/differential/compare_candidate.py": "d7cb552e568ef1e0ac1159e3e6c0345a4569402a82f645f5ba05be4227c7c651",
+    "experiments/differential/decisions.md": "da2c223691b1cee12df8181918447053bdd8ac72af21e59ff18cbeba6797432b"
+  },
+  "capture_manifest": {
+    "shell_exit": 0,
+    "pager_exit": 0,
+    "editor_exit": 0,
+    "shell_bytes": 85,
+    "pager_bytes": 360,
+    "editor_bytes": 1912,
+    "editor_file_verified": true
+  },
+  "runs": 3,
+  "counts": {
+    "match": 2,
+    "reference_difference": 1
+  },
+  "passed": true,
+  "execution_passed": true,
+  "real_application_covered": true,
+  "semantic_acceptance": false,
+  "performance_measured": false,
+  "presented_done": null,
+  "records": [
+    {
+      "case": "shell",
+      "plan": "whole",
+      "input_sha256": "5f27c3d595f5c6e971d40e3e88e35e906f044bfcae4befa8e0745e1a8a78b442",
+      "bytes": 85,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        85
+      ],
+      "checkpoints": 2,
+      "status": "reference_difference",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": {
+        "checkpoint": 1,
+        "offset": 85,
+        "path": ".screen.history.length",
+        "expected": 0,
+        "actual": 1
+      },
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      },
+      "decision": "ED2 history policy from decisions.md; not a compatibility match",
+      "candidate_final_rows": [
+        "TF_REAL_SHEL",
+        "L",
+        ""
+      ]
+    },
+    {
+      "case": "pager",
+      "plan": "whole",
+      "input_sha256": "d035d53385788d2b68dcc0d866b5a2fe68897cdcb28a761bd4d36efcc6df6cf9",
+      "bytes": 360,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        360
+      ],
+      "checkpoints": 2,
+      "status": "match",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": null,
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      },
+      "candidate_final_rows": [
+        "TF_PAGE_23",
+        "--More(56%",
+        ")--"
+      ]
+    },
+    {
+      "case": "editor",
+      "plan": "whole",
+      "input_sha256": "ed2794141e48ad03edd66367c5ecbf2564396407e0fc340440876d387177ddce",
+      "bytes": 1912,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        1912
+      ],
+      "checkpoints": 2,
+      "status": "match",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": null,
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      },
+      "candidate_final_rows": [
+        "w][unix]1L,",
+        "12Bwritten",
+        ""
+      ]
+    }
+  ]
+}

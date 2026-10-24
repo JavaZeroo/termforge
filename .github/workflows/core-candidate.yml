@@ -62,6 +62,9 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
       - name: Build native trace
         run: cmake --build build --config Release --target terminal_trace
+      - name: Build real application capture on Windows
+        if: runner.os == 'Windows'
+        run: cmake --build build --config Release --target real_app_capture
       - name: Run headless integration checks
         run: python experiments/candidates/alacritty/run.py --out build/test-artifacts/candidate-alacritty-cli
       - name: Test runner and failure gates
@@ -74,6 +77,12 @@ jobs:
         run: python experiments/differential/capability_matrix.py --trace "${{ env.TERMFORGE_TRACE }}" --candidate "${{ env.TERMFORGE_ALACRITTY_TRACE }}" --out build/test-artifacts/candidate-capabilities-cli
       - name: Test extended capabilities and unsupported gates
         run: python -m unittest discover -s experiments/differential -p test_capability_matrix.py -v
+      - name: Compare real application traces on Windows
+        if: runner.os == 'Windows'
+        run: python experiments/differential/real_app_matrix.py --trace "${{ env.TERMFORGE_TRACE }}" --candidate "${{ env.TERMFORGE_ALACRITTY_TRACE }}" --capture "${{ github.workspace }}/build/bin/Release/real_app_capture.exe" --out build/test-artifacts/real-app-cli
+      - name: Test real application traces on Windows
+        if: runner.os == 'Windows'
+        run: python -m unittest discover -s experiments/differential -p test_real_app_matrix.py -v
       - name: Preserve synthetic candidate evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -88,3 +97,5 @@ jobs:
             build/test-artifacts/candidate-comparison/
             build/test-artifacts/candidate-capabilities-cli/
             build/test-artifacts/candidate-capabilities/
+            build/test-artifacts/real-app-cli/
+            build/test-artifacts/real-applications/

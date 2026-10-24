@@ -84,6 +84,14 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 两个测试 trace 在同一输入结束点执行 `--resize=2x6` 并追加同偏移检查点。双方实际尺寸均为 2×6，候选重排为 `123456`/`7890`、光标列 4，自研物理裁剪保留列 5，故记为 `resize_difference` 而非一致。`resize_covered=true`，但 `real_application_covered=false`、`semantic_acceptance=false`；重排合同由 #29 决定，本矩阵不提前实现产品功能。
 
+## 真实应用核心轨迹（#25）
+
+`real_app_capture` 通过 ConPTY 启动真实 Windows cmd、`more.com` 和 Vim，分别验证正常退出、`q` 退出及无配置/无交换文件/无 viminfo 的编辑 `:wq` 与文件内容。`real_app_matrix.py` 将捕获字节原样交给双方核心，自研使用产品同源的 Recovery 模式；它不是截图或 GUI 验收。
+
+[2026-10-25 摘要](results/2026-10-25-real-applications/summary.json)记录应用版本、二进制/源码哈希和退出/文件结果：分页器和 Vim 为 `match`，shell 仅有已裁决的 ED2 历史策略 `reference_difference`。新增 3 个门槛后，差分、能力和真实应用测试合计 19 项通过；Windows candidate workflow 强制构建并执行，其他平台或缺少 Vim/捕获依赖时明确跳过可选测试。
+
+`real_application_covered=true` 仅指这三条真实核心轨迹，`presented_done=null`、`semantic_acceptance=false`，不代表产品 TUI 已交付、所有应用已兼容或 #26 已决定。持续 fuzz 与最小失败复现仍由 #25 后续完成。
+
 ## 2026-10-22 实际验证
 
 [历史运行摘要](results/2026-10-22/summary.json)记录共同子集、精确已知差异和分块不变性检查结果；已知差异不算兼容通过。摘要保存输入/源码/二进制/参考包源码哈希和每次最早差异；完整 trace 留在本地输出目录，可按上面的命令重建。

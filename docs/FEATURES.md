@@ -23,7 +23,7 @@
 | Unicode 与文字显示 | **部分**：UTF-8、固定 Unicode 15.0 宽度策略、有限组合标记、16 色/粗体、Consolas 逐格绘制；实际 DWrite glyph run 已检查 Consolas 身份、中文非 Consolas fallback 与缺字负例 | 完整字素/emoji/整形、通用 fallback、真彩色/更多属性、Powerline；WindTerm 的 Unicode 13 声明与本项目策略差异需明确裁决 | R2 / R4 |
 | resize 与 reflow | **已验证（有限）**：窗口、核心、ConPTY 行列同步；宽字符边界有回归；与 Alacritty 的同输入结束点 2×6 [对照](../experiments/differential/results/2026-10-25-capabilities-v2/summary.json)明确候选重排不同于自研物理裁剪 | 目前按物理行裁剪，缩窄内容不可恢复；无逻辑行 reflow，不能当无损历史/日志存储；重排合同由 #29 决定 | R2 |
 | 本地 shell 选择 | **部分**：`ShellLaunch` 分离可执行文件、参数、工作目录及 shell 命令差异；cmd、Windows PowerShell 5.1、PowerShell 7、显式 Ubuntu WSL 各有[两轮真实启动/目录/尺寸/正常退出证据](../experiments/shell/results/2026-10-24-r2-shell-lifecycle/validation.json)，无效程序启动错误可见且可关闭后恢复 cmd | 仅声明上述固定入口和隔离目录；任意 profile/参数、通用分屏/排序、全部运行时错误提示及管理员 shell 未完成 | R2；权限场景 R4 |
-| 常用 TUI | **未实现** | 先实际构建外部核心候选并按 ADR-0003 重审，再验证分页器/编辑器/tmux 普通终端使用等真实轨迹 | R2 |
+| 常用 TUI | **产品未实现**：已有[真实分页器/Vim 核心轨迹](../experiments/differential/results/2026-10-25-real-applications/summary.json)，但仅是 headless 核心比较，`presented_done=null` | #26 路线决定后才扩展产品实现；真实 GUI 中进入、操作、退出、主屏恢复、输入/输出模式和更多应用仍未验收 | R2 |
 
 ## 工作区与会话
 
