@@ -92,6 +92,14 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 `real_application_covered=true` 仅指这三条真实核心轨迹，`presented_done=null`、`semantic_acceptance=false`，不代表产品 TUI 已交付、所有应用已兼容或 #26 已决定。持续 fuzz 与最小失败复现仍由 #25 后续完成。
 
+## 有界 fuzz 与固定回归（#25）
+
+`fuzz_matrix.py` 在 Recovery 下按固定 token 池和种子生成 1–12 项、最长数十字节的输入，执行 whole/byte 对照并核对最终分块状态。它保留首个未登记失败的种子、计划、最早差异、原始输入和双二进制重放；按逆序单字节删除，只有同一字段差异仍存在才接受删除，不以更短但不同质的输入冒充最小化。`--seeds` 可扩大调查范围，未登记新失败始终使命令失败。
+
+首个 seed 3 是行首组合标记后接宽字：自研按 Recovery 合同替换无相邻基字标记，候选附着到后续宽字，属于参考行为差异而非通过。逆序删除得到最小例 `81 e4 b8 ad 1b 5b 48`，保留同一 `.screen.cells[0][0].text` 差异。`fuzz-known-failures.json` 固定原输入和最小例的输入哈希、最早差异与双方最终状态；改变输入不能复用旧裁决。
+
+[2026-10-25 摘要](results/2026-10-25-fuzz/summary.json)覆盖 seed 0–3 的 8 次 whole/byte：2 次已知失败、2 次一致、4 次已裁决参考差异；[首次失败与最小化](results/2026-10-25-fuzz/first-failure.json)独立保留。新增 4 个门槛后，差分、能力、真实应用和 fuzz 测试合计 23 项通过，candidate workflow 持续运行同一小矩阵。该种子范围不是广泛兼容证明，扩大范围发现的新差异仍需逐项裁决；#26 才评估成本与路线。
+
 ## 2026-10-22 实际验证
 
 [历史运行摘要](results/2026-10-22/summary.json)记录共同子集、精确已知差异和分块不变性检查结果；已知差异不算兼容通过。摘要保存输入/源码/二进制/参考包源码哈希和每次最早差异；完整 trace 留在本地输出目录，可按上面的命令重建。

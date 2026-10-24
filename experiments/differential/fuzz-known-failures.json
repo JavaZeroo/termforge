@@ -1,0 +1,40 @@
+[
+  {
+    "name": "seed-3-leading-combining-wide",
+    "hex": "cc81e4b8ad081b5b323b3348",
+    "decision": "Recovery contract replaces a combining mark without an adjacent base; candidate attachment to a later wide scalar is a reference behavior difference, not a pass",
+    "signature": {
+      "input_sha256": "a0d3958efdd10df4e6df69b27f728e86993367f42e946ac9436bead5bc416b50",
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "first_difference": {
+        "offset": 12,
+        "path": ".screen.cells[0][0].text",
+        "expected": "�",
+        "actual": "中"
+      },
+      "final_core_sha256": "fd53c522ee273affbb0c6f5e11b2cc81e99a3c53c6961ccaeddd4427e85dac3d",
+      "final_candidate_sha256": "1e5fa6752aed93bb6c512c35769c571e54b0684bf07eea767031f1864d9cb6db"
+    }
+  },
+  {
+    "name": "minimized-invalid-continuation-wide-home",
+    "hex": "81e4b8ad1b5b48",
+    "decision": "Byte-deletion minimized form of seed-3-leading-combining-wide; same Recovery/reference difference",
+    "signature": {
+      "input_sha256": "d5e775e1a9a8c72cfcfbe44b32c5fbbe682f2d30ad12ee12ba44bafc2d8baef9",
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "first_difference": {
+        "offset": 7,
+        "path": ".screen.cells[0][0].text",
+        "expected": "�",
+        "actual": "中"
+      },
+      "final_core_sha256": "fb1128a6c1d36fdcb59fc31c8321e53fe932e5ecb8b246dffae935cceda0b7b9",
+      "final_candidate_sha256": "804d3977a984a4e3d3b6ca99cc8445a97538b7206452dfe060ae7b3b41e1bc30"
+    }
+  }
+]

@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "core_trace_sha256": "216692104651dfe1881ba99471f2ec78da035cfba20f61ba616e9ac18c433e99",
+  "candidate_trace_sha256": "d5825e4a0abff3df226b219c4f39550d1dc51d4b3ff7aa618072445f27cdc205",
+  "source_sha256": {
+    "experiments/differential/fuzz_matrix.py": "89bb6837de9a5da6f239545073c3a9b9c1b8b156cf0674d784a6a86e40d3298e",
+    "experiments/differential/compare_candidate.py": "d7cb552e568ef1e0ac1159e3e6c0345a4569402a82f645f5ba05be4227c7c651",
+    "experiments/differential/fuzz-known-failures.json": "0daa2db840c6266098f790c53f5a88d070f573a604599b94742083e9522483a7",
+    "experiments/core/trace.cpp": "d77b41acb0cfc261c47d9972d7b3170bc0049bc8001e2e0e1cf55ec15b19a9ec"
+  },
+  "seeds": 4,
+  "runs": 8,
+  "counts": {
+    "known_failure": 2,
+    "match": 2,
+    "reference_difference": 4
+  },
+  "passed": true,
+  "execution_passed": true,
+  "semantic_acceptance": false,
+  "performance_measured": false,
+  "records": [
+    {
+      "case": "seed_0",
+      "plan": "whole",
+      "input_sha256": "3aa86b8143d72771f7fc9d93bd498538afd8dfb8c6fa82ba5c8d329401ed6ee0",
+      "bytes": 22,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        22
+      ],
+      "checkpoints": 2,
+      "status": "reference_difference",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": {
+        "checkpoint": 1,
+        "offset": 22,
+        "path": ".screen.history.length",
+        "expected": 0,
+        "actual": 1
+      },
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      }
+    },
+    {
+      "case": "seed_0",
+      "plan": "byte",
+      "status": "reference_difference",
+      "input_sha256": "3aa86b8143d72771f7fc9d93bd498538afd8dfb8c6fa82ba5c8d329401ed6ee0",
+      "checkpoints": 23,
+      "first_difference": null,
+      "core_fragmentation_difference": null,
+      "candidate_fragmentation_difference": null,
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null
+    },
+    {
+      "case": "seed_1",
+      "plan": "whole",
+      "input_sha256": "1e09a9d44f8a20b14d88dd232ee07ee286e1b3301070afc72c6f0a66b338b335",
+      "bytes": 7,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        7
+      ],
+      "checkpoints": 2,
+      "status": "reference_difference",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": {
+        "checkpoint": 1,
+        "offset": 7,
+        "path": ".screen.history.length",
+        "expected": 0,
+        "actual": 1
+      },
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      }
+    },
+    {
+      "case": "seed_1",
+      "plan": "byte",
+      "status": "reference_difference",
+      "input_sha256": "1e09a9d44f8a20b14d88dd232ee07ee286e1b3301070afc72c6f0a66b338b335",
+      "checkpoints": 8,
+      "first_difference": null,
+      "core_fragmentation_difference": null,
+      "candidate_fragmentation_difference": null,
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null
+    },
+    {
+      "case": "seed_2",
+      "plan": "whole",
+      "input_sha256": "9d1e0e2d9459d06523ad13e28a4093c2316baafe7aec5b25f30eba2e113599c4",
+      "bytes": 1,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        1
+      ],
+      "checkpoints": 2,
+      "status": "match",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": null,
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      }
+    },
+    {
+      "case": "seed_2",
+      "plan": "byte",
+      "status": "match",
+      "input_sha256": "9d1e0e2d9459d06523ad13e28a4093c2316baafe7aec5b25f30eba2e113599c4",
+      "checkpoints": 2,
+      "first_difference": null,
+      "core_fragmentation_difference": null,
+      "candidate_fragmentation_difference": null,
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null
+    },
+    {
+      "case": "seed_3",
+      "plan": "whole",
+      "input_sha256": "a0d3958efdd10df4e6df69b27f728e86993367f42e946ac9436bead5bc416b50",
+      "bytes": 12,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        12
+      ],
+      "checkpoints": 2,
+      "status": "known_failure",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": {
+        "checkpoint": 1,
+        "offset": 12,
+        "path": ".screen.cells[0][0].text",
+        "expected": "�",
+        "actual": "中"
+      },
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      }
+    },
+    {
+      "case": "seed_3",
+      "plan": "byte",
+      "status": "known_failure",
+      "input_sha256": "a0d3958efdd10df4e6df69b27f728e86993367f42e946ac9436bead5bc416b50",
+      "checkpoints": 13,
+      "first_difference": null,
+      "core_fragmentation_difference": null,
+      "candidate_fragmentation_difference": null,
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null
+    }
+  ]
+}
