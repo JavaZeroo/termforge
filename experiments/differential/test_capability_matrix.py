@@ -27,10 +27,10 @@ class CapabilityMatrixTests(unittest.TestCase):
 
     def test_extended_matrix_preserves_execution_and_support_boundaries(self):
         self.assertTrue(self.summary["execution_passed"], self.summary["counts"])
-        self.assertEqual(self.summary["runs"], 20)
-        self.assertEqual(self.summary["counts"], {"core_unsupported": 15, "match": 5})
+        self.assertEqual(self.summary["runs"], 25)
+        self.assertEqual(self.summary["counts"], {"core_unsupported": 15, "match": 5, "resize_difference": 5})
         self.assertFalse(self.summary["semantic_acceptance"])
-        self.assertFalse(self.summary["resize_covered"])
+        self.assertTrue(self.summary["resize_covered"])
         self.assertFalse(self.summary["real_application_covered"])
         for name in ("alternate_screen", "scroll_region", "cursor_query"):
             for record in self.records(name):
@@ -57,6 +57,18 @@ class CapabilityMatrixTests(unittest.TestCase):
             self.assertFalse(record.get("candidate_fragmentation_difference"))
             folder = self.artifacts / "suite" / "recovery_stream" / record["plan"].replace(":", "-")
             self.assertIn(b"\xff", (folder / "input.bin").read_bytes())
+
+    def test_resize_records_actual_dimensions_and_reflow_difference(self):
+        for record in self.records("resize_stream"):
+            self.assertEqual(record["status"], "resize_difference")
+            self.assertEqual(record["core_arguments"], ["--resize=2x6"])
+            self.assertEqual(record["candidate_arguments"], ["--resize=2x6"])
+            self.assertEqual(record["core_final_dimensions"], [2, 6])
+            self.assertEqual(record["candidate_final_dimensions"], [2, 6])
+            self.assertEqual(record["candidate_final_rows"], ["123456", "7890"])
+            self.assertEqual((record["first_difference"]["offset"], record["first_difference"]["path"],
+                              record["first_difference"]["expected"], record["first_difference"]["actual"]),
+                             (18, ".screen.column", 5, 4))
 
 
 if __name__ == "__main__":

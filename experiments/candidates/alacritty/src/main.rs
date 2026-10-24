@@ -128,9 +128,23 @@ fn snapshot(term: &mut Term<Listener>, listener: &Listener, offset: usize) -> Va
 
 fn run() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
-    if args.len() != 6 {
-        return Err("usage: alacritty_trace input rows columns history chunks.txt".into());
+    if !(6..=7).contains(&args.len()) {
+        return Err("usage: alacritty_trace input rows columns history chunks.txt [--resize=RxC]".into());
     }
+    let resize = if args.len() == 7 {
+        let (rows, columns) = args[6]
+            .strip_prefix("--resize=")
+            .and_then(|value| value.split_once('x'))
+            .ok_or("invalid resize option")?;
+        let rows = rows.parse::<usize>().map_err(|_| "invalid resize rows")?;
+        let columns = columns.parse::<usize>().map_err(|_| "invalid resize columns")?;
+        if rows == 0 || columns < 2 {
+            return Err("resize dimensions exceed the trace budget".into());
+        }
+        Some((rows, columns))
+    } else {
+        None
+    };
     let rows = args[2].parse::<usize>().map_err(|_| "invalid rows")?;
     let columns = args[3].parse::<usize>().map_err(|_| "invalid columns")?;
     let history = args[4].parse::<usize>().map_err(|_| "invalid history")?;
@@ -174,6 +188,10 @@ fn run() -> Result<(), String> {
     }
     if offset != data.len() {
         return Err("chunk plan does not cover input".into());
+    }
+    if let Some((rows, columns)) = resize {
+        term.resize(Size { columns, rows });
+        println!("{}", checkpoint(&mut term, offset)?);
     }
     Ok(())
 }

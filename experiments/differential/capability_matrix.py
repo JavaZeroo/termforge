@@ -26,6 +26,8 @@ CAPABILITIES = (
          case=Case("cursor_query", "A\x1b[6n")),
     dict(name="recovery_stream", supported=True, arguments=("--recovery",),
          case=RawCase("recovery_stream", "A\x1b[?9999zB\x1b]0;title\x07C\xffD")),
+    dict(name="resize_stream", supported=True, arguments=("--resize=2x6",), fragmentation=False,
+         case=Case("resize_stream", "abc中\r\n1234567890")),
 )
 
 
@@ -46,19 +48,27 @@ def run_suite(core_binary, candidate_binary, output, selected=None, plans=None):
         byte_core, byte_candidate = None, None
         for plan in plans or ["byte", "whole", "seed:42", "seed:20261022", "seed:8675309"]:
             folder = output / capability["name"] / plan.replace(":", "-")
-            report, core, candidate = run_case(core_binary, candidate_binary, case, plan, folder, arguments)
+            candidate_arguments = arguments if capability["name"] == "resize_stream" else ()
+            report, core, candidate = run_case(core_binary, candidate_binary, case, plan, folder, arguments,
+                                               candidate_arguments)
             raw_candidate = raw_records(folder, "candidate")
             report.update(capability=capability["name"], expected_core_support=capability["supported"],
-                          core_arguments=list(arguments),
+                          core_arguments=list(arguments), candidate_arguments=list(candidate_arguments),
                           replies=[reply for record in raw_candidate for reply in record["replies"]],
                           candidate_final_rows=[row_text(row) for row in candidate[-1]["screen"]["cells"]]
-                          if candidate else [])
+                          if candidate else [],
+                          candidate_final_dimensions=[len(candidate[-1]["screen"]["cells"]),
+                                                    len(candidate[-1]["screen"]["cells"][0])] if candidate else [],
+                          core_final_dimensions=[len(core[-1]["screen"]["cells"]),
+                                                 len(core[-1]["screen"]["cells"][0])] if core else [])
             if not capability["supported"] and report["core_returncode"] != 0 and report["candidate_returncode"] == 0 \
                     and not report["candidate_error"]:
                 report["status"] = "core_unsupported"
+            if capability["name"] == "resize_stream" and report["status"] == "difference":
+                report["status"] = "resize_difference"
             if plan == "byte":
                 byte_core, byte_candidate = core, candidate
-            elif byte_core is not None and capability["supported"]:
+            elif byte_core is not None and capability["supported"] and capability.get("fragmentation", True):
                 offsets = [item["offset"] for item in core]
                 report["core_fragmentation_difference"] = compare_traces([byte_core[i] for i in offsets], core)
                 report["candidate_fragmentation_difference"] = compare_traces(
@@ -67,9 +77,11 @@ def run_suite(core_binary, candidate_binary, output, selected=None, plans=None):
                     report["status"] = "fragmentation_failure"
             write_json(folder / "report.json", report)
             records.append(report)
-    passed = all(record["status"] in ("match", "reference_difference", "core_unsupported") for record in records)
+    passed = all(record["status"] in ("match", "reference_difference", "core_unsupported", "resize_difference")
+                 for record in records)
     sources = ["experiments/core/trace.cpp", "experiments/differential/compare_candidate.py",
-               "experiments/differential/capability_matrix.py", "experiments/differential/candidate-known-differences.json"]
+               "experiments/differential/capability_matrix.py", "experiments/differential/candidate-known-differences.json",
+               "experiments/candidates/alacritty/src/main.rs"]
     summary = dict(schema=1, candidate="alacritty_terminal", version="0.26.0",
                    platform=platform.platform(), core_trace_sha256=sha(core_binary),
                    candidate_trace_sha256=sha(candidate_binary),
@@ -79,7 +91,9 @@ def run_suite(core_binary, candidate_binary, output, selected=None, plans=None):
                            for status in sorted({record["status"] for record in records})},
                    passed=passed, execution_passed=passed, semantic_acceptance=False,
                    performance_measured=False,
-                   unsupported_is_not_a_pass=True, resize_covered=False, real_application_covered=False,
+                   unsupported_is_not_a_pass=True,
+                   resize_covered=any(record["capability"] == "resize_stream" for record in records),
+                   real_application_covered=False,
                    records=records)
     write_json(output / "summary.json", summary)
     return summary

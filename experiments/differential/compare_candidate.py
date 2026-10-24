@@ -49,13 +49,14 @@ def execute(binary, prefix, case, sizes, output, arguments=()):
     return records, returncode, error
 
 
-def run_case(core_binary, candidate_binary, case, plan, output, core_arguments=()):
+def run_case(core_binary, candidate_binary, case, plan, output, core_arguments=(), candidate_arguments=()):
     output.mkdir(parents=True, exist_ok=False)
     sizes = chunks(len(case.data), plan)
     (output / "input.bin").write_bytes(case.data)
     (output / "chunks.txt").write_text("".join(f"{size}\n" for size in sizes), encoding="ascii")
     core, core_code, core_error = execute(core_binary, "core", case, sizes, output, core_arguments)
-    candidate, candidate_code, candidate_error = execute(candidate_binary, "candidate", case, sizes, output)
+    candidate, candidate_code, candidate_error = execute(candidate_binary, "candidate", case, sizes, output,
+                                                         candidate_arguments)
     difference = None
     if core_code == 0 and candidate_code == 0 and not core_error and not candidate_error:
         difference = compare_traces(core, candidate)

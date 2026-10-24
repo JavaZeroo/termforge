@@ -2,7 +2,7 @@
 
 本组件把分块字节流变成可检查的屏幕、光标和有界历史状态，供离线回放、接收实验和[本地 shell 工作区](../shell/README.md)使用。独立 C++17 实现，不依赖 WindTerm、Qt 或私有实现；支持范围仍是有限 VT 子集，产品核心路线见 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)。
 
-解析器提供默认 `strict` 和显式 `ParseMode::recovery` 两种模式。replay/receive、trace 默认值和共同子集差分使用严格模式，本地 shell 选择恢复模式；测试 trace 可用第七个参数 `--recovery` 显式比较恢复行为。[恢复策略](RECOVERY.md)定义未知控制序列、非法 UTF-8、超长输入、取消及 EOF 的有界处理；下表未支持输入的失败规则适用于严格模式。
+解析器提供默认 `strict` 和显式 `ParseMode::recovery` 两种模式。replay/receive、trace 默认值和共同子集差分使用严格模式，本地 shell 选择恢复模式；测试 trace 可用第七个参数 `--recovery` 比较恢复行为，或 `--resize=RxC` 在输入结束点 resize 并追加检查点。[恢复策略](RECOVERY.md)定义未知控制序列、非法 UTF-8、超长输入、取消及 EOF 的有界处理；下表未支持输入的失败规则适用于严格模式。
 
 `Screen::resize` 采用[物理行裁剪契约](../../docs/adr/0005-physical-row-resize.md)。`resize_test` 通过根 CTest 在 Windows/Linux 检查内容、历史、宽字符与字节流边界；本地 shell 将它与窗口/ConPTY 尺寸同步，replay CLI 不执行隐式 resize。
 
