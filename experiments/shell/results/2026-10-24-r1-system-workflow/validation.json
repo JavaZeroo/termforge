@@ -1,0 +1,2560 @@
+{
+  "schema": "termforge-r1-system-workflow-acceptance-v1",
+  "status": "passed",
+  "source_commit": "ce9b24db12ea2725b12a4b821403975e91387e68",
+  "scope": "R1 limited Windows local cmd text workflow, fixed Microsoft Pinyin, bounded eight-session workload.",
+  "complete_r1_08_verified": true,
+  "complete_r1_verified": true,
+  "prerequisite_issues": {
+    "11": {
+      "state": "closed",
+      "limited_contract": true
+    },
+    "12": {
+      "state": "closed",
+      "limited_contract": true
+    },
+    "13": {
+      "state": "closed",
+      "limited_contract": true
+    },
+    "14": {
+      "state": "closed",
+      "limited_contract": true
+    },
+    "15": {
+      "state": "closed",
+      "limited_contract": true
+    },
+    "16": {
+      "state": "closed",
+      "limited_contract": true
+    },
+    "17": {
+      "state": "closed",
+      "limited_contract": true
+    }
+  },
+  "aggregate_acceptance": {
+    "reference_and_single_features": "R1-01 through R1-07 accepted under their original contracts; current-source regressions below.",
+    "actual_clipboard_copy_paste_confirmation_hidden_target": true,
+    "actual_ime_prefix_commit_cancel": true,
+    "same_eight_session_process_and_background_load": true,
+    "exact_raw_target_isolation": true,
+    "five_close_recreate_cycles_and_eighteen_instances": true,
+    "actual_clipboard_worker_and_task_cleanup": true,
+    "bounded_queue_history_search_paste_observations": true,
+    "actual_scroll_state_and_wm_paint_submission": true,
+    "calibrated_resource_phase_windows_and_cost_limitations": true,
+    "final_source_full_ci_and_two_fresh_system_rounds": true,
+    "non_author_downloaded_originals_and_adversarial_review": true
+  },
+  "system_workflow": {
+    "schema": "termforge-r1-e3-independent-hosted-audit-v1",
+    "status": "passed",
+    "run_id": 40045686776,
+    "source_commit": "ce9b24db12ea2725b12a4b821403975e91387e68",
+    "real_system_workflow_verified": true,
+    "complete_r1_verified": false,
+    "presented_done": null,
+    "run_conclusion": "success",
+    "artifact": {
+      "id": 12541800327,
+      "name": "r1-workflow-system-windows-2025",
+      "zip_sha256": "ee2925593634e6367bfabf6536624bdd2513f5581ca1304ae9bb1aca58b6ed91",
+      "api_digest_verified": true,
+      "files": 191,
+      "strict_whitelist": true,
+      "uncompressed_bytes": 36109102,
+      "all_original_files_rehashed_unchanged": true,
+      "workflow_run_identity": {
+        "id": 40045686776,
+        "repository_id": 1425395176,
+        "head_repository_id": 1425395176,
+        "head_branch": "main",
+        "head_sha": "ce9b24db12ea2725b12a4b821403975e91387e68"
+      },
+      "public_json_absolute_path_and_raw_identity_scan_hits": 0
+    },
+    "source_manifest": {
+      "CMakeLists.txt": {
+        "identity": {
+          "bytes": 14376,
+          "sha256": "381381f736ca8285f35f4cd576437c41f25bbee32b2d0d777322bf33d955e2c7"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      ".github/workflows/r1-ime.yml": {
+        "identity": {
+          "bytes": 6999,
+          "sha256": "107a890d1df98630df91376f727f9bcac782fbf703cdcb059cbd7e47df623358"
+        },
+        "match": "git-blob-exact"
+      },
+      "experiments/shell/shell.cpp": {
+        "identity": {
+          "bytes": 64696,
+          "sha256": "75c4ec16bffb049bff64547505c36238f92a145632daf436911258e16b265442"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/workspace.hpp": {
+        "identity": {
+          "bytes": 40106,
+          "sha256": "8116e5819f78951600b2ea8185e1cb243c4ebd42bff2e22e323cdaddcdb2bb8b"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/workspace_interactions.hpp": {
+        "identity": {
+          "bytes": 6036,
+          "sha256": "730ffd5b704d4c616421d277e43527f3915b3fa8baefc56f34ef36478678790b"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/workspace_workflow_scenario.hpp": {
+        "identity": {
+          "bytes": 31395,
+          "sha256": "1a25c8a2e50f93e69cb6ac3adf99f195112766fd793d11ac736c878e0a2783bd"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/workflow_system_state.hpp": {
+        "identity": {
+          "bytes": 3781,
+          "sha256": "bc9f2e4cc21ab7b9a6a9ed6c561f5c541da92ff73be74fef352d5f2f6a4680e7"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/workspace_workflow_system.hpp": {
+        "identity": {
+          "bytes": 16991,
+          "sha256": "124fffff9ccbc891f9d64d5658dd0f3fcbf9a683ffaa001b4ddf0b128988d571"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/workflow_scenario_state.hpp": {
+        "identity": {
+          "bytes": 1604,
+          "sha256": "18ce620dd3b36d922804e0df8d185f2c773b56aa20161c6df6fc13b1744fe65a"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/workflow_controller.hpp": {
+        "identity": {
+          "bytes": 10078,
+          "sha256": "f240f275ac089146035fa6bd14b95ccecff3f23023b62b6dd45dd6c5aefc3fc9"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/workflow_fixture.hpp": {
+        "identity": {
+          "bytes": 20213,
+          "sha256": "a6fa770fe32878831458ac472e0431a2f96b2ba3e6c5e736aeef91a9960cf868"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/runtime_observation.hpp": {
+        "identity": {
+          "bytes": 12938,
+          "sha256": "01289eadc36ed297180c3bb1cc3da4f32ab808b56b113e599ae7e22beb4f7bcc"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/operation_observation.hpp": {
+        "identity": {
+          "bytes": 5794,
+          "sha256": "ba01f79db47e5bd659af040378801cf3f34171481ddcec5e1e8aec8ae1d6d0cc"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/workflow_resources.py": {
+        "identity": {
+          "bytes": 30567,
+          "sha256": "70bfc20d8950d1796b091c3f178fe5e3aa5de2906393efa5df4d1ab15a4a4595"
+        },
+        "match": "git-blob-exact"
+      },
+      "experiments/shell/workflow_resource_phases.py": {
+        "identity": {
+          "bytes": 14110,
+          "sha256": "187f95d71a44e363b54269613e962d8ff6de1b758d78b7053da3cbedebd54b00"
+        },
+        "match": "git-blob-exact"
+      },
+      "experiments/shell/workflow_sessions_checks.py": {
+        "identity": {
+          "bytes": 37121,
+          "sha256": "842802135062fb435a2cc35d1abd98c0bb9bc17e023d055eb014fb749fa12ace"
+        },
+        "match": "git-blob-exact"
+      },
+      "experiments/shell/workflow_checks.py": {
+        "identity": {
+          "bytes": 14473,
+          "sha256": "5db901f98c66468441461a866ba97c69a92905d71f33a7cda25c18d86e9021b9"
+        },
+        "match": "git-blob-exact"
+      },
+      "experiments/shell/queues.hpp": {
+        "identity": {
+          "bytes": 7376,
+          "sha256": "495806a423d50b8ad1ab53236bef3f06b1cf815f47af44bc5c9024343b7f6c14"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/queue_probe.cpp": {
+        "identity": {
+          "bytes": 15727,
+          "sha256": "7e2f402f8d92c45d331ef758167c6071b8c2e5ee74903c4467c2def83c3b49b3"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/resize.hpp": {
+        "identity": {
+          "bytes": 3938,
+          "sha256": "a4c2d6d79dd323bfa75669cbb46c825b0e015e6b9f81ba93ec15ee42bccd3f89"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/raw_console_receiver.hpp": {
+        "identity": {
+          "bytes": 11261,
+          "sha256": "123e9a8497c672b2286e9186159f1968b249e05e3f4b76f083ee2ace4749a014"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/text_client.cpp": {
+        "identity": {
+          "bytes": 5839,
+          "sha256": "17c1779d22f5fded29e92002a46096b908561ab10c2a6aea8eed444803e51121"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/input_client.cpp": {
+        "identity": {
+          "bytes": 11971,
+          "sha256": "f63de9e003eb8cc9f0ba740b4676985c0c113314948cae59ce71a30c4bb20354"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/test_launcher.cpp": {
+        "identity": {
+          "bytes": 11009,
+          "sha256": "15ed869d778a0856d562b92f9ca9c239e34561343bfbb6ace2a351eedb85e31d"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/hosted_ime_input.hpp": {
+        "identity": {
+          "bytes": 33886,
+          "sha256": "15a176bfd4afadc3198b892ab1ab170db1080938a3424cd0d0a0246cebaf1cfd"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/ime.hpp": {
+        "identity": {
+          "bytes": 6234,
+          "sha256": "52240ec585821b162a56eab289510724449f4d9b080575f24b1509ce2a18469b"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/ime_input_expectation.hpp": {
+        "identity": {
+          "bytes": 1304,
+          "sha256": "7ce88b3640bdd172e6551b5fadf943d6fa7828199289a4f5101de470ef2df65c"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/clipboard.hpp": {
+        "identity": {
+          "bytes": 3152,
+          "sha256": "f1a46762e8aa2a7999f59c071b0372a0de9fb728f518b4de673d518504e1bba5"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/clipboard_worker.hpp": {
+        "identity": {
+          "bytes": 11393,
+          "sha256": "9a1d80ce6a047e3b3ac2412dfb759d926603b1c664ea0f3343de9f67b3c0cb26"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/clipboard_worker.cpp": {
+        "identity": {
+          "bytes": 1957,
+          "sha256": "8d91dc4968f548aa84eb39a8399d79a52619b6d80bf1fac4b01ee6761b9775d5"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/paste.hpp": {
+        "identity": {
+          "bytes": 9215,
+          "sha256": "fa228294687d39c7f1b10bf949d8315f28726cab448ab4dd79e9bc04ca469a2f"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/paste_prompt.hpp": {
+        "identity": {
+          "bytes": 4780,
+          "sha256": "ae6ed9f516512123cb060a2ba441cfbd3be74b6b10538823483d28b79acb42f6"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/find_bar.hpp": {
+        "identity": {
+          "bytes": 15160,
+          "sha256": "c928fa7843ed0d3ff06313f998584d7c8c2bef9bdefcafdaac259510691fd1d9"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/text_interactions.hpp": {
+        "identity": {
+          "bytes": 6572,
+          "sha256": "e813ce48b69f564249f7b536ecbbec73673ca9e4bd6f2952305088ea8bf2bf65"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/search_interactions.hpp": {
+        "identity": {
+          "bytes": 8465,
+          "sha256": "5b09afd54975c478c7d045fdd679ecd0b0ced940afef5bc55e2d5bd807a0bdd1"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/shell/text_actions.hpp": {
+        "identity": {
+          "bytes": 2826,
+          "sha256": "fff0191fcc7c5141049ea73ad2aea543e662f82c28cf3b004de4b71c156bf594"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/conpty/session.hpp": {
+        "identity": {
+          "bytes": 10304,
+          "sha256": "ce4ef92598db5b98993837d8c79b4eb125edba18c3c9d7b9d52a9b797ba52b11"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/conpty/run.py": {
+        "identity": {
+          "bytes": 10460,
+          "sha256": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329"
+        },
+        "match": "git-blob-exact"
+      },
+      "experiments/presentation/render.hpp": {
+        "identity": {
+          "bytes": 16098,
+          "sha256": "980ef35f576fc6a8f618c4f949138e09cb5d9f5ee5957fa35063afe0e7f7c5af"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/presentation/desktop.hpp": {
+        "identity": {
+          "bytes": 1714,
+          "sha256": "49e3b704bb2644d3de84853481ad23e0dcc69e8d901b831d7897641767a56373"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/core/history_view.hpp": {
+        "identity": {
+          "bytes": 2902,
+          "sha256": "802ea7a9910f6732666115de893bfd594f6abb6b34125089b7c4c3ee0259f3a8"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/core/text_projection.hpp": {
+        "identity": {
+          "bytes": 1802,
+          "sha256": "b10af17578484ac75f221c33d6721cfb414d0b0e92b67899f087cf5cee476caf"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/core/text_selection.hpp": {
+        "identity": {
+          "bytes": 9576,
+          "sha256": "3c9b3baef62b3c24bfbeead5dbea8ebbd34671c6a8a648b6f0e5853877775131"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/core/text_search.hpp": {
+        "identity": {
+          "bytes": 17955,
+          "sha256": "21f583b9d00b7cc68d6a036983a82abefcaff7417b052deb5d58dddba69b4edb"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/core/terminal.hpp": {
+        "identity": {
+          "bytes": 11322,
+          "sha256": "994ae3e103841ef4a599f0918cfbbb58b4ad6d72a16ba25d9d5b2e6890c7ca91"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/core/screen.hpp": {
+        "identity": {
+          "bytes": 12771,
+          "sha256": "bca076ce2d59ab82be7ae03e6287e8f7235e6a4792cd4d65065bb6268e2fbf87"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "experiments/core/unicode_width.hpp": {
+        "identity": {
+          "bytes": 33713,
+          "sha256": "013a1e56ded18a491bb73cb3a22d6233fc8f95abe313f37e2f2296a3fa958d89"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "benchmarks/tools/sample.py": {
+        "identity": {
+          "bytes": 5883,
+          "sha256": "82fe0e9ceb01d4bafb300b7e0a4b7c1487596f44a70c1eef392e209f02ec8473"
+        },
+        "match": "git-blob-exact"
+      },
+      "benchmarks/tools/summarize_resources.py": {
+        "identity": {
+          "bytes": 9581,
+          "sha256": "8f106f9f211c23ed04b619a633bd4a1cc8c683c12f0c253f3114da5dd0d30599"
+        },
+        "match": "git-blob-exact"
+      },
+      "benchmarks/requirements.txt": {
+        "identity": {
+          "bytes": 15,
+          "sha256": "2733592e057a09df84a6c368f6487f701cf0c937cf05a6db9c0e89b0e815a7b8"
+        },
+        "match": "git-blob-LF-to-CRLF-checkout"
+      },
+      "research/ime/product_runner.py": {
+        "identity": {
+          "bytes": 12725,
+          "sha256": "3aabb482a2f4397259b12274fc5766fa30809f57906b97a429b092f2937d65e2"
+        },
+        "match": "git-blob-exact"
+      },
+      "research/ime/product_checks.py": {
+        "identity": {
+          "bytes": 28889,
+          "sha256": "2f2a37995e154cd0b35c2b8f0d2f863c0bc054f16d0f38f4aef81e4f7dd1b441"
+        },
+        "match": "git-blob-exact"
+      },
+      "research/ime/inventory_hosted.py": {
+        "identity": {
+          "bytes": 11856,
+          "sha256": "2d570beb20dc2da8821a0e425efa050a9c92f7455b59f56ed0a233f266aeb5f5"
+        },
+        "match": "git-blob-exact"
+      },
+      "research/ime/workflow_system_runner.py": {
+        "identity": {
+          "bytes": 20389,
+          "sha256": "be1d0f7db3cc106a9f691c8e90ac840e8c1e04a024f4c3bfe28b8f01425686bd"
+        },
+        "match": "git-blob-exact"
+      },
+      "research/ime/workflow_system_checks.py": {
+        "identity": {
+          "bytes": 38411,
+          "sha256": "778cb48f145f683bb4e97a75733f4d819926fa08f7add8285122e8aa97490687"
+        },
+        "match": "git-blob-exact"
+      },
+      "research/ime/test_workflow_system.py": {
+        "identity": {
+          "bytes": 18730,
+          "sha256": "5dba61745d01132260bbfbac2b4986aa65ab323334db861ced02702d3c5f47a3"
+        },
+        "match": "git-blob-exact"
+      },
+      "research/ime/test_workflow_system_runner.py": {
+        "identity": {
+          "bytes": 11793,
+          "sha256": "05bf7ceea2bd3027b4a428bf2f6217f8d410647af19decf44c75ee51a9656c63"
+        },
+        "match": "git-blob-exact"
+      },
+      "assets/fonts/RobotoMono-Regular.ttf": {
+        "identity": {
+          "bytes": 125748,
+          "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+        },
+        "match": "git-blob-exact"
+      }
+    },
+    "binary_manifest": {
+      "files": {
+        "shell_test_launcher.exe": {
+          "bytes": 56320,
+          "sha256": "3892c04e9aeaef2cb70399696686821ea9c9ef97f8ad667226b6edeca6b9bce7"
+        },
+        "termforge_shell.exe": {
+          "bytes": 1081344,
+          "sha256": "6ccaf965d49211f0a7632d47ad15cea5fb944b899bf299ded481db8f1a639815"
+        },
+        "shell_text_client.exe": {
+          "bytes": 127488,
+          "sha256": "e2ee093a4bffd778c24d426df274a88391ce07969f5c1ce2aca4c0db5c380dcc"
+        },
+        "shell_input_client.exe": {
+          "bytes": 52224,
+          "sha256": "464c8b0e56da1fcc9e76a170be9d534d27b686956648ff54a959f68b4d68015a"
+        },
+        "shell_clipboard_reader.exe": {
+          "bytes": 32256,
+          "sha256": "a8c5518427a8e4dd81dda6e87b7cbeeb1a0eb54a804179e829e6e61795dc8df2"
+        }
+      },
+      "downloaded_executables": false,
+      "independent_binary_rehash": false,
+      "source_to_binary_binding": "hosted-build-record-not-independent-attestation"
+    },
+    "batch_status": "passed",
+    "public_batch": {
+      "schema": "termforge-workflow-system-run-v1",
+      "mode": "ui-workflow-system",
+      "status": "passed",
+      "commit": "ce9b24db12ea2725b12a4b821403975e91387e68",
+      "rounds_required": 2,
+      "timeout_seconds_per_case": 90,
+      "native_timeout_seconds": 70,
+      "launcher_timeout_seconds": 80,
+      "desktop_policy": "existing-input-desktop-no-create-switch-or-delete",
+      "cases": [
+        {
+          "schema": "termforge-workflow-system-case-v1",
+          "mode": "ui-workflow-system",
+          "round": 0,
+          "status": "passed",
+          "content_verified": true,
+          "resources_verified": true,
+          "real_system_workflow_verified": true,
+          "desktop_policy": "existing-input-desktop-no-create-switch-or-delete",
+          "presented_done": null,
+          "complete_r1_verified": false,
+          "assigned": true,
+          "gate_released": true,
+          "process_reaped": true,
+          "timed_out": false,
+          "forced_job_termination": false,
+          "returncode": 0,
+          "outer_job_before_cleanup": {
+            "active": 0,
+            "total": 83,
+            "terminated": 0
+          },
+          "outer_job_after": {
+            "active": 0,
+            "total": 83,
+            "terminated": 0
+          },
+          "cleanup_error_count": 0,
+          "evidence_error_count": 0,
+          "lifecycle": [
+            {
+              "stage": "starting",
+              "elapsed_seconds": 0.0
+            },
+            {
+              "stage": "awaiting-go",
+              "elapsed_seconds": 0.0
+            },
+            {
+              "stage": "job-assigned",
+              "elapsed_seconds": 0.0
+            },
+            {
+              "stage": "releasing-go",
+              "elapsed_seconds": 0.03100000000000591
+            },
+            {
+              "stage": "finished",
+              "elapsed_seconds": 18.46799999999999
+            }
+          ],
+          "streams": {
+            "stdout.jsonl": {
+              "bytes": 305,
+              "sha256": "843c9d639d5520a6246b09ff08cf13d32b82782307c0856a48bfcfb468644214"
+            },
+            "stderr.txt": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "public_streams": {
+            "stdout.jsonl": "public/stdout.jsonl",
+            "stderr.txt": "public/stderr.txt"
+          },
+          "stderr_error_bytes": 0,
+          "native_shell": {
+            "valid": true,
+            "mode": "ui-workflow-system",
+            "sessions_closed": 18,
+            "active_children_after": 0,
+            "presented_done": null
+          },
+          "native_launcher": {
+            "schema": "termforge-hosted-ime-launcher-v1",
+            "mode": "ui-workflow-system",
+            "child_exit_code": 0,
+            "child_signaled": true,
+            "timed_out": false,
+            "inner_job_after": {
+              "active": 0,
+              "total": 81,
+              "terminated": 0
+            }
+          },
+          "error_kind": null,
+          "verification": {
+            "snapshots": 13,
+            "ordered_events": 28,
+            "guarded_key_batches": 9,
+            "native_shortcuts": 4,
+            "companion_observations": 172,
+            "combined_observations": 409
+          },
+          "resources": {
+            "scope": "launcher-tree",
+            "phase_status": "mapped",
+            "performance_gate": "not_evaluated",
+            "sample_count": 183
+          }
+        },
+        {
+          "schema": "termforge-workflow-system-case-v1",
+          "mode": "ui-workflow-system",
+          "round": 1,
+          "status": "passed",
+          "content_verified": true,
+          "resources_verified": true,
+          "real_system_workflow_verified": true,
+          "desktop_policy": "existing-input-desktop-no-create-switch-or-delete",
+          "presented_done": null,
+          "complete_r1_verified": false,
+          "assigned": true,
+          "gate_released": true,
+          "process_reaped": true,
+          "timed_out": false,
+          "forced_job_termination": false,
+          "returncode": 0,
+          "outer_job_before_cleanup": {
+            "active": 0,
+            "total": 83,
+            "terminated": 0
+          },
+          "outer_job_after": {
+            "active": 0,
+            "total": 83,
+            "terminated": 0
+          },
+          "cleanup_error_count": 0,
+          "evidence_error_count": 0,
+          "lifecycle": [
+            {
+              "stage": "starting",
+              "elapsed_seconds": 0.0
+            },
+            {
+              "stage": "awaiting-go",
+              "elapsed_seconds": 0.014999999999986358
+            },
+            {
+              "stage": "job-assigned",
+              "elapsed_seconds": 0.014999999999986358
+            },
+            {
+              "stage": "releasing-go",
+              "elapsed_seconds": 0.014999999999986358
+            },
+            {
+              "stage": "finished",
+              "elapsed_seconds": 18.35899999999998
+            }
+          ],
+          "streams": {
+            "stdout.jsonl": {
+              "bytes": 305,
+              "sha256": "843c9d639d5520a6246b09ff08cf13d32b82782307c0856a48bfcfb468644214"
+            },
+            "stderr.txt": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "public_streams": {
+            "stdout.jsonl": "public/stdout.jsonl",
+            "stderr.txt": "public/stderr.txt"
+          },
+          "stderr_error_bytes": 0,
+          "native_shell": {
+            "valid": true,
+            "mode": "ui-workflow-system",
+            "sessions_closed": 18,
+            "active_children_after": 0,
+            "presented_done": null
+          },
+          "native_launcher": {
+            "schema": "termforge-hosted-ime-launcher-v1",
+            "mode": "ui-workflow-system",
+            "child_exit_code": 0,
+            "child_signaled": true,
+            "timed_out": false,
+            "inner_job_after": {
+              "active": 0,
+              "total": 81,
+              "terminated": 0
+            }
+          },
+          "error_kind": null,
+          "verification": {
+            "snapshots": 13,
+            "ordered_events": 28,
+            "guarded_key_batches": 9,
+            "native_shortcuts": 4,
+            "companion_observations": 172,
+            "combined_observations": 409
+          },
+          "resources": {
+            "scope": "launcher-tree",
+            "phase_status": "mapped",
+            "performance_gate": "not_evaluated",
+            "sample_count": 182
+          }
+        }
+      ],
+      "real_system_workflow_verified": true,
+      "complete_r1_verified": false,
+      "presented_done": null
+    },
+    "cases": [
+      {
+        "round": 0,
+        "verification": {
+          "snapshots": 13,
+          "companion_observations": 172,
+          "combined_observations": 409,
+          "manifest_verified": true,
+          "complete_workflow_verified": false,
+          "ordered_events": 28,
+          "guarded_key_batches": 9,
+          "native_shortcuts": 4,
+          "operations_verified": 2,
+          "state_and_submission_verified": true,
+          "presented_done": null,
+          "sessions_verified": true,
+          "system_clipboard_verified": true,
+          "ime_verified": true,
+          "frame_sha256": "32b2c910666fe2a67767df26aac63f664d56619355767258152f984441b64bc3",
+          "public_host_and_streams_verified": true,
+          "resources_verified": true,
+          "inner_and_outer_job_zero_verified": true,
+          "private_resource_raw_available": false
+        },
+        "observations": 409,
+        "system_observations": 172,
+        "operations": [
+          {
+            "schema": "termforge-scroll-operation-v1",
+            "clock": "QPC-ticks",
+            "operation_id": 1,
+            "session_id": 2,
+            "window_creation_serial": 2,
+            "generation": 2,
+            "scroll_command": 0,
+            "qpc_frequency": 10000000,
+            "received_qpc": 2242879006,
+            "state_qpc": 2242879910,
+            "published_revision": 73,
+            "submitted_qpc": 2242914849,
+            "presented_done": null,
+            "reason": "submitted"
+          },
+          {
+            "schema": "termforge-scroll-operation-v1",
+            "clock": "QPC-ticks",
+            "operation_id": 2,
+            "session_id": 2,
+            "window_creation_serial": 2,
+            "generation": 2,
+            "scroll_command": 1,
+            "qpc_frequency": 10000000,
+            "received_qpc": 2243093131,
+            "state_qpc": 2243094951,
+            "published_revision": 74,
+            "submitted_qpc": 2243130271,
+            "presented_done": null,
+            "reason": "submitted"
+          }
+        ],
+        "closed_instances": 18,
+        "final_B_bytes": 58,
+        "paste_cases": [
+          {
+            "name": "cancel",
+            "target": 1,
+            "total": 3000000,
+            "before_sent": 258819,
+            "before_accepted": 259842,
+            "accepted": 263934,
+            "sent": 263934,
+            "in_flight": 0,
+            "retained_capacity": 15,
+            "state": "cancelled",
+            "checkpoint_bytes": 768,
+            "received": 263934,
+            "flood_observed": true
+          },
+          {
+            "name": "close",
+            "target": 1,
+            "total": 3000000,
+            "before_sent": 295647,
+            "before_accepted": 296670,
+            "accepted": 300762,
+            "sent": 300762,
+            "in_flight": 0,
+            "retained_capacity": 15,
+            "state": "cancelled",
+            "checkpoint_bytes": 768,
+            "received": 768,
+            "flood_observed": true
+          }
+        ],
+        "resources": {
+          "samples": 183,
+          "quality": {
+            "collection_ns_max": 56369700,
+            "actual_interval_ns_max": 104306100,
+            "schedule_lateness_ns_max": 6220500,
+            "skipped_ticks": 0,
+            "discovery_errors": 1,
+            "samples_with_unavailable_processes": 7
+          },
+          "holds": [
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 1,
+              "start_bounds_ns": [
+                10592511500,
+                10592512300
+              ],
+              "end_bounds_ns": [
+                11623704100,
+                11623704900
+              ],
+              "conservative_inside_ns": [
+                10592512300,
+                11623704100
+              ],
+              "duration_bounds_ns": [
+                1031191800,
+                1031193400
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 10,
+              "sample_sequences": [
+                107,
+                108,
+                109,
+                110,
+                111,
+                112,
+                113,
+                114,
+                115,
+                116
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1114112,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 135,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 82833408,
+                  "sampled_peak_observed_working_set_bytes": 177889280,
+                  "sampled_peak_observed_handles": 1841
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 13258752,
+                  "sampled_peak_observed_working_set_bytes": 23719936,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 144,
+                "observed_samples": 10,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 83947520,
+                "sampled_peak_observed_working_set_bytes": 183345152,
+                "sampled_peak_observed_handles": 1905
+              },
+              "discovery_errors": 0
+            },
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 2,
+              "start_bounds_ns": [
+                11913722500,
+                11913723300
+              ],
+              "end_bounds_ns": [
+                12929859900,
+                12929860700
+              ],
+              "conservative_inside_ns": [
+                11913723300,
+                12929859900
+              ],
+              "duration_bounds_ns": [
+                1016136600,
+                1016138200
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 10,
+              "sample_sequences": [
+                121,
+                122,
+                123,
+                124,
+                125,
+                126,
+                127,
+                128,
+                129,
+                130
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1114112,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 135,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 84373504,
+                  "sampled_peak_observed_working_set_bytes": 178618368,
+                  "sampled_peak_observed_handles": 1862
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.03125,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 13258752,
+                  "sampled_peak_observed_working_set_bytes": 23719936,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 144,
+                "observed_samples": 10,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 85487616,
+                "sampled_peak_observed_working_set_bytes": 184074240,
+                "sampled_peak_observed_handles": 1926
+              },
+              "discovery_errors": 0
+            },
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 3,
+              "start_bounds_ns": [
+                13196820700,
+                13196821500
+              ],
+              "end_bounds_ns": [
+                14202483500,
+                14202484300
+              ],
+              "conservative_inside_ns": [
+                13196821500,
+                14202483500
+              ],
+              "duration_bounds_ns": [
+                1005662000,
+                1005663600
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 11,
+              "sample_sequences": [
+                133,
+                134,
+                135,
+                136,
+                137,
+                138,
+                139,
+                140,
+                141,
+                142,
+                143
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 10,
+                  "observed_samples": 11,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1114112,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 150,
+                  "observed_samples": 11,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 84652032,
+                  "sampled_peak_observed_working_set_bytes": 180150272,
+                  "sampled_peak_observed_handles": 1883
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.03125,
+                  "cpu_pairs": 10,
+                  "observed_samples": 11,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 13258752,
+                  "sampled_peak_observed_working_set_bytes": 23719936,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 160,
+                "observed_samples": 11,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 85766144,
+                "sampled_peak_observed_working_set_bytes": 185606144,
+                "sampled_peak_observed_handles": 1947
+              },
+              "discovery_errors": 0
+            },
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 4,
+              "start_bounds_ns": [
+                14438474800,
+                14438475600
+              ],
+              "end_bounds_ns": [
+                15458789500,
+                15458790300
+              ],
+              "conservative_inside_ns": [
+                14438475600,
+                15458789500
+              ],
+              "duration_bounds_ns": [
+                1020313900,
+                1020315500
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 10,
+              "sample_sequences": [
+                146,
+                147,
+                148,
+                149,
+                150,
+                151,
+                152,
+                153,
+                154,
+                155
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1114112,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 135,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 85258240,
+                  "sampled_peak_observed_working_set_bytes": 180162560,
+                  "sampled_peak_observed_handles": 1902
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.03125,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 13258752,
+                  "sampled_peak_observed_working_set_bytes": 23719936,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 144,
+                "observed_samples": 10,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 86372352,
+                "sampled_peak_observed_working_set_bytes": 185618432,
+                "sampled_peak_observed_handles": 1966
+              },
+              "discovery_errors": 0
+            },
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 5,
+              "start_bounds_ns": [
+                15742896700,
+                15742897500
+              ],
+              "end_bounds_ns": [
+                16761774800,
+                16761775600
+              ],
+              "conservative_inside_ns": [
+                15742897500,
+                16761774800
+              ],
+              "duration_bounds_ns": [
+                1018877300,
+                1018878900
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 10,
+              "sample_sequences": [
+                159,
+                160,
+                161,
+                162,
+                163,
+                164,
+                165,
+                166,
+                167,
+                168
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1114112,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 135,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 84635648,
+                  "sampled_peak_observed_working_set_bytes": 180105216,
+                  "sampled_peak_observed_handles": 1922
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.015625,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 13258752,
+                  "sampled_peak_observed_working_set_bytes": 23719936,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 144,
+                "observed_samples": 10,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 85749760,
+                "sampled_peak_observed_working_set_bytes": 185561088,
+                "sampled_peak_observed_handles": 1986
+              },
+              "discovery_errors": 0
+            }
+          ],
+          "phase_windows": 19,
+          "observed_phase_windows": 19,
+          "clock_calibration": {
+            "implementation": "QueryPerformanceCounter()",
+            "monotonic": true,
+            "adjustable": false,
+            "resolution_ns": 100,
+            "points": [
+              {
+                "batch": "before-go",
+                "perf_before_ns": -589400,
+                "perf_after_ns": -588300,
+                "qpc_counter": 2239248981,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "before-go",
+                "perf_before_ns": -586300,
+                "perf_after_ns": -585500,
+                "qpc_counter": 2239249009,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "before-go",
+                "perf_before_ns": -583700,
+                "perf_after_ns": -583200,
+                "qpc_counter": 2239249033,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "before-go",
+                "perf_before_ns": -582400,
+                "perf_after_ns": -582000,
+                "qpc_counter": 2239249046,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "after-cleanup",
+                "perf_before_ns": 18300639800,
+                "perf_after_ns": 18300640800,
+                "qpc_counter": 2422261273,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "after-cleanup",
+                "perf_before_ns": 18300642800,
+                "perf_after_ns": 18300643400,
+                "qpc_counter": 2422261300,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "after-cleanup",
+                "perf_before_ns": 18300644100,
+                "perf_after_ns": 18300644600,
+                "qpc_counter": 2422261312,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "after-cleanup",
+                "perf_before_ns": 18300644900,
+                "perf_after_ns": 18300645300,
+                "qpc_counter": 2422261319,
+                "qpc_frequency": 10000000
+              }
+            ],
+            "offset_bounds_ns": [
+              -223925487100,
+              -223925486500
+            ],
+            "cross_process_tick_ns": 100
+          },
+          "single_sample_windows": [
+            {
+              "name": "eight-ready-to-load-started",
+              "cycle": 0,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-six-end-to-cycle-eight",
+              "cycle": 1,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-six-end-to-cycle-eight",
+              "cycle": 2,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-eight-to-cycle-six",
+              "cycle": 2,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-six-end-to-cycle-eight",
+              "cycle": 3,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-eight-to-cycle-six",
+              "cycle": 3,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-eight-to-cycle-six",
+              "cycle": 4,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            }
+          ],
+          "python_observer_cpu_seconds": 0.5625,
+          "launcher_tree_cpu_seconds": 2.6875
+        },
+        "frame": {
+          "file": "case-0/frame.bmp",
+          "sha256": "32b2c910666fe2a67767df26aac63f664d56619355767258152f984441b64bc3",
+          "visual_review": "passed",
+          "observed": "1360x860 final workspace; B selected in main, F3 retained tail in bottom; seven sessions after C close; Paste sent 51/51; no leftover find/paste/candidate UI"
+        },
+        "system_content": {
+          "copy_utf8_bytes": 52,
+          "copy_utf16_units": 42,
+          "prefix_bytes": 51,
+          "committed_bytes": 57,
+          "final_bytes": 58,
+          "other_role_raw_bytes": 0,
+          "provider": {
+            "clsid": "{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}",
+            "profile": "{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+            "langid": 2052,
+            "language_hresult": 0,
+            "activation_hresult": 0
+          },
+          "checkpoint_B_bytes": [
+            {
+              "phase": "selected",
+              "bytes": 0
+            },
+            {
+              "phase": "copied",
+              "bytes": 0
+            },
+            {
+              "phase": "paste-requested",
+              "bytes": 0
+            },
+            {
+              "phase": "paste-confirmation",
+              "bytes": 0
+            },
+            {
+              "phase": "paste-complete",
+              "bytes": 51
+            },
+            {
+              "phase": "commit-preedit",
+              "bytes": 51
+            },
+            {
+              "phase": "committed",
+              "bytes": 57
+            },
+            {
+              "phase": "cancel-preedit",
+              "bytes": 57
+            },
+            {
+              "phase": "cancelled",
+              "bytes": 57
+            },
+            {
+              "phase": "large-cancel-requested",
+              "bytes": 57
+            },
+            {
+              "phase": "large-cancel-ready",
+              "bytes": 57
+            },
+            {
+              "phase": "large-close-requested",
+              "bytes": 57
+            },
+            {
+              "phase": "large-close-ready",
+              "bytes": 57
+            }
+          ]
+        },
+        "host_cleanup": {
+          "outer_before": {
+            "active": 0,
+            "total": 83,
+            "terminated": 0
+          },
+          "outer_after": {
+            "active": 0,
+            "total": 83,
+            "terminated": 0
+          },
+          "native_inner": {
+            "active": 0,
+            "total": 81,
+            "terminated": 0
+          },
+          "lifecycle": [
+            {
+              "stage": "starting",
+              "elapsed_seconds": 0.0
+            },
+            {
+              "stage": "awaiting-go",
+              "elapsed_seconds": 0.0
+            },
+            {
+              "stage": "job-assigned",
+              "elapsed_seconds": 0.0
+            },
+            {
+              "stage": "releasing-go",
+              "elapsed_seconds": 0.03100000000000591
+            },
+            {
+              "stage": "finished",
+              "elapsed_seconds": 18.46799999999999
+            }
+          ],
+          "input_desktop_policy": "existing-input-desktop-no-create-switch-or-delete"
+        }
+      },
+      {
+        "round": 1,
+        "verification": {
+          "snapshots": 13,
+          "companion_observations": 172,
+          "combined_observations": 409,
+          "manifest_verified": true,
+          "complete_workflow_verified": false,
+          "ordered_events": 28,
+          "guarded_key_batches": 9,
+          "native_shortcuts": 4,
+          "operations_verified": 2,
+          "state_and_submission_verified": true,
+          "presented_done": null,
+          "sessions_verified": true,
+          "system_clipboard_verified": true,
+          "ime_verified": true,
+          "frame_sha256": "32b2c910666fe2a67767df26aac63f664d56619355767258152f984441b64bc3",
+          "public_host_and_streams_verified": true,
+          "resources_verified": true,
+          "inner_and_outer_job_zero_verified": true,
+          "private_resource_raw_available": false
+        },
+        "observations": 409,
+        "system_observations": 172,
+        "operations": [
+          {
+            "schema": "termforge-scroll-operation-v1",
+            "clock": "QPC-ticks",
+            "operation_id": 1,
+            "session_id": 2,
+            "window_creation_serial": 2,
+            "generation": 2,
+            "scroll_command": 0,
+            "qpc_frequency": 10000000,
+            "received_qpc": 2436380679,
+            "state_qpc": 2436381555,
+            "published_revision": 72,
+            "submitted_qpc": 2436417066,
+            "presented_done": null,
+            "reason": "submitted"
+          },
+          {
+            "schema": "termforge-scroll-operation-v1",
+            "clock": "QPC-ticks",
+            "operation_id": 2,
+            "session_id": 2,
+            "window_creation_serial": 2,
+            "generation": 2,
+            "scroll_command": 1,
+            "qpc_frequency": 10000000,
+            "received_qpc": 2436601132,
+            "state_qpc": 2436602720,
+            "published_revision": 73,
+            "submitted_qpc": 2436639542,
+            "presented_done": null,
+            "reason": "submitted"
+          }
+        ],
+        "closed_instances": 18,
+        "final_B_bytes": 58,
+        "paste_cases": [
+          {
+            "name": "cancel",
+            "target": 1,
+            "total": 3000000,
+            "before_sent": 271095,
+            "before_accepted": 272118,
+            "accepted": 272118,
+            "sent": 272118,
+            "in_flight": 0,
+            "retained_capacity": 15,
+            "state": "cancelled",
+            "checkpoint_bytes": 768,
+            "received": 272118,
+            "flood_observed": true
+          },
+          {
+            "name": "close",
+            "target": 1,
+            "total": 3000000,
+            "before_sent": 291555,
+            "before_accepted": 292578,
+            "accepted": 296670,
+            "sent": 296670,
+            "in_flight": 0,
+            "retained_capacity": 15,
+            "state": "cancelled",
+            "checkpoint_bytes": 768,
+            "received": 768,
+            "flood_observed": true
+          }
+        ],
+        "resources": {
+          "samples": 182,
+          "quality": {
+            "collection_ns_max": 44162300,
+            "actual_interval_ns_max": 101093800,
+            "schedule_lateness_ns_max": 1284300,
+            "skipped_ticks": 0,
+            "discovery_errors": 0,
+            "samples_with_unavailable_processes": 8
+          },
+          "holds": [
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 1,
+              "start_bounds_ns": [
+                10639220100,
+                10639220900
+              ],
+              "end_bounds_ns": [
+                11655796100,
+                11655796900
+              ],
+              "conservative_inside_ns": [
+                10639220900,
+                11655796100
+              ],
+              "duration_bounds_ns": [
+                1016575200,
+                1016576800
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 10,
+              "sample_sequences": [
+                108,
+                109,
+                110,
+                111,
+                112,
+                113,
+                114,
+                115,
+                116,
+                117
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1118208,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 135,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 83824640,
+                  "sampled_peak_observed_working_set_bytes": 177348608,
+                  "sampled_peak_observed_handles": 1832
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 18927616,
+                  "sampled_peak_observed_working_set_bytes": 29708288,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 144,
+                "observed_samples": 10,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 84942848,
+                "sampled_peak_observed_working_set_bytes": 182804480,
+                "sampled_peak_observed_handles": 1896
+              },
+              "discovery_errors": 0
+            },
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 2,
+              "start_bounds_ns": [
+                11906147800,
+                11906148600
+              ],
+              "end_bounds_ns": [
+                12913388600,
+                12913389400
+              ],
+              "conservative_inside_ns": [
+                11906148600,
+                12913388600
+              ],
+              "duration_bounds_ns": [
+                1007240000,
+                1007241600
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 10,
+              "sample_sequences": [
+                121,
+                122,
+                123,
+                124,
+                125,
+                126,
+                127,
+                128,
+                129,
+                130
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1118208,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 135,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 84492288,
+                  "sampled_peak_observed_working_set_bytes": 178536448,
+                  "sampled_peak_observed_handles": 1853
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.03125,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 18927616,
+                  "sampled_peak_observed_working_set_bytes": 29708288,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 144,
+                "observed_samples": 10,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 85610496,
+                "sampled_peak_observed_working_set_bytes": 183992320,
+                "sampled_peak_observed_handles": 1917
+              },
+              "discovery_errors": 0
+            },
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 3,
+              "start_bounds_ns": [
+                13168490600,
+                13168491400
+              ],
+              "end_bounds_ns": [
+                14181558600,
+                14181559400
+              ],
+              "conservative_inside_ns": [
+                13168491400,
+                14181558600
+              ],
+              "duration_bounds_ns": [
+                1013067200,
+                1013068800
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 10,
+              "sample_sequences": [
+                133,
+                134,
+                135,
+                136,
+                137,
+                138,
+                139,
+                140,
+                141,
+                142
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1118208,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 135,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 84234240,
+                  "sampled_peak_observed_working_set_bytes": 179085312,
+                  "sampled_peak_observed_handles": 1873
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.03125,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 18927616,
+                  "sampled_peak_observed_working_set_bytes": 29708288,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 144,
+                "observed_samples": 10,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 85352448,
+                "sampled_peak_observed_working_set_bytes": 184541184,
+                "sampled_peak_observed_handles": 1937
+              },
+              "discovery_errors": 0
+            },
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 4,
+              "start_bounds_ns": [
+                14503123600,
+                14503124400
+              ],
+              "end_bounds_ns": [
+                15517922400,
+                15517923200
+              ],
+              "conservative_inside_ns": [
+                14503124400,
+                15517922400
+              ],
+              "duration_bounds_ns": [
+                1014798000,
+                1014799600
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 10,
+              "sample_sequences": [
+                147,
+                148,
+                149,
+                150,
+                151,
+                152,
+                153,
+                154,
+                155,
+                156
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1118208,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 135,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 85934080,
+                  "sampled_peak_observed_working_set_bytes": 179650560,
+                  "sampled_peak_observed_handles": 1893
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.03125,
+                  "cpu_pairs": 9,
+                  "observed_samples": 10,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 18927616,
+                  "sampled_peak_observed_working_set_bytes": 29708288,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 144,
+                "observed_samples": 10,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 87052288,
+                "sampled_peak_observed_working_set_bytes": 185106432,
+                "sampled_peak_observed_handles": 1957
+              },
+              "discovery_errors": 0
+            },
+            {
+              "name": "cycle-six-to-cycle-six-end",
+              "kind": "six-resident",
+              "cycle": 5,
+              "start_bounds_ns": [
+                15799777600,
+                15799778400
+              ],
+              "end_bounds_ns": [
+                16831039100,
+                16831039900
+              ],
+              "conservative_inside_ns": [
+                15799778400,
+                16831039100
+              ],
+              "duration_bounds_ns": [
+                1031260700,
+                1031262300
+              ],
+              "collection_endpoint_uncertainty_ns": 100,
+              "status": "observed",
+              "reason": null,
+              "sample_count": 11,
+              "sample_sequences": [
+                159,
+                160,
+                161,
+                162,
+                163,
+                164,
+                165,
+                166,
+                167,
+                168,
+                169
+              ],
+              "groups": {
+                "root": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 10,
+                  "observed_samples": 11,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 1118208,
+                  "sampled_peak_observed_working_set_bytes": 5455872,
+                  "sampled_peak_observed_handles": 64
+                },
+                "descendant": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 150,
+                  "observed_samples": 11,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 85876736,
+                  "sampled_peak_observed_working_set_bytes": 179646464,
+                  "sampled_peak_observed_handles": 1913
+                },
+                "sampler": {
+                  "coverage": "observed-only",
+                  "observed_accounted_cpu_seconds": 0.0,
+                  "cpu_pairs": 10,
+                  "observed_samples": 11,
+                  "unavailable_rows": 0,
+                  "sampled_peak_observed_private_bytes": 18927616,
+                  "sampled_peak_observed_working_set_bytes": 29708288,
+                  "sampled_peak_observed_handles": 219
+                }
+              },
+              "launcher_tree": {
+                "coverage": "observed-only",
+                "observed_accounted_cpu_seconds": 0.0,
+                "cpu_pairs": 160,
+                "observed_samples": 11,
+                "unavailable_rows": 0,
+                "sampled_peak_observed_private_bytes": 86994944,
+                "sampled_peak_observed_working_set_bytes": 185102336,
+                "sampled_peak_observed_handles": 1977
+              },
+              "discovery_errors": 0
+            }
+          ],
+          "phase_windows": 19,
+          "observed_phase_windows": 19,
+          "clock_calibration": {
+            "implementation": "QueryPerformanceCounter()",
+            "monotonic": true,
+            "adjustable": false,
+            "resolution_ns": 100,
+            "points": [
+              {
+                "batch": "before-go",
+                "perf_before_ns": -471200,
+                "perf_after_ns": -470200,
+                "qpc_counter": 2432906770,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "before-go",
+                "perf_before_ns": -468600,
+                "perf_after_ns": -468100,
+                "qpc_counter": 2432906791,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "before-go",
+                "perf_before_ns": -467500,
+                "perf_after_ns": -467100,
+                "qpc_counter": 2432906801,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "before-go",
+                "perf_before_ns": -466500,
+                "perf_after_ns": -466000,
+                "qpc_counter": 2432906812,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "after-cleanup",
+                "perf_before_ns": 18200551500,
+                "perf_after_ns": 18200552500,
+                "qpc_counter": 2614916996,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "after-cleanup",
+                "perf_before_ns": 18200555100,
+                "perf_after_ns": 18200555600,
+                "qpc_counter": 2614917028,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "after-cleanup",
+                "perf_before_ns": 18200556300,
+                "perf_after_ns": 18200556700,
+                "qpc_counter": 2614917039,
+                "qpc_frequency": 10000000
+              },
+              {
+                "batch": "after-cleanup",
+                "perf_before_ns": 18200557100,
+                "perf_after_ns": 18200557600,
+                "qpc_counter": 2614917048,
+                "qpc_frequency": 10000000
+              }
+            ],
+            "offset_bounds_ns": [
+              -243291147700,
+              -243291147100
+            ],
+            "cross_process_tick_ns": 100
+          },
+          "single_sample_windows": [
+            {
+              "name": "eight-ready-to-load-started",
+              "cycle": 0,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-six-end-to-cycle-eight",
+              "cycle": 1,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-six-end-to-cycle-eight",
+              "cycle": 2,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-eight-to-cycle-six",
+              "cycle": 2,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-six-end-to-cycle-eight",
+              "cycle": 4,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-eight-to-cycle-six",
+              "cycle": 4,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            },
+            {
+              "name": "cycle-six-end-to-cycle-eight",
+              "cycle": 5,
+              "cpu_pairs": 0,
+              "observed_accounted_cpu_seconds": null
+            }
+          ],
+          "python_observer_cpu_seconds": 0.578125,
+          "launcher_tree_cpu_seconds": 2.59375
+        },
+        "frame": {
+          "file": "case-1/frame.bmp",
+          "sha256": "32b2c910666fe2a67767df26aac63f664d56619355767258152f984441b64bc3",
+          "visual_review": "passed",
+          "observed": "1360x860 final workspace; B selected in main, F3 retained tail in bottom; seven sessions after C close; Paste sent 51/51; no leftover find/paste/candidate UI"
+        },
+        "system_content": {
+          "copy_utf8_bytes": 52,
+          "copy_utf16_units": 42,
+          "prefix_bytes": 51,
+          "committed_bytes": 57,
+          "final_bytes": 58,
+          "other_role_raw_bytes": 0,
+          "provider": {
+            "clsid": "{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}",
+            "profile": "{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+            "langid": 2052,
+            "language_hresult": 0,
+            "activation_hresult": 0
+          },
+          "checkpoint_B_bytes": [
+            {
+              "phase": "selected",
+              "bytes": 0
+            },
+            {
+              "phase": "copied",
+              "bytes": 0
+            },
+            {
+              "phase": "paste-requested",
+              "bytes": 0
+            },
+            {
+              "phase": "paste-confirmation",
+              "bytes": 0
+            },
+            {
+              "phase": "paste-complete",
+              "bytes": 51
+            },
+            {
+              "phase": "commit-preedit",
+              "bytes": 51
+            },
+            {
+              "phase": "committed",
+              "bytes": 57
+            },
+            {
+              "phase": "cancel-preedit",
+              "bytes": 57
+            },
+            {
+              "phase": "cancelled",
+              "bytes": 57
+            },
+            {
+              "phase": "large-cancel-requested",
+              "bytes": 57
+            },
+            {
+              "phase": "large-cancel-ready",
+              "bytes": 57
+            },
+            {
+              "phase": "large-close-requested",
+              "bytes": 57
+            },
+            {
+              "phase": "large-close-ready",
+              "bytes": 57
+            }
+          ]
+        },
+        "host_cleanup": {
+          "outer_before": {
+            "active": 0,
+            "total": 83,
+            "terminated": 0
+          },
+          "outer_after": {
+            "active": 0,
+            "total": 83,
+            "terminated": 0
+          },
+          "native_inner": {
+            "active": 0,
+            "total": 81,
+            "terminated": 0
+          },
+          "lifecycle": [
+            {
+              "stage": "starting",
+              "elapsed_seconds": 0.0
+            },
+            {
+              "stage": "awaiting-go",
+              "elapsed_seconds": 0.014999999999986358
+            },
+            {
+              "stage": "job-assigned",
+              "elapsed_seconds": 0.014999999999986358
+            },
+            {
+              "stage": "releasing-go",
+              "elapsed_seconds": 0.014999999999986358
+            },
+            {
+              "stage": "finished",
+              "elapsed_seconds": 18.35899999999998
+            }
+          ],
+          "input_desktop_policy": "existing-input-desktop-no-create-switch-or-delete"
+        }
+      }
+    ],
+    "mutations": {
+      "count": 21,
+      "all_rejected": true,
+      "original_files_unchanged": true,
+      "cases": [
+        {
+          "name": "missing-companion-checkpoint",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "wrong-raw-paste-prefix",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "duplicate-committed-chinese",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "wrong-other-target-input",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "preedit-sent-before-commit",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "actual-candidate-missing",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "clipboard-worker-not-joined",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "actual-queue-error",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "wrong-prompt-owner",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "op-wrong-published-revision",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "op-missing-actual-submission",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "closed-instance-missing",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "incompatible-resource-clock",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "resource-collection-boundary-changed",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "outer-job-not-zero",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "go-before-assignment",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "stdout-duplicate-key-with-updated-hash",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "resource-whole-collection-boundary-false-inclusion",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "resource-single-sample-invented-zero-cpu",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "resource-published-offset-not-recomputed",
+          "rejected": true,
+          "error_type": "ValueError"
+        },
+        {
+          "name": "active-large-paste-capacity-not-real",
+          "rejected": true,
+          "error_type": "ValueError"
+        }
+      ]
+    },
+    "cross_review": {
+      "status": "passed",
+      "source_commit": "ce9b24db12ea2725b12a4b821403975e91387e68",
+      "source_files": 58,
+      "bindings": {
+        "CMakeLists.txt": "whole-file-checkout-CRLF",
+        ".github/workflows/r1-ime.yml": "git-blob-bytes",
+        "experiments/shell/shell.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace_interactions.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace_workflow_scenario.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_system_state.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workspace_workflow_system.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_scenario_state.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_controller.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_fixture.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/runtime_observation.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/operation_observation.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/workflow_resources.py": "git-blob-bytes",
+        "experiments/shell/workflow_resource_phases.py": "git-blob-bytes",
+        "experiments/shell/workflow_sessions_checks.py": "git-blob-bytes",
+        "experiments/shell/workflow_checks.py": "git-blob-bytes",
+        "experiments/shell/queues.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/queue_probe.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/resize.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/raw_console_receiver.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/text_client.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/input_client.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/test_launcher.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/hosted_ime_input.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/ime.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/ime_input_expectation.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/clipboard.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/clipboard_worker.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/clipboard_worker.cpp": "whole-file-checkout-CRLF",
+        "experiments/shell/paste.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/paste_prompt.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/find_bar.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/text_interactions.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/search_interactions.hpp": "whole-file-checkout-CRLF",
+        "experiments/shell/text_actions.hpp": "whole-file-checkout-CRLF",
+        "experiments/conpty/session.hpp": "whole-file-checkout-CRLF",
+        "experiments/conpty/run.py": "git-blob-bytes",
+        "experiments/presentation/render.hpp": "whole-file-checkout-CRLF",
+        "experiments/presentation/desktop.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/history_view.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/text_projection.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/text_selection.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/text_search.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/terminal.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/screen.hpp": "whole-file-checkout-CRLF",
+        "experiments/core/unicode_width.hpp": "whole-file-checkout-CRLF",
+        "benchmarks/tools/sample.py": "git-blob-bytes",
+        "benchmarks/tools/summarize_resources.py": "git-blob-bytes",
+        "benchmarks/requirements.txt": "whole-file-checkout-CRLF",
+        "research/ime/product_runner.py": "git-blob-bytes",
+        "research/ime/product_checks.py": "git-blob-bytes",
+        "research/ime/inventory_hosted.py": "git-blob-bytes",
+        "research/ime/workflow_system_runner.py": "git-blob-bytes",
+        "research/ime/workflow_system_checks.py": "git-blob-bytes",
+        "research/ime/test_workflow_system.py": "git-blob-bytes",
+        "research/ime/test_workflow_system_runner.py": "git-blob-bytes",
+        "assets/fonts/RobotoMono-Regular.ttf": "git-blob-bytes"
+      },
+      "normalization_counts": {
+        "whole-file-checkout-CRLF": 42,
+        "git-blob-bytes": 16
+      },
+      "binary_records": {
+        "shell_test_launcher.exe": {
+          "bytes": 56320,
+          "sha256": "3892c04e9aeaef2cb70399696686821ea9c9ef97f8ad667226b6edeca6b9bce7"
+        },
+        "termforge_shell.exe": {
+          "bytes": 1081344,
+          "sha256": "6ccaf965d49211f0a7632d47ad15cea5fb944b899bf299ded481db8f1a639815"
+        },
+        "shell_text_client.exe": {
+          "bytes": 127488,
+          "sha256": "e2ee093a4bffd778c24d426df274a88391ce07969f5c1ce2aca4c0db5c380dcc"
+        },
+        "shell_input_client.exe": {
+          "bytes": 52224,
+          "sha256": "464c8b0e56da1fcc9e76a170be9d534d27b686956648ff54a959f68b4d68015a"
+        },
+        "shell_clipboard_reader.exe": {
+          "bytes": 32256,
+          "sha256": "a8c5518427a8e4dd81dda6e87b7cbeeb1a0eb54a804179e829e6e61795dc8df2"
+        }
+      },
+      "same_build_common_with_legacy_ime": {
+        "termforge_shell.exe": {
+          "bytes": 1081344,
+          "sha256": "6ccaf965d49211f0a7632d47ad15cea5fb944b899bf299ded481db8f1a639815"
+        },
+        "shell_test_launcher.exe": {
+          "bytes": 56320,
+          "sha256": "3892c04e9aeaef2cb70399696686821ea9c9ef97f8ad667226b6edeca6b9bce7"
+        }
+      },
+      "binary_independently_rehashed": false,
+      "source_to_binary_binding": "hosted-build-record-not-independent-attestation"
+    },
+    "source_identity_summary": {
+      "files": 58,
+      "match_counts": {
+        "git-blob-LF-to-CRLF-checkout": 42,
+        "git-blob-exact": 16
+      },
+      "fixed_head": "ce9b24db12ea2725b12a4b821403975e91387e68"
+    },
+    "visual_review_passed": true,
+    "limitations": [
+      "Limited R1 local workflow acceptance only; final R1 closure also requires prior slices and same-head regression review.",
+      "Presented completion remains null; WM_PAINT BitBlt/GdiFlush submission is not display presentation.",
+      "Observed resource values are not a performance gate or matched WindTerm comparison.",
+      "The entire Python observer process is accounted, without a paired observer-off experiment; incremental instrumentation overhead remains unknown.",
+      "Process polling can miss short-lived descendants and exit CPU; missing/discovery records are preserved, not zero-filled.",
+      "Five approximately one-second stable windows do not establish long-term absence of memory or handle leaks.",
+      "Downloaded artifact contains no executable, private resource raw trace or original ConPTY transport; binary SHA values are hosted build records, not independent rehash/attestation."
+    ],
+    "audit_script": {
+      "file": "local/audit_r109_system_ci.py",
+      "sha256": "9b78b0c69bba536625c06503984a3282d18c58ea57a0bc0fd8f24700faf190af",
+      "effective_input_driven_locally": false,
+      "original_evidence_edited": false
+    },
+    "review_boundary": {
+      "code_unchanged_during_audit": true,
+      "system_cases_fresh_directories": [
+        "case-0",
+        "case-1"
+      ],
+      "old_ime_or_data_only_substituted": false,
+      "real_system_component_verified": true,
+      "entire_R1_closed_by_this_report": false
+    }
+  },
+  "same_source_regression": "regression.json",
+  "local_validation": {
+    "ctest": {
+      "passed": 38,
+      "total": 38,
+      "internal_skips": 8,
+      "system_skips_are_not_system_passes": true
+    },
+    "two_fresh_data_rounds": [
+      {
+        "round": 0,
+        "source_files": 40,
+        "binary_identities": 4,
+        "sample_count": 148,
+        "calibration_points": 8,
+        "markers": 19,
+        "windows": 19,
+        "workflow": {
+          "schema": "termforge-workflow-sessions-identity-validation-v1",
+          "live_sessions": 8,
+          "checkpoints": 26,
+          "rejected_ninth": true,
+          "load_foreground_verified": true,
+          "data_workflow_verified": true,
+          "complete_workflow_verified": false,
+          "system_clipboard_verified": false,
+          "ime_verified": false
+        }
+      },
+      {
+        "round": 1,
+        "source_files": 40,
+        "binary_identities": 4,
+        "sample_count": 148,
+        "calibration_points": 8,
+        "markers": 19,
+        "windows": 19,
+        "workflow": {
+          "schema": "termforge-workflow-sessions-identity-validation-v1",
+          "live_sessions": 8,
+          "checkpoints": 26,
+          "rejected_ninth": true,
+          "load_foreground_verified": true,
+          "data_workflow_verified": true,
+          "complete_workflow_verified": false,
+          "system_clipboard_verified": false,
+          "ime_verified": false
+        }
+      }
+    ],
+    "source_to_binary_binding": "not_independently_attested",
+    "limitations": [
+      "Data-only runs do not invoke actual clipboard or IME.",
+      "Whole Python observer process accounting is not incremental sampler overhead.",
+      "Short phase windows cannot establish long-term absence of leaks."
+    ]
+  },
+  "code_review": {
+    "fixed_base": "1ffd01c536ab627f1c4f651322c349245f9e3951",
+    "standards": "passed",
+    "spec": "passed",
+    "non_author_reviewed_code_files_unchanged": 25,
+    "addressed_findings": [
+      "Companion metadata must agree with the fixed system contract.",
+      "Include all oracle and clipboard-worker dependencies in identity manifests.",
+      "Export independently checkable GO and native stdout facts without private records.",
+      "Reject recursively duplicated JSON keys before exporting original safe stream bytes."
+    ]
+  },
+  "preserved_failures": [
+    {
+      "symptom": "shell / queue real resize enters working state",
+      "first_full_suite": "36/37",
+      "diagnosis": "A successful transient resize completed before the polling observer sampled working.",
+      "diagnostic": "200ms delayed observation: requested=1 completed=1 working=false failed=false.",
+      "resolution": "Explicit worker gate before the real Session.resize; preserve coalescing, real child dimensions and cleanup.",
+      "fixed_native_repeats": 30,
+      "timeouts_and_real_child_dimensions_unchanged": true,
+      "originals_preserved_locally": true
+    },
+    {
+      "symptom": "An early local audit helper assumed every queue-probe stdout line was JSON.",
+      "diagnosis": "The probe emits three JSON rows followed by a fixed plain-text success line.",
+      "resolution": "Audit the exact four-line format; native success was not relabeled as a product failure."
+    }
+  ],
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "remaining": [
+    "R2 actual external-core builds and ADR-0003 comparison before expanding TUI/modes.",
+    "Common TUI, complex Unicode, real cross-monitor behavior, persistence and a distributable development build.",
+    "SSH/SFTP, other protocols, advanced workflows and cross-platform clients.",
+    "Official WindTerm matched performance baseline, observer-off comparison, presentation endpoints and long-duration stability.",
+    "Full UI and WindTerm 2.7.0 target-matrix parity."
+  ]
+}

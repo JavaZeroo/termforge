@@ -6,7 +6,8 @@
 |---|---|
 | 已经能做什么，离目标差在哪里？ | [功能与差异矩阵](FEATURES.md) |
 | 最终目标是什么，如何分阶段完成？ | [五个路标，远到近](PLAN.md) |
-| 下一阶段具体做哪些事情？ | [R1 基础文字交互](milestones/R1-local-text.md) |
+| 下一阶段具体做哪些事情？ | [R2工作包与前置](PLAN.md)、[当前执行项](TRACKING.md) |
+| 已验收的基础文字交互合同是什么？ | [R1 基础文字交互](milestones/R1-local-text.md) |
 | 哪项可开工，谁阻塞谁？ | [GitHub 跟踪索引](TRACKING.md) |
 | 已完成结论由什么支持？ | [证据索引](EVIDENCE.md) |
 | 如何构建、运行与贡献？ | [贡献指南](../CONTRIBUTING.md)、[本地 shell](../experiments/shell/README.md) |

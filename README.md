@@ -4,7 +4,7 @@
 
 An independent, fully open-source terminal project targeting WindTerm 2.7.0 feature, interaction and performance parity. Not affiliated with WindTerm or KingToolbox.
 
-当前是有限 Windows 本地终端原型：已有真实 cmd/ConPTY 输入输出、主区与底部共最多 8 个会话、标签操作、可保存的布局、每会话缩放和受控 DPI 回归。R1 有界历史浏览已按限定合同验收；有界粘贴和历史字面量查找已有重复验收；固定 Microsoft 拼音已有五组实际产品验收，含历史阅读、Find 与重命名组合取消；选择复制的精确文本、占用重试和基本归属已有重复系统验收。统一文字动作和限定参考对照已验收，完整文字工作流与八会话资源边界仍待验收。常用 TUI、SSH/SFTP 和日常开发包尚未完成；尚无与 WindTerm 性能等价的结论。`TermForge` 是暂名。
+当前是有限 Windows 本地终端原型，**R1 基础文字交互已按限定合同验收**：真实 cmd/ConPTY、两个区域共最多8个会话、有界历史/选择复制/粘贴/查找、固定Microsoft拼音，以及同次八会话完整文字流程和有限资源回收均有[重复运行与独立审计](experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)。接下来进入R2的可靠本地终端准备；常用TUI、配置恢复、SSH/SFTP和日常开发包尚未完成，UI也尚未全面等价。没有与WindTerm性能等价的结论。`TermForge` 是暂名。
 
 ## 开始使用
 
@@ -22,7 +22,8 @@ An independent, fully open-source terminal project targeting WindTerm 2.7.0 feat
 |---|---|
 | 已经做了什么、还缺什么 | [当前能力与目标矩阵](docs/FEATURES.md) |
 | 最终目标与五个路标（从远到近） | [总体计划](docs/PLAN.md) |
-| 下一路标的具体事项、依赖和验收 | [R1 基础文字交互](docs/milestones/R1-local-text.md) |
+| 下一路标的工作包与前置 | [R2 可靠本地终端](docs/PLAN.md#r2可靠本地终端持久化与可发布开发版) |
+| 已验收的基础文字交互合同 | [R1 基础文字交互](docs/milestones/R1-local-text.md) |
 | GitHub milestones、issues 和执行顺序 | [任务跟踪](docs/TRACKING.md) |
 | 结论依据、复现命令和全部文档 | [证据索引](docs/EVIDENCE.md) · [文档导航](docs/README.md) |
 

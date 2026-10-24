@@ -1,6 +1,6 @@
 # 本地 shell 工作区
 
-受控编号日志、洪流、八会话data-only场景及资源接缝见 [WORKFLOW](WORKFLOW.md)。E2在真实工作区验证有限并发负载、文字状态及反复回收；同次实际Copy→Paste→IME完整工作流、资源阶段校准和操作提交端点仍待验收，实时状态见 [#18](https://github.com/JavaZeroo/termforge/issues/18)。
+受控编号日志、洪流、八会话data-only场景及资源接缝见 [WORKFLOW](WORKFLOW.md)。E2在真实工作区验证有限并发负载、文字状态及反复回收；同次实际Copy→Paste→IME完整工作流、资源阶段校准和滚动提交端点已按[限定合同验收](results/2026-10-24-r1-system-workflow/validation.json)，实时状态见 [#18](https://github.com/JavaZeroo/termforge/issues/18)。
 
 这是可从源码运行的 Windows 本地交互原型：真实 `cmd.exe` → ConPTY → 有界输出队列 → Recovery 核心 → 历史视口/只读快照 → DirectWrite/Direct2D → 自有 HWND；窗口输入经有界队列回到 ConPTY。核心、窗口与子进程尺寸同步，当前按 [R1 合同](../../docs/milestones/R1-local-text.md)推进基础文字交互，仍未达到日常开发版验收。
 
@@ -30,7 +30,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 - 当前独立粘贴策略：最多 1 Mi 个 UTF-16 单元、4 MiB UTF-8，换行规范化为 CR，拒绝不完整 UTF-16 和不支持的控制字符；不宣称已对齐 WindTerm 默认策略，也不无条件发送 bracketed-paste 包装。
 - 键盘处理包含 Tab/Shift+Tab、Home/End/Insert/Delete/Page、修饰键、AltGr 和跨消息 UTF-16。IME 采用每终端独立原生上下文，只发送已提交文字；候选位置使用物理网格。固定 Microsoft 拼音的组合、候选、提交/取消已有五组实际产品验收；其他输入法和真实跨屏仍未验收，见 [IME 工具](../../research/ime/README.md)。
 
-基础能力与统一文字动作已按 [#12–#17 的各自限定合同](../../docs/milestones/R1-local-text.md)验收；当前能力与边界统一见[功能矩阵](../../docs/FEATURES.md)。[#18](https://github.com/JavaZeroo/termforge/issues/18)的E2受控场景覆盖实际8会话/拒绝第9个、五路有限洪流、前台文字操作、合成粘贴取消/关闭和5次8→6→8，本地及同源码hosted各两fresh已通过限定复验。该场景不访问系统剪贴板、不调用真实IME；资源记录也不构成性能通过或R1整体验收。
+基础能力与统一文字动作已按 [#12–#17 的各自限定合同](../../docs/milestones/R1-local-text.md)验收；当前能力与边界统一见[功能矩阵](../../docs/FEATURES.md)。[#18](https://github.com/JavaZeroo/termforge/issues/18)的E2受控场景覆盖实际8会话/拒绝第9个、五路有限洪流、前台文字操作、合成粘贴取消/关闭和5次8→6→8，本地及同源码hosted各两fresh已通过限定复验。该数据场景不访问系统剪贴板、不调用真实IME；同源码[系统组合及整体回归](results/2026-10-24-r1-system-workflow/validation.json)另验收，资源记录不构成性能通过。
 
 ## 工作区操作与已知差异
 
@@ -65,7 +65,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 
 当前同步 I/O 取消与 ConPTY 关闭不提供跨所有 Windows 版本的硬截止时间保证；UI 仍能处理消息，自动测试有外部时限。Server 2022 已知资源门槛问题继续保留，未扩大已验收平台范围。
 
-专用测试可启用UI线程按值runtime快照；worker状态在各自短锁内读取，关闭前及实际join后分别留证，未知容量和未完成查询保持null。资源驱动复用既有sampler，明确按launcher-tree观察并将sampler单列；实际采样开销及调度缺口须随结果保留，短命后代可能漏采。native阶段时钟未校准、phase_windows=null，操作到state/实际WM_PAINT提交端点仍未接入。普通启动默认关闭这些观测，不自动采样或写文件；字段和限制见[观测合同](WORKFLOW.md#运行快照)。
+专用测试可启用UI线程按值runtime快照；worker状态在各自短锁内读取，关闭前及实际join后分别留证，未知容量和未完成查询保持null。资源驱动复用既有sampler，明确按launcher-tree观察并将sampler单列；实际采样开销及调度缺口须随结果保留，短命后代可能漏采。native阶段通过8次夹测校准；19阶段窗与两次实际滚动的state/同revision WM_PAINT提交已按限定场景验证。呈现和长期无泄漏仍未知。普通启动默认关闭这些观测，不自动采样或写文件；字段和限制见[观测合同](WORKFLOW.md#运行快照)。
 
 ## 无人值守验证
 
@@ -114,7 +114,7 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 | `ui-copy-system` | 选择后实际 Copy 菜单/快捷键系统复制、占用失败反馈/保持CF/释放后重试 | 旧 v3/v4 只算各自覆盖；v5 必须真实 owner 握手、原始错误、sentinel/sequence、strict release/join 和成功重试。[两轮最终系统审计](results/2026-10-24-r1-selection-accepted/validation.json)通过；只在指定一次性 hosted 环境运行，本地跳过不算系统验收 |
 | `ui-selection-bytes` / `ui-copy-bytes-system` | 真实 ConPTY 软折行、硬 CRLF、中文/组合字符、显式带样式尾两空格和受控 96→144→192→96 | 独立 producer/transport/capture 文件与逐行 oracle；本地模式不访问剪贴板，system 模式仅 disposable hosted VM。普通尾空格在 ConPTY 中的规范化仍是缺口，不能据此宣称与 WindTerm 该行为等价 |
 | `ui-selection-context` / `ui-copy-context-system` | 3会话的同组标签隐藏/返回、live CR覆盖失效、rename EDIT、带选区关闭后的目标隔离 | 16阶段独立literal/journal/transport/raw；local不执行有效CF，system仅disposable hosted并要求真实EDIT Copy与选区CF。实际system两轮已通过[独立审计](results/2026-10-24-r1-selection-accepted/validation.json)；未知显式空白端点策略不据此裁决 |
-| `ui-actions` / `ui-actions-system` | 真实终端右键菜单、快捷键、Find/rename 原生编辑、busy/closing/无会话反馈，以及命中和选区跨受控 DPI/zoom | local每轮26阶段且不执行有效CF；system每轮36阶段，覆盖Find原生Ctrl+A/C/V、中文查询重选/Escape、终端Copy/Paste、Shift+Insert、默认Return及目标切换。[固定源码两轮系统审计](results/2026-10-24-r1-actions-accepted/validation.json)已通过；仅一次性hosted运行。范围与策略见[动作对照](../../docs/research/r1-action-comparison.md)，完整CF/IME组合及资源阶段/操作端点仍待#18 |
+| `ui-actions` / `ui-actions-system` | 真实终端右键菜单、快捷键、Find/rename 原生编辑、busy/closing/无会话反馈，以及命中和选区跨受控 DPI/zoom | local每轮26阶段且不执行有效CF；system每轮36阶段，覆盖Find原生Ctrl+A/C/V、中文查询重选/Escape、终端Copy/Paste、Shift+Insert、默认Return及目标切换。[固定源码两轮系统审计](results/2026-10-24-r1-actions-accepted/validation.json)已通过；仅一次性hosted运行。范围与策略见[动作对照](../../docs/research/r1-action-comparison.md)，完整CF/IME组合及资源阶段/滚动端点见[#18整体验收](results/2026-10-24-r1-system-workflow/validation.json) |
 | `ui-find-stream` | 实际持续 CR 输出中导航、运行中替换查询、取消及关闭目标 | 10 阶段独立 oracle、两个原始接收文件和有限 worker/Job 回收；局部结果绝不冒充全局循环 |
 | `ui-find` | 多批搜索、方向/循环、大小写/中文/无结果、蓝黄高亮、后台追加、淘汰与 Escape | `find.json`、逐阶段记录及真实 `ReadConsoleW` 接收字节；查询在原生 EDIT 中操作，独立 oracle 检查稳定位置与焦点 |
 | `ui-keyboard` | 修饰键、编辑键、Unicode 与会话目标 | 真实 `ReadConsoleW` 接收端与独立字节预期；不替代真实 IME |

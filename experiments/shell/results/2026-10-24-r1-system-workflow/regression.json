@@ -1,0 +1,97 @@
+{
+  "schema": "termforge-r1-system-workflow-regression-v1",
+  "status": "passed",
+  "source_commit": "ce9b24db12ea2725b12a4b821403975e91387e68",
+  "main": {
+    "run_id": 40045678550,
+    "status": "success",
+    "windows_ctest": 38,
+    "ubuntu_ctest": 24,
+    "ctest_failed": 0,
+    "ctest_skipped": 0,
+    "internal_unittest_skip_count": null,
+    "internal_skip_reason": "Successful main CTest output suppresses internal unittest lines; no LastTest.log or JUnit uploaded.",
+    "artifact_id": 12541800613,
+    "artifact_digest": "sha256:7250cf2c005ec7607c6a7433d3dd9936d2d989220de3ffc8e0c75e47de8374ac",
+    "archive_files": 743,
+    "archive_prefix_counts": {
+      "paste": 42,
+      "shell": 289,
+      "selection-bytes": 48,
+      "selection-context": 32,
+      "text-actions": 57,
+      "raw-console-receiver": 9,
+      "workflow-fixture": 54,
+      "workflow-controller": 30,
+      "workflow-sessions": 182
+    },
+    "eight_session_rounds": 2,
+    "fixture_rounds": 2,
+    "controller_rounds": 2,
+    "resource_samples_by_round": {
+      "0": 178,
+      "1": 177
+    },
+    "e2_sources_per_round": 40,
+    "e2_source_normalization": {
+      "git-blob-bytes": 10,
+      "whole-file-checkout-CRLF": 30
+    },
+    "calibrated_phase_markers": 19,
+    "calibration_points": 8,
+    "phase_windows": 19,
+    "six_resident_windows_per_round": 5,
+    "legacy_groups": 12,
+    "legacy_total_rounds": 24,
+    "native_operation_raw_unit_stdout_available": false,
+    "lower_transport_probe_rounds": 3,
+    "lower_actual_clipboard_rounds": 1,
+    "lower_receiver_cases": 3
+  },
+  "explicit_ime": {
+    "run_id": 40045686776,
+    "status": "success",
+    "artifact_id": 12540854688,
+    "artifact_digest": "sha256:bdddabdd3f1a886c26abca3e0d20e8374f28fcf95f2ca8c5e1cb79b88ef6ada8",
+    "old_five_modes": 5,
+    "old_five_batches": 1,
+    "old_checkpoints": 28,
+    "expected_empty_prefix_receivers": 11,
+    "normal_receivers": 10,
+    "closed_receiver_exit91_without_sidecar": 1,
+    "archive_files": 69,
+    "product_and_environment_files": 53,
+    "final_frames_visually_inspected": 5,
+    "preflight_unittests": 65,
+    "preflight_skipped": 1,
+    "preflight_skipped_reason": "Local-refusal entry test is intentionally skipped on the actual authorized hosted VM."
+  },
+  "source_crosscheck": {
+    "e3_manifest_sources": 58,
+    "hosted_binary_records": 5,
+    "old_ime_common_binary_records_equal": 2,
+    "binary_independently_rehashed": false
+  },
+  "current_frames": {
+    "e2_final_frames_inspected": 2,
+    "observed": "Each frame shows the expected seven-session final pre-close state, B READY/STOPPED and F3 completed numbered tail."
+  },
+  "limitations": [
+    "This audit does not substitute earlier one-feature system modes for the E3 combined workflow audited separately.",
+    "No executable is included in either artifact; binary hashes are hosted build identity metadata, not independent source-to-binary attestation.",
+    "Private raw resource traces and original ConPTY transport for E2 fixture/controller are absent; their CI provenance checks cannot be independently rehashed from downloaded artifacts.",
+    "Main internal skip count and suppressed runtime_observation per-operation stdout are unavailable, retained as unknown.",
+    "Short bounded workloads, controlled DPI and submission do not prove long-duration leak freedom, real cross-monitor behavior, compositor presentation or WindTerm performance parity."
+  ],
+  "scope": "Same-source existing-feature regressions; combined E3 evidence is separate.",
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "independent_checks": {
+    "strict_archive_members": true,
+    "original_files_rehashed": true,
+    "fixture_controller_and_e2_literals": true,
+    "legacy_twelve_groups_twice": true,
+    "phase_formula_recomputed_separately": true,
+    "five_mode_ime_raw_candidates_cleanup": true
+  }
+}
