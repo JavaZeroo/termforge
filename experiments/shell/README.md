@@ -14,9 +14,11 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 .\build\bin\Release\termforge_shell.exe
 ```
 
-程序为 Windows GUI 子系统，不额外打开宿主控制台。默认打开真实可见窗口，在启动目录运行系统 `cmd.exe /d /q`，关闭 AutoRun，设置 UTF-8 code page 与固定 `TF>` 提示符。支持普通字符、中文字符消息、回车、退格、方向键和 Ctrl-C。输入 `exit` 或关闭标签会结束本会话并回收其自有子树；关闭主窗口回收全部标签。最后一个标签关闭后工作区保留，可以继续新建。用户启动的进程仍可访问用户自己的文件；这里是本地 shell，不是沙箱。
+程序为 Windows GUI 子系统，不额外打开宿主控制台。默认打开真实可见窗口，在启动目录运行系统 `cmd.exe /d /q`，关闭 AutoRun，设置 UTF-8 code page 与固定 `TF>` 提示符。支持普通字符、中文字符消息、回车、退格和方向键；R1 历史证据包含 Ctrl-C，但当前 Windows 11 持续 `cmd for /L` 输出的中断回归 [#36](https://github.com/JavaZeroo/termforge/issues/36) 尚未解决，不能宣称当前该场景通过。输入 `exit` 或关闭标签会结束本会话并回收其自有子树；关闭主窗口回收全部标签。最后一个标签关闭后工作区保留，可以继续新建。用户启动的进程仍可访问用户自己的文件；这里是本地 shell，不是沙箱。
 
 构建会自动复制独立开源的 Roboto Mono UI 字体及许可到 EXE 旁的 `assets/fonts/`；移动或分发 EXE 时保留此目录及同目录的 `shell_clipboard_reader.exe`。字体从可执行文件目录私有加载，不依赖当前工作目录，不安装到系统。缺失或实际字体不匹配时明确失败。来源、固定哈希及 OFL 许可见[字体说明](../../assets/fonts/README.md)。
+
+`ShellLaunch` 将可执行文件、参数、工作目录和命令差异放在同一启动描述中。默认仍为原 cmd；固定测试另覆盖 Windows PowerShell 5.1、PowerShell 7 和显式 Ubuntu WSL。PowerShell 原生命令使用 `&`，WSL helper 将绝对 Windows 路径转换为 `/mnt/<drive>/...`，不能用同一字符串拼法处理三种 shell。两轮真实启动/目录/尺寸/逐个正常退出及启动失败恢复见[验证](results/2026-10-24-r2-shell-lifecycle/validation.json)；通用分屏/排序、任意 profile/参数和全部运行时错误提示尚未完成。
 
 默认 1360×860 逻辑内容区（以 96 DPI 为基准），底部真实 ShellPane，每会话保留最多 100 行历史；网格按扣除原生滚动条的客户区和实际单元格计算。窗口支持拖动缩放/最大化，网格范围为 1–500 列、1–200 行。采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄会截去右侧内容，增宽不会恢复，也没有逻辑行重排。历史、选择复制、系统粘贴、查找、固定拼音输入和统一文字动作均已有 R1 限定验收；八会话data-only与完整真实Copy→Paste→IME组合均已按各自限定合同验收，SSH、备用屏和完整 TUI 尚未实现。不实现终端查询回复，未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。逐格布局来自 [V1](../presentation/README.md)，布局缓存至多 1,024 项，满时清空重建；尚未做产品级缓存策略或性能对比。
 
@@ -36,6 +38,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 
 - `Ctrl+Shift+T`、主区 `+` 或 Session → New main session 新建主区本地 cmd；`Ctrl+T` 或底部 `+` 新建底部 shell。两个区域合计最多 8 个，各自保留选中的标签，可同时显示终端。
 - 点击终端、标签或右侧 Sessions 列表改变当前操作区域；状态栏显示 `Focus: Main/Shell`。`Ctrl+Tab` 在该区域切换，`Ctrl+W` 关闭该区域选中的会话，标签 `x` 关闭它所在的会话。主工具栏提供新建、关闭、重命名和只读本地目标说明。
+- 主区 `Alt+-` 创建一个真实左右 split，两个独立会话并排显示；`Alt+Left/Right` 切换 pane，`Alt+Z` 隐藏/恢复而不终止进程，`Alt+X` 关闭当前 pane。隐藏标签继续接收输出，关闭只影响目标会话。当前仅一个主区左右 split，[两轮验证](results/2026-10-24-r2-main-split/validation.json)不表示任意嵌套、拖放或分屏持久化已完成。
 - `Ctrl++` / `Ctrl+-` 或 View 菜单放大/缩小当前会话文字，每次 25%，范围 50%–200%；也支持数字键盘加减。`Ctrl+0` 重置 100%，状态栏显示比例。其他会话保持原比例，重命名时不触发终端缩放。比例暂不跨进程保存。
 - `F2`、标签中键或 Session → Rename shell 重命名；支持 Unicode，Enter 提交、Esc 取消，切换焦点时提交。空白、控制字符或不完整 UTF-16 不接受，最多 64 个 UTF-16 单元；标签与 Sessions 列表同步，标题不写入终端。
 - `F11` / View → Focus shell 扩大底部终端；在此模式新建/选择主区会话会先恢复普通布局，再把焦点交给可见的主终端。View → Side panels 显示/隐藏两侧区域。Session 菜单可新建、关闭和退出。
@@ -43,7 +46,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 - 三列约 1:4:1、上下约 2:1、24 高面板标题、26 高 Shell 标签、27 高底栏、29 高状态栏来自 [直接取证](../../docs/research/windterm-ui-2026-10-23.md)。主区容器空时高 19、有标签时高 26，连接状态工具栏高 34，主终端外区域从 y=93 开始，依据[第二轮测量](../../docs/research/windterm-ui-typography-2026-10-23.md)。主区最后一个标签关闭后恢复空状态，可重新新建。
 - Explorer/Filer/Outline 暂为空布局区域，没有文件浏览/大纲功能。当前菜单只暴露已实现动作；底栏是原创新建快捷入口，没有复刻 WindTerm QuickBar 配置。
 - UI 使用独立随附的 Roboto Mono，9pt；终端继续使用 Consolas，96 DPI / 100% 下为 12×26 网格与原有调色板。字号、整数物理单元、裁剪和光标共用度量。启动读取窗口 DPI，`WM_DPICHANGED` 更新字体、布局、鼠标命中、编辑器和隐藏终端，取消未提交拖动并保留编辑内容/焦点；先应用最终像素矩形再更新终端网格，避免中间缩窄裁剪。主终端外框已按固定逻辑尺寸对齐，内部网格、标签标题宽度及重命名/关闭策略仍是 TermForge 自身实现。
-- 96→144→192→96 受控消息场景已验证，真实跨显示器 DPI、字体/像素等价、标签排序/会话持久化、SSH/SFTP 均未验收。受控消息不修改系统显示设置，不能当作真实跨屏结果。
+- 96→144→192→96 受控消息场景已验证；`ui-monitors` 另在两台真实 96-DPI 显示器间往返两次，保持 rename 焦点、隐藏标签和网格，`distinct_dpi=false`，见[R2 合同](../../docs/milestones/R2-font-display.md)与[验证](results/2026-10-24-r2-monitor-font/validation.json)。不同 DPI 的真实跨屏、实际呈现、字体/像素等价、标签排序/会话持久化、SSH/SFTP 仍未验收。
 - 主窗口是既有 Win32/DirectWrite 实验的有限扩展，不锁定未来产品 GUI 框架；没有复制 WindTerm 主题、图标或反编译实现。
 
 ## 布局保存
@@ -87,7 +90,7 @@ E2驱动是唯一默认传入`resources=True`的场景驱动，依赖项目Pytho
 
 resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子进程查询实际尺寸；包括快速连续请求、洪流中缩放、随后 Ctrl-C 或关闭。正常 resize 验证 60×12、100×28、72×18；关闭场景只查询前两个尺寸。脚本还将自有窗口移至非输入 desktop 右下边缘，验证 retained DIB 不依赖可见更新矩形。每次绘制与全量重绘作 RGB 对比；这些带检查的样本不能作为低开销延迟数据。
 
-每次运行依次验证普通命令、中文、退格、左右方向键编辑，再运行一百万轮的输出命令。至少持续一秒且消费 64 KiB 后发送 Ctrl-C，再执行 `echo TF_AFTER`；确认对应状态与已提交帧后 `exit 37`。另测输出中关闭，正常/关闭各重复三次，检查 Job 活跃进程归零与自有 desktop 消失。监督器用真实存活 shell 验证超时清理。独立队列探针验证容量、背压、顺序、停止唤醒与输入拒绝。短回归不代表长时无泄漏。
+每次运行依次验证普通命令、中文、退格、左右方向键编辑，再运行一百万轮的输出命令。至少持续一秒且消费 64 KiB 后发送 Ctrl-C，再执行 `echo TF_AFTER`；确认对应状态与已提交帧后 `exit 37`。当前 Windows 11 上 normal/resize 在该中断阶段超时，由 #36 保留，完整 CTest 不能记为通过。另测输出中关闭，正常/关闭各重复三次，检查 Job 活跃进程归零与自有 desktop 消失。监督器用真实存活 shell 验证超时清理。独立队列探针验证容量、背压、顺序、停止唤醒与输入拒绝。短回归不代表长时无泄漏。
 
 产品真实 IME 单独由 [`research.ime.product_runner`](../../research/ime/README.md) 显式托管运行，使用严格受控的真实 `SendInput`，不在这些私有 desktop 场景中合成 IME 消息。五个 `ui-ime-*` 场景有独立输入桌面/焦点/代次检查和内外 Job/GO 门控，开发机拒绝运行；历史/Find 与 rename 双 Escape 已有[固定源码系统审计](../../research/ime/results/2026-10-24-product-ime-contexts/validation.json)。
 
@@ -109,6 +112,10 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 | `ui` / `ui-edit` / `ui-restore` | 多标签、五处分隔线、重命名、捕获/Escape 回滚、新进程恢复布局 | 真实子进程尺寸、保存文件、焦点与回收；不恢复会话进程或标题 |
 | `ui-main` | 主区/底部隔离、隐藏输出、焦点模式、空区域与关闭目标 | `geometry.json` 按固定参考常量检查 HWND/字体/矩形；内部网格由实际客户区扣除系统滚动条后计算 |
 | `ui-dpi` | 每会话缩放、隐藏标签、受控 DPI、边缘命中/拖动及长行保留 | `dpi.json` 区分受控 DPI 与系统 DPI；实际子进程尺寸及 dirty/full 图像比较；不替代真实跨屏 |
+| `ui-monitors` | 至少两台真实显示器间往返，保持 rename 焦点、隐藏标签、网格与 dirty/full 图像 | `monitors.json` 核对真实矩形、实际 DPI 和 `distinct_dpi`；当前两台均 96，不覆盖不同 DPI 或实际呈现 |
+| `ui-shells` | cmd、PowerShell 5.1/7、显式 Ubuntu WSL 的启动、参数、隔离目录、实际尺寸和逐个正常退出 | `shells.json` 固定四种身份及 `normal_exit=true`；PowerShell 原生命令前缀与 WSL helper 路径分别处理 |
+| `ui-split` | 主区一个真实左右 split 的独立输出、Alt 焦点、隐藏后台、恢复与关闭 | `split.json` 核对真实矩形、可见性和3会话回收；仅一个 split，任意嵌套/拖放/持久化未完成 |
+| `ui-launch-failure` | 无效可执行文件的错误显示、失败会话关闭及 cmd 恢复 | `launch-failure.json` 核对 `CreateProcess: 2` 和3会话回收；不声称全部运行时错误对话框 |
 | `ui-history` | 编号日志、滚轮/翻页/拖动、阅读锚点、隐藏输出、淘汰、缩放与输入回到底部 | `history.json` 与独立编号 oracle；`native-scroll.jsonl` 记录系统原生非客户区 tracker 的轨迹，使用队列鼠标消息，不移动用户鼠标 |
 | `ui-selection` | 正逆拖选、词/行、宽字/组合字符、缩放、双会话、后台追加及淘汰失效 | `selection.json` 与独立逐字预期；检查实际窗口高亮及回收，本场景不操作系统剪贴板 |
 | `ui-copy-system` | 选择后实际 Copy 菜单/快捷键系统复制、占用失败反馈/保持CF/释放后重试 | 旧 v3/v4 只算各自覆盖；v5 必须真实 owner 握手、原始错误、sentinel/sequence、strict release/join 和成功重试。[两轮最终系统审计](results/2026-10-24-r1-selection-accepted/validation.json)通过；只在指定一次性 hosted 环境运行，本地跳过不算系统验收 |
@@ -124,6 +131,6 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 
 系统剪贴板边界另由 `python -m unittest experiments.shell.test_paste -v` 验证。畸形终止符用例保留 `terminator-before/after/reader.utf16le`：先核对发布前确实没有 NUL，再独立捕获系统返回的完整分配。仅接受“原分配未变且读取器拒绝”或“最后一个单元被系统改为 NUL 且读取器精确返回其前缀”两种有字节证据的结果；其他转换仍失败并留存原始内容。跨平台 `paste_test` 直接测试生产读取器共用的有界解析逻辑，包括无终止符、超限、分配末端与字符上限，不能用系统可能规范化了夹具代替解析边界测试。
 
-原生 `layout_state` 测试覆盖严格读取、截断、非法数值、Unicode 路径和替换失败保留。`renderer_metrics` 覆盖 GDI/DirectWrite × 96/120/144/192 DPI × 50/100/125/200% 共 32 组，检查非整数边界、实际绘字与 dirty/full 一致。
+原生 `layout_state` 测试覆盖严格读取、截断、非法数值、Unicode 路径和替换失败保留。`renderer_metrics` 覆盖 GDI/DirectWrite × 96/120/144/192 DPI × 50/100/125/200% 共 32 组，检查非整数边界、实际绘字与 dirty/full 一致；DWrite glyph run 另断言 ASCII/组合字符的 Consolas 身份、中文非 Consolas fallback 和缺字负例，不把请求字体或 GDI 对照当作实际 fallback 证明。同一测试还验证私有 Roboto Mono 的 GDI face、9pt em 高度和实际行高，并拒绝越界 DPI；其资产依赖与 `termforge_shell` 共用。测试会在构建目录复制一个不含 `assets/` 的独立进程，确认缺失字体以指定错误明确失败，等待期限 10 秒，结束后删除副本。
 
 合成 `frame.bmp` 和 DPI 图片来自自有工作区/终端绘制，不含原生 EDIT 子控件；编辑器由实际 HWND/字体断言验证。这些图片不是用户桌面截图、像素等价或实际呈现完成证据。历史批次的测量与修复依据统一从[证据索引](../../docs/EVIDENCE.md)进入。

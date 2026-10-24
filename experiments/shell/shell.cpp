@@ -14,16 +14,11 @@
 #include "text_actions.hpp"
 #include "runtime_observation.hpp"
 #include "operation_observation.hpp"
+#include "shell_launch.hpp"
 #include <atomic>
 #include <optional>
 #include <sstream>
 
-static std::wstring system_cmd() {
-    wchar_t folder[MAX_PATH]{};
-    const UINT n = GetSystemDirectoryW(folder, MAX_PATH);
-    require(n && n < MAX_PATH, "system directory failed");
-    return std::wstring(folder) + L"\\cmd.exe";
-}
 struct Result {
     int resize_verified = 0, rows = 24, columns = 80;
     size_t consumed = 0, output_high_water = 0, input_high_water = 0, input_rejected = 0, max_consumed_per_tick = 0;
@@ -55,9 +50,9 @@ class ShellWindow {
     uint64_t window_creation_serial_ = 0;
     std::thread closer_;
     std::atomic<bool> closed_{false};
-    bool closing_ = false, started_ = false, metrics_dirty_ = false;
+    bool closing_ = false, started_ = false, metrics_dirty_ = false, wsl_ = false;
     bool closer_joined_ = false, session_closed_on_closer_ = false;
-    std::string failure_, close_failure_, mode_, image_path_;
+    std::string failure_, close_failure_, launch_error_, mode_, image_path_;
     int revision_ = 0, stage_ = 0;
     int dirty_first_ = 0, dirty_last_ = 24;
     tf_shell::KeyboardEncoder keyboard_;
@@ -69,7 +64,7 @@ class ShellWindow {
     std::optional<tf_shell::PreparedPaste> pending_paste_;
     std::unique_ptr<tf_shell::PastePrompt> paste_prompt_;
     std::shared_ptr<tf_shell::PasteTransfer> paste_transfer_;
-    std::wstring input_status_;
+    std::wstring input_status_, command_prefix_;
     int wheel_remainder_ = 0;
     termforge::TextSelection selection_;
     std::optional<termforge::TextPosition> selection_anchor_;
@@ -185,8 +180,9 @@ class ShellWindow {
         require(n && n < 32768, "size client path failed");
         std::wstring file(path, n);
         file = file.substr(0, file.find_last_of(L'\\')+1) + L"shell_size_client.exe";
+        if (wsl_) file = tf_shell::wsl_path(file);
         // Absolute synthetic helper; it independently queries the child console.
-        const auto command=L"\"" + file + L"\"\r";
+        const auto command=command_prefix_ + L"\"" + file + L"\"\r";
         if(fixture_output_only) fixture_command(command); else type(command);
     }
 
@@ -591,7 +587,7 @@ class ShellWindow {
                 const auto key=tf_shell::KeyboardEncoder::key_down(static_cast<uint32_t>(wp),mods);
                 if(key.handled) { self->send_input(key.bytes); return 0; }
             }
-            if (message == WM_TIMER && self->started_) { self->tick(); return 0; }
+            if (message == WM_TIMER && (self->started_ || self->closing_)) { self->tick(); return 0; }
             if (message == WM_ERASEBKGND) return 1;
             if (message == WM_PAINT) {
                 PAINTSTRUCT paint{}; HDC dc = BeginPaint(hwnd, &paint);
@@ -668,7 +664,7 @@ public:
         if (hwnd_) DestroyWindow(hwnd_);
         if (registered_ && --class_users_ == 0) UnregisterClassW(L"TermForgeShell", GetModuleHandleW(nullptr));
     }
-    void create(HWND parent = nullptr) {
+    void create(HWND parent = nullptr, tf_shell::ShellLaunch launch = {}) {
         require_ui_thread();
         require(!creation_thread_id_ || creation_thread_id_ == GetCurrentThreadId(), "shell windows require one UI thread");
         parent_ = parent;
@@ -686,14 +682,21 @@ public:
         creation_thread_id_=GetCurrentThreadId(); window_creation_serial_=++successful_window_creations_;
         ime_.attach(hwnd_);
         publish();
-        const auto cmd = system_cmd();
-        const auto chcp = cmd.substr(0, cmd.find_last_of(L'\\') + 1) + L"chcp.com";
-        session_.start(cmd, L"/d /s /q /k \"\"" + chcp + L"\" 65001>nul&prompt TF$G&cls\"",
-            [this](std::string_view bytes) { output_.push(bytes); });
+        if (launch.executable.empty()) launch = tf_shell::cmd();
+        wsl_ = launch.wsl;
+        command_prefix_ = launch.command_prefix;
+        require(SetTimer(hwnd_,1,16,nullptr) != 0, "shell timer failed");
+        try {
+            session_.start(launch.executable, launch.arguments,
+                [this](std::string_view bytes) { output_.push(bytes); }, launch.working_directory);
+        } catch (const std::exception& error) {
+            launch_error_ = error.what();
+            input_status(L"Launch failed: " + utf16(launch_error_.c_str()));
+            return;
+        }
         input_.start(); resize_.start(); started_ = true;
         if (!parent_) set_dpi(static_cast<int>(GetDpiForWindow(hwnd_)));
         RECT client{}; GetClientRect(hwnd_, &client); size_changed(client.right, client.bottom);
-        require(SetTimer(hwnd_,1,16,nullptr) != 0, "shell timer failed");
     }
     HWND handle() const { return hwnd_; }
     void enable_operation_observation() {
@@ -852,6 +855,8 @@ public:
         return selection_.copy(termforge::TextDocument(parser_.screen),4*1024*1024);
     }
     const std::wstring& status_text() const { return input_status_; }
+    bool launch_failed() const { return !launch_error_.empty(); }
+    const std::string& launch_error() const { return launch_error_; }
     HWND paste_prompt_handle() const { return paste_prompt_?paste_prompt_->handle():nullptr; }
     bool route_paste_message(MSG& message) { return paste_prompt_ && paste_prompt_->route(message); }
     void restore_input_focus() {
@@ -1000,7 +1005,7 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
+            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
             if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system" || mode=="ui-copy-context-system" || mode=="ui-actions-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
@@ -1013,7 +1018,7 @@ static int application(int argc, char** argv) {
         wchar_t desktop_name[256]{}; DWORD desktop_size=0;
         require(GetUserObjectInformationW(GetThreadDesktop(GetCurrentThreadId()),UOI_NAME,desktop_name,sizeof(desktop_name),&desktop_size)!=FALSE &&
             std::wstring_view(desktop_name).find(L"TermForgeShell-")==0,"shell test requires the runner-owned desktop");
-        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions") {
             Workspace window(image,mode); return window.run();
         }
         Result r;

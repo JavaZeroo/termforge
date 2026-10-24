@@ -18,7 +18,8 @@ class Workspace {
     std::unique_ptr<WorkspaceFont> ui_font_;
     std::vector<Tab> tabs_;
     std::vector<Tab> main_tabs_;
-    int main_active_ = -1;
+    int main_active_ = -1, split_index_ = -1;
+    bool split_active_ = false, split_right_focus_ = false;
     Group focused_ = Group::bottom, rename_group_ = Group::bottom;
     int active_ = -1, next_id_ = 1, stage_ = 0, collected_ = 0;
     bool closing_ = false, settings_failed_ = false;
@@ -86,7 +87,10 @@ class Workspace {
     }
     std::vector<Tab>& group_tabs(Group group) { return group==Group::main?main_tabs_:tabs_; }
     int& selection(Group group) { return group==Group::main?main_active_:active_; }
-    ShellWindow* selected(Group group) { const int index=selection(group); return index>=0?group_tabs(group)[index].shell.get():nullptr; }
+    ShellWindow* selected(Group group) {
+        const int index=group==Group::main && split_active_ && split_right_focus_?split_index_:selection(group);
+        return index>=0?group_tabs(group)[index].shell.get():nullptr;
+    }
     ShellWindow* active() { return selected(focused_); }
     size_t session_count() const { return tabs_.size()+main_tabs_.size(); }
     int tab_width() const { return std::min(140,width_/static_cast<int>(tabs_.size()+1)); }
@@ -98,7 +102,11 @@ class Workspace {
     }
     void note_focus(ShellWindow* shell) {
         for(const auto group:{Group::bottom,Group::main}) for(auto& tab:group_tabs(group))
-            if(tab.shell.get()==shell) { focused_=group; InvalidateRect(window_,nullptr,FALSE); return; }
+            if(tab.shell.get()==shell) {
+                focused_=group;
+                if(group==Group::main && split_active_) split_right_focus_=tab.shell.get()==main_tabs_[split_index_].shell.get();
+                InvalidateRect(window_,nullptr,FALSE); return;
+            }
     }
     Divider divider_at(int x, int y) const;
     void drag_to(int x, int y);
@@ -114,16 +122,40 @@ class Workspace {
         if (index<0 || index>=static_cast<int>(group_tabs(group).size())) return;
         end_rename(true);
         if(group==Group::main && state_.focus) { state_.focus=false; save_layout(); }
-        focused_=group; selection(group)=index; layout();
+        focused_=group;
+        if(group==Group::main && split_active_ && split_right_focus_) split_index_=index;
+        else selection(group)=index;
+        layout();
         if (!closing_) SetFocus(active()->handle());
     }
-    void add(Group group=Group::bottom) {
+    void add(Group group=Group::bottom, tf_shell::ShellLaunch launch={}) {
         if(workflow_) ++workflow_->attempted_creations;
         if (closing_ || session_count()>=8) return;
-        auto shell=std::make_unique<ShellWindow>("", ""); shell->set_dpi(dpi_); shell->create(window_);
+        const auto launch_id=launch.id;
+        auto shell=std::make_unique<ShellWindow>("", ""); shell->set_dpi(dpi_); shell->create(window_,std::move(launch));
         const int id=next_id_++;
         auto& tabs=group_tabs(group);
-        tabs.push_back({id,L"cmd "+std::to_wstring(id),std::move(shell)}); select(static_cast<int>(tabs.size())-1,group);
+        const auto title=launch_id.empty()?L"cmd "+std::to_wstring(id):launch_id;
+        tabs.push_back({id,title,std::move(shell)}); select(static_cast<int>(tabs.size())-1,group);
+    }
+    void split() {
+        if(closing_ || focused_!=Group::main || main_active_<0 || split_active_) return;
+        split_active_=true; split_right_focus_=true;
+        add(Group::main);
+    }
+    void zoom_split() {
+        if(split_index_<0) return;
+        split_active_=!split_active_;
+        if(split_active_ && main_active_==split_index_ && main_tabs_.size()>1)
+            main_active_=split_index_==0?1:0;
+        split_right_focus_=split_active_;
+        layout();
+        if(!closing_ && active()) SetFocus(active()->handle());
+    }
+    void focus_split(bool right) {
+        if(!split_active_) return;
+        split_right_focus_=right; focused_=Group::main;
+        layout(); SetFocus(active()->handle());
     }
     void close_all() {
         if (closing_) return;
@@ -165,10 +197,15 @@ class Workspace {
             InvalidateRect(window_,nullptr,FALSE);
         }
     }
-    bool shortcut(WPARAM key,bool ctrl,bool shift=false) {
+    bool shortcut(WPARAM key,bool ctrl,bool shift=false,bool alt=false) {
         if(closing_ || rename_) return false;
         if(key==VK_ESCAPE && dragging_!=Divider::none) { end_drag(false); return true; }
         if(key==VK_F2) { action(6); return true; }
+        if(alt && !ctrl && key==VK_OEM_MINUS) { split(); return true; }
+        if(alt && !ctrl && key=='Z') { zoom_split(); return true; }
+        if(alt && !ctrl && key=='X') { action(2); return true; }
+        if(alt && !ctrl && key==VK_LEFT) { focus_split(false); return true; }
+        if(alt && !ctrl && key==VK_RIGHT) { focus_split(true); return true; }
         if(ctrl && key=='T') { action(shift?8:1); return true; }
         if(ctrl && key=='W') { action(2); return true; }
         if(ctrl && (key==VK_OEM_PLUS || key==VK_ADD)) { action(9); return true; }
@@ -211,9 +248,19 @@ class Workspace {
         for(size_t i=0;i<main_tabs_.size();++i) {
             auto handle=main_tabs_[i].shell->handle();
             if(!handle) continue;
-            place(handle,main_terminal_,false);
-            main_tabs_[i].shell->sync_client_size();
-            ShowWindow(handle,!state_.focus && static_cast<int>(i)==main_active_?SW_SHOWNA:SW_HIDE);
+            RECT target=main_terminal_;
+            bool visible=!state_.focus && static_cast<int>(i)==main_active_;
+            if(split_active_ && split_index_>=0) {
+                const LONG middle=(main_terminal_.left+main_terminal_.right)/2;
+                target.right=middle;
+                if(static_cast<int>(i)==split_index_) target={middle,main_terminal_.top,main_terminal_.right,main_terminal_.bottom};
+                visible=!state_.focus && (static_cast<int>(i)==main_active_ || static_cast<int>(i)==split_index_);
+            }
+            if(visible) {
+                place(handle,target,false);
+                main_tabs_[i].shell->sync_client_size();
+            }
+            ShowWindow(handle,visible?SW_SHOWNA:SW_HIDE);
         }
         if(rename_) {
             auto& tabs=group_tabs(rename_group_);
@@ -356,6 +403,10 @@ class Workspace {
     void scenario_restore();
     void scenario_main();
     void scenario_dpi();
+    void scenario_monitors();
+    void scenario_shells();
+    void scenario_launch_failure();
+    void scenario_split();
     void scenario_history();
     void scenario_keyboard();
     void scenario_paste();
@@ -450,6 +501,10 @@ class Workspace {
                 else if(self->test_mode_=="ui-restore") self->scenario_restore();
                 else if(self->test_mode_=="ui-main") self->scenario_main();
                 else if(self->test_mode_=="ui-dpi") self->scenario_dpi();
+                else if(self->test_mode_=="ui-monitors") self->scenario_monitors();
+                else if(self->test_mode_=="ui-shells") self->scenario_shells();
+                else if(self->test_mode_=="ui-launch-failure") self->scenario_launch_failure();
+                else if(self->test_mode_=="ui-split") self->scenario_split();
                 else if(self->test_mode_=="ui-history") self->scenario_history();
                 else if(self->test_mode_=="ui-keyboard") self->scenario_keyboard();
                 else if(self->test_mode_=="ui-paste" || self->test_mode_=="ui-paste-system") self->scenario_paste();
@@ -527,7 +582,7 @@ public:
             if(paste_message) continue;
             if(edit_key(msg)) continue;
             const auto mods=ShellWindow::key_modifiers();
-            if(msg.message==WM_KEYDOWN && !mods.alt && !(active() && active()->composing()) && shortcut(msg.wParam,mods.control,mods.shift)) continue;
+            if(msg.message==WM_KEYDOWN && !(active() && active()->composing()) && shortcut(msg.wParam,mods.control,mods.shift,mods.alt)) continue;
             ShellWindow::dispatch_message(msg);
         }
         require(status==0,"workspace message loop failed"); require(failure_.empty(),failure_.c_str());
@@ -548,6 +603,22 @@ public:
         if(!image_.empty() && test_mode_=="ui-dpi") {
             require(stage_==100 && collected_==3,"workspace DPI scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\"ui-dpi\",\"dpi_and_zoom_verified\":true,\"sessions_closed\":3,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && test_mode_=="ui-monitors") {
+            require(stage_==100 && collected_==3,"workspace monitor scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\"ui-monitors\",\"real_monitor_transition\":true,\"sessions_closed\":3,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && test_mode_=="ui-shells") {
+            require(stage_==100 && collected_==4,"workspace local shells scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\"ui-shells\",\"shells_verified\":4,\"sessions_closed\":4,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && test_mode_=="ui-launch-failure") {
+            require(stage_==100 && collected_==3,"workspace launch failure scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\"ui-launch-failure\",\"launch_failure_visible\":true,\"recovered\":true,\"sessions_closed\":3,\"active_children_after\":0,\"presented_done\":null}\n";
+        }
+        if(!image_.empty() && test_mode_=="ui-split") {
+            require(stage_==100 && collected_==3,"workspace split scenario incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\"ui-split\",\"split_verified\":true,\"sessions_closed\":3,\"active_children_after\":0,\"presented_done\":null}\n";
         }
         if(!image_.empty() && test_mode_=="ui-history") {
             require(stage_==100 && collected_==3,"workspace history scenario incomplete");
@@ -574,7 +645,7 @@ public:
             require(stage_==100 && collected_==3,"workspace selection context incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":3,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && !tf_shell_test::is_product_ime_mode(utf16(test_mode_.c_str())) && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find" && test_mode_!="ui-find-stream" && test_mode_!="ui-selection-bytes" && test_mode_!="ui-copy-bytes-system" && test_mode_!="ui-selection-context" && test_mode_!="ui-copy-context-system" && test_mode_!="ui-actions" && test_mode_!="ui-actions-system") {
+        if(!image_.empty() && !tf_shell_test::is_product_ime_mode(utf16(test_mode_.c_str())) && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-monitors" && test_mode_!="ui-shells" && test_mode_!="ui-launch-failure" && test_mode_!="ui-split" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find" && test_mode_!="ui-find-stream" && test_mode_!="ui-selection-bytes" && test_mode_!="ui-copy-bytes-system" && test_mode_!="ui-selection-context" && test_mode_!="ui-copy-context-system" && test_mode_!="ui-actions" && test_mode_!="ui-actions-system") {
             require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
@@ -585,6 +656,10 @@ public:
 #include "workspace_scenarios.hpp"
 #include "workspace_main_scenario.hpp"
 #include "workspace_dpi_scenario.hpp"
+#include "workspace_monitor_scenario.hpp"
+#include "workspace_shells_scenario.hpp"
+#include "workspace_launch_failure_scenario.hpp"
+#include "workspace_split_scenario.hpp"
 #include "workspace_history_scenario.hpp"
 #include "workspace_keyboard_scenario.hpp"
 #include "workspace_paste_scenario.hpp"

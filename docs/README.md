@@ -8,11 +8,13 @@
 | 最终目标是什么，如何分阶段完成？ | [五个路标，远到近](PLAN.md) |
 | 下一阶段具体做哪些事情？ | [R2工作包与前置](PLAN.md)、[当前执行项](TRACKING.md) |
 | 已验收的基础文字交互合同是什么？ | [R1 基础文字交互](milestones/R1-local-text.md) |
+| 字体、网格和真实显示如何验收？ | [R2 字体与显示合同](milestones/R2-font-display.md) |
 | 哪项可开工，谁阻塞谁？ | [GitHub 跟踪索引](TRACKING.md) |
 | 已完成结论由什么支持？ | [证据索引](EVIDENCE.md) |
+| 外部核心候选如何构建和验证？ | [Alacritty 固定候选实验](../experiments/candidates/alacritty/README.md) |
 | 当前可下载什么版本？ | [Alpha 1 发布说明](releases/v0.1.0-alpha.1.md)、[发行验证](releases/v0.1.0-alpha.1-validation.json) |
 | 如何构建、运行与贡献？ | [贡献指南](../CONTRIBUTING.md)、[本地 shell](../experiments/shell/README.md) |
-| 逆向什么、如何测量？ | [研究工具](../research/README.md)、[UI 探针](../research/ui/README.md)、[性能协议](../benchmarks/PROTOCOL.md) |
+| 逆向什么、如何测量？ | [研究工具](../research/README.md)、[UI 探针](../research/ui/README.md)、[ConPTY 中断输入机制](research/conpty-ctrl-c-input.md)、[性能协议](../benchmarks/PROTOCOL.md) |
 | 为什么采用当前技术和限制？ | [ADR-0001](adr/0001-evidence-before-stack.md)、[ADR-0002](adr/0002-automation-first-investigation.md)、[ADR-0003](adr/0003-core-reference-and-reuse.md)、[ADR-0004](adr/0004-presentation-backend.md)、[ADR-0005](adr/0005-physical-row-resize.md) |
 | 哪些材料可以进入完整开源项目？ | [来源与公开边界](PROVENANCE.md)、[字体来源](../assets/fonts/README.md) |
 | 旧 M0/G1、批次审查和规格去哪里了？ | [历史归档及迁移表](archive/README.md) |

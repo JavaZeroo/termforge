@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "date": "2026-10-24",
+  "issue": 32,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "binary_sha256": "e2ec0d74e7c3060af922d0a0e729b232ea77d8dfd8c6ce1887b71c6afd207eb7",
+  "source_sha256": {
+    "experiments/shell/shell.cpp": "2f297785738e41c03ae1391326fbe0eef927a8f0acea98310468fe1cf87399e1",
+    "experiments/shell/workspace.hpp": "ad75aa263831fc72f38d3e6b63066e82c8018327862338af834079e8d56ac200",
+    "experiments/shell/workspace_interactions.hpp": "8582dca4d2906e075b4780be4678383b8ccd0fb6348e1d2f3a820c14776d833a",
+    "experiments/shell/workspace_split_scenario.hpp": "fc04870698b99659e52363ba4dd82aabd10132c79350fd4c46abda8071f166f7",
+    "experiments/shell/run.py": "9509b7946497ad35c3986a34563ce5e2e8c415d89178a208bc974a588dc15cf8",
+    "experiments/shell/test_shell.py": "52d178ad438686fad9821623f2bc47452e7044237136ac69f97cd176144222ef"
+  },
+  "main_split_rounds": {
+    "passed": 2,
+    "failed": 0,
+    "files": ["split-0.json", "split-1.json"],
+    "independent_left_right_output": true,
+    "alt_minus_creates_real_right_pane": true,
+    "alt_left_right_changes_focus": true,
+    "alt_z_hides_without_killing_and_restores": true,
+    "background_output_during_hidden": true,
+    "alt_x_closes_only_right": true,
+    "left_alive_after_right_close": true,
+    "sessions_closed_per_round": 3,
+    "job_active_after_each_round": 0,
+    "desktop_gone_after_each_round": true,
+    "final_frame_sha256": "fb0746b7ffbe672718ab3ff3427e99fe62dc934ccf5b046011a390f6ca944a97",
+    "split_frame_sha256": "540f93a153f980775007625a8c16a0be449fc92d2c26c7afa6f845511bcb5b07",
+    "split_frame": "split.bmp",
+    "frames_reviewed": true,
+    "presented_done": null
+  },
+  "related_checks": {
+    "main_and_bottom_sessions_focus_geometry_and_cleanup": "passed",
+    "local_shell_launch_working_directory_and_cleanup": "passed",
+    "launch_failure_is_visible_and_recoverable": "passed",
+    "real_monitor_round_trip_preserves_workspace": "passed",
+    "split_schema_and_visibility_negative_tests": "passed"
+  },
+  "limitations": [
+    "Only one left/right split in the main area; no nested or arbitrary split",
+    "No tab drag/reorder/search/color or split persistence",
+    "Non-input desktop and scripted messages are not physical input or compositor presentation evidence",
+    "Existing issue #36 keeps the full CTest suite red; focused passes do not replace it"
+  ]
+}

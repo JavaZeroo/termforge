@@ -59,7 +59,7 @@ public:
     ~Session() { close(); }
 
     void start(const std::wstring& executable, const std::wstring& arguments = L"--child",
-               std::function<void(std::string_view)> consume = {}) {
+               std::function<void(std::string_view)> consume = {}, const std::wstring& working_directory = {}) {
         Handle child_input, child_output;
         if (!CreatePipe(child_input.put(), input_.put(), nullptr, 0)) fail("CreatePipe(input)");
         if (!CreatePipe(output_.put(), child_output.put(), nullptr, 0)) fail("CreatePipe(output)");
@@ -114,7 +114,8 @@ public:
         PROCESS_INFORMATION info{};
         std::wstring command = L"\"" + executable + L"\" " + arguments;
         if (!CreateProcessW(executable.c_str(), command.data(), nullptr, nullptr, FALSE,
-                            EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED, nullptr, nullptr,
+                            EXTENDED_STARTUPINFO_PRESENT | CREATE_SUSPENDED, nullptr,
+                            working_directory.empty() ? nullptr : working_directory.c_str(),
                             &startup.StartupInfo, &info)) fail("CreateProcess");
         process_.reset(info.hProcess); Handle thread(info.hThread); pid = info.dwProcessId;
         if (!AssignProcessToJobObject(job_.get(), process_.get())) {
@@ -198,8 +199,9 @@ public:
                 Sleep(10);
             }
         }
+        const bool no_process = !process_.get();
         output_.reset(); process_.reset(); job_.reset();
-        cleanup_complete = child_signaled && !active_after && !forced_reader_cancel && !forced_process_cancel;
+        cleanup_complete = (no_process || child_signaled) && !active_after && !forced_reader_cancel && !forced_process_cancel;
     }
 };
 } // namespace tf_conpty

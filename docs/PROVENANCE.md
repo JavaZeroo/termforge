@@ -17,3 +17,5 @@
 - 差分测试依赖 `pyte 0.8.2`（LGPLv3）和 `wcwidth 0.2.13`（MIT），固定 wheel 哈希并保留原包许可；没有复制其源码或将其作为产品组件。版本、官方来源与适配边界见[差分说明](../experiments/differential/README.md)。原创项目许可证不替代这些依赖的许可证。
 
 - `experiments/core/unicode_width.hpp`：通过原创生成器从 Python 3.12.10 `unicodedata` 所带 Unicode 15.0.0 属性数据生成，含项目自己的宽度/拒绝策略。未复制 CPython 实现源码。Unicode 数据保留[官方许可](../experiments/core/UNICODE-LICENSE.txt)与归属，来源为 [Unicode](https://www.unicode.org/)；正常构建使用固定生成文件。此数据不归项目 MIT 许可覆盖。
+
+- 外部核心候选实验使用 `alacritty_terminal 0.26.0`（Apache-2.0），crate SHA-256 为 `bda177466b9524d59f1b12f0dd30b68696788e9992a7e959021c4a0ed96fcf59`；精确传递依赖及校验值由 `Cargo.lock` 固定。未 vendoring 上游源码，候选不进入当前产品包或默认 CMake 依赖。官方来源、许可边界和复现入口见[候选说明](../experiments/candidates/alacritty/README.md)。

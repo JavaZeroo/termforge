@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "candidate": "alacritty_terminal",
+  "version": "0.26.0",
+  "license": "Apache-2.0",
+  "crate_sha256": "bda177466b9524d59f1b12f0dd30b68696788e9992a7e959021c4a0ed96fcf59",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "trace_sha256": "d2c8ee3629165e0c8832c8f53ac8a96e038353e310ea6894a2017088dc509ffc",
+  "source_sha256": {
+    "Cargo.toml": "4c5cd85c6b1b3688b403bbaa9acb592f01ecf7586a9a5c023db2ecc06e68613f",
+    "Cargo.lock": "63ecc3c9b86937a59c565e8f1a8e7ce0246ff49f3d5863d8d8db5fdb08ffe5d6",
+    "src/main.rs": "bec49ade26fb867665fe60f51762a523f1e1ecdf505182a8993e4a7cd031296e",
+    "run.py": "682ab7b2b7724071fd63d1b1cfd14369e26126bdf4a5dfaf2389e0b5bfd74cd8"
+  },
+  "cases": [
+    {
+      "case": "ascii_unicode_fragmentation",
+      "passed": true,
+      "whole": {
+        "bytes": 20,
+        "rows": 3,
+        "columns": 8,
+        "history": 2,
+        "chunk_sizes": [
+          20
+        ],
+        "input_sha256": "5da9414d08215d41051d359ccc9e233d217bc34c3a066bc32bd36f26f54fd5bc",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 2,
+        "passed": true
+      },
+      "byte": {
+        "bytes": 20,
+        "rows": 3,
+        "columns": 8,
+        "history": 2,
+        "chunk_sizes": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "input_sha256": "5da9414d08215d41051d359ccc9e233d217bc34c3a066bc32bd36f26f54fd5bc",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 21,
+        "passed": true
+      }
+    },
+    {
+      "case": "alternate_query_history",
+      "passed": true,
+      "replies": [
+        "\u001b[3;5R"
+      ],
+      "report": {
+        "bytes": 34,
+        "rows": 3,
+        "columns": 8,
+        "history": 2,
+        "chunk_sizes": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "input_sha256": "d26191e7ad136a2bd7e9c38ea11b762f046d1262ba714eb07edc9a46d41bfcfc",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 35,
+        "passed": true
+      }
+    },
+    {
+      "case": "bounded_history",
+      "passed": true,
+      "report": {
+        "bytes": 13,
+        "rows": 3,
+        "columns": 8,
+        "history": 2,
+        "chunk_sizes": [
+          13
+        ],
+        "input_sha256": "2517aff26119c5df8106526c30b3e3d57b3877748cf64c366909f01721a22341",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 2,
+        "passed": true
+      }
+    }
+  ],
+  "passed": true,
+  "performance_measured": false,
+  "limitations": [
+    "Only default/ANSI-16 colors map exactly; other colors use -2",
+    "Space and empty cells share the upstream is_empty projection",
+    "Headless adapter evidence is not product TUI or platform acceptance"
+  ]
+}

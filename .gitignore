@@ -9,6 +9,7 @@ __pycache__/
 *.pyc
 .venv/
 node_modules/
+target/
 .env
 .env.*
 !.env.example

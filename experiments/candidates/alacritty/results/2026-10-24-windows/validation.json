@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "date": "2026-10-24",
+  "issue": 24,
+  "candidate": "alacritty_terminal",
+  "version": "0.26.0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "toolchain": "Rust/cargo 1.92.0",
+  "clean_target": "CARGO_TARGET_DIR pointed to a new local/candidate-alacritty-final-target directory",
+  "commands": [
+    "cargo build --release --locked",
+    "cargo test --locked",
+    "python experiments/candidates/alacritty/run.py --out local/candidate-alacritty-final-result",
+    "python -m unittest experiments.candidates.alacritty.test_candidate -v",
+    "cargo fmt -- --check",
+    "cargo metadata --locked --format-version 1"
+  ],
+  "results": {
+    "clean_release_build": "passed",
+    "rust_projection_tests": {"passed": 2, "failed": 0},
+    "headless_cases": {"passed": 3, "failed": 0},
+    "python_gate_tests": {"passed": 5, "failed": 0},
+    "rustfmt_check": "passed",
+    "locked_packages_including_adapter": 60,
+    "summary": "summary.json"
+  },
+  "ci": {
+    "workflow": ".github/workflows/core-candidate.yml",
+    "status": "not_run_on_uncommitted_workflow"
+  },
+  "r1_regression_boundary": {
+    "full_ctest": "37/38; shell suite failed before candidate changes",
+    "issue": 36,
+    "candidate_checks_do_not_replace_r1_system_acceptance": true
+  },
+  "limitations": [
+    "Local Windows headless evidence only; Ubuntu workflow has not run",
+    "No performance measurement or product core decision",
+    "No full common-trace differential, real application, product TUI or platform acceptance",
+    "Published summary and inputs are synthetic; no personal terminal data or proprietary assets"
+  ]
+}

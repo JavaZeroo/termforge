@@ -84,7 +84,8 @@ inline void Workspace::collect_child(ShellWindow* child) {
     for(const auto group:{Group::bottom,Group::main}) {
         auto& tabs=group_tabs(group);
         for(size_t i=0;i<tabs.size();++i) if(tabs[i].shell.get()==child) {
-            const bool removed_focused=group==focused_ && static_cast<int>(i)==selection(group);
+            const int focused_index=group==Group::main && split_active_ && split_right_focus_?split_index_:selection(group);
+            const bool removed_focused=group==focused_ && static_cast<int>(i)==focused_index;
             if(rename_id_==tabs[i].id) end_rename(false);
             try {
                 const Result result=child->collect();
@@ -94,10 +95,22 @@ inline void Workspace::collect_child(ShellWindow* child) {
                 try { workflow_collected(child,tabs[i].id); }
                 catch(const std::exception& error) { failure_=error.what(); }
             }
+            if(group==Group::main) {
+                if(static_cast<int>(i)<split_index_) --split_index_;
+                else if(static_cast<int>(i)==split_index_) { split_index_=-1; split_active_=false; split_right_focus_=false; }
+            }
             int& index=selection(group);
             if(static_cast<int>(i)<index) --index;
             tabs.erase(tabs.begin()+i); ++collected_;
             index=tabs.empty()?-1:std::clamp(index,0,static_cast<int>(tabs.size())-1);
+            if(group==Group::main && split_active_) {
+                if(split_index_<0 || split_index_>=static_cast<int>(tabs.size())) {
+                    split_index_=-1; split_active_=false; split_right_focus_=false;
+                } else if(main_active_==split_index_) {
+                    if(tabs.size()>1) main_active_=split_index_==0?1:0;
+                    else { split_index_=-1; split_active_=false; split_right_focus_=false; }
+                }
+            }
             if(!failure_.empty() && !closing_) close_all();
             else if(closing_ && session_count()==0) DestroyWindow(window_);
             else {

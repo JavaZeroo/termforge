@@ -11,4 +11,4 @@
 
 构建不访问网络。Windows `termforge_shell` 的构建步骤把本目录的字体、许可与本文复制到可执行文件旁的 `assets/fonts/`；分发可执行文件时须一并保留该目录。`WorkspaceFont` 从可执行文件目录解析路径，以 [`AddFontResourceExW(..., FR_PRIVATE, ...)`](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-addfontresourceexw)仅对本进程加载，释放 HFONT 后卸载。字体不存在、加载失败或 [`GetTextFaceW`](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-gettextfacew) 返回的实际 face 不是 `Roboto Mono` 时明确失败，不静默替换。
 
-本字体仅用于工作区 UI，使用 9pt 字号并随窗口 DPI 调整（96 DPI 下字符高度为 12 像素）。同名字体不证明与 WindTerm 所带版本的字形或像素完全一致；GDI 与 Qt 的字体选择、测量与栅格化也可能不同。终端 Renderer 继续使用独立的字体族和可缩放网格；本资源不提供 Nerd Font 或通用逐字形 fallback。工作区 DPI 更新已有受控回归，真实跨显示器切换仍待验收，详见[工作区说明](../../experiments/shell/README.md)。
+本字体仅用于工作区 UI，使用 9pt 字号并随窗口 DPI 调整。`LOGFONT.lfHeight` 请求的是 em 高度：96/120/144/192 DPI 分别为 12/15/18/24 像素；固定字体的实际 GDI `TEXTMETRIC.tmHeight` 行高分别为 16/20/24/32 像素，两者不得混用。同名字体不证明与 WindTerm 所带版本的字形或像素完全一致；GDI 与 Qt 的字体选择、测量与栅格化也可能不同。终端 Renderer 继续使用独立的字体族和可缩放网格；本资源不提供 Nerd Font 或通用逐字形 fallback。固定网格、受控 DPI 与真实跨屏的证据层级见[R2 字体/显示合同](../../docs/milestones/R2-font-display.md)和[工作区说明](../../experiments/shell/README.md)。

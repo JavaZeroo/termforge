@@ -59,6 +59,26 @@ def validate(row, mode):
                 row.get("presented_done", 1) is not None):
             raise ValueError("workspace DPI, zoom or cleanup gate failed")
         return
+    if mode == "ui-monitors":
+        if row != {"valid": True, "mode": mode, "real_monitor_transition": True,
+                   "sessions_closed": 3, "active_children_after": 0, "presented_done": None}:
+            raise ValueError("real monitor transition or cleanup gate failed")
+        return
+    if mode == "ui-shells":
+        if row != {"valid": True, "mode": mode, "shells_verified": 4,
+                   "sessions_closed": 4, "active_children_after": 0, "presented_done": None}:
+            raise ValueError("local shell launch or cleanup gate failed")
+        return
+    if mode == "ui-launch-failure":
+        if row != {"valid": True, "mode": mode, "launch_failure_visible": True, "recovered": True,
+                   "sessions_closed": 3, "active_children_after": 0, "presented_done": None}:
+            raise ValueError("launch failure presentation, recovery or cleanup gate failed")
+        return
+    if mode == "ui-split":
+        if row != {"valid": True, "mode": mode, "split_verified": True,
+                   "sessions_closed": 3, "active_children_after": 0, "presented_done": None}:
+            raise ValueError("main split or cleanup gate failed")
+        return
     if mode == "ui-main":
         if (row.get("valid") is not True or row.get("mode") != mode or
                 any(row.get(field) is not True for field in
@@ -103,6 +123,86 @@ def validate(row, mode):
             raise ValueError("incorrect state/submission timing")
     elif row["scripted_input_to_state_ms"] is not None or row["scripted_input_to_submit_ms"] is not None:
         raise ValueError("unobserved input endpoints must be null")
+
+
+def validate_local_shells(data):
+    if (not isinstance(data, dict) or data.get("schema") != "termforge-local-shells-v1" or
+            data.get("shells") != ["cmd", "powershell", "pwsh", "wsl-Ubuntu"] or
+            data.get("main_sessions") != 2 or data.get("bottom_sessions") != 2 or
+            not isinstance(data.get("working_directory"), str) or not data["working_directory"] or
+            data.get("normal_exit") is not True or data.get("presented_done", 1) is not None):
+        raise ValueError("local shell identity, directory or presentation evidence mismatch")
+
+
+def validate_launch_failure(data):
+    if (not isinstance(data, dict) or data.get("schema") != "termforge-launch-failure-v1" or
+            not isinstance(data.get("error"), str) or "CreateProcess" not in data["error"] or
+            data.get("recovered") is not True or data.get("sessions_closed") != 3 or
+            data.get("presented_done", 1) is not None):
+        raise ValueError("launch failure visibility, recovery or cleanup evidence mismatch")
+
+
+def validate_main_split(data):
+    if (not isinstance(data, dict) or data.get("schema") != "termforge-main-split-v1" or
+            any(data.get(field) is not True for field in
+                ("independent_output", "background_output", "restored", "right_closed", "left_alive")) or
+            data.get("sessions_closed") != 3 or data.get("presented_done", 1) is not None or
+            not isinstance(data.get("snapshots"), list) or len(data["snapshots"]) != 2 or
+            [row.get("phase") for row in data["snapshots"]] != ["active", "restored"]):
+        raise ValueError("main split behavior evidence mismatch")
+    for snapshot in data["snapshots"]:
+        if (snapshot.get("split_active") is not True or snapshot.get("right_focus") is not True or
+                snapshot.get("left_visible") is not True or snapshot.get("right_visible") is not True):
+            raise ValueError("main split visibility or focus mismatch")
+        left, right = snapshot.get("left_rect"), snapshot.get("right_rect")
+        if (not isinstance(left, list) or not isinstance(right, list) or len(left) != 4 or len(right) != 4 or
+                any(type(value) is not int for value in left + right) or
+                left[2] != right[0] or left[1] != right[1] or left[3] != right[3] or left[2] <= left[0]):
+            raise ValueError("main split physical rectangles mismatch")
+
+
+def validate_monitor_geometry(data):
+    phases = ("origin", "target", "restored")
+    if (not isinstance(data, dict) or data.get("schema") != "termforge-ui-monitors-v1" or
+            data.get("real_monitor_transition") is not True or
+            type(data.get("distinct_dpi")) is not bool or data.get("presented_done", 1) is not None or
+            not isinstance(data.get("monitors"), list) or len(data["monitors"]) != 2 or
+            not isinstance(data.get("snapshots"), list) or len(data["snapshots"]) != 3 or
+            [row.get("phase") for row in data["snapshots"]] != list(phases)):
+        raise ValueError("missing real monitor evidence or phases")
+    roles = [row.get("role") for row in data["monitors"]]
+    if roles != ["origin", "target"]:
+        raise ValueError("incorrect monitor roles")
+    for monitor in data["monitors"]:
+        for field in ("rect", "work"):
+            rect = monitor.get(field)
+            if (not isinstance(rect, list) or len(rect) != 4 or
+                    any(type(value) is not int for value in rect) or rect[2] <= rect[0] or rect[3] <= rect[1]):
+                raise ValueError("invalid monitor rectangle")
+        if type(monitor.get("dpi")) is not int or monitor["dpi"] <= 0:
+            raise ValueError("invalid monitor DPI")
+    if data["distinct_dpi"] != (data["monitors"][0]["dpi"] != data["monitors"][1]["dpi"]):
+        raise ValueError("monitor DPI distinction was fabricated")
+    for index, snapshot in enumerate(data["snapshots"]):
+        monitor = data["monitors"][0 if index != 1 else 1]
+        if snapshot.get("window_dpi") != monitor["dpi"] or snapshot.get("rename_focused") is not True:
+            raise ValueError("monitor window DPI or rename focus mismatch")
+        rect = snapshot.get("window_rect")
+        if not isinstance(rect, list) or len(rect) != 4 or any(type(value) is not int for value in rect):
+            raise ValueError("invalid monitor window rectangle")
+        center_x, center_y = (rect[0] + rect[2]) // 2, (rect[1] + rect[3]) // 2
+        bounds = monitor["rect"]
+        if not (bounds[0] <= center_x < bounds[2] and bounds[1] <= center_y < bounds[3]):
+            raise ValueError("window center is outside the claimed real monitor")
+        sessions = snapshot.get("sessions")
+        if not isinstance(sessions, list) or len(sessions) != 3:
+            raise ValueError("monitor session count mismatch")
+        for session in sessions:
+            if (session.get("display_dpi") != monitor["dpi"] or type(session.get("visible")) is not bool or
+                    not isinstance(session.get("grid"), list) or len(session["grid"]) != 2 or
+                    not isinstance(session.get("cell_pixels"), list) or len(session["cell_pixels"]) != 2 or
+                    any(type(value) is not int or value <= 0 for value in session["grid"] + session["cell_pixels"])):
+                raise ValueError("monitor session projection mismatch")
 
 
 def validate_main_geometry(data):
@@ -296,6 +396,14 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
                 validate_main_geometry(json.loads((out / "geometry.json").read_text(encoding="utf-8")))
             if mode == "ui-dpi":
                 validate_dpi_geometry(json.loads((out / "dpi.json").read_text(encoding="utf-8")))
+            if mode == "ui-monitors":
+                validate_monitor_geometry(json.loads((out / "monitors.json").read_text(encoding="utf-8")))
+            if mode == "ui-shells":
+                validate_local_shells(json.loads((out / "shells.json").read_text(encoding="utf-8")))
+            if mode == "ui-launch-failure":
+                validate_launch_failure(json.loads((out / "launch-failure.json").read_text(encoding="utf-8")))
+            if mode == "ui-split":
+                validate_main_split(json.loads((out / "split.json").read_text(encoding="utf-8")))
             if mode == "ui-history":
                 validate_history(json.loads((out / "history.json").read_text(encoding="utf-8")))
                 validate_native_scroll([json.loads(line) for line in (out / "native-scroll.jsonl").read_text(encoding="utf-8").splitlines()])
@@ -410,7 +518,9 @@ def main():
              "experiments/shell/runtime_observation.hpp", "experiments/shell/operation_observation.hpp", "experiments/shell/workflow_sessions_checks.py",
              "experiments/shell/workflow_resources.py", "experiments/shell/workflow_resource_phases.py", "benchmarks/tools/sample.py", "benchmarks/tools/summarize_resources.py",
              "experiments/shell/workspace_main_scenario.hpp", "assets/fonts/RobotoMono-Regular.ttf",
-             "experiments/shell/workspace_dpi_scenario.hpp",
+             "experiments/shell/workspace_dpi_scenario.hpp", "experiments/shell/workspace_monitor_scenario.hpp",
+             "experiments/shell/shell_launch.hpp", "experiments/shell/shell_launch.cpp", "experiments/shell/workspace_shells_scenario.hpp",
+             "experiments/shell/workspace_launch_failure_scenario.hpp", "experiments/shell/workspace_split_scenario.hpp",
              "experiments/shell/workspace_history_scenario.hpp", "experiments/shell/history_checks.py",
              "experiments/shell/native_scroll_gesture.hpp",
              "experiments/shell/workspace_keyboard_scenario.hpp", "experiments/shell/input_client.cpp",

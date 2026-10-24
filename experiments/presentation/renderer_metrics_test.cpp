@@ -1,4 +1,5 @@
 #include "render.hpp"
+#include "../shell/ui_font.hpp"
 #include <cmath>
 
 static void expect_rejected(const std::string& backend, int dpi, int zoom) {
@@ -6,6 +7,38 @@ static void expect_rejected(const std::string& backend, int dpi, int zoom) {
     try { Renderer renderer(backend, dpi, zoom); }
     catch (const std::runtime_error&) { rejected = true; }
     require(rejected, "invalid renderer settings accepted");
+}
+
+static void verify_missing_font() {
+    std::vector<wchar_t> module(32768);
+    const DWORD count = GetModuleFileNameW(nullptr, module.data(), static_cast<DWORD>(module.size()));
+    require(count && count < module.size(), "test executable path unavailable");
+    const auto directory = std::filesystem::current_path() /
+        (".renderer-font-missing-" + std::to_string(GetCurrentProcessId()));
+    require(std::filesystem::create_directory(directory), "font-missing fixture directory already exists");
+    struct Cleanup {
+        std::filesystem::path directory;
+        ~Cleanup() { std::error_code error; std::filesystem::remove_all(directory, error); }
+    } cleanup{directory};
+    const auto copy = directory / L"renderer_metrics_test.exe";
+    require(CopyFileW(std::wstring(module.data(), count).c_str(), copy.c_str(), TRUE),
+            "font-missing fixture copy failed");
+    std::wstring command = L"\"" + copy.native() + L"\" --expect-missing-font";
+    STARTUPINFOW startup{}; startup.cb = sizeof(startup);
+    PROCESS_INFORMATION process{};
+    require(CreateProcessW(copy.c_str(), command.data(), nullptr, nullptr, FALSE,
+                           CREATE_NO_WINDOW, nullptr, nullptr, &startup, &process),
+            "font-missing fixture launch failed");
+    const DWORD waited = WaitForSingleObject(process.hProcess, 10000);
+    if (waited != WAIT_OBJECT_0) {
+        TerminateProcess(process.hProcess, 1);
+        WaitForSingleObject(process.hProcess, 5000);
+    }
+    DWORD exit_code = MAXDWORD;
+    const BOOL queried = GetExitCodeProcess(process.hProcess, &exit_code);
+    CloseHandle(process.hThread); CloseHandle(process.hProcess);
+    require(waited == WAIT_OBJECT_0 && queried && exit_code == 42,
+            "missing bundled font was not rejected by an asset-free process");
 }
 
 static void verify_cursor(const Bitmap& with, const Bitmap& without,
@@ -51,9 +84,17 @@ static void scenario(const std::string& backend, int dpi, int zoom, float baseli
     }
     // Text layout audit widths stay in DIPs; monitor DPI changes pixel density,
     // while terminal zoom changes the requested font size itself.
-    require(std::abs(renderer.layout("M", false).width-baseline_width*zoom/100.0f) < 0.02f,
+    const auto& ascii = renderer.layout("M", false);
+    require(std::abs(ascii.width-baseline_width*zoom/100.0f) < 0.02f,
             "layout width did not retain DIP units");
-    require(renderer.layout("\xf4\x8f\xbf\xbf", false).missing > 0, "missing-glyph control failed");
+    require(ascii.faces == std::set<std::string>{"Consolas"}, "ASCII font identity changed");
+    require(renderer.layout("e\xcc\x81", false).faces == std::set<std::string>{"Consolas"},
+            "combining text did not retain the requested font");
+    const auto& fallback = renderer.layout("\xe4\xb8\xad", false);
+    require(fallback.missing == 0 && !fallback.faces.empty() && !fallback.faces.count("Consolas"),
+            "CJK fallback identity was not resolved");
+    const auto& missing = renderer.layout("\xf4\x8f\xbf\xbf", false);
+    require(missing.missing > 0 && !missing.faces.empty(), "missing-glyph control failed");
 
     termforge::Parser parser(4,24,0);
     parser.feed("ASCII e\xcc\x81 \xe4\xb8\xad\xe6\x96\x87\r\n\x1b[1;31;44mColor\x1b[0m\r\nCursor\r\nTail");
@@ -92,11 +133,49 @@ static void scenario(const std::string& backend, int dpi, int zoom, float baseli
         require(band_pixels.rgb(x,y) == color(colors[y/height],true), "rounded row background has gap or overlap");
 }
 
-int main() {
+int main(int argc, char** argv) {
     try {
+        if (argc == 2 && std::string(argv[1]) == "--expect-missing-font") {
+            try { WorkspaceFont font; }
+            catch (const std::runtime_error& error) {
+                return std::string(error.what()).find("UI font missing:") == 0 ? 42 : 1;
+            }
+            return 1;
+        }
+        require(argc == 1, "unexpected renderer metrics arguments");
+        verify_missing_font();
         for (const int dpi : {-1,0,47,769}) expect_rejected("dwrite", dpi, 100);
         for (const int zoom : {-1,0,49,201}) expect_rejected("gdi", 96, zoom);
         expect_rejected("invalid", 96, 100);
+        for (const int dpi : {47,769}) {
+            bool rejected = false;
+            try { WorkspaceFont font(dpi); }
+            catch (const std::runtime_error&) { rejected = true; }
+            require(rejected, "invalid workspace font DPI accepted");
+        }
+        for (const int dpi : {96,120,144,192}) {
+            WorkspaceFont font(dpi);
+            require(font.handle() && font.face() == L"Roboto Mono", "workspace font identity mismatch");
+            LOGFONTW logical{};
+            require(GetObjectW(font.handle(), sizeof(logical), &logical) == sizeof(logical),
+                    "workspace font logical metrics unavailable");
+            const int expected_height = MulDiv(9, dpi, 72);
+            require(logical.lfHeight == -expected_height, "workspace font DPI height mismatch");
+            const HDC dc = CreateCompatibleDC(nullptr);
+            require(dc != nullptr, "workspace font audit DC creation failed");
+            const HGDIOBJ previous = SelectObject(dc, font.handle());
+            wchar_t resolved[LF_FACESIZE]{};
+            TEXTMETRICW metrics{};
+            const bool audited = previous && previous != HGDI_ERROR &&
+                GetTextFaceW(dc, LF_FACESIZE, resolved) > 0 && GetTextMetricsW(dc, &metrics);
+            if (previous && previous != HGDI_ERROR) SelectObject(dc, previous);
+            DeleteDC(dc);
+            const int expected_line_height = MulDiv(expected_height, 4, 3);
+            if (!audited || std::wstring(resolved) != L"Roboto Mono" || metrics.tmHeight != expected_line_height)
+                throw std::runtime_error("workspace font resolved GDI metrics mismatch: dpi=" + std::to_string(dpi) +
+                    " em=" + std::to_string(expected_height) + " expected_line=" +
+                    std::to_string(expected_line_height) + " actual_line=" + std::to_string(metrics.tmHeight));
+        }
         Renderer baseline("dwrite", 96);
         require(baseline.zoom_percent() == 100 && baseline.cell_width() == 12 && baseline.cell_height() == 26,
                 "default renderer contract changed");

@@ -24,6 +24,7 @@ An independent, fully open-source terminal project targeting WindTerm 2.7.0 feat
 |---|---|
 | 已经做了什么、还缺什么 | [当前能力与目标矩阵](docs/FEATURES.md) |
 | 最终目标与五个路标（从远到近） | [总体计划](docs/PLAN.md) |
+| 官方发行平台、架构与声明的最低系统边界 | [2.7.0 平台范围台账](research/windterm-2.7.0-platform-scope.md) |
 | 下一路标的工作包与前置 | [R2 可靠本地终端](docs/PLAN.md#r2可靠本地终端持久化与可发布开发版) |
 | 已验收的基础文字交互合同 | [R1 基础文字交互](docs/milestones/R1-local-text.md) |
 | GitHub milestones、issues 和执行顺序 | [任务跟踪](docs/TRACKING.md) |

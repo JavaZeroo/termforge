@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "date": "2026-10-24",
+  "issue": 31,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "binary_sha256": "e140180a5da171a6a557fd3dad403e4046d2a2b1effe09826cedbb25e922c34f",
+  "source_sha256": {
+    "experiments/shell/shell.cpp": "93ba930baeca52f220e9c918856dc18763f38fcef723a7dcc3e616ad87d4dc4d",
+    "experiments/shell/workspace.hpp": "2445ede7492e23e9d8d65bfc4110268994ba2f1301455a0d4a628484feb56937",
+    "experiments/shell/workspace_monitor_scenario.hpp": "b2409405e10e49f4a0b9df8c4822e6cf96747f12388915780e2e52fe4771df22",
+    "experiments/shell/run.py": "2ab99185005baa9d8a311968dba8eb55f53358265ae6658feb9a2fcac192de71",
+    "experiments/shell/test_shell.py": "4dc4dd040ec92ae556c30e984bf5bb62de9ef21e04cd4318e5932a89ae01fbaa"
+  },
+  "real_monitor_round_trips": {
+    "passed": 2,
+    "failed": 0,
+    "files": ["monitors-0.json", "monitors-1.json"],
+    "real_monitor_transition": true,
+    "distinct_dpi": false,
+    "origin": {"rect": [0, 0, 2560, 1440], "dpi": 96},
+    "target": {"rect": [2560, -219, 3640, 1701], "dpi": 96},
+    "rename_focus_preserved": true,
+    "hidden_and_visible_session_grids_preserved": true,
+    "sessions_closed_per_round": 3,
+    "job_active_after_each_round": 0,
+    "desktop_gone_after_each_round": true,
+    "frame_sha256": [
+      "72ea59f5881e1aebbfa78a9b8df15ffdcd7f57b00b854f3b70cdfa1c978389aa",
+      "116fce7dc5dd6526af6968c460bccd0cc524538ebee1fe1b3f1530b447deb24a"
+    ],
+    "frames_reviewed": true,
+    "presented_done": null
+  },
+  "related_checks": {
+    "controlled_ui_dpi": "passed",
+    "renderer_metrics": "passed",
+    "layout_state": "passed",
+    "negative_monitor_schema_checks": "passed"
+  },
+  "limitations": [
+    "Both real monitors had effective DPI 96; different display scaling was not tested",
+    "Owned non-input desktop and scripted messages are not physical input or compositor presentation evidence",
+    "No full complex Unicode/IME or product GUI acceptance",
+    "Existing issue #36 keeps the full CTest suite red; these focused passes do not replace it"
+  ]
+}

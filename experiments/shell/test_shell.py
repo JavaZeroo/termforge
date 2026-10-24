@@ -1,5 +1,6 @@
 """Real shell messages/output/frame/lifecycle regression; all windows are owned."""
 import copy
+import ctypes
 import json
 import os
 from pathlib import Path
@@ -10,7 +11,9 @@ import unittest
 from unittest import mock
 
 from experiments.build_paths import ROOT, binary
-from experiments.shell.run import execute, validate, validate_main_geometry, validate_dpi_geometry
+from experiments.shell.run import (execute, validate, validate_main_geometry, validate_dpi_geometry,
+                                   validate_monitor_geometry, validate_local_shells, validate_launch_failure,
+                                   validate_main_split)
 from experiments.shell.history_checks import validate_history, validate_native_scroll
 from experiments.shell.clipboard_checks import require_hosted_clipboard, validate_clipboard_workflow
 from experiments.shell.selection_checks import validate_selection, validate_selection_workflow, _validate_copy_popup, _validate_copy_contention
@@ -434,6 +437,91 @@ class ShellTests(unittest.TestCase):
             broken["snapshots"].pop()
             with self.assertRaises(ValueError):
                 validate_dpi_geometry(broken)
+
+    @unittest.skipUnless(os.name == "nt" and ctypes.windll.user32.GetSystemMetrics(80) > 1,
+                         "real multi-monitor transition requires at least two monitors")
+    def test_real_monitor_round_trip_preserves_workspace(self):
+        for repeat in range(2):
+            out = self.out / f"monitors-{repeat}"
+            row = execute(self.exe, "ui-monitors", out)["result"]
+            broken = copy.deepcopy(row)
+            broken["real_monitor_transition"] = False
+            with self.assertRaises(ValueError):
+                validate(broken, "ui-monitors")
+            geometry = json.loads((out / "monitors.json").read_text(encoding="utf-8"))
+            for field, wrong in (("real_monitor_transition", False), ("distinct_dpi", "unknown"),
+                                 ("presented_done", 1)):
+                broken = copy.deepcopy(geometry)
+                broken[field] = wrong
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate_monitor_geometry(broken)
+            broken = copy.deepcopy(geometry)
+            broken["snapshots"][1]["window_dpi"] = 0
+            with self.assertRaises(ValueError):
+                validate_monitor_geometry(broken)
+            broken = copy.deepcopy(geometry)
+            broken["snapshots"][1]["window_rect"] = [0, 0, 0, 0]
+            with self.assertRaises(ValueError):
+                validate_monitor_geometry(broken)
+            broken = copy.deepcopy(geometry)
+            broken["snapshots"][0]["sessions"][0]["visible"] = "unknown"
+            with self.assertRaises(ValueError):
+                validate_monitor_geometry(broken)
+
+    def test_local_shell_launch_working_directory_and_cleanup(self):
+        for repeat in range(2):
+            out = self.out / f"shells-{repeat}"
+            row = execute(self.exe, "ui-shells", out)["result"]
+            broken = copy.deepcopy(row)
+            broken["shells_verified"] = 3
+            with self.assertRaises(ValueError):
+                validate(broken, "ui-shells")
+            evidence = json.loads((out / "shells.json").read_text(encoding="utf-8"))
+            for field, wrong in (("shells", ["cmd"]), ("main_sessions", 1), ("working_directory", ""),
+                                 ("normal_exit", False)):
+                broken = copy.deepcopy(evidence)
+                broken[field] = wrong
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate_local_shells(broken)
+
+    def test_launch_failure_is_visible_and_recoverable(self):
+        for repeat in range(2):
+            out = self.out / f"launch-failure-{repeat}"
+            row = execute(self.exe, "ui-launch-failure", out)["result"]
+            broken = copy.deepcopy(row)
+            broken["recovered"] = False
+            with self.assertRaises(ValueError):
+                validate(broken, "ui-launch-failure")
+            evidence = json.loads((out / "launch-failure.json").read_text(encoding="utf-8"))
+            for field, wrong in (("error", "unknown"), ("recovered", False), ("sessions_closed", 1)):
+                broken = copy.deepcopy(evidence)
+                broken[field] = wrong
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate_launch_failure(broken)
+
+    def test_main_split_background_restore_close_and_focus(self):
+        for repeat in range(2):
+            out = self.out / f"split-{repeat}"
+            row = execute(self.exe, "ui-split", out)["result"]
+            broken = copy.deepcopy(row)
+            broken["split_verified"] = False
+            with self.assertRaises(ValueError):
+                validate(broken, "ui-split")
+            evidence = json.loads((out / "split.json").read_text(encoding="utf-8"))
+            for field, wrong in (("independent_output", False), ("background_output", False),
+                                 ("restored", False), ("right_closed", False), ("left_alive", False)):
+                broken = copy.deepcopy(evidence)
+                broken[field] = wrong
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate_main_split(broken)
+            broken = copy.deepcopy(evidence)
+            broken["snapshots"][0]["right_visible"] = False
+            with self.assertRaises(ValueError):
+                validate_main_split(broken)
+            broken = copy.deepcopy(evidence)
+            broken["snapshots"][0]["right_rect"][0] -= 1
+            with self.assertRaises(ValueError):
+                validate_main_split(broken)
 
 
 class SelectionCopyPopupSchemaTests(unittest.TestCase):

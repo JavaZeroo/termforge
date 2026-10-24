@@ -1,0 +1,59 @@
+name: External core candidate
+
+on:
+  push:
+    paths:
+      - 'experiments/candidates/alacritty/**'
+      - '.github/workflows/core-candidate.yml'
+  pull_request:
+    paths:
+      - 'experiments/candidates/alacritty/**'
+      - '.github/workflows/core-candidate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  alacritty-headless:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2025
+            binary: experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe
+          - os: ubuntu-24.04
+            binary: experiments/candidates/alacritty/target/release/termforge-alacritty-trace
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      PYTHONUTF8: '1'
+      TERMFORGE_ALACRITTY_TRACE: ${{ github.workspace }}/${{ matrix.binary }}
+      TERMFORGE_TEST_ARTIFACTS: ${{ github.workspace }}/build/test-artifacts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Select fixed Rust toolchain
+        run: rustup default 1.92.0
+      - name: Build locked candidate
+        working-directory: experiments/candidates/alacritty
+        run: cargo build --release --locked
+      - name: Test Rust projection
+        working-directory: experiments/candidates/alacritty
+        run: cargo test --locked
+      - name: Run headless integration checks
+        run: python experiments/candidates/alacritty/run.py --out build/test-artifacts/candidate-alacritty-cli
+      - name: Test runner and failure gates
+        run: python -m unittest experiments.candidates.alacritty.test_candidate -v
+      - name: Preserve synthetic candidate evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: candidate-alacritty-${{ matrix.os }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            build/test-artifacts/candidate-alacritty-cli/
+            build/test-artifacts/candidate-alacritty/

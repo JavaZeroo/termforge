@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "date": "2026-10-24",
+  "issue": 32,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "binary_sha256": "796d14b5d0b49b56939790f8ddee1bd5c897555ab1e06f3a3d2d9e08fd546d5b",
+  "source_sha256": {
+    "CMakeLists.txt": "a1238e31a9c9e2668833d4a87072a8cc82a764c8b8182e5d058a7e201bf046ca",
+    "experiments/conpty/session.hpp": "f143a858df22302a2bc4a794263ff7769f4d0cfd9537307d916feb8ad638c6b6",
+    "experiments/shell/shell.cpp": "58c440346bd093f87841416a44d9e06d44978c990b71d844eef82f15d7b0b4c9",
+    "experiments/shell/shell_launch.hpp": "1b57406ec1987b91b99e15cf7d02720a1a8cc91da4a334fdfc051fb1a3427c67",
+    "experiments/shell/shell_launch.cpp": "71c3c6da7c7e05b910ea05a2c37e28d6abc2bcf1706601397535a3edff2578fd",
+    "experiments/shell/shell_launch_test.cpp": "aad26853fc968b2373d20c064f4da21149e056452627ab77145b2998cb52838f",
+    "experiments/shell/workspace.hpp": "42d1f9e0ce5f9527e43616560ebfd20d4648cba90e6861280655410f733d832e",
+    "experiments/shell/workspace_shells_scenario.hpp": "d61ca96b928c17634c9aebe7adb6a67f6e2c6c0b5ea2e9e74e3e1666418759f7",
+    "experiments/shell/workspace_launch_failure_scenario.hpp": "124b4fc337466b260c847f94f2e76e8c65a641b16fdcacfce5a60804c2949797",
+    "experiments/shell/run.py": "51a64422c6a35eee3bd284106fec3a8f076fd1abb0241ec56c9cee1d7c5043e6",
+    "experiments/shell/test_shell.py": "eca3051599fc0623b95b3b3cffd31e0d13df2acbd5377f95c4c8d2bb76775338"
+  },
+  "normal_exit_rounds": {
+    "passed": 2,
+    "failed": 0,
+    "files": ["shells-0.json", "shells-1.json"],
+    "shells_per_round": ["cmd", "powershell", "pwsh", "wsl-Ubuntu"],
+    "working_directory_and_arguments_verified_inside_each_shell": true,
+    "actual_conpty_dimensions_verified": true,
+    "normal_exit_per_round": 4,
+    "other_sessions_not_closed_by_exit": true,
+    "job_active_after_each_round": 0,
+    "desktop_gone_after_each_round": true,
+    "frame_sha256": [
+      "04f15cea0815ee9d8ad04d045690bda613053a509d64003e23c451c52a8f376a",
+      "63dcc9901997eda5d48b64229f624a3860e21c4a36ebcea6068b1474837a7913"
+    ],
+    "frames_reviewed": true,
+    "normal_exit": true,
+    "presented_done": null
+  },
+  "launch_failure_recovery_rounds": {
+    "passed": 2,
+    "failed": 0,
+    "files": ["launch-failure-0.json", "launch-failure-1.json"],
+    "visible_create_process_error": "CreateProcess: 2",
+    "failed_session_close_does_not_close_existing_cmd": true,
+    "cmd_recovery_succeeded": true,
+    "sessions_closed_per_round": 3,
+    "job_active_after_each_round": 0,
+    "desktop_gone_after_each_round": true,
+    "frame_sha256": "fcdddb1c53f881eafeaf9152f4a7d3ccade84e714a0f63ee39861d20cbab0105",
+    "frames_reviewed": true,
+    "presented_done": null
+  },
+  "related_checks": {
+    "shell_launch_factory_and_negative_tests": "passed",
+    "main_and_bottom_sessions_focus_geometry_and_cleanup": "passed",
+    "normal_exit_schema_and_launch_failure_negative_tests": "passed"
+  },
+  "limitations": [
+    "Only the explicitly named shells and isolated directory are covered",
+    "Generic split/reorder, arbitrary profile/arguments, administrator shell and SSH remain open",
+    "Launch errors before process creation are visible; all possible runtime error dialogs are not claimed",
+    "Existing issue #36 keeps the full CTest suite red; focused passes do not replace it"
+  ]
+}
