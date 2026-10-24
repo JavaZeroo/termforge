@@ -8,7 +8,9 @@ An independent, fully open-source terminal project targeting WindTerm 2.7.0 feat
 
 ## 开始使用
 
-按照[贡献与构建指南](CONTRIBUTING.md)构建后，Windows / Visual Studio 入口为 `build/bin/Release/termforge_shell.exe`；分发时保留旁边的 `assets/fonts`。
+下载首个 [Windows x64 Alpha 预发布包](https://github.com/JavaZeroo/termforge/releases/tag/v0.1.0-alpha.1)：完整解压 `TermForge-v0.1.0-alpha.1-windows-x64.zip` 后双击 `termforge_shell.exe`，保留同目录的 `shell_clipboard_reader.exe` 和 `assets/fonts/`。运行不需要 Python、CMake 或 Visual C++ Redistributable；包内附版本、源码身份和文件哈希，发布页另附 `SHA256SUMS.txt`。
+
+这是未签名的免安装体验包，尚未达到 R2 日常开发版。已验环境限 Windows 11 本机与 Windows Server 2025 CI；不据此声明 Windows 10/Server 2022 支持。布局仍保存到 `%LOCALAPPDATA%\TermForge\workspace-v1.layout`，并非全数据便携模式。具体边界见[发布说明](docs/releases/v0.1.0-alpha.1.md)。也可按[贡献与构建指南](CONTRIBUTING.md)从源码构建，Visual Studio 入口为 `build/bin/Release/termforge_shell.exe`。
 
 - `Ctrl+Shift+T` 新建主区会话，`Ctrl+T` 新建底部会话。
 - `F2` 重命名当前区域标签，`F11` 扩大底部 Shell；五条分隔线可拖动。

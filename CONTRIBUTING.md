@@ -1,8 +1,8 @@
 # 贡献指南
 
-项目当前优先推进 R1 基础文字交互，以及与其并行的自动取证和性能工具工作。
+R1 基础文字交互已按限定合同验收，当前优先进入 R2 可靠本地终端准备，并持续推进自动取证和性能工具。
 
-开始前阅读[总体计划](docs/PLAN.md)、[当前能力](docs/FEATURES.md)和[任务跟踪](docs/TRACKING.md)。近期合同见 [R1](docs/milestones/R1-local-text.md)；先核对 issue 的真实阻塞和工作树，再选取范围明确的任务。PR 说明问题、最终行为、验证方法和限制，并更新对应能力行。大型依赖或技术栈变更需要记录 ADR 和实验依据。
+开始前阅读[总体计划](docs/PLAN.md)、[当前能力](docs/FEATURES.md)和[任务跟踪](docs/TRACKING.md)。下一路标见 [R2](docs/PLAN.md#r2可靠本地终端持久化与可发布开发版)，已验基础合同见 [R1](docs/milestones/R1-local-text.md)；先核对 issue 的真实阻塞和工作树，再选取范围明确的任务。PR 说明问题、最终行为、验证方法和限制，并更新对应能力行。大型依赖或技术栈变更需要记录 ADR 和实验依据。
 
 ## 性能结果
 
@@ -44,3 +44,22 @@ python -m experiments.core.run --fixture unicode --out local/experiments/core-un
 [GitHub Actions](.github/workflows/build.yml) 在干净检出上构建并执行相同检查及两套完整回放。Windows 剪贴板/窗口合成场景保留成功或失败产物；其余失败产物限于本次 CTest/CMake 日志和 `build/test-artifacts` 内的合成用例结果。主构建不上传仓库 `local/`、WindTerm、个人终端会话或完整工作目录。[R1 参考探针](.github/workflows/r1-reference.yml)在相关探针文件进入 main 后自动运行，也保留手动入口；[IME 工作流](.github/workflows/r1-ime.yml)的自动入口只做有界只读盘点，语言准备与真实输入须显式选择 `verify`。两者仅上传白名单事实和自有探针记录。测试可通过 `TERMFORGE_TEST_ARTIFACTS` 指定合成记录目录。CI 的运行时间用于回归诊断，不是受控性能基准。
 
 Server 2022 的 ConPTY 稳态句柄增长尚未解决，未列入已验收平台。它保留为[按需兼容性探针](.github/workflows/conpty-compat.yml)，运行同样严格的断言，失败仍报告失败；[原因与证据](docs/research/conpty-platform-check-2026-10-22.md)独立保留，不能把现代 Windows 主 CI 通过解释为旧系统也通过。
+
+## Windows Alpha 构建与打包
+
+首个 Alpha 是 R1 原型的 Windows x64 免安装体验包，不代表 R2 开发版验收。正式打包使用独立构建目录、Release 和静态 MSVC 运行库 `/MT`，不要求用户安装 Visual C++ Redistributable。Python、CMake 和编译器仅用于构建/验证，不是运行包依赖。
+
+以下命令从仓库根目录运行；先安装上文测试依赖，`local/alpha-smoke-new` 必须不存在：
+
+```powershell
+cmake -S . -B build-alpha -A x64 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+cmake --build build-alpha --config Release --parallel 2
+ctest --test-dir build-alpha -C Release --output-on-failure
+python tools/package_alpha.py --bin-dir build-alpha/bin/Release --out-dir dist --version 0.1.0-alpha.1
+Expand-Archive -LiteralPath dist/TermForge-v0.1.0-alpha.1-windows-x64.zip -DestinationPath local/alpha-unpacked-new
+python tools/alpha_smoke.py --bundle local/alpha-unpacked-new/TermForge-v0.1.0-alpha.1-windows-x64 --test-bin build-alpha/bin/Release --out local/alpha-smoke-new
+```
+
+ZIP 包含 `termforge_shell.exe`、`shell_clipboard_reader.exe`、三个 `assets/fonts` 文件、`LICENSE`、`README.txt` 和 `build-info.json`；`SHA256SUMS.txt` 作为单独发布资产。保留资源许可和原始字体字节；打包清单不包括测试二进制或个人配置。包内身份与哈希用于核对构建输入和文件，不能单独证明可复现的逐字节二进制构建。
+
+[Alpha 工作流](.github/workflows/alpha-release.yml)从干净源码构建、验证并保留待发布产物；上传 Actions artifact 不等于发布 GitHub release。审核产物和验证证据后，再以 `v0.1.0-alpha.1` 创建 GitHub prerelease。此包未签名，已验环境限 Windows 11 本机和 Windows Server 2025 CI；最低系统版本与其他 Windows 版本仍须单独验收。布局写入 `%LOCALAPPDATA%\TermForge\workspace-v1.layout`，所以免安装不代表所有数据都在解压目录。

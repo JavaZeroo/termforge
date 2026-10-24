@@ -1,0 +1,250 @@
+name: Build and verify Windows Alpha package
+
+# Explicit release-candidate verification on a disposable hosted VM. This job
+# never publishes a release or creates a tag; reviewed artifacts are published
+# separately after the exact ZIP and its evidence have been audited.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Alpha version without the leading v
+        type: string
+        required: true
+        default: 0.1.0-alpha.1
+
+permissions:
+  contents: read
+
+jobs:
+  windows-alpha:
+    if: github.repository == 'JavaZeroo/termforge'
+    runs-on: windows-2025
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      PYTHONUTF8: '1'
+      ALPHA_VERSION: ${{ inputs.version }}
+      TERMFORGE_BIN_DIR: ${{ github.workspace }}/build-alpha/bin/Release
+      TERMFORGE_TEST_ARTIFACTS: ${{ github.workspace }}/local/alpha/test-artifacts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Validate Alpha version
+        run: |
+          if ($env:ALPHA_VERSION -cnotmatch '\A(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-alpha\.[1-9][0-9]*\z') {
+            throw 'Expected an Alpha SemVer without the leading v.'
+          }
+      - name: Install declared test dependencies
+        timeout-minutes: 3
+        run: |
+          python -m pip install -r benchmarks/requirements.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m pip install --require-hashes -r experiments/differential/requirements.txt
+      - name: Check packaging, hosted guards and evidence policies
+        id: policy
+        timeout-minutes: 3
+        run: >-
+          python -m unittest tools.test_package_alpha
+          research.ime.test_hosted_inventory research.ime.test_prepare_hosted
+          research.ime.test_product_ime research.ime.test_workflow_system
+          research.ime.test_workflow_system_runner.WorkflowSystemRunnerPolicyTests -v
+      - name: Configure x64 Release with static C++ runtime
+        timeout-minutes: 3
+        run: cmake -S . -B build-alpha -A x64 -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+      - name: Build release candidate and test helpers
+        timeout-minutes: 10
+        run: cmake --build build-alpha --config Release --parallel 2
+      - name: Require complete CTest including actual system clipboard
+        id: ctest
+        timeout-minutes: 20
+        env:
+          TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD: '1'
+        run: ctest --test-dir build-alpha -C Release --output-on-failure --output-junit test-results.xml
+      - name: Full ASCII state replay
+        id: ascii
+        timeout-minutes: 3
+        run: python -m experiments.core.run --out local/alpha/replay-ascii
+      - name: Full Unicode state replay
+        id: unicode
+        timeout-minutes: 3
+        run: python -m experiments.core.run --fixture unicode --out local/alpha/replay-unicode
+      - name: Package exact distributable allowlist
+        id: package
+        timeout-minutes: 2
+        run: >-
+          python tools/package_alpha.py --bin-dir build-alpha/bin/Release
+          --out-dir dist --version "$env:ALPHA_VERSION"
+      - name: Extract the exact ZIP into a path with spaces and Chinese characters
+        timeout-minutes: 2
+        run: |
+          $stem = "TermForge-v$env:ALPHA_VERSION-windows-x64"
+          $destination = Join-Path $env:GITHUB_WORKSPACE 'local/alpha/Extracted Alpha 中文'
+          Expand-Archive -LiteralPath (Join-Path $env:GITHUB_WORKSPACE "dist/$stem.zip") -DestinationPath $destination
+          if (-not (Test-Path -LiteralPath (Join-Path $destination $stem) -PathType Container)) {
+            throw 'The expected exact ZIP root is missing.'
+          }
+      - name: Require exact-bundle normal entry, resize, close and workspace smoke
+        id: smoke
+        timeout-minutes: 6
+        run: |
+          $stem = "TermForge-v$env:ALPHA_VERSION-windows-x64"
+          $bundle = Join-Path $env:GITHUB_WORKSPACE "local/alpha/Extracted Alpha 中文/$stem"
+          python tools/alpha_smoke.py --bundle $bundle --test-bin build-alpha/bin/Release --out local/alpha/smoke
+      - name: Read-only bounded hosted IME inventory
+        timeout-minutes: 4
+        run: python -m research.ime.inventory_hosted --out local/alpha/hosted-ime/inventory --query-timeout 60
+      - name: Activate existing fixed Microsoft Pinyin in disposable hosted VM
+        timeout-minutes: 10
+        run: >-
+          & "$env:SystemRoot/System32/WindowsPowerShell/v1.0/powershell.exe"
+          -NoProfile -NonInteractive -ExecutionPolicy Bypass
+          -File ./research/ime/prepare_hosted.ps1
+          -Out "$env:GITHUB_WORKSPACE/local/alpha/hosted-ime/environment"
+      - name: Require real composition, candidate position, commit and cancel
+        id: probe
+        timeout-minutes: 2
+        run: >-
+          python research/ime/run_probe.py
+          --exe build-alpha/bin/Release/termforge_ime_probe.exe
+          --mode hosted --timeout 55 --out local/alpha/hosted-ime/probe
+      - name: Require five real product IME workflows and owned cleanup
+        id: ime
+        timeout-minutes: 6
+        run: >-
+          python -m research.ime.product_runner
+          --launcher build-alpha/bin/Release/shell_test_launcher.exe
+          --timeout 60 --out local/alpha/hosted-ime/product
+      - name: Require two fresh real system workflow and resource rounds
+        id: workflow
+        timeout-minutes: 4
+        run: >-
+          python -m research.ime.workflow_system_runner
+          --launcher build-alpha/bin/Release/shell_test_launcher.exe
+          --out local/alpha/hosted-ime/workflow-system
+      - name: Write bounded release verification summary
+        if: always()
+        env:
+          POLICY_OUTCOME: ${{ steps.policy.outcome }}
+          CTEST_OUTCOME: ${{ steps.ctest.outcome }}
+          ASCII_OUTCOME: ${{ steps.ascii.outcome }}
+          UNICODE_OUTCOME: ${{ steps.unicode.outcome }}
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
+          PROBE_OUTCOME: ${{ steps.probe.outcome }}
+          IME_OUTCOME: ${{ steps.ime.outcome }}
+          WORKFLOW_OUTCOME: ${{ steps.workflow.outcome }}
+        run: |
+          @'
+          import json, os, pathlib, re, xml.etree.ElementTree as ET
+          allowed = {'success', 'failure', 'cancelled', 'skipped', ''}
+          names = ('policy', 'ctest', 'ascii', 'unicode', 'package', 'smoke', 'probe', 'ime', 'workflow')
+          gates = {name: os.environ[name.upper() + '_OUTCOME'] for name in names}
+          if any(value not in allowed for value in gates.values()):
+              raise ValueError('unexpected step outcome')
+          commit = os.environ['GITHUB_SHA']
+          if not re.fullmatch('[0-9a-f]{40}', commit):
+              raise ValueError('unexpected source identity')
+          counts = None
+          xml = pathlib.Path('build-alpha/test-results.xml')
+          if xml.is_file():
+              root = ET.parse(xml).getroot()
+              if root.tag != 'testsuite':
+                  raise ValueError('unexpected CTest JUnit root')
+              counts = {name: int(root.attrib.get(name, 0)) for name in ('tests', 'failures', 'errors', 'skipped')}
+              if any(value < 0 for value in counts.values()):
+                  raise ValueError('negative CTest count')
+          if gates['ctest'] == 'success' and (counts is None or counts['tests'] == 0 or counts['failures'] or counts['errors']):
+              raise ValueError('successful CTest step has no passing test report')
+          summary = {'schema': 'termforge-alpha-release-verification-v1', 'source_commit': commit,
+                     'runner': 'windows-2025', 'architecture': 'x64', 'configuration': 'Release',
+                     'cxx_runtime': 'static', 'gates': gates, 'ctest_counts': counts,
+                     'ctest_count_scope': 'CTest registrations; internal framework skips are not counted',
+                     'internal_framework_skips': None,
+                     'performance_equivalence_verified': False, 'presented_done': None}
+          out = pathlib.Path('local/alpha/test-summary.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(summary, indent=2) + '\n', encoding='utf-8')
+          '@ | python -
+      - name: Preserve verified release candidate and public package evidence
+        if: success()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: termforge-alpha-windows-x64
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            dist/TermForge-v*-windows-x64.zip
+            dist/SHA256SUMS.txt
+            dist/build-info.json
+            local/alpha/smoke/validation.json
+            local/alpha/test-summary.json
+      - name: Preserve bounded public package diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: termforge-alpha-public-failure
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            local/alpha/smoke/validation.json
+            local/alpha/test-summary.json
+      - name: Preserve explicit system workflow evidence allowlist
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: alpha-workflow-system-windows-2025
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            local/alpha/hosted-ime/workflow-system/result.public.json
+            local/alpha/hosted-ime/workflow-system/source-manifest.json
+            local/alpha/hosted-ime/workflow-system/binary-manifest.json
+            local/alpha/hosted-ime/workflow-system/case-*/result.public.json
+            local/alpha/hosted-ime/workflow-system/case-*/public/stdout.jsonl
+            local/alpha/hosted-ime/workflow-system/case-*/public/stderr.txt
+            local/alpha/hosted-ime/workflow-system/case-*/sessions.json
+            local/alpha/hosted-ime/workflow-system/case-*/resource-phases.jsonl
+            local/alpha/hosted-ime/workflow-system/case-*/resource-observations.jsonl
+            local/alpha/hosted-ime/workflow-system/case-*/resource-summary.json
+            local/alpha/hosted-ime/workflow-system/case-*/workflow-system.json
+            local/alpha/hosted-ime/workflow-system/case-*/workflow-system-progress.jsonl
+            local/alpha/hosted-ime/workflow-system/case-*/frame.bmp
+            local/alpha/hosted-ime/workflow-system/case-*/cancel.bin
+            local/alpha/hosted-ime/workflow-system/case-*/close.bin
+            local/alpha/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin
+            local/alpha/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin.source.bin
+            local/alpha/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin.workflow.json
+            local/alpha/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin.progress.jsonl
+            local/alpha/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin.receiver.json
+      - name: Preserve bounded IME evidence on success or failure
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: alpha-ime-windows-2025
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            local/alpha/hosted-ime/inventory/inventory.json
+            local/alpha/hosted-ime/inventory/*/phase.json
+            local/alpha/hosted-ime/inventory/*/progress.json
+            local/alpha/hosted-ime/environment/environment.json
+            local/alpha/hosted-ime/probe/result.json
+            local/alpha/hosted-ime/probe/stdout.jsonl
+            local/alpha/hosted-ime/probe/stderr.txt
+            local/alpha/hosted-ime/product/manifest.json
+            local/alpha/hosted-ime/product/*/result.json
+            local/alpha/hosted-ime/product/*/product-ime.json
+            local/alpha/hosted-ime/product/*/progress.jsonl
+            local/alpha/hosted-ime/product/*/stdout.jsonl
+            local/alpha/hosted-ime/product/*/stderr.txt
+            local/alpha/hosted-ime/product/*/frame.bmp
+            local/alpha/hosted-ime/product/*/bottom.bin
+            local/alpha/hosted-ime/product/*/main.bin
+            local/alpha/hosted-ime/product/*/hidden.bin
+            local/alpha/hosted-ime/product/*/bottom.bin.receiver.json
+            local/alpha/hosted-ime/product/*/main.bin.receiver.json
+            local/alpha/hosted-ime/product/*/hidden.bin.receiver.json

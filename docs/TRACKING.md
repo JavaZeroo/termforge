@@ -29,6 +29,10 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 | R1-07 | [#17](https://github.com/JavaZeroo/termforge/issues/17) | 统一文字动作上下文并完成 WindTerm 交互对照 | [#11](https://github.com/JavaZeroo/termforge/issues/11)、[#13](https://github.com/JavaZeroo/termforge/issues/13)、[#14](https://github.com/JavaZeroo/termforge/issues/14)、[#15](https://github.com/JavaZeroo/termforge/issues/15)、[#16](https://github.com/JavaZeroo/termforge/issues/16) |
 | R1-08 | [#18](https://github.com/JavaZeroo/termforge/issues/18) | 验收完整文字工作流与多会话资源边界 | [#17](https://github.com/JavaZeroo/termforge/issues/17) |
 
+## Alpha 交付切片
+
+[#22](https://github.com/JavaZeroo/termforge/issues/22)跟踪首个 `v0.1.0-alpha.1` Windows x64 免安装预发布包、静态运行库、精确清单、最终 ZIP 启动验证与发布下载核验。它交付 R1 体验包；R2 的完整开发版出口保持不变。发布说明见 [Alpha 1](releases/v0.1.0-alpha.1.md)。
+
 ## 从当前状态接着做
 
 以下为选题顺序；各项已做/待做和验收结果只在对应 issue 维护。`ready-for-agent` 表示可以开工，不代表全仓库所有 ready 项优先级相同。

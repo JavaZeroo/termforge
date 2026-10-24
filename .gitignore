@@ -3,6 +3,7 @@
 /benchmarks/local-results/
 /local/
 /build/
+/build-alpha/
 /dist/
 __pycache__/
 *.pyc
