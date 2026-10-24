@@ -183,7 +183,7 @@ public:
             history.push_back(std::move(lines.front()));
             if (history.size() > history_limit) { history.pop_front(); ++discarded; }
         } else ++discarded;
-        lines.erase(lines.begin()); lines.push_back(make_line(width(), blank(), next_id_));
+        lines.erase(lines.begin()); lines.push_back(make_line(width(), Cell{}, next_id_));
     }
     void put(uint32_t cp, const std::string& utf8) {
         const int cells = scalar_width(cp);

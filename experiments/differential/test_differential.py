@@ -44,7 +44,7 @@ class DifferentialTests(unittest.TestCase):
     def test_common_subset_and_precise_known_differences(self):
         summary = run_suite(self.binary, self.artifacts / "suite")
         self.assertTrue(summary["passed"], summary["counts"])
-        self.assertEqual(summary["counts"], {"match": 65, "expected_difference": 30})
+        self.assertEqual(summary["counts"], {"match": 70, "expected_difference": 25})
         self.assertEqual(summary["runs"], 95)
         self.assertEqual(sum(record["plan"] == "byte" for record in summary["records"]), 19)
         for record in summary["records"]:

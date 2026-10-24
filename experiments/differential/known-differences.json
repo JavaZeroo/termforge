@@ -68,19 +68,5 @@
     },
     "final_core_sha256": "4fef83c5585a214953bdd16ade82441e90333cfdff8632cc66c0ca5774a5fe46",
     "final_reference_sha256": "1c1d947903edf57014e1e5d726adef851821ebb425ff35a2edbe5720a6b8eb69"
-  },
-  "styled_scroll_blank": {
-    "input_sha256": "0d63e102dcd7787333a73f1cec97a3ac6d1d3e6280601ab950cd9aebe376cb24",
-    "rows": 3,
-    "columns": 12,
-    "history": 3,
-    "first_difference": {
-      "offset": 14,
-      "path": ".screen.cells[2][0].style.fg",
-      "expected": -1,
-      "actual": 1
-    },
-    "final_core_sha256": "dd02f5b6d6758a542d614c69984912c06b3ead58477f1488da5e7528b16f7149",
-    "final_reference_sha256": "e41fd45531b8a05c55740f5b9c4821d955d9ae45d3ac1264eb47e03aceb14f18"
   }
 }

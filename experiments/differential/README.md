@@ -49,7 +49,7 @@ terminal_trace input.bin 3 12 3 chunks.txt
 
 ## 已知差异独立保留
 
-`expected` 始终指 pyte，`actual` 指 TermForge，并不表示 pyte 必然正确。六个最小例子的规范、产品文字策略和第二参考裁决由 [#20](https://github.com/JavaZeroo/termforge/issues/20)承接，不以迎合单个参考为修改核心的依据。
+`expected` 始终指 pyte，`actual` 指 TermForge，并不表示 pyte 必然正确。六个最小例子的规范、产品文字策略和第二参考裁决见[逐项决定](decisions.md)，不以迎合单个参考为修改核心的依据。
 
 | 场景 | 最早字节偏移 | 观察到的差异 |
 |---|---:|---|
@@ -58,9 +58,8 @@ terminal_trace input.bin 3 12 3 chunks.txt
 | `wide_trailer_overwrite` | 8 | 覆盖宽字尾格：TermForge 清空原首格，pyte 保留原“中” |
 | `combining_at_pending_wrap` | 14 | 行末基字后的组合标记：TermForge 留在原行，pyte 先进入下一行 |
 | `vertical_move_at_pending_wrap` | 15 | 待换行时向上移动：TermForge 取消待换行，pyte 保留 |
-| `styled_scroll_blank` | 14 | 红色样式下滚动后的空白行：TermForge 使用当前前景，pyte 使用默认前景 |
 
-[known-differences.json](known-differences.json) 按案例名、输入 SHA256、尺寸、首次偏移、字段、差异方向以及双方最终完整投影状态 SHA256 精确匹配。其余差异、意外变成相同、执行异常都会失败。不同拆包的检查点编号可能不同，但同一最早字节偏移与差异必须一致。六个例子均在造成首次差异的操作处结束；不会用一个已知差异放行后续任意行为。
+[known-differences.json](known-differences.json) 按案例名、输入 SHA256、尺寸、首次偏移、字段、差异方向以及双方最终完整投影状态 SHA256 精确匹配。其余差异、意外变成相同、执行异常都会失败。不同拆包的检查点编号可能不同，但同一最早字节偏移与差异必须一致。五个保留例子均在造成首次差异的操作处结束；不会用一个已知差异放行后续任意行为。原第六项 `styled_scroll_blank` 已按裁决修正为滚动新行默认样式，不再列为参考差异。
 
 生成的共同流限定为无样式滚动，样式滚动仍由单独案例持续检查。回归测试保留“中途不同、最终相同”的光标例子：最早偏移为 16，只检查最终屏幕会漏掉它。
 
@@ -75,7 +74,7 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 共同投影只额外统一 NFC 与空白/空单元格表示；显式空格、`mode_bits` 和回复不在这一投影裁决，样式、宽度、光标、屏幕和历史仍逐格比较。`expected` 仅是自研核心字段位置、`actual` 是候选，二者都不是真值。`execution_passed=true` 只表示执行与分块检查通过，`semantic_acceptance` 固定为 false，差异不得自动视为兼容通过或任一实现错误。
 
-2026-10-25 [Windows 摘要](results/2026-10-25-candidate-common/summary.json)为 95 次、1011 检查点，85 次一致、10 次差异，集中于 `erase_display` 与 `styled_scroll_blank`。`erase_display` 的最早差异随分块检查点位置而不同，测试按五种计划分别固定，不把它误报为分块失败。新增 3 个自动门槛与原有 8 个差分测试共同通过；候选 workflow 在 Windows/Ubuntu 构建两个原生 trace 并运行同一矩阵。未构建可选 Rust 候选的通用主回归会明确跳过这 3 项，candidate workflow 不以该跳过代替执行。六类 pyte 差异、这两类候选差异、真实应用和 fuzz 仍由 #25 后续裁决，本切片不完成核心路线决定。
+2026-10-25 修复后[候选 Windows 摘要](results/2026-10-25-candidate-common-v2/summary.json)为 95 次、1011 检查点，90 次一致、5 次差异，剩余全部属于 `erase_display`；[pyte 摘要](results/2026-10-25/summary.json)为 70 次一致、25 次保留的已知差异。`erase_display` 的最早差异随分块检查点位置而不同，测试按五种计划分别固定，不把它误报为分块失败。新增 3 个自动门槛与原有 8 个差分测试共同通过；候选 workflow 在 Windows/Ubuntu 构建两个原生 trace 并运行同一矩阵。未构建可选 Rust 候选的通用主回归会明确跳过这 3 项，candidate workflow 不以该跳过代替执行。六类 pyte 差异已有[逐项裁决](decisions.md)，`erase_display`、真实应用和 fuzz 仍由 #25 后续处理，本切片不完成核心路线决定。
 
 ## 2026-10-22 实际验证
 

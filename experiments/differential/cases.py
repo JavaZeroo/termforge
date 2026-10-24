@@ -41,5 +41,5 @@ def cases():
         Case("wide_trailer_overwrite", "中\x1b[2GX", difference="wide-overwrite"),
         Case("combining_at_pending_wrap", "12345678901e\u0301", difference="combining-wrap"),
         Case("vertical_move_at_pending_wrap", "123456789012\x1b[A", difference="vertical-wrap"),
-        Case("styled_scroll_blank", "\x1b[31mA\r\nB\r\nC\r\n", difference="scroll-blank-style"),
+        Case("styled_scroll_blank", "\x1b[31mA\r\nB\r\nC\r\n"),
     ]

@@ -27,7 +27,7 @@ class CandidateComparisonTests(unittest.TestCase):
         self.assertTrue(self.summary["execution_passed"], self.summary["counts"])
         self.assertEqual(self.summary["runs"], 95)
         self.assertEqual(self.summary["checkpoints"], 1011)
-        self.assertEqual(self.summary["counts"], {"difference": 10, "match": 85})
+        self.assertEqual(self.summary["counts"], {"difference": 5, "match": 90})
         self.assertFalse(self.summary["semantic_acceptance"])
         self.assertFalse(self.summary["differences_adjudicated"])
         for record in self.summary["records"]:
@@ -42,7 +42,7 @@ class CandidateComparisonTests(unittest.TestCase):
     def test_current_differences_keep_exact_case_offset_and_direction(self):
         differences = [record for record in self.summary["records"] if record["status"] == "difference"]
         self.assertEqual({(record["case"], record["plan"]) for record in differences},
-                         {(case, plan) for case in ("erase_display", "styled_scroll_blank")
+                         {("erase_display", plan)
                           for plan in ("byte", "whole", "seed:42", "seed:20261022", "seed:8675309")})
         erase_expected = {
             "byte": (28, ".screen.cells[0][0].text", "", "o"),
@@ -53,10 +53,8 @@ class CandidateComparisonTests(unittest.TestCase):
         }
         for record in differences:
             difference = record["first_difference"]
-            expected = (erase_expected[record["plan"]] if record["case"] == "erase_display"
-                        else (14, ".screen.cells[2][0].style.fg", 1, -1))
             self.assertEqual((difference["offset"], difference["path"],
-                              difference["expected"], difference["actual"]), expected)
+                              difference["expected"], difference["actual"]), erase_expected[record["plan"]])
             self.assertIn("neither is an oracle", record["difference_direction"])
 
     def test_missing_candidate_is_an_execution_failure(self):
