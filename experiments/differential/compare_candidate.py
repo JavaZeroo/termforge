@@ -26,9 +26,9 @@ def common_projection(records):
     return result
 
 
-def execute(binary, prefix, case, sizes, output):
+def execute(binary, prefix, case, sizes, output, arguments=()):
     command = [str(binary), str(output / "input.bin"), str(case.rows), str(case.columns),
-               str(case.history), str(output / "chunks.txt")]
+               str(case.history), str(output / "chunks.txt"), *arguments]
     try:
         process = subprocess.run(command, capture_output=True, timeout=20)
         stdout, stderr, returncode = process.stdout, process.stderr, process.returncode
@@ -49,12 +49,12 @@ def execute(binary, prefix, case, sizes, output):
     return records, returncode, error
 
 
-def run_case(core_binary, candidate_binary, case, plan, output):
+def run_case(core_binary, candidate_binary, case, plan, output, core_arguments=()):
     output.mkdir(parents=True, exist_ok=False)
     sizes = chunks(len(case.data), plan)
     (output / "input.bin").write_bytes(case.data)
     (output / "chunks.txt").write_text("".join(f"{size}\n" for size in sizes), encoding="ascii")
-    core, core_code, core_error = execute(core_binary, "core", case, sizes, output)
+    core, core_code, core_error = execute(core_binary, "core", case, sizes, output, core_arguments)
     candidate, candidate_code, candidate_error = execute(candidate_binary, "candidate", case, sizes, output)
     difference = None
     if core_code == 0 and candidate_code == 0 and not core_error and not candidate_error:

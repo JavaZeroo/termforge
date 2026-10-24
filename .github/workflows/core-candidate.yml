@@ -70,6 +70,10 @@ jobs:
         run: python experiments/differential/compare_candidate.py --out build/test-artifacts/candidate-common
       - name: Test common comparison and failure gates
         run: python -m unittest discover -s experiments/differential -p test_candidate_compare.py -v
+      - name: Compare extended capability traces
+        run: python experiments/differential/capability_matrix.py --trace "${{ env.TERMFORGE_TRACE }}" --candidate "${{ env.TERMFORGE_ALACRITTY_TRACE }}" --out build/test-artifacts/candidate-capabilities-cli
+      - name: Test extended capabilities and unsupported gates
+        run: python -m unittest discover -s experiments/differential -p test_capability_matrix.py -v
       - name: Preserve synthetic candidate evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -82,3 +86,5 @@ jobs:
             build/test-artifacts/candidate-alacritty/
             build/test-artifacts/candidate-common/
             build/test-artifacts/candidate-comparison/
+            build/test-artifacts/candidate-capabilities-cli/
+            build/test-artifacts/candidate-capabilities/

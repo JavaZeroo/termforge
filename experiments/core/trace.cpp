@@ -25,8 +25,10 @@ void cells(std::ostream& out, const Rows& rows) {
 int main(int argc, char** argv) {
     size_t offset = 0;
     try {
-        if (argc != 6) throw std::runtime_error("usage: terminal_trace input rows columns history chunks.txt");
-        termforge::Parser parser(std::stoi(argv[2]), std::stoi(argv[3]), std::stoull(argv[4]));
+        if (argc < 6 || argc > 7 || (argc == 7 && std::string_view(argv[6]) != "--recovery"))
+            throw std::runtime_error("usage: terminal_trace input rows columns history chunks.txt [--recovery]");
+        termforge::Parser parser(std::stoi(argv[2]), std::stoi(argv[3]), std::stoull(argv[4]),
+                                argc == 7 ? termforge::ParseMode::recovery : termforge::ParseMode::strict);
         std::ifstream input(argv[1], std::ios::binary | std::ios::ate);
         if (!input || input.tellg() > 1024 * 1024) throw std::runtime_error("invalid trace input file or size");
         input.seekg(0);

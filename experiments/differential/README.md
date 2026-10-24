@@ -76,6 +76,14 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 2026-10-25 [候选 Windows 摘要](results/2026-10-25-candidate-common-v3/summary.json)为 95 次、1011 检查点，90 次一致、5 次已裁决参考差异；[pyte 摘要](results/2026-10-25/summary.json)为 70 次一致、25 次保留的已知差异。`erase_display` 的最早差异随分块检查点位置而不同，[ED1/ED2 已分开裁决](decisions.md#erase_display-的-ed1ed2-分离裁决)，`candidate-known-differences.json` 按五种计划固定输入、最早差异和最终状态；新输入不能复用旧裁决。新增 4 个自动门槛与原有 8 个差分测试共同通过；候选 workflow 在 Windows/Ubuntu 构建两个原生 trace 并运行同一矩阵。未构建可选 Rust 候选的通用主回归会明确跳过这 4 项，candidate workflow 不以该跳过代替执行。六类 pyte 差异与 `erase_display` 均已有[逐项裁决](decisions.md)，`differences_adjudicated=true` 只覆盖当前差异，`semantic_acceptance=false` 不把它们算作兼容一致。真实应用和 fuzz 仍由 #25 后续处理，本切片不完成核心路线决定。
 
+## 扩展能力轨迹（#25）
+
+`capability_matrix.py` 另跑备用屏、滚动区、光标查询和异常恢复各 5 种分块，共 20 次。严格模式未支持的自研功能记为 `core_unsupported`，必须同时满足候选执行成功，不能当作兼容通过或静默跳过。Recovery 由测试 trace 的显式 `--recovery` 启用，非法 UTF-8、未知 CSI 和 OSC 流与候选逐检查点一致。
+
+[2026-10-25 摘要](results/2026-10-25-capabilities/summary.json)为 15 次 `core_unsupported`、5 次 `match`。自动断言包括备用屏恢复后的 `A/BZ` 主屏、滚动区结果 `B/D/X`、真实回复 `ESC[1;2R`、Recovery 的 `ABC U+FFFD D` 及双方分块不变性。新增 3 个门槛后，差分与能力测试合计 15 项通过；未构建候选时主回归明确跳过这些可选项，candidate workflow 强制执行。
+
+本矩阵没有 resize 或真实应用轨迹，`resize_covered=false`、`real_application_covered=false`、`semantic_acceptance=false`。它只为 #25/#26 提供支持差距证据，不提前实现 #27/#28 的产品功能。
+
 ## 2026-10-22 实际验证
 
 [历史运行摘要](results/2026-10-22/summary.json)记录共同子集、精确已知差异和分块不变性检查结果；已知差异不算兼容通过。摘要保存输入/源码/二进制/参考包源码哈希和每次最早差异；完整 trace 留在本地输出目录，可按上面的命令重建。
