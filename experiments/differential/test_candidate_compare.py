@@ -14,7 +14,10 @@ class CandidateComparisonTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.core = trace_binary()
-        cls.candidate = compare_candidate.candidate_trace_binary()
+        try:
+            cls.candidate = compare_candidate.candidate_trace_binary()
+        except FileNotFoundError:
+            raise unittest.SkipTest("optional Alacritty binary is not built; core-candidate workflow runs these checks")
         base = Path(os.environ.get("TERMFORGE_TEST_ARTIFACTS", ROOT / "build/test-artifacts")) / "candidate-comparison"
         base.mkdir(parents=True, exist_ok=True)
         cls.artifacts = Path(tempfile.mkdtemp(prefix="run-", dir=base))
