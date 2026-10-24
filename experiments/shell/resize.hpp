@@ -2,8 +2,13 @@
 // while the console host processes resize. Join before closing its HPCON.
 #pragma once
 #include "../conpty/session.hpp"
+#include <functional>
 class ResizeWorker {
     tf_conpty::Session& session_;
+    // Optional test synchronization before the real API. The worker still
+    // performs Session::resize; a working generation means worker ownership,
+    // not proof that the kernel call is blocked or a child applied the size.
+    std::function<void()> before_resize_;
     mutable std::mutex mutex_;
     std::condition_variable ready_;
     std::thread thread_;
@@ -19,7 +24,8 @@ public:
         unsigned requested_generation = 0, completed_generation = 0, working_generation = 0, pending_generation = 0;
         bool working = false, pending = false, stopping = false, started = false, joined = false, failed = false;
     };
-    explicit ResizeWorker(tf_conpty::Session& session) : session_(session) {}
+    explicit ResizeWorker(tf_conpty::Session& session,std::function<void()> before_resize={})
+        : session_(session),before_resize_(std::move(before_resize)) {}
     ~ResizeWorker() { stop(); }
     Snapshot snapshot() const {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -41,7 +47,9 @@ public:
                     const auto generation = requested_;
                     const int rows = rows_, columns = columns_;
                     working_ = true; working_generation_ = generation;
-                    lock.unlock(); session_.resize(static_cast<short>(columns), static_cast<short>(rows));
+                    lock.unlock();
+                    if(before_resize_) before_resize_();
+                    session_.resize(static_cast<short>(columns), static_cast<short>(rows));
                     lock.lock(); completed_ = generation; working_ = false; working_generation_ = 0;
                 }
             } catch (...) {

@@ -44,7 +44,11 @@ jobs:
           python-version: '3.12'
       - name: Check inventory guard, evidence and owned synthetic timeout
         timeout-minutes: 2
-        run: python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_hosted research.ime.test_product_ime -v
+        run: python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_hosted research.ime.test_product_ime research.ime.test_workflow_system research.ime.test_workflow_system_runner.WorkflowSystemRunnerPolicyTests -v
+      - name: Install declared workflow resource dependency
+        if: inputs.mode == 'verify'
+        timeout-minutes: 2
+        run: python -m pip install -r benchmarks/requirements.txt
       - name: Read-only bounded hosted IME inventory
         timeout-minutes: 4
         run: python -m research.ime.inventory_hosted --out local/hosted-ime/inventory --query-timeout 60
@@ -55,7 +59,7 @@ jobs:
       - name: Build native IME probe and product receiver
         if: inputs.mode == 'verify'
         timeout-minutes: 5
-        run: cmake --build build --config Release --target termforge_ime_probe shell_test_launcher shell_ime_client --parallel 2
+        run: cmake --build build --config Release --target termforge_ime_probe shell_test_launcher shell_ime_client shell_text_client shell_input_client shell_clipboard_reader --parallel 2
       - name: Activate existing fixed Microsoft Pinyin in disposable hosted VM
         if: inputs.mode == 'verify'
         timeout-minutes: 10
@@ -78,6 +82,41 @@ jobs:
           python -m research.ime.product_runner
           --launcher build/bin/Release/shell_test_launcher.exe
           --timeout 60 --out local/hosted-ime/product
+      - name: Require two fresh real system workflow and resource rounds
+        if: inputs.mode == 'verify'
+        timeout-minutes: 4
+        run: >-
+          python -m research.ime.workflow_system_runner
+          --launcher build/bin/Release/shell_test_launcher.exe
+          --out local/hosted-ime/workflow-system
+      - name: Preserve explicit system workflow evidence allowlist
+        if: always() && inputs.mode == 'verify'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: r1-workflow-system-windows-2025
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            local/hosted-ime/workflow-system/result.public.json
+            local/hosted-ime/workflow-system/source-manifest.json
+            local/hosted-ime/workflow-system/binary-manifest.json
+            local/hosted-ime/workflow-system/case-*/result.public.json
+            local/hosted-ime/workflow-system/case-*/public/stdout.jsonl
+            local/hosted-ime/workflow-system/case-*/public/stderr.txt
+            local/hosted-ime/workflow-system/case-*/sessions.json
+            local/hosted-ime/workflow-system/case-*/resource-phases.jsonl
+            local/hosted-ime/workflow-system/case-*/resource-observations.jsonl
+            local/hosted-ime/workflow-system/case-*/resource-summary.json
+            local/hosted-ime/workflow-system/case-*/workflow-system.json
+            local/hosted-ime/workflow-system/case-*/workflow-system-progress.jsonl
+            local/hosted-ime/workflow-system/case-*/frame.bmp
+            local/hosted-ime/workflow-system/case-*/cancel.bin
+            local/hosted-ime/workflow-system/case-*/close.bin
+            local/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin
+            local/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin.source.bin
+            local/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin.workflow.json
+            local/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin.progress.jsonl
+            local/hosted-ime/workflow-system/case-*/fixtures/*/capture.bin.receiver.json
       - name: Preserve bounded IME evidence on success or failure
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

@@ -326,6 +326,21 @@ class WorkflowResources:
         self._failure = self._report = self._identity = self._clock_zero = None
         self._identity_verified = False
         self._marks = []
+        self._clock_before = self._clock_after = None
+        self._clock_error = None
+
+    def _capture_clock(self, batch):
+        # Lazy import/API: resource-disabled execution never reaches this seam.
+        from experiments.shell.workflow_resource_phases import capture_clock_brackets
+        try:
+            result = capture_clock_brackets(batch)
+        except (OSError, ValueError, AttributeError):
+            self._clock_error = 'clock-calibration-unavailable'
+            result = None
+        if batch == 'before-go': self._clock_before = result
+        else: self._clock_after = result
+        (self.private_dir/'clock-calibration.private.json').write_text(
+            json.dumps({'before':self._clock_before,'after':self._clock_after,'error':self._clock_error},allow_nan=False)+'\n')
 
     def _verify_live_identity(self):
         if self.process.poll() is not None:
@@ -352,6 +367,7 @@ class WorkflowResources:
             raise ValueError('workflow resource recording already started')
         self._identity = self._verify_live_identity()
         self.private_dir.mkdir(parents=True, exist_ok=False)
+        self._capture_clock('before-go')
         self._thread = threading.Thread(target=self._observe, name='termforge-workflow-resource-sampler', daemon=False)
         self._thread.start()
         deadline = time.monotonic() + 5
@@ -401,8 +417,7 @@ class WorkflowResources:
             raise TimeoutError('resource sampler thread did not join')
         if self._failure is not None:
             raise RuntimeError('resource sampler failed') from self._failure
-        if native_phases is not None:
-            raise ValueError('native resource phases require calibrated clock mapping')
+        self._capture_clock('after-cleanup')
         trace = _summarizer.summarize(self.trace_path)
         with self.trace_path.open(encoding='utf-8') as stream:
             metadata = json.loads(stream.readline())
@@ -434,16 +449,27 @@ class WorkflowResources:
         version = metadata.get('psutil_version')
         if type(version) is not str or re.fullmatch(r'\d+(?:\.\d+){1,3}',version) is None:
             version = None
+        phase_windows = None
+        if native_phases is not None:
+            from experiments.shell.workflow_resource_phases import relative_calibration, summarize_resource_phases, SCHEMA
+            try:
+                if self._clock_error or self._clock_before is None or self._clock_after is None:
+                    raise ValueError('clock-calibration-unavailable')
+                calibration = relative_calibration(self._clock_before,self._clock_after,self._clock_zero)
+                phase_windows = summarize_resource_phases(observations_path,native_phases,calibration=calibration,marks=self._marks)
+            except (ValueError,KeyError,TypeError):
+                phase_windows = {'schema':SCHEMA,'status':'unknown','reason':'clock-calibration-unavailable',
+                                 'calibration':None,'markers':None,'windows':None,'performance_gate':'not_evaluated'}
         self._report = {'schema': 'termforge-workflow-resources-v1', 'status': 'recorded', 'scope': 'launcher-tree',
                         'root_role': 'actual-launcher-not-ui', 'root_identity_verified': self._identity_verified,
                         'sampler_started':True, 'sampler_joined': True, 'sampling_finished_before_stop_request':finished_before_stop,
                         'performance_gate': 'not_evaluated', 'trace': trace,
                         'launcher_tree': tree, 'group_sampled_peak_observed_handles': handles,
-                        'marks': list(self._marks), 'phase_windows': None, 'observations':observations,
+                        'marks': list(self._marks), 'phase_windows': phase_windows, 'observations':observations,
                         'dependencies':{'psutil_version':version,
                                         'sampler_sha256':hashlib.sha256((ROOT/'benchmarks/tools/sample.py').read_bytes()).hexdigest(),
                                         'summarizer_sha256':hashlib.sha256((ROOT/'benchmarks/tools/summarize_resources.py').read_bytes()).hexdigest()},
-                        'limitations': ['Native phase clock mapping is not calibrated; initialization and short cycle trends are unknown.',
+                        'limitations': ['Native phase windows need compatible measured pre/post clock brackets; absent or incompatible mapping remains unknown.',
                                         'Launcher-tree includes UI, console hosts, shells, producers and helpers; it is not UI-only cost.',
                                         'CPU starts at first observation and can miss final CPU; polling can miss short-lived descendants.',
                                         'Peaks sum only observed rows in one sample; unavailable rows are unknown, working sets can share pages.',

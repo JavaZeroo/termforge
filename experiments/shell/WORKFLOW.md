@@ -74,7 +74,9 @@ Resize 分列 requested/completed、实际 working 代次与合并后的最新 p
 
 Shell的`enable_runtime_observation()`为opt-in；`runtime_snapshot()`只允许UI线程调用，按值返回schema `termforge-runtime-snapshot-v1`，记录采集begin/end时间。UI自有的screen/history、search结果/容量、selection位置、paste进度、viewport、可见/关闭状态与worker短锁快照分列，不提供全文、对象引用、PID/HWND或私有错误原文。多个模块的观测不是整个进程的原子快照；不可观测的工作量/分配容量保持null，不能由声明上限补出测量值。采样不触发复制或推进搜索。
 
-关闭前快照在清除Find/search/paste之前取得；最终生命周期证据只在实际关闭线程join及Session关闭完成后收集。运行中或查询失败的子进程/worker状态保持unknown，不能把尚未读取当成0。场景以实际字节、状态、join与Job查询共同判断回收；单独queued=0不证明内核管道排空。操作→状态及包含目标revision的真实WM_PAINT BitBlt/GdiFlush提交端点尚未接入。
+关闭前快照在清除Find/search/paste之前取得；最终生命周期证据只在实际关闭线程join及Session关闭完成后收集。运行中或查询失败的子进程/worker状态保持unknown，不能把尚未读取当成0。场景以实际字节、状态、join与Job查询共同判断回收；单独queued=0不证明内核管道排空。
+
+`operation_observation.hpp`为显式启用的窗口提供最多8条按值滚动记录。记录实际WM_VSCROLL接收、该处理器发布的状态revision，以及包含同一revision且成功BitBlt/GdiFlush的实际WM_PAINT提交；WM_PRINT、离屏绘制、隐藏、被新revision覆盖和关闭均不能冒充提交。未知端点保持null并附原因，`presented_done`始终为null。系统组合场景预先固定两次A会话滚动及实际`110→109→110`内容/身份检查，合成单元测试不替代该场景的最终托管验收。
 
 `completed_generation` 表示 resize API 已返回，不代表子进程已应用该尺寸，更不代表已绘制或呈现。队列探针另外从真实子进程查询尺寸并有界等待固定预期；两种端点分别检查。
 
@@ -84,12 +86,24 @@ Shell的`enable_runtime_observation()`为opt-in；`runtime_snapshot()`只允许U
 
 `resource-observations.jsonl`使用独立schema `termforge-workflow-resource-observations-v1`，在CI本地与私有raw逐条对比；它不是把假PID写回原采样schema。公开记录保留相对时间、实际CPU/memory/handles、调度缺口及固定错误类别，可离线重算`resource-summary.json`。同一样本的内存/handles求和峰值、退出进程最后已观测的CPU增量均保留；sampler另组，不能计入launcher树；该组是承载runner与采样线程的整个Python进程，CPU不等于采样线程单独开销。全程未观测的指标为null，部分缺失只能称观察下界；working set求和可能重复shared pages。
 
-默认请求间隔100ms、后代发现间隔1s均不是实际采样达成保证；短命后代可能漏采。当前样本中sampler开销显著、实际间隔与skipped ticks存在缺口，不能称低扰动或用这些数值下性能通过结论。初始化和短趋势尚未形成经时钟校准的阶段对照；不设置新的性能通过线，也不由短回归推断长期无泄漏。
+默认请求间隔100ms、后代发现间隔1s均不是实际采样达成保证；短命后代可能漏采。当前样本中观察进程成本显著、实际间隔与skipped ticks存在缺口，不能称低扰动或用这些数值下性能通过结论。该成本覆盖整个Python监督进程，没有关闭观测的配对实验时不能解释为采样的增量成本。不设置新的性能通过线，也不由短回归推断长期无泄漏。
 
-native另写最多32条`resource-phases.jsonl`（schema `termforge-workflow-resource-phase-v1`），记录实际QPC counter/frequency。完整E2有19个marker，其中每轮`cycle-six`→`cycle-six-end`是同6个身份、无新建的1秒等待区间，之后到`cycle-eight`包含创建。尚未校准QPC与Python采样时钟及误差，因此资源`phase_windows=null`；不能直接相减elapsed时间，把初始化/创建或不确定边界样本称为稳态。实际操作到state/submit与完整真实CF/IME组合仍由#18后续验收。
+native另写最多32条`resource-phases.jsonl`（schema `termforge-workflow-resource-phase-v1`），记录实际QPC counter/frequency。完整E2有19个marker，其中每轮`cycle-six`→`cycle-six-end`是同6个身份、无新建的1秒等待区间，之后到`cycle-eight`包含创建。
+
+`workflow_resource_phases.py`使用采样前后各4次`perf_counter_ns→QPC→perf_counter_ns`实际夹测，验证频率与时钟偏移区间交集，保留分辨率和tick误差。公开夹测可离线复算；不能假设时钟同纪元或直接相减两个elapsed。整个样本采集区间必须落在保守阶段内界；CPU还须同身份连续有效样本对，跨创建、缺失或窗口边界不拼接。缺夹测、校准不一致、无有效样本均为unknown；旧产物不能追溯补出校准。五次短驻留比较只描述观察值，不能推出长期无泄漏。新增接点仍等待最终源码的系统组合验证与独立审计。
 
 ## Paste 后输入的期望
 
 `ImeInputExpectation` 在创建 receiver 时固定已接受的 UTF-8 前缀。提交前必须逐字等于前缀，提交后必须等于前缀加恰好一次“你好”；不能事后把意外输入重新命名为前缀。严格解码后前缀最多4094 UTF-16单元，为“你好”保留2单元；容量没有扩大。
 
 旧五个真实 IME 模式仍使用空前缀，独立校验拒绝其非空前缀元数据。边界单元测试通过不替代未来同次真实 Copy→Paste→IME 组合验收。源字节、ConPTY字节、核心状态、实际绘制提交及呈现时刻必须分别记录；`presented_done` 继续未知，不能由目标20ms间隔或 producer-complete 推导性能。
+
+## 显式系统组合入口（尚未验收）
+
+`python -m research.ime.workflow_system_runner --launcher build/bin/Release/shell_test_launcher.exe --out local/hosted-ime/workflow-system`只允许指定仓库的一次性GitHub托管Windows环境，普通本机在创建目录前拒绝。通过`r1-ime.yml`显式`mode=verify`调用；共享输入desktop只查询，双GO和内外OwnedJob仍约束所有进程。固定两个全新目录，每轮native/launcher/Python监督上限分别70/80/90秒；失败保留并停止本次重复。
+
+它复用同八会话、26主检查点和18实例，在后台负载下完成实际两行选择、Ctrl+Shift+C、CF_UNICODETEXT、Ctrl+Shift+V、真实确认按钮与隐藏目标接收，再由固定Microsoft拼音以受保护SendInput组合/提交“你好”并取消下一次组合。大粘贴取消和关闭也经过实际clipboard worker。原始前缀固定51字节，提交后57字节，关闭另一目标后继续输入最终58字节；不能清空接收文件或事后重定义前缀。
+
+新增`workflow-system.json`的13个观察点与`workflow-system-progress.jsonl`的28条动作/检查点逐项对照，系统记录总预算512，data-only仍为256且不读取剪贴板/IME。独立oracle核对源/raw/日志、真实选区、候选位置、代次、容量、两个滚动端点与回收；退出码或原生完成标记不能单独通过。系统产物使用独立白名单，私有进程身份、完整监督记录、EXE与任意异常原文不公开。
+
+公开`result.public.json`保留实际GO顺序、Job计数和原始安全流身份；只有通过严格字段及递归重复键检查的两行原生JSON可原字节导出`public/stdout.jsonl`，stderr仅为空时导出。下载后可调用`research.ime.workflow_system_checks.validate_workflow_system_public(case_directory)`直接复核公开事实、所有原始内容与阶段资源，不制造私有record替身，也不依赖上次runner的verified标记。上述协议与实现就绪不表示R1出口已经验收。

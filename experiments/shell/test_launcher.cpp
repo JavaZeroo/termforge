@@ -95,7 +95,7 @@ int wmain(int argc, wchar_t** argv) {
         std::wstring desktop;
         if(hosted) {
             const auto input=tf_shell_test::require_hosted_ime_input();
-            require(tf_shell_test::is_product_ime_mode(argv[2]),"invalid explicit hosted IME case");
+            require(tf_shell_test::is_product_ime_mode(argv[2]) || tf_shell_test::is_hosted_workflow_mode(argv[2]),"invalid explicit hosted IME case");
             desktop=tf_shell_test::ime_object_name(GetProcessWindowStation())+L"\\"+input;
         } else desktop=validate_desktop(argv[1]);
         require(*argv[2] && *argv[3], "test launcher mode and frame path are required");
@@ -150,7 +150,7 @@ int wmain(int argc, wchar_t** argv) {
         // Only the child owns these inherited writer handles after startup.
         output.reset(); error.reset(); null.reset();
 
-        const DWORD limit=hosted?50000:std::wstring_view(argv[2])==L"ui-workflow-sessions"?80000:45000;
+        const DWORD limit=hosted?(tf_shell_test::is_hosted_workflow_mode(argv[2])?80000:50000):std::wstring_view(argv[2])==L"ui-workflow-sessions"?80000:45000;
         const DWORD waited = WaitForSingleObject(process.get(), limit);
         if (waited == WAIT_TIMEOUT) {
             if (!TerminateJobObject(job.get(), 124)) fail("test launcher timeout termination");

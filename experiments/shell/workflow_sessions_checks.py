@@ -16,14 +16,18 @@ FULL_PHASES = ([(phase, 0) for phase in PHASES[:11]] +
                [('paste-close-pending', 5), ('after-paste-close', 5)])
 
 
-def expected_raw(name, phase):
+def expected_raw(name, phase, *, contract='data'):
+    _require(contract in ('data', 'system'), 'unknown workflow content contract')
+    if contract == 'system':
+        from research.ime.workflow_system_checks import COMMITTED_INPUT, FINAL_INPUT
+        return (FINAL_INPUT if phase == 'after-paste-close' else COMMITTED_INPUT) if name == 'B' and phase not in PHASES[:7] else b''
     if name == 'B' and phase not in PHASES[:7]:
         return ('TF_R108_FOREGROUND 中文\r' + ('!' if phase == 'after-paste-close' else '')).encode('utf-8')
     return b''
 
 
-def validate_checkpoint_raw(slot, phase):
-    expected = expected_raw(slot['name'], phase)
+def validate_checkpoint_raw(slot, phase, *, contract='data'):
+    expected = expected_raw(slot['name'], phase, contract=contract)
     _require(slot.get('raw_hex') == expected.hex() and type(slot.get('raw_bytes')) is int and
              slot['raw_bytes'] == len(expected) and slot.get('raw_sha256') == hashlib.sha256(expected).hexdigest(),
              'checkpoint input literal/target/timing mismatch')
@@ -55,7 +59,7 @@ def _f_line(role, number):
     return f'TF_R108_{role}_{number:05d} 中文 e\u0301'.encode('utf-8').ljust(62, b'.').decode('utf-8')
 
 
-def _cache_bounds(runtime):
+def _cache_bounds(runtime, *, system_receiver=False):
     search = runtime.get('search', {})
     # Fixed Windows scenario allocation observation budgets, allowing allocator
     # slack; not portable container guarantees or product performance gates.
@@ -73,6 +77,15 @@ def _cache_bounds(runtime):
         if paste is None:
             continue
         _require(type(paste) is dict, 'paste observation missing')
+        if system_receiver:
+            _require(not active and paste.get('state') == 'completed' and
+                     type(paste.get('target')) is int and paste['target'] == runtime['session_id'] and
+                     paste.get('total_bytes') == 51 and paste.get('source_units') == 42 and
+                     paste.get('accepted_bytes') == 51 and paste.get('sent_bytes') == 51 and
+                     paste.get('in_flight_bytes') == 0 and paste.get('error_present') is False and
+                     _integer(paste.get('retained_capacity_bytes'), 'completed prefix capacity') <= 32,
+                     'system receiver completed paste differs from fixed prefix')
+            continue
         total = _integer(paste.get('total_bytes'), 'paste total')
         accepted = _integer(paste.get('accepted_bytes'), 'paste accepted')
         sent = _integer(paste.get('sent_bytes'), 'paste sent')
@@ -91,7 +104,7 @@ def _cache_bounds(runtime):
                      'terminal paste allocation/error bound')
 
 
-def _runtime_bounds(slot, allow_paste=False):
+def _runtime_bounds(slot, allow_paste=False, *, contract='data'):
     runtime = slot['runtime']
     _require(runtime.get('schema') == 'termforge-runtime-snapshot-v1' and
              runtime.get('window_creation_serial') == slot['window_creation_serial'], 'runtime identity')
@@ -108,7 +121,7 @@ def _runtime_bounds(slot, allow_paste=False):
              1 <= _integer(runtime.get('rows'), 'rows') <= 200 and
              _integer(runtime.get('retained_rows'), 'retained rows') <= 100 + runtime['rows'], 'history bounds')
     _require(_integer(runtime.get('max_consumed_per_tick'), 'tick bytes') <= 65536, 'UI consumption bound')
-    _cache_bounds(runtime)
+    _cache_bounds(runtime, system_receiver=contract == 'system' and slot['name'] == 'B')
     _require(runtime.get('pending_prepared_paste') is False and runtime.get('paste_prompt_present') is False and
              runtime.get('clipboard') is None, 'unexpected prompt/clipboard operation in data slice')
     if not allow_paste:
@@ -117,12 +130,12 @@ def _runtime_bounds(slot, allow_paste=False):
     _require(resize.get('failed') is False, 'resize worker failed')
 
 
-def _validate_vertical(out, checkpoints, final_b=None):
+def _validate_vertical(out, checkpoints, final_b=None, *, contract='data'):
     by_phase = {point['phase']: {slot['name']: slot for slot in point['slots']} for point in checkpoints}
     for index, phase in enumerate(PHASES):
         slots = by_phase[phase]
         for name, slot in slots.items():
-            _runtime_bounds(slot)
+            _runtime_bounds(slot, contract=contract)
             lines = slot.get('visible_lines')
             _require(type(lines) is list and len(lines) == slot['runtime']['rows'], 'actual visible row count')
             _require(all(type(line) is dict and type(line.get('text')) is str and
@@ -180,7 +193,7 @@ def _validate_vertical(out, checkpoints, final_b=None):
                      slot.get('document_tail') == tail, 'background full source/core tail mismatch')
 
 
-def _validate_closed(closed, baseline, full=False):
+def _validate_closed(closed, baseline, full=False, *, contract='data'):
     entities = {identity['session_id']: dict(identity, name=identity.get('name', key)) for key, identity in baseline.items()}
     _require(type(closed) is list and len(closed) == len(entities) and
              {row.get('session_id') for row in closed} == set(entities), 'all distinct closed entities required')
@@ -198,7 +211,7 @@ def _validate_closed(closed, baseline, full=False):
         _require(type(before) is dict and type(final) is dict, 'actual preclose/final snapshots missing')
         for snapshot in (before, final):
             if full:
-                _cache_bounds(snapshot)
+                _cache_bounds(snapshot, system_receiver=contract == 'system' and row['name'] == 'B')
             _require(snapshot.get('schema') == 'termforge-runtime-snapshot-v1' and
                      _integer(snapshot.get('session_id'), 'closed runtime identity', 1) == identity['session_id'] and
                      _integer(snapshot.get('window_creation_serial'), 'closed creation serial', 1) == identity['window_creation_serial'], 'close runtime bound to wrong window')
@@ -235,13 +248,21 @@ def validate_cycle_transition(previous, six, eight, closed):
     _require(len({row['window_token'] for row in eight.values()}) == 8, 'replacement aliases a live HWND')
 
 
-def _validate_cycles_and_paste(out, data, entities):
+def _validate_cycles_and_paste(out, data, entities, *, contract='data'):
     marks = [json.loads(line) for line in _bounded(out/'resource-phases.jsonl', 65536).splitlines()]
     validate_resource_phases(marks)
     observed = sum(len(point['slots'])+len(point.get('background_load', [])) for point in data['checkpoints']) + 2*len(data['closed'])+len(marks)
-    _require(len(entities) == 18 and observed == 235 and _integer(data.get('observations'), 'observations') == observed <= 256 and
+    declared = _integer(data.get('observations'), 'observations')
+    if contract == 'system':
+        _require(data.get('base_observations') == observed and data.get('observation_limit') == 512 and
+                 declared == observed + _integer(data.get('system_observations'), 'system observations') +
+                 _integer(data.get('operation_observations'), 'operation observations') <= 512,
+                 'combined system observation accounting')
+    else:
+        _require(declared == observed <= 256, 'data observation accounting')
+    _require(len(entities) == 18 and observed == 235 and
              data.get('resource_markers') == len(marks), 'bounded eighteen-entity observation count')
-    _validate_closed(data.get('closed'), entities, full=True)
+    _validate_closed(data.get('closed'), entities, full=True, contract=contract)
     checkpoints = data['checkpoints']
     by_phase = {(p['phase'], p['cycle']): {s['name']: s for s in p['slots']} for p in checkpoints}
     closed = data['closed']; prior = by_phase[('background-complete', 0)]
@@ -260,7 +281,7 @@ def _validate_cycles_and_paste(out, data, entities):
         _require(set(six) == set(NAMES[:6]), 'cycle six residents changed')
         for name in ('F4', 'F5'):
             slot = eight[name]
-            _runtime_bounds(slot)
+            _runtime_bounds(slot, contract=contract)
             _require(slot.get('fixture_running') is True and slot.get('output_done') is False and
                      4096 <= _integer(slot.get('source_bytes'), 'replacement source bytes') < 2048000, 'replacement output not active')
             texts = slot.get('document_tail', []) + [row['text'] for row in slot.get('visible_lines', [])]
@@ -363,17 +384,36 @@ def _validate_paste_cases(out, data, target):
 
 
 def validate_workflow_sessions(out, record, *, allow_partial=False):
+    return _validate_workflow_sessions(out, record, allow_partial=allow_partial, contract='data')
+
+
+def _validate_workflow_sessions(out, record, *, allow_partial=False, contract):
     """First slice: eight live identities and rejected ninth creation, not full E2."""
+    _require(contract in ('data', 'system') and (contract == 'data' or not allow_partial), 'workflow contract/partial mismatch')
     out = Path(out)
-    _require(type(record) is dict and record.get('timed_out') is False and
-             type(record.get('exit_code')) is int and record['exit_code'] == 0 and
-             record.get('desktop_gone') is True and not record.get('cleanup_errors'), 'runner exit/desktop cleanup')
-    job = record.get('job_after', {})
-    _require(type(job) is dict and _integer(job.get('active'), 'outer Job active') == 0, 'outer Job not empty')
+    if contract == 'system':
+        from research.ime.workflow_system_checks import validate_system_record
+        validate_system_record(record)
+    else:
+        _require(type(record) is dict and record.get('timed_out') is False and
+                 type(record.get('exit_code')) is int and record['exit_code'] == 0 and
+                 record.get('desktop_gone') is True and not record.get('cleanup_errors'), 'runner exit/desktop cleanup')
+        job = record.get('job_after', {})
+        _require(type(job) is dict and _integer(job.get('active'), 'outer Job active') == 0, 'outer Job not empty')
+    return _validate_workflow_sessions_content(out, allow_partial=allow_partial, contract=contract)
+
+
+def _validate_workflow_sessions_content(out, *, allow_partial=False, contract):
+    """Fixed content contracts, entered after a separate raw/public host gate."""
+    _require(contract in ('data', 'system') and (contract == 'data' or not allow_partial), 'workflow contract/partial mismatch')
+    out = Path(out)
     data = json.loads(_bounded(out / 'sessions.json', 2 * 1024 * 1024))
     _require(type(data) is dict and data.get('schema') == 'termforge-workflow-sessions-v1' and
-             data.get('fixture') == 'r108-console-v1' and data.get('data_only') is True and
-             data.get('system_clipboard') is False and data.get('ime') is False, 'session evidence identity')
+             data.get('fixture') == 'r108-console-v1' and data.get('data_only') is (contract == 'data') and
+             data.get('system_clipboard') is (contract == 'system') and data.get('ime') is (contract == 'system'), 'session evidence identity')
+    if contract == 'data':
+        _require(not any(field in data for field in ('operation_records','operation_context','operation_observations',
+                 'base_observations','system_observations','observation_limit')), 'system-only observations in data evidence')
     checkpoints = data.get('checkpoints')
     _require(type(checkpoints) is list and (len(checkpoints) == 26 or allow_partial and len(checkpoints) in (2, 12)), 'full E2 checkpoint count required')
     full = len(checkpoints) == 26
@@ -424,17 +464,17 @@ def validate_workflow_sessions(out, record, *, allow_partial=False):
             _require(type(runtime) is dict and type(runtime.get('session_id')) is int and
                      runtime['session_id'] == slot['session_id'], 'runtime attached to wrong session')
             if full:
-                _runtime_bounds(slot, allow_paste=name == 'C' and phase in ('paste-cancel-pending','paste-close-pending'))
+                _runtime_bounds(slot, allow_paste=name == 'C' and phase in ('paste-cancel-pending','paste-close-pending'), contract=contract)
             capture = f'fixtures/{name}-{slot["generation"]}/capture.bin'
             _require(slot.get('capture') == capture, 'capture role/generation path')
             path = out / capture
             _require(path.resolve().is_relative_to(out.resolve()), 'capture escaped evidence directory')
-            raw = expected_raw(name, phase) if vertical else b''
-            final_raw = expected_raw(name, phases[-1][0]) if vertical else b''
+            raw = expected_raw(name, phase, contract=contract) if vertical else b''
+            final_raw = expected_raw(name, phases[-1][0], contract=contract) if vertical else b''
             _require(_bounded(path, 16384) == final_raw and _integer(slot.get('raw_bytes'), 'raw bytes') == len(raw) and
                      slot.get('raw_sha256') == hashlib.sha256(raw).hexdigest(), 'input literal/target/timing mismatch')
             if vertical:
-                validate_checkpoint_raw(slot, phase)
+                validate_checkpoint_raw(slot, phase, contract=contract)
             identities[name] = {key: slot[key] for key in ('session_id', 'generation', 'window_token',
                 'window_creation_serial', 'process_identity', 'capture', 'selected', 'visible', 'group')}
         if len(expected_names) >= 6:
@@ -456,12 +496,12 @@ def validate_workflow_sessions(out, record, *, allow_partial=False):
             all_entities[identity['session_id']] = dict(identity, name=name)
     if vertical:
         _validate_vertical(out, [p for p in checkpoints if p['phase'] in PHASES],
-                           final_b=expected_raw('B', 'after-paste-close') if full else None)
+                           final_b=expected_raw('B', 'after-paste-close', contract=contract) if full else None, contract=contract)
     if full:
-        _validate_cycles_and_paste(out, data, all_entities)
+        _validate_cycles_and_paste(out, data, all_entities, contract=contract)
     elif vertical or 'closed' in data:
         _validate_closed(data.get('closed'), baseline)
     return dict(schema='termforge-workflow-sessions-identity-validation-v1', live_sessions=8,
                 checkpoints=len(checkpoints), rejected_ninth=True, load_foreground_verified=vertical,
-                data_workflow_verified=full, complete_workflow_verified=False,
+                data_workflow_verified=full and contract == 'data', complete_workflow_verified=False,
                 system_clipboard_verified=False, ime_verified=False)

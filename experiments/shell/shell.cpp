@@ -13,6 +13,7 @@
 #include "find_bar.hpp"
 #include "text_actions.hpp"
 #include "runtime_observation.hpp"
+#include "operation_observation.hpp"
 #include <atomic>
 #include <optional>
 #include <sstream>
@@ -98,6 +99,13 @@ class ShellWindow {
     std::optional<tf_shell::RuntimeSnapshot::Clipboard> runtime_last_terminal_clipboard_;
     std::optional<size_t> runtime_paste_source_units_;
     std::optional<termforge::ViewportState> runtime_published_viewport_;
+    tf_shell::ScrollOperationObservations operation_observations_;
+
+    static uint64_t operation_qpc() {
+        LARGE_INTEGER value{};
+        require(QueryPerformanceCounter(&value)!=FALSE && value.QuadPart>0,"operation QPC query failed");
+        return static_cast<uint64_t>(value.QuadPart);
+    }
 
     void require_ui_thread() const {
         require(GetCurrentThreadId() == ui_thread_id_, "runtime observation requires the owning UI thread");
@@ -316,6 +324,7 @@ class ShellWindow {
         if (closing_) return;
         if(runtime_enabled_) runtime_before_close_=runtime_snapshot();
         closing_ = true;
+        operation_observations_.close();
         selection_end();
         find_.reset(); search_.close(); find_current_.reset(); clear_find_resize_anchor();
         keyboard_.reset();
@@ -332,7 +341,7 @@ class ShellWindow {
             closed_.store(true);
         });
     }
-    void publish() {
+    void publish(std::optional<size_t> scroll_operation=std::nullopt,bool scroll_changed=false) {
         selection_.reconcile(termforge::TextDocument(parser_.screen));
         auto view = viewport_.snapshot(parser_.screen);
         if(runtime_enabled_) runtime_published_viewport_=view.viewport;
@@ -348,6 +357,9 @@ class ShellWindow {
         }
         auto next = std::make_shared<const Snapshot>(std::move(view), ++revision_);
         auto dirty = changed_rows(*snapshot_, *next); snapshot_ = std::move(next);
+        if(operation_observations_.enabled()) operation_observations_.published(snapshot_->revision);
+        if(scroll_operation) operation_observations_.state(*scroll_operation,snapshot_->revision,operation_qpc(),
+            scroll_changed,hwnd_ && IsWindowVisible(hwnd_)!=FALSE);
         update_ime_caret();
         if (!dirty.empty()) {
             dirty_first_ = (std::min)(dirty_first_, dirty.front());
@@ -358,7 +370,7 @@ class ShellWindow {
         if (stage_ >= 5 && result_.input_to_state_ms < 0 && line_is("TF_AFTER"))
             result_.input_to_state_ms = ms(input_time_);
     }
-    void history_scroll(UINT command) {
+    void history_scroll(UINT command,std::optional<size_t> operation=std::nullopt) {
         if (closing_) return;
         const auto state=viewport_.reconcile(parser_.screen);
         const auto page=static_cast<int64_t>((std::max)(size_t{1},state.page-1));
@@ -376,7 +388,10 @@ class ShellWindow {
         }
         default: return;
         }
-        publish();
+        if(operation) {
+            const auto after=viewport_.reconcile(parser_.screen);
+            publish(operation,state.top!=after.top || state.following!=after.following);
+        } else publish();
     }
     void update_ime_caret() {
         if(!hwnd_ || GetFocus()!=hwnd_ || snapshot_->cursor_row<0) return;
@@ -512,7 +527,12 @@ class ShellWindow {
             if (message == WM_CONTEXTMENU) {
                 self->selection_menu(static_cast<short>(LOWORD(lp)),static_cast<short>(HIWORD(lp))); return 0;
             }
-            if (message == WM_VSCROLL) { self->history_scroll(LOWORD(wp)); return 0; }
+            if (message == WM_VSCROLL) {
+                if(!self->operation_observations_.enabled()) { self->history_scroll(LOWORD(wp)); return 0; }
+                const auto token=self->operation_observations_.receive(LOWORD(wp),operation_qpc());
+                self->history_scroll(LOWORD(wp),token);
+                return 0;
+            }
             if (message == WM_MOUSEWHEEL) { self->history_wheel(static_cast<short>(HIWORD(wp))); return 0; }
             if (message == WM_KILLFOCUS) { self->keyboard_.reset(); self->selection_end(); }
             if (message == WM_SETFOCUS && self->parent_) {
@@ -553,7 +573,10 @@ class ShellWindow {
             if (message == WM_PASTE) { self->perform_text_action(tf_shell::TextAction::paste); return 0; }
             if (message == WM_COPY) { self->perform_text_action(tf_shell::TextAction::copy); return 0; }
             if (message == WM_MOVE && self->find_) self->find_->reposition();
-            if (message == WM_SHOWWINDOW && !wp && self->find_) self->find_->show(false);
+            if (message == WM_SHOWWINDOW && !wp) {
+                self->operation_observations_.hide();
+                if(self->find_) self->find_->show(false);
+            }
             if (message == WM_SYSCHAR) {
                 const auto mods=key_modifiers();
                 self->character(static_cast<wchar_t>(wp),mods.alt && !mods.alt_graph); return 0;
@@ -572,6 +595,8 @@ class ShellWindow {
             if (message == WM_ERASEBKGND) return 1;
             if (message == WM_PAINT) {
                 PAINTSTRUCT paint{}; HDC dc = BeginPaint(hwnd, &paint);
+                const int painted_revision=self->snapshot_->revision;
+                const bool observed=self->operation_observations_.paint_candidate(painted_revision);
                 try {
                     // rcPaint is clipped by visible desktop/window regions.
                     // Retained pixels must also incorporate off-screen dirty
@@ -589,11 +614,17 @@ class ShellWindow {
                     }
                     require(BitBlt(dc,0,0,self->surface_->width,self->surface_->height,self->surface_->dc,0,0,SRCCOPY) != FALSE, "shell frame blit failed");
                     require(GdiFlush() != FALSE, "shell frame flush failed"); ++self->result_.frames;
+                    if(observed) self->operation_observations_.paint(painted_revision,operation_qpc(),
+                        IsWindowVisible(hwnd)!=FALSE,!IsRectEmpty(&paint.rcPaint),true);
                     self->dirty_first_ = self->snapshot_->rows(); self->dirty_last_ = 0;
                     if (self->stage_ >= 5 && !self->frame_after_ && self->line_is("TF_AFTER")) {
                         self->result_.input_to_submit_ms = ms(self->input_time_); self->frame_after_ = true;
                     }
-                } catch (...) { EndPaint(hwnd, &paint); throw; }
+                } catch (...) {
+                    if(observed) self->operation_observations_.paint(painted_revision,0,
+                        IsWindowVisible(hwnd)!=FALSE,!IsRectEmpty(&paint.rcPaint),false);
+                    EndPaint(hwnd, &paint); throw;
+                }
                 EndPaint(hwnd, &paint); return 0;
             }
         } catch (const std::exception& e) {
@@ -665,6 +696,23 @@ public:
         require(SetTimer(hwnd_,1,16,nullptr) != 0, "shell timer failed");
     }
     HWND handle() const { return hwnd_; }
+    void enable_operation_observation() {
+        require_ui_thread(); require(!closing_,"operation observation must be enabled before close");
+        if(operation_observations_.enabled()) return;
+        LARGE_INTEGER frequency{};
+        require(QueryPerformanceFrequency(&frequency)!=FALSE && frequency.QuadPart>0,"operation QPC frequency failed");
+        operation_observations_.enable(static_cast<uint64_t>(frequency.QuadPart));
+    }
+    bool operation_observation_enabled() const { require_ui_thread(); return operation_observations_.enabled(); }
+    void arm_scroll_observation(uint64_t id,uint64_t generation,UINT command) {
+        require_ui_thread(); require(!closing_ && hwnd_ && IsWindow(hwnd_),"operation target must be live");
+        require(command==SB_LINEUP || command==SB_LINEDOWN || command==SB_PAGEUP || command==SB_PAGEDOWN ||
+            command==SB_TOP || command==SB_BOTTOM,"unsupported observed scroll command");
+        operation_observations_.arm(id,identity_,window_creation_serial_,generation,command);
+    }
+    std::vector<tf_shell::OperationObservation> operation_observations() const {
+        require_ui_thread(); return operation_observations_.values();
+    }
     static uint64_t successful_window_creations() {
         require(!creation_thread_id_ || creation_thread_id_ == GetCurrentThreadId(), "shell creation count requires the UI thread");
         return successful_window_creations_;
@@ -945,7 +993,7 @@ static int application(int argc, char** argv) {
         if(argc==4 && std::string_view(argv[1])=="--test-owned-hosted-ime") {
             tf_shell_test::require_hosted_ime_child_gate();
             mode=argv[2]; image=argv[3];
-            require(tf_shell_test::is_product_ime_mode(utf16(mode.c_str())) && !image.empty(),"invalid explicit hosted IME case");
+            require((tf_shell_test::is_product_ime_mode(utf16(mode.c_str())) || tf_shell_test::is_hosted_workflow_mode(utf16(mode.c_str()))) && !image.empty(),"invalid explicit hosted IME case");
             require(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)!=FALSE,"DPI awareness failed");
             Workspace window(image,mode); return window.run();
         }

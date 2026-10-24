@@ -22,7 +22,7 @@ struct WorkflowSlot {
     std::unique_ptr<WorkflowController> controller;
 };
 struct WorkflowScenarioState {
-    static constexpr size_t observation_limit=256;
+    const size_t observation_limit;
     unsigned next_generation=1,attempted_creations=0;
     unsigned cycle=0;
     uint64_t reading_anchor=0;
@@ -32,7 +32,7 @@ struct WorkflowScenarioState {
     tf_conpty::Handle resource_phase_file;
     std::vector<WorkflowSlot> slots;
     std::vector<std::string> checkpoints,closed;
-    WorkflowScenarioState() { slots.reserve(18);checkpoints.reserve(32);closed.reserve(18); }
+    explicit WorkflowScenarioState(bool system=false):observation_limit(system?512:256) { slots.reserve(18);checkpoints.reserve(32);closed.reserve(18); }
     void reserve_observations(size_t count) {
         workflow_check(count<=observation_limit-observations,"workflow observation budget exceeded"); observations+=count;
     }

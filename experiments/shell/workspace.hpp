@@ -7,6 +7,7 @@
 #include "paste_scenario_state.hpp"
 #include "clipboard_scenario_state.hpp"
 #include "workflow_scenario_state.hpp"
+#include "workflow_system_state.hpp"
 
 class Workspace {
     struct Tab { int id; std::wstring title; std::unique_ptr<ShellWindow> shell; };
@@ -37,6 +38,7 @@ class Workspace {
     tf_shell_test::ClipboardScenarioState clipboard_scenario_;
     std::unique_ptr<tf_shell_test::ProductImeScenarioState> ime_scenario_;
     std::unique_ptr<tf_shell_test::WorkflowScenarioState> workflow_;
+    std::unique_ptr<tf_shell_test::WorkflowSystemState> workflow_system_;
     int width_ = 1360, height_ = 860, dpi_ = 96;
     int physical_width_ = 1360, physical_height_ = 860;
     int left_ = 226, right_ = 226, left_middle_ = 289, right_middle_ = 289;
@@ -371,6 +373,17 @@ class Workspace {
     void workflow_attach(const std::string& name,const std::string& role,Group group,bool create);
     void workflow_collected(ShellWindow* child,int id);
     void workflow_write();
+    void workflow_system_initialize();
+    std::string workflow_system_identity(const std::string& name);
+    void workflow_system_event(const std::string& kind,const std::string& fields);
+    void workflow_system_shortcut(const std::string& name,bool copy);
+    HWND workflow_system_prompt();
+    void workflow_system_point(const char* phase,bool clipboard=false,bool prompt=false,bool ime=false);
+    bool workflow_system_tick();
+    void workflow_system_finish();
+    std::string workflow_operation_top();
+    void workflow_operation_arm(uint64_t id,UINT command);
+    bool workflow_operation_complete(uint64_t id);
     void scenario_find();
     void scenario_find_stream();
     static std::string size_marker(int outer_width,int rows,ShellWindow* shell) {
@@ -445,7 +458,7 @@ class Workspace {
                 else if(self->test_mode_=="ui-selection-bytes" || self->test_mode_=="ui-copy-bytes-system") self->scenario_selection_bytes();
                 else if(self->test_mode_=="ui-selection-context" || self->test_mode_=="ui-copy-context-system") self->scenario_selection_context();
                 else if(self->test_mode_=="ui-actions" || self->test_mode_=="ui-actions-system") self->scenario_actions();
-                else if(self->test_mode_=="ui-workflow-sessions") self->scenario_workflow();
+                else if(self->workflow_) self->scenario_workflow();
                 else if(self->test_mode_=="ui-find") self->scenario_find();
                 else if(self->test_mode_=="ui-find-stream") self->scenario_find_stream();
                 else if(tf_shell_test::is_product_ime_mode(utf16(self->test_mode_.c_str()))) self->scenario_ime();
@@ -466,7 +479,11 @@ class Workspace {
     }
 public:
     explicit Workspace(std::string image="",std::string mode="ui"):test_mode_(std::move(mode)),image_(std::move(image)) {
-        if(test_mode_=="ui-workflow-sessions") workflow_=std::make_unique<tf_shell_test::WorkflowScenarioState>();
+        if(test_mode_=="ui-workflow-sessions" || test_mode_=="ui-workflow-system") {
+            const bool system=test_mode_=="ui-workflow-system";
+            if(system) {tf_shell_test::require_hosted_ime_input();workflow_system_=std::make_unique<tf_shell_test::WorkflowSystemState>();}
+            workflow_=std::make_unique<tf_shell_test::WorkflowScenarioState>(system);
+        }
         if(!image_.empty()) settings_path_=std::filesystem::path(image_).parent_path()/"workspace.layout";
         else {
             wchar_t base[32768]{};
@@ -514,9 +531,10 @@ public:
             ShellWindow::dispatch_message(msg);
         }
         require(status==0,"workspace message loop failed"); require(failure_.empty(),failure_.c_str());
-        if(!image_.empty() && test_mode_=="ui-workflow-sessions") {
+        if(!image_.empty() && workflow_) {
             require(stage_==100 && collected_==18,"workflow sessions scenario incomplete");
-            std::cout<<"{\"valid\":true,\"mode\":\"ui-workflow-sessions\",\"sessions_closed\":18,\"active_children_after\":0,\"presented_done\":null}\n";
+            if(workflow_system_) require(workflow_system_->points.size()==13 && workflow_system_->journal_rows==28,"workflow system observations incomplete");
+            std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":18,\"active_children_after\":0,\"presented_done\":null}\n";
             return 0;
         }
         if(!image_.empty() && test_mode_=="ui") {
@@ -578,3 +596,4 @@ public:
 #include "workspace_find_scenario.hpp"
 #include "workspace_ime_scenario.hpp"
 #include "workspace_workflow_scenario.hpp"
+#include "workspace_workflow_system.hpp"

@@ -64,6 +64,7 @@ inline std::wstring require_hosted_ime_input() {
 inline bool is_product_ime_mode(const std::wstring& mode) {
     return mode==L"ui-ime-basic" || mode==L"ui-ime-geometry" || mode==L"ui-ime-focus" || mode==L"ui-ime-close" || mode==L"ui-ime-reading";
 }
+inline bool is_hosted_workflow_mode(const std::wstring& mode) { return mode==L"ui-workflow-system"; }
 inline void require_hosted_ime_child_gate() {
     // The launcher resumes us only after inner Job assignment. No IME/profile
     // activation or window creation occurs until this second exact GO gate.

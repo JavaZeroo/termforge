@@ -124,7 +124,16 @@ inline void Workspace::workflow_checkpoint(const char* phase,unsigned cycle,cons
 inline void Workspace::workflow_write() {
     const auto path=std::filesystem::path(image_).parent_path()/"sessions.json";
     std::ofstream out(path,std::ios::binary|std::ios::trunc); require(out.good(),"workflow evidence open failed");
-    out<<"{\"schema\":\"termforge-workflow-sessions-v1\",\"fixture\":\"r108-console-v1\",\"data_only\":true,\"system_clipboard\":false,\"ime\":false,\"observations\":"<<workflow_->observations<<",\"resource_markers\":"<<workflow_->resource_markers<<",\"checkpoints\":[";
+    out<<"{\"schema\":\"termforge-workflow-sessions-v1\",\"fixture\":\"r108-console-v1\",\"data_only\":"<<(workflow_system_?"false":"true")
+       <<",\"system_clipboard\":"<<(workflow_system_?"true":"false")<<",\"ime\":"<<(workflow_system_?"true":"false")<<",\"observations\":"<<workflow_->observations;
+    if(workflow_system_) {
+        out<<",\"system_observations\":"<<workflow_system_->observations<<",\"operation_observations\":"<<workflow_system_->operation_records.size()
+           <<",\"base_observations\":"<<workflow_->observations-workflow_system_->observations-workflow_system_->operation_records.size()<<",\"observation_limit\":"<<workflow_->observation_limit
+           <<",\"operation_records\":[";
+        for(size_t i=0;i<workflow_system_->operation_records.size();++i) {if(i) out<<',';out<<workflow_system_->operation_records[i];}
+        out<<"],\"operation_context\":[";for(size_t i=0;i<workflow_system_->operation_context.size();++i) {if(i) out<<',';out<<workflow_system_->operation_context[i];}out<<']';
+    }
+    out<<",\"resource_markers\":"<<workflow_->resource_markers<<",\"checkpoints\":[";
     bool first=true;for(const auto& row:workflow_->checkpoints) {if(!first) out<<',';first=false;out<<row;}
     out<<"],\"closed\":[";first=true;for(const auto& row:workflow_->closed) {if(!first) out<<',';first=false;out<<row;}
     out<<"],\"paste_cases\":[";first=true;
@@ -150,7 +159,8 @@ inline void Workspace::workflow_collected(ShellWindow* child,int id) {
            <<",\"find_window_gone\":"<<(!slot.closing_find || !IsWindow(slot.closing_find)?"true":"false")
            <<",\"before_close\":"<<(before?tf_shell::runtime_snapshot_json(*before):"null")
            <<",\"final\":"<<(final?tf_shell::runtime_snapshot_json(*final):"null")<<'}';
-        slot.retired=true;workflow_->closed.push_back(out.str());workflow_write();return;
+        slot.retired=true;workflow_->closed.push_back(out.str());workflow_write();
+        if(workflow_system_ && stage_==100 && workflow_->closed.size()==18) workflow_system_finish();return;
     }
 }
 inline void Workspace::scenario_workflow() {
@@ -177,6 +187,7 @@ inline void Workspace::scenario_workflow() {
         stage_=2;
     } else if(stage_==2) {
         for(auto& slot:evidence.slots) if(!slot.controller->ready()) return;
+        workflow_system_initialize();
         workflow_checkpoint("eight-ready"); add(Group::main);workflow_checkpoint("reject-ninth");
         gate("A").start(tf_shell_test::WorkflowPhase::output);
         for(const std::string name:{"F1","F2","F3","F4","F5"}) gate(name).start(tf_shell_test::WorkflowPhase::output);
@@ -185,13 +196,26 @@ inline void Workspace::scenario_workflow() {
     } else if(stage_==3) {
         auto* shell=workflow_shell("A");
         if(!gate("A").done(tf_shell_test::WorkflowPhase::output) || !shell->live_contains_line("TF_R108_A_OUTPUT_DONE 0160")) return;
+        if(workflow_system_) {
+            const auto document=shell->observed_document_lines();
+            if(document.size()<2 || !document.back().projection.text.empty() || document[document.size()-2].projection.text!="TF_R108_A_OUTPUT_DONE 0160") return;
+        }
         for(const std::string name:{"F1","F2","F3","F4","F5"}) if(std::filesystem::file_size(gate(name).path.wstring()+L".source.bin")<4096) return;
         backgrounds_running();workflow_checkpoint("load-started");
         SendMessageW(shell->handle(),WM_VSCROLL,SB_TOP,0);
         const auto top_text=[&] {std::string text;for(const auto& cell:shell->visible_snapshot().lines.front()) text+=cell.text;while(!text.empty() && text.back()==' ') text.pop_back();return text;};
         for(unsigned i=0;i<200 && top_text()!=u8"TF_R108_A_0110 中文 é";++i) SendMessageW(shell->handle(),WM_VSCROLL,SB_LINEDOWN,0);
         require(top_text()==u8"TF_R108_A_0110 中文 é" && !shell->history_state().following,"workflow could not read retained line110");
-        evidence.reading_anchor=shell->history_state().anchor;workflow_checkpoint("reading-before-append");
+        if(workflow_system_) {workflow_operation_arm(1,SB_LINEUP);stage_=301;}
+        else {
+            evidence.reading_anchor=shell->history_state().anchor;workflow_checkpoint("reading-before-append");
+            gate("A").start(tf_shell_test::WorkflowPhase::append);stage_=4;
+        }
+    } else if(stage_==301) {
+        if(!workflow_operation_complete(1)) return;workflow_operation_arm(2,SB_LINEDOWN);stage_=302;
+    } else if(stage_==302) {
+        if(!workflow_operation_complete(2)) return;
+        evidence.reading_anchor=workflow_shell("A")->history_state().anchor;workflow_checkpoint("reading-before-append");
         gate("A").start(tf_shell_test::WorkflowPhase::append);stage_=4;
     } else if(stage_==4) {
         auto* shell=workflow_shell("A");
@@ -209,11 +233,16 @@ inline void Workspace::scenario_workflow() {
         auto* shell=workflow_shell("A");
         if(shell->search_status()!=termforge::SearchStatus::complete || !shell->current_find_range()) return;
         backgrounds_running();workflow_checkpoint("find-complete");
-        workflow_select("B");
-        for(wchar_t c:std::wstring(L"TF_R108_FOREGROUND 中文\r")) require(PostMessageW(workflow_shell("B")->handle(),WM_CHAR,c,1)!=FALSE,"workflow foreground key failed");
-        stage_=7;
+        if(workflow_system_) stage_=60;
+        else {
+            workflow_select("B");
+            for(wchar_t c:std::wstring(L"TF_R108_FOREGROUND 中文\r")) require(PostMessageW(workflow_shell("B")->handle(),WM_CHAR,c,1)!=FALSE,"workflow foreground key failed");
+            stage_=7;
+        }
+    } else if(stage_==60) {
+        backgrounds_running();if(workflow_system_tick()) stage_=7;
     } else if(stage_==7) {
-        if(gate("B").bytes()!=u8"TF_R108_FOREGROUND 中文\r") return;
+        if(workflow_system_?!workflow_system_->input.after_commit(gate("B").bytes()):gate("B").bytes()!=u8"TF_R108_FOREGROUND 中文\r") return;
         backgrounds_running();workflow_checkpoint("foreground-input");action(10);stage_=8;
     } else if(stage_==8) {
         auto* target=workflow_shell("B");if(!target->settled()) return;
@@ -237,8 +266,17 @@ inline void Workspace::scenario_workflow() {
         paste_scenario_.start_receiver(path,"cancel");
         auto* target=workflow_shell("C");target->begin_output_observation();target->fixture_command(paste_scenario_.receiver_command(path));stage_=21;
     } else if(stage_==21 && paste_scenario_.receiver->ready()) {
-        auto* target=workflow_shell("C");target->synthetic_paste(std::u16string(paste_scenario_.large_units,u'汉'));
-        paste_scenario_.transfer=target->observed_paste();require(paste_scenario_.transfer!=nullptr,"workflow cancel transfer missing");stage_=22;
+        auto* target=workflow_shell("C");
+        if(workflow_system_) {
+            tf_shell_test::require_hosted_ime_input();workflow_select("C");tf_shell::write_unicode_clipboard(window_,std::u16string(paste_scenario_.large_units,u'汉'));
+            workflow_system_shortcut("C",false);workflow_system_point("large-cancel-requested");stage_=221;
+        } else {
+            target->synthetic_paste(std::u16string(paste_scenario_.large_units,u'汉'));
+            paste_scenario_.transfer=target->observed_paste();require(paste_scenario_.transfer!=nullptr,"workflow cancel transfer missing");stage_=22;
+        }
+    } else if(stage_==221) {
+        paste_scenario_.transfer=workflow_shell("C")->observed_paste();if(!paste_scenario_.transfer) return;
+        workflow_system_point("large-cancel-ready");stage_=22;
     } else if(stage_==22 && paste_scenario_.transfer->progress().sent>=16384) {
         require(!tf_shell::paste_terminal(paste_scenario_.transfer->progress().state),"workflow cancel transfer completed before gate");
         paste_scenario_.receiver->allow_read();stage_=23;
@@ -309,8 +347,17 @@ inline void Workspace::scenario_workflow() {
         paste_scenario_.start_receiver(std::filesystem::path(image_).parent_path()/"close.bin","close");
         auto* target=workflow_shell("C");paste_scenario_.target=target->handle();target->begin_output_observation();target->fixture_command(paste_scenario_.receiver_command(std::filesystem::path(image_).parent_path()/"close.bin"));stage_=41;
     } else if(stage_==41 && paste_scenario_.receiver->ready()) {
-        auto* target=workflow_shell("C");target->synthetic_paste(std::u16string(paste_scenario_.large_units,u'汉'));
-        paste_scenario_.transfer=target->observed_paste();require(paste_scenario_.transfer!=nullptr,"workflow close transfer missing");stage_=42;
+        auto* target=workflow_shell("C");
+        if(workflow_system_) {
+            tf_shell_test::require_hosted_ime_input();workflow_select("C");tf_shell::write_unicode_clipboard(window_,std::u16string(paste_scenario_.large_units,u'汉'));
+            workflow_system_shortcut("C",false);workflow_system_point("large-close-requested");stage_=241;
+        } else {
+            target->synthetic_paste(std::u16string(paste_scenario_.large_units,u'汉'));
+            paste_scenario_.transfer=target->observed_paste();require(paste_scenario_.transfer!=nullptr,"workflow close transfer missing");stage_=42;
+        }
+    } else if(stage_==241) {
+        paste_scenario_.transfer=workflow_shell("C")->observed_paste();if(!paste_scenario_.transfer) return;
+        workflow_system_point("large-close-ready");stage_=42;
     } else if(stage_==42 && paste_scenario_.transfer->progress().sent>=16384) {
         require(!tf_shell::paste_terminal(paste_scenario_.transfer->progress().state),"workflow close transfer completed before gate");paste_scenario_.receiver->allow_read();stage_=43;
     } else if(stage_==43 && paste_scenario_.receiver->checkpoint()) {
@@ -321,7 +368,7 @@ inline void Workspace::scenario_workflow() {
         paste_scenario_.finish(std::filesystem::path(image_).parent_path()/"close.bin",false);
         workflow_select("B");require(PostMessageW(workflow_shell("B")->handle(),WM_CHAR,'!',1)!=FALSE,"post-close target key failed");stage_=45;
     } else if(stage_==45) {
-        if(gate("B").bytes()!=u8"TF_R108_FOREGROUND 中文\r!") return;
+        if(gate("B").bytes()!=(workflow_system_?workflow_system_->input.prefix()+u8"你好!":u8"TF_R108_FOREGROUND 中文\r!")) return;
         workflow_checkpoint("after-paste-close",5,{"B"});gate("F4").stop();gate("F5").stop();gate("B").stop();stage_=46;
     } else if(stage_==46) {
         if(!gate("F4").finished() || !gate("F5").finished() || !gate("B").finished()) return;

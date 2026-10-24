@@ -35,12 +35,14 @@ def file_identity(path):
     return {"bytes": size, "sha256": digest.hexdigest()}
 
 
-def _run_gated_command(mode, directory, command, timeout):
+def _run_gated_command(mode, directory, command, timeout, *, resource_observation=False):
     """Contain a fixed GO worker; local tests use benign Python children only.
 
     This private transport does not drive input or alter desktops. The public
     product entry point performs its hosted guard before any directory claim.
     """
+    if type(resource_observation) is not bool or resource_observation and mode != "ui-workflow-system":
+        raise ValueError("resource observation is restricted to the explicit workflow case")
     directory = Path(directory)
     claim_directory(directory)
     started = time.monotonic()
@@ -59,7 +61,8 @@ def _run_gated_command(mode, directory, command, timeout):
                                     "elapsed_seconds": time.monotonic() - started})
         write_json(directory / "result.json", record)
 
-    job = process = None
+    job = process = resource_recorder = None
+    resource_started = False
     checkpoint("starting")
     try:
         with (directory / "stdout.jsonl").open("wb") as stdout, (directory / "stderr.txt").open("wb") as stderr:
@@ -72,6 +75,12 @@ def _run_gated_command(mode, directory, command, timeout):
                 job.assign(process.pid)
                 record["assigned"] = True
                 checkpoint("job-assigned")
+                if resource_observation:
+                    from experiments.shell.workflow_resources import WorkflowResources
+                    resource_recorder = WorkflowResources(process, directory / "_resources-private", seconds=timeout + 10)
+                    resource_recorder.start()
+                    resource_started = True
+                    resource_recorder.mark("launcher-go")
                 # The native launcher does not create its product process or
                 # send input before this gate. No desktop argument is supplied.
                 record["gate_released"] = True
@@ -115,6 +124,8 @@ def _run_gated_command(mode, directory, command, timeout):
                         process.communicate(timeout=5)
                         record["returncode"] = process.returncode
                         record["process_reaped"] = process.poll() is not None
+                        if resource_started and record["process_reaped"]:
+                            resource_recorder.mark("launcher-exit")
                     except Exception as error:
                         record["cleanup_errors"].append(error_identity(error))
                 if job:
@@ -132,6 +143,20 @@ def _run_gated_command(mode, directory, command, timeout):
     except Exception as error:
         record["status"] = "failed"
         record["error"] = record["error"] or error_identity(error)
+    finally:
+        # Even a pre-GO start failure must stop/join any partially started
+        # sampler. This runs after actual process/Job cleanup; it owns no input.
+        if resource_recorder is not None:
+            try:
+                if resource_started:
+                    resource_recorder.mark("cleanup-finished")
+                summary = resource_recorder.finish(native_phases=directory / "resource-phases.jsonl",
+                                                   observations_path=directory / "resource-observations.jsonl")
+                write_json(directory / "resource-summary.json", summary)
+                record["resources"] = {"summary": "resource-summary.json", "scope": summary["scope"],
+                                       "performance_gate": summary["performance_gate"]}
+            except Exception as error:
+                record["cleanup_errors"].append({"kind": "resource-observation-failed", "cause": error_identity(error)})
 
     for filename in ("stdout.jsonl", "stderr.txt"):
         try:

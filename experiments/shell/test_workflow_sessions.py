@@ -16,13 +16,16 @@ SOURCE_FILES = (
     'CMakeLists.txt', 'experiments/build_paths.py', 'experiments/shell/shell.cpp',
     'experiments/shell/workspace.hpp', 'experiments/shell/workspace_interactions.hpp',
     'experiments/shell/workspace_workflow_scenario.hpp', 'experiments/shell/workflow_scenario_state.hpp',
+    'experiments/shell/workflow_system_state.hpp', 'experiments/shell/workspace_workflow_system.hpp',
     'experiments/shell/workflow_controller.hpp', 'experiments/shell/workflow_fixture.hpp',
-    'experiments/shell/runtime_observation.hpp', 'experiments/shell/queues.hpp', 'experiments/shell/resize.hpp',
+    'experiments/shell/runtime_observation.hpp', 'experiments/shell/operation_observation.hpp',
+    'experiments/shell/queues.hpp', 'experiments/shell/resize.hpp',
+    'experiments/shell/queue_probe.cpp',
     'experiments/shell/raw_console_receiver.hpp', 'experiments/shell/text_client.cpp', 'experiments/shell/input_client.cpp',
     'experiments/shell/test_launcher.cpp', 'experiments/shell/paste.hpp', 'experiments/shell/paste_scenario_state.hpp',
     'experiments/shell/find_bar.hpp', 'experiments/shell/run.py', 'experiments/shell/workflow_checks.py',
     'experiments/shell/workflow_sessions_checks.py', 'experiments/shell/test_workflow_sessions.py',
-    'experiments/shell/workflow_resources.py', 'experiments/conpty/session.hpp',
+    'experiments/shell/workflow_resources.py', 'experiments/shell/workflow_resource_phases.py', 'experiments/conpty/session.hpp',
     'experiments/presentation/render.hpp', 'experiments/presentation/desktop.hpp',
     'experiments/core/history_view.hpp', 'experiments/core/text_projection.hpp', 'experiments/core/terminal.hpp',
     'experiments/core/screen.hpp', 'experiments/core/unicode_width.hpp',
@@ -86,6 +89,25 @@ def identity_sample(out):
 
 
 class WorkflowSessionsOracleTest(unittest.TestCase):
+    def test_system_contract_does_not_relax_data_receiver(self):
+        literal = ('TF_R108_A_0110 中文 e\u0301\rTF_R108_A_0111 中文 e\u0301你好').encode('utf-8')
+        self.assertEqual(expected_raw('B', 'find-complete', contract='system'), b'')
+        self.assertEqual(expected_raw('B', 'foreground-input', contract='system'), literal)
+        self.assertEqual(expected_raw('B', 'after-paste-close', contract='system'), literal+b'!')
+        self.assertNotEqual(expected_raw('B', 'foreground-input'), literal)
+        self.assertEqual(expected_raw('A', 'foreground-input', contract='system'), b'')
+        with self.assertRaises(ValueError): expected_raw('B', 'foreground-input', contract='arbitrary')
+        runtime = {'session_id':3, 'search':{'find_query_bytes':0,'find_query_capacity':15,
+                   'result_count':0,'result_capacity':0,'retained_metadata_rows':0,'pending_navigation_count':0},
+                   'last_terminal_paste':{'target':3,'state':'completed','total_bytes':51,'source_units':42,
+                   'accepted_bytes':51,'sent_bytes':51,'in_flight_bytes':0,'retained_capacity_bytes':15,'error_present':False}}
+        _cache_bounds(runtime,system_receiver=True)
+        with self.assertRaises(ValueError):_cache_bounds(runtime)
+        for field,value in (('target',2),('total_bytes',52),('source_units',43),('sent_bytes',50),('error_present',True)):
+            wrong=copy.deepcopy(runtime);wrong['last_terminal_paste'][field]=value
+            with self.subTest(field=field):
+                with self.assertRaises(ValueError):_cache_bounds(wrong,system_receiver=True)
+
     def test_observed_cache_budgets_and_paste_errors(self):
         runtime = {'search': {'find_query_bytes': 14, 'find_query_capacity': 31,
                    'result_count': 1, 'result_capacity': 2, 'retained_metadata_rows': 117,
@@ -263,6 +285,7 @@ class WorkflowSessionsTests(unittest.TestCase):
         from experiments.build_paths import ROOT, binary
         from experiments.shell.run import execute
         from experiments.shell.workflow_resources import summarize_resource_observations
+        from experiments.shell.workflow_resource_phases import summarize_resource_phases
         executable = binary('termforge_shell')
         binaries = {name: hashlib.sha256(binary(name).read_bytes()).hexdigest() for name in
                     ('termforge_shell', 'shell_test_launcher', 'shell_text_client', 'shell_input_client')}
@@ -289,8 +312,23 @@ class WorkflowSessionsTests(unittest.TestCase):
                 self.assertEqual(resources['performance_gate'], 'not_evaluated')
                 self.assertTrue(resources['root_identity_verified'])
                 self.assertTrue(resources['sampler_joined'])
-                self.assertIsNone(resources['phase_windows'])
-                validation.update(status='passed', workflow=checked, resources=derived)
+                phases = resources['phase_windows']
+                self.assertEqual(phases['status'], 'mapped')
+                replayed = summarize_resource_phases(out/'resource-observations.jsonl', out/'resource-phases.jsonl',
+                                                     calibration=phases['calibration'], marks=resources['marks'])
+                self.assertEqual(phases, replayed)
+                self.assertEqual(len(phases['calibration']['points']), 8)
+                self.assertEqual(len(phases['markers']), 19)
+                self.assertEqual(len(phases['windows']), 19)
+                self.assertEqual(phases['windows'][0]['kind'], 'initialization-observation')
+                self.assertEqual(phases['windows'][0]['name'], 'python-runner-go-observation-to-eight-ready')
+                stable = [w for w in phases['windows'] if w['kind'] == 'six-resident']
+                creations = [w for w in phases['windows'] if w['kind'] == 'creation']
+                self.assertEqual([w['cycle'] for w in stable], [1,2,3,4,5])
+                self.assertEqual([w['cycle'] for w in creations], [1,2,3,4,5])
+                self.assertEqual(phases['sampler_scope'], 'entire-python-observer-process')
+                self.assertEqual(phases['performance_gate'], 'not_evaluated')
+                validation.update(status='passed', workflow=checked, resources=derived, phase_resources=phases)
             except BaseException as error:
                 validation['error_kind'] = type(error).__name__
                 raise

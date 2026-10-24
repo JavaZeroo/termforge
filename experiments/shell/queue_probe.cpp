@@ -130,18 +130,22 @@ static void lifecycle_edges() {
 }
 static void real_workers() {
     std::mutex gate_mutex; std::condition_variable gate_changed;
-    bool reader_entered = false, reader_released = false;
+    bool reader_entered = false, reader_released = false, resize_entered=false, resize_released=false;
     OutputQueue output;
     tf_conpty::Session session;
-    InputQueue input(session); ResizeWorker resize(session);
-    const auto release_reader = [&] {
-        std::lock_guard<std::mutex> lock(gate_mutex); reader_released = true; gate_changed.notify_all();
+    InputQueue input(session);
+    ResizeWorker resize(session,[&] {
+        std::unique_lock<std::mutex> lock(gate_mutex);resize_entered=true;gate_changed.notify_all();
+        gate_changed.wait(lock,[&] {return resize_released;});
+    });
+    const auto release_gates = [&] {
+        std::lock_guard<std::mutex> lock(gate_mutex); reader_released = resize_released = true; gate_changed.notify_all();
     };
     bool cleanup_started = false;
     const auto cleanup = [&] {
         if (cleanup_started) return;
         cleanup_started = true;
-        release_reader(); output.stop(); input.stop();
+        release_gates(); output.stop(); input.stop();
         if (session.pid) session.cancel();
         resize.stop(); session.close();
     };
@@ -172,14 +176,18 @@ static void real_workers() {
         check(joined_input.started && joined_input.joined && joined_input.stopping && !joined_input.queued_bytes &&
               !joined_input.in_flight_bytes && !joined_input.failed, "input stop joins and releases held payload");
         resize.request(40, 100); resize.start();
-        ResizeWorker::Snapshot working{};
-        await([&] { working = resize.snapshot(); return working.working; }, "real resize enters working state");
+        {std::unique_lock<std::mutex> lock(gate_mutex);
+         check(gate_changed.wait_for(lock,std::chrono::seconds(3),[&] {return resize_entered;}),"resize worker reaches explicit pre-API gate");}
+        // The old probe tried to catch a transient OS call with a polling loop.
+        // Delayed observation is now deterministic, even when the API is fast.
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        const auto working=resize.snapshot();check(working.working,"gated worker owns resize generation");
         resize.request(41, 101); resize.request(42, 102);
         const auto coalesced = resize.snapshot();
         check(coalesced.working && coalesced.pending && coalesced.working_generation == 1 &&
               coalesced.pending_generation == 3 && coalesced.requested_generation == 3 && !coalesced.completed_generation,
-              "one real in-flight resize plus latest coalesced request");
-        release_reader();
+              "one worker-owned resize plus latest coalesced request before real API");
+        release_gates();
         await([&] { output.take(65536); return resize.settled(); }, "real resize settles after output gate release");
         const auto complete = resize.snapshot();
         check(!complete.working && !complete.pending && complete.requested_generation == 3 &&

@@ -378,7 +378,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
                 except BaseException as error:
                     cleanup_errors.append("resource cleanup marker failed: " + str(error))
             try:
-                summary = resource_recorder.finish(observations_path=out / "resource-observations.jsonl")
+                summary = resource_recorder.finish(native_phases=out / "resource-phases.jsonl",
+                                                   observations_path=out / "resource-observations.jsonl")
                 (out / "resource-summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
                 record["resources"] = {"summary": "resource-summary.json", "scope": summary["scope"],
                                        "performance_gate": summary["performance_gate"]}
@@ -406,8 +407,8 @@ def main():
              "experiments/shell/workspace_interactions.hpp", "experiments/shell/workspace_scenarios.hpp",
              "experiments/shell/workspace_workflow_scenario.hpp", "experiments/shell/workflow_scenario_state.hpp",
              "experiments/shell/workflow_controller.hpp", "experiments/shell/workflow_fixture.hpp",
-             "experiments/shell/runtime_observation.hpp", "experiments/shell/workflow_sessions_checks.py",
-             "experiments/shell/workflow_resources.py", "benchmarks/tools/sample.py", "benchmarks/tools/summarize_resources.py",
+             "experiments/shell/runtime_observation.hpp", "experiments/shell/operation_observation.hpp", "experiments/shell/workflow_sessions_checks.py",
+             "experiments/shell/workflow_resources.py", "experiments/shell/workflow_resource_phases.py", "benchmarks/tools/sample.py", "benchmarks/tools/summarize_resources.py",
              "experiments/shell/workspace_main_scenario.hpp", "assets/fonts/RobotoMono-Regular.ttf",
              "experiments/shell/workspace_dpi_scenario.hpp",
              "experiments/shell/workspace_history_scenario.hpp", "experiments/shell/history_checks.py",
