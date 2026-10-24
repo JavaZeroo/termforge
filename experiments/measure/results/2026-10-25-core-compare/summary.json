@@ -1,0 +1,252 @@
+{
+  "schema_version": 2,
+  "fixture_sha256": "02ff60ca95c13ab3e41909685634ee6a800310dc39a07a98ac6965b0c57f2b14",
+  "repeats": 2,
+  "cpu_floor_seconds": 1.0,
+  "groups": [
+    {
+      "implementation": "termforge",
+      "chunk": 512,
+      "observe": 0,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 42.80352838045145,
+      "wall_ns_per_byte_median": 45.37065612672584,
+      "rounds": [
+        288,
+        312
+      ],
+      "ordinary_allocations": [
+        null,
+        null
+      ],
+      "ordinary_allocated_bytes": [
+        null,
+        null
+      ]
+    },
+    {
+      "implementation": "termforge",
+      "chunk": 512,
+      "observe": 1,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 50.887872208436725,
+      "wall_ns_per_byte_median": 55.012918054285834,
+      "rounds": [
+        248,
+        304
+      ],
+      "ordinary_allocations": [
+        407464,
+        499472
+      ],
+      "ordinary_allocated_bytes": [
+        1302561224,
+        1596687952
+      ]
+    },
+    {
+      "implementation": "termforge",
+      "chunk": 4096,
+      "observe": 0,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 42.61203891138102,
+      "wall_ns_per_byte_median": 43.84925462386242,
+      "rounds": [
+        312,
+        304
+      ],
+      "ordinary_allocations": [
+        null,
+        null
+      ],
+      "ordinary_allocated_bytes": [
+        null,
+        null
+      ]
+    },
+    {
+      "implementation": "termforge",
+      "chunk": 4096,
+      "observe": 1,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 52.81888521634615,
+      "wall_ns_per_byte_median": 53.73730969551282,
+      "rounds": [
+        256,
+        256
+      ],
+      "ordinary_allocations": [
+        420608,
+        420608
+      ],
+      "ordinary_allocated_bytes": [
+        1344579328,
+        1344579328
+      ]
+    },
+    {
+      "implementation": "termforge",
+      "chunk": 65536,
+      "observe": 0,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 44.416728216070325,
+      "wall_ns_per_byte_median": 44.77170015410147,
+      "rounds": [
+        296,
+        304
+      ],
+      "ordinary_allocations": [
+        null,
+        null
+      ],
+      "ordinary_allocated_bytes": [
+        null,
+        null
+      ]
+    },
+    {
+      "implementation": "termforge",
+      "chunk": 65536,
+      "observe": 1,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 51.59910268193816,
+      "wall_ns_per_byte_median": 51.534606841534696,
+      "rounds": [
+        256,
+        272
+      ],
+      "ordinary_allocations": [
+        420608,
+        446896
+      ],
+      "ordinary_allocated_bytes": [
+        1344579328,
+        1428615536
+      ]
+    },
+    {
+      "implementation": "alacritty",
+      "chunk": 512,
+      "observe": 0,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 28.653800626456878,
+      "wall_ns_per_byte_median": 31.674085058821387,
+      "rounds": [
+        440,
+        512
+      ],
+      "ordinary_allocations": [
+        null,
+        null
+      ],
+      "ordinary_allocated_bytes": [
+        null,
+        null
+      ]
+    },
+    {
+      "implementation": "alacritty",
+      "chunk": 512,
+      "observe": 1,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 580.0948183760684,
+      "wall_ns_per_byte_median": 599.748530982906,
+      "rounds": [
+        24,
+        24
+      ],
+      "ordinary_allocations": [
+        4514520,
+        4514520
+      ],
+      "ordinary_allocated_bytes": [
+        778296792,
+        778296792
+      ]
+    },
+    {
+      "implementation": "alacritty",
+      "chunk": 4096,
+      "observe": 0,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 29.695852963739476,
+      "wall_ns_per_byte_median": 29.545675737822123,
+      "rounds": [
+        448,
+        456
+      ],
+      "ordinary_allocations": [
+        null,
+        null
+      ],
+      "ordinary_allocated_bytes": [
+        null,
+        null
+      ]
+    },
+    {
+      "implementation": "alacritty",
+      "chunk": 4096,
+      "observe": 1,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 554.0114182692307,
+      "wall_ns_per_byte_median": 573.0598290598291,
+      "rounds": [
+        24,
+        32
+      ],
+      "ordinary_allocations": [
+        4514520,
+        6019360
+      ],
+      "ordinary_allocated_bytes": [
+        778296792,
+        1037729056
+      ]
+    },
+    {
+      "implementation": "alacritty",
+      "chunk": 65536,
+      "observe": 0,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 28.123394282550507,
+      "wall_ns_per_byte_median": 29.740686573247935,
+      "rounds": [
+        544,
+        568
+      ],
+      "ordinary_allocations": [
+        null,
+        null
+      ],
+      "ordinary_allocated_bytes": [
+        null,
+        null
+      ]
+    },
+    {
+      "implementation": "alacritty",
+      "chunk": 65536,
+      "observe": 1,
+      "samples": 2,
+      "cpu_ns_per_byte_median": 539.4047142094016,
+      "wall_ns_per_byte_median": 555.2592548076923,
+      "rounds": [
+        24,
+        32
+      ],
+      "ordinary_allocations": [
+        4514520,
+        6019360
+      ],
+      "ordinary_allocated_bytes": [
+        778296792,
+        1037729056
+      ]
+    }
+  ],
+  "performance_gate": "not_evaluated",
+  "allocation_scopes_differ": true,
+  "counter_off_is_uninstrumented": false,
+  "observation_cost_not_subtracted": true
+}

@@ -383,6 +383,7 @@ name = "termforge-alacritty-trace"
 version = "0.1.0"
 dependencies = [
  "alacritty_terminal",
+ "libc",
  "serde_json",
 ]
 

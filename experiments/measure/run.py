@@ -75,7 +75,7 @@ def validate_result(result, floor, expected):
             raise ValueError(f"mismatched {name}")
     if result["rounds"] != result["iterations"] or result["bytes_per_round"] != 78000:
         raise ValueError("unexpected workload volume")
-    if result["state_fnv1a64"] != EXPECTED_STATE:
+    if result["state_fnv1a64"] != expected.get("state_fnv1a64", EXPECTED_STATE):
         raise ValueError("unexpected state digest")
     if result["cpu_interval_differences"] != 1 or result["counted_parser_destructions"] != result["rounds"] - 1:
         raise ValueError("unexpected continuous interval endpoint")

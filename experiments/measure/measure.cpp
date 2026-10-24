@@ -176,12 +176,12 @@ int main(int argc, char** argv) {
         const size_t chunk = integer_arg(argv[2], 1048576);
         const bool observe = integer_arg(argv[3], 1) != 0;
         const double duration = duration_arg(argv[4]);
-        if ((route != "parse" && route != "state") || chunk == 0) throw std::runtime_error("invalid arguments");
+        if ((route != "parse" && route != "project" && route != "state") || chunk == 0) throw std::runtime_error("invalid arguments");
         const std::string line(76, 'x');
         std::string payload;
         for (int i = 0; i < 1000; ++i) payload += line + "\r\n";
         auto run = [&](termforge::Parser& parser) {
-            if (route == "parse") {
+            if (route != "state") {
                 for (size_t offset = 0; offset < payload.size(); offset += chunk)
                     parser.feed(std::string_view(payload).substr(offset, chunk));
                 parser.finish();
@@ -215,7 +215,11 @@ int main(int argc, char** argv) {
         std::optional<termforge::Parser> parser;
         allocations = allocated_bytes = 0;
         count_allocations = observe;
-        const auto interval = measure(duration, 8, [&] { parser.emplace(); run(*parser); });
+        const auto interval = measure(duration, 8, [&] {
+            parser.emplace(); run(*parser);
+            if (route == "project" && observe && hash_state(parser->screen) != expected_hash)
+                throw std::runtime_error("measured projection oracle failed");
+        });
         count_allocations = false;
         const auto checks = Clock::now();
         if (!correct(parser->screen) || hash_state(parser->screen) != expected_hash) throw std::runtime_error("final state oracle failed");
@@ -231,7 +235,8 @@ int main(int argc, char** argv) {
             << ",\"cpu_floor_seconds\":" << duration << ',';
         interval_json(interval, 8); std::cout << ','; clock_identity();
         std::cout << ",\"warmup_and_oracle_seconds\":" << preparation << ",\"final_oracle_seconds\":" << oracle_seconds
-            << ",\"oracle_scope\":\"warmup and final iteration; intermediate iterations not inspected\""
+            << ",\"oracle_scope\":\"" << (route == "project" && observe
+                ? "warmup and final; every measured projection also hashed" : "warmup and final iteration") << "\""
             << ",\"state_fnv1a64\":\"" << expected_hash << "\",\"ordinary_allocations\":";
         if (observe) std::cout << allocations; else std::cout << "null";
         std::cout << ",\"ordinary_allocated_bytes\":";

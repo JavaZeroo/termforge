@@ -25,6 +25,19 @@ Linux 单配置构建使用 `build/bin`。每个核心子进程限时 90 秒；�
 
 v2 的字段为 `interval_cpu_seconds` / `interval_wall_seconds`，并记录 `schema_version: 2`、门槛检查次数、时钟身份和实际析构次数。v1 的计量端点和检查策略不同，旧结果保持原样，**不可直接比较数值或拼接统计**。
 
+## 原生候选 project 对照（#26）
+
+`project` 复用同一 78,000 字节 ASCII 负载、24×80 屏幕和 100 行历史。观察关闭只执行构造、前一轮析构、分块 feed 和门槛；观察开启还在每轮生成真实状态投影/JSON、校验哈希并记录分配。`alacritty-measure` 与 `core_measure` 使用相同的连续 CPU/墙钟端点、8 轮墙钟检查间隔和独立最终状态检查。`compare.py` 以固定种子交错双方配置并保存原始 JSONL：
+
+```powershell
+cargo build --manifest-path experiments/candidates/alacritty/Cargo.toml --release --locked --bin alacritty-measure
+python experiments/measure/compare.py --out local/core-compare-new --cpu-seconds 1 --repeats 2
+```
+
+2026-10-25 [正式批次](results/2026-10-25-core-compare/)在 Windows 11 build 26200 上完成 12 组×2 个连续 1 秒样本，未并行构建/测试，但不是隔离机器。纯 feed 的 CPU 中位数：自研 42.61–44.42 ns/字节，候选 28.12–29.70；观察开启后自研 50.89–52.82，候选 539.40–580.09。它说明当前候选全量投影/JSON 成本远高于其纯 feed，不能把核心处理和适配观测混成“语言速度”，也不证明产品路径更快。
+
+普通 C++ `new` 与 Rust global allocator 统计范围不同，不是等价内存指标；peak working set 包含整个进程准备/检查。观察开启/关闭不是无插桩 A/B，任何差值都不扣除。当前仅覆盖 ASCII 长输出，交互路径、无插桩对照、跨平台与维护成本另审；`performance_gate=not_evaluated`，不能据此作最终路线决定或 WindTerm 性能结论。
+
 ## 校准能回答什么
 
 `core_measure calibrate seconds [observe_first]` 提供两个可重复诊断：

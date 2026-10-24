@@ -13,7 +13,7 @@ use alacritty_terminal::vte::ansi::{Color, NamedColor, Processor};
 use serde_json::{Value, json};
 
 #[derive(Clone, Default)]
-struct Listener(Arc<Mutex<Vec<Event>>>);
+pub(crate) struct Listener(pub(crate) Arc<Mutex<Vec<Event>>>);
 
 impl EventListener for Listener {
     fn send_event(&self, event: Event) {
@@ -21,9 +21,9 @@ impl EventListener for Listener {
     }
 }
 
-struct Size {
-    columns: usize,
-    rows: usize,
+pub(crate) struct Size {
+    pub(crate) columns: usize,
+    pub(crate) rows: usize,
 }
 
 impl Dimensions for Size {
@@ -86,7 +86,7 @@ fn rows(term: &Term<Listener>, first: i32, count: usize) -> Vec<Value> {
         .collect()
 }
 
-fn snapshot(term: &mut Term<Listener>, listener: &Listener, offset: usize) -> Value {
+pub(crate) fn snapshot(term: &mut Term<Listener>, listener: &Listener, offset: usize) -> Value {
     let history = term.grid().history_size();
     let grid = term.grid();
     let cursor = &grid.cursor;

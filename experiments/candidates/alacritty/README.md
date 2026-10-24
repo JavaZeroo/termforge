@@ -46,7 +46,7 @@ alacritty_trace input.bin rows columns history chunks.txt
 - 历史容量和屏幕行内容；
 - 测试另验证非法分块、缺失二进制和结果被改变时不能判为通过。
 
-`summary.json` 记录候选版本、许可、crate/适配器源码/二进制/输入哈希、平台、检查点和限制。2026-10-24 本地 Windows 干净构建的[结果摘要](results/2026-10-24-windows/summary.json)和[验证边界](results/2026-10-24-windows/validation.json)已审核公开；Ubuntu workflow 尚未运行。CI 只上传这些合成白名单记录，不上传候选二进制或个人配置。
+`summary.json` 记录候选版本、许可、crate/适配器源码/二进制/输入哈希、平台、检查点和限制。2026-10-24 本地 Windows 干净构建的[结果摘要](results/2026-10-24-windows/summary.json)和[验证边界](results/2026-10-24-windows/validation.json)已审核公开；[Windows/Ubuntu candidate workflow](https://github.com/JavaZeroo/termforge/actions/runs/40117504346)已运行。CI 只上传这些合成白名单记录，不上传候选二进制或个人配置。
 
 ## 适配边界与后续
 
@@ -56,3 +56,4 @@ alacritty_trace input.bin rows columns history chunks.txt
 - 备用屏/查询的一个固定轨迹不证明完整 TUI、所有 VT 模式、真实 ConPTY 生命周期或产品 UI 兼容。
 - 候选可构建不等于支持 [#23 平台台账](../../../research/windterm-2.7.0-platform-scope.md)的全部系统。Windows 7 的非 ConPTY 路径、macOS 10.13、Linux glibc 2.17、x86 和 ARM 缺口在 #26/#34 单独判断。
 - #25 已完成[共同轨迹与逐项裁决](../../differential/decisions.md)：95 次、1011 检查点，90 次一致、5 次已裁决参考差异；ED1 候选错误与 ED2 历史策略已固定签名，执行通过不等于语义接受。[扩展能力矩阵](../../differential/results/2026-10-25-capabilities-v2/summary.json)覆盖备用屏、滚动区、回复、Recovery 和 resize；[真实 cmd/more.com/Vim 核心轨迹](../../differential/results/2026-10-25-real-applications/summary.json)已验证生命周期与回放，但不是产品 GUI/TUI 验收。[有界 fuzz](../../differential/results/2026-10-25-fuzz/summary.json)固定首败与最小回归，未登记新差异仍失败；#29 决定重排合同，#26 才测量成本并重审 ADR-0003。
+- #26 已建立[共同 project 计量](../../measure/README.md#原生候选-project-对照26)：纯 feed 与全量投影/JSON 成本分开，当前候选观察适配成本显著，不能据此直接选型。交互路径、平台与维护审查仍在进行。

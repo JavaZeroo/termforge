@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "status": "complete",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "started_utc": "2026-10-24T18:49:46.670062+00:00",
+  "machine": "AMD64",
+  "cpu_floor_seconds": 1.0,
+  "repeats": 2,
+  "seed": 20261025,
+  "endpoint": "same 78,000-byte project workload and continuous interval; observation off excludes projection, observation on includes projection/JSON and allocation counting; counters are not an uninstrumented baseline",
+  "core_sha256": "7de5bd08c55472e5d00306b4850da7f76d8e51cc6e2b00e09c9375a443879aff",
+  "candidate_sha256": "74fd37b53f5403871982700133f2838ffe169d801f6d05a086bc84306781bcc3",
+  "source_sha256": {
+    "experiments/measure/measure.cpp": "1482dbb1c7fe172248195535c79f014acebb94c1dc4676fefd2b39d78c3bc9fd",
+    "experiments/measure/compare.py": "9cd59384d95624f2e3f4a5c8be661323f5e417ac6d62eb6b9c1dd55b57a6fade",
+    "experiments/candidates/alacritty/src/measure.rs": "08b60f82b00dd0083c2216c6c70cf87463c6d062f6f8095089f9322cde51a633",
+    "experiments/candidates/alacritty/src/main.rs": "7fcf080886118e0505aae774b9f41f9ba7458384377a2dd457fc73de57ae21f9"
+  },
+  "fixture_sha256": "02ff60ca95c13ab3e41909685634ee6a800310dc39a07a98ac6965b0c57f2b14",
+  "comparable_to_schema_v1": false,
+  "performance_gate": "not_evaluated",
+  "samples": 24,
+  "calibrations": 1,
+  "finished_utc": "2026-10-24T18:50:19.053042+00:00"
+}
