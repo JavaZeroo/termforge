@@ -3,10 +3,16 @@ name: External core candidate
 on:
   push:
     paths:
+      - 'CMakeLists.txt'
+      - 'experiments/core/**'
+      - 'experiments/differential/**'
       - 'experiments/candidates/alacritty/**'
       - '.github/workflows/core-candidate.yml'
   pull_request:
     paths:
+      - 'CMakeLists.txt'
+      - 'experiments/core/**'
+      - 'experiments/differential/**'
       - 'experiments/candidates/alacritty/**'
       - '.github/workflows/core-candidate.yml'
   workflow_dispatch:
@@ -22,19 +28,24 @@ jobs:
         include:
           - os: windows-2025
             binary: experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe
+            core_binary: build/bin/Release/terminal_trace.exe
           - os: ubuntu-24.04
             binary: experiments/candidates/alacritty/target/release/termforge-alacritty-trace
+            core_binary: build/bin/terminal_trace
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     env:
       PYTHONUTF8: '1'
       TERMFORGE_ALACRITTY_TRACE: ${{ github.workspace }}/${{ matrix.binary }}
+      TERMFORGE_TRACE: ${{ github.workspace }}/${{ matrix.core_binary }}
       TERMFORGE_TEST_ARTIFACTS: ${{ github.workspace }}/build/test-artifacts
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
+      - name: Install fixed semantic references
+        run: python -m pip install --require-hashes -r experiments/differential/requirements.txt
       - name: Select fixed Rust toolchain
         run: rustup default 1.92.0
       - name: Build locked candidate
@@ -43,10 +54,22 @@ jobs:
       - name: Test Rust projection
         working-directory: experiments/candidates/alacritty
         run: cargo test --locked
+      - name: Configure native trace on Windows
+        if: runner.os == 'Windows'
+        run: cmake -S . -B build -A x64
+      - name: Configure native trace on Unix
+        if: runner.os != 'Windows'
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build native trace
+        run: cmake --build build --config Release --target terminal_trace
       - name: Run headless integration checks
         run: python experiments/candidates/alacritty/run.py --out build/test-artifacts/candidate-alacritty-cli
       - name: Test runner and failure gates
         run: python -m unittest experiments.candidates.alacritty.test_candidate -v
+      - name: Compare common native traces
+        run: python experiments/differential/compare_candidate.py --out build/test-artifacts/candidate-common
+      - name: Test common comparison and failure gates
+        run: python -m unittest discover -s experiments/differential -p test_candidate_compare.py -v
       - name: Preserve synthetic candidate evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -57,3 +80,5 @@ jobs:
           path: |
             build/test-artifacts/candidate-alacritty-cli/
             build/test-artifacts/candidate-alacritty/
+            build/test-artifacts/candidate-common/
+            build/test-artifacts/candidate-comparison/
