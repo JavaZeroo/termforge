@@ -27,9 +27,9 @@ class CandidateComparisonTests(unittest.TestCase):
         self.assertTrue(self.summary["execution_passed"], self.summary["counts"])
         self.assertEqual(self.summary["runs"], 95)
         self.assertEqual(self.summary["checkpoints"], 1011)
-        self.assertEqual(self.summary["counts"], {"difference": 5, "match": 90})
+        self.assertEqual(self.summary["counts"], {"match": 90, "reference_difference": 5})
         self.assertFalse(self.summary["semantic_acceptance"])
-        self.assertFalse(self.summary["differences_adjudicated"])
+        self.assertTrue(self.summary["differences_adjudicated"])
         for record in self.summary["records"]:
             self.assertFalse(record.get("core_fragmentation_difference"))
             self.assertFalse(record.get("candidate_fragmentation_difference"))
@@ -40,7 +40,7 @@ class CandidateComparisonTests(unittest.TestCase):
                              next(case.data for case in cases() if case.name == record["case"]))
 
     def test_current_differences_keep_exact_case_offset_and_direction(self):
-        differences = [record for record in self.summary["records"] if record["status"] == "difference"]
+        differences = [record for record in self.summary["records"] if record["status"] == "reference_difference"]
         self.assertEqual({(record["case"], record["plan"]) for record in differences},
                          {("erase_display", plan)
                           for plan in ("byte", "whole", "seed:42", "seed:20261022", "seed:8675309")})
@@ -56,6 +56,12 @@ class CandidateComparisonTests(unittest.TestCase):
             self.assertEqual((difference["offset"], difference["path"],
                               difference["expected"], difference["actual"]), erase_expected[record["plan"]])
             self.assertIn("neither is an oracle", record["difference_direction"])
+
+    def test_changed_input_cannot_reuse_adjudicated_difference(self):
+        case = next(case for case in cases() if case.name == "erase_display")
+        changed = type(case)(case.name, case.text + "\x1b[31m")
+        report, _, _ = run_case(self.core, self.candidate, changed, "whole", self.artifacts / "changed-known")
+        self.assertEqual(report["status"], "difference")
 
     def test_missing_candidate_is_an_execution_failure(self):
         case = next(case for case in cases() if case.name == "ascii_wrap_scroll")

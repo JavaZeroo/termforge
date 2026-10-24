@@ -74,7 +74,7 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 共同投影只额外统一 NFC 与空白/空单元格表示；显式空格、`mode_bits` 和回复不在这一投影裁决，样式、宽度、光标、屏幕和历史仍逐格比较。`expected` 仅是自研核心字段位置、`actual` 是候选，二者都不是真值。`execution_passed=true` 只表示执行与分块检查通过，`semantic_acceptance` 固定为 false，差异不得自动视为兼容通过或任一实现错误。
 
-2026-10-25 修复后[候选 Windows 摘要](results/2026-10-25-candidate-common-v2/summary.json)为 95 次、1011 检查点，90 次一致、5 次差异，剩余全部属于 `erase_display`；[pyte 摘要](results/2026-10-25/summary.json)为 70 次一致、25 次保留的已知差异。`erase_display` 的最早差异随分块检查点位置而不同，测试按五种计划分别固定，不把它误报为分块失败。新增 3 个自动门槛与原有 8 个差分测试共同通过；候选 workflow 在 Windows/Ubuntu 构建两个原生 trace 并运行同一矩阵。未构建可选 Rust 候选的通用主回归会明确跳过这 3 项，candidate workflow 不以该跳过代替执行。六类 pyte 差异已有[逐项裁决](decisions.md)，`erase_display`、真实应用和 fuzz 仍由 #25 后续处理，本切片不完成核心路线决定。
+2026-10-25 [候选 Windows 摘要](results/2026-10-25-candidate-common-v3/summary.json)为 95 次、1011 检查点，90 次一致、5 次已裁决参考差异；[pyte 摘要](results/2026-10-25/summary.json)为 70 次一致、25 次保留的已知差异。`erase_display` 的最早差异随分块检查点位置而不同，[ED1/ED2 已分开裁决](decisions.md#erase_display-的-ed1ed2-分离裁决)，`candidate-known-differences.json` 按五种计划固定输入、最早差异和最终状态；新输入不能复用旧裁决。新增 4 个自动门槛与原有 8 个差分测试共同通过；候选 workflow 在 Windows/Ubuntu 构建两个原生 trace 并运行同一矩阵。未构建可选 Rust 候选的通用主回归会明确跳过这 4 项，candidate workflow 不以该跳过代替执行。六类 pyte 差异与 `erase_display` 均已有[逐项裁决](decisions.md)，`differences_adjudicated=true` 只覆盖当前差异，`semantic_acceptance=false` 不把它们算作兼容一致。真实应用和 fuzz 仍由 #25 后续处理，本切片不完成核心路线决定。
 
 ## 2026-10-22 实际验证
 

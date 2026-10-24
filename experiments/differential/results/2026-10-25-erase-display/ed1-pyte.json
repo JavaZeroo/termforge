@@ -1,0 +1,27 @@
+{
+  "case": "ed1_only",
+  "plan": "whole",
+  "input_sha256": "2a8ba0a12ab9e0ba9e745943b4f82983a738ded25f33b22b7641761419adf2d8",
+  "bytes": 25,
+  "rows": 3,
+  "columns": 12,
+  "history": 3,
+  "chunk_sizes": [
+    25
+  ],
+  "checkpoints": 2,
+  "status": "match",
+  "returncode": 0,
+  "known_difference": null,
+  "first_difference": null,
+  "error": null,
+  "normalization": "NFC text; pyte cursor.x==columns maps to wrap_pending + last column",
+  "reproduce": [
+    "terminal_trace",
+    "input.bin",
+    "3",
+    "12",
+    "3",
+    "chunks.txt"
+  ]
+}

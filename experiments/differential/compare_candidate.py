@@ -8,7 +8,7 @@ import platform
 import subprocess
 
 from cases import cases
-from run import ROOT, canonicalize_core, chunks, compare_traces, sha, write_json
+from run import ROOT, canonicalize_core, chunks, compare_traces, sha, state_sha, write_json
 from experiments.candidates.alacritty.run import trace_binary as candidate_trace_binary
 
 
@@ -59,8 +59,17 @@ def run_case(core_binary, candidate_binary, case, plan, output):
     difference = None
     if core_code == 0 and candidate_code == 0 and not core_error and not candidate_error:
         difference = compare_traces(core, candidate)
-    status = ("execution_failure" if core_code != 0 or candidate_code != 0 or core_error or candidate_error
-              else "difference" if difference else "match")
+    status = "execution_failure" if core_code != 0 or candidate_code != 0 or core_error or candidate_error else "match"
+    if difference:
+        signature = dict(input_sha256=sha(output / "input.bin"), rows=case.rows, columns=case.columns,
+                         history=case.history,
+                         first_difference={key: value for key, value in difference.items() if key != "checkpoint"},
+                         final_core_sha256=state_sha(core[-1]["screen"]),
+                         final_candidate_sha256=state_sha(candidate[-1]["screen"]))
+        known_path = Path(__file__).with_name("candidate-known-differences.json")
+        known = json.loads(known_path.read_text(encoding="utf-8")) if known_path.exists() else {}
+        expected = known.get(case.name, {}).get("plans", {}).get(plan)
+        status = "reference_difference" if expected == signature else "difference"
     report = dict(case=case.name, plan=plan, input_sha256=sha(output / "input.bin"),
                   bytes=len(case.data), rows=case.rows, columns=case.columns, history=case.history,
                   chunk_sizes=sizes, checkpoints=len(core), status=status,
@@ -99,6 +108,7 @@ def run_suite(core_binary, candidate_binary, output, selected=None, plans=None):
     sources = ["experiments/core/trace.cpp", "experiments/core/terminal.hpp", "experiments/core/screen.hpp",
                "experiments/core/unicode_width.hpp", "experiments/differential/run.py",
                "experiments/differential/cases.py", "experiments/differential/compare_candidate.py",
+               "experiments/differential/candidate-known-differences.json",
                "experiments/candidates/alacritty/src/main.rs", "experiments/candidates/alacritty/Cargo.toml",
                "experiments/candidates/alacritty/Cargo.lock"]
     execution_passed = all(record["status"] not in ("execution_failure", "fragmentation_failure")
@@ -111,7 +121,9 @@ def run_suite(core_binary, candidate_binary, output, selected=None, plans=None):
                    counts={status: sum(record["status"] == status for record in records)
                            for status in sorted({record["status"] for record in records})},
                    passed=execution_passed, execution_passed=execution_passed,
-                   semantic_acceptance=False, differences_adjudicated=False,
+                   semantic_acceptance=False,
+                   differences_adjudicated=all(record["status"] in ("match", "reference_difference")
+                                               for record in records),
                    performance_measured=False, records=records)
     write_json(output / "summary.json", summary)
     return summary
