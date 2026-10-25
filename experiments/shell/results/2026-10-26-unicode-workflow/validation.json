@@ -1,0 +1,115 @@
+{
+  "schema": "termforge-unicode-workflow-validation-v1",
+  "source_commit": "730b5cde632bb33e2411686442a3b9c7255a64c5",
+  "source_tree": "6813612ba8c555232c83c41dbbc57f9c773fc586",
+  "source_binding": "Staged source contents matched the commit and the binaries exercised by the regression.",
+  "passed": false,
+  "scoped_validation_passed": true,
+  "complete_unicode_ime_verified": false,
+  "complete_workflow_verified": false,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 local x64",
+    "python": "build/r1-python/Scripts/python.exe",
+    "independent_layout_model": "pyte==0.8.2",
+    "harness": "owned non-input desktop and Job; no screenshots, foreground input or display-setting changes"
+  },
+  "scoped_checks": {
+    "pure_oracles": {
+      "count": 22,
+      "passed": true,
+      "includes_wrong_text_geometry_generation_completion_padding_missing_lines_and_nfc_changes": true
+    },
+    "native_conpty_fixture": {
+      "command": "ctest --test-dir build -C Release -R '^workflow_fixture$' --output-on-failure",
+      "passed": true,
+      "seconds": 22.68
+    },
+    "narrow_workspace": {
+      "window": "1008x681",
+      "main_columns": 54,
+      "bottom_columns": 82,
+      "records_per_f_role": 32000,
+      "source_bytes_per_f_role": 2048000,
+      "default_and_candidate_passed": true,
+      "checkpoints": 26,
+      "closed_session_identities": 18,
+      "active_children_after": 0,
+      "original_timeout_seconds": 90
+    },
+    "ordinary_workflow": {
+      "default_rounds": 2,
+      "candidate_rounds": 2,
+      "passed": true
+    },
+    "evidence_layers": {
+      "complete_source_literal": true,
+      "console_char_info_and_leading_trailing_flags": true,
+      "actual_transport_tail_bounded_to_8192_bytes": true,
+      "independent_model_geometry": true,
+      "decomposed_source_preserved": true,
+      "nfc_is_not_used_as_original_text_proof": true,
+      "console_cell_projection_example": "30/5",
+      "termforge_and_independent_model_projection_example": "31/5"
+    }
+  },
+  "default_ctest": {
+    "command": "ctest --test-dir build -C Release --output-on-failure",
+    "total": 40,
+    "passed": 39,
+    "failed": 1,
+    "seconds": 314.56,
+    "shell_nested_errors": 2,
+    "shell_nested_skipped": 3,
+    "remaining_failures": [
+      "test_commands_unicode_editing_interrupt_and_normal_exit",
+      "test_resize_child_dimensions_and_interrupt"
+    ]
+  },
+  "candidate_ctest": {
+    "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure",
+    "total": 42,
+    "passed": 41,
+    "failed": 1,
+    "seconds": 361.0,
+    "shell_nested_errors": 4,
+    "shell_nested_skipped": 3,
+    "remaining_failures": [
+      "test_close_during_continuous_output",
+      "test_close_while_resizing_continuous_output",
+      "test_commands_unicode_editing_interrupt_and_normal_exit",
+      "test_resize_child_dimensions_and_interrupt"
+    ],
+    "failure_stage": "Early text/input scenarios; a close-worker root cause is not established"
+  },
+  "binary_sha256": {
+    "default/termforge_shell": "5409b2bf474ebd77d6012ed74451746c0c4068d90c73a493ee86a6bbe4f355bc",
+    "default/shell_test_launcher": "3a0ccd7a936f106235ff6d45c4b8d2640763e018b645764b6b1717beb99d8e75",
+    "default/shell_text_client": "a2981a1d78384b2711f3a4b67a204b6677701dda5bb6ed8230315fa3cd82349f",
+    "default/shell_size_client": "eb9baa6885227d6a7b73a0c3374442f9912b55218b998258932a9973ff8d772b",
+    "candidate/termforge_shell": "af7d96414350560089e6af6c066dba3829cf05e26dedd45efc39919f26a084c0",
+    "candidate/shell_test_launcher": "98f55be477de81c057a5084ac8369f92bbba55f4c1b104d35eb10d8c7be67e0a",
+    "candidate/shell_text_client": "a1ae39bb04f3d6d250da135353c117835703da904d3533f2f3e4ac1cf4f891f7",
+    "candidate/shell_size_client": "f3346e2b53b0e35253d86e5ebe4d2e8d2d1bec626e6d33441bbacc17fff062f4"
+  },
+  "static_investigation": {
+    "target": "WindTerm 2.7.0 Windows x64",
+    "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "target_executed": false,
+    "read_only_ghidra": true,
+    "matched_metric_symbols": 113,
+    "selected_functions_decompiled": 10,
+    "decompilation_completed": true,
+    "reproduction_entry": "research/README.md and research/ghidra/FindUnicodeMetrics.java",
+    "runtime_grid_or_windterm_parity_verified": false
+  },
+  "limitations": [
+    "This is a bounded F-fixture and evidence-layer validation, not full Unicode, grapheme, emoji, IME, fallback or keyboard-mode acceptance.",
+    "The complete default and candidate suites are not green; #36 and candidate early input/close scenarios remain open.",
+    "Source bytes, ConPTY cells, independent layout and TermForge text are distinct evidence layers; known cell-policy differences are not silently treated as equivalent.",
+    "No real distinct-DPI transition or presented-frame endpoint was established; no performance claim is made.",
+    "Raw private artifacts and third-party decompilation remain local and are not reproduced here."
+  ]
+}
