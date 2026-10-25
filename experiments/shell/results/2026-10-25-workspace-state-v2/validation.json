@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "scope": "issue 33 bounded v2 workspace configuration model; no product restore integration",
+  "local_passed": true,
+  "platforms": ["Windows-11-10.0.26200-SP0", "Ubuntu on WSL with GNU 13.3.0"],
+  "coverage": [
+    "full v2 Unicode title/path, quote, geometry, launch kind, focus, split and zoom round trip",
+    "v1 exact field migration and corrupt-v1 rejection",
+    "valid empty session set distinct from missing or corrupt configuration",
+    "all truncated prefixes, duplicate/unknown fields and unknown versions",
+    "odd hex, overlong, surrogate, out-of-range and invalid UTF-8 and control text",
+    "launch kind, distribution, directory, zoom, session count, window and focus invariants",
+    "invalid-save preservation, failed replacement, temporary cleanup and Unicode paths"
+  ],
+  "commands": [
+    "cmake --build build --config Release --target layout_state_test workspace_state_test",
+    "build/bin/Release/layout_state_test.exe",
+    "build/bin/Release/workspace_state_test.exe",
+    "cmake -S . -B build/ci-shell-clean-20261025 -A x64 -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=ON -DPython3_EXECUTABLE=D:/Code/termforge/build/r1-python/Scripts/python.exe",
+    "cmake --build build/ci-shell-clean-20261025 --config Release --target shell_test_launcher workspace_state_test",
+    "ctest --test-dir build/ci-shell-clean-20261025 -C Release -R 'candidate_shell_tui|workspace_state' --output-on-failure",
+    "wsl.exe -d Ubuntu -e sh -c 'cd /mnt/d/Code/termforge && cmake -S . -B build/e1-workspace -DCMAKE_BUILD_TYPE=Release && cmake --build build/e1-workspace --target workspace_state_test -j2 && build/e1-workspace/bin/workspace_state_test'"
+  ],
+  "results": {
+    "windows_layout_state": "passed",
+    "windows_workspace_state": "passed",
+    "clean_launcher_and_candidate_tui": "2/2 passed; shell_size_client.exe exists and is exercised",
+    "ubuntu_workspace_state": "passed"
+  },
+  "source_sha256": {
+    "CMakeLists.txt": "73a169af1d682f63dd1cdc528090c92637144907f966ed088443e4453f09c32a",
+    "experiments/shell/layout_state.hpp": "ac1b56bb2809ff2b28cf81e7806280cda0c547d5b1417228b1b8b264f1d1d5c5",
+    "experiments/shell/workspace_state.hpp": "0c0e4e4c5170126f92192cc003657781d4bd8ea09fbf48ff8801701737fe8225",
+    "experiments/shell/workspace_state_test.cpp": "62e19383a041788e9c8fc2874dfee76253f8ef1de5b3f48bca3253f238ecf04b",
+    "build/bin/Release/workspace_state_test.exe": "ca9c72baf2c4bccae4c482238ff52e4c2eb4310e975f4776c80acac8ddcea2ec",
+    "build/e1-workspace/bin/workspace_state_test": "c5b88c462a96a8418e3878ee1ca094562109cd3305135caf6b42288a6ebe8654"
+  },
+  "default_full_ctest": {
+    "completed": true,
+    "elapsed_seconds": 287.06,
+    "passed": false,
+    "passed_tests": 39,
+    "total_tests": 40,
+    "workspace_state": "passed",
+    "shell_nested_failures": 6,
+    "details": [
+      "normal/resize stage 5 timeouts, retained by issue 36",
+      "ui-main empty error",
+      "split physical rectangles mismatch",
+      "middle click did not open rename",
+      "partial session row setup failed"
+    ],
+    "geometry_interaction_issue": "https://github.com/JavaZeroo/termforge/issues/38"
+  },
+  "candidate_full_ctest": {
+    "completed": true,
+    "elapsed_seconds": 328.34,
+    "passed": false,
+    "passed_tests": 37,
+    "total_tests": 42,
+    "workspace_state": "passed",
+    "failures": [
+      {"test": "text_actions", "reason": "Find match and selection lost identity after real ConPTY resize replay"},
+      {"test": "workflow_sessions", "reason": "could not read retained line110"},
+      {"test": "shell", "reason": "suite timeout; nested normal, resize, find and selection failures; not attributed solely to issue 36"},
+      {"test": "selection_bytes", "reason": "CONT wide/combining fixture row not visible"},
+      {"test": "selection_context", "reason": "TF_FIND_077 fixture row not visible"}
+    ]
+  },
+  "warnings": [
+    "Ubuntu build emitted clock-skew warnings from the mounted filesystem; tests still executed and passed, not a performance measurement"
+  ],
+  "limitations": [
+    "The model and tests do not restore Workspace tabs or start real sessions",
+    "Unknown-version overwrite suppression belongs to the product integration and is not yet exercised",
+    "No arbitrary command lines, credentials, environment, history, process identifiers or pending input are persisted",
+    "Only the current single workspace and five adjustable layout ratios are modeled; no multi-window or adjustable main-split ratio is claimed",
+    "Issue 33 and the R2 milestone remain open"
+  ]
+}

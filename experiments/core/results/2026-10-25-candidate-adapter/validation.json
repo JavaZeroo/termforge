@@ -27,7 +27,7 @@
     "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib": "3fa9d18793a20477e80969cd0f13ef28e5cdb0c9607b62d367dd025f06f893be"
   },
   "source_sha256": {
-    "CMakeLists.txt": "af7ada1916cf3cab06a5483a9cd9f2aa272bfe6750f76bdc7708a1f41afdd022",
+    "CMakeLists.txt": "73a169af1d682f63dd1cdc528090c92637144907f966ed088443e4453f09c32a",
     ".github/workflows/core-candidate.yml": "77e585d2c470b4ba52a3bc7b367a95e8cd347cf4647dd70a2b88fa1551d98f63",
     "experiments/candidates/alacritty/Cargo.toml": "c5f89fda48ab73f30adfdcc4437fb3eeb1779647886d85364d91395bf8beec86",
     "experiments/candidates/alacritty/Cargo.lock": "91bd90015f37ad5324ec4277377a8565e46234cfaa06ab7faec3e654aad3f105",
@@ -87,10 +87,10 @@
   },
   "full_candidate_ctest": {
     "completed": true,
-    "elapsed_seconds": 328.60,
+    "elapsed_seconds": 328.34,
     "passed": false,
-    "passed_tests": 36,
-    "total_tests": 41,
+    "passed_tests": 37,
+    "total_tests": 42,
     "failures": [
       {"test": "text_actions", "reason": "Find match and selection lost identity after real ConPTY resize replay"},
       {"test": "workflow_sessions", "reason": "could not read retained line110"},
@@ -101,11 +101,11 @@
   },
   "default_ctest": {
     "completed": true,
-    "elapsed_seconds": 295.16,
+    "elapsed_seconds": 287.06,
     "passed": false,
-    "passed_tests": 38,
-    "total_tests": 39,
-    "failures": [{"test": "shell", "reason": "issue 36 normal/resize Ctrl-C and post-interrupt lifecycle"}]
+    "passed_tests": 39,
+    "total_tests": 40,
+    "failures": [{"test": "shell", "reason": "six nested failures: issue 36 normal/resize plus issue 38 geometry/interaction"}]
   },
   "default_shell_integrated": false,
   "candidate_shell_integrated": true,

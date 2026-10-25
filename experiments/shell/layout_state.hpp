@@ -39,6 +39,38 @@ inline bool valid_layout(const LayoutState& state) noexcept {
            bounded(state.right_top, .2, .8);
 }
 
+namespace layout_detail {
+inline bool parse_layout_v1(const std::string& document, LayoutState& state) {
+    if (document.empty() || document.size() > 1024 || document.back() != '\n') return false;
+    for (unsigned char ch : document)
+        if ((ch < 32 && ch != '\n' && ch != '\r' && ch != '\t') || ch > 126) return false;
+    std::istringstream input(document);
+    input.imbue(std::locale::classic());
+    const auto field = [&](const char* expected, auto& value) {
+        std::string line, actual;
+        if (!std::getline(input, line)) return false;
+        std::istringstream row(line);
+        row.imbue(std::locale::classic());
+        if (!(row >> actual >> value) || actual != expected) return false;
+        row >> std::ws;
+        return row.eof();
+    };
+    LayoutState result;
+    int version = 0, sides = -1, focus = -1;
+    if (!field("TermForge-layout", version) || version != 1 ||
+        !field("left", result.left) || !field("right", result.right) ||
+        !field("upper", result.upper) || !field("left_top", result.left_top) ||
+        !field("right_top", result.right_top) || !field("sides", sides) || !field("focus", focus) ||
+        (sides != 0 && sides != 1) || (focus != 0 && focus != 1) || !valid_layout(result)) return false;
+    input >> std::ws;
+    if (!input.eof()) return false;
+    result.sides = sides != 0;
+    result.focus = focus != 0;
+    state = result;
+    return true;
+}
+} // namespace layout_detail
+
 // A complete, versioned document is required: partial recovery could silently
 // combine a new layout with unrelated old fields. Reads are bounded even if the
 // file grows concurrently; malformed/unreadable files select all defaults.
@@ -50,32 +82,9 @@ inline LayoutState load_layout(const std::filesystem::path& path) noexcept {
         file.read(buffer, sizeof buffer);
         const auto size = file.gcount();
         if (file.bad() || !file.eof() || size < 1 || size > 1024 || buffer[size - 1] != '\n') return {};
-        std::string document(buffer, static_cast<std::size_t>(size));
-        for (unsigned char ch : document)
-            if ((ch < 32 && ch != '\n' && ch != '\r' && ch != '\t') || ch > 126) return {};
-        std::istringstream input(document);
-        input.imbue(std::locale::classic());
-        const auto field = [&](const char* expected, auto& value) {
-            std::string line, actual;
-            if (!std::getline(input, line)) return false;
-            std::istringstream row(line);
-            row.imbue(std::locale::classic());
-            if (!(row >> actual >> value) || actual != expected) return false;
-            row >> std::ws;
-            return row.eof();
-        };
         LayoutState state;
-        int version = 0, sides = -1, focus = -1;
-        if (!field("TermForge-layout", version) || version != 1 ||
-            !field("left", state.left) || !field("right", state.right) ||
-            !field("upper", state.upper) || !field("left_top", state.left_top) ||
-            !field("right_top", state.right_top) || !field("sides", sides) || !field("focus", focus) ||
-            (sides != 0 && sides != 1) || (focus != 0 && focus != 1) || !valid_layout(state)) return {};
-        input >> std::ws;
-        if (!input.eof()) return {};
-        state.sides = sides != 0;
-        state.focus = focus != 0;
-        return state;
+        return layout_detail::parse_layout_v1(std::string(buffer, static_cast<std::size_t>(size)), state)
+            ? state : LayoutState{};
     } catch (...) { return {}; }
 }
 

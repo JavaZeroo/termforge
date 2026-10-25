@@ -57,6 +57,8 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 
 自动测试仅读写各自结果目录下的 `workspace.layout`，不会读取或修改上述用户配置。
 
+`workspace_state.hpp` 另实现有界 v2 配置模型与严格迁移/损坏分类，保留上述 v1 兼容。当前仅在 Windows/Ubuntu 完成无窗口模型和原子写入验证，未接入 Workspace 启动恢复；不表示 #33 已完成，也不保存任意命令行、秘密、历史或进程状态。验证见[模型结果](results/2026-10-25-workspace-state-v2/validation.json)。
+
 ## 所有权与调度
 
 - ConPTY 输出线程将最多 64 KiB 的读取块放入 256 KiB 队列；满时等待窗口消费，正常运行不丢弃字节。

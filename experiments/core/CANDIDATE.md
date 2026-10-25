@@ -33,4 +33,4 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 
 `candidate_core_test` 覆盖 whole/逐字节、Unicode/组合标记、备用屏恢复、真实光标回复、空载荷事件、稳定 ID/版本/淘汰、选择/搜索/HistoryViewport、软硬换行、滚动区、ED1/ED2、resize 和错误参数。证据见 [validation](results/2026-10-25-candidate-adapter/validation.json)。
 
-候选整合不表示 #27 已关闭：完整候选 CTest 自然结束为 36/41；`text_actions`、`workflow_sessions`、`selection_bytes`、`selection_context` 有行身份/保真失败，`shell` 也超时，不能只归因于 #36。#28 的更多真实 TUI、#29 的 resize/重放身份合同、#37 的 Windows CI 捕获和最终呈现/性能验收均保持独立开放。
+候选整合不表示 #27 已关闭：完整候选 CTest 自然结束为 37/42，其中 #33 的独立 `workspace_state` 模型测试通过；`text_actions`、`workflow_sessions`、`selection_bytes`、`selection_context` 有行身份/保真失败，`shell` 也超时，不能只归因于 #36。#28 的更多真实 TUI、#29 的 resize/重放身份合同、#37 的 Windows CI 捕获和最终呈现/性能验收均保持独立开放。
