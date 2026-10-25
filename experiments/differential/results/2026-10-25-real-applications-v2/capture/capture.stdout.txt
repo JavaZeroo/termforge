@@ -1,0 +1,1 @@
+real shell, pager and editor captures passed

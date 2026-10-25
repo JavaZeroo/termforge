@@ -56,6 +56,9 @@ jobs:
       - name: Test Rust projection
         working-directory: experiments/candidates/alacritty
         run: cargo test --locked
+      - name: Test fixed upstream and compatibility patches
+        working-directory: experiments/candidates/alacritty
+        run: cargo test --locked --package alacritty_terminal
       - name: Build candidate measurement
         working-directory: experiments/candidates/alacritty
         run: cargo build --release --locked --bin alacritty-measure

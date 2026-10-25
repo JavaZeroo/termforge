@@ -9,7 +9,8 @@ import subprocess
 
 from cases import cases
 from run import ROOT, canonicalize_core, chunks, compare_traces, sha, state_sha, write_json
-from experiments.candidates.alacritty.run import trace_binary as candidate_trace_binary
+from experiments.candidates.alacritty.run import VERSION as CANDIDATE_VERSION
+from experiments.candidates.alacritty.run import trace_binary as candidate_trace_binary, vendor_sources
 
 
 def common_projection(records):
@@ -110,11 +111,11 @@ def run_suite(core_binary, candidate_binary, output, selected=None, plans=None):
                "experiments/core/unicode_width.hpp", "experiments/differential/run.py",
                "experiments/differential/cases.py", "experiments/differential/compare_candidate.py",
                "experiments/differential/candidate-known-differences.json",
-               "experiments/candidates/alacritty/src/main.rs", "experiments/candidates/alacritty/Cargo.toml",
-               "experiments/candidates/alacritty/Cargo.lock"]
+               "experiments/candidates/alacritty/src/main.rs", "experiments/candidates/alacritty/run.py",
+               "experiments/candidates/alacritty/Cargo.toml", "experiments/candidates/alacritty/Cargo.lock"] + vendor_sources()
     execution_passed = all(record["status"] not in ("execution_failure", "fragmentation_failure")
                            for record in records)
-    summary = dict(schema=1, candidate="alacritty_terminal", version="0.26.0",
+    summary = dict(schema=1, candidate="alacritty_terminal", version=CANDIDATE_VERSION,
                    platform=platform.platform(), python=platform.python_version(),
                    core_trace_sha256=sha(core_binary), candidate_trace_sha256=sha(candidate_binary),
                    source_sha256={path: sha(ROOT / path) for path in sources},

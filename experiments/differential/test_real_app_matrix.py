@@ -33,7 +33,7 @@ class RealApplicationMatrixTests(unittest.TestCase):
     def test_real_lifecycle_and_core_comparison(self):
         self.assertTrue(self.summary["execution_passed"], self.summary["counts"])
         self.assertEqual(self.summary["runs"], 3)
-        self.assertEqual(self.summary["counts"], {"match": 2, "reference_difference": 1})
+        self.assertEqual(self.summary["counts"], {"match": 3})
         self.assertTrue(self.summary["real_application_covered"])
         self.assertFalse(self.summary["semantic_acceptance"])
         self.assertIsNone(self.summary["presented_done"])
@@ -50,12 +50,11 @@ class RealApplicationMatrixTests(unittest.TestCase):
             replay = self.artifacts / "suite" / record["case"] / "input.bin"
             self.assertEqual(replay.read_bytes(), capture.read_bytes())
 
-    def test_shell_keeps_adjudicated_history_difference(self):
+    def test_shell_matches_without_history_migration(self):
         record = next(record for record in self.summary["records"] if record["case"] == "shell")
-        self.assertEqual(record["status"], "reference_difference")
-        self.assertEqual((record["first_difference"]["path"], record["first_difference"]["expected"],
-                          record["first_difference"]["actual"]), (".screen.history.length", 0, 1))
-        self.assertIn("not a compatibility match", record["decision"])
+        self.assertEqual(record["status"], "match")
+        self.assertIsNone(record["first_difference"])
+        self.assertNotIn("decision", record)
 
 
 if __name__ == "__main__":

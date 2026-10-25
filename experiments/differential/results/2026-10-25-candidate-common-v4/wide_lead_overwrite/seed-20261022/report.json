@@ -1,0 +1,41 @@
+{
+  "case": "wide_lead_overwrite",
+  "plan": "seed:20261022",
+  "input_sha256": "8ac4252536df91fa15f7fb224d1838b786e8e439f31624403807e63c5d2e46cd",
+  "bytes": 5,
+  "rows": 3,
+  "columns": 12,
+  "history": 3,
+  "chunk_sizes": [
+    5
+  ],
+  "checkpoints": 2,
+  "status": "match",
+  "core_returncode": 0,
+  "candidate_returncode": 0,
+  "core_error": null,
+  "candidate_error": null,
+  "first_difference": null,
+  "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+  "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+  "reproduce": {
+    "core": [
+      "terminal_trace",
+      "input.bin",
+      "3",
+      "12",
+      "3",
+      "chunks.txt"
+    ],
+    "candidate": [
+      "termforge-alacritty-trace",
+      "input.bin",
+      "3",
+      "12",
+      "3",
+      "chunks.txt"
+    ]
+  },
+  "core_fragmentation_difference": null,
+  "candidate_fragmentation_difference": null
+}

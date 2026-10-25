@@ -14,6 +14,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from experiments.build_paths import binary
+from experiments.candidates.alacritty.run import vendor_sources
 from experiments.measure.run import EXPECTED_STATE, execute
 
 CANDIDATE_STATE = "11966868740884721388"
@@ -55,8 +56,9 @@ def run_batch(core, candidate, output, floor, repeats, seed, route="project"):
                     core_sha256=sha(core), candidate_sha256=sha(candidate),
                     source_sha256={path: sha(ROOT / path) for path in (
                         "experiments/measure/measure.cpp", "experiments/measure/compare.py",
+                        "experiments/measure/run.py", "experiments/candidates/alacritty/run.py",
                         "experiments/candidates/alacritty/src/measure.rs",
-                        "experiments/candidates/alacritty/src/main.rs")},
+                        "experiments/candidates/alacritty/src/main.rs") + tuple(vendor_sources())},
                     fixture_sha256=hashlib.sha256(workload["fixture"]).hexdigest(),
                     comparable_to_schema_v1=False, performance_gate="not_evaluated", samples=0, calibrations=0)
     meta = output / "manifest.json"

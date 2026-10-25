@@ -74,7 +74,7 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 共同投影只额外统一 NFC 与空白/空单元格表示；显式空格、`mode_bits` 和回复不在这一投影裁决，样式、宽度、光标、屏幕和历史仍逐格比较。`expected` 仅是自研核心字段位置、`actual` 是候选，二者都不是真值。`execution_passed=true` 只表示执行与分块检查通过，`semantic_acceptance` 固定为 false，差异不得自动视为兼容通过或任一实现错误。
 
-2026-10-25 [候选 Windows 摘要](results/2026-10-25-candidate-common-v3/summary.json)为 95 次、1011 检查点，90 次一致、5 次已裁决参考差异；[pyte 摘要](results/2026-10-25/summary.json)为 70 次一致、25 次保留的已知差异。`erase_display` 的最早差异随分块检查点位置而不同，[ED1/ED2 已分开裁决](decisions.md#erase_display-的-ed1ed2-分离裁决)，`candidate-known-differences.json` 按五种计划固定输入、最早差异和最终状态；新输入不能复用旧裁决。新增 4 个自动门槛与原有 8 个差分测试共同通过；候选 workflow 在 Windows/Ubuntu 构建两个原生 trace 并运行同一矩阵。未构建可选 Rust 候选的通用主回归会明确跳过这 4 项，candidate workflow 不以该跳过代替执行。六类 pyte 差异与 `erase_display` 均已有[逐项裁决](decisions.md)，`differences_adjudicated=true` 只覆盖当前差异，`semantic_acceptance=false` 不把它们算作兼容一致。真实应用和 fuzz 仍由 #25 后续处理，本切片不完成核心路线决定。
+2026-10-25 [候选 Windows 摘要](results/2026-10-25-candidate-common-v3/summary.json)为 95 次、1011 检查点，90 次一致、5 次已裁决参考差异；[pyte 摘要](results/2026-10-25/summary.json)为 70 次一致、25 次保留的已知差异。`erase_display` 的最早差异随分块检查点位置而不同，[ED1/ED2 已分开裁决](decisions.md#erase_display-的-ed1ed2-分离裁决)，当时的 `candidate-known-differences.json` 按五种计划固定输入、最早差异和最终状态；新输入不能复用旧裁决。新增 4 个自动门槛与原有 8 个差分测试共同通过；候选 workflow 在 Windows/Ubuntu 构建两个原生 trace 并运行同一矩阵。未构建可选 Rust 候选的通用主回归会明确跳过这 4 项，candidate workflow 不以该跳过代替执行。六类 pyte 差异与 `erase_display` 均已有[逐项裁决](decisions.md)，`differences_adjudicated=true` 只覆盖当前差异，`semantic_acceptance=false` 不把它们算作兼容一致。真实应用和 fuzz 仍由 #25 后续处理，本切片不完成核心路线决定。
 
 ## 扩展能力轨迹（#25）
 
@@ -105,5 +105,11 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 [历史运行摘要](results/2026-10-22/summary.json)记录共同子集、精确已知差异和分块不变性检查结果；已知差异不算兼容通过。摘要保存输入/源码/二进制/参考包源码哈希和每次最早差异；完整 trace 留在本地输出目录，可按上面的命令重建。
 
 自动测试覆盖实际运行整个矩阵、故意制造额外差异、截断序列执行失败、错误分块计划，以及中间状态恢复的漏检回归。变更已知差异前须核查规范和用例，再审查预期；测试不会自动更新预期。
+
+## termforge.1 兼容补丁结果（#27）
+
+当前固定 `0.26.1-dev+termforge.1` 的[来源与补丁](../../experiments/candidates/alacritty/PROVENANCE.md)纳入上游资源修复、ED1/ED2 和稳定行元数据。[v4 共同矩阵](results/2026-10-25-candidate-common-v4/summary.json)为 95 次、1011 检查点全部一致，旧 ED 差异不再放行；[真实应用 v2](results/2026-10-25-real-applications-v2/summary.json)3 次全部一致；[fuzz v2](results/2026-10-25-fuzz-v2/summary.json)为 2 次固定已知差异、6 次一致。[扩展能力 v3](results/2026-10-25-capabilities-v3/summary.json)仍是 15 次自研未支持、5 次一致、5 次 resize 差异，未把 resize 合同提前关闭。
+
+全部 vendor 文件纳入结果哈希，23 个差分 Python 测试、140 个固定 crate 单元测试和 doc test 通过。上述旧 0.26.0 结果继续作为原始基线，不能改写版本或拼接性能统计；新结果仍不是完整语义接受或产品 TUI。
 
 路线判断见 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)。

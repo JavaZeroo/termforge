@@ -1,19 +1,19 @@
 # Alacritty 原生核心候选（R2-01 / #24）
 
-本目录是 [#20](https://github.com/JavaZeroo/termforge/issues/20) 的实际候选构建、状态适配与核心成本实验。[ADR-0003](../../../docs/adr/0003-core-reference-and-reuse.md)已决定 R2 新能力复用候选 Term/Processor，但本目录尚未完成产品整合，也不改变现有 C++ 核心的默认构建。计量不代表产品性能，不启动 GUI。
+本目录包含候选构建、状态适配、固定兼容补丁与核心成本实验。[ADR-0003](../../../docs/adr/0003-core-reference-and-reuse.md)已决定 R2 新能力复用候选 Term/Processor；当前尚未完成 C++ 产品 FFI 或默认 shell 替换，不启动 GUI，不把 headless 结果写成产品 TUI。
 
 ## 固定来源与许可
 
-| 项目 | 固定值 | 一手来源 |
+| 项目 | 当前固定值 | 来源 |
 |---|---|---|
-| `alacritty_terminal` | `0.26.0`，Apache-2.0；顶层 crate Rust >= 1.85，当前锁定图 >= 1.88 | [crates.io 版本元数据](https://crates.io/api/v1/crates/alacritty_terminal/0.26.0)、[固定 crate 源码](https://crates.io/api/v1/crates/alacritty_terminal/0.26.0/download)、[home 0.5.12](https://crates.io/api/v1/crates/home/0.5.12) |
-| crate SHA-256 | `bda177466b9524d59f1b12f0dd30b68696788e9992a7e959021c4a0ed96fcf59` | 同一 crates.io 元数据的 `checksum` |
-| 适配器工具链 | Rust/cargo 1.92.0 | 本机与候选 CI 显式选择；不宣称这是最低验证版本 |
-| 传递依赖 | `Cargo.lock` 固定 59 个依赖包；`cargo metadata` 共 60 个包（含适配器） | `cargo metadata --locked --format-version 1` 核对精确版本、来源和 registry 校验值 |
+| `alacritty_terminal` | `0.26.1-dev+termforge.1`，Apache-2.0 | [上游 commit `5421470`](https://github.com/alacritty/alacritty/commit/542147067dd016fc5f49120ef0ba605a98a4e3a7)与[来源/补丁台账](PROVENANCE.md) |
+| 本地补丁 | ED1、ED2、稳定 Row ID/换行元数据、安全完整 Row swap | `vendor/alacritty_terminal/src/`；所有文件哈希进入结果 manifest |
+| 工具链 | Rust/cargo 1.92.0 | 本机与候选 CI 显式选择；当前锁定图最高声明 Rust 1.85 |
+| 传递依赖 | 59 个注册表包 + 固定 path crate，共 60 个包 | `Cargo.lock` 与 `cargo metadata --locked --format-version 1` |
 
-`Cargo.toml` 用 `=0.26.0` 固定候选并关闭默认 serde feature；`Cargo.lock` 固定实际传递依赖。未 vendoring 上游源码，也未把第三方代码改标 MIT。候选二进制当前只用于本地/CI 实验，不进入 Alpha 或产品发行包；若以后分发，必须同时完成全部依赖许可与通知审计。
+根 `Cargo.toml` 使用固定 path 依赖并关闭默认 serde feature。上游只复制 manifest、changelog、许可证和约 426 KiB 的 `src/`，不复制约 46 MiB 行为录制；内联测试保留。补丁不冒充 crates.io 原始 0.26.0，也不把第三方代码改标 MIT。候选二进制当前只用于本地/CI 实验，不进入 Alpha 或产品发行包；以后分发须完成全部依赖许可与通知审计。
 
-选择这个候选是因为它能直接提供无窗口终端网格、光标/样式、历史、备用屏、resize 和 `Event::PtyWrite` 回复事件。选择依据不包括 Rust 语言、Alacritty 的声誉或其整体性能声明。
+选择 Term/Processor 是因为其实际网格、历史、备用屏、resize 和 `Event::PtyWrite` 能力及共同证据，不是语言或项目声誉。候选 PTY/event loop 未因此成为产品依赖。
 
 ## 干净构建与验证
 
@@ -22,12 +22,12 @@
 ```powershell
 rustup default 1.92.0
 cargo build --manifest-path experiments/candidates/alacritty/Cargo.toml --release --locked
-cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --locked
+cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --locked --workspace
 python experiments/candidates/alacritty/run.py --out local/candidate-alacritty-new
 python -m unittest experiments.candidates.alacritty.test_candidate -v
 ```
 
-Linux/macOS 使用相同命令。默认二进制为 `target/release/termforge-alacritty-trace[.exe]`；可用 `TERMFORGE_ALACRITTY_TRACE` 显式选择另一构建，缺失文件会失败，不回退到旧产物。主 CMake/CTest 不需要 Rust；候选自己的 workflow 在 Windows/Ubuntu 干净检出上构建。
+Linux/macOS 使用相同命令。默认二进制为 `target/release/termforge-alacritty-trace[.exe]`；可用 `TERMFORGE_ALACRITTY_TRACE` 显式选择另一构建，缺失文件会失败，不回退到旧产物。主 CMake/CTest 不需要 Rust；候选自己的 workflow 在 Windows/Ubuntu 干净检出上构建并运行固定 crate 的 140 个单元测试和 doc test。
 
 ## Trace 与检查内容
 
@@ -39,21 +39,12 @@ alacritty_trace input.bin rows columns history chunks.txt
 
 每个检查点输出 `offset`、光标、待换行、当前样式、屏幕格、历史格、模式位和该间隔内的 `PtyWrite` 回复。输入上限 1 MiB，累计投影上限 100 万格，子进程测试限时 20 秒；非法尺寸、分块和不完整覆盖返回非零。Trace 序列化只用于正确性观测，不能拿它的耗时做核心性能排名。
 
-`run.py` 固定检查：
+`run.py` 固定检查 ASCII、中文、组合标记和 emoji 分块一致性，有界历史、备用屏恢复、真实回复、非法分块、缺失二进制和篡改结果负例。摘要记录当前版本、上游 commit、适配器与全部 vendor 源码/二进制/输入哈希、平台、检查点和限制。
 
-- ASCII、中文、组合标记和 emoji 在整块/逐字节输入后的状态一致；
-- 有界历史、备用屏退出后的主屏恢复，以及光标查询产生的真实回复；
-- 历史容量和屏幕行内容；
-- 测试另验证非法分块、缺失二进制和结果被改变时不能判为通过。
+## 当前结果与历史边界
 
-`summary.json` 记录候选版本、许可、crate/适配器源码/二进制/输入哈希、平台、检查点和限制。2026-10-24 本地 Windows 干净构建的[结果摘要](results/2026-10-24-windows/summary.json)和[验证边界](results/2026-10-24-windows/validation.json)已审核公开；[Windows/Ubuntu candidate workflow](https://github.com/JavaZeroo/termforge/actions/runs/40117504346)已运行。CI 只上传这些合成白名单记录，不上传候选二进制或个人配置。
-
-## 适配边界与后续
-
-- 默认/ANSI 16 色映射为现有数值；其他颜色暂以 `-2` 保留“未投影”，不能当成默认色或完整样式通过。
-- 上游 `Cell::is_empty` 将空格和空单元格合并；本投影不用于裁决显式尾空格语义。宽字符 spacer、零宽字符和 NFC 差异须在 #25 单独比较。
-- `replies` 是相邻检查点之间的新回复，不是最终状态里的累计队列；汇总时按检查点顺序收集。
-- 备用屏/查询的一个固定轨迹不证明完整 TUI、所有 VT 模式、真实 ConPTY 生命周期或产品 UI 兼容。
-- 候选可构建不等于支持 [#23 平台台账](../../../research/windterm-2.7.0-platform-scope.md)的全部系统。Windows 7 的非 ConPTY 路径、macOS 10.13、Linux glibc 2.17、x86 和 ARM 缺口在 #26/#34 单独判断。
-- #25 已完成[共同轨迹与逐项裁决](../../differential/decisions.md)：95 次、1011 检查点，90 次一致、5 次已裁决参考差异；ED1 候选错误与 ED2 历史策略已固定签名，执行通过不等于语义接受。[扩展能力矩阵](../../differential/results/2026-10-25-capabilities-v2/summary.json)覆盖备用屏、滚动区、回复、Recovery 和 resize；[真实 cmd/more.com/Vim 核心轨迹](../../differential/results/2026-10-25-real-applications/summary.json)已验证生命周期与回放，但不是产品 GUI/TUI 验收。[有界 fuzz](../../differential/results/2026-10-25-fuzz/summary.json)固定首败与最小回归，未登记新差异仍失败；#29 决定重排合同，#26 已测量成本并完成 ADR-0003 重审。
-- #26 已完成[平台、维护与接口审查](../../../docs/research/2026-10-25-core-route-review.md)及 ADR-0003 重审：R2 新能力复用 Term/Processor，保留自有传输、呈现和自研差分回退。当前锁定依赖图要求 Rust >= 1.88；ED1/ED2、0.26.1-dev 修复、稳定行身份和产品 FFI 仍是整合前置，候选尚未进入产品包。
+- termforge.1 的[共同矩阵](../../differential/results/2026-10-25-candidate-common-v4/summary.json)为 95 次、1011 检查点全部一致；旧 0.26.0 的 ED1/ED2 差异已修复，不再以 `reference_difference` 放行。[扩展能力](../../differential/results/2026-10-25-capabilities-v3/summary.json)保持 15 次自研未支持、5 次一致、5 次 resize 差异；[真实 cmd/more.com/Vim 核心轨迹](../../differential/results/2026-10-25-real-applications-v2/summary.json)3 次全部一致；[fuzz](../../differential/results/2026-10-25-fuzz-v2/summary.json)为 2 次固定已知差异、6 次一致。均不是产品 GUI/TUI 或完整语义接受。
+- #25 的[逐项裁决](../../differential/decisions.md)保留旧 0.26.0 的 90 次一致、5 次已裁决参考差异及修复关系；#26 的[路线审查](../../../docs/research/2026-10-25-core-route-review.md)与 project/interactive 计量也是原始 0.26.0 历史基线，不能改写成 termforge.1 的同版本性能结论。
+- 默认/ANSI 16 色映射为现有数值；其他颜色以 `-2` 保留未投影。上游 `Cell::is_empty` 合并空格和空单元格，不能裁决显式尾空格。`replies` 是相邻检查点的新回复，不是累计队列。
+- 稳定 Row ID 和换行元数据为后续拥有值适配提供基础；C++ FFI、产品 damage/快照、真实输入队列和 R1 系统整合仍未完成。resize/reflow 合同归 #29，不能由候选行为静默替换。
+- 候选可构建不等于支持 [#23 平台台账](../../../research/windterm-2.7.0-platform-scope.md)的全部系统。Windows 7 非 ConPTY、macOS 10.13、glibc 2.17、x86 和 ARM 缺口继续归 #34/R4；Windows CI 的 Vim 捕获问题由 #37 单独保留。

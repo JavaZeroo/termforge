@@ -4,8 +4,11 @@ version = "0.1.0"
 edition = "2024"
 publish = false
 
+[workspace]
+members = ["vendor/alacritty_terminal"]
+
 [dependencies]
-alacritty_terminal = { version = "=0.26.0", default-features = false }
+alacritty_terminal = { path = "vendor/alacritty_terminal", default-features = false }
 serde_json = "1"
 
 [target.'cfg(unix)'.dependencies]

@@ -32,7 +32,7 @@
 ## 版本与维护路径
 
 - crates.io 固定 [0.26.0 元数据](https://crates.io/api/v1/crates/alacritty_terminal/0.26.0)：2026-04-06 发布、Apache-2.0、未 yanked、crate SHA-256 `bda177466b9524d59f1b12f0dd30b68696788e9992a7e959021c4a0ed96fcf59`。上游 tag 对应 commit [`94e7c887`](https://github.com/alacritty/alacritty/commit/94e7c8874e526b1e67b349d9ba30ddf81669119e)。
-- 顶层 crate 声明 Rust 1.85，但当前 `Cargo.lock` 的 [`home 0.5.12`](https://crates.io/api/v1/crates/home/0.5.12)要求 Rust 1.88；因此本次锁定图的声明下限是 **1.88**，实际验证工具链固定 1.92.0。升级必须审查整个依赖图。
+- 顶层 crate 声明 Rust 1.85，但重审时 `Cargo.lock` 的 [`home 0.5.12`](https://crates.io/api/v1/crates/home/0.5.12)要求 Rust 1.88；因此该次锁定图的声明下限是 **1.88**，实际验证工具链固定 1.92.0。后续 termforge.1 锁定图已单独复核，升级必须审查整个依赖图。
 - 审查时 0.26.0 是最新发布版，但上游仍活跃。[固定上游 0.26.1-dev changelog](https://github.com/alacritty/alacritty/blob/542147067dd016fc5f49120ef0ba605a98a4e3a7/alacritty_terminal/CHANGELOG.md)已有 PTY non-blocking panic、ViMotion、**逐格零宽字符内存无界**及零列 Row unsoundness 修复。不得把 latest release 当成包含全部修复；产品整合前必须等待含修复的发布或选择固定回溯补丁并重新跑全部语义/资源回归。
 - [上游贡献政策](https://github.com/alacritty/alacritty/blob/94e7c8874e526b1e67b349d9ba30ddf81669119e/CONTRIBUTING.md)要求 PR、测试、MSRV 和显著变更 changelog。没有推断支持 SLA、固定发布周期或回溯保证。
 
@@ -57,3 +57,7 @@
 出现以下任一情况须重审：兼容补丁无法在上游或固定 fork 中可维护；稳定行身份/增量投影无法满足选择搜索合同；真实产品成本或资源有界性不达标；最低平台出现不可接受的硬缺口；上游维护/许可发生不利变化。
 
 本审查不完成产品 FFI、补丁、真实 TUI、复杂 Unicode、reflow、不同 DPI、跨平台客户端、无插桩性能对照或 WindTerm 性能等价。它们仍归对应 issues；R2/#7 保持开放。
+
+## 实施更新
+
+#27 随后固定 `0.26.1-dev+termforge.1`，已落实上述上游修复、ED1/ED2 和稳定行元数据；当前锁定图最高声明 Rust 1.85，详见[来源与补丁台账](../../experiments/candidates/alacritty/PROVENANCE.md)。共同矩阵达到 95 次一致，真实应用 3 次一致。这只是 headless 整合切片；产品 FFI、默认 shell 替换和 R1 系统验收仍未完成，不改变本审查的平台与性能边界。

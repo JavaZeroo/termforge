@@ -9,6 +9,7 @@ import platform
 from cases import Case
 from compare_candidate import compare_traces, run_case
 from run import ROOT, sha, write_json
+from experiments.candidates.alacritty.run import VERSION as CANDIDATE_VERSION, vendor_sources
 
 
 class RawCase(Case):
@@ -81,8 +82,8 @@ def run_suite(core_binary, candidate_binary, output, selected=None, plans=None):
                  for record in records)
     sources = ["experiments/core/trace.cpp", "experiments/differential/compare_candidate.py",
                "experiments/differential/capability_matrix.py", "experiments/differential/candidate-known-differences.json",
-               "experiments/candidates/alacritty/src/main.rs"]
-    summary = dict(schema=1, candidate="alacritty_terminal", version="0.26.0",
+               "experiments/candidates/alacritty/src/main.rs", "experiments/candidates/alacritty/run.py"] + vendor_sources()
+    summary = dict(schema=1, candidate="alacritty_terminal", version=CANDIDATE_VERSION,
                    platform=platform.platform(), core_trace_sha256=sha(core_binary),
                    candidate_trace_sha256=sha(candidate_binary),
                    source_sha256={path: sha(ROOT / path) for path in sources},

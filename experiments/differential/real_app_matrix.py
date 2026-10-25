@@ -13,6 +13,7 @@ from cases import Case
 from compare_candidate import run_case
 from experiments.build_paths import binary as native_binary
 from run import ROOT, sha, write_json
+from experiments.candidates.alacritty.run import VERSION as CANDIDATE_VERSION, vendor_sources
 
 
 class FileCase(Case):
@@ -58,11 +59,6 @@ def run_suite(core_binary, candidate_binary, capture, vim, output):
         report, core, candidate = run_case(core_binary, candidate_binary,
                                           FileCase(name, str(capture_output / f"{name}.bin")), "whole",
                                           output / name, ("--recovery",))
-        difference = report["first_difference"]
-        if name == "shell" and difference and difference["path"] == ".screen.history.length" \
-                and difference["expected"] == 0 and difference["actual"] == 1:
-            report["status"] = "reference_difference"
-            report["decision"] = "ED2 history policy from decisions.md; not a compatibility match"
         report["candidate_final_rows"] = ["".join(cell["text"] for cell in row).rstrip()
                                           for row in candidate[-1]["screen"]["cells"]]
         write_json(output / name / "report.json", report)
@@ -70,10 +66,11 @@ def run_suite(core_binary, candidate_binary, capture, vim, output):
     passed = all(record["status"] in ("match", "reference_difference") for record in records)
     sources = ["experiments/conpty/real_app_capture.cpp", "experiments/conpty/session.hpp",
                "experiments/core/trace.cpp", "experiments/differential/real_app_matrix.py",
-               "experiments/differential/compare_candidate.py", "experiments/differential/decisions.md"]
+               "experiments/differential/compare_candidate.py", "experiments/differential/decisions.md",
+               "experiments/candidates/alacritty/run.py"] + vendor_sources()
     version = subprocess.run([str(vim), "--version"], capture_output=True, timeout=10, check=True)
     vim_version = version.stdout.decode("utf-8", "replace").splitlines()[0]
-    summary = dict(schema=1, platform=platform.platform(), candidate="alacritty_terminal", version="0.26.0",
+    summary = dict(schema=1, platform=platform.platform(), candidate="alacritty_terminal", version=CANDIDATE_VERSION,
                    applications={"shell": "Windows cmd.exe", "pager": "Windows more.com", "editor": vim_version},
                    capture_sha256=sha(capture), core_trace_sha256=sha(core_binary),
                    candidate_trace_sha256=sha(candidate_binary),

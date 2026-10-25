@@ -26,6 +26,12 @@
 - **ED1 是候选实现错误。** ECMA-48 8.3.39 明确规定参数 1 将页首至当前位置（包含当前位置）置为 erased。pyte 与 TermForge 都清除这些位置，Alacritty 却保留前序行；保留 TermForge，不把候选行为当成规范差异。
 - **ED2 的历史迁移是参考策略差异。** 同一节参数 2 只要求活动页全部置为 erased，不要求创建、迁移或清空终端历史；xterm 还把 saved lines 单独列为 ED3。TermForge 与 pyte 清屏但不新增历史，Alacritty 将三行可见内容迁入历史。保留 TermForge 当前“清屏但不新增/清空历史”的策略；候选策略可供 #26 适配成本分析，但不是必须照搬的目标。
 
-`candidate-known-differences.json` 对复合 `erase_display` 的五种分块分别固定输入哈希、最早差异和双方最终状态哈希，状态改为 `reference_difference`。新输入、后续状态变化或未裁决差异仍为 `difference`，不能复用该裁决。当前矩阵因此为 90 次一致、5 次已裁决参考差异；`differences_adjudicated=true` 只覆盖这批现有差异，`semantic_acceptance=false` 仍表示它们不是兼容一致。
+旧 `candidate-known-differences.json` 对复合 `erase_display` 的五种分块分别固定输入哈希、最早差异和双方最终状态哈希，状态改为 `reference_difference`。当时矩阵因此为 90 次一致、5 次已裁决参考差异；`differences_adjudicated=true` 只覆盖这批旧差异，`semantic_acceptance=false` 仍表示它们不是兼容一致。
 
 本裁决不涉及新增 VT 模式、真实 TUI、性能或 #26 核心路线决定。公开规范只支持上述具体边界，不证明所有终端或 WindTerm 都采用同一策略。
+
+## termforge.1 修复结果（#27）
+
+后续按 ADR-0003 的固定补丁路线，在 `0.26.1-dev+termforge.1` 中修正 ED1 前序行清理，并把 ED2 调整为 TermForge 已裁决的“清屏但不新增/清空历史”。补丁同时纳入上游零宽字符内存等修复；[来源与补丁身份](../../experiments/candidates/alacritty/PROVENANCE.md)独立保存。
+
+[当前共同矩阵](results/2026-10-25-candidate-common-v4/summary.json)为 95 次、1011 检查点全部 `match`，真实 cmd/more.com/Vim 也全部一致。旧差异签名已从当前 `candidate-known-differences.json` 移除，防止旧候选差异被继续放行；上述旧批次与裁决保留原样。新差异仍须单独复现和裁决，95 次一致不扩大为完整 VT、WindTerm 或产品 TUI 认证。

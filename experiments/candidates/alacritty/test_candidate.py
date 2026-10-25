@@ -24,10 +24,12 @@ class AlacrittyCandidateTests(unittest.TestCase):
         self.assertFalse(self.summary["performance_measured"])
 
     def test_identity_and_limitations_are_recorded(self):
-        self.assertEqual(self.summary["version"], "0.26.0")
+        self.assertEqual(self.summary["version"], "0.26.1-dev+termforge.1")
         self.assertEqual(self.summary["license"], "Apache-2.0")
+        self.assertEqual(self.summary["upstream_commit"], "542147067dd016fc5f49120ef0ba605a98a4e3a7")
         self.assertEqual(len(self.summary["trace_sha256"]), 64)
-        self.assertEqual(len(self.summary["source_sha256"]), 4)
+        self.assertGreaterEqual(len(self.summary["source_sha256"]), 4)
+        self.assertIn("vendor/alacritty_terminal/src/grid/row.rs", self.summary["source_sha256"])
         self.assertTrue(self.summary["limitations"])
 
     def test_invalid_chunk_plan_is_an_execution_failure(self):

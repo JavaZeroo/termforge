@@ -26,7 +26,7 @@ class FuzzMatrixTests(unittest.TestCase):
         self.assertTrue(self.summary["execution_passed"], self.summary["counts"])
         self.assertEqual(self.summary["seeds"], 4)
         self.assertEqual(self.summary["runs"], 8)
-        self.assertEqual(self.summary["counts"], {"known_failure": 2, "match": 2, "reference_difference": 4})
+        self.assertEqual(self.summary["counts"], {"known_failure": 2, "match": 6})
         self.assertFalse(self.summary["semantic_acceptance"])
 
     def test_original_and_minimized_regressions_match_exact_signatures(self):

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import argparse
-import copy
 import hashlib
 import json
 from pathlib import Path
@@ -11,6 +10,7 @@ import random
 
 from compare_candidate import compare_traces, run_case
 from run import ROOT, sha, state_sha, write_json
+from experiments.candidates.alacritty.run import VERSION as CANDIDATE_VERSION, vendor_sources
 
 
 TOKENS = (b"A", b" ", b"\r", b"\n", b"\b", b"\t", b"\x1b[31m", b"\x1b[0m",
@@ -58,13 +58,6 @@ def evaluate(core_binary, candidate_binary, data, name, output):
         known = known_failures().get(report["input_sha256"])
         if known and known["signature"] == signature(report, core, candidate):
             status = "known_failure"
-        else:
-            left, right = copy.deepcopy(core), copy.deepcopy(candidate)
-            for records in (left, right):
-                for record in records:
-                    record["screen"]["history"] = []
-            if not compare_traces(left, right):
-                status = "reference_difference"
     return status, report, core, candidate
 
 
@@ -135,9 +128,11 @@ def run_suite(core_binary, candidate_binary, output, seeds=4):
                 write_json(output / "summary.json", summary)
                 return summary
     sources = ["experiments/differential/fuzz_matrix.py", "experiments/differential/compare_candidate.py",
-               "experiments/differential/fuzz-known-failures.json", "experiments/core/trace.cpp"]
+               "experiments/differential/fuzz-known-failures.json", "experiments/core/trace.cpp",
+               "experiments/candidates/alacritty/run.py"] + vendor_sources()
     passed = all(record["status"] in ("match", "reference_difference", "known_failure") for record in records)
-    summary = dict(schema=1, platform=platform.platform(), core_trace_sha256=sha(core_binary),
+    summary = dict(schema=1, platform=platform.platform(), candidate="alacritty_terminal",
+                   version=CANDIDATE_VERSION, core_trace_sha256=sha(core_binary),
                    candidate_trace_sha256=sha(candidate_binary),
                    source_sha256={path: sha(ROOT / path) for path in sources}, seeds=seeds,
                    runs=len(records),

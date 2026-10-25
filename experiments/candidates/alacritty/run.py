@@ -11,7 +11,13 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
-CRATE_SHA256 = "bda177466b9524d59f1b12f0dd30b68696788e9992a7e959021c4a0ed96fcf59"
+VERSION = "0.26.1-dev+termforge.1"
+UPSTREAM_COMMIT = "542147067dd016fc5f49120ef0ba605a98a4e3a7"
+BASE_CRATE_SHA256 = "bda177466b9524d59f1b12f0dd30b68696788e9992a7e959021c4a0ed96fcf59"
+
+
+def vendor_sources():
+    return sorted(path.relative_to(ROOT).as_posix() for path in (HERE / "vendor").rglob("*") if path.is_file())
 
 
 def sha(path):
@@ -93,10 +99,12 @@ def run_suite(binary, output):
     cases.append(dict(case="bounded_history", passed=passed, report=report))
 
     sources = ["Cargo.toml", "Cargo.lock", "src/main.rs", "run.py"]
-    summary = dict(schema=1, candidate="alacritty_terminal", version="0.26.0",
-                   license="Apache-2.0", crate_sha256=CRATE_SHA256, platform=platform.platform(),
-                   trace_sha256=sha(binary),
-                   source_sha256={path: sha(HERE / path) for path in sources},
+    source_sha256 = {path: sha(HERE / path) for path in sources}
+    source_sha256.update({path: sha(ROOT / path) for path in vendor_sources()})
+    summary = dict(schema=1, candidate="alacritty_terminal", version=VERSION,
+                   license="Apache-2.0", upstream_commit=UPSTREAM_COMMIT,
+                   base_crate_sha256=BASE_CRATE_SHA256, platform=platform.platform(),
+                   trace_sha256=sha(binary), source_sha256=source_sha256,
                    cases=cases, passed=all(case["passed"] for case in cases),
                    performance_measured=False,
                    limitations=["Only default/ANSI-16 colors map exactly; other colors use -2",
