@@ -68,12 +68,37 @@
     "build/candidate-adapter/bin/Release/real_app_capture.exe": "8211c06d3a60113d20ba77a790da342c329ba51ff0819b14fa19b24e688b8c53"
   },
   "remote_ci": {
-    "status": "pending_new_commit",
+    "status": "passed",
+    "run": "https://github.com/JavaZeroo/termforge/actions/runs/40190890251",
+    "commit": "c284c86c6b933cb86b593a2be9f770d24aaca0ab",
+    "windows_job_id": 121161463631,
+    "ubuntu_job_id": 121161463921,
+    "artifact": "candidate-alacritty-windows-2025",
+    "artifact_id": 12598466219,
+    "real_application_summary": "real-app-cli/summary.json",
+    "summary_sha256": "d3b7817bd70326aec8da9aced320e67385ba4ac83367e14765ca8a6e7e5c7fdc",
+    "capture_manifest_sha256": "0adfafbf6fa9c9f6d107a9fe34ac2e1e1fd4cf76132b0e410a01050812dc8e03",
+    "source_identity": "34 sources match the commit content; 29 raw CI hashes reflect only LF-to-CRLF checkout conversion",
+    "candidate_shell_tui": {"rounds": 2, "startup_event_verified": true, "insert_event_verified": true, "vim_size": "60x12", "cursor_reply_verified": true, "active_children_after": 0},
+    "editor_version": "VIM - Vi IMproved 9.2 (2026 Feb 14, compiled Sep 09 2026 21:26:31)",
+    "editor_file_verified": true,
+    "startup_event_verified": true,
+    "insert_event_verified": true,
+    "application_trace_matches": 3,
+    "windows_required_steps": {
+      "candidate_shell": "passed",
+      "real_application_capture": "passed",
+      "real_application_tests": "passed",
+      "bounded_fuzz": "passed",
+      "fuzz_minimization": "passed",
+      "project_costs": "passed",
+      "interactive_costs": "passed"
+    },
     "previous_failure": "https://github.com/JavaZeroo/termforge/actions/runs/40183895072"
   },
   "limitations": [
-    "Local Windows success does not prove the Windows Server 2025 CI workflow has passed",
-    "Issue 37 remains open until real application, fuzz and interleaved measurements finish naturally in CI",
+    "The Windows Server 2025 real application, fuzz and interleaved measurement steps passed in run 40190890251; this does not pass the separate full product CTest suite",
+    "Issue 37 is limited to that CI capture chain; issues 27, 28, 29 and the broader R2 milestone remain independently open",
     "Synthetic application traces and event files are not GUI presentation or broad application compatibility evidence",
     "The negative executable deliberately is not Vim; it validates diagnostics and cleanup, not a supported application",
     "The product Ctrl-O workflow does not claim Vim Escape or alternate-screen acceptance"
