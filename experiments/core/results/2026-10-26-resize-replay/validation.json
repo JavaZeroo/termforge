@@ -15,6 +15,7 @@
     "sha256": "2e50f511053a846bb04968321f7cd1f547145b78339096c9b0d2e45e887c6b68",
     "sections": 4,
     "dimensions": [[7, 111], [7, 112], [7, 112], [7, 111], [10, 149]],
+    "binary_preservation": ".gitattributes marks this fixture binary so checkout cannot normalize its CRLF bytes",
     "provenance": "Synthetic TF_FIND lines captured from the original owned non-input-desktop failure; no private session or WindTerm resource"
   },
   "baseline": {

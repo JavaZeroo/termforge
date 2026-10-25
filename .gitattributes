@@ -4,3 +4,4 @@
 *.yml text eol=lf
 *.py text eol=lf
 *.ps1 text eol=crlf
+experiments/core/fixtures/*.bin binary
