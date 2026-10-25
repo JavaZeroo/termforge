@@ -420,6 +420,72 @@ class ShellWindow {
         const auto step=lines==WHEEL_PAGESCROLL?page:static_cast<int64_t>(lines);
         viewport_.scroll_by(parser_.screen,-static_cast<int64_t>(detents)*step); publish();
     }
+    void scenario_alternate() {
+#ifndef TERMFORGE_CANDIDATE_CORE
+        throw std::runtime_error("candidate-alt requires the candidate adapter build");
+#else
+        const auto directory = std::filesystem::path(image_path_).parent_path();
+        const std::wstring gate = L"Local\\TermForgeAlt-" + std::to_wstring(GetCurrentProcessId());
+        if (stage_ == 0 && has("TF>")) {
+            wchar_t path[32768]{};
+            const auto count = GetModuleFileNameW(nullptr, path, 32768);
+            require(count && count < 32768, "alternate fixture location failed");
+            const auto client = std::filesystem::path(path).parent_path() / L"shell_text_client.exe";
+            const auto prefix = directory / "candidate-alt";
+            begin_output_observation();
+            command(L"\"" + client.wstring() + L"\" --alt-v1 \"" + prefix.wstring() + L"\" \"" + gate + L"\"\r");
+            stage_ = 1;
+            return;
+        }
+        if (stage_ != 1 || !live_contains_line("TF_ALT_DONE") || !resize_.settled()) return;
+        const auto save = [](const std::filesystem::path& path, const std::string& bytes) {
+            std::ofstream out(path, std::ios::binary | std::ios::trunc);
+            out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+            out.close(); require(bool(out), "alternate evidence write failed");
+        };
+        save(directory / "candidate-alt.transport.bin", observed_output_);
+        require(frame_matches_full(), "alternate retained frame mismatch");
+        std::ostringstream out;
+        out << "{\"schema\":\"termforge-candidate-alt-v1\",\"columns\":" << parser_.screen.width()
+            << ",\"rows\":" << parser_.screen.height() << ",\"cursor_row\":" << parser_.screen.row
+            << ",\"cursor_column\":" << parser_.screen.column
+            << ",\"alternate_enabled\":" << ((parser_.mode_bits() & (1 << 12)) ? "true" : "false")
+            << ",\"default_fg\":" << parser_.screen.style.fg << ",\"default_bg\":" << parser_.screen.style.bg
+            << ",\"frame_matches_full\":true,\"presented_done\":null,\"visible_lines\":[";
+        for (size_t row = 0; row < snapshot_->lines.size(); ++row) {
+            if (row) out << ',';
+            termforge::Screen::quoted(out, termforge::project_line(snapshot_->lines[row]).text);
+        }
+        out << "],\"document_lines\":[";
+        const auto document = observed_document_lines();
+        for (size_t row = 0; row < document.size(); ++row) {
+            if (row) out << ',';
+            termforge::Screen::quoted(out, document[row].projection.text);
+        }
+        out << "],\"styled_cells\":[";
+        bool first = true;
+        for (size_t row = 0; row < snapshot_->lines.size(); ++row) {
+            for (size_t column = 0; column < snapshot_->lines[row].size(); ++column) {
+                const auto& cell = snapshot_->lines[row][column];
+                if (!cell.written || !cell.width) continue;
+                if (!first) out << ',';
+                first = false;
+                out << "{\"row\":" << row << ",\"column\":" << column << ",\"text\":";
+                termforge::Screen::quoted(out, cell.text);
+                out << ",\"fg\":" << cell.style.fg << ",\"bg\":" << cell.style.bg
+                    << ",\"bold\":" << (cell.style.bold ? "true" : "false") << '}';
+            }
+        }
+        out << "]}";
+        save(directory / "candidate-alt.json", out.str());
+        tf_conpty::Handle release(OpenEventW(EVENT_MODIFY_STATE | SYNCHRONIZE, FALSE, gate.c_str()));
+        require(release.get() != nullptr, "alternate release open failed");
+        require(SetEvent(release.get()) != FALSE, "alternate release signal failed");
+        result_.normal = true;
+        type(L"exit 37\r");
+        stage_ = 6;
+#endif
+    }
     void scenario_unicode() {
 #ifndef TERMFORGE_CANDIDATE_CORE
         throw std::runtime_error("candidate-unicode requires the candidate adapter build");
@@ -492,6 +558,10 @@ class ShellWindow {
         require(ms(start_) < 25000, "shell scenario timeout");
         if (mode_ == "watchdog") {
             if (!stage_ && result_.frames) { std::cout << "{\"watchdog_ready\":true}\n" << std::flush; stage_ = 1; }
+            return;
+        }
+        if (mode_ == "candidate-alt") {
+            scenario_alternate();
             return;
         }
         if (mode_ == "candidate-unicode") {
@@ -1206,7 +1276,7 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "candidate-tui" || mode == "candidate-unicode" || mode == "candidate-input-escape" || mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
+            require(mode == "candidate-tui" || mode == "candidate-alt" || mode == "candidate-unicode" || mode == "candidate-input-escape" || mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
             if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system" || mode=="ui-copy-context-system" || mode=="ui-actions-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
@@ -1228,9 +1298,9 @@ static int application(int argc, char** argv) {
         }
         const bool candidate = mode == "candidate-tui"
             ? r.candidate_tui_start && r.candidate_replies && r.candidate_tui && r.candidate_resize && r.normal && r.exit_code == 37
-            : mode == "candidate-unicode" ? r.normal && r.exit_code == 37
+            : mode == "candidate-unicode" || mode == "candidate-alt" ? r.normal && r.exit_code == 37
             : mode != "candidate-input-escape" || (r.candidate_replies && r.normal && r.exit_code == 37);
-        const bool legacy = mode == "candidate-tui" || mode == "candidate-unicode" || mode == "candidate-input-escape" ||
+        const bool legacy = mode == "candidate-tui" || mode == "candidate-alt" || mode == "candidate-unicode" || mode == "candidate-input-escape" ||
             (r.normal && r.unicode && r.edited && r.arrows &&
              (mode == "close" || mode == "resize-close" || (r.interrupted && r.exit_code == 37)));
         const bool valid = r.complete && r.active_children == 0 && r.frames > 0 && r.input_rejected == 0 && candidate && legacy &&

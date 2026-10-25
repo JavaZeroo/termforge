@@ -101,10 +101,88 @@ int unicode_fixture(const wchar_t* capture) {
     workflow_capture_console(options, "unicode");
     return 0;
 }
+void wait_alternate_console(const std::filesystem::path& capture, const std::wstring& text, DWORD foreground) {
+    const auto console = GetStdHandle(STD_OUTPUT_HANDLE);
+    const auto deadline = GetTickCount64() + 1000;
+    for (;;) {
+        CONSOLE_SCREEN_BUFFER_INFO info{};
+        require(GetConsoleScreenBufferInfo(console, &info) != FALSE, "alternate console dimensions failed");
+        const int columns = info.dwSize.X;
+        require(columns > 0 && columns <= 500 && info.srWindow.Top >= 0 &&
+                info.srWindow.Bottom >= info.srWindow.Top && info.srWindow.Bottom - info.srWindow.Top < 200,
+                "alternate console bounds failed");
+        for (SHORT row = info.srWindow.Top; row <= info.srWindow.Bottom; ++row) {
+            std::wstring line(static_cast<size_t>(columns), L'\0');
+            DWORD count = 0;
+            require(ReadConsoleOutputCharacterW(console, line.data(), columns, {0,row}, &count) != FALSE,
+                    "alternate console text read failed");
+            const auto offset = line.find(text);
+            if (offset == std::wstring::npos) continue;
+            std::vector<CHAR_INFO> cells(static_cast<size_t>(columns));
+            SMALL_RECT region{0,row,static_cast<SHORT>(columns-1),row};
+            require(ReadConsoleOutputW(console, cells.data(), {static_cast<SHORT>(columns),1}, {0,0}, &region) != FALSE &&
+                    region.Left == 0 && region.Top == row && region.Right == columns-1 && region.Bottom == row,
+                    "alternate console cell read failed");
+            bool matches = offset + text.size() <= cells.size();
+            for (size_t index = 0; matches && index < text.size(); ++index) {
+                matches = cells[offset+index].Char.UnicodeChar == text[index] &&
+                    static_cast<DWORD>(cells[offset+index].Attributes & 0xf) == foreground;
+            }
+            if (matches) return;
+        }
+        if (GetTickCount64() >= deadline) {
+            tf_shell_test::WorkflowOptions options;
+            options.capture = capture.wstring() + L".timeout";
+            options.generation = 1;
+            workflow_capture_console(options, "alt-timeout");
+            require(false, "alternate native state timeout");
+        }
+        Sleep(1);
+    }
+}
+int alternate_fixture(const wchar_t* capture, const wchar_t* gate_name) {
+    BOOL owned = FALSE;
+    require(IsProcessInJob(GetCurrentProcess(), nullptr, &owned) && owned, "alternate fixture requires an owned Job");
+    tf_shell_test::WorkflowOptions options;
+    options.capture = capture;
+    options.generation = 1;
+    const auto base = options.capture.wstring();
+    const auto snapshot = [&](const wchar_t* suffix, const std::string& role) {
+        options.capture = base + suffix;
+        workflow_capture_console(options, role);
+    };
+    tf_conpty::Handle gate(CreateEventW(nullptr, TRUE, FALSE, gate_name));
+    require(gate.get() != nullptr, "alternate fixture event creation failed");
+    const std::string main_text = "\x1b[2J\x1b[H\x1b[32mMAIN_GREEN\x1b[0m\r\n";
+    const std::string first = "\x1b[?1049h\x1b[34mALT_ONE\x1b[0m\x1b[?1049l";
+    const std::string middle = "MAIN_AFTER\r\n";
+    const std::string second = "\x1b[?1049h\x1b[31mALT_TWO\x1b[0m\x1b[?1049l";
+    const std::string done = "TF_ALT_DONE\r\n";
+    output(main_text); wait_alternate_console(capture, L"MAIN_GREEN", 2); snapshot(L".before", "main-before");
+    output("\x1b[?1049h\x1b[34mALT_ONE\x1b[0m");
+    wait_alternate_console(capture, L"ALT_ONE", 1); snapshot(L".alt1", "alt-one");
+    output("\x1b[?1049l"); wait_alternate_console(capture, L"MAIN_GREEN", 2); snapshot(L".restored1", "main-restored");
+    output(middle);
+    output("\x1b[?1049h\x1b[31mALT_TWO\x1b[0m");
+    wait_alternate_console(capture, L"ALT_TWO", 4); snapshot(L".alt2", "alt-two");
+    output("\x1b[?1049l"); output(done);
+    wait_alternate_console(capture, L"TF_ALT_DONE", 7); snapshot(L".final", "main-final");
+    tf_conpty::Handle source(tf_shell_test::workflow_new_file(base + L".source.bin"));
+    tf_shell_test::workflow_save(source.get(), main_text + first + middle + second + done);
+    require(FlushFileBuffers(source.get()) != FALSE, "alternate source flush failed");
+    require(WaitForSingleObject(gate.get(), 5000) == WAIT_OBJECT_0, "alternate fixture release timeout");
+    return 0;
+}
 int wmain(int argc, wchar_t** argv) {
     try {
         if(argc>1 && std::wstring(argv[1])==L"--workflow-v1")
             return tf_shell_test::run_workflow_fixture(tf_shell_test::workflow_options(argc,argv));
+        if(argc==4 && std::wstring(argv[1])==L"--alt-v1") {
+            const auto input = GetStdHandle(STD_INPUT_HANDLE);
+            require(SetConsoleCP(CP_UTF8) && SetConsoleOutputCP(CP_UTF8) &&
+                    SetConsoleMode(input, ENABLE_VIRTUAL_TERMINAL_INPUT), "alternate fixture console mode failed");
+            return alternate_fixture(argv[2], argv[3]);
+        }
         if(argc==3 && std::wstring(argv[1])==L"--unicode-v1") {
             const auto input = GetStdHandle(STD_INPUT_HANDLE);
             require(SetConsoleCP(CP_UTF8) && SetConsoleOutputCP(CP_UTF8) &&
