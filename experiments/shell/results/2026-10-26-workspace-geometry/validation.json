@@ -1,0 +1,96 @@
+{
+  "schema": "termforge-workspace-geometry-validation-v1",
+  "source_commit": "27f376d02009e2bcb916b5cb23767d9b7df10cdc",
+  "source_tree": "bb17b58512a3e9d4e90b957d26ba4337a749d580",
+  "source_binding": "Committed file bytes matched the validation source tree exactly; no uncommitted Unicode workflow changes were included.",
+  "passed": false,
+  "scoped_validation_passed": true,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "daily_development_release": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 local x64",
+    "compiler": "Visual Studio 2022 / MSVC 19.42",
+    "python": "build/r1-python/Scripts/python.exe",
+    "generator": "Visual Studio 17 2022",
+    "window_harness": "owned non-input desktop and Job; no screenshots, foreground input or display-setting changes"
+  },
+  "scoped_checks": {
+    "workspace_v2_multiple_shells_split_and_geometry_restore": {
+      "default_rounds": 2,
+      "candidate_rounds": 2,
+      "passed": true,
+      "includes_real_clamped_restore": true,
+      "requested_clamped_width": 65535,
+      "preserves_non_window_fields": true
+    },
+    "workspace_sessions_resize_and_cleanup": {
+      "original_rounds": 2,
+      "additional_narrow_workspace_rounds": 1,
+      "narrow_workspace": "1008x681",
+      "passed": true,
+      "history_retention_checked_instead_of_visible_only": true,
+      "dib_checked_at_actual_client_geometry": true
+    },
+    "workspace_main_and_rename_restore": {
+      "original_rounds": 2,
+      "additional_narrow_workspace_rounds": 1,
+      "passed": true,
+      "actual_client_and_dpi_geometry_checked": true
+    },
+    "command_completion": {
+      "actual_output_and_subsequent_prompt_required": true,
+      "cursor_sequences_preserved": true,
+      "observation_flag_matches_actual_capture": true
+    }
+  },
+  "default_ctest": {
+    "command": "ctest --test-dir build/geometry-validation-default-final -C Release --output-on-failure",
+    "total": 40,
+    "passed": 39,
+    "failed": 1,
+    "seconds": 296.46,
+    "shell_nested_errors": 2,
+    "shell_nested_skipped": 3,
+    "remaining_failures": [
+      "test_commands_unicode_editing_interrupt_and_normal_exit",
+      "test_resize_child_dimensions_and_interrupt"
+    ],
+    "workspace_save_restore_failed": false
+  },
+  "candidate_ctest": {
+    "command": "ctest --test-dir build/geometry-validation-candidate-final -C Release --output-on-failure",
+    "total": 42,
+    "passed": 41,
+    "failed": 1,
+    "seconds": 345.78,
+    "shell_nested_errors": 4,
+    "shell_nested_skipped": 3,
+    "remaining_failures": [
+      "test_close_during_continuous_output",
+      "test_close_while_resizing_continuous_output",
+      "test_commands_unicode_editing_interrupt_and_normal_exit",
+      "test_resize_child_dimensions_and_interrupt"
+    ],
+    "failure_stage": "Early text/input scenarios; a close-worker root cause is not established",
+    "workspace_save_restore_failed": false
+  },
+  "binary_sha256": {
+    "default/termforge_shell": "034ff9cb8eb371051db6c4ecd0fece54501f3e4cf0538c1cd9fc8e082f1b092a",
+    "default/shell_test_launcher": "62770f1fb2b89a88524b02d45e7273254b34aba9f9772c3ce2b480458861d88c",
+    "default/shell_text_client": "04a47d2f0101711e0874f63c51d1b5f0435ed77018c882fa7c7ca0b7186ee809",
+    "default/shell_size_client": "ddd2b34ffbccbb1ca76db9f48d60251f59f73ecf28cd890095843d0f291ef4d4",
+    "candidate/termforge_shell": "2adede64e4ff553d2dc7481e8343e615b3efc9c9fe0b5c69a2b555ae1f5b368e",
+    "candidate/shell_test_launcher": "89fd02d960a821c07e3702d4c61e75ebcb76063f79040faaec609516e776e5b2",
+    "candidate/shell_text_client": "915590b8daef0f9a05ea45c805e087413edddab5d5e7001eb10b43151532596e",
+    "candidate/shell_size_client": "0d526d9022c2b8aada4f06040c17eccf7d3389bb282c981d668eef5c197d59a2"
+  },
+  "limitations": [
+    "The full default and candidate suites are not green; #36 and candidate early input/close scenarios remain open.",
+    "#38 remains open for the remaining input, selection, close and CI gaps.",
+    "This is a bounded workspace geometry/persistence slice, not R1/R2 completion, complete WindTerm parity or measured performance equivalence.",
+    "No real distinct-DPI transition or presented-frame endpoint was established.",
+    "Raw private artifacts and any third-party decompilation remain local; this record contains no private session or raw binary extraction."
+  ]
+}
