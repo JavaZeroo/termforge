@@ -25,7 +25,7 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 
 ## 真实产品场景
 
-`candidate_shell_tui` 在同一 `ShellWindow` 和 ConPTY 路径上连续执行两轮真实 Vim：进入全屏编辑、插入文字、resize 到 60×12、退出写盘、确认主屏 shell 返回。本机 Vim 输出未发送 `1049/1047/47`，所以此场景不计作备用屏验收；1049 的固定核心用例与真实 Vim 证据分开。通过插入模式的 `Ctrl-O` 调用 Vim 命令，实际保存 `&columns/&lines` 并检查 60×12，再以 `Ctrl-O:wq` 写盘退出；不把 ConPTY 重绘、`ResizePseudoConsole` 返回或异步事件恰好先到当作 Vim 已就绪。本路径不声称验证 Vim 的 Escape 行为，独立控制台 ESC 接收另测。`-W` 日志核对插入文本与 `:wq` 顺序，其中可能含 Vim 内部特殊键，不能冒充纯键盘字节。随后用独立 `shell_query_client.exe` 发出真实 `CSI 6n`，保存终端经 `InputQueue` 返回的光标报告，并用 `shell_size_client.exe` 核对子进程尺寸。另有 resize 后独立 ESC 接收检查。
+`candidate_shell_tui` 在同一 `ShellWindow` 和 ConPTY 路径上连续执行两轮真实 Vim：进入全屏编辑、插入文字、resize 到 60×12、退出写盘、确认主屏 shell 返回。本机 Vim 输出未发送 `1049/1047/47`，所以此场景不计作备用屏验收；1049 的固定核心用例与真实 Vim 证据分开。启动和插入由 Vim 写入的真实 `VimEnter`/`InsertEnter` 事件文件确认，避免 `echon` 消息被重绘覆盖；随后通过插入模式的 `Ctrl-O` 调用 Vim 命令，实际保存 `&columns/&lines` 并检查 60×12，再以 `Ctrl-O:wq` 写盘退出。不把 ConPTY 重绘或 `ResizePseudoConsole` 返回当作 Vim 已就绪。本路径不声称验证 Vim 的 Escape 行为，独立控制台 ESC 接收另测。`-W` 日志核对插入文本与 `:wq` 顺序，其中可能含 Vim 内部特殊键，不能冒充纯键盘字节。随后用独立 `shell_query_client.exe` 发出真实 `CSI 6n`，保存终端经 `InputQueue` 返回的光标报告，并用 `shell_size_client.exe` 核对子进程尺寸。另有 resize 后独立 ESC 接收检查。
 
 原有 `runtime_observation` 也在候选适配构建运行，保留滚动后的逐行内容、retained/full RGB 一致、no-op 状态端点及会话清理断言。所有此类检查只使用自有窗口的 DIB，不截图，`presented_done` 仍未知。
 

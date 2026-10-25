@@ -86,11 +86,13 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 ## 真实应用核心轨迹（#25）
 
-`real_app_capture` 通过 ConPTY 启动真实 Windows cmd、`more.com` 和 Vim，分别验证正常退出、`q` 退出及无配置/无交换文件/无 viminfo 的编辑 `:wq` 与文件内容。Vim 握手要求依次观察到 `[New]`、`-- INSERT --` 和插入文本，再发送 Escape 与 `:wq`，不以一个 ESC 或固定延时代替状态；manifest 记录真实编辑器路径。失败时保存阶段、错误、退出码、合成输出和 Job 清理结果，真实负例验证这些证据可用。`real_app_matrix.py` 将捕获字节原样交给双方核心，自研使用产品同源的 Recovery 模式；它不是截图或 GUI 验收。
+`real_app_capture` 通过 ConPTY 启动真实 Windows cmd、`more.com` 和 Vim，分别验证正常退出、`q` 退出及无配置/无交换文件/无 viminfo 的编辑 `:wq` 与文件内容。Vim 握手要求 `VimEnter` 写入 `READY`、`InsertEnter` 写入 `INSERT`，并观察到 `[New]` 和实际插入文本，再发送 Escape 与 `:wq`，不以一个 ESC 或固定延时代替状态；等待真实事件文件，不依赖消息是否被重绘覆盖。manifest 记录真实编辑器路径和事件验证结果，事件文件一并保留。失败时保存阶段、错误、退出码、合成输出和 Job 清理结果，真实负例验证这些证据可用。`real_app_matrix.py` 将捕获字节原样交给双方核心，自研使用产品同源的 Recovery 模式；它不是截图或 GUI 验收。
 
 [2026-10-25 摘要](results/2026-10-25-real-applications/summary.json)记录应用版本、二进制/源码哈希和退出/文件结果：分页器和 Vim 为 `match`，shell 仅有已裁决的 ED2 历史策略 `reference_difference`。新增 3 个门槛后，差分、能力和真实应用测试合计 19 项通过；Windows candidate workflow 强制构建并执行，其他平台或缺少 Vim/捕获依赖时明确跳过可选测试。
 
 [握手与失败诊断切片](results/2026-10-25-real-applications-v4/validation.json)在本地 Windows 验证三应用 3 次一致、真实编辑器路径和负例回收；真实应用 Python 为 4 项，differential CTest 通过。#37 仍需 Windows Server 2025 CI 的真实应用、fuzz 和计量自然结束，不能据此提前关闭。
+
+[真实事件文件切片](results/2026-10-25-real-applications-v5/validation.json)改用 Vim 写入的 `VimEnter`/`InsertEnter` 文件握手，保留 `READY`、`INSERT` 和实际 60×12 证据。原始输出证明 `echon` 插入消息可能被后续重绘覆盖，故不依赖消息显示时机。候选聚焦 4 项、连续 3 轮场景、真实应用 Python 4 项和 differential 均通过；完整 CI 未通过前 #37 保持开放。
 
 `real_application_covered=true` 仅指这三条真实核心轨迹，`presented_done=null`、`semantic_acceptance=false`，不代表产品 TUI 已交付、所有应用已兼容或 #26 已决定。持续 fuzz 与最小失败复现仍由 #25 后续完成。
 

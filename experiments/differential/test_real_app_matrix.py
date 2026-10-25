@@ -42,6 +42,10 @@ class RealApplicationMatrixTests(unittest.TestCase):
         self.assertEqual((manifest["shell_exit"], manifest["pager_exit"], manifest["editor_exit"]), (0, 0, 0))
         self.assertTrue(manifest["editor_file_verified"])
         self.assertEqual(Path(manifest["editor_path"]), self.vim)
+        self.assertTrue(manifest["startup_event_verified"])
+        self.assertTrue(manifest["insert_event_verified"])
+        self.assertEqual((self.artifacts / "suite/editor-startup.txt").read_bytes(), b"READY\n")
+        self.assertEqual((self.artifacts / "suite/editor-insert.txt").read_bytes(), b"INSERT\n")
 
     def test_failure_preserves_editor_stage_trace_and_cleanup(self):
         executable = Path("C:/Windows/System32/cmd.exe")
@@ -50,7 +54,7 @@ class RealApplicationMatrixTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "real application capture failed"):
                 real_app_matrix.run_capture(self.capture, executable, output)
             diagnostic = json.loads((output / "editor-failure.json").read_text(encoding="utf-8"))
-            self.assertEqual(diagnostic["stage"], "new-buffer")
+            self.assertEqual(diagnostic["stage"], "vim-enter")
             self.assertEqual(diagnostic["editor_path"], executable.as_posix())
             self.assertTrue(diagnostic["child_signaled"])
             self.assertEqual(diagnostic["active_children"], 0)

@@ -448,13 +448,18 @@ class ShellWindow {
 #ifndef TERMFORGE_CANDIDATE_CORE
             throw std::runtime_error("candidate-tui requires the candidate adapter build");
 #else
+            const auto event_line = [](const char* path) {
+                std::ifstream stream(path, std::ios::binary);
+                std::string line; std::getline(stream, line); return line;
+            };
             if (stage_ == 0 && has("TF>")) {
-                type(L"vim -Nu NONE -n -i NONE --cmd \"set noswapfile\" --cmd \"autocmd InsertCharPre * call writefile([v:char], 'candidate-insert-log.txt', 'a')\" --cmd \"autocmd InsertLeave * call writefile(['LEAVE'], 'candidate-insert-log.txt', 'a')\" -W candidate-input.bin candidate-tui.txt\r"); stage_ = 50;
+                begin_output_observation();
+                type(L"vim -Nu NONE -n -i NONE --cmd \"set noswapfile\" --cmd \"autocmd VimEnter * call writefile(['READY'], 'candidate-startup-log.txt')\" --cmd \"autocmd InsertEnter * call writefile(['INSERT'], 'candidate-insert-log.txt', 'a')\" --cmd \"autocmd InsertCharPre * call writefile([v:char], 'candidate-insert-log.txt', 'a')\" --cmd \"autocmd InsertLeave * call writefile(['LEAVE'], 'candidate-insert-log.txt', 'a')\" -W candidate-input.bin candidate-tui.txt\r"); stage_ = 50;
             }
-            if (stage_ == 50 && has("[New]")) {
+            if (stage_ == 50 && has("[New]") && event_line("candidate-startup-log.txt") == "READY") {
                 result_.candidate_tui_start = true;
                 fixture_command(L"i"); stage_ = 57;
-            } else if (stage_ == 57 && line_is("-- INSERT --")) {
+            } else if (stage_ == 57 && event_line("candidate-insert-log.txt") == "INSERT") {
                 fixture_command(L"TF_CANDIDATE_TUI"); stage_ = 58;
             } else if (stage_ == 58 && has("TF_CANDIDATE_TUI")) {
                 { std::ofstream clear("candidate-resize-log.txt", std::ios::trunc); require(bool(clear), "resize observation reset failed"); }
@@ -1083,6 +1088,12 @@ public:
             }
             runtime_final_=runtime_snapshot();
             result_.runtime_before_close=runtime_before_close_; result_.runtime_final=runtime_final_;
+        }
+        if (mode_ == "candidate-tui" && !image_path_.empty()) {
+            const auto path = std::filesystem::path(image_path_).parent_path() / "candidate-output.bin";
+            std::ofstream trace(path, std::ios::binary | std::ios::trunc);
+            trace.write(observed_output_.data(), static_cast<std::streamsize>(observed_output_.size()));
+            trace.close(); require(bool(trace), "candidate output evidence write failed");
         }
         if (!failure_.empty() && !mode_.empty()) {
             std::cerr << "stage=" << stage_ << " bytes=" << result_.consumed << " screen=";

@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "scope": "VimEnter/InsertEnter file-event handshake and failure diagnostics, issue 37",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "local_passed": true,
+  "handshake": [
+    "VimEnter writes editor-startup.txt containing READY",
+    "InsertEnter writes editor-insert.txt containing INSERT",
+    "new file and inserted text are observed",
+    "ordered Escape and :wq writes the file and exits with code zero"
+  ],
+  "positive": {
+    "summary": "summary.json",
+    "summary_sha256": "25bfdce25fc3d8c395843570b805eb94dcd45846678289e787e12c5f619a921a",
+    "editor_path": "C:/Program Files/Git/usr/bin/vim.EXE",
+    "editor_version": "VIM - Vi IMproved 9.1 (2024 Jan 02, compiled Jul 09 2024 07:07:42)",
+    "editor_bytes": 1999,
+    "editor_file_verified": true,
+    "startup_event_verified": true,
+    "insert_event_verified": true,
+    "startup_sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5",
+    "insert_sha256": "196ba50f55ed130f5d5390bd4278302019223ce712f0e1f5ce7c345abf208aa4",
+    "application_trace_runs": 3,
+    "matches": 3
+  },
+  "candidate_product": {
+    "startup_file": "candidate-startup-log.txt",
+    "insert_file": "candidate-insert-log.txt",
+    "bounded_trace": "candidate-output.bin",
+    "vim_size_file": "60x12 from Vim's own &columns/&lines",
+    "repeated_ctest_rounds": 3,
+    "alternate_screen_verified": false,
+    "vim_escape_verified": false
+  },
+  "negative": {
+    "executable": "C:/Windows/System32/cmd.exe",
+    "expected_capture_exit": 1,
+    "stage": "vim-enter",
+    "error": "editor READY event missing",
+    "editor_bytes": 302,
+    "editor_exit": 1,
+    "child_signaled": true,
+    "active_children": 0,
+    "cleanup_complete": true,
+    "capture_overflow": false,
+    "diagnostic_sha256": "256ec74c4307917bcf20886af603691c7df8a921b1bddb0da98c2b60348632aa",
+    "trace_sha256": "c5e5951632d6000394007f6516277bed0ddddaca2baa39caddf4c610108aeead"
+  },
+  "commands": [
+    "cmake --build build/candidate-adapter --config Release --target shell_test_launcher real_app_capture runtime_observation_test candidate_core_test",
+    "ctest --test-dir build/candidate-adapter -C Release -R 'candidate_(core|shell_tui)|runtime_observation|differential' --output-on-failure",
+    "for round in 1 2 3; do ctest --test-dir build/candidate-adapter -C Release -R '^candidate_shell_tui$' --output-on-failure || exit; done",
+    ".venv/Scripts/python experiments/differential/real_app_matrix.py --trace build/candidate-adapter/bin/Release/terminal_trace.exe --candidate experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe --capture build/candidate-adapter/bin/Release/real_app_capture.exe --out local/real-applications-v5",
+    "build/candidate-adapter/bin/Release/real_app_capture.exe local/ci-editor-negative-v5/capture C:/Windows/System32/cmd.exe"
+  ],
+  "test_counts": {
+    "focused_candidate_ctest": {"passed": 4, "failed": 0},
+    "differential_python": {"passed": 24, "failed": 0},
+    "real_application_python": {"passed": 4, "failed": 0}
+  },
+  "source_sha256": {
+    "experiments/conpty/real_app_capture.cpp": "8b606be3a916a634d5fb9fd73238763af1afb6d39b2c3793a8a970dc0c01a944",
+    "experiments/differential/real_app_matrix.py": "b3ebc063355320283b8974f88248516b3cc250f6e6d5ce3aff8446d0e266e1d2",
+    "experiments/differential/test_real_app_matrix.py": "0d78ded2805967965934223332ec623bc7b5309ab7bfd628cdf7dbd5e3669bbc",
+    "experiments/shell/shell.cpp": "d1e7ccc8de6e4d6487242afc1e091a1fd6d83eab26176753df12496e2b0938b3",
+    "experiments/shell/test_candidate_tui.py": "542a8b5ebd2e4e96e48fef83ae4017cb1724a2290f3e9781c50e331c55a434ab",
+    ".github/workflows/core-candidate.yml": "77e585d2c470b4ba52a3bc7b367a95e8cd347cf4647dd70a2b88fa1551d98f63",
+    "build/candidate-adapter/bin/Release/real_app_capture.exe": "8211c06d3a60113d20ba77a790da342c329ba51ff0819b14fa19b24e688b8c53"
+  },
+  "remote_ci": {
+    "status": "pending_new_commit",
+    "previous_failure": "https://github.com/JavaZeroo/termforge/actions/runs/40183895072"
+  },
+  "limitations": [
+    "Local Windows success does not prove the Windows Server 2025 CI workflow has passed",
+    "Issue 37 remains open until real application, fuzz and interleaved measurements finish naturally in CI",
+    "Synthetic application traces and event files are not GUI presentation or broad application compatibility evidence",
+    "The negative executable deliberately is not Vim; it validates diagnostics and cleanup, not a supported application",
+    "The product Ctrl-O workflow does not claim Vim Escape or alternate-screen acceptance"
+  ]
+}

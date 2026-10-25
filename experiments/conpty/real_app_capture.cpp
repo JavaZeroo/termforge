@@ -17,6 +17,21 @@ static void write_bytes(const std::filesystem::path& path, const std::string& da
     require(stream.good(), "output write failed");
 }
 
+static void wait_event(tf_conpty::Session& session, const std::filesystem::path& path,
+                       const std::string& expected, unsigned timeout_ms) {
+    const auto deadline = GetTickCount64() + timeout_ms;
+    const std::string error = "editor " + expected + " event missing";
+    for (;;) {
+        std::ifstream file(path, std::ios::binary);
+        std::string actual;
+        std::getline(file, actual);
+        if (actual == expected) return;
+        require(!session.wait_exit(0), error.c_str());
+        require(GetTickCount64() < deadline, error.c_str());
+        Sleep(1);
+    }
+}
+
 int main(int argc, char** argv) {
     try {
         require(argc == 3, "usage: real_app_capture output-directory vim-executable");
@@ -55,12 +70,14 @@ int main(int argc, char** argv) {
             tf_conpty::Session session;
             std::string stage = "launch";
             try {
-                session.start(vim.wstring(), L"-Nu NONE -n -i NONE --cmd \"set noswapfile\" editor.txt", {}, root.wstring());
+                session.start(vim.wstring(), L"-Nu NONE -n -i NONE --cmd \"set noswapfile\" --cmd \"autocmd VimEnter * call writefile(['READY'], 'editor-startup.txt')\" --cmd \"autocmd InsertEnter * call writefile(['INSERT'], 'editor-insert.txt')\" editor.txt", {}, root.wstring());
+                stage = "vim-enter";
+                wait_event(session, root / "editor-startup.txt", "READY", 10000);
                 stage = "new-buffer";
                 require(session.wait_text("[New]", 10000), "editor new buffer was not displayed");
                 stage = "insert-mode";
                 session.send("i");
-                require(session.wait_text("-- INSERT --", 10000), "editor insert mode was not displayed");
+                wait_event(session, root / "editor-insert.txt", "INSERT", 10000);
                 stage = "insert-text";
                 session.send("TF_VIM_REAL");
                 require(session.wait_text("TF_VIM_REAL", 10000), "editor inserted text was not displayed");
@@ -100,7 +117,7 @@ int main(int argc, char** argv) {
         std::ofstream manifest(out / "manifest.json", std::ios::trunc);
         manifest << "{\"shell_exit\":0,\"pager_exit\":0,\"editor_exit\":0,\"shell_bytes\":" << shell_bytes
                  << ",\"pager_bytes\":" << pager_bytes << ",\"editor_bytes\":" << editor_bytes
-                 << ",\"editor_file_verified\":true,\"editor_path\":";
+                 << ",\"editor_file_verified\":true,\"startup_event_verified\":true,\"insert_event_verified\":true,\"editor_path\":";
         termforge::Screen::quoted(manifest, vim.generic_u8string());
         manifest << "}\n";
         require(manifest.good(), "manifest write failed");

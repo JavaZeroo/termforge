@@ -1,0 +1,206 @@
+{
+  "schema": 1,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "candidate": "alacritty_terminal",
+  "version": "0.26.1-dev+termforge.2",
+  "applications": {
+    "shell": "Windows cmd.exe",
+    "pager": "Windows more.com",
+    "editor": "VIM - Vi IMproved 9.1 (2024 Jan 02, compiled Jul 09 2024 07:07:42)"
+  },
+  "capture_sha256": "8211c06d3a60113d20ba77a790da342c329ba51ff0819b14fa19b24e688b8c53",
+  "core_trace_sha256": "ddc0730993abd0f3c1ee6a12cbd2b27f99785d56eb8ea4f1b20edea7a1617b1e",
+  "candidate_trace_sha256": "9f5139a7d0c638ef08c0076231abe743e6f11272d1dcc719235384fefdf7bdc9",
+  "source_sha256": {
+    "experiments/conpty/real_app_capture.cpp": "8b606be3a916a634d5fb9fd73238763af1afb6d39b2c3793a8a970dc0c01a944",
+    "experiments/conpty/session.hpp": "f143a858df22302a2bc4a794263ff7769f4d0cfd9537307d916feb8ad638c6b6",
+    "experiments/core/screen.hpp": "7fdeef16f37965c7b42f47b9dd1d6be1476b48ecdc1d896b2af18a00b4b74054",
+    "experiments/core/trace.cpp": "d77b41acb0cfc261c47d9972d7b3170bc0049bc8001e2e0e1cf55ec15b19a9ec",
+    "experiments/differential/real_app_matrix.py": "b3ebc063355320283b8974f88248516b3cc250f6e6d5ce3aff8446d0e266e1d2",
+    "experiments/differential/compare_candidate.py": "b823369ec73dd6d4de4678898271dc26357587ff3ff1dccb340c228ea93d75b3",
+    "experiments/differential/decisions.md": "5676d502941f1d6e1d3a8e467653e2fc20d73794e9b6d04d0a777885cf107160",
+    "experiments/candidates/alacritty/run.py": "97e9c0773751397d737ef1402359f856dd0a189209441b4b4d455342aa4c6cb8",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/CHANGELOG.md": "97231d9beda30b536650c566169c692fa846be3f7b0405add3c9741f95f3af62",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "ca8957214051c2efbcdb321beab98e211644c2f359ceb0212401a73101679063",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/LICENSE-APACHE": "8884289e3969c089cd556c53fa1d3f51d86b29e52a8c1d660a55ce8292986910",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/event.rs": "e76c212f36bbfc43ea037a825dbc9c5b1174f5836fe8b69dfd158aadf3fc4048",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/event_loop.rs": "6da2897b76d8c0e7f989daa1463fd6fdeb3469a0a63e0c6ba703a9562663163c",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/mod.rs": "be15d08b03a28a271aa927b7149346a1b5d29e92e9186891bf246fdd2a4c90fc",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "a9a9a285ed28d75b547f86554174c192f74f2a0fb1b331f43a5d2433bcd5d9d7",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/row.rs": "2f963299e52525828d9d0bf1de758d793661c908eb7c126aa8556a1c9945a83d",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/storage.rs": "27a9b5101833d57423ae34ccef3d82c1a1cf9f51cbc42cc836a6fce79c088348",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/tests.rs": "5f38819134540eeb0dff7047f57f5d06250ce59493839c66ec4cd56e43db62f8",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/index.rs": "46908b68508f4e4ea90313f0536a88c357f2d17ad211b14d44b7f92dfdaa4402",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/lib.rs": "b9cae8ed53a4be8f738111f8727dd86218e66c88df38f32f4904e56651a2bee1",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/selection.rs": "0d1373577602646e84a4ab3448c65ee181987327bdabceff3c827e76dd9bd0d8",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/sync.rs": "4410fbae64e8f80321b3569a1495fb323e3319812c441f9eac54048c65ff93fb",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/cell.rs": "a569c233790530e6502ca031d0d3ed488b5aa2356e872da16ca689d64cb7b62c",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/color.rs": "ad2e33b60f397fe30e5e8f2dde2096bad8f5e256d464ba279cbda4a93cbbe224",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "a1d83cad4df22e4fb4065b4a2efb3310016e2c3c3d8f43fa302fd73b99e092c4",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/search.rs": "84e04c5f0da21009dbbcfc2f8033e322d6240c8d227028b5ce8a784f1c55ccaf",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/thread.rs": "e2f9fdc5d950bbea6c710c7a974f2998127af6b434344c363afb38e849f86144",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/mod.rs": "8cca30ba29cee2df84603f560a8d26624a48979d96d78f1b6729a470ff34d8a1",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/unix.rs": "2e8d0edf1aea816ac95c1e442d60025ebdd20dacaa99d0fd4f7c7cf78ac369e4",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/blocking.rs": "60121a65df120c4a227520d6672231c9e3c515cb75241241e6b37a0c5bc186ca",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/child.rs": "4782f173c639bff6891f474b068fee64b6e2ad411edabdf496bbfe6554ceb32e",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/conpty.rs": "62abd7e72af144ae1f1c359538e18cceaa97741382efa94e001f397510eef416",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/mod.rs": "b08803dae0f192bc6737aff22992a37368ac505c7133554c495ffcacb4116733",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/vi_mode.rs": "f52c0d3248707c68295880acd7ad96610467110d6813f1172d4ae767365add2e"
+  },
+  "capture_manifest": {
+    "shell_exit": 0,
+    "pager_exit": 0,
+    "editor_exit": 0,
+    "shell_bytes": 85,
+    "pager_bytes": 360,
+    "editor_bytes": 1999,
+    "editor_file_verified": true,
+    "startup_event_verified": true,
+    "insert_event_verified": true,
+    "editor_path": "C:/Program Files/Git/usr/bin/vim.EXE"
+  },
+  "runs": 3,
+  "counts": {
+    "match": 3
+  },
+  "passed": true,
+  "execution_passed": true,
+  "real_application_covered": true,
+  "semantic_acceptance": false,
+  "performance_measured": false,
+  "presented_done": null,
+  "records": [
+    {
+      "case": "shell",
+      "plan": "whole",
+      "input_sha256": "5f27c3d595f5c6e971d40e3e88e35e906f044bfcae4befa8e0745e1a8a78b442",
+      "bytes": 85,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        85
+      ],
+      "checkpoints": 2,
+      "status": "match",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": null,
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      },
+      "candidate_final_rows": [
+        "TF_REAL_SHEL",
+        "L",
+        ""
+      ]
+    },
+    {
+      "case": "pager",
+      "plan": "whole",
+      "input_sha256": "d035d53385788d2b68dcc0d866b5a2fe68897cdcb28a761bd4d36efcc6df6cf9",
+      "bytes": 360,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        360
+      ],
+      "checkpoints": 2,
+      "status": "match",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": null,
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      },
+      "candidate_final_rows": [
+        "TF_PAGE_23",
+        "--More(56%",
+        ")--"
+      ]
+    },
+    {
+      "case": "editor",
+      "plan": "whole",
+      "input_sha256": "0f84870913b0a29626879c85cbc490a8044d2bb14c5bb7990473a930f08d542a",
+      "bytes": 1999,
+      "rows": 3,
+      "columns": 12,
+      "history": 3,
+      "chunk_sizes": [
+        1999
+      ],
+      "checkpoints": 2,
+      "status": "match",
+      "core_returncode": 0,
+      "candidate_returncode": 0,
+      "core_error": null,
+      "candidate_error": null,
+      "first_difference": null,
+      "difference_direction": "expected=TermForge core; actual=Alacritty candidate; neither is an oracle",
+      "normalization": "NFC text; blank/empty cells share a projection; explicit-space semantics are excluded; mode_bits/replies are not compared here",
+      "reproduce": {
+        "core": [
+          "terminal_trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ],
+        "candidate": [
+          "termforge-alacritty-trace",
+          "input.bin",
+          "3",
+          "12",
+          "3",
+          "chunks.txt"
+        ]
+      },
+      "candidate_final_rows": [
+        "1L,12Bwri",
+        "tten",
+        ""
+      ]
+    }
+  ]
+}

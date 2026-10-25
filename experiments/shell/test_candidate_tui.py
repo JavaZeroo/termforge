@@ -34,9 +34,12 @@ class CandidateTuiTests(unittest.TestCase):
             script = (out / "candidate-input.bin").read_bytes()
             self.assertTrue(script.startswith(b"iTF_CANDIDATE_TUI"))
             self.assertTrue(script.endswith(b":wq\r"))
+            output = (out / "candidate-output.bin").read_bytes()
+            self.assertTrue(output)
+            self.assertEqual((out / "candidate-startup-log.txt").read_bytes(), b"READY\n")
             self.assertEqual((out / "candidate-resize-log.txt").read_bytes(), b"60x12")
             self.assertEqual((out / "candidate-insert-log.txt").read_text(encoding="utf-8"),
-                             "\n".join("TF_CANDIDATE_TUI") + "\nLEAVE\nLEAVE\n")
+                             "INSERT\n" + "\n".join("TF_CANDIDATE_TUI") + "\nLEAVE\nINSERT\nLEAVE\n")
             replies = (out / "candidate-replies.bin").read_bytes()
             self.assertRegex(replies, rb"^\x1b\[[0-9]+;[0-9]+R$", replies)
             self.assertIsNone(result["presented_done"])
