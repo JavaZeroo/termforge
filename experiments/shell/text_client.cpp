@@ -173,10 +173,41 @@ int alternate_fixture(const wchar_t* capture, const wchar_t* gate_name) {
     require(WaitForSingleObject(gate.get(), 5000) == WAIT_OBJECT_0, "alternate fixture release timeout");
     return 0;
 }
+int scroll_fixture(const wchar_t* capture, const wchar_t* gate_name) {
+    BOOL owned = FALSE;
+    require(IsProcessInJob(GetCurrentProcess(), nullptr, &owned) && owned, "scroll fixture requires an owned Job");
+    tf_shell_test::WorkflowOptions options;
+    options.capture = capture;
+    options.generation = 1;
+    const auto base = options.capture.wstring();
+    const auto snapshot = [&](const wchar_t* suffix, const std::string& role) {
+        options.capture = base + suffix;
+        workflow_capture_console(options, role);
+    };
+    tf_conpty::Handle gate(CreateEventW(nullptr, TRUE, FALSE, gate_name));
+    require(gate.get() != nullptr, "scroll fixture event creation failed");
+    const std::string initial = "\x1b[2J\x1b[HTOP_FIXED\r\nREGION_A\r\nREGION_B\r\nBOTTOM_FIXED\r\n";
+    const std::string region = "\x1b[2;3r\x1b[3;1H\nREGION_C\nREGION_D";
+    const std::string done = "\x1b[r\x1b[5;1HTF_SCROLL_DONE\r\n";
+    output(initial); wait_alternate_console(capture, L"BOTTOM_FIXED", 7); snapshot(L".before", "main-before");
+    output(region); wait_alternate_console(capture, L"REGION_D", 7); snapshot(L".region", "main-region");
+    output(done); wait_alternate_console(capture, L"TF_SCROLL_DONE", 7); snapshot(L".final", "main-final");
+    tf_conpty::Handle source(tf_shell_test::workflow_new_file(base + L".source.bin"));
+    tf_shell_test::workflow_save(source.get(), initial + region + done);
+    require(FlushFileBuffers(source.get()) != FALSE, "scroll source flush failed");
+    require(WaitForSingleObject(gate.get(), 5000) == WAIT_OBJECT_0, "scroll fixture release timeout");
+    return 0;
+}
 int wmain(int argc, wchar_t** argv) {
     try {
         if(argc>1 && std::wstring(argv[1])==L"--workflow-v1")
             return tf_shell_test::run_workflow_fixture(tf_shell_test::workflow_options(argc,argv));
+        if(argc==4 && std::wstring(argv[1])==L"--scroll-v1") {
+            const auto input = GetStdHandle(STD_INPUT_HANDLE);
+            require(SetConsoleCP(CP_UTF8) && SetConsoleOutputCP(CP_UTF8) &&
+                    SetConsoleMode(input, ENABLE_VIRTUAL_TERMINAL_INPUT), "scroll fixture console mode failed");
+            return scroll_fixture(argv[2], argv[3]);
+        }
         if(argc==4 && std::wstring(argv[1])==L"--alt-v1") {
             const auto input = GetStdHandle(STD_INPUT_HANDLE);
             require(SetConsoleCP(CP_UTF8) && SetConsoleOutputCP(CP_UTF8) &&

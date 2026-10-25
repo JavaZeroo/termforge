@@ -422,31 +422,35 @@ class ShellWindow {
     }
     void scenario_alternate() {
 #ifndef TERMFORGE_CANDIDATE_CORE
-        throw std::runtime_error("candidate-alt requires the candidate adapter build");
+        throw std::runtime_error(mode_ + " requires the candidate adapter build");
 #else
+        const bool scroll = mode_ == "candidate-scroll";
         const auto directory = std::filesystem::path(image_path_).parent_path();
-        const std::wstring gate = L"Local\\TermForgeAlt-" + std::to_wstring(GetCurrentProcessId());
+        const auto prefix = directory / (scroll ? "candidate-scroll" : "candidate-alt");
+        const std::wstring gate = (scroll ? L"Local\\TermForgeScroll-" : L"Local\\TermForgeAlt-") + std::to_wstring(GetCurrentProcessId());
+        const wchar_t* option = scroll ? L"--scroll-v1" : L"--alt-v1";
+        const char* done = scroll ? "TF_SCROLL_DONE" : "TF_ALT_DONE";
         if (stage_ == 0 && has("TF>")) {
             wchar_t path[32768]{};
             const auto count = GetModuleFileNameW(nullptr, path, 32768);
-            require(count && count < 32768, "alternate fixture location failed");
+            require(count && count < 32768, "buffer fixture location failed");
             const auto client = std::filesystem::path(path).parent_path() / L"shell_text_client.exe";
-            const auto prefix = directory / "candidate-alt";
             begin_output_observation();
-            command(L"\"" + client.wstring() + L"\" --alt-v1 \"" + prefix.wstring() + L"\" \"" + gate + L"\"\r");
+            command(L"\"" + client.wstring() + L"\" " + option + L" \"" + prefix.wstring() + L"\" \"" + gate + L"\"\r");
             stage_ = 1;
             return;
         }
-        if (stage_ != 1 || !live_contains_line("TF_ALT_DONE") || !resize_.settled()) return;
+        if (stage_ != 1 || !live_contains_line(done) || !resize_.settled()) return;
         const auto save = [](const std::filesystem::path& path, const std::string& bytes) {
             std::ofstream out(path, std::ios::binary | std::ios::trunc);
             out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
             out.close(); require(bool(out), "alternate evidence write failed");
         };
-        save(directory / "candidate-alt.transport.bin", observed_output_);
+        save(prefix.wstring() + L".transport.bin", observed_output_);
         require(frame_matches_full(), "alternate retained frame mismatch");
         std::ostringstream out;
-        out << "{\"schema\":\"termforge-candidate-alt-v1\",\"columns\":" << parser_.screen.width()
+        out << "{\"schema\":\"" << (scroll ? "termforge-candidate-scroll-v1" : "termforge-candidate-alt-v1")
+            << "\",\"columns\":" << parser_.screen.width()
             << ",\"rows\":" << parser_.screen.height() << ",\"cursor_row\":" << parser_.screen.row
             << ",\"cursor_column\":" << parser_.screen.column
             << ",\"alternate_enabled\":" << ((parser_.mode_bits() & (1 << 12)) ? "true" : "false")
@@ -477,7 +481,7 @@ class ShellWindow {
             }
         }
         out << "]}";
-        save(directory / "candidate-alt.json", out.str());
+        save(prefix.wstring() + L".json", out.str());
         tf_conpty::Handle release(OpenEventW(EVENT_MODIFY_STATE | SYNCHRONIZE, FALSE, gate.c_str()));
         require(release.get() != nullptr, "alternate release open failed");
         require(SetEvent(release.get()) != FALSE, "alternate release signal failed");
@@ -560,7 +564,7 @@ class ShellWindow {
             if (!stage_ && result_.frames) { std::cout << "{\"watchdog_ready\":true}\n" << std::flush; stage_ = 1; }
             return;
         }
-        if (mode_ == "candidate-alt") {
+        if (mode_ == "candidate-alt" || mode_ == "candidate-scroll") {
             scenario_alternate();
             return;
         }
@@ -1276,7 +1280,7 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "candidate-tui" || mode == "candidate-alt" || mode == "candidate-unicode" || mode == "candidate-input-escape" || mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
+            require(mode == "candidate-tui" || mode == "candidate-alt" || mode == "candidate-scroll" || mode == "candidate-unicode" || mode == "candidate-input-escape" || mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
             if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system" || mode=="ui-copy-context-system" || mode=="ui-actions-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
@@ -1298,9 +1302,9 @@ static int application(int argc, char** argv) {
         }
         const bool candidate = mode == "candidate-tui"
             ? r.candidate_tui_start && r.candidate_replies && r.candidate_tui && r.candidate_resize && r.normal && r.exit_code == 37
-            : mode == "candidate-unicode" || mode == "candidate-alt" ? r.normal && r.exit_code == 37
+            : mode == "candidate-unicode" || mode == "candidate-alt" || mode == "candidate-scroll" ? r.normal && r.exit_code == 37
             : mode != "candidate-input-escape" || (r.candidate_replies && r.normal && r.exit_code == 37);
-        const bool legacy = mode == "candidate-tui" || mode == "candidate-alt" || mode == "candidate-unicode" || mode == "candidate-input-escape" ||
+        const bool legacy = mode == "candidate-tui" || mode == "candidate-alt" || mode == "candidate-scroll" || mode == "candidate-unicode" || mode == "candidate-input-escape" ||
             (r.normal && r.unicode && r.edited && r.arrows &&
              (mode == "close" || mode == "resize-close" || (r.interrupted && r.exit_code == 37)));
         const bool valid = r.complete && r.active_children == 0 && r.frames > 0 && r.input_rejected == 0 && candidate && legacy &&

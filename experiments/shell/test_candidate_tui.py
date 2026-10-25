@@ -9,6 +9,7 @@ from experiments.build_paths import binary
 from experiments.shell.run import execute
 from experiments.shell.unicode_checks import validate_candidate_unicode
 from experiments.shell.alternate_checks import STAGES, validate_candidate_alternate
+from experiments.shell.scroll_checks import STAGES as SCROLL_STAGES, validate_candidate_scroll
 from experiments.shell.workflow_checks import validate_console_window
 
 
@@ -87,6 +88,45 @@ class CandidateTuiTests(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         validate_candidate_alternate(changed, changed_consoles,
                                                     b"" if corruption == "source" else source, transport)
+
+    def test_real_scroll_region(self):
+        for repeat in range(2):
+            out = self.out / f"candidate-scroll-{repeat}"
+            record = execute(binary("termforge_shell"), "candidate-scroll", out, timeout=20)
+            summary = record["scroll_output"]
+            self.assertTrue(summary["scroll_region_verified"])
+            self.assertTrue(summary["outside_preserved"])
+            self.assertFalse(summary["origin_and_wrap_modes_verified"])
+            self.assertFalse(summary["resize_cross_verified"])
+            self.assertFalse(summary["full_r2_contract_verified"])
+            self.assertIsNone(summary["presented_done"])
+            data = json.loads((out / "candidate-scroll.json").read_text(encoding="utf-8"))
+            consoles = {stage: validate_console_window(out, expected_role=role, expected_generation=1, prefix=prefix)
+                        for stage, (role, prefix) in SCROLL_STAGES.items()}
+            source = (out / "candidate-scroll.source.bin").read_bytes()
+            transport = (out / "candidate-scroll.transport.bin").read_bytes()
+            for corruption in ("outside", "region", "history", "source", "transport", "cursor", "frame", "missing-stage"):
+                changed = copy.deepcopy(data)
+                changed_consoles = consoles
+                if corruption == "outside":
+                    changed["visible_lines"][0] = "REGION_A"
+                elif corruption == "region":
+                    changed["visible_lines"][1], changed["visible_lines"][2] = \
+                        changed["visible_lines"][2], changed["visible_lines"][1]
+                elif corruption == "history":
+                    changed["document_lines"].append("REGION_A")
+                elif corruption == "cursor":
+                    changed["cursor_row"] = (changed["cursor_row"] + 1) % changed["rows"]
+                elif corruption == "frame":
+                    changed["frame_matches_full"] = False
+                elif corruption == "missing-stage":
+                    changed_consoles = dict(consoles)
+                    del changed_consoles["region"]
+                with self.subTest(repeat=repeat, corruption=corruption):
+                    with self.assertRaises(ValueError):
+                        validate_candidate_scroll(changed, changed_consoles,
+                                                 b"" if corruption == "source" else source,
+                                                 transport.replace(b"REGION_C", b"REGION_X") if corruption == "transport" else transport)
 
     def test_real_unicode_scalar_preservation_and_glyphs(self):
         for repeat in range(2):

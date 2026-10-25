@@ -28,6 +28,7 @@ from experiments.shell.find_checks import validate_find_workflow, validate_find_
 from experiments.shell.workflow_sessions_checks import validate_workflow_sessions
 from experiments.shell.unicode_checks import validate_unicode_output
 from experiments.shell.alternate_checks import validate_alternate_output
+from experiments.shell.scroll_checks import validate_scroll_output
 
 
 WORKSPACE_DATA_MODES = {
@@ -57,6 +58,12 @@ def validate(row, mode):
                 row.get("command_verified") is not True or row.get("input_rejected") != 0 or
                 row.get("presented_done") is not None):
             raise ValueError("candidate escape lifecycle failed")
+        return
+    if mode == "candidate-scroll":
+        if (row.get("valid") is not True or row.get("exit_code") != 37 or
+                row.get("active_children_after") != 0 or row.get("command_verified") is not True or
+                row.get("input_rejected") != 0 or row.get("presented_done") is not None):
+            raise ValueError("candidate scroll lifecycle failed")
         return
     if mode == "candidate-alt":
         if (row.get("valid") is not True or row.get("exit_code") != 37 or
@@ -468,6 +475,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
             if mode == "ui-history":
                 validate_history(json.loads((out / "history.json").read_text(encoding="utf-8")))
                 validate_native_scroll([json.loads(line) for line in (out / "native-scroll.jsonl").read_text(encoding="utf-8").splitlines()])
+            if mode == "candidate-scroll":
+                record["scroll_output"] = validate_scroll_output(out)
             if mode == "candidate-alt":
                 record["alternate_output"] = validate_alternate_output(out)
             if mode == "candidate-unicode":
@@ -591,7 +600,7 @@ def main():
              "experiments/shell/workspace_launch_failure_scenario.hpp", "experiments/shell/workspace_split_scenario.hpp",
              "experiments/shell/workspace_history_scenario.hpp", "experiments/shell/history_checks.py",
              "experiments/shell/native_scroll_gesture.hpp",
-             "experiments/shell/unicode_checks.py", "experiments/shell/alternate_checks.py", "experiments/shell/workflow_checks.py",
+             "experiments/shell/unicode_checks.py", "experiments/shell/alternate_checks.py", "experiments/shell/scroll_checks.py", "experiments/shell/workflow_checks.py",
              "experiments/shell/text_client.cpp", "experiments/shell/test_candidate_tui.py",
              "experiments/shell/workspace_keyboard_scenario.hpp", "experiments/shell/input_client.cpp",
              "experiments/shell/workspace_paste_scenario.hpp", "experiments/shell/paste_prompt.hpp",
