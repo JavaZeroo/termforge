@@ -1,12 +1,12 @@
 # Alacritty 原生核心候选（R2-01 / #24）
 
-本目录是 [#20](https://github.com/JavaZeroo/termforge/issues/20) 的实际候选构建、状态适配与核心成本实验，不是产品核心选型结论，也不改变现有 C++ 核心的默认构建。计量不代表产品性能，不启动 GUI，不扩大 R2 的 VT/TUI 产品实现。
+本目录是 [#20](https://github.com/JavaZeroo/termforge/issues/20) 的实际候选构建、状态适配与核心成本实验。[ADR-0003](../../../docs/adr/0003-core-reference-and-reuse.md)已决定 R2 新能力复用候选 Term/Processor，但本目录尚未完成产品整合，也不改变现有 C++ 核心的默认构建。计量不代表产品性能，不启动 GUI。
 
 ## 固定来源与许可
 
 | 项目 | 固定值 | 一手来源 |
 |---|---|---|
-| `alacritty_terminal` | `0.26.0`，Apache-2.0，Rust >= 1.85 | [crates.io 版本元数据](https://crates.io/api/v1/crates/alacritty_terminal/0.26.0)、[固定 crate 源码](https://crates.io/api/v1/crates/alacritty_terminal/0.26.0/download)、[上游仓库](https://github.com/alacritty/alacritty) |
+| `alacritty_terminal` | `0.26.0`，Apache-2.0；顶层 crate Rust >= 1.85，当前锁定图 >= 1.88 | [crates.io 版本元数据](https://crates.io/api/v1/crates/alacritty_terminal/0.26.0)、[固定 crate 源码](https://crates.io/api/v1/crates/alacritty_terminal/0.26.0/download)、[home 0.5.12](https://crates.io/api/v1/crates/home/0.5.12) |
 | crate SHA-256 | `bda177466b9524d59f1b12f0dd30b68696788e9992a7e959021c4a0ed96fcf59` | 同一 crates.io 元数据的 `checksum` |
 | 适配器工具链 | Rust/cargo 1.92.0 | 本机与候选 CI 显式选择；不宣称这是最低验证版本 |
 | 传递依赖 | `Cargo.lock` 固定 59 个依赖包；`cargo metadata` 共 60 个包（含适配器） | `cargo metadata --locked --format-version 1` 核对精确版本、来源和 registry 校验值 |
@@ -55,5 +55,5 @@ alacritty_trace input.bin rows columns history chunks.txt
 - `replies` 是相邻检查点之间的新回复，不是最终状态里的累计队列；汇总时按检查点顺序收集。
 - 备用屏/查询的一个固定轨迹不证明完整 TUI、所有 VT 模式、真实 ConPTY 生命周期或产品 UI 兼容。
 - 候选可构建不等于支持 [#23 平台台账](../../../research/windterm-2.7.0-platform-scope.md)的全部系统。Windows 7 的非 ConPTY 路径、macOS 10.13、Linux glibc 2.17、x86 和 ARM 缺口在 #26/#34 单独判断。
-- #25 已完成[共同轨迹与逐项裁决](../../differential/decisions.md)：95 次、1011 检查点，90 次一致、5 次已裁决参考差异；ED1 候选错误与 ED2 历史策略已固定签名，执行通过不等于语义接受。[扩展能力矩阵](../../differential/results/2026-10-25-capabilities-v2/summary.json)覆盖备用屏、滚动区、回复、Recovery 和 resize；[真实 cmd/more.com/Vim 核心轨迹](../../differential/results/2026-10-25-real-applications/summary.json)已验证生命周期与回放，但不是产品 GUI/TUI 验收。[有界 fuzz](../../differential/results/2026-10-25-fuzz/summary.json)固定首败与最小回归，未登记新差异仍失败；#29 决定重排合同，#26 才测量成本并重审 ADR-0003。
-- #26 已建立[共同 project/interactive 计量](../../measure/README.md#原生候选-project--interactive-对照26)：长输出与固定编辑回放的纯 feed、全量投影/JSON 成本分开，当前候选观察适配成本显著，不能据此直接选型。平台、维护/升级路径、接口影响与 ADR-0003 结论仍在审查。
+- #25 已完成[共同轨迹与逐项裁决](../../differential/decisions.md)：95 次、1011 检查点，90 次一致、5 次已裁决参考差异；ED1 候选错误与 ED2 历史策略已固定签名，执行通过不等于语义接受。[扩展能力矩阵](../../differential/results/2026-10-25-capabilities-v2/summary.json)覆盖备用屏、滚动区、回复、Recovery 和 resize；[真实 cmd/more.com/Vim 核心轨迹](../../differential/results/2026-10-25-real-applications/summary.json)已验证生命周期与回放，但不是产品 GUI/TUI 验收。[有界 fuzz](../../differential/results/2026-10-25-fuzz/summary.json)固定首败与最小回归，未登记新差异仍失败；#29 决定重排合同，#26 已测量成本并完成 ADR-0003 重审。
+- #26 已完成[平台、维护与接口审查](../../../docs/research/2026-10-25-core-route-review.md)及 ADR-0003 重审：R2 新能力复用 Term/Processor，保留自有传输、呈现和自研差分回退。当前锁定依赖图要求 Rust >= 1.88；ED1/ED2、0.26.1-dev 修复、稳定行身份和产品 FFI 仍是整合前置，候选尚未进入产品包。

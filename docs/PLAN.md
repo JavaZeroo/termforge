@@ -14,7 +14,7 @@
 
 **R1 基础文字交互已按限定合同验收，当前进入R2准备。** 固定源码`ce9b24d`的[完整文字工作流及同源码回归](../experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)覆盖同一次真实八会话Copy→Paste→中文输入、后台负载、两次滚动状态/提交端点、校准阶段资源与回收。实际呈现、长期资源稳定和WindTerm性能对照仍未验收。现有空面板、有限VT核心和局部UI取证不能计作完整产品功能。
 
-下一次可交付结果是：在明确支持的本地shell中可靠运行常见TUI，重启后恢复工作配置，并提供可复建的Windows开发包。平台、架构和声明的最低系统边界已由[#23](https://github.com/JavaZeroo/termforge/issues/23)的[范围台账](../research/windterm-2.7.0-platform-scope.md)冻结；近期推进实际外部核心候选比较，在扩大终端模式实现前完成ADR-0003重审。具体工作包见下文R2，执行项统一由[TRACKING](TRACKING.md)指向issues。
+下一次可交付结果是：在明确支持的本地shell中可靠运行常见TUI，重启后恢复工作配置，并提供可复建的Windows开发包。平台、架构和声明的最低系统边界已由[#23](https://github.com/JavaZeroo/termforge/issues/23)的[范围台账](../research/windterm-2.7.0-platform-scope.md)冻结；[ADR-0003](adr/0003-core-reference-and-reuse.md)已决定 R2 新终端能力复用候选 Term/Processor，保留自有传输、呈现和自研差分回退。后续按该路线整合，不把路线决定当作产品能力完成。具体工作包见下文R2，执行项统一由[TRACKING](TRACKING.md)指向issues。
 
 本地会话、布局、受控DPI和R1完整基础文字流程已有**限定验收**；完整TUI、复杂文字、真实跨屏、持久化、远程和跨平台客户端仍有**产品能力缺口**。R1不代表可日常替代WindTerm。参考取证、实现和验收分列，详细边界只在能力矩阵维护。
 
