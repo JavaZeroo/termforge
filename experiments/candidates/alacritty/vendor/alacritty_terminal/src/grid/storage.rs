@@ -67,9 +67,14 @@ impl<T> Storage<T> {
     where
         T: Default,
     {
-        // Initialize visible lines; the scrollback buffer is initialized dynamically.
+        // Initialize visible lines in grid order; the scrollback buffer is initialized dynamically.
         let mut inner = Vec::with_capacity(visible_lines);
-        inner.resize_with(visible_lines, || Row::new(columns));
+        for _ in 0..visible_lines {
+            inner.push(Row::new(columns));
+        }
+        for index in (0..visible_lines).rev() {
+            inner[index].renew_identity();
+        }
 
         Storage { inner, zero: 0, visible_lines, len: visible_lines }
     }

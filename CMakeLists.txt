@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(termforge_experiments VERSION 0.1.0 LANGUAGES CXX)
 
+option(TERMFORGE_BUILD_CANDIDATE_ADAPTER "Build the Rust candidate C++ adapter checks" OFF)
+
 # Single-config generators use bin/, multi-config generators use bin/<config>/.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 include(CTest)
@@ -28,6 +30,35 @@ termforge_warnings(terminal_trace)
 add_executable(recovery_probe experiments/core/recovery_probe.cpp)
 target_link_libraries(recovery_probe PRIVATE termforge_core)
 termforge_warnings(recovery_probe)
+
+if(TERMFORGE_BUILD_CANDIDATE_ADAPTER)
+  set(CANDIDATE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/experiments/candidates/alacritty")
+  file(GLOB_RECURSE CANDIDATE_SOURCES CONFIGURE_DEPENDS
+    "${CANDIDATE_DIR}/*.rs" "${CANDIDATE_DIR}/Cargo.toml" "${CANDIDATE_DIR}/Cargo.lock")
+  if(WIN32)
+    set(CANDIDATE_LIBRARY "${CANDIDATE_DIR}/target/release/termforge_alacritty_core.lib")
+  else()
+    set(CANDIDATE_LIBRARY "${CANDIDATE_DIR}/target/release/libtermforge_alacritty_core.a")
+  endif()
+  add_custom_command(OUTPUT "${CANDIDATE_LIBRARY}"
+    COMMAND cargo build --release --locked --lib
+    WORKING_DIRECTORY "${CANDIDATE_DIR}"
+    DEPENDS ${CANDIDATE_SOURCES}
+    COMMENT "Build fixed Rust candidate static library")
+  add_custom_target(termforge_candidate_core_build DEPENDS "${CANDIDATE_LIBRARY}")
+  add_library(termforge_candidate_core STATIC IMPORTED GLOBAL)
+  set_target_properties(termforge_candidate_core PROPERTIES IMPORTED_LOCATION "${CANDIDATE_LIBRARY}")
+  add_dependencies(termforge_candidate_core termforge_candidate_core_build)
+
+  add_executable(candidate_core_test experiments/core/candidate_terminal_test.cpp experiments/core/candidate_terminal.cpp)
+  target_link_libraries(candidate_core_test PRIVATE termforge_core termforge_candidate_core)
+  termforge_warnings(candidate_core_test)
+  if(WIN32)
+    target_link_libraries(candidate_core_test PRIVATE ws2_32 userenv ntdll)
+  else()
+    target_link_libraries(candidate_core_test PRIVATE pthread dl m)
+  endif()
+endif()
 
 add_executable(resize_test experiments/core/resize_test.cpp)
 target_link_libraries(resize_test PRIVATE termforge_core)
@@ -187,6 +218,9 @@ if(BUILD_TESTING)
     target_compile_definitions(layout_state_test PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
   endif()
   add_test(NAME layout_state COMMAND layout_state_test)
+  if(TERMFORGE_BUILD_CANDIDATE_ADAPTER)
+    add_test(NAME candidate_core COMMAND candidate_core_test)
+  endif()
   add_test(NAME resize_core COMMAND resize_test)
   add_test(NAME history_core COMMAND history_test)
   add_test(NAME selection_core COMMAND selection_test)

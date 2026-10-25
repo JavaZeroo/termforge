@@ -2807,6 +2807,32 @@ mod tests {
     }
 
     #[test]
+    fn reused_scroll_row_receives_new_identity() {
+        let size = TermSize::new(10, 2);
+        let mut term = Term::new(Config::default(), &size, VoidListener);
+        let first = term.grid()[Line(0)].id();
+        let second = term.grid()[Line(1)].id();
+        assert!(first < second, "initial row IDs are not ordered: {first} {second}");
+        term.linefeed();
+        term.linefeed();
+        assert_eq!(term.grid()[Line(0)].id(), second);
+        assert!(term.grid()[Line(1)].id() > second);
+        assert_ne!(term.grid()[Line(1)].id(), first);
+    }
+
+    #[test]
+    fn history_evictions_are_counted() {
+        let size = TermSize::new(10, 2);
+        let config = Config { scrolling_history: 1, ..Config::default() };
+        let mut term = Term::new(config, &size, VoidListener);
+        for _ in 0..5 {
+            term.linefeed();
+        }
+        assert_eq!(term.grid().history_size(), 1);
+        assert_eq!(term.grid().discarded(), 3);
+    }
+
+    #[test]
     fn clearing_viewport_keeps_history_position() {
         let size = TermSize::new(10, 20);
         let mut term = Term::new(Config::default(), &size, VoidListener);

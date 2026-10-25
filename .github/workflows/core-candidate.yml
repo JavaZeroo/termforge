@@ -64,14 +64,16 @@ jobs:
         run: cargo build --release --locked --bin alacritty-measure
       - name: Configure native trace on Windows
         if: runner.os == 'Windows'
-        run: cmake -S . -B build -A x64
+        run: cmake -S . -B build -A x64 -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=ON
       - name: Configure native trace on Unix
         if: runner.os != 'Windows'
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=ON
       - name: Build native trace
         run: cmake --build build --config Release --target terminal_trace
       - name: Build native measurement
         run: cmake --build build --config Release --target core_measure
+      - name: Build and test candidate C++ adapter
+        run: cmake --build build --config Release --target candidate_core_test && ctest --test-dir build -C Release -R candidate_core --output-on-failure
       - name: Build real application capture on Windows
         if: runner.os == 'Windows'
         run: cmake --build build --config Release --target real_app_capture

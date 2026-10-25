@@ -1,0 +1,33 @@
+{
+  "bytes": 20,
+  "rows": 3,
+  "columns": 8,
+  "history": 2,
+  "chunk_sizes": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "input_sha256": "5da9414d08215d41051d359ccc9e233d217bc34c3a066bc32bd36f26f54fd5bc",
+  "returncode": 0,
+  "error": null,
+  "checkpoints": 21,
+  "passed": true
+}

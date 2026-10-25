@@ -1,0 +1,14 @@
+{
+  "case": "seed_2",
+  "plan": "byte",
+  "status": "match",
+  "input_sha256": "9d1e0e2d9459d06523ad13e28a4093c2316baafe7aec5b25f30eba2e113599c4",
+  "checkpoints": 2,
+  "first_difference": null,
+  "core_fragmentation_difference": null,
+  "candidate_fragmentation_difference": null,
+  "core_returncode": 0,
+  "candidate_returncode": 0,
+  "core_error": null,
+  "candidate_error": null
+}

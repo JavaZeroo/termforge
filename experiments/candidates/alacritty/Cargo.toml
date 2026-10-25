@@ -17,3 +17,8 @@ libc = "0.2"
 [[bin]]
 name = "alacritty-measure"
 path = "src/measure.rs"
+
+[lib]
+name = "termforge_alacritty_core"
+path = "src/ffi.rs"
+crate-type = ["staticlib"]

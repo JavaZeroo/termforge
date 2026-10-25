@@ -60,4 +60,4 @@
 
 ## 实施更新
 
-#27 随后固定 `0.26.1-dev+termforge.1`，已落实上述上游修复、ED1/ED2 和稳定行元数据；当前锁定图最高声明 Rust 1.85，详见[来源与补丁台账](../../experiments/candidates/alacritty/PROVENANCE.md)。共同矩阵达到 95 次一致，真实应用 3 次一致。这只是 headless 整合切片；产品 FFI、默认 shell 替换和 R1 系统验收仍未完成，不改变本审查的平台与性能边界。
+#27 随后固定 `0.26.1-dev+termforge.2`，已落实上述上游修复、ED1/ED2 和稳定行元数据；当前锁定图最高声明 Rust 1.85，详见[来源与补丁台账](../../experiments/candidates/alacritty/PROVENANCE.md)。共同矩阵达到 95 次一致，真实应用 3 次一致，[C++ 拥有值适配](../../experiments/core/CANDIDATE.md)已独立验证。实际 InputQueue、默认 shell 替换和 R1 系统验收仍未完成，不改变本审查的平台与性能边界。

@@ -11,7 +11,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
-VERSION = "0.26.1-dev+termforge.1"
+VERSION = "0.26.1-dev+termforge.2"
 UPSTREAM_COMMIT = "542147067dd016fc5f49120ef0ba605a98a4e3a7"
 BASE_CRATE_SHA256 = "bda177466b9524d59f1b12f0dd30b68696788e9992a7e959021c4a0ed96fcf59"
 
@@ -98,9 +98,12 @@ def run_suite(binary, output):
               [row_text(row) for row in final["screen"]["history"]] == ["A", "B"])
     cases.append(dict(case="bounded_history", passed=passed, report=report))
 
-    sources = ["Cargo.toml", "Cargo.lock", "src/main.rs", "run.py"]
+    sources = ["Cargo.toml", "Cargo.lock", "src/main.rs", "src/ffi.rs",
+               "include/termforge_candidate.h", "run.py"]
     source_sha256 = {path: sha(HERE / path) for path in sources}
-    source_sha256.update({path: sha(ROOT / path) for path in vendor_sources()})
+    adapter_sources = ["experiments/core/candidate_terminal.cpp", "experiments/core/candidate_terminal.hpp",
+                       "experiments/core/candidate_terminal_test.cpp"]
+    source_sha256.update({path: sha(ROOT / path) for path in vendor_sources() + adapter_sources})
     summary = dict(schema=1, candidate="alacritty_terminal", version=VERSION,
                    license="Apache-2.0", upstream_commit=UPSTREAM_COMMIT,
                    base_crate_sha256=BASE_CRATE_SHA256, platform=platform.platform(),

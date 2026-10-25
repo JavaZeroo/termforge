@@ -112,4 +112,8 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 全部 vendor 文件纳入结果哈希，23 个差分 Python 测试、140 个固定 crate 单元测试和 doc test 通过。上述旧 0.26.0 结果继续作为原始基线，不能改写版本或拼接性能统计；新结果仍不是完整语义接受或产品 TUI。
 
+## termforge.2 拥有值适配结果（#27）
+
+`0.26.1-dev+termforge.2` 增加滚动复用/初始 ID 顺序、历史淘汰和实际 C++/C ABI 适配。[v5 共同矩阵](results/2026-10-25-candidate-common-v5/summary.json)继续 95 次全部一致，[真实应用 v3](results/2026-10-25-real-applications-v3/summary.json)3 次一致，[fuzz v3](results/2026-10-25-fuzz-v3/summary.json)为 2 已知差异+6 一致，[扩展能力 v4](results/2026-10-25-capabilities-v4/summary.json)分类不变。142 个固定 crate 单元测试、doc test、23 个差分 Python、15 个计量与 C++ candidate_core 均通过；[适配验证](../../experiments/core/results/2026-10-25-candidate-adapter/validation.json)另行记录。默认 shell 和产品 TUI 仍未验收。
+
 路线判断见 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)。

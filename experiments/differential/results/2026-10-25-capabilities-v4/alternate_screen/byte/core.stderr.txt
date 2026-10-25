@@ -1,0 +1,1 @@
+trace failed after checkpoint 6: unsupported CSI command

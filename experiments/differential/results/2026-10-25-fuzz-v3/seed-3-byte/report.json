@@ -1,0 +1,14 @@
+{
+  "case": "seed_3",
+  "plan": "byte",
+  "status": "known_failure",
+  "input_sha256": "a0d3958efdd10df4e6df69b27f728e86993367f42e946ac9436bead5bc416b50",
+  "checkpoints": 13,
+  "first_difference": null,
+  "core_fragmentation_difference": null,
+  "candidate_fragmentation_difference": null,
+  "core_returncode": 0,
+  "candidate_returncode": 0,
+  "core_error": null,
+  "candidate_error": null
+}

@@ -135,6 +135,9 @@ pub struct Grid<T> {
 
     /// Maximum number of lines in history.
     max_scroll_limit: usize,
+
+    #[cfg_attr(feature = "serde", serde(skip))]
+    discarded: u64,
 }
 
 impl<T: GridCell + Default + PartialEq> Grid<T> {
@@ -142,6 +145,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         Grid {
             raw: Storage::with_capacity(lines, columns),
             max_scroll_limit,
+            discarded: 0,
             display_offset: 0,
             saved_cursor: Cursor::default(),
             cursor: Cursor::default(),
@@ -196,6 +200,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         // When rotating the entire region, just reset everything.
         if region.end - region.start <= positions {
             for i in (region.start.0..region.end.0).map(Line::from) {
+                self.raw[i].renew_identity();
                 self.raw[i].reset(&self.cursor.template);
             }
 
@@ -225,6 +230,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
             // Ensure all new lines are fully cleared.
             for i in (0..positions).map(Line::from) {
+                self.raw[i].renew_identity();
                 self.raw[i].reset(&self.cursor.template);
             }
 
@@ -241,6 +247,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
             let range = region.start.0..(region.start + positions).0;
             for line in range.rev().map(Line::from) {
+                self.raw[line].renew_identity();
                 self.raw[line].reset(&self.cursor.template);
             }
         }
@@ -257,6 +264,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         // When rotating the entire region with fixed lines at the top, just reset everything.
         if region.end - region.start <= positions && region.start != 0 {
             for i in (region.start.0..region.end.0).map(Line::from) {
+                self.raw[i].renew_identity();
                 self.raw[i].reset(&self.cursor.template);
             }
 
@@ -270,6 +278,14 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
         // Only rotate the entire history if the active region starts at the top.
         if region.start == 0 {
+            let available = self.max_scroll_limit - self.history_size();
+            let evicted = if self.max_scroll_limit == 0 {
+                positions
+            } else {
+                min(positions.saturating_sub(available), self.history_size())
+            };
+            self.discarded = self.discarded.checked_add(evicted as u64).expect("history discarded exhausted");
+
             // Create scrollback for the new lines.
             self.increase_scroll_limit(positions);
 
@@ -302,6 +318,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
         // Ensure all new lines are fully cleared.
         for i in (region.end.0 - positions as i32..region.end.0).map(Line::from) {
+            self.raw[i].renew_identity();
             self.raw[i].reset(&self.cursor.template);
         }
     }
@@ -515,6 +532,13 @@ pub trait Dimensions {
     #[inline]
     fn history_size(&self) -> usize {
         self.total_lines().saturating_sub(self.screen_lines())
+    }
+}
+
+impl<G> Grid<G> {
+    #[inline]
+    pub fn discarded(&self) -> u64 {
+        self.discarded
     }
 }
 

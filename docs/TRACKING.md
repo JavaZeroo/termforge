@@ -58,7 +58,7 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 
 以下为选题顺序；各项已做/待做和验收结果只在对应 issue 维护。`ready-for-agent` 表示可以开工，不代表全仓库所有 ready 项优先级相同。
 
-1. **按已定核心路线整合。** [#23](https://github.com/JavaZeroo/termforge/issues/23) 已冻结[平台、架构与声明的最低系统边界](../research/windterm-2.7.0-platform-scope.md)，#24/#25 已完成候选构建与共同轨迹；#26 已形成 [ADR-0003 决定](adr/0003-core-reference-and-reuse.md)。#27 的 termforge.1 已完成上游资源修复、ED1/ED2 和稳定行元数据的 headless 切片，共同矩阵 95 次一致；C++ FFI、产品快照与真实输入队列仍待实施，候选尚未接入默认 shell。
+1. **按已定核心路线整合。** [#23](https://github.com/JavaZeroo/termforge/issues/23) 已冻结[平台、架构与声明的最低系统边界](../research/windterm-2.7.0-platform-scope.md)，#24/#25 已完成候选构建与共同轨迹；#26 已形成 [ADR-0003 决定](adr/0003-core-reference-and-reuse.md)。#27 的 termforge.2 已完成兼容补丁和 [C++ 拥有值适配](../experiments/core/CANDIDATE.md)，共同矩阵 95 次一致，ID/版本/淘汰、选择/搜索/视口已独立验证；实际输入队列与默认 shell 整合仍待实施。
 2. **并行推进独立的显示与会话切片。** [#31](https://github.com/JavaZeroo/termforge/issues/31) 已形成[字体/显示合同](milestones/R2-font-display.md)，完成实际 glyph/fallback、私有字体度量/缺失资产检查及两台 96-DPI 显示器的[真实往返证据](../experiments/shell/results/2026-10-24-r2-monitor-font/validation.json)；不同 DPI 与实际呈现保持 OPEN。[#32](https://github.com/JavaZeroo/termforge/issues/32) 已交付[四种固定本地 shell 生命周期](../experiments/shell/results/2026-10-24-r2-shell-lifecycle/validation.json)及[主区一个真实左右分屏](../experiments/shell/results/2026-10-24-r2-main-split/validation.json)；任意嵌套、拖放/搜索/颜色和分屏持久化继续后续。
 3. **按依赖整合用户结果。** 核心路线决定后推进 #27–#30，#32 后推进 #33；真实工作流齐备后由 #34 决定产品架构，最终由 #35 验收完整开发版，不能以单项成功替代 #7 出口。
 4. **持续保留R1系统回归。** 基础动作、五组IME与同次八会话真实工作流分开运行，再核原始字节、目标、阶段资源和回收。当前 [#36](https://github.com/JavaZeroo/termforge/issues/36) 保留 normal/resize 的真实失败，[输入机制研究](research/conpty-ctrl-c-input.md)确认 ETX 正确，并把未决点收窄到洪流写入与 conhost 控制分派之间；它是 #35 的出口前置，不能用本机跳过或旧证据替代修复后的新源码验收。

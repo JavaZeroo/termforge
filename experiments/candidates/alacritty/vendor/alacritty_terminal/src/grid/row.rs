@@ -138,6 +138,11 @@ impl<T> Row<T> {
     }
 
     #[inline]
+    pub(crate) fn renew_identity(&mut self) {
+        self.id = next_row_id();
+    }
+
+    #[inline]
     pub(crate) fn set_hard_break(&mut self, value: bool) {
         self.hard_break = value;
     }
