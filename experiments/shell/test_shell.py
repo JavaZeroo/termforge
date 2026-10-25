@@ -528,6 +528,41 @@ class ShellTests(unittest.TestCase):
             self.assertFalse((second / "frame.bmp").exists())
             self.assertEqual((second / "workspace.layout").read_text(encoding="utf-8"), empty)
 
+    def test_workspace_write_failure_retry_and_close_discard(self):
+        for repeat in range(2):
+            legacy = ("TermForge-layout 1\nleft 0.24\nright 0.21\nupper 0.57\n"
+                      "left_top 0.38\nright_top 0.69\nsides 1\nfocus 0\n").encode("ascii")
+            source = self.out / f"writer-v1-source-{repeat}"
+            source.write_bytes(legacy)
+            seed = self.out / f"writer-seed-{repeat}"
+            execute(self.exe, "ui-workspace-v1", seed, settings_source=source)
+            original = (seed / "workspace.layout").read_bytes()
+            self.assertEqual(original.splitlines()[-1].split()[-1], b"125")
+
+            retry = self.out / f"workspace-write-retry-{repeat}"
+            row = execute(self.exe, "ui-workspace-write-failure", retry,
+                          settings_source=seed / "workspace.layout")
+            self.assertTrue(row["result"]["retry_saved"])
+            self.assertFalse(row["result"]["settings_save_failed"])
+            recovered = (retry / "workspace.layout").read_bytes()
+            self.assertEqual(recovered.splitlines()[-1].split()[-1], b"150")
+            self.assertEqual(list(retry.glob("workspace.layout.tmp-*")), [])
+            self.assertEqual(row["job_after"]["active"], 0)
+
+            failure = self.out / f"workspace-close-failure-{repeat}"
+            row = execute(self.exe, "ui-workspace-close-failure", failure,
+                          settings_source=seed / "workspace.layout")
+            self.assertTrue(row["result"]["configuration_preserved"])
+            self.assertTrue(row["result"]["settings_save_failed"])
+            self.assertTrue(row["result"]["settings_discarded"])
+            self.assertEqual((failure / "original-workspace.layout").read_bytes(), original)
+            self.assertTrue((failure / "workspace.layout").is_dir())
+            self.assertEqual((failure / "workspace.layout" / "sentinel").read_bytes(), b"keep")
+            self.assertEqual(list(failure.glob("workspace.layout.tmp-*")), [])
+            self.assertFalse((failure / "frame.bmp").exists())
+            self.assertEqual(row["job_after"]["active"], 0)
+            self.assertTrue(row["desktop_gone"])
+
     def test_main_and_bottom_sessions_focus_geometry_and_cleanup(self):
         for repeat in range(2):
             out = self.out / f"main-{repeat}"
@@ -683,9 +718,9 @@ class SelectionCopyPopupSchemaTests(unittest.TestCase):
                 "copy_popup_verified": True, "copy_popup_observer_idle": True,
                 "copy_popup_sequence_before": 100, "copy_popup_sequence_after": 102,
                 "copy_popup_menu": {"schema": "termforge-owned-popup-menu-v1", "input_path": "queued-owner-mouse-and-popup-keys",
-                    "owned_non_input_desktop": True, "target_command": 14, "target_index": 8, "initial_state": 0,
+                    "owned_non_input_desktop": True, "target_command": 14, "target_index": 9, "initial_state": 0,
                     "highlighted_state": 128, "actual_return_command": 14, "popup_hwnd": 42, "navigation_keys": 7,
-                    "last_highlighted_command": 14, "popup_class": "#32768", "enabled_commands": [8, 1, 2, 6, 5, 12, 14, 15, 16],
+                    "last_highlighted_command": 14, "popup_class": "#32768", "enabled_commands": [8, 1, 2, 6, 5, 17, 12, 14, 15, 16],
                     "popup_visible_observed": True, "highlighted": True, "returned": True, "popup_closed": True,
                     "timed_out": False, "escape_cleanup": False, "endmenu_cleanup": False, "failure": None,
                     "popup_rect": [10, 10, 300, 500], "item_rect": [10, 300, 300, 320]},
@@ -701,10 +736,10 @@ class SelectionCopyPopupSchemaTests(unittest.TestCase):
 
     def test_native_copy_return_highlight_cf_and_target_are_independent_gates(self):
         data = self.example(); self.assertTrue(_validate_copy_popup(data))
-        for field, wrong in (("target_command", 15), ("target_index", 9), ("actual_return_command", 15),
+        for field, wrong in (("target_command", 15), ("target_index", 8), ("actual_return_command", 15),
                              ("initial_state", 3), ("highlighted_state", 0), ("last_highlighted_command", 15),
                              ("popup_hwnd", 0), ("timed_out", True), ("popup_closed", False),
-                             ("enabled_commands", [8, 1, 2, 6, 5, 12, 15, 16])):
+                             ("enabled_commands", [8, 1, 2, 6, 5, 17, 12, 15, 16])):
             bad = copy.deepcopy(data); bad["copy_popup_menu"][field] = wrong
             with self.subTest(popup=field), self.assertRaises(ValueError): _validate_copy_popup(bad)
         for field, wrong in (("copy_popup_verified", False), ("copy_popup_observer_idle", False),

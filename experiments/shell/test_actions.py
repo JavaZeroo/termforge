@@ -60,11 +60,11 @@ def synthetic_actions(system=False):
     actual_popups = {
         "terminal-empty": (0, True, (2, 3, 4)), "context-all": (3, True, (2, 3, 4)),
         "context-find": (4, True, (1, 2, 3, 4)), "busy-terminal": (0, True, (3, 4)),
-        "busy-session": (0, False, (8, 1, 2, 6, 5, 13, 15, 16)),
-        "busy-cancelled": (13, False, (8, 1, 2, 6, 5, 13, 15, 16)),
+        "busy-session": (0, False, (8, 1, 2, 6, 5, 17, 13, 15, 16)),
+        "busy-cancelled": (13, False, (8, 1, 2, 6, 5, 17, 13, 15, 16)),
         "system-copy": (1, True, (1, 2, 3, 4)), "system-paste-prompt": (2, True, (2, 3, 4)),
         "system-default-enter-prompt": (2, True, (2, 3, 4)),
-        "empty-session-menu": (0, False, (8, 1, 2, 6, 5)),
+        "empty-session-menu": (0, False, (8, 1, 2, 6, 5, 17)),
     }
     data = {"schema": "termforge-window-actions-v1", "system_clipboard": system,
             "fixture": "shell_text_client-80", "snapshots": []}

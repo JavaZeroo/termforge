@@ -115,7 +115,7 @@ inline void Workspace::collect_child(ShellWindow* child) {
                     else { split_index_=-1; split_active_=false; split_right_focus_=false; }
                 }
             }
-            if(!failure_.empty() && !closing_) close_all();
+            if(!failure_.empty() && !closing_) discard_and_close();
             else if(closing_ && session_count()==0) DestroyWindow(window_);
             else {
                 if(removed_focused && !active()) {

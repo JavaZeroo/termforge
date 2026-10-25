@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "scope": "issue 33 real atomic-write failure, successful retry and final-close failure policy; not an R2 completion claim",
+  "local_passed": true,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "commands": [
+    "cmake --build build --config Release --target shell_test_launcher",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-write-failure-20261025 .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_write_failure_retry_and_close_discard -v",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-failure-final .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_write_failure_retry_and_close_discard experiments.shell.test_shell.ShellTests.test_workspace_v1_empty_and_invalid_recovery -v",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-failure-r1 .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_rename_drag_and_fresh_process_restore experiments.shell.test_shell.ShellTests.test_main_and_bottom_sessions_focus_geometry_and_cleanup experiments.shell.test_shell.ShellTests.test_main_split_background_restore_close_and_focus experiments.shell.test_shell.ShellTests.test_workspace_v2_multiple_shells_split_and_geometry_restore experiments.shell.test_shell.ShellTests.test_workspace_v1_empty_and_invalid_recovery experiments.shell.test_shell.ShellTests.test_workspace_v2_empty_session_roundtrip experiments.shell.test_shell.ShellTests.test_workspace_write_failure_retry_and_close_discard -v",
+    "ctest --test-dir build -C Release -R '^text_actions$' --output-on-failure",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-menu-contract-20261025 .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_mouse_selection_copy_model_zoom_sessions_and_eviction experiments.shell.test_shell.SelectionCopyPopupSchemaTests.test_native_copy_return_highlight_cf_and_target_are_independent_gates experiments.shell.test_shell.ShellTests.test_workspace_write_failure_retry_and_close_discard -v",
+    "ctest --test-dir build -C Release -R 'shell_launch|layout_state|workspace_state' --output-on-failure",
+    "cmake --build build/candidate-adapter --config Release --target shell_test_launcher workspace_state_test",
+    "ctest --test-dir build/candidate-adapter -C Release -R 'candidate_shell_tui|workspace_state' --output-on-failure",
+    "ctest --test-dir build -C Release --output-on-failure"
+  ],
+  "fault_injection": {
+    "initial_document": "a real v1-generated v2 document with one cmd and zoom=125",
+    "method": "rename the valid file to original-workspace.layout, create a directory at the original settings path, and write a sentinel inside it",
+    "effect": "the real atomic replacement fails when its destination is a directory; no ACL, display setting, user configuration or real credential is changed",
+    "pending_zoom_after_real_action": 150,
+    "temporary_files_after_failure": 0
+  },
+  "write_retry": {
+    "rounds": 2,
+    "observed_error": "atomic write",
+    "status_text_checked": "Workspace could not be saved: atomic write",
+    "original_backup_unchanged": true,
+    "sentinel_preserved": "keep",
+    "successful_retry_clears_error": true,
+    "saved_zoom": 150,
+    "retry_saved_result": true,
+    "settings_save_failed_after_retry": false,
+    "final_close_succeeded": true
+  },
+  "close_failure": {
+    "rounds": 2,
+    "normal_close_aborted_on_save_failure": true,
+    "window_still_exists": true,
+    "active_shell_not_closing": true,
+    "original_backup_unchanged": true,
+    "sentinel_preserved": "keep",
+    "explicit_discard_action": "Ctrl+Shift+W / Session -> Exit without saving",
+    "settings_save_failed": true,
+    "settings_discarded": true,
+    "configuration_preserved": true,
+    "discarded_state_is_not_claimed_as_saved": true,
+    "job_active_after_discard": 0
+  },
+  "future_version": {
+    "normal_close_also_aborts_on_read_only_save_failure": true,
+    "explicit_discard_required_for_exit": true,
+    "source_preserved": true
+  },
+  "regressions": {
+    "workspace_test_methods": {"passed": 7, "rounds_each": 2},
+    "text_actions_ctest": "passed after explicitly adding the new enabled command to the independent contract",
+    "real_selection_popup": "passed after updating the new command and menu-index expectations",
+    "static_popup_negative_gates": "passed",
+    "focused_default_ctest": {"passed": 3, "failed": 0},
+    "candidate_focus_ctest": {"passed": 2, "failed": 0}
+  },
+  "menu_contract": {
+    "new_enabled_command": 17,
+    "observed_session_menu_ids": [8, 1, 2, 6, 5, 17, 13, 15, 16],
+    "select_all_target_index": 10,
+    "copy_target_index_expected": 9,
+    "real_session_copy_popup_verified": false,
+    "initial_failure": "the independent contract lacked the new command and its shifted indices",
+    "correction": "update the exact enabled sets and indices, preserve negative gates and all popup visibility/cleanup checks"
+  },
+  "raw_samples": ["retry-workspace.layout", "close-original.layout", "sentinel.txt", "processes.json", "menu-contract.json"],
+  "source_sha256": {
+    "experiments/shell/workspace.hpp": "005222c6c216624c6034cb844dcad3ecbd846bd4b7248165d22b38f3d24daf2f",
+    "experiments/shell/workspace_interactions.hpp": "04d2ba43050c9eaa1f5b983cf1b634dcf46efafbf1bd3a894b5e425723bd8ad9",
+    "experiments/shell/workspace_persistence_scenario.hpp": "7061d089c9d64f572e2c1b53e399cc592c172ed6795615a863afc47c06a21853",
+    "experiments/shell/workspace_state.hpp": "f81aec1d9ff1816f0cb34cde5621e39f859dabcaff5e02a29eced164f544fc09",
+    "experiments/shell/shell.cpp": "0bdd30df95aa8b10bcbd2a21c7e77696b6c87a4575116d4752e8bea7e9a45f40",
+    "experiments/shell/run.py": "c91e88a2d4a6d3ff9943461e25ef0502fa16d4262efb13c36d6896f3e41005b1",
+    "experiments/shell/action_checks.py": "eb1d2b08c3f1384b57a45eb6154f462363bc52d4f900cf887c1518b17bb2a1bb",
+    "experiments/shell/test_actions.py": "29eed3bd65e590ba24d18049f9493215665eb44c93efbcdb740b3c3b3bdfe1d1",
+    "experiments/shell/selection_checks.py": "7871a642df191db5dbaeabfbac7d4aa72d512ba46605a0b99db2ad6c0bceace6",
+    "experiments/shell/test_shell.py": "ae3d569583eafe91602041b25efea0865801cafe1ea95c9363cbb580b886a653",
+    "build/bin/Release/termforge_shell.exe": "090116e061d10328c5c733f3bc5db9b1f221aa08449923f9c395281d87d7af87",
+    "build/candidate-adapter/bin/Release/termforge_shell.exe": "b0508824a792f20f455bdfcadce59853342152ff6d0d717061e89b1cdece67fe"
+  },
+  "initial_full_ctest": {
+    "completed": true,
+    "elapsed_seconds": 333.58,
+    "passed": false,
+    "passed_tests": 38,
+    "total_tests": 40,
+    "failed_tests": ["text_actions", "shell"],
+    "menu_contract_failures_corrected_and_rerun": true,
+    "issue_36_normal_and_resize_failures_remain": true
+  },
+  "full_ctest": {
+    "completed": true,
+    "elapsed_seconds": 339.66,
+    "passed": false,
+    "passed_tests": 39,
+    "total_tests": 40,
+    "failed_tests": ["shell"],
+    "shell_nested_errors": [
+      "test_commands_unicode_editing_interrupt_and_normal_exit (issue 36)",
+      "test_resize_child_dimensions_and_interrupt (issue 36)"
+    ],
+    "text_actions": "passed",
+    "selection_popup": "passed",
+    "workspace_write_failure": "passed",
+    "multi_process_restore": "passed"
+  },
+  "issue_33_acceptance": {
+    "fresh_process_restore": "bounded real scenarios passed",
+    "atomic_migration_corruption_and_write_failure": "passed",
+    "documentation_and_r1_layout_regressions": "passed",
+    "full_suite_is_not_green_because_issue_36": true,
+    "intermittent_issue_38_remains_open": true,
+    "r2_milestone_completed": false
+  },
+  "limitations": [
+    "The full default suite is evaluated separately; focused success does not erase issue 36 or the intermittent issue 38",
+    "A deliberate discarded session is not a successful persistence operation",
+    "Only ordinary file replacement failure is exercised, not power loss, crash consistency or every device error",
+    "Status text is checked through the same method used by paint, not by a screenshot or physical presentation",
+    "Only the current single workspace and normal window bounds are covered; named/multi-workspace and maximized state are not claimed",
+    "R2 and issue 38 remain open"
+  ]
+}

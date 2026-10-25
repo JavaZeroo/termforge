@@ -102,9 +102,19 @@ inline void Workspace::scenario_workspace() {
     };
     const auto cmd_directory=directory/L"restore-cmd \x76ee\x5f55";
     const auto ps_directory=directory/L"restore-powershell \x7a7a\x683c";
-    const auto settings_text=[&] {
-        std::ifstream input(settings_path_,std::ios::binary);
+    const auto read_path=[](const std::filesystem::path& path) {
+        std::ifstream input(path,std::ios::binary);
         std::ostringstream content; content<<input.rdbuf(); return content.str();
+    };
+    const auto settings_text=[&] { return read_path(settings_path_); };
+    const auto block_settings=[&] {
+        const auto backup=directory/"original-workspace.layout";
+        std::filesystem::rename(settings_path_,backup);
+        std::filesystem::create_directory(settings_path_);
+        std::ofstream sentinel(settings_path_/"sentinel",std::ios::binary);
+        sentinel<<"keep"; sentinel.close();
+        require(bool(sentinel),"workspace write-failure sentinel creation failed");
+        return backup;
     };
 
     if(test_mode_=="ui-workspace-empty-create") {
@@ -159,9 +169,61 @@ inline void Workspace::scenario_workspace() {
                 select(0);
                 require(settings_read_only_ && settings_failed_ && settings_error_=="read-only settings" &&
                         settings_text()==original,"future configuration was overwritten");
+                close_all();
+                require(!closing_ && active() && !active()->closing() && settings_text()==original,
+                        "read-only close did not preserve the active session and source");
+                action(17);
+                require(settings_discarded_ && closing_ && settings_text()==original,
+                        "explicit discard did not preserve the future configuration");
             } else require(!settings_failed_ && settings_text()==original,
                            "corrupt configuration was overwritten during startup");
             stage_=100; close_all();
+        }
+        return;
+    }
+    if(test_mode_=="ui-workspace-write-failure") {
+        if(stage_==0 && active() && active()->ready()) {
+            const auto original=settings_text();
+            require(settings_load_status_==tf_workspace::LoadStatus::valid_v2 &&
+                    active()->zoom_percent()==125,"write-failure fixture did not restore a valid session");
+            const auto backup=block_settings();
+            action(9);
+            require(settings_failed_ && settings_error_=="atomic write" && active()->zoom_percent()==150 &&
+                    settings_status_text().find(L"could not be saved")!=std::wstring::npos &&
+                    read_path(backup)==original && read_path(settings_path_/"sentinel")=="keep",
+                    "atomic write failure did not preserve the source or report the error");
+            require(std::filesystem::is_directory(settings_path_) &&
+                    read_path(settings_path_/"sentinel")=="keep","write-failure fixture changed unexpectedly");
+            std::filesystem::remove_all(settings_path_);
+            std::filesystem::rename(backup,settings_path_);
+            require(save_workspace() && !settings_failed_ && settings_error_.empty(),
+                    "successful retry did not clear the write failure");
+            const auto recovered=tf_workspace::load_workspace(settings_path_);
+            require(recovered.status==tf_workspace::LoadStatus::valid_v2 &&
+                    recovered.state.bottom.size()==1 && recovered.state.bottom[0].zoom_percent==150,
+                    "successful retry did not save the pending session state");
+            stage_=100; close_all();
+        }
+        return;
+    }
+    if(test_mode_=="ui-workspace-close-failure") {
+        if(stage_==0 && active() && active()->ready()) {
+            const auto original=settings_text();
+            require(settings_load_status_==tf_workspace::LoadStatus::valid_v2 &&
+                    active()->zoom_percent()==125,"close-failure fixture did not restore a valid session");
+            const auto backup=block_settings();
+            action(9);
+            require(settings_failed_ && settings_error_=="atomic write" &&
+                    settings_status_text().find(L"could not be saved")!=std::wstring::npos,
+                    "close-failure fixture did not report the write failure");
+            close_all();
+            require(!closing_ && IsWindow(window_) && active() && !active()->closing() && settings_failed_ &&
+                    read_path(backup)==original && read_path(settings_path_/"sentinel")=="keep",
+                    "failed final save destroyed the session or original configuration");
+            require(shortcut('W',true,true) && settings_discarded_ && closing_ &&
+                    read_path(backup)==original && read_path(settings_path_/"sentinel")=="keep",
+                    "explicit unsaved exit did not preserve the original configuration");
+            stage_=100;
         }
         return;
     }

@@ -28,7 +28,7 @@ class Workspace {
     Group focused_ = Group::bottom, rename_group_ = Group::bottom;
     int active_ = -1, next_id_ = 1, stage_ = 0, collected_ = 0;
     bool closing_ = false, settings_failed_ = false, settings_read_only_ = false;
-    bool settings_closed_ = false, restoring_ = false;
+    bool settings_closed_ = false, restoring_ = false, settings_discarded_ = false;
     tf_workspace::LayoutState state_, drag_start_;
     tf_workspace::WorkspaceState restored_workspace_;
     tf_workspace::LoadStatus settings_load_status_ = tf_workspace::LoadStatus::missing;
@@ -171,8 +171,8 @@ class Workspace {
             layout();
         } catch(...) { restoring_=false; throw; }
     }
-    void save_workspace() {
-        if(restoring_ || settings_closed_) return;
+    bool save_workspace() {
+        if(restoring_ || settings_closed_) return false;
         try {
             const auto state=capture_state();
             if(settings_path_.empty()) settings_error_="empty settings path";
@@ -184,6 +184,7 @@ class Workspace {
             settings_failed_=!settings_error_.empty();
         } catch(const std::exception& error) { settings_failed_=true; settings_error_=error.what(); }
         if(window_) InvalidateRect(window_,nullptr,FALSE);
+        return !settings_failed_;
     }
     void select(int index,Group group=Group::bottom) {
         if (index<0 || index>=static_cast<int>(group_tabs(group).size())) return;
@@ -234,15 +235,24 @@ class Workspace {
         layout(); SetFocus(active()->handle());
         save_workspace();
     }
-    void close_all() {
+    void close_all(bool persist=true) {
         if (closing_) return;
         end_rename(false); end_drag(false);
+        if(persist && !save_workspace()) {
+            settings_failed_=true;
+            if(settings_error_.empty()) settings_error_="not saved";
+            if(window_) InvalidateRect(window_,nullptr,FALSE);
+            return;
+        }
         closing_=true;
-        save_workspace();
         settings_closed_=true;
         for (auto& tab:tabs_) tab.shell->close();
         for (auto& tab:main_tabs_) tab.shell->close();
         if (session_count()==0) DestroyWindow(window_);
+    }
+    void discard_and_close() {
+        settings_discarded_=true;
+        close_all(false);
     }
     tf_shell::TextActionState text_action_state(tf_shell::TextAction action) {
         const auto* shell=active();
@@ -263,6 +273,7 @@ class Workspace {
         if (id==3) { end_drag(false); end_rename(true); state_.focus=!state_.focus; if(state_.focus) focused_=Group::bottom; layout(); save_workspace(); SetFocus(active()?active()->handle():window_); }
         if (id==4) { end_drag(false); state_.sides=!state_.sides; layout(); save_workspace(); }
         if (id==5) close_all();
+        if (id==17) discard_and_close();
         if (id==6) begin_rename(selection(focused_),focused_);
         if (id==7) { end_rename(false); end_drag(false); state_={}; layout(); save_workspace(); }
         if (id==8) add(Group::main);
@@ -287,6 +298,7 @@ class Workspace {
         if(alt && !ctrl && key==VK_LEFT) { focus_split(false); return true; }
         if(alt && !ctrl && key==VK_RIGHT) { focus_split(true); return true; }
         if(ctrl && key=='T') { action(shift?8:1); return true; }
+        if(ctrl && shift && key=='W') { action(17); return true; }
         if(ctrl && key=='W') { action(2); return true; }
         if(ctrl && (key==VK_OEM_PLUS || key==VK_ADD)) { action(9); return true; }
         if(ctrl && (key==VK_OEM_MINUS || key==VK_SUBTRACT)) { action(10); return true; }
@@ -362,6 +374,12 @@ class Workspace {
         fill(dc,r,background); RECT header{r.left,r.top,r.right,r.top+24};
         fill(dc,header,RGB(51,51,51)); label(dc,header,title);
     }
+    std::wstring settings_status_text() const {
+        if(settings_read_only_) return L"Workspace settings not overwritten";
+        std::wstring result=L"Workspace could not be saved";
+        if(!settings_error_.empty()) result+=L": "+utf16(settings_error_.c_str());
+        return result;
+    }
     void paint(HDC dc) {
         auto old=SelectObject(dc,font_); SetBkMode(dc,TRANSPARENT);
         fill(dc,{0,0,width_,height_},background);
@@ -427,14 +445,14 @@ class Workspace {
         fill(dc,{0,height_-56,width_,height_-29},RGB(35,35,35));
         label(dc,{0,height_-56,width_,height_-29},L"+ New shell");
         fill(dc,{0,height_-29,width_,height_},RGB(38,38,38));
-        const auto settings_error=settings_read_only_?L"Workspace settings not overwritten":L"Workspace could not be saved";
+        const auto settings_error=settings_status_text();
         label(dc,{0,height_-29,width_,height_},closing_?L"Closing sessions...":settings_failed_?settings_error:L"LOCAL     "+std::to_wstring(session_count())+L" sessions     Focus: "+(focused_==Group::main?L"Main":L"Shell")+L"     Zoom: "+std::to_wstring(active()?active()->zoom_percent():100)+L"%     "+(active()?active()->status_text():L""));
         SelectObject(dc,old);
     }
     void click(int x,int y) {
         if(y<33) {
             HMENU menu=CreatePopupMenu();
-            if(x<82) { AppendMenuW(menu,MF_STRING,8,L"New main session\tCtrl+Shift+T"); AppendMenuW(menu,MF_STRING,1,L"New shell\tCtrl+T"); AppendMenuW(menu,MF_STRING,2,L"Close focused session\tCtrl+W"); AppendMenuW(menu,MF_STRING,6,L"Rename focused session\tF2"); AppendMenuW(menu,MF_STRING,5,L"Exit"); }
+            if(x<82) { AppendMenuW(menu,MF_STRING,8,L"New main session\tCtrl+Shift+T"); AppendMenuW(menu,MF_STRING,1,L"New shell\tCtrl+T"); AppendMenuW(menu,MF_STRING,2,L"Close focused session\tCtrl+W"); AppendMenuW(menu,MF_STRING,6,L"Rename focused session\tF2"); AppendMenuW(menu,MF_STRING,5,L"Exit"); AppendMenuW(menu,MF_STRING,17,L"Exit without saving\tCtrl+Shift+W"); }
             else { AppendMenuW(menu,MF_STRING|(state_.focus?MF_CHECKED:0),3,L"Focus shell\tF11"); AppendMenuW(menu,MF_STRING|(state_.sides?MF_CHECKED:0),4,L"Side panels"); AppendMenuW(menu,MF_STRING,7,L"Reset layout"); AppendMenuW(menu,MF_SEPARATOR,0,nullptr); const UINT enabled=active()&&!rename_?MF_STRING:MF_STRING|MF_GRAYED; AppendMenuW(menu,enabled,9,L"Zoom in\tCtrl++"); AppendMenuW(menu,enabled,10,L"Zoom out\tCtrl+-"); AppendMenuW(menu,enabled,11,L"Reset zoom\tCtrl+0"); }
             if(x<82) {
                 AppendMenuW(menu,MF_SEPARATOR,0,nullptr);
@@ -618,7 +636,7 @@ class Workspace {
                 try { self->paint(dc); } catch(...) { EndPaint(hwnd,&ps); throw; }
                 EndPaint(hwnd,&ps); return 0;
             }
-        } catch(const std::exception& error) { self->failure_=error.what(); self->close_all(); }
+        } catch(const std::exception& error) { self->failure_=error.what(); self->discard_and_close(); }
         return DefWindowProcW(hwnd,message,wp,lp);
     }
 public:
@@ -704,12 +722,14 @@ public:
         if(!image_.empty() && workspace_data_mode()) {
             const int expected_closed=test_mode_=="ui-workspace-empty"?0:
                 test_mode_=="ui-workspace-save" || test_mode_=="ui-workspace-restore"?3:1;
-            const bool protected_settings=test_mode_=="ui-workspace-future";
+            const bool protected_settings=test_mode_=="ui-workspace-future" || test_mode_=="ui-workspace-close-failure";
             require(stage_==100 && collected_==expected_closed,"workspace persistence scenario incomplete");
-            require(settings_failed_==protected_settings,"workspace persistence save result mismatch");
+            require(settings_failed_==protected_settings && settings_discarded_==protected_settings,
+                    "workspace persistence save result mismatch");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":"<<expected_closed
                 <<",\"active_children_after\":0,\"settings_save_failed\":"<<(settings_failed_?"true":"false");
-            if(protected_settings) std::cout<<",\"configuration_preserved\":true";
+            if(protected_settings) std::cout<<",\"configuration_preserved\":true,\"settings_discarded\":true";
+            if(test_mode_=="ui-workspace-write-failure") std::cout<<",\"retry_saved\":true";
             std::cout<<",\"presented_done\":null}\n";
             return 0;
         }

@@ -27,8 +27,8 @@ INTERACTIONS = ("autoscroll-up-start", "autoscroll-up-held", "autoscroll-up-rele
 
 
 def _validate_popup(menu: dict, command: int = 15) -> None:
-    expected_index = 8 if command == 14 else 9
-    expected_enabled = [8, 1, 2, 6, 5, 12, 14, 15, 16] if command == 14 else [8, 1, 2, 6, 5, 12, 15, 16]
+    expected_index = 9 if command == 14 else 10
+    expected_enabled = [8, 1, 2, 6, 5, 17, 12, 14, 15, 16] if command == 14 else [8, 1, 2, 6, 5, 17, 12, 15, 16]
     if (not isinstance(menu, dict) or menu.get("schema") != "termforge-owned-popup-menu-v1" or
             menu.get("input_path") != "queued-owner-mouse-and-popup-keys" or menu.get("owned_non_input_desktop") is not True or
             any(type(menu.get(key)) is not int for key in ("target_command", "target_index", "initial_state", "highlighted_state",

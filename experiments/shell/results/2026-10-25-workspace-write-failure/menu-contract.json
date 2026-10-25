@@ -1,0 +1,21 @@
+{
+  "session_menu": {
+    "enabled_commands": [8, 1, 2, 6, 5, 17, 13, 15, 16],
+    "inspection_only": true,
+    "popup_visible_observed": true,
+    "returned": true,
+    "popup_closed": true
+  },
+  "select_all": {
+    "target_command": 15,
+    "target_index": 10,
+    "navigation_keys": 10,
+    "highlighted_state": 128,
+    "actual_return_command": 15,
+    "popup_visible_observed": true,
+    "highlighted": true,
+    "returned": true,
+    "popup_closed": true
+  },
+  "scope": "real Select All popup and Session availability; hosted Session Copy is not claimed here"
+}
