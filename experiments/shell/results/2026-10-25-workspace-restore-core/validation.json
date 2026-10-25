@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "scope": "issue 33 single-session Workspace snapshot and real fresh-process restore; not full issue acceptance",
+  "local_passed": true,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "commands": [
+    "cmake --build build --config Release --target shell_test_launcher workspace_state_test",
+    "ctest --test-dir build -C Release -R 'shell_launch|layout_state|workspace_state' --output-on-failure",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-v2-core-suite .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_rename_drag_and_fresh_process_restore -v",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-v2-final-core .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_rename_drag_and_fresh_process_restore experiments.shell.test_shell.ShellTests.test_main_and_bottom_sessions_focus_geometry_and_cleanup -v",
+    "wsl.exe -d Ubuntu -e sh -c 'cd /mnt/d/Code/termforge && cmake --build build/e1-workspace --target workspace_state_test -j2 && build/e1-workspace/bin/workspace_state_test'"
+  ],
+  "results": {
+    "focused_ctest": {"passed": 3, "failed": 0},
+    "original_restore_unit_test": {"passed": 1, "real_process_pairs": 2},
+    "main_session_regression_unit_test": {"passed": 1, "rounds": 2},
+    "additional_direct_process_pair": {"passed": 1, "directory": "build/workspace-v2-core-diagnostic-3", "binary_sha256": "35e3be1b96ea6c4b04716779dfb11994da0f9e99c14edff4b2d112ed02e7d992"},
+    "ubuntu_workspace_state": "passed",
+    "independent_config_projection": {
+      "bottom_sessions": 1,
+      "main_sessions": 0,
+      "launch_kind": "cmd",
+      "title": "研究 Shell",
+      "zoom_percent": 100,
+      "window_client_logical": [1360, 860],
+      "old_history_restored": false
+    },
+    "job_active_after_each_process": 0,
+    "private_desktop_removed": true
+  },
+  "raw_samples": [
+    "process-edit.json",
+    "process-restore.json",
+    "edit-workspace.layout",
+    "restored-workspace.layout"
+  ],
+  "source_sha256": {
+    "experiments/shell/workspace.hpp": "c8939e8368b2fa61302b36c9e55f46ef975f95d1f44ea578b629937d9d3a6bdd",
+    "experiments/shell/workspace_interactions.hpp": "ce792b68f6527bd1c30524afb3fe5fe977af94982b2b0d91f4147f79b6b77152",
+    "experiments/shell/workspace_scenarios.hpp": "8ffd3bf6c4c5d64d64397256e4de3c4fcd4c4d77449361cc8f0bc261e846694b",
+    "experiments/shell/workspace_main_scenario.hpp": "3435756100453568ac6ed3773ee4b85705b0dcbc7c8e5a758ab3d685d86a5a9b",
+    "experiments/shell/workspace_state.hpp": "602fe125231c25dbdc3dcf2a926b1ff80e09fa6ce510240e6fe9fc724cdd61b8",
+    "experiments/shell/workspace_state_test.cpp": "f657d375a9ec85e4d0aa925a0eceee4783bdebeac80712cc10c6da23039a3830",
+    "experiments/shell/run.py": "fd0a1300a597d510474c082e03aeb8fb451477d345878d382ae379398de8db48",
+    "build/bin/Release/termforge_shell.exe": "10bff52c8653c1d5c9ac236c4516b361c8e071757910ad5f71029d6009df40e2",
+    "build/bin/Release/workspace_state_test.exe": "a808aa688bfdebac03c121d57fcb4e9206e12a4908375d9e569538247f0f0384",
+    "build/e1-workspace/bin/workspace_state_test": "56b5a66fed351be9ec50ae80f245250c6f41cc8b864a81acff62afc4371876f6"
+  },
+  "full_ctest": {
+    "status": "not_rerun_for_this_bounded_slice",
+    "open_regressions": [29, 36, 38]
+  },
+  "limitations": [
+    "Only one real cmd, Unicode title, default window bounds and layout were restored in this slice",
+    "Multiple shell types, explicit directories, main split, non-default zoom and non-default window bounds still require real two-process acceptance",
+    "Real v1 migration, valid empty sessions, corrupt/future-version handling and product write-failure retry are not yet accepted",
+    "Startup restoration suppresses writes; final state is captured before child shutdown, but full close-time failure behavior remains to be tested",
+    "Same-DPI private-desktop checks only; no screenshot, foreground input, physical presentation, maximized-window or multi-workspace claim",
+    "Issue 33 and the R2 milestone remain open"
+  ]
+}

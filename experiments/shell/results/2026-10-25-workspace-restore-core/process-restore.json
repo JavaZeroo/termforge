@@ -1,0 +1,11 @@
+{
+  "mode": "ui-restore",
+  "status": "passed",
+  "timed_out": false,
+  "exit_code": 0,
+  "result": {"valid": true, "mode": "ui-restore", "interactions_verified": true, "sessions_closed": 1, "active_children_after": 0, "presented_done": null},
+  "job_after": {"active": 0, "total": 7, "terminated": 0},
+  "desktop_gone": true,
+  "job_after_cleanup": {"active": 0, "total": 7, "terminated": 0},
+  "frame_sha256": "df749991e7dcd17e0f97ef102add625fb2907aafda2c2d75b030488aad1adc08"
+}

@@ -62,8 +62,10 @@ inline void Workspace::scenario_edit() {
     } else if(stage_==7 && active()->contains_line(size_marker(1360,12,active()))) {
         Bitmap frame(width_,height_); paint(frame.dc); active()->render_to(frame.dc,terminal_.left,terminal_.top); frame.save(image_);
         SendMessageW(window_,WM_COMMAND,4,0); require(!state_.sides,"side hide failed");
-        const auto stored=tf_workspace::load_layout(settings_path_);
-        require(!stored.sides && !stored.focus && stored.left==state_.left && stored.upper==state_.upper,"saved layout differs");
+        const auto stored=tf_workspace::load_workspace(settings_path_);
+        require(stored.status==tf_workspace::LoadStatus::valid_v2 && !stored.state.layout.sides &&
+                !stored.state.layout.focus && stored.state.layout.left==state_.left &&
+                stored.state.layout.upper==state_.upper,"saved workspace differs");
         stage_=100; SendMessageW(window_,WM_CLOSE,0,0);
     }
 }
@@ -76,7 +78,9 @@ inline void Workspace::scenario_restore() {
         require(std::abs(state_.left-300.0/1358)<1e-12 && std::abs(state_.right-280.0/1358)<1e-12 &&
                 std::abs(state_.upper-387.0/769)<1e-12 && std::abs(state_.left_top-147.0/386)<1e-12 &&
                 std::abs(state_.right_top-217.0/386)<1e-12,"split ratios were not restored");
-        require(tabs_.size()==1 && tabs_[0].title==L"cmd 1","session names unexpectedly restored");
+        require(settings_load_status_==tf_workspace::LoadStatus::valid_v2 &&
+                tabs_.size()==1 && tabs_[0].title==L"\x7814\x7a76 Shell" && tabs_[0].launch &&
+                tabs_[0].launch->kind==L"cmd","v2 title or launch was not restored");
         SendMessageW(window_,WM_COMMAND,4,0); stage_=1;
     } else if(stage_==1 && active()->settled()) { active()->check_size(); stage_=2;
     } else if(stage_==2 && active()->contains_line(size_marker(1360,12,active()))) {
@@ -112,7 +116,7 @@ inline void Workspace::scenario() {
             require(right_middle_<83,"partial session row setup failed");
             SendMessageW(window_,WM_LBUTTONDOWN,0,MAKELPARAM(width_-20,65));
             require(active_==1,"invisible session row was clickable");
-            state_=previous; layout(); save_layout();
+            state_=previous; layout(); save_workspace();
             SendMessageW(window_,WM_LBUTTONDOWN,0,MAKELPARAM(width_-20,65));
             require(active_==0,"session list selection failed");
             SendMessageW(window_,WM_LBUTTONDOWN,0,MAKELPARAM(160,tab_bar_.top+10));

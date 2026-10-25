@@ -546,7 +546,7 @@ def main():
              "experiments/shell/ime.hpp", "experiments/shell/test_launcher.cpp",
              "experiments/shell/clipboard_worker.hpp", "experiments/shell/clipboard_worker.cpp",
              "experiments/shell/keyboard.hpp", "experiments/shell/paste.hpp",
-             "experiments/shell/layout_state.hpp", "experiments/shell/ui_font.hpp",
+             "experiments/shell/layout_state.hpp", "experiments/shell/workspace_state.hpp", "experiments/shell/ui_font.hpp",
              "experiments/shell/resize.hpp", "experiments/shell/size_client.cpp",
              "experiments/conpty/session.hpp", "experiments/presentation/render.hpp", "experiments/presentation/desktop.hpp",
              "experiments/core/history_view.hpp", "experiments/core/text_projection.hpp",

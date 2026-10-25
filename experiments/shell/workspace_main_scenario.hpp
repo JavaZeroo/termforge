@@ -104,7 +104,9 @@ inline void Workspace::scenario_main() {
         shortcut(VK_F11,false); require(state_.focus,"shell focus setup failed");
         shortcut('T',true,true);
         require(!state_.focus && focused_==Group::main && IsWindowVisible(active()->handle()),"new main remained hidden in focus-shell mode");
-        require(!tf_workspace::load_layout(settings_path_).focus,"main reopen did not save restored layout"); stage_=12;
+        const auto stored=tf_workspace::load_workspace(settings_path_);
+        require(stored.status==tf_workspace::LoadStatus::valid_v2 && !stored.state.layout.focus,
+                "main reopen did not save restored workspace"); stage_=12;
     } else if(stage_==12 && selected(Group::main)->ready()) {
         selected(Group::main)->command(L"echo TF_MAIN_REOPEN\r"); stage_=13;
     } else if(stage_==13 && selected(Group::main)->contains_line("TF_MAIN_REOPEN")) {

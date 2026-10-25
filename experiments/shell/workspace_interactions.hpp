@@ -28,7 +28,7 @@ inline void Workspace::end_drag(bool commit) {
     if(dragging_==Divider::none) return;
     dragging_=Divider::none;
     if(GetCapture()==window_) ReleaseCapture();
-    if(commit) save_layout();
+    if(commit) save_workspace();
     else { state_=drag_start_; layout(); }
 }
 
@@ -65,7 +65,11 @@ inline void Workspace::end_rename(bool commit,bool restore_focus) {
         bool valid=!title.empty() && title.size()<=64 &&
             std::none_of(title.begin(),title.end(),[](wchar_t c){return c<32 || c==127;});
         if(valid) valid=WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,title.data(),static_cast<int>(title.size()),nullptr,0,nullptr,nullptr)>0;
-        if(valid) for(auto& tab:group_tabs(rename_group_)) if(tab.id==id && !tab.shell->closing()) tab.title=title;
+        bool changed=false;
+        if(valid) for(auto& tab:group_tabs(rename_group_)) if(tab.id==id && !tab.shell->closing() && tab.title!=title) {
+            tab.title=title; changed=true;
+        }
+        if(changed) save_workspace();
     }
     if(window_) InvalidateRect(window_,nullptr,FALSE);
     if(restore_focus && active() && !closing_) SetFocus(active()->handle());
@@ -116,9 +120,10 @@ inline void Workspace::collect_child(ShellWindow* child) {
             else {
                 if(removed_focused && !active()) {
                     focused_=group==Group::main?Group::bottom:Group::main;
-                    if(active() && focused_==Group::main && state_.focus) { state_.focus=false; save_layout(); }
+                    if(active() && focused_==Group::main && state_.focus) { state_.focus=false; save_workspace(); }
                 }
                 layout();
+                if(!closing_) save_workspace();
                 // A background exit never changes the other area's keyboard
                 // target, nor commits/cancels an unrelated rename editor.
                 if(rename_) SetFocus(rename_);

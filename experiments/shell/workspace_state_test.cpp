@@ -65,6 +65,9 @@ int main() {
         desired.split_active = true;
         desired.split_right_focus = true;
         check(tf_workspace::valid_workspace(desired), "complete v2 fixture rejected");
+        auto split_background = desired;
+        split_background.main_focused = false;
+        check(tf_workspace::valid_workspace(split_background), "visible split incorrectly requires main focus");
         check(tf_workspace::save_workspace(file, desired), "v2 create parent and save");
         const auto original = read(file);
         check(original.size() < tf_workspace::workspace_document_limit &&
@@ -120,7 +123,12 @@ int main() {
         invalid = desired; invalid.split_index = -1;
         invalid_save(invalid, "missing split identity accepted");
         invalid = desired; invalid.main.clear(); invalid.main_active = -1;
+        invalid.split_index = -1; invalid.split_active = false; invalid.split_right_focus = false;
         invalid_save(invalid, "focused empty main region accepted");
+        invalid = desired; invalid.bottom.clear(); invalid.bottom_active = -1; invalid.main_focused = false;
+        invalid_save(invalid, "nonempty main region has no valid focus target");
+        invalid = desired; invalid.window.width = 999;
+        invalid_save(invalid, "window below the product minimum accepted");
         invalid = desired; invalid.bottom.push_back(invalid.bottom.front());
         invalid.bottom.push_back(invalid.bottom.front());
         invalid.bottom.push_back(invalid.bottom.front());

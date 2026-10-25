@@ -57,15 +57,16 @@ inline bool valid_workspace(const WorkspaceState& state) noexcept {
     if (!valid_layout(state.layout)) return false;
     const auto& window = state.window;
     if (window.x < -1048576 || window.x > 1048576 || window.y < -1048576 || window.y > 1048576 ||
-        window.width < 1 || window.width > 65535 || window.height < 1 || window.height > 65535) return false;
+        window.width < 1000 || window.width > 65535 || window.height < 650 || window.height > 65535) return false;
     if (state.bottom.size() + state.main.size() > 8) return false;
     if (state.bottom_active < (state.bottom.empty() ? -1 : 0) ||
         state.bottom_active >= static_cast<int>(state.bottom.size())) return false;
     if (state.main_active < (state.main.empty() ? -1 : 0) ||
         state.main_active >= static_cast<int>(state.main.size())) return false;
     if (state.main_focused && state.main_active < 0) return false;
+    if (state.bottom.empty() && !state.main.empty() && !state.main_focused) return false;
     if (state.split_index < -1 || state.split_index >= static_cast<int>(state.main.size())) return false;
-    if (state.split_active && (state.split_index < 0 || state.main.size() < 2 || !state.main_focused)) return false;
+    if (state.split_active && (state.split_index < 0 || state.main.size() < 2)) return false;
     if (state.split_active && state.split_right_focus != (state.main_active == state.split_index)) return false;
     for (const auto* sessions : {&state.bottom, &state.main}) for (const auto& session : *sessions) {
         if (session.kind != L"cmd" && session.kind != L"powershell" && session.kind != L"pwsh" && session.kind != L"wsl") return false;

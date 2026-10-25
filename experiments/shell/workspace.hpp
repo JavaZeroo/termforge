@@ -2,7 +2,7 @@
 #pragma once
 #include "menu_gesture.hpp"
 #include <cmath>
-#include "layout_state.hpp"
+#include "workspace_state.hpp"
 #include "ui_font.hpp"
 #include "paste_scenario_state.hpp"
 #include "clipboard_scenario_state.hpp"
@@ -10,7 +10,12 @@
 #include "workflow_system_state.hpp"
 
 class Workspace {
-    struct Tab { int id; std::wstring title; std::unique_ptr<ShellWindow> shell; };
+    struct Tab {
+        int id;
+        std::wstring title;
+        std::optional<tf_shell::LaunchDefinition> launch;
+        std::unique_ptr<ShellWindow> shell;
+    };
     enum class Group { bottom, main };
     enum class Divider { none, left, right, bottom, left_middle, right_middle };
     HWND window_{};
@@ -22,8 +27,11 @@ class Workspace {
     bool split_active_ = false, split_right_focus_ = false;
     Group focused_ = Group::bottom, rename_group_ = Group::bottom;
     int active_ = -1, next_id_ = 1, stage_ = 0, collected_ = 0;
-    bool closing_ = false, settings_failed_ = false;
+    bool closing_ = false, settings_failed_ = false, settings_read_only_ = false;
+    bool settings_closed_ = false, restoring_ = false;
     tf_workspace::LayoutState state_, drag_start_;
+    tf_workspace::WorkspaceState restored_workspace_;
+    tf_workspace::LoadStatus settings_load_status_ = tf_workspace::LoadStatus::missing;
     Divider dragging_ = Divider::none;
     std::filesystem::path settings_path_;
     HWND rename_{};
@@ -103,8 +111,12 @@ class Workspace {
     void note_focus(ShellWindow* shell) {
         for(const auto group:{Group::bottom,Group::main}) for(auto& tab:group_tabs(group))
             if(tab.shell.get()==shell) {
+                const bool right=group==Group::main && split_active_ &&
+                    tab.shell.get()==main_tabs_[split_index_].shell.get();
+                const bool changed=focused_!=group || (group==Group::main && split_active_ && right!=split_right_focus_);
                 focused_=group;
-                if(group==Group::main && split_active_) split_right_focus_=tab.shell.get()==main_tabs_[split_index_].shell.get();
+                if(group==Group::main && split_active_) split_right_focus_=right;
+                if(changed) save_workspace();
                 InvalidateRect(window_,nullptr,FALSE); return;
             }
     }
@@ -114,34 +126,91 @@ class Workspace {
     void begin_rename(int index,Group group=Group::bottom);
     void end_rename(bool commit,bool restore_focus=true);
     bool edit_key(const MSG& msg);
-    void save_layout() {
-        settings_failed_ = settings_path_.empty() || !tf_workspace::save_layout(settings_path_,state_);
-        InvalidateRect(window_,nullptr,FALSE);
+    tf_workspace::WorkspaceState capture_state() {
+        tf_workspace::WorkspaceState result;
+        result.layout=state_;
+        result.bottom.clear(); result.main.clear();
+        result.bottom_active=active_; result.main_active=main_active_;
+        result.split_index=split_index_; result.main_focused=focused_==Group::main;
+        result.split_active=split_active_; result.split_right_focus=split_right_focus_;
+        WINDOWPLACEMENT placement{sizeof(WINDOWPLACEMENT)};
+        require(GetWindowPlacement(window_,&placement)!=FALSE,"workspace normal bounds query failed");
+        const RECT normal=placement.rcNormalPosition;
+        RECT frame{};
+        require(AdjustWindowRectExForDpi(&frame,WS_OVERLAPPEDWINDOW,FALSE,0,dpi_)!=FALSE,
+                "workspace frame measurement failed");
+        result.window.x=normal.left; result.window.y=normal.top;
+        result.window.width=logical(normal.right-normal.left-(frame.right-frame.left));
+        result.window.height=logical(normal.bottom-normal.top-(frame.bottom-frame.top));
+        for(const auto group:{Group::bottom,Group::main}) {
+            auto& sessions=group==Group::bottom?result.bottom:result.main;
+            for(const auto& tab:group_tabs(group)) {
+                if(!tab.launch) throw std::runtime_error("custom shell launch cannot be persisted");
+                sessions.push_back({tab.launch->kind,tab.launch->distribution,
+                    tab.launch->working_directory,tab.title,tab.shell->zoom_percent()});
+            }
+        }
+        return result;
+    }
+    void restore_sessions() {
+        restoring_=true;
+        try {
+            if(settings_load_status_==tf_workspace::LoadStatus::valid_v2 ||
+               settings_load_status_==tf_workspace::LoadStatus::valid_empty_v2) {
+                for(const auto& session:restored_workspace_.bottom)
+                    add(Group::bottom,tf_shell::make_launch({session.kind,session.distribution,session.working_directory}),&session);
+                for(const auto& session:restored_workspace_.main)
+                    add(Group::main,tf_shell::make_launch({session.kind,session.distribution,session.working_directory}),&session);
+                active_=restored_workspace_.bottom_active; main_active_=restored_workspace_.main_active;
+                split_index_=restored_workspace_.split_index;
+                focused_=restored_workspace_.main_focused?Group::main:Group::bottom;
+                split_active_=restored_workspace_.split_active;
+                split_right_focus_=restored_workspace_.split_right_focus;
+            } else add();
+            restoring_=false;
+            layout();
+        } catch(...) { restoring_=false; throw; }
+    }
+    void save_workspace() {
+        if(restoring_ || settings_closed_) return;
+        try {
+            settings_failed_=settings_path_.empty() || settings_read_only_ ||
+                !tf_workspace::save_workspace(settings_path_,capture_state());
+        } catch(...) { settings_failed_=true; }
+        if(window_) InvalidateRect(window_,nullptr,FALSE);
     }
     void select(int index,Group group=Group::bottom) {
         if (index<0 || index>=static_cast<int>(group_tabs(group).size())) return;
         end_rename(true);
-        if(group==Group::main && state_.focus) { state_.focus=false; save_layout(); }
+        if(group==Group::main && state_.focus) { state_.focus=false; save_workspace(); }
         focused_=group;
         if(group==Group::main && split_active_ && split_right_focus_) split_index_=index;
         else selection(group)=index;
         layout();
         if (!closing_) SetFocus(active()->handle());
+        save_workspace();
     }
-    void add(Group group=Group::bottom, tf_shell::ShellLaunch launch={}) {
+    void add(Group group=Group::bottom, tf_shell::ShellLaunch launch={},
+             const tf_workspace::SessionState* restored=nullptr) {
         if(workflow_) ++workflow_->attempted_creations;
         if (closing_ || session_count()>=8) return;
+        const auto definition=tf_shell::known_launch(launch);
         const auto launch_id=launch.id;
-        auto shell=std::make_unique<ShellWindow>("", ""); shell->set_dpi(dpi_); shell->create(window_,std::move(launch));
+        auto shell=std::make_unique<ShellWindow>("", "");
+        shell->set_dpi(dpi_);
+        if(restored) shell->change_zoom(restored->zoom_percent-shell->zoom_percent());
+        shell->create(window_,std::move(launch));
         const int id=next_id_++;
         auto& tabs=group_tabs(group);
-        const auto title=launch_id.empty()?L"cmd "+std::to_wstring(id):launch_id;
-        tabs.push_back({id,title,std::move(shell)}); select(static_cast<int>(tabs.size())-1,group);
+        const auto title=restored?restored->title:
+            (launch_id.empty()?L"cmd "+std::to_wstring(id):launch_id);
+        tabs.push_back({id,title,definition,std::move(shell)});
+        select(static_cast<int>(tabs.size())-1,group);
     }
-    void split() {
-        if(closing_ || focused_!=Group::main || main_active_<0 || split_active_) return;
+    void split(tf_shell::ShellLaunch launch={}) {
+        if(closing_ || focused_!=Group::main || main_active_<0 || split_active_ || session_count()>=8) return;
         split_active_=true; split_right_focus_=true;
-        add(Group::main);
+        add(Group::main,std::move(launch));
     }
     void zoom_split() {
         if(split_index_<0) return;
@@ -151,16 +220,20 @@ class Workspace {
         split_right_focus_=split_active_;
         layout();
         if(!closing_ && active()) SetFocus(active()->handle());
+        save_workspace();
     }
     void focus_split(bool right) {
         if(!split_active_) return;
         split_right_focus_=right; focused_=Group::main;
         layout(); SetFocus(active()->handle());
+        save_workspace();
     }
     void close_all() {
         if (closing_) return;
         end_rename(false); end_drag(false);
         closing_=true;
+        save_workspace();
+        settings_closed_=true;
         for (auto& tab:tabs_) tab.shell->close();
         for (auto& tab:main_tabs_) tab.shell->close();
         if (session_count()==0) DestroyWindow(window_);
@@ -181,11 +254,11 @@ class Workspace {
         if (closing_) return;
         if (id==1) add();
         if (id==2 && active()) active()->close();
-        if (id==3) { end_drag(false); end_rename(true); state_.focus=!state_.focus; if(state_.focus) focused_=Group::bottom; layout(); save_layout(); SetFocus(active()?active()->handle():window_); }
-        if (id==4) { end_drag(false); state_.sides=!state_.sides; layout(); save_layout(); }
+        if (id==3) { end_drag(false); end_rename(true); state_.focus=!state_.focus; if(state_.focus) focused_=Group::bottom; layout(); save_workspace(); SetFocus(active()?active()->handle():window_); }
+        if (id==4) { end_drag(false); state_.sides=!state_.sides; layout(); save_workspace(); }
         if (id==5) close_all();
         if (id==6) begin_rename(selection(focused_),focused_);
-        if (id==7) { end_rename(false); end_drag(false); state_={}; layout(); save_layout(); }
+        if (id==7) { end_rename(false); end_drag(false); state_={}; layout(); save_workspace(); }
         if (id==8) add(Group::main);
         if (id==12) perform_text_action(tf_shell::TextAction::paste);
         if (id==13) perform_text_action(tf_shell::TextAction::cancel_paste);
@@ -194,6 +267,7 @@ class Workspace {
         if (id==16) perform_text_action(tf_shell::TextAction::find);
         if (!rename_ && active() && id>=9 && id<=11) {
             if(id==11) active()->reset_zoom(); else active()->change_zoom(id==9?25:-25);
+            save_workspace();
             InvalidateRect(window_,nullptr,FALSE);
         }
     }
@@ -347,7 +421,8 @@ class Workspace {
         fill(dc,{0,height_-56,width_,height_-29},RGB(35,35,35));
         label(dc,{0,height_-56,width_,height_-29},L"+ New shell");
         fill(dc,{0,height_-29,width_,height_},RGB(38,38,38));
-        label(dc,{0,height_-29,width_,height_},closing_?L"Closing sessions...":settings_failed_?L"Layout could not be saved":L"LOCAL     "+std::to_wstring(session_count())+L" sessions     Focus: "+(focused_==Group::main?L"Main":L"Shell")+L"     Zoom: "+std::to_wstring(active()?active()->zoom_percent():100)+L"%     "+(active()?active()->status_text():L""));
+        const auto settings_error=settings_read_only_?L"Workspace settings not overwritten":L"Workspace could not be saved";
+        label(dc,{0,height_-29,width_,height_},closing_?L"Closing sessions...":settings_failed_?settings_error:L"LOCAL     "+std::to_wstring(session_count())+L" sessions     Focus: "+(focused_==Group::main?L"Main":L"Shell")+L"     Zoom: "+std::to_wstring(active()?active()->zoom_percent():100)+L"%     "+(active()?active()->status_text():L""));
         SelectObject(dc,old);
     }
     void click(int x,int y) {
@@ -451,6 +526,7 @@ class Workspace {
             if(message==WM_CLOSE) { self->close_all(); return 0; }
             if(message==WM_DESTROY) { self->window_=nullptr; PostQuitMessage(0); return 0; }
             if(message==WM_SIZE && wp!=SIZE_MINIMIZED) { self->layout(); return 0; }
+            if(message==WM_EXITSIZEMOVE) { self->save_workspace(); return 0; }
             if(message==WM_DPICHANGED) {
                 const HWND focus=GetFocus();
                 self->set_dpi(LOWORD(wp));
@@ -545,7 +621,12 @@ public:
             DWORD n=GetEnvironmentVariableW(L"LOCALAPPDATA",base,32768);
             if(n && n<32768) settings_path_=std::filesystem::path(base)/L"TermForge"/L"workspace-v1.layout";
         }
-        state_=tf_workspace::load_layout(settings_path_);
+        const auto loaded=tf_workspace::load_workspace(settings_path_);
+        settings_load_status_=loaded.status;
+        restored_workspace_=loaded.state;
+        state_=restored_workspace_.layout;
+        settings_read_only_=loaded.status==tf_workspace::LoadStatus::unsupported_version ||
+            loaded.status==tf_workspace::LoadStatus::io_error;
     }
     ~Workspace() { end_rename(false); tabs_.clear(); main_tabs_.clear(); if(window_) DestroyWindow(window_); UnregisterClassW(L"TermForgeWorkspace",GetModuleHandleW(nullptr)); }
     int run() {
@@ -561,13 +642,34 @@ public:
         // Apply the desired size once our window procedure owns the HWND.
         const UINT actual_dpi=GetDpiForWindow(window_); require(actual_dpi!=0,"workspace DPI query failed");
         set_dpi(static_cast<int>(actual_dpi));
-        rect={0,0,physical(1360),physical(860)};
-        require(AdjustWindowRectExForDpi(&rect,WS_OVERLAPPEDWINDOW,FALSE,0,dpi_)!=FALSE,"workspace initial frame calculation failed");
-        require(SetWindowPos(window_,nullptr,0,0,rect.right-rect.left,rect.bottom-rect.top,
-                            SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"workspace initial resize failed");
+        const auto& restored=restored_workspace_.window;
+        rect={0,0,physical(restored.width),physical(restored.height)};
+        require(AdjustWindowRectExForDpi(&rect,WS_OVERLAPPEDWINDOW,FALSE,0,dpi_)!=FALSE,"workspace restored frame calculation failed");
+        RECT desired{restored.x,restored.y,restored.x+rect.right-rect.left,restored.y+rect.bottom-rect.top};
+        MONITORINFO monitor{sizeof(MONITORINFO)};
+        require(GetMonitorInfoW(MonitorFromRect(&desired,MONITOR_DEFAULTTONEAREST),&monitor)!=FALSE,
+                "workspace monitor query failed");
+        const RECT work=monitor.rcWork;
+        const LONG outer_width=std::min(desired.right-desired.left,work.right-work.left);
+        const LONG outer_height=std::min(desired.bottom-desired.top,work.bottom-work.top);
+        const LONG x=std::clamp<LONG>(restored.x,work.left,std::max(work.left,work.right-outer_width));
+        const LONG y=std::clamp<LONG>(restored.y,work.top,std::max(work.top,work.bottom-outer_height));
+        const LONG frame_width=rect.right-rect.left-physical(restored.width);
+        const LONG frame_height=rect.bottom-rect.top-physical(restored.height);
+        const int expected_width=logical(outer_width-frame_width);
+        const int expected_height=logical(outer_height-frame_height);
+        require(SetWindowPos(window_,nullptr,x,y,outer_width,outer_height,SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,
+                "workspace restored bounds failed");
         layout();
-        require(width_==1360 && height_==860,"workspace initial client size mismatch");
-        add();
+        require(width_==expected_width && height_==expected_height,
+                ("workspace restored client size mismatch: expected="+
+                 std::to_string(expected_width)+"x"+std::to_string(expected_height)+" actual="+
+                 std::to_string(width_)+"x"+std::to_string(height_)+" saved="+
+                 std::to_string(restored.width)+"x"+std::to_string(restored.height)+
+                 " dpi="+std::to_string(dpi_)+" outer="+std::to_string(outer_width)+"x"+
+                 std::to_string(outer_height)+" frame="+std::to_string(frame_width)+"x"+
+                 std::to_string(frame_height)).c_str());
+        restore_sessions();
         if(!image_.empty()) require(SetTimer(window_,1,30,nullptr)!=0,"workspace timer failed");
         ShowWindow(window_,image_.empty()?SW_SHOW:SW_SHOWNOACTIVATE);
         MSG msg{}; BOOL status;

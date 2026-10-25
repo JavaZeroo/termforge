@@ -49,15 +49,15 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 - 96→144→192→96 受控消息场景已验证；`ui-monitors` 另在两台真实 96-DPI 显示器间往返两次，保持 rename 焦点、隐藏标签和网格，`distinct_dpi=false`，见[R2 合同](../../docs/milestones/R2-font-display.md)与[验证](results/2026-10-24-r2-monitor-font/validation.json)。不同 DPI 的真实跨屏、实际呈现、字体/像素等价、标签排序/会话持久化、SSH/SFTP 仍未验收。
 - 主窗口是既有 Win32/DirectWrite 实验的有限扩展，不锁定未来产品 GUI 框架；没有复制 WindTerm 主题、图标或反编译实现。
 
-## 布局保存
+## 工作区保存
 
-拖动提交、显隐/焦点模式切换及 View → Reset layout 后，自动保存到 `%LOCALAPPDATA%\TermForge\workspace-v1.layout`。下一次启动恢复五个分割比例及侧栏/焦点模式；焦点模式保留原分割比例。仅保存布局，不保存窗口位置/尺寸、标签标题、命令或会话。
+配置沿用 `%LOCALAPPDATA%\TermForge\workspace-v1.layout` 这一历史路径，但新文档为 v2；不在另一文件保存副本。保留 v1 严格读取与内存迁移，启动不立即改写旧文件。文件缺失、v1 或损坏配置走现有默认 cmd 回退；未知新版本或读取失败禁止旧程序覆盖。有效空会话与缺失配置分开。
 
-左右列宽各限于工作区的 10%–35%，上部限于 25%–80%，左右列内部上半部限于 20%–80%，另保留标题所需最小空间。这些是独立实现的可用性边界。配置为版本 1 的严格文本格式，读取最多 1 KiB；文件缺失、损坏、截断、版本未知或数值越界时整体使用默认布局。保存使用同目录独占临时文件与原子替换，失败保留旧文件，状态栏显示 `Layout could not be saved`。不承诺断电持久性；多进程同时操作采用最后成功保存的布局。
+在提交的增删/选择/重命名/缩放/分屏、布局拖动、显隐/焦点模式及窗口尺寸移动结束后保存；启动恢复期间抑制写入，关闭时先抓取最终快照再回收子进程，后续异步删除不再覆盖。保存使用同目录独占临时文件与原子替换；写入失败保留旧文件并显示 `Workspace could not be saved`，后续成功保存才清除。只保存固定 shell 工厂类型、必要 WSL distribution、明确目录、标题、正常窗口位置/逻辑客户区、布局、焦点/split 和 zoom；自定义命令行、秘密、环境、历史和进程身份不进入配置。不承诺断电持久性或多进程冲突合并。
+
+当前仅完成**单 cmd** 的新进程启动、Unicode 标题、默认窗口/布局恢复及原有两轮回归；多类型会话、显式目录、split、非默认 zoom/窗口、真实 v1/空会话与故障处理尚待验收，#33 未完成。模型与 Windows/Ubuntu 检查见[模型结果](results/2026-10-25-workspace-state-v2/validation.json)，单会话接入见[双进程验证](results/2026-10-25-workspace-restore-core/validation.json)。
 
 自动测试仅读写各自结果目录下的 `workspace.layout`，不会读取或修改上述用户配置。
-
-`workspace_state.hpp` 另实现有界 v2 配置模型与严格迁移/损坏分类，保留上述 v1 兼容。当前仅在 Windows/Ubuntu 完成无窗口模型和原子写入验证，未接入 Workspace 启动恢复；不表示 #33 已完成，也不保存任意命令行、秘密、历史或进程状态。验证见[模型结果](results/2026-10-25-workspace-state-v2/validation.json)。
 
 ## 所有权与调度
 
