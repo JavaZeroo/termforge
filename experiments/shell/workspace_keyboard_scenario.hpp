@@ -24,7 +24,8 @@ inline void Workspace::scenario_keyboard() {
         };
         try {
             modifiers(false,false,false);
-            for(wchar_t value:std::wstring(L"A\x6c49" L"e\x0301\xd83d\xde42")) character(value);
+            const std::wstring sample=L"A\x6c49" L"e\x0301\xd83d\xde42" L"\xd83d\xdc69\x200d\xd83d\xdcbb" L"1\xfe0f\x20e3";
+            for(wchar_t value:sample) character(value);
             key(VK_TAB);
             modifiers(true,false,false); key(VK_TAB);
             modifiers(false,true,false); key(VK_SPACE); key(VK_LEFT);

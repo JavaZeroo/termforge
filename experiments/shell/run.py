@@ -455,7 +455,7 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
                 validate_history(json.loads((out / "history.json").read_text(encoding="utf-8")))
                 validate_native_scroll([json.loads(line) for line in (out / "native-scroll.jsonl").read_text(encoding="utf-8").splitlines()])
             if mode == "ui-keyboard":
-                expected = ("A汉e\u0301🙂".encode("utf-8") + b"\t\x1b[Z\x00\x1b[1;5D\x1b[3;4~\x1bx" +
+                expected = ("A汉e\u0301🙂👩\u200d💻1\ufe0f\u20e3".encode("utf-8") + b"\t\x1b[Z\x00\x1b[1;5D\x1b[3;4~\x1bx" +
                             "é".encode("utf-8") + b"\x00\x7f\x1b[H\x1b[F\x1b[2~\x1b[3~\x1b[5~\x1b[6~" +
                             "\ufffd🙂\ufffd".encode("utf-8"))
                 if (out / "input.bin").read_bytes() != expected:
