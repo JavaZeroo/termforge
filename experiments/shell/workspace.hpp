@@ -483,7 +483,7 @@ class Workspace {
     void scenario_edit();
     void scenario_restore();
     bool workspace_data_mode() const {
-        return test_mode_=="ui-workspace-save" || test_mode_=="ui-workspace-restore";
+        return test_mode_.rfind("ui-workspace-",0)==0;
     }
     std::string workspace_geometry();
     void save_workspace_geometry();
@@ -702,10 +702,15 @@ public:
         }
         require(status==0,"workspace message loop failed"); require(failure_.empty(),failure_.c_str());
         if(!image_.empty() && workspace_data_mode()) {
-            require(stage_==100 && collected_==3,"workspace persistence scenario incomplete");
-            require(!settings_failed_,"workspace persistence save failed");
-            std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_
-                <<"\",\"sessions_closed\":3,\"active_children_after\":0,\"settings_save_failed\":false,\"presented_done\":null}\n";
+            const int expected_closed=test_mode_=="ui-workspace-empty"?0:
+                test_mode_=="ui-workspace-save" || test_mode_=="ui-workspace-restore"?3:1;
+            const bool protected_settings=test_mode_=="ui-workspace-future";
+            require(stage_==100 && collected_==expected_closed,"workspace persistence scenario incomplete");
+            require(settings_failed_==protected_settings,"workspace persistence save result mismatch");
+            std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":"<<expected_closed
+                <<",\"active_children_after\":0,\"settings_save_failed\":"<<(settings_failed_?"true":"false");
+            if(protected_settings) std::cout<<",\"configuration_preserved\":true";
+            std::cout<<",\"presented_done\":null}\n";
             return 0;
         }
         if(!image_.empty() && workflow_) {

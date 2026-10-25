@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "scope": "issue 33 real v1 migration, valid empty workspace, corrupt fallback and future-version overwrite protection; final write-failure acceptance remains separate",
+  "local_passed": true,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "commands": [
+    "cmake --build build --config Release --target shell_test_launcher workspace_state_test",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-v2-ready-regression .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_v2_multiple_shells_split_and_geometry_restore experiments.shell.test_shell.ShellTests.test_workspace_v1_empty_and_invalid_recovery experiments.shell.test_shell.ShellTests.test_workspace_v2_empty_session_roundtrip -v",
+    "ctest --test-dir build -C Release -R 'shell_launch|layout_state|workspace_state' --output-on-failure",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-v2-fallback-r1 .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_rename_drag_and_fresh_process_restore experiments.shell.test_shell.ShellTests.test_main_and_bottom_sessions_focus_geometry_and_cleanup experiments.shell.test_shell.ShellTests.test_main_split_background_restore_close_and_focus -v",
+    "ctest --test-dir build -C Release --output-on-failure",
+    "wsl.exe -d Ubuntu -e sh -c 'cd /mnt/d/Code/termforge && cmake --build build/e1-workspace --target workspace_state_test -j2 && build/e1-workspace/bin/workspace_state_test'"
+  ],
+  "results": {
+    "recovery_and_multi_tests": {"passed": 3, "rounds_each": 2},
+    "original_workspace_regressions": {"passed": 3, "rounds_each": 2},
+    "focused_default_ctest": {"passed": 3, "failed": 0},
+    "ubuntu_workspace_state": "passed",
+    "all_recovery_modes_data_only": true,
+    "job_active_after_each_process": 0,
+    "private_desktop_removed": true,
+    "presented_done": null
+  },
+  "v1": {
+    "rounds": 2,
+    "startup_write_deferred": true,
+    "all_layout_fields_and_actual_geometry_restored": true,
+    "default_cmd_and_title_created": true,
+    "committed_zoom_save": 125,
+    "complete_v2_after_commit": true
+  },
+  "empty": {
+    "rounds": 2,
+    "saved_after_real_last_session_exit": true,
+    "bottom_and_main_counts": [0, 0],
+    "active_indices": [-1, -1],
+    "neutral_bottom_focus_after_last_exit": true,
+    "fresh_restore_created_no_shell": true,
+    "configuration_byte_identical_after_empty_restore": true
+  },
+  "corrupt": {
+    "rounds": 2,
+    "partial_v2_not_combined_with_defaults": true,
+    "one_default_cmd_created": true,
+    "default_zoom": 100,
+    "subsequent_complete_v2_save": true
+  },
+  "future": {
+    "rounds": 2,
+    "version": 3,
+    "attempted_save_rejected": true,
+    "settings_save_failed_reported": true,
+    "configuration_preserved_after_attempt_and_close": true,
+    "temporary_files_created": 0,
+    "configuration_preserved_result_flag": true
+  },
+  "process_results": {
+    "ui-workspace-v1": {"rounds": 2, "sessions_closed": 1, "save_failed": false},
+    "ui-workspace-empty-create": {"rounds": 2, "sessions_closed": 1, "save_failed": false},
+    "ui-workspace-empty": {"rounds": 2, "sessions_closed": 0, "save_failed": false},
+    "ui-workspace-corrupt": {"rounds": 2, "sessions_closed": 1, "save_failed": false},
+    "ui-workspace-future": {"rounds": 2, "sessions_closed": 1, "save_failed": true, "configuration_preserved": true}
+  },
+  "readiness_regression": {
+    "observed": "the initial marker wait timed out after commands had been issued before an explicit all-ready gate",
+    "guard": "wait for real readiness of every new shell before sending commands; the 30-second bound is unchanged",
+    "subsequent_results": "focused rounds passed, one later full run still reached the marker-wait timeout, and a repeated shell suite passed both rounds; intermittent behavior is not resolved",
+    "timeout_diagnostics": "bounded observed PTY bytes when enabled and textual visible rows, without a bitmap"
+  },
+  "raw_samples": [
+    "v1-input.layout",
+    "v1-output.layout",
+    "empty.layout",
+    "corrupt-input.layout",
+    "corrupt-output.layout",
+    "future.layout"
+  ],
+  "source_sha256": {
+    "experiments/shell/workspace.hpp": "d3451a4774a131a6bc1a795b61487a646e0d6e713df55b784ac6dfe15e958e3e",
+    "experiments/shell/workspace_interactions.hpp": "c2b2c8e9a57e5004f991c6906a158b70b8f52d5e893c1bef3d2cfdff49c52d06",
+    "experiments/shell/workspace_persistence_scenario.hpp": "251f21d15a4ef2b27671217ddeea0922fceb660021096068d78c4a28373ebc67",
+    "experiments/shell/workspace_state.hpp": "f81aec1d9ff1816f0cb34cde5621e39f859dabcaff5e02a29eced164f544fc09",
+    "experiments/shell/workspace_state_test.cpp": "ccf27ac3f538ea30bb5bbcf6fc4edace86c043d482fc816551907d5883ba7c87",
+    "experiments/shell/shell.cpp": "42a63395a8904b442fb75d536c6098b108796c81c1e73992b4ad6b92f660c746",
+    "experiments/shell/run.py": "a3e1925be928cf3661521b453e8fe74378b0f633d61a514022ee87a11f0c2617",
+    "experiments/shell/test_shell.py": "09545515b3360c797320c6e899d0de5a00759e697d416ddbf26aeb73f38b1086",
+    "build/bin/Release/termforge_shell.exe": "91b2dc9e6ce1d3db5c9c7ae285369fd2ed4c4ae18cef59b0627ae3cf53d7002e",
+    "build/candidate-adapter/bin/Release/termforge_shell.exe": "f5473f96028bf5e3d6beb29b09a9c7139f52c3769fc96d5a3da95ef08e477ecc",
+    "build/e1-workspace/bin/workspace_state_test": "8893a7e5a40fca8b0b9d436bb164ab3f67ac24984e8de45ffd1eeca79b8ca529"
+  },
+  "full_ctest": {
+    "completed": true,
+    "elapsed_seconds": 356.97,
+    "passed": false,
+    "passed_tests": 39,
+    "total_tests": 40,
+    "failed_tests": ["shell"],
+    "shell_nested_errors": [
+      "test_commands_unicode_editing_interrupt_and_normal_exit (issue 36)",
+      "test_resize_child_dimensions_and_interrupt (issue 36)",
+      "test_workspace_v2_multiple_shells_split_and_geometry_restore (one marker-wait timeout)"
+    ]
+  },
+  "follow_up_shell_suite": {
+    "completed": true,
+    "python_tests": 35,
+    "errors": 2,
+    "errors_are_issue_36": true,
+    "multi_process_rounds": 2,
+    "multi_process_passed": true,
+    "intermittent_issue_resolved": false
+  },
+  "candidate_focus_ctest": {
+    "completed": true,
+    "passed": 2,
+    "failed": 0,
+    "commands": [
+      "cmake --build build/candidate-adapter --config Release --target shell_test_launcher workspace_state_test",
+      "ctest --test-dir build/candidate-adapter -C Release -R 'candidate_shell_tui|workspace_state' --output-on-failure"
+    ]
+  },
+  "limitations": [
+    "Product write-failure injection, successful retry and final close-time failure behavior are not yet accepted",
+    "Future-version safety is a deliberate rejected save, not a successful persistence operation",
+    "Same private desktop and synthetic configurations only; no screenshot, foreground input or actual presentation claim",
+    "Normal window bounds and a single current workspace only; maximized state and named/multi-workspace recovery are not claimed",
+    "Issue 33 remains open until the separate failure contracts and regression review are complete; R2 is not complete"
+  ]
+}

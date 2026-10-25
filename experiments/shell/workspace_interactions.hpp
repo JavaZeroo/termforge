@@ -120,6 +120,7 @@ inline void Workspace::collect_child(ShellWindow* child) {
             else {
                 if(removed_focused && !active()) {
                     focused_=group==Group::main?Group::bottom:Group::main;
+                    if(!active()) focused_=Group::bottom;
                     if(active() && focused_==Group::main && state_.focus) { state_.focus=false; save_workspace(); }
                 }
                 layout();

@@ -54,8 +54,31 @@ inline void Workspace::save_workspace_geometry() {
 
 inline void Workspace::scenario_workspace() {
     if(image_.empty() || closing_) return;
-    require(ms(started_)<30000,("workspace persistence timeout at stage "+std::to_string(stage_)).c_str());
     const auto directory=std::filesystem::path(image_).parent_path();
+    if(ms(started_)>=30000) {
+        std::ofstream out(directory/"persistence-failure.json",std::ios::binary);
+        out<<"{\"mode\":\""<<test_mode_<<"\",\"stage\":"<<stage_<<",\"tabs\":[";
+        bool first=true;
+        for(const auto group:{Group::bottom,Group::main}) for(const auto& tab:group_tabs(group)) {
+            if(!first) out<<','; first=false;
+            out<<"{\"group\":\""<<(group==Group::main?"main":"bottom")<<"\",\"kind\":";
+            termforge::Screen::quoted(out,tab.launch?utf8(tab.launch->kind.c_str()):"custom");
+            out<<",\"ready\":"<<tab.shell->ready()<<",\"observation_enabled\":"
+               <<(test_mode_=="ui-workspace-save" && stage_>=2)<<",\"observed\":";
+            termforge::Screen::quoted(out,tab.shell->observed_output());
+            out<<",\"visible\":[";
+            bool first_row=true;
+            if(tab.shell->ready()) for(const auto& row:tab.shell->visible_snapshot().lines) {
+                std::string text; for(const auto& cell:row) text+=cell.text;
+                while(!text.empty() && text.back()==' ') text.pop_back();
+                if(!first_row) out<<','; first_row=false;
+                termforge::Screen::quoted(out,text);
+            }
+            out<<"]}";
+        }
+        out<<"]}"; out.close(); require(bool(out),"workspace failure evidence write failed");
+        require(false,("workspace persistence timeout at stage "+std::to_string(stage_)).c_str());
+    }
     const auto all_ready=[&] {
         for(const auto group:{Group::bottom,Group::main}) for(const auto& tab:group_tabs(group))
             if(!tab.shell->ready()) return false;
@@ -79,6 +102,69 @@ inline void Workspace::scenario_workspace() {
     };
     const auto cmd_directory=directory/L"restore-cmd \x76ee\x5f55";
     const auto ps_directory=directory/L"restore-powershell \x7a7a\x683c";
+    const auto settings_text=[&] {
+        std::ifstream input(settings_path_,std::ios::binary);
+        std::ostringstream content; content<<input.rdbuf(); return content.str();
+    };
+
+    if(test_mode_=="ui-workspace-empty-create") {
+        if(stage_==0 && active() && active()->ready()) { active()->close(); stage_=1; }
+        else if(stage_==1 && collected_==1 && session_count()==0) {
+            require(!settings_failed_ && active_==-1 && main_active_==-1 && focused_==Group::bottom &&
+                    tf_workspace::load_workspace(settings_path_).status==tf_workspace::LoadStatus::valid_empty_v2,
+                    "empty workspace was not saved after the last session exited");
+            stage_=100; close_all();
+        }
+        return;
+    }
+    if(test_mode_=="ui-workspace-empty") {
+        if(stage_==0) {
+            require(settings_load_status_==tf_workspace::LoadStatus::valid_empty_v2 &&
+                    session_count()==0 && active_==-1 && main_active_==-1 && !active() && !settings_failed_,
+                    "valid empty workspace incorrectly created a default session");
+            stage_=100; close_all();
+        }
+        return;
+    }
+    if(test_mode_=="ui-workspace-v1") {
+        const std::string legacy="TermForge-layout 1\nleft 0.24\nright 0.21\nupper 0.57\n"
+            "left_top 0.38\nright_top 0.69\nsides 1\nfocus 0\n";
+        if(stage_==0 && active() && active()->ready()) {
+            require(settings_load_status_==tf_workspace::LoadStatus::migrated_v1 && settings_text()==legacy &&
+                    tabs_.size()==1 && tabs_[0].title==L"cmd 1" && main_tabs_.empty() &&
+                    state_.left==.24 && state_.right==.21 && state_.upper==.57 &&
+                    state_.left_top==.38 && state_.right_top==.69 && state_.sides && !state_.focus &&
+                    left_==326 && right_==285 && left_middle_==199 && right_middle_==335,
+                    "v1 migration, deferred write or geometry mismatch");
+            action(9);
+            const auto recovered=tf_workspace::load_workspace(settings_path_);
+            require(!settings_failed_ && recovered.status==tf_workspace::LoadStatus::valid_v2 &&
+                    tf_workspace::same_layout(recovered.state.layout,state_) &&
+                    recovered.state.bottom.size()==1 && recovered.state.bottom[0].title==L"cmd 1" &&
+                    recovered.state.bottom[0].zoom_percent==125 && tabs_[0].shell->zoom_percent()==125,
+                    "v1 committed save did not produce a complete v2 document");
+            stage_=100; close_all();
+        }
+        return;
+    }
+    if(test_mode_=="ui-workspace-corrupt" || test_mode_=="ui-workspace-future") {
+        const bool future=test_mode_=="ui-workspace-future";
+        if(stage_==0 && active() && active()->ready()) {
+            const auto expected=future?tf_workspace::LoadStatus::unsupported_version:tf_workspace::LoadStatus::corrupt;
+            const auto original=settings_text();
+            require(settings_load_status_==expected && tabs_.size()==1 && tabs_[0].title==L"cmd 1" &&
+                    main_tabs_.empty() && tf_workspace::same_layout(state_,tf_workspace::LayoutState{}),
+                    "corrupt or future configuration did not select the complete default fallback");
+            if(future) {
+                select(0);
+                require(settings_read_only_ && settings_failed_ && settings_error_=="read-only settings" &&
+                        settings_text()==original,"future configuration was overwritten");
+            } else require(!settings_failed_ && settings_text()==original,
+                           "corrupt configuration was overwritten during startup");
+            stage_=100; close_all();
+        }
+        return;
+    }
 
     if(test_mode_=="ui-workspace-save") {
         if(stage_==0 && active() && active()->ready()) {
@@ -99,14 +185,16 @@ inline void Workspace::scenario_workspace() {
             require(SetWindowPos(window_,nullptr,90,60,frame.right-frame.left,frame.bottom-frame.top,
                 SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"workspace save fixture bounds failed");
             layout(); require(width_==1200 && height_==760,"workspace save fixture client mismatch");
-            SendMessageW(window_,WM_EXITSIZEMOVE,0,0);
+            SendMessageW(window_,WM_EXITSIZEMOVE,0,0); stage_=1;
+        } else if(stage_==1 && all_ready()) {
+            for(auto& tab:main_tabs_) tab.shell->begin_output_observation();
             focus_split(false); active()->command(L"echo TF_SAVE_CMD\r");
             focus_split(true); active()->command(L"Write-Output 'TF_SAVE_PS'\r");
-            select(0); stage_=1;
-        } else if(stage_==1 && main_tabs_[0].shell->contains_line("TF_SAVE_CMD") &&
+            select(0); stage_=2;
+        } else if(stage_==2 && main_tabs_[0].shell->contains_line("TF_SAVE_CMD") &&
                   main_tabs_[1].shell->contains_line("TF_SAVE_PS")) {
-            query_sizes(); stage_=2;
-        } else if(stage_==2 && sizes_ready()) {
+            query_sizes(); stage_=3;
+        } else if(stage_==3 && sizes_ready()) {
             focus_split(true); select(0);
             require(focused_==Group::bottom && GetFocus()==tabs_[0].shell->handle() && split_right_focus_,
                     "workspace final bottom focus was not committed");

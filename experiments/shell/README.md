@@ -55,9 +55,9 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 
 在提交的增删/选择/重命名/缩放/分屏、布局拖动、显隐/焦点模式及窗口尺寸移动结束后保存；启动恢复期间抑制写入，关闭时先抓取最终快照再回收子进程，后续异步删除不再覆盖。保存使用同目录独占临时文件与原子替换；写入失败保留旧文件并显示 `Workspace could not be saved`，后续成功保存才清除。只保存固定 shell 工厂类型、必要 WSL distribution、明确目录、标题、正常窗口位置/逻辑客户区、布局、焦点/split 和 zoom；自定义命令行、秘密、环境、历史和进程身份不进入配置。不承诺断电持久性或多进程冲突合并。
 
-已完成单 cmd 及 **cmd + Windows PowerShell 主区分屏** 的真实双进程恢复：两轮覆盖独立目录、Unicode 标题、100%/150%/75% zoom、split 成员/底部焦点和非默认窗口/布局；新进程实际核对 shell 类型/目录/尺寸，配置逐字一致，旧输出不注入新屏幕。模型与 Windows/Ubuntu 检查见[模型结果](results/2026-10-25-workspace-state-v2/validation.json)，单会话见[核心验证](results/2026-10-25-workspace-restore-core/validation.json)，多会话见[双进程验证](results/2026-10-25-workspace-restore-multi/validation.json)。真实 v1/空会话/损坏/未知版本/写失败与最终关闭失败仍待验收，#33 未完成。
+已完成单 cmd 及 **cmd + Windows PowerShell 主区分屏** 的真实双进程恢复：两轮覆盖独立目录、Unicode 标题、100%/150%/75% zoom、split 成员/底部焦点和非默认窗口/布局；新进程实际核对 shell 类型/目录/尺寸，配置逐字一致，旧输出不注入新屏幕。模型与 Windows/Ubuntu 检查见[模型结果](results/2026-10-25-workspace-state-v2/validation.json)，单会话见[核心验证](results/2026-10-25-workspace-restore-core/validation.json)，多会话见[双进程验证](results/2026-10-25-workspace-restore-multi/validation.json)。真实 v1 延迟迁移、有效空会话、损坏默认回退及未知版本不覆盖另见[迁移与回退验证](results/2026-10-25-workspace-recovery-guards/validation.json)；写入失败/成功重试与最终关闭失败仍待验收，#33 未完成。
 
-自动测试仅读写各自结果目录下的 `workspace.layout`，不会读取或修改上述用户配置。
+自动测试仅读写各自结果目录下的 `workspace.layout`，不会读取或修改上述用户配置。恢复场景为 data-only，不生成位图；若等待超时，`persistence-failure.json` 保留有界 PTY 输出和文本屏幕以区分输入与显示问题，内容仅限合成会话。
 
 ## 所有权与调度
 

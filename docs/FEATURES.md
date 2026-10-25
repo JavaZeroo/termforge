@@ -33,7 +33,7 @@
 | 基础窗口操作 | **已验证（有限）**：新建/切换/关闭/重命名、五条分隔线、面板显隐、底部焦点模式 | 完整会话动作/快捷键、命令面板、目标 Focus/SyncInput 行为 | R1 / R4 |
 | 工作区外观 | **部分**：两种逻辑尺寸下部分外框/层级依据直接取证；UI 字体来自独立 OFL 来源，私有加载、实际 GDI face/em/行高与缺失资产失败有自动检查 | 不是像素等价；图标、主题/透明度、多语言及所有状态仍缺。Explorer/Filer/Outline 当前为空区域 | R2 / R3 / R4 |
 | DPI 与文字缩放 | **已验证（有限）**：每会话 50%–200%，受控 96→144→192→96；[字体/显示合同](milestones/R2-font-display.md)明确 12×26 基准网格。两台真实 96-DPI 显示器间往返两次保持窗口、rename 焦点、隐藏标签和网格，[证据](../experiments/shell/results/2026-10-24-r2-monitor-font/validation.json)明确 `distinct_dpi=false`；v2 会话恢复另覆盖 100%/150%/75% zoom | 不同 DPI 的真实跨屏、实际呈现和真实 IME 跨屏仍未验收；恢复证据为同一 96-DPI 私有 desktop，目标字形/逐字形 fallback 未等价 | R2 |
-| 配置与会话持久化 | **部分**：有界 v2 模型、原子替换、损坏分类与 v1 读取；[多会话双进程验证](../experiments/shell/results/2026-10-25-workspace-restore-multi/validation.json)覆盖 cmd、Windows PowerShell、独立目录、Unicode 标题、100%/150%/75% zoom、主区 split、底部焦点和非默认窗口/布局，配置逐字一致。只重建白名单 shell，不恢复原进程/历史 | 真实 v1/空会话/损坏/未知版本/写失败与最终关闭失败验收未完成；偏好、会话分组/搜索与文字标记恢复归后续范围，#33 保持开放 | R2 / R3 / R4 |
+| 配置与会话持久化 | **部分**：有界 v2 模型、原子替换、损坏分类与 v1 读取；[多会话双进程验证](../experiments/shell/results/2026-10-25-workspace-restore-multi/validation.json)覆盖 cmd、Windows PowerShell、独立目录、Unicode 标题、100%/150%/75% zoom、主区 split、底部焦点和非默认窗口/布局，配置逐字一致。[迁移与回退](../experiments/shell/results/2026-10-25-workspace-recovery-guards/validation.json)另验真实 v1 延迟迁移、有效空会话、损坏默认回退及未知版本不覆盖。只重建白名单 shell，不恢复原进程/历史 | 写入失败/成功重试和最终关闭失败验收未完成；偏好、会话分组/搜索与文字标记恢复归后续范围，#33 保持开放 | R2 / R3 / R4 |
 | 文本增强与辅助面板 | **未实现** | 高亮/时间戳/折叠/outline、补全与 Fish 增强、命令历史、Sender/QuickBar、Free Type Mode（输入模式，行为待取证）、vim 本地/远程键位、锁屏、Sysmon | R4 |
 
 ## 远程、文件与协议

@@ -458,6 +458,76 @@ class ShellTests(unittest.TestCase):
             for forbidden in ("\narguments ", "\nhistory ", "\nenvironment ", "\nprocess ", "\npid "):
                 self.assertNotIn(forbidden, first_config)
 
+    def test_workspace_v1_empty_and_invalid_recovery(self):
+        def fields(path):
+            result = {}
+            for line in path.read_text(encoding="utf-8").splitlines():
+                key, value = line.split(maxsplit=1)
+                result[key] = value
+            return result
+
+        for repeat in range(2):
+            legacy = ("TermForge-layout 1\nleft 0.24\nright 0.21\nupper 0.57\n"
+                      "left_top 0.38\nright_top 0.69\nsides 1\nfocus 0\n").encode("ascii")
+            source = self.out / f"workspace-v1-source-{repeat}"
+            source.write_bytes(legacy)
+            out = self.out / f"workspace-v1-{repeat}"
+            execute(self.exe, "ui-workspace-v1", out, settings_source=source)
+            self.assertEqual(source.read_bytes(), legacy)
+            recovered = fields(out / "workspace.layout")
+            self.assertEqual(recovered["TermForge-workspace"], "2")
+            self.assertEqual([float(recovered[key]) for key in ("left", "right", "upper", "left_top", "right_top")],
+                             [.24, .21, .57, .38, .69])
+            self.assertEqual((recovered["sides"], recovered["focus"], recovered["window-width"],
+                              recovered["window-height"], recovered["bottom-count"], recovered["main-count"]),
+                             ("1", "0", "1360", "860", "1", "0"))
+            session = (out / "workspace.layout").read_text(encoding="utf-8").splitlines()[-1].split()
+            self.assertEqual(session[:5], ["session", "bottom", "cmd", "-", "-"])
+            self.assertEqual(bytes.fromhex(session[5]).decode("utf-8"), "cmd 1")
+            self.assertEqual(session[6], "125")
+
+            corrupt_source = self.out / f"workspace-corrupt-source-{repeat}"
+            corrupt_source.write_bytes(b"TermForge-workspace 2\nleft 0.24\n")
+            corrupt = self.out / f"workspace-corrupt-{repeat}"
+            execute(self.exe, "ui-workspace-corrupt", corrupt, settings_source=corrupt_source)
+            fallback = fields(corrupt / "workspace.layout")
+            self.assertEqual(fallback["TermForge-workspace"], "2")
+            self.assertEqual([float(fallback[key]) for key in ("left", "right", "upper", "left_top", "right_top")],
+                             [1 / 6, 1 / 6, 2 / 3, .5, .5])
+            self.assertEqual((fallback["bottom-count"], fallback["main-count"]), ("1", "0"))
+            self.assertNotEqual(float(fallback["left"]), .24)
+            self.assertEqual((corrupt / "workspace.layout").read_text(encoding="utf-8").splitlines()[-1].split()[-1], "100")
+
+            future_source = self.out / f"workspace-future-source-{repeat}"
+            future_source.write_bytes(b"TermForge-workspace 3\n")
+            future = self.out / f"workspace-future-{repeat}"
+            row = execute(self.exe, "ui-workspace-future", future, settings_source=future_source)
+            self.assertTrue(row["result"]["configuration_preserved"])
+            self.assertTrue(row["result"]["settings_save_failed"])
+            self.assertEqual((future / "workspace.layout").read_bytes(), b"TermForge-workspace 3\n")
+            self.assertEqual(list(future.glob("workspace.layout.tmp-*")), [])
+            self.assertEqual(row["job_after"]["active"], 0)
+            self.assertTrue(row["desktop_gone"])
+
+    def test_workspace_v2_empty_session_roundtrip(self):
+        for repeat in range(2):
+            first = self.out / f"workspace-empty-create-{repeat}"
+            second = self.out / f"workspace-empty-restore-{repeat}"
+            execute(self.exe, "ui-workspace-empty-create", first)
+            empty = (first / "workspace.layout").read_text(encoding="utf-8")
+            self.assertTrue(empty.startswith("TermForge-workspace 2\n"))
+            self.assertNotIn("\nsession ", empty)
+            fields = dict(line.split(maxsplit=1) for line in empty.splitlines())
+            self.assertEqual((fields["bottom-count"], fields["main-count"], fields["bottom-active"],
+                              fields["main-active"], fields["main-focused"], fields["split-index"]),
+                             ("0", "0", "-1", "-1", "0", "-1"))
+            row = execute(self.exe, "ui-workspace-empty", second, settings_source=first / "workspace.layout")
+            self.assertEqual(row["result"]["sessions_closed"], 0)
+            self.assertEqual(row["job_after"]["active"], 0)
+            self.assertTrue(row["data_only"])
+            self.assertFalse((second / "frame.bmp").exists())
+            self.assertEqual((second / "workspace.layout").read_text(encoding="utf-8"), empty)
+
     def test_main_and_bottom_sessions_focus_geometry_and_cleanup(self):
         for repeat in range(2):
             out = self.out / f"main-{repeat}"

@@ -28,13 +28,21 @@ from experiments.shell.find_checks import validate_find_workflow, validate_find_
 from experiments.shell.workflow_sessions_checks import validate_workflow_sessions
 
 
-WORKSPACE_DATA_MODES = {"ui-workspace-save", "ui-workspace-restore"}
+WORKSPACE_DATA_MODES = {
+    "ui-workspace-save", "ui-workspace-restore", "ui-workspace-v1", "ui-workspace-empty-create",
+    "ui-workspace-empty", "ui-workspace-corrupt", "ui-workspace-future",
+}
 
 
 def validate(row, mode):
     if mode in WORKSPACE_DATA_MODES:
-        if row != {"valid": True, "mode": mode, "sessions_closed": 3, "active_children_after": 0,
-                   "settings_save_failed": False, "presented_done": None}:
+        closed = 3 if mode in ("ui-workspace-save", "ui-workspace-restore") else 0 if mode == "ui-workspace-empty" else 1
+        expected_failure = mode == "ui-workspace-future"
+        expected = {"valid": True, "mode": mode, "sessions_closed": closed, "active_children_after": 0,
+                    "settings_save_failed": expected_failure, "presented_done": None}
+        if expected_failure:
+            expected["configuration_preserved"] = True
+        if row != expected:
             raise ValueError("workspace persistence, fresh sessions or cleanup failed")
         return
     if mode == "candidate-input-escape":
