@@ -61,6 +61,8 @@ public:
     // Resize can bump Screen's versions without changing any projected text.
     // Refresh only after exact owned-text/span/break comparison. Real writes,
     // cropping and history eviction invalidate the entire range atomically.
+    // An excluded zero-column endpoint may replace its row identity only while
+    // both the saved and live rows have no text or spans.
     bool reconcile(const TextDocument& document) {
         if (!range_) return !invalidated_;
         const auto begin = document.index_of(range_->begin.line_id);
@@ -68,8 +70,11 @@ public:
         for (size_t i = 0; i < saved_.size(); ++i) {
             const auto meta = document.meta(*begin + i);
             auto& saved = saved_[i];
-            if (meta.id != saved.projection.id) return invalidate();
-            if (meta.version != saved.projection.version || meta.joins_next != saved.joins_next) {
+            if (meta.id != saved.projection.id &&
+                (i + 1 != saved_.size() || range_->end.column != 0 ||
+                 !saved.projection.text.empty() || !saved.projection.spans.empty())) return invalidate();
+            if (meta.id != saved.projection.id || meta.version != saved.projection.version ||
+                meta.joins_next != saved.joins_next) {
                 auto current = document.line(*begin + i);
                 // The last row at column zero is an excluded half-open
                 // endpoint. Its own following break is outside the copy.

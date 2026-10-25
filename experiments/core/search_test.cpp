@@ -147,6 +147,28 @@ static void changing_text_and_eviction() {
     check(search.matches().empty(), "interior rewrite clears cross-row match");
     across.screen.resize(3, 2); finish(search, across_doc, search.notify_change(across_doc), 1);
     check(search.matches().empty(), "physical clipping cannot preserve old soft-wrap search match");
+
+    Parser wider(2, 8, 4); wider.feed("needle\r\nother"); const TextDocument wider_doc(wider.screen);
+    finish(search, wider_doc, search.start(wider_doc, "needle"), 1);
+    check(visible_hits(search, wider_doc) == 1, "initial hard-row hit before widening");
+    wider.screen.resize(2, 16); search.notify_change(wider_doc);
+    check(!search.match(wider_doc, 0), "default physical resize invalidates old position versions");
+    finish(search, wider_doc, search.generation(), 1);
+    check(visible_hits(search, wider_doc) == 1, "incremental search refreshes a physically resized hard-row hit");
+
+    Parser moved(3, 8, 2); moved.feed("needle\r\nlast\r\nthird"); const TextDocument moved_doc(moved.screen);
+    finish(search, moved_doc, search.start(moved_doc, "needle"), 1);
+    const auto retained_id = moved.screen.lines[0].id, removed_id = moved.screen.lines[1].id;
+    moved.feed("\x1b[1;1H"); moved.screen.resize(1, 8);
+    moved.screen.resize(2, 8); moved.feed("\x1b[2;1H"); moved.screen.resize(1, 8);
+    search.notify_change(moved_doc);
+    check(moved_doc.index_of(retained_id) == std::optional<size_t>(0) && !moved_doc.index_of(removed_id) &&
+          moved_doc.line(0).projection.text == "needle" && moved_doc.size() == 2,
+          "height clipping removes the successor but retains the target in history");
+    check(search.match(moved_doc, 0) && search.match(moved_doc, 0)->range.begin.line_id == retained_id,
+          "successor removal does not invalidate a retained hard-row hit");
+    finish(search, moved_doc, search.generation(), 1);
+    check(visible_hits(search, moved_doc) == 1, "successor removal retains the audited target hit");
 }
 static void continuous_output_keeps_progress() {
     Parser parser(2, 40, 100); parser.feed("needle stable\r\n");

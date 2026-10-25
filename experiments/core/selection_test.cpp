@@ -119,6 +119,28 @@ static void half_open_endpoint_boundary() {
     check(selection.set(padding,{at(padding,0,0),at(padding,2,1)}),"select a nonzero final column");
     nonzero.feed("\r\n");
     check(!selection.reconcile(padding),"nonzero endpoint is not granted the excluded-zero-column boundary exception");
+    Parser replaced(4,20,4); replaced.feed("ONE\r\nTWO\r\n"); TextDocument replaced_document(replaced.screen);
+    check(selection.set(replaced_document,{at(replaced_document,0,0),at(replaced_document,2,0)}),
+          "select through an empty endpoint before identity replacement");
+    const auto old_endpoint = replaced.screen.lines[2].id;
+    auto imported = replaced.screen.lines; imported[2].id = 0;
+    replaced.screen.normalize_identities(imported); replaced.screen.lines = std::move(imported);
+    const auto new_endpoint = replaced.screen.lines[2].id;
+    check(new_endpoint != old_endpoint && selection.reconcile(replaced_document) &&
+          selection.range()->end.line_id == new_endpoint && selection.copy(replaced_document,100).text == "ONE\r\nTWO\r\n",
+          "a still-empty excluded endpoint can be replaced without changing selected bytes");
+    check(selection.set(replaced_document,{at(replaced_document,0,0),at(replaced_document,2,0)}),
+          "reselect before nonempty endpoint replacement");
+    replaced.feed("\x1b[3;1HX"); imported = replaced.screen.lines; imported[2].id = 0;
+    replaced.screen.normalize_identities(imported); replaced.screen.lines = std::move(imported);
+    check(!selection.reconcile(replaced_document) && selection.empty(),
+          "replacement of an excluded empty endpoint must remain empty");
+    check(selection.set(replaced_document,{at(replaced_document,1,0),at(replaced_document,1,3)}),
+          "select a nonempty endpoint before identity replacement");
+    imported = replaced.screen.lines; imported[1].id = 0;
+    replaced.screen.normalize_identities(imported); replaced.screen.lines = std::move(imported);
+    check(!selection.reconcile(replaced_document) && selection.empty(),
+          "a nonempty endpoint cannot borrow a replacement row identity");
 }
 static void word_line_policy() {
     Parser p(3, 32, 2); p.feed("TF-HISTORY-000  \xe4\xb8\xad\xe6\x96\x87 e\xcc\x81,ok\r\nNEXT  ");

@@ -109,8 +109,7 @@ inline void Workspace::workflow_checkpoint(const char* phase,unsigned cycle,cons
         out<<"],\"visible_lines\":[";
         const auto& view=shell->visible_snapshot();
         for(size_t i=0;i<view.lines.size();++i) {
-            if(i) out<<',';std::string text;for(const auto& cell:view.lines[i]) text+=cell.text;
-            while(!text.empty() && text.back()==' ') text.pop_back();
+            if(i) out<<',';std::string text=termforge::project_line(view.lines[i]).text;
             out<<"{\"id\":"<<view.lines[i].id<<",\"version\":"<<view.lines[i].version<<",\"text\":";termforge::Screen::quoted(out,text);out<<'}';
         }
         const auto current=shell->current_find_range();
@@ -203,7 +202,7 @@ inline void Workspace::scenario_workflow() {
         for(const std::string name:{"F1","F2","F3","F4","F5"}) if(std::filesystem::file_size(gate(name).path.wstring()+L".source.bin")<4096) return;
         backgrounds_running();workflow_checkpoint("load-started");
         SendMessageW(shell->handle(),WM_VSCROLL,SB_TOP,0);
-        const auto top_text=[&] {std::string text;for(const auto& cell:shell->visible_snapshot().lines.front()) text+=cell.text;while(!text.empty() && text.back()==' ') text.pop_back();return text;};
+        const auto top_text=[&] {return termforge::project_line(shell->visible_snapshot().lines.front()).text;};
         for(unsigned i=0;i<200 && top_text()!=u8"TF_R108_A_0110 中文 é";++i) SendMessageW(shell->handle(),WM_VSCROLL,SB_LINEDOWN,0);
         require(top_text()==u8"TF_R108_A_0110 中文 é" && !shell->history_state().following,"workflow could not read retained line110");
         if(workflow_system_) {workflow_operation_arm(1,SB_LINEUP);stage_=301;}

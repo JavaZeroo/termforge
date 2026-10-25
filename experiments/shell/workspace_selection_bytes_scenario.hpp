@@ -41,15 +41,13 @@ inline void Workspace::scenario_selection_bytes() {
         return std::string(std::istreambuf_iterator<char>(in), {});
     };
     const auto line_text = [](const auto& line) {
-        std::string value;
-        for (const auto& cell : line) value += cell.text;
-        while (!value.empty() && value.back() == ' ') value.pop_back();
-        return value;
+        return termforge::project_line(line).text;
     };
     const auto row_of = [&](ShellWindow* shell, const std::string& text, bool prefix = false) {
         const auto& view = shell->visible_snapshot();
         for (size_t row = 0; row < view.lines.size(); ++row) {
-            const auto actual = line_text(view.lines[row]);
+            auto actual = line_text(view.lines[row]);
+            while (!actual.empty() && actual.back() == ' ') actual.pop_back();
             if (prefix ? actual.rfind(text, 0) == 0 : actual == text) return static_cast<int>(row);
         }
         throw std::runtime_error("selection bytes fixture row is not visible: " + text);

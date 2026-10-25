@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "date": "2026-10-26",
+  "scope": "candidate ConPTY resize replay identity, bounded history, Find and selection; not R2 completion",
+  "passed": true,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "build_type": "Release",
+  "adapter_option": "TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON",
+  "candidate": "alacritty_terminal 0.26.1-dev+termforge.2",
+  "rust_toolchain": "1.92.0",
+  "source_identity_note": "Hashes identify raw worktree bytes and local binaries, not an independent source-to-binary proof",
+  "replay_fixture": {
+    "path": "experiments/core/fixtures/conpty-resize-replay.bin",
+    "bytes": 861,
+    "sha256": "2e50f511053a846bb04968321f7cd1f547145b78339096c9b0d2e45e887c6b68",
+    "sections": 4,
+    "dimensions": [[7, 111], [7, 112], [7, 112], [7, 111], [10, 149]],
+    "provenance": "Synthetic TF_FIND lines captured from the original owned non-input-desktop failure; no private session or WindTerm resource"
+  },
+  "baseline": {
+    "symptom": "real ConPTY replay preserved the target text but changed its row identity and invalidated Find and the whole-document selection",
+    "initial_find_id": 1263,
+    "changed_find_id": 1260,
+    "target": "TF_FIND_077 needle 中文 é"
+  },
+  "observed_causes": {
+    "identity_collision": "The original FFI IDs were unique, but replay remapping could collide with another raw row. One snapshot had duplicate IDs across history and visible rows and 197697 retained search metadata rows for an 82-row document.",
+    "history_overwrite": "Growing the viewport first pulled old history into visible rows. The subsequent ConPTY repaint overwrote TF_FIND_072 through TF_FIND_074 with later rows; resize alone did not remove them.",
+    "text_projection": "Concatenating cells exposed a wide-character zero-width spacer as an extra blank. The existing project_line contract produced the expected 29-byte target instead of the 31-byte raw-cell string; assertions now use that projection without dropping explicit styled tail spaces.",
+    "selection_endpoint": "Select All used an excluded zero-column empty endpoint. Only an endpoint that remains empty may acquire a replacement identity; nonempty endpoints and actual text changes still invalidate atomically."
+  },
+  "implemented_contract": {
+    "bounded_replay": "Split cursor hide/show markers are recognized only after resize. Pending snapshots are bounded by 8192 bytes and released on overflow or finish.",
+    "identity": "Only rows whose complete keys are unique and ordered retain ID/version. Final retained IDs are nonzero, unique and strictly increasing; conflicts receive fresh identity/version. Raw FFI IDs and retained identities are tracked separately.",
+    "history": "After a complete replay, prior bounded history is merged by ID and full row key. Actual evictions are not resurrected, and explicit clear does not restore old rows. Empty rows are not blindly matched.",
+    "continuous_sync": "An FFI-ID to retained-ID alias cache avoids a full history key scan on every feed; an unknown old ID can still require full replay matching.",
+    "search": "Find live-validates ID, version, position and projected text. Non-soft physical width or successor-ID changes alone do not invalidate a hit, but adding the first successor introduces an LF and requires a rescan. Metadata remains bounded by the retained document.",
+    "default_core": "The original physical-row clipping and resize-version semantics remain unchanged."
+  },
+  "focused_checks": {
+    "candidate_core": {
+      "passed": true,
+      "coverage": [
+        "whole and bytewise replay with identical target ID, position and projected text",
+        "ordered unique retained identities and duplicate-text negative cases",
+        "live Find after change notification with bounded metadata",
+        "line and whole-document selection bytes including the excluded empty endpoint",
+        "persistent identities across subsequent empty synchronization",
+        "incomplete replay bound, finish release and explicit history clear"
+      ]
+    },
+    "rust_workspace": {"vendor_unit_tests": 142, "root_unit_tests": 6, "doc_tests": 1, "failed": 0},
+    "runtime_observation": {"passed": true},
+    "candidate_shell_tui": {"passed": true, "real_vim_rounds": 2, "real_escape_rounds": 2, "real_vim_alternate_screen_verified": false},
+    "text_actions": {"passed": true},
+    "workflow_sessions": {"passed": true, "background_records_per_role": 32000},
+    "selection_bytes": {"passed": true, "styled_tail_spaces_preserved": true},
+    "selection_context": {"passed": true},
+    "geometry_evidence": {
+      "rounds": 2,
+      "find_id": 95,
+      "stable_find_identity": true,
+      "selection_status": "ok",
+      "dimensions": [[111, 7], [112, 7], [112, 7], [111, 7], [149, 10], [111, 7]],
+      "source": "Synthetic local text/JSONL observations; no screenshots"
+    }
+  },
+  "diagnostic_timing": {
+    "purpose": "targeted diagnosis only, not a performance acceptance or controlled comparison",
+    "before_alias": "One failing role had total_ms=10416.2 and reconcile_ms=10014.7 over 256 synchronizations",
+    "after_alias": "A passing role had total_ms=693.88 and reconcile_ms=37.5384 over 418 synchronizations; a passing two-round workflow completed in 41.06 seconds with diagnostic instrumentation enabled",
+    "note": "Different phases and instrumentation prevent treating these values as a fair percentage improvement"
+  },
+  "windterm_reference": {
+    "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "target_bytes": 13534208,
+    "static_only": true,
+    "selected_functions": 44,
+    "decompilation_completed": 44,
+    "local_evidence": "local/analysis/windterm-resize-history-20261026/",
+    "facts": [
+      "0x140238f90 enters the shrink-only 0x140233a30 path",
+      "the checked growth path calls 0x1402ee110, which allocates and initializes new screen rows rather than consuming scrollback to fill the viewport"
+    ],
+    "limitations": [
+      "Static, selected paths only; no runtime claim for all resize configurations",
+      "Document/Scintilla and all dynamic Qt connections are not covered",
+      "Does not prove that upstream must change or that WindTerm permits dropping the three old rows",
+      "Raw decompilation and assembly remain local and are not published"
+    ]
+  },
+  "source_sha256": {
+    "experiments/core/candidate_terminal.cpp": "b50dfbd3a2cf95e2b2cd46979759b2a776ed142c0e2a932ca1cae4fef235f2a4",
+    "experiments/core/candidate_terminal.hpp": "46d3e6d662a86fd6fdf656c9dfca3c1d04825cc77b57fba6068f3927f95d8459",
+    "experiments/core/candidate_terminal_test.cpp": "b400379d3c969df3ca4714fa37288508e38fd08f2da343ec413d4ff9100fa72d",
+    "experiments/core/screen.hpp": "60dee7105f9cd58611896e5fd83797533d0115a575833d00a16e8ae874d002ed",
+    "experiments/core/search_test.cpp": "42dc6381a827f0621007987cc0c3bc8f0bf35d8b5242e4ee6b2a1928e88bffc5",
+    "experiments/core/selection_test.cpp": "0e74f19801a0e2e7273d2312fb36259487fbfefb180fcc64048ad415cce753a6",
+    "experiments/core/text_search.hpp": "fcc64b96c1f8d39b3a09dc45ffe537e7dc0fd70727b4d46768706ab55467caac",
+    "experiments/core/text_selection.hpp": "7d41d58d434ad3c32ce2f67c043e337277abbbc69e4a7a2b6bdf7e519f9f5462",
+    "experiments/core/fixtures/conpty-resize-replay.bin": "2e50f511053a846bb04968321f7cd1f547145b78339096c9b0d2e45e887c6b68",
+    "experiments/shell/selection_bytes_checks.py": "7e008035ee827ac1e16416c98536c9b1e7ee523bbf1c3acaf68e5c62ea9a9874",
+    "experiments/shell/test_selection_bytes.py": "cf639057c87c9bbca9d81710c29f8c0c7a1fb4c09680fd3304414e059179146a",
+    "experiments/shell/workspace.hpp": "3303e1dcdcd29bcc868965bdc4f534355398bedee70ae97118298fa7b4435c6d",
+    "experiments/shell/workspace_actions_scenario.hpp": "0da18068dffcf702e1c5a3bd7e524660d24a59ca3416dc3ce7167940a85527a0",
+    "experiments/shell/workspace_find_scenario.hpp": "66ac75407793ab01323f1922f1476b482452113d275dd241d6f2fdc279d6f606",
+    "experiments/shell/workspace_selection_bytes_scenario.hpp": "7978988f402eae588dd217b15a479c4c1ca9a49c6834be3bbc6c508f2ae613a6",
+    "experiments/shell/workspace_selection_context_scenario.hpp": "e134f28afe99b199ab141be3f2eabfc4e84f0c2a26c41f5accfe16dd0d36d9a0",
+    "experiments/shell/workspace_selection_scenario.hpp": "b22d768e4c2232790fc274e48650e71b208415459cb8c4f519ed7e34182f7c09",
+    "experiments/shell/workspace_workflow_scenario.hpp": "f8bbc79c3e91037b14697dbb435baf4db866580e51a5a88922b1183086356040",
+    "experiments/shell/workspace_workflow_system.hpp": "de7dd67dd7cef36dfaf4187faf1927ceff8ea141dc8a1ab654e84529de7bd78e"
+  },
+  "binary_sha256": {
+    "build/candidate-adapter/bin/Release/candidate_core_test.exe": "42da3bad9d2b97498c5b180b8065d55dd3020428dab1133f9ca75eb413d2d6e9",
+    "build/candidate-adapter/bin/Release/termforge_shell.exe": "639d06525e68cd44913c7074f020bedee817c7de8949351f117f5f0cb57e99e3",
+    "build/bin/Release/termforge_shell.exe": "a9c6af0a3b341ad584e8d45d9ca7e60819065bf7d3b292d439f4ab4ef4d07d8b"
+  },
+  "commands": [
+    "cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --locked --workspace",
+    "cmake --build build/candidate-adapter --config Release --target candidate_core_test shell_test_launcher",
+    "build/candidate-adapter/bin/Release/candidate_core_test.exe experiments/core/fixtures/conpty-resize-replay.bin",
+    "cmake --build build/candidate-adapter --config Release && ctest --test-dir build/candidate-adapter -C Release --output-on-failure",
+    "cmake --build build --config Release",
+    "ctest --test-dir build -C Release --output-on-failure"
+  ],
+  "full_candidate_ctest": {
+    "completed": true,
+    "elapsed_seconds": 376.89,
+    "passed": false,
+    "passed_tests": 41,
+    "total_tests": 42,
+    "failures": [
+      {"test": "shell", "reason": "five nested failures: issue 36 normal/resize plus close/resize-close stage 2 and workspace restore stage 1; issue 38 remains open"}
+    ]
+  },
+  "default_ctest": {
+    "completed": true,
+    "elapsed_seconds": 306.25,
+    "passed": false,
+    "passed_tests": 39,
+    "total_tests": 40,
+    "failures": [
+      {"test": "shell", "reason": "issue 36 normal/resize continuous-output interruption timeouts; this run's workspace save/restore passed, but issue 38 remains open"}
+    ]
+  },
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "screenshots": false,
+  "foreground_input": false,
+  "private_non_input_desktop": true,
+  "r2_completed": false,
+  "limitations": [
+    "This is a bounded replay/history contract, not complete reflow, all VT modes, all applications or WindTerm equivalence",
+    "Alternate-screen/scroll-region coverage remains limited to separately recorded cases",
+    "Controlled DPI is not distinct physical DPI; private DIB/pixel comparisons are not presented_done",
+    "No performance acceptance is inferred from diagnostic timings or focused workflow completion",
+    "Issue 36 continuous-output interruption and issue 38 intermittent workspace/geometry failures remain independent open work",
+    "Issues 27, 28, 31, 35 and the R2 exit are not closed by this slice"
+  ]
+}

@@ -35,17 +35,20 @@ def expected_multiline(columns: int) -> str:
     return "SOFT_" + "s" * (columns - 7) + "  " + CONT + "\r\n" + HARD
 
 
-def expected_physical_lines(initial_columns: int, current_columns: int, rows: int) -> list[str]:
+def expected_physical_lines(initial_columns: int, current_columns: int, rows: int, fixture_style: str = "plain-v1") -> list[str]:
     """The fixed fixture's ConPTY repaint at the observed current width."""
+    if fixture_style not in ("plain-v1", "styled-tail-v1"):
+        raise ValueError("selection physical-row fixture identity is unknown")
     result = []
     for logical in ("SOFT_" + "s" * (initial_columns - 7) + "  " + CONT, HARD, READY):
         physical, used = "", 0
         for char in logical:
             cells = 0 if char == "\u0301" else 2 if char in "中文" else 1
             if cells and used + cells > current_columns:
-                result.append(physical.rstrip(" ")); physical, used = "", 0
+                result.append(physical if fixture_style == "styled-tail-v1" else physical.rstrip(" "))
+                physical, used = "", 0
             physical += char; used += cells
-        result.append(physical.rstrip(" "))
+        result.append(physical if fixture_style == "styled-tail-v1" else physical.rstrip(" "))
     if len(result) > rows:
         raise ValueError("selection fixture no longer fits its bounded visible page")
     return result + [""] * (rows - len(result))
@@ -131,7 +134,7 @@ def validate_selection_bytes(data: dict, system_clipboard: bool, run_record: dic
             if (not isinstance(lines, list) or len(lines) != session["rows"] or
                     any(not isinstance(line, str) or len(line.encode("utf-8")) > 4096 for line in lines)):
                 raise ValueError("selection bytes visible physical rows are missing or unbounded")
-            if lines != expected_physical_lines(session["initial_columns"], session["columns"], session["rows"]):
+            if lines != expected_physical_lines(session["initial_columns"], session["columns"], session["rows"], fixture_style):
                 raise ValueError("selection bytes fixed fixture physical rows differ after actual ConPTY/DPI repaint")
             if session_index and ((system_clipboard and phase_index < 6 and session.get("product_status") != "Selected text copied") or
                                   (phase == "empty-copy" and session.get("product_status") != "No selected text")):

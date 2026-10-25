@@ -138,6 +138,11 @@ class SelectionBytesOracleTest(unittest.TestCase):
     def test_styled_fixture_requires_new_identity_and_literal_transport_spaces(self):
         data, record = synthetic_contract()
         data.update(schema="termforge-window-selection-bytes-v2", fixture_style="styled-tail-v1")
+        for snapshot in data["snapshots"]:
+            for session in snapshot["sessions"]:
+                session["visible_lines"][:4] = [SOFT, CONT, HARD, READY]
+        self.assertEqual(expected_physical_lines(40, 40, 8, "styled-tail-v1"),
+                         [SOFT, CONT, HARD, READY, "", "", "", ""])
         self.assertEqual(intended_output(40, "styled-tail-v1"), STYLED_PAYLOAD)
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)

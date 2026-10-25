@@ -43,7 +43,7 @@ inline void Workspace::scenario_actions() {
         require(std::filesystem::file_size(path)<=16384,"actions raw capture bound exceeded");
         std::ifstream in(path,std::ios::binary); require(bool(in),"actions raw capture missing"); return std::string(std::istreambuf_iterator<char>(in),{});
     };
-    const auto line=[](const auto& row) { std::string text; for(const auto& cell:row) text+=cell.text; while(!text.empty() && text.back()==' ') text.pop_back(); return text; };
+    const auto line=[](const auto& row) { return termforge::project_line(row).text; };
     const auto transition=[&](int dpi) {
         RECT next{0,0,MulDiv(1360,dpi,96),MulDiv(860,dpi,96)}; const UINT os_dpi=GetDpiForWindow(window_);
         require(os_dpi && AdjustWindowRectExForDpi(&next,WS_OVERLAPPEDWINDOW,FALSE,0,os_dpi),"actions controlled DPI frame calculation failed");

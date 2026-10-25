@@ -130,6 +130,22 @@ public:
         const auto index = lower_bound_line(identity);
         return index < retained_size() && retained_line(index).id == identity ? &retained_line(index) : nullptr;
     }
+    // Imported rows retain ordered unique identities; conflicts get a fresh identity and version.
+    void normalize_identities(std::vector<Line>& retained) {
+        uint64_t maximum = next_id_ - 1;
+        for (const auto& line : retained) maximum = (std::max)(maximum, line.id);
+        uint64_t previous = 0;
+        for (auto& line : retained) {
+            if (!line.id || line.id <= previous) {
+                if (maximum == (std::numeric_limits<uint64_t>::max)())
+                    throw std::overflow_error("screen line identities exhausted");
+                line.id = ++maximum;
+                line.version = 1;
+            }
+            previous = line.id;
+        }
+        next_id_ = maximum == (std::numeric_limits<uint64_t>::max)() ? maximum : maximum + 1;
+    }
     // Physical-row policy: no reflow, no pulling old history into the viewport.
     // Prepare copies first so invalid sizes/allocation failure leave state intact.
     void resize(int rows, int columns) {

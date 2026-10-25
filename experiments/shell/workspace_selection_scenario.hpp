@@ -29,9 +29,7 @@ inline void Workspace::scenario_selection() {
     static bool owner_before=false, owner_at_error=false, copy_error_visible=false;
     if(restore_keys) { require(SetKeyboardState(saved_keys.data())!=FALSE,"selection keyboard state restoration failed"); restore_keys=false; }
     const auto line_text=[](const auto& line) {
-        std::string value; for(const auto& cell:line) value+=cell.text;
-        while(!value.empty() && value.back()==' ') value.pop_back();
-        return value;
+        return termforge::project_line(line).text;
     };
     const auto row_of=[&](ShellWindow* shell,const std::string& text) {
         const auto& view=shell->visible_snapshot();

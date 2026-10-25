@@ -99,8 +99,13 @@ class TextSearch {
     }
     bool row_valid(const TextDocument& doc, const DocumentLineMetadata& expected, uint64_t successor_id) const {
         const auto index = doc.index_of(expected.id);
-        return index && same(doc.meta(*index), expected) &&
-               (*index + 1 < doc.size() ? doc.meta(*index + 1).id : 0) == successor_id;
+        if (!index) return false;
+        const auto current = doc.meta(*index);
+        if (!expected.joins_next)
+            return current.id == expected.id && current.version == expected.version &&
+                current.joins_next == expected.joins_next && current.ending == expected.ending &&
+                (successor_id != 0 || *index + 1 == doc.size());
+        return same(current, expected) && *index + 1 < doc.size() && doc.meta(*index + 1).id == successor_id;
     }
     // Re-read enough preceding text to reconstruct matches crossing the changed
     // row. Keep metadata, not a full text copy or query-sized per-row snapshots.

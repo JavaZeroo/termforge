@@ -1,9 +1,11 @@
 #pragma once
 #include "screen.hpp"
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 namespace termforge {
@@ -17,7 +19,18 @@ class CandidateTerminal {
     uint64_t mode_bits_ = 0;
     std::unordered_map<uint64_t, uint64_t> versions_;
     std::vector<CandidateEvent> events_;
+    struct IdentityAlias { uint64_t id = 0, version = 0; };
+    std::unordered_map<uint64_t, IdentityAlias> identity_aliases_;
+    std::unique_ptr<Screen> replay_origin_;
+    std::string replay_tail_;
+    size_t replay_bytes_ = 0;
+    bool replay_pending_ = false, replay_hide_ = false, replay_show_ = false;
+    bool preserve_history_ = false;
 
+    void begin_replay();
+    void scan_replay(std::string_view bytes);
+    std::unordered_set<uint64_t> reconcile_replay(std::vector<Line>& retained);
+    void merge_history(std::vector<Line>& retained, std::vector<uint64_t>& original_ids, size_t& history, uint64_t& discarded);
     void synchronize();
     static void check(int status, const char* message);
 

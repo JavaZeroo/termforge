@@ -16,7 +16,7 @@ An independent, fully open-source terminal project targeting WindTerm 2.7.0 feat
 - `F2` 重命名当前区域标签，`F11` 扩大底部 Shell；五条分隔线可拖动。
 - `Ctrl++` / `Ctrl+-` 调整当前会话文字大小，`Ctrl+0` 恢复 100%，范围 50%–200%。
 
-完整操作、自动验证与限制见[本地 shell 说明](experiments/shell/README.md)。当前 resize 按物理行裁剪，无 reflow；受控 DPI 测试不等于实际跨显示器验证。
+完整操作、自动验证与限制见[本地 shell 说明](experiments/shell/README.md)。默认核心 resize 按物理行裁剪，无 reflow；显式候选构建采用独立的 [resize 与历史合同](experiments/core/CANDIDATE.md)。受控 DPI 测试不等于实际跨显示器验证。
 
 ## 项目地图
 

@@ -21,7 +21,7 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 - C++ 同步历史/可见行、稳定 ID、逐行版本、样式、光标、软硬换行、next_id/wrap_columns 和实际淘汰数。普通 reset 保留 ID，滚动复用行更新 ID；初始 Storage 方向也显式检查。
 - 普通空单元格保留一个可绘制背景格，只有宽字符 spacer 是零宽。未写格与显式空格的语义仍受上游 `is_empty` 限制，不能由当前投影裁决；真彩色等非 16 色样式仍为 `-2`。
 - 不走 JSON。Rust/C++ 文本由调用方拥有，未做增量 FFI 或性能验收；候选 damage 的产品化仍属后续。
-- `screen.resize` 与候选 `Term::resize` 同步尺寸，但 reflow 合同归 #29；独立测试不替代最终 resize 策略裁决。真实 ConPTY 多次重放已使未换行内容的 ID 改变并令 Find/选区失效，原始字节和复现见 [#29 证据](https://github.com/JavaZeroo/termforge/issues/29#issuecomment-6395700469)；不能将固定小尺寸 resize 或 headless ID 检查当作该合同已通过。
+- `screen.resize` 与候选 `Term::resize` 同步尺寸；默认自研回退继续采用 ADR-0005 的物理行裁剪，候选不把它称为完整 reflow。真实 ConPTY 重放可能先由上游把历史拉入可见区再覆盖，候选在完整重放后合并有界历史，按 ID 和完整行键去重，保留 Find/选区所需的稳定身份，且不让冲突产生重复 ID。连续同步缓存原始 FFI ID 与最终身份的映射，仅在需要重放的未知旧 ID 时回退到完整键匹配，不重复扫描全部历史。真实淘汰不恢复，显式清空不复活；普通空白行、未决 reflow、备用屏/滚动区全语义不在此保证内。合同与验证见 [resize/历史记录](results/2026-10-26-resize-replay/validation.json)。
 
 ## 真实产品场景
 
@@ -31,6 +31,6 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 
 ## 当前验证与限制
 
-`candidate_core_test` 覆盖 whole/逐字节、Unicode/组合标记、备用屏恢复、真实光标回复、空载荷事件、稳定 ID/版本/淘汰、选择/搜索/HistoryViewport、软硬换行、滚动区、ED1/ED2、resize 和错误参数。证据见 [validation](results/2026-10-25-candidate-adapter/validation.json)。
+`candidate_core_test` 覆盖 whole/逐字节、Unicode/组合标记、备用屏恢复、真实光标回复、空载荷事件、稳定 ID/版本/淘汰、选择/搜索/HistoryViewport、软硬换行、滚动区、ED1/ED2、resize 和错误参数。新增真实 ConPTY 重放的唯一行身份、Find 增量收敛、整篇/局部选区、连续同步、历史合并/清空及超限释放检查。证据见[适配验证](results/2026-10-25-candidate-adapter/validation.json)和[resize/历史验证](results/2026-10-26-resize-replay/validation.json)。
 
-候选整合不表示 #27 已关闭：完整候选 CTest 自然结束为 37/42，其中 #33 的独立 `workspace_state` 模型测试通过；`text_actions`、`workflow_sessions`、`selection_bytes`、`selection_context` 有行身份/保真失败，`shell` 也超时，不能只归因于 #36。#28 的更多真实 TUI、#29 的 resize/重放身份合同、#37 的 Windows CI 捕获和最终呈现/性能验收均保持独立开放。
+候选整合不表示 #27 已关闭；#29 的限定 resize/历史实现与证据不表示完整 R1 或 R2 已通过。完整 CTest 及 #36/#38 的原始失败在新记录同步；#28 的更多真实 TUI、#31 的 DPI/呈现、#35 的交付和性能验收保持开放。#37 的独立 Windows CI 验收已通过。

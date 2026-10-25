@@ -16,8 +16,7 @@ inline void Workspace::scenario_find() {
     auto* bottom = tabs_.front().shell.get(); auto* main = selected(Group::main);
     const auto directory = std::filesystem::path(image_).parent_path();
     const auto line_text = [](const auto& row) {
-        std::string text; for (const auto& cell : row) text += cell.text;
-        while (!text.empty() && text.back() == ' ') text.pop_back(); return text;
+        return termforge::project_line(row).text;
     };
     const auto fixture_line = [](unsigned number) {
         std::ostringstream out; out << "TF_FIND_" << std::setw(3) << std::setfill('0') << number << " needle 中文 e\xcc\x81";
@@ -207,8 +206,7 @@ inline void Workspace::scenario_find_stream() {
     static std::array<BYTE,256> saved_keys{}; static bool restore_keys=false, cancel_baseline=false;
     static uint64_t cancelled_tail_id=0; static HWND closing_find=nullptr, closing_terminal=nullptr;
     if(restore_keys) { require(SetKeyboardState(saved_keys.data()),"stream keyboard state restore failed"); restore_keys=false; }
-    const auto text=[](const auto& row) { std::string result; for(const auto& cell:row) result+=cell.text;
-        while(!result.empty() && result.back()==' ') result.pop_back(); return result; };
+    const auto text=[](const auto& row) { return termforge::project_line(row).text; };
     const auto capture=[&](const char* name) { const auto path=directory/name;
         if(!std::filesystem::exists(path)) return std::string{};
         require(std::filesystem::file_size(path)<=4096,"stream raw capture exceeded diagnostic bound");

@@ -1,5 +1,6 @@
 // Independent workspace. Measurements: docs/research/windterm-ui-2026-10-23.md.
 #pragma once
+#include "../core/text_projection.hpp"
 #include "menu_gesture.hpp"
 #include <cmath>
 #include "workspace_state.hpp"

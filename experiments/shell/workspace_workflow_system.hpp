@@ -21,8 +21,7 @@ inline void Workspace::workflow_system_event(const std::string& kind,const std::
 inline std::string Workspace::workflow_operation_top() {
     auto* target=workflow_shell("A");const auto& view=target->visible_snapshot();
     require(!view.lines.empty(),"workflow operation has no actual viewport");
-    const auto& line=view.lines.front();std::string text;for(const auto& cell:line) text+=cell.text;
-    while(!text.empty() && text.back()==' ') text.pop_back();
+    const auto& line=view.lines.front();std::string text=termforge::project_line(line).text;
     std::ostringstream out;out<<"{\"published_revision\":"<<target->runtime_snapshot().published_revision
         <<",\"top_line\":{\"id\":"<<line.id<<",\"version\":"<<line.version<<",\"text\":"<<tf_shell_test::ime_quote(text)<<"}}";return out.str();
 }

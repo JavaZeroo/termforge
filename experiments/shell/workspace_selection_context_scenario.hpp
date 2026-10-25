@@ -32,9 +32,7 @@ inline void Workspace::scenario_selection_context() {
     if (stage_ >= 12 && b) save(directory / "selection-context-overwrite.transport.bin",b->observed_output());
     require(ms(started_) < 30000, "selection context scenario exceeded its bounded deadline");
     const auto line_text = [](const auto& line) {
-        std::string value; for (const auto& cell : line) value += cell.text;
-        while (!value.empty() && value.back() == ' ') value.pop_back();
-        return value;
+        return termforge::project_line(line).text;
     };
     const auto fixture_line = [](unsigned number) {
         std::ostringstream out; out << "TF_FIND_" << std::setw(3) << std::setfill('0') << number << " needle 中文 e\xcc\x81";
