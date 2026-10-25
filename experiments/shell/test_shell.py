@@ -1,6 +1,7 @@
 """Real shell messages/output/frame/lifecycle regression; all windows are owned."""
 import copy
 import ctypes
+from ctypes import wintypes
 import json
 import os
 from pathlib import Path
@@ -19,6 +20,102 @@ from experiments.shell.clipboard_checks import require_hosted_clipboard, validat
 from experiments.shell.selection_checks import validate_selection, validate_selection_workflow, _validate_copy_popup, _validate_copy_contention
 from experiments.shell.find_checks import (validate_find, validate_find_workflow,
                                            validate_find_stream, validate_find_stream_workflow)
+
+
+def synthetic_main_geometry(initial, resized):
+    snapshots = []
+    for phase, (width, height), empty in zip(
+            ("empty-1360", "session-1360", "session-2048"), (initial, initial, resized), (True, False, False)):
+        side = int((width - 2) / 6 + 0.5)
+        left, right = side + 1, width - side - 1
+        upper = int((max(100, height - 90) - 1) * (2 / 3) + 0.5)
+        toolbar_top = 52 if empty else 59
+        toolbar_height = 36 if empty else 34
+        terminal_top = toolbar_top + toolbar_height
+        terminal = [left, terminal_top, right - left, upper + 33 - terminal_top]
+        snapshots.append(dict(
+            phase=phase, dpi=96, client_pixels=[width, height], window=[width, height],
+            main_group=[left, 33, right - left, toolbar_top - 33],
+            main_toolbar=[left, toolbar_top, right - left, toolbar_height],
+            main_address=[left + 103, toolbar_top + 4, right - left - 133, toolbar_height - 8],
+            main_terminal=terminal, main_child=None if empty else terminal.copy(),
+            shell_terminal=[0, upper + 84, width, max(upper + 110, height - 57) - upper - 84]))
+    return {"ui_font_family": "Roboto Mono", "snapshots": snapshots}
+
+
+def narrow_workspace_fixture():
+    return ("TermForge-workspace 2\n"
+            "left 0.16666666666666666\nright 0.16666666666666666\n"
+            "upper 0.66666666666666663\nleft_top 0.5\nright_top 0.5\n"
+            "sides 1\nfocus 0\nwindow 0\nwindow-y 0\nwindow-width 1008\nwindow-height 681\n"
+            "main-focused 0\nbottom-active 0\nmain-active -1\nsplit-index -1\n"
+            "split-active 0\nsplit-right-focus 0\nbottom-count 1\nmain-count 0\n"
+            "session bottom cmd - - 636d642031 100\n").encode("ascii")
+
+
+def validate_workspace_geometry(data, requested, *, restoring, origin=(0, 0)):
+    if not isinstance(data, dict) or data.get("schema") != "termforge-workspace-restore-v1":
+        raise ValueError("workspace geometry identity mismatch")
+    dpi = data.get("dpi")
+    if type(dpi) is not int or dpi <= 0:
+        raise ValueError("workspace geometry requires actual DPI")
+    api = ctypes.WinDLL("user32", use_last_error=True)
+    api.AdjustWindowRectExForDpi.argtypes = [ctypes.POINTER(wintypes.RECT), wintypes.DWORD,
+                                               wintypes.BOOL, wintypes.DWORD, wintypes.DWORD]
+    api.AdjustWindowRectExForDpi.restype = wintypes.BOOL
+    physical = lambda value: (value * dpi + 48) // 96
+    logical = lambda value: (value * 96 + dpi // 2) // dpi
+    client_width, client_height = (physical(value) for value in requested)
+    frame = wintypes.RECT(0, 0, client_width, client_height)
+    if not api.AdjustWindowRectExForDpi(ctypes.byref(frame), 0x00CF0000, False, 0, dpi):
+        raise ctypes.WinError(ctypes.get_last_error())
+    frame_width, frame_height = frame.right - frame.left, frame.bottom - frame.top
+    x, y = origin
+    desired = wintypes.RECT(x, y, x + frame_width, y + frame_height)
+    expected_window = [x, y, frame_width, frame_height]
+    if restoring:
+        api.MonitorFromRect.argtypes = [ctypes.POINTER(wintypes.RECT), wintypes.DWORD]
+        api.MonitorFromRect.restype = wintypes.HWND
+        monitor = api.MonitorFromRect(ctypes.byref(desired), 2)
+        if not monitor:
+            raise ValueError("workspace monitor query failed")
+        class MonitorInfo(ctypes.Structure):
+            _fields_ = [("size", wintypes.DWORD), ("monitor", wintypes.RECT),
+                        ("work", wintypes.RECT), ("flags", wintypes.DWORD)]
+        api.GetMonitorInfoW.argtypes = [wintypes.HWND, ctypes.POINTER(MonitorInfo)]
+        api.GetMonitorInfoW.restype = wintypes.BOOL
+        info = MonitorInfo(ctypes.sizeof(MonitorInfo))
+        if not api.GetMonitorInfoW(monitor, ctypes.byref(info)):
+            raise ctypes.WinError(ctypes.get_last_error())
+        work = info.work
+        outer_width = min(frame_width, work.right - work.left)
+        outer_height = min(frame_height, work.bottom - work.top)
+        x = max(work.left, min(x, max(work.left, work.right - outer_width)))
+        y = max(work.top, min(y, max(work.top, work.bottom - outer_height)))
+        expected_window = [x, y, outer_width, outer_height]
+    actual_width = expected_window[2] - (frame_width - client_width)
+    actual_height = expected_window[3] - (frame_height - client_height)
+    if data.get("window") != expected_window or data.get("client") != [actual_width, actual_height]:
+        raise ValueError(f"workspace native bounds mismatch: {data.get('window')} {data.get('client')} "
+                         f"expected {expected_window} {[actual_width, actual_height]}")
+    return [logical(x), logical(y), logical(actual_width), logical(actual_height)]
+
+
+class MainGeometryOracleTest(unittest.TestCase):
+    def test_actual_client_bounds_drive_geometry(self):
+        for initial, resized in (((1008, 681), (1008, 681)), ((1360, 860), (2048, 1120))):
+            with self.subTest(initial=initial, resized=resized):
+                validate_main_geometry(synthetic_main_geometry(initial, resized))
+        data = synthetic_main_geometry((1360, 860), (2048, 1120))
+        for phase, field in ((0, "main_group"), (1, "main_child"), (2, "client_pixels"), (0, "dpi")):
+            with self.subTest(corruption=(phase, field)):
+                changed = copy.deepcopy(data)
+                if field == "dpi":
+                    del changed["snapshots"][phase][field]
+                else:
+                    changed["snapshots"][phase][field][0] += 1
+                with self.assertRaises(ValueError):
+                    validate_main_geometry(changed)
 
 
 @unittest.skipUnless(os.name == "nt", "ConPTY shell requires Windows")
@@ -358,38 +455,62 @@ class ShellTests(unittest.TestCase):
         self.assertIn(b"invalid shell test mode", result.stderr)
 
     def test_workspace_sessions_resize_and_cleanup(self):
-        for repeat in range(2):
-            row = execute(self.exe, "ui", self.out / f"ui-{repeat}")["result"]
+        narrow = self.out / "narrow-workspace.layout"
+        narrow.write_bytes(narrow_workspace_fixture())
+        for repeat in range(3):
+            row = execute(self.exe, "ui", self.out / f"ui-{repeat}",
+                          settings_source=narrow if repeat == 2 else None)["result"]
             for field, wrong in (("isolation_verified", False), ("resize_verified", False),
                                  ("sessions_closed", 1), ("active_children_after", 1)):
                 broken = copy.deepcopy(row); broken[field] = wrong
                 with self.subTest(field=field), self.assertRaises(ValueError):
                     validate(broken, "ui")
-            data = (self.out / f"ui-{repeat}" / "frame.bmp").read_bytes()
+            out = self.out / f"ui-{repeat}"
+            geometry = json.loads((out / "restore-geometry.json").read_text(encoding="utf-8"))
+            data = (out / "frame.bmp").read_bytes()
             offset = struct.unpack_from("<I", data, 10)[0]
-            self.assertEqual(struct.unpack_from("<ii", data, 18), (1360, -860))
-            # Independently recorded reference coordinates, not values read from
-            # workspace layout code. Check separators, pane header and active tab.
-            for x, y, rgb in ((226, 100, (68, 68, 68)), (1133, 100, (68, 68, 68)),
-                              (500, 546, (68, 68, 68)), (500, 548, (51, 51, 51)),
-                              (10, 596, (0, 122, 204)), (500, 832, (38, 38, 38))):
-                b, g, r = data[offset + (y * 1360 + x) * 4:][:3]
+            width, height = struct.unpack_from("<ii", data, 18)
+            self.assertLess(height, 0)
+            width, height = width, -height
+            self.assertEqual([width, height], geometry["client"])
+            self.assertEqual(geometry["ratios"], [1 / 6, 1 / 6, 2 / 3, .5, .5])
+            self.assertTrue(geometry["sides"])
+            self.assertFalse(geometry["focus_mode"])
+            dpi = geometry["dpi"]
+            self.assertGreater(dpi, 0)
+            physical = lambda value: (value * dpi + 48) // 96
+            logical = lambda value: (value * 96 + dpi // 2) // dpi
+            logical_width, logical_height = logical(width), logical(height)
+            left = int((logical_width - 2) / 6 + 0.5)
+            center_right = logical_width - left - 1
+            upper = int((max(100, logical_height - 90) - 1) * (2 / 3) + 0.5)
+            points = ((physical(left), physical(100), (68, 68, 68)),
+                      (physical(center_right), physical(100), (68, 68, 68)),
+                      (physical(500), physical(33 + upper), (68, 68, 68)),
+                      (physical(500), physical(35 + upper), (51, 51, 51)),
+                      (physical(10), physical(upper + 83), (0, 122, 204)),
+                      (physical(500), physical(logical_height - 28), (38, 38, 38)))
+            self.assertGreaterEqual(offset, 54)
+            self.assertLessEqual(offset + width * height * 4, len(data))
+            for x, y, rgb in points:
+                self.assertTrue(0 <= x < width and 0 <= y < height)
+                b, g, r = data[offset + (y * width + x) * 4:][:3]
                 self.assertEqual((r, g, b), rgb, (x, y))
 
     def test_workspace_rename_drag_and_fresh_process_restore(self):
-        for repeat in range(2):
+        narrow = self.out / "narrow-edit-workspace.layout"
+        narrow.write_bytes(narrow_workspace_fixture())
+        for repeat in range(3):
             first = self.out / f"edit-{repeat}"
-            execute(self.exe, "ui-edit", first)
+            execute(self.exe, "ui-edit", first, settings_source=narrow if repeat == 2 else None)
             execute(self.exe, "ui-restore", self.out / f"restore-{repeat}",
                     settings_source=first / "workspace.layout")
 
     def test_workspace_v2_multiple_shells_split_and_geometry_restore(self):
-        def check_geometry(data):
-            self.assertEqual(data["schema"], "termforge-workspace-restore-v1")
-            self.assertGreater(data["dpi"], 0)
-            physical = lambda value: (value * data["dpi"] + 48) // 96
-            self.assertEqual(data["client"], [physical(1200), physical(760)])
-            self.assertEqual(data["window"][:2], [90, 60])
+        def check_geometry(data, requested=(1200, 760), restoring=False):
+            bounds = validate_workspace_geometry(data, requested, restoring=restoring, origin=(90, 60))
+            if not restoring:
+                self.assertEqual(data["window"][:2], [90, 60])
             self.assertEqual(data["ratios"], [.24, .21, .57, .38, .69])
             self.assertFalse(data["sides"])
             self.assertFalse(data["focus_mode"])
@@ -410,6 +531,7 @@ class ShellTests(unittest.TestCase):
                 self.assertTrue(all(value > 0 for value in tab["grid"] + tab["cell"]))
             self.assertEqual(data["tabs"][1]["rect"][0] + data["tabs"][1]["rect"][2],
                              data["tabs"][2]["rect"][0])
+            return bounds
 
         for repeat in range(2):
             first = self.out / f"workspace-v2-save-{repeat}"
@@ -417,16 +539,31 @@ class ShellTests(unittest.TestCase):
             first_row = execute(self.exe, "ui-workspace-save", first)
             second_row = execute(self.exe, "ui-workspace-restore", second,
                                  settings_source=first / "workspace.layout")
-            for row, out in ((first_row, first), (second_row, second)):
+            expected_bounds = []
+            for row, out, restoring in ((first_row, first, False), (second_row, second, True)):
                 self.assertNotIn("frame_sha256", row)
                 self.assertFalse((out / "frame.bmp").exists())
                 self.assertEqual(row["job_after"]["active"], 0)
                 self.assertTrue(row["desktop_gone"])
-                check_geometry(json.loads((out / "restore-geometry.json").read_text(encoding="utf-8")))
-            self.assertEqual(json.loads((first / "restore-geometry.json").read_text(encoding="utf-8")),
-                             json.loads((second / "restore-geometry.json").read_text(encoding="utf-8")))
+                expected_bounds.append(check_geometry(
+                    json.loads((out / "restore-geometry.json").read_text(encoding="utf-8")), restoring=restoring))
+            first_bounds, second_bounds = expected_bounds
+            first_geometry = json.loads((first / "restore-geometry.json").read_text(encoding="utf-8"))
+            second_geometry = json.loads((second / "restore-geometry.json").read_text(encoding="utf-8"))
+            invariant = lambda data: {key:value for key, value in data.items() if key not in ("window", "client", "tabs")}
+            self.assertEqual(invariant(first_geometry), invariant(second_geometry))
+            tab_identity = lambda data: [{key:tab[key] for key in ("group", "kind", "title", "zoom")} for tab in data["tabs"]]
+            self.assertEqual(tab_identity(first_geometry), tab_identity(second_geometry))
+            if first_bounds == second_bounds:
+                self.assertEqual(first_geometry, second_geometry)
             first_config = (first / "workspace.layout").read_text(encoding="utf-8")
-            self.assertEqual(first_config, (second / "workspace.layout").read_text(encoding="utf-8"))
+            second_config = (second / "workspace.layout").read_text(encoding="utf-8")
+            bounds_names = {"window", "window-y", "window-width", "window-height"}
+            without_bounds = lambda text: [line for line in text.splitlines() if line.split()[0] not in bounds_names]
+            self.assertEqual(without_bounds(first_config), without_bounds(second_config))
+            second_fields = dict(line.split(maxsplit=1) for line in second_config.splitlines())
+            for key, expected_value in zip(("window", "window-y", "window-width", "window-height"), second_bounds):
+                self.assertEqual(second_fields[key], str(expected_value))
             rows = [line.split() for line in first_config.splitlines()]
             self.assertEqual(rows[0], ["TermForge-workspace", "2"])
             self.assertEqual([row[0] for row in rows[:20]],
@@ -457,6 +594,19 @@ class ShellTests(unittest.TestCase):
                 self.assertEqual(row[6], zoom)
             for forbidden in ("\narguments ", "\nhistory ", "\nenvironment ", "\nprocess ", "\npid "):
                 self.assertNotIn(forbidden, first_config)
+            clamped_source = self.out / f"workspace-v2-clamped-source-{repeat}"
+            clamped_source.write_bytes(first_config.replace("window-width 1200\n", "window-width 65535\n").encode("utf-8"))
+            self.assertNotEqual(clamped_source.read_bytes(), first_config.encode("utf-8"))
+            clamped = self.out / f"workspace-v2-clamped-{repeat}"
+            execute(self.exe, "ui-workspace-restore", clamped, settings_source=clamped_source)
+            clamped_bounds = check_geometry(json.loads((clamped / "restore-geometry.json").read_text(encoding="utf-8")),
+                                           (65535, 760), restoring=True)
+            self.assertLess(clamped_bounds[2], 65535)
+            clamped_config = (clamped / "workspace.layout").read_text(encoding="utf-8")
+            self.assertEqual(without_bounds(clamped_config), without_bounds(first_config))
+            clamped_fields = dict(line.split(maxsplit=1) for line in clamped_config.splitlines())
+            for key, expected_value in zip(("window", "window-y", "window-width", "window-height"), clamped_bounds):
+                self.assertEqual(clamped_fields[key], str(expected_value))
 
     def test_workspace_v1_empty_and_invalid_recovery(self):
         def fields(path):
@@ -478,9 +628,12 @@ class ShellTests(unittest.TestCase):
             self.assertEqual(recovered["TermForge-workspace"], "2")
             self.assertEqual([float(recovered[key]) for key in ("left", "right", "upper", "left_top", "right_top")],
                              [.24, .21, .57, .38, .69])
-            self.assertEqual((recovered["sides"], recovered["focus"], recovered["window-width"],
-                              recovered["window-height"], recovered["bottom-count"], recovered["main-count"]),
-                             ("1", "0", "1360", "860", "1", "0"))
+            native = json.loads((out / "restore-geometry.json").read_text(encoding="utf-8"))
+            bounds = validate_workspace_geometry(native, (1360, 860), restoring=True)
+            for key, expected_value in zip(("window", "window-y", "window-width", "window-height"), bounds):
+                self.assertEqual(recovered[key], str(expected_value))
+            self.assertEqual((recovered["sides"], recovered["focus"], recovered["bottom-count"], recovered["main-count"]),
+                             ("1", "0", "1", "0"))
             session = (out / "workspace.layout").read_text(encoding="utf-8").splitlines()[-1].split()
             self.assertEqual(session[:5], ["session", "bottom", "cmd", "-", "-"])
             self.assertEqual(bytes.fromhex(session[5]).decode("utf-8"), "cmd 1")
@@ -564,9 +717,11 @@ class ShellTests(unittest.TestCase):
             self.assertTrue(row["desktop_gone"])
 
     def test_main_and_bottom_sessions_focus_geometry_and_cleanup(self):
-        for repeat in range(2):
+        narrow = self.out / "narrow-main-workspace.layout"
+        narrow.write_bytes(narrow_workspace_fixture())
+        for repeat in range(3):
             out = self.out / f"main-{repeat}"
-            row = execute(self.exe, "ui-main", out)["result"]
+            row = execute(self.exe, "ui-main", out, settings_source=narrow if repeat == 2 else None)["result"]
             for field, wrong in (("main_sessions_verified", False), ("focus_verified", False),
                                  ("geometry_verified", False), ("sessions_closed", 3),
                                  ("ui_font_family", "Consolas"), ("presented_done", 1)):

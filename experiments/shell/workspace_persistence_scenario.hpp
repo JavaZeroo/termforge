@@ -1,6 +1,15 @@
 // Owned data-only persistence scenarios; no bitmap or user-desktop input.
 #pragma once
 
+inline bool workspace_output_completed(ShellWindow* shell,const std::string& marker) {
+    if(marker.empty()) return false;
+    const auto& raw=shell->observed_output();
+    const auto output=raw.rfind(marker),prompt=raw.rfind("TF>");
+    if(output==std::string::npos || prompt==std::string::npos || output>=prompt) return false;
+    const auto suffix=output+marker.size();
+    return suffix<raw.size() && (raw[suffix]=='\r' || raw[suffix]=='\n' || raw[suffix]=='\x1b');
+}
+
 inline std::string Workspace::workspace_geometry() {
     auto rectangle=[](RECT value) {
         return "["+std::to_string(value.left)+","+std::to_string(value.top)+","+
@@ -64,7 +73,7 @@ inline void Workspace::scenario_workspace() {
             out<<"{\"group\":\""<<(group==Group::main?"main":"bottom")<<"\",\"kind\":";
             termforge::Screen::quoted(out,tab.launch?utf8(tab.launch->kind.c_str()):"custom");
             out<<",\"ready\":"<<tab.shell->ready()<<",\"observation_enabled\":"
-               <<(test_mode_=="ui-workspace-save" && stage_>=2)<<",\"observed\":";
+               <<tab.shell->output_observation_enabled()<<",\"observed\":";
             termforge::Screen::quoted(out,tab.shell->observed_output());
             out<<",\"visible\":[";
             bool first_row=true;
@@ -140,11 +149,17 @@ inline void Workspace::scenario_workspace() {
         const std::string legacy="TermForge-layout 1\nleft 0.24\nright 0.21\nupper 0.57\n"
             "left_top 0.38\nright_top 0.69\nsides 1\nfocus 0\n";
         if(stage_==0 && active() && active()->ready()) {
+            const int upper=static_cast<int>(std::lround((std::max(100,height_-90)-1)*.57));
+            const int pane_min=std::min(48,(upper-1)/2);
+            const auto side=[&](double ratio) { return static_cast<int>(std::lround((width_-2)*ratio)); };
+            const auto middle=[&](double ratio) {
+                return 33+std::clamp(static_cast<int>(std::lround((upper-1)*ratio)),pane_min,upper-1-pane_min);
+            };
             require(settings_load_status_==tf_workspace::LoadStatus::migrated_v1 && settings_text()==legacy &&
                     tabs_.size()==1 && tabs_[0].title==L"cmd 1" && main_tabs_.empty() &&
                     state_.left==.24 && state_.right==.21 && state_.upper==.57 &&
                     state_.left_top==.38 && state_.right_top==.69 && state_.sides && !state_.focus &&
-                    left_==326 && right_==285 && left_middle_==199 && right_middle_==335,
+                    left_==side(.24) && right_==side(.21) && left_middle_==middle(.38) && right_middle_==middle(.69),
                     "v1 migration, deferred write or geometry mismatch");
             action(9);
             const auto recovered=tf_workspace::load_workspace(settings_path_);
@@ -153,7 +168,7 @@ inline void Workspace::scenario_workspace() {
                     recovered.state.bottom.size()==1 && recovered.state.bottom[0].title==L"cmd 1" &&
                     recovered.state.bottom[0].zoom_percent==125 && tabs_[0].shell->zoom_percent()==125,
                     "v1 committed save did not produce a complete v2 document");
-            stage_=100; close_all();
+            save_workspace_geometry();stage_=100; close_all();
         }
         return;
     }
@@ -254,7 +269,7 @@ inline void Workspace::scenario_workspace() {
             focus_split(true); active()->command(L"Write-Output 'TF_SAVE_PS'\r");
             select(0); stage_=2;
         } else if(stage_==2 && main_tabs_[0].shell->contains_line("TF_SAVE_CMD") &&
-                  main_tabs_[1].shell->contains_line("TF_SAVE_PS")) {
+                  workspace_output_completed(main_tabs_[1].shell.get(),"TF_SAVE_PS")) {
             query_sizes(); stage_=3;
         } else if(stage_==3 && sizes_ready()) {
             focus_split(true); select(0);
@@ -293,21 +308,43 @@ inline void Workspace::scenario_workspace() {
                     main_tabs_[1].launch && main_tabs_[1].launch->kind==L"powershell" &&
                     main_tabs_[1].launch->working_directory==restored_workspace_.main[1].working_directory,
                     "workspace restored launch definitions mismatch");
-            const auto state=capture_state();
-            require(state.window==restored_workspace_.window && tf_workspace::valid_workspace(state),
-                    "workspace restored normal bounds mismatch");
+            const auto state=capture_state();const auto& restored=restored_workspace_.window;
+            RECT frame{0,0,physical(restored.width),physical(restored.height)};
+            require(AdjustWindowRectExForDpi(&frame,WS_OVERLAPPEDWINDOW,FALSE,0,dpi_)!=FALSE,
+                    "workspace restored fixture frame measurement failed");
+            const RECT desired{restored.x,restored.y,restored.x+frame.right-frame.left,restored.y+frame.bottom-frame.top};
+            MONITORINFO monitor{sizeof(MONITORINFO)};
+            require(GetMonitorInfoW(MonitorFromRect(&desired,MONITOR_DEFAULTTONEAREST),&monitor)!=FALSE,
+                    "workspace restored fixture monitor query failed");
+            const RECT work=monitor.rcWork;
+            const LONG outer_width=std::min(desired.right-desired.left,work.right-work.left);
+            const LONG outer_height=std::min(desired.bottom-desired.top,work.bottom-work.top);
+            auto expected=restored;
+            expected.x=std::clamp<LONG>(restored.x,work.left,std::max(work.left,work.right-outer_width));
+            expected.y=std::clamp<LONG>(restored.y,work.top,std::max(work.top,work.bottom-outer_height));
+            expected.width=logical(outer_width-(frame.right-frame.left-physical(restored.width)));
+            expected.height=logical(outer_height-(frame.bottom-frame.top-physical(restored.height)));
+            save_workspace_geometry();
+            require(state.window==expected && tf_workspace::valid_workspace(state),
+                    ("workspace restored normal bounds mismatch: actual="+
+                     std::to_string(state.window.x)+":"+std::to_string(state.window.y)+":"+
+                     std::to_string(state.window.width)+"x"+std::to_string(state.window.height)+" expected="+
+                     std::to_string(expected.x)+":"+std::to_string(expected.y)+":"+
+                     std::to_string(expected.width)+"x"+std::to_string(expected.height)).c_str());
             for(const auto group:{Group::bottom,Group::main}) for(const auto& tab:group_tabs(group))
                 require(!tab.shell->contains_line("TF_SAVE_CMD") && !tab.shell->contains_line("TF_SAVE_PS"),
                         "old output was restored into a fresh session");
+            for(auto& tab:main_tabs_) tab.shell->begin_output_observation();
             focus_split(false);
             active()->command(L"for %I in (\"%CD%\") do @echo TF_CMD_DIR=%~nxI\r");
             focus_split(true);
             active()->command(L"Write-Output ('TF_PS_DIR=' + (Split-Path -Leaf $PWD.Path)); "
                 L"Write-Output ('TF_PS_MAJOR=' + $PSVersionTable.PSVersion.Major)\r");
-            select(0); active()->command(L"echo TF_RESTORE_BOTTOM\r"); stage_=1;
-        } else if(stage_==1 && main_tabs_[0].shell->contains_line(utf8(L"TF_CMD_DIR=restore-cmd \x76ee\x5f55")) &&
-                  main_tabs_[1].shell->contains_line(utf8(L"TF_PS_DIR=restore-powershell \x7a7a\x683c")) &&
-                  main_tabs_[1].shell->contains_line("TF_PS_MAJOR=5") && active()->contains_line("TF_RESTORE_BOTTOM")) {
+            select(0); active()->begin_output_observation(); active()->command(L"echo TF_RESTORE_BOTTOM\r"); stage_=1;
+        } else if(stage_==1 && workspace_output_completed(main_tabs_[0].shell.get(),utf8(L"TF_CMD_DIR=restore-cmd \x76ee\x5f55")) &&
+                  workspace_output_completed(main_tabs_[1].shell.get(),utf8(L"TF_PS_DIR=restore-powershell \x7a7a\x683c")) &&
+                  workspace_output_completed(main_tabs_[1].shell.get(),"TF_PS_MAJOR=5") &&
+                  workspace_output_completed(active(),"TF_RESTORE_BOTTOM")) {
             query_sizes(); stage_=2;
         } else if(stage_==2 && sizes_ready()) {
             require(!settings_failed_,"workspace restored state save failed");

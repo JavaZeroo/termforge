@@ -55,7 +55,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 
 在提交的增删/选择/重命名/缩放/分屏、布局拖动、显隐/焦点模式及窗口尺寸移动结束后保存；启动恢复期间抑制写入，关闭时先抓取最终快照再回收子进程，后续异步删除不再覆盖。保存使用同目录独占临时文件与原子替换；写入失败保留旧文件并显示 `Workspace could not be saved`，后续成功保存才清除。正常关闭若最终保存失败，则保留窗口和活动会话，允许修复后重试；`Session → Exit without saving` / `Ctrl+Shift+W` 才显式放弃未保存状态并回收，不覆盖旧配置，也不表示保存成功。只保存固定 shell 工厂类型、必要 WSL distribution、明确目录、标题、正常窗口位置/逻辑客户区、布局、焦点/split 和 zoom；自定义命令行、秘密、环境、历史和进程身份不进入配置。不承诺断电持久性或多进程冲突合并。
 
-已完成单 cmd 及 **cmd + Windows PowerShell 主区分屏** 的真实双进程恢复：两轮覆盖独立目录、Unicode 标题、100%/150%/75% zoom、split 成员/底部焦点和非默认窗口/布局；新进程实际核对 shell 类型/目录/尺寸，配置逐字一致，旧输出不注入新屏幕。模型与 Windows/Ubuntu 检查见[模型结果](results/2026-10-25-workspace-state-v2/validation.json)，单会话见[核心验证](results/2026-10-25-workspace-restore-core/validation.json)，多会话见[双进程验证](results/2026-10-25-workspace-restore-multi/validation.json)。真实 v1 延迟迁移、有效空会话、损坏默认回退及未知版本不覆盖另见[迁移与回退验证](results/2026-10-25-workspace-recovery-guards/validation.json)；写入失败、成功重试及关闭失败策略见[故障恢复验证](results/2026-10-25-workspace-write-failure/validation.json)。完整 R2 出口、真实 DPI/呈现和 #38 等回归不因此视为完成。
+已完成单 cmd 及 **cmd + Windows PowerShell 主区分屏** 的真实双进程恢复：两轮覆盖独立目录、Unicode 标题、100%/150%/75% zoom、split 成员/底部焦点和非默认窗口/布局；新进程实际核对 shell 类型/目录/尺寸，配置逐字一致，旧输出不注入新屏幕。模型与 Windows/Ubuntu 检查见[模型结果](results/2026-10-25-workspace-state-v2/validation.json)，单会话见[核心验证](results/2026-10-25-workspace-restore-core/validation.json)，多会话见[双进程验证](results/2026-10-25-workspace-restore-multi/validation.json)。真实 v1 延迟迁移、有效空会话、损坏默认回退及未知版本不覆盖另见[迁移与回退验证](results/2026-10-25-workspace-recovery-guards/validation.json)；写入失败、成功重试及关闭失败策略见[故障恢复验证](results/2026-10-25-workspace-write-failure/validation.json)。恢复窗口若超出实际工作区，则按可用边界裁剪；测试以独立 Win32 计算和超大保存尺寸区分完整恢复与裁剪恢复，不冒称同尺寸恢复。完整 R2 出口、真实 DPI/呈现和 #38 等回归不因此视为完成。
 
 自动测试仅读写各自结果目录下的 `workspace.layout`，不会读取或修改上述用户配置。恢复场景为 data-only，不生成位图；若等待超时，`persistence-failure.json` 保留有界 PTY 输出和文本屏幕以区分输入与显示问题，内容仅限合成会话。
 
@@ -112,8 +112,8 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 |---|---|---|
 | `candidate-tui` / `candidate-input-escape` | 仅显式候选构建：真实 Vim 进入/插入/60×12 resize/退出写盘，主屏恢复、独立 `CSI 6n` 光标回复及独立 ESC 接收 | `test_candidate_tui.py` 各连续两轮；固定 `candidate-vim.vim` 以短 `-S` 命令加载，避免交互式 cmd 拆分长命令；以 Vim 写入的真实 `VimEnter`/`InsertEnter` 事件文件为启动握手，以 `Ctrl-O` 调用命令保存实际 `&columns/&lines`，核对脚本、文件、子进程尺寸及 InputQueue 字节；有界合成输出另存 `candidate-output.bin`，私有 desktop/Job，无截图。不把该路径写成 Vim Escape 或备用屏验收，不替代 #28/#29 或实际呈现验收 |
 | `ui-workflow-sessions` | 8真实会话/拒绝第9个、五路有限洪流、阅读/Find/输入/缩放/淘汰、合成粘贴取消/关闭、5次8→6→8 | `test_workflow_sessions`独立literal/raw/journal/UI和回收校验；每轮26检查点、18身份、235/256观测，资源scope=launcher-tree。data-only，不代替同次实际CF/IME、native阶段校准或操作提交端点 |
-| `ui` / `ui-edit` / `ui-restore` | 多标签、五处分隔线、重命名、捕获/Escape 回滚、新进程恢复布局 | 真实子进程尺寸、保存文件、焦点与回收；不恢复会话进程或标题 |
-| `ui-main` | 主区/底部隔离、隐藏输出、焦点模式、空区域与关闭目标 | `geometry.json` 按固定参考常量检查 HWND/字体/矩形；内部网格由实际客户区扣除系统滚动条后计算 |
+| `ui` / `ui-edit` / `ui-restore` | 多标签、五处分隔线、重命名、捕获/Escape 回滚、新进程恢复布局 | 真实子进程尺寸、保存文件、焦点与回收；只新建会话，不恢复原进程，恢复范围见工作区保存 |
+| `ui-main` | 主区/底部隔离、隐藏输出、焦点模式、空区域与关闭目标 | `geometry.json` 按实际客户区/DPI和布局合同检查 HWND/字体/矩形；内部网格由实际终端窗口扣除原生滚动条和物理单元格后计算 |
 | `ui-dpi` | 每会话缩放、隐藏标签、受控 DPI、边缘命中/拖动及长行保留 | `dpi.json` 区分受控 DPI 与系统 DPI；实际子进程尺寸及 dirty/full 图像比较；不替代真实跨屏 |
 | `ui-monitors` | 至少两台真实显示器间往返，保持 rename 焦点、隐藏标签、网格与 dirty/full 图像 | `monitors.json` 核对真实矩形、实际 DPI 和 `distinct_dpi`；当前两台均 96，不覆盖不同 DPI 或实际呈现 |
 | `ui-shells` | cmd、PowerShell 5.1/7、显式 Ubuntu WSL 的启动、参数、隔离目录、实际尺寸和逐个正常退出 | `shells.json` 固定四种身份及 `normal_exit=true`；PowerShell 原生命令前缀与 WSL helper 路径分别处理 |

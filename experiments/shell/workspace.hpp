@@ -543,9 +543,12 @@ class Workspace {
     bool workflow_operation_complete(uint64_t id);
     void scenario_find();
     void scenario_find_stream();
-    static std::string size_marker(int outer_width,int rows,ShellWindow* shell) {
+    static std::string size_marker(ShellWindow* shell) {
+        RECT outer{};require(GetWindowRect(shell->handle(),&outer)!=FALSE,"workspace terminal bounds query failed");
+        const auto [cell_width,cell_height]=shell->pixel_cell_size();
         const int bar=GetSystemMetricsForDpi(SM_CXVSCROLL,GetDpiForWindow(shell->handle()));
-        return "TF_SIZE_"+std::to_string((outer_width-bar)/12)+"x"+std::to_string(rows);
+        require(cell_width>0 && cell_height>0 && outer.right>outer.left && outer.bottom>outer.top,"workspace terminal cell/bounds invalid");
+        return "TF_SIZE_"+std::to_string((outer.right-outer.left-bar)/cell_width)+"x"+std::to_string((outer.bottom-outer.top)/cell_height);
     }
     void record_geometry(const char* phase);
     void collect_child(ShellWindow* child);

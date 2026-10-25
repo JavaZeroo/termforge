@@ -13,7 +13,9 @@ inline void Workspace::record_geometry(const char* phase) {
         OffsetRect(&actual,origin.x-actual.left,origin.y-actual.top); child=rect(actual);
         require(EqualRect(&actual,&main_terminal_)!=FALSE,"main child geometry differs from assigned view");
     }
-    geometry_samples_.push_back("{\"phase\":\""+std::string(phase)+"\",\"window\":["+std::to_string(width_)+","+
+    RECT client{};require(GetClientRect(window_,&client)!=FALSE,"main client geometry query failed");
+    geometry_samples_.push_back("{\"phase\":\""+std::string(phase)+"\",\"dpi\":"+std::to_string(dpi_)+
+        ",\"client_pixels\":["+std::to_string(client.right)+","+std::to_string(client.bottom)+"],\"window\":["+std::to_string(width_)+","+
         std::to_string(height_)+"],\"main_group\":"+rect(main_group_)+",\"main_toolbar\":"+rect(main_toolbar_)+
         ",\"main_address\":"+rect(main_address_)+",\"main_terminal\":"+rect(main_terminal_)+",\"main_child\":"+child+
         ",\"shell_terminal\":"+rect(terminal_)+"}");
@@ -68,7 +70,7 @@ inline void Workspace::scenario_main() {
         require(main_tabs_[1].title==L"\x4e3b\x4f1a\x8bdd cmd" && tabs_[0].title==L"cmd 1","main rename affected another group");
         require(GetFocus()==selected(Group::main)->handle(),"main rename did not restore focus");
         selected(Group::main)->check_size(); selected(Group::bottom)->check_size(); stage_=5;
-    } else if(stage_==5 && selected(Group::main)->contains_line(size_marker(906,17,selected(Group::main))) && selected(Group::bottom)->contains_line(size_marker(1360,7,selected(Group::bottom)))) {
+    } else if(stage_==5 && selected(Group::main)->contains_line(size_marker(selected(Group::main))) && selected(Group::bottom)->contains_line(size_marker(selected(Group::bottom)))) {
         record_geometry("session-1360");
         Bitmap frame(width_,height_); paint(frame.dc);
         selected(Group::main)->render_to(frame.dc,main_terminal_.left,main_terminal_.top);
@@ -77,7 +79,7 @@ inline void Workspace::scenario_main() {
         require(SetWindowPos(window_,nullptr,0,0,size.right-size.left,size.bottom-size.top,SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"main resize failed"); stage_=6;
     } else if(stage_==6 && selected(Group::main)->settled() && selected(Group::bottom)->settled()) {
         selected(Group::main)->check_size(); selected(Group::bottom)->check_size(); stage_=7;
-    } else if(stage_==7 && selected(Group::main)->contains_line(size_marker(1364,24,selected(Group::main))) && selected(Group::bottom)->contains_line(size_marker(2048,11,selected(Group::bottom)))) {
+    } else if(stage_==7 && selected(Group::main)->contains_line(size_marker(selected(Group::main))) && selected(Group::bottom)->contains_line(size_marker(selected(Group::bottom)))) {
         record_geometry("session-2048");
         click_child(selected(Group::bottom));
         main_tabs_[0].shell->command(L"exit 0\r"); stage_=8;

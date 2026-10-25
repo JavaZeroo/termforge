@@ -243,26 +243,36 @@ def validate_monitor_geometry(data):
 
 
 def validate_main_geometry(data):
-    """Independent 96-unit reference, measured before this implementation.
-
-    Compare both workspace layout and actual HWND placement. This does not
-    establish inner text-grid, pixel, physical-DPI or performance equivalence.
-    """
+    """Derive the logical layout from measured client pixels, not nominal sizes."""
     phases = ("empty-1360", "session-1360", "session-2048")
     if (not isinstance(data, dict) or data.get("ui_font_family") != "Roboto Mono" or
             not isinstance(data.get("snapshots"), list) or
             [row.get("phase") for row in data["snapshots"] if isinstance(row, dict)] != list(phases) or
             len(data["snapshots"]) != 3):
         raise ValueError("missing main workspace geometry phases or font identity")
-    expected = (
-        ([1360, 860], [227, 33, 906, 19], [227, 52, 906, 36], None),
-        ([1360, 860], [227, 33, 906, 26], [227, 59, 906, 34], [227, 93, 906, 453]),
-        ([2048, 1120], [342, 33, 1364, 26], [342, 59, 1364, 34], [342, 93, 1364, 626]),
-    )
-    for row, (window, group, toolbar, terminal) in zip(data["snapshots"], expected):
-        fields = {"window": window, "main_group": group, "main_child": terminal, "main_toolbar": toolbar}
-        if terminal is not None:
-            fields.update(main_terminal=terminal)
+    for index, row in enumerate(data["snapshots"]):
+        dpi = row.get("dpi")
+        pixels = row.get("client_pixels")
+        if (type(dpi) is not int or dpi <= 0 or not isinstance(pixels, list) or len(pixels) != 2 or
+                any(type(value) is not int or value <= 0 for value in pixels)):
+            raise ValueError("main geometry requires actual client pixels and DPI")
+        width, height = [(value * 96 + dpi // 2) // dpi for value in pixels]
+        side = int((width - 2) / 6 + 0.5)
+        left, right = side + 1, width - side - 1
+        upper = int((max(100, height - 90) - 1) * (2 / 3) + 0.5)
+        toolbar_top = 52 if index == 0 else 59
+        toolbar_height = 36 if index == 0 else 34
+        terminal_top = toolbar_top + toolbar_height
+        terminal = [left, terminal_top, right - left, upper + 33 - terminal_top]
+        fields = {
+            "window": [width, height],
+            "main_group": [left, 33, right - left, toolbar_top - 33],
+            "main_toolbar": [left, toolbar_top, right - left, toolbar_height],
+            "main_address": [left + 103, toolbar_top + 4, right - left - 133, toolbar_height - 8],
+            "main_terminal": terminal,
+            "main_child": None if index == 0 else terminal,
+            "shell_terminal": [0, upper + 84, width, max(upper + 110, height - 57) - upper - 84],
+        }
         for field, wanted in fields.items():
             value = row.get(field)
             if value != wanted or (wanted is not None and

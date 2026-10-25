@@ -1028,6 +1028,7 @@ public:
     termforge::ViewportState history_state() { return viewport_.reconcile(parser_.screen); }
     const Snapshot& visible_snapshot() const { return *snapshot_; }
     void begin_output_observation() { observed_output_.clear(); observe_output_=true; }
+    bool output_observation_enabled() const { return observe_output_; }
     const std::string& observed_output() const { return observed_output_; }
     bool ready() const { return has("TF>"); }
     bool settled() { return resize_.settled(); }

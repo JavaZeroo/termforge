@@ -57,9 +57,9 @@ inline void Workspace::scenario_edit() {
         SendMessageW(window_,WM_MOUSEMOVE,MK_LBUTTON,MAKELPARAM(600,600));
         PostMessageW(window_,WM_KEYDOWN,VK_ESCAPE,0); stage_=60;
     } else if(stage_==60 && dragging_==Divider::none) {
-        require(std::abs(state_.upper-387.0/769)<1e-12,"Escape did not cancel drag"); stage_=6;
+        require(std::abs(state_.upper-387.0/(height_-91))<1e-12,"Escape did not cancel drag"); stage_=6;
     } else if(stage_==6 && active()->settled()) { active()->check_size(); stage_=7;
-    } else if(stage_==7 && active()->contains_line(size_marker(1360,12,active()))) {
+    } else if(stage_==7 && active()->contains_line(size_marker(active()))) {
         Bitmap frame(width_,height_); paint(frame.dc); active()->render_to(frame.dc,terminal_.left,terminal_.top); frame.save(image_);
         SendMessageW(window_,WM_COMMAND,4,0); require(!state_.sides,"side hide failed");
         const auto stored=tf_workspace::load_workspace(settings_path_);
@@ -75,15 +75,15 @@ inline void Workspace::scenario_restore() {
     require(ms(started_)<20000,"workspace restore scenario timeout");
     if(stage_==0 && active()->ready()) {
         require(!state_.sides && !state_.focus,"visibility was not restored");
-        require(std::abs(state_.left-300.0/1358)<1e-12 && std::abs(state_.right-280.0/1358)<1e-12 &&
-                std::abs(state_.upper-387.0/769)<1e-12 && std::abs(state_.left_top-147.0/386)<1e-12 &&
+        require(std::abs(state_.left-300.0/(width_-2))<1e-12 && std::abs(state_.right-280.0/(width_-2))<1e-12 &&
+                std::abs(state_.upper-387.0/(height_-91))<1e-12 && std::abs(state_.left_top-147.0/386)<1e-12 &&
                 std::abs(state_.right_top-217.0/386)<1e-12,"split ratios were not restored");
         require(settings_load_status_==tf_workspace::LoadStatus::valid_v2 &&
                 tabs_.size()==1 && tabs_[0].title==L"\x7814\x7a76 Shell" && tabs_[0].launch &&
                 tabs_[0].launch->kind==L"cmd","v2 title or launch was not restored");
         SendMessageW(window_,WM_COMMAND,4,0); stage_=1;
     } else if(stage_==1 && active()->settled()) { active()->check_size(); stage_=2;
-    } else if(stage_==2 && active()->contains_line(size_marker(1360,12,active()))) {
+    } else if(stage_==2 && active()->contains_line(size_marker(active()))) {
         require(left_==300 && right_==280 && left_middle_==180 && right_middle_==250,"restored geometry mismatch");
         Bitmap frame(width_,height_); paint(frame.dc); active()->render_to(frame.dc,terminal_.left,terminal_.top); frame.save(image_);
         stage_=100; SendMessageW(window_,WM_CLOSE,0,0);
@@ -94,6 +94,10 @@ inline void Workspace::scenario() {
         if(image_.empty() || closing_) return;
         if(ms(started_)>=20000) throw std::runtime_error("workspace scenario timeout: stage="+std::to_string(stage_)+
             " client="+std::to_string(width_)+"x"+std::to_string(height_));
+        const auto retains=[](ShellWindow* shell,const std::string& expected) {
+            for(const auto& line:shell->observed_document_lines()) if(line.projection.text==expected) return true;
+            return false;
+        };
         if(stage_==0 && active() && active()->ready()) { active()->command(L"echo TF_UI_FIRST\r"); stage_=1; }
         else if(stage_==1 && active()->contains_line("TF_UI_FIRST")) {
             // Queued WM_CHAR is dispatched only after add() hides this child.
@@ -101,9 +105,9 @@ inline void Workspace::scenario() {
             SendMessageW(window_,WM_COMMAND,1,0); stage_=2;
         }
         else if(stage_==2 && active()->ready()) { active()->command(L"echo TF_UI_SECOND\r"); stage_=3; }
-        else if(stage_==3 && active()->contains_line("TF_UI_SECOND") && tabs_[0].shell->contains_line("TF_UI_BACKGROUND")) {
-            require(!active()->contains_line("TF_UI_FIRST"),"session state leaked");
-            require(tabs_[0].shell->contains_line("TF_UI_BACKGROUND"),"hidden session stopped consuming output");
+        else if(stage_==3 && retains(active(),"TF_UI_SECOND") && retains(tabs_[0].shell.get(),"TF_UI_BACKGROUND")) {
+            require(!retains(active(),"TF_UI_FIRST"),"session state leaked");
+            require(retains(tabs_[0].shell.get(),"TF_UI_BACKGROUND"),"hidden session stopped consuming output");
             // Shrink the Sessions pane until even its first row is not fully
             // visible. Its blank tail must not select that hidden row.
             const auto previous=state_;
@@ -122,20 +126,20 @@ inline void Workspace::scenario() {
             SendMessageW(window_,WM_LBUTTONDOWN,0,MAKELPARAM(160,tab_bar_.top+10));
             require(active_==1,"tab selection failed");
             SendMessageW(window_,WM_LBUTTONDOWN,0,MAKELPARAM(20,tab_bar_.top+10));
-            require(active()->contains_line("TF_UI_FIRST"),"first session lost state");
+            require(retains(active(),"TF_UI_FIRST"),"first session lost state");
             SendMessageW(window_,WM_COMMAND,3,0); stage_=4;
         } else if(stage_==4 && active()->settled()) { active()->check_size(); stage_=40;
-        } else if(stage_==40 && active()->contains_line(size_marker(1360,27,active()))) {
+        } else if(stage_==40 && active()->contains_line(size_marker(active()))) {
             SendMessageW(window_,WM_COMMAND,3,0); stage_=5;
         } else if(stage_==5 && active()->settled()) { active()->check_size(); stage_=50;
-        } else if(stage_==50 && active()->contains_line(size_marker(1360,7,active()))) {
+        } else if(stage_==50 && active()->contains_line(size_marker(active()))) {
             Bitmap frame(width_,height_); paint(frame.dc); active()->render_to(frame.dc,terminal_.left,terminal_.top);
-            frame.save(image_);
+            frame.save(image_);save_workspace_geometry();
             RECT size{0,0,2048,1120}; AdjustWindowRect(&size,WS_OVERLAPPEDWINDOW,FALSE);
             require(SetWindowPos(window_,nullptr,0,0,size.right-size.left,size.bottom-size.top,SWP_NOZORDER|SWP_NOACTIVATE)!=FALSE,"workspace resize failed");
             stage_=51;
         } else if(stage_==51 && active()->settled()) { active()->check_size(); stage_=52;
-        } else if(stage_==52 && active()->contains_line(size_marker(2048,11,active()))) {
+        } else if(stage_==52 && active()->contains_line(size_marker(active()))) {
             SendMessageW(window_,WM_COMMAND,4,0); require(!state_.sides,"panel toggle failed");
             SendMessageW(window_,WM_COMMAND,4,0); require(state_.sides,"panel restore failed");
             SendMessageW(window_,WM_MBUTTONDOWN,0,MAKELPARAM(160,tab_bar_.top+10));
@@ -144,7 +148,7 @@ inline void Workspace::scenario() {
             SendMessageW(rename_,EM_SETSEL,7,7);
             tabs_[0].shell->command(L"exit 0\r"); stage_=6;
         } else if(stage_==6 && tabs_.size()==1) {
-            require(active()->contains_line("TF_UI_SECOND"),"remaining session lost state");
+            require(retains(active(),"TF_UI_SECOND"),"remaining session lost state");
             require(tabs_[active_].id==2 && tabs_[active_].title==L"cmd 2","background close changed active identity or committed rename");
             require(rename_ && GetFocus()==rename_,"background close stole rename focus");
             PostMessageW(GetFocus(),WM_CHAR,L'X',0); stage_=61;
