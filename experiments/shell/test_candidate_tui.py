@@ -1,3 +1,5 @@
+import copy
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -5,6 +7,8 @@ import unittest
 
 from experiments.build_paths import binary
 from experiments.shell.run import execute
+from experiments.shell.unicode_checks import validate_candidate_unicode
+from experiments.shell.workflow_checks import validate_console_window
 
 
 class CandidateTuiTests(unittest.TestCase):
@@ -49,6 +53,40 @@ class CandidateTuiTests(unittest.TestCase):
             replies = (out / "candidate-replies.bin").read_bytes()
             self.assertRegex(replies, rb"^\x1b\[[0-9]+;[0-9]+R$", replies)
             self.assertIsNone(result["presented_done"])
+
+    def test_real_unicode_scalar_preservation_and_glyphs(self):
+        for repeat in range(2):
+            out = self.out / f"candidate-unicode-{repeat}"
+            record = execute(binary("termforge_shell"), "candidate-unicode", out, timeout=20)
+            summary = record["unicode_output"]
+            self.assertEqual([sample["label"] for sample in summary["samples"]],
+                             ["TF_U_DECOMPOSE", "TF_U_EMOJI", "TF_U_ZWJ", "TF_U_KEYCAP"])
+            self.assertFalse(summary["complete_unicode_ime_verified"])
+            self.assertFalse(summary["whole_cluster_width_policy_verified"])
+            self.assertIsNone(summary["presented_done"])
+            data = json.loads((out / "candidate-unicode.json").read_text(encoding="utf-8"))
+            console = validate_console_window(out, expected_role="unicode", expected_generation=1,
+                                              prefix="candidate-unicode")
+            source = (out / "candidate-unicode.source.bin").read_bytes()
+            transport = (out / "candidate-unicode.transport.bin").read_bytes()
+            validate_candidate_unicode(data, console, source, transport)
+            for corruption in ("missing", "width", "cluster", "source", "frame"):
+                changed = copy.deepcopy(data)
+                if corruption == "missing":
+                    next(cell for line in changed["lines"] for cell in line["cells"]
+                         if cell["text"] in ("👩\u200d", "👩\u200d💻"))["missing"] = 1
+                elif corruption == "width":
+                    next(cell for line in changed["lines"] for cell in line["cells"]
+                         if cell["text"] in ("👩\u200d", "👩\u200d💻"))["width"] = 3
+                elif corruption == "cluster":
+                    next(cell for line in changed["lines"] for cell in line["cells"]
+                         if cell["text"] in ("👩\u200d", "👩\u200d💻"))["text"] = "👩"
+                elif corruption == "frame":
+                    changed["frame_matches_full"] = False
+                with self.subTest(repeat=repeat, corruption=corruption):
+                    with self.assertRaises(ValueError):
+                        validate_candidate_unicode(changed, console, b"" if corruption == "source" else source,
+                                                   transport)
 
 
 if __name__ == "__main__":

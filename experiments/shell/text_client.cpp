@@ -73,10 +73,44 @@ public:
     }
     ~StreamOutput() { stop(); if (stop_) CloseHandle(stop_); }
 };
+int unicode_fixture(const wchar_t* capture) {
+    BOOL owned = FALSE;
+    require(IsProcessInJob(GetCurrentProcess(), nullptr, &owned) && owned, "Unicode fixture requires an owned Job");
+    tf_shell_test::WorkflowOptions options;
+    options.capture = capture;
+    options.generation = 1;
+    const std::wstring text =
+        L"\x1b[2J\x1b[H"
+        L"TF_U_DECOMPOSE e\u0301\r\n"
+        L"TF_U_EMOJI \U0001F642\r\n"
+        L"TF_U_ZWJ \U0001F469\u200D\U0001F4BB\r\n"
+        L"TF_U_KEYCAP 1\uFE0F\u20E3\r\n"
+        L"TF_U_DONE\r\n";
+    DWORD written = 0;
+    require(WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), text.data(), static_cast<DWORD>(text.size()),
+                          &written, nullptr) && written == text.size(), "Unicode console output failed");
+    tf_conpty::Handle source(tf_shell_test::workflow_new_file(std::filesystem::path(capture).wstring() + L".source.bin"));
+    const std::string bytes =
+        "TF_U_DECOMPOSE e\xcc\x81\r\n"
+        "TF_U_EMOJI \xf0\x9f\x99\x82\r\n"
+        "TF_U_ZWJ \xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x92\xbb\r\n"
+        "TF_U_KEYCAP 1\xef\xb8\x8f\xe2\x83\xa3\r\n"
+        "TF_U_DONE\r\n";
+    tf_shell_test::workflow_save(source.get(), bytes);
+    require(FlushFileBuffers(source.get()) != FALSE, "Unicode source flush failed");
+    workflow_capture_console(options, "unicode");
+    return 0;
+}
 int wmain(int argc, wchar_t** argv) {
     try {
         if(argc>1 && std::wstring(argv[1])==L"--workflow-v1")
             return tf_shell_test::run_workflow_fixture(tf_shell_test::workflow_options(argc,argv));
+        if(argc==3 && std::wstring(argv[1])==L"--unicode-v1") {
+            const auto input = GetStdHandle(STD_INPUT_HANDLE);
+            require(SetConsoleCP(CP_UTF8) && SetConsoleOutputCP(CP_UTF8) &&
+                    SetConsoleMode(input, ENABLE_VIRTUAL_TERMINAL_INPUT), "Unicode fixture console mode failed");
+            return unicode_fixture(argv[2]);
+        }
         require(argc == 2 && *argv[1], "usage: shell_text_client capture.bin");
         const auto input = GetStdHandle(STD_INPUT_HANDLE);
         require(SetConsoleCP(CP_UTF8) && SetConsoleOutputCP(CP_UTF8) &&

@@ -102,7 +102,7 @@ static std::pair<std::string, int> probe(int argc, char** argv) {
         require(missing_probe.missing > 0,"missing-glyph control was not detected");
         size_t glyphs = 0, missing = 0, overflowing = 0; std::set<std::string> faces;
         for (const auto& row : initial->lines) for (const auto& cell : row) if (cell.width && cell.text != " ") {
-            const auto& text = renderer.layout(cell.text,cell.style.bold); glyphs += text.glyphs; missing += text.missing;
+            const auto& text = renderer.layout(cell.text,cell.style.bold,cell.width); glyphs += text.glyphs; missing += text.missing;
             faces.insert(text.faces.begin(),text.faces.end()); if (text.width > cell.width*12.0f+0.01f) ++overflowing;
         }
         Window window(renderer,initial); window.paint();

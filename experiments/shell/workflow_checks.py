@@ -29,10 +29,11 @@ def _sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def validate_console_window(directory, *, expected_role, expected_generation):
-    """Validate the bounded F-fixture console, excluding only right blank padding."""
+def validate_console_window(directory, *, expected_role, expected_generation, prefix='capture.bin'):
+    """Validate bounded console evidence, excluding only right blank padding."""
     directory = Path(directory)
-    metadata = json.loads(_read(directory / 'capture.bin.console.json', 65536))
+    _require(type(prefix) is str and prefix and Path(prefix).name == prefix, 'console capture prefix')
+    metadata = json.loads(_read(directory / (prefix + '.console.json'), 65536))
     _require(metadata.get('schema') == 'termforge-console-window-v1' and
              metadata.get('role') == expected_role and
              _uint(metadata.get('generation'), 'console generation') == _uint(expected_generation, 'expected generation'),
@@ -48,7 +49,7 @@ def validate_console_window(directory, *, expected_role, expected_generation):
     _require(type(counts) is list and len(counts) == rows, 'console row count')
     for count in counts:
         _require(type(count) is int and 0 <= count <= columns, 'console row UTF-16 bound')
-    payload = _read(directory / 'capture.bin.console.bin', 200000)
+    payload = _read(directory / (prefix + '.console.bin'), 200000)
     _require(len(payload) % 2 == 0 and metadata.get('text_sha256') == _sha(payload), 'console text hash/encoding')
     text = payload.decode('utf-16-le')
     _require(_uint(metadata.get('utf16_units'), 'console UTF-16 units') == len(text) == sum(counts),
@@ -63,12 +64,14 @@ def validate_console_window(directory, *, expected_role, expected_generation):
     cell_count = _uint(metadata.get('cell_count'), 'console cell count')
     _require(cell_count == columns * rows and _uint(metadata.get('cell_stride'), 'console cell stride') == 4,
              'console cell metadata')
-    raw_cells = _read(directory / 'capture.bin.cells.bin', 400000)
+    raw_cells = _read(directory / (prefix + '.cells.bin'), 400000)
     _require(len(raw_cells) == cell_count * 4 and metadata.get('cell_sha256') == _sha(raw_cells),
              'console cell bytes/hash')
     cell_lines = []
+    cell_records = []
     for row in range(rows):
         cells = list(struct.iter_unpack('<HH', raw_cells[row * columns * 4:(row + 1) * columns * 4]))
+        cell_records.append(cells)
         text = []
         for column, (codepoint, attributes) in enumerate(cells):
             if attributes & 0x100:
@@ -82,7 +85,7 @@ def validate_console_window(directory, *, expected_role, expected_generation):
             text.append(chr(codepoint))
         cell_lines.append(''.join(text).rstrip(' '))
     return dict(columns=columns, rows=rows, top=top, cursor_column=cursor_column,
-                cursor_row=cursor_row, lines=lines, cell_lines=cell_lines)
+                cursor_row=cursor_row, lines=lines, cell_lines=cell_lines, cells=cell_records)
 
 
 def _validate_receiver(manifest, receiver, raw):

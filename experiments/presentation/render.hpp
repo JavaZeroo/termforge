@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <tuple>
 #include <utility>
 using Microsoft::WRL::ComPtr;
 using Clock = std::chrono::steady_clock;
@@ -154,7 +155,7 @@ class Renderer {
     ComPtr<ID2D1DCRenderTarget> target_;
     ComPtr<ID2D1SolidColorBrush> brush_;
     ComPtr<IDWriteTextFormat> formats_[2];
-    std::map<std::pair<std::string,bool>,Layout> layouts_;
+    std::map<std::tuple<std::string,bool,int>,Layout> layouts_;
     // Round the cell once, then use its physical size throughout the grid. This
     // keeps hit testing, dirty rows, clips and glyph origins on the same pixels.
     int scaled_pixels(int value) const { return (value*dpi_*zoom_percent_+4800)/9600; }
@@ -205,16 +206,27 @@ public:
     int cell_height() const { return cell_height_; }
     int x(int cell) const { return cell*cell_width_; }
     int y(int row) const { return row*cell_height_; }
-    const Layout& layout(const std::string& text, bool bold) {
-        const auto key = std::make_pair(text,bold); auto found = layouts_.find(key);
+    const Layout& layout(const std::string& text, bool bold, int columns = 1) {
+        require(columns == 1 || columns == 2, "glyph layout requires one or two cells");
+        const auto key = std::make_tuple(text,bold,columns); auto found = layouts_.find(key);
         if (found != layouts_.end()) return found->second;
         if (layouts_.size() >= 1024) layouts_.clear(); // Fixed memory budget for live streams.
         Layout result; const auto wide = utf16(text);
         check(write_->CreateTextLayout(wide.data(),static_cast<UINT32>(wide.size()),formats_[bold].Get(),
             64.0f*zoom_percent_/100.0f,logical_y(1),result.text.GetAddressOf()));
+        const float available = float(cell_width_*columns)*96.0f/dpi_;
+        DWRITE_TEXT_METRICS metrics{}; check(result.text->GetMetrics(&metrics));
+        if (metrics.widthIncludingTrailingWhitespace > available+0.01f) {
+            const DWRITE_TEXT_RANGE range{0,static_cast<UINT32>(wide.size())};
+            const float size = 18.0f*zoom_percent_/100.0f*available/metrics.widthIncludingTrailingWhitespace;
+            check(result.text->SetFontSize((std::max)(1.0f,size),range));
+            check(result.text->GetMetrics(&metrics));
+            require(metrics.widthIncludingTrailingWhitespace <= available+0.01f,
+                    "glyph cannot fit its existing physical cell");
+        }
         ComPtr<GlyphAudit> audit; audit.Attach(new GlyphAudit(write_.Get())); check(result.text->Draw(nullptr,audit.Get(),0,0));
         result.glyphs = audit->glyphs; result.missing = audit->missing; result.faces = audit->faces;
-        DWRITE_TEXT_METRICS metrics{}; check(result.text->GetMetrics(&metrics)); result.width = metrics.widthIncludingTrailingWhitespace;
+        result.width = metrics.widthIncludingTrailingWhitespace;
         return layouts_.emplace(key,std::move(result)).first->second;
     }
     void draw(Bitmap& bitmap, const Snapshot& snapshot, int first, int last, bool cursor = true) {
@@ -234,7 +246,7 @@ public:
                 const auto& cell = snapshot.lines[r][c]; if (cell.width == 0) continue;
                 const auto rect = D2D1::RectF(logical_x(c),logical_y(r),logical_x(c+cell.width),logical_y(r+1));
                 brush_->SetColor(D2D1::ColorF(color(cell.style.bg,true))); target_->FillRectangle(rect,brush_.Get());
-                const auto& text = layout(cell.text,cell.style.bold); brush_->SetColor(D2D1::ColorF(color(cell.style.fg,false)));
+                const auto& text = layout(cell.text,cell.style.bold,cell.width); brush_->SetColor(D2D1::ColorF(color(cell.style.fg,false)));
                 target_->PushAxisAlignedClip(rect,D2D1_ANTIALIAS_MODE_ALIASED);
                 target_->DrawTextLayout(D2D1::Point2F(logical_x(c),logical_y(r)),text.text.Get(),brush_.Get(),D2D1_DRAW_TEXT_OPTIONS_CLIP);
                 target_->PopAxisAlignedClip();
@@ -247,6 +259,6 @@ public:
         }
         require(GdiFlush() != FALSE,"GDI flush failed");
     }
-    void warm(const Snapshot& snapshot) { for (const auto& row : snapshot.lines) for (const auto& cell : row) if (cell.width) layout(cell.text,cell.style.bold); }
+    void warm(const Snapshot& snapshot) { for (const auto& row : snapshot.lines) for (const auto& cell : row) if (cell.width) layout(cell.text,cell.style.bold,cell.width); }
     size_t layout_count() const { return layouts_.size(); }
 };

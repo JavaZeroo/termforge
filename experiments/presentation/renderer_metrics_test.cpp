@@ -61,7 +61,7 @@ static void verify_ink(const Bitmap& bitmap, const Snapshot& snapshot, Renderer&
     for (int r = 0; r < snapshot.rows(); ++r) for (int c = 0; c < snapshot.columns(); ++c) {
         const auto& cell = snapshot.lines[r][c];
         if (cell.width == 0 || cell.text == " ") continue;
-        const auto& audit = renderer.layout(cell.text, cell.style.bold);
+        const auto& audit = renderer.layout(cell.text, cell.style.bold, cell.width);
         require(audit.glyphs > 0 && audit.missing == 0 && !audit.faces.empty(), "glyph audit failed");
         const float available_dip = float(renderer.cell_width()*cell.width)*96.0f/renderer.dpi();
         require(audit.width <= available_dip+0.01f, "glyph layout exceeds the physical grid width");
@@ -97,7 +97,7 @@ static void scenario(const std::string& backend, int dpi, int zoom, float baseli
     require(missing.missing > 0 && !missing.faces.empty(), "missing-glyph control failed");
 
     termforge::Parser parser(4,24,0);
-    parser.feed("ASCII e\xcc\x81 \xe4\xb8\xad\xe6\x96\x87\r\n\x1b[1;31;44mColor\x1b[0m\r\nCursor\r\nTail");
+    parser.feed("ASCII e\xcc\x81 \xe4\xb8\xad\xe6\x96\x87\r\n\x1b[1;31;44mColor\x1b[0m\r\nCursor\r\nTail\xf0\x9f\x99\x82");
     parser.finish();
     const Snapshot initial(parser.screen, 1);
     Bitmap partial(renderer.x(initial.columns()), renderer.y(initial.rows()));

@@ -420,11 +420,82 @@ class ShellWindow {
         const auto step=lines==WHEEL_PAGESCROLL?page:static_cast<int64_t>(lines);
         viewport_.scroll_by(parser_.screen,-static_cast<int64_t>(detents)*step); publish();
     }
+    void scenario_unicode() {
+#ifndef TERMFORGE_CANDIDATE_CORE
+        throw std::runtime_error("candidate-unicode requires the candidate adapter build");
+#else
+        const auto directory = std::filesystem::path(image_path_).parent_path();
+        if (stage_ == 0 && has("TF>")) {
+            wchar_t path[32768]{};
+            const auto count = GetModuleFileNameW(nullptr, path, 32768);
+            require(count && count < 32768, "Unicode fixture location failed");
+            const auto client = std::filesystem::path(path).parent_path() / L"shell_text_client.exe";
+            const auto prefix = directory / "candidate-unicode";
+            begin_output_observation();
+            command(L"\"" + client.wstring() + L"\" --unicode-v1 \"" + prefix.wstring() + L"\"\r");
+            stage_ = 1;
+            return;
+        }
+        if (stage_ != 1 || !live_contains_line("TF_U_DONE") || !resize_.settled()) return;
+        const auto save = [](const std::filesystem::path& path, const std::string& bytes) {
+            std::ofstream out(path, std::ios::binary | std::ios::trunc);
+            out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+            out.close(); require(bool(out), "Unicode evidence write failed");
+        };
+        save(directory / "candidate-unicode.transport.bin", observed_output_);
+        require(frame_matches_full(), "Unicode retained frame mismatch");
+        std::ostringstream out;
+        out << "{\"schema\":\"termforge-candidate-unicode-v1\",\"columns\":" << parser_.screen.width()
+            << ",\"rows\":" << parser_.screen.height() << ",\"dpi\":" << renderer_->dpi()
+            << ",\"cell_width\":" << renderer_->cell_width() << ",\"cell_height\":" << renderer_->cell_height()
+            << ",\"frame_matches_full\":true,\"presented_done\":null,\"lines\":[";
+        for (size_t row = 0; row < snapshot_->lines.size(); ++row) {
+            if (row) out << ',';
+            out << "{\"row\":" << row << ",\"text\":";
+            termforge::Screen::quoted(out, termforge::project_line(snapshot_->lines[row]).text);
+            out << ",\"cells\":[";
+            bool first = true;
+            for (size_t column = 0; column < snapshot_->lines[row].size(); ++column) {
+                const auto& cell = snapshot_->lines[row][column];
+                if (!cell.written) continue;
+                if (!first) out << ',';
+                first = false;
+                const Layout* layout = nullptr;
+                if (cell.width && cell.text != " ") layout = &renderer_->layout(cell.text, cell.style.bold, cell.width);
+                out << "{\"column\":" << column << ",\"width\":" << cell.width
+                    << ",\"marks\":" << cell.marks << ",\"written\":true,\"text\":";
+                termforge::Screen::quoted(out, cell.text);
+                out << ",\"glyphs\":" << (layout ? layout->glyphs : 0)
+                    << ",\"missing\":" << (layout ? layout->missing : 0)
+                    << ",\"width_dip\":" << (layout ? layout->width : 0) << ",\"faces\":[";
+                if (layout) {
+                    bool face_first = true;
+                    for (const auto& face : layout->faces) {
+                        if (!face_first) out << ',';
+                        face_first = false;
+                        termforge::Screen::quoted(out, face);
+                    }
+                }
+                out << "]}";
+            }
+            out << "]}";
+        }
+        out << "]}";
+        save(directory / "candidate-unicode.json", out.str());
+        result_.normal = true;
+        type(L"exit 37\r");
+        stage_ = 6;
+#endif
+    }
     void scenario() {
         if (mode_.empty() || closing_) return;
         require(ms(start_) < 25000, "shell scenario timeout");
         if (mode_ == "watchdog") {
             if (!stage_ && result_.frames) { std::cout << "{\"watchdog_ready\":true}\n" << std::flush; stage_ = 1; }
+            return;
+        }
+        if (mode_ == "candidate-unicode") {
+            scenario_unicode();
             return;
         }
         if (mode_ == "candidate-input-escape") {
@@ -1135,7 +1206,7 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "candidate-tui" || mode == "candidate-input-escape" || mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
+            require(mode == "candidate-tui" || mode == "candidate-unicode" || mode == "candidate-input-escape" || mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
             if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system" || mode=="ui-copy-context-system" || mode=="ui-actions-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
@@ -1157,8 +1228,9 @@ static int application(int argc, char** argv) {
         }
         const bool candidate = mode == "candidate-tui"
             ? r.candidate_tui_start && r.candidate_replies && r.candidate_tui && r.candidate_resize && r.normal && r.exit_code == 37
+            : mode == "candidate-unicode" ? r.normal && r.exit_code == 37
             : mode != "candidate-input-escape" || (r.candidate_replies && r.normal && r.exit_code == 37);
-        const bool legacy = mode == "candidate-tui" || mode == "candidate-input-escape" ||
+        const bool legacy = mode == "candidate-tui" || mode == "candidate-unicode" || mode == "candidate-input-escape" ||
             (r.normal && r.unicode && r.edited && r.arrows &&
              (mode == "close" || mode == "resize-close" || (r.interrupted && r.exit_code == 37)));
         const bool valid = r.complete && r.active_children == 0 && r.frames > 0 && r.input_rejected == 0 && candidate && legacy &&

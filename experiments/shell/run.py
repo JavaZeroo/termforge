@@ -26,6 +26,7 @@ from experiments.shell.selection_context_checks import validate_selection_contex
 from experiments.shell.action_checks import validate_actions_workflow
 from experiments.shell.find_checks import validate_find_workflow, validate_find_stream_workflow
 from experiments.shell.workflow_sessions_checks import validate_workflow_sessions
+from experiments.shell.unicode_checks import validate_unicode_output
 
 
 WORKSPACE_DATA_MODES = {
@@ -55,6 +56,12 @@ def validate(row, mode):
                 row.get("command_verified") is not True or row.get("input_rejected") != 0 or
                 row.get("presented_done") is not None):
             raise ValueError("candidate escape lifecycle failed")
+        return
+    if mode == "candidate-unicode":
+        if (row.get("valid") is not True or row.get("exit_code") != 37 or
+                row.get("active_children_after") != 0 or row.get("command_verified") is not True or
+                row.get("input_rejected") != 0 or row.get("presented_done") is not None):
+            raise ValueError("candidate Unicode lifecycle failed")
         return
     if mode == "candidate-tui":
         if row.get("valid") is not True or row.get("exit_code") != 37 or row.get("active_children_after") != 0:
@@ -454,6 +461,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
             if mode == "ui-history":
                 validate_history(json.loads((out / "history.json").read_text(encoding="utf-8")))
                 validate_native_scroll([json.loads(line) for line in (out / "native-scroll.jsonl").read_text(encoding="utf-8").splitlines()])
+            if mode == "candidate-unicode":
+                record["unicode_output"] = validate_unicode_output(out)
             if mode == "ui-keyboard":
                 expected = ("A汉e\u0301🙂👩\u200d💻1\ufe0f\u20e3".encode("utf-8") + b"\t\x1b[Z\x00\x1b[1;5D\x1b[3;4~\x1bx" +
                             "é".encode("utf-8") + b"\x00\x7f\x1b[H\x1b[F\x1b[2~\x1b[3~\x1b[5~\x1b[6~" +
@@ -573,6 +582,8 @@ def main():
              "experiments/shell/workspace_launch_failure_scenario.hpp", "experiments/shell/workspace_split_scenario.hpp",
              "experiments/shell/workspace_history_scenario.hpp", "experiments/shell/history_checks.py",
              "experiments/shell/native_scroll_gesture.hpp",
+             "experiments/shell/unicode_checks.py", "experiments/shell/workflow_checks.py",
+             "experiments/shell/text_client.cpp", "experiments/shell/test_candidate_tui.py",
              "experiments/shell/workspace_keyboard_scenario.hpp", "experiments/shell/input_client.cpp",
              "experiments/shell/workspace_paste_scenario.hpp", "experiments/shell/paste_prompt.hpp",
              "experiments/shell/paste_scenario_state.hpp", "experiments/shell/paste_checks.py",
