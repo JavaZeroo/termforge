@@ -1,0 +1,211 @@
+{
+  "schema": "termforge-unicode-renderer-validation-v1",
+  "source_commit": "18c36ce8a38fd4bbd3f09acd224b35e0852b3160",
+  "source_tree": "a98d7ce460b68cd5464e1ee6166484a6d6d1a548",
+  "source_binding": "The implementation and tests were committed before the final builds and regressions. Documentation and this evidence are a separate follow-up.",
+  "scope": "Exact source and scalar preservation, native console evidence, and grid-fitting DWrite text layouts with actual glyph-run evidence for four fixed samples. Whole-cluster shaping and width policy are explicitly excluded.",
+  "passed": false,
+  "scoped_validation_passed": true,
+  "complete_unicode_ime_verified": false,
+  "complex_grapheme_rendering_verified": false,
+  "whole_cluster_width_policy_verified": false,
+  "new_sample_selection_verified": false,
+  "application_keyboard_modes_verified": false,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 local x64 10.0.26200",
+    "python": "build/r1-python/Scripts/python.exe",
+    "harness": "Owned non-input desktop and Job; no screenshots, foreground input or display-setting changes",
+    "raw_artifact_root": "build/r2-unicode-scalar-final"
+  },
+  "builds": {
+    "default": {"command": "cmake --build build --config Release", "passed": true},
+    "candidate": {"command": "cmake --build build/candidate-adapter --config Release", "passed": true}
+  },
+  "renderer": {
+    "initial_failure": "gdi dpi=96 zoom=50: glyph layout exceeds the physical grid width",
+    "initial_emoji_width_dip": 24.7148,
+    "available_width_dip_at_96dpi": 24,
+    "final_emoji_width_dip": 24,
+    "final_glyph_faces": ["Segoe UI Emoji"],
+    "missing_glyphs": 0,
+    "policy": "Only over-wide DWrite layouts reduce font size to fit the existing one/two-cell physical grid; cell dimensions are not expanded.",
+    "cache_key": "text, bold and actual cell width",
+    "audit_after_font_size_adjustment": true,
+    "ordinary_layouts_unchanged_when_they_fit": true,
+    "dpi_zoom_backend_scenarios_per_build": 32,
+    "candidate_and_default_scenario_tests_passed": true,
+    "full_cluster_shaping_claimed": false
+  },
+  "candidate_unicode": {
+    "command": "PYTHONUTF8=1 TERMFORGE_BIN_DIR=build/candidate-adapter/bin/Release TERMFORGE_TEST_ARTIFACTS=build/r2-unicode-scalar-final build/r1-python/Scripts/python.exe -m unittest experiments.shell.test_candidate_tui -v",
+    "test_count": 3,
+    "seconds": 3.574,
+    "unicode_rounds_passed": 2,
+    "tamper_cases_rejected": 10,
+    "source_bytes": 91,
+    "source_sha256": "a3b951ab67ca5d079f7e91ee8f1cd25dfde82ae4b08ed40c406c911e0ccdf8c2",
+    "samples": ["e\u0301", "🙂", "👩\u200d💻", "1\ufe0f\u20e3"],
+    "observed_not_contract": {
+      "zwj_cells": ["👩\u200d", "💻"],
+      "keycap_cells": ["1\ufe0f\u20e3"],
+      "keycap_width": 1
+    },
+    "scalar_sequences_preserved": true,
+    "candidate_cells_contiguous": true,
+    "glyph_runs_have_no_missing_glyphs": true,
+    "layouts_fit_physical_cells": true,
+    "whole_cluster_width_accepted": false
+  },
+  "targeted_regression": {
+    "candidate": {
+      "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure -R '^(candidate_shell_tui|renderer_metrics|workflow_fixture)$'",
+      "passed": 3,
+      "failed": 0,
+      "seconds": 26.95
+    },
+    "default": {
+      "command": "ctest --test-dir build -C Release --output-on-failure -R '^(renderer_metrics|presentation|workflow_fixture)$'",
+      "passed": 3,
+      "failed": 0,
+      "seconds": 27.73
+    }
+  },
+  "native_console": {
+    "source_and_transport_preserve_original_scalars": true,
+    "projection": "replacement-non-bmp on this Windows host",
+    "non_bmp_cell_representation": "Each supplementary scalar becomes a leading/trailing pair of U+FFFD cells; text projection exposes one replacement character per scalar.",
+    "console_text_sha256": "6b6d7218f098f18cd3ebd077e73566fb850f2dc8adf7e4230ffa56f44db65f79",
+    "char_info_sha256": "86c36ff9ab2fb4aa9b3b4883da7079b21176981052d6f9d8e7293e387380e1f8",
+    "direct_probe_without_termforge_window": {
+      "source_console_and_char_info_files_identical_to_product_scenario": true,
+      "exit_code": 0,
+      "cleanup_complete": true,
+      "active_processes_after": 0,
+      "local_probe": "local/r2-unicode-console-probe",
+      "raw_probe_and_logs_published": false
+    },
+    "not_a_windterm_or_cross_platform_claim": true
+  },
+  "artifact_hashes": [
+    {
+      "round": 0,
+      "transport_bytes": 743,
+      "transport_sha256": "4c0dfa67f1ef6b2f2687783bc48d60db53c4b1853916e0d0200e0c79980312dc",
+      "window_observation_sha256": "c1927846b94e96fcbd0cb337412626ee5fac141b98919d86eb222172556adb60"
+    },
+    {
+      "round": 1,
+      "transport_bytes": 691,
+      "transport_sha256": "2300a4550769ad6be9089720e3218bff108876168317e5e2944b2238f555c977",
+      "window_observation_sha256": "b4d96218e93e9172bc05309176d3c4ffd35cad0980a325f247822b493a4f192a"
+    }
+  ],
+  "windterm_static_investigation": {
+    "target": "WindTerm 2.7.0 Windows x64",
+    "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "target_executed": false,
+    "read_only_ghidra": true,
+    "observations": [
+      "0x1405fab20 uses whole-QString advance for Mark/skin-tone paths and per-scalar measurement otherwise.",
+      "0x1405faef0 provides another whole-string measurement path; the existing exports do not establish which caller or cluster representation is used.",
+      "The reviewed exports do not establish actual ZWJ/keycap cell width, cursor advancement or runtime WindTerm behavior."
+    ],
+    "runtime_grid_verified": false,
+    "raw_decompilation_published": false,
+    "reproduction_entry": "research/README.md and research/ghidra/FindUnicodeMetrics.java"
+  },
+  "open_follow_up": {
+    "issue": 39,
+    "state": "OPEN",
+    "relationship": "Native child and blocked-by dependency of #30; both remain open",
+    "reason": "Streaming grapheme segmentation and width/cursor contracts are unresolved. Current unicode-width 0.2.2 and zero-width append behavior do not establish a complete grapheme implementation; no new dependency was silently added."
+  },
+  "regression": {
+    "default": {
+      "command": "ctest --test-dir build -C Release --output-on-failure",
+      "status": "completed",
+      "exit_code": 8,
+      "total": 40,
+      "passed": 39,
+      "failed": 1,
+      "seconds": 312.56,
+      "shell_nested_errors": 2,
+      "shell_nested_skipped": 3,
+      "remaining_failures": [
+        "test_commands_unicode_editing_interrupt_and_normal_exit",
+        "test_resize_child_dimensions_and_interrupt"
+      ],
+      "existing_issue": 36,
+      "loads_or_timeouts_changed": false
+    },
+    "candidate": {
+      "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure",
+      "status": "completed",
+      "exit_code": 8,
+      "total": 42,
+      "passed": 41,
+      "failed": 1,
+      "seconds": 362.02,
+      "shell_nested_errors": 4,
+      "shell_nested_skipped": 3,
+      "remaining_failures": [
+        "test_close_during_continuous_output",
+        "test_close_while_resizing_continuous_output",
+        "test_commands_unicode_editing_interrupt_and_normal_exit",
+        "test_resize_child_dimensions_and_interrupt"
+      ],
+      "existing_issues": [36, 38],
+      "failure_stage": "Early text/input and close scenarios; a different or close-worker root cause is not established",
+      "loads_or_timeouts_changed": false
+    }
+  },
+  "remote_ci": {
+    "candidate_workflow": {
+      "run": 40241569770,
+      "conclusion": "success",
+      "scope": "External core candidate workflow; it is not a substitute for the complete local candidate regression"
+    },
+    "default_workflow": {
+      "run": 40241569730,
+      "ubuntu": "success",
+      "windows": "failure",
+      "windows_total": 40,
+      "windows_passed": 39,
+      "windows_failed": 1,
+      "windows_seconds": 258.55,
+      "windows_shell_errors": [
+        "test_local_shell_launch_working_directory_and_cleanup: stage 4 timeout",
+        "test_mouse_selection_copy_model_zoom_sessions_and_eviction: missing TF_FIND_050 needle row",
+        "test_mouse_selection_to_real_system_clipboard: missing TF_FIND_050 needle row"
+      ],
+      "windows_shell_skipped": 1,
+      "normal_and_resize_interrupt_scenarios": "Passed in this hosted run; this does not resolve the distinct local #36 failures",
+      "pre_renderer_change_run": 40237901832,
+      "same_three_errors_preceded_renderer_change": true,
+      "root_cause": "Unresolved and tracked by #38; not attributed to the renderer fix, environment or #36 without evidence",
+      "logs_verified_through_rest_job_api": true
+    }
+  },
+  "binary_sha256": {
+    "default/termforge_shell.exe": "0d387a63087cb566f67c51c85487275b380d56c753e145f3919693c6beeb0d80",
+    "default/shell_text_client.exe": "a49e90c025e3e0e9b1a47509292f7b0a5a6ac20dd911adff98a3b9cce29e5ca2",
+    "default/shell_test_launcher.exe": "3a0ccd7a936f106235ff6d45c4b8d2640763e018b645764b6b1717beb99d8e75",
+    "default/renderer_metrics_test.exe": "721e1e837d5932408962a8582d04663cfebf08e3980a7bf6ad966dc9a11af30a",
+    "candidate/termforge_shell.exe": "3f10f1641fa341fc0807ec069f7fbbda266462ea6331067169f8190240336cad",
+    "candidate/shell_text_client.exe": "0d798c2216fe8f6d4f1f1e2137852f066143bc239894735a2cd46c6cbe83a65d",
+    "candidate/shell_test_launcher.exe": "98f55be477de81c057a5084ac8369f92bbba55f4c1b104d35eb10d8c7be67e0a",
+    "candidate/renderer_metrics_test.exe": "d5e694a2aed8881f08a76e46199ac7164c70b13dfa87030c5d7e5e3db3838c1d"
+  },
+  "limitations": [
+    "This slice verifies exact source/scalar preservation and actual glyph layout only. It does not accept a complete ZWJ/keycap clustering, width, cursor or selection contract; #39 remains open.",
+    "Glyph-run identities and layout-width bounds do not prove per-pixel overhang or presented-frame correctness; no such visual claim is made.",
+    "The observed native replacement projection is not treated as original text, a WindTerm result, or proof of cross-platform behavior.",
+    "The full #30 Unicode/IME contract, application keyboard modes, selection of the added samples, real distinct-DPI transitions and presented frames remain unverified.",
+    "Only the explicit candidate build runs the new end-to-end scenario; the default self-developed core was not expanded to claim complex grapheme support.",
+    "Known #36/#38 failures and the full default/candidate regression results must remain visible; no complete-suite or R2 completion claim is made.",
+    "Raw private artifacts, third-party decompilation and the local native-only probe are not published. Public fixed scenarios and hashes support the documented limited reproduction."
+  ]
+}

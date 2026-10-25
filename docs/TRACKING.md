@@ -46,12 +46,12 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 | R2-04 | [#27](https://github.com/JavaZeroo/termforge/issues/27) | 备用屏、滚动区域及关联模式 | #26 |
 | R2-05 | [#28](https://github.com/JavaZeroo/termforge/issues/28) | 终端回复、输入/输出模式及固定真实 TUI | #27 |
 | R2-06 | [#29](https://github.com/JavaZeroo/termforge/issues/29) | resize、逻辑行与历史语义 | #26 |
-| R2-07 | [#30](https://github.com/JavaZeroo/termforge/issues/30) | 复杂 Unicode、IME、键盘与选择语义 | #26 |
+| R2-07 | [#30](https://github.com/JavaZeroo/termforge/issues/30) | 复杂 Unicode、IME、键盘与选择语义；完整流式字素聚类与宽度由子项 [#39](https://github.com/JavaZeroo/termforge/issues/39) 承担 | #26、#39（完整聚类与宽度合同） |
 | R2-08 | [#31](https://github.com/JavaZeroo/termforge/issues/31) | 字体网格及真实 DPI/跨显示器验收 | 无 |
 | R2-09 | [#32](https://github.com/JavaZeroo/termforge/issues/32) | 固定本地 shell 与真正的分屏/标签工作流 | 无 |
 | R2-10 | [#33](https://github.com/JavaZeroo/termforge/issues/33) | 会话配置、窗口与工作区恢复及迁移/损坏处理 | #32 |
 | R2-11 | [#34](https://github.com/JavaZeroo/termforge/issues/34) | 产品 GUI/平台、核心历史接口与呈现隔离决定 | #23、#26、#28–#33 |
-| R2-12 | [#35](https://github.com/JavaZeroo/termforge/issues/35) | Windows R2 日常开发版与路标出口验收 | #27–#34、#36 |
+| R2-12 | [#35](https://github.com/JavaZeroo/termforge/issues/35) | Windows R2 日常开发版与路标出口验收 | #27–#34、#36、#38 |
 | R1 回归 | [#36](https://github.com/JavaZeroo/termforge/issues/36) | 定位持续 cmd 输出时 ETX 不中断并恢复 normal/resize 与完整 CTest | 无；不得减少负载或仅延长超时 |
 
 ## 从当前状态接着做
