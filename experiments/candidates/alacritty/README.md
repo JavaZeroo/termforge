@@ -1,6 +1,6 @@
 # Alacritty 原生核心候选（R2-01 / #24）
 
-本目录是 [#20](https://github.com/JavaZeroo/termforge/issues/20) 的实际候选构建与状态适配实验，不是产品核心选型结论，也不改变现有 C++ 核心的默认构建。这里不测量性能，不启动 GUI，不扩大 R2 的 VT/TUI 产品实现。
+本目录是 [#20](https://github.com/JavaZeroo/termforge/issues/20) 的实际候选构建、状态适配与核心成本实验，不是产品核心选型结论，也不改变现有 C++ 核心的默认构建。计量不代表产品性能，不启动 GUI，不扩大 R2 的 VT/TUI 产品实现。
 
 ## 固定来源与许可
 
@@ -56,4 +56,4 @@ alacritty_trace input.bin rows columns history chunks.txt
 - 备用屏/查询的一个固定轨迹不证明完整 TUI、所有 VT 模式、真实 ConPTY 生命周期或产品 UI 兼容。
 - 候选可构建不等于支持 [#23 平台台账](../../../research/windterm-2.7.0-platform-scope.md)的全部系统。Windows 7 的非 ConPTY 路径、macOS 10.13、Linux glibc 2.17、x86 和 ARM 缺口在 #26/#34 单独判断。
 - #25 已完成[共同轨迹与逐项裁决](../../differential/decisions.md)：95 次、1011 检查点，90 次一致、5 次已裁决参考差异；ED1 候选错误与 ED2 历史策略已固定签名，执行通过不等于语义接受。[扩展能力矩阵](../../differential/results/2026-10-25-capabilities-v2/summary.json)覆盖备用屏、滚动区、回复、Recovery 和 resize；[真实 cmd/more.com/Vim 核心轨迹](../../differential/results/2026-10-25-real-applications/summary.json)已验证生命周期与回放，但不是产品 GUI/TUI 验收。[有界 fuzz](../../differential/results/2026-10-25-fuzz/summary.json)固定首败与最小回归，未登记新差异仍失败；#29 决定重排合同，#26 才测量成本并重审 ADR-0003。
-- #26 已建立[共同 project 计量](../../measure/README.md#原生候选-project-对照26)：纯 feed 与全量投影/JSON 成本分开，当前候选观察适配成本显著，不能据此直接选型。交互路径、平台与维护审查仍在进行。
+- #26 已建立[共同 project/interactive 计量](../../measure/README.md#原生候选-project--interactive-对照26)：长输出与固定编辑回放的纯 feed、全量投影/JSON 成本分开，当前候选观察适配成本显著，不能据此直接选型。平台、维护/升级路径、接口影响与 ADR-0003 结论仍在审查。

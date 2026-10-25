@@ -73,7 +73,7 @@ def validate_result(result, floor, expected):
     for name in ("route", "chunk", "observe"):
         if result[name] != expected[name]:
             raise ValueError(f"mismatched {name}")
-    if result["rounds"] != result["iterations"] or result["bytes_per_round"] != 78000:
+    if result["rounds"] != result["iterations"] or result["bytes_per_round"] != expected.get("bytes_per_round", 78000):
         raise ValueError("unexpected workload volume")
     if result["state_fnv1a64"] != expected.get("state_fnv1a64", EXPECTED_STATE):
         raise ValueError("unexpected state digest")

@@ -6,6 +6,7 @@ on:
       - 'CMakeLists.txt'
       - 'experiments/core/**'
       - 'experiments/differential/**'
+      - 'experiments/measure/**'
       - 'experiments/candidates/alacritty/**'
       - '.github/workflows/core-candidate.yml'
   pull_request:
@@ -13,6 +14,7 @@ on:
       - 'CMakeLists.txt'
       - 'experiments/core/**'
       - 'experiments/differential/**'
+      - 'experiments/measure/**'
       - 'experiments/candidates/alacritty/**'
       - '.github/workflows/core-candidate.yml'
   workflow_dispatch:
@@ -94,6 +96,8 @@ jobs:
         run: python -m unittest discover -s experiments/differential -p test_fuzz_matrix.py -v
       - name: Compare interleaved project costs
         run: python experiments/measure/compare.py --out build/test-artifacts/measure-compare --cpu-seconds 1 --repeats 2
+      - name: Compare interleaved interactive costs
+        run: python experiments/measure/compare.py --route interactive --out build/test-artifacts/measure-interactive --cpu-seconds 1 --repeats 2
       - name: Test measurement contracts
         run: python -m unittest discover -s experiments/measure -p test_*.py -v
       - name: Preserve synthetic candidate evidence
@@ -115,3 +119,4 @@ jobs:
             build/test-artifacts/candidate-fuzz-cli/
             build/test-artifacts/candidate-fuzz/
             build/test-artifacts/measure-compare/
+            build/test-artifacts/measure-interactive/

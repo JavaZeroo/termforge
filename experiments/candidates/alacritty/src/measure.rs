@@ -146,7 +146,7 @@ fn projection(term: &mut Term<Listener>, listener: &Listener) -> Result<(u64, Va
     Ok((hash_bytes(&bytes), value))
 }
 
-fn correct(value: &Value) -> bool {
+fn correct(value: &Value, route: &str) -> bool {
     let screen = &value["screen"];
     if screen["row"] != 23 || screen["column"] != 0 || screen["wrap_pending"] != false {
         return false;
@@ -155,6 +155,22 @@ fn correct(value: &Value) -> bool {
     let history = screen["history"].as_array().unwrap();
     if cells.len() != 24 || history.len() != 100 {
         return false;
+    }
+    if route == "interactive" {
+        for row in cells[..23].iter().chain(history.iter()) {
+            for (column, cell) in row.as_array().unwrap().iter().enumerate() {
+                let expected = if column < 8 { &"abcdeQgh"[column..column + 1] } else { "" };
+                if cell["text"] != expected || cell["style"]["fg"] != -1 || cell["style"]["bg"] != -1 {
+                    return false;
+                }
+            }
+        }
+        for cell in cells[23].as_array().unwrap() {
+            if cell["text"] != "" || cell["style"]["fg"] != -1 || cell["style"]["bg"] != -1 {
+                return false;
+            }
+        }
+        return true;
     }
     for (row_index, row) in cells.iter().enumerate() {
         for (column, cell) in row.as_array().unwrap().iter().enumerate() {
@@ -185,9 +201,10 @@ fn duration_arg(value: &str) -> Result<f64, String> {
 
 fn run() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
-    if args.len() != 5 || args[1] != "project" {
-        return Err("alacritty-measure project chunk observe(0|1) min_cpu_seconds".into());
+    if args.len() != 5 || (args[1] != "project" && args[1] != "interactive") {
+        return Err("alacritty-measure project|interactive chunk observe(0|1) min_cpu_seconds".into());
     }
+    let route = args[1].as_str();
     let chunk = args[2].parse::<usize>().map_err(|_| "invalid chunk")?;
     if chunk == 0 || chunk > 1_048_576 {
         return Err("invalid chunk".into());
@@ -198,7 +215,11 @@ fn run() -> Result<(), String> {
         _ => return Err("invalid observer".into()),
     };
     let duration = duration_arg(&args[4])?;
-    let payload = format!("{}\r\n", "x".repeat(76)).repeat(1000);
+    let payload = if route == "interactive" {
+        "abcdefgh\x1b[D\x1b[D\x1b[DZ\x08Q\r\n".repeat(1000)
+    } else {
+        format!("{}\r\n", "x".repeat(76)).repeat(1000)
+    };
     let listener = Listener::default();
     let config = Config { scrolling_history: 100, ..Config::default() };
     let new_term = || Term::new(config.clone(), &Size { columns: 80, rows: 24 }, listener.clone());
@@ -209,7 +230,7 @@ fn run() -> Result<(), String> {
         parser.advance(&mut warmup, &payload.as_bytes()[offset..(offset + chunk).min(payload.len())]);
     }
     let (expected_hash, expected_value) = projection(&mut warmup, &listener)?;
-    if !correct(&expected_value) {
+    if !correct(&expected_value, route) {
         return Err("warmup oracle failed".into());
     }
     drop(warmup);
@@ -227,7 +248,7 @@ fn run() -> Result<(), String> {
         }
         if observe {
             let (actual, value) = projection(current, &listener)?;
-            if actual != expected_hash || !correct(&value) {
+            if actual != expected_hash || !correct(&value, route) {
                 return Err("measured projection oracle failed".into());
             }
         }
@@ -235,8 +256,8 @@ fn run() -> Result<(), String> {
     })?;
     OBSERVE.store(false, Ordering::Relaxed);
     let checks = Instant::now();
-    let (_, final_value) = projection(term.as_mut().unwrap(), &listener)?;
-    if !correct(&final_value) {
+    let (final_hash, final_value) = projection(term.as_mut().unwrap(), &listener)?;
+    if final_hash != expected_hash || !correct(&final_value, route) {
         return Err("final state oracle failed".into());
     }
     let oracle_seconds = checks.elapsed().as_secs_f64();
@@ -247,7 +268,7 @@ fn run() -> Result<(), String> {
         "schema_version": 2,
         "kind": "core_cost",
         "valid": true,
-        "route": "project",
+        "route": route,
         "chunk": chunk,
         "observe": observe,
         "rounds": interval.iterations,

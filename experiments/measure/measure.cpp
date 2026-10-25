@@ -171,15 +171,17 @@ int main(int argc, char** argv) {
             calibrate(duration_arg(argv[2]), argc == 4 && integer_arg(argv[3], 1) != 0);
             return 0;
         }
-        if (argc != 5) throw std::runtime_error("core_measure parse|state chunk observe(0|1) min_cpu_seconds OR calibrate min_cpu_seconds [observe_first(0|1)]");
+        if (argc != 5) throw std::runtime_error("core_measure parse|project|interactive|state chunk observe(0|1) min_cpu_seconds OR calibrate min_cpu_seconds [observe_first(0|1)]");
         const std::string route = argv[1];
         const size_t chunk = integer_arg(argv[2], 1048576);
         const bool observe = integer_arg(argv[3], 1) != 0;
         const double duration = duration_arg(argv[4]);
-        if ((route != "parse" && route != "project" && route != "state") || chunk == 0) throw std::runtime_error("invalid arguments");
+        if ((route != "parse" && route != "project" && route != "interactive" && route != "state") || chunk == 0)
+            throw std::runtime_error("invalid arguments");
         const std::string line(76, 'x');
+        const std::string action = "abcdefgh\x1b[D\x1b[D\x1b[DZ\bQ\r\n";
         std::string payload;
-        for (int i = 0; i < 1000; ++i) payload += line + "\r\n";
+        for (int i = 0; i < 1000; ++i) payload += route == "interactive" ? action : line + "\r\n";
         auto run = [&](termforge::Parser& parser) {
             if (route != "state") {
                 for (size_t offset = 0; offset < payload.size(); offset += chunk)
@@ -192,8 +194,21 @@ int main(int argc, char** argv) {
                 }
             }
         };
-        auto correct = [&line](const termforge::Screen& s) {
+        auto correct = [&line, &route](const termforge::Screen& s) {
             if (s.row != 23 || s.column != 0 || s.wrap_pending || s.discarded != 877 || s.history.size() != 100) return false;
+            if (route == "interactive") {
+                const auto matches = [](const termforge::Line& row) {
+                    const std::string expected = "abcdeQgh";
+                    for (int c = 0; c < 80; ++c) if (row[c].text != (c < 8 ? expected.substr(c, 1) : " ") ||
+                        row[c].width != 1 || !row[c].style.plain()) return false;
+                    return true;
+                };
+                for (int r = 0; r < 23; ++r) if (!matches(s.lines[r])) return false;
+                for (const auto& row : s.history) if (!matches(row)) return false;
+                for (int c = 0; c < 80; ++c) if (s.lines.back()[c].text != " " ||
+                    s.lines.back()[c].width != 1 || !s.lines.back()[c].style.plain()) return false;
+                return true;
+            }
             for (int r = 0; r < 24; ++r) for (int c = 0; c < 80; ++c) {
                 const auto& cell = s.lines[r][c];
                 if (cell.text != (r < 23 && c < static_cast<int>(line.size()) ? "x" : " ") || cell.width != 1 || !cell.style.plain()) return false;
@@ -217,7 +232,7 @@ int main(int argc, char** argv) {
         count_allocations = observe;
         const auto interval = measure(duration, 8, [&] {
             parser.emplace(); run(*parser);
-            if (route == "project" && observe && hash_state(parser->screen) != expected_hash)
+            if ((route == "project" || route == "interactive") && observe && hash_state(parser->screen) != expected_hash)
                 throw std::runtime_error("measured projection oracle failed");
         });
         count_allocations = false;
@@ -235,7 +250,7 @@ int main(int argc, char** argv) {
             << ",\"cpu_floor_seconds\":" << duration << ',';
         interval_json(interval, 8); std::cout << ','; clock_identity();
         std::cout << ",\"warmup_and_oracle_seconds\":" << preparation << ",\"final_oracle_seconds\":" << oracle_seconds
-            << ",\"oracle_scope\":\"" << (route == "project" && observe
+            << ",\"oracle_scope\":\"" << ((route == "project" || route == "interactive") && observe
                 ? "warmup and final; every measured projection also hashed" : "warmup and final iteration") << "\""
             << ",\"state_fnv1a64\":\"" << expected_hash << "\",\"ordinary_allocations\":";
         if (observe) std::cout << allocations; else std::cout << "null";

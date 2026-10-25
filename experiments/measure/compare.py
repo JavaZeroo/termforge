@@ -1,4 +1,4 @@
-"""Interleaved TermForge/Alacritty project-cost samples with raw evidence, not a speed gate."""
+"""Interleaved TermForge/Alacritty core-cost samples with raw evidence, not a speed gate."""
 import argparse
 from datetime import datetime, timezone
 import hashlib
@@ -14,11 +14,23 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from experiments.build_paths import binary
-from experiments.measure.run import execute
+from experiments.measure.run import EXPECTED_STATE, execute
 
 CANDIDATE_STATE = "11966868740884721388"
 ENDPOINT = ("same 78,000-byte project workload and continuous interval; observation off excludes projection, "
             "observation on includes projection/JSON and allocation counting; counters are not an uninstrumented baseline")
+WORKLOADS = {
+    "project": dict(chunks=(512, 4096, 65536), fixture=(b"x" * 76 + b"\r\n") * 1000,
+                    bytes_per_round=78000, endpoint=ENDPOINT,
+                    states=dict(termforge=EXPECTED_STATE, alacritty=CANDIDATE_STATE)),
+    "interactive": dict(
+        chunks=(1, 16, 64, 22000),
+        fixture=b"abcdefgh\x1b[D\x1b[D\x1b[DZ\x08Q\r\n" * 1000,
+        bytes_per_round=22000,
+        endpoint=("same 22,000-byte interactive workload and continuous interval; observation off excludes projection, "
+                  "observation on includes projection/JSON and allocation counting; counters are not an uninstrumented baseline"),
+        states=dict(termforge="8292075482910706113", alacritty="8035857386658397897")),
+}
 
 
 def sha(path):
@@ -33,22 +45,24 @@ def candidate_binary(value=None):
     return (ROOT / "experiments/candidates/alacritty/target/release" / name).resolve(strict=True)
 
 
-def run_batch(core, candidate, output, floor, repeats, seed):
+def run_batch(core, candidate, output, floor, repeats, seed, route="project"):
+    workload = WORKLOADS[route]
     output.mkdir(parents=True, exist_ok=False)
     manifest = dict(schema_version=2, status="running", platform=platform.platform(),
                     started_utc=datetime.now(timezone.utc).isoformat(), machine=platform.machine(),
-                    cpu_floor_seconds=floor, repeats=repeats, seed=seed, endpoint=ENDPOINT,
+                    cpu_floor_seconds=floor, repeats=repeats, seed=seed, route=route,
+                    bytes_per_round=workload["bytes_per_round"], endpoint=workload["endpoint"],
                     core_sha256=sha(core), candidate_sha256=sha(candidate),
                     source_sha256={path: sha(ROOT / path) for path in (
                         "experiments/measure/measure.cpp", "experiments/measure/compare.py",
                         "experiments/candidates/alacritty/src/measure.rs",
                         "experiments/candidates/alacritty/src/main.rs")},
-                    fixture_sha256=hashlib.sha256((b"x" * 76 + b"\r\n") * 1000).hexdigest(),
+                    fixture_sha256=hashlib.sha256(workload["fixture"]).hexdigest(),
                     comparable_to_schema_v1=False, performance_gate="not_evaluated", samples=0, calibrations=0)
     meta = output / "manifest.json"
     meta.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     implementations = (("termforge", core), ("alacritty", candidate))
-    configs = list(itertools.product((512, 4096, 65536), (0, 1)))
+    configs = list(itertools.product(workload["chunks"], (0, 1)))
     rng = random.Random(seed)
     samples = []
     try:
@@ -65,10 +79,10 @@ def run_batch(core, candidate, output, floor, repeats, seed):
                 rng.shuffle(order)
                 for (implementation, executable), (chunk, observe) in order:
                     expected = dict(kind="core_cost", implementation=implementation, repeat=repeat,
-                                    route="project", chunk=chunk, observe=observe)
-                    if implementation == "alacritty":
-                        expected["state_fnv1a64"] = CANDIDATE_STATE
-                    record = execute([str(executable), "project", str(chunk), str(observe), str(floor)],
+                                    route=route, chunk=chunk, observe=observe,
+                                    bytes_per_round=workload["bytes_per_round"],
+                                    state_fnv1a64=workload["states"][implementation])
+                    record = execute([str(executable), route, str(chunk), str(observe), str(floor)],
                                      floor, expected)
                     raw.write(json.dumps(record, ensure_ascii=False) + "\n")
                     raw.flush()
@@ -84,7 +98,7 @@ def run_batch(core, candidate, output, floor, repeats, seed):
         manifest["finished_utc"] = datetime.now(timezone.utc).isoformat()
         meta.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     groups = []
-    for implementation, chunk, observe in itertools.product(("termforge", "alacritty"), (512, 4096, 65536), (0, 1)):
+    for implementation, chunk, observe in itertools.product(("termforge", "alacritty"), workload["chunks"], (0, 1)):
         selected = [record for record in samples if record["implementation"] == implementation and
                     record["chunk"] == chunk and record["observe"] == observe]
         groups.append(dict(implementation=implementation, chunk=chunk, observe=observe, samples=len(selected),
@@ -94,7 +108,8 @@ def run_batch(core, candidate, output, floor, repeats, seed):
                            ordinary_allocations=[record["result"]["ordinary_allocations"] for record in selected],
                            ordinary_allocated_bytes=[record["result"]["ordinary_allocated_bytes"]
                                                      for record in selected]))
-    summary = dict(schema_version=2, fixture_sha256=manifest["fixture_sha256"], repeats=repeats,
+    summary = dict(schema_version=2, route=route, bytes_per_round=workload["bytes_per_round"],
+                   state_fnv1a64=workload["states"], fixture_sha256=manifest["fixture_sha256"], repeats=repeats,
                    cpu_floor_seconds=floor, groups=groups, performance_gate="not_evaluated",
                    allocation_scopes_differ=True, counter_off_is_uninstrumented=False,
                    observation_cost_not_subtracted=True)
@@ -107,6 +122,7 @@ def main():
     parser.add_argument("--core", type=Path)
     parser.add_argument("--candidate", type=Path)
     parser.add_argument("--out", type=Path, required=True, help="new output directory; never overwritten")
+    parser.add_argument("--route", choices=sorted(WORKLOADS), default="project")
     parser.add_argument("--cpu-seconds", type=float, default=1.0)
     parser.add_argument("--repeats", type=int, default=2)
     parser.add_argument("--seed", type=int, default=20261025)
@@ -115,7 +131,8 @@ def main():
         parser.error("invalid duration or repeats")
     core = args.core.resolve(strict=True) if args.core else binary("core_measure")
     candidate = candidate_binary(args.candidate)
-    _, summary = run_batch(core, candidate, args.out.resolve(), args.cpu_seconds, args.repeats, args.seed)
+    _, summary = run_batch(core, candidate, args.out.resolve(), args.cpu_seconds, args.repeats, args.seed,
+                           route=args.route)
     print(json.dumps({"samples": sum(group["samples"] for group in summary["groups"]),
                       "groups": len(summary["groups"]), "performance_gate": summary["performance_gate"]}, indent=2))
 
