@@ -1,0 +1,90 @@
+{
+  "schema": "termforge-unicode-keyboard-validation-v1",
+  "source_commit": "fe0240051d8cc7e508362df9578c2a3c4e4a2d08",
+  "source_tree": "fb1572ac7d03cec17c6aeb0c3f9e8bd2fdbad285",
+  "source_binding": "The two changed source files matched this commit; the exercised binaries and raw receiver files were hashed after the tests.",
+  "scope": "Fixed complex scalar sequences and existing keyboard boundaries through WM_CHAR, ConPTY and a real ReadConsoleW receiver.",
+  "passed": false,
+  "scoped_validation_passed": true,
+  "complete_unicode_ime_verified": false,
+  "complex_grapheme_rendering_verified": false,
+  "new_sample_selection_verified": false,
+  "application_keyboard_modes_verified": false,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 local x64 10.0.26200",
+    "python": "build/r1-python/Scripts/python.exe",
+    "harness": "Owned non-input desktop and Job; no screenshots, foreground input or display-setting changes",
+    "input_path": "Synthetic WM_CHAR/WM_KEYDOWN to ShellWindow, InputQueue, ConPTY and shell_input_client ReadConsoleW",
+    "physical_keyboard_or_ime": false
+  },
+  "builds": {
+    "default": {
+      "command": "cmake --build build --config Release",
+      "passed": true
+    },
+    "candidate": {
+      "command": "cmake --build build/candidate-adapter --config Release --target shell_test_launcher",
+      "passed": true
+    }
+  },
+  "keyboard": {
+    "command": "PYTHONUTF8=1 TERMFORGE_BIN_DIR=<variant>/bin/Release TERMFORGE_TEST_ARTIFACTS=build/r2-unicode-keyboard/<variant>-verified build/r1-python/Scripts/python.exe -m unittest experiments.shell.test_shell.ShellTests.test_keyboard_message_path_to_real_console_bytes -v",
+    "default_rounds_passed": 2,
+    "candidate_rounds_passed": 2,
+    "expected_independent_of_receiver": true,
+    "literal_samples": ["e\u0301", "🙂", "👩\u200d💻", "1\ufe0f\u20e3"],
+    "retained_boundaries": ["AltGr text", "editing and navigation sequences", "surrogate pairing, replacement and focus reset"],
+    "raw_bytes_per_round": 84,
+    "raw_sha256_per_round": "30a48ee8a238d1e6757a69ec5d7ec3848c694b9d8c9edc342e45ae1a0c0cc305",
+    "all_four_raw_files_identical": true,
+    "raw_artifact_root": "build/r2-unicode-keyboard/{default,candidate}-verified"
+  },
+  "candidate_scoped_ctest": {
+    "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure -R '^(candidate_core|candidate_shell_tui|keyboard|raw_console_receiver|core)$'",
+    "total": 5,
+    "passed": 5,
+    "failed": 0,
+    "seconds": 9.54
+  },
+  "default_ctest": {
+    "command": "ctest --test-dir build -C Release --output-on-failure",
+    "status": "completed",
+    "exit_code": 8,
+    "total": 40,
+    "passed": 39,
+    "failed": 1,
+    "seconds": 314.17,
+    "shell_nested_errors": 2,
+    "shell_nested_skipped": 3,
+    "keyboard_scenario_within_shell": "passed",
+    "remaining_failures": [
+      "test_commands_unicode_editing_interrupt_and_normal_exit",
+      "test_resize_child_dimensions_and_interrupt"
+    ],
+    "existing_issue": 36,
+    "loads_or_timeouts_changed": false
+  },
+  "source_file_sha256": {
+    "experiments/shell/run.py": "2d7cd4f2a9cc356be15018e98956fc7cdb6d8a15687a90d4cb0f0926906a1785",
+    "experiments/shell/workspace_keyboard_scenario.hpp": "03b75bde8c6dcd640d9acbee5e417529081d8e70940ff0aa0b0ab3adeb0b1bcc"
+  },
+  "binary_sha256": {
+    "default/termforge_shell.exe": "4b3c4723d475a58cc36ad5ebcf2ff1d98a6bf115657deeb6c22ff78b1d8a75b1",
+    "default/shell_test_launcher.exe": "3a0ccd7a936f106235ff6d45c4b8d2640763e018b645764b6b1717beb99d8e75",
+    "default/shell_input_client.exe": "507d8ce46693d3f2fdae817664f46fa5e9e2c3fc9e3d265b764929c3aa7356a5",
+    "candidate/termforge_shell.exe": "7ffcd286ac069f304fad0931f9d8bc3b3287041b0e77d99e75348b07b8bb9f97",
+    "candidate/shell_test_launcher.exe": "98f55be477de81c057a5084ac8369f92bbba55f4c1b104d35eb10d8c7be67e0a",
+    "candidate/shell_input_client.exe": "ec5cc226b6d07d3eaa0d57f9c9fd9281dd50874acc6ece7460be6cc91c325e57"
+  },
+  "limitations": [
+    "This slice verifies exact received bytes only; it does not verify shaping, cell layout, glyph fallback, selection or rendering of the added samples.",
+    "Synthetic window messages are not physical keyboard input or a real IME session. Existing fixed Microsoft Pinyin evidence has its own environment and scope.",
+    "Application cursor/keypad modes and the complete #30 Unicode/IME contract remain unverified; no WindTerm runtime comparison was made.",
+    "The retained DIB is not a presented-frame endpoint; presented_done remains null and no performance claim is made.",
+    "The scoped candidate CTest list above is not a complete candidate regression. Known #36/#38 failures remain tracked separately.",
+    "Raw artifacts and private desktop data remain local; public hashes and the fixed source scenario support reproduction without publishing those artifacts."
+  ]
+}

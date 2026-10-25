@@ -127,7 +127,7 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 | `ui-actions` / `ui-actions-system` | 真实终端右键菜单、快捷键、Find/rename 原生编辑、busy/closing/无会话反馈，以及命中和选区跨受控 DPI/zoom | local每轮26阶段且不执行有效CF；system每轮36阶段，覆盖Find原生Ctrl+A/C/V、中文查询重选/Escape、终端Copy/Paste、Shift+Insert、默认Return及目标切换。[固定源码两轮系统审计](results/2026-10-24-r1-actions-accepted/validation.json)已通过；仅一次性hosted运行。范围与策略见[动作对照](../../docs/research/r1-action-comparison.md)，完整CF/IME组合及资源阶段/滚动端点见[#18整体验收](results/2026-10-24-r1-system-workflow/validation.json) |
 | `ui-find-stream` | 实际持续 CR 输出中导航、运行中替换查询、取消及关闭目标 | 10 阶段独立 oracle、两个原始接收文件和有限 worker/Job 回收；局部结果绝不冒充全局循环 |
 | `ui-find` | 多批搜索、方向/循环、大小写/中文/无结果、蓝黄高亮、后台追加、淘汰与 Escape | `find.json`、逐阶段记录及真实 `ReadConsoleW` 接收字节；查询在原生 EDIT 中操作，独立 oracle 检查稳定位置与焦点 |
-| `ui-keyboard` | 修饰键、编辑键、Unicode 与会话目标 | 真实 `ReadConsoleW` 接收端与独立字节预期；不替代真实 IME |
+| `ui-keyboard` | 修饰键、编辑键、Unicode 与会话目标 | 固定中文、分解组合标记、单个 emoji、`👩‍💻` ZWJ 和 `1️⃣` keycap 经真实 `ReadConsoleW` 接收端与独立预期逐字节核对；只验证消息输入保真，不证明字素绘制、物理键盘或真实 IME |
 | `ui-paste` | 默认 Paste/Enter 发送一次、默认 Escape 取消、Tab/Enter、隐藏目标、输出洪流、发送途中取消和关闭 | v2 `paste-workflow.json` 与 `input.bin`/`cancel.bin`/`close.bin`；接收端事件握手确保动作发生在发送途中；本场景不读取用户剪贴板；旧 v1 默认 Cancel 证据保留且不计作新默认验收 |
 | `ui-paste-system` | 真实 Unicode 系统剪贴板 → 快捷键 → 确认 → 接收端 | 只在指定一次性 hosted 环境运行；本地未运行/跳过不计系统验收 |
 | `ui-clipboard-system` | 经产品 Paste 验证占用/超限错误与重试、读取途中取消/关闭 | 延迟渲染 owner 握手、真实接收端字节、错误画面及 helper/Job 回收；仅一次性 hosted 环境运行；场景存在不等于整项通过，当前结果见 [#14](https://github.com/JavaZeroo/termforge/issues/14) |
