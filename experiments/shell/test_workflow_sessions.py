@@ -10,7 +10,8 @@ import unittest
 import uuid
 
 from experiments.shell.workflow_sessions_checks import (validate_workflow_sessions, expected_raw, validate_checkpoint_raw,
-                                                       validate_cycle_transition, validate_resource_phases, _validate_paste_cases, _cache_bounds)
+                                                       validate_cycle_transition, validate_resource_phases, _validate_paste_cases, _cache_bounds,
+                                                       _validate_background_console)
 
 SOURCE_FILES = (
     'CMakeLists.txt', 'experiments/build_paths.py', 'experiments/shell/shell.cpp',
@@ -213,6 +214,36 @@ class WorkflowSessionsOracleTest(unittest.TestCase):
         for name in ('A','C','F1','F2','F3','F4','F5'):
             self.assertEqual(expected_raw(name,'foreground-input'), b'')
 
+    def test_background_console_tail_requires_exact_geometry_and_text(self):
+        prefix = 'TF_R108_F1_31999 中文 e\u0301'
+        transport = (b'\x1b[11;1H' + prefix.encode() + b'.' * 30 + b'\r\n\x1b[11;54H' +
+                     b'.' * 6 + b'\r\nTF_R108_F1_OUTPUT_DONE 0500\r\n')
+        slot = dict(name='F1', source_bytes=2048000, output_done=True,
+                    runtime={'columns':54, 'rows':12,
+                             'resize':{'requested_generation':1, 'completed_generation':1,
+                                       'pending':False, 'working':False}},
+                    document_tail=[''] * 6 + [prefix + '.' * 31, '.....', 'TF_R108_F1_OUTPUT_DONE 0500', ''])
+        console = dict(columns=54, rows=12,
+                       cell_lines=[''] * 8 + [prefix + '.' * 30, '.....', 'TF_R108_F1_OUTPUT_DONE 0500', ''])
+        _validate_background_console(slot, console, transport)
+        for defect in ('core-missing-dot', 'console-extra-dot', 'wrong-column', 'wrong-rows',
+                       'wrong-completion', 'missing-source', 'unfinished', 'padding', 'missing-line',
+                       'missing-cup', 'normalization'):
+            changed_slot, changed_console, changed_transport = copy.deepcopy(slot), copy.deepcopy(console), transport
+            if defect == 'core-missing-dot': changed_slot['document_tail'][6] = prefix + '.' * 30
+            elif defect == 'console-extra-dot': changed_console['cell_lines'][8] += '.'
+            elif defect == 'wrong-column': changed_console['columns'] = 55
+            elif defect == 'wrong-rows': changed_console['rows'] = 11
+            elif defect == 'wrong-completion': changed_console['cell_lines'][-2] = 'TF_R108_F1_OUTPUT_DONE 0499'
+            elif defect == 'missing-source': changed_slot['source_bytes'] -= 1
+            elif defect == 'unfinished': changed_slot['output_done'] = False
+            elif defect == 'padding': changed_slot['document_tail'][6] += ' '
+            elif defect == 'missing-line': changed_console['cell_lines'].pop(0)
+            elif defect == 'missing-cup': changed_transport = transport.replace(b'\x1b[11;54H', b'')
+            else: changed_transport = transport.replace('e\u0301'.encode(), 'é'.encode())
+            with self.subTest(defect=defect), self.assertRaises(ValueError):
+                _validate_background_console(changed_slot, changed_console, changed_transport)
+
     def test_raw_checkpoint_rejects_early_duplicate_partial_and_wrong_target(self):
         literal='TF_R108_FOREGROUND 中文\r'.encode('utf-8')
         for name,phase,raw,valid in [('B','foreground-input',literal,True),
@@ -298,6 +329,7 @@ class WorkflowSessionsTests(unittest.TestCase):
                               binary_sha256=binaries, data_only=True, system_clipboard_verified=False,
                               sources=sources, source_to_binary_binding='not_independently_verified',
                               source_hash_policy='sha256_raw_worktree_bytes_git_checkout_may_differ',
+                              layout_model='pyte==0.8.2',
                               ime_verified=False, status='failed', error_kind=None)
             try:
                 record = execute(executable, 'ui-workflow-sessions', out, timeout=90, resources=True)

@@ -2,6 +2,7 @@
 import hashlib
 import json
 import re
+import struct
 from pathlib import Path
 
 
@@ -26,6 +27,62 @@ def _read(path, limit):
 
 def _sha(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def validate_console_window(directory, *, expected_role, expected_generation):
+    """Validate the bounded F-fixture console, excluding only right blank padding."""
+    directory = Path(directory)
+    metadata = json.loads(_read(directory / 'capture.bin.console.json', 65536))
+    _require(metadata.get('schema') == 'termforge-console-window-v1' and
+             metadata.get('role') == expected_role and
+             _uint(metadata.get('generation'), 'console generation') == _uint(expected_generation, 'expected generation'),
+             'console identity')
+    columns = _uint(metadata.get('columns'), 'console columns')
+    rows = _uint(metadata.get('rows'), 'console rows')
+    top = _uint(metadata.get('top'), 'console top')
+    _require(0 < columns <= 500 and 0 < rows <= 200, 'console dimensions')
+    cursor_column = _uint(metadata.get('cursor_column'), 'console cursor column')
+    cursor_row = _uint(metadata.get('cursor_row'), 'console cursor row')
+    _require(cursor_column < columns and top <= cursor_row < top + rows, 'console cursor outside captured window')
+    counts = metadata.get('row_units')
+    _require(type(counts) is list and len(counts) == rows, 'console row count')
+    for count in counts:
+        _require(type(count) is int and 0 <= count <= columns, 'console row UTF-16 bound')
+    payload = _read(directory / 'capture.bin.console.bin', 200000)
+    _require(len(payload) % 2 == 0 and metadata.get('text_sha256') == _sha(payload), 'console text hash/encoding')
+    text = payload.decode('utf-16-le')
+    _require(_uint(metadata.get('utf16_units'), 'console UTF-16 units') == len(text) == sum(counts),
+             'console UTF-16 totals')
+    lines = []
+    offset = 0
+    for count in counts:
+        line = text[offset:offset + count]
+        _require('\x00' not in line, 'console contains an unmapped cell')
+        lines.append(line.rstrip(' '))
+        offset += count
+    cell_count = _uint(metadata.get('cell_count'), 'console cell count')
+    _require(cell_count == columns * rows and _uint(metadata.get('cell_stride'), 'console cell stride') == 4,
+             'console cell metadata')
+    raw_cells = _read(directory / 'capture.bin.cells.bin', 400000)
+    _require(len(raw_cells) == cell_count * 4 and metadata.get('cell_sha256') == _sha(raw_cells),
+             'console cell bytes/hash')
+    cell_lines = []
+    for row in range(rows):
+        cells = list(struct.iter_unpack('<HH', raw_cells[row * columns * 4:(row + 1) * columns * 4]))
+        text = []
+        for column, (codepoint, attributes) in enumerate(cells):
+            if attributes & 0x100:
+                _require(column + 1 < columns and cells[column + 1][1] & 0x200,
+                         'console leading cell lacks its trailing cell')
+            if attributes & 0x200:
+                _require(column > 0 and cells[column - 1][1] & 0x100,
+                         'console trailing cell lacks its leading cell')
+                continue
+            _require(codepoint != 0, 'console contains an unmapped cell')
+            text.append(chr(codepoint))
+        cell_lines.append(''.join(text).rstrip(' '))
+    return dict(columns=columns, rows=rows, top=top, cursor_column=cursor_column,
+                cursor_row=cursor_row, lines=lines, cell_lines=cell_lines)
 
 
 def _validate_receiver(manifest, receiver, raw):
@@ -163,10 +220,15 @@ def validate_fixture_case(directory, *, expected_role, expected_generation, expe
         end = events[2 + index * 2] if expected_complete else events[-1]
         _require(start['elapsed_ms'] <= stage['begin_ms'] <= stage['end_ms'] <= end['elapsed_ms'], 'stage outside actual events')
     _validate_receiver(manifest, receiver, raw)
+    needs_console = flood and expected_complete
+    _require(manifest.get('console_window', False) is needs_console, 'console capture scope')
+    console = validate_console_window(directory, expected_role=expected_role,
+                                      expected_generation=expected_generation) if needs_console else None
     return dict(role=expected_role, generation=expected_generation, records=records,
                 source_bytes=len(source), source_sha256=_sha(source), received_bytes=len(raw),
                 received_sha256=_sha(raw), events=len(events), ime_verified=False,
-                clipboard_verified=False, transport_verified=False, complete=expected_complete)
+                clipboard_verified=False, transport_verified=False, complete=expected_complete,
+                console_window=console)
 
 
 def validate_fixture_host(directory, host):

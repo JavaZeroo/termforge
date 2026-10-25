@@ -10,7 +10,8 @@ import tempfile
 import unittest
 
 from experiments.build_paths import ROOT, binary
-from experiments.shell.workflow_checks import validate_fixture_case, validate_rejected_order, validate_fixture_host
+from experiments.shell.workflow_checks import (validate_fixture_case, validate_rejected_order, validate_fixture_host,
+                                               validate_console_window)
 
 PREFIX = 'TF_R108_PASTE 中文\rNEXT\r'
 
@@ -53,7 +54,58 @@ def synthetic_case(directory, role='A', generation=1):
     return manifest,events
 
 
+def synthetic_console(directory, role='F1', generation=1, columns=80, lines=None):
+    if lines is None:
+        lines = [f'TF_R108_{role}_31999 中文 e\u0301' + '.' * 35,
+                 f'TF_R108_{role}_OUTPUT_DONE 0500', '']
+    payload = ''.join(lines).encode('utf-16-le')
+    cell_payload = bytearray()
+    for line in lines:
+        cells = []
+        for char in line:
+            cells.append((ord(char), 0x107 if char in '中文' else 0x7))
+            if char in '中文':
+                cells.append((ord(char), 0x207))
+        cells.extend([(0x20, 0x7)] * (columns - len(cells)))
+        for codepoint, attributes in cells:
+            cell_payload.extend(struct.pack('<HH', codepoint, attributes))
+    counts = [len(line.encode('utf-16-le')) // 2 for line in lines]
+    metadata = dict(schema='termforge-console-window-v1', role=role, generation=generation,
+                    columns=columns, rows=len(lines), top=0, cursor_column=0, cursor_row=len(lines)-1,
+                    utf16_units=sum(counts), row_units=counts, text_sha256=hashlib.sha256(payload).hexdigest(),
+                    cell_count=columns*len(lines), cell_stride=4, cell_sha256=hashlib.sha256(cell_payload).hexdigest())
+    (directory/'capture.bin.console.bin').write_bytes(payload)
+    (directory/'capture.bin.cells.bin').write_bytes(cell_payload)
+    (directory/'capture.bin.console.json').write_text(json.dumps(metadata),encoding='utf-8')
+    return metadata
+
+
 class WorkflowOracleTest(unittest.TestCase):
+    def test_console_window_requires_bounded_identity_and_complete_unicode(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            metadata = synthetic_console(directory, generation=7)
+            actual = validate_console_window(directory, expected_role='F1', expected_generation=7)
+            self.assertEqual(actual['lines'][0], 'TF_R108_F1_31999 中文 e\u0301' + '.' * 35)
+            self.assertEqual(actual['lines'][-1], '')
+            self.assertEqual(actual['cell_lines'], actual['lines'])
+            for field, value in [('role', 'F2'), ('generation', 8), ('columns', 0),
+                                 ('utf16_units', metadata['utf16_units'] + 1),
+                                 ('text_sha256', '0' * 64),
+                                 ('cell_count', metadata['cell_count'] + 1)]:
+                with self.subTest(corruption=field):
+                    changed = dict(metadata); changed[field] = value
+                    (directory/'capture.bin.console.json').write_text(json.dumps(changed),encoding='utf-8')
+                    with self.assertRaises(ValueError):
+                        validate_console_window(directory, expected_role='F1', expected_generation=7)
+            changed = dict(metadata); changed['row_units'] = changed['row_units'][:-1]
+            (directory/'capture.bin.console.json').write_text(json.dumps(changed),encoding='utf-8')
+            with self.assertRaises(ValueError):
+                validate_console_window(directory, expected_role='F1', expected_generation=7)
+            (directory/'capture.bin.console.bin').unlink()
+            with self.assertRaises(ValueError):
+                validate_console_window(directory, expected_role='F1', expected_generation=7)
+
     def test_rejection_keeps_real_reason_and_cannot_be_normal_completion(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory=Path(temporary);manifest,events=synthetic_case(directory,'B',5)
@@ -102,11 +154,16 @@ class WorkflowOracleTest(unittest.TestCase):
                 (directory/'capture.bin.receiver.json').write_text(json.dumps(receiver),encoding='utf-8')
                 (directory/'capture.bin').write_bytes(b'')
                 (directory/'capture.bin.source.bin').write_bytes(source)
+                manifest['console_window']=complete
+                if complete:
+                    synthetic_console(directory,role=role,lines=[rows[-1][:-2].decode('utf-8'),
+                        f'TF_R108_{role}_OUTPUT_DONE 0500',''])
                 (directory/'capture.bin.workflow.json').write_text(json.dumps(manifest),encoding='utf-8')
                 (directory/'capture.bin.progress.jsonl').write_text(''.join(json.dumps(x)+'\n' for x in events),encoding='utf-8')
                 result=validate_fixture_case(directory,expected_role=role,expected_generation=1,expected_input=b'',expected_complete=complete)
                 self.assertIs(result['complete'],complete)
                 self.assertEqual(result['records'],count)
+                self.assertIs(result['console_window'] is not None,complete)
                 with self.assertRaises(ValueError):
                     validate_fixture_case(directory,expected_role=role,expected_generation=1,expected_input=b'',expected_complete=not complete)
                 (directory/'capture.bin.source.bin').write_bytes(source.replace(b'00001',b'00000',1))

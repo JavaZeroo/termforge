@@ -18,6 +18,7 @@ inline void Workspace::workflow_select(const std::string& name) {
 inline void Workspace::workflow_attach(const std::string& name,const std::string& role,Group group,bool create) {
     auto& evidence=*workflow_;if(create) add(group);
     auto& tab=group_tabs(group).back();auto* shell=tab.shell.get();shell->enable_runtime_observation();
+    if(role.size()==2 && role[0]=='F') shell->begin_output_observation();
     const auto generation=evidence.next_generation++;
     const auto directory=std::filesystem::path(image_).parent_path()/"fixtures"/(name+"-"+std::to_string(generation));
     require(std::filesystem::create_directories(directory),"workflow fixture directory must be fresh");
@@ -75,6 +76,11 @@ inline void Workspace::workflow_checkpoint(const char* phase,unsigned cycle,cons
         const auto runtime=shell->runtime_snapshot();
         const auto raw=slot.controller->bytes();
         const auto document=shell->observed_document_lines();
+        if(point_name=="background-complete" && slot.name.size()==2 && slot.name[0]=='F') {
+            tf_conpty::Handle transport(tf_shell_test::workflow_new_file(slot.controller->path.wstring()+L".transport.bin"));
+            tf_shell_test::workflow_save(transport.get(),shell->observed_output());
+            require(FlushFileBuffers(transport.get())!=FALSE,"workflow transport tail flush failed");
+        }
         const HWND find_edit=shell->find_edit_handle();std::wstring find_query;
         if(find_edit) {
             const int units=GetWindowTextLengthW(find_edit);require(units>=0 && units<=1024,"workflow Find query observation exceeds bound");

@@ -40,6 +40,19 @@ $env:PATH="$env:JAVA_HOME\bin;"+$env:PATH
   "$PWD/local/analysis/windterm-new-run/selected" 1402e4cc0
 ```
 
+字符宽度、组合字符或字体度量问题可先在现有数据库运行 `FindUnicodeMetrics.java`，再只反编译返回的 `function_entry`。脚本枚举匹配的 Qt 符号及直接引用，不执行目标，也不证明 Qt 内部或运行时行为：
+
+```powershell
+& local/toolchains/ghidra_12.1.4_PUBLIC/support/analyzeHeadless.bat `
+  "$PWD/local/analysis/windterm-new-run/projects" WindTerm `
+  -process WindTerm.exe -noanalysis -readOnly `
+  -scriptPath "$PWD/research/ghidra" `
+  -postScript FindUnicodeMetrics.java `
+  "$PWD/local/analysis/windterm-new-run/unicode-metrics"
+```
+
+输出目录必须不存在。匹配符号最多 128 个、每个符号的直接引用最多 64 条，截断不代表缺失；应核对 `summary.json` 的目标 SHA-256、数量和边界，再选择少量函数复核反编译与汇编。
+
 定向脚本输出每个函数的本地 `.asm`、`.c` 和 `.json`，单函数反编译超时 60 秒。应检查 JSON 的完成状态与日志；工具进程成功退出不等于每个函数都成功反编译。直接调用 Java 脚本没有 Python 入口的目录保护，调用者须保持输出在 `local/`。不要提交这些输出或从中复制私有实现。
 
 ```powershell

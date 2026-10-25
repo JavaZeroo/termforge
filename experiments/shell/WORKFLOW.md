@@ -58,9 +58,14 @@ python -m unittest experiments.shell.test_workflow_sessions -v
 | `capture.bin.source.bin` | 实际成功 `WriteFile` 的生产 payload；部分写保留成功前缀并失败。仅含编号记录，不含控制/READY/DONE标记 |
 | `transport.bin` | 实际 ConPTY 字节流，独立核对每个编号、内容、顺序及控制标记；不是屏幕快照。可能含主机 OSC 绝对路径，留私有目录，禁止上传 |
 | `capture.bin` / `.receiver.json` | 原始接收字节及 receiver 的 read/cancel/join 状态；沿用4096 UTF-16单元上限，不能清空接收文件来对齐期望 |
+| `capture.bin.console.bin` / `.console.json` | 完整 F 输出结束、STOPPED 前的逐行控制台文本与身份/尺寸/光标/哈希。`row_units` 是实际返回的 UTF-16 单元数，不等于控制台列数；非完整 F 不生成或冒充此证据 |
+| `capture.bin.cells.bin` | 同一可见区域的原始 `CHAR_INFO` 单元格及属性；`cell_count` 和 `cell_stride=4` 有界，另核 SHA-256、宽字符前导/尾随标记与空单元格，不把字符 API 的短读当作丢字 |
+| `capture.bin.transport.bin` | E2 每个 F 的 TermForge 接收侧最近至多8192字节，保存于 `background-complete`；可能有前缀截断，不是完整运输或呈现证据，也不生成 `presented_done` |
 | `capture.bin.workflow.json` | schema `termforge-workflow-fixture-v1`：角色、代次、阶段偏移/哈希/完成状态、实际时刻、接收汇总与错误 |
 | `capture.bin.progress.jsonl` | schema `termforge-workflow-progress-v1`：递增序号、相对原生时钟、阶段事件与累计字节/记录/哈希；失败事件保留 |
 | `stdout.json` / `validation.json` | 原生控制结果和独立 Python 审核，分列数据限定范围、二进制哈希、退出/回收/强制清理和失败，不含私有身份 |
+
+完整 F 的尾部校验分别要求：源文件逐字匹配固定负载，子控制台按实际单元格还原来源记录，独立 [pyte 0.8.2](../differential/requirements.txt) 在实际行列下重放运输尾部并形成物理行预期，最后核对 TermForge 的 `document_tail`。pyte 对 `e + U+0301` 使用预组合 `é`，只用于布局对照；TermForge 必须保留分解形式，不能把 NFC 当作原文。多点、少点、错行、错误尺寸、错误代次、缺失完成边界和改变分解形式均拒绝。ConPTY 与 TermForge 的组合字符单元格策略差异继续由 [#30](https://github.com/JavaZeroo/termforge/issues/30) 验收，不宣称完整 Unicode、WindTerm 等价或实际呈现通过。
 
 `workflow_checks.py` 用独立字面量生成预期，交叉检查源文件、传输、原始接收、阶段日志、receiver 和 Job。此独立夹具oracle不验收UI range或实际系统Paste确认前零增量；E2的UI/目标校验由工作区oracle另行完成。`.identity`含原生PID/代次，`transport.bin`可能含绝对路径，`stderr.txt`、controller的`stdout.private.json`、E2原始`sample.json`和`_resources-private/`也保留私有。成功及失败上传均排除这些文件，公开结果仅含明确白名单中的合成字节/日志、脱敏`sample.public.json`、资源observations/summary与审核事实。
 

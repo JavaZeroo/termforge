@@ -72,7 +72,8 @@ public:
         check(generation>0 && generation<=999999 && (role=="A" || role=="B" || (role.size()==2 && role[0]=='F' && role[1]>='1' && role[1]<='5')),
             "workflow controller role/generation invalid");
         check(!capture.empty() && std::filesystem::is_directory(path.parent_path()),"workflow controller capture parent missing");quoted_path(path);
-        for(const wchar_t* suffix:{L"",L".identity",L".receiver.json",L".source.bin",L".workflow.json",L".progress.jsonl"})
+        for(const wchar_t* suffix:{L"",L".identity",L".receiver.json",L".source.bin",L".workflow.json",L".progress.jsonl",
+            L".console.bin",L".console.json",L".cells.bin",L".transport.bin"})
             check(!std::filesystem::exists(path.wstring()+suffix),"workflow controller evidence must be fresh");
         BOOL owned=FALSE;check(IsProcessInJob(GetCurrentProcess(),nullptr,&owned)!=FALSE && owned,"workflow controller requires an owned Job");
         wchar_t image[32768]{};const auto count=GetModuleFileNameW(nullptr,image,32768);

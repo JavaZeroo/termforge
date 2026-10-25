@@ -59,6 +59,90 @@ def _f_line(role, number):
     return f'TF_R108_{role}_{number:05d} 中文 e\u0301'.encode('utf-8').ljust(62, b'.').decode('utf-8')
 
 
+def _validate_console_source(console, role):
+    prefix = f'TF_R108_{role}_'
+    done = prefix + 'OUTPUT_DONE 0500'
+    lines = console.get('cell_lines')
+    _require(type(lines) is list and len(lines) == console.get('rows') and
+             all(type(line) is str for line in lines), 'background console cell rows')
+    records, current, completed = [], None, False
+    for line in lines:
+        if line == done:
+            if current is not None:
+                records.append(current)
+                current = None
+            completed = True
+            break
+        if line.startswith(prefix) and line[len(prefix):len(prefix) + 5].isdigit() and line[len(prefix) + 5:len(prefix) + 6] == ' ':
+            if current is not None:
+                records.append(current)
+            current = [line[:len(prefix) + 5], line]
+        elif current is not None:
+            current[1] += line
+    _require(completed and current is None and records and lines[-1] == '' and lines[-2] == done,
+             'background console completion boundary')
+    numbers = [int(record[0][-5:]) for record in records]
+    _require(numbers == list(range(numbers[0], numbers[0] + len(numbers))), 'background console source sequence')
+    for label, text in records:
+        _require(text == _f_line(role, int(label[-5:])), 'background console source literal mismatch')
+
+
+def _background_model_tail(transport, role, columns, rows):
+    _require(type(transport) is bytes and 0 < len(transport) <= 8192, 'background transport tail bound')
+    done = f'TF_R108_{role}_OUTPUT_DONE 0500'
+    _require(transport.endswith((done + '\r\n').encode()) and (f'TF_R108_{role}_STOPPED').encode() not in transport,
+             'background transport completion boundary')
+    _require(type(columns) is int and 1 <= columns <= 500 and type(rows) is int and 1 <= rows <= 200,
+             'background model dimensions')
+    import pyte
+    from importlib.metadata import version as package_version
+    _require(package_version('pyte') == '0.8.2', 'background independent model version')
+    screen = pyte.Screen(columns, rows)
+    pyte.ByteStream(screen).feed(transport)
+    expected = []
+    for line in screen.display:
+        line = line.rstrip(' ')
+        if not line:
+            expected.append('')
+            continue
+        if line == done:
+            expected.append(done)
+            continue
+        if set(line) == {'.'}:
+            expected.append(line)
+            continue
+        label = line[:16]
+        _require(label.startswith(f'TF_R108_{role}_') and label[-5:].isdigit(), 'background model source label')
+        prefix = _f_line(role, int(label[-5:])).split('.')[0]
+        count = line.count('.')
+        # The independent model uses NFC for this fixture. Keep layout evidence
+        # separate from TermForge's required decomposed source text.
+        _require(line == prefix.replace('e\u0301', 'é') + '.' * count, 'background model literal mismatch')
+        _require(prefix.encode() in transport, 'background decomposed source missing')
+        expected.append(prefix + '.' * count)
+    _require(len(expected) >= 2 and expected[-1] == '' and expected[-2] == done and
+             any(line.startswith(f'TF_R108_{role}_') and line != done for line in expected),
+             'background model completion boundary')
+    return expected[-min(10, rows):]
+
+
+def _validate_background_console(slot, console, transport):
+    _require(isinstance(console, dict), 'background console evidence missing')
+    runtime = slot.get('runtime', {})
+    columns, rows = runtime.get('columns'), runtime.get('rows')
+    _require(console.get('columns') == columns and console.get('rows') == rows,
+             'background console/core geometry mismatch')
+    resize = runtime.get('resize', {})
+    _require(resize.get('pending') is False and resize.get('working') is False and
+             resize.get('requested_generation') == resize.get('completed_generation'), 'background size is not settled')
+    _validate_console_source(console, slot['name'])
+    expected = _background_model_tail(transport, slot['name'], columns, rows)
+    tail = slot.get('document_tail')
+    _require(slot.get('source_bytes') == 2048000 and slot.get('output_done') is True and
+             type(tail) is list and len(tail) == 10 and all(type(line) is str for line in tail) and
+             tail[-len(expected):] == expected, 'background console/core tail mismatch')
+
+
 def _cache_bounds(runtime, *, system_receiver=False):
     search = runtime.get('search', {})
     # Fixed Windows scenario allocation observation budgets, allowing allocator
@@ -182,15 +266,14 @@ def _validate_vertical(out, checkpoints, final_b=None, *, contract='data'):
     final = by_phase['background-complete']
     for name, slot in final.items():
         directory = (out / slot['capture']).parent
-        validate_fixture_case(directory, expected_role=slot['fixture_role'], expected_generation=slot['generation'],
-                              expected_input=final_b if name == 'B' and final_b is not None else expected_raw(name, 'background-complete'))
+        fixture = validate_fixture_case(directory, expected_role=slot['fixture_role'], expected_generation=slot['generation'],
+                                       expected_input=final_b if name == 'B' and final_b is not None else expected_raw(name, 'background-complete'))
         if name == 'A':
             tail = [_a_line(i) for i in range(672, 680)] + ['TF_R108_A_EVICT_DONE 0500', '']
             _require(slot.get('source_bytes') == 18360 and slot.get('document_tail') == tail, 'A final retained literal tail')
         elif name.startswith('F'):
-            tail = [_f_line(name, i) for i in range(31992, 32000)] + [f'TF_R108_{name}_OUTPUT_DONE 0500', '']
-            _require(slot.get('source_bytes') == 2048000 and slot.get('output_done') is True and
-                     slot.get('document_tail') == tail, 'background full source/core tail mismatch')
+            transport = _bounded(directory / 'capture.bin.transport.bin', 8192)
+            _validate_background_console(slot, fixture['console_window'], transport)
 
 
 def _validate_closed(closed, baseline, full=False, *, contract='data'):

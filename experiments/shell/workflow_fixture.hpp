@@ -180,6 +180,52 @@ public:
         });
     }
 };
+inline void workflow_capture_console(const WorkflowOptions& options,const std::string& role) {
+    const auto console=GetStdHandle(STD_OUTPUT_HANDLE);
+    workflow_check(console && console!=INVALID_HANDLE_VALUE,"workflow console output handle unavailable");
+    CONSOLE_SCREEN_BUFFER_INFO info{};
+    workflow_check(GetConsoleScreenBufferInfo(console,&info)!=FALSE,"workflow console dimensions unavailable");
+    const int columns=info.dwSize.X,rows=info.srWindow.Bottom-info.srWindow.Top+1;
+    workflow_check(columns>0 && columns<=500 && rows>0 && rows<=200 && info.srWindow.Top>=0,"workflow console capture bounds invalid");
+    static_assert(sizeof(CHAR_INFO)==4,"workflow console cell layout changed");
+    std::wstring text;std::vector<DWORD> row_units;std::vector<CHAR_INFO> cells(static_cast<size_t>(columns)*rows);
+    for(int row=0;row<rows;++row) {
+        std::wstring line(static_cast<size_t>(columns),L'\0');DWORD read=0;
+        const BOOL success=ReadConsoleOutputCharacterW(console,line.data(),columns,{0,static_cast<short>(info.srWindow.Top+row)},&read);
+        const DWORD error=success?0:GetLastError();
+        workflow_check(success,("workflow console row read failed: error="+std::to_string(error)+" row="+std::to_string(row)).c_str());
+        workflow_check(read<=static_cast<DWORD>(columns),"workflow console row exceeded its width");
+        line.resize(read);workflow_check(line.find(L'\0')==std::wstring::npos,"workflow console row contains an unmapped cell");
+        text+=line;row_units.push_back(read);
+        SMALL_RECT region{0,static_cast<short>(info.srWindow.Top+row),static_cast<short>(columns-1),static_cast<short>(info.srWindow.Top+row)};
+        const BOOL cells_read=ReadConsoleOutputW(console,cells.data()+static_cast<size_t>(row)*columns,
+            {static_cast<short>(columns),1},{0,0},&region);
+        const DWORD cell_error=cells_read?0:GetLastError();
+        workflow_check(cells_read && region.Left==0 && region.Top==info.srWindow.Top+row &&
+            region.Right==columns-1 && region.Bottom==info.srWindow.Top+row,
+            ("workflow console cell read failed="+std::to_string(cell_error)).c_str());
+    }
+    const auto path=options.capture.wstring();
+    tf_conpty::Handle screen(workflow_new_file(path+L".console.bin"));
+    workflow_save(screen.get(),std::string_view(reinterpret_cast<const char*>(text.data()),text.size()*sizeof(wchar_t)));
+    workflow_check(FlushFileBuffers(screen.get())!=FALSE,"workflow console text flush failed");
+    const auto digest=workflow_file_sha256(path+L".console.bin");
+    tf_conpty::Handle cell_file(workflow_new_file(path+L".cells.bin"));
+    workflow_save(cell_file.get(),std::string_view(reinterpret_cast<const char*>(cells.data()),cells.size()*sizeof(CHAR_INFO)));
+    workflow_check(FlushFileBuffers(cell_file.get())!=FALSE,"workflow console cells flush failed");
+    const auto cell_digest=workflow_file_sha256(path+L".cells.bin");
+    std::ostringstream metadata;
+    metadata<<"{\"schema\":\"termforge-console-window-v1\",\"role\":"<<workflow_quote(role)
+        <<",\"generation\":"<<options.generation<<",\"columns\":"<<columns<<",\"rows\":"<<rows
+        <<",\"top\":"<<info.srWindow.Top<<",\"cursor_column\":"<<info.dwCursorPosition.X
+        <<",\"cursor_row\":"<<info.dwCursorPosition.Y<<",\"utf16_units\":"<<text.size()<<",\"row_units\":[";
+    for(size_t i=0;i<row_units.size();++i) {if(i) metadata<<',';metadata<<row_units[i];}
+    metadata<<"],\"text_sha256\":"<<workflow_quote(digest)<<",\"cell_count\":"<<cells.size()
+        <<",\"cell_stride\":"<<sizeof(CHAR_INFO)<<",\"cell_sha256\":"<<workflow_quote(cell_digest)<<"}\n";
+    tf_conpty::Handle record(workflow_new_file(path+L".console.json"));
+    workflow_save(record.get(),metadata.str());
+    workflow_check(FlushFileBuffers(record.get())!=FALSE,"workflow console metadata flush failed");
+}
 inline int run_workflow_fixture(const WorkflowOptions& options) {
     BOOL owned=FALSE; workflow_check(IsProcessInJob(GetCurrentProcess(),nullptr,&owned)!=FALSE && owned,"workflow fixture requires an owned Job");
     const auto input=GetStdHandle(STD_INPUT_HANDLE);
@@ -267,6 +313,11 @@ inline int run_workflow_fixture(const WorkflowOptions& options) {
     worker.join(true);
     try { worker.check(); } catch(const std::exception& error) { if(failure.empty()) failure=error.what(); }
     try { receiver.finish(); } catch(const std::exception& error) { if(failure.empty()) failure=error.what(); }
+    bool console_window=failure.empty() && role!="A" && role!="B" && stages.size()==1 && stages.front().complete;
+    if(console_window) {
+        try { workflow_capture_console(options,role); }
+        catch(const std::exception& error) { failure=error.what();console_window=false; }
+    }
     if(failure.empty()) output.write("TF_R108_"+role+"_STOPPED\r\n",false);
     output.flush(); output.progress("stopped");
     const auto received=receiver.status(); const auto counts=output.counts();
@@ -274,7 +325,8 @@ inline int run_workflow_fixture(const WorkflowOptions& options) {
     report<<"{\"schema\":\"termforge-workflow-fixture-v1\",\"fixture\":\"r108-console-v1\",\"role\":"<<workflow_quote(role)
         <<",\"generation\":"<<options.generation<<",\"status\":"<<workflow_quote(failure.empty()?"stopped":"failed")
         <<",\"failure\":"<<workflow_quote(failure)<<",\"source_bytes\":"<<counts.first<<",\"source_sha256\":"<<workflow_quote(output.digest())
-        <<",\"records\":"<<counts.second<<",\"worker_joined\":true,\"receiver\":{\"units\":"<<received.received_units<<",\"bytes\":"<<received.saved_bytes
+        <<",\"records\":"<<counts.second<<",\"worker_joined\":true,\"console_window\":"<<(console_window?"true":"false")
+        <<",\"receiver\":{\"units\":"<<received.received_units<<",\"bytes\":"<<received.saved_bytes
         <<",\"sha256\":"<<workflow_quote(workflow_file_sha256(options.capture))<<",\"joined\":"<<(received.worker_joined?"true":"false")<<",\"error\":"<<received.worker_error<<"},\"stages\":[";
     bool first=true;
     for(const auto& stage:stages) {
