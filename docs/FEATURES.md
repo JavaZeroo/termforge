@@ -29,11 +29,11 @@
 
 | 能力 | 当前状态与边界 | 目标差距 | 路标 |
 |---|---|---|---|
-| 主区/底部多标签与分屏 | **已验证（有限）**：两个区域独立选中标签，共计最多 8 个真实本地会话；主区可有一个真实左右 split，Alt+- 创建、Alt+Z 隐藏/恢复、Alt+Left/Right 切换、Alt+X 关闭，[两轮独立输出/后台/焦点/回收证据](../experiments/shell/results/2026-10-24-r2-main-split/validation.json) | 仅主区一个 split；任意嵌套、标签排序/拖放、复制会话、标签搜索/颜色和分屏持久化未完成 | R2 / R3 / R4 |
+| 主区/底部多标签与分屏 | **已验证（有限）**：两个区域独立选中标签，共计最多 8 个真实本地会话；主区可有一个真实左右 split，Alt+- 创建、Alt+Z 隐藏/恢复、Alt+Left/Right 切换、Alt+X 关闭，[两轮独立输出/后台/焦点/回收证据](../experiments/shell/results/2026-10-24-r2-main-split/validation.json) | 仅主区一个 split；任意嵌套、标签排序/拖放、复制会话、标签搜索/颜色未完成；分屏持久化范围见配置行 | R2 / R3 / R4 |
 | 基础窗口操作 | **已验证（有限）**：新建/切换/关闭/重命名、五条分隔线、面板显隐、底部焦点模式 | 完整会话动作/快捷键、命令面板、目标 Focus/SyncInput 行为 | R1 / R4 |
 | 工作区外观 | **部分**：两种逻辑尺寸下部分外框/层级依据直接取证；UI 字体来自独立 OFL 来源，私有加载、实际 GDI face/em/行高与缺失资产失败有自动检查 | 不是像素等价；图标、主题/透明度、多语言及所有状态仍缺。Explorer/Filer/Outline 当前为空区域 | R2 / R3 / R4 |
-| DPI 与文字缩放 | **已验证（有限）**：每会话 50%–200%，受控 96→144→192→96；[字体/显示合同](milestones/R2-font-display.md)明确 12×26 基准网格。两台真实 96-DPI 显示器间往返两次保持窗口、rename 焦点、隐藏标签和网格，[证据](../experiments/shell/results/2026-10-24-r2-monitor-font/validation.json)明确 `distinct_dpi=false` | 不同 DPI 的真实跨屏、实际呈现和真实 IME 跨屏仍未验收；比例不跨进程保存，目标字形/逐字形 fallback 未等价 | R2 |
-| 配置与会话持久化 | **部分**：有界 v2 模型、原子替换、损坏分类与 v1 读取；[单会话接入](../experiments/shell/results/2026-10-25-workspace-restore-core/validation.json)已在真实新进程中恢复 cmd、Unicode 标题、默认窗口/布局，原有两轮恢复回归通过。启动恢复抑制写盘，关闭先抓快照；只重建白名单 shell，不恢复原进程/历史 | 多类型会话集/分屏/独立目录、非默认窗口/缩放、真实 v1/空会话/损坏/写失败验收未完成；偏好、会话分组/搜索与文字标记恢复归后续范围，#33 保持开放 | R2 / R3 / R4 |
+| DPI 与文字缩放 | **已验证（有限）**：每会话 50%–200%，受控 96→144→192→96；[字体/显示合同](milestones/R2-font-display.md)明确 12×26 基准网格。两台真实 96-DPI 显示器间往返两次保持窗口、rename 焦点、隐藏标签和网格，[证据](../experiments/shell/results/2026-10-24-r2-monitor-font/validation.json)明确 `distinct_dpi=false`；v2 会话恢复另覆盖 100%/150%/75% zoom | 不同 DPI 的真实跨屏、实际呈现和真实 IME 跨屏仍未验收；恢复证据为同一 96-DPI 私有 desktop，目标字形/逐字形 fallback 未等价 | R2 |
+| 配置与会话持久化 | **部分**：有界 v2 模型、原子替换、损坏分类与 v1 读取；[多会话双进程验证](../experiments/shell/results/2026-10-25-workspace-restore-multi/validation.json)覆盖 cmd、Windows PowerShell、独立目录、Unicode 标题、100%/150%/75% zoom、主区 split、底部焦点和非默认窗口/布局，配置逐字一致。只重建白名单 shell，不恢复原进程/历史 | 真实 v1/空会话/损坏/未知版本/写失败与最终关闭失败验收未完成；偏好、会话分组/搜索与文字标记恢复归后续范围，#33 保持开放 | R2 / R3 / R4 |
 | 文本增强与辅助面板 | **未实现** | 高亮/时间戳/折叠/outline、补全与 Fish 增强、命令历史、Sender/QuickBar、Free Type Mode（输入模式，行为待取证）、vim 本地/远程键位、锁屏、Sysmon | R4 |
 
 ## 远程、文件与协议

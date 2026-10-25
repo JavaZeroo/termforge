@@ -59,7 +59,7 @@ int main() {
             {L"wsl", L"Ubuntu", fs::u8path(u8"D:\\wsl work").wstring(), L"WSL 文档", 200},
         };
         desired.bottom_active = 1;
-        desired.main_active = 1;
+        desired.main_active = 0;
         desired.split_index = 1;
         desired.main_focused = true;
         desired.split_active = true;
@@ -68,6 +68,7 @@ int main() {
         auto split_background = desired;
         split_background.main_focused = false;
         check(tf_workspace::valid_workspace(split_background), "visible split incorrectly requires main focus");
+        check(tf_workspace::workspace_validation_error(split_background)==nullptr, "valid split returned a validation error");
         check(tf_workspace::save_workspace(file, desired), "v2 create parent and save");
         const auto original = read(file);
         check(original.size() < tf_workspace::workspace_document_limit &&
@@ -118,8 +119,8 @@ int main() {
         invalid_save(invalid, "invalid main selection accepted");
         invalid = desired; invalid.split_index = 2;
         invalid_save(invalid, "invalid split identity accepted");
-        invalid = desired; invalid.main_active = 0;
-        invalid_save(invalid, "inconsistent split focus accepted");
+        invalid = desired; invalid.main_active = 1;
+        invalid_save(invalid, "coincident visible split members accepted");
         invalid = desired; invalid.split_index = -1;
         invalid_save(invalid, "missing split identity accepted");
         invalid = desired; invalid.main.clear(); invalid.main_active = -1;

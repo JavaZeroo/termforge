@@ -53,35 +53,40 @@ inline bool valid_workspace_text(const std::wstring& value) {
     for (const wchar_t c : value) if (c < 32 || c == 127) return false;
     return true;
 }
-inline bool valid_workspace(const WorkspaceState& state) noexcept {
-    if (!valid_layout(state.layout)) return false;
+inline const char* workspace_validation_error(const WorkspaceState& state) noexcept {
+    if (!valid_layout(state.layout)) return "layout bounds";
     const auto& window = state.window;
     if (window.x < -1048576 || window.x > 1048576 || window.y < -1048576 || window.y > 1048576 ||
-        window.width < 1000 || window.width > 65535 || window.height < 650 || window.height > 65535) return false;
-    if (state.bottom.size() + state.main.size() > 8) return false;
+        window.width < 1000 || window.width > 65535 || window.height < 650 || window.height > 65535) return "window bounds";
+    if (state.bottom.size() + state.main.size() > 8) return "session count";
     if (state.bottom_active < (state.bottom.empty() ? -1 : 0) ||
-        state.bottom_active >= static_cast<int>(state.bottom.size())) return false;
+        state.bottom_active >= static_cast<int>(state.bottom.size())) return "bottom selection";
     if (state.main_active < (state.main.empty() ? -1 : 0) ||
-        state.main_active >= static_cast<int>(state.main.size())) return false;
-    if (state.main_focused && state.main_active < 0) return false;
-    if (state.bottom.empty() && !state.main.empty() && !state.main_focused) return false;
-    if (state.split_index < -1 || state.split_index >= static_cast<int>(state.main.size())) return false;
-    if (state.split_active && (state.split_index < 0 || state.main.size() < 2)) return false;
-    if (state.split_active && state.split_right_focus != (state.main_active == state.split_index)) return false;
+        state.main_active >= static_cast<int>(state.main.size())) return "main selection";
+    if (state.main_focused && state.main_active < 0) return "empty main focus";
+    if (state.bottom.empty() && !state.main.empty() && !state.main_focused) return "missing main focus";
+    if (state.split_index < -1 || state.split_index >= static_cast<int>(state.main.size())) return "split identity";
+    if (state.split_active && (state.split_index < 0 || state.main.size() < 2)) return "split membership";
+    if (state.split_active && state.main_active == state.split_index) return "split membership";
     for (const auto* sessions : {&state.bottom, &state.main}) for (const auto& session : *sessions) {
-        if (session.kind != L"cmd" && session.kind != L"powershell" && session.kind != L"pwsh" && session.kind != L"wsl") return false;
-        if (session.zoom_percent < 50 || session.zoom_percent > 200 ||
-            session.distribution.size() > 256 || session.working_directory.size() > 2048 || session.title.size() > 256 ||
-            !valid_workspace_text(session.distribution) || !valid_workspace_text(session.working_directory) ||
-            !valid_workspace_text(session.title)) return false;
+        if (session.kind != L"cmd" && session.kind != L"powershell" && session.kind != L"pwsh" && session.kind != L"wsl")
+            return "launch kind";
+        if (session.zoom_percent < 50 || session.zoom_percent > 200) return "zoom bounds";
+        if (session.distribution.size() > 256 || session.working_directory.size() > 2048 || session.title.size() > 256)
+            return "text bounds";
+        if (!valid_workspace_text(session.distribution) || !valid_workspace_text(session.working_directory) ||
+            !valid_workspace_text(session.title)) return "control text";
         if (session.kind == L"wsl") {
-            if (session.distribution.empty() || session.working_directory.empty()) return false;
+            if (session.distribution.empty() || session.working_directory.empty()) return "WSL definition";
             for (const wchar_t c : session.distribution)
                 if (!((c >= L'a' && c <= L'z') || (c >= L'A' && c <= L'Z') ||
-                      (c >= L'0' && c <= L'9') || c == L'_' || c == L'-' || c == L'.')) return false;
-        } else if (!session.distribution.empty()) return false;
+                      (c >= L'0' && c <= L'9') || c == L'_' || c == L'-' || c == L'.')) return "WSL distribution";
+        } else if (!session.distribution.empty()) return "native distribution";
     }
-    return true;
+    return nullptr;
+}
+inline bool valid_workspace(const WorkspaceState& state) noexcept {
+    return workspace_validation_error(state) == nullptr;
 }
 
 namespace workspace_detail {

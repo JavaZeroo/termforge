@@ -1,0 +1,24 @@
+{
+  "save": {
+    "mode": "ui-workspace-save",
+    "status": "passed",
+    "timed_out": false,
+    "exit_code": 0,
+    "result": {"valid": true, "mode": "ui-workspace-save", "sessions_closed": 3, "active_children_after": 0, "settings_save_failed": false, "presented_done": null},
+    "job_after": {"active": 0, "total": 14, "terminated": 0},
+    "desktop_gone": true,
+    "data_only": true,
+    "job_after_cleanup": {"active": 0, "total": 14, "terminated": 0}
+  },
+  "restore": {
+    "mode": "ui-workspace-restore",
+    "status": "passed",
+    "timed_out": false,
+    "exit_code": 0,
+    "result": {"valid": true, "mode": "ui-workspace-restore", "sessions_closed": 3, "active_children_after": 0, "settings_save_failed": false, "presented_done": null},
+    "job_after": {"active": 0, "total": 14, "terminated": 0},
+    "desktop_gone": true,
+    "data_only": true,
+    "job_after_cleanup": {"active": 0, "total": 14, "terminated": 0}
+  }
+}

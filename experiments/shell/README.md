@@ -46,7 +46,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 - 三列约 1:4:1、上下约 2:1、24 高面板标题、26 高 Shell 标签、27 高底栏、29 高状态栏来自 [直接取证](../../docs/research/windterm-ui-2026-10-23.md)。主区容器空时高 19、有标签时高 26，连接状态工具栏高 34，主终端外区域从 y=93 开始，依据[第二轮测量](../../docs/research/windterm-ui-typography-2026-10-23.md)。主区最后一个标签关闭后恢复空状态，可重新新建。
 - Explorer/Filer/Outline 暂为空布局区域，没有文件浏览/大纲功能。当前菜单只暴露已实现动作；底栏是原创新建快捷入口，没有复刻 WindTerm QuickBar 配置。
 - UI 使用独立随附的 Roboto Mono，9pt；终端继续使用 Consolas，96 DPI / 100% 下为 12×26 网格与原有调色板。字号、整数物理单元、裁剪和光标共用度量。启动读取窗口 DPI，`WM_DPICHANGED` 更新字体、布局、鼠标命中、编辑器和隐藏终端，取消未提交拖动并保留编辑内容/焦点；先应用最终像素矩形再更新终端网格，避免中间缩窄裁剪。主终端外框已按固定逻辑尺寸对齐，内部网格、标签标题宽度及重命名/关闭策略仍是 TermForge 自身实现。
-- 96→144→192→96 受控消息场景已验证；`ui-monitors` 另在两台真实 96-DPI 显示器间往返两次，保持 rename 焦点、隐藏标签和网格，`distinct_dpi=false`，见[R2 合同](../../docs/milestones/R2-font-display.md)与[验证](results/2026-10-24-r2-monitor-font/validation.json)。不同 DPI 的真实跨屏、实际呈现、字体/像素等价、标签排序/会话持久化、SSH/SFTP 仍未验收。
+- 96→144→192→96 受控消息场景已验证；`ui-monitors` 另在两台真实 96-DPI 显示器间往返两次，保持 rename 焦点、隐藏标签和网格，`distinct_dpi=false`，见[R2 合同](../../docs/milestones/R2-font-display.md)与[验证](results/2026-10-24-r2-monitor-font/validation.json)。不同 DPI 的真实跨屏、实际呈现、字体/像素等价、标签排序、SSH/SFTP 仍未验收；配置恢复范围见下文。
 - 主窗口是既有 Win32/DirectWrite 实验的有限扩展，不锁定未来产品 GUI 框架；没有复制 WindTerm 主题、图标或反编译实现。
 
 ## 工作区保存
@@ -55,7 +55,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 
 在提交的增删/选择/重命名/缩放/分屏、布局拖动、显隐/焦点模式及窗口尺寸移动结束后保存；启动恢复期间抑制写入，关闭时先抓取最终快照再回收子进程，后续异步删除不再覆盖。保存使用同目录独占临时文件与原子替换；写入失败保留旧文件并显示 `Workspace could not be saved`，后续成功保存才清除。只保存固定 shell 工厂类型、必要 WSL distribution、明确目录、标题、正常窗口位置/逻辑客户区、布局、焦点/split 和 zoom；自定义命令行、秘密、环境、历史和进程身份不进入配置。不承诺断电持久性或多进程冲突合并。
 
-当前仅完成**单 cmd** 的新进程启动、Unicode 标题、默认窗口/布局恢复及原有两轮回归；多类型会话、显式目录、split、非默认 zoom/窗口、真实 v1/空会话与故障处理尚待验收，#33 未完成。模型与 Windows/Ubuntu 检查见[模型结果](results/2026-10-25-workspace-state-v2/validation.json)，单会话接入见[双进程验证](results/2026-10-25-workspace-restore-core/validation.json)。
+已完成单 cmd 及 **cmd + Windows PowerShell 主区分屏** 的真实双进程恢复：两轮覆盖独立目录、Unicode 标题、100%/150%/75% zoom、split 成员/底部焦点和非默认窗口/布局；新进程实际核对 shell 类型/目录/尺寸，配置逐字一致，旧输出不注入新屏幕。模型与 Windows/Ubuntu 检查见[模型结果](results/2026-10-25-workspace-state-v2/validation.json)，单会话见[核心验证](results/2026-10-25-workspace-restore-core/validation.json)，多会话见[双进程验证](results/2026-10-25-workspace-restore-multi/validation.json)。真实 v1/空会话/损坏/未知版本/写失败与最终关闭失败仍待验收，#33 未完成。
 
 自动测试仅读写各自结果目录下的 `workspace.layout`，不会读取或修改上述用户配置。
 

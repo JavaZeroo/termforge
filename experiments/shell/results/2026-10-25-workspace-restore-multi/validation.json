@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "scope": "issue 33 real multi-shell, split, zoom and normal-window recovery; not migration/failure or R2 completion",
+  "local_passed": true,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "observed_dpi": 96,
+  "distinct_dpi": false,
+  "commands": [
+    "cmake --build build --config Release --target shell_test_launcher workspace_state_test",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-v2-multi-final .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_v2_multiple_shells_split_and_geometry_restore -v",
+    "ctest --test-dir build -C Release -R 'shell_launch|layout_state|workspace_state' --output-on-failure",
+    "TERMFORGE_TEST_ARTIFACTS=build/workspace-v2-multi-r1 .venv/Scripts/python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_rename_drag_and_fresh_process_restore experiments.shell.test_shell.ShellTests.test_main_and_bottom_sessions_focus_geometry_and_cleanup experiments.shell.test_shell.ShellTests.test_main_split_background_restore_close_and_focus -v",
+    "cmake --build build/candidate-adapter --config Release --target shell_test_launcher workspace_state_test",
+    "ctest --test-dir build/candidate-adapter -C Release -R 'candidate_shell_tui|workspace_state' --output-on-failure",
+    "wsl.exe -d Ubuntu -e sh -c 'cd /mnt/d/Code/termforge && cmake --build build/e1-workspace --target workspace_state_test -j2 && build/e1-workspace/bin/workspace_state_test'"
+  ],
+  "results": {
+    "multi_process_test": {"passed": 1, "rounds": 2, "workspace_process_pairs": 2, "fresh_shell_sessions_per_round": 6},
+    "focused_default_ctest": {"passed": 3, "failed": 0},
+    "original_workspace_regressions": {"passed": 3, "rounds_each": 2},
+    "candidate_focus_ctest": {"passed": 2, "failed": 0, "scope": "candidate_shell_tui and workspace_state only"},
+    "ubuntu_workspace_state": "passed",
+    "configuration_byte_identical_after_restore": true,
+    "first_round_configuration_sha256": "ace0324e8fc69b382f0edc8d0723cd3bdf9367542c1fbe230e126f0005c2543c",
+    "geometry_identical_after_restore": true,
+    "old_markers_absent_from_fresh_screens": true,
+    "job_active_after_each_workspace_process": 0,
+    "private_desktop_removed": true,
+    "bitmap_created": false,
+    "presented_done": null
+  },
+  "configuration_projection": {
+    "window": {"x": 90, "y": 60, "logical_client": [1200, 760], "origin_units": "physical pixels", "client_units": "96-DPI logical units"},
+    "focused_group": "bottom",
+    "main_active": 0,
+    "split_index": 1,
+    "split_active": true,
+    "split_right_focus": true,
+    "sessions": [
+      {"group": "bottom", "kind": "cmd", "directory": "default", "title": "底部 cmd", "zoom": 100},
+      {"group": "main", "kind": "cmd", "directory_leaf": "restore-cmd 目录", "title": "主 cmd", "zoom": 150},
+      {"group": "main", "kind": "powershell", "directory_leaf": "restore-powershell 空格", "title": "研究 PowerShell", "zoom": 75}
+    ],
+    "full_working_directories": "synthetic local paths retained in test artifacts, not published",
+    "forbidden_fields_absent": ["arguments", "history", "environment", "process", "pid"]
+  },
+  "real_shell_checks": [
+    "cmd evaluates its actual current directory and prints the expected Unicode leaf",
+    "PowerShell prints the expected directory leaf and PSVersionTable.PSVersion.Major=5",
+    "every restored shell reports its actual console dimensions through shell_size_client",
+    "actual HWND rectangles, grid dimensions and cell metrics match between the two processes",
+    "no previous TF_SAVE_CMD or TF_SAVE_PS marker appears on a fresh session screen"
+  ],
+  "validation_fix": {
+    "previous_error": "the model incorrectly related right-pane focus to equality of main_active and split_index",
+    "current_contract": "visible split members must be distinct; bottom focus and independent right-focus state are valid",
+    "temporary_trace_removed": true
+  },
+  "raw_samples": ["geometry-save.json", "geometry-restore.json", "processes.json"],
+  "source_sha256": {
+    "experiments/shell/workspace.hpp": "250822bbd918c62394d024623e2522f839b3f45964765f98cff6dd5fffcea666",
+    "experiments/shell/workspace_state.hpp": "f81aec1d9ff1816f0cb34cde5621e39f859dabcaff5e02a29eced164f544fc09",
+    "experiments/shell/workspace_state_test.cpp": "ccf27ac3f538ea30bb5bbcf6fc4edace86c043d482fc816551907d5883ba7c87",
+    "experiments/shell/workspace_persistence_scenario.hpp": "39de68b3f2ab3ca4b5c9371a32870bca99351e654004a46eb1fbdfbcdf559628",
+    "experiments/shell/shell.cpp": "f20e41f45437bf8d149996df4defbcb899a6de6865e8b5e9702a97b47973471f",
+    "experiments/shell/run.py": "46a700b3392176097dafb6ddeba6e8ea19a8057fcedf9981ba68295593400ec6",
+    "experiments/shell/test_shell.py": "c4ff0eb6223db03bf728e18e83c628d6c9ecd0a21e8de867cf49eac2dd2ef2d6",
+    "build/bin/Release/termforge_shell.exe": "b31730c51af485eaf8af8a9c3fafecbcc8573f0129cf5d5ddec490fe501842fd",
+    "build/bin/Release/workspace_state_test.exe": "5e51aa297572d219af024b6453e4c69b022d107347c8c21249045533f6e3c0a0",
+    "build/candidate-adapter/bin/Release/termforge_shell.exe": "14994ac664222a9c972621a9eb15363270cea3240955a1eb794250f7c580c657",
+    "build/e1-workspace/bin/workspace_state_test": "8893a7e5a40fca8b0b9d436bb164ab3f67ac24984e8de45ffd1eeca79b8ca529"
+  },
+  "full_ctest": {
+    "status": "not_rerun_for_this_bounded_slice",
+    "known_open_regressions": [29, 36, 38]
+  },
+  "limitations": [
+    "Real v1 migration, valid empty sessions, corrupt/future-version handling, write failure/retry and final close-time save failure remain unverified",
+    "Same-DPI owned data-only scenarios do not establish actual presentation or distinct-DPI recovery",
+    "Only normal window bounds and the current single workspace are persisted; maximized state and multiple named workspaces are not claimed",
+    "No scrollback is serialized; old markers are checked on new visible screens, not by inspecting terminated processes",
+    "Candidate focused success is not a full candidate or default CTest pass",
+    "Issue 33 and the R2 milestone remain open"
+  ]
+}

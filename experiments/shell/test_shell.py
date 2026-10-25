@@ -383,6 +383,81 @@ class ShellTests(unittest.TestCase):
             execute(self.exe, "ui-restore", self.out / f"restore-{repeat}",
                     settings_source=first / "workspace.layout")
 
+    def test_workspace_v2_multiple_shells_split_and_geometry_restore(self):
+        def check_geometry(data):
+            self.assertEqual(data["schema"], "termforge-workspace-restore-v1")
+            self.assertGreater(data["dpi"], 0)
+            physical = lambda value: (value * data["dpi"] + 48) // 96
+            self.assertEqual(data["client"], [physical(1200), physical(760)])
+            self.assertEqual(data["window"][:2], [90, 60])
+            self.assertEqual(data["ratios"], [.24, .21, .57, .38, .69])
+            self.assertFalse(data["sides"])
+            self.assertFalse(data["focus_mode"])
+            self.assertEqual(data["focused"], "bottom")
+            self.assertEqual((data["bottom_active"], data["main_active"], data["split_index"]), (0, 0, 1))
+            self.assertTrue(data["split_active"])
+            self.assertTrue(data["split_right_focus"])
+            expected = (("bottom", "cmd", "底部 cmd", 100),
+                        ("main", "cmd", "主 cmd", 150),
+                        ("main", "powershell", "研究 PowerShell", 75))
+            self.assertEqual(len(data["tabs"]), len(expected))
+            for tab, (group, kind, title, zoom) in zip(data["tabs"], expected):
+                self.assertEqual((tab["group"], tab["kind"], tab["title"], tab["zoom"]),
+                                 (group, kind, title, zoom))
+                self.assertTrue(tab["visible"])
+                self.assertGreater(tab["rect"][2], 0)
+                self.assertGreater(tab["rect"][3], 0)
+                self.assertTrue(all(value > 0 for value in tab["grid"] + tab["cell"]))
+            self.assertEqual(data["tabs"][1]["rect"][0] + data["tabs"][1]["rect"][2],
+                             data["tabs"][2]["rect"][0])
+
+        for repeat in range(2):
+            first = self.out / f"workspace-v2-save-{repeat}"
+            second = self.out / f"workspace-v2-restore-{repeat}"
+            first_row = execute(self.exe, "ui-workspace-save", first)
+            second_row = execute(self.exe, "ui-workspace-restore", second,
+                                 settings_source=first / "workspace.layout")
+            for row, out in ((first_row, first), (second_row, second)):
+                self.assertNotIn("frame_sha256", row)
+                self.assertFalse((out / "frame.bmp").exists())
+                self.assertEqual(row["job_after"]["active"], 0)
+                self.assertTrue(row["desktop_gone"])
+                check_geometry(json.loads((out / "restore-geometry.json").read_text(encoding="utf-8")))
+            self.assertEqual(json.loads((first / "restore-geometry.json").read_text(encoding="utf-8")),
+                             json.loads((second / "restore-geometry.json").read_text(encoding="utf-8")))
+            first_config = (first / "workspace.layout").read_text(encoding="utf-8")
+            self.assertEqual(first_config, (second / "workspace.layout").read_text(encoding="utf-8"))
+            rows = [line.split() for line in first_config.splitlines()]
+            self.assertEqual(rows[0], ["TermForge-workspace", "2"])
+            self.assertEqual([row[0] for row in rows[:20]],
+                             ["TermForge-workspace", "left", "right", "upper", "left_top", "right_top",
+                              "sides", "focus", "window", "window-y", "window-width", "window-height",
+                              "main-focused", "bottom-active", "main-active", "split-index", "split-active",
+                              "split-right-focus", "bottom-count", "main-count"])
+            fields = {row[0]: row[1] for row in rows[1:20]}
+            ratio_names = ("left", "right", "upper", "left_top", "right_top")
+            self.assertEqual({name: float(fields[name]) for name in ratio_names},
+                             dict(zip(ratio_names, (.24, .21, .57, .38, .69))))
+            self.assertEqual({name: value for name, value in fields.items() if name not in ratio_names},
+                             {"sides": "0", "focus": "0", "window": "90", "window-y": "60",
+                              "window-width": "1200", "window-height": "760", "main-focused": "0",
+                              "bottom-active": "0", "main-active": "0", "split-index": "1",
+                              "split-active": "1", "split-right-focus": "1", "bottom-count": "1", "main-count": "2"})
+            expected = (("bottom", "cmd", None, "底部 cmd", "100"),
+                        ("main", "cmd", first / "restore-cmd 目录", "主 cmd", "150"),
+                        ("main", "powershell", first / "restore-powershell 空格", "研究 PowerShell", "75"))
+            self.assertEqual(len(rows[20:]), 3)
+            for row, (group, kind, directory, title, zoom) in zip(rows[20:], expected):
+                self.assertEqual(len(row), 7)
+                self.assertEqual(row[:3], ["session", group, kind])
+                self.assertEqual(row[3], "-")
+                decoded_directory = None if row[4] == "-" else Path(bytes.fromhex(row[4]).decode("utf-8"))
+                self.assertEqual(decoded_directory, directory)
+                self.assertEqual(bytes.fromhex(row[5]).decode("utf-8"), title)
+                self.assertEqual(row[6], zoom)
+            for forbidden in ("\narguments ", "\nhistory ", "\nenvironment ", "\nprocess ", "\npid "):
+                self.assertNotIn(forbidden, first_config)
+
     def test_main_and_bottom_sessions_focus_geometry_and_cleanup(self):
         for repeat in range(2):
             out = self.out / f"main-{repeat}"

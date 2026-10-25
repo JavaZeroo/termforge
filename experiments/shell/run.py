@@ -28,7 +28,15 @@ from experiments.shell.find_checks import validate_find_workflow, validate_find_
 from experiments.shell.workflow_sessions_checks import validate_workflow_sessions
 
 
+WORKSPACE_DATA_MODES = {"ui-workspace-save", "ui-workspace-restore"}
+
+
 def validate(row, mode):
+    if mode in WORKSPACE_DATA_MODES:
+        if row != {"valid": True, "mode": mode, "sessions_closed": 3, "active_children_after": 0,
+                   "settings_save_failed": False, "presented_done": None}:
+            raise ValueError("workspace persistence, fresh sessions or cleanup failed")
+        return
     if mode == "candidate-input-escape":
         if (row.get("valid") is not True or row.get("exit_code") != 37 or
                 row.get("active_children_after") != 0 or row.get("candidate_replies") is not True or
@@ -454,7 +462,10 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
             if mode == "ui-workflow-sessions":
                 record["sessions_workflow"] = validate_workflow_sessions(out, record)
             record["result"] = result
-            record["frame_sha256"] = hashlib.sha256((out / "frame.bmp").read_bytes()).hexdigest()
+            if mode in WORKSPACE_DATA_MODES:
+                record["data_only"] = True
+            else:
+                record["frame_sha256"] = hashlib.sha256((out / "frame.bmp").read_bytes()).hexdigest()
         record["status"] = "passed"
         return record
     except BaseException as error:
@@ -546,7 +557,8 @@ def main():
              "experiments/shell/ime.hpp", "experiments/shell/test_launcher.cpp",
              "experiments/shell/clipboard_worker.hpp", "experiments/shell/clipboard_worker.cpp",
              "experiments/shell/keyboard.hpp", "experiments/shell/paste.hpp",
-             "experiments/shell/layout_state.hpp", "experiments/shell/workspace_state.hpp", "experiments/shell/ui_font.hpp",
+             "experiments/shell/layout_state.hpp", "experiments/shell/workspace_state.hpp", "experiments/shell/workspace_persistence_scenario.hpp",
+             "experiments/shell/ui_font.hpp",
              "experiments/shell/resize.hpp", "experiments/shell/size_client.cpp",
              "experiments/conpty/session.hpp", "experiments/presentation/render.hpp", "experiments/presentation/desktop.hpp",
              "experiments/core/history_view.hpp", "experiments/core/text_projection.hpp",

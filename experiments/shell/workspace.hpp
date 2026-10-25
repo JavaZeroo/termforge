@@ -37,7 +37,7 @@ class Workspace {
     HWND rename_{};
     int rename_id_ = -1;
     std::string test_mode_;
-    std::string image_, failure_;
+    std::string image_, failure_, settings_error_;
     Clock::time_point started_ = Clock::now();
     RECT terminal_{}, tab_bar_{};
     RECT main_group_{}, main_toolbar_{}, main_address_{}, main_terminal_{};
@@ -174,9 +174,15 @@ class Workspace {
     void save_workspace() {
         if(restoring_ || settings_closed_) return;
         try {
-            settings_failed_=settings_path_.empty() || settings_read_only_ ||
-                !tf_workspace::save_workspace(settings_path_,capture_state());
-        } catch(...) { settings_failed_=true; }
+            const auto state=capture_state();
+            if(settings_path_.empty()) settings_error_="empty settings path";
+            else if(settings_read_only_) settings_error_="read-only settings";
+            else if(const char* error=tf_workspace::workspace_validation_error(state); error!=nullptr)
+                settings_error_=error;
+            else if(!tf_workspace::save_workspace(settings_path_,state)) settings_error_="atomic write";
+            else settings_error_.clear();
+            settings_failed_=!settings_error_.empty();
+        } catch(const std::exception& error) { settings_failed_=true; settings_error_=error.what(); }
         if(window_) InvalidateRect(window_,nullptr,FALSE);
     }
     void select(int index,Group group=Group::bottom) {
@@ -476,6 +482,12 @@ class Workspace {
     void scenario();
     void scenario_edit();
     void scenario_restore();
+    bool workspace_data_mode() const {
+        return test_mode_=="ui-workspace-save" || test_mode_=="ui-workspace-restore";
+    }
+    std::string workspace_geometry();
+    void save_workspace_geometry();
+    void scenario_workspace();
     void scenario_main();
     void scenario_dpi();
     void scenario_monitors();
@@ -575,6 +587,7 @@ class Workspace {
             if(message==WM_TIMER) {
                 if(self->test_mode_=="ui-edit") self->scenario_edit();
                 else if(self->test_mode_=="ui-restore") self->scenario_restore();
+                else if(self->workspace_data_mode()) self->scenario_workspace();
                 else if(self->test_mode_=="ui-main") self->scenario_main();
                 else if(self->test_mode_=="ui-dpi") self->scenario_dpi();
                 else if(self->test_mode_=="ui-monitors") self->scenario_monitors();
@@ -688,6 +701,13 @@ public:
             ShellWindow::dispatch_message(msg);
         }
         require(status==0,"workspace message loop failed"); require(failure_.empty(),failure_.c_str());
+        if(!image_.empty() && workspace_data_mode()) {
+            require(stage_==100 && collected_==3,"workspace persistence scenario incomplete");
+            require(!settings_failed_,"workspace persistence save failed");
+            std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_
+                <<"\",\"sessions_closed\":3,\"active_children_after\":0,\"settings_save_failed\":false,\"presented_done\":null}\n";
+            return 0;
+        }
         if(!image_.empty() && workflow_) {
             require(stage_==100 && collected_==18,"workflow sessions scenario incomplete");
             if(workflow_system_) require(workflow_system_->points.size()==13 && workflow_system_->journal_rows==28,"workflow system observations incomplete");
@@ -756,6 +776,7 @@ public:
 };
 #include "workspace_interactions.hpp"
 #include "workspace_scenarios.hpp"
+#include "workspace_persistence_scenario.hpp"
 #include "workspace_main_scenario.hpp"
 #include "workspace_dpi_scenario.hpp"
 #include "workspace_monitor_scenario.hpp"
