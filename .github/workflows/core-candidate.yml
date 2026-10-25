@@ -5,6 +5,8 @@ on:
     paths:
       - 'CMakeLists.txt'
       - 'experiments/core/**'
+      - 'experiments/conpty/**'
+      - 'experiments/shell/**'
       - 'experiments/differential/**'
       - 'experiments/measure/**'
       - 'experiments/candidates/alacritty/**'
@@ -13,6 +15,8 @@ on:
     paths:
       - 'CMakeLists.txt'
       - 'experiments/core/**'
+      - 'experiments/conpty/**'
+      - 'experiments/shell/**'
       - 'experiments/differential/**'
       - 'experiments/measure/**'
       - 'experiments/candidates/alacritty/**'
@@ -74,6 +78,9 @@ jobs:
         run: cmake --build build --config Release --target core_measure
       - name: Build and test candidate C++ adapter
         run: cmake --build build --config Release --target candidate_core_test && ctest --test-dir build -C Release -R candidate_core --output-on-failure
+      - name: Build and test candidate shell on Windows
+        if: runner.os == 'Windows'
+        run: cmake --build build --config Release --target shell_test_launcher && ctest --test-dir build -C Release -R candidate_shell_tui --output-on-failure
       - name: Build real application capture on Windows
         if: runner.os == 'Windows'
         run: cmake --build build --config Release --target real_app_capture
@@ -117,6 +124,7 @@ jobs:
             build/test-artifacts/candidate-alacritty/
             build/test-artifacts/candidate-common/
             build/test-artifacts/candidate-comparison/
+            build/test-artifacts/candidate-shell/
             build/test-artifacts/candidate-capabilities-cli/
             build/test-artifacts/candidate-capabilities/
             build/test-artifacts/real-app-cli/

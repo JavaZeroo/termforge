@@ -65,7 +65,8 @@ def run_suite(core_binary, candidate_binary, capture, vim, output):
         records.append(report)
     passed = all(record["status"] in ("match", "reference_difference") for record in records)
     sources = ["experiments/conpty/real_app_capture.cpp", "experiments/conpty/session.hpp",
-               "experiments/core/trace.cpp", "experiments/differential/real_app_matrix.py",
+               "experiments/core/screen.hpp", "experiments/core/trace.cpp",
+               "experiments/differential/real_app_matrix.py",
                "experiments/differential/compare_candidate.py", "experiments/differential/decisions.md",
                "experiments/candidates/alacritty/run.py"] + vendor_sources()
     version = subprocess.run([str(vim), "--version"], capture_output=True, timeout=10, check=True)

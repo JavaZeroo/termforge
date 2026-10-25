@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "scope": "real Vim lifecycle handshake and failure diagnostics, issue 37",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "local_passed": true,
+  "handshake": [
+    "new file displays [New]",
+    "insert mode displays -- INSERT --",
+    "typed TF_VIM_REAL is displayed",
+    "ordered Escape and :wq writes the file and exits with code zero"
+  ],
+  "positive": {
+    "summary": "summary.json",
+    "summary_sha256": "8de5fab23d6ba3914a6a95a4861f0a36011aee0db946010923ae66c022b302f9",
+    "editor_path": "C:/Program Files/Git/usr/bin/vim.exe",
+    "editor_version": "VIM - Vi IMproved 9.1 (2024 Jan 02, compiled Jul 09 2024 07:07:42)",
+    "editor_bytes": 1972,
+    "editor_file_verified": true,
+    "application_trace_runs": 3,
+    "matches": 3
+  },
+  "negative": {
+    "executable": "C:/Windows/System32/cmd.exe",
+    "expected_capture_exit": 1,
+    "stage": "new-buffer",
+    "error": "editor new buffer was not displayed",
+    "editor_bytes": 86,
+    "child_signaled": true,
+    "active_children": 0,
+    "cleanup_complete": true,
+    "capture_overflow": false,
+    "diagnostic_sha256": "6b1c601311093fb5a2fe158098d3287bc59a1bfcf3de573226030b68e6ad5815",
+    "trace_sha256": "429609160e19aced2a5066ca658a724ab647b77e9dc73aa95d832178515c2bcf"
+  },
+  "commands": [
+    "cmake --build build/candidate-adapter --config Release --target real_app_capture",
+    "TERMFORGE_BIN_DIR=D:/Code/termforge/build/candidate-adapter/bin/Release TERMFORGE_REAL_APP_CAPTURE=D:/Code/termforge/build/candidate-adapter/bin/Release/real_app_capture.exe TERMFORGE_TRACE=D:/Code/termforge/build/candidate-adapter/bin/Release/terminal_trace.exe .venv/Scripts/python -m unittest discover -s experiments/differential -p test_real_app_matrix.py -v",
+    "ctest --test-dir build/candidate-adapter -C Release -R '^differential$' --output-on-failure",
+    "build/candidate-adapter/bin/Release/real_app_capture.exe local/ci-editor-negative-20261025-v1/capture C:/Windows/System32/cmd.exe"
+  ],
+  "test_counts": {
+    "real_application_python": {"passed": 4, "failed": 0},
+    "candidate_differential_ctest": {"passed": 1, "failed": 0}
+  },
+  "source_sha256": {
+    "experiments/conpty/real_app_capture.cpp": "d89f252fcd01aa1fdb21a78eae5676f522f88bf47adb3f24546b66ec10c80082",
+    "experiments/differential/real_app_matrix.py": "b3ebc063355320283b8974f88248516b3cc250f6e6d5ce3aff8446d0e266e1d2",
+    "experiments/differential/test_real_app_matrix.py": "904a4864018d2a5150b4a5d49b8110cec4ea70ffd25dd4a3510f4e64acf2014d",
+    ".github/workflows/core-candidate.yml": "4bf039bccdac5d7e608ec4eeb70fa993f16623e9a929706fb5be5811d03148e6",
+    "build/candidate-adapter/bin/Release/real_app_capture.exe": "a6b8d405ba39cf7c7ea1aac835851516ed15fe399a185f4e6245dfe828403f81"
+  },
+  "remote_ci": null,
+  "limitations": [
+    "Local Windows success does not prove the Windows Server 2025 CI workflow has passed",
+    "Issue 37 remains open until real application, fuzz and interleaved measurements finish naturally in CI",
+    "Synthetic application traces are not GUI presentation or broad application compatibility evidence",
+    "The negative executable deliberately is not Vim; it validates diagnostics and cleanup, not a supported application"
+  ]
+}

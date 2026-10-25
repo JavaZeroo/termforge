@@ -1,4 +1,5 @@
 """Real Windows shell/pager/editor traces; never substituted with synthetic TUI."""
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -40,6 +41,21 @@ class RealApplicationMatrixTests(unittest.TestCase):
         manifest = self.summary["capture_manifest"]
         self.assertEqual((manifest["shell_exit"], manifest["pager_exit"], manifest["editor_exit"]), (0, 0, 0))
         self.assertTrue(manifest["editor_file_verified"])
+        self.assertEqual(Path(manifest["editor_path"]), self.vim)
+
+    def test_failure_preserves_editor_stage_trace_and_cleanup(self):
+        executable = Path("C:/Windows/System32/cmd.exe")
+        with tempfile.TemporaryDirectory(dir=self.artifacts) as temporary:
+            output = Path(temporary) / "capture"
+            with self.assertRaisesRegex(RuntimeError, "real application capture failed"):
+                real_app_matrix.run_capture(self.capture, executable, output)
+            diagnostic = json.loads((output / "editor-failure.json").read_text(encoding="utf-8"))
+            self.assertEqual(diagnostic["stage"], "new-buffer")
+            self.assertEqual(diagnostic["editor_path"], executable.as_posix())
+            self.assertTrue(diagnostic["child_signaled"])
+            self.assertEqual(diagnostic["active_children"], 0)
+            self.assertTrue(diagnostic["cleanup_complete"])
+            self.assertEqual((output / "editor.bin").stat().st_size, diagnostic["editor_bytes"])
 
     def test_pager_and_editor_match(self):
         for record in self.summary["records"]:

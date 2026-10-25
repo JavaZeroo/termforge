@@ -29,6 +29,23 @@ from experiments.shell.workflow_sessions_checks import validate_workflow_session
 
 
 def validate(row, mode):
+    if mode == "candidate-input-escape":
+        if (row.get("valid") is not True or row.get("exit_code") != 37 or
+                row.get("active_children_after") != 0 or row.get("candidate_replies") is not True or
+                row.get("command_verified") is not True or row.get("input_rejected") != 0 or
+                row.get("presented_done") is not None):
+            raise ValueError("candidate escape lifecycle failed")
+        return
+    if mode == "candidate-tui":
+        if row.get("valid") is not True or row.get("exit_code") != 37 or row.get("active_children_after") != 0:
+            raise ValueError("candidate shell lifecycle failed")
+        if any(row.get(field) is not True for field in ("candidate_tui_start", "candidate_replies", "candidate_tui", "candidate_resize", "command_verified")):
+            raise ValueError("candidate TUI start, reply, editor or resize verification failed")
+        if row.get("input_rejected") != 0 or row.get("frames", 0) < 1 or row.get("consumed_bytes", 0) <= 0:
+            raise ValueError("candidate input or presentation gate failed")
+        if not 0 < row.get("max_consumed_per_tick", 0) <= 65536 or row.get("presented_done") is not None:
+            raise ValueError("candidate UI budget or presentation endpoint failed")
+        return
     if mode == "ui-workflow-sessions":
         if row != {"valid": True, "mode": mode, "sessions_closed": 18, "active_children_after": 0, "presented_done": None}:
             raise ValueError("eight-session workflow or cleanup failed")

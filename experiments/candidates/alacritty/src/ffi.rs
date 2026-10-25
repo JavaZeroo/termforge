@@ -270,7 +270,7 @@ pub unsafe extern "C" fn tf_terminal_cell_meta(
     let result = CellMeta {
         width: if flags.contains(Flags::WIDE_CHAR) {
             2
-        } else if text.is_empty() || flags.contains(Flags::WIDE_CHAR_SPACER) {
+        } else if flags.contains(Flags::WIDE_CHAR_SPACER) {
             0
         } else {
             1

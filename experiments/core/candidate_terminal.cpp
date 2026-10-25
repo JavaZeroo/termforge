@@ -54,6 +54,10 @@ void CandidateTerminal::feed(std::string_view bytes) {
         size_t needed = 0;
         int status = tf_terminal_next_event(impl_, &kind, nullptr, 0, &needed);
         if (status == 0) break;
+        if (status == 1 && needed == 0) {
+            events_.push_back({kind, {}});
+            continue;
+        }
         if (status != 2) throw std::runtime_error("candidate event size query failed");
         std::string payload(needed, '\0');
         status = tf_terminal_next_event(impl_, &kind,

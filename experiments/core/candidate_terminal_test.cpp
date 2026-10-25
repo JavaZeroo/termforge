@@ -36,6 +36,10 @@ void fragmentation() {
     require(whole.screen.history[0][2].width == 0 && whole.screen.history[0][2].written,
             "wide character spacer was not preserved as written");
     require(whole.screen.history[0][3].marks == 1, "combining mark missing");
+    for (const auto& cell : whole.screen.history[0])
+        require(cell.width != 0 || cell.written, "unused cell was incorrectly treated as a wide spacer");
+    require(whole.screen.history[0][7].width == 1 && whole.screen.history[0][7].text == " " &&
+            !whole.screen.history[0][7].written, "unused cell must retain its paintable width");
 }
 
 void alternate_and_replies() {
@@ -50,6 +54,18 @@ void alternate_and_replies() {
     require(events.size() == 1 && events[0].kind == 1 && events[0].bytes == "\x1b[3;5R",
             "cursor reply was not preserved");
     require(terminal.take_events().empty(), "candidate events were not drained");
+}
+
+void empty_payload_events() {
+    termforge::CandidateTerminal terminal(3, 8, 2);
+    terminal.feed("\x1b]0;title\a");
+    const auto events = terminal.take_events();
+    require(events.size() == 1 && events[0].kind == 2 && events[0].bytes == "title",
+            "title event was not preserved");
+    terminal.feed("\x1b]0;\a");
+    const auto empty = terminal.take_events();
+    require(empty.size() == 1 && empty[0].kind == 2 && empty[0].bytes.empty() &&
+            terminal.take_events().empty(), "zero-length event was not drained exactly once");
 }
 
 void identity_versions_and_eviction() {
@@ -126,7 +142,7 @@ void scrolling_and_erase() {
 
     termforge::CandidateTerminal erase(3, 12, 3);
     erase.feed("one\r\ntwo\x1b[2;1H\x1b[1J");
-    require(text(erase.screen.lines[0]).empty() && text(erase.screen.lines[1]) == "wo",
+    require(text(erase.screen.lines[0]).empty() && text(erase.screen.lines[1]) == " wo",
             "ED1 did not clear page start through cursor");
     termforge::CandidateTerminal clear(3, 12, 3);
     clear.feed("A\r\nB\r\nC\r\nD\x1b[2J");
@@ -158,6 +174,7 @@ int main() {
     try {
         fragmentation();
         alternate_and_replies();
+        empty_payload_events();
         identity_versions_and_eviction();
         selection_search_and_viewport();
         linebreaks();

@@ -1,5 +1,6 @@
 {
   "schema": 1,
+  "scope": "owned-value adapter, real Vim/InputQueue and retained-pixel slice; not issue 27 completion",
   "candidate": "alacritty_terminal",
   "version": "0.26.1-dev+termforge.2",
   "platform": "Windows-11-10.0.26200-SP0",
@@ -9,29 +10,36 @@
   "passed": true,
   "cases": [
     "whole and bytewise UTF-8",
-    "wide spacer written flag",
+    "paintable unused cells and wide spacer written flag",
     "alternate screen and PtyWrite",
-    "event draining",
+    "ordinary and zero-length event draining",
     "stable IDs versions and eviction",
     "selection search and HistoryViewport",
     "hard and soft linebreaks",
     "scroll region and ED1/ED2",
-    "resize and invalid arguments"
+    "resize and invalid arguments",
+    "two real Vim insert/60x12-resize/write-quit rounds",
+    "real cursor report through bounded InputQueue",
+    "actual scroll retained pixels equal an independent full redraw"
   ],
   "binary_sha256": {
-    "build/candidate-adapter/bin/Release/candidate_core_test.exe": "9e3832649d0aee15a0c23cbc75665f039eb34f84140faf4702db266b6278838e",
-    "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib": "0e3ccec34955c2c6ef6c66b5de4efa56d65707465b4db80ee3c5412ae706e5b3"
+    "build/candidate-adapter/bin/Release/candidate_core_test.exe": "15f3b24f719ff54033cb3eef05f080020f707d259c49a64f128596d0a9fbd4e0",
+    "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib": "3fa9d18793a20477e80969cd0f13ef28e5cdb0c9607b62d367dd025f06f893be"
   },
   "source_sha256": {
-    "CMakeLists.txt": "5d9166bda21649ad0222d63baf9acdfe8c53e95e31f5332346956aa75abe04d1",
-    ".github/workflows/core-candidate.yml": "030c0c1ba08508e7061e24b710cdf2de6d5706fa1b4f7edd2bd66940dd8f13a2",
+    "CMakeLists.txt": "af7ada1916cf3cab06a5483a9cd9f2aa272bfe6750f76bdc7708a1f41afdd022",
+    ".github/workflows/core-candidate.yml": "77e585d2c470b4ba52a3bc7b367a95e8cd347cf4647dd70a2b88fa1551d98f63",
     "experiments/candidates/alacritty/Cargo.toml": "c5f89fda48ab73f30adfdcc4437fb3eeb1779647886d85364d91395bf8beec86",
     "experiments/candidates/alacritty/Cargo.lock": "91bd90015f37ad5324ec4277377a8565e46234cfaa06ab7faec3e654aad3f105",
-    "experiments/candidates/alacritty/src/ffi.rs": "f4e5d18b79fbd795cc72e2690c20b1e513b09f28c1173ab8b14d3037a2d1a4c4",
+    "experiments/candidates/alacritty/src/ffi.rs": "9d89e5d7e84cbbd0b4a5d0499f9b5eb6b739537c1dab8c154cc0351dec0dd927",
     "experiments/candidates/alacritty/include/termforge_candidate.h": "986c29a892d4274e140363d514f6e1088bb0964485075b98a52edea00dd8964a",
-    "experiments/core/candidate_terminal.cpp": "40d3bca2d24ce12ddd213d9cb2bcf26b6e02d2878fa463155d547080387f7f73",
+    "experiments/core/candidate_terminal.cpp": "d5356a0739505a746b055878d9e1360a76d00257d520cfdd22aa49c03405dc6c",
     "experiments/core/candidate_terminal.hpp": "f9964bd14a6b89430da774d31f091884c76a9ff90a80f33a4977646ebf6aeffa",
-    "experiments/core/candidate_terminal_test.cpp": "a83d58580ef668461f40bd279fac661d87f6a29382800eafc0d67edec05a4768",
+    "experiments/core/candidate_terminal_test.cpp": "4824c4202cfb28dd30093e4f50d370ec93312c3655b3bbb9d2309569d5de076b",
+    "experiments/shell/query_client.cpp": "c8b871ba3cb6ca5c40bddf23e5006c52803eba52ccb5bee56d0b7c52cad68869",
+    "experiments/shell/run.py": "553a0ad5b70936bd9839a0af137eedb59972f9e78d4c4fa18cae27d105cd30d0",
+    "experiments/shell/shell.cpp": "7544beb8b96de50686117b33b74151850c69125f07c5504eb0a8d268a726ba09",
+    "experiments/shell/test_candidate_tui.py": "16139b59b56613bd884bb0accec35a06adde50856e7b0ff03ea22e5a67bbfa19",
     "experiments/candidates/alacritty/vendor/alacritty_terminal/CHANGELOG.md": "97231d9beda30b536650c566169c692fa846be3f7b0405add3c9741f95f3af62",
     "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "ca8957214051c2efbcdb321beab98e211644c2f359ceb0212401a73101679063",
     "experiments/candidates/alacritty/vendor/alacritty_terminal/LICENSE-APACHE": "8884289e3969c089cd556c53fa1d3f51d86b29e52a8c1d660a55ce8292986910",
@@ -60,20 +68,57 @@
     "experiments/candidates/alacritty/vendor/alacritty_terminal/src/vi_mode.rs": "f52c0d3248707c68295880acd7ad96610467110d6813f1172d4ae767365add2e"
   },
   "commands": [
-    "cargo build --manifest-path experiments/candidates/alacritty/Cargo.toml --release --locked --lib",
-    "cmake -S . -B build/candidate-adapter -A x64 -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=ON",
-    "cmake --build build/candidate-adapter --config Release --target candidate_core_test",
-    "ctest --test-dir build/candidate-adapter -C Release -R candidate_core --output-on-failure"
+    "cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --locked --workspace",
+    "cmake -S . -B build/candidate-adapter -A x64 -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=ON -DPython3_EXECUTABLE=D:/Code/termforge/build/r1-python/Scripts/python.exe",
+    "cmake --build build/candidate-adapter --config Release --target runtime_observation_test candidate_core_test termforge_shell",
+    "ctest --test-dir build/candidate-adapter -C Release -R 'candidate_(core|shell_tui)|runtime_observation' --output-on-failure",
+    ".venv/Scripts/python -m unittest experiments.candidates.alacritty.test_candidate -v",
+    ".venv/Scripts/python -m unittest discover -s experiments/measure -p 'test_*.py' -v",
+    "ctest --test-dir build/candidate-adapter -C Release --output-on-failure"
   ],
+  "focused_tests": {
+    "candidate_core": {"passed": 1, "failed": 0},
+    "candidate_shell_tui": {"passed": 1, "failed": 0, "real_vim_rounds": 2, "real_escape_rounds": 2, "real_vim_alternate_screen_verified": false, "cursor_reply_pattern": "^\\x1b\\[[0-9]+;[0-9]+R$"},
+    "runtime_observation": {"passed": 1, "failed": 0},
+    "fixed_crate_units": {"passed": 142, "failed": 0, "doc_tests": 1},
+    "candidate_python": {"passed": 5, "failed": 0},
+    "differential_python": {"passed": 24, "failed": 0},
+    "measurement_python": {"passed": 15, "failed": 0}
+  },
+  "full_candidate_ctest": {
+    "completed": true,
+    "elapsed_seconds": 330.67,
+    "passed": false,
+    "passed_tests": 36,
+    "total_tests": 41,
+    "failures": [
+      {"test": "text_actions", "reason": "Find match and selection lost identity after real ConPTY resize replay"},
+      {"test": "workflow_sessions", "reason": "could not read retained line110"},
+      {"test": "shell", "reason": "suite timeout; nested normal, resize, find and selection failures; not attributed solely to issue 36"},
+      {"test": "selection_bytes", "reason": "CONT wide/combining fixture row not visible"},
+      {"test": "selection_context", "reason": "TF_FIND_077 fixture row not visible"}
+    ]
+  },
+  "default_ctest": {
+    "completed": true,
+    "elapsed_seconds": 295.16,
+    "passed": false,
+    "passed_tests": 38,
+    "total_tests": 39,
+    "failures": [{"test": "shell", "reason": "issue 36 normal/resize Ctrl-C and post-interrupt lifecycle"}]
+  },
   "default_shell_integrated": false,
-  "input_queue_integrated": false,
+  "candidate_shell_integrated": true,
+  "input_queue_integrated": true,
   "presented_done": null,
   "performance_gate": "not_evaluated",
   "limitations": [
-    "Independent owned-value adapter only; no default ShellWindow integration",
-    "No real InputQueue or ConPTY product workflow",
+    "Default CMake retains the original core as fallback; the candidate product is opt-in",
+    "Focused real Vim and retained-pixel success is not issue 27 or R2 completion",
+    "Full candidate R1/system regressions have not passed",
+    "ConPTY replay identity and reflow contract remain with issue 29; see issue comment 6395700469",
     "No incremental FFI or product performance acceptance",
-    "Explicit trailing-space semantics remain unknown",
-    "Resize/reflow contract remains with #29"
+    "Explicit trailing-space semantics and true-color projection remain unknown",
+    "No screenshots or foreground input are used; private-desktop DIB evidence is not presented_done"
   ]
 }

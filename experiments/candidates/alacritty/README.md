@@ -1,6 +1,6 @@
 # Alacritty 原生核心候选（R2-01 / #24）
 
-本目录包含候选构建、状态适配、固定兼容补丁、C ABI 与核心成本实验。[ADR-0003](../../../docs/adr/0003-core-reference-and-reuse.md)已决定 R2 新能力复用候选 Term/Processor；C++ 拥有值适配已独立验证，默认 shell 尚未替换，不启动 GUI，不把 headless 结果写成产品 TUI。
+本目录包含候选构建、状态适配、固定兼容补丁、C ABI 与核心成本实验。[ADR-0003](../../../docs/adr/0003-core-reference-and-reuse.md)已决定 R2 新能力复用候选 Term/Processor；C++ 拥有值适配已接入显式候选 `ShellWindow`，默认 CMake 保留自研回退，不把 headless 结果写成产品 TUI。
 
 ## 固定来源与许可
 
@@ -27,9 +27,9 @@ python experiments/candidates/alacritty/run.py --out local/candidate-alacritty-n
 python -m unittest experiments.candidates.alacritty.test_candidate -v
 
 # 可选 C++ 适配器；默认 CMake 仍不需要 Rust。
-cmake -S . -B build/candidate-adapter -A x64 -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=ON
-cmake --build build/candidate-adapter --config Release --target candidate_core_test
-ctest --test-dir build/candidate-adapter -C Release -R candidate_core --output-on-failure
+cmake -S . -B build/candidate-adapter -A x64 -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=ON -DPython3_EXECUTABLE="$PWD/.venv/Scripts/python.exe"
+cmake --build build/candidate-adapter --config Release
+ctest --test-dir build/candidate-adapter -C Release --output-on-failure
 ```
 
 Linux/macOS 使用相同 Cargo 命令和相应 CMake 配置。默认 trace 为 `target/release/termforge-alacritty-trace[.exe]`；可用 `TERMFORGE_ALACRITTY_TRACE` 显式选择另一构建，缺失文件会失败。候选 workflow 在 Windows/Ubuntu 构建并运行固定 crate 的 142 个单元测试、doc test 和 C++ 适配器。
@@ -45,7 +45,7 @@ Linux/macOS 使用相同 Cargo 命令和相应 CMake 配置。默认 trace 为 `
 ## 当前结果与历史边界
 
 - termforge.2 的[共同矩阵](../../differential/results/2026-10-25-candidate-common-v5/summary.json)为 95 次、1011 检查点全部一致；旧 ED 差异不再以 `reference_difference` 放行。[扩展能力](../../differential/results/2026-10-25-capabilities-v4/summary.json)保持 15 次自研未支持、5 次一致、5 次 resize 差异；[真实应用](../../differential/results/2026-10-25-real-applications-v3/summary.json)3 次全部一致；[fuzz](../../differential/results/2026-10-25-fuzz-v3/summary.json)为 2 次固定已知差异、6 次一致。均不是完整语义接受或产品 TUI。
-- C++ 适配器独立验证分块一致性、真实回复、备用屏/滚动区、ED、Unicode、resize、ID/版本、选择、搜索和 HistoryViewport，证据见 [validation](../../core/results/2026-10-25-candidate-adapter/validation.json)。实际 InputQueue、默认 shell 和 R1 系统整合尚未完成。
+- C++ 适配器验证分块一致性、真实回复、备用屏/滚动区、ED、Unicode、resize、ID/版本、选择、搜索和 HistoryViewport。显式候选 `ShellWindow` 已运行两轮真实 Vim、60×12 resize、主屏恢复及经有界 InputQueue 的真实光标回复，并修复普通空格背景残留；证据见 [validation](../../core/results/2026-10-25-candidate-adapter/validation.json)。默认构建保留自研回退，#36、#29 的真实重放身份失效、完整 R1 回归和实际呈现仍未关闭。
 - #25 的[逐项裁决](../../differential/decisions.md)保留旧 0.26.0 差异；#26 的[路线审查](../../../docs/research/2026-10-25-core-route-review.md)与 project/interactive 计量是原始 0.26.0 历史基线，termforge.1 是更早 headless 切片，均不覆盖 termforge.2。
 - 默认/ANSI 16 色映射为现有数值；其他颜色以 `-2` 保留未投影。上游 `Cell::is_empty` 合并空格和空单元格，不能裁决显式尾空格。`replies` 是相邻检查点的新回复，不是累计队列。
 - resize/reflow 合同归 #29，不能由候选行为静默替换。候选可构建不等于支持 [#23 平台台账](../../../research/windterm-2.7.0-platform-scope.md)的全部系统；Windows 7 非 ConPTY、macOS 10.13、glibc 2.17、x86 和 ARM 缺口继续归 #34/R4，Windows CI 的 Vim 捕获问题由 #37 单独保留。

@@ -1,5 +1,8 @@
 // Local shell with physical-row resize. See README for the limited contract.
 #include "../presentation/render.hpp"
+#ifdef TERMFORGE_CANDIDATE_CORE
+#include "../core/candidate_terminal.hpp"
+#endif
 #include "queues.hpp"
 #include "resize.hpp"
 #include "keyboard.hpp"
@@ -25,6 +28,7 @@ struct Result {
     int frames = 0, ticks = 0;
     DWORD exit_code = STILL_ACTIVE, active_children = MAXDWORD;
     bool complete = false, normal = false, unicode = false, edited = false, arrows = false, interrupted = false;
+    bool candidate_tui_start = false, candidate_replies = false, candidate_tui = false, candidate_resize = false;
     double input_to_state_ms = -1, input_to_submit_ms = -1, max_tick_ms = 0;
     std::string screen;
     std::optional<tf_shell::RuntimeSnapshot> runtime_before_close, runtime_final;
@@ -36,7 +40,11 @@ class ShellWindow {
     tf_conpty::Session session_;
     InputQueue input_{session_};
     ResizeWorker resize_{session_};
+#ifdef TERMFORGE_CANDIDATE_CORE
+    termforge::CandidateTerminal parser_{24, 80, 100};
+#else
     termforge::Parser parser_{24, 80, 100, termforge::ParseMode::recovery};
+#endif
     termforge::HistoryViewport viewport_;
     std::unique_ptr<Renderer> renderer_ = std::make_unique<Renderer>("dwrite", 96);
     std::shared_ptr<const Snapshot> snapshot_;
@@ -64,7 +72,7 @@ class ShellWindow {
     std::optional<tf_shell::PreparedPaste> pending_paste_;
     std::unique_ptr<tf_shell::PastePrompt> paste_prompt_;
     std::shared_ptr<tf_shell::PasteTransfer> paste_transfer_;
-    std::wstring input_status_, command_prefix_;
+    std::wstring input_status_, command_prefix_, terminal_title_;
     int wheel_remainder_ = 0;
     termforge::TextSelection selection_;
     std::optional<termforge::TextPosition> selection_anchor_;
@@ -150,7 +158,11 @@ class ShellWindow {
             find_resize_pending_=find_resize_anchor_.set(termforge::TextDocument(parser_.screen),*current);
             find_resize_wrapped_=find_current_->wrapped;
         }
+#ifdef TERMFORGE_CANDIDATE_CORE
+        parser_.resize(rows, columns);
+#else
         parser_.screen.resize(rows, columns);
+#endif
         search_changed();
         dirty_first_ = 0; dirty_last_ = rows;
         surface_ = std::move(surface); metrics_dirty_ = false; publish();
@@ -415,6 +427,77 @@ class ShellWindow {
             if (!stage_ && result_.frames) { std::cout << "{\"watchdog_ready\":true}\n" << std::flush; stage_ = 1; }
             return;
         }
+        if (mode_ == "candidate-input-escape") {
+            if (stage_ == 0 && has("TF>")) {
+                start_query_receiver(L"candidate-escape.bin", true); stage_ = 60;
+            } else if (stage_ == 60 && line_is("TF_QUERY_READY")) {
+                begin_output_observation(); resize_window(60, 12); stage_ = 61;
+            } else if (stage_ == 61 && resize_.settled() &&
+                       parser_.screen.width() == 60 && parser_.screen.height() == 12 &&
+                       observed_output_.find("\x1b[?25h") != std::string::npos) {
+                fixture_command(std::wstring(1, 27)); stage_ = 62;
+            } else if (stage_ == 62 && live_contains_line("TF_ESCAPE_DONE")) {
+                std::ifstream stream("candidate-escape.bin", std::ios::binary);
+                std::ostringstream content; content << stream.rdbuf();
+                require(content.str() == std::string(1, 27), "escape input capture differs");
+                result_.candidate_replies = result_.normal = true; type(L"exit 37\r"); stage_ = 6;
+            }
+            return;
+        }
+        if (mode_ == "candidate-tui") {
+#ifndef TERMFORGE_CANDIDATE_CORE
+            throw std::runtime_error("candidate-tui requires the candidate adapter build");
+#else
+            if (stage_ == 0 && has("TF>")) {
+                type(L"vim -Nu NONE -n -i NONE --cmd \"set noswapfile\" --cmd \"autocmd InsertCharPre * call writefile([v:char], 'candidate-insert-log.txt', 'a')\" --cmd \"autocmd InsertLeave * call writefile(['LEAVE'], 'candidate-insert-log.txt', 'a')\" -W candidate-input.bin candidate-tui.txt\r"); stage_ = 50;
+            }
+            if (stage_ == 50 && has("[New]")) {
+                result_.candidate_tui_start = true;
+                fixture_command(L"i"); stage_ = 57;
+            } else if (stage_ == 57 && line_is("-- INSERT --")) {
+                fixture_command(L"TF_CANDIDATE_TUI"); stage_ = 58;
+            } else if (stage_ == 58 && has("TF_CANDIDATE_TUI")) {
+                { std::ofstream clear("candidate-resize-log.txt", std::ios::trunc); require(bool(clear), "resize observation reset failed"); }
+                resize_window(60, 12); stage_ = 55;
+            } else if (stage_ == 55 && resize_.settled() &&
+                       parser_.screen.width() == 60 && parser_.screen.height() == 12) {
+                fixture_command(L"\x0f:call writefile([string(&columns) . 'x' . string(&lines)], 'candidate-resize-log.txt', 'b')\r"); stage_ = 59;
+            } else if (stage_ == 59) {
+                std::ifstream stream("candidate-resize-log.txt", std::ios::binary);
+                std::ostringstream content; content << stream.rdbuf();
+                if (content.str() == "60x12") {
+                    fixture_command(L"\x0f:wq\r"); stage_ = 51;
+                }
+            }
+            if (stage_ == 51 && live_contains_line("TF>")) {
+                std::ifstream stream("candidate-tui.txt", std::ios::binary);
+                std::ostringstream content; content << stream.rdbuf();
+                require(content.str().find("TF_CANDIDATE_TUI") != std::string::npos, "candidate editor file missing");
+                result_.candidate_tui = result_.normal = true;
+                query_size(); stage_ = 56;
+            } else if (stage_ == 56 && line_is("TF_SIZE_60x12")) {
+                require(parser_.screen.width() == 60 && parser_.screen.height() == 12,
+                        "candidate child resize dimensions mismatch");
+                result_.candidate_resize = true;
+                start_query_receiver(L"candidate-replies.bin"); stage_ = 52;
+            } else if (stage_ == 52 && live_contains_line("TF_QUERY_DONE")) {
+                std::ifstream stream("candidate-replies.bin", std::ios::binary);
+                std::ostringstream content; content << stream.rdbuf();
+                const auto response = content.str();
+                require(response.size() >= 4 && response[0] == '\x1b' && response[1] == '[' && response.back() == 'R',
+                        "candidate cursor reply bytes missing");
+                bool separator = false;
+                for (size_t i = 2; i + 1 < response.size(); ++i) {
+                    const char c = response[i];
+                    require((c >= '0' && c <= '9') || c == ';', "invalid candidate cursor reply format");
+                    separator = separator || c == ';';
+                }
+                require(separator, "candidate cursor reply has no coordinates");
+                result_.candidate_replies = true; type(L"exit 37\r"); stage_ = 6;
+            }
+            return;
+#endif
+        }
         if (stage_ == 0 && has("TF>")) { type(L"echo TF_READY\r"); stage_ = 1; }
         else if (stage_ == 1 && line_is("TF_READY")) {
             result_.normal = true; type(L"echo \x4e2d\x6587\x00e9\r"); stage_ = 2;
@@ -457,6 +540,23 @@ class ShellWindow {
             ++result_.resize_verified; type(L"exit 37\r"); stage_ = 6;
         }
     }
+#ifdef TERMFORGE_CANDIDATE_CORE
+    void route_terminal_events() {
+        for (const auto& event : parser_.take_events()) {
+            switch (event.kind) {
+            case 1:
+                if (!event.bytes.empty()) require(input_.send(event.bytes), "terminal reply rejected by input queue");
+                break;
+            case 2: terminal_title_ = utf16(event.bytes); break;
+            case 3: terminal_title_.clear(); break;
+            case 4: MessageBeep(MB_OK); break;
+            case 5: case 7: case 12: break;
+            case 6: begin_close(); break;
+            default: throw std::runtime_error("unsupported terminal event kind");
+            }
+        }
+    }
+#endif
     void tick() {
         const auto began = Clock::now(); ++result_.ticks;
         poll_paste();
@@ -472,6 +572,9 @@ class ShellWindow {
                 if(observed_output_.size()>8192) observed_output_.erase(0,observed_output_.size()-8192);
             }
             parser_.feed(bytes); batch += bytes.size();
+#ifdef TERMFORGE_CANDIDATE_CORE
+            route_terminal_events();
+#endif
         } while (batch < 65536 && ms(began) < 4);
         result_.max_consumed_per_tick = (std::max)(result_.max_consumed_per_tick, batch);
         if (batch) { result_.consumed += batch; search_changed(); publish(); }
@@ -887,6 +990,12 @@ public:
         const auto client=std::filesystem::path(path).parent_path()/L"shell_input_client.exe";
         command(L"\""+client.wstring()+L"\" \""+capture.wstring()+L"\"\r");
     }
+    void start_query_receiver(const std::filesystem::path& capture, bool escape = false) {
+        wchar_t path[32768]{}; const auto count=GetModuleFileNameW(nullptr,path,32768);
+        require(count && count<32768,"query receiver location failed");
+        const auto client=std::filesystem::path(path).parent_path()/L"shell_query_client.exe";
+        command(L"\""+client.wstring()+L"\" \""+capture.wstring()+L"\""+(escape?L" --escape":L"")+L"\r");
+    }
     void start_text_receiver(const std::filesystem::path& capture) {
         wchar_t path[32768]{}; const auto count=GetModuleFileNameW(nullptr,path,32768);
         require(count && count<32768,"text receiver location failed");
@@ -1005,7 +1114,7 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
+            require(mode == "candidate-tui" || mode == "candidate-input-escape" || mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
             if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system" || mode=="ui-copy-context-system" || mode=="ui-actions-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
@@ -1025,9 +1134,13 @@ static int application(int argc, char** argv) {
         {
             ShellWindow window(mode,image); r = window.run();
         }
-        const bool valid = r.complete && r.active_children == 0 && r.frames > 0 && r.input_rejected == 0 &&
+        const bool candidate = mode == "candidate-tui"
+            ? r.candidate_tui_start && r.candidate_replies && r.candidate_tui && r.candidate_resize && r.normal && r.exit_code == 37
+            : mode != "candidate-input-escape" || (r.candidate_replies && r.normal && r.exit_code == 37);
+        const bool legacy = mode == "candidate-tui" || mode == "candidate-input-escape" ||
             (r.normal && r.unicode && r.edited && r.arrows &&
-             (mode == "close" || mode == "resize-close" || (r.interrupted && r.exit_code == 37))) &&
+             (mode == "close" || mode == "resize-close" || (r.interrupted && r.exit_code == 37)));
+        const bool valid = r.complete && r.active_children == 0 && r.frames > 0 && r.input_rejected == 0 && candidate && legacy &&
             (mode != "resize" || r.resize_verified == 3) && (mode != "resize-close" || r.resize_verified == 2);
         std::cout << "{\"valid\":" << (valid ? "true" : "false") << ",\"mode\":\"" << mode << "\",\"consumed_bytes\":" << r.consumed
             << ",\"frames\":" << r.frames << ",\"ticks\":" << r.ticks << ",\"output_queue_high_water\":" << r.output_high_water
@@ -1043,6 +1156,10 @@ static int application(int argc, char** argv) {
         std::cout << ",\"max_tick_ms\":" << r.max_tick_ms
             << ",\"resize_verified\":" << r.resize_verified << ",\"rows\":" << r.rows << ",\"columns\":" << r.columns
             << ",\"max_consumed_per_tick\":" << r.max_consumed_per_tick
+            << ",\"candidate_tui_start\":" << (r.candidate_tui_start?"true":"false")
+            << ",\"candidate_replies\":" << (r.candidate_replies?"true":"false")
+            << ",\"candidate_tui\":" << (r.candidate_tui?"true":"false")
+            << ",\"candidate_resize\":" << (r.candidate_resize?"true":"false")
             << ",\"presented_done\":null,\"screen\":" << r.screen << "}\n";
         return valid ? 0 : 1;
     } catch (const std::exception& e) {
