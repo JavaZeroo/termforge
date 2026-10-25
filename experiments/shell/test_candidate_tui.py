@@ -31,6 +31,12 @@ class CandidateTuiTests(unittest.TestCase):
             self.assertTrue(result["candidate_replies"])
             self.assertTrue(result["candidate_resize"])
             self.assertIn("TF_CANDIDATE_TUI", (out / "candidate-tui.txt").read_text(encoding="utf-8"))
+            self.assertEqual((out / "candidate-vim.vim").read_text(encoding="utf-8"),
+                             "set noswapfile\n"
+                             "autocmd VimEnter * call writefile(['READY'], 'candidate-startup-log.txt')\n"
+                             "autocmd InsertEnter * call writefile(['INSERT'], 'candidate-insert-log.txt', 'a')\n"
+                             "autocmd InsertCharPre * call writefile([v:char], 'candidate-insert-log.txt', 'a')\n"
+                             "autocmd InsertLeave * call writefile(['LEAVE'], 'candidate-insert-log.txt', 'a')\n")
             script = (out / "candidate-input.bin").read_bytes()
             self.assertTrue(script.startswith(b"iTF_CANDIDATE_TUI"))
             self.assertTrue(script.endswith(b":wq\r"))

@@ -108,7 +108,7 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 
 | 场景 | 检查内容 | 独立结果与边界 |
 |---|---|---|
-| `candidate-tui` / `candidate-input-escape` | 仅显式候选构建：真实 Vim 进入/插入/60×12 resize/退出写盘，主屏恢复、独立 `CSI 6n` 光标回复及独立 ESC 接收 | `test_candidate_tui.py` 各连续两轮；以 Vim 写入的真实 `VimEnter`/`InsertEnter` 事件文件为启动握手，以 `Ctrl-O` 调用命令保存实际 `&columns/&lines`，核对文件、子进程尺寸及 InputQueue 字节；有界合成输出另存 `candidate-output.bin`，私有 desktop/Job，无截图。不把该路径写成 Vim Escape 或备用屏验收，不替代 #28/#29 或实际呈现验收 |
+| `candidate-tui` / `candidate-input-escape` | 仅显式候选构建：真实 Vim 进入/插入/60×12 resize/退出写盘，主屏恢复、独立 `CSI 6n` 光标回复及独立 ESC 接收 | `test_candidate_tui.py` 各连续两轮；固定 `candidate-vim.vim` 以短 `-S` 命令加载，避免交互式 cmd 拆分长命令；以 Vim 写入的真实 `VimEnter`/`InsertEnter` 事件文件为启动握手，以 `Ctrl-O` 调用命令保存实际 `&columns/&lines`，核对脚本、文件、子进程尺寸及 InputQueue 字节；有界合成输出另存 `candidate-output.bin`，私有 desktop/Job，无截图。不把该路径写成 Vim Escape 或备用屏验收，不替代 #28/#29 或实际呈现验收 |
 | `ui-workflow-sessions` | 8真实会话/拒绝第9个、五路有限洪流、阅读/Find/输入/缩放/淘汰、合成粘贴取消/关闭、5次8→6→8 | `test_workflow_sessions`独立literal/raw/journal/UI和回收校验；每轮26检查点、18身份、235/256观测，资源scope=launcher-tree。data-only，不代替同次实际CF/IME、native阶段校准或操作提交端点 |
 | `ui` / `ui-edit` / `ui-restore` | 多标签、五处分隔线、重命名、捕获/Escape 回滚、新进程恢复布局 | 真实子进程尺寸、保存文件、焦点与回收；不恢复会话进程或标题 |
 | `ui-main` | 主区/底部隔离、隐藏输出、焦点模式、空区域与关闭目标 | `geometry.json` 按固定参考常量检查 HWND/字体/矩形；内部网格由实际客户区扣除系统滚动条后计算 |

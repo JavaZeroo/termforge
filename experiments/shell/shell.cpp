@@ -453,8 +453,17 @@ class ShellWindow {
                 std::string line; std::getline(stream, line); return line;
             };
             if (stage_ == 0 && has("TF>")) {
+                const char script[] =
+                    "set noswapfile\n"
+                    "autocmd VimEnter * call writefile(['READY'], 'candidate-startup-log.txt')\n"
+                    "autocmd InsertEnter * call writefile(['INSERT'], 'candidate-insert-log.txt', 'a')\n"
+                    "autocmd InsertCharPre * call writefile([v:char], 'candidate-insert-log.txt', 'a')\n"
+                    "autocmd InsertLeave * call writefile(['LEAVE'], 'candidate-insert-log.txt', 'a')\n";
+                std::ofstream fixture("candidate-vim.vim", std::ios::binary | std::ios::trunc);
+                fixture.write(script, sizeof(script) - 1); fixture.close();
+                require(bool(fixture), "candidate Vim fixture write failed");
                 begin_output_observation();
-                type(L"vim -Nu NONE -n -i NONE --cmd \"set noswapfile\" --cmd \"autocmd VimEnter * call writefile(['READY'], 'candidate-startup-log.txt')\" --cmd \"autocmd InsertEnter * call writefile(['INSERT'], 'candidate-insert-log.txt', 'a')\" --cmd \"autocmd InsertCharPre * call writefile([v:char], 'candidate-insert-log.txt', 'a')\" --cmd \"autocmd InsertLeave * call writefile(['LEAVE'], 'candidate-insert-log.txt', 'a')\" -W candidate-input.bin candidate-tui.txt\r"); stage_ = 50;
+                type(L"vim -Nu NONE -n -i NONE -S candidate-vim.vim -W candidate-input.bin candidate-tui.txt\r"); stage_ = 50;
             }
             if (stage_ == 50 && has("[New]") && event_line("candidate-startup-log.txt") == "READY") {
                 result_.candidate_tui_start = true;
