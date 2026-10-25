@@ -1,0 +1,179 @@
+{
+  "schema": "termforge-alternate-screen-validation-v1",
+  "source_commit": "7b447b4d74fc0d3a9d80ba4dd29c0fdc37e0384c",
+  "source_tree": "76b6d7c7db768f1f35f4ed5d7673edc4ab4e6460",
+  "source_binding": "The fixture, scenario and independent checks were committed before the full regression. Documentation and this evidence are a separate follow-up.",
+  "scope": "Two real 1049h/1049l transitions, native main-screen restoration, candidate style/cursor restoration and history isolation. Scroll regions, resize and the full #27 contract are excluded.",
+  "passed": false,
+  "scoped_validation_passed": true,
+  "alternate_scoped_verified": true,
+  "scroll_region_verified": false,
+  "origin_and_wrap_modes_verified": false,
+  "resize_cross_verified": false,
+  "full_r1_regression_verified": false,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 local x64 10.0.26200",
+    "python": "build/r1-python/Scripts/python.exe",
+    "harness": "Owned non-input desktop and Job; no screenshots, foreground input or display-setting changes",
+    "raw_artifact_root": "build/r2-alt-screen-wait",
+    "completion_handshake": "A test-only per-process named event holds the helper after the final marker until candidate observations are saved"
+  },
+  "builds": {
+    "default": {"command": "cmake --build build --config Release", "passed": true},
+    "candidate": {"command": "cmake --build build/candidate-adapter --config Release", "passed": true}
+  },
+  "scenario": {
+    "command": "PYTHONUTF8=1 TERMFORGE_BIN_DIR=build/candidate-adapter/bin/Release TERMFORGE_TEST_ARTIFACTS=build/r2-alt-screen-wait build/r1-python/Scripts/python.exe -m unittest experiments.shell.test_candidate_tui.CandidateTuiTests.test_real_alternate_screen_restoration -v",
+    "rounds_passed": 2,
+    "tamper_cases_rejected": 12,
+    "original_scenario_timeout_seconds": 25,
+    "native_state_wait_bound_ms": 1000,
+    "source_bytes": 117,
+    "source_sha256": "a7b819c053688521f0df607a54b9fc3fbf7b8a2da3a8348a1bb0b511489baa99",
+    "source_or_original_timeouts_changed": false,
+    "enter_1049_count": 2,
+    "exit_1049_count": 2,
+    "snapshot_synchronization": "The initial fixture captured pre-transition content. The fixture now waits for actual native text and style before each snapshot; the VT source and original scenario deadline were not changed.",
+    "native_stage_roles": ["main-before", "alt-one", "main-restored", "alt-two", "main-final"]
+  },
+  "native_console": {
+    "before_and_restored_text_identical": true,
+    "before_and_restored_char_info_identical": true,
+    "before_and_restored_cursor_identical": true,
+    "main_green_foreground": 2,
+    "alt_one_foreground": 1,
+    "alt_two_foreground": 4,
+    "alt_two_contains_main_text": false,
+    "alt_one_retained_on_second_entry": false,
+    "reentry_observation_is_not_a_complete_mode_contract": true,
+    "rounds_with_identical_native_hashes": 2,
+    "stage_hashes": {
+      "before": {
+        "text_sha256": "1500c8bc367899f22dc06740020c43dc4f9b4b09413b697cd8937dde11189529",
+        "cells_sha256": "f5d0c086a4b22bf09cbaa7a885056da1966df6a25ae03acd807e49d95f61ff46"
+      },
+      "alt1": {
+        "text_sha256": "6b656dea9f6879c2d75266b8bc4a60b55ddcc7c65002de1e4e0c55bc8d7d2ea6",
+        "cells_sha256": "e8a1e85c424e60664b056cb8f2cdb525c912505804130d17f2f3c7c72f5695bc"
+      },
+      "restored1": {
+        "text_sha256": "1500c8bc367899f22dc06740020c43dc4f9b4b09413b697cd8937dde11189529",
+        "cells_sha256": "f5d0c086a4b22bf09cbaa7a885056da1966df6a25ae03acd807e49d95f61ff46"
+      },
+      "alt2": {
+        "text_sha256": "d1bb9771b9f6207da64f51493a846f71bbab1204b9c977a2ee2e9c9a09172c2e",
+        "cells_sha256": "b3b527c52d831a1017e0f5906cfedbf7feeda7512c0361846d5447eb49d98137"
+      },
+      "final": {
+        "text_sha256": "7fbc62f9a521f83ef13869969c8e419f289010784e56cd5356bd7f2ae0f0a8f1",
+        "cells_sha256": "b28d7d372aeecfcf5462c528d45d7af0b67a9d49f5c648e115f6b0e6eba3244e"
+      }
+    }
+  },
+  "candidate": {
+    "main_text_restored": ["MAIN_GREEN", "MAIN_AFTER", "TF_ALT_DONE"],
+    "alternate_text_absent_from_visible_and_retained_document": true,
+    "restored_main_foreground": 2,
+    "restored_main_background": -1,
+    "default_foreground": -1,
+    "default_background": -1,
+    "alternate_mode_enabled_at_end": false,
+    "cursor_matches_native_final": true,
+    "retained_frame_matches_full": true,
+    "presented_done": null
+  },
+  "transport": [
+    {"round": 0, "bytes": 1333, "sha256": "bdb8379504da2f036b1eb2fcd23e7383d49ff1811a2d7509e9279a67630bc4cd"},
+    {"round": 1, "bytes": 1335, "sha256": "a05ec6cfd590e72b5184b87d15d5db317a03102b865d7958fd566c0217a2116c"}
+  ],
+  "targeted_regression": {
+    "candidate": {
+      "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure -R '^(candidate_core|candidate_shell_tui|runtime_observation|workflow_fixture|renderer_metrics|presentation)$'",
+      "passed": 6,
+      "failed": 0,
+      "seconds": 35.10
+    },
+    "default": {
+      "command": "ctest --test-dir build -C Release --output-on-failure -R '^(runtime_observation|workflow_fixture|renderer_metrics|presentation)$'",
+      "passed": 4,
+      "failed": 0,
+      "seconds": 29.24
+    }
+  },
+  "regression": {
+    "default": {
+      "command": "ctest --test-dir build -C Release --output-on-failure",
+      "status": "completed",
+      "exit_code": 8,
+      "total": 40,
+      "passed": 39,
+      "failed": 1,
+      "seconds": 313.52,
+      "shell_nested_errors": 2,
+      "shell_nested_skipped": 3,
+      "remaining_failures": [
+        "test_commands_unicode_editing_interrupt_and_normal_exit",
+        "test_resize_child_dimensions_and_interrupt"
+      ],
+      "existing_issue": 36,
+      "loads_or_timeouts_changed": false
+    },
+    "candidate": {
+      "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure",
+      "status": "completed",
+      "exit_code": 8,
+      "total": 42,
+      "passed": 41,
+      "failed": 1,
+      "seconds": 363.76,
+      "shell_nested_errors": 4,
+      "shell_nested_skipped": 3,
+      "remaining_failures": [
+        "test_close_during_continuous_output",
+        "test_close_while_resizing_continuous_output",
+        "test_commands_unicode_editing_interrupt_and_normal_exit",
+        "test_resize_child_dimensions_and_interrupt"
+      ],
+      "existing_issues": [36, 38],
+      "loads_or_timeouts_changed": false
+    }
+  },
+  "remote_ci": {
+    "candidate_workflow": {"run": 40244057450, "conclusion": "success"},
+    "default_workflow": {
+      "run": 40244057401,
+      "ubuntu": "success",
+      "windows": "failure",
+      "windows_total": 40,
+      "windows_passed": 38,
+      "windows_failed": 2,
+      "windows_seconds": 287.19,
+      "failed_suites": ["ime_inventory", "shell"],
+      "shell_issue": 38,
+      "inventory_issue": 40,
+      "inventory_timeout_seconds": 10,
+      "local_same_inventory_test_seconds": 1.633,
+      "prior_inventory_passed_run": 40241569730,
+      "root_cause": "Unresolved; local success does not eliminate the CI timeout and no environment or product-cause attribution is made",
+      "timeout_or_skip_changes": false
+    }
+  },
+  "binary_sha256": {
+    "default/termforge_shell.exe": "a500265c9a7ee0749397732e44701670b7a4092bafecbef0132da878152e977e",
+    "default/shell_text_client.exe": "948d744cdee367e2434d1ab0f5127ad5a8c7e8266aa9466950cc9a51f47ca708",
+    "default/shell_test_launcher.exe": "3a0ccd7a936f106235ff6d45c4b8d2640763e018b645764b6b1717beb99d8e75",
+    "candidate/termforge_shell.exe": "d13a463fb21633afbffaec9e0d7e1b92ba5a0df58e1cc231af775f5e1af4c479",
+    "candidate/shell_text_client.exe": "3b61ff493819850f0b25743e42a5bc67088d61e343257a0b3294e504cc3e3040",
+    "candidate/shell_test_launcher.exe": "98f55be477de81c057a5084ac8369f92bbba55f4c1b104d35eb10d8c7be67e0a"
+  },
+  "limitations": [
+    "This is a bounded alternate-screen scenario, not scroll-region, origin/wrap, resize-cross or full #27 acceptance. #28 remains blocked by #27.",
+    "The observed second-entry absence of ALT_ONE is not a general mode or WindTerm equivalence claim.",
+    "The full R1/system regression is not green; known #36/#38 failures must remain visible and are not replaced by this scoped result.",
+    "The retained DIB and frame comparison are not a presented-frame endpoint or a physical-input result; presented_done remains null and no performance claim is made.",
+    "Raw private artifacts and third-party content are not published. Public source fixtures and sanitized hashes define the limited reproduction."
+  ]
+}

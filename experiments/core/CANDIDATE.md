@@ -27,6 +27,8 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 
 `candidate_shell_tui` 在同一 `ShellWindow` 和 ConPTY 路径上连续执行两轮真实 Vim：进入全屏编辑、插入文字、resize 到 60×12、退出写盘、确认主屏 shell 返回。本机 Vim 输出未发送 `1049/1047/47`，所以此场景不计作备用屏验收；1049 的固定核心用例与真实 Vim 证据分开。固定自动命令写入 `candidate-vim.vim` 并以短 `-S` 命令加载，避免交互式 cmd 拆分长启动命令。启动和插入由 Vim 写入的真实 `VimEnter`/`InsertEnter` 事件文件确认，避免 `echon` 消息被重绘覆盖；随后通过插入模式的 `Ctrl-O` 调用 Vim 命令，实际保存 `&columns/&lines` 并检查 60×12，再以 `Ctrl-O:wq` 写盘退出。不把 ConPTY 重绘或 `ResizePseudoConsole` 返回当作 Vim 已就绪。本路径不声称验证 Vim 的 Escape 行为，独立控制台 ESC 接收另测。`-W` 日志核对插入文本与 `:wq` 顺序，其中可能含 Vim 内部特殊键，不能冒充纯键盘字节。随后用独立 `shell_query_client.exe` 发出真实 `CSI 6n`，保存终端经 `InputQueue` 返回的光标报告，并用 `shell_size_client.exe` 核对子进程尺寸。另有 resize 后独立 ESC 接收检查。
 
+`candidate-alt` 通过真实辅助进程执行两次 1049h/1049l，在五个阶段保存源 VT 字节、子控制台 `CHAR_INFO`、文本、样式和光标。两轮[限定验证](../shell/results/2026-10-26-alternate-screen/validation.json)要求原生主屏恢复与进入前一致，候选主屏文字/样式和最终光标恢复，ALT_ONE/ALT_TWO 不进入主历史。快照按实际控制台文字/样式有界同步，不把早期快照或旧核心用例冒充产品结果。滚动区域、原点/换行、异常序列及 resize 交叉仍由 #27 保留，#28 不因此解除阻塞。
+
 `candidate-unicode` 另以真实辅助进程输出固定分解组合、单 emoji、ZWJ 和 keycap，保存源字节、真实控制台 `CHAR_INFO`、ConPTY transport、候选单元格及实际 DWrite glyph。两轮[限定验证](../shell/results/2026-10-26-unicode-renderer/validation.json)要求原文保留、glyph 无缺字且布局不超出原网格；过宽文字只缩小字号。当前 ZWJ 分格和 keycap 宽度是观测结果，不是完整聚类合同；完整流式字素与宽度由 [#39](https://github.com/JavaZeroo/termforge/issues/39) 阻塞，不能将本场景写成完整 Unicode/IME 验收。
 
 原有 `runtime_observation` 也在候选适配构建运行，保留滚动后的逐行内容、retained/full RGB 一致、no-op 状态端点及会话清理断言。所有此类检查只使用自有窗口的 DIB，不截图，`presented_done` 仍未知。

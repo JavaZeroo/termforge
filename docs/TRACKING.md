@@ -53,6 +53,8 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 | R2-11 | [#34](https://github.com/JavaZeroo/termforge/issues/34) | 产品 GUI/平台、核心历史接口与呈现隔离决定 | #23、#26、#28–#33 |
 | R2-12 | [#35](https://github.com/JavaZeroo/termforge/issues/35) | Windows R2 日常开发版与路标出口验收 | #27–#34、#36、#38 |
 | R1 回归 | [#36](https://github.com/JavaZeroo/termforge/issues/36) | 定位持续 cmd 输出时 ETX 不中断并恢复 normal/resize 与完整 CTest | 无；不得减少负载或仅延长超时 |
+| Windows 回归 | [#38](https://github.com/JavaZeroo/termforge/issues/38) | 定位工作区、交互及 CI 的真实失败 | 无；#35 的出口依赖，不能以局部几何结果代替修复 |
+| Windows CI 回归 | [#40](https://github.com/JavaZeroo/termforge/issues/40) | 复核 `ime_inventory` 纯夹具原 10 秒超时、最终进度和回收 | 无；作为 #38 的子项阻塞 #38，不能用本机通过冒充 CI 修复 |
 
 ## 从当前状态接着做
 
