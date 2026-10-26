@@ -15,6 +15,67 @@ from unittest.mock import patch
 from research.ime import inventory_hosted as inventory
 
 
+FIXTURE_CHECKPOINT_STAGES = frozenset((
+    "fixture-ready", "go-received", "ast-started", "ast-ended", "worker-entered",
+    "progress-started", "progress-ended", "progress-failed", "worker-returned",
+))
+
+
+def fixture_checkpoints(directory):
+    """Read only bounded, fixed-stage telemetry after the owned host is reaped."""
+    observation = {"status": "missing", "events": [], "error": None}
+    try:
+        with (directory / "fixture-progress.tsv").open("rb") as stream:
+            contents = stream.read(4097)
+        if len(contents) > 4096 or not contents.endswith(b"\n"):
+            raise ValueError("incomplete or oversized fixture checkpoint record")
+        rows = contents.decode("ascii").splitlines()
+        if not 1 <= len(rows) <= 32:
+            raise ValueError("invalid checkpoint count")
+        events = []
+        previous = -1
+        for row in rows:
+            milliseconds, stage = row.split("\t")
+            if (not milliseconds.isdecimal() or len(milliseconds) > 10
+                    or stage not in FIXTURE_CHECKPOINT_STAGES):
+                raise ValueError("invalid fixture checkpoint")
+            elapsed = int(milliseconds)
+            if elapsed < previous:
+                raise ValueError("nonmonotonic fixture checkpoint")
+            events.append({"elapsed_milliseconds": elapsed, "stage": stage})
+            previous = elapsed
+        observation.update(status="observed", events=events)
+    except FileNotFoundError:
+        pass
+    except (OSError, UnicodeError, ValueError) as error:
+        observation.update(status="unavailable", error=inventory.error_identity(error))
+    return observation
+
+
+class FixtureCheckpoints(unittest.TestCase):
+    def test_only_fixed_complete_monotonic_bounded_records_are_public(self):
+        for contents in (b"", b"0\tgo-received", b"0\tPRIVATE-PATH\n",
+                         b"1\tgo-received\n0\tast-started\n", b"x\tast-started\n",
+                         b"0\tast-started\textra\n", b"\xff\tast-started\n",
+                         b"0\tast-started\n" * 33, b"X" * 4097):
+            with self.subTest(contents=contents[:30]), tempfile.TemporaryDirectory() as directory:
+                (Path(directory) / "fixture-progress.tsv").write_bytes(contents)
+                result = fixture_checkpoints(Path(directory))
+                self.assertEqual(result["status"], "unavailable")
+                self.assertEqual(result["events"], [])
+                self.assertNotIn("PRIVATE", json.dumps(result))
+
+    def test_absent_and_unreadable_records_remain_unknown(self):
+        with tempfile.TemporaryDirectory() as directory:
+            self.assertEqual(fixture_checkpoints(Path(directory)),
+                             {"status": "missing", "events": [], "error": None})
+            with patch.object(Path, "open", side_effect=PermissionError("PRIVATE")):
+                result = fixture_checkpoints(Path(directory))
+            self.assertEqual(result["status"], "unavailable")
+            self.assertEqual(result["events"], [])
+            self.assertNotIn("PRIVATE", json.dumps(result))
+
+
 class InventoryReports(unittest.TestCase):
     def test_guard_rejects_without_creating_output(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -248,9 +309,19 @@ Set-StrictMode -Version Latest
         if lifecycle:
             prefix += r"""
 $fixtureStopwatch = [Diagnostics.Stopwatch]::StartNew()
+$fixtureProgressPath = [IO.Path]::Combine($PSScriptRoot, 'fixture-progress.tsv')
+function Save-FixtureCheckpoint([string]$Stage) {
+    # CLR-only fixed-stage metadata survives a timeout before final JSON output.
+    # Do not load a module or query the environment to produce test telemetry.
+    $line = $fixtureStopwatch.ElapsedMilliseconds.ToString([Globalization.CultureInfo]::InvariantCulture) + "`t" + $Stage + "`n"
+    [IO.File]::AppendAllText($fixtureProgressPath, $line, [Text.Encoding]::ASCII)
+}
+Save-FixtureCheckpoint 'fixture-ready'
 [IO.File]::WriteAllText([IO.Path]::Combine($PSScriptRoot, 'fixture-ready'), 'ready')
 if ([Console]::ReadLine() -cne 'GO') { throw 'Missing fixture GO' }
+Save-FixtureCheckpoint 'go-received'
 $fixtureAstStarted = $fixtureStopwatch.ElapsedMilliseconds
+Save-FixtureCheckpoint 'ast-started'
 """
         prefix += r"""
 $tokens = $null; $errors = $null
@@ -258,7 +329,7 @@ $ast = [Management.Automation.Language.Parser]::ParseFile($Worker, [ref]$tokens,
 if ($errors.Count) { throw 'Worker syntax errors' }
 """
         if lifecycle:
-            prefix += "\n$fixtureAstParseMilliseconds = $fixtureStopwatch.ElapsedMilliseconds - $fixtureAstStarted\n"
+            prefix += "\n$fixtureAstParseMilliseconds = $fixtureStopwatch.ElapsedMilliseconds - $fixtureAstStarted\nSave-FixtureCheckpoint 'ast-ended'\n"
         with tempfile.TemporaryDirectory() as directory:
             script = Path(directory) / "pure-fixture.ps1"
             script.write_text(prefix + body, encoding="utf-8")
@@ -277,9 +348,9 @@ if ($errors.Count) { throw 'Worker syntax errors' }
         job = process = None
         stdout = stderr = b""
         record = {"timeout_seconds": timeout, "elapsed_seconds": None, "ready_seconds": None,
-                  "returncode": None, "reaped": False, "timed_out": False,
+                  "returncode": None, "reaped": False, "streams_drained": False, "timed_out": False,
                   "job_before_cleanup": None, "job_after": None, "cleanup_errors": [], "error": None,
-                  "outcome": None}
+                  "outcome": None, "checkpoint_observation": None}
         try:
             job = inventory.OwnedJob()
             process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -326,6 +397,7 @@ if ($errors.Count) { throw 'Worker syntax errors' }
                     stdout, stderr = process.communicate(timeout=5)
                     record["returncode"] = process.returncode
                     record["reaped"] = process.poll() is not None
+                    record["streams_drained"] = True
                 except Exception as error:
                     record["cleanup_errors"].append(inventory.error_identity(error))
             if job is not None:
@@ -338,6 +410,7 @@ if ($errors.Count) { throw 'Worker syntax errors' }
                 finally:
                     job.close()
             record["elapsed_seconds"] = time.monotonic() - started
+            record["checkpoint_observation"] = fixture_checkpoints(directory)
             print(json.dumps({"fixture": "powershell-final-progress", "lifecycle": record}), flush=True)
 
     def test_worker_syntax_and_parameter_sets_are_checked_without_union(self):
@@ -363,28 +436,37 @@ $offline = Get-QueryContract ([pscustomobject]@{ParameterSets = @(
         self.assertIsNone(result["offline"]["online_parameter_set"])
         self.assertIn("Online", result["offline"]["missing_parameters"])
 
-    def test_failed_final_progress_cannot_return_complete(self):
-        result = self.pure_script(r"""
+    @staticmethod
+    def failed_progress_body(pause_final=False):
+        body = r"""
 $Operation = 'powershell'; $phase = $Operation
 $report = [ordered]@{status = 'failed'; data = [ordered]@{}}
 $script:states = @()
 $script:stateTimeline = @()
 function Save-Progress([string]$Phase, [string]$State, $ErrorInfo = $null) {
+    Save-FixtureCheckpoint ('progress-' + $State)
     $script:states += $State
     $script:stateTimeline += [pscustomobject]@{state = $State; elapsed_milliseconds = $fixtureStopwatch.ElapsedMilliseconds}
-    if ($State -eq 'ended') { throw 'Synthetic final progress write failure' }
+    if ($State -eq 'ended') { __PAUSE_FINAL__ throw 'Synthetic final progress write failure' }
 }
 $body = @($ast.EndBlock.Statements | Where-Object { $_ -is [Management.Automation.Language.TryStatementAst] })
 if ($body.Count -ne 1) { throw 'Expected one top-level worker operation boundary' }
+Save-FixtureCheckpoint 'worker-entered'
 . ([scriptblock]::Create($body[0].Extent.Text))
+Save-FixtureCheckpoint 'worker-returned'
 @{status=$report.status; error=$report.data.error; states=$script:states; state_timeline=@($script:stateTimeline);
   ast_parse_milliseconds=$fixtureAstParseMilliseconds} | ConvertTo-Json -Depth 8 -Compress
-""", lifecycle=True)
+"""
+        return body.replace("__PAUSE_FINAL__", "[Threading.Thread]::Sleep(20000);" if pause_final else "")
+
+    def test_failed_final_progress_cannot_return_complete(self):
+        result = self.pure_script(self.failed_progress_body(), lifecycle=True)
         self.assertEqual(result["status"], "failed")
         self.assertEqual(result["states"], ["started", "ended", "failed"])
         self.assertIn("kind", result["error"])
         self.assertEqual(result["process"]["returncode"], 0)
         self.assertTrue(result["process"]["reaped"])
+        self.assertTrue(result["process"]["streams_drained"])
         self.assertEqual(result["process"]["job_after"]["active"], 0)
         self.assertEqual(result["process"]["cleanup_errors"], [])
         self.assertEqual(result["process"]["timeout_seconds"], 10)
@@ -392,6 +474,10 @@ if ($body.Count -ne 1) { throw 'Expected one top-level worker operation boundary
         self.assertGreaterEqual(result["process"]["ready_seconds"], 0)
         self.assertGreaterEqual(result["ast_parse_milliseconds"], 0)
         self.assertEqual([row["state"] for row in result["state_timeline"]], result["states"])
+        self.assertEqual([row["stage"] for row in result["process"]["checkpoint_observation"]["events"]],
+            ["fixture-ready", "go-received", "ast-started", "ast-ended", "worker-entered",
+             "progress-started", "progress-ended", "progress-failed", "worker-returned"])
+        self.assertEqual(result["process"]["checkpoint_observation"]["status"], "observed")
 
     def test_lifecycle_timeout_is_preserved_after_owned_cleanup(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -408,6 +494,24 @@ if ($body.Count -ne 1) { throw 'Expected one top-level worker operation boundary
             self.assertNotEqual(record["returncode"], 0)
             self.assertEqual(record["job_after"]["active"], 0)
             self.assertEqual(record["cleanup_errors"], [])
+            self.assertEqual(record["checkpoint_observation"]["status"], "missing")
+
+    def test_timeout_keeps_post_gate_checkpoint_without_a_final_report(self):
+        with patch("builtins.print") as output, self.assertRaises(subprocess.TimeoutExpired):
+            self.pure_script(self.failed_progress_body(pause_final=True), lifecycle=True)
+        output.assert_called_once()
+        record = json.loads(output.call_args.args[0])["lifecycle"]
+        self.assertTrue(record["timed_out"])
+        self.assertIsNone(record["outcome"])
+        self.assertEqual(record["checkpoint_observation"]["status"], "observed")
+        self.assertEqual([row["stage"] for row in record["checkpoint_observation"]["events"]],
+                         ["fixture-ready", "go-received", "ast-started", "ast-ended", "worker-entered",
+                          "progress-started", "progress-ended"])
+        self.assertEqual(record["timeout_seconds"], 10)
+        self.assertTrue(record["reaped"])
+        self.assertTrue(record["streams_drained"])
+        self.assertEqual(record["job_after"]["active"], 0)
+        self.assertEqual(record["cleanup_errors"], [])
 
     def test_tip_inventory_enumerates_a_non_enumerated_cmdlet_collection(self):
         body = r"""
