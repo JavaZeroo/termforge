@@ -55,6 +55,8 @@ gh workflow run r1-ime.yml --repo JavaZeroo/termforge -f mode=inventory
 python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_hosted -v
 ```
 
+最终进度失败的纯 AST 夹具额外保留原 10 秒总期限，在 GO 前将 PowerShell 纳入 kill-on-close Job，记录启动就绪、AST 解析、`started/ended/failed`、进程退出与 Job 回收。另一个合成超时保留 `TimeoutExpired`，不因清理成功改判通过。这些观测不执行系统 IME 操作，也不代表已确定 [#40](https://github.com/JavaZeroo/termforge/issues/40) 的 CI 根因。
+
 以下为早期独立探针的证据范围；产品交叉验收以末节的完整结果为准。显式 [verify 40008180684](https://github.com/JavaZeroo/termforge/actions/runs/40008180684) 的[脱敏事实](results/2026-10-24-real-ime-probe/validation.json) 固定 `68ad8d9`、Server 2025 Datacenter 26100、`win25-vs2026/20261021.278.1` 及拼音程序版本/哈希；17 个白名单文件与 ZIP 摘要一致，原始 stdout 与结果相同、stderr 为空。六项查询/六个准备阶段完成，固定 TIP 在 `zh-Hans-CN` 用户条目中，程序哈希前后不变；Basic 前后仍为 NotPresent，没有安装语言能力。真实预编辑 `ni'hao`、实际候选位移（+144,+96）、提交“你好”恰好一次及 Escape 取消均通过。probe 进程已回收、HIMC/自有窗口销毁；旧 probe collector 没有自有 Job，这一结果不证明产品终端、PTY、跨会话或资源矩阵通过。
 
 当前 `verify` 先盘点，再用 Windows PowerShell 执行现有 provider 用户激活；逐阶段保存失败，明确枚举 Generic.List 中每个语言值，只接受 `zh-CN`/实际返回的 `zh-Hans-CN` 与精确固定 TIP，完成前后身份校验后才进入真实探针。`prepared-not-verified` 只代表准备完成。更早的[盘点哈希失败](results/2026-10-24-hosted-inventory/validation.json)、[空读回](results/2026-10-24-hosted-activation-readback/validation.json)、[标签拒绝](results/2026-10-24-hosted-language-tag/validation.json) 保留原结论；[旧准备超时](https://github.com/JavaZeroo/termforge/actions/runs/39950720638) 也不改判成功。依据：[用户语言列表](https://learn.microsoft.com/en-us/powershell/module/international/get-winuserlanguagelist?view=windowsserver2025-ps)、[设置输入方法](https://learn.microsoft.com/en-us/powershell/module/international/set-winuserlanguagelist)、[Pinyin 标识](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-input-locales-for-windows-language-packs)。

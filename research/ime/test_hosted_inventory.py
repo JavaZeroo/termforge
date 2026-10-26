@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -236,26 +237,108 @@ class WorkerContract(unittest.TestCase):
     def powershell():
         return Path(os.environ["SystemRoot"]) / "System32/WindowsPowerShell/v1.0/powershell.exe"
 
-    def pure_script(self, body):
+    def pure_script(self, body, lifecycle=False):
         # Only selected AST definitions/blocks execute. No fake CI environment,
         # module import, system inventory or language operations are permitted.
         prefix = r"""
 param([string]$Worker)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+"""
+        if lifecycle:
+            prefix += r"""
+$fixtureStopwatch = [Diagnostics.Stopwatch]::StartNew()
+[IO.File]::WriteAllText([IO.Path]::Combine($PSScriptRoot, 'fixture-ready'), 'ready')
+if ([Console]::ReadLine() -cne 'GO') { throw 'Missing fixture GO' }
+$fixtureAstStarted = $fixtureStopwatch.ElapsedMilliseconds
+"""
+        prefix += r"""
 $tokens = $null; $errors = $null
 $ast = [Management.Automation.Language.Parser]::ParseFile($Worker, [ref]$tokens, [ref]$errors)
 if ($errors.Count) { throw 'Worker syntax errors' }
 """
+        if lifecycle:
+            prefix += "\n$fixtureAstParseMilliseconds = $fixtureStopwatch.ElapsedMilliseconds - $fixtureAstStarted\n"
         with tempfile.TemporaryDirectory() as directory:
             script = Path(directory) / "pure-fixture.ps1"
             script.write_text(prefix + body, encoding="utf-8")
-            result = subprocess.run([str(self.powershell()), "-NoProfile", "-NonInteractive", "-NoLogo",
+            command = [str(self.powershell()), "-NoProfile", "-NonInteractive", "-NoLogo",
                 "-ExecutionPolicy", "Bypass", "-File", str(script),
-                "-Worker", str(Path(inventory.__file__).with_name("inventory_worker.ps1"))],
-                capture_output=True, timeout=10)
+                "-Worker", str(Path(inventory.__file__).with_name("inventory_worker.ps1"))]
+            if lifecycle:
+                return self.run_lifecycle_fixture(command, Path(directory))
+            result = subprocess.run(command, capture_output=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", errors="replace"))
             return json.loads(result.stdout)
+
+    def run_lifecycle_fixture(self, command, directory):
+        timeout = 10
+        started = time.monotonic()
+        job = process = None
+        stdout = stderr = b""
+        record = {"timeout_seconds": timeout, "elapsed_seconds": None, "ready_seconds": None,
+                  "returncode": None, "reaped": False, "timed_out": False,
+                  "job_before_cleanup": None, "job_after": None, "cleanup_errors": [], "error": None,
+                  "outcome": None}
+        try:
+            job = inventory.OwnedJob()
+            process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, creationflags=subprocess.CREATE_NO_WINDOW)
+            job.assign(process.pid)
+            deadline = started + timeout
+            ready = directory / "fixture-ready"
+            while not ready.exists() and process.poll() is None:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise subprocess.TimeoutExpired(command, timeout)
+                time.sleep(min(0.01, remaining))
+            record["ready_seconds"] = time.monotonic() - started
+            if process.poll() is not None and not ready.exists():
+                raise RuntimeError("PowerShell fixture did not reach its gate")
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(command, timeout)
+            stdout, stderr = process.communicate(b"GO\n", timeout=remaining)
+            record["returncode"] = process.returncode
+            self.assertEqual(process.returncode, 0, stderr.decode("utf-8", errors="replace"))
+            result = json.loads(stdout)
+            result["process"] = record
+            record["outcome"] = {key: result[key] for key in
+                ("status", "states", "state_timeline", "ast_parse_milliseconds")}
+            return result
+        except subprocess.TimeoutExpired:
+            record["timed_out"] = True
+            raise
+        except Exception as error:
+            record["error"] = inventory.error_identity(error)
+            raise
+        finally:
+            if job is not None:
+                try:
+                    record["job_before_cleanup"] = job.accounting()
+                    job.terminate()
+                except Exception as error:
+                    record["cleanup_errors"].append(inventory.error_identity(error))
+            if process is not None:
+                try:
+                    if process.poll() is None:
+                        process.kill()
+                    stdout, stderr = process.communicate(timeout=5)
+                    record["returncode"] = process.returncode
+                    record["reaped"] = process.poll() is not None
+                except Exception as error:
+                    record["cleanup_errors"].append(inventory.error_identity(error))
+            if job is not None:
+                try:
+                    record["job_after"] = job.drain(timeout=5)
+                    if record["job_after"]["active"]:
+                        record["cleanup_errors"].append({"kind": "owned-job-not-empty", "code": None})
+                except Exception as error:
+                    record["cleanup_errors"].append(inventory.error_identity(error))
+                finally:
+                    job.close()
+            record["elapsed_seconds"] = time.monotonic() - started
+            print(json.dumps({"fixture": "powershell-final-progress", "lifecycle": record}), flush=True)
 
     def test_worker_syntax_and_parameter_sets_are_checked_without_union(self):
         result = self.pure_script(r"""
@@ -285,18 +368,46 @@ $offline = Get-QueryContract ([pscustomobject]@{ParameterSets = @(
 $Operation = 'powershell'; $phase = $Operation
 $report = [ordered]@{status = 'failed'; data = [ordered]@{}}
 $script:states = @()
+$script:stateTimeline = @()
 function Save-Progress([string]$Phase, [string]$State, $ErrorInfo = $null) {
     $script:states += $State
+    $script:stateTimeline += [pscustomobject]@{state = $State; elapsed_milliseconds = $fixtureStopwatch.ElapsedMilliseconds}
     if ($State -eq 'ended') { throw 'Synthetic final progress write failure' }
 }
 $body = @($ast.EndBlock.Statements | Where-Object { $_ -is [Management.Automation.Language.TryStatementAst] })
 if ($body.Count -ne 1) { throw 'Expected one top-level worker operation boundary' }
 . ([scriptblock]::Create($body[0].Extent.Text))
-@{status=$report.status; error=$report.data.error; states=$script:states} | ConvertTo-Json -Depth 8 -Compress
-""")
+@{status=$report.status; error=$report.data.error; states=$script:states; state_timeline=@($script:stateTimeline);
+  ast_parse_milliseconds=$fixtureAstParseMilliseconds} | ConvertTo-Json -Depth 8 -Compress
+""", lifecycle=True)
         self.assertEqual(result["status"], "failed")
         self.assertEqual(result["states"], ["started", "ended", "failed"])
         self.assertIn("kind", result["error"])
+        self.assertEqual(result["process"]["returncode"], 0)
+        self.assertTrue(result["process"]["reaped"])
+        self.assertEqual(result["process"]["job_after"]["active"], 0)
+        self.assertEqual(result["process"]["cleanup_errors"], [])
+        self.assertEqual(result["process"]["timeout_seconds"], 10)
+        self.assertFalse(result["process"]["timed_out"])
+        self.assertGreaterEqual(result["process"]["ready_seconds"], 0)
+        self.assertGreaterEqual(result["ast_parse_milliseconds"], 0)
+        self.assertEqual([row["state"] for row in result["state_timeline"]], result["states"])
+
+    def test_lifecycle_timeout_is_preserved_after_owned_cleanup(self):
+        with tempfile.TemporaryDirectory() as directory:
+            command = [str(self.powershell()), "-NoProfile", "-NonInteractive", "-NoLogo",
+                       "-Command", "[Console]::ReadLine()"]
+            with patch("builtins.print") as output, self.assertRaises(subprocess.TimeoutExpired):
+                self.run_lifecycle_fixture(command, Path(directory))
+            output.assert_called_once()
+            record = json.loads(output.call_args.args[0])["lifecycle"]
+            self.assertTrue(record["timed_out"])
+            self.assertEqual(record["timeout_seconds"], 10)
+            self.assertIsNone(record["ready_seconds"])
+            self.assertTrue(record["reaped"])
+            self.assertNotEqual(record["returncode"], 0)
+            self.assertEqual(record["job_after"]["active"], 0)
+            self.assertEqual(record["cleanup_errors"], [])
 
     def test_tip_inventory_enumerates_a_non_enumerated_cmdlet_collection(self):
         body = r"""
