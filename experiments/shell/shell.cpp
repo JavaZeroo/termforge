@@ -1200,6 +1200,7 @@ public:
     int observed_tick_count() const { return result_.ticks; }
     void arm_output_record_checkpoint(Clock::time_point deadline) {
         require_ui_thread();
+        require(!closing_ && hwnd_ && IsWindow(hwnd_),"output checkpoint target must be live");
         const auto& view=*snapshot_;
         const bool empty=view.cursor_row>=0 && static_cast<size_t>(view.cursor_row)<view.lines.size() &&
             view.cursor_column==0 && termforge::project_line(view.lines[static_cast<size_t>(view.cursor_row)]).text.empty();

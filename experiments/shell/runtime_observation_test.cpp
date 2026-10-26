@@ -129,10 +129,16 @@ static void runtime_default_off_case() {
     require(window.output_record_checkpoint_active(),"explicit output checkpoint must arm");
     window.close();
     require(!window.output_record_checkpoint_active(),"close must release an armed output record checkpoint");
+    bool closed_arm_rejected=false;
+    try { window.arm_output_record_checkpoint(std::chrono::steady_clock::now()+std::chrono::seconds(5)); }
+    catch(const std::exception&) { closed_arm_rejected=true; }
+    const bool rearmed=window.output_record_checkpoint_active();
+    window.release_output_record_checkpoint();
     runtime_wait(window, [&] { return IsWindow(window.handle()) == FALSE; }, "unobserved real shell closes deadline");
     const auto result = window.collect();
     require(result.complete && !result.runtime_before_close && !result.runtime_final &&
         !window.runtime_before_close() && !window.runtime_final(), "normal lifecycle creates no runtime samples");
+    require(closed_arm_rejected && !rearmed,"closing window must reject a new output record checkpoint");
 }
 static void operation_state_case() {
     using R=tf_shell::OperationReason;
