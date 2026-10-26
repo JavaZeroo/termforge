@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import platform
 import subprocess
+import time
 
 from experiments.conpty.margin_run import PACKAGE, backend_path
 from experiments.conpty.run import OwnedJob
@@ -34,14 +35,15 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
 
 
-def capture(exe, backend, out, index):
+def capture(exe, backend, out, index, *, gate=b"GO\n", timeout=20):
     # The native parent creates this fresh case directory only after GO.
     job = OwnedJob()
     process = None
     assigned = False
     stdout = stderr = b""
     report = dict(case=index, exit_code=None, timed_out=False, forced_outer_cleanup=False,
-                  job_after=None, cleanup_errors=[])
+                  job_after=None, job_after_forced_cleanup=None, process_reaped=False,
+                  streams_drained=False, cleanup_errors=[])
     try:
         process = subprocess.Popen([str(exe), "--parent", str(out), str(index), str(backend)],
                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -49,38 +51,80 @@ def capture(exe, backend, out, index):
         job.assign(process.pid)
         assigned = True
         try:
-            stdout, stderr = process.communicate(b"GO\n", timeout=20)
+            stdout, stderr = process.communicate(gate, timeout=timeout)
+            report["streams_drained"] = True
         except subprocess.TimeoutExpired:
             report["timed_out"] = True
     finally:
+        deadline = time.monotonic() + 5
+
+        def fault(code):
+            report["cleanup_errors"].append(code)
+
+        def running():
+            try:
+                return process.poll() is None
+            except Exception:
+                fault("process_poll")
+                return True
+
+        def collect_process():
+            nonlocal stdout, stderr
+            try:
+                stdout, stderr = process.communicate(timeout=max(0, deadline - time.monotonic()))
+                report["streams_drained"] = True
+            except Exception:
+                fault("process_communicate")
+
         try:
-            if process is not None and process.poll() is None:
+            if process is not None and running():
                 report["forced_outer_cleanup"] = True
                 try:
                     if assigned:
                         job.terminate()
                     else:
                         process.kill()  # This root is still gated; no child exists.
-                    stdout, stderr = process.communicate(timeout=5)
                 except Exception:
-                    report["cleanup_errors"].append("process_cleanup")
+                    fault("process_terminate")
+                # A failed termination operation must not skip the wait.
+                collect_process()
             if assigned:
                 try:
-                    report["job_after"] = job.drain(timeout=5)
-                    if report["job_after"]["active"]:
-                        report["forced_outer_cleanup"] = True
-                        job.terminate()
+                    report["job_after"] = job.drain(timeout=max(0, deadline - time.monotonic()))
                 except Exception:
-                    report["cleanup_errors"].append("job_cleanup")
+                    fault("job_accounting")
+                if report["job_after"] is not None and report["job_after"]["active"]:
+                    report["forced_outer_cleanup"] = True
+                    try:
+                        job.terminate()
+                    except Exception:
+                        fault("job_terminate")
+                    try:
+                        report["job_after_forced_cleanup"] = job.drain(timeout=max(0, deadline - time.monotonic()))
+                        if report["job_after_forced_cleanup"]["active"]:
+                            fault("job_not_empty")
+                    except Exception:
+                        fault("job_accounting_after_termination")
         finally:
-            job.close()  # Kill-on-close remains effective when a cleanup operation fails.
-        report["exit_code"] = process.poll() if process is not None else None
+            try:
+                job.close()  # Kill-on-close fallback, even after a failed terminate/wait.
+            except Exception:
+                fault("job_close")
+        if process is not None:
+            if running() or not report["streams_drained"]:
+                collect_process()
+            try:
+                report["exit_code"] = process.poll()
+                report["process_reaped"] = report["exit_code"] is not None
+            except Exception:
+                fault("process_final_poll")
         out.mkdir(exist_ok=True)
         (out / "parent.stdout.bin").write_bytes(stdout)
         (out / "parent.stderr.bin").write_bytes(stderr)
         write_json(out / "capture.json", report)
     if (report["exit_code"] != 0 or report["timed_out"] or report["forced_outer_cleanup"] or
-            report["cleanup_errors"] or report["job_after"] != {"active": 0, "total": 4, "terminated": 0}):
+            report["cleanup_errors"] or not report["process_reaped"] or not report["streams_drained"] or
+            report["job_after"] != {"active": 0, "total": 4, "terminated": 0}):
         raise ValueError("native_capture_failed")
     native = json.loads(stdout)
     if (native["case"] != index or native["child_exit"] != 37 or native["active_children"] != 0 or
