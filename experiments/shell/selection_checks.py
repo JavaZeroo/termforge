@@ -78,6 +78,46 @@ def _validate_copy_popup(data: dict) -> bool:
     return True
 
 
+def _copy_error_frame_dimensions(value: dict) -> tuple[int, int]:
+    schema = value.get("schema")
+    if schema == "termforge-product-copy-contention-v1":
+        if "error_frame_geometry" in value:
+            raise ValueError("legacy Copy contention cannot claim newly observed client geometry")
+        return 1360, 860
+    if schema != "termforge-product-copy-contention-v2":
+        raise ValueError("occupied Copy frame requires a known contention identity")
+    geometry = value.get("error_frame_geometry")
+    if (not isinstance(geometry, dict) or
+            geometry.get("schema") != "termforge-copy-error-client-geometry-v1" or
+            geometry.get("coordinate_space") != "physical-client-pixels"):
+        raise ValueError("occupied Copy frame lacks capture-time native client geometry")
+    for field, size in (("client_rect", 4), ("client_rect_after", 4), ("physical_size", 2),
+                        ("bitmap_size", 2), ("bitmap_format", 2)):
+        values = geometry.get(field)
+        if not isinstance(values, list) or len(values) != size or any(type(n) is not int for n in values):
+            raise ValueError("occupied Copy native geometry observation is missing or malformed")
+    left, top, width, height = geometry["client_rect"]
+    # Workspace's native maximum tracking bounds are 6020 x 5300 pixels.
+    if (left != 0 or top != 0 or not 0 < width <= 6020 or not 0 < height <= 5300 or
+            geometry["client_rect_after"] != [0, 0, width, height] or
+            geometry["physical_size"] != [width, height] or geometry["bitmap_size"] != [width, height] or
+            geometry["bitmap_format"] != [1, 32] or type(geometry.get("bitmap_stride_bytes")) is not int or
+            geometry["bitmap_stride_bytes"] != width * 4):
+        raise ValueError("occupied Copy client, physical surface and actual DIB geometry disagree")
+    return width, height
+
+
+def _validate_copy_error_frame(value: dict, frame: bytes) -> tuple[int, int]:
+    width, height = _copy_error_frame_dimensions(value)
+    size = 54 + width * height * 4
+    if type(frame) is not bytes or len(frame) != size or frame[:2] != b"BM":
+        raise ValueError("actual occupied Copy visible error frame is missing or truncated")
+    expected = (b"BM", size, 0, 0, 54, 40, width, -height, 1, 32, 0, 0, 0, 0, 0, 0)
+    if struct.unpack_from("<2sIHHIIiiHHIIiiII", frame) != expected:
+        raise ValueError("actual occupied Copy error frame geometry or native format is wrong")
+    return width, height
+
+
 def _validate_copy_contention(data: dict) -> dict | None:
     if data.get("schema") in ("termforge-window-selection-v3", "termforge-window-selection-v4"):
         if "copy_contention" in data:
@@ -85,12 +125,14 @@ def _validate_copy_contention(data: dict) -> dict | None:
         return None
     value = data.get("copy_contention")
     if (data.get("schema") != "termforge-window-selection-v5" or data.get("system_clipboard") is not True or
-            not isinstance(value, dict) or value.get("schema") != "termforge-product-copy-contention-v1" or
+            not isinstance(value, dict) or value.get("schema") not in
+            ("termforge-product-copy-contention-v1", "termforge-product-copy-contention-v2") or
             value.get("entry") != "queued-Ctrl-Shift-C" or value.get("target") != "main" or
             any(value.get(field) is not True for field in ("owner_occupied_before", "owner_occupied_at_error", "error_visible")) or
             type(value.get("native_error")) is not int or not 1 <= value["native_error"] <= 0xffffffff or
             value.get("failure_step") != "OpenClipboard" or value.get("error_frame") != "selection-copy-occupied-error.bmp"):
         raise ValueError("real occupied product Copy entry, owner, visible original native error or error frame is missing")
+    _copy_error_frame_dimensions(value)
     status = f"Copy failed: OpenClipboard: {value['native_error']}"
     if value.get("error_status") != status or value.get("native_window_title") != "TermForge — " + status:
         raise ValueError("product Copy original OpenClipboard error was lost or relabelled")
@@ -295,13 +337,14 @@ def validate_selection_workflow(directory: Path, system_clipboard: bool, run_rec
         if menu != data["copy_popup_menu"]:
             raise ValueError("actual native Copy popup journal differs from the final manifest")
     if summary["interactions"]["copy_contention"]:
-        frame = (directory / "selection-copy-occupied-error.bmp").read_bytes()
-        if len(frame) != 54 + 1360 * 860 * 4 or frame[:2] != b"BM":
+        width, height = _copy_error_frame_dimensions(data["copy_contention"])
+        expected_size = 54 + width * height * 4
+        frame_path = directory / "selection-copy-occupied-error.bmp"
+        if not frame_path.is_file() or frame_path.is_symlink() or frame_path.stat().st_size != expected_size:
             raise ValueError("actual occupied Copy visible error frame is missing or truncated")
-        size, offset, dib, width, height = struct.unpack_from("<IxxxxIIii", frame, 2)
-        planes, bits, compression = struct.unpack_from("<HHI", frame, 26)
-        if (size, offset, dib, width, height, planes, bits, compression) != (len(frame), 54, 40, 1360, -860, 1, 32, 0):
-            raise ValueError("actual occupied Copy error frame geometry or native format is wrong")
+        with frame_path.open("rb") as stream:
+            frame = stream.read(expected_size + 1)
+        _validate_copy_error_frame(data["copy_contention"], frame)
         summary["copy_occupied_error_frame_sha256"] = hashlib.sha256(frame).hexdigest()
     if (directory / "selection-bottom.bin").read_bytes() != b"" or (directory / "selection-main.bin").read_bytes() != b"x":
         raise ValueError("queued Select All/Escape leaked bytes or input reached the wrong raw receiver")

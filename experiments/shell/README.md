@@ -140,6 +140,8 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 | `ui-paste-system` | 真实 Unicode 系统剪贴板 → 快捷键 → 确认 → 接收端 | 只在指定一次性 hosted 环境运行；本地未运行/跳过不计系统验收 |
 | `ui-clipboard-system` | 经产品 Paste 验证占用/超限错误与重试、读取途中取消/关闭 | 延迟渲染 owner 握手、真实接收端字节、错误画面及 helper/Job 回收；仅一次性 hosted 环境运行；场景存在不等于整项通过，当前结果见 [#14](https://github.com/JavaZeroo/termforge/issues/14) |
 
+`ui-copy-system` 的嵌套 `copy_contention` 另有错误帧几何版本：v1 历史结果继续只接受 1360×860，不得补写现场几何；新 native 生产 v2，在错误发生并绘制时独立查询前后 `GetClientRect` 和 `GetObjectW` 的实际 DIB 尺寸、stride、格式，要求它们与物理 surface 一致。Python 用同一份现场元数据核对完整 BMP 头和精确字节数，接受宿主合法裁剪后的尺寸，同时拒绝缺失或相互矛盾的元数据。纯 oracle 测试和为旧 BMP 构造的模拟 v2 数据只验证校验器，不会把旧结果升级为真实 v2 观测；新的现场合同必须由新源码在指定 hosted VM 实际执行后验收。
+
 系统剪贴板边界另由 `python -m unittest experiments.shell.test_paste -v` 验证。畸形终止符用例保留 `terminator-before/after/reader.utf16le`：先核对发布前确实没有 NUL，再独立捕获系统返回的完整分配。仅接受“原分配未变且读取器拒绝”或“最后一个单元被系统改为 NUL 且读取器精确返回其前缀”两种有字节证据的结果；其他转换仍失败并留存原始内容。跨平台 `paste_test` 直接测试生产读取器共用的有界解析逻辑，包括无终止符、超限、分配末端与字符上限，不能用系统可能规范化了夹具代替解析边界测试。
 
 原生 `layout_state` 测试覆盖严格读取、截断、非法数值、Unicode 路径和替换失败保留。`renderer_metrics` 覆盖 GDI/DirectWrite × 96/120/144/192 DPI × 50/100/125/200% 共 32 组，检查非整数边界、实际绘字与 dirty/full 一致；DWrite glyph run 另断言 ASCII/组合字符的 Consolas 身份、中文非 Consolas fallback 和缺字负例，不把请求字体或 GDI 对照当作实际 fallback 证明。同一测试还验证私有 Roboto Mono 的 GDI face、9pt em 高度和实际行高，并拒绝越界 DPI；其资产依赖与 `termforge_shell` 共用。测试会在构建目录复制一个不含 `assets/` 的独立进程，确认缺失字体以指定错误明确失败，等待期限 10 秒，结束后删除副本。

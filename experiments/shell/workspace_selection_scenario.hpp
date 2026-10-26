@@ -25,7 +25,7 @@ inline void Workspace::scenario_selection() {
     static std::optional<tf_shell_test::ClipboardOwnerReleaseResult> copy_owner_release;
     static DWORD occupied_sequence_before=0, occupied_sequence_error=0, occupied_sequence_joined=0, occupied_sequence_retry=0;
     static DWORD copy_native_error=0;
-    static std::string copy_error_status, copy_error_title;
+    static std::string copy_error_status, copy_error_title, copy_error_geometry;
     static bool owner_before=false, owner_at_error=false, copy_error_visible=false;
     if(restore_keys) { require(SetKeyboardState(saved_keys.data())!=FALSE,"selection keyboard state restoration failed"); restore_keys=false; }
     const auto line_text=[](const auto& line) {
@@ -189,7 +189,7 @@ inline void Workspace::scenario_selection() {
         interaction_samples.clear();
         popup_gesture.reset(); popup_evidence.clear(); copy_popup_evidence.clear(); copy_selection_before.clear();
         copy_sequence_before=copy_sequence_after=0;
-        copy_owner.reset(); copy_owner_release.reset(); copy_native_error=0; copy_error_status.clear(); copy_error_title.clear();
+        copy_owner.reset(); copy_owner_release.reset(); copy_native_error=0; copy_error_status.clear(); copy_error_title.clear(); copy_error_geometry.clear();
         occupied_sequence_before=occupied_sequence_error=occupied_sequence_joined=occupied_sequence_retry=0;
         owner_before=owner_at_error=copy_error_visible=false;
         if(system) tf_shell_test::require_hosted_clipboard();
@@ -351,11 +351,34 @@ inline void Workspace::scenario_selection() {
                 copy_error_title=="TermForge — "+copy_error_status && main->has_selection() &&
                 selection_value.status==termforge::SelectionCopyStatus::ok && selection_value.text==copy_selection_before,
                 "occupied product Copy failed without preserving its actual visible error, selected target or clipboard sequence");
-        Bitmap frame(physical_width_,physical_height_); paint(frame.dc);
+        RECT client{};
+        require(GetClientRect(window_,&client)!=FALSE && client.left==0 && client.top==0 &&
+                client.right==physical_width_ && client.bottom==physical_height_ && client.right>0 && client.bottom>0,
+                "Copy error client rectangle differs from the physical workspace surface");
+        Bitmap frame(physical_width_,physical_height_);
+        BITMAP actual_bitmap{};
+        require(GetObjectW(frame.bitmap,static_cast<int>(sizeof(actual_bitmap)),&actual_bitmap)==static_cast<int>(sizeof(actual_bitmap)) &&
+                actual_bitmap.bmWidth==client.right && actual_bitmap.bmHeight==client.bottom &&
+                actual_bitmap.bmPlanes==1 && actual_bitmap.bmBitsPixel==32 && actual_bitmap.bmWidthBytes==client.right*4,
+                "Copy error actual DIB geometry differs from its native client rectangle");
+        paint(frame.dc);
         for(const auto group:{Group::bottom,Group::main}) {
             const RECT rect=physical(group==Group::main?main_terminal_:terminal_); selected(group)->render_to(frame.dc,rect.left,rect.top);
         }
         frame.save((directory/"selection-copy-occupied-error.bmp").string());
+        RECT client_after{};
+        require(GetClientRect(window_,&client_after)!=FALSE && EqualRect(&client,&client_after)!=FALSE &&
+                frame.width==physical_width_ && frame.height==physical_height_,
+                "Copy error client geometry changed during its frame capture");
+        std::ostringstream geometry;
+        geometry<<"{\"schema\":\"termforge-copy-error-client-geometry-v1\",\"coordinate_space\":\"physical-client-pixels\""
+                <<",\"client_rect\":["<<client.left<<','<<client.top<<','<<client.right<<','<<client.bottom<<']'
+                <<",\"client_rect_after\":["<<client_after.left<<','<<client_after.top<<','<<client_after.right<<','<<client_after.bottom<<']'
+                <<",\"physical_size\":["<<physical_width_<<','<<physical_height_<<']'
+                <<",\"bitmap_size\":["<<actual_bitmap.bmWidth<<','<<actual_bitmap.bmHeight<<']'
+                <<",\"bitmap_stride_bytes\":"<<actual_bitmap.bmWidthBytes
+                <<",\"bitmap_format\":["<<actual_bitmap.bmPlanes<<','<<actual_bitmap.bmBitsPixel<<"]}";
+        copy_error_geometry=geometry.str();
         copy_owner->release(); stage_=25;
     } else if(stage_==25 && system && copy_owner && copy_owner->released()) {
         copy_owner_release=copy_owner->finish(); copy_owner.reset();
@@ -399,11 +422,13 @@ inline void Workspace::scenario_selection() {
             require(copy_owner_release.has_value() && !copy_owner,"occupied Copy owner was not joined before final evidence");
             const auto& release=*copy_owner_release; const auto& observed=release.observation;
             const auto flag=[&](const char* name,bool value) { out<<",\""<<name<<"\":"<<(value?"true":"false"); };
-            out<<",\"copy_contention\":{\"schema\":\"termforge-product-copy-contention-v1\",\"entry\":\"queued-Ctrl-Shift-C\",\"target\":\"main\"";
+            require(!copy_error_geometry.empty(),"Copy error capture-time client geometry was not observed");
+            out<<",\"copy_contention\":{\"schema\":\"termforge-product-copy-contention-v2\",\"entry\":\"queued-Ctrl-Shift-C\",\"target\":\"main\"";
             flag("owner_occupied_before",owner_before); flag("owner_occupied_at_error",owner_at_error); flag("error_visible",copy_error_visible);
             out<<",\"native_error\":"<<copy_native_error<<",\"failure_step\":\"OpenClipboard\",\"error_status\":";
             termforge::Screen::quoted(out,copy_error_status); out<<",\"native_window_title\":"; termforge::Screen::quoted(out,copy_error_title);
-            out<<",\"error_frame\":\"selection-copy-occupied-error.bmp\",\"sequence_before\":"<<occupied_sequence_before
+            out<<",\"error_frame\":\"selection-copy-occupied-error.bmp\",\"error_frame_geometry\":"<<copy_error_geometry
+               <<",\"sequence_before\":"<<occupied_sequence_before
                <<",\"sequence_at_error\":"<<occupied_sequence_error<<",\"sequence_after_owner_join\":"<<occupied_sequence_joined
                <<",\"sequence_after_retry\":"<<occupied_sequence_retry<<",\"owner_release\":{\"reason\":\"ordinary\",\"proof\":{\"owner_entered\":"
                <<(release.proof.owner_entered?"true":"false")<<",\"requester_exited\":"<<(release.proof.requester_exited?"true":"false")

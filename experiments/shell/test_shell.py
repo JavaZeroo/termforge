@@ -317,6 +317,7 @@ class ShellTests(unittest.TestCase):
             record = execute(self.exe, "ui-copy-system", out)
             data = json.loads((out / "selection.json").read_text(encoding="utf-8"))
             self.assertEqual(data["schema"], "termforge-window-selection-v5")
+            self.assertEqual(data["copy_contention"]["schema"], "termforge-product-copy-contention-v2")
             self.assertTrue(record["selection_workflow"]["interactions"]["actual_copy_popup"])
             self.assertTrue(record["selection_workflow"]["interactions"]["copy_contention"])
             for field, wrong in (("actual_return_command", 15), ("target_command", 15),
