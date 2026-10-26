@@ -18,3 +18,5 @@ python -m unittest experiments.shell.test_selection_bytes -v
 ```
 
 普通本地环境会明确跳过实际系统 CF，用例仍检查 native/Python 的 hosted 保护。完整系统门槛由 PR 的 Windows hosted CI 执行；本页和固定记录不借用其他核心/后端或历史成功。
+
+[同实现的 hosted 复核](../../experiments/shell/results/2026-10-26-selection-tick-gate/hosted-validation.json)固定实现 `dcb7e6e`、PR head `c634134` 与实际 checkout tree 相等。Windows [CI 40310013544](https://github.com/JavaZeroo/termforge/actions/runs/40310013544) 的 `system-0/1` 确实执行，各九阶段；原字节、CF、完整重绘、隔离和回收合同均通过，后八阶段的双会话计数差至少三。首阶段没有相邻观察，delta 保持 null；逐运行 EXE 哈希仍缺失，不声称 source-to-binary 或实际呈现证明。两条 CI 与独立双轴复核通过，#66 限定关闭，不扩大到候选/实验后端或完整 R2。

@@ -1,0 +1,531 @@
+{
+  "schema": "r66-hosted-artifact-readonly-verification-v1",
+  "run": 40310013544,
+  "windows_job": 121528530213,
+  "ubuntu_job": 121528530449,
+  "artifact_id": 12644531840,
+  "artifact_name": "r1-windows-input",
+  "artifact_bytes": 4305851,
+  "artifact_download_count": 1,
+  "zip_sha256": "65deb082d294c0a12b660a965e8ac554ab3a747f383013cfd500826280da3691",
+  "github_digest_matches": true,
+  "pr_head": "c63413430e9f9c8a18a728bcaf6b90cdbdb65abd",
+  "actual_checkout": "89dbc711bcff319cd7fc08a1082236d59c36407b",
+  "actual_checkout_tree": "2278af80cf52de77dfca699f3a2b47e4b40cc374",
+  "head_tree_equals_actual_checkout_tree": true,
+  "source_git_blob_sha1": {
+    "experiments/shell/scenario_tick_gate.hpp": "938059af4fa61fe49e2c39b39ace298f91068c33",
+    "experiments/shell/workspace_selection_bytes_scenario.hpp": "d4365a261c96d6203b380c627682628b31777acf",
+    "experiments/shell/selection_bytes_checks.py": "6026dc5a0aee332e6d609951729edc17c1be3593",
+    "experiments/shell/test_selection_bytes.py": "cf3eb4a38d33d5c0f051a16e5706732d125f425a",
+    "experiments/shell/run.py": "271d8ac7b937027dd668dee0b3c3c66fc572aec5"
+  },
+  "source_implementation": "dcb7e6ed0ebc2cb358b68823c348c2fd9a78dac9",
+  "original_deadlines": {
+    "native_seconds": 30,
+    "outer_seconds": 40,
+    "source_unchanged": true
+  },
+  "runs": [
+    {
+      "case": "system-0",
+      "actually_executed": true,
+      "skipped": false,
+      "mode": "ui-copy-bytes-system",
+      "collector_status": "passed",
+      "exit_code": 0,
+      "outer_timed_out": false,
+      "native_result": {
+        "valid": true,
+        "mode": "ui-copy-bytes-system",
+        "sessions_closed": 2,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "pure_record_oracle": "passed",
+      "selected_text_cf_physical_rows_focus_and_input": "passed unchanged original oracle",
+      "producer_transport_and_raw_validation": {
+        "bottom": {
+          "producer_sha256": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+          "producer_facts_sha256": "df7fe9106a98a3785c4c623ff3306957ac9b7af3843bf8a6072c8826459668c7",
+          "transport_sha256": "17c95de568d55b3f3dc3e512be078fb32faf9d0d50e4875f691127de6ebe4f2e",
+          "transport_bytes": 1607,
+          "literal_styled_tails": 8,
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "raw_bytes": 0
+        },
+        "main": {
+          "producer_sha256": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+          "producer_facts_sha256": "67bbbd89891bbe141d604f3f196fb6e3a41376142ef7db91b63163b856ecb60a",
+          "transport_sha256": "5e34e6d135e18762e9541e3b81bfbf9117f70fbf4cc02138c5406ae9656ceb18",
+          "transport_bytes": 1651,
+          "literal_styled_tails": 8,
+          "raw_sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+          "raw_bytes": 1
+        }
+      },
+      "phases": [
+        {
+          "phase": "forward",
+          "ticks_bottom_main": [
+            14,
+            11
+          ],
+          "adjacent_delta_bottom_main": null,
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "reverse",
+          "ticks_bottom_main": [
+            17,
+            14
+          ],
+          "adjacent_delta_bottom_main": [
+            3,
+            3
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "dpi-96",
+          "ticks_bottom_main": [
+            20,
+            17
+          ],
+          "adjacent_delta_bottom_main": [
+            3,
+            3
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "dpi-144",
+          "ticks_bottom_main": [
+            26,
+            23
+          ],
+          "adjacent_delta_bottom_main": [
+            6,
+            6
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 144,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "dpi-192",
+          "ticks_bottom_main": [
+            32,
+            29
+          ],
+          "adjacent_delta_bottom_main": [
+            6,
+            6
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 192,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "dpi-96-restored",
+          "ticks_bottom_main": [
+            39,
+            36
+          ],
+          "adjacent_delta_bottom_main": [
+            7,
+            7
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "cleared",
+          "ticks_bottom_main": [
+            42,
+            39
+          ],
+          "adjacent_delta_bottom_main": [
+            3,
+            3
+          ],
+          "copy_entry": "none",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "empty-copy",
+          "ticks_bottom_main": [
+            46,
+            43
+          ],
+          "adjacent_delta_bottom_main": [
+            4,
+            4
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C-empty",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "input-after",
+          "ticks_bottom_main": [
+            50,
+            47
+          ],
+          "adjacent_delta_bottom_main": [
+            4,
+            4
+          ],
+          "copy_entry": "none",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 1,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        }
+      ],
+      "private_sha256": {
+        "sample.json": "d8ddc3b4bbcca8bcbd2638fb2001afa293e2eb4ce9631249980be9264a8297f6",
+        "selection-bytes.json": "b3f2811d036a80b978e4ce3bd6b0a18ec505678fd02505ddb79932e305dce7fe",
+        "selection-bytes-progress.jsonl": "68a4c4a858108680d98cb85b88b160ae6e4ad4c79db85ac6d83872b307410997",
+        "frame.bmp": "f24abb53b0fcf3ce76e4a4bb1b2810638fbfc3b5a1cc27ddfd8d319116a0c0a0"
+      }
+    },
+    {
+      "case": "system-1",
+      "actually_executed": true,
+      "skipped": false,
+      "mode": "ui-copy-bytes-system",
+      "collector_status": "passed",
+      "exit_code": 0,
+      "outer_timed_out": false,
+      "native_result": {
+        "valid": true,
+        "mode": "ui-copy-bytes-system",
+        "sessions_closed": 2,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "pure_record_oracle": "passed",
+      "selected_text_cf_physical_rows_focus_and_input": "passed unchanged original oracle",
+      "producer_transport_and_raw_validation": {
+        "bottom": {
+          "producer_sha256": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+          "producer_facts_sha256": "df7fe9106a98a3785c4c623ff3306957ac9b7af3843bf8a6072c8826459668c7",
+          "transport_sha256": "eb624a4055fa798e5ce689f4df34ab92da4e063a7e341821991aa57de3fd79ea",
+          "transport_bytes": 1607,
+          "literal_styled_tails": 8,
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "raw_bytes": 0
+        },
+        "main": {
+          "producer_sha256": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+          "producer_facts_sha256": "67bbbd89891bbe141d604f3f196fb6e3a41376142ef7db91b63163b856ecb60a",
+          "transport_sha256": "dadd06731ec0f72d661f7e77af3715e5bc9c6c3efaeb8a1cf2b7d4bdfa818607",
+          "transport_bytes": 1651,
+          "literal_styled_tails": 8,
+          "raw_sha256": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+          "raw_bytes": 1
+        }
+      },
+      "phases": [
+        {
+          "phase": "forward",
+          "ticks_bottom_main": [
+            13,
+            11
+          ],
+          "adjacent_delta_bottom_main": null,
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "reverse",
+          "ticks_bottom_main": [
+            16,
+            14
+          ],
+          "adjacent_delta_bottom_main": [
+            3,
+            3
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "dpi-96",
+          "ticks_bottom_main": [
+            19,
+            17
+          ],
+          "adjacent_delta_bottom_main": [
+            3,
+            3
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "dpi-144",
+          "ticks_bottom_main": [
+            26,
+            24
+          ],
+          "adjacent_delta_bottom_main": [
+            7,
+            7
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 144,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "dpi-192",
+          "ticks_bottom_main": [
+            32,
+            30
+          ],
+          "adjacent_delta_bottom_main": [
+            6,
+            6
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 192,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "dpi-96-restored",
+          "ticks_bottom_main": [
+            38,
+            36
+          ],
+          "adjacent_delta_bottom_main": [
+            6,
+            6
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "cleared",
+          "ticks_bottom_main": [
+            41,
+            39
+          ],
+          "adjacent_delta_bottom_main": [
+            3,
+            3
+          ],
+          "copy_entry": "none",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "empty-copy",
+          "ticks_bottom_main": [
+            45,
+            43
+          ],
+          "adjacent_delta_bottom_main": [
+            4,
+            4
+          ],
+          "copy_entry": "queued-Ctrl-Shift-C-empty",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 0,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        },
+        {
+          "phase": "input-after",
+          "ticks_bottom_main": [
+            48,
+            46
+          ],
+          "adjacent_delta_bottom_main": [
+            3,
+            3
+          ],
+          "copy_entry": "none",
+          "controlled_dpi": 96,
+          "os_window_dpi": 96,
+          "clipboard_matches_expected": true,
+          "raw_input_matches_expected": true,
+          "raw_bottom_bytes": 0,
+          "raw_main_bytes": 1,
+          "full_redraw_matches_both": true,
+          "capture_released_both": true
+        }
+      ],
+      "private_sha256": {
+        "sample.json": "3b5007dcee24f76d1d6e05611c450a5c029264fb3c0e932071899e9f5347107a",
+        "selection-bytes.json": "560ed6cb5ce9c8194e37390b366c7702301f2c4f578d39321ccb46a071830e57",
+        "selection-bytes-progress.jsonl": "39cb26370ad921e0050bb6e28f30f563b52bc7c85ce01a037ff9c7f4f01e4d0c",
+        "frame.bmp": "f24abb53b0fcf3ce76e4a4bb1b2810638fbfc3b5a1cc27ddfd8d319116a0c0a0"
+      }
+    }
+  ],
+  "related_same_job_binary_identity_records": [
+    {
+      "record_sha256": "6fb2b96c7b97641c5d49fc342fb67bbad727ea30c687cca55fee3cb450696979",
+      "binary_sha256": {
+        "termforge_shell.exe": "a8fabc15d39faab0ed850281d813460015c61c1bbefd4eb454b06fdcfb8ba430",
+        "shell_test_launcher.exe": "d5725950098f581df5115bd4c3301a66fae0ec6ca692a76e3600c21df80927d9",
+        "shell_text_client.exe": "ce509e23426bafa5e44c242fb608040031bd270d57e50305277186a8846a93ba",
+        "shell_clipboard_reader.exe": "83371f7b313c56c709ec64aa550a9e6dc680a6dc309f260f638a033460994b6c"
+      }
+    },
+    {
+      "record_sha256": "38b950babacc394f00cd86d84947dfb0daba80db5920fee697e9d98150e82989",
+      "binary_sha256": {
+        "termforge_shell": "a8fabc15d39faab0ed850281d813460015c61c1bbefd4eb454b06fdcfb8ba430",
+        "shell_test_launcher": "d5725950098f581df5115bd4c3301a66fae0ec6ca692a76e3600c21df80927d9",
+        "shell_text_client": "ce509e23426bafa5e44c242fb608040031bd270d57e50305277186a8846a93ba",
+        "shell_input_client": "bff86ebfa601545e07f00cb427b65b1bcecebbd0b86223994aeccd490df09b85"
+      }
+    },
+    {
+      "record_sha256": "11704c7a4415e5a13a956de5926e7d1e6d16b53b047f46668d5d087b17860668",
+      "binary_sha256": {
+        "termforge_shell": "a8fabc15d39faab0ed850281d813460015c61c1bbefd4eb454b06fdcfb8ba430",
+        "shell_test_launcher": "d5725950098f581df5115bd4c3301a66fae0ec6ca692a76e3600c21df80927d9",
+        "shell_text_client": "ce509e23426bafa5e44c242fb608040031bd270d57e50305277186a8846a93ba",
+        "shell_input_client": "bff86ebfa601545e07f00cb427b65b1bcecebbd0b86223994aeccd490df09b85"
+      }
+    }
+  ],
+  "binary_identity_limitation": "Selection per-run records do not independently hash the EXE; related same-job manifests report hashes but are not a source-to-binary attestation. The original failed selection run has the same gap.",
+  "first_phase_timer_limitation": "Forward has no preceding snapshot; its counts are positive. All following eight phase transitions independently have both deltas >=3. Internal action baselines are enforced by fixed source but not directly logged.",
+  "scope": "Read-only verification of actual hosted CF samples; no code/proof edits, new test runs, live clipboard access or full R2/parity claim."
+}
