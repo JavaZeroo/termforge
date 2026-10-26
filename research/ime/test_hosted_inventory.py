@@ -10,7 +10,7 @@ import sys
 import tempfile
 import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from research.ime import inventory_hosted as inventory
 
@@ -346,11 +346,23 @@ if ($errors.Count) { throw 'Worker syntax errors' }
         timeout = 10
         started = time.monotonic()
         job = process = None
+        result = None
         stdout = stderr = b""
         record = {"timeout_seconds": timeout, "elapsed_seconds": None, "ready_seconds": None,
-                  "returncode": None, "reaped": False, "streams_drained": False, "timed_out": False,
+                  "returncode": None, "reaped": None, "streams_drained": False, "timed_out": False,
                   "job_before_cleanup": None, "job_after": None, "cleanup_errors": [], "error": None,
-                  "outcome": None, "checkpoint_observation": None}
+                  "outcome": None, "checkpoint_observation": None,
+                  "cleanup_timeout_seconds": 5, "cleanup_complete": False}
+
+        def cleanup_fault(stage, error):
+            record["cleanup_errors"].append({"stage": stage, **inventory.error_identity(error)})
+
+        def checked_accounting(observed):
+            if (type(observed) is not dict or set(observed) != {"active", "total", "terminated"}
+                    or any(type(value) is not int or value < 0 for value in observed.values())):
+                raise ValueError("invalid owned Job accounting")
+            return observed
+
         try:
             job = inventory.OwnedJob()
             process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -370,48 +382,90 @@ if ($errors.Count) { throw 'Worker syntax errors' }
             if remaining <= 0:
                 raise subprocess.TimeoutExpired(command, timeout)
             stdout, stderr = process.communicate(b"GO\n", timeout=remaining)
+            record["streams_drained"] = True
             record["returncode"] = process.returncode
             self.assertEqual(process.returncode, 0, stderr.decode("utf-8", errors="replace"))
             result = json.loads(stdout)
             result["process"] = record
             record["outcome"] = {key: result[key] for key in
                 ("status", "states", "state_timeline", "ast_parse_milliseconds")}
-            return result
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as error:
             record["timed_out"] = True
+            record["error"] = inventory.error_identity(error)
             raise
-        except Exception as error:
+        except BaseException as error:
             record["error"] = inventory.error_identity(error)
             raise
         finally:
+            cleanup_deadline = time.monotonic() + record["cleanup_timeout_seconds"]
             if job is not None:
                 try:
-                    record["job_before_cleanup"] = job.accounting()
+                    record["job_before_cleanup"] = checked_accounting(job.accounting())
+                except Exception as error:
+                    cleanup_fault("job_accounting", error)
+                try:
                     job.terminate()
                 except Exception as error:
-                    record["cleanup_errors"].append(inventory.error_identity(error))
+                    cleanup_fault("job_terminate", error)
             if process is not None:
                 try:
-                    if process.poll() is None:
-                        process.kill()
-                    stdout, stderr = process.communicate(timeout=5)
-                    record["returncode"] = process.returncode
-                    record["reaped"] = process.poll() is not None
-                    record["streams_drained"] = True
+                    running = process.poll() is None
                 except Exception as error:
-                    record["cleanup_errors"].append(inventory.error_identity(error))
+                    running = True
+                    cleanup_fault("process_poll", error)
+                if running:
+                    try:
+                        process.kill()
+                    except Exception as error:
+                        cleanup_fault("process_kill", error)
+                if not record["streams_drained"]:
+                    try:
+                        stdout, stderr = process.communicate(timeout=max(0, cleanup_deadline - time.monotonic()))
+                        record["returncode"] = process.returncode
+                        record["streams_drained"] = True
+                    except Exception as error:
+                        cleanup_fault("process_communicate", error)
             if job is not None:
                 try:
-                    record["job_after"] = job.drain(timeout=5)
+                    record["job_after"] = checked_accounting(
+                        job.drain(timeout=max(0, cleanup_deadline - time.monotonic())))
                     if record["job_after"]["active"]:
-                        record["cleanup_errors"].append({"kind": "owned-job-not-empty", "code": None})
+                        cleanup_fault("job_not_empty", ValueError("owned Job not empty"))
                 except Exception as error:
-                    record["cleanup_errors"].append(inventory.error_identity(error))
+                    cleanup_fault("job_drain", error)
                 finally:
-                    job.close()
+                    try:
+                        job.close()
+                    except Exception as error:
+                        cleanup_fault("job_close", error)
+            if process is not None:
+                try:
+                    if not record["streams_drained"]:
+                        stdout, stderr = process.communicate(timeout=max(0, cleanup_deadline - time.monotonic()))
+                        record["returncode"] = process.returncode
+                        record["streams_drained"] = True
+                    record["reaped"] = process.poll() is not None
+                    if not record["reaped"]:
+                        cleanup_fault("process_not_reaped", ValueError("owned process not reaped"))
+                except Exception as error:
+                    cleanup_fault("process_reap_after_close", error)
             record["elapsed_seconds"] = time.monotonic() - started
-            record["checkpoint_observation"] = fixture_checkpoints(directory)
-            print(json.dumps({"fixture": "powershell-final-progress", "lifecycle": record}), flush=True)
+            try:
+                record["checkpoint_observation"] = fixture_checkpoints(directory)
+            except Exception as error:
+                cleanup_fault("checkpoint_read", error)
+                record["checkpoint_observation"] = {
+                    "status": "unavailable", "events": [], "error": inventory.error_identity(error)}
+            record["cleanup_complete"] = (not record["cleanup_errors"] and record["job_after"] is not None
+                and record["job_after"]["active"] == 0 and record["reaped"] is True and record["streams_drained"])
+            try:
+                print(json.dumps({"fixture": "powershell-final-progress", "lifecycle": record}), flush=True)
+            except Exception as error:
+                cleanup_fault("summary_emit", error)
+                record["cleanup_complete"] = False
+        if not record["cleanup_complete"]:
+            raise ValueError("fixture_cleanup_failed")
+        return result
 
     def test_worker_syntax_and_parameter_sets_are_checked_without_union(self):
         result = self.pure_script(r"""
@@ -587,6 +641,91 @@ $second = Get-Content -LiteralPath $progressPath -Raw | ConvertFrom-Json
                         env=environment, input=message, capture_output=True, timeout=10)
                     self.assertEqual(result.returncode, code)
                     self.assertFalse(out.exists())
+
+
+class LifecycleCleanupFailures(unittest.TestCase):
+    def fixture(self, directory, process, job):
+        (directory / "fixture-ready").touch()
+        (directory / "fixture-progress.tsv").write_text("0\tfixture-ready\n", encoding="ascii")
+        with patch.object(inventory, "OwnedJob", return_value=job), \
+             patch.object(subprocess, "Popen", return_value=process), \
+             patch.object(subprocess, "CREATE_NO_WINDOW", 0, create=True):
+            return WorkerContract().run_lifecycle_fixture(["PRIVATE command"], directory)
+
+    def mocks(self):
+        process, job = Mock(), Mock()
+        process.pid, process.returncode = 123, None
+        process.poll.return_value = None
+        job.accounting.return_value = {"active": 0, "total": 1, "terminated": 0}
+        job.drain.return_value = {"active": 0, "total": 1, "terminated": 0}
+        return process, job
+
+    def test_original_timeout_survives_accounting_terminate_reap_and_close_failures(self):
+        process, job = self.mocks()
+        original = subprocess.TimeoutExpired("PRIVATE original", 10)
+        process.communicate.side_effect = [original, OSError("PRIVATE communicate"), OSError("PRIVATE reap")]
+        for method in (job.accounting, job.terminate, job.drain, job.close):
+            method.side_effect = OSError("PRIVATE cleanup")
+        with tempfile.TemporaryDirectory() as directory, patch("builtins.print") as output:
+            with self.assertRaises(subprocess.TimeoutExpired) as raised:
+                self.fixture(Path(directory), process, job)
+            self.assertIs(raised.exception, original)
+            output.assert_called_once()
+            record = json.loads(output.call_args.args[0])["lifecycle"]
+            self.assertTrue(record["timed_out"])
+            self.assertIsNone(record["job_before_cleanup"])
+            self.assertIsNone(record["job_after"])
+            self.assertIsNone(record["reaped"])
+            self.assertEqual(record["checkpoint_observation"]["status"], "observed")
+            self.assertNotIn("PRIVATE", json.dumps(record))
+            self.assertEqual({row["stage"] for row in record["cleanup_errors"]},
+                {"job_accounting", "job_terminate", "process_communicate", "job_drain", "job_close",
+                 "process_reap_after_close"})
+        job.terminate.assert_called_once()
+        job.close.assert_called_once()
+
+    def test_cleanup_waits_share_one_five_second_deadline(self):
+        process, job = self.mocks()
+        original = subprocess.TimeoutExpired("PRIVATE original", 10)
+        process.communicate.side_effect = [original, (b"", b"")]
+        process.poll.side_effect = [None, None, 99]
+        with tempfile.TemporaryDirectory() as directory, patch("builtins.print"), \
+             patch.object(time, "monotonic", side_effect=[0, 1, 2, 3, 7, 8, 9]):
+            with self.assertRaises(subprocess.TimeoutExpired) as raised:
+                self.fixture(Path(directory), process, job)
+            self.assertIs(raised.exception, original)
+        self.assertEqual(process.communicate.call_args_list[-1].kwargs["timeout"], 1)
+        self.assertEqual(job.drain.call_args.kwargs["timeout"], 0)
+
+    def test_cleanup_failure_after_complete_report_is_not_success(self):
+        process, job = self.mocks()
+        process.poll.return_value = 0
+        process.returncode = 0
+        report = {"status": "failed", "states": ["started", "ended", "failed"],
+                  "state_timeline": [], "ast_parse_milliseconds": 1}
+        process.communicate.return_value = (json.dumps(report).encode(), b"")
+        job.close.side_effect = OSError("PRIVATE close")
+        with tempfile.TemporaryDirectory() as directory, patch("builtins.print") as output:
+            with self.assertRaisesRegex(ValueError, "^fixture_cleanup_failed$"):
+                self.fixture(Path(directory), process, job)
+            output.assert_called_once()
+            record = json.loads(output.call_args.args[0])["lifecycle"]
+            self.assertEqual(record["cleanup_errors"][0]["stage"], "job_close")
+            self.assertEqual(record["checkpoint_observation"]["status"], "observed")
+            self.assertNotIn("PRIVATE", json.dumps(record))
+
+    def test_summary_emit_failure_cannot_replace_original_timeout(self):
+        process, job = self.mocks()
+        original = subprocess.TimeoutExpired("PRIVATE original", 10)
+        process.communicate.side_effect = [original, (b"", b"")]
+        process.poll.side_effect = [None, None, 99]
+        with tempfile.TemporaryDirectory() as directory, \
+             patch("builtins.print", side_effect=OSError("PRIVATE output failure")) as output:
+            with self.assertRaises(subprocess.TimeoutExpired) as raised:
+                self.fixture(Path(directory), process, job)
+            self.assertIs(raised.exception, original)
+            output.assert_called_once()
+        job.close.assert_called_once()
 
 
 if __name__ == "__main__":
