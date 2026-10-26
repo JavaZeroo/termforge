@@ -238,5 +238,111 @@
     "semantic_acceptance": false,
     "presented_done": null,
     "summary_sha256": "cced694562a16395e0d25cbad4a70ea639aabc9df49188351cae782f05d20c47"
+  },
+  "gui_after_native_fixture_fix": {
+    "runtime_source": "aa5fbe5f61d771b5ac7716ce4e77cb143baec3ef",
+    "binary_sha256": "ac7998c5c6b89f251e1fc83a773dcad31d63b55c10f69f04408dc1e4b2b97499",
+    "temporary_instrumentation_removed": true,
+    "same_runtime_as_gui_original_except_native_capture_fix": true,
+    "runs": [
+      {
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "raw_sha256": {
+          "candidate-output.bin": "7976fddf498096e0fa1ce90318ec6fb618d6d267ddbf1e89503bfd717471e832",
+          "candidate-insert-log.txt": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a",
+          "candidate-resize-log.txt": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7",
+          "candidate-startup-log.txt": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+        }
+      },
+      {
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "raw_sha256": {
+          "candidate-output.bin": "4b415c29f16225a8c9df5d1fec37a128dfd91f405bf42878fdbd2d08bdeaa027",
+          "candidate-insert-log.txt": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a",
+          "candidate-resize-log.txt": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7",
+          "candidate-startup-log.txt": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+        }
+      }
+    ],
+    "interpretation": "two current passes do not explain or fix the original genuine stage59 failure"
+  },
+  "bounded_gui_diagnostics": {
+    "accepted_as_fix": false,
+    "strace_wrapper": {
+      "runs": 2,
+      "failure": "different startup crash c0000005, GUI stage50, not original stage59",
+      "real_input_version_and_oracle_retained": true
+    },
+    "temporary_WriteFile_observer": {
+      "runs": [
+        {
+          "status": "passed",
+          "actual_write_order": [
+            [
+              "cursor-position-reply",
+              89
+            ],
+            [
+              "resize-command",
+              90
+            ]
+          ],
+          "all_reported_writes_successful": true,
+          "write_trace_sha256": "edcc9fe614bff32d753da8ab212362cf1101a5648ffbfe1fb701199688517a31"
+        },
+        {
+          "status": "passed",
+          "actual_write_order": [
+            [
+              "resize-command",
+              89
+            ],
+            [
+              "cursor-position-reply",
+              90
+            ]
+          ],
+          "all_reported_writes_successful": true,
+          "write_trace_sha256": "7738ce6719efc0f08b82117118e8efce118702132aa40f939774b0e09fdca0ba"
+        },
+        {
+          "status": "passed",
+          "actual_write_order": [
+            [
+              "resize-command",
+              89
+            ],
+            [
+              "cursor-position-reply",
+              90
+            ]
+          ],
+          "all_reported_writes_successful": true,
+          "write_trace_sha256": "cad8e5598daf7dc1ad1110b56ef675d6c5d1e21033d2b7ed02146dcd7bf5e9c2"
+        }
+      ],
+      "binary_sha256": null,
+      "binary_identity_limitation": "probe executable not hashed before restoring original source; excluded from acceptance",
+      "local_patch_sha256": "1b6da35b9be9ff84babecb60e36c46588306eac6df10ac2fe54ccb3dc2d87bb8",
+      "falsified_hypothesis": "Ctrl-O preceding CPR necessarily causes stage59 failure",
+      "remaining_unknown": "Where between console host input processing and Vim resize/key processing Ctrl-O ceased to act in the original failure"
+    },
+    "cleanup": "temporary source edits removed; final working tree rebuilt without observers"
   }
 }
