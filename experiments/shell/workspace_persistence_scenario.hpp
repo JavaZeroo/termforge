@@ -1,13 +1,9 @@
 // Owned data-only persistence scenarios; no bitmap or user-desktop input.
 #pragma once
+#include "transport_completion.hpp"
 
 inline bool workspace_output_completed(ShellWindow* shell,const std::string& marker) {
-    if(marker.empty()) return false;
-    const auto& raw=shell->observed_output();
-    const auto output=raw.rfind(marker),prompt=raw.rfind("TF>");
-    if(output==std::string::npos || prompt==std::string::npos || output>=prompt) return false;
-    const auto suffix=output+marker.size();
-    return suffix<raw.size() && (raw[suffix]=='\r' || raw[suffix]=='\n' || raw[suffix]=='\x1b');
+    return tf_shell_test::transport_output_completed(shell->observed_output(),marker);
 }
 
 inline std::string Workspace::workspace_geometry() {
