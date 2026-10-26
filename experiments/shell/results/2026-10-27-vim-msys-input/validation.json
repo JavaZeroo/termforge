@@ -1,0 +1,1659 @@
+{
+  "schema": "termforge.vim-msys-input-observation.v1",
+  "scope": "diagnosis only; no product fix or R2 acceptance",
+  "base_commit": "44ea45b988b6bb0b72f21cd24597fe54b9b4ec31",
+  "product_source": "c662011616a0498e0fbd6af8019f5f3cc03fdcaa",
+  "configuration": {
+    "candidate": "termforge.5",
+    "backend": "reviewed-side-by-side-1.25.260930003",
+    "creation_flags": 24,
+    "platform": "Windows-11-10.0.26200-SP0",
+    "vim_version": "9.1 patches 1-532",
+    "vim_file_sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+    "msys_file_sha256": "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f",
+    "msys_source_commit": "2e2ef940151485490aff0c7b00c00965ef7a71a4",
+    "frida_provider_version": null
+  },
+  "diagnostic_identity": {
+    "shell_sha256": "73472864e5aa291704917812ff1848f7a59be6e5f30c41f6a613e3fc18c740d4",
+    "source_sha256": {
+      "experiments/conpty/session.hpp": "c41a4b401f412a9845fc6b2f365e241fdd039af3432f1e9f96f734e98118a521",
+      "experiments/shell/shell.cpp": "0f262abf4ef3ba62a2553bc2d80513b080e1bf06d4116c82d193c05722467495"
+    },
+    "baseline_shell_sha256": "941ef34db129282a26625d8bad4fd663c4284fe3307802907366299ab04f31c4",
+    "original_scenario_sha256": "a300380b97ad424c5af06219a021a256de6178c3af7fb7e933e24bb8142201ee",
+    "original_runner_sha256": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d",
+    "temporary_patch_sha256": "4e2b450c3d7c16bfc7c8d8530e381234bb1330b3e6b8840d6eace8c917ce7167"
+  },
+  "protocol": {
+    "inner_timeout_seconds": 25,
+    "outer_timeout_seconds": 40,
+    "input": "\u000f:call writefile([string(&columns) . 'x' . string(&lines)], 'candidate-resize-log.txt', 'b')\r",
+    "attachment_gate": "only after original VimEnter READY and visible New; inside original deadline, before original i input",
+    "selection": "unique fixed-path Vim from session-owned Job; no global process scan",
+    "boundary_batch": {
+      "maximum": 4,
+      "executed": 3,
+      "stop": "at least one original stage59 and one valid green, or any different failure; otherwise maximum four cases",
+      "observed_outcomes": [
+        "stage59",
+        "stage59",
+        "green"
+      ]
+    },
+    "function_batch": {
+      "maximum": 2,
+      "executed": 1,
+      "stop": "first original stage59 or any different failure; otherwise maximum two cases",
+      "observed_outcomes": [
+        "stage59"
+      ]
+    },
+    "target_input_buffers_or_return_values_modified_by_script": false,
+    "records_limit": 512,
+    "native_records_per_call_limit": 256,
+    "read_bytes_per_call_limit": 512
+  },
+  "cases": [
+    {
+      "id": "boundary-red-0",
+      "outcome": "stage59",
+      "outer_exit_code": 2,
+      "outer_timed_out": false,
+      "owned_job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "owned_desktop_gone": true,
+      "writer": {
+        "records": 91,
+        "truncated": false,
+        "command_written_bytes": 93,
+        "command_error": 0
+      },
+      "frida": {
+        "evidence_id": "ev_18adf14197eb077fa8d019c7f021251982860dcbcd9f22cc6e9117c8f41cd10c",
+        "event_count": 19,
+        "messages_truncated": false,
+        "provider": {
+          "id": "frida",
+          "name": "Frida",
+          "version": null
+        },
+        "provider_limitations": [
+          "Artifact identity is unavailable for this observation.",
+          "The target operating system and architecture were not reported by this observation."
+        ],
+        "script_limitations": [
+          "calls already entered before attach are not observed",
+          "interception changes scheduling",
+          "timestamps are observer wall clock; no cross-process high resolution alignment"
+        ],
+        "script_sha256": "f01e1363d482ef404a7ef2031caf13434409f00dfe936b55fc3863c60628b9cb"
+      },
+      "events": [
+        {
+          "sequence": 2,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": []
+        },
+        {
+          "sequence": 3,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 2048,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": []
+        },
+        {
+          "sequence": 4,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": []
+        },
+        {
+          "sequence": 5,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 1,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "69"
+        },
+        {
+          "sequence": 6,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "54",
+          "resize_events": []
+        },
+        {
+          "sequence": 7,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 16,
+          "requested": 2048,
+          "returned_count": 16,
+          "truncated": false,
+          "key_characters_hex": "54465f43414e4449444154455f545549",
+          "resize_events": []
+        },
+        {
+          "sequence": 8,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 16,
+          "requested": 16,
+          "returned_count": 16,
+          "truncated": false,
+          "key_characters_hex": "54465f43414e4449444154455f545549",
+          "resize_events": []
+        },
+        {
+          "sequence": 9,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 16,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "54465f43414e4449444154455f545549"
+        },
+        {
+          "sequence": 10,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            }
+          ]
+        },
+        {
+          "sequence": 11,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 2,
+          "requested": 2048,
+          "returned_count": 2,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            },
+            {
+              "position": 1,
+              "columns": 60,
+              "rows": 12
+            }
+          ]
+        },
+        {
+          "sequence": 12,
+          "type": "console",
+          "thread": "T3",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 95,
+          "requested": 2176,
+          "returned_count": 95,
+          "truncated": false,
+          "key_characters_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            },
+            {
+              "position": 1,
+              "columns": 60,
+              "rows": 12
+            }
+          ]
+        },
+        {
+          "sequence": 13,
+          "type": "console",
+          "thread": "T3",
+          "name": "WriteConsoleInputW",
+          "success": true,
+          "count": 93,
+          "requested": 93,
+          "returned_count": 93,
+          "truncated": false,
+          "key_characters_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 14,
+          "type": "console",
+          "thread": "T3",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 93,
+          "requested": 2176,
+          "returned_count": 93,
+          "truncated": false,
+          "key_characters_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 15,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "0f",
+          "resize_events": []
+        },
+        {
+          "sequence": 16,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "3a",
+          "resize_events": []
+        },
+        {
+          "sequence": 17,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 92,
+          "requested": 2048,
+          "returned_count": 92,
+          "truncated": false,
+          "key_characters_hex": "3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 18,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 92,
+          "requested": 92,
+          "returned_count": 92,
+          "truncated": false,
+          "key_characters_hex": "3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 19,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 92,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d"
+        }
+      ],
+      "private_artifact_sha256": {
+        "sample.json": "a5b6287b358da1678d30efb47d541c10377ee24f3a606202f75a4053ef1eeae0",
+        "r52-writes.json": "d89fb7eadbcee2846a37c8b8b71784fa58d2f3a9a6a8d8da4a1453b654f6fd4d",
+        "candidate-input.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "candidate-insert-log.txt": "e6de4daeba1841783e7e22f81dbf87154f341c309dc5b54405e5fc2c2f3550a6",
+        "candidate-resize-log.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "candidate-output.bin": "fc43e5c356005f9c32847476d4bdba5fabaf51439083d8ac4e530d3e8bb5c883",
+        "case-0-identity.json": "5632d1aac8f0e3df18b3fef69b532d6cd5e577a8496cf40ec03d5b21529d6081",
+        "case-0-status-final.json": "db0736829d3d23154f3dac4b8e4941d3350ba33e6e51f21f4d45de0c0396b76e",
+        "case-0-load.json": "cfa00b7a534855dea6708ea9bee6721f78df77f0beaa454549ea4a0af7b8176e",
+        "case-0-detach.json": "b53d8b7832810f75d86584dbc495295037f01103e868dcf359d1be54012afdc5"
+      },
+      "observed_file_sha256": {
+        "alpha_normal_smoke.exe": "55f76e0ef0a68a2d3ee2d047852551b86e63074b84604e59fe6d0893361ba3a6",
+        "candidate_core_test.exe": "4c73b58d7da111ab52b6edbbb59898cf660860fdedaa64c4f49b46fae856a02d",
+        "candidate_reply_close_test.exe": "7431b2d5a414703d85fb9425b07b7df125eb7b5668851cb5383cf575cb620a69",
+        "candidate_resize_replay.exe": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+        "candidate_title_test.exe": "359141b75c6eeb9a0cc9ef59f9f21ad0d07bcaefb51beb19f64e3288a059bec2",
+        "clipboard_policy_test.exe": "ef7c7d860bad3b458b7ac8e659c46acd0f768f70281e7d6797e489520d1d559e",
+        "conpty_backend_probe.exe": "39b52ad4acc4e432718d3cdd6dc6ee2ab80b1584de16c0edc3d775ccc7b03c0d",
+        "conpty_ctrl_c_probe.exe": "30ad460b54cfcc752e20ccd5f656c6769e292528408a4a68e7182ab3206d39b6",
+        "conpty_margin_probe.exe": "7aaef1da461b3b6d833aea79332f28d8f924e26de2f9332feeb1f1303a51e30f",
+        "conpty_resize_native_probe.exe": "a570b55f7ef0f65be01b827112905a223fb32f37a0f645ce121ead1ed6555f59",
+        "core_measure.exe": "dfe74cf8e6ec0fdb976911569c14e52709be5e880d9b36d2a108187bca9c165b",
+        "find_bar_test.exe": "632e5ff486b7ad5d29292b4af1206c196d09ca1c1c8a38a830a004ee9c21f1a1",
+        "history_test.exe": "3b3f6199ad4d345ef5cc759ddcf80667fdde4c7778658e99764342cc17949e2e",
+        "ime_context_test.exe": "8941d52ed7642b15c46da5a50927ba09ceab7078c5f31c649e4e3baa859e8ae1",
+        "ime_input_expectation_test.exe": "a960fbd62a7c0d6eec564a5a2bb1cc271582e7bb55ec07ddb63bc46044b9c438",
+        "keyboard_test.exe": "fe027bbcb21a09fac9411dd5766a37e8edd711d3ef547f37a080ded097a4de3e",
+        "layout_state_test.exe": "7b174db85ff75e8a8f5613c949c264a4dedbb8cfeb8a18581f016191bd036ddb",
+        "paste_test.exe": "1e6acc382a75fe18b50212cf6950d3d714f89939b1cf63000795348e4db22d54",
+        "presentation_probe.exe": "91aa34c2ac7b4f6610da419a04091d4391cb78e224e6b5f567437a5565d4e33a",
+        "raw_console_receiver_test.exe": "0731af92b2536b189d80894b5ca4243d814e07ab2c513fff7b4d3fd3654578f2",
+        "real_app_capture.exe": "fddd86a02d7c8ba13b7cd458373c8acd19d999199baefce77e8f237efce47189",
+        "receive.exe": "b5ea1d10bba964ec80f183d761b1c0ea4334f6963597ccd1bb16b9c769fc76d5",
+        "recovery_probe.exe": "72213828da26b5657915667faccd1d0aca83dbe6d9537f38dbd9d5464750313b",
+        "renderer_metrics_test.exe": "f08e88f6ff8bb6be87f724ff6a3c398df359a639f83d75b5970e69659f8a4a5c",
+        "replay.exe": "54298c3fa5020d3ebcaa55c76564b9dcbfec5b25d772343c428e2e36e1858ca1",
+        "resize_test.exe": "fd97c87127d4763320832d1d538af5755eece8a1ec1485435cab6b41e9e549cd",
+        "runtime_observation_test.exe": "0049a0d863724bf8bd181c85868bd68a409eb5e12c755a5538add5f85bf8b0bf",
+        "scenario_tick_gate_test.exe": "f7368d2d4c13a9eee4a210e857fd5d13479641328fa71a984582c69b57735ecf",
+        "search_test.exe": "6bf2a5fa47e1f0665462e6601e01253674c6662e5db730161bd7eb09c81d621d",
+        "selection_test.exe": "19eaf7ef3e6f1a35f67e1b17a60858bfb0f268a20c9f2686d141c847a68fbb3a",
+        "sender_fence_pipe_test.exe": "19bba0df9e37159cc70728f68ae8a28364127fac21ab72cb21cdb036f9380686",
+        "sender_fence_test.exe": "b3c396a7d8a306d0987ef149fd9d5e014ab90ac6d54d0915a48b6d261a6e21c1",
+        "sent_message_wait_test.exe": "b9bb4960dc470d5aac08fecb2c0775c16e2a7e75fdabe283b6c028d284679abb",
+        "shell_clipboard_reader.exe": "01aad3988dfc520ec6419f9747cb2baa04efc9c1409f4b50a4a65b2f385bd7be",
+        "shell_ime_client.exe": "f02ec529d90db13bf4c904bbee8bc77930fdcf51ba868b4a43a43ed783f61830",
+        "shell_input_client.exe": "0075a332e524071809a1fdbd5161d1f360fa8e89faaf2b45b24c19f1d94829cc",
+        "shell_launch_test.exe": "6e96e163b4adc40b8d53c022a23a206176bf558c73eb76d9790b61f2abb13baf",
+        "shell_paste_probe.exe": "dd49d693dc30372d6f44cce2b7a1dcfc64adea1e6638399da4d400784a14bf6f",
+        "shell_query_client.exe": "691b440e9c500c76c1c09c448aafbe2316793bf341ffe69bbc2bf70e41be64cc",
+        "shell_queue_probe.exe": "e030070a6f287421bc3b74350fd45c8cd762837dc1512a76f688d20d39aa8715",
+        "shell_selection_text_client.exe": "18b60279aed48a9d39b6f5c57371c60b3a2b59bb21d6e30f92bac7adf50a3ed2",
+        "shell_size_client.exe": "eeb0801f69cc8add0a8178a185dcedb78a9b33234abfe5c600fd9b20b0f5aab4",
+        "shell_test_launcher.exe": "7bd78cffd78ac66d651933c9614d6be937c99baa105ce04c1a533df5785c11e2",
+        "shell_text_client.exe": "9350e53de74c9a6b78495a3b59788e3a31e0067a9c5ec1b8685a729ff18244d3",
+        "termforge_conpty_probe.exe": "1dcf69f65e9dd2abca1a58c10df2be3a296a4e22cdd895ba457222fe9e27f021",
+        "termforge_ime_probe.exe": "ba59ec28909430669c187a644651588b2f1984b1308b97056f222f332e7de9c9",
+        "termforge_shell.exe": "73472864e5aa291704917812ff1848f7a59be6e5f30c41f6a613e3fc18c740d4",
+        "terminal_trace.exe": "d09f34702cbd2d8be6ecfe98ab56a2326be1fde6b1fde4d10ef85d0f62955d2f",
+        "text_action_policy_test.exe": "9988026742d9ff45f300a6fa336ceca052a502b568f32114be7fd5057e57f5a4",
+        "transport_completion_test.exe": "6952438843e8a7605bb6cf0eb7add56dd8574f4e5edfbc3a534f795030a3fcc8",
+        "workflow_checkpoint_test.exe": "056047580e8ddd77224908667297a0b704f97ef57d1eadeb382b52c7c7875b86",
+        "workflow_fixture_test.exe": "ce3f09d8b3bb97d92dd6c61531e2cb9ba36070d2222b7b4ad7b86de82021f208",
+        "workspace_state_test.exe": "18080df77a0b7a370aa1e2dc79f2986dd3a4eb01661663dd95c43a11b802ee11"
+      }
+    },
+    {
+      "id": "boundary-red-1",
+      "outcome": "stage59",
+      "outer_exit_code": 2,
+      "outer_timed_out": false,
+      "owned_job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "owned_desktop_gone": true,
+      "writer": {
+        "records": 91,
+        "truncated": false,
+        "command_written_bytes": 93,
+        "command_error": 0
+      },
+      "frida": {
+        "evidence_id": "ev_57b774550517dd49065104ebb12df86fbb31f791e78b51424637cd505a3a4d1e",
+        "event_count": 17,
+        "messages_truncated": false,
+        "provider": {
+          "id": "frida",
+          "name": "Frida",
+          "version": null
+        },
+        "provider_limitations": [
+          "Artifact identity is unavailable for this observation.",
+          "The target operating system and architecture were not reported by this observation."
+        ],
+        "script_limitations": [
+          "calls already entered before attach are not observed",
+          "interception changes scheduling",
+          "timestamps are observer wall clock; no cross-process high resolution alignment"
+        ],
+        "script_sha256": "f01e1363d482ef404a7ef2031caf13434409f00dfe936b55fc3863c60628b9cb"
+      },
+      "events": [
+        {
+          "sequence": 2,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": []
+        },
+        {
+          "sequence": 3,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 2048,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": []
+        },
+        {
+          "sequence": 4,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": []
+        },
+        {
+          "sequence": 5,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 1,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "69"
+        },
+        {
+          "sequence": 6,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "54",
+          "resize_events": []
+        },
+        {
+          "sequence": 7,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 16,
+          "requested": 2048,
+          "returned_count": 16,
+          "truncated": false,
+          "key_characters_hex": "54465f43414e4449444154455f545549",
+          "resize_events": []
+        },
+        {
+          "sequence": 8,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 16,
+          "requested": 16,
+          "returned_count": 16,
+          "truncated": false,
+          "key_characters_hex": "54465f43414e4449444154455f545549",
+          "resize_events": []
+        },
+        {
+          "sequence": 9,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 16,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "54465f43414e4449444154455f545549"
+        },
+        {
+          "sequence": 10,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            }
+          ]
+        },
+        {
+          "sequence": 11,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 2,
+          "requested": 2048,
+          "returned_count": 2,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            },
+            {
+              "position": 1,
+              "columns": 60,
+              "rows": 12
+            }
+          ]
+        },
+        {
+          "sequence": 12,
+          "type": "console",
+          "thread": "T3",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 2,
+          "requested": 2176,
+          "returned_count": 2,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            },
+            {
+              "position": 1,
+              "columns": 60,
+              "rows": 12
+            }
+          ]
+        },
+        {
+          "sequence": 13,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "0f",
+          "resize_events": []
+        },
+        {
+          "sequence": 14,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "3a",
+          "resize_events": []
+        },
+        {
+          "sequence": 15,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 92,
+          "requested": 2048,
+          "returned_count": 92,
+          "truncated": false,
+          "key_characters_hex": "3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 16,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 92,
+          "requested": 92,
+          "returned_count": 92,
+          "truncated": false,
+          "key_characters_hex": "3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 17,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 92,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d"
+        }
+      ],
+      "private_artifact_sha256": {
+        "sample.json": "1fad8b791526612e05cc06053e43ef8277028ee5061874ab06940736b24a4b0f",
+        "r52-writes.json": "8b5f6d77dc5a2814e3f725e5ffa4a6c97820fb799c577debdaa2e6e06121ec87",
+        "candidate-input.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "candidate-insert-log.txt": "e6de4daeba1841783e7e22f81dbf87154f341c309dc5b54405e5fc2c2f3550a6",
+        "candidate-resize-log.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "candidate-output.bin": "fc43e5c356005f9c32847476d4bdba5fabaf51439083d8ac4e530d3e8bb5c883",
+        "case-1-identity.json": "9feb950dd6183c656fa552975a985784774b6cd78022761cb9f7edede1160384",
+        "case-1-status-final.json": "bbaa93f260e171490538831f67c96aa21409c0cf0c94cec8fb316a8d23b16e11",
+        "case-1-load.json": "87f1209688e5efb1d81fa8f374640215070d15bc25f5dab8d5dcd4d5d965d103",
+        "case-1-detach.json": "b53d8b7832810f75d86584dbc495295037f01103e868dcf359d1be54012afdc5"
+      },
+      "observed_file_sha256": {
+        "alpha_normal_smoke.exe": "55f76e0ef0a68a2d3ee2d047852551b86e63074b84604e59fe6d0893361ba3a6",
+        "candidate_core_test.exe": "4c73b58d7da111ab52b6edbbb59898cf660860fdedaa64c4f49b46fae856a02d",
+        "candidate_reply_close_test.exe": "7431b2d5a414703d85fb9425b07b7df125eb7b5668851cb5383cf575cb620a69",
+        "candidate_resize_replay.exe": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+        "candidate_title_test.exe": "359141b75c6eeb9a0cc9ef59f9f21ad0d07bcaefb51beb19f64e3288a059bec2",
+        "clipboard_policy_test.exe": "ef7c7d860bad3b458b7ac8e659c46acd0f768f70281e7d6797e489520d1d559e",
+        "conpty_backend_probe.exe": "39b52ad4acc4e432718d3cdd6dc6ee2ab80b1584de16c0edc3d775ccc7b03c0d",
+        "conpty_ctrl_c_probe.exe": "30ad460b54cfcc752e20ccd5f656c6769e292528408a4a68e7182ab3206d39b6",
+        "conpty_margin_probe.exe": "7aaef1da461b3b6d833aea79332f28d8f924e26de2f9332feeb1f1303a51e30f",
+        "conpty_resize_native_probe.exe": "a570b55f7ef0f65be01b827112905a223fb32f37a0f645ce121ead1ed6555f59",
+        "core_measure.exe": "dfe74cf8e6ec0fdb976911569c14e52709be5e880d9b36d2a108187bca9c165b",
+        "find_bar_test.exe": "632e5ff486b7ad5d29292b4af1206c196d09ca1c1c8a38a830a004ee9c21f1a1",
+        "history_test.exe": "3b3f6199ad4d345ef5cc759ddcf80667fdde4c7778658e99764342cc17949e2e",
+        "ime_context_test.exe": "8941d52ed7642b15c46da5a50927ba09ceab7078c5f31c649e4e3baa859e8ae1",
+        "ime_input_expectation_test.exe": "a960fbd62a7c0d6eec564a5a2bb1cc271582e7bb55ec07ddb63bc46044b9c438",
+        "keyboard_test.exe": "fe027bbcb21a09fac9411dd5766a37e8edd711d3ef547f37a080ded097a4de3e",
+        "layout_state_test.exe": "7b174db85ff75e8a8f5613c949c264a4dedbb8cfeb8a18581f016191bd036ddb",
+        "paste_test.exe": "1e6acc382a75fe18b50212cf6950d3d714f89939b1cf63000795348e4db22d54",
+        "presentation_probe.exe": "91aa34c2ac7b4f6610da419a04091d4391cb78e224e6b5f567437a5565d4e33a",
+        "raw_console_receiver_test.exe": "0731af92b2536b189d80894b5ca4243d814e07ab2c513fff7b4d3fd3654578f2",
+        "real_app_capture.exe": "fddd86a02d7c8ba13b7cd458373c8acd19d999199baefce77e8f237efce47189",
+        "receive.exe": "b5ea1d10bba964ec80f183d761b1c0ea4334f6963597ccd1bb16b9c769fc76d5",
+        "recovery_probe.exe": "72213828da26b5657915667faccd1d0aca83dbe6d9537f38dbd9d5464750313b",
+        "renderer_metrics_test.exe": "f08e88f6ff8bb6be87f724ff6a3c398df359a639f83d75b5970e69659f8a4a5c",
+        "replay.exe": "54298c3fa5020d3ebcaa55c76564b9dcbfec5b25d772343c428e2e36e1858ca1",
+        "resize_test.exe": "fd97c87127d4763320832d1d538af5755eece8a1ec1485435cab6b41e9e549cd",
+        "runtime_observation_test.exe": "0049a0d863724bf8bd181c85868bd68a409eb5e12c755a5538add5f85bf8b0bf",
+        "scenario_tick_gate_test.exe": "f7368d2d4c13a9eee4a210e857fd5d13479641328fa71a984582c69b57735ecf",
+        "search_test.exe": "6bf2a5fa47e1f0665462e6601e01253674c6662e5db730161bd7eb09c81d621d",
+        "selection_test.exe": "19eaf7ef3e6f1a35f67e1b17a60858bfb0f268a20c9f2686d141c847a68fbb3a",
+        "sender_fence_pipe_test.exe": "19bba0df9e37159cc70728f68ae8a28364127fac21ab72cb21cdb036f9380686",
+        "sender_fence_test.exe": "b3c396a7d8a306d0987ef149fd9d5e014ab90ac6d54d0915a48b6d261a6e21c1",
+        "sent_message_wait_test.exe": "b9bb4960dc470d5aac08fecb2c0775c16e2a7e75fdabe283b6c028d284679abb",
+        "shell_clipboard_reader.exe": "01aad3988dfc520ec6419f9747cb2baa04efc9c1409f4b50a4a65b2f385bd7be",
+        "shell_ime_client.exe": "f02ec529d90db13bf4c904bbee8bc77930fdcf51ba868b4a43a43ed783f61830",
+        "shell_input_client.exe": "0075a332e524071809a1fdbd5161d1f360fa8e89faaf2b45b24c19f1d94829cc",
+        "shell_launch_test.exe": "6e96e163b4adc40b8d53c022a23a206176bf558c73eb76d9790b61f2abb13baf",
+        "shell_paste_probe.exe": "dd49d693dc30372d6f44cce2b7a1dcfc64adea1e6638399da4d400784a14bf6f",
+        "shell_query_client.exe": "691b440e9c500c76c1c09c448aafbe2316793bf341ffe69bbc2bf70e41be64cc",
+        "shell_queue_probe.exe": "e030070a6f287421bc3b74350fd45c8cd762837dc1512a76f688d20d39aa8715",
+        "shell_selection_text_client.exe": "18b60279aed48a9d39b6f5c57371c60b3a2b59bb21d6e30f92bac7adf50a3ed2",
+        "shell_size_client.exe": "eeb0801f69cc8add0a8178a185dcedb78a9b33234abfe5c600fd9b20b0f5aab4",
+        "shell_test_launcher.exe": "7bd78cffd78ac66d651933c9614d6be937c99baa105ce04c1a533df5785c11e2",
+        "shell_text_client.exe": "9350e53de74c9a6b78495a3b59788e3a31e0067a9c5ec1b8685a729ff18244d3",
+        "termforge_conpty_probe.exe": "1dcf69f65e9dd2abca1a58c10df2be3a296a4e22cdd895ba457222fe9e27f021",
+        "termforge_ime_probe.exe": "ba59ec28909430669c187a644651588b2f1984b1308b97056f222f332e7de9c9",
+        "termforge_shell.exe": "73472864e5aa291704917812ff1848f7a59be6e5f30c41f6a613e3fc18c740d4",
+        "terminal_trace.exe": "d09f34702cbd2d8be6ecfe98ab56a2326be1fde6b1fde4d10ef85d0f62955d2f",
+        "text_action_policy_test.exe": "9988026742d9ff45f300a6fa336ceca052a502b568f32114be7fd5057e57f5a4",
+        "transport_completion_test.exe": "6952438843e8a7605bb6cf0eb7add56dd8574f4e5edfbc3a534f795030a3fcc8",
+        "workflow_checkpoint_test.exe": "056047580e8ddd77224908667297a0b704f97ef57d1eadeb382b52c7c7875b86",
+        "workflow_fixture_test.exe": "ce3f09d8b3bb97d92dd6c61531e2cb9ba36070d2222b7b4ad7b86de82021f208",
+        "workspace_state_test.exe": "18080df77a0b7a370aa1e2dc79f2986dd3a4eb01661663dd95c43a11b802ee11"
+      }
+    },
+    {
+      "id": "boundary-green",
+      "outcome": "green",
+      "outer_exit_code": 0,
+      "outer_timed_out": false,
+      "owned_job_after": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "owned_desktop_gone": true,
+      "writer": {
+        "records": 288,
+        "truncated": false,
+        "command_written_bytes": 93,
+        "command_error": 0
+      },
+      "frida": {
+        "evidence_id": "ev_5d9f4e9910aa1a8acaae8b86d66a0b214a83e3d88f94b2dc5a8e4b141c2169a9",
+        "event_count": 23,
+        "messages_truncated": false,
+        "provider": {
+          "id": "frida",
+          "name": "Frida",
+          "version": null
+        },
+        "provider_limitations": [
+          "Artifact identity is unavailable for this observation.",
+          "The target operating system and architecture were not reported by this observation."
+        ],
+        "script_limitations": [
+          "calls already entered before attach are not observed",
+          "interception changes scheduling",
+          "timestamps are observer wall clock; no cross-process high resolution alignment"
+        ],
+        "script_sha256": "f01e1363d482ef404a7ef2031caf13434409f00dfe936b55fc3863c60628b9cb"
+      },
+      "events": [
+        {
+          "sequence": 2,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": []
+        },
+        {
+          "sequence": 3,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 2048,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": []
+        },
+        {
+          "sequence": 4,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": []
+        },
+        {
+          "sequence": 5,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 1,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "69"
+        },
+        {
+          "sequence": 6,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "54",
+          "resize_events": []
+        },
+        {
+          "sequence": 7,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 16,
+          "requested": 2048,
+          "returned_count": 16,
+          "truncated": false,
+          "key_characters_hex": "54465f43414e4449444154455f545549",
+          "resize_events": []
+        },
+        {
+          "sequence": 8,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 16,
+          "requested": 16,
+          "returned_count": 16,
+          "truncated": false,
+          "key_characters_hex": "54465f43414e4449444154455f545549",
+          "resize_events": []
+        },
+        {
+          "sequence": 9,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 16,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "54465f43414e4449444154455f545549"
+        },
+        {
+          "sequence": 10,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            }
+          ]
+        },
+        {
+          "sequence": 11,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 95,
+          "requested": 2048,
+          "returned_count": 95,
+          "truncated": false,
+          "key_characters_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            },
+            {
+              "position": 1,
+              "columns": 60,
+              "rows": 12
+            }
+          ]
+        },
+        {
+          "sequence": 12,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            }
+          ]
+        },
+        {
+          "sequence": 13,
+          "type": "console",
+          "thread": "T3",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 94,
+          "requested": 2176,
+          "returned_count": 94,
+          "truncated": false,
+          "key_characters_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 12
+            }
+          ]
+        },
+        {
+          "sequence": 14,
+          "type": "console",
+          "thread": "T3",
+          "name": "WriteConsoleInputW",
+          "success": true,
+          "count": 93,
+          "requested": 93,
+          "returned_count": 93,
+          "truncated": false,
+          "key_characters_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 15,
+          "type": "console",
+          "thread": "T3",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 93,
+          "requested": 2176,
+          "returned_count": 93,
+          "truncated": false,
+          "key_characters_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 16,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "0f",
+          "resize_events": []
+        },
+        {
+          "sequence": 17,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 93,
+          "requested": 2048,
+          "returned_count": 93,
+          "truncated": false,
+          "key_characters_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 18,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 93,
+          "requested": 93,
+          "returned_count": 93,
+          "truncated": false,
+          "key_characters_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": []
+        },
+        {
+          "sequence": 19,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 93,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "0f3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d"
+        },
+        {
+          "sequence": 20,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "truncated": false,
+          "key_characters_hex": "0f",
+          "resize_events": []
+        },
+        {
+          "sequence": 21,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 5,
+          "requested": 2048,
+          "returned_count": 5,
+          "truncated": false,
+          "key_characters_hex": "0f3a77710d",
+          "resize_events": []
+        },
+        {
+          "sequence": 22,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 5,
+          "requested": 5,
+          "returned_count": 5,
+          "truncated": false,
+          "key_characters_hex": "0f3a77710d",
+          "resize_events": []
+        },
+        {
+          "sequence": 23,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 5,
+          "requested": 4096,
+          "truncated": false,
+          "bytes_hex": "0f3a77710d"
+        }
+      ],
+      "private_artifact_sha256": {
+        "sample.json": "ff2fef363f302558772b9023862e77a5331b682768f214dfa8ab40655c6e1ab9",
+        "r52-writes.json": "4e4d6993b54463236bcba0e9beec30e58a65aa8718d7367f149127741ed5c532",
+        "candidate-input.bin": "4bd689a84f1eb7336afb3b607dec760d117caef3d83f3e8e1b6b1f83d70b4b68",
+        "candidate-insert-log.txt": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a",
+        "candidate-resize-log.txt": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7",
+        "candidate-output.bin": "fd4684c9af94212afbbc3d0274c03dfee4797125ec3c35a71f005794ff4d8235",
+        "case-2-identity.json": "625d8ec842d1024ea9b2bc35194fc0a2b8cf0667dcce5ae8a1c5a381ca351074",
+        "case-2-status-final.json": "96e4e0dec59e7b911b5a4cee13583fdf3ce49551261819a9b04616e99a69ff59",
+        "case-2-load.json": "2d19cccb2ff6833cf6dc1d2a903a2529ec89389594b2b6b3de478db3bd76ec55",
+        "case-2-detach.json": "b53d8b7832810f75d86584dbc495295037f01103e868dcf359d1be54012afdc5"
+      },
+      "observed_file_sha256": {
+        "alpha_normal_smoke.exe": "55f76e0ef0a68a2d3ee2d047852551b86e63074b84604e59fe6d0893361ba3a6",
+        "candidate_core_test.exe": "4c73b58d7da111ab52b6edbbb59898cf660860fdedaa64c4f49b46fae856a02d",
+        "candidate_reply_close_test.exe": "7431b2d5a414703d85fb9425b07b7df125eb7b5668851cb5383cf575cb620a69",
+        "candidate_resize_replay.exe": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+        "candidate_title_test.exe": "359141b75c6eeb9a0cc9ef59f9f21ad0d07bcaefb51beb19f64e3288a059bec2",
+        "clipboard_policy_test.exe": "ef7c7d860bad3b458b7ac8e659c46acd0f768f70281e7d6797e489520d1d559e",
+        "conpty_backend_probe.exe": "39b52ad4acc4e432718d3cdd6dc6ee2ab80b1584de16c0edc3d775ccc7b03c0d",
+        "conpty_ctrl_c_probe.exe": "30ad460b54cfcc752e20ccd5f656c6769e292528408a4a68e7182ab3206d39b6",
+        "conpty_margin_probe.exe": "7aaef1da461b3b6d833aea79332f28d8f924e26de2f9332feeb1f1303a51e30f",
+        "conpty_resize_native_probe.exe": "a570b55f7ef0f65be01b827112905a223fb32f37a0f645ce121ead1ed6555f59",
+        "core_measure.exe": "dfe74cf8e6ec0fdb976911569c14e52709be5e880d9b36d2a108187bca9c165b",
+        "find_bar_test.exe": "632e5ff486b7ad5d29292b4af1206c196d09ca1c1c8a38a830a004ee9c21f1a1",
+        "history_test.exe": "3b3f6199ad4d345ef5cc759ddcf80667fdde4c7778658e99764342cc17949e2e",
+        "ime_context_test.exe": "8941d52ed7642b15c46da5a50927ba09ceab7078c5f31c649e4e3baa859e8ae1",
+        "ime_input_expectation_test.exe": "a960fbd62a7c0d6eec564a5a2bb1cc271582e7bb55ec07ddb63bc46044b9c438",
+        "keyboard_test.exe": "fe027bbcb21a09fac9411dd5766a37e8edd711d3ef547f37a080ded097a4de3e",
+        "layout_state_test.exe": "7b174db85ff75e8a8f5613c949c264a4dedbb8cfeb8a18581f016191bd036ddb",
+        "paste_test.exe": "1e6acc382a75fe18b50212cf6950d3d714f89939b1cf63000795348e4db22d54",
+        "presentation_probe.exe": "91aa34c2ac7b4f6610da419a04091d4391cb78e224e6b5f567437a5565d4e33a",
+        "raw_console_receiver_test.exe": "0731af92b2536b189d80894b5ca4243d814e07ab2c513fff7b4d3fd3654578f2",
+        "real_app_capture.exe": "fddd86a02d7c8ba13b7cd458373c8acd19d999199baefce77e8f237efce47189",
+        "receive.exe": "b5ea1d10bba964ec80f183d761b1c0ea4334f6963597ccd1bb16b9c769fc76d5",
+        "recovery_probe.exe": "72213828da26b5657915667faccd1d0aca83dbe6d9537f38dbd9d5464750313b",
+        "renderer_metrics_test.exe": "f08e88f6ff8bb6be87f724ff6a3c398df359a639f83d75b5970e69659f8a4a5c",
+        "replay.exe": "54298c3fa5020d3ebcaa55c76564b9dcbfec5b25d772343c428e2e36e1858ca1",
+        "resize_test.exe": "fd97c87127d4763320832d1d538af5755eece8a1ec1485435cab6b41e9e549cd",
+        "runtime_observation_test.exe": "0049a0d863724bf8bd181c85868bd68a409eb5e12c755a5538add5f85bf8b0bf",
+        "scenario_tick_gate_test.exe": "f7368d2d4c13a9eee4a210e857fd5d13479641328fa71a984582c69b57735ecf",
+        "search_test.exe": "6bf2a5fa47e1f0665462e6601e01253674c6662e5db730161bd7eb09c81d621d",
+        "selection_test.exe": "19eaf7ef3e6f1a35f67e1b17a60858bfb0f268a20c9f2686d141c847a68fbb3a",
+        "sender_fence_pipe_test.exe": "19bba0df9e37159cc70728f68ae8a28364127fac21ab72cb21cdb036f9380686",
+        "sender_fence_test.exe": "b3c396a7d8a306d0987ef149fd9d5e014ab90ac6d54d0915a48b6d261a6e21c1",
+        "sent_message_wait_test.exe": "b9bb4960dc470d5aac08fecb2c0775c16e2a7e75fdabe283b6c028d284679abb",
+        "shell_clipboard_reader.exe": "01aad3988dfc520ec6419f9747cb2baa04efc9c1409f4b50a4a65b2f385bd7be",
+        "shell_ime_client.exe": "f02ec529d90db13bf4c904bbee8bc77930fdcf51ba868b4a43a43ed783f61830",
+        "shell_input_client.exe": "0075a332e524071809a1fdbd5161d1f360fa8e89faaf2b45b24c19f1d94829cc",
+        "shell_launch_test.exe": "6e96e163b4adc40b8d53c022a23a206176bf558c73eb76d9790b61f2abb13baf",
+        "shell_paste_probe.exe": "dd49d693dc30372d6f44cce2b7a1dcfc64adea1e6638399da4d400784a14bf6f",
+        "shell_query_client.exe": "691b440e9c500c76c1c09c448aafbe2316793bf341ffe69bbc2bf70e41be64cc",
+        "shell_queue_probe.exe": "e030070a6f287421bc3b74350fd45c8cd762837dc1512a76f688d20d39aa8715",
+        "shell_selection_text_client.exe": "18b60279aed48a9d39b6f5c57371c60b3a2b59bb21d6e30f92bac7adf50a3ed2",
+        "shell_size_client.exe": "eeb0801f69cc8add0a8178a185dcedb78a9b33234abfe5c600fd9b20b0f5aab4",
+        "shell_test_launcher.exe": "7bd78cffd78ac66d651933c9614d6be937c99baa105ce04c1a533df5785c11e2",
+        "shell_text_client.exe": "9350e53de74c9a6b78495a3b59788e3a31e0067a9c5ec1b8685a729ff18244d3",
+        "termforge_conpty_probe.exe": "1dcf69f65e9dd2abca1a58c10df2be3a296a4e22cdd895ba457222fe9e27f021",
+        "termforge_ime_probe.exe": "ba59ec28909430669c187a644651588b2f1984b1308b97056f222f332e7de9c9",
+        "termforge_shell.exe": "73472864e5aa291704917812ff1848f7a59be6e5f30c41f6a613e3fc18c740d4",
+        "terminal_trace.exe": "d09f34702cbd2d8be6ecfe98ab56a2326be1fde6b1fde4d10ef85d0f62955d2f",
+        "text_action_policy_test.exe": "9988026742d9ff45f300a6fa336ceca052a502b568f32114be7fd5057e57f5a4",
+        "transport_completion_test.exe": "6952438843e8a7605bb6cf0eb7add56dd8574f4e5edfbc3a534f795030a3fcc8",
+        "workflow_checkpoint_test.exe": "056047580e8ddd77224908667297a0b704f97ef57d1eadeb382b52c7c7875b86",
+        "workflow_fixture_test.exe": "ce3f09d8b3bb97d92dd6c61531e2cb9ba36070d2222b7b4ad7b86de82021f208",
+        "workspace_state_test.exe": "18080df77a0b7a370aa1e2dc79f2986dd3a4eb01661663dd95c43a11b802ee11"
+      }
+    },
+    {
+      "id": "symbol-red",
+      "outcome": "stage59",
+      "outer_exit_code": 2,
+      "outer_timed_out": false,
+      "owned_job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "owned_desktop_gone": true,
+      "writer": {
+        "records": 91,
+        "truncated": false,
+        "command_written_bytes": 93,
+        "command_error": 0
+      },
+      "frida": {
+        "evidence_id": "ev_d9ec8dd6c39ad99e42d4c2ada98b9546a47e9550b5c026eaf59ef80c35ccd485",
+        "event_count": 27,
+        "messages_truncated": false,
+        "provider": {
+          "id": "frida",
+          "name": "Frida",
+          "version": null
+        },
+        "provider_limitations": [
+          "Artifact identity is unavailable for this observation.",
+          "The target operating system and architecture were not reported by this observation."
+        ],
+        "script_limitations": [
+          "calls already entered before attach are not observed",
+          "interception changes scheduling",
+          "timestamps are observer wall clock; no cross-process high resolution alignment"
+        ],
+        "script_sha256": "a33709df621e376ede656f88dd85d0c04dfb7c578c71a3ebee9dbd047dbd23bd"
+      },
+      "events": [
+        {
+          "sequence": 2,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "inside_process": false,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": [],
+          "caller_symbol": "_ZL12peek_consoleP13select_recordb",
+          "caller_rva": "0x76ecb",
+          "caller_offset": 667
+        },
+        {
+          "sequence": 3,
+          "type": "process-enter",
+          "thread": "T1",
+          "inside_process": true,
+          "inside_winch": false
+        },
+        {
+          "sequence": 4,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 2048,
+          "returned_count": 1,
+          "inside_process": true,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": [],
+          "caller_symbol": "_ZN16fhandler_console21process_input_messageEv",
+          "caller_rva": "0xc7a50",
+          "caller_offset": 128
+        },
+        {
+          "sequence": 5,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "inside_process": true,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "69",
+          "resize_events": [],
+          "caller_symbol": "_ZN16fhandler_console21process_input_messageEv",
+          "caller_rva": "0xc7bfb",
+          "caller_offset": 555
+        },
+        {
+          "sequence": 6,
+          "type": "process-leave",
+          "thread": "T1",
+          "result": 1,
+          "inside_process": true,
+          "inside_winch": false
+        },
+        {
+          "sequence": 7,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 1,
+          "requested": 4096,
+          "inside_process": false,
+          "inside_winch": false,
+          "truncated": false,
+          "bytes_hex": "69"
+        },
+        {
+          "sequence": 8,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "inside_process": false,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "54",
+          "resize_events": [],
+          "caller_symbol": "_ZL12peek_consoleP13select_recordb",
+          "caller_rva": "0x76ecb",
+          "caller_offset": 667
+        },
+        {
+          "sequence": 9,
+          "type": "process-enter",
+          "thread": "T1",
+          "inside_process": true,
+          "inside_winch": false
+        },
+        {
+          "sequence": 10,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 16,
+          "requested": 2048,
+          "returned_count": 16,
+          "inside_process": true,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "54465f43414e4449444154455f545549",
+          "resize_events": [],
+          "caller_symbol": "_ZN16fhandler_console21process_input_messageEv",
+          "caller_rva": "0xc7a50",
+          "caller_offset": 128
+        },
+        {
+          "sequence": 11,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 16,
+          "requested": 16,
+          "returned_count": 16,
+          "inside_process": true,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "54465f43414e4449444154455f545549",
+          "resize_events": [],
+          "caller_symbol": "_ZN16fhandler_console21process_input_messageEv",
+          "caller_rva": "0xc7bfb",
+          "caller_offset": 555
+        },
+        {
+          "sequence": 12,
+          "type": "process-leave",
+          "thread": "T1",
+          "result": 1,
+          "inside_process": true,
+          "inside_winch": false
+        },
+        {
+          "sequence": 13,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 16,
+          "requested": 4096,
+          "inside_process": false,
+          "inside_winch": false,
+          "truncated": false,
+          "bytes_hex": "54465f43414e4449444154455f545549"
+        },
+        {
+          "sequence": 14,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "inside_process": false,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            }
+          ],
+          "caller_symbol": "_ZL12peek_consoleP13select_recordb",
+          "caller_rva": "0x76ecb",
+          "caller_offset": 667
+        },
+        {
+          "sequence": 15,
+          "type": "process-enter",
+          "thread": "T1",
+          "inside_process": true,
+          "inside_winch": false
+        },
+        {
+          "sequence": 16,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 2,
+          "requested": 2048,
+          "returned_count": 2,
+          "inside_process": true,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            },
+            {
+              "position": 1,
+              "columns": 60,
+              "rows": 12
+            }
+          ],
+          "caller_symbol": "_ZN16fhandler_console21process_input_messageEv",
+          "caller_rva": "0xc7a50",
+          "caller_offset": 128
+        },
+        {
+          "sequence": 17,
+          "type": "winch-enter",
+          "thread": "T1",
+          "inside_process": true,
+          "inside_winch": true
+        },
+        {
+          "sequence": 18,
+          "type": "console",
+          "thread": "T3",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 2,
+          "requested": 2176,
+          "returned_count": 2,
+          "inside_process": false,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "",
+          "resize_events": [
+            {
+              "position": 0,
+              "columns": 60,
+              "rows": 24
+            },
+            {
+              "position": 1,
+              "columns": 60,
+              "rows": 12
+            }
+          ],
+          "caller_symbol": "_ZN16fhandler_console18cons_master_threadEPN16fhandler_termios17cons_handle_set_tEP3tty",
+          "caller_rva": "0xc0520",
+          "caller_offset": 480
+        },
+        {
+          "sequence": 19,
+          "type": "winch-leave",
+          "thread": "T1",
+          "result": 1,
+          "inside_process": true,
+          "inside_winch": true
+        },
+        {
+          "sequence": 20,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "inside_process": true,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "0f",
+          "resize_events": [],
+          "caller_symbol": "_ZN16fhandler_console21process_input_messageEv",
+          "caller_rva": "0xc7bfb",
+          "caller_offset": 555
+        },
+        {
+          "sequence": 21,
+          "type": "process-leave",
+          "thread": "T1",
+          "result": 3,
+          "inside_process": true,
+          "inside_winch": false
+        },
+        {
+          "sequence": 22,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 1,
+          "requested": 1,
+          "returned_count": 1,
+          "inside_process": false,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "3a",
+          "resize_events": [],
+          "caller_symbol": "_ZL12peek_consoleP13select_recordb",
+          "caller_rva": "0x76ecb",
+          "caller_offset": 667
+        },
+        {
+          "sequence": 23,
+          "type": "process-enter",
+          "thread": "T1",
+          "inside_process": true,
+          "inside_winch": false
+        },
+        {
+          "sequence": 24,
+          "type": "console",
+          "thread": "T1",
+          "name": "PeekConsoleInputW",
+          "success": true,
+          "count": 92,
+          "requested": 2048,
+          "returned_count": 92,
+          "inside_process": true,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": [],
+          "caller_symbol": "_ZN16fhandler_console21process_input_messageEv",
+          "caller_rva": "0xc7a50",
+          "caller_offset": 128
+        },
+        {
+          "sequence": 25,
+          "type": "console",
+          "thread": "T1",
+          "name": "ReadConsoleInputW",
+          "success": true,
+          "count": 92,
+          "requested": 92,
+          "returned_count": 92,
+          "inside_process": true,
+          "inside_winch": false,
+          "truncated": false,
+          "key_characters_hex": "3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d",
+          "resize_events": [],
+          "caller_symbol": "_ZN16fhandler_console21process_input_messageEv",
+          "caller_rva": "0xc7bfb",
+          "caller_offset": 555
+        },
+        {
+          "sequence": 26,
+          "type": "process-leave",
+          "thread": "T1",
+          "result": 1,
+          "inside_process": true,
+          "inside_winch": false
+        },
+        {
+          "sequence": 27,
+          "type": "msys-read",
+          "thread": "T2",
+          "count": 92,
+          "requested": 4096,
+          "inside_process": false,
+          "inside_winch": false,
+          "truncated": false,
+          "bytes_hex": "3a63616c6c20777269746566696c65285b737472696e672826636f6c756d6e7329202e20277827202e20737472696e6728266c696e6573295d2c202763616e6469646174652d726573697a652d6c6f672e747874272c20276227290d"
+        }
+      ],
+      "private_artifact_sha256": {
+        "sample.json": "323fd063cf25c12a79843b434d912070143b1b757fcdd4259c0c238764a56037",
+        "r52-writes.json": "da113f75b2f36563a7cf4ea3597afe800f15c6775707a7d3b9f7e4257fc29f90",
+        "candidate-input.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "candidate-insert-log.txt": "e6de4daeba1841783e7e22f81dbf87154f341c309dc5b54405e5fc2c2f3550a6",
+        "candidate-resize-log.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "candidate-output.bin": "fc43e5c356005f9c32847476d4bdba5fabaf51439083d8ac4e530d3e8bb5c883",
+        "case-0-identity.json": "35ca331419b51f084db61cb550010eb64bfa90679beaac15d5247945184f07ab",
+        "case-0-status-final.json": "4238c82e9cd6c94747b5b3b5faa4134dc320e63534ba889526ae466467adabbd",
+        "case-0-load.json": "97d63987cc45685444eb3be50d7e21c22fbbbec1a97096073bba325b9eb4a77f",
+        "case-0-detach.json": "b53d8b7832810f75d86584dbc495295037f01103e868dcf359d1be54012afdc5"
+      },
+      "observed_file_sha256": {
+        "alpha_normal_smoke.exe": "55f76e0ef0a68a2d3ee2d047852551b86e63074b84604e59fe6d0893361ba3a6",
+        "candidate_core_test.exe": "4c73b58d7da111ab52b6edbbb59898cf660860fdedaa64c4f49b46fae856a02d",
+        "candidate_reply_close_test.exe": "7431b2d5a414703d85fb9425b07b7df125eb7b5668851cb5383cf575cb620a69",
+        "candidate_resize_replay.exe": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+        "candidate_title_test.exe": "359141b75c6eeb9a0cc9ef59f9f21ad0d07bcaefb51beb19f64e3288a059bec2",
+        "clipboard_policy_test.exe": "ef7c7d860bad3b458b7ac8e659c46acd0f768f70281e7d6797e489520d1d559e",
+        "conpty_backend_probe.exe": "39b52ad4acc4e432718d3cdd6dc6ee2ab80b1584de16c0edc3d775ccc7b03c0d",
+        "conpty_ctrl_c_probe.exe": "30ad460b54cfcc752e20ccd5f656c6769e292528408a4a68e7182ab3206d39b6",
+        "conpty_margin_probe.exe": "7aaef1da461b3b6d833aea79332f28d8f924e26de2f9332feeb1f1303a51e30f",
+        "conpty_resize_native_probe.exe": "a570b55f7ef0f65be01b827112905a223fb32f37a0f645ce121ead1ed6555f59",
+        "core_measure.exe": "dfe74cf8e6ec0fdb976911569c14e52709be5e880d9b36d2a108187bca9c165b",
+        "find_bar_test.exe": "632e5ff486b7ad5d29292b4af1206c196d09ca1c1c8a38a830a004ee9c21f1a1",
+        "history_test.exe": "3b3f6199ad4d345ef5cc759ddcf80667fdde4c7778658e99764342cc17949e2e",
+        "ime_context_test.exe": "8941d52ed7642b15c46da5a50927ba09ceab7078c5f31c649e4e3baa859e8ae1",
+        "ime_input_expectation_test.exe": "a960fbd62a7c0d6eec564a5a2bb1cc271582e7bb55ec07ddb63bc46044b9c438",
+        "keyboard_test.exe": "fe027bbcb21a09fac9411dd5766a37e8edd711d3ef547f37a080ded097a4de3e",
+        "layout_state_test.exe": "7b174db85ff75e8a8f5613c949c264a4dedbb8cfeb8a18581f016191bd036ddb",
+        "paste_test.exe": "1e6acc382a75fe18b50212cf6950d3d714f89939b1cf63000795348e4db22d54",
+        "presentation_probe.exe": "91aa34c2ac7b4f6610da419a04091d4391cb78e224e6b5f567437a5565d4e33a",
+        "raw_console_receiver_test.exe": "0731af92b2536b189d80894b5ca4243d814e07ab2c513fff7b4d3fd3654578f2",
+        "real_app_capture.exe": "fddd86a02d7c8ba13b7cd458373c8acd19d999199baefce77e8f237efce47189",
+        "receive.exe": "b5ea1d10bba964ec80f183d761b1c0ea4334f6963597ccd1bb16b9c769fc76d5",
+        "recovery_probe.exe": "72213828da26b5657915667faccd1d0aca83dbe6d9537f38dbd9d5464750313b",
+        "renderer_metrics_test.exe": "f08e88f6ff8bb6be87f724ff6a3c398df359a639f83d75b5970e69659f8a4a5c",
+        "replay.exe": "54298c3fa5020d3ebcaa55c76564b9dcbfec5b25d772343c428e2e36e1858ca1",
+        "resize_test.exe": "fd97c87127d4763320832d1d538af5755eece8a1ec1485435cab6b41e9e549cd",
+        "runtime_observation_test.exe": "0049a0d863724bf8bd181c85868bd68a409eb5e12c755a5538add5f85bf8b0bf",
+        "scenario_tick_gate_test.exe": "f7368d2d4c13a9eee4a210e857fd5d13479641328fa71a984582c69b57735ecf",
+        "search_test.exe": "6bf2a5fa47e1f0665462e6601e01253674c6662e5db730161bd7eb09c81d621d",
+        "selection_test.exe": "19eaf7ef3e6f1a35f67e1b17a60858bfb0f268a20c9f2686d141c847a68fbb3a",
+        "sender_fence_pipe_test.exe": "19bba0df9e37159cc70728f68ae8a28364127fac21ab72cb21cdb036f9380686",
+        "sender_fence_test.exe": "b3c396a7d8a306d0987ef149fd9d5e014ab90ac6d54d0915a48b6d261a6e21c1",
+        "sent_message_wait_test.exe": "b9bb4960dc470d5aac08fecb2c0775c16e2a7e75fdabe283b6c028d284679abb",
+        "shell_clipboard_reader.exe": "771da921ef4d30a7e710989ea0d4446254fc4e85c59199730704edf2256bb641",
+        "shell_ime_client.exe": "f02ec529d90db13bf4c904bbee8bc77930fdcf51ba868b4a43a43ed783f61830",
+        "shell_input_client.exe": "0075a332e524071809a1fdbd5161d1f360fa8e89faaf2b45b24c19f1d94829cc",
+        "shell_launch_test.exe": "6e96e163b4adc40b8d53c022a23a206176bf558c73eb76d9790b61f2abb13baf",
+        "shell_paste_probe.exe": "dd49d693dc30372d6f44cce2b7a1dcfc64adea1e6638399da4d400784a14bf6f",
+        "shell_query_client.exe": "691b440e9c500c76c1c09c448aafbe2316793bf341ffe69bbc2bf70e41be64cc",
+        "shell_queue_probe.exe": "e030070a6f287421bc3b74350fd45c8cd762837dc1512a76f688d20d39aa8715",
+        "shell_selection_text_client.exe": "18b60279aed48a9d39b6f5c57371c60b3a2b59bb21d6e30f92bac7adf50a3ed2",
+        "shell_size_client.exe": "eeb0801f69cc8add0a8178a185dcedb78a9b33234abfe5c600fd9b20b0f5aab4",
+        "shell_test_launcher.exe": "7bd78cffd78ac66d651933c9614d6be937c99baa105ce04c1a533df5785c11e2",
+        "shell_text_client.exe": "9350e53de74c9a6b78495a3b59788e3a31e0067a9c5ec1b8685a729ff18244d3",
+        "termforge_conpty_probe.exe": "1dcf69f65e9dd2abca1a58c10df2be3a296a4e22cdd895ba457222fe9e27f021",
+        "termforge_ime_probe.exe": "ba59ec28909430669c187a644651588b2f1984b1308b97056f222f332e7de9c9",
+        "termforge_shell.exe": "73472864e5aa291704917812ff1848f7a59be6e5f30c41f6a613e3fc18c740d4",
+        "terminal_trace.exe": "d09f34702cbd2d8be6ecfe98ab56a2326be1fde6b1fde4d10ef85d0f62955d2f",
+        "text_action_policy_test.exe": "9988026742d9ff45f300a6fa336ceca052a502b568f32114be7fd5057e57f5a4",
+        "transport_completion_test.exe": "6952438843e8a7605bb6cf0eb7add56dd8574f4e5edfbc3a534f795030a3fcc8",
+        "workflow_checkpoint_test.exe": "056047580e8ddd77224908667297a0b704f97ef57d1eadeb382b52c7c7875b86",
+        "workflow_fixture_test.exe": "ce3f09d8b3bb97d92dd6c61531e2cb9ba36070d2222b7b4ad7b86de82021f208",
+        "workspace_state_test.exe": "18080df77a0b7a370aa1e2dc79f2986dd3a4eb01661663dd95c43a11b802ee11"
+      }
+    }
+  ],
+  "restoration": {
+    "source_bytes_equal_baseline": true,
+    "rebuild_completed": true,
+    "rebuild_log_sha256": "1e9970789882be9fec43ca72b65f8b5329b0aa7e5a93dbe87627a2c2df7e415d",
+    "rebuilt_shell_sha256": "b061934e08561a7bc2e0dc2773412ef3d900e2728267ce1d5c54be5ca6ad8515",
+    "same_binary_as_pre_probe": false,
+    "new_regression_run_claimed": false
+  },
+  "conclusions": {
+    "observed": "Original command reaches native input. On red runs process_input_message consumes Ctrl-O after another thread removes the earlier resize events; read(0) returns only the following 92 bytes. Diagnostic green returns all 93 bytes.",
+    "source_inference": "send_winch_maybe temporarily releases input_mutex; the saved PeekConsoleInput snapshot can become stale before discard. Function-boundary observation confirms the corresponding cross-thread order, not a tested patch.",
+    "hypotheses": {
+      "lost_before_native": "contradicted in these captured runs",
+      "lost_in_msys_console_to_read": "observed in three captured red runs",
+      "vim_ignores_received_control": "not the boundary of these captured failures"
+    },
+    "product_fixed": false,
+    "fixed_target_replacement_or_runtime_upgrade_tested": false,
+    "unobserved_historical_runs_attributed": false
+  },
+  "limitations": [
+    "Frida installs code hooks; instrumentation and initial attachment gate alter scheduling; no performance conclusion.",
+    "No fixed application update, no production workaround, no controlled patch red-to-green; issue 52 remains open.",
+    "Provider did not supply artifact identity, OS/architecture or version; local file hashes and script-reported identity/function-prefix checks are separate evidence.",
+    "Calls already entered before attach are outside coverage; the original i and marker are captured before the failing command.",
+    "Threads are aliases within each run; observer wall-clock intervals are not cross-process timing measurements.",
+    "A fresh source rebuild has a different executable hash from the pre-probe binary; no new full regression is claimed.",
+    "No private raw captures, local absolute paths, PIDs, native addresses or binary prefixes are published."
+  ]
+}
