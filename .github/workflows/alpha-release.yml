@@ -58,6 +58,9 @@ jobs:
       - name: Build release candidate and test helpers
         timeout-minutes: 10
         run: cmake --build build-alpha --config Release --parallel 2
+      - name: Prepare fixed hosted local shell fixture
+        timeout-minutes: 7
+        run: python -m tools.prepare_hosted_shells --out local/alpha/hosted-shells
       - name: Require complete CTest including actual system clipboard
         id: ctest
         timeout-minutes: 20
@@ -182,6 +185,7 @@ jobs:
             dist/build-info.json
             local/alpha/smoke/validation.json
             local/alpha/test-summary.json
+            local/alpha/hosted-shells/summary.json
       - name: Preserve bounded public package diagnostics on failure
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -192,6 +196,7 @@ jobs:
           path: |
             local/alpha/smoke/validation.json
             local/alpha/test-summary.json
+            local/alpha/hosted-shells/summary.json
       - name: Preserve explicit system workflow evidence allowlist
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

@@ -178,6 +178,21 @@ class ShellTests(unittest.TestCase):
                 with self.subTest(raw_selection_bytes=index), self.assertRaises(ValueError):
                     validate_selection_workflow(rejected, False, record)
 
+    def test_selection_autoscroll_with_short_and_tall_workspace(self):
+        for height in (681, 860):
+            with self.subTest(client_height=height):
+                state = self.out / f"selection-height-{height}.layout"
+                state.write_bytes(narrow_workspace_fixture().replace(
+                    b"window-height 681", f"window-height {height}".encode("ascii")))
+                out = self.out / f"selection-height-{height}"
+                execute(self.exe, "ui-selection", out, settings_source=state)
+                data = json.loads((out / "selection.json").read_text(encoding="utf-8"))
+                starts = [row for row in data["interactions"] if row["phase"] in (
+                    "autoscroll-up-start", "autoscroll-down-start", "autoscroll-capture-start")]
+                self.assertEqual([row["anchor_line"] for row in starts], [75, 50, 40])
+                self.assertTrue(all(row["top"] <= row["anchor_line"] < row["top"] + row["page"]
+                                    for row in starts))
+
     def test_find_real_edit_navigation_unicode_output_isolation_and_cancel(self):
         for repeat in range(2):
             out = self.out / f"find-{repeat}"
@@ -302,6 +317,7 @@ class ShellTests(unittest.TestCase):
             record = execute(self.exe, "ui-copy-system", out)
             data = json.loads((out / "selection.json").read_text(encoding="utf-8"))
             self.assertEqual(data["schema"], "termforge-window-selection-v5")
+            self.assertEqual(data["copy_contention"]["schema"], "termforge-product-copy-contention-v2")
             self.assertTrue(record["selection_workflow"]["interactions"]["actual_copy_popup"])
             self.assertTrue(record["selection_workflow"]["interactions"]["copy_contention"])
             for field, wrong in (("actual_return_command", 15), ("target_command", 15),

@@ -1,0 +1,35 @@
+{
+  "schema": "termforge-ctrl-c-local-audit-v1",
+  "status": "bounded-probe-passed-historical-failure-unresolved",
+  "recorded_source_commit": "c44ae98",
+  "source_binding": "recorded_inputs_not_independent_build_attestation",
+  "samples": [
+    {
+      "sample": 0,
+      "raw_hashes_and_sizes_recomputed": true,
+      "raw_trace_recomputed": true,
+      "handler_delivery_verified": false
+    },
+    {
+      "sample": 1,
+      "raw_hashes_and_sizes_recomputed": true,
+      "raw_trace_recomputed": true,
+      "handler_delivery_verified": false
+    },
+    {
+      "sample": 2,
+      "raw_hashes_and_sizes_recomputed": true,
+      "raw_trace_recomputed": true,
+      "handler_delivery_verified": false
+    }
+  ],
+  "raw_transport_published": false,
+  "issue_36_closed": false,
+  "handler_delivery_verified": false,
+  "performance_claim": false,
+  "limitations": [
+    "Historical failure is not reproduced; no product Ctrl-C fix.",
+    "Raw transport was checked locally and remains private; public hashes cannot alone reproduce that audit.",
+    "No independent native control-handler delivery, source-to-binary attestation, or performance claim."
+  ]
+}

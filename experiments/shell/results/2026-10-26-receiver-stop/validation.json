@@ -1,0 +1,141 @@
+{
+  "schema": "termforge-receiver-stop-oracle-validation-v1",
+  "issue": 46,
+  "base_commit": "c6461356ed5930bc40e0606b5c0440fc9497ef38",
+  "scope": "Python expected rejected-order oracle only; native receiver, workloads, deadlines and normal-case gates unchanged",
+  "original_red": {
+    "source_commit": "0e1fb58518a51bc71c756eee8ab344ec9f0d2bcc",
+    "test": "workflow_fixture/test_two_fresh_owned_data_only_rounds",
+    "round": 0,
+    "case": "F2-order",
+    "generation": 5,
+    "python_reason": "receiver read join",
+    "native_host_exit": 0,
+    "native_host_cases_passed": 5,
+    "client_expected_exit": 2,
+    "source_bytes": 0,
+    "capture_bytes": 0,
+    "transport_bytes": 231,
+    "transport_sha256": "4a23045f3071059d0bfb4664d799dc40ee1523b4986f403c7affae2de63c254a",
+    "fixture": "experiments/shell/fixtures/rejected-order-before-read.json",
+    "fixture_sha256": "91263594574f86cf5869893e918741bf7414c0e209a3c9868b9fa7bbf1df1b72",
+    "outer_job_active_after": 0,
+    "inner_job_active_after": 0,
+    "process_reaped": true,
+    "timed_out": false,
+    "forced_cleanup": false,
+    "full_run_remains_failed": true,
+    "ctest_log_sha256": "b43276db04eb89cfee755bf836dc5289a07aa544645092728c826e9e47ef6e58"
+  },
+  "receiver_contract": {
+    "observed_state": "stopped and joined before first ReadConsoleW entry",
+    "all_common_cleanup_and_actual_totals_checks_retained": true,
+    "zero_read_exception_context": "validate_rejected_order only, after empty capture/source and protocol rejection checks",
+    "required_read_counts": [
+      0,
+      0
+    ],
+    "required_cancel_calls_min": 1,
+    "required_cancel_successes": 0,
+    "required_last_cancel_error": 1168,
+    "last_read_fields": "success=false, count=0, error=0, zero_read_accepted=false; no last read occurred"
+  },
+  "binary_reuse": {
+    "native_source_commit": "0e1fb58518a51bc71c756eee8ab344ec9f0d2bcc",
+    "native_source_blobs_identical_at_base": true,
+    "workflow_fixture_test_sha256": "dca14f0c1106370bb0a84baa1803c3c6c382054bba4dc653cdc0ee2a9017a444",
+    "shell_text_client_sha256": "5004f73faa2668ad3ce77a32e83fc80b525c6dac46bb78868a00ded7bdf251e7",
+    "native_source_sha256": {
+      "experiments/shell/raw_console_receiver.hpp": "9ea35252c33a938a7dc76d4ea7c6db72d04a3fd010c1ce6b0289c9747e50afcc",
+      "experiments/shell/workflow_fixture.hpp": "332d73699320a6f503fc212417a4d3820b82cc2d3feb3d1fffe3930660d57453",
+      "experiments/shell/workflow_fixture_test.cpp": "29d35fd143ac215b6746f810e1915be17ad6c407623d0768121f1799e38c553c",
+      "experiments/shell/workflow_controller.hpp": "61005e442aa1729759dd1c1b8f0919826cb2e71f225fae53f0ea0c9cc28d38eb",
+      "experiments/shell/text_client.cpp": "aea8ed527e6e79fbe61446afadbb25d4fa0b7ddef4966930583ac8fa04cadd15",
+      "experiments/conpty/session.hpp": "f143a858df22302a2bc4a794263ff7769f4d0cfd9537307d916feb8ad638c6b6"
+    }
+  },
+  "pure_red_green": {
+    "command": "python -m unittest experiments.shell.test_workflow.WorkflowOracleTest -v",
+    "before": {
+      "tests": 12,
+      "errors": 1,
+      "reason": "receiver read join",
+      "log_sha256": "50462c2e1853e217289a318c4476ce08bd80f125e8f269b45a460d3ad8969666"
+    },
+    "after": {
+      "tests": 12,
+      "errors": 0,
+      "log_sha256": "a84d432b76e71c075af3ecddeb9bb98c1369dec39f7523daf799a9e6705791e1"
+    },
+    "negative_cases": "22 receiver field corruptions, nonempty raw/source, normal A/B zero-read states remain rejected"
+  },
+  "same_bytes_counterfactual": {
+    "schema": "termforge-receiver-oracle-counterfactual-v1",
+    "original": {
+      "old": {
+        "accepted": false,
+        "reason": "receiver read join"
+      },
+      "new": {
+        "accepted": true,
+        "reason": null
+      }
+    },
+    "fresh": [
+      {
+        "round": 1,
+        "reads_entered": 0,
+        "reads_completed": 0,
+        "cancel_successes": 0,
+        "last_cancel_error": 1168,
+        "old_oracle": {
+          "accepted": false,
+          "reason": "receiver read join"
+        },
+        "new_oracle": {
+          "accepted": true,
+          "reason": null
+        }
+      },
+      {
+        "round": 0,
+        "reads_entered": 1,
+        "reads_completed": 1,
+        "cancel_successes": 1,
+        "last_cancel_error": 0,
+        "old_oracle": {
+          "accepted": true,
+          "reason": null
+        },
+        "new_oracle": {
+          "accepted": true,
+          "reason": null
+        }
+      }
+    ]
+  },
+  "fresh_workflow": {
+    "command": "python -m unittest experiments.shell.test_workflow -v",
+    "tests": 14,
+    "passed": 14,
+    "skipped": 0,
+    "elapsed_seconds": 24.263,
+    "host_rounds": 4,
+    "native_cases": 16,
+    "all_outer_jobs_active_after": 0,
+    "all_inner_jobs_active_after": 0,
+    "all_processes_reaped": true,
+    "timeouts": 0,
+    "forced_cleanups": 0,
+    "log_sha256": "94e3020fda71e46077b32c8219bd68c4ba7d30e9c3ca261fd23a3132808cec55"
+  },
+  "limits": {
+    "candidate_core_cause": null,
+    "same_cause_as_issue44": null,
+    "shared_cause_with_issue44_established": false,
+    "issue44_cause_remains_unknown": true,
+    "old_full_result_replaced": false,
+    "new_full_suite_run": false,
+    "performance_or_target_parity_claim": false
+  }
+}

@@ -23,9 +23,9 @@ class RecoveryTests(unittest.TestCase):
         if self.last_run and any(test is self for test, _ in result.failures + result.errors):
             self.preserve(*self.last_run)
 
-    def run_input(self, data, chunks, *, mode="recovery", cols=80, finish=None):
+    def run_input(self, data, chunks, *, mode="recovery", rows=2, cols=80, finish=None):
         self.path.write_bytes(data)
-        command = [str(binary("recovery_probe")), str(self.path), "2", str(cols), "2",
+        command = [str(binary("recovery_probe")), str(self.path), str(rows), str(cols), "2",
                    ",".join(map(str, chunks)), mode]
         if finish is not None:
             command.append(str(finish))
@@ -90,6 +90,49 @@ class RecoveryTests(unittest.TestCase):
 
     def test_unknown_escape_and_intermediates(self):
         self.expect(b"A\x1b7\x1b(B\x1b#8Z", "AZ", stats={"ignored_sequences": 3})
+
+    def test_ech_default_zero_count_clamp_and_cursor_are_independently_expected(self):
+        for sequence, expected in ((b"\x1b[X", "a cd"), (b"\x1b[0X", "a cd"),
+                                   (b"\x1b[2X", "a  d"), (b"\x1b[79X", "a   ")):
+            data = b"abcd\r\nWXYZ\x1b[1;2H" + sequence
+            for mode in ("strict", "recovery"):
+                for chunks in ([1], [2, 3, 7], [4096]):
+                    with self.subTest(sequence=sequence, mode=mode, chunks=chunks):
+                        result = self.run_input(data, chunks, mode=mode, cols=4)
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        value = json.loads(result.stdout)
+                        self.assertEqual(value["screen"]["lines"], [expected, "WXYZ"])
+                        self.assertEqual((value["screen"]["row"], value["screen"]["column"]), (0, 1))
+                        self.assertFalse(value["screen"]["wrap_pending"])
+
+    def test_ech_resets_pending_wrap_and_preserves_existing_wide_glyph_policy(self):
+        cases = [(b"ABCD\x1b[X", ["ABC ", "    "], 3, False),
+                 (b"ABCD\x1b[XZ", ["ABCZ", "    "], 3, True),
+                 ("中A\x1b[1G\x1b[X".encode(), ["  A ", "    "], 0, False),
+                 ("中A\x1b[2G\x1b[X".encode(), ["  A ", "    "], 1, False)]
+        for data, expected, column, pending in cases:
+            for chunks in ([1], [3, 1, 7], [4096]):
+                with self.subTest(data=data, chunks=chunks):
+                    screen = json.loads(self.run_input(data, chunks, cols=4).stdout)["screen"]
+                    self.assertEqual(screen["lines"], expected)
+                    self.assertEqual((screen["row"], screen["column"], screen["wrap_pending"]), (0, column, pending))
+
+    def test_both_real_more_captures_keep_their_complete_bytes_and_expected_ech_result(self):
+        fixtures = ROOT / "experiments/core/fixtures"
+        identities = (("360", "d035d53385788d2b68dcc0d866b5a2fe68897cdcb28a761bd4d36efcc6df6cf9", ") --        ", 5),
+                      ("366", "bb9dbe77353245a2aad7ef07e12da9a8371cc7ac56d6b47ebc0bfecee35b9958", "            ", 0))
+        for count, digest, last, column in identities:
+            data = (fixtures / f"more-pager-{count}.bin").read_bytes()
+            self.assertEqual(len(data), int(count))
+            self.assertEqual(hashlib.sha256(data).hexdigest(), digest)
+            if count == "366":
+                self.assertTrue(data.endswith(b"\r\x1b[79X"))
+            for chunks in ([1], [2, 7, 31], [4096]):
+                with self.subTest(bytes=count, chunks=chunks):
+                    value = json.loads(self.run_input(data, chunks, rows=3, cols=12).stdout)
+                    self.assertEqual(value["screen"]["lines"], ["TF_PAGE_23  ", "-- More (56%", last])
+                    self.assertEqual((value["screen"]["row"], value["screen"]["column"]), (2, column))
+                    self.assertFalse(value["screen"]["wrap_pending"])
 
     def test_unknown_csi_consumes_private_and_intermediate(self):
         self.expect(b"A\x1b[?1049h\x1b[1 q\x1b[6nZ", "AZ", stats={"ignored_sequences": 3})

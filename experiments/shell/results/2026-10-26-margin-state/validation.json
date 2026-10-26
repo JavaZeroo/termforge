@@ -1,0 +1,666 @@
+{
+  "schema": "termforge-margin-state-validation-v1",
+  "status": "candidate-source-contract-passed-conpty-difference-open",
+  "generated_utc": "2026-10-26T02:56:42Z",
+  "implementation_commit": "3ba2b750a1986dc7eb1874f815da8057a72393d3",
+  "candidate": {
+    "name": "alacritty_terminal",
+    "version": "0.26.1-dev+termforge.3",
+    "upstream_commit": "542147067dd016fc5f49120ef0ba605a98a4e3a7",
+    "license": "Apache-2.0",
+    "dependency_packages": {
+      "registry": 58,
+      "path": 2,
+      "total": 60
+    }
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)"
+  },
+  "source_contract": {
+    "source_bytes": 175,
+    "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+    "chunk_sizes": [
+      58,
+      63,
+      8,
+      46
+    ],
+    "whole_and_bytewise_final_screen_equal": true,
+    "stages": {
+      "before": {
+        "cursor": [
+          0,
+          0
+        ],
+        "alternate": false,
+        "lines": [
+          "TOP_FIXED",
+          "REGION_A",
+          "REGION_B",
+          "BOTTOM_FIXED",
+          "",
+          "",
+          ""
+        ],
+        "history": []
+      },
+      "alternate": {
+        "cursor": [
+          4,
+          10
+        ],
+        "alternate": true,
+        "lines": [
+          "ALT_OUTSIDE",
+          "",
+          "",
+          "ALT_C",
+          "     ALT_D",
+          "",
+          ""
+        ],
+        "history": []
+      },
+      "restored": {
+        "cursor": [
+          0,
+          0
+        ],
+        "alternate": false,
+        "lines": [
+          "TOP_FIXED",
+          "REGION_A",
+          "REGION_B",
+          "BOTTOM_FIXED",
+          "",
+          "",
+          ""
+        ],
+        "history": []
+      },
+      "final": {
+        "cursor": [
+          6,
+          0
+        ],
+        "alternate": false,
+        "lines": [
+          "TOP_FIXED",
+          "REGION_C",
+          "        REGION_D",
+          "BOTTOM_FIXED",
+          "",
+          "TF_MARGIN_DONE",
+          ""
+        ],
+        "history": []
+      }
+    },
+    "main_margin_restored": true,
+    "margins_per_buffer_verified": true,
+    "lf_column_preservation": "单独 LF 保持列；实际 ConPTY transport 的 CRLF 单独核对，未改写源输入。",
+    "pyte_used_as_margin_oracle": false,
+    "local_trace": "build/margin-trace-sv_5qxte",
+    "candidate_trace_sha256": "e398d78853a62275aa29d1d7b63121956768e6a42a69d01b7719bfce3593fb44",
+    "reports": {
+      "whole": {
+        "bytes": 175,
+        "rows": 24,
+        "columns": 80,
+        "history": 100,
+        "chunk_sizes": [
+          58,
+          63,
+          8,
+          46
+        ],
+        "input_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 5,
+        "passed": true
+      },
+      "byte": {
+        "bytes": 175,
+        "rows": 24,
+        "columns": 80,
+        "history": 100,
+        "chunk_sizes": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "input_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 176,
+        "passed": true
+      }
+    }
+  },
+  "public_adapter": {
+    "command": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+    "returncode": 0,
+    "stdout": "candidate terminal adapter checks passed",
+    "binary_sha256": "c7084984e2bef9ecc8f3e8b981ed12dcc6b886525d1bfea476e8b479fce30f21",
+    "margin_resize_and_reset_verified": true
+  },
+  "real_conpty_observations": {
+    "source": "build/test-artifacts/candidate-shell/run-o97hkqm3",
+    "repeat_count": 2,
+    "negative_cases_per_repeat": [
+      "main-margin",
+      "alt-margin",
+      "restored",
+      "history",
+      "source",
+      "transport",
+      "cursor",
+      "frame",
+      "missing-stage",
+      "host-limit"
+    ],
+    "source_fixture_unchanged": true,
+    "observation_only": true,
+    "margins_per_buffer_verified": false,
+    "native_main_margins_restored": false,
+    "windterm_runtime_equivalence_verified": false,
+    "presented_done": null,
+    "shell_binary_sha256": "1c7446d0eb43f479f85c4f21502bb989a0e8489122be8cd84f93953f7fd33ac6",
+    "runs": [
+      {
+        "repeat": 0,
+        "summary": {
+          "scoped_validation_passed": true,
+          "observation_only": true,
+          "margins_per_buffer_verified": false,
+          "native_main_margins_restored": false,
+          "conpty_margin_difference_observed": true,
+          "candidate_matches_native": true,
+          "alternate_scroll_region_verified": true,
+          "scroll_region_verified": false,
+          "outside_preserved": false,
+          "native_main_restored": true,
+          "native_viewport_top": 0,
+          "windterm_runtime_equivalence_verified": false,
+          "origin_and_wrap_modes_verified": false,
+          "resize_cross_verified": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_sha256": "d32c038bad791e29644ce98bc837777e9664b3caa2ae7b5c72b9922f7d66bd8f",
+          "transport_bytes": 1088
+        },
+        "final_lines": [
+          "TOP_FIXED",
+          "REGION_A",
+          "REGION_B",
+          "REGION_CIXED",
+          "REGION_D",
+          "TF_MARGIN_DONE"
+        ],
+        "native": {
+          "before": {
+            "text_sha256": "4279b6605b0fb08728ce75e50e7b24eaf2d75e39e3d44b12b0f41d2e6ba8343b",
+            "cell_sha256": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651",
+            "cursor": [
+              0,
+              0
+            ]
+          },
+          "alt": {
+            "text_sha256": "f6492387ed4760be9851cccd504ac8f6f21624d55dce9671b3be4560ada0b5ac",
+            "cell_sha256": "0fd582bf6115b38b1dbe57084658f686392c74b4d6b1340f945cfcbca4ff7635",
+            "cursor": [
+              4,
+              5
+            ]
+          },
+          "restored": {
+            "text_sha256": "4279b6605b0fb08728ce75e50e7b24eaf2d75e39e3d44b12b0f41d2e6ba8343b",
+            "cell_sha256": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651",
+            "cursor": [
+              0,
+              0
+            ]
+          },
+          "final": {
+            "text_sha256": "605961db2489fcac706c6b5fc52a68f56acc558ac097cea21f9dd874400be438",
+            "cell_sha256": "00896cdf02c29564c82f4b2f7b118e6c1ac5cb8a0b8f8f5a0d91be3556a94421",
+            "cursor": [
+              6,
+              0
+            ]
+          }
+        },
+        "native_restore_matches_before": true
+      },
+      {
+        "repeat": 1,
+        "summary": {
+          "scoped_validation_passed": true,
+          "observation_only": true,
+          "margins_per_buffer_verified": false,
+          "native_main_margins_restored": false,
+          "conpty_margin_difference_observed": true,
+          "candidate_matches_native": true,
+          "alternate_scroll_region_verified": true,
+          "scroll_region_verified": false,
+          "outside_preserved": false,
+          "native_main_restored": true,
+          "native_viewport_top": 0,
+          "windterm_runtime_equivalence_verified": false,
+          "origin_and_wrap_modes_verified": false,
+          "resize_cross_verified": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_sha256": "c0bc6270e37e656d6c85fdeae992fb9fbfb26934a6b26d964cb8e6de4796e43b",
+          "transport_bytes": 1088
+        },
+        "final_lines": [
+          "TOP_FIXED",
+          "REGION_A",
+          "REGION_B",
+          "REGION_CIXED",
+          "REGION_D",
+          "TF_MARGIN_DONE"
+        ],
+        "native": {
+          "before": {
+            "text_sha256": "4279b6605b0fb08728ce75e50e7b24eaf2d75e39e3d44b12b0f41d2e6ba8343b",
+            "cell_sha256": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651",
+            "cursor": [
+              0,
+              0
+            ]
+          },
+          "alt": {
+            "text_sha256": "f6492387ed4760be9851cccd504ac8f6f21624d55dce9671b3be4560ada0b5ac",
+            "cell_sha256": "0fd582bf6115b38b1dbe57084658f686392c74b4d6b1340f945cfcbca4ff7635",
+            "cursor": [
+              4,
+              5
+            ]
+          },
+          "restored": {
+            "text_sha256": "4279b6605b0fb08728ce75e50e7b24eaf2d75e39e3d44b12b0f41d2e6ba8343b",
+            "cell_sha256": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651",
+            "cursor": [
+              0,
+              0
+            ]
+          },
+          "final": {
+            "text_sha256": "605961db2489fcac706c6b5fc52a68f56acc558ac097cea21f9dd874400be438",
+            "cell_sha256": "00896cdf02c29564c82f4b2f7b118e6c1ac5cb8a0b8f8f5a0d91be3556a94421",
+            "cursor": [
+              6,
+              0
+            ]
+          }
+        },
+        "native_restore_matches_before": true
+      }
+    ]
+  },
+  "static_reference": {
+    "microsoft_document": "https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#scrolling-region",
+    "microsoft_terminal_commit": "7ff11ee107c984e236960ec948b450ccbc10187b",
+    "adapt_dispatch_has_single_margin_field": true,
+    "windterm_target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "ghidra_version": "12.1.4",
+    "read_only_no_analysis": true,
+    "target_executed": false,
+    "target_unchanged": true,
+    "decompiled_function_count": 6,
+    "observation": "DECSTBM 写入所选 screen 的上下边界；1049 路径选择 screen，直接函数未见专门 margin 拷贝。",
+    "limitation": "screen 状态归属是静态推断；未闭合 callee/间接调用和运行时恢复行为，不宣称 WindTerm 等价。"
+  },
+  "targeted_ctest": {
+    "candidate": {
+      "passed": 6,
+      "total": 6,
+      "elapsed_seconds": 44.77
+    },
+    "default": {
+      "passed": 4,
+      "total": 4,
+      "elapsed_seconds": 31.16
+    }
+  },
+  "rust_workspace": {
+    "vendor_unit_passed": 141,
+    "vendor_doc_passed": 1,
+    "root_test_targets": 3,
+    "root_tests_per_target": 2,
+    "command": "cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --release --locked --workspace"
+  },
+  "matrices": {
+    "common": {
+      "path": "experiments/differential/results/2026-10-26-candidate-common-v6/summary.json",
+      "runs": 95,
+      "counts": {
+        "match": 95
+      }
+    },
+    "capabilities": {
+      "path": "experiments/differential/results/2026-10-26-capabilities-v5/summary.json",
+      "runs": 25,
+      "counts": {
+        "core_unsupported": 15,
+        "match": 5,
+        "resize_difference": 5
+      }
+    },
+    "fuzz": {
+      "path": "experiments/differential/results/2026-10-26-fuzz-v4/summary.json",
+      "runs": 8,
+      "counts": {
+        "known_failure": 2,
+        "match": 6
+      }
+    }
+  },
+  "real_applications": {
+    "fresh_capture": {
+      "summary": "experiments/differential/results/2026-10-26-real-applications-v6/summary.json",
+      "runs": 3,
+      "counts": {"match": 3},
+      "pager_bytes": 360,
+      "editor_file_verified": true,
+      "startup_event_verified": true,
+      "insert_event_verified": true,
+      "semantic_acceptance": false,
+      "presented_done": null
+    },
+    "trailing_ech_investigation": {
+      "issue": 42,
+      "source": "build/test-artifacts/real-applications/run-xrdvymz2/suite",
+      "pager_bytes": 366,
+      "pager_sha256": "bb9dbe77353245a2aad7ef07e12da9a8371cc7ac56d6b47ebc0bfecee35b9958",
+      "suffix_hex": "0d1b5b373958",
+      "first_difference": {"path": ".screen.cells[2][0].text", "expected": ")", "actual": ""},
+      "termforge2_same_capture": "difference",
+      "termforge2_binary_sha256": "4a86b398e90fd3b5ffc4dcc0d0496e9664ef24ed3086b58b3d5754a53188e090",
+      "termforge3_same_capture": "difference",
+      "termforge3_binary_sha256": "e398d78853a62275aa29d1d7b63121956768e6a42a69d01b7719bfce3593fb44",
+      "pyte": {"version": "0.8.2", "cursor": [0, 2],
+               "final_display": ["TF_PAGE_23  ", "-- More (56%", "            "]},
+      "candidate_final_rows": ["TF_PAGE_23", "--More(56%", ""],
+      "comparison": "独立 pyte 与候选的归一投影一致；Recovery 留下 )，需按 ECH/wrap 合同裁决，不能自动改判 match。",
+      "capture_synchronization": "当前仅等待 TF_PAGE_1 即发送 q；完整 More 提示与尾部排干尚未验证。",
+      "not_attributed_to_margin_patch": true,
+      "accepted_as_match": false
+    }
+  },
+  "full_ctest": {
+    "combined_log_sha256": "c8a2c16bcbaa299bf6d39510cd89427dee134b01f20f7e7da65339019a97072d",
+    "default": {"passed": 38, "total": 40, "elapsed_seconds": 381.06,
+                "failed_suites": [{"name": "differential", "issues": [42]}, {"name": "shell", "issues": [36]}]},
+    "candidate": {"passed": 41, "total": 42, "elapsed_seconds": 436.85,
+                  "failed_suites": [{"name": "shell", "issues": [36, 38]}]},
+    "local_hosted_skips_not_counted_as_passes": 3,
+    "all_passed": false,
+    "known_failures_preserved": true
+  },
+  "ci": {
+    "candidate": {
+      "run_id": 40261449120,
+      "conclusion": "success",
+      "job_ids": [121374525002, 121374525208],
+      "scope": "Ubuntu 24.04 and Windows Server 2025 fixed candidate"
+    },
+    "main": {
+      "run_id": 40261449223,
+      "status": "completed",
+      "conclusion": "failure",
+      "updated_at": "2026-10-26T03:01:48Z",
+      "job_ids": [121374525528, 121374525686],
+      "ubuntu_conclusion": "success",
+      "windows": {
+        "tests_passed": 39,
+        "tests_total": 40,
+        "ime_inventory": {"result": "passed", "elapsed_seconds": 25.59},
+        "failed_suite": "shell",
+        "failure_scope": "ui-shells stage 4 and two selection fixture visibility checks",
+        "issue": 38
+      },
+      "log_sha256": "33a531f114b29dfe12e052e6af37d11dae2217b0b84e7ad7c8db2b6f1bf9a04e"
+    }
+  },
+  "source_sha256": {
+    "experiments/candidates/alacritty/Cargo.lock": "f14e3d50d997f4e20e2be3cdb25838825747aeb8ca50022b5fc6277887c5d8ce",
+    "experiments/candidates/alacritty/Cargo.toml": "c5f89fda48ab73f30adfdcc4437fb3eeb1779647886d85364d91395bf8beec86",
+    "experiments/candidates/alacritty/run.py": "fc3b4ff1485eee9eb4525bbc9d4b5911eb4a5836e5e16c04d83a1aaf2847a665",
+    "experiments/candidates/alacritty/src/ffi.rs": "9d89e5d7e84cbbd0b4a5d0499f9b5eb6b739537c1dab8c154cc0351dec0dd927",
+    "experiments/candidates/alacritty/src/main.rs": "7fcf080886118e0505aae774b9f41f9ba7458384377a2dd457fc73de57ae21f9",
+    "experiments/candidates/alacritty/test_candidate.py": "d3b2e136bf12628803ed69d348dbfa6de2464011d00b9c3461c138981f51f22e",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/CHANGELOG.md": "97231d9beda30b536650c566169c692fa846be3f7b0405add3c9741f95f3af62",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "af09057a0404d3034a0e06103af3d2218cafd43e8e99ec68a2ab1c0e5afe04c0",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/LICENSE-APACHE": "8884289e3969c089cd556c53fa1d3f51d86b29e52a8c1d660a55ce8292986910",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/event.rs": "e76c212f36bbfc43ea037a825dbc9c5b1174f5836fe8b69dfd158aadf3fc4048",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/event_loop.rs": "6da2897b76d8c0e7f989daa1463fd6fdeb3469a0a63e0c6ba703a9562663163c",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/mod.rs": "be15d08b03a28a271aa927b7149346a1b5d29e92e9186891bf246fdd2a4c90fc",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "a9a9a285ed28d75b547f86554174c192f74f2a0fb1b331f43a5d2433bcd5d9d7",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/row.rs": "2f963299e52525828d9d0bf1de758d793661c908eb7c126aa8556a1c9945a83d",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/storage.rs": "27a9b5101833d57423ae34ccef3d82c1a1cf9f51cbc42cc836a6fce79c088348",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/tests.rs": "5f38819134540eeb0dff7047f57f5d06250ce59493839c66ec4cd56e43db62f8",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/index.rs": "46908b68508f4e4ea90313f0536a88c357f2d17ad211b14d44b7f92dfdaa4402",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/lib.rs": "b9cae8ed53a4be8f738111f8727dd86218e66c88df38f32f4904e56651a2bee1",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/selection.rs": "0d1373577602646e84a4ab3448c65ee181987327bdabceff3c827e76dd9bd0d8",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/sync.rs": "4410fbae64e8f80321b3569a1495fb323e3319812c441f9eac54048c65ff93fb",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/cell.rs": "a569c233790530e6502ca031d0d3ed488b5aa2356e872da16ca689d64cb7b62c",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/color.rs": "ad2e33b60f397fe30e5e8f2dde2096bad8f5e256d464ba279cbda4a93cbbe224",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "fa1382d465c2b35361201d87303573ba4660de96fc01e2091b6075b934e6564c",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/search.rs": "84e04c5f0da21009dbbcfc2f8033e322d6240c8d227028b5ce8a784f1c55ccaf",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/thread.rs": "e2f9fdc5d950bbea6c710c7a974f2998127af6b434344c363afb38e849f86144",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/mod.rs": "8cca30ba29cee2df84603f560a8d26624a48979d96d78f1b6729a470ff34d8a1",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/unix.rs": "2e8d0edf1aea816ac95c1e442d60025ebdd20dacaa99d0fd4f7c7cf78ac369e4",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/blocking.rs": "60121a65df120c4a227520d6672231c9e3c515cb75241241e6b37a0c5bc186ca",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/child.rs": "4782f173c639bff6891f474b068fee64b6e2ad411edabdf496bbfe6554ceb32e",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/conpty.rs": "62abd7e72af144ae1f1c359538e18cceaa97741382efa94e001f397510eef416",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/mod.rs": "b08803dae0f192bc6737aff22992a37368ac505c7133554c495ffcacb4116733",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/vi_mode.rs": "f52c0d3248707c68295880acd7ad96610467110d6813f1172d4ae767365add2e",
+    "experiments/core/candidate_terminal.cpp": "b50dfbd3a2cf95e2b2cd46979759b2a776ed142c0e2a932ca1cae4fef235f2a4",
+    "experiments/core/candidate_terminal.hpp": "46d3e6d662a86fd6fdf656c9dfca3c1d04825cc77b57fba6068f3927f95d8459",
+    "experiments/core/candidate_terminal_test.cpp": "978bf6d91ab03e7f7fdf1c6b841b5727aea765a7284e9b992676860e948b022a",
+    "experiments/shell/margin_checks.py": "d571ea1cd1d99c41a0ae1d2939549becfca3c6d95dc431a4dcbd0255e4259f1c",
+    "experiments/shell/run.py": "531ecb08189b490357a4266caa5ade46df66497a1ea2ba70e5d968216a16508d",
+    "experiments/shell/shell.cpp": "5002016fb220ab7bf6f6142c0d661226fb5984a45da4aaa6aca401970c93a493",
+    "experiments/shell/test_candidate_tui.py": "f2f990ee3d60aef62f37a524b8c0ed46d752d862d84c669b7e740250c4f5a772",
+    "experiments/shell/text_client.cpp": "aea8ed527e6e79fbe61446afadbb25d4fa0b7ddef4966930583ac8fa04cadd15"
+  },
+  "screenshots_or_user_desktop_input": false,
+  "raw_transport_and_proprietary_exports_committed": false,
+  "full_r2_contract_verified": false,
+  "issues": {
+    "27": "OPEN",
+    "28": "OPEN",
+    "35": "OPEN",
+    "41": "OPEN",
+    "42": "OPEN"
+  },
+  "remaining_gaps": [
+    "真实 ConPTY 主屏 margin 恢复由 #41 保留，差异观察不是能力通过。",
+    "WindTerm 运行时恢复与等价性未证明；静态符号不替代运行时证据。",
+    "origin/wrap、异常序列及完整真实 resize 交叉尚未验收。",
+    "More 尾部 CR+CSI79X 的捕获同步与 Recovery 擦除差异由 #42 保留；同捕获旧、新候选及 pyte 对照不把它归因于 margin 修复。",
+    "#36/#38 的真实回归、#28 的更多 TUI、实际呈现及 #35/R2 出口仍未完成。"
+  ]
+}

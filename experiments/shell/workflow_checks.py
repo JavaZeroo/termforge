@@ -88,7 +88,7 @@ def validate_console_window(directory, *, expected_role, expected_generation, pr
                 cursor_row=cursor_row, lines=lines, cell_lines=cell_lines, cells=cell_records)
 
 
-def _validate_receiver(manifest, receiver, raw):
+def _validate_receiver(manifest, receiver, raw, *, allow_unentered_stop=False):
     units = len(raw.decode('utf-8').encode('utf-16-le')) // 2
     summary = manifest.get('receiver', {})
     _require(summary.get('joined') is True and _uint(summary.get('error'), 'receiver error') == 0 and
@@ -103,9 +103,21 @@ def _validate_receiver(manifest, receiver, raw):
     _require(_uint(receiver.get('received_units'), 'received units') == units and
              _uint(receiver.get('saved_bytes'), 'saved bytes') == len(raw), 'receiver actual totals')
     reads = _uint(receiver.get('reads_entered'), 'reads entered')
-    _require(reads >= (2 if raw else 1) and reads == _uint(receiver.get('reads_completed'), 'reads completed'), 'receiver read join')
+    completed = _uint(receiver.get('reads_completed'), 'reads completed')
     calls = _uint(receiver.get('cancel_calls'), 'cancel calls')
     successes = _uint(receiver.get('cancel_successes'), 'cancel successes')
+    if allow_unentered_stop and reads == 0:
+        # Append-before-output may reject and stop the receiver before its
+        # worker enters ReadConsoleW. There is then no last read to cancel.
+        _require(raw == b'' and completed == 0, 'unentered receiver read join')
+        _require(calls >= 1 and successes == 0 and
+                 _uint(receiver.get('last_cancel_error'), 'cancel error') == 1168, 'unentered receiver cancellation')
+        _require(receiver.get('last_read_success') is False and
+                 _uint(receiver.get('last_read_count'), 'last read count') == 0 and
+                 _uint(receiver.get('last_read_error'), 'last read error') == 0 and
+                 receiver.get('zero_read_accepted') is False, 'unentered receiver has no final read')
+        return
+    _require(reads >= (2 if raw else 1) and reads == completed, 'receiver read join')
     _require(calls >= successes >= 1 and _uint(receiver.get('last_cancel_error'), 'cancel error') in (0, 1168), 'receiver cancellation')
     success = receiver.get('last_read_success')
     _require(type(success) is bool and _uint(receiver.get('last_read_count'), 'last read count') == 0, 'receiver final read')
@@ -140,7 +152,7 @@ def validate_rejected_order(directory, *, expected_generation):
                  _uint(event.get('records'), 'event records') == 0 and
                  event.get('source_sha256') == _sha(b''), 'rejection event payload')
     receiver = json.loads(_read(directory / 'capture.bin.receiver.json', 65536))
-    _validate_receiver(manifest, receiver, b'')
+    _validate_receiver(manifest, receiver, b'', allow_unentered_stop=True)
     return dict(role='F2', generation=expected_generation, expected_rejection=True,
                 reason='workflow command order invalid', normal_completion=False)
 

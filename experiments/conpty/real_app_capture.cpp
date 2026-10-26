@@ -32,9 +32,42 @@ static void wait_event(tf_conpty::Session& session, const std::filesystem::path&
     }
 }
 
+static size_t wait_more_prompt(tf_conpty::Session& session, const std::filesystem::path& capture) {
+    const auto deadline = GetTickCount64() + 10000;
+    size_t saved = 0;
+    write_bytes(capture, {});
+    for (;;) {
+        const auto bytes = session.output();
+        if (bytes.size() != saved) {
+            write_bytes(capture, bytes); saved = bytes.size();
+        }
+        const auto begin = bytes.find("-- More (");
+        if (begin != std::string::npos) {
+            auto end = begin + 9;
+            while (end < bytes.size() && bytes[end] >= '0' && bytes[end] <= '9') ++end;
+            if (end > begin + 9 && end <= begin + 12 && bytes.compare(end, 6, "%) -- ") == 0)
+                return end + 6;
+        }
+        require(!session.wait_exit(0), "pager exited before complete prompt");
+        require(GetTickCount64() < deadline, "pager complete English prompt missing");
+        Sleep(1); // poll the actual complete prompt, never substitute a delay
+    }
+}
+
+static void require_output_eof(const tf_conpty::Session& session) {
+    // close() joins the continuously draining reader. Broken-pipe is its actual
+    // ReadFile endpoint; forced cancellation and process exit alone are weaker.
+    require(session.cleanup_complete && session.read_error == ERROR_BROKEN_PIPE &&
+            !session.forced_reader_cancel && !session.forced_process_cancel, "capture output EOF was not observed");
+}
+
 int main(int argc, char** argv) {
     try {
         require(argc == 3, "usage: real_app_capture output-directory vim-executable");
+        char gate[4]{};
+        if (!std::cin.getline(gate, sizeof(gate)) || std::string(gate) != "GO") return 2;
+        BOOL contained = FALSE;
+        if (!IsProcessInJob(GetCurrentProcess(), nullptr, &contained) || !contained) return 2;
         const std::filesystem::path out = argv[1], vim = argv[2];
         require(std::filesystem::create_directories(out), "output directory already exists");
         const auto root = out.parent_path();
@@ -42,29 +75,58 @@ int main(int argc, char** argv) {
         {
             tf_conpty::Session session;
             session.start(L"C:\\Windows\\System32\\cmd.exe", L"/d /q /c \"echo TF_REAL_SHELL\"");
-            require(session.wait_exit(10000) && session.exit_code == 0, "real shell lifecycle failed");
+            const bool shell_exited = session.wait_exit(10000);
+            write_bytes(out / "shell.bin", session.output());
+            require(shell_exited && session.exit_code == 0, "real shell lifecycle failed");
+            session.close();
+            require_output_eof(session);
             require(!session.capture_overflow, "real shell capture overflow");
             const auto output = session.output();
             require(output.find("TF_REAL_SHELL") != std::string::npos, "real shell output missing");
             write_bytes(out / "shell.bin", output);
             shell_bytes = output.size();
-            session.close();
-            require(session.cleanup_complete, "real shell cleanup failed");
         }
         {
             std::string input;
             for (int line = 1; line <= 40; ++line) input += "TF_PAGE_" + std::to_string(line) + "\r\n";
             write_bytes(root / "pager.txt", input);
             tf_conpty::Session session;
-            session.start(L"C:\\Windows\\System32\\more.com", L"pager.txt", {}, root.wstring());
-            require(session.wait_text("TF_PAGE_1", 10000), "pager initial output missing");
-            session.send("q");
-            require(session.wait_exit(10000) && session.exit_code == 0, "pager q lifecycle failed");
-            require(!session.capture_overflow, "pager capture overflow");
-            write_bytes(out / "pager.bin", session.output());
-            pager_bytes = session.output().size();
+            std::string stage = "launch";
+            size_t prompt_end = 0, q_bytes = 0;
+            bool valid = false;
+            try {
+                session.start(L"C:\\Windows\\System32\\more.com", L"pager.txt", {}, root.wstring());
+                stage = "complete-prompt"; prompt_end = wait_more_prompt(session, out / "pager.bin");
+                stage = "q-input"; session.send("q", [&](size_t bytes) { q_bytes += bytes; });
+                stage = "q-exit";
+                require(session.wait_exit(10000) && session.exit_code == 0, "pager q lifecycle failed");
+                // Preserve actual bytes even if the subsequent close/EOF stage
+                // needs the external watchdog. This prefix is never complete.
+                write_bytes(out / "pager.bin", session.output());
+                stage = "output-eof"; session.close(); require_output_eof(session);
+                require(!session.capture_overflow, "pager capture overflow");
+                valid = q_bytes == 1;
+            } catch (...) {
+                write_bytes(out / "pager.bin", session.output());
+                try { session.cancel(); } catch (...) {}
+                session.close();
+            }
             session.close();
-            require(session.cleanup_complete, "pager cleanup failed");
+            const auto output = session.output();
+            write_bytes(out / "pager.bin", output); pager_bytes = output.size();
+            std::ofstream diagnostic(out / "pager-lifecycle.json", std::ios::trunc);
+            diagnostic << "{\"schema\":\"termforge-more-capture-v1\",\"valid\":" << (valid ? "true" : "false")
+                       << ",\"stage\":"; termforge::Screen::quoted(diagnostic, stage);
+            diagnostic << ",\"prompt_end_offset\":" << prompt_end << ",\"q_bytes\":" << q_bytes
+                       << ",\"exit_code\":" << session.exit_code << ",\"output_bytes\":" << output.size()
+                       << ",\"read_error\":" << session.read_error
+                       << ",\"output_eof\":" << (session.read_error == ERROR_BROKEN_PIPE ? "true" : "false")
+                       << ",\"cleanup_complete\":" << (session.cleanup_complete ? "true" : "false")
+                       << ",\"active_children_after\":" << session.active_after
+                       << ",\"forced_reader_cancel\":" << (session.forced_reader_cancel ? "true" : "false")
+                       << ",\"forced_process_cancel\":" << (session.forced_process_cancel ? "true" : "false") << "}\n";
+            require(diagnostic.good(), "pager lifecycle evidence write failed");
+            require(valid, "pager lifecycle failed; preserved complete captured bytes and stage");
         }
         {
             tf_conpty::Session session;
@@ -84,11 +146,12 @@ int main(int argc, char** argv) {
                 stage = "write-quit";
                 session.send("\x1b:wq\r");
                 require(session.wait_exit(15000) && session.exit_code == 0, "editor wq lifecycle failed");
+                write_bytes(out / "editor.bin", session.output());
+                session.close(); require_output_eof(session);
                 stage = "capture";
                 require(!session.capture_overflow, "editor capture overflow");
                 write_bytes(out / "editor.bin", session.output());
                 editor_bytes = session.output().size();
-                session.close();
                 stage = "cleanup";
                 require(session.cleanup_complete, "editor cleanup failed");
                 std::ifstream edited(root / "editor.txt", std::ios::binary);
@@ -96,6 +159,7 @@ int main(int argc, char** argv) {
                 stage = "file-content";
                 require(content.find("TF_VIM_REAL") != std::string::npos, "editor file content missing");
             } catch (const std::exception& error) {
+                write_bytes(out / "editor.bin", session.output());
                 try { session.cancel(); } catch (...) {}
                 session.close();
                 const auto output = session.output();

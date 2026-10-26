@@ -21,6 +21,7 @@ static double ms(Clock::time_point start) { return std::chrono::duration<double,
 static void require(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
 static void check(HRESULT hr) { require(SUCCEEDED(hr), "render API failed"); }
 static std::wstring utf16(const std::string& text) {
+    if (text.empty()) return {};
     const int n = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), static_cast<int>(text.size()), nullptr, 0);
     require(n != 0, "invalid text"); std::wstring value(n, 0);
     require(MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.data(), static_cast<int>(text.size()), value.data(), n) == n, "UTF-16 conversion failed");

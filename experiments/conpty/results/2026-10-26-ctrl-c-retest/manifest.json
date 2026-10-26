@@ -1,0 +1,27 @@
+{
+  "schema": "termforge-conpty-ctrl-c-v1",
+  "status": "passed",
+  "started_utc": "2026-10-26T03:27:38.423953+00:00",
+  "probe_sha256": "0e8db147c1418ac4c6b0e5b1b7343198987ca4bd7b1deedf0cac4cdb64905184",
+  "source_sha256": {
+    "experiments/conpty/ctrl_c_probe.cpp": "5e7022cb266818db206279a3d3075fff338688bcd16742b2cae38a09936b06f5",
+    "experiments/conpty/session.hpp": "f143a858df22302a2bc4a794263ff7769f4d0cfd9537307d916feb8ad638c6b6",
+    "experiments/conpty/ctrl_c_run.py": "698e76ac95b7de74b0479b5dbc79596137ad770c28b9185140ca790389752c9b",
+    "experiments/conpty/run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329",
+    "CMakeLists.txt": "f79c1f8c887e65c4248408725f051ee5ac8dbe93e91e0ba755be2f4edf7610db"
+  },
+  "source_binding": "recorded_inputs_not_independent_build_attestation",
+  "workload": {
+    "loop_count": 1000000,
+    "busy_hold_min_ms": 1000,
+    "flood_etx_count": 1,
+    "followup_delay_ms": 0,
+    "marker_timeout_ms": 5000,
+    "outer_timeout_seconds": 15
+  },
+  "handler_delivery_verified": false,
+  "performance_claim": false,
+  "requested_repeats": 3,
+  "passed_repeats": 3,
+  "finished_utc": "2026-10-26T03:27:42.132210+00:00"
+}

@@ -1,0 +1,436 @@
+{
+  "schema": "termforge-more-ech-validation-v1",
+  "status": "bounded-more-ech-passed-candidate-pending-difference-retained",
+  "generated_utc": "2026-10-26T03:51:30.662399+00:00",
+  "implementation_commit": "245545ff6fc805c81279e7d3a656080acaea7124",
+  "base_commit": "2bd7e45a38237e46efc16e852351c35ead6fa823",
+  "source_sha256": {
+    "experiments/conpty/real_app_capture.cpp": "95b16e22e0c8fc9cf763093900f1982a01ad6808a679f00e52c3761195099fe6",
+    "experiments/conpty/session.hpp": "f143a858df22302a2bc4a794263ff7769f4d0cfd9537307d916feb8ad638c6b6",
+    "experiments/core/screen.hpp": "e8ef71e86198d6f36cb885580a88f36d06ff7419d6e2a10e8c4452ef9caa5f77",
+    "experiments/core/terminal.hpp": "e5ca6b065b38b98ba4bb32f579e4f0e8e126a7872de147ff37c2c68aac414358",
+    "experiments/core/trace.cpp": "91e6f4594ae47a9e0c60a435c71687666ec114373899d033fa59e1e46b9945d2",
+    "experiments/core/test_recovery.py": "2aa90e46c70de55b062311bb7d4b7053a6247c5902cfa1f75903a8d2a52bd269",
+    "experiments/differential/real_app_matrix.py": "4bb8ddadbcde608e84592b46c409ec26177972fd9a4f097c42ee2aeb5f4746ba",
+    "experiments/differential/test_real_app_matrix.py": "da042175d895ecae3ffb7eb679cb9cb4413efaabba39949b7bb03cc1ab46170b",
+    "experiments/differential/compare_candidate.py": "b823369ec73dd6d4de4678898271dc26357587ff3ff1dccb340c228ea93d75b3"
+  },
+  "source_binding": "recorded_inputs_not_independent_build_attestation",
+  "binaries": {
+    "pre_fix_trace_sha256": "9803b12e6dd74566a95fb5e1c55ef934c8b125d7d3bc4b57426f4f2d7ae00b73",
+    "post_fix_trace_sha256": "60631c77d41e538fb815d7991fd6476dc032892f0efa958853b6f81eb53501a0",
+    "candidate_sha256": "e398d78853a62275aa29d1d7b63121956768e6a42a69d01b7719bfce3593fb44",
+    "capture_sha256": "47b3f28f8506eeddf473e1614633a2ad1dae7ef2c7ae1cf1f3b25dd54d85d482"
+  },
+  "pre_fix_source_sha256": {
+    "trace.cpp": "91e6f4594ae47a9e0c60a435c71687666ec114373899d033fa59e1e46b9945d2",
+    "screen.hpp": "60dee7105f9cd58611896e5fd83797533d0115a575833d00a16e8ae874d002ed",
+    "terminal.hpp": "892997bc2b869a8655d272e9ff049c4102bb1366f1ac709cff8c3d4a41657396",
+    "unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+  },
+  "reference": {
+    "candidate_version": "0.26.1-dev+termforge.3",
+    "candidate_identity_reference": "experiments/differential/results/2026-10-26-real-applications-v6/summary.json",
+    "pyte_version": "0.8.2",
+    "pyte_source_sha256": {
+      "screens.py": "43bcd10d5555f6a8e53a1f9c0e557a47ec801b3914533d5b51af5828a5242ecb",
+      "streams.py": "a8c667e0f288b20064c3d8600aaf792f562cdfa84b4a39bc852ce05acc04c14d"
+    }
+  },
+  "normalization": "NFC and blank-cell projection; explicit spaces, mode bits and terminal replies excluded; pyte comparison below covers final visible rows and cursor only",
+  "fixtures": [
+    {
+      "fixture": "experiments/core/fixtures/more-pager-360.bin",
+      "bytes": 360,
+      "sha256": "d035d53385788d2b68dcc0d866b5a2fe68897cdcb28a761bd4d36efcc6df6cf9",
+      "suffix_hex": "465f504147455f32330d0a2d2d204d6f7265202835362529202d2d20",
+      "runs": [
+        {
+          "version": "pre_fix",
+          "plan": "whole",
+          "status": "match",
+          "checkpoints": 2,
+          "first_difference": null,
+          "default_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "candidate_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "pyte_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "default_cursor": [
+            5,
+            2
+          ],
+          "candidate_cursor": [
+            5,
+            2
+          ],
+          "pyte_cursor": [
+            5,
+            2
+          ],
+          "default_matches_pyte_visible_rows": true,
+          "candidate_matches_pyte_visible_rows": true
+        },
+        {
+          "version": "pre_fix",
+          "plan": "byte",
+          "status": "match",
+          "checkpoints": 361,
+          "first_difference": null,
+          "default_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "candidate_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "pyte_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "default_cursor": [
+            5,
+            2
+          ],
+          "candidate_cursor": [
+            5,
+            2
+          ],
+          "pyte_cursor": [
+            5,
+            2
+          ],
+          "default_matches_pyte_visible_rows": true,
+          "candidate_matches_pyte_visible_rows": true
+        },
+        {
+          "version": "post_fix",
+          "plan": "whole",
+          "status": "match",
+          "checkpoints": 2,
+          "first_difference": null,
+          "default_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "candidate_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "pyte_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "default_cursor": [
+            5,
+            2
+          ],
+          "candidate_cursor": [
+            5,
+            2
+          ],
+          "pyte_cursor": [
+            5,
+            2
+          ],
+          "default_matches_pyte_visible_rows": true,
+          "candidate_matches_pyte_visible_rows": true
+        },
+        {
+          "version": "post_fix",
+          "plan": "byte",
+          "status": "match",
+          "checkpoints": 361,
+          "first_difference": null,
+          "default_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "candidate_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "pyte_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "default_cursor": [
+            5,
+            2
+          ],
+          "candidate_cursor": [
+            5,
+            2
+          ],
+          "pyte_cursor": [
+            5,
+            2
+          ],
+          "default_matches_pyte_visible_rows": true,
+          "candidate_matches_pyte_visible_rows": true
+        }
+      ]
+    },
+    {
+      "fixture": "experiments/core/fixtures/more-pager-366.bin",
+      "bytes": 366,
+      "sha256": "bb9dbe77353245a2aad7ef07e12da9a8371cc7ac56d6b47ebc0bfecee35b9958",
+      "suffix_hex": "5f32330d0a2d2d204d6f7265202835362529202d2d200d1b5b373958",
+      "runs": [
+        {
+          "version": "pre_fix",
+          "plan": "whole",
+          "status": "difference",
+          "checkpoints": 2,
+          "first_difference": {
+            "checkpoint": 1,
+            "offset": 366,
+            "path": ".screen.cells[2][0].text",
+            "expected": ")",
+            "actual": ""
+          },
+          "default_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "candidate_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "pyte_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "default_cursor": [
+            0,
+            2
+          ],
+          "candidate_cursor": [
+            0,
+            2
+          ],
+          "pyte_cursor": [
+            0,
+            2
+          ],
+          "default_matches_pyte_visible_rows": false,
+          "candidate_matches_pyte_visible_rows": true
+        },
+        {
+          "version": "pre_fix",
+          "plan": "byte",
+          "status": "difference",
+          "checkpoints": 367,
+          "first_difference": {
+            "checkpoint": 366,
+            "offset": 366,
+            "path": ".screen.cells[2][0].text",
+            "expected": ")",
+            "actual": ""
+          },
+          "default_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ")--"
+          ],
+          "candidate_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "pyte_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "default_cursor": [
+            0,
+            2
+          ],
+          "candidate_cursor": [
+            0,
+            2
+          ],
+          "pyte_cursor": [
+            0,
+            2
+          ],
+          "default_matches_pyte_visible_rows": false,
+          "candidate_matches_pyte_visible_rows": true
+        },
+        {
+          "version": "post_fix",
+          "plan": "whole",
+          "status": "match",
+          "checkpoints": 2,
+          "first_difference": null,
+          "default_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "candidate_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "pyte_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "default_cursor": [
+            0,
+            2
+          ],
+          "candidate_cursor": [
+            0,
+            2
+          ],
+          "pyte_cursor": [
+            0,
+            2
+          ],
+          "default_matches_pyte_visible_rows": true,
+          "candidate_matches_pyte_visible_rows": true
+        },
+        {
+          "version": "post_fix",
+          "plan": "byte",
+          "status": "match",
+          "checkpoints": 367,
+          "first_difference": null,
+          "default_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "candidate_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "pyte_final_rows": [
+            "TF_PAGE_23",
+            "--More(56%",
+            ""
+          ],
+          "default_cursor": [
+            0,
+            2
+          ],
+          "candidate_cursor": [
+            0,
+            2
+          ],
+          "pyte_cursor": [
+            0,
+            2
+          ],
+          "default_matches_pyte_visible_rows": true,
+          "candidate_matches_pyte_visible_rows": true
+        }
+      ]
+    }
+  ],
+  "performance_measured": false,
+  "presented_done": null,
+  "full_vt_acceptance": false,
+  "fresh_capture": {
+    "bytes": 382,
+    "sha256": "bdf54e2c317c0e9639956ffb66ab63d5b987dd8b8514bd08bde3d867b3efb5ef",
+    "suffix_hex": "0d1b5b3f393030316c1b5b3f313030346c1b5b373958",
+    "lifecycle": {
+      "schema": "termforge-more-capture-v1",
+      "valid": true,
+      "stage": "output-eof",
+      "prompt_end_offset": 360,
+      "q_bytes": 1,
+      "exit_code": 0,
+      "output_bytes": 382,
+      "read_error": 109,
+      "output_eof": true,
+      "cleanup_complete": true,
+      "active_children_after": 0,
+      "forced_reader_cancel": false,
+      "forced_process_cancel": false
+    },
+    "supervision": {
+      "schema": "termforge-real-app-capture-supervision-v1",
+      "timed_out": false,
+      "returncode": 0,
+      "job_after": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "cleanup_errors": []
+    },
+    "real_applications_counts": {
+      "match": 3
+    },
+    "capture_source_sha256": "95b16e22e0c8fc9cf763093900f1982a01ad6808a679f00e52c3761195099fe6",
+    "capture_binary_sha256": "47b3f28f8506eeddf473e1614633a2ad1dae7ef2c7ae1cf1f3b25dd54d85d482"
+  },
+  "retained_candidate_difference": {
+    "input_hex": "414243441b5b585a",
+    "rows": 2,
+    "columns": 4,
+    "history": 2,
+    "default_final_rows": [
+      "ABCZ",
+      "    "
+    ],
+    "candidate_final_rows": [
+      "ABC ",
+      "Z"
+    ],
+    "default_cursor": [
+      3,
+      0
+    ],
+    "candidate_cursor": [
+      1,
+      1
+    ],
+    "registered_as_reference_difference": false,
+    "covered_by_current_fixed_fuzz": false,
+    "owner_issue": 27,
+    "policy": "Default follows the fixed Microsoft Terminal reset-delayed-wrap behavior; no global ECH equivalence claim"
+  },
+  "validation": {
+    "recovery_unittests": 33,
+    "real_application_and_supervisor_tests": 8,
+    "common_matrix": {
+      "match": 95
+    },
+    "fuzz": {
+      "known_failure": 2,
+      "match": 6
+    },
+    "scope": "Local Windows 11; English More prompt; source-fixed transport and parser; no GUI or WindTerm runtime comparison"
+  }
+}

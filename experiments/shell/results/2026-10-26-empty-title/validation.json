@@ -1,0 +1,139 @@
+{
+  "schema": "termforge-candidate-empty-title-v1",
+  "issue": "https://github.com/JavaZeroo/termforge/issues/45",
+  "implementation_commit": "b9da64ea491e9ea14149e6b75a8b106c9ad21f3b",
+  "base_commit": "fba3659",
+  "scope": "Legal empty UTF-8 title conversion through a real owned console and candidate GUI",
+  "source_sha256_before": {
+    "experiments/presentation/render.hpp": "7645f92cff86d00864802cf901a802ca7f66da16f79510e7d6ab92a5f437115d",
+    "experiments/presentation/renderer_metrics_test.cpp": "e9452774f16df6045cf0db47e4d2097821005b07be5dbde8288eb7f690246eb7",
+    "experiments/shell/candidate_title_test.cpp": "60066ba29b6f153c78ac96fb2dbc61b68f025623d2b84c9cb83afb3604cd5362",
+    "experiments/shell/shell.cpp": "c680d175326348afaf907560d8abf587d126acdef43f583da13190b2f45c9ac3",
+    "CMakeLists.txt": "1af4d3df2fdcd74c3013ab13fd310a29496b64167ba7edf637896efdcf431fa8"
+  },
+  "source_sha256_after": {
+    "experiments/presentation/render.hpp": "cd91d049e5e985f85d5400b7be51021efbf0271c781fd1d15a0c0126baa74812",
+    "experiments/presentation/renderer_metrics_test.cpp": "e9452774f16df6045cf0db47e4d2097821005b07be5dbde8288eb7f690246eb7",
+    "experiments/shell/candidate_title_test.cpp": "60066ba29b6f153c78ac96fb2dbc61b68f025623d2b84c9cb83afb3604cd5362",
+    "experiments/shell/shell.cpp": "c680d175326348afaf907560d8abf587d126acdef43f583da13190b2f45c9ac3",
+    "CMakeLists.txt": "1af4d3df2fdcd74c3013ab13fd310a29496b64167ba7edf637896efdcf431fa8"
+  },
+  "same_test_sources_before_and_after": true,
+  "binary_sha256_before": {
+    "candidate_title_test.exe": "4fc7d45f781c5fdc34412a24e2de68879a9e0cf1506bed3c7f70d7e2e370b28f",
+    "renderer_metrics_test.exe": "695d6d0c5f56689014061bc0e2b90f806cbc3773192f93d30986a292aab52b6f"
+  },
+  "binary_sha256_after": {
+    "candidate_title_test.exe": "e0453aa277f548025517250b6c6d86a9cff326d1bc240da7c4dbdb8e76a47a7c",
+    "renderer_metrics_test.exe": "73c2a2ac0c83766e6f9a840fd474f2aac00370340ccb6910d517b6c4df2dd30d"
+  },
+  "preliminary_non_reproducing_capture": {
+    "transport_prefix": {
+      "bytes": 336,
+      "sha256": "3b56a2b72930994e676b906f42ea24dbd472968808e093868c797dd53becbc02",
+      "empty_osc_0_bel_observed": false,
+      "utf8_decodable": true
+    },
+    "failure_code": "complete_empty_osc_not_observed",
+    "reason": "The short-lived client capture contained only cmd start/return titles; no complete empty OSC was observed.",
+    "invalid_text_observed": false,
+    "used_as_bug_reproduction": false
+  },
+  "effective_pre_fix_gui_reproduction": {
+    "transport_prefix": {
+      "bytes": 355,
+      "sha256": "f3e8d444a935b57f6fd01f69609dadbdce48a2715a4d88229209fcf7acd47386",
+      "empty_osc_0_bel_observed": true,
+      "utf8_decodable": true
+    },
+    "input_empty_title_sequence_hex": "1b5d303b07",
+    "client": "SetConsoleTitleW(nonempty), SetConsoleTitleW(empty), fixed marker, owned event release",
+    "complete_empty_osc_observed": true,
+    "after_marker_observed": true,
+    "collected_without_error": false,
+    "failure_code": "invalid_text",
+    "ctest_seconds": 0.448809
+  },
+  "conversion_regression": {
+    "valid_empty": "empty UTF-16 string",
+    "valid_mixed_scalars": "A中é😀",
+    "invalid_nonempty_hex_rejected": [
+      "ff",
+      "c080",
+      "eda080",
+      "e4b8"
+    ],
+    "mb_err_invalid_chars_retained": true,
+    "renderer_metrics_original_32_scenarios_passed": true
+  },
+  "post_fix_real_gui": {
+    "fresh_owned_cases": 2,
+    "case_observations": [
+      {
+        "title_case": "real-console-empty",
+        "empty_title_osc_observed": true,
+        "after_marker_observed": true,
+        "window_alive_after_empty": true
+      },
+      {
+        "title_case": "real-console-empty",
+        "empty_title_osc_observed": true,
+        "after_marker_observed": true,
+        "window_alive_after_empty": true
+      }
+    ],
+    "transport_prefixes": [
+      {
+        "bytes": 355,
+        "sha256": "a7be4ae40a12c7beb8937d139ed5db74e8f3c411e16c5b39457c273f2b479537",
+        "empty_osc_0_bel_observed": true,
+        "utf8_decodable": true
+      },
+      {
+        "bytes": 355,
+        "sha256": "3493e5d2989e22e6210861e8c9b3a1c4ac15046d12906b4527dbaf16fc7b8dbf",
+        "empty_osc_0_bel_observed": true,
+        "utf8_decodable": true
+      }
+    ],
+    "session_job_active_after_each": 0,
+    "parent_owned_job_zero_verified": true,
+    "owned_desktop_deletion_verified": true
+  },
+  "old_binary_counterfactual_after_fix": {
+    "native_exit_code": 1,
+    "seconds": 0.4220000000204891,
+    "binary_sha256": "4fc7d45f781c5fdc34412a24e2de68879a9e0cf1506bed3c7f70d7e2e370b28f",
+    "log_sha256": "d1a02243dd02bda37cb7488e2716ba0379e2948a667a2a7ace414d93781eb425"
+  },
+  "supervision": {
+    "owned_non_input_desktop": true,
+    "assign_before_resume": true,
+    "child_watchdog_ms": 15000,
+    "phase_deadline_ms": 5000,
+    "client_release_deadline_ms": 5000,
+    "raw_transport_scope": "local ignored _private prefix; no EOF or presentation claim"
+  },
+  "old_421_normal_1_is_separate": {
+    "safe_summary": "original-normal-invalid-text.json",
+    "safe_summary_sha256": "b2776fb41ba78436d5b79c3d41d8899ef5b9ad0f406e5bc982c000852c7cd196",
+    "candidate_event_kind": null,
+    "candidate_event_payload_length": null,
+    "conversion_callsite": null,
+    "original_root_cause_established": false,
+    "host_oom_established": false
+  },
+  "evidence_sha256": {
+    "pre-fix-junit.xml": "84e03d976243b1aa7d80c4ca4b049d86195e62888ce95e957e1952efae8e3dc6",
+    "pre-held-junit.xml": "b9f911b299c7d6e4aa2896a18af4f312eb0904b474e2175d119232f519b833dc",
+    "post-fix-junit.xml": "78ef7f3b9f18e090b5bfa08253ca60de18fef3d89d46dc66666510f40244b64a",
+    "pre-held.log": "2c604cc0adaf12f68ee6d6123a6ea862b02eb4afa314d72774fdd37bc91ebd86",
+    "post-fix.log": "efb3bf60092d655c77127220720f0fda8d9f234d798b1e2616ed6db620ec4cc1",
+    "pre-binary-counterfactual.log": "d1a02243dd02bda37cb7488e2716ba0379e2948a667a2a7ace414d93781eb425"
+  },
+  "limits": {
+    "post_fix_full_candidate_ctest_included": false,
+    "complete_r2_or_windterm_parity_established": false,
+    "presented_done": null
+  }
+}

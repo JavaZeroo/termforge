@@ -92,13 +92,17 @@ E2驱动是唯一默认传入`resources=True`的场景驱动，依赖项目Pytho
 
 resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子进程查询实际尺寸；包括快速连续请求、洪流中缩放、随后 Ctrl-C 或关闭。正常 resize 验证 60×12、100×28、72×18；关闭场景只查询前两个尺寸。脚本还将自有窗口移至非输入 desktop 右下边缘，验证 retained DIB 不依赖可见更新矩形。每次绘制与全量重绘作 RGB 对比；这些带检查的样本不能作为低开销延迟数据。
 
-每次运行依次验证普通命令、中文、退格、左右方向键编辑，再运行一百万轮的输出命令。至少持续一秒且消费 64 KiB 后发送 Ctrl-C，再执行 `echo TF_AFTER`；确认对应状态与已提交帧后 `exit 37`。当前 Windows 11 上 normal/resize 在该中断阶段超时，由 #36 保留，完整 CTest 不能记为通过。另测输出中关闭，正常/关闭各重复三次，检查 Job 活跃进程归零与自有 desktop 消失。监督器用真实存活 shell 验证超时清理。独立队列探针验证容量、背压、顺序、停止唤醒与输入拒绝。短回归不代表长时无泄漏。
+每次运行依次验证普通命令、中文、退格、左右方向键编辑，再运行一百万轮的输出命令。至少持续一秒且消费 64 KiB 后发送 Ctrl-C，再执行 `echo TF_AFTER`；确认对应状态与已提交帧后 `exit 37`。[#36](https://github.com/JavaZeroo/termforge/issues/36) 保留历史中断超时与根因缺口；本次 normal/resize 各十轮未复现，不能写成产品修复。独立的[原始 ConPTY 回归](../conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)另保留输入/输出与系统文件身份。另测输出中关闭，正常/关闭各重复三次，检查 Job 活跃进程归零与自有 desktop 消失。监督器用真实存活 shell 验证超时清理。独立队列探针验证容量、背压、顺序、停止唤醒与输入拒绝。短回归不代表长时无泄漏。
 
 产品真实 IME 单独由 [`research.ime.product_runner`](../../research/ime/README.md) 显式托管运行，使用严格受控的真实 `SendInput`，不在这些私有 desktop 场景中合成 IME 消息。五个 `ui-ime-*` 场景有独立输入桌面/焦点/代次检查和内外 Job/GO 门控，开发机拒绝运行；历史/Find 与 rename 双 Escape 已有[固定源码系统审计](../../research/ime/results/2026-10-24-product-ime-contexts/validation.json)。
 
 测试的 `scripted_input_to_state_ms` 从 Ctrl-C 的 WM_CHAR 被处理开始，到后续 `TF_AFTER` 完整输出行进入快照；`scripted_input_to_submit_ms` 到包含该行的 WM_PAINT BitBlt/GdiFlush 完成。两者包含中断、后续命令和调度，不能当作单键延迟。自有 DIB 截图不是合成器呈现，`presented_done=null`。关闭场景没有该标记，相关字段为 null，不参与延迟统计。
 
 默认监督时限为 40 秒，原生基础场景为 25 秒，主区、DPI、选择和查找场景为 30 秒；`ui-clipboard-system` 的监督/原生场景分别为 60/45 秒，watchdog 场景在 3 秒后强制回收。stdout/stderr、失败状态、最终自有 BMP、身份与环境均保留。CTest 产物在 `TERMFORGE_TEST_ARTIFACTS/shell`，默认 `build/test-artifacts/shell`；runner 输出目录必须不存在。只有审核过的合成记录可公开，日常用户会话不会自动录制或上传。
+
+`ui-shells` 要求四种固定入口全部可用，缺少 Ubuntu 不作为跳过。指定一次性 GitHub Windows VM 在运行严格测试前，由 [prepare_hosted_shells](../../tools/prepare_hosted_shells.py) 检查真实启动；仅 Ubuntu 未注册时导入固定 SHA-256 的官方 rootfs。已有 Ubuntu 启动失败仍失败，不替换发行版、不启用系统功能或更改默认项。该入口拒绝普通本机环境；纯 guard/oracle 检查用 `python -m unittest tools.test_prepare_hosted_shells -v`，不执行导入。
+
+四 shell 场景的 `shells-progress.jsonl` 保留阶段、退出及回收事实。提前退出立即失败，最多 8 KiB 的真实输出尾部只写入场景 `_private/local-shells/`；CI 不上传 `_private`。选择场景先把原固定内容锚点滚入可见区再拖动，另以 681/860 两种客户区高度回归；内容、淘汰和复制断言保持相同。
 
 E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单包含合成source/raw/progress、`sessions.json`、脱敏`sample.public.json`、`resource-observations.jsonl`和`resource-summary.json`。原始`sample.json`、controller `stdout.private.json`、`.identity`、`transport.bin`、私有stderr和整个`_resources-private/`均不上传，失败兜底也排除。资源公开记录在CI本地与raw逐条比对，下载后可离线重算脱敏观测；无法从公开artifact重哈希未上传的原始传输和二进制。
 
@@ -113,6 +117,7 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 | `candidate-tui` / `candidate-input-escape` | 仅显式候选构建：真实 Vim 进入/插入/60×12 resize/退出写盘，主屏恢复、独立 `CSI 6n` 光标回复及独立 ESC 接收 | `test_candidate_tui.py` 各连续两轮；固定 `candidate-vim.vim` 以短 `-S` 命令加载，避免交互式 cmd 拆分长命令；以 Vim 写入的真实 `VimEnter`/`InsertEnter` 事件文件为启动握手，以 `Ctrl-O` 调用命令保存实际 `&columns/&lines`，核对脚本、文件、子进程尺寸及 InputQueue 字节；有界合成输出另存 `candidate-output.bin`，私有 desktop/Job，无截图。不把该路径写成 Vim Escape 或备用屏验收，不替代 #28/#29 或实际呈现验收 |
 | `candidate-alt` | 仅显式候选构建：两次 1049h/1049l、主屏文字/样式/光标恢复、历史隔离 | [两轮限定验证](results/2026-10-26-alternate-screen/validation.json)独立核对源 VT、五阶段真实 `CHAR_INFO`、transport 和候选状态；原生恢复快照一致，备用屏文字不进入主历史。夹具按实际控制台状态有界同步，不把切换前快照误记为切换后；origin/wrap、独立 margin、resize 和 #27 整项未验收，`presented_done=null` |
 | `candidate-scroll` | 仅显式候选构建：DECSTBM 局部滚动、区域外保持、有限历史语义 | [两轮限定验证](results/2026-10-26-scroll-region/validation.json)独立核对源 VT、三阶段真实 `CHAR_INFO`、候选保留文档及 `pyte==0.8.2` transport 重放；区域外不变、C/D 位于正确区域、A/B 不混入主历史。origin/wrap、独立 margin、resize 和 #27 整项未验收，`presented_done=null` |
+| `candidate-margins` | 仅显式候选构建：主屏 `2;3r`、备用屏 `4;5r`、恢复后局部滚动及四阶段真实控制台快照 | [限定验证](results/2026-10-26-margin-state/validation.json)分别核对公开源 VT 的恢复、resize/RIS 与真实 ConPTY 的宿主差异；当前宿主出现 `REGION_CIXED`，由 [#41](https://github.com/JavaZeroo/termforge/issues/41) 保留。两轮差异观察均为 `margins_per_buffer_verified=false`，不是能力通过；无截图或前台输入，`presented_done=null` |
 | `candidate-unicode` | 仅显式候选构建：固定分解组合、单 emoji、ZWJ/keycap 的真实 ConPTY 文本、子控制台 `CHAR_INFO`、候选单元格和实际 DWrite glyph | [两轮限定验证](results/2026-10-26-unicode-renderer/validation.json)独立核对源、transport、单元格和 glyph；过宽文字只在原网格内缩小字号。ZWJ/keycap 只验收原文保留和 glyph，不宣称聚类或宽度合同已通过，后者归 [#39](https://github.com/JavaZeroo/termforge/issues/39)；`presented_done=null` |
 | `ui-workflow-sessions` | 8真实会话/拒绝第9个、五路有限洪流、阅读/Find/输入/缩放/淘汰、合成粘贴取消/关闭、5次8→6→8 | `test_workflow_sessions`独立literal/raw/journal/UI和回收校验；每轮26检查点、18身份、235/256观测，资源scope=launcher-tree。data-only，不代替同次实际CF/IME、native阶段校准或操作提交端点 |
 | `ui` / `ui-edit` / `ui-restore` | 多标签、五处分隔线、重命名、捕获/Escape 回滚、新进程恢复布局 | 真实子进程尺寸、保存文件、焦点与回收；只新建会话，不恢复原进程，恢复范围见工作区保存 |
@@ -134,6 +139,8 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 | `ui-paste` | 默认 Paste/Enter 发送一次、默认 Escape 取消、Tab/Enter、隐藏目标、输出洪流、发送途中取消和关闭 | v2 `paste-workflow.json` 与 `input.bin`/`cancel.bin`/`close.bin`；接收端事件握手确保动作发生在发送途中；本场景不读取用户剪贴板；旧 v1 默认 Cancel 证据保留且不计作新默认验收 |
 | `ui-paste-system` | 真实 Unicode 系统剪贴板 → 快捷键 → 确认 → 接收端 | 只在指定一次性 hosted 环境运行；本地未运行/跳过不计系统验收 |
 | `ui-clipboard-system` | 经产品 Paste 验证占用/超限错误与重试、读取途中取消/关闭 | 延迟渲染 owner 握手、真实接收端字节、错误画面及 helper/Job 回收；仅一次性 hosted 环境运行；场景存在不等于整项通过，当前结果见 [#14](https://github.com/JavaZeroo/termforge/issues/14) |
+
+`ui-copy-system` 的嵌套 `copy_contention` 另有错误帧几何版本：v1 历史结果继续只接受 1360×860，不得补写现场几何；新 native 生产 v2，在错误发生并绘制时独立查询前后 `GetClientRect` 和 `GetObjectW` 的实际 DIB 尺寸、stride、格式，要求它们与物理 surface 一致。Python 用同一份现场元数据核对完整 BMP 头和精确字节数，接受宿主合法裁剪后的尺寸，同时拒绝缺失或相互矛盾的元数据。纯 oracle 测试和为旧 BMP 构造的模拟 v2 数据只验证校验器，不会把旧结果升级为真实 v2 观测；新的现场合同必须由新源码在指定 hosted VM 实际执行后验收。
 
 系统剪贴板边界另由 `python -m unittest experiments.shell.test_paste -v` 验证。畸形终止符用例保留 `terminator-before/after/reader.utf16le`：先核对发布前确实没有 NUL，再独立捕获系统返回的完整分配。仅接受“原分配未变且读取器拒绝”或“最后一个单元被系统改为 NUL 且读取器精确返回其前缀”两种有字节证据的结果；其他转换仍失败并留存原始内容。跨平台 `paste_test` 直接测试生产读取器共用的有界解析逻辑，包括无终止符、超限、分配末端与字符上限，不能用系统可能规范化了夹具代替解析边界测试。
 

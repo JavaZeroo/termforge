@@ -132,3 +132,13 @@ Windows Terminal 安装版本 `1.24.12741.0` 对应 annotated tag [`v1.24.12741.
 - ConPTY 通道模型：<https://learn.microsoft.com/en-us/windows/console/creating-a-pseudoconsole-session>
 - 控制台信号与模式：<https://learn.microsoft.com/en-us/windows/console/setconsolemode>、<https://learn.microsoft.com/en-us/windows/console/ctrl-c-and-ctrl-break-signals>、<https://learn.microsoft.com/en-us/windows/console/setconsolectrlhandler>
 - 官方已知限制：<https://github.com/microsoft/terminal/issues/6258>、<https://github.com/microsoft/terminal/issues/2141>、<https://github.com/microsoft/terminal/issues/15055>、<https://github.com/microsoft/terminal/issues/19417>
+
+## 2026-10-26 接手复核与固定回归入口
+
+在固定 `41cbbe3` 的独立工作树上，不修改产品代码，新鲜默认构建的 `normal` 三轮先通过，随后原 `normal` / `resize` 各十个 fresh 场景均通过。新 GO/Job 包装的原始 ConPTY 探针五轮通过；此前失败的旧探针原二进制在受监督的挂起创建包装器下五轮也通过，其文件字节保持不变。没有延长原五秒期限、修改一百万次循环、重复 ETX 或替换输入编码。
+
+本次 PowerShell 的版本资源显示字符串均为 `10.0.26100.8875`，但 `VS_FIXEDFILEINFO` 的数值版本为 cmd `10.0.26100.9278`、conhost `10.0.26100.9444`；conhost 数值版本与旧报告一致。显示字符串和数值版本并不等价，文件 SHA-256 在此次核对前后不变，不能据此宣称系统曾更换版本。回归入口同时记录固定数值、资源字符串和文件哈希。当前仍未定位旧失败与现在成功的因果差异，旧失败不能改判成功。
+
+已将一次性原始反馈整理为[受监督 cmd 回归入口](../../experiments/conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)。输入/输出、实际系统文件和当前构建身份与回收结果各自落盘，遇到旧失败会保留失败而非跳过。它完成 #36 的可重复探针工作，**没有产品 Ctrl+C 修复，也没有验收原生处理函数的独立信号场景**。旧 9444 失败与根因缺口继续保留，#36 保持 OPEN。
+
+最终入口的[三次 fresh 公开样本](../../experiments/conpty/results/2026-10-26-ctrl-c-retest/validation.json)另有本地离线复核：全部原件大小/哈希和独立完整标记重新计算一致，内外回收通过。原始运输没有公开，源码到二进制没有独立构建证明；这些限制随记录保留。

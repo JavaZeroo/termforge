@@ -2,6 +2,17 @@
 #include "../shell/ui_font.hpp"
 #include <cmath>
 
+static void verify_text_conversion() {
+    require(utf16("").empty(), "empty UTF-8 must convert to an empty UTF-16 string");
+    require(utf16("A中e\xcc\x81😀") == L"A中e\u0301\U0001f600", "valid UTF-8 scalars changed during conversion");
+    for (const auto& invalid : {std::string("\xff"), std::string("\xc0\x80"),
+                                std::string("\xed\xa0\x80"), std::string("\xe4\xb8")}) {
+        bool rejected = false;
+        try { (void)utf16(invalid); } catch (const std::runtime_error&) { rejected = true; }
+        require(rejected, "nonempty invalid UTF-8 must remain rejected");
+    }
+}
+
 static void expect_rejected(const std::string& backend, int dpi, int zoom) {
     bool rejected = false;
     try { Renderer renderer(backend, dpi, zoom); }
@@ -135,6 +146,7 @@ static void scenario(const std::string& backend, int dpi, int zoom, float baseli
 
 int main(int argc, char** argv) {
     try {
+        verify_text_conversion();
         if (argc == 2 && std::string(argv[1]) == "--expect-missing-font") {
             try { WorkspaceFont font; }
             catch (const std::runtime_error& error) {

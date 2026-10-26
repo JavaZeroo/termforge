@@ -86,6 +86,8 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 ## 真实应用核心轨迹（#25）
 
+More 捕获现在等待完整英文提示，再发送一个 q；进程退出后继续读到真实管道 EOF，所有尾部模式关闭与 ECH 原样保存。捕获宿主有 GO/Job 监督；提示偏移、q 字节数、EOF、退出与回收由独立门槛核对。[#42 合同与固定字节回归](../../docs/research/more-capture-ech.md)明确默认 ECH 和保留的候选 pending-wrap 差异，不以部分捕获或自动差异豁免代替通过。
+
 `real_app_capture` 通过 ConPTY 启动真实 Windows cmd、`more.com` 和 Vim，分别验证正常退出、`q` 退出及无配置/无交换文件/无 viminfo 的编辑 `:wq` 与文件内容。Vim 握手要求 `VimEnter` 写入 `READY`、`InsertEnter` 写入 `INSERT`，并观察到 `[New]` 和实际插入文本，再发送 Escape 与 `:wq`，不以一个 ESC 或固定延时代替状态；等待真实事件文件，不依赖消息是否被重绘覆盖。manifest 记录真实编辑器路径和事件验证结果，事件文件一并保留。失败时保存阶段、错误、退出码、合成输出和 Job 清理结果，真实负例验证这些证据可用。`real_app_matrix.py` 将捕获字节原样交给双方核心，自研使用产品同源的 Recovery 模式；它不是截图或 GUI 验收。
 
 [2026-10-25 摘要](results/2026-10-25-real-applications/summary.json)记录应用版本、二进制/源码哈希和退出/文件结果：分页器和 Vim 为 `match`，shell 仅有已裁决的 ED2 历史策略 `reference_difference`。新增 3 个门槛后，差分、能力和真实应用测试合计 19 项通过；Windows candidate workflow 强制构建并执行，其他平台或缺少 Vim/捕获依赖时明确跳过可选测试。
@@ -119,5 +121,11 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 ## termforge.2 拥有值适配结果（#27）
 
 `0.26.1-dev+termforge.2` 增加滚动复用/初始 ID 顺序、历史淘汰和实际 C++/C ABI 适配。[v5 共同矩阵](results/2026-10-25-candidate-common-v5/summary.json)继续 95 次全部一致，[真实应用 v3](results/2026-10-25-real-applications-v3/summary.json)3 次一致，[fuzz v3](results/2026-10-25-fuzz-v3/summary.json)为 2 已知差异+6 一致，[扩展能力 v4](results/2026-10-25-capabilities-v4/summary.json)分类不变。142 个固定 crate 单元测试、doc test、23 个差分 Python、15 个计量与 C++ candidate_core 均通过；[适配验证](../../experiments/core/results/2026-10-25-candidate-adapter/validation.json)另行记录。默认 shell 和产品 TUI 仍未验收。
+
+## termforge.3 每缓冲区 margin 与宿主差异（#27/#41）
+
+`0.26.1-dev+termforge.3` 随主/备用网格保存独立滚动区域，并在 resize/RIS 同时重置。[v6 共同矩阵](results/2026-10-26-candidate-common-v6/summary.json)为 95 次一致，[扩展能力 v5](results/2026-10-26-capabilities-v5/summary.json)分类不变，[fuzz v4](results/2026-10-26-fuzz-v4/summary.json)为 2 已知差异+6 一致，[真实应用 v6](results/2026-10-26-real-applications-v6/summary.json)的固定新鲜捕获为 3 次一致。141 个固定 crate 单元测试、1 个 doc test 与 C++ `candidate_core` 均通过。
+
+[margin 验证](../../experiments/shell/results/2026-10-26-margin-state/validation.json)分别保留源 VT 的整段/逐字节恢复、resize/RIS 和真实 ConPTY 的宿主差异。真实宿主未恢复主屏 margin 由 #41 保留，差异观察不作为能力通过。另一 366 字节 More 捕获的尾部 `CR + CSI 79X` 暴露 Recovery 擦除差异与捕获同步问题，旧、新候选均与 pyte 一致，由 #42 保留，不自动改判 match 或归因于 margin 修复。
 
 路线判断见 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)。
