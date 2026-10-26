@@ -148,7 +148,8 @@ static void lifecycle_edges() {
     std::cout << "{\"case\":\"lifecycle-edges\",\"stopped_uncompleted_generation\":3,\"input_error_preserved\":true,"
                  "\"resize_error_preserved\":true}\n";
 }
-static void real_workers(bool fence_sender) {
+enum class WriterAction { stop, cancel, cancel_stop_race };
+static void real_workers(bool fence_sender, WriterAction action) {
     std::mutex gate_mutex; std::condition_variable gate_changed;
     bool reader_entered = false, reader_released = false, resize_entered=false, resize_released=false;
     bool reader_gate_enabled = !fence_sender;
@@ -206,11 +207,14 @@ static void real_workers(bool fence_sender) {
             }
         } catch (...) {
             const auto observed = transfer->progress();
+            bool observed_reader_entered = false, observed_reader_released = false;
+            { std::lock_guard<std::mutex> lock(gate_mutex);
+              observed_reader_entered = reader_entered; observed_reader_released = reader_released; }
             std::cerr << "{\"case\":\"writer-observation-rejected\",\"total\":" << observed.total
                       << ",\"accepted\":" << observed.accepted << ",\"sent\":" << observed.sent
                       << ",\"paste_in_flight\":" << observed.in_flight << ",\"queue_in_flight\":" << held.in_flight_bytes
                       << ",\"state\":" << static_cast<unsigned>(observed.state)
-                      << ",\"reader_entered\":" << reader_entered << ",\"reader_released\":" << reader_released << "}\n";
+                      << ",\"reader_entered\":" << observed_reader_entered << ",\"reader_released\":" << observed_reader_released << "}\n";
             throw;
         }
         if (fence_sender) {
@@ -226,6 +230,22 @@ static void real_workers(bool fence_sender) {
         check(!held.queued_bytes && held.in_flight_bytes <= 1024 && held.started && !held.joined && !held.stopping && !held.failed,
               "dequeued input remains in flight");
         const auto before_stop = transfer->progress();
+        if (action == WriterAction::cancel) {
+            input.cancel_paste();
+            while (!tf_shell::paste_terminal(transfer->progress().state)) {
+                check(std::chrono::steady_clock::now() < observation_deadline, "real queue cancellation finishes its claimed chunk");
+                std::this_thread::yield();
+            }
+            const auto cancelled = transfer->progress();
+            check(cancelled.state == tf_shell::PasteState::cancelled && cancelled.sent == before_stop.accepted &&
+                  cancelled.accepted == before_stop.accepted && !cancelled.in_flight && cancelled.retained_capacity <= 32,
+                  "real queue cancellation uses send acknowledgement for its claimed chunk");
+        } else if (action == WriterAction::cancel_stop_race) {
+            std::promise<void> start;
+            const auto go = start.get_future().share();
+            std::thread cancel([&] { go.wait(); input.cancel_paste(); });
+            start.set_value(); input.stop(); cancel.join();
+        }
         input.stop(); const auto joined_input = input.snapshot();
         check(joined_input.started && joined_input.joined && joined_input.stopping && !joined_input.queued_bytes &&
               !joined_input.in_flight_bytes && !joined_input.failed, "input stop joins and releases held payload");
@@ -236,10 +256,15 @@ static void real_workers(bool fence_sender) {
                   stopped_fence.state == tf_shell_test::SenderFence::State::aborted &&
                   stopped_fence.abort_reason == tf_shell_test::SenderFence::AbortReason::stop,
                   "stop wakes the held writer without a control GO");
-            check(stopped_paste.state == tf_shell::PasteState::failed && !stopped_paste.in_flight &&
-                  stopped_paste.sent == before_stop.sent && stopped_paste.accepted == before_stop.accepted &&
+            check(tf_shell::paste_terminal(stopped_paste.state) && !stopped_paste.in_flight &&
+                  stopped_paste.state != tf_shell::PasteState::completed &&
+                  stopped_paste.sent >= before_stop.sent && stopped_paste.sent <= before_stop.accepted &&
+                  stopped_paste.accepted == before_stop.accepted &&
                   stopped_paste.retained_capacity <= 32,
                   "stopped pre-send chunk is released without a fabricated write acknowledgement");
+            if (action == WriterAction::stop)
+                check(stopped_paste.state == tf_shell::PasteState::failed && stopped_paste.sent == before_stop.sent,
+                      "stop never submits its pre-send held chunk");
         }
         resize.request(40, 100); resize.start();
         {std::unique_lock<std::mutex> lock(gate_mutex);
@@ -274,7 +299,10 @@ static void real_workers(bool fence_sender) {
         cleanup();
         check(session.cleanup_complete && !session.active_after && session.child_signaled && session.exit_code == 0,
               "real queue fixture Job cleanup");
-        std::cout << "{\"case\":\"real-workers\",\"input_queued\":" << held.queued_bytes
+        const char* action_name = action == WriterAction::stop ? "stop" :
+                                  action == WriterAction::cancel ? "cancel" : "cancel-stop-race";
+        const auto after = transfer->progress();
+        std::cout << "{\"case\":\"real-workers\",\"action\":\"" << action_name << "\",\"input_queued\":" << held.queued_bytes
                   << ",\"input_in_flight\":" << held.in_flight_bytes << ",\"input_joined\":true,\"working_generation\":"
                   << coalesced.working_generation << ",\"pending_generation\":" << coalesced.pending_generation
                   << ",\"completed_generation\":" << complete.completed_generation
@@ -283,6 +311,9 @@ static void real_workers(bool fence_sender) {
                   << ",\"paste_in_flight_before_stop\":" << before_stop.in_flight
                   << ",\"total\":" << before_stop.total << ",\"child_prefix_read\":" << (fence_sender ? 16384 : 0)
                   << ",\"sender_fence_held\":" << (fence_sender ? "true" : "false")
+                  << ",\"sent_after\":" << after.sent << ",\"accepted_after\":" << after.accepted
+                  << ",\"in_flight_after\":" << after.in_flight << ",\"retained_capacity_after\":" << after.retained_capacity
+                  << ",\"state_after\":" << static_cast<unsigned>(after.state)
                   << ",\"job_active_after\":0}\n";
     } catch (...) {
         const auto original = std::current_exception();
@@ -302,7 +333,11 @@ int wmain(int argc, wchar_t** argv) {
             argc = 1;
         }
         check(argc == 1, "unknown queue probe arguments");
-        bounded_queues(); lifecycle_edges(); real_workers(fence_sender);
+        bounded_queues(); lifecycle_edges(); real_workers(fence_sender, WriterAction::stop);
+        if (fence_sender) {
+            real_workers(true, WriterAction::cancel);
+            real_workers(true, WriterAction::cancel_stop_race);
+        }
         std::cout << "bounded queues, backpressure, ordering, in-flight resize and stop verified\n";
         return 0;
     } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 2; }

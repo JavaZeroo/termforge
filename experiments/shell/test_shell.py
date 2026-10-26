@@ -465,16 +465,27 @@ class ShellTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         rows = [json.loads(line) for line in result.stdout.decode("utf-8").splitlines() if line.startswith("{")]
         actual = [row for row in rows if row.get("case") == "real-workers"]
-        self.assertEqual(len(actual), 1, result.stdout)
-        row = actual[0]
-        for field, value in dict(total=4 * 1024 * 1024, input_submitted_before_stop=16384,
+        self.assertEqual([row.get("action") for row in actual], ["stop", "cancel", "cancel-stop-race"], result.stdout)
+        for row in actual:
+            for field, value in dict(total=4 * 1024 * 1024, input_submitted_before_stop=16384,
                                  input_accepted_before_stop=17408, input_in_flight=1024,
                                  paste_in_flight_before_stop=1024, child_prefix_read=16384,
                                  sender_fence_held=True, input_joined=True, input_queued=0,
                                  working_generation=1, pending_generation=3, completed_generation=3,
                                  child_columns=102, child_rows=42, job_active_after=0).items():
-            with self.subTest(field=field):
-                self.assertEqual(row.get(field), value)
+                with self.subTest(action=row["action"], field=field):
+                    self.assertEqual(row.get(field), value)
+            self.assertEqual(row["accepted_after"], 17408)
+            self.assertEqual(row["in_flight_after"], 0)
+            self.assertLessEqual(row["retained_capacity_after"], 32)
+            if row["action"] == "cancel":
+                self.assertEqual((row["sent_after"], row["state_after"]), (17408, 4))
+            elif row["action"] == "stop":
+                self.assertEqual((row["sent_after"], row["state_after"]), (16384, 5))
+            else:
+                self.assertIn(row["state_after"], (4, 5))
+                self.assertGreaterEqual(row["sent_after"], 16384)
+                self.assertLessEqual(row["sent_after"], 17408)
 
     def test_invalid_arguments_create_no_session(self):
         result = subprocess.run([str(self.exe), "--test", "invalid", "unused.bmp"],
