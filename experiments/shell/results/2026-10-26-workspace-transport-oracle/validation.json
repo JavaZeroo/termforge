@@ -1,0 +1,141 @@
+{
+  "schema": "termforge-workspace-transport-oracle-v1",
+  "date": "2026-10-26",
+  "scope": "Test completion endpoint correction only; no product restore fix or complete R2/candidate acceptance claim.",
+  "source_commit": "e3633cc4e9aca1d0723fa49a484d9f4d56664fce",
+  "source_hash_policy": "SHA-256 of Git blob bytes (canonical repository content)",
+  "source_sha256": {
+    "CMakeLists.txt": "3f392fe061ba73084f51597b6898778f8ea89ea69cbe083cfbd9d28ab5e763fd",
+    "experiments/shell/workspace_persistence_scenario.hpp": "7f70d755549718d0fddb94b43cce12f3955727fcc51599a8bb124bf3e59ec263",
+    "experiments/shell/transport_completion.hpp": "acb72d8d85b0118ea6e2e5d44eda1154937bc616b867fdcc4fb7b89b67bcb9fe",
+    "experiments/shell/transport_completion_test.cpp": "2a5a35dfcd5034d4258cfeef9cbe58c736ccaa354c5a6f9580a11e418cd27780"
+  },
+  "preserved_contract": {
+    "observation_cap_bytes": 8192,
+    "native_deadline_ms": 30000,
+    "cwd_version_return_prompt_geometry_resize_checks": "unchanged"
+  },
+  "private_inputs": [
+    {
+      "id": "osc-title-shadow",
+      "failing_oracle": "baseline rfind marker and suffix gate",
+      "file_bytes": 1735,
+      "file_sha256": "af1a2c513b3891ce75acccca6ec2125ab46ab2fc2b312d0a05fd8cd40fa425bc",
+      "observed_streams": {
+        "cmd": {"bytes": 214, "sha256": "5e9fa7ea30608341b726aa7b1662fa898fe8a728e88f7b2099c08494d61e163e"},
+        "powershell": {"bytes": 343, "sha256": "fc2961b0e4bbf2067bd2ff16a661635ccbc321840a902cf513862229c6e6456b"},
+        "bottom": {"bytes": 168, "sha256": "bafd1b1ab688a8c4365363f5565b35cffcced3fd6721d72517379cd8d3f751ee"}
+      },
+      "original_native_result": "stage-1 timeout (unchanged)",
+      "legacy_rfind_predicates": {
+        "cmd_dir": false,
+        "powershell_dir": true,
+        "powershell_major": true,
+        "bottom": true
+      },
+      "repaired_native_helper_replay": [true, true, true, true]
+    },
+    {
+      "id": "lf-only-cup-counterexample",
+      "failing_oracle": "intermediate OSC/CSI strip with LF-only records",
+      "file_bytes": 1440,
+      "file_sha256": "339ca19fc01a0a188325fd6b4b594538cfdf6535e9b1e17ca398b6fa4472c8a5",
+      "observed_streams": {
+        "cmd": {"bytes": 96, "sha256": "e1f91c63bb069864e818cc371e93965f76c0440e6c3b8d2970f681ce35d91158"},
+        "powershell": {"bytes": 343, "sha256": "fc2961b0e4bbf2067bd2ff16a661635ccbc321840a902cf513862229c6e6456b"},
+        "bottom": {"bytes": 48, "sha256": "25f9f8759ea0abe64e2d9c4ca160d5b95e359ee035f1641ddc5cdfc30a64f334"}
+      },
+      "original_native_result": "stage-1 timeout (unchanged)",
+      "legacy_rfind_predicates": {
+        "cmd_dir": true,
+        "powershell_dir": true,
+        "powershell_major": true,
+        "bottom": true
+      },
+      "repaired_native_helper_replay": [true, true, true, true]
+    }
+  ],
+  "branch_explanation": {
+    "osc": "A later complete OSC title repeats the earlier complete output marker and makes legacy rfind false.",
+    "cup": "A fresh capture emits a complete marker followed by column-one CUP and a prompt. CUP is a record boundary; initial cursor row and final visible row are not inferred."
+  },
+  "pure_regression": {
+    "assertions": 32,
+    "positive": 6,
+    "negative": 26,
+    "default": "passed",
+    "candidate": "passed",
+    "pre_fix_red": "OSC BEL title must not shadow actual output",
+    "lf_only_red": "ConPTY column-one CUP frames an exact output line",
+    "negative_scope": [
+      "echo and CUP echo redraw",
+      "OSC BEL/ST or DCS payload",
+      "partial marker across CUP",
+      "SGR or non-column-one CUP cannot complete marker",
+      "incomplete or malformed controls",
+      "missing, stale or substring prompt"
+    ]
+  },
+  "fresh_original_method": [
+    {
+      "build": "default",
+      "method": "ShellTests.test_workspace_v2_multiple_shells_split_and_geometry_restore",
+      "rounds": 2,
+      "native_saves": 2,
+      "native_fresh_restores": 2,
+      "native_clamped_restores": 2,
+      "result": "passed",
+      "elapsed_seconds": 15.718,
+      "all_native_samples": {
+        "exit_code": 0,
+        "sessions_closed": 3,
+        "active_children_after": 0,
+        "settings_save_failed": false,
+        "job_after_active": 0,
+        "job_forced_terminations": 0,
+        "desktop_gone": true
+      },
+      "sample_sha256": {
+        "workspace-v2-clamped-0": "7be75dc10c46ef2b60b4342a9a7a7c68b9abc7c6131b459b48222c0ee64ae75c",
+        "workspace-v2-clamped-1": "59cbc9d44440267297433d7451dc979acc55339733d7ea0c7a07d6b6167b8f4f",
+        "workspace-v2-restore-0": "69a5d716ae376ae4eddbdd85803c5ea2c6956355fddad3e1458d744bfadc017c",
+        "workspace-v2-restore-1": "05b1c718e3f8f600a36be5e111b5ccb154d7d32441942b98eef6f9a29adca911",
+        "workspace-v2-save-0": "99b39d103548bd56145d31da0c8f3175334338d9af3ba76b0313bc2323444ba1",
+        "workspace-v2-save-1": "f98dbb425e5f7cae035030050549843c4f7f700e0e3d1ef62fdc1dac04db5373"
+      }
+    },
+    {
+      "build": "candidate",
+      "method": "ShellTests.test_workspace_v2_multiple_shells_split_and_geometry_restore",
+      "rounds": 2,
+      "native_saves": 2,
+      "native_fresh_restores": 2,
+      "native_clamped_restores": 2,
+      "result": "passed",
+      "elapsed_seconds": 15.571,
+      "all_native_samples": {
+        "exit_code": 0,
+        "sessions_closed": 3,
+        "active_children_after": 0,
+        "settings_save_failed": false,
+        "job_after_active": 0,
+        "job_forced_terminations": 0,
+        "desktop_gone": true
+      },
+      "sample_sha256": {
+        "workspace-v2-clamped-0": "9b475da5bd750836ce97fe564d914c8db257cf52dde284f85700fb4695cb654a",
+        "workspace-v2-clamped-1": "43a9d2fdbb015b90e4974d378c6f1e695d838ea147c65a591df6828ece496c02",
+        "workspace-v2-restore-0": "c4c90a76ac27e65142e0185335582d90bff77edf6895891ef2a83fd4c47b9b51",
+        "workspace-v2-restore-1": "da563eb1da603d2bd594549aef5c6a2e52dee60d6733bbcfa84d038af8f52e37",
+        "workspace-v2-save-0": "28f14503548006c80a2065470aae50b325cee69d60082b330a97e52852b9bfc8",
+        "workspace-v2-save-1": "f7742ff19340a911de3c7e10e63c2cef1e43be9ce2c2076ab804835f02eb2046"
+      }
+    }
+  ],
+  "limitations": [
+    "Original failed runs remain failed; helper replay does not rewrite historical observations.",
+    "Raw transport and original failure JSON remain private.",
+    "Private non-input desktops and owned Jobs only; no user system clipboard or IME.",
+    "Merged-tree CI and complete candidate regression are separate checks."
+  ]
+}

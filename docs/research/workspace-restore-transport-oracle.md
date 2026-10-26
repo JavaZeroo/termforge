@@ -27,4 +27,4 @@ python -m unittest experiments.shell.test_shell.ShellTests.test_workspace_v2_mul
 
 候选构建使用相同测试命令和原场景两轮保存/新进程恢复，将 `TERMFORGE_BIN_DIR` 指向显式候选构建。两个构建使用私有非输入 desktop 和自有 Job；无须接触用户剪贴板或输入法。
 
-本地最终验证：默认与候选 Release 构建均通过独立 helper 回归和上述原测试方法；每种构建完成两轮保存、两轮新进程恢复和两轮超宽窗口裁剪恢复。原始两份失败字节分别经 C++ helper 重放，四个条件均成立。此处不代替合并后 CI 或完整候选回归。
+本地最终验证：默认与候选 Release 构建均通过独立 helper 回归和上述原测试方法；每种构建完成两轮保存、两轮新进程恢复和两轮超宽窗口裁剪恢复。原始两份失败字节分别经 C++ helper 重放，四个条件均成立。[公开复核摘要](../../experiments/shell/results/2026-10-26-workspace-transport-oracle/validation.json)记录源文件及输入身份、旧谓词、反例和 fresh 样本哈希；原始运输数据保留本地。此处不代替合并后 CI 或完整候选回归。
