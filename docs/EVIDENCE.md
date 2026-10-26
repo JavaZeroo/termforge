@@ -14,6 +14,8 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 
 显式官方后端的旧 `.3` 实现及独立生命期/双 SHA 拒绝记录见[实验合同](research/experimental-conpty-backend.md)与[冻结验证](../experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)。联合源码 `3e5b96d` 的[三配置清单](../experiments/conpty/results/2026-10-26-joint-backend/validation.json)分别记录默认43/45、候选/system 48/48、显式官方46/48（shell套件超时，未完成项仍未知）；原resize/Vim各一红一绿、粘贴两红。新恢复/worker/工作区失败由 #61–#63 承接，旧失败不因其他轮成功变成通过。
 
+后续合并推送的两个独立失败见[原件审计](../experiments/shell/results/2026-10-26-postmerge-ci/validation.json)：main `098f9ab` 工作区第二轮保存 stage2 [#72](https://github.com/JavaZeroo/termforge/issues/72)，实验分支源码 `af563ba` 的 681 高度选择场景 [#73](https://github.com/JavaZeroo/termforge/issues/73)。两次 CI 实际均为默认自研核心/system；return2、Job0、desktop 已删除，原生退出/EOF 与逐运行 EXE 绑定仍未知。它们不等同已修 #61/#66，另一批 PR 成功不能覆盖这些失败。
+
 ## 产品能力的限定验收
 
 | 范围 | 结果与复现入口 | 可以支持的结论与限制 |
@@ -49,6 +51,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 | 原生 margin 逐字段合同与修复候选（#56 仍开放） | [合同、源码与路径](research/conpty-native-margin-path.md)、[独立 oracle](../experiments/conpty/margin_contract.py)、[固定运行](../experiments/conpty/results/2026-10-26-native-margin-path/validation.json) | 四阶段文字/格属性/光标独立判据；系统与官方原生 final 仍红，官方80列两次原5秒生命周期失败保留。共享单 margin 源码支持小 MIT fork 候选；patch 仅可应用，未编译、未运行、不计修复。 |
 | ConPTY 系统/固定官方后端的同源 margin A/B（#41、#47 未关闭） | [合同与第一方来源](research/conpty-margin-backends.md)、[固定 175B 与 16 case 结果](../experiments/conpty/results/2026-10-26-margin-backends/validation.json) | 相同 175B、两网格/两 mode/两 fresh：系统末端 margin 错，固定官方后端的末端正确；CHAR_INFO 仍错。禁用 VT 由窄屏反例拒绝；仅诊断可行性，不证明 PR #50 或 main 联合整合通过。 |
 | 实验输入 worker 持块与停止（#62） | [sender fence 合同](research/sender-fence.md)、[固定源码与实际字段](../experiments/shell/results/2026-10-26-sender-fence/validation.json) | `519a3f3` 的系统/官方各两进程、每次 stop/cancel/竞争，共 12 条实际 worker 记录，均 join/Job0；另有各一次原 focus 单测和各 2/2 纯 CTest。明确修正旧 never-read/output-first 不能保证 16KiB 的夹具假设，同 EXE 旧顺序仍红。实现仅在 PR #50 实验整合，main 未包含；probe 未链接候选 VT，纯 EOF 为模拟，#53 UI/3MB/768B/八会话及完整官方矩阵未验收。 |
+| Native Vim 捕获目录隔离 | [原因与复验](research/vim-fixture-isolation.md)、[固定原件审计](../experiments/conpty/results/2026-10-26-vim-fixture-isolation/validation.json) | 实验分支同旧 EXE 的兄弟运行一绿一红；修正新目录隔离后完整模块9/9。仅闭合 #52 native 夹具原因；GUI stage59 仍开放，未知与受扰动探针分列。 |
 | 工作区几何与交互的固定记录 | [#38](https://github.com/JavaZeroo/termforge/issues/38)、[工作区几何与输出验证](../experiments/shell/results/2026-10-26-workspace-geometry/validation.json)、[resize 限定证据](../experiments/core/results/2026-10-26-resize-replay/validation.json) | 固定 27f376d 的客户区/布局/输出、默认/候选恢复及窄屏记录；其完整回归仍有 #36/#38 红项，不代表当前所有配置或 R2 通过。 |
 | 短窗口选区夹具与 hosted 四 shell 前置（#38） | [固定锚点回归](../experiments/shell/test_shell.py)、[准备入口](../tools/prepare_hosted_shells.py)、[夹具收尾合同](research/hosted-wsl-fixture-cleanup.md)、[云端结果与剩余阻塞](https://github.com/JavaZeroo/termforge/issues/38) | 短窗口保留相同选择断言；仅指定一次性 hosted VM 准备固定 Ubuntu。夹具强制收尾与产品自然退出分列，未知归属/回收仍失败。 |
 | 工作区恢复的运输完成端点（#38 夹具修正） | [限定合同](research/workspace-restore-transport-oracle.md)、[原失败及默认/候选验证](../experiments/shell/results/2026-10-26-workspace-transport-oracle/validation.json) | OSC 标题中的重复标记与 column-one CUP 误导旧端点；新判定保留完整 UTF-8、期限、负载及恢复断言。仅修夹具，不宣称修复产品恢复。 |
@@ -57,8 +60,6 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 | 拒绝负例的读取前停止（#46 夹具修正） | [原记录、反事实及 fresh 验证](../experiments/shell/results/2026-10-26-receiver-stop/validation.json)、[公开空数据夹具](../experiments/shell/fixtures/rejected-order-before-read.json) | 旧 oracle 错误拒绝“首读前已停止”；同一空数据/零读原件红→绿，正常读取约束保留。限定夹具修正，不解释 #44 的退出。 |
 | 候选 GUI 合法空标题（#45） | [真实 GUI 前后对照](../experiments/shell/results/2026-10-26-empty-title/validation.json)、[转换入口](../experiments/presentation/render.hpp)、[持续回归](../experiments/shell/candidate_title_test.cpp) | 真实空 OSC 标题使旧 UTF 转换抛异常；修后两 fresh GUI 正常，非法非空反例保留。不回填旧 normal-1 未知异常的根因。 |
 | More 尾部 ECH 与捕获时序（#42 限定修复） | [合同及来源](research/more-capture-ech.md)、[修复前后与同输入对照](../experiments/differential/results/2026-10-26-more-ech/validation.json)、[历史触发记录](../experiments/shell/results/2026-10-26-margin-state/validation.json) | Recovery ECH 缺失和旧捕获过早分开修正，同原件 whole/byte 红→绿；完整 More 提示、单 q/自然退出/EOF/Job0 独立核对。候选 pending-wrap 差异仍保留。 |
-
-[#52 native 捕获目录隔离](research/vim-fixture-isolation.md)保留同旧 EXE 的兄弟运行红例、修后完整 cmd/More/Vim 两轮和真实 stale-fixture 反例；GUI stage59 仍有本批真实红例，不能据此关闭 #52。
 
 ## 核心路线、参考与历史验证
 

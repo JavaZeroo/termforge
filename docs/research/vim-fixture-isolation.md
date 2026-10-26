@@ -1,6 +1,6 @@
 # Vim 捕获的运行目录隔离
 
-[#52](https://github.com/JavaZeroo/termforge/issues/52) 的 native `new-buffer` 和 GUI stage59 是两条独立入口。本页只解释 native 捕获复用旧文件的原因；GUI 仍有真实失败，不能由本修正关闭 #52。
+[#52](https://github.com/JavaZeroo/termforge/issues/52) 的 native `new-buffer` 和 GUI stage59 是两条独立入口。本页只解释 native 捕获复用旧文件的原因；GUI 仍有真实失败，不能由本修正关闭 #52。实现通过 [PR #70](https://github.com/JavaZeroo/termforge/pull/70) 合入 `fix/conpty-backend-r47` 实验分支，尚未进入 main。
 
 ## native 反例与修正
 
@@ -14,7 +14,7 @@
 
 ## 复验
 
-先构建 `real_app_capture`，在当前进程 PATH 提供固定 Vim；设置 `TERMFORGE_REAL_APP_CAPTURE` 指向所验配置的实际 EXE。
+先在上述实验分支构建 `real_app_capture`，在当前进程 PATH 提供固定 Vim；设置 `TERMFORGE_REAL_APP_CAPTURE` 指向所验配置的实际 EXE。
 
 ```powershell
 python -m unittest discover -s experiments/differential -p test_real_app_matrix.py -v
