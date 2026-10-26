@@ -38,7 +38,7 @@ jobs:
       - name: Build
         run: cmake --build build --config Release --parallel 2
       - name: Verify shell preparation guards and oracles
-        run: python -m unittest tools.test_prepare_hosted_shells -v
+        run: python -m unittest tools.test_prepare_hosted_shells tools.test_owned_job_cleanup -v
       - name: Prepare hosted Windows shell prerequisites
         if: runner.os == 'Windows'
         run: python -m tools.prepare_hosted_shells --out local/hosted-shells

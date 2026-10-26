@@ -20,6 +20,7 @@ import traceback
 import urllib.request
 
 from experiments.conpty.run import OwnedJob
+from tools.owned_job_cleanup import JobMembers, helper_cleanup_accepted
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = "termforge-hosted-shell-preparation-v1"
@@ -270,7 +271,17 @@ def run_step(step, out):
     record = {"schema": SCHEMA, "step": step, "status": "failed", "failure_code": "worker_failed"}
     job = process = None
     assigned = False
+    cleanup = {"root_natural_exit": False, "root_reaped": False, "root_exit_code": None,
+               "root_direct_kill_requested": False, "job_termination_requests": 0,
+               "job_before": None, "job_after": None, "job_after_pid_count": None,
+               "membership_stable": False, "members": [], "member_cleanup_requested_count": 0,
+               "verified_wsl_helper_count": 0,
+               "helper_cleanup_policy": "not-observed", "audit_status": "not-observed"}
+    record["cleanup"] = cleanup
     stdout = stderr = b""
+    def terminate_job():
+        cleanup["job_termination_requests"] += 1
+        job.terminate()
     try:
         job = OwnedJob()
         command = [sys.executable, "-m", "tools.prepare_hosted_shells", "--out", str(out), "--worker", step]
@@ -280,11 +291,12 @@ def run_step(step, out):
         assigned = True
         try:
             stdout, stderr = process.communicate(b"GO\n", timeout=STEPS[step])
+            cleanup["root_natural_exit"] = True
         except subprocess.TimeoutExpired:
             record["failure_code"] = "worker_deadline"
-            job.terminate()
+            terminate_job()
             stdout, stderr = process.communicate(timeout=5)
-        if process.returncode == 0 and len(stdout) <= 4096:
+        if cleanup["root_natural_exit"] and process.returncode == 0 and len(stdout) <= 4096:
             value = json.loads(stdout)
             if set(value) == {"result"} and value["result"] in RESULTS_BY_STEP[step]:
                 record.update(status="passed", failure_code="none", result=value["result"])
@@ -299,21 +311,60 @@ def run_step(step, out):
         (private / "exception.txt").write_text(traceback.format_exc(), encoding="utf-8")
     finally:
         if job is not None:
+            audit = None
             try:
                 if process is not None and process.poll() is None:
                     if assigned:
-                        job.terminate()
+                        terminate_job()
                     else:
+                        cleanup["root_direct_kill_requested"] = True
                         process.kill()  # no GO was sent
                     stdout, stderr = process.communicate(timeout=5)
-                if assigned and job.drain()["active"]:
-                    record.update(status="failed", failure_code="cleanup_failed")
-                    job.terminate()
-                    if job.drain()["active"]:
+                cleanup["root_reaped"] = process is not None and process.poll() is not None
+                cleanup["root_exit_code"] = process.returncode if cleanup["root_reaped"] else None
+                if assigned:
+                    cleanup["job_before"] = job.drain()
+                    audit = JobMembers(job, process.pid)
+                    cleanup["membership_stable"] = audit.stable
+                    cleanup["members"] = audit.members
+                    cleanup["verified_wsl_helper_count"] = sum(
+                        member["role"] == "windows-wsl-host" and
+                        member["exact_job_membership_verified"] and member["query_error"] == 0
+                        for member in audit.members)
+                    write_json(private / "cleanup-members.json", audit.private)
+                    if cleanup["job_before"]["active"]:
+                        cleanup["member_cleanup_requested_count"] = len(audit.members)
+                        terminate_job()
+                    cleanup["job_after"] = job.drain()
+                    cleanup["job_after_pid_count"] = len(audit.process_ids())
+                    audit.observe_exit()
+                    cleanup["audit_status"] = "observed"
+                    if (cleanup["job_after"]["active"] or cleanup["job_after_pid_count"] or
+                            not cleanup["membership_stable"] or
+                            len(audit.members) != cleanup["job_before"]["active"]):
                         record.update(status="failed", failure_code="cleanup_failed")
+                    if cleanup["job_before"]["active"]:
+                        if helper_cleanup_accepted(step, record["status"] == "passed", cleanup):
+                            cleanup["helper_cleanup_policy"] = "owned-wsl-host-fixture-v1"
+                        else:
+                            cleanup["helper_cleanup_policy"] = "unverified-remaining-members"
+                            record.update(status="failed", failure_code="cleanup_failed")
+                    else:
+                        cleanup["helper_cleanup_policy"] = "natural-empty-job"
             except Exception:
+                cleanup["audit_status"] = "failed"
                 record.update(status="failed", failure_code="cleanup_failed")
+                (private / "cleanup.exception.txt").write_text(traceback.format_exc(), encoding="utf-8")
+                # Failure remains a failure even if a final owned-job cleanup succeeds.
+                if assigned:
+                    try:
+                        terminate_job()
+                        cleanup["job_after"] = job.drain()
+                    except Exception:
+                        pass
             finally:
+                if audit is not None:
+                    audit.close()
                 job.close()
         (private / "worker.stdout").write_bytes(stdout)
         (private / "worker.stderr").write_bytes(stderr)
