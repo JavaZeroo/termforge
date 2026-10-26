@@ -1,7 +1,7 @@
 {
   "schema": "termforge-r54-preparation-validation-v1",
   "source_base_commit": "3d6d44d3b3e9a9a3e41da98e8711e9f19a211fd8",
-  "source_identity": "source_sha256 records actual tested checkout bytes; committed Git blobs can differ only by checkout newline normalization",
+  "source_identity": "source_sha256 preserves tested checkout bytes at 56459cabd697f999547b0dec77e59fd0422c67c5; CI-only follow-up below is a separate identity",
   "source_sha256": {
     ".github/workflows/core-candidate.yml": "c758f8acc205b9bb0f5bca78e0505242c4695195425063ea96c6394d6b5c244e",
     "CMakeLists.txt": "185832b2b503091d9e1a9538e120e27fa8d8bcf8c8a6804f062b46a57868d325",
@@ -115,5 +115,14 @@
     "No transport/input/presentation or product workflow acceptance"
   ],
   "original_12_cost_samples_changed": false,
-  "performance_gate": "not_evaluated"
+  "performance_gate": "not_evaluated",
+  "ci_followup": {
+    "first_failed_run": "https://github.com/JavaZeroo/termforge/actions/runs/40305230147",
+    "first_failure": "workflow did not instantiate jobs: runner context is unavailable in job-level env",
+    "correction_commit": "3e2ba43",
+    "correction": "derive executable suffix from matrix.os in job-level env",
+    "workflow_sha256": "ff68936d25ec3057fe780155bea663ec086aaff3819de7233894a8e63b75a05b",
+    "measurement_runtime_changed": false,
+    "validation": "new GitHub validation pending; no formal cost samples"
+  }
 }
