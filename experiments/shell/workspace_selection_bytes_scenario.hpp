@@ -6,6 +6,7 @@
 #include <iterator>
 #include <sstream>
 #include <string_view>
+#include "clipboard_failure.hpp"
 #include "scenario_tick_gate.hpp"
 
 inline void Workspace::scenario_selection_bytes() {
@@ -151,7 +152,8 @@ inline void Workspace::scenario_selection_bytes() {
         try {
             tf_shell::write_unicode_clipboard(window_,u"TF_BYTES_SENTINEL 中文 e\u0301");
         } catch (const tf_shell::ClipboardError& error) {
-            observe_clipboard_error(true,error); release_held_clipboard(owner); throw;
+            observe_clipboard_error(true,error);
+            tf_shell_test::rethrow_clipboard_failure([&] { release_held_clipboard(owner); },std::cerr);
         }
         require(!owner,"occupied selection clipboard write unexpectedly succeeded");
     };
@@ -164,7 +166,8 @@ inline void Workspace::scenario_selection_bytes() {
             require(!owner,"occupied selection clipboard read unexpectedly succeeded");
             const std::wstring wide(value.begin(),value.end()); return utf8(wide.c_str());
         } catch (const tf_shell::ClipboardError& error) {
-            observe_clipboard_error(false,error); release_held_clipboard(owner); throw;
+            observe_clipboard_error(false,error);
+            tf_shell_test::rethrow_clipboard_failure([&] { release_held_clipboard(owner); },std::cerr);
         }
     };
     const auto copy_if_system = [&]() {
