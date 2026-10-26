@@ -1,6 +1,6 @@
 # 固定候选来源与本地补丁
 
-当前适配版本为 `alacritty_terminal 0.26.1-dev+termforge.2`，不是 crates.io 原始 `0.26.0`。
+当前适配版本为 `alacritty_terminal 0.26.1-dev+termforge.3`，不是 crates.io 原始 `0.26.0`。
 
 ## 上游身份
 
@@ -11,7 +11,7 @@
 - 固定内容：`Cargo.toml`、`CHANGELOG.md`、`LICENSE-APACHE`、`src/`。未复制约 46 MiB 的上游 `tests/` 行为录制；内联单元测试和 doc test 保留并执行。
 - 选择此 commit 是因为其 0.26.1-dev changelog 已包含 PTY non-blocking、ViMotion、逐格零宽字符内存上限和零列 Row 修复。它不代表正式 0.26.1 已发布。
 
-`termforge.2` 的 `Cargo.lock` 固定 59 个注册表依赖包，连同固定 path crate 共 60 个包。当前最高声明 Rust 版本为 1.85，实际验证工具链为 1.92.0；升级时须重新审查整个依赖图，不能沿用旧锁定图的 1.88 结论。
+`termforge.3` 的 `Cargo.lock` 固定 58 个注册表依赖包，连同根适配器与固定 vendor 两个 path crate 共 60 个包。当前最高声明 Rust 版本为 1.85，实际验证工具链为 1.92.0；升级时须重新审查整个依赖图，不能沿用旧锁定图的 1.88 结论。
 
 ## termforge.2 补丁
 
@@ -30,6 +30,16 @@
    - 按 Storage 的真实 top/bottom 索引方向分配初始 ID，不能只依赖 `resize_with` 或物理 Vec 顺序。
 5. `Cargo.toml`
    - 固定独立构建所需的 edition/MSRV，并以 `0.26.1-dev+termforge.2` 明确标识补丁版本。
+
+## termforge.3 补丁
+
+1. `src/term/mod.rs`
+   - 为非活动屏幕保存独立 `inactive_scroll_region`，`swap_alt` 与网格一起交换两份滚动区域。
+   - resize 与 RIS 同时重置两份滚动区域；公开 C++ feed 覆盖整段/逐字节、主屏 `2;3r`、备用屏 `4;5r`、恢复后局部滚动及 resize/RIS 边界。
+2. `Cargo.toml`
+   - 以 `0.26.1-dev+termforge.3` 标识补丁，未增加第三方依赖。
+
+真实 ConPTY 的宿主 margin 差异由 [#41](https://github.com/JavaZeroo/termforge/issues/41) 保持开放；差异观察固定为 `margins_per_buffer_verified=false`，不作为产品能力通过。WindTerm 定向静态证据只用于 screen 状态归属分析，不等于运行时恢复或等价证明。
 
 原始上游与本目录的差异可用固定 commit 对比复核；差分/真实应用/计量 manifest 另记录每个 vendor 文件的 SHA-256。后续补丁必须更新版本、测试和本文件，不得覆盖来源或继续称为未修改上游版本。
 

@@ -59,6 +59,54 @@ void alternate_and_replies() {
     require(terminal.take_events().empty(), "candidate events were not drained");
 }
 
+void per_buffer_margins() {
+    const std::string before = "\x1b[2J\x1b[HTOP_FIXED\r\nREGION_A\r\nREGION_B\r\nBOTTOM_FIXED\r\n\x1b[2;3r";
+    const std::string alt = "\x1b[?1049hALT_OUTSIDE\r\n\x1b[4;1HALT_A\r\nALT_B\x1b[4;5r\x1b[5;1H\nALT_C\nALT_D";
+    const std::string after = "\x1b[?1049l\x1b[3;1H\nREGION_C\nREGION_D\x1b[6;1HTF_MARGIN_DONE\r\n";
+    for (const bool fragmented : {false, true}) {
+        termforge::CandidateTerminal terminal(24, 80, 100);
+        const auto feed = [&](const std::string& data) {
+            if (fragmented) {
+                for (const char byte : data) terminal.feed(std::string_view(&byte, 1));
+            } else terminal.feed(data);
+        };
+        feed(before);
+        feed(alt);
+        require(text(terminal.screen.lines[0]) == "ALT_OUTSIDE" && text(terminal.screen.lines[3]) == "ALT_C" &&
+                text(terminal.screen.lines[4]) == "     ALT_D", "alternate scroll region differs");
+        feed(after);
+        const std::vector<std::string> expected = {
+            "TOP_FIXED", "REGION_C", "        REGION_D", "BOTTOM_FIXED", "", "TF_MARGIN_DONE",
+        };
+        for (size_t row = 0; row < expected.size(); ++row)
+            require(text(terminal.screen.lines[row]) == expected[row], "main scroll region was not restored");
+        for (size_t row = expected.size(); row < terminal.screen.lines.size(); ++row)
+            require(text(terminal.screen.lines[row]).empty(), "unexpected content after margin fixture");
+        require(terminal.screen.history.empty(), "per-buffer margins polluted main history");
+        require(terminal.screen.row == 6 && terminal.screen.column == 0 && !(terminal.mode_bits() & (1 << 12)),
+                "margin fixture cursor or alternate mode differs");
+    }
+}
+
+void margin_resize_and_reset() {
+    termforge::CandidateTerminal resized(5, 8, 4);
+    resized.feed("\x1b[2;3r\x1b[?1049h\x1b[4;5r");
+    resized.resize(8, 8);
+    resized.feed("\x1b[?1049l\x1b[1;1H1\r\n2\r\n3\r\n4\r\n5\r\n6\r\n7\r\n8\r\n9");
+    require(resized.screen.history.size() == 1 && text(resized.screen.history[0]) == "1",
+            "resize retained an inactive margin or incorrect history");
+    for (size_t row = 0; row < resized.screen.lines.size(); ++row)
+        require(text(resized.screen.lines[row]) == std::to_string(row + 2),
+                "resize did not reset both scrolling regions");
+
+    termforge::CandidateTerminal reset(4, 8, 4);
+    reset.feed("\x1b[2;3r\x1b[?1049h\x1b[3;4r\x1b" "c");
+    reset.feed("\x1b[?1049h1\r\n2\r\n3\r\n4\r\n5");
+    require(reset.screen.history.empty() && text(reset.screen.lines[0]) == "2" &&
+            text(reset.screen.lines[1]) == "3" && text(reset.screen.lines[2]) == "4" &&
+            text(reset.screen.lines[3]) == "5", "RIS did not reset both scrolling regions");
+}
+
 void empty_payload_events() {
     termforge::CandidateTerminal terminal(3, 8, 2);
     terminal.feed("\x1b]0;title\a");
@@ -346,6 +394,8 @@ int main(int argc, char** argv) {
     try {
         fragmentation();
         alternate_and_replies();
+        per_buffer_margins();
+        margin_resize_and_reset();
         empty_payload_events();
         identity_versions_and_eviction();
         conpty_resize_replay(argc > 1 ? std::filesystem::path(argv[1]) :

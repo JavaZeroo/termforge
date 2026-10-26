@@ -24,7 +24,7 @@ class AlacrittyCandidateTests(unittest.TestCase):
         self.assertFalse(self.summary["performance_measured"])
 
     def test_identity_and_limitations_are_recorded(self):
-        self.assertEqual(self.summary["version"], "0.26.1-dev+termforge.2")
+        self.assertEqual(self.summary["version"], "0.26.1-dev+termforge.3")
         self.assertEqual(self.summary["license"], "Apache-2.0")
         self.assertEqual(self.summary["upstream_commit"], "542147067dd016fc5f49120ef0ba605a98a4e3a7")
         self.assertEqual(len(self.summary["trace_sha256"]), 64)
