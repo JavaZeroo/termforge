@@ -34,12 +34,20 @@
     "boundary_batch": {
       "maximum": 4,
       "executed": 3,
-      "stop": "two original stage59 failures and one original-assertion diagnostic green"
+      "stop": "at least one original stage59 and one valid green, or any different failure; otherwise maximum four cases",
+      "observed_outcomes": [
+        "stage59",
+        "stage59",
+        "green"
+      ]
     },
     "function_batch": {
       "maximum": 2,
       "executed": 1,
-      "stop": "first original stage59 failure with verified function entry/caller evidence"
+      "stop": "first original stage59 or any different failure; otherwise maximum two cases",
+      "observed_outcomes": [
+        "stage59"
+      ]
     },
     "target_input_buffers_or_return_values_modified_by_script": false,
     "records_limit": 512,
