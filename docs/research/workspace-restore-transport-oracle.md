@@ -16,7 +16,7 @@
 
 ## 限定 oracle 合同
 
-[#88](https://github.com/JavaZeroo/termforge/issues/88) 的官方后端第二轮普通恢复 stage1 原件中，主 cmd 的 262 B 运输包含命令回显的裸 CR/CUP，随后已有独立目录输出和新提示符。相同 helper 重放四个谓词，仅主 cmd 为 false；只移除该回显 CR 后为 true，再去掉真实输出行仍为 false。修正将这种已存在文字的回显记录保持为不可信，等待真实 LF 后重新验证独立输出；不模拟 CR/CUP，也不删除或拼接回显文字。原完整回归失败保留在 [#51 固定记录](../../experiments/conpty/results/2026-10-27-native-viewport-resize/validation.json)，修复的最终集成状态由 #88 跟踪。
+[#88](https://github.com/JavaZeroo/termforge/issues/88) 的官方后端第二轮普通恢复 stage1 原件中，主 cmd 的 262 B 运输包含命令回显的裸 CR/CUP，随后已有独立目录输出和新提示符。相同 helper 重放四个谓词，仅主 cmd 为 false；只移除该回显 CR 后为 true，再去掉真实输出行仍为 false。修正将这种已存在文字的回显记录保持为不可信，等待真实 LF 后重新验证独立输出；不模拟 CR/CUP，也不删除或拼接回显文字。原完整回归失败保留在 [#51 固定记录](../../experiments/conpty/results/2026-10-27-native-viewport-resize/validation.json)。[修正验证](../../experiments/shell/results/2026-10-27-workspace-echo-cr/validation.json)保留相同触发断言的红绿、最终补充的四个用例，以及构建完成后正式执行的原两轮保存/恢复/钳制；六次运行和完整 shell 方法通过。最终官方配置 CTest 55/56、398.08 秒，Vim stage59 仍归 #52；新构建的 trace 使四项可选差分检查实际执行，剩余 8 项内部 skip 单列。构建重叠的早期运行已排除，旧 #63/#87 失败未因本轮未复现而关闭。
 
 - 独立扫描 7-bit ESC 形式的完整 OSC（BEL 或 ST 终止）和 CSI。OSC 内容不参与正文匹配，UTF-8 的所有高位正文 bytes 原样保留，包括 `目` 中的 `0x9b`。
 - 标记必须匹配完整正文记录，前后不可附加命令、其它正文或任意子串。LF 结束记录；显式正行号、第 1 列 CUP/HVP 仅可结束完整标记或提示符，不能清除命令前缀或拼接分散的标记片段。其它非空内容遇 CUP 保持未知，直到真实 LF；SGR 和其它 CSI 不会凭空结束标记。
