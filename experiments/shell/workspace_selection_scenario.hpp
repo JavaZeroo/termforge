@@ -162,6 +162,20 @@ inline void Workspace::scenario_selection() {
     };
     const auto begin_autoscroll=[&](unsigned anchor,int direction) {
         select(0,Group::main); anchor_line=anchor; scroll_direction=direction;
+        // A native PageUp exposes fewer fixture rows on a short workspace.
+        // Put the same literal anchor at the opposite edge of the drag using
+        // real scrollbar messages. Separate drags then also begin at different
+        // pixels instead of accidentally becoming a double-click on short pages.
+        const auto initial=main->history_state();
+        const size_t offset=direction<0?initial.page-1:0;
+        const size_t target=(std::min)(initial.maximum_top,anchor>offset?anchor-offset:size_t{0});
+        for(size_t steps=0;;++steps) {
+            const auto state=main->history_state();
+            if(state.top==target) break;
+            require(steps<82,"selection anchor reveal exceeded the fixed fixture");
+            SendMessageW(main->handle(),WM_VSCROLL,target<state.top?SB_LINEUP:SB_LINEDOWN,0);
+            require(main->history_state().top!=state.top,"selection anchor reveal made no scrollbar progress");
+        }
         const int row=row_of(main,fixture_line(anchor));
         mouse(main,WM_LBUTTONDOWN,pixel(main,0,row));
         require(GetCapture()==main->handle(),"autoscroll drag has no actual capture");
@@ -202,13 +216,18 @@ inline void Workspace::scenario_selection() {
         click(bottom,word); record("line",entry(true),copy(bottom,true));
         record("zoom-before"); bottom->change_zoom(25); stage_=3;
     } else if(stage_==3 && bottom->settled() && main && main->settled()) {
+        // Zoom can move the still-valid selected row above a short viewport.
+        // Reveal it before observing the existing visible-highlight contract.
+        SendMessageW(bottom->handle(),WM_VSCROLL,SB_TOP,0);
         record("zoom-after");
         select(0,Group::main);
         const int other=row_of(main,"OTHER  text");
         drag(main,pixel(main,0,other),pixel(main,11,other));
         record("main-selected",entry(false),copy(main,false));
         select(0,Group::bottom); record("bottom-restored",entry(true),copy(bottom,true));
-        select(0,Group::main); bottom->fixture_command(L"echo TF_SELECT_APPEND\r"); stage_=4;
+        select(0,Group::main);
+        SendMessageW(bottom->handle(),WM_VSCROLL,SB_BOTTOM,0);
+        bottom->fixture_command(L"echo TF_SELECT_APPEND\r"); stage_=4;
     } else if(stage_==4 && bottom->live_contains_line("TF_SELECT_APPEND")) {
         record("append-retained");
         bottom->fixture_command(L"for /L %i in (1,1,500) do @echo TF_SEL_%i\r"); stage_=5;
