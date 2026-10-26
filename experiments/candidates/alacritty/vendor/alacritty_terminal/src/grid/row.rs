@@ -37,6 +37,10 @@ pub struct Row<T> {
     hard_break: bool,
     #[cfg_attr(feature = "serde", serde(skip))]
     wrap_columns: usize,
+    /// Explicit padding at a retained/native viewport boundary. Any mutable
+    /// cell access invalidates it; ordinary wrap_columns never implies padding.
+    #[cfg_attr(feature = "serde", serde(skip))]
+    native_wrap_padding: bool,
 }
 
 impl<T: Default> Default for Row<T> {
@@ -55,7 +59,7 @@ impl<T: Default> Row<T> {
     /// Create a new terminal row.
     pub fn new(columns: usize) -> Row<T> {
         let inner = iter::repeat_with(T::default).take(columns).collect();
-        Row { inner, occ: 0, id: next_row_id(), hard_break: false, wrap_columns: 0 }
+        Row { inner, occ: 0, id: next_row_id(), hard_break: false, wrap_columns: 0, native_wrap_padding: false }
     }
 
     /// Increase the number of columns in the row.
@@ -65,6 +69,7 @@ impl<T: Default> Row<T> {
             return;
         }
 
+        self.native_wrap_padding = false;
         self.inner.resize_with(columns, T::default);
     }
 
@@ -79,6 +84,7 @@ impl<T: Default> Row<T> {
             return None;
         }
 
+        self.native_wrap_padding = false;
         // Split off cells for a new row.
         let mut new_row = self.inner.split_off(columns);
         let index = new_row.iter().rposition(|c| !c.is_empty()).map_or(0, |i| i + 1);
@@ -112,6 +118,7 @@ impl<T: Default> Row<T> {
         self.occ = 0;
         self.hard_break = false;
         self.wrap_columns = 0;
+        self.native_wrap_padding = false;
     }
 }
 
@@ -119,7 +126,7 @@ impl<T: Default> Row<T> {
 impl<T> Row<T> {
     #[inline]
     pub fn from_vec(vec: Vec<T>, occ: usize) -> Row<T> {
-        Row { inner: vec, occ, id: next_row_id(), hard_break: false, wrap_columns: 0 }
+        Row { inner: vec, occ, id: next_row_id(), hard_break: false, wrap_columns: 0, native_wrap_padding: false }
     }
 
     #[inline]
@@ -138,17 +145,29 @@ impl<T> Row<T> {
     }
 
     #[inline]
+    pub fn native_wrap_padding(&self) -> bool {
+        self.native_wrap_padding
+    }
+
+    #[inline]
+    pub(crate) fn mark_native_wrap_padding(&mut self) {
+        self.native_wrap_padding = true;
+    }
+
+    #[inline]
     pub(crate) fn renew_identity(&mut self) {
         self.id = next_row_id();
     }
 
     #[inline]
     pub(crate) fn set_hard_break(&mut self, value: bool) {
+        self.native_wrap_padding = false;
         self.hard_break = value;
     }
 
     #[inline]
     pub(crate) fn set_wrap_columns(&mut self, value: usize) {
+        self.native_wrap_padding = false;
         self.wrap_columns = value;
     }
 
@@ -164,6 +183,7 @@ impl<T> Row<T> {
 
     #[inline]
     pub fn last_mut(&mut self) -> Option<&mut T> {
+        self.native_wrap_padding = false;
         self.occ = self.inner.len();
         self.inner.last_mut()
     }
@@ -173,12 +193,14 @@ impl<T> Row<T> {
     where
         T: GridCell,
     {
+        self.native_wrap_padding = false;
         self.occ += vec.len();
         self.inner.append(vec);
     }
 
     #[inline]
     pub fn append_front(&mut self, mut vec: Vec<T>) {
+        self.native_wrap_padding = false;
         self.occ += vec.len();
 
         vec.append(&mut self.inner);
@@ -196,6 +218,7 @@ impl<T> Row<T> {
 
     #[inline]
     pub fn front_split_off(&mut self, at: usize) -> Vec<T> {
+        self.native_wrap_padding = false;
         self.occ = self.occ.saturating_sub(at);
 
         let mut split = self.inner.split_off(at);
@@ -220,6 +243,7 @@ impl<'a, T> IntoIterator for &'a mut Row<T> {
 
     #[inline]
     fn into_iter(self) -> slice::IterMut<'a, T> {
+        self.native_wrap_padding = false;
         self.occ = self.len();
         self.inner.iter_mut()
     }
@@ -237,6 +261,7 @@ impl<T> Index<Column> for Row<T> {
 impl<T> IndexMut<Column> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: Column) -> &mut T {
+        self.native_wrap_padding = false;
         self.occ = max(self.occ, *index + 1);
         &mut self.inner[index.0]
     }
@@ -254,6 +279,7 @@ impl<T> Index<Range<Column>> for Row<T> {
 impl<T> IndexMut<Range<Column>> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: Range<Column>) -> &mut [T] {
+        self.native_wrap_padding = false;
         self.occ = max(self.occ, *index.end);
         &mut self.inner[(index.start.0)..(index.end.0)]
     }
@@ -271,6 +297,7 @@ impl<T> Index<RangeTo<Column>> for Row<T> {
 impl<T> IndexMut<RangeTo<Column>> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: RangeTo<Column>) -> &mut [T] {
+        self.native_wrap_padding = false;
         self.occ = max(self.occ, *index.end);
         &mut self.inner[..(index.end.0)]
     }
@@ -288,6 +315,7 @@ impl<T> Index<RangeFrom<Column>> for Row<T> {
 impl<T> IndexMut<RangeFrom<Column>> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: RangeFrom<Column>) -> &mut [T] {
+        self.native_wrap_padding = false;
         self.occ = self.len();
         &mut self.inner[(index.start.0)..]
     }
@@ -305,6 +333,7 @@ impl<T> Index<RangeFull> for Row<T> {
 impl<T> IndexMut<RangeFull> for Row<T> {
     #[inline]
     fn index_mut(&mut self, _: RangeFull) -> &mut [T] {
+        self.native_wrap_padding = false;
         self.occ = self.len();
         &mut self.inner[..]
     }
@@ -322,6 +351,7 @@ impl<T> Index<RangeToInclusive<Column>> for Row<T> {
 impl<T> IndexMut<RangeToInclusive<Column>> for Row<T> {
     #[inline]
     fn index_mut(&mut self, index: RangeToInclusive<Column>) -> &mut [T] {
+        self.native_wrap_padding = false;
         self.occ = max(self.occ, *index.end + 1);
         &mut self.inner[..=(index.end.0)]
     }

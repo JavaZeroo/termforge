@@ -38,6 +38,7 @@ void tf_terminal_free(void* terminal);
 int tf_terminal_feed(void* terminal, const uint8_t* data, size_t len, uint8_t* error, size_t error_capacity);
 int tf_terminal_finish(void* terminal, uint8_t* error, size_t error_capacity);
 int tf_terminal_resize(void* terminal, size_t rows, size_t columns, uint8_t* error, size_t error_capacity);
+int tf_terminal_resize_native_viewport(void* terminal, size_t rows, size_t columns, uint8_t* error, size_t error_capacity);
 int tf_terminal_meta(void* terminal, TfTerminalMeta* output);
 int tf_terminal_row_meta(void* terminal, size_t index, TfRowMeta* output);
 int tf_terminal_cell_meta(void* terminal, size_t index, size_t column, TfCellMeta* output);

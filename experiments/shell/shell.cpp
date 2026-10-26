@@ -46,7 +46,11 @@ class ShellWindow {
                               rows, columns, generation);
     }};
 #ifdef TERMFORGE_CANDIDATE_CORE
+#ifdef TERMFORGE_CONPTY_SIDEBYSIDE
+    termforge::CandidateTerminal parser_{24, 80, 100, termforge::CandidateResizePolicy::native_viewport};
+#else
     termforge::CandidateTerminal parser_{24, 80, 100};
+#endif
 #else
     termforge::Parser parser_{24, 80, 100, termforge::ParseMode::recovery};
 #endif

@@ -2,7 +2,7 @@
 
 按 [ADR-0006](../../docs/adr/0006-confirmed-project-direction.md)，用户确认保留本候选代码继续评估，尚未确认最终采用。下述实现、来源与回归结果继续保留；与 WindTerm 2.7.0 的重要差异、性能容差及正式选型分别提交用户确认。
 
-`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.4` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
+`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.5` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
 
 ## 构建与验证
 
@@ -25,6 +25,12 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 - 普通空单元格保留一个可绘制背景格，只有宽字符 spacer 是零宽。未写格与显式空格的语义仍受上游 `is_empty` 限制，不能由当前投影裁决；真彩色等非 16 色样式仍为 `-2`。
 - 不走 JSON。Rust/C++ 文本由调用方拥有，未做增量 FFI 或性能验收；候选 damage 的产品化仍属后续。
 - `screen.resize` 与候选 `Term::resize` 同步尺寸；默认自研回退继续采用 ADR-0005 的物理行裁剪，候选不把它称为完整 reflow。真实 ConPTY 重放可能先由上游把历史拉入可见区再覆盖，候选在完整重放后合并有界历史，按 ID 和完整行键去重，保留 Find/选区所需的稳定身份，且不让冲突产生重复 ID。连续同步缓存原始 FFI ID 与最终身份的映射，仅在需要重放的未知旧 ID 时回退到完整键匹配，不重复扫描全部历史。真实淘汰不恢复，显式清空不复活；普通空白行、未决 reflow、备用屏/滚动区全语义不在此保证内。合同与验证见 [resize/历史记录](results/2026-10-26-resize-replay/validation.json)。
+
+### 显式原生 viewport resize
+
+`CandidateResizePolicy::reflow_history` 是构造器默认值。显式官方 ConPTY 构建的候选 `ShellWindow` 选择 `native_viewport`：增高向底部加空行，增宽后可见行合并腾出的空间也保留在底部；历史继续有界保留，但不跨历史/可见区边界参与原生控制台的坐标重排。跨边界的软行关系继续用于文本复制；布局填充不变成正文空格。公开适配器检查六组原生行/光标、历史 ID、完整复制与重复 resize，并检查 0/2/100 行历史上限。
+
+`candidate_resize_replay transport.bin plan.txt --native-viewport` 与 `resize_trace.py ... --native-viewport` 显式选择同一策略。缺省命令保留原历史重排行为，未知或额外参数拒绝；重放记录须标出策略，不能用默认策略解释官方候选窗口。原生观测、原因和完整场景边界见[resize 对照](../../docs/research/native-viewport-resize.md)。WindTerm 2.7.0 的对应行为仍需调查，本策略不替代 #29 或 #34 的确认。
 
 ## 真实产品场景
 

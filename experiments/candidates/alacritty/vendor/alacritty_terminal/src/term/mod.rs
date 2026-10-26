@@ -665,6 +665,16 @@ impl<T> Term<T> {
 
     /// Resize terminal to new dimensions.
     pub fn resize<S: Dimensions>(&mut self, size: S) {
+        self.resize_with_viewport(size, false);
+    }
+
+    /// Resize against a native console whose viewport has no scrollback.
+    /// Retain terminal history while keeping it outside native coordinates.
+    pub fn resize_native_viewport<S: Dimensions>(&mut self, size: S) {
+        self.resize_with_viewport(size, true);
+    }
+
+    fn resize_with_viewport<S: Dimensions>(&mut self, size: S, preserve_viewport: bool) {
         self.seal_grapheme();
         let old_cols = self.columns();
         let old_lines = self.screen_lines();
@@ -684,11 +694,14 @@ impl<T> Term<T> {
         let mut delta = num_lines as i32 - old_lines as i32;
         let min_delta = cmp::min(0, num_lines as i32 - self.grid.cursor.point.line.0 - 1);
         delta = cmp::min(cmp::max(delta, min_delta), history_size as i32);
+        if preserve_viewport {
+            delta = cmp::min(delta, 0);
+        }
         self.vi_mode_cursor.point.line += delta;
 
         let is_alt = self.mode.contains(TermMode::ALT_SCREEN);
-        self.grid.resize(!is_alt, num_lines, num_cols);
-        self.inactive_grid.resize(is_alt, num_lines, num_cols);
+        self.grid.resize_with_viewport(!is_alt, num_lines, num_cols, preserve_viewport);
+        self.inactive_grid.resize_with_viewport(is_alt, num_lines, num_cols, preserve_viewport);
 
         // Invalidate selection and tabs only when necessary.
         if old_cols != num_cols {
