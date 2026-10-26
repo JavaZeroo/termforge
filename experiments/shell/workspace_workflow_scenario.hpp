@@ -346,12 +346,8 @@ inline void Workspace::scenario_workflow() {
     } else if(stage_==35) {
         for(const std::string name:{"F4","F5"}) {
             if(std::filesystem::file_size(gate(name).path.wstring()+L".source.bin")<4096) return;
-            const auto prefix="TF_R108_"+name+'_';bool consumed=false;
-            for(const auto& row:workflow_shell(name)->observed_document_lines()) {
-                const auto& text=row.projection.text;
-                if(text.rfind(prefix,0)==0 && text.size()>prefix.size() && text[prefix.size()]>='0' && text[prefix.size()]<='9') consumed=true;
-            }
-            if(!consumed) return;
+            const auto* shell=workflow_shell(name);
+            if(!tf_shell_test::workflow_checkpoint_ready(name,shell->observed_document_lines(),shell->visible_snapshot())) return;
         }
         workflow_checkpoint("cycle-eight",evidence.cycle);
         if(evidence.cycle<5) {++evidence.cycle;stage_=30;} else stage_=40;
