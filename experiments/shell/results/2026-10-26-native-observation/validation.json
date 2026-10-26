@@ -1,0 +1,601 @@
+{
+  "schema": "termforge-native-observation-handshakes-v1",
+  "scope": "Native observation and test-driver contracts; no candidate grid or product selection policy change",
+  "implementation_commits": {
+    "canonical_row_observation": "24b58f62ea6a82166be286ad54063e0861f1a924",
+    "actual_echo_before_selection": "948618c6914888fcebca06690370744f632394a7"
+  },
+  "source_sha256_at_948618c": {
+    "experiments/shell/shell.cpp": "c680d175326348afaf907560d8abf587d126acdef43f583da13190b2f45c9ac3",
+    "experiments/shell/runtime_observation_test.cpp": "577b5e9368d945c65a8628f55eb882cf93bb4e0da9d06d234d217ec646beb90d",
+    "experiments/core/candidate_terminal_test.cpp": "c60329aa998f66761716b4532e180d4aa1b29033fc8aa62a930dccfc8a7de88f",
+    "experiments/core/text_projection.hpp": "093300058775376b6b9b298c3d65cdcc22ab4cd5d3f12b1789afcd7c66405611",
+    "experiments/core/text_selection.hpp": "7d41d58d434ad3c32ce2f67c043e337277abbbc69e4a7a2b6bdf7e519f9f5462",
+    "experiments/core/CANDIDATE.md": "a09d9873ec570548014bd5b419878deeb0a3ec6851826af4ecb412abc7c46c8b"
+  },
+  "original_full_validation": {
+    "source_commit": "6b768b708b015afba59467662f659085078beaca",
+    "source_tree": "67906a7e0f61b225a0b270c4209ed7cb1351390f",
+    "candidate_adapter": true,
+    "ctest_count": 43,
+    "passed": 40,
+    "failed": [
+      "runtime_observation",
+      "workflow_fixture",
+      "shell"
+    ],
+    "internal_skips": 8,
+    "binary_sha256": {
+      "build\\bin\\Release\\termforge_shell.exe": "0e43f488f3c052d7c57eb522223034e4eb41a557d783f57a36c7d43382e62279",
+      "build\\bin\\Release\\terminal_trace.exe": "237e1af32e86f565546c2aae3661e32fe08311c50111e734040d9ab20110df79",
+      "build\\bin\\Release\\candidate_core_test.exe": "e5e279fff28dc67587d849ca101b839200b414ec8dcb3bec6d2c5a7914cd9ba2",
+      "experiments\\candidates\\alacritty\\target\\release\\termforge-alacritty-trace.exe": "206ad63b2047e556757c742bd9ee5e9172d37f59f6420e9ea120d850e23fa93b"
+    },
+    "evidence_sha256": {
+      "candidate-junit.xml": "bbbf4c1731e8814b08e9ebf29a31ed93c070446f3a5de425499a0ae49a98fefa",
+      "ctest.log": "86127894764e566cfe07475029af58a19bda772a31b283b02c320b390175c770",
+      "tools.log": "9977ce8341e229743e43da9bc7e8f36adde02281bfbc87672050fc58378df546",
+      "LastTest-complete.log": "b8fa6a7f691b678a23e731821f1f8677e6553c59c1fbbc434f4ffbf4868c2f13"
+    },
+    "subsequent_changes_do_not_rewrite_original_red": true
+  },
+  "canonical_row_observation": {
+    "contract": "width 0 is a wide-scalar trailing cell; canonical project_line omits its payload",
+    "adapter_trailing_text_was_not_required_to_be_empty": true,
+    "original_failure": {
+      "modes": [
+        "close",
+        "resize-close",
+        "normal",
+        "resize"
+      ],
+      "stage": 2,
+      "expected_literal": "\u4e2d\u6587\u00e9",
+      "raw_cell_concatenation_literal": "\u4e2d \u6587 \u00e9",
+      "flood_or_etx_stage_reached": false,
+      "external_watchdog_timed_out": false,
+      "active_owned_processes_after_each_failure": 0
+    },
+    "same_source_bracket": [
+      {
+        "stage": "default-before",
+        "mode": "close",
+        "accepted": true,
+        "executable_sha256": "5744a0cfbb2d6cdc42fe4e96bc3befecd0b04830a4c45fecdcc88af0e9035e3f",
+        "process_exit_code": 0,
+        "outer_timed_out": false,
+        "active_owned_processes_after": 0
+      },
+      {
+        "stage": "default-before",
+        "mode": "normal",
+        "accepted": true,
+        "executable_sha256": "5744a0cfbb2d6cdc42fe4e96bc3befecd0b04830a4c45fecdcc88af0e9035e3f",
+        "process_exit_code": 0,
+        "outer_timed_out": false,
+        "active_owned_processes_after": 0
+      },
+      {
+        "stage": "candidate",
+        "mode": "close",
+        "accepted": false,
+        "executable_sha256": "0e43f488f3c052d7c57eb522223034e4eb41a557d783f57a36c7d43382e62279",
+        "process_exit_code": 2,
+        "outer_timed_out": false,
+        "active_owned_processes_after": 0
+      },
+      {
+        "stage": "candidate",
+        "mode": "normal",
+        "accepted": false,
+        "executable_sha256": "0e43f488f3c052d7c57eb522223034e4eb41a557d783f57a36c7d43382e62279",
+        "process_exit_code": 2,
+        "outer_timed_out": false,
+        "active_owned_processes_after": 0
+      },
+      {
+        "stage": "default-after",
+        "mode": "close",
+        "accepted": true,
+        "executable_sha256": "5744a0cfbb2d6cdc42fe4e96bc3befecd0b04830a4c45fecdcc88af0e9035e3f",
+        "process_exit_code": 0,
+        "outer_timed_out": false,
+        "active_owned_processes_after": 0
+      },
+      {
+        "stage": "default-after",
+        "mode": "normal",
+        "accepted": true,
+        "executable_sha256": "5744a0cfbb2d6cdc42fe4e96bc3befecd0b04830a4c45fecdcc88af0e9035e3f",
+        "process_exit_code": 0,
+        "outer_timed_out": false,
+        "active_owned_processes_after": 0
+      }
+    ],
+    "fix": "Native line_is, has and live_contains_line reuse project_line; original literals, loads and deadlines remain",
+    "independent_literal_projection": {
+      "input": "A\u4e2de\u0301\ud83d\ude00",
+      "expected": "A\u4e2de\u0301\ud83d\ude00",
+      "candidate_core_test_passed": true
+    },
+    "post_fix_original_four_unittests": {
+      "unittests": 4,
+      "fresh_scenarios": 12,
+      "status": "passed",
+      "shell_executable_sha256": "81ec43940d087db7abeaa233c47fc61d4cf628f5b601ef42871d42c907375a28",
+      "samples": [
+        {
+          "mode": "close",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": false,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "close",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": false,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "close",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": false,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "normal",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": true,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "normal",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": true,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "normal",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": true,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "resize",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": true,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "resize",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": true,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "resize",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": true,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "resize-close",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": false,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "resize-close",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": false,
+          "outer_job_active_after": 0
+        },
+        {
+          "mode": "resize-close",
+          "status": "passed",
+          "exit_code": 0,
+          "native_cleanup_complete": true,
+          "native_active_children_after": 0,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": false,
+          "outer_job_active_after": 0
+        }
+      ],
+      "log_sha256": "a65e0314232edc2647977238f19fa2163383c860650ee5abef3544c27ea27d48"
+    }
+  },
+  "runtime_echo_handshake": {
+    "original_failed_field_values_were_not_recorded": true,
+    "original_red_summary_sha256": "749b8f9cc434e45015de1e6cf96551e1a5bf19502589cf3cf99076cac3e448ce",
+    "first_diagnostic_batch": {
+      "source_base": "24b58f62ea6a82166be286ad54063e0861f1a924",
+      "source_overrides_sha256": {
+        "experiments/shell/shell.cpp": "c680d175326348afaf907560d8abf587d126acdef43f583da13190b2f45c9ac3",
+        "experiments/shell/runtime_observation_test.cpp": "27a8357e1063d2a6a1560b716259d54d11fe0b1caae8584068b021f9c9508f50",
+        "experiments/core/candidate_terminal_test.cpp": "c60329aa998f66761716b4532e180d4aa1b29033fc8aa62a930dccfc8a7de88f"
+      },
+      "binary_sha256": "9f2e1f57949bcba22f50c25f79527546c02d8d35eb3c096757c6c3c8e1f8a853",
+      "fresh_runs": 4,
+      "exit_counts": {
+        "0": 3,
+        "1": 1
+      },
+      "runs": [
+        {
+          "run": 0,
+          "exit_code": 0,
+          "log_sha256": "593e45292328e69c2d09d47ae94d0fe99c3f20002c7a90a9ebff2e63705c2e17",
+          "echo_stages": []
+        },
+        {
+          "run": 1,
+          "exit_code": 0,
+          "log_sha256": "54a5bc1470374a71bdafdcb0ad0e93aebfc60ba469b3e7343e595cfb75e3a279",
+          "echo_stages": []
+        },
+        {
+          "run": 2,
+          "exit_code": 0,
+          "log_sha256": "105cb436bd5eec456913c634048cf21bee601ea743db1373779278317b6bd205",
+          "echo_stages": []
+        },
+        {
+          "run": 3,
+          "exit_code": 1,
+          "log_sha256": "d178e5984eef51547f50d6c680befeb9a2088b6930835c569e55fe23f5e9a2dc",
+          "echo_stages": []
+        }
+      ]
+    },
+    "stage_instrumented_control_before_barrier": {
+      "source_base": "24b58f62ea6a82166be286ad54063e0861f1a924",
+      "source_overrides_sha256": {
+        "experiments/shell/runtime_observation_test.cpp": "ea5864846f81c39897c6d10c4d774401bca04f5c39f39677704ffbe768552f5b",
+        "experiments/shell/shell.cpp": "c680d175326348afaf907560d8abf587d126acdef43f583da13190b2f45c9ac3"
+      },
+      "binary_sha256": "c28d3d497d8f69c68c6bb280c4c5081fb54fd0a5335a67515c2db21b46faa309",
+      "fresh_runs": 5,
+      "exit_counts": {
+        "0": 4,
+        "1": 1
+      },
+      "runs": [
+        {
+          "run": 0,
+          "exit_code": 0,
+          "log_sha256": "fa682ac703c8098012ec72a08ce81cbecbd917ba63949da790bc5f170ee7c0b2",
+          "echo_stages": []
+        },
+        {
+          "run": 1,
+          "exit_code": 0,
+          "log_sha256": "ad895fe2b9285b640b7a39e65177ade407cc681f5da082d2f87cc429fbfa31c0",
+          "echo_stages": []
+        },
+        {
+          "run": 2,
+          "exit_code": 0,
+          "log_sha256": "9cb8ad7b9be521124a51cd055080b3a358a73cbfb33f1596d0c729991dff52d4",
+          "echo_stages": []
+        },
+        {
+          "run": 3,
+          "exit_code": 0,
+          "log_sha256": "9d275bbc90269e8e4bcc73d0640869eb5e92b76d1f27afc94f6f675b05cc7523",
+          "echo_stages": []
+        },
+        {
+          "run": 4,
+          "exit_code": 1,
+          "log_sha256": "a2e5e00b276940d7f331ffb7877fae8e2721c3803e06b20772aa4ccab8f843ce",
+          "echo_stages": [
+            {
+              "echo_visible_before_selection": false,
+              "selected_before_find": true,
+              "echo_visible_at_failed_tasks": true,
+              "consumed_before_selection": 403,
+              "consumed_at_failed_tasks": 415
+            }
+          ]
+        }
+      ]
+    },
+    "observed_failure": {
+      "echo_stages": {
+        "echo_visible_before_selection": false,
+        "selected_before_find": true,
+        "echo_visible_at_failed_tasks": true,
+        "consumed_before_selection": 403,
+        "consumed_at_failed_tasks": 415
+      },
+      "selection_at_tasks": null,
+      "input_queued_bytes": 0,
+      "input_in_flight_bytes": 0,
+      "last_paste_state": "completed",
+      "last_paste_sent_bytes": 12,
+      "search": {
+        "state": "complete",
+        "result_count": 2,
+        "find_query_bytes": 19,
+        "editor_present": true
+      },
+      "pending_prepared_bytes": 22,
+      "pending_source_units": 23,
+      "pending_prepared_capacity_bytes": 79,
+      "paste": null
+    },
+    "finding": "Input writing had completed. The 12-byte screen echo arrived after selecting; the previously present selection range was then absent.",
+    "causal_interpretation": "The fixture selected before its own echo. The existing version-bound selection is permitted to invalidate when the selected row changes.",
+    "interpretation_uses_stage_order_and_selection_contract": true,
+    "fixture_fix": "The existing five-second wait now requires both transfer completion and the complete live TF>RUNTIME_SENT line before selecting.",
+    "wait_budget_ms": 5000,
+    "owned_child_watchdog_ms": 15000,
+    "original_compound_assertion_unchanged": true,
+    "original_input_unchanged": true,
+    "fixed_delay_added": false,
+    "selection_product_policy_changed": false,
+    "with_barrier": {
+      "source_base": "24b58f62ea6a82166be286ad54063e0861f1a924",
+      "source_overrides_sha256": {
+        "experiments/shell/runtime_observation_test.cpp": "577b5e9368d945c65a8628f55eb882cf93bb4e0da9d06d234d217ec646beb90d",
+        "experiments/shell/shell.cpp": "c680d175326348afaf907560d8abf587d126acdef43f583da13190b2f45c9ac3"
+      },
+      "binary_sha256": "06613071928baa678c2f43eac58780e88ca74ba08cf3fbdbf171d4eeeb8ef8b2",
+      "fresh_runs": 5,
+      "exit_counts": {
+        "0": 5
+      },
+      "implementation_commit": "948618c6914888fcebca06690370744f632394a7",
+      "successful_owned_window_lifecycles": 10,
+      "runs": [
+        {
+          "run": 0,
+          "exit_code": 0,
+          "log_sha256": "0b696ec8a5ba71ba08fa6065aab76fd61038ed40ee3b842f8d632cc6c33ac16f",
+          "echo_stages": [
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 415,
+              "consumed_at_tasks": 415
+            },
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 415,
+              "consumed_at_tasks": 415
+            }
+          ],
+          "successful_owned_window_lifecycles": 2,
+          "owned_job_zero_and_desktop_deleted_verified": true
+        },
+        {
+          "run": 1,
+          "exit_code": 0,
+          "log_sha256": "24e57feffa098d993ef55e5bd35103d387ae997abd8bfde9b7894756e952898e",
+          "echo_stages": [
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 415,
+              "consumed_at_tasks": 415
+            },
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 415,
+              "consumed_at_tasks": 415
+            }
+          ],
+          "successful_owned_window_lifecycles": 2,
+          "owned_job_zero_and_desktop_deleted_verified": true
+        },
+        {
+          "run": 2,
+          "exit_code": 0,
+          "log_sha256": "dc015ea02be1b18b56ea32de552ca6e250998367e6405f30c78937216aad2db1",
+          "echo_stages": [
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 415,
+              "consumed_at_tasks": 415
+            },
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 415,
+              "consumed_at_tasks": 415
+            }
+          ],
+          "successful_owned_window_lifecycles": 2,
+          "owned_job_zero_and_desktop_deleted_verified": true
+        },
+        {
+          "run": 3,
+          "exit_code": 0,
+          "log_sha256": "97a917c4c25ebdb1e89c4db6e128e8a9836311d00ad99942265d59b1b020fe0a",
+          "echo_stages": [
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 415,
+              "consumed_at_tasks": 415
+            },
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 415,
+              "consumed_at_tasks": 415
+            }
+          ],
+          "successful_owned_window_lifecycles": 2,
+          "owned_job_zero_and_desktop_deleted_verified": true
+        },
+        {
+          "run": 4,
+          "exit_code": 0,
+          "log_sha256": "29d09f7e5201c0a0c8661c23701446e2a30c26a55d920675a68551f115b7945b",
+          "echo_stages": [
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 548,
+              "consumed_at_tasks": 548
+            },
+            {
+              "echo_visible_before_selection": true,
+              "selected_before_find": true,
+              "echo_visible_at_tasks": true,
+              "consumed_before_selection": 415,
+              "consumed_at_tasks": 415
+            }
+          ],
+          "successful_owned_window_lifecycles": 2,
+          "owned_job_zero_and_desktop_deleted_verified": true
+        }
+      ]
+    },
+    "same_no_barrier_binary_counterfactual_after": {
+      "source_base": "24b58f62ea6a82166be286ad54063e0861f1a924",
+      "source_overrides_sha256": {
+        "experiments/shell/runtime_observation_test.cpp": "ea5864846f81c39897c6d10c4d774401bca04f5c39f39677704ffbe768552f5b",
+        "experiments/shell/shell.cpp": "c680d175326348afaf907560d8abf587d126acdef43f583da13190b2f45c9ac3"
+      },
+      "binary_sha256": "c28d3d497d8f69c68c6bb280c4c5081fb54fd0a5335a67515c2db21b46faa309",
+      "fresh_runs": 5,
+      "exit_counts": {
+        "0": 5
+      },
+      "runs": [
+        {
+          "run": 0,
+          "exit_code": 0,
+          "log_sha256": "37db8581624dd1c1e0aae7b243e423c4bfca5f06867fd4cf514267ef4bc4d62f",
+          "echo_stages": []
+        },
+        {
+          "run": 1,
+          "exit_code": 0,
+          "log_sha256": "0269f6a37d53ed3a8baf22206f33caf63a14634bef1d10ad163fce683c783c08",
+          "echo_stages": []
+        },
+        {
+          "run": 2,
+          "exit_code": 0,
+          "log_sha256": "0ce661270e7f9ca2d688a8cd0415acd62111cfeaefd105a8118f4d7e7d329419",
+          "echo_stages": []
+        },
+        {
+          "run": 3,
+          "exit_code": 0,
+          "log_sha256": "bc7b6eb16d5ee543d886cc2d7bd233628b176635992941a10be929b021636efb",
+          "echo_stages": []
+        },
+        {
+          "run": 4,
+          "exit_code": 0,
+          "log_sha256": "596e09986deab33c19e64334606b0c38c00409fcc46fb38ad64efa4de99898ad",
+          "echo_stages": []
+        }
+      ]
+    },
+    "intermittency_limit": "The no-barrier control failed once in its first five-run batch and passed all five later runs; no failure-rate or performance claim follows."
+  },
+  "limits": {
+    "final_integrated_full_ctest_rerun_included_here": false,
+    "complete_candidate_parity_established": false,
+    "windterm_runtime_equivalence_verified": false,
+    "presentation_completion_measured": false,
+    "controller_cmd_return_race_resolved": false
+  }
+}
