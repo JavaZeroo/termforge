@@ -100,7 +100,6 @@
       "failure": {
         "stage": "new-buffer",
         "error": "editor new buffer was not displayed",
-        "editor_pid": 58360,
         "editor_exit": 91,
         "child_signaled": true,
         "editor_bytes": 1999,
