@@ -1,6 +1,8 @@
 // Independent decision-table checks for the fixture's narrow requester-exit case.
 #include "clipboard_owner_policy.hpp"
+#include "clipboard_failure.hpp"
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 using namespace tf_shell_test;
 static void check(bool value, const char* why) { if(!value) throw std::runtime_error(why); }
@@ -70,7 +72,37 @@ static void exact_native_error_matrix() {
     ClipboardOwnerObservation complete; complete.release_event = complete.thread_exited = true;
     check(occupied.decide(complete) == ClipboardOwnerDecision::accepted, "ordinary occupied owner needs no publication");
 }
+static void cleanup_cannot_replace_primary_failure() {
+    struct PrimaryFailure : std::runtime_error {
+        int code = 5;
+        PrimaryFailure() : std::runtime_error("synthetic primary clipboard failure") {}
+    };
+    for(const bool cleanup_fails : {false,true}) for(const bool diagnostic_fails : {false,true}) {
+        std::ostringstream diagnostic;
+        if(diagnostic_fails) { diagnostic.setstate(std::ios::badbit); }
+        unsigned calls = 0;
+        try {
+            try { throw PrimaryFailure(); }
+            catch(const PrimaryFailure&) {
+                if(diagnostic_fails) {
+                    // Arm the stream while preserving the primary handler.
+                    try { diagnostic.exceptions(std::ios::badbit); } catch(const std::ios_base::failure&) {}
+                }
+                rethrow_clipboard_failure([&] {
+                    ++calls;
+                    if(cleanup_fails) throw std::runtime_error("synthetic private cleanup detail");
+                },diagnostic);
+            }
+        } catch(const PrimaryFailure& error) {
+            check(error.code == 5,"primary failure code changed");
+            check(std::string_view(error.what()) == "synthetic primary clipboard failure","primary failure text changed");
+        }
+        check(calls == 1,"cleanup must run exactly once even when it fails");
+        check(diagnostic.str() == (cleanup_fails && !diagnostic_fails ?
+            "[TF-SELECTION-CLIPBOARD] owned cleanup failed\n" : ""),"secondary failure must have only a fixed safe diagnostic");
+    }
+}
 int main() {
-    try { release_proofs_and_pending_states(); exact_native_error_matrix(); std::cout << "clipboard owner policy checks passed\n"; }
+    try { release_proofs_and_pending_states(); exact_native_error_matrix(); cleanup_cannot_replace_primary_failure(); std::cout << "clipboard owner policy checks passed\n"; }
     catch(const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }
