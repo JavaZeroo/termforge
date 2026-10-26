@@ -2,6 +2,8 @@
 
 对应 [#31](https://github.com/JavaZeroo/termforge/issues/31)。本合同区分工作区字体、终端绘制字体、固定网格和真实显示环境；受控消息、真实窗口跨屏、实际呈现是不同证据层级。复杂 Unicode/IME 由 #30 验收，产品后端决定由 #34 负责。
 
+本文记录当前实现与验证合同，不表示用户已确认最终字体/网格或与原版的差异。按 [ADR-0006](../adr/0006-confirmed-project-direction.md)，#31 补固定原版的实际对照；12×26 网格、18 DIP、缩字适配及缺字体失败等策略保留明确来源与限制，重要差异提交用户确认。已有度量和回归结果继续有效于原限定范围。
+
 ## 字体来源与失败策略
 
 - 工作区 UI 使用独立获取的 Roboto Mono Regular，9pt，SIL OFL 1.1；固定上游提交、原始字节和 SHA-256 见[字体来源](../../assets/fonts/README.md)。通过 `AddFontResourceExW(..., FR_PRIVATE, ...)` 仅对进程加载，缺失、注册失败或实际 `GetTextFaceW` 不是 Roboto Mono 时明确失败，不静默替换。`renderer_metrics` 独立复核实际 GDI face、em 高度与 `TEXTMETRIC.tmHeight`；96/120/144/192 DPI 的 em 为 12/15/18/24，行高为 16/20/24/32，不能把二者混为“字符高度”。

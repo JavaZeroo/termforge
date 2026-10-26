@@ -3,8 +3,10 @@
 > A1/G1/G2 为历史代号；首个本地窗口已进入当前原型。后端与平台边界的重审归入 [R2 产品架构决策](../PLAN.md)，须在扩大远程和跨平台产品整合前完成，不能以本 ADR 将实验后端永久定案。
 
 - 日期：2026-10-23
-- 状态：临时接受；仅覆盖 Windows 的 A1/G1 实验，不锁定产品后端或跨平台栈。
+- 状态：历史实验选择保留；仅覆盖 Windows 的 A1/G1 实验，产品 GUI/呈现/后端选型待用户确认。
 - 前置：[V1 窗口探针](../../experiments/presentation/README.md)、[ADR-0001](0001-evidence-before-stack.md)、[ADR-0002](0002-automation-first-investigation.md)。
+
+当前按 [ADR-0006](0006-confirmed-project-direction.md) 优先实现 Windows 11 x64 的完整复刻，最终覆盖 Windows/Linux/macOS。#34 必须给出原版行为、性能、跨平台可行性和维护取舍的具体方案，经用户确认后定案；保留本实验不等于用户选定 Win32、DirectWrite 或 Direct2D。具体性能容差尚待用户明确。
 
 ## 问题与候选
 
