@@ -64,3 +64,7 @@ python -m unittest experiments.conpty.test_ctrl_c -v
 合同保留一百万次 `cmd for /L`，实际输出至少持续一秒后发送单个 ETX，立即发送后续命令，五秒内检查独立完整输出行；命令回显或循环自然结束不算中断。监督器检查退出与自有 Job 回收，分别记录输入/输出身份、探针/源码身份和本次自有 cmd/conhost 映像的系统文件身份。原始诊断只留在输出目录的 `_private` 子目录；公开文件不包含路径、PID 或原始异常文本。
 
 此入口验收的是固定 cmd 场景，不能单独证明所有原生控制处理函数、真实物理按键或所有 Windows 版本通过。当前条件未复现旧失败，也不能据重复通过关闭 #36；环境对照与未决点见[输入机制研究](../../docs/research/conpty-ctrl-c-input.md)。
+
+## 每屏 margin 与可替换后端诊断
+
+`conpty_margin_probe` / `experiments.conpty.margin_run` 对同一固定175字节源检查四阶段真实 console capture、ConPTY EOF和候选末端。标准系统后端与固定官方 side-by-side ConPTY 的差异、关闭VT处理的窄网格反例、包身份及复现命令见[后端调查](../../docs/research/conpty-margin-backends.md)。这里只增加有界诊断，产品默认后端未改变；原生源控制台与末端结果分列，不能据末端正确关闭 #41 或宣布 R2 通过。

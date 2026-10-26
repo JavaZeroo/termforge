@@ -11,7 +11,7 @@ import unittest
 
 from experiments.build_paths import ROOT, binary
 from experiments.shell.workflow_checks import (validate_fixture_case, validate_rejected_order, validate_fixture_host,
-                                               validate_console_window)
+                                               validate_console_window, controller_observations, validate_controller_exit)
 
 PREFIX = 'TF_R108_PASTE 中文\rNEXT\r'
 
@@ -94,6 +94,55 @@ def captured_rejected_order(directory):
 
 
 class WorkflowOracleTest(unittest.TestCase):
+    def test_failed_controller_observation_retains_unknown_without_private_fields(self):
+        # Synthetic failed-row counterexample, not recovered historical data:
+        # a five-second wait times out and close produces STATUS_CONTROL_C_EXIT.
+        # This tests the sanitizer without claiming to reproduce the cause.
+        row = dict(generation=21, observed_generation=21, child_exit_code=0,
+                   cmd_exit_code=0xC000013A, exit_input_bytes=5, cmd_exit_wait_ms=5000,
+                   transport_bytes_before_exit_input=100, transport_bytes_before_close=140,
+                   prompt_count_before_exit_input=1, prompt_count_before_close=1,
+                   inner_job_active_after=0, launched_through_existing_cmd=True,
+                   identity_verified=True, child_joined=True, phases_complete=False,
+                   parent_order_rejected=False, target_job_cancelled=False,
+                   abnormal_completion_rejected=False, stopped_event=True, child_finished=True,
+                   cmd_exited_before_exit_input=False, cmd_wait_exit_result=False,
+                   cmd_native_wait_result_before_exit_input=258, cmd_native_wait_error_before_exit_input=0,
+                   cmd_native_wait_result=258, cmd_native_wait_error=0,
+                   forced_process_cancel=False, forced_reader_cancel=False,
+                   cleanup_complete=True, passed=False, cmd_exit_code_before_exit_input=None,
+                   preclose_cmd_exit_code=None, identity_pid=1234, process_creation_time=999,
+                   raw_transport='PRIVATE')
+        host = dict(schema='termforge-workflow-controller-test-v1', passed=False,
+                    cases=[dict(row, name=name, role=role) for name, role in
+                           [('B graceful', 'B'), ('A phases', 'A'), ('B closed', 'B')]])
+        observed = controller_observations(host)
+        self.assertFalse(observed[0]['cmd_wait_exit_result'])
+        self.assertIsNone(observed[0]['preclose_cmd_exit_code'])
+        self.assertFalse(observed[0]['passed'])
+        for value in observed:
+            self.assertTrue({'identity_pid', 'process_creation_time', 'raw_transport'}.isdisjoint(value))
+        with self.assertRaises(ValueError):
+            validate_controller_exit(observed[0], closed=False)
+
+    def test_controller_preclose_exit_cannot_be_replaced_by_cleanup(self):
+        row = dict(cmd_wait_exit_result=True, cmd_native_wait_result=0, cmd_native_wait_error=0,
+                   preclose_cmd_exit_code=0, exit_input_bytes=5,
+                   forced_process_cancel=False, forced_reader_cancel=False, cmd_exit_code=0)
+        validate_controller_exit(row, closed=False)
+        closed = dict(row, preclose_cmd_exit_code=91, exit_input_bytes=0, cmd_exit_code=91)
+        validate_controller_exit(closed, closed=True)
+        # A plausible post-close code and successful cleanup cannot fill an
+        # unobserved pre-close result; preserve the original timed-out verdict.
+        for patch in ({'cmd_wait_exit_result': False, 'preclose_cmd_exit_code': None},
+                      {'preclose_cmd_exit_code': 0xC000013A}, {'preclose_cmd_exit_code': False},
+                      {'cmd_native_wait_result': 258}, {'cmd_native_wait_result': 0xFFFFFFFF, 'cmd_native_wait_error': 6},
+                      {'cmd_native_wait_result': False}, {'cmd_native_wait_error': False},
+                      {'exit_input_bytes': 4}, {'exit_input_bytes': True},
+                      {'forced_process_cancel': True}, {'forced_reader_cancel': True}):
+            with self.subTest(patch=patch), self.assertRaises(ValueError):
+                validate_controller_exit(dict(row, **patch), closed=False)
+
     def test_captured_rejected_order_can_stop_before_first_read(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
@@ -316,9 +365,11 @@ class WorkflowFixtureTests(unittest.TestCase):
                           client_sha256=hashlib.sha256(client.read_bytes()).hexdigest(),
                           source_sha256={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
                               'experiments/shell/workflow_controller.hpp', 'experiments/shell/workflow_fixture_test.cpp',
-                              'experiments/shell/test_workflow.py', 'experiments/shell/workflow_checks.py')},
+                              'experiments/shell/test_workflow.py', 'experiments/shell/workflow_checks.py',
+                              'experiments/conpty/session.hpp', 'experiments/shell/workflow_fixture.hpp',
+                              'experiments/shell/raw_console_receiver.hpp', 'experiments/shell/text_client.cpp')},
                           returncode=None, outer_job_after=None, forced_cleanup=False, timed_out=False,
-                          process_reaped=False, error_kind=None, status='failed', cases=[])
+                          process_reaped=False, error_kind=None, status='failed', cases=[], native_case_observations=[])
             job = OwnedJob(); process = None; stdout = stderr = b''
             try:
                 process = subprocess.Popen([str(executable), '--controller-host', str(cases)], stdin=subprocess.PIPE,
@@ -328,10 +379,15 @@ class WorkflowFixtureTests(unittest.TestCase):
                 stdout, stderr = process.communicate(b'GO\n', timeout=25)
                 record['returncode'] = process.returncode
                 record['outer_job_after'] = job.drain(timeout=3)
+                # Parse before the return-code assertion so a native failed
+                # case retains its pre-close observation, independently of the
+                # verified-success list below. Raw identity-bearing stdout is
+                # still private and is never copied into this allowlist.
+                host = json.loads(stdout)
+                record['native_case_observations'] = controller_observations(host)
                 self.assertEqual(process.returncode, 0, stderr.decode('utf-8', 'replace'))
                 self.assertEqual(stderr, b'')
                 self.assertEqual(record['outer_job_after']['active'], 0)
-                host = json.loads(stdout)
                 self.assertEqual(host['schema'], 'termforge-workflow-controller-test-v1')
                 self.assertIs(host['data_only'], True)
                 self.assertIs(host['ime_or_global_input_used'], False)
@@ -369,6 +425,7 @@ class WorkflowFixtureTests(unittest.TestCase):
                         self.assertIs(type(row['cmd_exit_code']), int)
                         self.assertEqual(row['child_exit_code'], 91 if closed else 0)
                         self.assertEqual(row['cmd_exit_code'], 91 if closed else 0)
+                        validate_controller_exit(row, closed=closed)
                         expected = (PREFIX+'你好').encode('utf-8') if name == 'B graceful' else b''
                         if closed:
                             # Job cancellation does not produce a normal receiver finish.

@@ -1,0 +1,430 @@
+{
+  "schema": "termforge-inventory-timeout-checkpoints-v1",
+  "generated_utc": "2026-10-26T06:52:36.464715+00:00",
+  "base_commit": "65988f5f20f62294ff52fcac5b5b81e563f93f3b",
+  "source_sha256": {
+    "research/ime/test_hosted_inventory.py": "4861f0113a0aa8a0d3bb026f1188fdfce576d5b0639a6d8f186abb7d9f5207ec",
+    "research/ime/inventory_worker.ps1": "fa34cf43beba5877748442998cbb1a10aacfeeb4a68ce4ffd2a3bfae1208b2de",
+    "research/ime/inventory_hosted.py": "2d570beb20dc2da8821a0e425efa050a9c92f7455b59f56ed0a233f266aeb5f5"
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "scope": {
+    "pure_ast_and_owned_children_only": true,
+    "real_ime_operations_executed": false,
+    "historical_timeout_cause_determined": false,
+    "issue_40_closed": false,
+    "timeout_seconds": 10,
+    "timeout_changed": false,
+    "performance_claim": false
+  },
+  "historical_failure": {
+    "run_id": 40244057401,
+    "job_id": 121321793310,
+    "image": "windows-2025-vs2026",
+    "image_version": "20261021.278.1",
+    "suite_elapsed_seconds": 45.07,
+    "exception_kind": "TimeoutExpired",
+    "timeout_seconds": 10,
+    "worker_phase_at_timeout": null,
+    "prior_record": "research/ime/results/2026-10-26-inventory-lifecycle/validation.json"
+  },
+  "normal_fresh_samples": [
+    {
+      "timeout_seconds": 10,
+      "elapsed_seconds": 1.5469999997876585,
+      "ready_seconds": 1.0,
+      "returncode": 0,
+      "reaped": true,
+      "streams_drained": true,
+      "timed_out": false,
+      "job_before_cleanup": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "cleanup_errors": [],
+      "error": null,
+      "outcome": {
+        "status": "failed",
+        "states": [
+          "started",
+          "ended",
+          "failed"
+        ],
+        "state_timeline": [
+          {
+            "state": "started",
+            "elapsed_milliseconds": 209
+          },
+          {
+            "state": "ended",
+            "elapsed_milliseconds": 253
+          },
+          {
+            "state": "failed",
+            "elapsed_milliseconds": 272
+          }
+        ],
+        "ast_parse_milliseconds": 48
+      },
+      "checkpoint_observation": {
+        "status": "observed",
+        "events": [
+          {
+            "elapsed_milliseconds": 32,
+            "stage": "fixture-ready"
+          },
+          {
+            "elapsed_milliseconds": 92,
+            "stage": "go-received"
+          },
+          {
+            "elapsed_milliseconds": 95,
+            "stage": "ast-started"
+          },
+          {
+            "elapsed_milliseconds": 145,
+            "stage": "ast-ended"
+          },
+          {
+            "elapsed_milliseconds": 174,
+            "stage": "worker-entered"
+          },
+          {
+            "elapsed_milliseconds": 207,
+            "stage": "progress-started"
+          },
+          {
+            "elapsed_milliseconds": 252,
+            "stage": "progress-ended"
+          },
+          {
+            "elapsed_milliseconds": 271,
+            "stage": "progress-failed"
+          },
+          {
+            "elapsed_milliseconds": 272,
+            "stage": "worker-returned"
+          }
+        ],
+        "error": null
+      }
+    },
+    {
+      "timeout_seconds": 10,
+      "elapsed_seconds": 1.375,
+      "ready_seconds": 0.9690000000409782,
+      "returncode": 0,
+      "reaped": true,
+      "streams_drained": true,
+      "timed_out": false,
+      "job_before_cleanup": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "cleanup_errors": [],
+      "error": null,
+      "outcome": {
+        "status": "failed",
+        "states": [
+          "started",
+          "ended",
+          "failed"
+        ],
+        "state_timeline": [
+          {
+            "state": "started",
+            "elapsed_milliseconds": 160
+          },
+          {
+            "state": "ended",
+            "elapsed_milliseconds": 185
+          },
+          {
+            "state": "failed",
+            "elapsed_milliseconds": 206
+          }
+        ],
+        "ast_parse_milliseconds": 43
+      },
+      "checkpoint_observation": {
+        "status": "observed",
+        "events": [
+          {
+            "elapsed_milliseconds": 26,
+            "stage": "fixture-ready"
+          },
+          {
+            "elapsed_milliseconds": 50,
+            "stage": "go-received"
+          },
+          {
+            "elapsed_milliseconds": 51,
+            "stage": "ast-started"
+          },
+          {
+            "elapsed_milliseconds": 95,
+            "stage": "ast-ended"
+          },
+          {
+            "elapsed_milliseconds": 127,
+            "stage": "worker-entered"
+          },
+          {
+            "elapsed_milliseconds": 158,
+            "stage": "progress-started"
+          },
+          {
+            "elapsed_milliseconds": 184,
+            "stage": "progress-ended"
+          },
+          {
+            "elapsed_milliseconds": 205,
+            "stage": "progress-failed"
+          },
+          {
+            "elapsed_milliseconds": 206,
+            "stage": "worker-returned"
+          }
+        ],
+        "error": null
+      }
+    },
+    {
+      "timeout_seconds": 10,
+      "elapsed_seconds": 1.3440000000409782,
+      "ready_seconds": 0.9530000002123415,
+      "returncode": 0,
+      "reaped": true,
+      "streams_drained": true,
+      "timed_out": false,
+      "job_before_cleanup": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "cleanup_errors": [],
+      "error": null,
+      "outcome": {
+        "status": "failed",
+        "states": [
+          "started",
+          "ended",
+          "failed"
+        ],
+        "state_timeline": [
+          {
+            "state": "started",
+            "elapsed_milliseconds": 152
+          },
+          {
+            "state": "ended",
+            "elapsed_milliseconds": 175
+          },
+          {
+            "state": "failed",
+            "elapsed_milliseconds": 198
+          }
+        ],
+        "ast_parse_milliseconds": 40
+      },
+      "checkpoint_observation": {
+        "status": "observed",
+        "events": [
+          {
+            "elapsed_milliseconds": 27,
+            "stage": "fixture-ready"
+          },
+          {
+            "elapsed_milliseconds": 40,
+            "stage": "go-received"
+          },
+          {
+            "elapsed_milliseconds": 41,
+            "stage": "ast-started"
+          },
+          {
+            "elapsed_milliseconds": 82,
+            "stage": "ast-ended"
+          },
+          {
+            "elapsed_milliseconds": 119,
+            "stage": "worker-entered"
+          },
+          {
+            "elapsed_milliseconds": 151,
+            "stage": "progress-started"
+          },
+          {
+            "elapsed_milliseconds": 175,
+            "stage": "progress-ended"
+          },
+          {
+            "elapsed_milliseconds": 198,
+            "stage": "progress-failed"
+          },
+          {
+            "elapsed_milliseconds": 199,
+            "stage": "worker-returned"
+          }
+        ],
+        "error": null
+      }
+    }
+  ],
+  "post_go_timeout_control": {
+    "exception_kind": "TimeoutExpired",
+    "record": {
+      "timeout_seconds": 10,
+      "elapsed_seconds": 10.0,
+      "ready_seconds": 1.0,
+      "returncode": 99,
+      "reaped": true,
+      "streams_drained": true,
+      "timed_out": true,
+      "job_before_cleanup": {
+        "active": 2,
+        "total": 2,
+        "terminated": 0
+      },
+      "job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "cleanup_errors": [],
+      "error": null,
+      "outcome": null,
+      "checkpoint_observation": {
+        "status": "observed",
+        "events": [
+          {
+            "elapsed_milliseconds": 25,
+            "stage": "fixture-ready"
+          },
+          {
+            "elapsed_milliseconds": 42,
+            "stage": "go-received"
+          },
+          {
+            "elapsed_milliseconds": 43,
+            "stage": "ast-started"
+          },
+          {
+            "elapsed_milliseconds": 92,
+            "stage": "ast-ended"
+          },
+          {
+            "elapsed_milliseconds": 131,
+            "stage": "worker-entered"
+          },
+          {
+            "elapsed_milliseconds": 166,
+            "stage": "progress-started"
+          },
+          {
+            "elapsed_milliseconds": 197,
+            "stage": "progress-ended"
+          }
+        ],
+        "error": null
+      }
+    }
+  },
+  "baseline_observer_counterfactual": {
+    "runner_source_commit": "65988f5",
+    "producer": "current instrumented pure AST",
+    "is_original_ci_reproduction": false,
+    "exception_kind": "TimeoutExpired",
+    "record": {
+      "timeout_seconds": 10,
+      "elapsed_seconds": 10.016000000061467,
+      "ready_seconds": 1.125,
+      "returncode": 99,
+      "reaped": true,
+      "timed_out": true,
+      "job_before_cleanup": {
+        "active": 2,
+        "total": 2,
+        "terminated": 0
+      },
+      "job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "cleanup_errors": [],
+      "error": null,
+      "outcome": null
+    },
+    "owned_file_after_reap": {
+      "status": "observed",
+      "events": [
+        {
+          "elapsed_milliseconds": 28,
+          "stage": "fixture-ready"
+        },
+        {
+          "elapsed_milliseconds": 45,
+          "stage": "go-received"
+        },
+        {
+          "elapsed_milliseconds": 47,
+          "stage": "ast-started"
+        },
+        {
+          "elapsed_milliseconds": 98,
+          "stage": "ast-ended"
+        },
+        {
+          "elapsed_milliseconds": 138,
+          "stage": "worker-entered"
+        },
+        {
+          "elapsed_milliseconds": 177,
+          "stage": "progress-started"
+        },
+        {
+          "elapsed_milliseconds": 206,
+          "stage": "progress-ended"
+        }
+      ],
+      "error": null
+    },
+    "finding": "actual progress-ended file exists, but baseline runner discards phase observations"
+  },
+  "full_test_suite": {
+    "command": "python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_hosted research.ime.test_product_ime -v",
+    "tests_passed": 54,
+    "tests_total": 54,
+    "elapsed_seconds": 62.936,
+    "skips": 0
+  },
+  "limitations": [
+    "No historical per-stage trace exists; old timeout cause remains unknown.",
+    "The controlled final-progress pause proves timeout telemetry retention, not a reproduction of the original CI cause.",
+    "A stage is an observed boundary, not proof the next individual call is blocked.",
+    "Missing, partial, invalid or unreadable checkpoint files remain unknown.",
+    "Parent seconds and child stopwatch milliseconds have independent origins.",
+    "Successful samples and retained cleanup evidence do not establish a performance or complete R2 claim."
+  ]
+}

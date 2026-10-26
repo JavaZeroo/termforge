@@ -49,6 +49,10 @@ python -m unittest experiments.shell.test_workflow_sessions -v
 
 父进程先创建全新、未置位的九个 named manual-reset events，后缀为 `ready`、`output`、`output-done`、`append`、`append-done`、`evict`、`evict-done`、`stop`、`stopped`。子进程核对角色/代次/所有者进程、Job 和事件初态；控制来自事件，不能把控制字符混入接收字节。停止优先于下一条命令；父进程退出、超时、重复或乱序命令均失败。完成与停止事件不代表消费或呈现完成。
 
+Controller 的正常结束回归另外记录 `exit\r` 的实际写入字节、原五秒 `wait_exit` 布尔、原生 wait 返回值/错误以及 close 前退出码；尚未 signaled 的退出码保留 null。close 后退出码、强制取消与 Job 回收分别记录，不能用最终回收成功补成自然退出。发送前和 close 前的运输偏移/prompt 次数仅为输出观察，不证明 cmd 已读取输入，也不增加 fresh-prompt 等待、重发或期限。Python 在检查原生失败码之前保存固定 scalar 白名单，私有 PID/创建时间与 raw transport 不进入该摘要。
+
+[#44 的原失败](results/2026-10-26-controller-exit/validation.json)仍未复现；[有界重放及新诊断](results/2026-10-26-controller-exit-observation/validation.json)不能覆盖原件或当作根因修复。当前正常返回的 fresh 重放同样可在只观察到初始 prompt 时完成 `exit\r`，因此不能仅由历史红推断必须增加 prompt 等待。两个 CMake 配置中的 controller probe 均不链接候选核心，相关通过不构成候选 GUI 或完整 R2 验收。
+
 旧 `shell_text_client` 80行模式和 `shell_ime_client` 20行模式保持。后者的新 workflow 入口仍位于原严格 hosted IME 守卫之后；本机数据回归使用 text client，不伪造环境标志。
 
 ## 证据分层
