@@ -87,12 +87,20 @@ class OwnJobApiTests(unittest.TestCase):
     def test_ordinary_owned_python_helper_is_audited_unknown_and_reaped(self):
         job = prep.OwnedJob()
         process = audit = None
+        readiness = tempfile.TemporaryDirectory(prefix="termforge-job-ready-")
         try:
-            script = ("import subprocess,sys\n"
+            script = ("import subprocess,sys,time\nfrom pathlib import Path\n"
                       "assert sys.stdin.buffer.readline()==b'GO\\n'\n"
-                      "subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)'],"
-                      "stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)\n")
-            process = subprocess.Popen([sys.executable, "-c", script], stdin=subprocess.PIPE,
+                      "child = 'import sys,time; from pathlib import Path; '\n"
+                      "child += 'Path(sys.argv[1]).write_bytes(bytes([82,69,65,68,89])); time.sleep(30)'\n"
+                      "subprocess.Popen([sys.executable,'-c',child,sys.argv[1]],"
+                      "stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)\n"
+                      "ready=Path(sys.argv[1]); deadline=time.monotonic()+4\n"
+                      "while not ready.exists() and time.monotonic()<deadline: time.sleep(.01)\n"
+                      "assert ready.read_bytes()==b'READY'\n")
+            # Wait for the actual helper interpreter, including any venv
+            # launcher descendants, before taking the stable Job snapshot.
+            process = subprocess.Popen([sys.executable, "-c", script, str(Path(readiness.name) / "ready")], stdin=subprocess.PIPE,
                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                        creationflags=subprocess.CREATE_NO_WINDOW)
             job.assign(process.pid)
@@ -114,6 +122,7 @@ class OwnJobApiTests(unittest.TestCase):
             job.terminate(); job.drain(); job.close()
             if process is not None and process.poll() is None:
                 process.kill(); process.communicate(timeout=5)
+            readiness.cleanup()
 
 
 if __name__ == "__main__": unittest.main()
