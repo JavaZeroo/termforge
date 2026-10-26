@@ -2,6 +2,7 @@
 #pragma once
 #include "workflow_controller.hpp"
 #include "workflow_fixture.hpp"
+#include "workflow_checkpoint.hpp"
 #include "runtime_observation.hpp"
 
 namespace tf_shell_test {

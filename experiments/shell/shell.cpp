@@ -6,6 +6,7 @@
 #include "queues.hpp"
 #include "resize.hpp"
 #include "resize_trace.hpp"
+#include "output_record_checkpoint.hpp"
 #include "keyboard.hpp"
 #include "ime.hpp"
 #include "hosted_ime_input.hpp"
@@ -102,6 +103,7 @@ class ShellWindow {
     bool find_initial_ = false, find_terminal_visible_ = true;
     bool observe_output_ = false;
     std::string observed_output_; // Opt-in synthetic probe, capped independently of queue size.
+    tf_shell_test::OutputRecordCheckpoint output_record_checkpoint_;
     Clock::time_point start_ = Clock::now(), input_time_, flood_start_;
     bool frame_after_ = false;
     Result result_;
@@ -354,6 +356,7 @@ class ShellWindow {
         if (closing_) return;
         if(runtime_enabled_) runtime_before_close_=runtime_snapshot();
         closing_ = true;
+        output_record_checkpoint_.release(); // Closing must drain even a held synthetic checkpoint.
         operation_observations_.close();
         selection_end();
         find_.reset(); search_.close(); find_current_.reset(); clear_find_resize_anchor();
@@ -793,7 +796,9 @@ class ShellWindow {
         bool drained = false;
         // Check time between small feeds; also retain a hard byte budget.
         do {
-            const auto bytes = output_.take(8192);
+            const auto budget=output_record_checkpoint_.read_budget(8192);
+            if(!budget) break;
+            const auto bytes = output_.take(budget);
             if (bytes.empty()) { drained = true; break; }
             if(observe_output_) {
                 observed_output_.append(bytes);
@@ -801,9 +806,11 @@ class ShellWindow {
             }
             resize_trace_.observe(tf_shell_test::ResizeTrace::feed, parser_.screen.height(), parser_.screen.width(), 0, stage_, bytes);
             parser_.feed(bytes); batch += bytes.size();
+            output_record_checkpoint_.consumed(bytes);
 #ifdef TERMFORGE_CANDIDATE_CORE
             route_terminal_events();
 #endif
+            if(output_record_checkpoint_.held()) break;
         } while (batch < 65536 && ms(began) < 4);
         result_.max_consumed_per_tick = (std::max)(result_.max_consumed_per_tick, batch);
         if (batch) { result_.consumed += batch; search_changed(); publish(); }
@@ -1191,6 +1198,17 @@ public:
         return lines;
     }
     int observed_tick_count() const { return result_.ticks; }
+    void arm_output_record_checkpoint(Clock::time_point deadline) {
+        require_ui_thread();
+        require(!closing_ && hwnd_ && IsWindow(hwnd_),"output checkpoint target must be live");
+        const auto& view=*snapshot_;
+        const bool empty=view.cursor_row>=0 && static_cast<size_t>(view.cursor_row)<view.lines.size() &&
+            view.cursor_column==0 && termforge::project_line(view.lines[static_cast<size_t>(view.cursor_row)]).text.empty();
+        output_record_checkpoint_.arm(empty,deadline);
+    }
+    bool output_record_checkpoint_held() const { require_ui_thread();return output_record_checkpoint_.held(); }
+    bool output_record_checkpoint_active() const { require_ui_thread();return output_record_checkpoint_.active(); }
+    void release_output_record_checkpoint() { require_ui_thread();output_record_checkpoint_.release(); }
     void set_search_work_budget(size_t units) {
         require(units>=1 && units<=4096,"search work budget outside testable bound"); search_work_budget_=units;
     }
