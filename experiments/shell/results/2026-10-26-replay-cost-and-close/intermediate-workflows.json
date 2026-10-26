@@ -1,0 +1,716 @@
+{
+  "runs": [
+    {
+      "run": "run-868918e65b584884877b410fa6c48805",
+      "sample": {
+        "mode": "ui-workflow-sessions",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "resources": {
+          "summary": "resource-summary.json",
+          "scope": "launcher-tree",
+          "performance_gate": "not_evaluated"
+        },
+        "error_kind": "ProbeFailure"
+      },
+      "data_only": true,
+      "system_clipboard": false,
+      "ime": false,
+      "checkpoints": [
+        {
+          "phase": "eight-ready",
+          "elapsed_ms": 572,
+          "cycle": 0
+        },
+        {
+          "phase": "reject-ninth",
+          "elapsed_ms": 576,
+          "cycle": 0
+        },
+        {
+          "phase": "load-started",
+          "elapsed_ms": 766,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-before-append",
+          "elapsed_ms": 798,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-after-append",
+          "elapsed_ms": 944,
+          "cycle": 0
+        },
+        {
+          "phase": "search-running",
+          "elapsed_ms": 1105,
+          "cycle": 0
+        },
+        {
+          "phase": "find-complete",
+          "elapsed_ms": 6944,
+          "cycle": 0
+        },
+        {
+          "phase": "foreground-input",
+          "elapsed_ms": 7093,
+          "cycle": 0
+        },
+        {
+          "phase": "zoom-75",
+          "elapsed_ms": 7222,
+          "cycle": 0
+        },
+        {
+          "phase": "switch-zoom",
+          "elapsed_ms": 7377,
+          "cycle": 0
+        },
+        {
+          "phase": "history-evicted",
+          "elapsed_ms": 7660,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancel-pending",
+          "elapsed_ms": 8297,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancelled",
+          "elapsed_ms": 8728,
+          "cycle": 0
+        },
+        {
+          "phase": "background-complete",
+          "elapsed_ms": 27467,
+          "cycle": 0
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 27779,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 29048,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 29328,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 30633,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 30925,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 32255,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 32580,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 33843,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 34162,
+          "cycle": 5
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 35424,
+          "cycle": 5
+        },
+        {
+          "phase": "paste-close-pending",
+          "elapsed_ms": 35756,
+          "cycle": 5
+        },
+        {
+          "phase": "after-paste-close",
+          "elapsed_ms": 35974,
+          "cycle": 5
+        }
+      ],
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "raw_sha256": {
+        "cancel.bin": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6",
+        "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+        "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "close.bin.before.json": "42d48c9b60c19059b0fd753b871521787ece886f5976aef804fe05baa7db1584",
+        "frame.bmp": "4443a91feb73693650c2a6f8ac4feb91fa9fe3fee9e1340086892c2257db1990",
+        "resource-observations.jsonl": "dd709b8cd12e332610082a7ae44c1dcbbe486e9451a7a21b7b899639c83453a0",
+        "resource-phases.jsonl": "f6dc0847c07730eafd232b117c375628a3d746285700805245570f087c926b05",
+        "resource-summary.json": "75f03192836a8f1b0dd3f7789b618a6305025bb4f6b11ff98efc3fac12aef32a",
+        "sample.json": "170f4625886507719d22cbcc1d05e3e72df3c1d53f9c54b6dba7697cc9b09cfa",
+        "sample.public.json": "63735633ab5fcace05f2deb18b21a39d9df834cc9534f6f9ad16a1e3385dfcf9",
+        "sessions.json": "ba4522ff74c1942f45da7fd2729a8ba0e631c9783d3d01292a1c8bf3cae528cc",
+        "validation.json": "a01ca51810fd51c4fee9947b3a43422dede0cba5e6ae6a9a72a0fef8a10bc5b0",
+        "workspace.layout": "9a96d62943f54727e7c50ce5785a571efbfa6cbece6248f6a6d144257c1e1d58"
+      },
+      "observed_failure": "terminal reply rejected by input queue",
+      "source": "06bf6b5cf4c5f7457cbb02355aa4971276c2b581"
+    },
+    {
+      "run": "run-39a01aa2558747c3b71d531c66e234e8",
+      "sample": {
+        "mode": "ui-workflow-sessions",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-workflow-sessions",
+          "sessions_closed": 18,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "frame_sha256": "68fb528174c7f7edf2916ca1b6f1f7d2a6b80deeb4cec787539fb051bb344ee5",
+        "sessions_workflow": {
+          "schema": "termforge-workflow-sessions-identity-validation-v1",
+          "live_sessions": 8,
+          "checkpoints": 26,
+          "rejected_ninth": true,
+          "load_foreground_verified": true,
+          "data_workflow_verified": true,
+          "complete_workflow_verified": false,
+          "system_clipboard_verified": false,
+          "ime_verified": false
+        },
+        "resources": {
+          "summary": "resource-summary.json",
+          "scope": "launcher-tree",
+          "performance_gate": "not_evaluated"
+        },
+        "error_kind": null
+      },
+      "data_only": true,
+      "system_clipboard": false,
+      "ime": false,
+      "checkpoints": [
+        {
+          "phase": "eight-ready",
+          "elapsed_ms": 570,
+          "cycle": 0
+        },
+        {
+          "phase": "reject-ninth",
+          "elapsed_ms": 573,
+          "cycle": 0
+        },
+        {
+          "phase": "load-started",
+          "elapsed_ms": 727,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-before-append",
+          "elapsed_ms": 747,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-after-append",
+          "elapsed_ms": 867,
+          "cycle": 0
+        },
+        {
+          "phase": "search-running",
+          "elapsed_ms": 1011,
+          "cycle": 0
+        },
+        {
+          "phase": "find-complete",
+          "elapsed_ms": 6314,
+          "cycle": 0
+        },
+        {
+          "phase": "foreground-input",
+          "elapsed_ms": 6454,
+          "cycle": 0
+        },
+        {
+          "phase": "zoom-75",
+          "elapsed_ms": 6591,
+          "cycle": 0
+        },
+        {
+          "phase": "switch-zoom",
+          "elapsed_ms": 6751,
+          "cycle": 0
+        },
+        {
+          "phase": "history-evicted",
+          "elapsed_ms": 7000,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancel-pending",
+          "elapsed_ms": 7606,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancelled",
+          "elapsed_ms": 7990,
+          "cycle": 0
+        },
+        {
+          "phase": "background-complete",
+          "elapsed_ms": 26131,
+          "cycle": 0
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 26437,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 27720,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 28020,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 29254,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 29556,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 30810,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 31122,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 32383,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 32669,
+          "cycle": 5
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 33961,
+          "cycle": 5
+        },
+        {
+          "phase": "paste-close-pending",
+          "elapsed_ms": 34293,
+          "cycle": 5
+        },
+        {
+          "phase": "after-paste-close",
+          "elapsed_ms": 34504,
+          "cycle": 5
+        }
+      ],
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "raw_sha256": {
+        "cancel.bin": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6",
+        "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+        "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "close.bin.before.json": "42d48c9b60c19059b0fd753b871521787ece886f5976aef804fe05baa7db1584",
+        "frame.bmp": "68fb528174c7f7edf2916ca1b6f1f7d2a6b80deeb4cec787539fb051bb344ee5",
+        "resource-observations.jsonl": "86c5915c71b43c3724b5c083401c481d2fc644d7b92c7c7b71c6fac3b7eb8c1c",
+        "resource-phases.jsonl": "2c438eed39c5948baaebb03893ea1791c28c563f6f08555dff9da7c4007edb2e",
+        "resource-summary.json": "a1af28883ff9efa10a0ac32af7a649047a886161d7fbf9a24d8ee286e32b75ed",
+        "sample.json": "6e4100ef925345920031c7885393ffea19621c138ba4a7c990fd8f4d01592195",
+        "sample.public.json": "9507843aee6d9088fd93fb35fb925f64d9b854f0d0c307dc5bc6676422ff7604",
+        "sessions.json": "8daad6179ab2acbbc4800f02e8d1377bb925c477028ce999bbb4ef47efcda590",
+        "validation.json": "e2d23746c84fed9ac9dcddb248fabee42cd8f8bfe13bfe2cf9ff6cd87f15acd5",
+        "workspace.layout": "9a96d62943f54727e7c50ce5785a571efbfa6cbece6248f6a6d144257c1e1d58"
+      },
+      "source": "06bf6b5 plus bounded reply-state diagnostics"
+    },
+    {
+      "run": "run-942f5c4bfd9d4922a23481675ad17e7d",
+      "sample": {
+        "mode": "ui-workflow-sessions",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "resources": {
+          "summary": "resource-summary.json",
+          "scope": "launcher-tree",
+          "performance_gate": "not_evaluated"
+        },
+        "error_kind": "ProbeFailure"
+      },
+      "data_only": true,
+      "system_clipboard": false,
+      "ime": false,
+      "checkpoints": [
+        {
+          "phase": "eight-ready",
+          "elapsed_ms": 533,
+          "cycle": 0
+        },
+        {
+          "phase": "reject-ninth",
+          "elapsed_ms": 536,
+          "cycle": 0
+        },
+        {
+          "phase": "load-started",
+          "elapsed_ms": 685,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-before-append",
+          "elapsed_ms": 704,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-after-append",
+          "elapsed_ms": 825,
+          "cycle": 0
+        },
+        {
+          "phase": "search-running",
+          "elapsed_ms": 966,
+          "cycle": 0
+        },
+        {
+          "phase": "find-complete",
+          "elapsed_ms": 6316,
+          "cycle": 0
+        },
+        {
+          "phase": "foreground-input",
+          "elapsed_ms": 6441,
+          "cycle": 0
+        },
+        {
+          "phase": "zoom-75",
+          "elapsed_ms": 6575,
+          "cycle": 0
+        },
+        {
+          "phase": "switch-zoom",
+          "elapsed_ms": 6738,
+          "cycle": 0
+        },
+        {
+          "phase": "history-evicted",
+          "elapsed_ms": 6984,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancel-pending",
+          "elapsed_ms": 7647,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancelled",
+          "elapsed_ms": 8011,
+          "cycle": 0
+        },
+        {
+          "phase": "background-complete",
+          "elapsed_ms": 26248,
+          "cycle": 0
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 26542,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 27794,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 28111,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 29384,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 29719,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 30983,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 31270,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 32527,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 32839,
+          "cycle": 5
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 34055,
+          "cycle": 5
+        },
+        {
+          "phase": "paste-close-pending",
+          "elapsed_ms": 34351,
+          "cycle": 5
+        },
+        {
+          "phase": "after-paste-close",
+          "elapsed_ms": 34568,
+          "cycle": 5
+        }
+      ],
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "raw_sha256": {
+        "cancel.bin": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6",
+        "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+        "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "close.bin.before.json": "42d48c9b60c19059b0fd753b871521787ece886f5976aef804fe05baa7db1584",
+        "frame.bmp": "4443a91feb73693650c2a6f8ac4feb91fa9fe3fee9e1340086892c2257db1990",
+        "resource-observations.jsonl": "97e19f4c8fe8de708740e1d2cce01f8117b531ba7c231a4552a3091a5668adbf",
+        "resource-phases.jsonl": "100f32a411ed3930e70630d411c7c354019366470eb4d5bbce3e7ba5431b76ce",
+        "resource-summary.json": "2feb2d4c8ecfc99d7a82b9b0f4213df47396d9b6dab29d5604c15ea146df1d26",
+        "sample.json": "7edc081e4c8dc9e22ee08dc40dfdf90f99062c82ccd234f2c9ccfa8c2eb6177f",
+        "sample.public.json": "63735633ab5fcace05f2deb18b21a39d9df834cc9534f6f9ad16a1e3385dfcf9",
+        "sessions.json": "6afe299c8fbb4014d8c2875ed824bbcd8bb5f8076e42115dea3f204d4c74336e",
+        "validation.json": "6e9c0fe26639b5dae2ee347a9f2b972e89b4402568e9ef60c76881c9051dbc9d",
+        "workspace.layout": "9a96d62943f54727e7c50ce5785a571efbfa6cbece6248f6a6d144257c1e1d58"
+      },
+      "observed_failure": "terminal reply rejected by input queue; session=3 closing=1 stopping=1 queued=0 failed=0 paste_busy=0 reply_hex=1b5b343b3452",
+      "source": "06bf6b5 plus bounded reply-state diagnostics"
+    }
+  ],
+  "reply_diagnostic_identity": {
+    "original_sha256": "b369968152bbff107c699181d4e23f271e62a5732f0c41793159b3efc3609321",
+    "diagnostic_sha256": "bcae8cd6c012fe3cf8b0e8ca5219c5136210dd6cd1e4940a9562d1eb73b59156"
+  }
+}

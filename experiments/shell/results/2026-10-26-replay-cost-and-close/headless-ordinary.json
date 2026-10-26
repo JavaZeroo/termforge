@@ -1,0 +1,376 @@
+{
+  "plan": {
+    "schema": "local-candidate-phase-probe-v1",
+    "source_commit": "8ff112e785073dde91a74142cf1a3000fa240007",
+    "files": {
+      "experiments\\core\\candidate_terminal.cpp": "0d0eaabe5ef896aa7b263c8151622f579f37c421bf9473fc3d69ada010a64e61",
+      "local\\r53-cost-probe\\instrumented.cpp": "753b5b1c5a9fb1585401dee36fba0722be78038ef6967c713ca61e4334997d12",
+      "local\\r53-cost-probe\\phase_probe.cpp": "3a39b8b01e97f6ae245a1cb0bd0fc05f8a6cab6e14a5584d6b8b98fdc942ba63",
+      "local\\r53-cost-probe\\probe_timing.hpp": "a114631fbb6777808a791a3e75c665a0f3b92e1103c2ed91a4e1fb46daed2579",
+      "local\\r53-cost-probe\\CMakeLists.txt": "a6d0346bdde98988d07f2b594b7ef79f6de9bf1570be0cba573913f9cbb83a6a",
+      "local\\r53-cost-probe\\f1.bin": "c0d35b68ed7d8147bfa42eb9ea7e8a64ddafef8a786b1b1f42b0b85f179057a4",
+      "experiments\\candidates\\alacritty\\target\\release\\termforge_alacritty_core.lib": "aa41a9ea5749f3933a0db8bfa41dda68812c68727d47d394fc3edd859973a260"
+    },
+    "workload": {
+      "role": "F1 producer bytes; no ConPTY transformation",
+      "bytes": 2048000,
+      "rows": 17,
+      "columns": 74,
+      "history": 100,
+      "chunk": 8192
+    },
+    "order": [
+      "plain",
+      "instrumented",
+      "instrumented",
+      "plain",
+      "plain",
+      "instrumented"
+    ],
+    "limitations": [
+      "headless, no transport or GUI",
+      "shared host",
+      "timers perturb execution",
+      "diagnostic only, not R54 formal sample or performance budget"
+    ]
+  },
+  "os": "Windows-11-10.0.26200-SP0",
+  "logical_cpus": 8,
+  "power_plan": "电源方案 GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (高性能)",
+  "binaries": {
+    "plain": "be21af65b5017a9277092747843f894321a6b82621a25d0766377258cffb706a",
+    "instrumented": "0c27682bac6a51ed874d2d3b23f0b4d13de513c2ff0cf8e00f6bb3bd09698680"
+  },
+  "run_script": "b19a723a976751a656a68ce24e1f428e67eb21a76a8fc24b1226bb46d246195a",
+  "utc_start": "2026-10-26T15:13:52Z",
+  "samples": [
+    {
+      "mode": "plain",
+      "returncode": 0,
+      "outer_seconds": 0.5309999999590218,
+      "background_cpu_before_percent": 30.0,
+      "result": {
+        "bytes": 2048000,
+        "cpu_ns": 453125000,
+        "wall_ns": 486336100,
+        "valid": true,
+        "phases": [
+          {
+            "id": 0,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 1,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 2,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 3,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 4,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 5,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          }
+        ]
+      },
+      "state_sha256": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0"
+    },
+    {
+      "mode": "instrumented",
+      "returncode": 0,
+      "outer_seconds": 0.4690000000409782,
+      "background_cpu_before_percent": 34.1,
+      "result": {
+        "bytes": 2048000,
+        "cpu_ns": 437500000,
+        "wall_ns": 430316800,
+        "valid": true,
+        "phases": [
+          {
+            "id": 0,
+            "ns": 70976000,
+            "max_ns": 655500,
+            "count": 250
+          },
+          {
+            "id": 1,
+            "ns": 534800,
+            "max_ns": 26400,
+            "count": 250
+          },
+          {
+            "id": 2,
+            "ns": 358655700,
+            "max_ns": 2857500,
+            "count": 250
+          },
+          {
+            "id": 3,
+            "ns": 33800,
+            "max_ns": 1400,
+            "count": 250
+          },
+          {
+            "id": 4,
+            "ns": 295519000,
+            "max_ns": 2096700,
+            "count": 250
+          },
+          {
+            "id": 5,
+            "ns": 35803000,
+            "max_ns": 881800,
+            "count": 250
+          }
+        ]
+      },
+      "state_sha256": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0"
+    },
+    {
+      "mode": "instrumented",
+      "returncode": 0,
+      "outer_seconds": 0.4839999999385327,
+      "background_cpu_before_percent": 15.6,
+      "result": {
+        "bytes": 2048000,
+        "cpu_ns": 437500000,
+        "wall_ns": 448960700,
+        "valid": true,
+        "phases": [
+          {
+            "id": 0,
+            "ns": 72738000,
+            "max_ns": 724000,
+            "count": 250
+          },
+          {
+            "id": 1,
+            "ns": 460500,
+            "max_ns": 12300,
+            "count": 250
+          },
+          {
+            "id": 2,
+            "ns": 375608200,
+            "max_ns": 2725500,
+            "count": 250
+          },
+          {
+            "id": 3,
+            "ns": 27600,
+            "max_ns": 1300,
+            "count": 250
+          },
+          {
+            "id": 4,
+            "ns": 312636300,
+            "max_ns": 1923500,
+            "count": 250
+          },
+          {
+            "id": 5,
+            "ns": 35133200,
+            "max_ns": 586600,
+            "count": 250
+          }
+        ]
+      },
+      "state_sha256": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0"
+    },
+    {
+      "mode": "plain",
+      "returncode": 0,
+      "outer_seconds": 0.4839999999385327,
+      "background_cpu_before_percent": 28.7,
+      "result": {
+        "bytes": 2048000,
+        "cpu_ns": 421875000,
+        "wall_ns": 446410900,
+        "valid": true,
+        "phases": [
+          {
+            "id": 0,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 1,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 2,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 3,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 4,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 5,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          }
+        ]
+      },
+      "state_sha256": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0"
+    },
+    {
+      "mode": "plain",
+      "returncode": 0,
+      "outer_seconds": 0.5160000000614673,
+      "background_cpu_before_percent": 33.8,
+      "result": {
+        "bytes": 2048000,
+        "cpu_ns": 468750000,
+        "wall_ns": 478586600,
+        "valid": true,
+        "phases": [
+          {
+            "id": 0,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 1,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 2,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 3,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 4,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          },
+          {
+            "id": 5,
+            "ns": 0,
+            "max_ns": 0,
+            "count": 0
+          }
+        ]
+      },
+      "state_sha256": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0"
+    },
+    {
+      "mode": "instrumented",
+      "returncode": 0,
+      "outer_seconds": 0.546000000089407,
+      "background_cpu_before_percent": 25.6,
+      "result": {
+        "bytes": 2048000,
+        "cpu_ns": 500000000,
+        "wall_ns": 496894700,
+        "valid": true,
+        "phases": [
+          {
+            "id": 0,
+            "ns": 80278700,
+            "max_ns": 1027000,
+            "count": 250
+          },
+          {
+            "id": 1,
+            "ns": 810600,
+            "max_ns": 103900,
+            "count": 250
+          },
+          {
+            "id": 2,
+            "ns": 414892000,
+            "max_ns": 6602700,
+            "count": 250
+          },
+          {
+            "id": 3,
+            "ns": 66400,
+            "max_ns": 6800,
+            "count": 250
+          },
+          {
+            "id": 4,
+            "ns": 325008500,
+            "max_ns": 5494600,
+            "count": 250
+          },
+          {
+            "id": 5,
+            "ns": 51881600,
+            "max_ns": 1497400,
+            "count": 250
+          }
+        ]
+      },
+      "state_sha256": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0"
+    }
+  ],
+  "local_raw_identity_sha256": "5fd91a263fb64c2487882aa1c98f35970fbff4eaa97c763c301595f02d81a52a",
+  "local_raw_files_sha256": {
+    "00-plain.state.json": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0",
+    "00-plain.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "00-plain.stdout": "00cc5fd93c82252f6968a348206e7c910ad7265160f1ae515857e9b47f94a3a9",
+    "01-instrumented.state.json": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0",
+    "01-instrumented.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "01-instrumented.stdout": "46b812a26f02455cfad72e5253fc1af4436909af5a8880b6e5483da6113aef2a",
+    "02-instrumented.state.json": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0",
+    "02-instrumented.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "02-instrumented.stdout": "f2d05c9fa772228c7900a288589d4a3a8ac9a2909595b972e3ca8cb0eec18cdb",
+    "03-plain.state.json": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0",
+    "03-plain.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "03-plain.stdout": "a3fe321b8bab4643b8530adf767adb6346a0e17af78ed892cfe0cd1b01d4e2ac",
+    "04-plain.state.json": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0",
+    "04-plain.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "04-plain.stdout": "28b8830d041869aa2b13826d5da2a0877a87b9216db31281960de97c712ea33d",
+    "05-instrumented.state.json": "ecfa1c1b31203793cd40d0d2977910e6fef4df1c9f33ba8d7f65a8eee4364dc0",
+    "05-instrumented.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "05-instrumented.stdout": "e20225b03b1c861180d2ce4620e1265b97eae88469bc9d39c5715ef0b12540ce",
+    "identity.json": "5fd91a263fb64c2487882aa1c98f35970fbff4eaa97c763c301595f02d81a52a"
+  }
+}
