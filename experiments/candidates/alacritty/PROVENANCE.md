@@ -1,6 +1,6 @@
 # 固定候选来源与本地补丁
 
-当前适配版本为 `alacritty_terminal 0.26.1-dev+termforge.3`，不是 crates.io 原始 `0.26.0`。
+当前适配版本为 `alacritty_terminal 0.26.1-dev+termforge.4`，不是 crates.io 原始 `0.26.0`。
 
 ## 上游身份
 
@@ -42,6 +42,16 @@
 真实 ConPTY 的宿主 margin 差异由 [#41](https://github.com/JavaZeroo/termforge/issues/41) 保持开放；差异观察固定为 `margins_per_buffer_verified=false`，不作为产品能力通过。WindTerm 定向静态证据只用于 screen 状态归属分析，不等于运行时恢复或等价证明。
 
 原始上游与本目录的差异可用固定 commit 对比复核；差分/真实应用/计量 manifest 另记录每个 vendor 文件的 SHA-256。后续补丁必须更新版本、测试和本文件，不得覆盖来源或继续称为未修改上游版本。
+
+## termforge.4 补丁
+
+1. `src/term/grapheme.rs` 与 Handler 边界：立即可见的流式扩展字素；首样式、透明查询、mutation seal、宽度差插入/剪裁、64 标量/256 字节无损分片与有界诊断；不复制整屏或整行。
+2. `src/term/cell.rs`：用有界后缀保存完整聚类，去除旧 9 个零宽字符静默丢弃；保留 clipped / fragment 身份。原始第三方版权和 Apache-2.0 不变。
+3. `src/grid/resize.rs`：一列目标不再无穷重排 wide 格，保留完整文本为明确 clipped footprint。普通多列 reflow 策略不变。
+4. 精确新增 `unicode-segmentation = 1.13.3`（Unicode 17，MIT OR Apache-2.0，MSRV 1.85.0，无运行时依赖），精确固定既有 `unicode-width = 0.2.2`（Unicode 17）。当前 59 注册表包、两个 path crate；锁定图最高声明 MSRV 1.85。
+5. 本地规范测试资料 `tests/data/GraphemeBreakTest-17.0.0.txt` 来自 Unicode 17 官方数据，SHA-256 `e2d134d2c52919bace503ebb6a551c1855fe1a1faec18478c78fff254a1793ec`，766 个用例；附独立 `UNICODE-LICENSE.txt`。这不是声称复制了被排除的 Alacritty 全部录制。
+
+完整控制/宽度/资源和字体策略见[流式字素合同](../../../docs/research/streaming-graphemes.md)。固定 WindTerm 的运行时字素/宽度仍未知。
 
 ## 历史基线
 

@@ -31,7 +31,7 @@ inline ProjectedLine project_line(const Line& line, bool trim_unwritten = true) 
         while (end && !line[end - 1].written) --end;
     for (size_t column = 0; column < end; ++column) {
         const auto& cell = line[column];
-        if (cell.width == 0) continue;
+        if (cell.width == 0 || cell.leading_spacer) continue;
         const auto begin = result.text.size(); result.text += cell.text;
         result.spans.push_back({begin, result.text.size(), column,
                                (std::min)(end, column + static_cast<size_t>(cell.width))});

@@ -6,7 +6,7 @@
 
 - 工作区 UI 使用独立获取的 Roboto Mono Regular，9pt，SIL OFL 1.1；固定上游提交、原始字节和 SHA-256 见[字体来源](../../assets/fonts/README.md)。通过 `AddFontResourceExW(..., FR_PRIVATE, ...)` 仅对进程加载，缺失、注册失败或实际 `GetTextFaceW` 不是 Roboto Mono 时明确失败，不静默替换。`renderer_metrics` 独立复核实际 GDI face、em 高度与 `TEXTMETRIC.tmHeight`；96/120/144/192 DPI 的 em 为 12/15/18/24，行高为 16/20/24/32，不能把二者混为“字符高度”。
 - 终端绘制当前使用系统 Consolas，DirectWrite `CreateTextFormat` 与 GDI `CreateFontW` 是独立路径。系统字体不分发；Microsoft 系统字体可用性、实际 fallback 和缺字必须由实际绘制路径证明。
-- DirectWrite `GlyphAudit` 读取实际被绘制的 `IDWriteTextLayout`，记录 glyph run 的字体身份、glyph 数和 glyph index 0。控件字体、请求的 family 和最终 glyph 字体不能混为一谈。
+- DirectWrite `GlyphAudit` 读取实际被绘制的 `IDWriteTextLayout`，记录 glyph run 的字体身份、glyph 数和 glyph index 0。控件字体、请求的 family 和最终 glyph 字体不能混为一谈。固定 ZWJ/合格 keycap 按[流式字素合同](../research/streaming-graphemes.md)另要求整段为 1 个 Segoe UI Emoji glyph；keycap 整段指定该系统字体，避免数字与方框被两个不同 fallback 字体拆开。
 - 不复制 WindTerm 字体、Nerd Font 或主题资源。新增可携带字体或 fallback 资产必须另行审核许可。
 
 ## 固定网格设计决定

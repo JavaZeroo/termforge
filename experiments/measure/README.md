@@ -41,6 +41,8 @@ python experiments/measure/compare.py --route interactive --out local/core-inter
 
 普通 C++ `new` 与 Rust global allocator 统计范围不同，不是等价内存指标；peak working set 包含整个进程准备/检查。观察开启/关闭不是无插桩 A/B，任何差值都不扣除。当前仅覆盖固定 ASCII 长输出与编辑回放，无插桩对照、真实输入/接收/呈现、跨平台与维护成本另审；`performance_gate=not_evaluated`，不能据此作最终路线决定或 WindTerm 性能结论。
 
+候选 `.4` 为完整 trace 投影新增 `grapheme_overflows: 0`，因此 project / interactive 的全对象摘要分别从 `11966868740884721388` / `8035857386658397897` 迁移为 `16178973312633948535` / `6154007251599136798`。屏幕、历史、光标、样式、模式和回复逐字段不变；字段继续进入哈希，不排除计数器来维持旧摘要。独立构造的完整固定负载状态、旧/新摘要迁移及实际 trace 对象由 `test_compare.py` 验证，实际计量批次继续覆盖全部块大小与观察开关，错误摘要继续拒绝。旧结果原样保留；首次 CI 红反馈及身份见[迁移记录](results/2026-10-26-projection-digest/validation.json)。这次修复仅更新诊断身份合同，没有改变产品、负载、计时或性能验收标准。
+
 ## 校准能回答什么
 
 `core_measure calibrate seconds [observe_first]` 提供两个可重复诊断：

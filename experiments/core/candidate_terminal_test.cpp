@@ -48,6 +48,125 @@ void fragmentation() {
             !whole.screen.history[0][7].written, "unused cell must retain its paintable width");
 }
 
+void streaming_graphemes_selection_and_history() {
+    const std::string zwj = "👩\xe2\x80\x8d💻", keycap = "1\xef\xb8\x8f\xe2\x83\xa3";
+    for (const bool fragmented : {false, true}) {
+        termforge::CandidateTerminal terminal(3, 16, 8);
+        const auto feed = [&](const std::string& input) {
+            if (fragmented) for (const char byte : input) terminal.feed(std::string_view(&byte, 1));
+            else terminal.feed(input);
+        };
+        feed("A" + zwj + keycap + "Z\r\n");
+        const auto& row = terminal.screen.lines[0];
+        require(row[1].text == zwj && row[1].width == 2 && row[2].width == 0 &&
+                row[3].text == keycap && row[3].width == 2 && row[4].width == 0 &&
+                row[5].text == "Z", "streaming whole-cluster cell layout differs");
+        require(termforge::project_line(row).text == "A" + zwj + keycap + "Z",
+                "whole-cluster literal projection differs");
+        termforge::TextDocument document(terminal.screen);
+        termforge::TextSelection selection;
+        require(selection.set(document, {*document.position(0, 2), *document.position(0, 4)}),
+                "inside-trailer selection failed");
+        require(selection.copy(document, 1024).text == zwj + keycap &&
+                selection.range()->begin.column == 1 && selection.range()->end.column == 5,
+                "selection split a complex grapheme");
+        terminal.resize(3, 20);
+        require(selection.reconcile(document) && selection.copy(document, 1024).text == zwj + keycap,
+                "width-only resize lost whole grapheme selection");
+        feed("B\r\nC\r\nD");
+        require(terminal.screen.history.size() == 1 &&
+                termforge::project_line(terminal.screen.history[0]).text == "A" + zwj + keycap + "Z" &&
+                selection.reconcile(document) && selection.copy(document, 1024).text == zwj + keycap,
+                "complex grapheme history or retained selection differs");
+    }
+    termforge::CandidateTerminal clipped(3, 4, 8);
+    clipped.feed("\x1b[?7lABC" + zwj);
+    require(clipped.screen.lines[0][3].text == zwj && clipped.screen.lines[0][3].width == 1 &&
+            clipped.screen.lines[0][3].clipped, "clipped grapheme metadata or scalar retention differs");
+    termforge::CandidateTerminal resized_one(3, 4, 8);
+    resized_one.feed(zwj);
+    resized_one.resize(3, 1);
+    require(resized_one.screen.lines[0][0].text == zwj && resized_one.screen.lines[0][0].width == 1 &&
+            resized_one.screen.lines[0][0].clipped && resized_one.screen.row == 0 &&
+            resized_one.screen.column == 0 && resized_one.screen.wrap_pending,
+            "resize to one column lost text, clipping metadata or cursor");
+    termforge::CandidateTerminal bounded(3, 16, 8);
+    std::string long_marks = "e";
+    for (int index = 0; index < 200; ++index) long_marks += "\xcc\x81";
+    bounded.feed(long_marks);
+    require(termforge::project_line(bounded.screen.lines[0]).text == long_marks &&
+            bounded.grapheme_overflows() == 3 && bounded.screen.lines[0][1].grapheme_fragment,
+            "bounded grapheme spill discarded text or diagnostics");
+    termforge::TextDocument document(bounded.screen);
+    termforge::TextSelection selection;
+    require(selection.select_line(document, 0) && selection.copy(document, 4096).text == long_marks,
+            "bounded grapheme fragments did not copy the original literal text");
+}
+
+void streaming_margin_padding_is_not_copied_as_an_inserted_space() {
+    const std::string keycap = "1\xef\xb8\x8f\xe2\x83\xa3";
+    for (const bool fragmented : {false, true}) {
+        for (const std::string prefix : {"ABC", "ABC "}) {
+            termforge::CandidateTerminal terminal(3, 4, 8);
+            const std::string literal = prefix + keycap;
+            if (fragmented) for (const char byte : literal) terminal.feed(std::string_view(&byte, 1));
+            else terminal.feed(literal);
+            require(terminal.screen.lines[0][3].leading_spacer == (prefix == "ABC"),
+                    "actual written space and leading-wide padding were conflated");
+            termforge::TextDocument document(terminal.screen);
+            termforge::TextSelection selection;
+            require(selection.set(document, {*document.position(0, 0), *document.position(1, 2)}) &&
+                    selection.copy(document, 1024).text == literal,
+                    "margin growth copy inserted padding or removed a literal space");
+            terminal.resize(3, 8);
+            require(termforge::project_line(terminal.screen.lines[0]).text == literal &&
+                    selection.select_line(document, 0) && selection.copy(document, 1024).text == literal,
+                    "resize copied padding or lost a true space");
+            terminal.feed("\r\nD\r\nE\r\nF");
+            require(terminal.screen.history.size() == 1 &&
+                    termforge::project_line(terminal.screen.history[0]).text == literal &&
+                    selection.select_line(document, 0) && selection.copy(document, 1024).text == literal,
+                    "history copied padding or lost original margin text");
+        }
+    }
+}
+
+void prepend_and_inserted_wide_trailer_copy() {
+    const std::string prepend = "\xdc\x8f";
+    for (const bool fragmented : {false, true}) {
+        termforge::CandidateTerminal prefix(3, 8, 8);
+        const std::string literal = prepend + "A";
+        if (fragmented) for (const char byte : literal) prefix.feed(std::string_view(&byte, 1));
+        else prefix.feed(literal);
+        termforge::TextDocument prefix_document(prefix.screen);
+        termforge::TextSelection prefix_selection;
+        require(prefix.screen.lines[0][0].text == literal && prefix_selection.select_line(prefix_document,0) &&
+                prefix_selection.copy(prefix_document,1024).text == literal,
+                "zero-width Prepend scalar disappeared from terminal or copied text");
+        for (const auto& pair : std::vector<std::pair<std::string, std::string>>{
+                {"X"," X ABCDE"}, {"1\xef\xb8\x8f\xe2\x83\xa3", " 1\xef\xb8\x8f\xe2\x83\xa3 ABCD"},
+                {"⌚\xef\xb8\x8e", " ⌚\xef\xb8\x8e ABCD"}}) {
+            termforge::CandidateTerminal terminal(3,8,8);
+            terminal.feed("中ABCDEF\x1b[1;2H\x1b[4h");
+            const auto check_pairs = [&] {
+                const auto& line = terminal.screen.lines[0];
+                for (size_t column=0;column<line.size();++column) {
+                    require(line[column].width != 2 || (column+1<line.size() && line[column+1].width==0),
+                            "inserted prefix left an unpaired wide lead");
+                    require(line[column].width != 0 || (column && line[column-1].width==2),
+                            "inserted prefix left an unpaired wide trailer");
+                }
+            };
+            if (fragmented) for (const char byte : pair.first) { terminal.feed(std::string_view(&byte,1)); check_pairs(); }
+            else { terminal.feed(pair.first); check_pairs(); }
+            termforge::TextDocument document(terminal.screen);
+            termforge::TextSelection selection;
+            require(selection.select_line(document,0) && selection.copy(document,1024).text == pair.second,
+                    "inserted wide-trailer copy did not preserve the atomic-clearing policy");
+        }
+    }
+}
+
 void alternate_and_replies() {
     termforge::CandidateTerminal terminal(3, 8, 2);
     terminal.feed("A\r\nB\r\nC\r\nD\x1b[?1049hALT\x1b[6n\x1b[?1049lZ");
@@ -396,6 +515,9 @@ void resize_and_errors() {
 int main(int argc, char** argv) {
     try {
         fragmentation();
+        streaming_graphemes_selection_and_history();
+        streaming_margin_padding_is_not_copied_as_an_inserted_space();
+        prepend_and_inserted_wide_trailer_copy();
         alternate_and_replies();
         per_buffer_margins();
         margin_resize_and_reset();

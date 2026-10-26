@@ -30,6 +30,9 @@ struct Cell {
     Style style;
     size_t marks = 0;
     bool written = false; // Distinguish explicit spaces from unused terminal padding.
+    bool clipped = false; // Candidate retains full text in a constrained footprint.
+    bool grapheme_fragment = false; // Lossless fragment after the bounded EGC budget.
+    bool leading_spacer = false; // Autowrap padding; paint it but never copy it as text.
 };
 enum class LineEnding { none, hard_break, soft_wrap };
 // A value container: moving/copying a row preserves its identity and metadata.

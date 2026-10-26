@@ -1,0 +1,149 @@
+{
+  "schema": "termforge-fixed-streaming-graphemes-v1",
+  "trace_sha256": "d74970c2101fa05f9d894285937e78662ea9a84690be1e60844c0f0f6cbb6663",
+  "passed": false,
+  "cases": [
+    {
+      "case": "zwj",
+      "plan": "whole",
+      "expected_text": "👩‍💻",
+      "expected_width": 2,
+      "occupied": [
+        [
+          "👩‍",
+          2
+        ],
+        [
+          "💻",
+          2
+        ]
+      ],
+      "row": 0,
+      "column": 4,
+      "passed": false,
+      "trace": {
+        "bytes": 11,
+        "rows": 3,
+        "columns": 8,
+        "history": 2,
+        "chunk_sizes": [
+          11
+        ],
+        "input_sha256": "427274538f1f24ef137872891551ffb4263f6edd90c80c533534578e8a5a9893",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 2,
+        "passed": true
+      }
+    },
+    {
+      "case": "zwj",
+      "plan": "byte",
+      "expected_text": "👩‍💻",
+      "expected_width": 2,
+      "occupied": [
+        [
+          "👩‍",
+          2
+        ],
+        [
+          "💻",
+          2
+        ]
+      ],
+      "row": 0,
+      "column": 4,
+      "passed": false,
+      "trace": {
+        "bytes": 11,
+        "rows": 3,
+        "columns": 8,
+        "history": 2,
+        "chunk_sizes": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "input_sha256": "427274538f1f24ef137872891551ffb4263f6edd90c80c533534578e8a5a9893",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 12,
+        "passed": true
+      }
+    },
+    {
+      "case": "keycap",
+      "plan": "whole",
+      "expected_text": "1️⃣",
+      "expected_width": 2,
+      "occupied": [
+        [
+          "1️⃣",
+          1
+        ]
+      ],
+      "row": 0,
+      "column": 1,
+      "passed": false,
+      "trace": {
+        "bytes": 7,
+        "rows": 3,
+        "columns": 8,
+        "history": 2,
+        "chunk_sizes": [
+          7
+        ],
+        "input_sha256": "3a54154ed9521ac47fb973d028932325fa75f99fea9a0d50958bb32878f5cd0b",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 2,
+        "passed": true
+      }
+    },
+    {
+      "case": "keycap",
+      "plan": "byte",
+      "expected_text": "1️⃣",
+      "expected_width": 2,
+      "occupied": [
+        [
+          "1️⃣",
+          1
+        ]
+      ],
+      "row": 0,
+      "column": 1,
+      "passed": false,
+      "trace": {
+        "bytes": 7,
+        "rows": 3,
+        "columns": 8,
+        "history": 2,
+        "chunk_sizes": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "input_sha256": "3a54154ed9521ac47fb973d028932325fa75f99fea9a0d50958bb32878f5cd0b",
+        "returncode": 0,
+        "error": null,
+        "checkpoints": 8,
+        "passed": true
+      }
+    }
+  ],
+  "windterm_runtime_executed": false,
+  "performance_measured": false
+}
