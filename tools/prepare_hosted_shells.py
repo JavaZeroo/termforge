@@ -29,6 +29,11 @@ ROOTFS_URL = "https://cloud-images.ubuntu.com/wsl/releases/noble/20240423/ubuntu
 ROOTFS_SHA256 = "8251e27ffff381a4af5f41dcb94d867de3e0d9774a9241908ab34555d99315ea"
 MAX_DOWNLOAD = 400 * 1024 * 1024
 STEPS = {"preflight": 45, "download": 120, "import": 90, "check-before": 25, "check-after": 25}
+COMMANDS_BY_STEP = {"preflight": ("cmd", "ps51", "ps7", "list"), "download": (),
+                    "import": ("list-before-import", "import"),
+                    "check-before": ("list", "startup"), "check-after": ("list", "startup")}
+COMMAND_DEADLINES = {"cmd": 10, "ps51": 10, "ps7": 10, "list": 10,
+                     "list-before-import": 10, "import": 80, "startup": 20}
 
 
 class PreparationError(Exception):
@@ -165,16 +170,95 @@ def copy_verified_rootfs(response, destination, *, expected_hash=ROOTFS_SHA256,
         raise PreparationError("download_hash")
 
 
+def validate_command_events(value, step):
+    """Whitelist an ordered prefix; an invoking tail is not a completed command."""
+    if (step not in COMMANDS_BY_STEP or not isinstance(value, dict) or set(value) != {"events"} or
+            not isinstance(value["events"], list) or len(value["events"]) > 8):
+        raise ValueError("command event schema")
+    expected = COMMANDS_BY_STEP[step]
+    index, waiting, timed_out = 0, False, False
+    for event in value["events"]:
+        if (not isinstance(event, dict) or
+                set(event) != {"command", "phase", "deadline_ms", "elapsed_ms", "returncode"} or
+                index >= len(expected) or timed_out or event["command"] != expected[index]):
+            raise ValueError("command event identity")
+        phase = event["phase"]
+        if (phase not in (("returned", "timed_out") if waiting else ("invoking",)) or
+                type(event["deadline_ms"]) is not int or
+                event["deadline_ms"] != 1000 * COMMAND_DEADLINES[expected[index]] or
+                type(event["elapsed_ms"]) is not int or not 0 <= event["elapsed_ms"] <= STEPS[step] * 1000 + 10000):
+            raise ValueError("command event boundary")
+        if phase == "returned":
+            if type(event["returncode"]) is not int or not -(2**31) <= event["returncode"] < 2**32:
+                raise ValueError("command exit code")
+            waiting = False
+            index += 1
+        else:
+            if event["returncode"] is not None or (phase == "invoking" and event["elapsed_ms"] != 0):
+                raise ValueError("unobserved command exit")
+            waiting = phase == "invoking"
+            timed_out = phase == "timed_out"
+    return value["events"]
+
+
+def read_command_events(directory, step):
+    with (directory / "command-events.json").open("rb") as stream:
+        raw = stream.read(8193)
+    if len(raw) > 8192:
+        raise ValueError("command event size")
+    return validate_command_events(json.loads(raw), step)
+
+
+def write_command_event(directory, name, phase, elapsed_ms, returncode=None):
+    try:
+        path = directory / "command-events.json"
+        events = read_command_events(directory, directory.name) if path.exists() else []
+        event = {"command": name, "phase": phase, "deadline_ms": 1000 * COMMAND_DEADLINES[name],
+                 "elapsed_ms": elapsed_ms, "returncode": returncode}
+        value = {"events": events + [event]}
+        validate_command_events(value, directory.name)
+        write_json(path, value)
+    except (OSError, ValueError, KeyError, RecursionError):
+        raise PreparationError("command_observation") from None
+
+
+def public_command_observation(directory, step):
+    # Read only after the worker is reaped. Partial traces survive its deadline;
+    # raw arguments/output and malformed data never enter the public report.
+    if step not in COMMANDS_BY_STEP:
+        return {"status": "invalid", "events": []}
+    if not COMMANDS_BY_STEP[step]:
+        return {"status": "not_applicable", "events": []}
+    try:
+        return {"status": "observed", "events": read_command_events(directory, step)}
+    except FileNotFoundError:
+        return {"status": "not_observed", "events": []}
+    except (OSError, ValueError, RecursionError):
+        return {"status": "invalid", "events": []}
+
+
 def run_command(command, directory, name, *, cwd, timeout=10, data=None):
     # This function only runs inside a GO-gated worker already in the parent's
     # exact Job. No shell string construction or global-process cleanup.
+    if name not in COMMANDS_BY_STEP.get(directory.name, ()) or timeout != COMMAND_DEADLINES[name]:
+        raise PreparationError("command_observation")
+    def observe(phase, elapsed_ms, returncode=None):
+        try:
+            write_command_event(directory, name, phase, elapsed_ms, returncode)
+        except PreparationError:
+            # A missing/partial trace cannot replace the actual command result.
+            pass
     stdout_path, stderr_path = directory / (name + ".stdout"), directory / (name + ".stderr")
     with stdout_path.open("xb") as stdout, stderr_path.open("xb") as stderr:
+        observe("invoking", 0)
+        started = time.monotonic_ns()
         try:
             result = subprocess.run(command, input=data, stdout=stdout, stderr=stderr,
                                     cwd=cwd, timeout=timeout, creationflags=subprocess.CREATE_NO_WINDOW)
         except subprocess.TimeoutExpired:
+            observe("timed_out", (time.monotonic_ns() - started) // 1000000)
             raise PreparationError("command_deadline") from None
+        observe("returned", (time.monotonic_ns() - started) // 1000000, result.returncode)
     if stdout_path.stat().st_size > 65536:
         raise PreparationError("command_report_size")
     return result.returncode, stdout_path.read_bytes()
@@ -268,7 +352,8 @@ RESULTS_BY_STEP = {"preflight": {"ubuntu-existing", "ubuntu-absent"},
 FAILURES = {"hosted_guard", "workspace_guard", "windows_admin_guard", "worker_job_guard", "cwd_identity", "wsl_report_size",
             "wsl_list_encoding", "wsl_list_identity", "marker_encoding", "shell_startup", "download_deadline",
             "download_size", "download_hash", "command_deadline", "command_report_size", "worker_directory_guard",
-            "wsl_list", "download_response", "ubuntu_already_present", "wsl_import", "ubuntu_missing", "worker_step"}
+            "wsl_list", "download_response", "ubuntu_already_present", "wsl_import", "ubuntu_missing", "worker_step",
+            "command_observation"}
 
 
 def run_step(step, out):
@@ -375,6 +460,8 @@ def run_step(step, out):
                 job.close()
         (private / "worker.stdout").write_bytes(stdout)
         (private / "worker.stderr").write_bytes(stderr)
+    record["command_observation"] = (public_command_observation(private, step) if cleanup["root_reaped"] else
+                                     {"status": "worker_not_reaped", "events": []})
     return record
 
 
