@@ -80,6 +80,8 @@ jobs:
         run: cmake --build build --config Release --target core_measure
       - name: Build and test candidate C++ adapter
         run: cmake --build build --config Release --target candidate_core_test && ctest --test-dir build -C Release -R candidate_core --output-on-failure
+      - name: Verify resize trace and actual replay input rejection
+        run: cmake --build build --config Release --target candidate_resize_replay && ctest --test-dir build -C Release -R "^(resize_trace|resize_replay)$" --no-tests=error --output-on-failure
       - name: Build and test candidate shell on Windows
         if: runner.os == 'Windows'
         run: cmake --build build --config Release --target shell_test_launcher && ctest --test-dir build -C Release -R candidate_shell_tui --output-on-failure
