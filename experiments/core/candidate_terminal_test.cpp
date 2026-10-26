@@ -3,6 +3,7 @@
 #include "text_document.hpp"
 #include "text_search.hpp"
 #include "text_selection.hpp"
+#include "text_projection.hpp"
 #include <iostream>
 #include <sstream>
 #include <filesystem>
@@ -39,6 +40,8 @@ void fragmentation() {
     require(whole.screen.history[0][2].width == 0 && whole.screen.history[0][2].written,
             "wide character spacer was not preserved as written");
     require(whole.screen.history[0][3].marks == 1, "combining mark missing");
+    require(termforge::project_line(whole.screen.history[0]).text == "A中e\xCC\x81😀",
+            "canonical text projection must omit wide spacer payloads and preserve literal scalars");
     for (const auto& cell : whole.screen.history[0])
         require(cell.width != 0 || cell.written, "unused cell was incorrectly treated as a wide spacer");
     require(whole.screen.history[0][7].width == 1 && whole.screen.history[0][7].text == " " &&

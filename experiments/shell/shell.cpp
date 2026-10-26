@@ -200,7 +200,7 @@ class ShellWindow {
 
     bool line_is(const std::string& expected) const {
         for (const auto& row : snapshot_->lines) {
-            std::string text; for (const auto& cell : row) text += cell.text;
+            std::string text = termforge::project_line(row, false).text;
             while (!text.empty() && text.back() == ' ') text.pop_back();
             if (text == expected) return true;
         }
@@ -208,7 +208,7 @@ class ShellWindow {
     }
     bool has(const std::string& value) const {
         for (const auto& row : snapshot_->lines) {
-            std::string text; for (const auto& cell : row) text += cell.text;
+            const std::string text = termforge::project_line(row, false).text;
             if (text.find(value) != std::string::npos) return true;
         }
         return false;
@@ -1165,7 +1165,7 @@ public:
     bool contains_line(const std::string& text) const { return line_is(text); }
     bool live_contains_line(const std::string& expected) const {
         for(const auto& line:parser_.screen.lines) {
-            std::string text; for(const auto& cell:line) text+=cell.text;
+            std::string text = termforge::project_line(line, false).text;
             while(!text.empty() && text.back()==' ') text.pop_back();
             if(text==expected) return true;
         }

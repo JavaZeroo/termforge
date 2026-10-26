@@ -71,10 +71,12 @@ static int runtime_window_case() {
         window.current_find_range().has_value(); }, "runtime actual find finishes deadline");
     window.synthetic_paste(u"TF_RUNTIME_PROMPT\r\nNEXT");
     const auto tasks = window.runtime_snapshot();
-    require(tasks.selection.range && tasks.search.editor_present && tasks.search.result_count >= 1 &&
+    const bool tasks_valid = tasks.selection.range && tasks.search.editor_present && tasks.search.result_count >= 1 &&
         tasks.search.find_query_bytes == 19 && tasks.pending_prepared_paste && tasks.paste_prompt_present &&
         tasks.pending_prepared_bytes == 22 && tasks.pending_source_units == size_t{23} && !tasks.paste &&
-        tasks.pending_prepared_capacity_bytes >= tasks.pending_prepared_bytes,
+        tasks.pending_prepared_capacity_bytes >= tasks.pending_prepared_bytes;
+    if (!tasks_valid) std::cerr << "runtime_tasks=" << tf_shell::runtime_snapshot_json(tasks) << '\n';
+    require(tasks_valid,
         "actual search selection and unsent confirmation payload are observed without copying text");
     window.close();
     const auto before_close = window.runtime_before_close();
