@@ -279,9 +279,22 @@ fn wrap_padding(row: &alacritty_terminal::grid::Row<Cell>, column: usize) -> boo
     // A short retained continuation can need physical padding to keep the
     // native viewport boundary. Its wrap marker does not turn that padding
     // into a written space. Other cell contents or attributes remain visible.
-    row.wrap_columns() > 0 && row.wrap_columns() < row.len() && column >= row.wrap_columns()
+    row.native_wrap_padding() && row.wrap_columns() > 0 && row.wrap_columns() < row.len() && column >= row.wrap_columns()
         && row.last().is_some_and(|cell| cell.flags.contains(Flags::WRAPLINE))
         && row[Column(column)] == Cell { flags: Flags::WRAPLINE, ..Cell::default() }
+}
+
+fn row_cell_text(row: &alacritty_terminal::grid::Row<Cell>, column: usize) -> String {
+    if wrap_padding(row, column) {
+        return String::new();
+    }
+    let cell = &row[Column(column)];
+    // Moving a wrap marker onto padding must not make the original trailing
+    // spaces unwritten. They still belong to the retained logical span.
+    if row.native_wrap_padding() && column < row.wrap_columns() && cell.is_empty() {
+        return " ".into();
+    }
+    cell_text(cell)
 }
 
 #[unsafe(no_mangle)]
@@ -302,7 +315,7 @@ pub unsafe extern "C" fn tf_terminal_cell_meta(
     let cell = &row[Column(column)];
     let _ = line;
     let padding = wrap_padding(row, column);
-    let text = if padding { String::new() } else { cell_text(cell) };
+    let text = row_cell_text(row, column);
     let flags = cell.flags();
     let result = CellMeta {
         width: if flags.contains(Flags::WIDE_CHAR) {
@@ -344,7 +357,7 @@ pub unsafe extern "C" fn tf_terminal_cell_text(
     if column >= value.term.grid().columns() {
         return 1;
     }
-    let text = if wrap_padding(row, column) { String::new() } else { cell_text(&row[Column(column)]) };
+    let text = row_cell_text(row, column);
     unsafe { *needed = text.len() };
     if capacity < text.len() || (output.is_null() && !text.is_empty()) {
         return 1;

@@ -56,7 +56,7 @@
 ## termforge.5 补丁
 
 1. `Term::resize_native_viewport` 与 Grid 的显式策略：增高在可见区底部补空行；增宽合并可见行时移动光标并保留底行；历史和原生可见区分别 reflow，不把历史拉进原生控制台的坐标。
-2. 保留历史跨边界的软换行和实际 `wrap_columns`；后续 reflow 只移除本策略产生的默认填充，不丢弃实际文本或样式。C ABI 对同一填充返回一致的未写格/空文本，避免选择复制插入空格。
+2. `src/grid/row.rs` 显式标记本策略产生的边界填充，clone/整行移动保留，mutable cell access、reset、拆分/合并和尺寸改变时失效；不从普通 `wrap_columns` 推断填充。保留历史跨边界的软换行及实际文本跨度，后续 reflow 只移除该标记指明的默认填充。C ABI 同步返回填充的未写格/空文本，并保留原文本跨度中的实际尾空格。
 3. 原 `Term::resize`、C ABI 和 C++ 默认策略继续采用 `reflow_history`。只有显式官方后端候选 `ShellWindow` 选择 `native_viewport`；新增 ABI 而不改变原函数签名。未新增第三方依赖。
 4. 独立原生 `ReadConsoleOutputW` 的六组合成样本、公开适配器回归与原 GUI 反馈见[原生 resize 对照](../../../docs/research/native-viewport-resize.md)。修改为本项目依据观察独立编写，未复制 WindTerm 或 Microsoft 私有代码；既有上游 Apache-2.0 归属保留。
 

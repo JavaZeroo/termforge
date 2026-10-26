@@ -511,6 +511,27 @@ void resize_and_errors() {
     require(rejected, "oversized feed was accepted");
 }
 
+void resize_preserves_written_spaces() {
+    for (const auto policy : {termforge::CandidateResizePolicy::reflow_history,
+                              termforge::CandidateResizePolicy::native_viewport}) {
+        termforge::CandidateTerminal terminal(3,4,100,policy);
+        terminal.feed("ABC   D");
+        for (const int width : {4,5,8,4,5}) {
+            terminal.resize(3,width);
+            termforge::TextDocument document(terminal.screen);
+            size_t last = document.size() - 1;
+            while (last && document.line(last).projection.text.empty()) --last;
+            termforge::TextSelection selection;
+            require(selection.set(document, {*document.position(0,0),
+                *document.position(last,document.line(last).projection.text.size())}),
+                "written-space selection failed");
+            const auto copied = selection.copy(document,4096);
+            require(copied.status == termforge::SelectionCopyStatus::ok && copied.text == "ABC   D",
+                    "resize changed written spaces");
+        }
+    }
+}
+
 void native_viewport_resize() {
     struct Case {
         int rows, columns, new_rows, new_columns;
@@ -600,6 +621,7 @@ int main(int argc, char** argv) {
         linebreaks();
         scrolling_and_erase();
         resize_and_errors();
+        resize_preserves_written_spaces();
         native_viewport_resize();
         std::cout << "candidate terminal adapter checks passed\n";
         return 0;

@@ -129,7 +129,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
     /// later reflow. A cell with actual text or attributes prevents removal.
     fn trim_reflow_padding(row: &mut Row<T>) {
         let used = row.wrap_columns();
-        if used == 0 || used >= row.len() {
+        if !row.native_wrap_padding() || used == 0 || used >= row.len() {
             return;
         }
         let empty = T::default();
@@ -181,6 +181,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                     previous.set_wrap_columns(previous.len());
                     previous.grow(columns);
                     previous[Column(columns - 1)].flags_mut().insert(Flags::WRAPLINE);
+                    previous.mark_native_wrap_padding();
                 }
             }
             // Check if reflowing should be performed.
@@ -386,6 +387,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                                 if wraps {
                                     row[Column(columns - 1)].flags_mut().insert(Flags::WRAPLINE);
                                     row.set_wrap_columns(used);
+                                    row.mark_native_wrap_padding();
                                 }
                             }
                             new_raw.push(row);
@@ -495,6 +497,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                         // Padding keeps physical columns aligned with the
                         // native viewport, but is not part of the logical line.
                         row.set_wrap_columns(occ);
+                        row.mark_native_wrap_padding();
                     }
 
                     if i < self.display_offset {

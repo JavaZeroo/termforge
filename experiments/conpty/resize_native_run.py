@@ -83,7 +83,7 @@ def capture(exe, backend, out, index, *, gate=b"GO\n", timeout=20):
                     if assigned:
                         job.terminate()
                     else:
-                        process.kill()  # This root is still gated; no child exists.
+                        process.kill()  # This root is gated before explicit ConPTY creation.
                 except Exception:
                     fault("process_terminate")
                 # A failed termination operation must not skip the wait.
@@ -118,10 +118,19 @@ def capture(exe, backend, out, index, *, gate=b"GO\n", timeout=20):
                 report["process_reaped"] = report["exit_code"] is not None
             except Exception:
                 fault("process_final_poll")
-        out.mkdir(exist_ok=True)
-        (out / "parent.stdout.bin").write_bytes(stdout)
-        (out / "parent.stderr.bin").write_bytes(stderr)
-        write_json(out / "capture.json", report)
+        try:
+            out.mkdir(exist_ok=True)
+        except Exception:
+            fault("evidence_directory")
+        for name, data in (("parent.stdout.bin", stdout), ("parent.stderr.bin", stderr)):
+            try:
+                (out / name).write_bytes(data)
+            except Exception:
+                fault("evidence_stream_write")
+        try:
+            write_json(out / "capture.json", report)
+        except Exception:
+            fault("evidence_report_write")
     if (report["exit_code"] != 0 or report["timed_out"] or report["forced_outer_cleanup"] or
             report["cleanup_errors"] or not report["process_reaped"] or not report["streams_drained"] or
             report["job_after"] != {"active": 0, "total": 4, "terminated": 0}):
