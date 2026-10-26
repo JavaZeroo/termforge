@@ -1,15 +1,108 @@
 import copy
+import json
 import os
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 from experiments.build_paths import binary
 from experiments.conpty.margin_run import (
     PACKAGE, SOURCE, SOURCE_SHA256, backend_path, margin_result, sha256, validate_lifecycle,
 )
 from experiments.conpty.run import OwnedJob
+from experiments.conpty import margin_run as runner
+
+
+class MarginCleanupFailureTests(unittest.TestCase):
+    def mocks(self):
+        process, job = mock.Mock(), mock.Mock()
+        process.pid, process.returncode = 123, None
+        process.poll.return_value = None
+        job.drain.return_value = {"active": 0, "total": 1, "terminated": 0}
+        return process, job
+
+    def execute(self, root, process, job):
+        with mock.patch.object(runner, "OwnedJob", return_value=job), \
+             mock.patch.object(runner.subprocess, "Popen", return_value=process), \
+             mock.patch.object(runner.subprocess, "CREATE_NO_WINDOW", 0, create=True), \
+             mock.patch.object(runner, "inspect_case", return_value={"synthetic": True}):
+            return runner.execute(Path(root) / "never-executed", "system", Path(root) / "unused-trace",
+                                  Path(root) / "sample", "vt-on", 80, 24)
+
+    def test_timeout_survives_independent_cleanup_failures_and_saves_unknowns(self):
+        process, job = self.mocks()
+        original = subprocess.TimeoutExpired("PRIVATE original", 15)
+        process.communicate.side_effect = [original, OSError("PRIVATE pipe failure"),
+                                           OSError("PRIVATE reap failure")]
+        job.terminate.side_effect = OSError("PRIVATE terminate failure")
+        job.drain.side_effect = OSError("PRIVATE accounting failure")
+        job.close.side_effect = OSError("PRIVATE close failure")
+        with tempfile.TemporaryDirectory() as root:
+            with self.assertRaises(subprocess.TimeoutExpired) as raised:
+                self.execute(root, process, job)
+            self.assertIs(raised.exception, original)
+            row = json.loads((Path(root) / "sample/diagnostic.json").read_text())
+            self.assertEqual(row["status"], "failed")
+            self.assertIsNone(row["outer_job_after"])
+            self.assertIsNone(row["process_reaped"])
+            for stage in ("process_terminate", "process_communicate", "job_accounting", "job_close",
+                          "process_reap_after_close"):
+                self.assertIn(stage, row["cleanup_errors"])
+            self.assertNotIn("PRIVATE", json.dumps(row))
+        job.close.assert_called_once()
+
+    def test_assignment_failure_never_sends_go_and_only_kills_owned_root(self):
+        process, job = self.mocks()
+        original = OSError("PRIVATE assignment failure")
+        job.assign.side_effect = original
+        process.poll.side_effect = [None, 99]
+        process.communicate.return_value = (b"", b"")
+        with tempfile.TemporaryDirectory() as root:
+            with self.assertRaises(OSError) as raised:
+                self.execute(root, process, job)
+            self.assertIs(raised.exception, original)
+            process.kill.assert_called_once()
+            row = json.loads((Path(root) / "sample/diagnostic.json").read_text())
+            self.assertFalse(row["job_assigned"])
+            self.assertTrue(row["process_reaped"])
+            self.assertTrue(row["streams_drained"])
+            self.assertIsNone(row["outer_job_after"])
+            self.assertNotIn("PRIVATE", json.dumps(row))
+        process.kill.assert_called_once()
+        process.communicate.assert_called_once()
+        self.assertEqual(process.communicate.call_args.args, ())
+        job.terminate.assert_not_called()
+        job.drain.assert_not_called()
+        job.close.assert_called_once()
+
+    def test_normal_body_cannot_pass_forced_or_unknown_cleanup(self):
+        native = dict(waited=True, exit_code=37, read_error=109, capture_overflow=False,
+                      forced_reader_cancel=False, forced_process_cancel=False,
+                      cleanup_complete=True, active_children_after=0)
+        for observation, forced in (({"active": 2, "total": 3, "terminated": 0}, True),
+                                    (OSError("PRIVATE query"), False),
+                                    ({"active": False, "total": 1, "terminated": 0}, False)):
+            with self.subTest(observation=type(observation).__name__), tempfile.TemporaryDirectory() as root:
+                process, job = self.mocks()
+                process.returncode = 0
+                process.poll.return_value = 0
+                process.communicate.return_value = (json.dumps(native).encode(), b"")
+                job.drain.side_effect = [observation, {"active": 0, "total": 3, "terminated": 2}]
+                with self.assertRaises(ValueError):
+                    self.execute(root, process, job)
+                row = json.loads((Path(root) / "sample/diagnostic.json").read_text())
+                self.assertEqual(row["status"], "failed")
+                if forced:
+                    self.assertEqual(row["outer_job_after"], observation)
+                    self.assertEqual(row["outer_job_after_forced_cleanup"]["active"], 0)
+                    self.assertTrue(row["forced_outer_cleanup"])
+                else:
+                    self.assertIsNone(row["outer_job_after"])
+                    self.assertIn("job_accounting", row["cleanup_errors"])
+                self.assertNotIn("PRIVATE", json.dumps(row))
+                job.close.assert_called_once()
 
 
 class MarginDiagnosticTests(unittest.TestCase):
