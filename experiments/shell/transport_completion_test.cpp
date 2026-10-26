@@ -26,6 +26,11 @@ int main() {
               "TF_RESTORE_BOTTOM\r\n\x1b]0;cmd.exe\a\r\nTF>","TF_RESTORE_BOTTOM"),"echo and output remain distinct");
         check(transport_output_completed("for %I in (\"%CD%\") do @echo TF_CMD_DIR=%~nxI\r\n"+
               marker+"\x1b[6;1H\x1b[?25hTF>",marker),"ConPTY column-one CUP frames an exact output line");
+        check(transport_output_completed("\x1b[?25l\x1b[93mW\x1b[m\x1b[1;6H\x1b[?25h"
+              "\x1b[93m\bWrite-Outp\x1b[m\x1b[1;15H\x1b[?25h\r\n"+
+              line+"TF>",marker),"command redraw BS before a fresh literal output line does not poison later records");
+        check(transport_output_completed("echo old\b\r\n"+line+"TF_PS_MAJOR=5\r\nTF> ",marker),
+              "fresh output remains independent of a prior edited command record");
 
         check(!transport_output_completed("TF>echo "+line+"TF>",marker),"command echo is not independent output");
         check(!transport_output_completed(title+"\a\r\nTF>",marker),"OSC BEL payload is not output");
@@ -56,6 +61,14 @@ int main() {
         check(!transport_output_completed(line+"TF>\x1bPunknown\x1b\\",marker),"unsupported control strings remain unknown");
         check(!transport_output_completed(line+"TF>",""),"empty marker rejected");
         check(!transport_output_completed("TF>\r\nTF>","TF>\r\nTF>"),"marker cannot contain controls");
+        check(!transport_output_completed("echo \b"+line+"TF>",marker),"BS cannot discard an echo prefix");
+        check(!transport_output_completed("\b"+marker+"\x1b[6;1HTF>",marker),"CUP cannot reset a BS-tainted record");
+        check(!transport_output_completed("TF_CMD_\bDIR=restore-cmd \xe7\x9b\xae\xe5\xbd\x95\r\nTF>",marker),
+              "BS-separated fragments cannot assemble an exact marker");
+        check(!transport_output_completed(marker+"\b\r\nTF>",marker),"editing the marker does not prove literal output");
+        check(!transport_output_completed(line+"\bTF>",marker),"BS after a marker cannot manufacture prompt");
+        check(!transport_output_completed(line+"TF>\b",marker),"trailing prompt BS remains unknown");
+        check(!transport_output_completed("\t\r\n"+line+"TF>",marker),"other bare controls remain rejected");
         std::cout<<"transport completion checks passed\n";
     } catch(const std::exception& error) {
         std::cerr<<error.what()<<'\n'; return 1;

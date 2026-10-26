@@ -10,8 +10,10 @@ namespace tf_shell_test {
 // column-one CUP. This is a record boundary, without assuming the initial cursor
 // row or claiming that the marker still occupies a separate visible screen row.
 // Complete CSI envelopes are omitted without interpreting their semantics.
-// Unknown ESC forms, malformed/incomplete envelopes and other control strings
-// remain unproven. ShellWindow retains its independent 8192-byte observation cap.
+// A command-editor BS before output invalidates that record until a real LF;
+// it cannot erase an echo prefix or splice a marker. Unknown ESC forms,
+// malformed/incomplete envelopes and other controls remain unproven.
+// ShellWindow retains its independent 8192-byte observation cap.
 inline bool transport_output_completed(std::string_view raw, std::string_view marker) {
     if(marker.empty()) return false;
     for(const unsigned char byte:marker) if(byte<0x20 || byte==0x7f) return false;
@@ -76,6 +78,12 @@ inline bool transport_output_completed(std::string_view raw, std::string_view ma
             if(i==raw.size() || raw[i]!='\n') return false;
         } else if(byte=='\n') {
             end_line();
+        } else if(byte=='\b') {
+            // PSReadLine redraw can precede the command's real output. Do not
+            // interpret its editing or reuse any text from that record. Once
+            // output has matched, BS cannot manufacture an idle prompt.
+            if(output_seen) return false;
+            literal_line=false;
         } else {
             if(byte<0x20 || byte==0x7f) return false;
             line.push_back(static_cast<char>(byte));
