@@ -1,0 +1,705 @@
+{
+  "schema": "termforge-selection-session-tick-gate-v1",
+  "date": "2026-10-26",
+  "scope": "R66 scenario synchronization correction; Python acceptance oracle and product behavior unchanged",
+  "implementation_source_commit": "dcb7e6ed0ebc2cb358b68823c348c2fd9a78dac9",
+  "base_commit": "3819093b5b622f340bec02a3057a74241507d559",
+  "source_git_blob_sha1": {
+    "CMakeLists.txt": "e5b3e38afdb2edca99bba8b3fafc91e90cb19e28",
+    "experiments/shell/scenario_tick_gate.hpp": "938059af4fa61fe49e2c39b39ace298f91068c33",
+    "experiments/shell/scenario_tick_gate_test.cpp": "01ea6f28fd0f5042567814c90a9d2ba077de4cab",
+    "experiments/shell/workspace_selection_bytes_scenario.hpp": "d4365a261c96d6203b380c627682628b31777acf",
+    "experiments/shell/selection_bytes_checks.py": "6026dc5a0aee332e6d609951729edc17c1be3593",
+    "experiments/shell/test_selection_bytes.py": "cf3eb4a38d33d5c0f051a16e5706732d125f425a",
+    "experiments/shell/shell.cpp": "b3681dd0a69dc013783c3d5872b4b48847e7d32e",
+    "experiments/shell/shell_selection_text_client.cpp": "e01b0e38ff421b5cd9d3b89e6025f529f6fe8bfa"
+  },
+  "source_raw_sha256": {
+    "CMakeLists.txt": "0763ec046daa5e932583012021a0058351844b28aecf314657ede1f4a2c64603",
+    "experiments/shell/scenario_tick_gate.hpp": "29a045b5559d7d00c9e0ec48793d889afcd1aea0d30e70d49f95a8394ea0c404",
+    "experiments/shell/scenario_tick_gate_test.cpp": "c105a6f56c079ecd6efe2154976b7b867a74b8238c20975adaeefe10209acf1a",
+    "experiments/shell/workspace_selection_bytes_scenario.hpp": "3d9f27fc32d59c7262183f3c86a0f9eced6d13b598c2ac41b824ba5f2b8ea4ca",
+    "experiments/shell/selection_bytes_checks.py": "7e008035ee827ac1e16416c98536c9b1e7ee523bbf1c3acaf68e5c62ea9a9874",
+    "experiments/shell/test_selection_bytes.py": "cf639057c87c9bbca9d81710c29f8c0c7a1fb4c09680fd3304414e059179146a",
+    "experiments/shell/shell.cpp": "49703b00131d88b491f58287f43daa0a6f12fbf5b36a19a097d901af7d62ce44",
+    "experiments/shell/shell_selection_text_client.cpp": "e4efe9d634839c491fca51219b6d249193d0dc770082d63149ebbe472a642b9a"
+  },
+  "original_ci": {
+    "run": 40306319630,
+    "job": 121516200920,
+    "artifact_id": 12642991922,
+    "artifact_bytes": 4736664,
+    "artifact_sha256": "c5fb6a790e6914e2b5195e9f78ee162611bff69d052d5024c47547c865740cb3",
+    "download_count": 1,
+    "reported_pr_head": "4a315ee40d9e0deb133780f1ad54278030575cc2",
+    "actual_checkout": "a160e924b05718141852c894e635a64a0aec7b04",
+    "checkout_tree": "86eaba6b7428f7ce27dd609eb4730d8d5fbaf10e",
+    "head_tree_equals_checkout_tree": true,
+    "environment": {
+      "os": "Windows Server 2025 Datacenter 10.0.26100",
+      "runner": "2.338.0",
+      "image": "windows-2025-vs2026",
+      "image_version": "20261021.278.1"
+    },
+    "related_same_job_binary_sha256": {
+      "termforge_shell.exe": "5e83784174f64dc0bbc62555ba443e8d1f1da7dc0731738ee0683bce886dc2a5",
+      "shell_test_launcher.exe": "2b5d2d176eeb157708362c50366a6c931f0c15e9a41a094f5c8716893f1f449d",
+      "shell_text_client.exe": "51cfb49c877fd1ba1e48b9e65c3858517f9529f478d62bd6b6df2eb848d2d80f",
+      "shell_clipboard_reader.exe": "147529df3123fb7e2d0ee2760e2dddc787f84eb667e483f06e75c0653d02c012"
+    },
+    "binary_identity_note": "The selection run does not record a per-run EXE hash. Same-job text-actions and both workflow manifests agree on these hashes; no source-to-binary proof is inferred.",
+    "per_phase_font_face": null,
+    "font_limitation": "Stage records measure DPI/cell pixels but do not identify the actual face; no font failure is inferred.",
+    "original_collector_status": "failed",
+    "native_cleanup": {
+      "exit_code": 0,
+      "timed_out": false,
+      "native_result": {
+        "valid": true,
+        "mode": "ui-copy-bytes-system",
+        "sessions_closed": 2,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true
+    },
+    "original_private_files_sha256": {
+      "sample.json": "44c20a786f3069acf07e83405ea77be55b8feff0fae8d34b57cca282383372c7",
+      "selection-bytes.json": "2e8db8e8df82eb7e01a67f271b41c7d07404881dcb90879ce18c20ff083916c5",
+      "selection-bytes-progress.jsonl": "fcef5355749908663e3990cc4a05a6db422f460be68b6d48995e9c5c9c9f3c41",
+      "frame.bmp": "f24abb53b0fcf3ce76e4a4bb1b2810638fbfc3b5a1cc27ddfd8d319116a0c0a0"
+    },
+    "final_frame": {
+      "width": 1360,
+      "height": -860,
+      "sha256": "f24abb53b0fcf3ce76e4a4bb1b2810638fbfc3b5a1cc27ddfd8d319116a0c0a0",
+      "reverse_stage_frame": false
+    },
+    "phases": [
+      {
+        "phase": "forward",
+        "ticks_bottom_main": [
+          14,
+          11
+        ],
+        "delta_bottom_main": [
+          14,
+          11
+        ],
+        "grid_and_cell_valid_both": true,
+        "dpi_valid_both": true,
+        "full_redraw_matches_both": true,
+        "capture_released_both": true,
+        "semantic_fields_match_both": true,
+        "clipboard_matches": true,
+        "raw_input_matches": true
+      },
+      {
+        "phase": "reverse",
+        "ticks_bottom_main": [
+          16,
+          14
+        ],
+        "delta_bottom_main": [
+          2,
+          3
+        ],
+        "grid_and_cell_valid_both": true,
+        "dpi_valid_both": true,
+        "full_redraw_matches_both": true,
+        "capture_released_both": true,
+        "semantic_fields_match_both": true,
+        "clipboard_matches": true,
+        "raw_input_matches": true
+      },
+      {
+        "phase": "dpi-96",
+        "ticks_bottom_main": [
+          19,
+          17
+        ],
+        "delta_bottom_main": [
+          3,
+          3
+        ],
+        "grid_and_cell_valid_both": true,
+        "dpi_valid_both": true,
+        "full_redraw_matches_both": true,
+        "capture_released_both": true,
+        "semantic_fields_match_both": true,
+        "clipboard_matches": true,
+        "raw_input_matches": true
+      },
+      {
+        "phase": "dpi-144",
+        "ticks_bottom_main": [
+          25,
+          23
+        ],
+        "delta_bottom_main": [
+          6,
+          6
+        ],
+        "grid_and_cell_valid_both": true,
+        "dpi_valid_both": true,
+        "full_redraw_matches_both": true,
+        "capture_released_both": true,
+        "semantic_fields_match_both": true,
+        "clipboard_matches": true,
+        "raw_input_matches": true
+      },
+      {
+        "phase": "dpi-192",
+        "ticks_bottom_main": [
+          31,
+          29
+        ],
+        "delta_bottom_main": [
+          6,
+          6
+        ],
+        "grid_and_cell_valid_both": true,
+        "dpi_valid_both": true,
+        "full_redraw_matches_both": true,
+        "capture_released_both": true,
+        "semantic_fields_match_both": true,
+        "clipboard_matches": true,
+        "raw_input_matches": true
+      },
+      {
+        "phase": "dpi-96-restored",
+        "ticks_bottom_main": [
+          37,
+          35
+        ],
+        "delta_bottom_main": [
+          6,
+          6
+        ],
+        "grid_and_cell_valid_both": true,
+        "dpi_valid_both": true,
+        "full_redraw_matches_both": true,
+        "capture_released_both": true,
+        "semantic_fields_match_both": true,
+        "clipboard_matches": true,
+        "raw_input_matches": true
+      },
+      {
+        "phase": "cleared",
+        "ticks_bottom_main": [
+          41,
+          39
+        ],
+        "delta_bottom_main": [
+          4,
+          4
+        ],
+        "grid_and_cell_valid_both": true,
+        "dpi_valid_both": true,
+        "full_redraw_matches_both": true,
+        "capture_released_both": true,
+        "semantic_fields_match_both": true,
+        "clipboard_matches": true,
+        "raw_input_matches": true
+      },
+      {
+        "phase": "empty-copy",
+        "ticks_bottom_main": [
+          44,
+          42
+        ],
+        "delta_bottom_main": [
+          3,
+          3
+        ],
+        "grid_and_cell_valid_both": true,
+        "dpi_valid_both": true,
+        "full_redraw_matches_both": true,
+        "capture_released_both": true,
+        "semantic_fields_match_both": true,
+        "clipboard_matches": true,
+        "raw_input_matches": true
+      },
+      {
+        "phase": "input-after",
+        "ticks_bottom_main": [
+          47,
+          45
+        ],
+        "delta_bottom_main": [
+          3,
+          3
+        ],
+        "grid_and_cell_valid_both": true,
+        "dpi_valid_both": true,
+        "full_redraw_matches_both": true,
+        "capture_released_both": true,
+        "semantic_fields_match_both": true,
+        "clipboard_matches": true,
+        "raw_input_matches": true
+      }
+    ]
+  },
+  "cause": {
+    "phase": "reverse",
+    "session": "bottom",
+    "previous_ticks": 14,
+    "observed_ticks": 16,
+    "delta": 2,
+    "required_delta": 3,
+    "main_previous_ticks": 11,
+    "main_observed_ticks": 14,
+    "old_main_only_gate": true,
+    "new_two_session_gate": false,
+    "gate_after_only_bottom_advances_to_17": true,
+    "explanation": "Two independently scheduled session timers cannot use main-only progress as evidence that both have advanced. All existing three_ticks phase gates now use per-session baselines."
+  },
+  "preserved_contract": {
+    "native_deadline_seconds": 30,
+    "outer_deadline_seconds": 40,
+    "phase_count": 9,
+    "observation_cap_bytes": 8192,
+    "minimum_ticks_each_session": 3,
+    "python_oracle_unchanged": true,
+    "text_transport_colors_reverse_drag_geometry_dpi_capture_full_redraw_unchanged": true,
+    "real_clipboard_vm_guard_unchanged": true,
+    "added_sleep": false
+  },
+  "local_validation": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "configuration": "default-core/system-ConPTY",
+    "binary_sha256": {
+      "termforge_shell.exe": "170aeb171fca34e05672b09448daf68db112d8a42a0d2d9ab05011ee042db7ba",
+      "shell_test_launcher.exe": "8909722a360d5ea599252ba784aa6199a78ed2665f89e7ded33b796419dd3db7",
+      "shell_selection_text_client.exe": "7aede0e7788fc9b45317216bb898cfb1a2dfbb28932a0e6fcd223d2b2ef01cfc",
+      "scenario_tick_gate_test.exe": "c0ea2011b0d4d46daf1cf6a72353a592a86724384713e337149280d089016850"
+    },
+    "helper_ctest": "passed",
+    "helper_assertions": 10,
+    "selection_bytes_module": {
+      "tests": 9,
+      "passed": 8,
+      "skipped": 1,
+      "skip": "real system CF requires a disposable GitHub-hosted VM",
+      "log_sha256": "dc9eb6a6ea341a6889a6a86a31660265d40a04c86d890373404b692b0aef4efc"
+    },
+    "fresh_data_runs": [
+      {
+        "case": "local-0",
+        "mode": "ui-selection-bytes",
+        "exit_code": 0,
+        "timed_out": false,
+        "native_result": {
+          "valid": true,
+          "mode": "ui-selection-bytes",
+          "sessions_closed": 2,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "independent_validation": {
+          "system_clipboard": false,
+          "phases": 9,
+          "fixture_style": "styled-tail-v1",
+          "soft_wrap_join": true,
+          "hard_crlf": true,
+          "explicit_trailing_spaces": 2,
+          "controlled_dpi": [
+            96,
+            144,
+            192,
+            96
+          ],
+          "dpi_selection_preserved": true,
+          "raw_input_isolated": true,
+          "cleanup_verified": true,
+          "evidence": {
+            "bottom": {
+              "producer_sha256": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+              "transport_sha256": "a960cfb1d8ae2b225613f643cbde5c2ad46160164e663473bfd7f6eab6044d20",
+              "transport_bytes": 1765,
+              "transport_equals_producer": false,
+              "literal_styled_tail_occurrences": 8,
+              "raw_bytes": 0
+            },
+            "main": {
+              "producer_sha256": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+              "transport_sha256": "6c76fabac86e0ec7eb39cc90590bc58621abf489b7de61ab3a8c4a68e6c48eac",
+              "transport_bytes": 1809,
+              "transport_equals_producer": false,
+              "literal_styled_tail_occurrences": 8,
+              "raw_bytes": 1
+            }
+          }
+        },
+        "phases": [
+          {
+            "phase": "forward",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              14,
+              12
+            ],
+            "delta_bottom_main": [
+              14,
+              12
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "reverse",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              17,
+              15
+            ],
+            "delta_bottom_main": [
+              3,
+              3
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "dpi-96",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              20,
+              18
+            ],
+            "delta_bottom_main": [
+              3,
+              3
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "dpi-144",
+            "controlled_dpi": 144,
+            "ticks_bottom_main": [
+              26,
+              24
+            ],
+            "delta_bottom_main": [
+              6,
+              6
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "dpi-192",
+            "controlled_dpi": 192,
+            "ticks_bottom_main": [
+              32,
+              31
+            ],
+            "delta_bottom_main": [
+              6,
+              7
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "dpi-96-restored",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              38,
+              37
+            ],
+            "delta_bottom_main": [
+              6,
+              6
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "cleared",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              41,
+              40
+            ],
+            "delta_bottom_main": [
+              3,
+              3
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "empty-copy",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              44,
+              43
+            ],
+            "delta_bottom_main": [
+              3,
+              3
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "input-after",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              48,
+              47
+            ],
+            "delta_bottom_main": [
+              4,
+              4
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          }
+        ],
+        "private_sha256": {
+          "sample.json": "38bb682c893b0532a147e7d37589442f0e02de98e0f5aac5d8e5fcae60cda7e6",
+          "selection-bytes.json": "6fad6e0d1fb7ef1de74e9dd310bfd4aad10ec1de2ba4391f788cd66bfd92656c",
+          "selection-bytes-progress.jsonl": "1ede6dde2d49d0e3364414d831ce749e288c98b6cec3e7ff0293c9b4a1a667e3",
+          "frame.bmp": "83cce5102441d1590b5ad469a1cb9d2a444a83a0660c129c301cbfdc4c6452b0",
+          "selection-bytes-main.producer.json": "67bbbd89891bbe141d604f3f196fb6e3a41376142ef7db91b63163b856ecb60a",
+          "selection-bytes-main.producer.bin": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+          "selection-bytes-main.transport.bin": "6c76fabac86e0ec7eb39cc90590bc58621abf489b7de61ab3a8c4a68e6c48eac",
+          "selection-bytes-bottom.producer.json": "df7fe9106a98a3785c4c623ff3306957ac9b7af3843bf8a6072c8826459668c7",
+          "selection-bytes-bottom.producer.bin": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+          "selection-bytes-bottom.transport.bin": "a960cfb1d8ae2b225613f643cbde5c2ad46160164e663473bfd7f6eab6044d20"
+        }
+      },
+      {
+        "case": "local-1",
+        "mode": "ui-selection-bytes",
+        "exit_code": 0,
+        "timed_out": false,
+        "native_result": {
+          "valid": true,
+          "mode": "ui-selection-bytes",
+          "sessions_closed": 2,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "independent_validation": {
+          "system_clipboard": false,
+          "phases": 9,
+          "fixture_style": "styled-tail-v1",
+          "soft_wrap_join": true,
+          "hard_crlf": true,
+          "explicit_trailing_spaces": 2,
+          "controlled_dpi": [
+            96,
+            144,
+            192,
+            96
+          ],
+          "dpi_selection_preserved": true,
+          "raw_input_isolated": true,
+          "cleanup_verified": true,
+          "evidence": {
+            "bottom": {
+              "producer_sha256": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+              "transport_sha256": "38d7c6a5589594edfbbcfc683ff5f1666926586ffe493faaf131c35bfb076795",
+              "transport_bytes": 1765,
+              "transport_equals_producer": false,
+              "literal_styled_tail_occurrences": 8,
+              "raw_bytes": 0
+            },
+            "main": {
+              "producer_sha256": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+              "transport_sha256": "26b39893b5c01a51473791e789cf6a5349a11efe16883e3f5d801df863825ff3",
+              "transport_bytes": 1809,
+              "transport_equals_producer": false,
+              "literal_styled_tail_occurrences": 8,
+              "raw_bytes": 1
+            }
+          }
+        },
+        "phases": [
+          {
+            "phase": "forward",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              14,
+              11
+            ],
+            "delta_bottom_main": [
+              14,
+              11
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "reverse",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              17,
+              14
+            ],
+            "delta_bottom_main": [
+              3,
+              3
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "dpi-96",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              20,
+              17
+            ],
+            "delta_bottom_main": [
+              3,
+              3
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "dpi-144",
+            "controlled_dpi": 144,
+            "ticks_bottom_main": [
+              26,
+              23
+            ],
+            "delta_bottom_main": [
+              6,
+              6
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "dpi-192",
+            "controlled_dpi": 192,
+            "ticks_bottom_main": [
+              32,
+              29
+            ],
+            "delta_bottom_main": [
+              6,
+              6
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "dpi-96-restored",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              38,
+              35
+            ],
+            "delta_bottom_main": [
+              6,
+              6
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "cleared",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              41,
+              38
+            ],
+            "delta_bottom_main": [
+              3,
+              3
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "empty-copy",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              44,
+              41
+            ],
+            "delta_bottom_main": [
+              3,
+              3
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          },
+          {
+            "phase": "input-after",
+            "controlled_dpi": 96,
+            "ticks_bottom_main": [
+              47,
+              44
+            ],
+            "delta_bottom_main": [
+              3,
+              3
+            ],
+            "full_redraw_matches_both": true,
+            "capture_released_both": true
+          }
+        ],
+        "private_sha256": {
+          "sample.json": "78a3569fa6183d0658c9ca26d6640ce139d11bd5384f9e1c07de0c81f925c859",
+          "selection-bytes.json": "16b81feb01139e69bf328f74da761e77543fef0e0c72c16473d6022bd74a8a87",
+          "selection-bytes-progress.jsonl": "9cd55bba47a1c785bb9f2c231b06f9a2cac1421f09c18f595e34cabac407d63f",
+          "frame.bmp": "83cce5102441d1590b5ad469a1cb9d2a444a83a0660c129c301cbfdc4c6452b0",
+          "selection-bytes-main.producer.json": "67bbbd89891bbe141d604f3f196fb6e3a41376142ef7db91b63163b856ecb60a",
+          "selection-bytes-main.producer.bin": "4ae7ba438881c4049c6cd1540175acf68bdb3b8e64146c4541eea70fbb6b9e31",
+          "selection-bytes-main.transport.bin": "26b39893b5c01a51473791e789cf6a5349a11efe16883e3f5d801df863825ff3",
+          "selection-bytes-bottom.producer.json": "df7fe9106a98a3785c4c623ff3306957ac9b7af3843bf8a6072c8826459668c7",
+          "selection-bytes-bottom.producer.bin": "e8f12ba1dfede1f963c49264142db4c8790c29d27876a9dfaad57fb3e4a86b8b",
+          "selection-bytes-bottom.transport.bin": "38d7c6a5589594edfbbcfc683ff5f1666926586ffe493faaf131c35bfb076795"
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "The original hosted system-clipboard process exited zero but its collector remains failed because the required per-session timer evidence was missing.",
+    "No original stage result is rewritten as passed. This artifact batch is inspected once; no old hosted rerun is used to choose a green.",
+    "Local fresh data-mode runs do not accept the system-clipboard path; final hosted same-source CF validation is still required.",
+    "The final frame.bmp is not a captured reverse-stage frame. Per-stage full-redraw boolean observations are separate from actual presentation, which remains unknown.",
+    "No specific cause for independent workspace, InputPump or transport failures is inferred.",
+    "The change fixes test phase synchronization, not renderer or clipboard behavior, and does not establish full R1/R2, different-DPI monitors, candidate/official backend, or performance acceptance."
+  ]
+}
