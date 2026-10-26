@@ -8,9 +8,11 @@
 |---|---|
 | main 默认：自研核心 + 系统 ConPTY | R1 限定总验收和有限 VT/Unicode 子集；默认构建不需要 Rust |
 | main 显式候选：`termforge.4` + 系统 ConPTY | [固定来源/补丁台账](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)、[#39 字素合同](research/streaming-graphemes.md)；仅按已有合同验收 |
-| PR #50 实验：`termforge.3` + 固定官方 ConPTY | [Draft PR](https://github.com/JavaZeroo/termforge/pull/50) / [#47](https://github.com/JavaZeroo/termforge/issues/47)；尚未与 main `.4` 联合验证；[resize #51](https://github.com/JavaZeroo/termforge/issues/51)、[Console-width Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[确定性 sender fence #53](https://github.com/JavaZeroo/termforge/issues/53)仍开放，已有 completed 观察不构成部分发送取消验收 |
+| PR #50 实验：`termforge.4` + 固定官方 ConPTY | [Draft PR](https://github.com/JavaZeroo/termforge/pull/50) / [#47](https://github.com/JavaZeroo/termforge/issues/47)；[联合基线](research/joint-conpty-baseline.md)已固定，产品回归未全绿；[resize #51](https://github.com/JavaZeroo/termforge/issues/51)、[Console-width Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[确定性 sender fence #53](https://github.com/JavaZeroo/termforge/issues/53)仍开放，已有 completed 观察不构成部分发送取消验收 |
 
 R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分别只代表原记录。源 VT、原生控制台 CHAR_INFO、transport、末端状态、自有 DIB、绘制提交和真实呈现是不同检查点；未知端点保持未知。
+
+显式官方后端的旧 `.3` 实现及独立生命期/双 SHA 拒绝记录见[实验合同](research/experimental-conpty-backend.md)与[冻结验证](../experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)。联合源码 `3e5b96d` 的[三配置清单](../experiments/conpty/results/2026-10-26-joint-backend/validation.json)分别记录默认43/45、候选/system 48/48、显式官方46/48（shell套件超时，未完成项仍未知）；原resize/Vim各一红一绿、粘贴两红。新恢复/worker/工作区失败由 #61–#63 承接，旧失败不因其他轮成功变成通过。
 
 ## 产品能力的限定验收
 

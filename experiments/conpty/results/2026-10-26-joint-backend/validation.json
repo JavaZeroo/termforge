@@ -1,0 +1,2928 @@
+{
+  "schema": "termforge-joint-conpty-baseline-proof-v1",
+  "date": "2026-10-26",
+  "issue": 55,
+  "purpose": "freeze actual joint baseline, including unresolved failures; not product acceptance",
+  "source": {
+    "main": "3d6d44d3b3e9a9a3e41da98e8711e9f19a211fd8",
+    "draft_50": "e2702af0e03cf6f78c0f433820df7edf64146b87",
+    "joint": "3e5b96d0e0854b691b6dd41821ab10b6124b83eb",
+    "tree": "a9010874dfef4a551554c4ca137460b1ef749914"
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "tools": {
+      "cmake": "cmake version 3.31.0\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).",
+      "rustc": "rustc 1.92.0 (ded5c06cf 2025-12-08)\nbinary: rustc\ncommit-hash: ded5c06cf21d2b93bffd5d884aa6e96934ee4234\ncommit-date: 2025-12-08\nhost: x86_64-pc-windows-msvc\nrelease: 1.92.0\nLLVM version: 21.1.3",
+      "cargo": "cargo 1.92.0 (344c4567c 2025-10-21)"
+    },
+    "shared_host": true,
+    "concurrent_builds_and_test_groups": true,
+    "performance_measurement": false
+  },
+  "sources": {
+    "CMakeLists.txt": {
+      "sha256": "8672f74ee151aa0ff96c3814b0100915405ac51e5f82512376f6f6fdbe3f7a64",
+      "git_blob": "fb84f1dacfe9e635ce060f096d16a7e698c389d2"
+    },
+    "cmake/ConptyBackend.cmake": {
+      "sha256": "6a9f9fb69f90a1db7ad5eb970e61d0913ce4ff75a121f267a369468344fffcde",
+      "git_blob": "6b0b9910fb36a31e486f9fbe2b33e906b68b43f0"
+    },
+    "experiments/conpty/backend.hpp": {
+      "sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489",
+      "git_blob": "3195dceaefa166b1251839108d29c5fd034aa2fb"
+    },
+    "experiments/conpty/session.hpp": {
+      "sha256": "6945e6ffba1d61e66266f867d3cd124eb63c39da37e27662a5eaf544f60ed96b",
+      "git_blob": "d44f36661594a5b76b62d1ecb95cf166db22e90a"
+    },
+    "experiments/conpty/backend_probe.cpp": {
+      "sha256": "c51d53ef508aa19f81dfb89ed030993ae95f06f5a85123560e9cae2de369b042",
+      "git_blob": "137564e8fc72005f1b8203dc545d5f18e89eac70"
+    },
+    "experiments/conpty/test_backend.py": {
+      "sha256": "540bb5dad1323fe271cf0e30a1af7f008d6b5a79d595f1d3e4ffbd9bf1bf97fd",
+      "git_blob": "14dca4b4f0e6da11cfc6c7c1d2d1719d1be85bfe"
+    },
+    "experiments/conpty/margin_probe.cpp": {
+      "sha256": "9fff80b3eb0ace2cc6944ea8a99603c5e5a2b0150b82933d858ed667b0357002",
+      "git_blob": "cfdea50b76fdf421be35aef38491aa47669ca34a"
+    },
+    "experiments/conpty/margin_run.py": {
+      "sha256": "9390bc716579728d6c6d9ee7d69ce2deae11e56fd7de5cec6b3231209ed72704",
+      "git_blob": "ef1264cddb3ae637e09e5d3ba9bb28259831b420"
+    },
+    "experiments/conpty/real_app_capture.cpp": {
+      "sha256": "95b16e22e0c8fc9cf763093900f1982a01ad6808a679f00e52c3761195099fe6",
+      "git_blob": "b37c4b682d8300797baa661cd51f165eb7af9192"
+    },
+    "experiments/shell/shell.cpp": {
+      "sha256": "6491a7153c498d9731b6f9804baddd0508b449de9713e0c5a8c379f17f14a93a",
+      "git_blob": "1f5d3c98d059cc6f7c9ae0ff0c95974b8b0d79cb"
+    },
+    "experiments/shell/test_candidate_tui.py": {
+      "sha256": "a300380b97ad424c5af06219a021a256de6178c3af7fb7e933e24bb8142201ee",
+      "git_blob": "f7cdd397af5d9ce6e4af1c5563cd7bb9c9249b22"
+    },
+    "experiments/shell/unicode_checks.py": {
+      "sha256": "95fffb54274b695be2b857d942555dd8001801eeec5e3f020a9d448cbe1a82e5",
+      "git_blob": "9d4c9739ca1a516dc94da1773fda8633c2208847"
+    },
+    "experiments/shell/run.py": {
+      "sha256": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d",
+      "git_blob": "bbd4dfc05012c55956973d7e2c69be717b48b1a9"
+    },
+    "experiments/shell/resize.hpp": {
+      "sha256": "14e44837d8fc2d0b88356db824e46616ef6c210dcf9b668445478bac06284415",
+      "git_blob": "da9f739d18f21ac14a137beeedaedc80f9d98feb"
+    },
+    "experiments/shell/paste_scenario_state.hpp": {
+      "sha256": "934414929448b30e429f95d84a3e5b7927ea31292d547b1e0ece92efa3b8c0dc",
+      "git_blob": "0c1165d0db196d2a0ac264d3de5628d0b343c835"
+    },
+    "experiments/shell/workspace_paste_scenario.hpp": {
+      "sha256": "406cc1162560fa7eb1b607c6895280a5353315ffc01099984685f25bab20656b",
+      "git_blob": "f9109f028e5e0b5180bdb5294aa4b89d1066d83c"
+    },
+    "experiments/core/candidate_terminal.cpp": {
+      "sha256": "0d0eaabe5ef896aa7b263c8151622f579f37c421bf9473fc3d69ada010a64e61",
+      "git_blob": "cc12246ee7e94382bf95835cd45e6ef6b8949a19"
+    },
+    "experiments/core/candidate_terminal.hpp": {
+      "sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "git_blob": "55de3176ec220b2e404cc7e108f6d0063af3c004"
+    },
+    "experiments/candidates/alacritty/Cargo.lock": {
+      "sha256": "896c6e60909d55d61fb26d277b1a98daf9245e8aee811caff37fc3e9d06ca627",
+      "git_blob": "6501189a98bfe0610ebcb5e3c31d3abc2ae3f132"
+    },
+    "experiments/candidates/alacritty/Cargo.toml": {
+      "sha256": "c5f89fda48ab73f30adfdcc4437fb3eeb1779647886d85364d91395bf8beec86",
+      "git_blob": "e596f796caca9fb67d2886409de6eb6a10d3f7a1"
+    },
+    "experiments/candidates/alacritty/src/ffi.rs": {
+      "sha256": "8c6fffa0559f0ab5f6e776bab03a35a1375b2b9f977c047da9bc62b8e5c30bfa",
+      "git_blob": "4f56d33ffdca519f249bae95aa5d943c9b926427"
+    },
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": {
+      "sha256": "b4a6fdaa4f8c3fdf56b614689ed381408acc68407bd05c8ea592fb6fd0021f78",
+      "git_blob": "e01395801c0b27bb3deefaaba69677b55bc90503"
+    },
+    "third_party/conpty/LICENSE": {
+      "sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+      "git_blob": "8cb179cdb69492ba3b8285e61a67fc1fbfe82cb2"
+    },
+    "third_party/conpty/manifest.json": {
+      "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "git_blob": "a3f7fb23a92762d8decb196a07893628ac759c63"
+    }
+  },
+  "rust_outputs": {
+    "alacritty-measure.exe": "864148f6ba785a66e27a57af970ada42a5454f12dc46139eb6d30271b09b34af",
+    "termforge-alacritty-trace.exe": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+    "termforge_alacritty_core.lib": "bac3e64b803e7488524b61262c56b16fb8d34832367adadcdcac2715006da918"
+  },
+  "configurations": {
+    "default": {
+      "build_directory": "joint-default",
+      "cmake": {
+        "candidate_adapter": false,
+        "explicit_reviewed_backend": false,
+        "configuration": "Release",
+        "architecture": "x64",
+        "parallel": 4
+      },
+      "backend": "system",
+      "creation_flags": 0,
+      "binaries": {
+        "alpha_normal_smoke.exe": "dab6c1546ef8465a48155afcf9a1359ca5fe0f6610a92e9dcf5d9432aa5dfe3e",
+        "assets/fonts/OFL.txt": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215",
+        "assets/fonts/README.md": "a278deeec4b6240acc5398fe4271ebe8cc0ef26502ac3a1cfb950d06ddaf43e6",
+        "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
+        "clipboard_policy_test.exe": "70412e654e960478b81ff4cd6be386a3b874f5a5ea3c02a33819e8dca76b1e9c",
+        "conpty_backend_probe.exe": "5361b8dc4dc5b0dc8c13124ff3f5aae9235462b4682d59e9054ba4f5c0924b62",
+        "conpty_ctrl_c_probe.exe": "03ab90552e3f5b43089a56f87bed91db102e58d7625b4bfdd30a9d52841c89ae",
+        "conpty_margin_probe.exe": "be23a9131529954b0ddd9208ec34e34aa3295b4c43f27729722d197f7d631c79",
+        "core_measure.exe": "eec568bb2a858d69bc49a393584840f920288cebe0124ac786a223ef20b2f957",
+        "find_bar_test.exe": "3e89500c9d7194cc21924a4ca5b1f086b4750c016a342aea00bace3adc894a4d",
+        "history_test.exe": "396520ca865f88c52645a45e9d28e0b2a1f73382c13fef2765b4b7822d699718",
+        "ime_context_test.exe": "c6b696eab033840321c1e8e4fb717cc5a92b03b50b96f2be3bc8dc19c732cb59",
+        "ime_input_expectation_test.exe": "55b34bcfd26d38a6eee959d93434fa6e9b81553c96a340fad381b33bf17174df",
+        "keyboard_test.exe": "00e42455d7741a95e52a1b90d160cf866812b387cfe72e7742596a30c50f7813",
+        "layout_state_test.exe": "109c629bf873de8bfed5d4282bfd1f66812b5081bff143dc0edcd88512fd5c23",
+        "paste_test.exe": "1c5500c90c9a6d7aa82c4386d6684092e9875ff0e22c02765fd0992e4104be41",
+        "presentation_probe.exe": "6246b451fec5c5f8fece14289ac73594a069cb817f2b6e02e14351576ece93dd",
+        "raw_console_receiver_test.exe": "0ee84450948d91377ea154b0c2a927dc8c76bf24e6d7f9da9c35e404c0341683",
+        "real_app_capture.exe": "90bfabe82ed2f0a493a2ffb7239178bea676b294511ee9c8c6db2ad0821dab78",
+        "receive.exe": "c2e86aea3a69fde584be5fef1482aced54c2a85c90e486f36a3ee638761c6a88",
+        "recovery_probe.exe": "1096bca8fe1f6295280c315bdf0109c201f71eb816d5299a05174b257d5cdf9e",
+        "renderer_metrics_test.exe": "be701560f8da5220964ee11d3ac5488d3e1f7db5a64b1c21f87c4ed9d9f8fd34",
+        "replay.exe": "33cd3c91e59313ef6a1bd53d34855d6cb1b5f86ab3534709605ebdf2d74be7b8",
+        "resize_test.exe": "b79cfb94eaa89c5501319e692affce3f6776b643fd60f2b2a2675e915207441a",
+        "runtime_observation_test.exe": "5d8823294f52b244badce61197e5f7764f8fbb12ace5c35e1203bc908cf8dbb0",
+        "search_test.exe": "61f1a8e7f5c7a2da403cbf1e21c6260bbad63786c0f8733248a93098de96a70c",
+        "selection_test.exe": "377ba86f21a027ec82ba0e52facdf5aa9ba72c56d8234d13434884578d4defce",
+        "sent_message_wait_test.exe": "9b3acb8d9db2adf80510348f922213e306544c5e72ca4093309b9d426e46fd6f",
+        "shell_clipboard_reader.exe": "4c4340d579ae82850aac79c668f4a72fa5cbc7f8d417953b800cbc78b928aaa5",
+        "shell_ime_client.exe": "1ac1b97fc6d512e13e1283b1f9c361087d25cec50815ce6971f920670cf63d74",
+        "shell_input_client.exe": "cbdaf29f2c028ef0f7d2ac6127f8d034d98947fcbdf411baa27640c500283b60",
+        "shell_launch_test.exe": "ec90ddbe50d6116195c8e4efeb1fd7e5ab4ee705204efeb25656d9e848f016a9",
+        "shell_paste_probe.exe": "602b8dbff1c00e4c00eeb6fa323990483d1d702089efc4f3fed9df03d34aaf85",
+        "shell_query_client.exe": "e0cf3ed59225837a918e6575bf56bfa20e1d2b4ad8b2f4ba206445787b3a940a",
+        "shell_queue_probe.exe": "72559f88822e8957221a697c0d1f6e600b679a6f6500bbf858ebdf45918ed66f",
+        "shell_selection_text_client.exe": "435a5f06c5b997ba988a051f2a9b467a061af4d18d5d0db9b0f86b4ccfd4bf16",
+        "shell_size_client.exe": "17f46c277142cd8b22d302604442f1a219b5053c39d996c5e893f18cc47370a5",
+        "shell_test_launcher.exe": "bccfe2bb731387a75b639049cac78498f50e8b6c2f1f89a9902ca1a86e9e07b0",
+        "shell_text_client.exe": "90e5215341e5c0f1d4595fccfde86b8443814247d8876393985ca7f987770cb3",
+        "termforge_conpty_probe.exe": "43869768fa55c5195fc88a9e003176565a4fd10e65c0ad84b1397345259ce38c",
+        "termforge_ime_probe.exe": "b08bfbf440b2566b16378368b388443921104dedc96725805d688f2463b87c63",
+        "termforge_shell.exe": "3807ed087dba1269c6a28e832dfbdfd50d9a5e5907645b2d6852d1b1bd509eeb",
+        "terminal_trace.exe": "b8e3242d711dbe289c155b9c116d76bbe09994bf13065f80ff80f66d4e81149f",
+        "text_action_policy_test.exe": "9585e6f1b99a2baaff53998a219a62d1b010326b507a03966574eeb94a858889",
+        "transport_completion_test.exe": "062fe805bb183e69a3abbf6f204f7a52b1c55c5bb0437cafa0021362087fba97",
+        "workflow_fixture_test.exe": "5931b988a514420f741da02f03431d0ccf0f842f6204513cc00cc95df42d7762",
+        "workspace_state_test.exe": "d0655a389210bebfc2249971007e4877fda9f0b07ec1a5ebe149ca44a82ff04b"
+      },
+      "cache_sha256": "44f9c6daf41f24882aae0935b465674fcfe54ba74bae49743885e5b151c5af1c",
+      "build_log_sha256": "202f7376d1965b4c70ff88926d1e54e8f69e42c941bdf55482d483105ed5e272",
+      "ctest": {
+        "total": 45,
+        "failed": 2,
+        "passed": 43,
+        "tests": [
+          {
+            "name": "shell_launch",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "runtime_observation",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "ime_input_expectation",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "sent_message_wait",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "find_bar",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "renderer_metrics",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "ime_context",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "layout_state",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workspace_state",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "transport_completion",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "resize_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "history_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "selection_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "search_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "paste",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "clipboard_policy",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "keyboard",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "text_action_policy",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "recovery",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "measure",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "binary_paths",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "benchmark_tools",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "differential",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "ime_inventory",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "text_actions",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_fixture",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_sessions",
+            "status": "fail",
+            "failure": "Failed"
+          },
+          {
+            "name": "workflow_resources",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_resource_phases",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_system_content",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_system_runner",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "copy_error_frame",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "research_guards",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "receive",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty_ctrl_c",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty_margin",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty_backend",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "presentation",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "shell",
+            "status": "fail",
+            "failure": "Failed"
+          },
+          {
+            "name": "selection_bytes",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "selection_context",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "raw_console_receiver",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "paste_system",
+            "status": "run",
+            "failure": null
+          }
+        ],
+        "internal_skips": [
+          {
+            "test": "test_actual_system_copy_paste_and_shortcuts_twice",
+            "reason": "actual system Copy/Paste requires a disposable hosted VM"
+          },
+          {
+            "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails",
+            "reason": "opt-in pinned reference failure injection"
+          },
+          {
+            "test": "test_either_selected_file_tamper_is_rejected",
+            "reason": "explicit reviewed backend build not selected"
+          },
+          {
+            "test": "test_selected_module_survives_session_and_unloads_after_close",
+            "reason": "explicit reviewed backend build not selected"
+          },
+          {
+            "test": "test_mouse_selection_to_real_system_clipboard",
+            "reason": "system copy UI gate requires a disposable hosted VM"
+          },
+          {
+            "test": "test_system_clipboard_product_read_errors_cancel_and_close",
+            "reason": "product clipboard read gate requires a disposable hosted VM"
+          },
+          {
+            "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver",
+            "reason": "real system clipboard UI gate requires a disposable hosted VM"
+          },
+          {
+            "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice",
+            "reason": "system CF requires a disposable hosted VM"
+          },
+          {
+            "test": "test_real_system_copy_and_edit_context_twice",
+            "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+          }
+        ],
+        "timeout_does_not_complete_all_internal_cases": false,
+        "raw_junit_sha256": "fabfac0b3f512e0f84788af6ae99cbf14d3accbd941ede688d8bc35df2a187ea",
+        "raw_full_log_sha256": "eb71a293390ca5b7c0b6e0e27af326009a8279ea250a3c8be9145d954e2a19db"
+      },
+      "backend_native_calls": [
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 0,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": {
+            "valid": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "loaded_during_session": false,
+            "loaded_after_close": false,
+            "module_unloaded_after_session": true,
+            "exit_code": 37,
+            "active_children_after": 0,
+            "read_error": 109,
+            "cleanup_complete": true,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false
+          },
+          "error": null
+        }
+      ]
+    },
+    "system": {
+      "build_directory": "joint-system",
+      "cmake": {
+        "candidate_adapter": true,
+        "explicit_reviewed_backend": false,
+        "configuration": "Release",
+        "architecture": "x64",
+        "parallel": 4
+      },
+      "backend": "system",
+      "creation_flags": 0,
+      "binaries": {
+        "alpha_normal_smoke.exe": "a05ee35364e91e3849d1b0142b8884d79bec8631e5f9a43e7b23c116c995f880",
+        "assets/fonts/OFL.txt": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215",
+        "assets/fonts/README.md": "a278deeec4b6240acc5398fe4271ebe8cc0ef26502ac3a1cfb950d06ddaf43e6",
+        "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
+        "candidate_core_test.exe": "095e1aeb942910a9eee514bc8df066f0cb0e24335a2fd3e7c151c31e254e8e1d",
+        "candidate_title_test.exe": "fc4168e3248f7bec23ca19ba86d5e0ff8089b99be7103612c93187d394e02699",
+        "clipboard_policy_test.exe": "c93fc86e9271e2b790acf38234b18340d2d54cefecdb1424f8688950fdb9b987",
+        "conpty_backend_probe.exe": "31711d46ae68696aaa335b24b575fd617dc039456849a93fc02681f92546d6ce",
+        "conpty_ctrl_c_probe.exe": "c298c9a2e3e29eca5b9e1d90fc04a35749eaade7034e7770703647553e21e325",
+        "conpty_margin_probe.exe": "a40befe37d21c203d0523529af0a99453c472d2aa5e397abf406cc90adee179e",
+        "core_measure.exe": "96335469560ef7cecad0852e0ad2c83b3be82ef67c58111135dd8420ada2358f",
+        "find_bar_test.exe": "0fe087e474e2a0acaea3bd9818352a507ecc8bc77f3417b18a03a63331094a29",
+        "history_test.exe": "80ff47d7e1618312c057c073ef0be579b649b66c920b921d7d7b13082c6c469c",
+        "ime_context_test.exe": "fa2f25517759e58bcf380219d58be0cd6cce4cc8d1e5b27e963cc23da44eb756",
+        "ime_input_expectation_test.exe": "060f3f00707dbe8375c49439f0532e59fb3b8742983a4a46b28f48ce35accfd6",
+        "keyboard_test.exe": "e7589f11292eb91123349a4da7eab3ee01fe564c7acf7522eac8ad19f641c2c4",
+        "layout_state_test.exe": "bee2ec92bb5e357475286fe0a73570eaa7498763f2a95de34690f94166b03486",
+        "paste_test.exe": "56e9d8dac1c56ecc23965e296ba704c5f15f356dc90be470c742d1500125305d",
+        "presentation_probe.exe": "bd502c9baf9a0bbfe86f9f32707efb0a1f0df550322001b97996df186bd93c1a",
+        "raw_console_receiver_test.exe": "4a2ed2032faf1713c9cb64dc96d3b5a9651bb9c339960ae32d952e7f071a89f0",
+        "real_app_capture.exe": "5918e8a2605b5683d1237fca2dd03f6e7fe51e3506bb86e33e46d61f87ed0b58",
+        "receive.exe": "a9ddddcb882fa50b388f3c7ade8c86ad75d2c962c4c5c13b8a671f71fb75764c",
+        "recovery_probe.exe": "e4be18917208c47d75a85ff0d3b144cdbbcb996f9230d8f0230a820856dff1eb",
+        "renderer_metrics_test.exe": "db6535da991b83611e8a328a7af5c6b98052bd4396f8bfef1e35e1a89d2e5f8e",
+        "replay.exe": "0d37bbb58b0a640a01509b07a6ab7aae29e25cfd636cc4455c60d99a9404415c",
+        "resize_test.exe": "07d747b762befd604e313f378cabccea65d26e1a12d9912503c368b29c18d2e8",
+        "runtime_observation_test.exe": "72e4eabfd3500514c2e794a97dea66c7f625dec61fa87f944d4170fb36bd5dd4",
+        "search_test.exe": "e38908278b7644a88629d552c2198424b3050e63c92a5ec85079111f6e4fdeda",
+        "selection_test.exe": "ea22b218e294a61821bf5e9740b3273e489f5c3b2af38b14c21576d6be904557",
+        "sent_message_wait_test.exe": "ba1b858e2cbc979f717f6b733064412c1278dbbcfa476b9aaa4ee934cb16daf0",
+        "shell_clipboard_reader.exe": "2d654930c3c18d56e0418281cc89b8f52461c701d4d85200426029ce14329a68",
+        "shell_ime_client.exe": "8b0222ad2d02753a1871a79d09f003751472351562812bc95ed1a6e4a4afec10",
+        "shell_input_client.exe": "3bc3ca7d092d935414a461bb6d14e6594bb4efdc6fd25b36c72efdaa168ecab0",
+        "shell_launch_test.exe": "5c1dcc45e6a0f362d5b2aaf00e43893f221273c5cde6021c3606420d19d900ef",
+        "shell_paste_probe.exe": "1ec6b348d1db48b92cb94378621d3145e5b8b7f70b3b8a6bd5a75d31b5b22fd5",
+        "shell_query_client.exe": "c47f6696da8b96b54d93678b71bb0b6eccc6c598a4c1b490322dd3fcde7c6428",
+        "shell_queue_probe.exe": "4ec3edff36aa1b468d92af0af09d7c64c0e74718e452aa1fb9e868a4d6be1404",
+        "shell_selection_text_client.exe": "6615e9136e79f79aa6e0d0caafa623bf836e8464d0efaddec5086c22f049004b",
+        "shell_size_client.exe": "44527d762ece7902d2ddf66b99a54c7a724af0f09a7fde3d13052e40c6c54f97",
+        "shell_test_launcher.exe": "ac77e41a86c0d3bb4ab96f7d6593eb968fb5e8ae0ddeee0bde026b5b8f3a6f00",
+        "shell_text_client.exe": "a942c6ca91620951584885d8af360e83f229f60fcef13a4201425304fa386e8c",
+        "termforge_conpty_probe.exe": "92511bdb557ab0df1efee95745c3492191592802d92c1d14d70f49d23da0e64d",
+        "termforge_ime_probe.exe": "89f6c8e736fe6d98daa6c967a9f27aec77ca1e6d588fb74c5fa60b755a227706",
+        "termforge_shell.exe": "cd66ff47e54cf2dec09b2eba610d61acc9974a07a72775760318e5915f874279",
+        "terminal_trace.exe": "ad25e5907bdc973aff76415567b719aecc11174908767a6365c5e45cee339a67",
+        "text_action_policy_test.exe": "a15121bc27131efee3c0a9bf24cd076d10ccf81e928fde3721b91ec14b70baa9",
+        "transport_completion_test.exe": "54d0fa8d2d8e96e808b9a145af30d64e13759a218bea55c752d26885d6ff9ebb",
+        "workflow_fixture_test.exe": "cfcdaa9ab4d09e6489a6a8ca80dacf4be3b8dd89834a0954164516c08216bfe3",
+        "workspace_state_test.exe": "c481d860f1c5b54752dc019b3b182bba7ed6afabc098289ba5e08f1d738c9d69"
+      },
+      "cache_sha256": "a9665063dcd1aa7399f6c4f319908a62c35b15188922645c83b7ac80f6cbf6b0",
+      "build_log_sha256": "eead8faae0d8dd89b6ab8498b332644b54600d483e3f61bd5c56f5ab3f186851",
+      "ctest": {
+        "total": 48,
+        "failed": 0,
+        "passed": 48,
+        "tests": [
+          {
+            "name": "shell_launch",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "candidate_title",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "runtime_observation",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "ime_input_expectation",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "sent_message_wait",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "find_bar",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "renderer_metrics",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "ime_context",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "layout_state",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workspace_state",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "transport_completion",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "candidate_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "resize_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "history_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "selection_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "search_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "paste",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "clipboard_policy",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "keyboard",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "text_action_policy",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "candidate_shell_tui",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "recovery",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "measure",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "binary_paths",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "benchmark_tools",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "differential",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "ime_inventory",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "text_actions",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_fixture",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_sessions",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_resources",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_resource_phases",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_system_content",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_system_runner",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "copy_error_frame",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "research_guards",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "receive",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty_ctrl_c",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty_margin",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty_backend",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "presentation",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "shell",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "selection_bytes",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "selection_context",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "raw_console_receiver",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "paste_system",
+            "status": "run",
+            "failure": null
+          }
+        ],
+        "internal_skips": [
+          {
+            "test": "test_actual_system_copy_paste_and_shortcuts_twice",
+            "reason": "actual system Copy/Paste requires a disposable hosted VM"
+          },
+          {
+            "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails",
+            "reason": "opt-in pinned reference failure injection"
+          },
+          {
+            "test": "test_either_selected_file_tamper_is_rejected",
+            "reason": "explicit reviewed backend build not selected"
+          },
+          {
+            "test": "test_selected_module_survives_session_and_unloads_after_close",
+            "reason": "explicit reviewed backend build not selected"
+          },
+          {
+            "test": "test_mouse_selection_to_real_system_clipboard",
+            "reason": "system copy UI gate requires a disposable hosted VM"
+          },
+          {
+            "test": "test_system_clipboard_product_read_errors_cancel_and_close",
+            "reason": "product clipboard read gate requires a disposable hosted VM"
+          },
+          {
+            "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver",
+            "reason": "real system clipboard UI gate requires a disposable hosted VM"
+          },
+          {
+            "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice",
+            "reason": "system CF requires a disposable hosted VM"
+          },
+          {
+            "test": "test_real_system_copy_and_edit_context_twice",
+            "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+          }
+        ],
+        "timeout_does_not_complete_all_internal_cases": false,
+        "raw_junit_sha256": "f710553aa496d6b2c3df648fef4124838ce4472e6ab25f3b4a466abd5e74f0f8",
+        "raw_full_log_sha256": "4b6dddcf120a95be85d7ce46e423d599f7b159f0414e32c3e4b989f655d56ae6"
+      },
+      "backend_native_calls": [
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 0,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": {
+            "valid": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "loaded_during_session": false,
+            "loaded_after_close": false,
+            "module_unloaded_after_session": true,
+            "exit_code": 37,
+            "active_children_after": 0,
+            "read_error": 109,
+            "cleanup_complete": true,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false
+          },
+          "error": null
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        }
+      ]
+    },
+    "official": {
+      "build_directory": "candidate",
+      "cmake": {
+        "candidate_adapter": true,
+        "explicit_reviewed_backend": true,
+        "configuration": "Release",
+        "architecture": "x64",
+        "parallel": 4
+      },
+      "backend": "reviewed-side-by-side-1.25.260930003",
+      "creation_flags": 24,
+      "binaries": {
+        "alpha_normal_smoke.exe": "ba0e19d454cbd54a47f1979f97e41ee447ad5ebe8a11bbdf80421bb194a1e366",
+        "assets/fonts/OFL.txt": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215",
+        "assets/fonts/README.md": "a278deeec4b6240acc5398fe4271ebe8cc0ef26502ac3a1cfb950d06ddaf43e6",
+        "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
+        "candidate_core_test.exe": "c78aaad5277738dc994fd35f7d01ff27d0b41083a9adfb8d355e07b02df8fcd8",
+        "candidate_title_test.exe": "e37e139e2380c7dbc171750c66715ce365e18f1c9cb3932648f4bb8c53b0375e",
+        "clipboard_policy_test.exe": "87a45d1e953dad323ba090303f9aed6ef4534be0c240cf585d64678bd5e4bab9",
+        "conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+        "conpty-backend/LICENSE": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+        "conpty-backend/manifest.json": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+        "conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+        "conpty_backend_probe.exe": "c7b6671db828cf3132b23322f1b2b038aeca39af5b059a32cfff0c413415f981",
+        "conpty_ctrl_c_probe.exe": "a3c81494af9e4ff60045470e4ef7d5f0c7b737c4774d516553facd9e4e0995b9",
+        "conpty_margin_probe.exe": "c24335a50a5c5d4a835764f1c5e7282d67dcb444ca999a0612238b551493c47a",
+        "core_measure.exe": "c1f72448173cc1e95b90eb93aedc2eb99eeb50c5d3bbced0b5a338a09fdf1753",
+        "find_bar_test.exe": "e4b4deeead3dd787e9c56fee85d4f8e39264dfb9ea6556f4ba47659b758a1bc4",
+        "history_test.exe": "3f8bdbb8e21bcce2c6b21251a6bdaa39b4dcb617dd1a31521590047a2b9146f4",
+        "ime_context_test.exe": "754aa0dd86c08164d5afc16adefb7789eee69ba4c58692ce6add500434d0c0fa",
+        "ime_input_expectation_test.exe": "da2bee7cce3f856844eddfc1be639e6e276eb5501fe04bfce0974ec23f089777",
+        "keyboard_test.exe": "aa50ae6f9f0f1c9042e42dac8a52046aa798ee05ca852d24a572883c6725fd17",
+        "layout_state_test.exe": "a720314304a2524efed1954421cb17a8cd9d3502d86bb8069faed3984e0636c4",
+        "paste_test.exe": "fad6e3ad4959e535699d84f9bf2fab5f522b5f29f58da4dce8ce5bdad780ff2e",
+        "presentation_probe.exe": "9e6e69040b34db4d5f35e287f055099d4fd2194e523820531d5c59e26717ef24",
+        "raw_console_receiver_test.exe": "19814a7f4aa8ab7f82e0dc5332f3a3739c2fa0534a7feb5cddef3330744175da",
+        "real_app_capture.exe": "6203c2a5ddaebf756d959456265aa64d21f9286c59730123709211120dee7941",
+        "receive.exe": "4d9e4da49d5be440d984f305dfd5b0f56b324091875a4b4727d3c232112b0bd0",
+        "recovery_probe.exe": "64eb408282120f12950c43ce9a3ca2c69d6c17899bc5dc80cd209e3cbdb90105",
+        "renderer_metrics_test.exe": "639d21931f03f15cb1e978e74d2f308ea78d6ab7f4850a050a18b3971c6f7739",
+        "replay.exe": "56a59d84305fecb7cb23269658d5687e37c9e8922a674af12e6881baae2ec545",
+        "resize_test.exe": "3b21eb173d0a6b2f81a1fbfd88dce2f1557299d7401d58630752f119670f4f8a",
+        "runtime_observation_test.exe": "4444f899a86a1ecfd664b1a7f5516b3d837151d478a45bf7863612922966a1a8",
+        "search_test.exe": "ac6653386c71b1d1aa7d1b64e1fe1b73821bf763c842b342a83c82c701aeed04",
+        "selection_test.exe": "79d43ea8634e71dccba035ac488a602b8ed07dc731f3a05a5ae0c3411664d893",
+        "sent_message_wait_test.exe": "598050429b5e4d02fcaf61c2e0566525680e7f7e175f32950a57c2a62c339c8f",
+        "shell_clipboard_reader.exe": "044a58bac79a41d76bde5c3c74ed09387d87e5740cdcf3700c3f89164b0c3591",
+        "shell_ime_client.exe": "eeed45b6426d94f6dca237db0d279aee360a498354c934d810f599cee253b8db",
+        "shell_input_client.exe": "43d87a7a2f5563a17eaa00c3a789caaa3047d85218f2969d18c74949ea2f3618",
+        "shell_launch_test.exe": "d03c6a77a2346ca08618548cdd946ceeb7e88df1eaa2d31dc0a0573cd9614c96",
+        "shell_paste_probe.exe": "d68630f9a6eb227989e4d86a708149ebfa3d004280b50989ad5e66af9cc6b042",
+        "shell_query_client.exe": "a0420332e670a60185a94cdc6177b836608f9682da1306fc639c90cbc0ff2e31",
+        "shell_queue_probe.exe": "422dd5b395e872e3e3022c3888f396c34b4bdee8bd58e74dcfba105d49c1748d",
+        "shell_selection_text_client.exe": "b8cbf8d7faa406e8251b52e5c83062459a3405b68fe6671999e3c0f327dcdd15",
+        "shell_size_client.exe": "b29daeda125b859f9dcd3035a7e6657a6f0d96601a4af34b4ea864a1f814be40",
+        "shell_test_launcher.exe": "9739c2d02525944390607fbf5a972038ee8553f588e00d6a43ddae6d997139e5",
+        "shell_text_client.exe": "ab736d3941b6bdd423c3697b23142cd41c884e99d5939089359dac0fbb8e59c1",
+        "termforge_conpty_probe.exe": "ecca45b9030891dcf7b1ecce14c0d1b210319b9230d806f394c5ec774ba3c185",
+        "termforge_ime_probe.exe": "fb22cfff4e683ec885c822829da1a782d6b635bfd6fbba389f4a5fc93ad13862",
+        "termforge_shell.exe": "a6ca1da80820cf8b1f243a894f436372d7c35ff8c8572c6fc9080a2f1ed8d38c",
+        "terminal_trace.exe": "e6e8ffda34c535ce796a06e40cbef8cf0ef629ce7e19245e0e3ca1cede76afd1",
+        "text_action_policy_test.exe": "0b112925722d486479a2517faa16d48a4ccf5b93aebe5c05d85e87d4f11af719",
+        "transport_completion_test.exe": "520be6eaff86af5b373e032131684aeceefb3db0d1f0f2e6aa293c000d39a620",
+        "workflow_fixture_test.exe": "bd0684e27ea7144a62b8d65f4e133dc763b2efc07e88bfaf7849e4103b5e1af1",
+        "workspace_state_test.exe": "e0653d93b2532a68df68396eed9c934ffdbdc0ac13714af8bfeb1972c3f46d7b"
+      },
+      "cache_sha256": "454f416b1d8e7b0edc750fb3f7d9f860ee924db7f06e1c40b2152196cd986e39",
+      "build_log_sha256": "a214cf34e349c35c705b1f6700583940005a9aab8f77dce090cc81f1f9864f0f",
+      "ctest": {
+        "total": 48,
+        "failed": 2,
+        "passed": 46,
+        "tests": [
+          {
+            "name": "shell_launch",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "candidate_title",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "runtime_observation",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "ime_input_expectation",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "sent_message_wait",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "find_bar",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "renderer_metrics",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "ime_context",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "layout_state",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workspace_state",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "transport_completion",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "candidate_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "resize_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "history_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "selection_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "search_core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "paste",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "clipboard_policy",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "keyboard",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "text_action_policy",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "candidate_shell_tui",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "core",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "recovery",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "measure",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "binary_paths",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "benchmark_tools",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "differential",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "ime_inventory",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "text_actions",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_fixture",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_sessions",
+            "status": "fail",
+            "failure": "Failed"
+          },
+          {
+            "name": "workflow_resources",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_resource_phases",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_system_content",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "workflow_system_runner",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "copy_error_frame",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "research_guards",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "receive",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty_ctrl_c",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty_margin",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "conpty_backend",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "presentation",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "shell",
+            "status": "fail",
+            "failure": "Timeout"
+          },
+          {
+            "name": "selection_bytes",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "selection_context",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "raw_console_receiver",
+            "status": "run",
+            "failure": null
+          },
+          {
+            "name": "paste_system",
+            "status": "run",
+            "failure": null
+          }
+        ],
+        "internal_skips": [
+          {
+            "test": "test_actual_system_copy_paste_and_shortcuts_twice",
+            "reason": "actual system Copy/Paste requires a disposable hosted VM"
+          },
+          {
+            "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails",
+            "reason": "opt-in pinned reference failure injection"
+          },
+          {
+            "test": "test_mouse_selection_to_real_system_clipboard",
+            "reason": "system copy UI gate requires a disposable hosted VM"
+          },
+          {
+            "test": "test_system_clipboard_product_read_errors_cancel_and_close",
+            "reason": "product clipboard read gate requires a disposable hosted VM"
+          },
+          {
+            "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver",
+            "reason": "real system clipboard UI gate requires a disposable hosted VM"
+          },
+          {
+            "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice",
+            "reason": "system CF requires a disposable hosted VM"
+          },
+          {
+            "test": "test_real_system_copy_and_edit_context_twice",
+            "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+          }
+        ],
+        "timeout_does_not_complete_all_internal_cases": true,
+        "raw_junit_sha256": "8bbf3061e4bd96a86300fc827381aa8b1479f15646afa770687eb3282db0c9ad",
+        "raw_full_log_sha256": "321a9cd2050353e0c9077c92a1750dceb53689f1d989b7b67fa6b0cfc1f28a03"
+      },
+      "backend_native_calls": [
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 0,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": {
+            "valid": true,
+            "side_by_side": true,
+            "creation_flags": 24,
+            "loaded_during_session": true,
+            "loaded_after_close": true,
+            "module_unloaded_after_session": true,
+            "exit_code": 37,
+            "active_children_after": 0,
+            "read_error": 109,
+            "cleanup_complete": true,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false
+          },
+          "error": null
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 0,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": {
+            "valid": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "loaded_during_session": false,
+            "loaded_after_close": false,
+            "module_unloaded_after_session": true,
+            "exit_code": 37,
+            "active_children_after": 0,
+            "read_error": 109,
+            "cleanup_complete": true,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false
+          },
+          "error": null
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "returncode": 2,
+          "outer_job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "forced_cleanup": false,
+          "native": null,
+          "error": "identity_rejected"
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "proprietary/private artifacts not committed",
+    "all timings diagnostic, not performance",
+    "complete R1/IME/eight-session final-config acceptance absent",
+    "no true different-DPI acceptance",
+    "no long-running resource acceptance",
+    "native margin contract remains failed",
+    "missing-export guard inspected; altered modules are rejected by pinned hash before load"
+  ],
+  "presented_done": null,
+  "full_r2_contract_verified": false,
+  "original_replays": [
+    {
+      "mode": "resize",
+      "repeat": 0,
+      "verdict": "failed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stage": 43,
+      "partial_counts": null,
+      "outer_job_after": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "cleanup_error_count": 0,
+      "binary_sha256": "a6ca1da80820cf8b1f243a894f436372d7c35ff8c8572c6fc9080a2f1ed8d38c",
+      "raw_sample_sha256": "70c27b52ed730cb2d9afacbe095687e57f7028772b9466f1fcdf76a9c7303435",
+      "failure_code": "resize_stage_43"
+    },
+    {
+      "mode": "resize",
+      "repeat": 1,
+      "verdict": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stage": null,
+      "partial_counts": null,
+      "outer_job_after": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "cleanup_error_count": 0,
+      "binary_sha256": "a6ca1da80820cf8b1f243a894f436372d7c35ff8c8572c6fc9080a2f1ed8d38c",
+      "raw_sample_sha256": "37973ff02d33214ab9ccb8e9c28548acc44c02ee8ae2ef2a78fb7fde52a0a08f"
+    },
+    {
+      "mode": "candidate-tui",
+      "repeat": 0,
+      "verdict": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stage": null,
+      "partial_counts": null,
+      "outer_job_after": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "cleanup_error_count": 0,
+      "binary_sha256": "a6ca1da80820cf8b1f243a894f436372d7c35ff8c8572c6fc9080a2f1ed8d38c",
+      "raw_sample_sha256": "16a7247ea57f812feb76099c0b7ad5523ce10e6ed65542c66af1b13a9e19f708"
+    },
+    {
+      "mode": "candidate-tui",
+      "repeat": 1,
+      "verdict": "failed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stage": 59,
+      "partial_counts": null,
+      "outer_job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "cleanup_error_count": 0,
+      "binary_sha256": "a6ca1da80820cf8b1f243a894f436372d7c35ff8c8572c6fc9080a2f1ed8d38c",
+      "raw_sample_sha256": "ece7f30bfe849abb2a7bf503ed824fddf786908a42ec57bb1c7d8b7c4deca215",
+      "failure_code": "vim_stage_59"
+    },
+    {
+      "mode": "ui-paste",
+      "repeat": 0,
+      "verdict": "failed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stage": null,
+      "partial_counts": null,
+      "outer_job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "cleanup_error_count": 0,
+      "binary_sha256": "a6ca1da80820cf8b1f243a894f436372d7c35ff8c8572c6fc9080a2f1ed8d38c",
+      "raw_sample_sha256": "e603aed90c229dcd587e0fcee60b6af37c806a62f6915d89d5eadfbe9b75ef9c",
+      "failure_code": "cancel_completed_before_receiver_gate",
+      "progress_counters_at_gate": null
+    },
+    {
+      "mode": "ui-paste",
+      "repeat": 1,
+      "verdict": "failed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stage": null,
+      "partial_counts": null,
+      "outer_job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "cleanup_error_count": 0,
+      "binary_sha256": "a6ca1da80820cf8b1f243a894f436372d7c35ff8c8572c6fc9080a2f1ed8d38c",
+      "raw_sample_sha256": "c2530fb1276c638d091a020a26377090c3945c9254f282a8997fb3cf592b5ecc",
+      "failure_code": "cancel_completed_before_receiver_gate",
+      "progress_counters_at_gate": null
+    },
+    {
+      "mode": "native-real-app-capture",
+      "repeat": 0,
+      "verdict": "passed",
+      "supervision": {
+        "schema": "termforge-real-app-capture-supervision-v1",
+        "timed_out": false,
+        "returncode": 0,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "cleanup_errors": []
+      },
+      "manifest": {
+        "shell_exit": 0,
+        "pager_exit": 0,
+        "editor_exit": 0,
+        "shell_bytes": 64,
+        "pager_bytes": 508,
+        "editor_bytes": 2099,
+        "editor_file_verified": true,
+        "startup_event_verified": true,
+        "insert_event_verified": true
+      }
+    },
+    {
+      "mode": "native-real-app-capture",
+      "repeat": 1,
+      "verdict": "failed",
+      "supervision": {
+        "schema": "termforge-real-app-capture-supervision-v1",
+        "timed_out": false,
+        "returncode": 1,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "cleanup_errors": []
+      },
+      "manifest": {}
+    }
+  ],
+  "margin_ab_flags_0": {
+    "system": {
+      "schema": "termforge-conpty-margin-backend-v2",
+      "generated_utc": "2026-10-26T09:58:13.121983+00:00",
+      "backend": "system",
+      "probe_sha256": "c24335a50a5c5d4a835764f1c5e7282d67dcb444ca999a0612238b551493c47a",
+      "candidate_trace_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+      "terminal_main_margins_restored_in_both_sizes": false,
+      "full_r2_contract_verified": false,
+      "samples": [
+        {
+          "status": "completed",
+          "failure_code": null,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "outer_job_after_forced_cleanup": null,
+          "forced_outer_cleanup": false,
+          "job_assigned": true,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "mode": "vt-on",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 641,
+          "transport_sha256": "f5fdfabd067fed9a0cb3a03352de31ca153704b739f1bef4bdbf2392b3d7ac09",
+          "original_decstbm_forwarded": false,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_A",
+            "REGION_B",
+            "REGION_CIXED",
+            "REGION_D",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": false,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "outer_job_after_forced_cleanup": null,
+          "forced_outer_cleanup": false,
+          "job_assigned": true,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "mode": "vt-off",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 330,
+          "transport_sha256": "ab8892697fef17f6f2cf69c55859a0523b41dde46e535649ed52a8bfad1a09e6",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;1HTF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              4,
+              6
+            ],
+            "alt": [
+              8,
+              5
+            ],
+            "restored": [
+              8,
+              13
+            ],
+            "final": [
+              11,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "outer_job_after_forced_cleanup": null,
+          "forced_outer_cleanup": false,
+          "job_assigned": true,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "mode": "vt-on",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 441,
+          "transport_sha256": "56f3b9155ae701368fa2baabd3701dafc3dda08f6244ee450e67a5a13d171ad7",
+          "original_decstbm_forwarded": false,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DO",
+              "NE"
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_A",
+            "REGION_B",
+            "REGION_CIXED",
+            "REGION_D",
+            "TF_MARGIN_DO",
+            "NE"
+          ],
+          "terminal_main_margins_restored": false,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "outer_job_after_forced_cleanup": null,
+          "forced_outer_cleanup": false,
+          "job_assigned": true,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "mode": "vt-off",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 505,
+          "transport_sha256": "c6184041f41b62b10074f99020cd891ba698aa168b6e3df2459318ed62082e8f",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_F",
+              "IXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "\u001b[2;3r"
+            ],
+            "alt": [
+              "9hALT_OUTSID",
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D"
+            ],
+            "restored": [
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049",
+              "l"
+            ],
+            "final": [
+              "ALT_D\u001b[?1049",
+              "l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;",
+              "1HTF_MARGIN_",
+              "DONE",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              6,
+              6
+            ],
+            "alt": [
+              6,
+              5
+            ],
+            "restored": [
+              6,
+              1
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_A",
+            "REGION_B",
+            "REGION_C",
+            "",
+            "_",
+            "DONE"
+          ],
+          "terminal_main_margins_restored": false,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        }
+      ]
+    },
+    "official": {
+      "schema": "termforge-conpty-margin-backend-v2",
+      "generated_utc": "2026-10-26T09:58:16.720300+00:00",
+      "backend": {
+        "name": "Microsoft.Windows.Console.ConPTY",
+        "version": "1.25.260930003",
+        "url": "https://github.com/microsoft/terminal/releases/download/v1.25.2733.0/Microsoft.Windows.Console.ConPTY.1.25.260930003.nupkg",
+        "bytes": 1750533,
+        "sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+        "files": {
+          "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+          "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+        }
+      },
+      "probe_sha256": "c24335a50a5c5d4a835764f1c5e7282d67dcb444ca999a0612238b551493c47a",
+      "candidate_trace_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+      "terminal_main_margins_restored_in_both_sizes": true,
+      "full_r2_contract_verified": false,
+      "samples": [
+        {
+          "status": "completed",
+          "failure_code": null,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "outer_job_after_forced_cleanup": null,
+          "forced_outer_cleanup": false,
+          "job_assigned": true,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "mode": "vt-on",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "side_by_side": true,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "outer_job_after_forced_cleanup": null,
+          "forced_outer_cleanup": false,
+          "job_assigned": true,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "mode": "vt-off",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;1HTF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              4,
+              6
+            ],
+            "alt": [
+              8,
+              5
+            ],
+            "restored": [
+              8,
+              13
+            ],
+            "final": [
+              11,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "side_by_side": true,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "outer_job_after_forced_cleanup": null,
+          "forced_outer_cleanup": false,
+          "job_assigned": true,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "mode": "vt-on",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DO",
+              "NE"
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DO",
+            "NE"
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "side_by_side": true,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "failure_code": null,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "outer_job_after_forced_cleanup": null,
+          "forced_outer_cleanup": false,
+          "job_assigned": true,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "mode": "vt-off",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 222,
+          "transport_sha256": "01064e034cc1cd3c34eae65a2f656ae940936cf381e60371b8e17428ec00617d",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_F",
+              "IXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "\u001b[2;3r"
+            ],
+            "alt": [
+              "9hALT_OUTSID",
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D"
+            ],
+            "restored": [
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049",
+              "l"
+            ],
+            "final": [
+              "ALT_D\u001b[?1049",
+              "l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;",
+              "1HTF_MARGIN_",
+              "DONE",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              6,
+              6
+            ],
+            "alt": [
+              6,
+              5
+            ],
+            "restored": [
+              6,
+              1
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DO",
+            "NE"
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "2b657327e1013ab30154d940a217a3f50ac1cdd64668914cadc82e2ef13ba272",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "side_by_side": true,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        }
+      ]
+    }
+  },
+  "rust_test": {
+    "passed": true,
+    "test_counts": [
+      2,
+      2,
+      2
+    ],
+    "log_sha256": "6697855f4e904695de7ab52b150690f02e86002606d1f55b22b41726f5c414e8"
+  },
+  "focused_rechecks": {
+    "default_restore": {
+      "status": "failed",
+      "code": "persistence_stage_1",
+      "outer_timeout": false,
+      "internal_deadline_seconds": 30,
+      "log_sha256": "168553cf706ce9ba80492049a30c2a36788867c048bb9c958b1498d59e172e59",
+      "issue": 61
+    },
+    "official_worker": {
+      "status": "failed",
+      "code": "real_input_writer_holds_a_chunk",
+      "returncode": 2,
+      "outer_timeout": false,
+      "issue": 62
+    },
+    "official_workspace": {
+      "status": "failed",
+      "code": "workspace_stage_52",
+      "returncode": 2,
+      "outer_timeout": false,
+      "issue": 63
+    },
+    "official_log_sha256": "780770d98edb984cde9869c05487d016862e8906cbc66b79c8b8c5328a1d68aa"
+  },
+  "additional_regressions": {
+    "default_ctest": [
+      "workflow flood=false at checkpoint768 (partial sent103323/accepted104346/total3000000/state1)",
+      "workspace-v2 clamped restore stage1"
+    ],
+    "official_ctest": [
+      "workflow paste completed before gate",
+      "shell suite Timeout180s; partial results include resize, real-worker gate, workspace stage52; unfinished tests unknown"
+    ],
+    "owners": {
+      "workflow_paste": 53,
+      "default_restore": 61,
+      "official_worker": 62,
+      "official_workspace": 63
+    }
+  },
+  "vim": {
+    "sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+    "version_sha256": "68e58ca14cf714abe51078a57baad439b7d0fc7556b652b56ef15c8032f95428"
+  }
+}
