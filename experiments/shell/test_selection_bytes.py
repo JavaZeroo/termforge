@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 from experiments.shell.selection_bytes_checks import (
     PHASES, DPIS, HARD, CONT, READY, intended_output, expected_physical_lines, validate_selection_bytes,
@@ -190,6 +191,29 @@ class SelectionBytesWindowTest(unittest.TestCase):
             self.assertEqual(summary["controlled_dpi"], [96, 144, 192, 96])
             self.assertTrue(summary["dpi_selection_preserved"])
             self.assertTrue(summary["cleanup_verified"])
+
+    @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and
+                         os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted", "system CF requires a disposable hosted VM")
+    def test_owned_clipboard_contention_preserves_write_and_read_failures(self):
+        for operation, stage in (("sentinel-write", 6), ("readback", 7)):
+            with self.subTest(operation=operation):
+                out = self.out / ("occupied-" + operation)
+                with mock.patch.dict(os.environ, {"TERMFORGE_TEST_SELECTION_CLIPBOARD_HOLD": operation}):
+                    with self.assertRaisesRegex(ValueError, "shell probe failed: OpenClipboard: 5"):
+                        execute(self.exe, "ui-copy-bytes-system", out)
+                sample = json.loads((out / "sample.json").read_text(encoding="utf-8"))
+                self.assertEqual(sample["exit_code"], 2)
+                self.assertFalse(sample["timed_out"])
+                self.assertTrue(sample["desktop_gone"])
+                self.assertEqual(sample["job_after"]["active"], 0)
+                evidence = json.loads((out / "selection-clipboard-failure.json").read_text(encoding="utf-8"))
+                self.assertEqual(evidence, {"schema": "termforge-selection-clipboard-failure-v1", "stage": stage,
+                    "operation": operation, "native_operation": "OpenClipboard", "native_error": 5,
+                    "observation": "after-error-nonatomic", "open_window": "same-process-window",
+                    "data_owner": "same-process-window"})
+                released = json.loads((out / "selection-clipboard-owner-release.json").read_text(encoding="utf-8"))
+                self.assertEqual(released, {"release_event": True, "thread_exited": True, "native_error": 0,
+                    "worker_error": 0, "secondary_native_error": 0, "secondary_worker_error": 0})
 
     @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and
                          os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted", "system CF requires a disposable hosted VM")
