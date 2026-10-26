@@ -86,6 +86,8 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 ## 真实应用核心轨迹（#25）
 
+More 捕获现在等待完整英文提示，再发送一个 q；进程退出后继续读到真实管道 EOF，所有尾部模式关闭与 ECH 原样保存。捕获宿主有 GO/Job 监督；提示偏移、q 字节数、EOF、退出与回收由独立门槛核对。[#42 合同与固定字节回归](../../docs/research/more-capture-ech.md)明确默认 ECH 和保留的候选 pending-wrap 差异，不以部分捕获或自动差异豁免代替通过。
+
 `real_app_capture` 通过 ConPTY 启动真实 Windows cmd、`more.com` 和 Vim，分别验证正常退出、`q` 退出及无配置/无交换文件/无 viminfo 的编辑 `:wq` 与文件内容。Vim 握手要求 `VimEnter` 写入 `READY`、`InsertEnter` 写入 `INSERT`，并观察到 `[New]` 和实际插入文本，再发送 Escape 与 `:wq`，不以一个 ESC 或固定延时代替状态；等待真实事件文件，不依赖消息是否被重绘覆盖。manifest 记录真实编辑器路径和事件验证结果，事件文件一并保留。失败时保存阶段、错误、退出码、合成输出和 Job 清理结果，真实负例验证这些证据可用。`real_app_matrix.py` 将捕获字节原样交给双方核心，自研使用产品同源的 Recovery 模式；它不是截图或 GUI 验收。
 
 [2026-10-25 摘要](results/2026-10-25-real-applications/summary.json)记录应用版本、二进制/源码哈希和退出/文件结果：分页器和 Vim 为 `match`，shell 仅有已裁决的 ED2 历史策略 `reference_difference`。新增 3 个门槛后，差分、能力和真实应用测试合计 19 项通过；Windows candidate workflow 强制构建并执行，其他平台或缺少 Vim/捕获依赖时明确跳过可选测试。

@@ -55,7 +55,7 @@ build/bin/Release/recovery_probe.exe input.bin 24 80 100 1,7,2,4096 recovery
 
 可选第七个参数 `finish_offset` 在指定字节偏移执行 EOF 屏障，然后继续输入，用于验证截断清理与恢复；探针每个屏障重复调用 `finish()`。输入上限 64 MiB，分块模式每项 1..1,048,576 字节、最多 1,024 项；子进程测试超时 15 秒。每条失败保留输入、命令参数和 stdout/stderr 到 `TERMFORGE_TEST_ARTIFACTS/recovery`，未设变量时使用 `build/test-artifacts/recovery`。
 
-30 项测试的期望文本和样式独立手写；非法 UTF-8 子段额外用 Python 标准解码器交叉检查。短案例遍历固定块长并用 seed `20261023` 产生非均匀拆包；长案例覆盖百万字节 ESC intermediate、CSI 数字、OSC 正文。还覆盖取消、内嵌 ESC、C1 边界、无效 SGR 原子性、标量/组合标记限制、EOF 重入和恢复后的合法文本。任意字节流测试验证不同拆包结果一致，并在显式取消后执行已知合法文本。严格模式负面用例与共同子集快照也保持回归。
+33 项测试的期望文本和样式独立手写；新增 ECH 计数、边界、光标、pending wrap、宽字政策及完整 More 字节断言，来源与保留差异见 [ECH 合同](../../docs/research/more-capture-ech.md)。非法 UTF-8 子段额外用 Python 标准解码器交叉检查。短案例遍历固定块长并用 seed `20261023` 产生非均匀拆包；长案例覆盖百万字节 ESC intermediate、CSI 数字、OSC 正文。还覆盖取消、内嵌 ESC、C1 边界、无效 SGR 原子性、标量/组合标记限制、EOF 重入和恢复后的合法文本。任意字节流测试验证不同拆包结果一致，并在显式取消后执行已知合法文本。严格模式负面用例与共同子集快照也保持回归。
 
 ## 依据与边界
 
