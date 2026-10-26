@@ -9,8 +9,9 @@ namespace tf_shell_test {
 // The fixed ConPTY output can separate its marker and prompt with an explicit
 // column-one CUP. This is a record boundary, without assuming the initial cursor
 // row or claiming that the marker still occupies a separate visible screen row.
-// Unknown or incomplete controls keep the observation unproven until more bytes
-// arrive. ShellWindow retains its existing independent 8192-byte observation cap.
+// Complete CSI envelopes are omitted without interpreting their semantics.
+// Unknown ESC forms, malformed/incomplete envelopes and other control strings
+// remain unproven. ShellWindow retains its independent 8192-byte observation cap.
 inline bool transport_output_completed(std::string_view raw, std::string_view marker) {
     if(marker.empty()) return false;
     for(const unsigned char byte:marker) if(byte<0x20 || byte==0x7f) return false;
