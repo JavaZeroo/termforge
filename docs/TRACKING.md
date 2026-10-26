@@ -38,11 +38,11 @@
 |---|---|---|
 | 持续输出中的 Ctrl-C 历史失败 | [原始 ETX 回归 #36](https://github.com/JavaZeroo/termforge/issues/36) | 有界定位历史因果与原生交付；后续通过不回填旧因 |
 | 新增实际回归 | [恢复 oracle 修正 #61](https://github.com/JavaZeroo/termforge/issues/61) · [InputPump gate #62](https://github.com/JavaZeroo/termforge/issues/62) · [工作区 stage52 #63](https://github.com/JavaZeroo/termforge/issues/63) · [hosted reverse #66](https://github.com/JavaZeroo/termforge/issues/66) | #61 恢复 oracle、#66 双会话 tick 门槛已按原合同限定闭合；#62 实验夹具已限定闭合，#63 继续开放；#53 的 UI fence 尚未接入，不放宽期限、负载或几何断言 |
-| 后续合并推送的新失败 | [保存 stage2 #72](https://github.com/JavaZeroo/termforge/issues/72) · [681 高度选择 #73](https://github.com/JavaZeroo/termforge/issues/73) | 两次均为默认/system；原件已审计，精确阶段/字节与因果另查，不重开不同触发的 #61/#66 |
+| 工作区保存判据与选择失败 | [保存 stage2 #72](https://github.com/JavaZeroo/termforge/issues/72) · [681 高度选择 #73](https://github.com/JavaZeroo/termforge/issues/73) | #72 的原字节因果修正已合入主线；#73 精确阶段与因果仍待定位，不重开不同触发的 #61/#66 |
 | 原 10 秒纯夹具超时 | [IME inventory 定位 #40](https://github.com/JavaZeroo/termforge/issues/40) | 阶段与清理已补齐；下一步是固定源码/宿主的有界原因定位 |
 | controller 自然退出 | [close 前退出 #44](https://github.com/JavaZeroo/termforge/issues/44) | 保留 send/wait/pre-close 与清理差异；不能以 close 后结果当自然退出 |
 | 旧 normal-1 未知异常 | [事件转换边界 #57](https://github.com/JavaZeroo/termforge/issues/57) | 独立于已修合法空标题 #45；原事件 kind/载荷未知，不能回填根因 |
-| Windows 工作流可靠性 | [回归汇总 #38](https://github.com/JavaZeroo/termforge/issues/38) | #40/#44/#57/#72/#73；已闭合切片和旧失败保留在该总项，不再排入当前队列 |
+| Windows 工作流可靠性 | [回归汇总 #38](https://github.com/JavaZeroo/termforge/issues/38) | #40/#44/#57/#73/#80/#81；已闭合切片和旧失败保留在该总项，不再排入当前队列 |
 | 显式官方 ConPTY 整合 | [后端汇总 #47](https://github.com/JavaZeroo/termforge/issues/47) | #51/#52（GUI）/#53/#63；#62 worker 夹具与 #52 native 捕获已独立修正，#55 已固定实验联合基线，实验可选不等于产品默认或日常验收 |
 | 每缓冲区 margin 端到端合同 | [margin 汇总 #41](https://github.com/JavaZeroo/termforge/issues/41) | #47/#56；原生 API、transport 和末端分别验证 |
 | 产品核心、GUI/平台与呈现边界 | [选型提案与用户确认 #34](https://github.com/JavaZeroo/termforge/issues/34) | #28–#31/#54，结合 #23/#26/#32/#33 和原版对标证据；重审 ADR-0003/0004，记录用户确认 |

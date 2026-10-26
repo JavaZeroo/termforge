@@ -1,0 +1,299 @@
+{
+  "schema": "termforge-hosted-command-boundaries-validation-v1",
+  "date": "2026-10-27",
+  "issue": "https://github.com/JavaZeroo/termforge/issues/81",
+  "scope": "bounded command observation and worker summary; no original timeout root-cause claim",
+  "code_commit": "f6db464e80973050f0c83f265c2227b04b128741",
+  "review_base": "54ed4b56eac026c32988dbba24b2015bbc37a80c",
+  "sources": [
+    {
+      "path": "tools/prepare_hosted_shells.py",
+      "git_blob_sha256": "d7de1cae740b288516a8a271e92c40840bad96bc8bd7230055cbf7c45c74133a",
+      "working_bytes_sha256": "d7de1cae740b288516a8a271e92c40840bad96bc8bd7230055cbf7c45c74133a"
+    },
+    {
+      "path": "tools/test_prepare_hosted_shells.py",
+      "git_blob_sha256": "40bf84fe14eb7cb29e97670924f1aa6d0411770a11888e4173280028dd4dee1a",
+      "working_bytes_sha256": "40bf84fe14eb7cb29e97670924f1aa6d0411770a11888e4173280028dd4dee1a"
+    }
+  ],
+  "environment": {
+    "os": "Windows",
+    "release": "11",
+    "version": "10.0.26200",
+    "machine": "AMD64",
+    "python": "3.12.10"
+  },
+  "original_hosted_failure": {
+    "pr": 76,
+    "head": "97ac1420801c072ec318604fb2193957c0c57e69",
+    "checkout": "1a1afd2152af3776e95a41c7f5fa1a8c3709d681",
+    "run_id": 40366292708,
+    "job_id": 121724790152,
+    "artifact_id": 12671066881,
+    "artifact": {
+      "path": "local/r76-ci-prep/hosted-shell-preparation.zip",
+      "bytes": 668,
+      "sha256": "b69abc82963067e5c7d406776f2dbf3cb2e0c31cfb65b5ab9a74e15b4dfb7a40"
+    },
+    "summary_identity": {
+      "path": "local/r76-ci-prep/summary.json",
+      "bytes": 1350,
+      "sha256": "132c9ec4fc3b7c34bb3f66465842d306287c809e409b9c5bf0a29f927d8f020c"
+    },
+    "summary": {
+      "schema": "termforge-hosted-shell-preparation-v1",
+      "status": "failed",
+      "fixed_import_rootfs_version": "noble-20240423-amd64-wsl1",
+      "fixed_import_rootfs_sha256": "8251e27ffff381a4af5f41dcb94d867de3e0d9774a9241908ab34555d99315ea",
+      "rootfs_verified": false,
+      "hosted_provenance": {
+        "image_os": "win25-vs2026",
+        "image_version": "20261021.278.1",
+        "github_run_id": "40366292708"
+      },
+      "steps": [
+        {
+          "schema": "termforge-hosted-shell-preparation-v1",
+          "step": "preflight",
+          "status": "failed",
+          "failure_code": "command_deadline",
+          "cleanup": {
+            "root_natural_exit": true,
+            "root_reaped": true,
+            "root_exit_code": 1,
+            "root_direct_kill_requested": false,
+            "job_termination_requests": 0,
+            "job_before": {
+              "active": 0,
+              "total": 6,
+              "terminated": 0
+            },
+            "job_after": {
+              "active": 0,
+              "total": 6,
+              "terminated": 0
+            },
+            "job_after_pid_count": 0,
+            "membership_stable": true,
+            "members": [],
+            "member_cleanup_requested_count": 0,
+            "verified_wsl_helper_count": 0,
+            "helper_cleanup_policy": "natural-empty-job",
+            "audit_status": "observed"
+          }
+        }
+      ],
+      "failure_code": "command_deadline"
+    },
+    "specific_command": null,
+    "product_tests_run": false,
+    "root_cause": null
+  },
+  "red_controls": [
+    {
+      "case": "new boundary test against implementation without command events",
+      "methods": 1,
+      "errors": 1,
+      "seconds": 0.006,
+      "observed_failure": "missing command-events.json",
+      "source_snapshot_available": false,
+      "log": "local/r81-red/test.log"
+    },
+    {
+      "case": "timeout terminal event write failure during implementation",
+      "methods": 1,
+      "failures": 1,
+      "seconds": 0.007,
+      "observed_failure": "command_observation replaced command_deadline",
+      "source_snapshot_available": false,
+      "log": "local/r81-write-fault-red/test.log"
+    },
+    {
+      "case": "invoking/returned write failures with real return code 0/7",
+      "methods": 1,
+      "errors": 4,
+      "seconds": 0.036,
+      "observed_failure": "command_observation replaced actual result",
+      "source_snapshot_available": true,
+      "same_test_source_as_green": true,
+      "log": "local/r81-return-fault-red/test.log"
+    }
+  ],
+  "green_validation": {
+    "command": "python -m unittest tools.test_prepare_hosted_shells tools.test_owned_job_cleanup -v",
+    "returncode": 0,
+    "methods": 23,
+    "passed": 23,
+    "skipped": 0,
+    "seconds": 0.354,
+    "log": "local/r81-final-observer-guards/test.log",
+    "test_results": [
+      {
+        "method": "test_parent_retains_command_or_worker_deadline_after_cleanup",
+        "class": "tools.test_prepare_hosted_shells.CommandBoundaryTests.test_parent_retains_command_or_worker_deadline_after_cleanup",
+        "result": "ok"
+      },
+      {
+        "method": "test_returned_command_and_partial_invocation_are_reported_independently",
+        "class": "tools.test_prepare_hosted_shells.CommandBoundaryTests.test_returned_command_and_partial_invocation_are_reported_independently",
+        "result": "ok"
+      },
+      {
+        "method": "test_timeout_keeps_actual_command_boundary_without_private_arguments",
+        "class": "tools.test_prepare_hosted_shells.CommandBoundaryTests.test_timeout_keeps_actual_command_boundary_without_private_arguments",
+        "result": "ok"
+      },
+      {
+        "method": "test_trace_write_failure_cannot_replace_observed_timeout",
+        "class": "tools.test_prepare_hosted_shells.CommandBoundaryTests.test_trace_write_failure_cannot_replace_observed_timeout",
+        "result": "ok"
+      },
+      {
+        "method": "test_trace_write_failure_preserves_command_and_marker_result",
+        "class": "tools.test_prepare_hosted_shells.CommandBoundaryTests.test_trace_write_failure_preserves_command_and_marker_result",
+        "result": "ok"
+      },
+      {
+        "method": "test_unknown_or_unordered_data_is_rejected_without_echoing_it",
+        "class": "tools.test_prepare_hosted_shells.CommandBoundaryTests.test_unknown_or_unordered_data_is_rejected_without_echoing_it",
+        "result": "ok"
+      },
+      {
+        "method": "test_a_successful_download_cannot_stand_in_for_import_or_shell_checks",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_a_successful_download_cannot_stand_in_for_import_or_shell_checks",
+        "result": "ok"
+      },
+      {
+        "method": "test_absent_ubuntu_requires_verified_download_before_import_and_both_checks",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_absent_ubuntu_requires_verified_download_before_import_and_both_checks",
+        "result": "ok"
+      },
+      {
+        "method": "test_distribution_list_and_marker_oracles_reject_missing_or_wrong_identity",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_distribution_list_and_marker_oracles_reject_missing_or_wrong_identity",
+        "result": "ok"
+      },
+      {
+        "method": "test_empty_list_error_does_not_replace_a_registered_distribution",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_empty_list_error_does_not_replace_a_registered_distribution",
+        "result": "ok"
+      },
+      {
+        "method": "test_exact_hosted_guard_rejects_other_hosts_and_repositories",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_exact_hosted_guard_rejects_other_hosts_and_repositories",
+        "result": "ok"
+      },
+      {
+        "method": "test_existing_unusable_ubuntu_is_never_replaced",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_existing_unusable_ubuntu_is_never_replaced",
+        "result": "ok"
+      },
+      {
+        "method": "test_fixed_product_launch_and_import_have_no_global_mutation_flags",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_fixed_product_launch_and_import_have_no_global_mutation_flags",
+        "result": "ok"
+      },
+      {
+        "method": "test_local_runtime_is_rejected_before_any_subprocess_or_download",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_local_runtime_is_rejected_before_any_subprocess_or_download",
+        "result": "ok"
+      },
+      {
+        "method": "test_path_guard_rejects_workspace_escape_and_requires_local_ownership",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_path_guard_rejects_workspace_escape_and_requires_local_ownership",
+        "result": "ok"
+      },
+      {
+        "method": "test_public_provenance_is_guarded_and_contains_only_safe_runner_identity",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_public_provenance_is_guarded_and_contains_only_safe_runner_identity",
+        "result": "ok"
+      },
+      {
+        "method": "test_stream_download_requires_exact_hash_size_and_deadline",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_stream_download_requires_exact_hash_size_and_deadline",
+        "result": "ok"
+      },
+      {
+        "method": "test_worker_job_guard_precedes_host_paths_or_commands",
+        "class": "tools.test_prepare_hosted_shells.HostedShellPreparationTests.test_worker_job_guard_precedes_host_paths_or_commands",
+        "result": "ok"
+      },
+      {
+        "method": "test_image_name_alone_never_qualifies_an_unknown_helper",
+        "class": "tools.test_owned_job_cleanup.CleanupPolicyTests.test_image_name_alone_never_qualifies_an_unknown_helper",
+        "result": "ok"
+      },
+      {
+        "method": "test_image_query_failure_is_not_failure_to_reap_an_owned_fixture_tree",
+        "class": "tools.test_owned_job_cleanup.CleanupPolicyTests.test_image_query_failure_is_not_failure_to_reap_an_owned_fixture_tree",
+        "result": "ok"
+      },
+      {
+        "method": "test_only_owned_and_reaped_check_trees_can_use_fixture_cleanup_policy",
+        "class": "tools.test_owned_job_cleanup.CleanupPolicyTests.test_only_owned_and_reaped_check_trees_can_use_fixture_cleanup_policy",
+        "result": "ok"
+      },
+      {
+        "method": "test_real_run_step_seam_distinguishes_worker_success_and_cleanup",
+        "class": "tools.test_owned_job_cleanup.CleanupPolicyTests.test_real_run_step_seam_distinguishes_worker_success_and_cleanup",
+        "result": "ok"
+      },
+      {
+        "method": "test_ordinary_owned_python_helper_is_audited_unknown_and_reaped",
+        "class": "tools.test_owned_job_cleanup.OwnJobApiTests.test_ordinary_owned_python_helper_is_audited_unknown_and_reaped",
+        "result": "ok"
+      }
+    ],
+    "real_process_test": "OwnJobApiTests.test_ordinary_owned_python_helper_is_audited_unknown_and_reaped",
+    "other_command_and_worker_tests": "subprocess/worker/clock/Job boundary fault injection; file read/write and existing entry points exercised",
+    "hosted_preparation_run_locally": false,
+    "local_wsl_configuration_changed": false
+  },
+  "reviews": {
+    "standards": "initial finding about observation masking result fixed; focused rereview passed",
+    "spec": "focused rereview passed; original hosted diagnosis remains incomplete",
+    "reviewers_reran_tests": false
+  },
+  "local_evidence": [
+    {
+      "path": "local/r81-red/test.log",
+      "bytes": 1673,
+      "sha256": "eb215b17b995709e1f6d1bf7d8652f0629a3a24e47217a2898f8075330f0f368"
+    },
+    {
+      "path": "local/r81-write-fault-red/test.log",
+      "bytes": 2191,
+      "sha256": "eb86e90507019c1ac7582839d349eb6f8cbba2cb8a8bdfeac92fbcc735f05890"
+    },
+    {
+      "path": "local/r81-return-fault-red/test.log",
+      "bytes": 5841,
+      "sha256": "81263ba133387c3d87d36946c2132f2c65e1e072de5fd247849a0c87d9e5817e"
+    },
+    {
+      "path": "local/r81-return-fault-red/prepare_hosted_shells.py",
+      "bytes": 25986,
+      "sha256": "a9e6af2c3e11092593ba78f36d0cd8ef9ff6d9f183021a888d2fa43100cbdb4e"
+    },
+    {
+      "path": "local/r81-return-fault-red/test_prepare_hosted_shells.py",
+      "bytes": 20777,
+      "sha256": "40bf84fe14eb7cb29e97670924f1aa6d0411770a11888e4173280028dd4dee1a"
+    },
+    {
+      "path": "local/r81-final-observer-guards/test.log",
+      "bytes": 4716,
+      "sha256": "e18931c3771d5a8defb9226efd4fd3a692a1a784b5fc99afeb67241942b4157a"
+    }
+  ],
+  "limitations": [
+    "No reenactment of original hosted timeout; its command and root cause remain unknown.",
+    "Fault-injected subprocess and worker results do not establish hosted behavior.",
+    "Invoking is a pre-call observation, not proof of OS process creation.",
+    "Observed can be a partial prefix; missing or malformed trace is not fabricated into completion.",
+    "Command return does not establish valid markers, ready WSL, cleanup success or product correctness.",
+    "Preparation budgets, no-retry policy and hosted/Job/path guards are unchanged.",
+    "No WindTerm performance equivalence, presentation or R2 acceptance claim."
+  ]
+}
