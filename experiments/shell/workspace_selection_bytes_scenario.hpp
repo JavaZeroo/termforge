@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iterator>
 #include <sstream>
+#include "scenario_tick_gate.hpp"
 
 inline void Workspace::scenario_selection_bytes() {
     if (image_.empty() || closing_) return;
@@ -16,7 +17,10 @@ inline void Workspace::scenario_selection_bytes() {
     static std::array<std::pair<int,int>,2> initial_grids{};
     static std::array<BYTE,256> saved_keys{};
     static bool restore_keys = false;
-    static int phase_tick = 0;
+    static tf_shell_test::TwoSessionTickGate phase_ticks;
+    const auto begin_phase = [&]() {
+        phase_ticks.begin({bottom->observed_tick_count(),main ? main->observed_tick_count() : 0});
+    };
     if (restore_keys) {
         require(SetKeyboardState(saved_keys.data()) != FALSE, "selection bytes keyboard state restoration failed");
         restore_keys = false;
@@ -96,7 +100,7 @@ inline void Workspace::scenario_selection_bytes() {
     };
     const auto copy_if_system = [&]() {
         if (system) { sentinel(); queued_key('C',true,true); }
-        phase_tick = main->observed_tick_count();
+        begin_phase();
     };
     const auto transition = [&](int dpi) {
         // A controlled message never changes the OS monitor or the display.
@@ -106,7 +110,7 @@ inline void Workspace::scenario_selection_bytes() {
             "selection bytes DPI frame calculation failed");
         SendMessageW(window_,WM_DPICHANGED,MAKEWPARAM(dpi,dpi),reinterpret_cast<LPARAM>(&next));
         require(dpi_ == dpi && width_ == 1360 && height_ == 860, "selection bytes controlled DPI changed logical client size");
-        phase_tick = main ? main->observed_tick_count() : 0;
+        begin_phase();
     };
     const auto record = [&](const char* phase, bool copy, bool empty_copy = false) {
         std::ostringstream out;
@@ -157,7 +161,9 @@ inline void Workspace::scenario_selection_bytes() {
         shell->begin_output_observation();
         shell->command(L"\"" + client.wstring() + L"\" \"" + prefix.wstring() + L".bin\" \"" + prefix.wstring() + L"\" styled-tail-v1\r");
     };
-    const auto three_ticks = [&]() { return main && main->observed_tick_count() - phase_tick >= 3; };
+    const auto three_ticks = [&]() {
+        return main && phase_ticks.ready({bottom->observed_tick_count(),main->observed_tick_count()});
+    };
     const auto settled = [&]() { return main && main->settled() && bottom->settled(); };
     if (stage_ == 0 && bottom->ready()) {
         samples.clear();
@@ -170,7 +176,7 @@ inline void Workspace::scenario_selection_bytes() {
         launch(bottom,L"bottom"); launch(main,L"main"); stage_ = 3;
     } else if (stage_ == 3 && main && main->live_contains_line("TF_SELECT_BYTES_READY") &&
                bottom->live_contains_line("TF_SELECT_BYTES_READY") && settled()) {
-        phase_tick = main->observed_tick_count(); stage_ = 4;
+        begin_phase(); stage_ = 4;
     } else if (stage_ == 4 && three_ticks() && settled()) {
         select(0,Group::main);
         const int soft = row_of(main,"SOFT_",true), continuation = row_of(main,"CONT 中文 e\xcc\x81"), hard = row_of(main,"HARD 中文 e\xcc\x81");
@@ -198,14 +204,14 @@ inline void Workspace::scenario_selection_bytes() {
         copy_if_system(); stage_ = 13;
     } else if (stage_ == 13 && three_ticks()) {
         record("dpi-96-restored",system); queued_key(VK_ESCAPE);
-        phase_tick = main->observed_tick_count(); stage_ = 14;
+        begin_phase(); stage_ = 14;
     } else if (stage_ == 14 && three_ticks()) {
         record("cleared",false);
         if (system) sentinel();
-        queued_key('C',true,true); phase_tick = main->observed_tick_count(); stage_ = 15;
+        queued_key('C',true,true); begin_phase(); stage_ = 15;
     } else if (stage_ == 15 && three_ticks()) {
         record("empty-copy",false,true); queued_key('X');
-        phase_tick = main->observed_tick_count(); stage_ = 16;
+        begin_phase(); stage_ = 16;
     } else if (stage_ == 16 && three_ticks() && !capture(L"main").empty()) {
         record("input-after",false);
         Bitmap frame(physical_width_,physical_height_); paint(frame.dc);
