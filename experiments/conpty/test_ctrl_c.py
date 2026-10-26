@@ -5,9 +5,11 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from experiments.build_paths import ROOT, binary
 from experiments.conpty.ctrl_c_run import COMPLETE_INPUT, execute, validate_sample, validate_trace
+from experiments.conpty import ctrl_c_run as runner
 
 
 class CtrlCOracleTests(unittest.TestCase):
@@ -40,12 +42,99 @@ class CtrlCOracleTests(unittest.TestCase):
                 validate_trace(raw, wrong)
 
 
+@unittest.skipUnless(os.name == "nt", "Windows runner cleanup is mocked without starting native processes")
+class CtrlCCleanupFailureTests(unittest.TestCase):
+    def mocked_run(self, temporary, process, job, images, *, gate=b"GO\n"):
+        exe = Path(temporary) / "mock-probe.exe"
+        exe.write_bytes(b"identity-only fixture; never executed")
+        out = Path(temporary) / "sample"
+        identity = {"cmd.exe": {"sha256": "a" * 64, "fixed_file_version": "1.2.3.4"},
+                    "conhost.exe": {"sha256": "b" * 64, "fixed_file_version": "1.2.3.4"}}
+        with mock.patch.object(runner, "system_directory", return_value=Path(temporary)), \
+             mock.patch.object(runner, "system_identity", return_value=identity), \
+             mock.patch.object(runner, "OwnedJob", return_value=job), \
+             mock.patch.object(runner, "OwnedImages", return_value=images), \
+             mock.patch.object(runner.subprocess, "Popen", return_value=process):
+            return runner.execute(exe, out, gate=gate)
+
+    def mocks(self):
+        process, job, images = mock.Mock(), mock.Mock(), mock.Mock()
+        process.pid, process.returncode = 123, None
+        job.accounting.return_value = {"active": 1, "total": 1, "terminated": 0}
+        job.drain.return_value = {"active": 0, "total": 1, "terminated": 0}
+        images.observed, images.error = {"cmd.exe": False, "conhost.exe": False}, False
+        return process, job, images
+
+    def test_terminate_and_reap_failures_preserve_original_and_unknown_accounting(self):
+        process, job, images = self.mocks()
+        original = OSError("private original termination failure")
+        process.poll.return_value = None
+        process.communicate.side_effect = [runner.subprocess.TimeoutExpired("private-command", 1)] * 3
+        job.terminate.side_effect = [original, OSError("private cleanup termination failure")]
+        job.drain.side_effect = OSError("private accounting failure")
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaises(OSError) as raised:
+                self.mocked_run(temporary, process, job, images)
+            self.assertIs(raised.exception, original)
+            row = json.loads((Path(temporary) / "sample/sample.json").read_text())
+            self.assertEqual(row["status"], "failed")
+            self.assertEqual(row["failure_code"], "cleanup_failed")
+            self.assertIsNone(row["job_after_cleanup"])
+            self.assertIsNone(row["process_reaped"])
+            self.assertIn("process_terminate", row["cleanup_errors"])
+            self.assertIn("process_communicate", row["cleanup_errors"])
+            self.assertIn("job_accounting", row["cleanup_errors"])
+            self.assertNotIn("private original", json.dumps(row))
+            self.assertIn("private original", (Path(temporary) / "sample/_private/exception.txt").read_text())
+            with self.assertRaises(ValueError):
+                validate_sample(row)
+        images.finish.assert_called_once()
+        job.close.assert_called_once()
+
+    def test_sampler_failure_cannot_skip_job_close_or_public_evidence(self):
+        process, job, images = self.mocks()
+        original = ValueError("private original protocol failure")
+        process.poll.side_effect = [None, 0, 0]
+        process.communicate.side_effect = [original, runner.subprocess.TimeoutExpired("private-command", 1)]
+        images.finish.side_effect = OSError("private sampler failure")
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaises(ValueError) as raised:
+                self.mocked_run(temporary, process, job, images)
+            self.assertIs(raised.exception, original)
+            row = json.loads((Path(temporary) / "sample/sample.json").read_text())
+            self.assertIn("image_sampler_finish", row["cleanup_errors"])
+            self.assertEqual(row["job_after_cleanup"]["active"], 0)
+            self.assertTrue(row["process_reaped"])
+            self.assertEqual(row["status"], "failed")
+        job.close.assert_called_once()
+
+    def test_cleanup_fault_after_normal_body_return_is_raised_and_never_accepted(self):
+        process, job, images = self.mocks()
+        process.returncode = 2
+        process.poll.side_effect = [None, 0, 0]
+        process.communicate.side_effect = [(b"guard rejected", b""),
+                                           runner.subprocess.TimeoutExpired("private-command", 1)]
+        job.terminate.side_effect = OSError("private cleanup termination failure")
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaisesRegex(ValueError, "^cleanup_failed$"):
+                self.mocked_run(temporary, process, job, images, gate=b"")
+            row = json.loads((Path(temporary) / "sample/sample.json").read_text())
+            self.assertEqual(row["failure_code"], "cleanup_failed")
+            self.assertEqual(row["status"], "failed")
+            self.assertEqual(row["cleanup_errors"], ["process_terminate", "process_communicate"])
+            self.assertEqual(len(row["probe_sha256"]), 64)
+            with self.assertRaises(ValueError):
+                validate_sample(row)
+        images.finish.assert_called()
+        job.close.assert_called_once()
+
+
 @unittest.skipUnless(os.name == "nt", "raw ConPTY requires Windows")
 class CtrlCIntegrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.exe = binary("conpty_ctrl_c_probe")
-        parent = ROOT / "local" / "ctrl-c-tests"
+        parent = Path(os.environ.get("TERMFORGE_TEST_ARTIFACTS", ROOT / "build/test-artifacts")) / "conpty-ctrl-c"
         parent.mkdir(parents=True, exist_ok=True)
         cls.out = Path(tempfile.mkdtemp(prefix="run-", dir=parent))
 

@@ -184,6 +184,8 @@ class OwnedImages:
 
 def validate_sample(row):
     native, trace = row.get("native", {}), row.get("trace", {})
+    if row.get("cleanup_errors") or not re.fullmatch(r"[0-9a-f]{64}", row.get("probe_sha256") or ""):
+        raise ValueError("cleanup_or_probe_identity")
     if row.get("schema") != SCHEMA or row.get("timed_out") or row.get("returncode") != 0:
         raise ValueError("execution")
     if (set(native) != NATIVE_FIELDS or native.get("schema") != "termforge-ctrl-c-native-v1" or
@@ -245,12 +247,25 @@ def execute(exe, out, *, timeout=15, gate=b"GO\n"):
     private = out / "_private"
     private.mkdir()
     row = {"schema": SCHEMA, "status": "failed", "failure_code": "execution",
-           "timed_out": False, "handler_delivery_verified": False, "performance_claim": False}
+           "timed_out": False, "handler_delivery_verified": False, "performance_claim": False,
+           "probe_sha256": None, "cleanup_errors": [], "job_after_cleanup": None,
+           "process_reaped": None}
     job = process = images = None
     assigned = False
     stdout = stderr = b""
+    cleanup_details = []
     started = time.monotonic()
+
+    def cleanup_fault(code):
+        row["cleanup_errors"].append(code)
+        row["status"] = "failed"
+        if row["failure_code"] != "cleanup_failed":
+            row["failure_before_cleanup"] = row["failure_code"]
+        row["failure_code"] = "cleanup_failed"
+        cleanup_details.append(traceback.format_exc())
+
     try:
+        row["probe_sha256"] = sha256(exe)
         directory = system_directory()
         row["system_files_before"] = system_identity(directory)
         job = OwnedJob()
@@ -295,33 +310,100 @@ def execute(exe, out, *, timeout=15, gate=b"GO\n"):
         else:
             row["failure_code"] = "guard_test"
     except BaseException:
-        (private / "exception.txt").write_text(traceback.format_exc(), encoding="utf-8")
+        # Preserve the original exception even if private evidence is unwritable.
+        try:
+            (private / "exception.txt").write_text(traceback.format_exc(), encoding="utf-8")
+        except Exception:
+            cleanup_fault("private_exception_write")
         raise
     finally:
-        if process is not None and process.poll() is None:
-            if assigned:
-                job.terminate()
-            else:
-                process.kill()  # GO has never been sent; no children can exist
-            stdout, stderr = process.communicate(timeout=5)
-        if images is not None:
-            images.finish()
-        if job is not None:
-            try:
-                if assigned:
+        # Every cleanup stage is independent. In particular, a failed terminate
+        # or pipe reap must never skip sampler shutdown, kill-on-close or JSON.
+        try:
+            if process is not None:
+                try:
+                    running = process.poll() is None
+                except Exception:
+                    running = True
+                    cleanup_fault("process_poll")
+                if running:
+                    try:
+                        if assigned:
+                            job.terminate()
+                        else:
+                            process.kill()  # no GO was sent; no children exist
+                    except Exception:
+                        cleanup_fault("process_terminate")
+                    try:
+                        stdout, stderr = process.communicate(timeout=5)
+                    except Exception:
+                        cleanup_fault("process_communicate")
+            if images is not None:
+                try:
+                    images.finish()
+                except Exception:
+                    cleanup_fault("image_sampler_finish")
+            if job is not None and assigned:
+                try:
                     row["job_after_cleanup"] = job.drain()
-                    if row["job_after_cleanup"]["active"]:
+                except Exception:
+                    # Unknown is explicit; a failed query never establishes zero.
+                    row["job_after_cleanup"] = None
+                    cleanup_fault("job_accounting")
+                if row["job_after_cleanup"] is not None and row["job_after_cleanup"]["active"]:
+                    try:
                         job.terminate()
+                    except Exception:
+                        cleanup_fault("job_terminate")
+                    try:
                         row["job_after_cleanup"] = job.drain()
-            finally:
-                job.close()
-        (private / "stdout.json").write_bytes(stdout)
-        (private / "stderr.txt").write_bytes(stderr)
+                        if row["job_after_cleanup"]["active"]:
+                            cleanup_fault("job_not_empty")
+                    except Exception:
+                        row["job_after_cleanup"] = None
+                        cleanup_fault("job_accounting")
+        finally:
+            # This is the final containment fallback when explicit termination
+            # fails. It is attempted before writing any diagnostic artifacts.
+            if job is not None:
+                try:
+                    job.close()
+                except Exception:
+                    cleanup_fault("job_close")
+        if process is not None:
+            try:
+                if process.poll() is None:
+                    stdout, stderr = process.communicate(timeout=5)
+                row["process_reaped"] = process.poll() is not None
+                if not row["process_reaped"]:
+                    cleanup_fault("process_not_reaped")
+            except Exception:
+                row["process_reaped"] = None
+                cleanup_fault("process_reap_after_close")
+        for name, data in (("stdout.json", stdout), ("stderr.txt", stderr)):
+            try:
+                (private / name).write_bytes(data)
+            except Exception:
+                cleanup_fault("private_stream_write")
+        if cleanup_details:
+            try:
+                (private / "cleanup.exception.txt").write_text("\n".join(cleanup_details), encoding="utf-8")
+            except Exception:
+                cleanup_fault("private_cleanup_write")
         row["wall_seconds"] = time.monotonic() - started
-        row["artifacts"] = {name: {"sha256": sha256(private / name), "bytes": (private / name).stat().st_size}
-                            for name in ("input.bin", "output.bin", "stdout.json", "stderr.txt")
-                            if (private / name).is_file()}
-        (out / "sample.json").write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")
+        row["artifacts"] = {}
+        for name in ("input.bin", "output.bin", "stdout.json", "stderr.txt"):
+            try:
+                if (private / name).is_file():
+                    row["artifacts"][name] = {"sha256": sha256(private / name), "bytes": (private / name).stat().st_size}
+            except Exception:
+                cleanup_fault("artifact_identity")
+        try:
+            (out / "sample.json").write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")
+        except Exception:
+            cleanup_fault("public_sample_write")
+    if row["cleanup_errors"]:
+        raise ValueError("cleanup_failed")
     return row
 
 
