@@ -133,6 +133,19 @@ class HostedShellPreparationTests(unittest.TestCase):
         self.assertEqual(report["status"], "failed")
         self.assertEqual(report["failure_code"], "worker_step")
 
+    def test_worker_job_guard_precedes_host_paths_or_commands(self):
+        fake_stdin = mock.Mock(buffer=io.BytesIO(b"GO\n"))
+        with mock.patch.object(prep.sys, "stdin", fake_stdin), \
+             mock.patch.object(prep, "require_worker_job", side_effect=prep.PreparationError("worker_job_guard")), \
+             mock.patch.object(prep, "require_runtime") as runtime, \
+             mock.patch.object(prep.subprocess, "run") as command, \
+             mock.patch.object(prep.urllib.request, "urlopen") as download:
+            with self.assertRaisesRegex(prep.PreparationError, "worker_job_guard"):
+                prep.worker("import", Path("local/not-created"))
+        runtime.assert_not_called()
+        command.assert_not_called()
+        download.assert_not_called()
+
     def test_local_runtime_is_rejected_before_any_subprocess_or_download(self):
         with mock.patch.object(prep, "require_runtime", side_effect=prep.PreparationError("hosted_guard")), \
              mock.patch.object(prep.subprocess, "Popen") as popen, \

@@ -173,9 +173,22 @@ def run_command(command, directory, name, *, cwd, timeout=10, data=None):
     return result.returncode, stdout_path.read_bytes()
 
 
+def require_worker_job():
+    if os.name != "nt":
+        raise PreparationError("worker_job_guard")
+    api = ctypes.WinDLL("kernel32", use_last_error=True)
+    api.GetCurrentProcess.restype = ctypes.c_void_p
+    api.IsProcessInJob.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_int)]
+    api.IsProcessInJob.restype = ctypes.c_int
+    contained = ctypes.c_int()
+    if not api.IsProcessInJob(api.GetCurrentProcess(), None, ctypes.byref(contained)) or not contained.value:
+        raise PreparationError("worker_job_guard")
+
+
 def worker(step, out):
-    if sys.stdin.buffer.readline() != b"GO\n":
+    if sys.stdin.buffer.readline(4) != b"GO\n":
         return 90
+    require_worker_job()
     workspace = require_runtime()
     require_paths(workspace, out)
     private = out / "_private" / step
@@ -245,7 +258,7 @@ def worker(step, out):
 RESULTS_BY_STEP = {"preflight": {"ubuntu-existing", "ubuntu-absent"},
                    "download": {"rootfs-verified"}, "import": {"ubuntu-imported-wsl1"},
                    "check-before": {"ubuntu-sh-cwd-verified"}, "check-after": {"ubuntu-sh-cwd-verified"}}
-FAILURES = {"hosted_guard", "workspace_guard", "windows_admin_guard", "cwd_identity", "wsl_report_size",
+FAILURES = {"hosted_guard", "workspace_guard", "windows_admin_guard", "worker_job_guard", "cwd_identity", "wsl_report_size",
             "wsl_list_encoding", "wsl_list_identity", "marker_encoding", "shell_startup", "download_deadline",
             "download_size", "download_hash", "command_deadline", "command_report_size", "worker_directory_guard",
             "wsl_list", "download_response", "ubuntu_already_present", "wsl_import", "ubuntu_missing", "worker_step"}
