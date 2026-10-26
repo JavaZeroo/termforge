@@ -300,6 +300,9 @@ pub struct Term<T> {
     /// Range going from top to bottom of the terminal, indexed from the top of the viewport.
     scroll_region: Range<Line>,
 
+    /// Scroll region for the inactive screen buffer.
+    inactive_scroll_region: Range<Line>,
+
     /// Modified terminal colors.
     colors: Colors,
 
@@ -424,6 +427,7 @@ impl<T> Term<T> {
 
         Term {
             inactive_grid,
+            inactive_scroll_region: scroll_region.clone(),
             scroll_region,
             event_proxy,
             damage,
@@ -697,8 +701,9 @@ impl<T> Term<T> {
             cmp::max(cmp::min(vi_point.line, viewport_bottom), viewport_top);
         self.vi_mode_cursor.point.column = cmp::min(vi_point.column, self.last_column());
 
-        // Reset scrolling region.
+        // Reset scrolling regions.
         self.scroll_region = Line(0)..Line(self.screen_lines() as i32);
+        self.inactive_scroll_region = self.scroll_region.clone();
 
         // Resize damage information.
         self.damage.resize(num_cols, num_lines);
@@ -729,6 +734,7 @@ impl<T> Term<T> {
         self.set_keyboard_mode(keyboard_mode, KeyboardModesApplyBehavior::Replace);
 
         mem::swap(&mut self.grid, &mut self.inactive_grid);
+        mem::swap(&mut self.scroll_region, &mut self.inactive_scroll_region);
         self.mode ^= TermMode::ALT_SCREEN;
         self.selection = None;
         self.mark_fully_damaged();
@@ -1833,6 +1839,7 @@ impl<T: EventListener> Handler for Term<T> {
         self.grid.reset();
         self.inactive_grid.reset();
         self.scroll_region = Line(0)..Line(self.screen_lines() as i32);
+        self.inactive_scroll_region = self.scroll_region.clone();
         self.tabs = TabStops::new(self.columns());
         self.title_stack = Vec::new();
         self.title = None;

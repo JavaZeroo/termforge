@@ -120,4 +120,10 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 `0.26.1-dev+termforge.2` 增加滚动复用/初始 ID 顺序、历史淘汰和实际 C++/C ABI 适配。[v5 共同矩阵](results/2026-10-25-candidate-common-v5/summary.json)继续 95 次全部一致，[真实应用 v3](results/2026-10-25-real-applications-v3/summary.json)3 次一致，[fuzz v3](results/2026-10-25-fuzz-v3/summary.json)为 2 已知差异+6 一致，[扩展能力 v4](results/2026-10-25-capabilities-v4/summary.json)分类不变。142 个固定 crate 单元测试、doc test、23 个差分 Python、15 个计量与 C++ candidate_core 均通过；[适配验证](../../experiments/core/results/2026-10-25-candidate-adapter/validation.json)另行记录。默认 shell 和产品 TUI 仍未验收。
 
+## termforge.3 每缓冲区 margin 与宿主差异（#27/#41）
+
+`0.26.1-dev+termforge.3` 随主/备用网格保存独立滚动区域，并在 resize/RIS 同时重置。[v6 共同矩阵](results/2026-10-26-candidate-common-v6/summary.json)为 95 次一致，[扩展能力 v5](results/2026-10-26-capabilities-v5/summary.json)分类不变，[fuzz v4](results/2026-10-26-fuzz-v4/summary.json)为 2 已知差异+6 一致，[真实应用 v6](results/2026-10-26-real-applications-v6/summary.json)的固定新鲜捕获为 3 次一致。141 个固定 crate 单元测试、1 个 doc test 与 C++ `candidate_core` 均通过。
+
+[margin 验证](../../experiments/shell/results/2026-10-26-margin-state/validation.json)分别保留源 VT 的整段/逐字节恢复、resize/RIS 和真实 ConPTY 的宿主差异。真实宿主未恢复主屏 margin 由 #41 保留，差异观察不作为能力通过。另一 366 字节 More 捕获的尾部 `CR + CSI 79X` 暴露 Recovery 擦除差异与捕获同步问题，旧、新候选均与 pyte 一致，由 #42 保留，不自动改判 match 或归因于 margin 修复。
+
 路线判断见 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)。

@@ -10,6 +10,7 @@ from experiments.shell.run import execute
 from experiments.shell.unicode_checks import validate_candidate_unicode
 from experiments.shell.alternate_checks import STAGES, validate_candidate_alternate
 from experiments.shell.scroll_checks import STAGES as SCROLL_STAGES, validate_candidate_scroll
+from experiments.shell.margin_checks import STAGES as MARGIN_STAGES, validate_candidate_margins
 from experiments.shell.workflow_checks import validate_console_window
 
 
@@ -127,6 +128,52 @@ class CandidateTuiTests(unittest.TestCase):
                         validate_candidate_scroll(changed, changed_consoles,
                                                  b"" if corruption == "source" else source,
                                                  transport.replace(b"REGION_C", b"REGION_X") if corruption == "transport" else transport)
+
+    def test_real_conpty_margin_difference(self):
+        for repeat in range(2):
+            out = self.out / f"candidate-margins-{repeat}"
+            record = execute(binary("termforge_shell"), "candidate-margins", out, timeout=20)
+            summary = record["margins_output"]
+            self.assertTrue(summary["observation_only"])
+            self.assertFalse(summary["margins_per_buffer_verified"])
+            self.assertFalse(summary["native_main_margins_restored"])
+            self.assertTrue(summary["conpty_margin_difference_observed"])
+            self.assertTrue(summary["candidate_matches_native"])
+            self.assertTrue(summary["native_main_restored"])
+            self.assertFalse(summary["windterm_runtime_equivalence_verified"])
+            self.assertFalse(summary["full_r2_contract_verified"])
+            self.assertIsNone(summary["presented_done"])
+            data = json.loads((out / "candidate-margins.json").read_text(encoding="utf-8"))
+            consoles = {stage: validate_console_window(out, expected_role=role, expected_generation=1, prefix=prefix)
+                        for stage, (role, prefix) in MARGIN_STAGES.items()}
+            source = (out / "candidate-margins.source.bin").read_bytes()
+            transport = (out / "candidate-margins.transport.bin").read_bytes()
+            for corruption in ("main-margin", "alt-margin", "restored", "history", "source", "transport",
+                               "cursor", "frame", "missing-stage", "host-limit"):
+                changed = copy.deepcopy(data)
+                changed_consoles = copy.deepcopy(consoles)
+                if corruption == "main-margin":
+                    changed["visible_lines"][1], changed["visible_lines"][2] = \
+                        changed["visible_lines"][2], changed["visible_lines"][1]
+                elif corruption == "alt-margin":
+                    changed_consoles["alt"]["lines"][3] = "ALT_A"
+                elif corruption == "restored":
+                    changed_consoles["restored"]["cells"][0][0] = (ord("X"), 7)
+                elif corruption == "history":
+                    changed["document_lines"].append("ALT_C")
+                elif corruption == "cursor":
+                    changed["cursor_row"] = (changed["cursor_row"] + 1) % changed["rows"]
+                elif corruption == "frame":
+                    changed["frame_matches_full"] = False
+                elif corruption == "missing-stage":
+                    del changed_consoles["restored"]
+                elif corruption == "host-limit":
+                    changed_consoles["final"]["lines"][1:4] = ["REGION_C", "REGION_D", "BOTTOM_FIXED"]
+                with self.subTest(repeat=repeat, corruption=corruption):
+                    with self.assertRaises(ValueError):
+                        validate_candidate_margins(changed, changed_consoles,
+                                                  b"" if corruption == "source" else source,
+                                                  transport.replace(b"\x1b[?1049h", b"\x1b[?1048h") if corruption == "transport" else transport)
 
     def test_real_unicode_scalar_preservation_and_glyphs(self):
         for repeat in range(2):

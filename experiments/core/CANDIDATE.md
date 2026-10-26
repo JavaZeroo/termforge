@@ -1,6 +1,6 @@
 # 候选 C++ 终端适配器
 
-`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.2` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
+`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.3` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
 
 ## 构建与验证
 
@@ -31,6 +31,8 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 
 `candidate-scroll` 通过真实辅助进程设置 DECSTBM 2;3r 并在区域底部连续换行，保存 before、region、final 的真实控制台状态。两轮[限定验证](../shell/results/2026-10-26-scroll-region/validation.json)要求区域外文字保持、C/D 位于正确区域、A/B 不混入主历史，光标与原生最终状态一致。ConPTY 的 transport 可能采用不同重绘方式，因此独立使用固定源 VT、原生阶段快照及 `pyte==0.8.2` 重放，不要求原样回显控制序列。origin/wrap、主/备用屏各自 margin 和 resize 交叉仍未验收。
 
+`candidate-margins` 固定主屏 `2;3r`、备用屏 `4;5r`，保存源 VT、四阶段真实控制台快照和 transport。[限定证据](../shell/results/2026-10-26-margin-state/validation.json)分别检查公开 feed 的主屏 margin 恢复、resize/RIS 边界与真实 ConPTY 的宿主差异。源 VT 的整段/逐字节候选回归通过；当前真实 ConPTY 只恢复主屏内容/样式/光标，未恢复主屏 margin，最终出现 `REGION_CIXED`，由 [#41](https://github.com/JavaZeroo/termforge/issues/41) 保留。真实观察返回 `margins_per_buffer_verified=false`，不是能力通过；源 LF 保持列与 transport 的 CRLF 分别核对，未修改输入或注入恢复命令。
+
 `candidate-unicode` 另以真实辅助进程输出固定分解组合、单 emoji、ZWJ 和 keycap，保存源字节、真实控制台 `CHAR_INFO`、ConPTY transport、候选单元格及实际 DWrite glyph。两轮[限定验证](../shell/results/2026-10-26-unicode-renderer/validation.json)要求原文保留、glyph 无缺字且布局不超出原网格；过宽文字只缩小字号。当前 ZWJ 分格和 keycap 宽度是观测结果，不是完整聚类合同；完整流式字素与宽度由 [#39](https://github.com/JavaZeroo/termforge/issues/39) 阻塞，不能将本场景写成完整 Unicode/IME 验收。
 
 原有 `runtime_observation` 也在候选适配构建运行，保留滚动后的逐行内容、retained/full RGB 一致、no-op 状态端点及会话清理断言。所有此类检查只使用自有窗口的 DIB，不截图，`presented_done` 仍未知。
@@ -39,4 +41,4 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 
 `candidate_core_test` 覆盖 whole/逐字节、Unicode/组合标记、备用屏恢复、真实光标回复、空载荷事件、稳定 ID/版本/淘汰、选择/搜索/HistoryViewport、软硬换行、滚动区、ED1/ED2、resize 和错误参数。新增真实 ConPTY 重放的唯一行身份、Find 增量收敛、整篇/局部选区、连续同步、历史合并/清空及超限释放检查。证据见[适配验证](results/2026-10-25-candidate-adapter/validation.json)和[resize/历史验证](results/2026-10-26-resize-replay/validation.json)。
 
-候选整合不表示 #27 已关闭；#29 的限定 resize/历史实现与证据不表示完整 R1 或 R2 已通过。完整 CTest 及 #36/#38 的原始失败在新记录同步；#28 的更多真实 TUI、#31 的 DPI/呈现、#35 的交付和性能验收保持开放。#37 的独立 Windows CI 验收已通过。
+候选整合不表示 #27 已关闭；#29 的限定 resize/历史实现与证据不表示完整 R1 或 R2 已通过。完整 CTest 及 #36/#38/#42 的原始失败在新记录同步；#28 的更多真实 TUI、#31 的 DPI/呈现、#35 的交付和性能验收保持开放。#37 的独立 Windows CI 验收已通过。
