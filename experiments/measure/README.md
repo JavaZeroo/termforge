@@ -2,6 +2,8 @@
 
 `core_measure` 使用原创固定输入与独立状态检查。v2 修正了 v1 将很多短轮次 CPU 差值相加的计量问题；`compare.py` 另提供自研/候选 project 与 interactive 成本诊断。解码、屏幕更新、历史仍未完整独立归因，不能据此判断 WindTerm 性能差距。R2 流式字素成本的受控定位与预算由 [#54](https://github.com/JavaZeroo/termforge/issues/54)承接，完整产品性能和跨目标基线仍按 [R4 工作包 #9](https://github.com/JavaZeroo/termforge/issues/9)验收。
 
+#54 的[测量前合同 v1](R54-COST.md)与 `r54_contract.py` 固定 `.3`/`.4` 源码、负载、相邻配对顺序、统计和预算决定程序；新增 Rust `--no-default-features` 测量构建可在编译期排除 allocator 包装。该准备仍缺实际两构建身份、受控重复测量和数值预算，不改变下述历史结果或性能边界。
+
 ```powershell
 # 先按 CONTRIBUTING.md 从仓库根目录构建。输出目录必须不存在。
 python experiments/measure/run.py --bin-dir build/bin/Release --out local/experiments/core-cost-v2-a --cpu-seconds 2 --repeats 3 --seed 20261023

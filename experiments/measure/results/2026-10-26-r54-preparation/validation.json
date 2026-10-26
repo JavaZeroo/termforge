@@ -1,0 +1,128 @@
+{
+  "schema": "termforge-r54-preparation-validation-v1",
+  "source_base_commit": "3d6d44d3b3e9a9a3e41da98e8711e9f19a211fd8",
+  "source_identity": "source_sha256 preserves tested checkout bytes at 56459cabd697f999547b0dec77e59fd0422c67c5; CI-only follow-up below is a separate identity",
+  "source_sha256": {
+    ".github/workflows/core-candidate.yml": "c758f8acc205b9bb0f5bca78e0505242c4695195425063ea96c6394d6b5c244e",
+    "CMakeLists.txt": "185832b2b503091d9e1a9538e120e27fa8d8bcf8c8a6804f062b46a57868d325",
+    "experiments/candidates/alacritty/Cargo.toml": "2b4be12e31053e65dabca8ca9c234a59b73ab2ab3e1520a6092c7dc94e12ffd7",
+    "experiments/candidates/alacritty/Cargo.lock": "896c6e60909d55d61fb26d277b1a98daf9245e8aee811caff37fc3e9d06ca627",
+    "experiments/candidates/alacritty/src/measure.rs": "701aecfd5bbd951434f7b8278b9efb700e7644c9eccfd19cec1b36aa6aeb3f8a",
+    "experiments/measure/run.py": "5643194c95c710790bee3a10e825cd338626222e88a9e2af194ad905b0718852",
+    "experiments/measure/r54_contract.py": "08c744f3d78e23439fecd8cc01348fdc1673c5397e16738266774fb49fbc76fa",
+    "experiments/measure/test_r54_contract.py": "7b242d92f6cb7d7c97d1174a1c21e25c0682fb576baa4b115d7162a597b1a95d",
+    "experiments/measure/R54-COST.md": "af52b1d7e19cee2d7f5d3da3a9503e7bf372ff32d5584d2d0408ade9edc0d289",
+    "experiments/measure/README.md": "6b898e0d938c7aba4c638ecee3e875a0eafca7a0001219c5c812d7c2938a16ba"
+  },
+  "core_version": "0.26.1-dev+termforge.4",
+  "builds": {
+    "wrapped": {
+      "binary_sha256": "8c7ef2b3ea1d56544536e9982c8fb3dfd8871584b45b750d46613ac298f1c95c",
+      "identity": {
+        "allocator_wrapper_compiled": true,
+        "projection_selectable": true,
+        "schema": "termforge-core-cost-build-v1",
+        "timing_gates_compiled": true
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "experiments/candidates/alacritty/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--jobs",
+        "1",
+        "--bin",
+        "alacritty-measure",
+        "--target-dir",
+        "local/r54-build/wrapped"
+      ],
+      "build_log_sha256": "1b5e7d536cd105428e67ac6c7f6ada1896bfa819ddf896481c4be3046b23b4d3"
+    },
+    "unwrapped": {
+      "binary_sha256": "8934c3150419c4a73b9adb6c434d3598a48bb8697747978611665af87b22f964",
+      "identity": {
+        "allocator_wrapper_compiled": false,
+        "projection_selectable": true,
+        "schema": "termforge-core-cost-build-v1",
+        "timing_gates_compiled": true
+      },
+      "command": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "experiments/candidates/alacritty/Cargo.toml",
+        "--release",
+        "--locked",
+        "--offline",
+        "--jobs",
+        "1",
+        "--bin",
+        "alacritty-measure",
+        "--no-default-features",
+        "--target-dir",
+        "local/r54-build/unwrapped"
+      ],
+      "build_log_sha256": "83d4fc1709141411d96f63a1d9f72c48c70d445cb89f46bfe0e49572f1d92587"
+    }
+  },
+  "test_scope": {
+    "pure_tests": 12,
+    "actual_build_mode_test": 1,
+    "real_measurement_calls": 8,
+    "routes": [
+      "project",
+      "interactive"
+    ],
+    "chunk": 4096,
+    "observes": [
+      0,
+      1
+    ],
+    "cpu_floor_seconds": 0.1,
+    "failures": 0,
+    "skipped": 0,
+    "checks": [
+      "both compile identities",
+      "warmup/final fixed full state",
+      "projection independent of allocator",
+      "null allocations in absent-wrapper mode",
+      "positive allocation counts only in wrapped observed mode",
+      "legacy and strict validator negatives",
+      "exclusive plan creation",
+      "failure evidence preservation"
+    ]
+  },
+  "test_log_sha256": "e1fb57272bbcbbdb820c3a89e0bb9dff52a59650b14c4213f239d152f8005a19",
+  "rustc": [
+    "rustc 1.92.0 (ded5c06cf 2025-12-08)",
+    "binary: rustc",
+    "commit-hash: ded5c06cf21d2b93bffd5d884aa6e96934ee4234",
+    "commit-date: 2025-12-08",
+    "host: x86_64-pc-windows-msvc",
+    "release: 1.92.0",
+    "LLVM version: 21.1.3"
+  ],
+  "cargo": "cargo 1.92.0 (344c4567c 2025-10-21)",
+  "limitations": [
+    "Host shared with root three-configuration CTest; no idle-host claim",
+    "Only .4 wrapper-on/off build sanity; pinned .3/.4 source-to-binary pair build manifests still pending",
+    "No formal performance batches or cost attribution",
+    "No numeric regression budget",
+    "Rust timing gates remain compiled; not a product-level uninstrumented baseline",
+    "No transport/input/presentation or product workflow acceptance"
+  ],
+  "original_12_cost_samples_changed": false,
+  "performance_gate": "not_evaluated",
+  "ci_followup": {
+    "first_failed_run": "https://github.com/JavaZeroo/termforge/actions/runs/40305230147",
+    "first_failure": "workflow did not instantiate jobs: runner context is unavailable in job-level env",
+    "correction_commit": "3e2ba43",
+    "correction": "derive executable suffix from matrix.os in job-level env",
+    "workflow_sha256": "ff68936d25ec3057fe780155bea663ec086aaff3819de7233894a8e63b75a05b",
+    "measurement_runtime_changed": false,
+    "validation": "new GitHub validation pending; no formal cost samples"
+  }
+}
