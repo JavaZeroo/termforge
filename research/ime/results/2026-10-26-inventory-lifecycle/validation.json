@@ -1,0 +1,671 @@
+{
+  "schema": "termforge-inventory-lifecycle-validation-v1",
+  "status": "local-and-ci-observed-root-cause-open",
+  "generated_utc": "2026-10-26T01:09:27.342568+00:00",
+  "issue": 40,
+  "base_commit": "27981d26e96a73a0625fc13a8d8546c13962cc9b",
+  "implementation_commit": "b9abcaba814dd9887bb589223841eda3aa99b8e6",
+  "source_sha256": {
+    "research/ime/test_hosted_inventory.py": "cbf2f9d27f80a92ee2f36283b7727e12a510f169b7e5c96fe6f8ab175513dee7",
+    "research/ime/inventory_hosted.py": "2d570beb20dc2da8821a0e425efa050a9c92f7455b59f56ed0a233f266aeb5f5",
+    "research/ime/inventory_worker.ps1": "fad4834bd9c5ac95cdc6ce85dc0254b334b9ef6ed458b48965353605ee39f565",
+    "experiments/conpty/run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329"
+  },
+  "scope": {
+    "pure_ast_fixture": true,
+    "live_inventory_or_ime_actions_executed": false,
+    "screenshots_or_user_desktop_input": false,
+    "original_timeout_seconds": 10,
+    "timeout_increased": false,
+    "owned_job_before_go": true,
+    "performance_or_ci_root_cause_claim": false,
+    "r2_complete": false,
+    "issue_40_closed": false
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "powershell": "5.1.26100.9444"
+  },
+  "ci_observations": [
+    {
+      "run_id": 40244057401,
+      "job_id": 121321793310,
+      "suite": "ime_inventory",
+      "result": "failed",
+      "elapsed_seconds": 45.07,
+      "log_sha256": "000295543d7f2bfea7a8d3942182c396de4e0410f198c8a54edff00422a6b6cb",
+      "failure": {
+        "kind": "TimeoutExpired",
+        "timeout_seconds": 10
+      }
+    },
+    {
+      "run_id": 40246531727,
+      "job_id": 121329169852,
+      "suite": "ime_inventory",
+      "result": "passed",
+      "elapsed_seconds": 12.56,
+      "log_sha256": "06c904c823273e1447ddfe98a60b9cbe3e36afe4379050b462c67024b4a7efc2"
+    },
+    {
+      "run_id": 40247449631,
+      "job_id": 121331925333,
+      "suite": "ime_inventory",
+      "result": "passed",
+      "elapsed_seconds": 14.2,
+      "log_sha256": "4b9036aa602a22aa5940bfe9b4c9d4c91f49103502be60655630faa76cbd7810"
+    }
+  ],
+  "local_repeats": [
+    {
+      "repeat": 0,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.3129999998491257,
+          "ready_seconds": 0.9069999998901039,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 133
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 163
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 181
+              }
+            ],
+            "ast_parse_milliseconds": 41
+          }
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.3590000001713634,
+          "ready_seconds": 0.9380000000819564,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 157
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 185
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 201
+              }
+            ],
+            "ast_parse_milliseconds": 48
+          }
+        }
+      }
+    },
+    {
+      "repeat": 2,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.3440000000409782,
+          "ready_seconds": 0.9370000001508743,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 142
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 167
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 184
+              }
+            ],
+            "ast_parse_milliseconds": 45
+          }
+        }
+      }
+    },
+    {
+      "repeat": 3,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.3900000001303852,
+          "ready_seconds": 0.9220000000204891,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 156
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 187
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 207
+              }
+            ],
+            "ast_parse_milliseconds": 52
+          }
+        }
+      }
+    },
+    {
+      "repeat": 4,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.3129999998491257,
+          "ready_seconds": 0.9069999998901039,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 125
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 155
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 173
+              }
+            ],
+            "ast_parse_milliseconds": 42
+          }
+        }
+      }
+    },
+    {
+      "repeat": 5,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.4840000001713634,
+          "ready_seconds": 1.0310000001918525,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 152
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 184
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 204
+              }
+            ],
+            "ast_parse_milliseconds": 45
+          }
+        }
+      }
+    },
+    {
+      "repeat": 6,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.4530000002123415,
+          "ready_seconds": 1.0310000001918525,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 155
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 188
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 207
+              }
+            ],
+            "ast_parse_milliseconds": 47
+          }
+        }
+      }
+    },
+    {
+      "repeat": 7,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.297000000020489,
+          "ready_seconds": 0.8910000000614673,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 127
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 154
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 170
+              }
+            ],
+            "ast_parse_milliseconds": 38
+          }
+        }
+      }
+    },
+    {
+      "repeat": 8,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.343000000109896,
+          "ready_seconds": 0.9220000000204891,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 146
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 175
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 193
+              }
+            ],
+            "ast_parse_milliseconds": 48
+          }
+        }
+      }
+    },
+    {
+      "repeat": 9,
+      "record": {
+        "fixture": "powershell-final-progress",
+        "lifecycle": {
+          "timeout_seconds": 10,
+          "elapsed_seconds": 1.2809999999590218,
+          "ready_seconds": 0.875,
+          "returncode": 0,
+          "reaped": true,
+          "timed_out": false,
+          "job_before_cleanup": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "job_after": {
+            "active": 0,
+            "total": 2,
+            "terminated": 0
+          },
+          "cleanup_errors": [],
+          "error": null,
+          "outcome": {
+            "status": "failed",
+            "states": [
+              "started",
+              "ended",
+              "failed"
+            ],
+            "state_timeline": [
+              {
+                "state": "started",
+                "elapsed_milliseconds": 135
+              },
+              {
+                "state": "ended",
+                "elapsed_milliseconds": 162
+              },
+              {
+                "state": "failed",
+                "elapsed_milliseconds": 178
+              }
+            ],
+            "ast_parse_milliseconds": 45
+          }
+        }
+      }
+    }
+  ],
+  "local_repeat_summary": {
+    "count": 10,
+    "ready_seconds_range": [
+      0.875,
+      1.0310000001918525
+    ],
+    "elapsed_seconds_range": [
+      1.2809999999590218,
+      1.4840000001713634
+    ],
+    "final_states": [
+      "started",
+      "ended",
+      "failed"
+    ],
+    "all_reaped_and_job_empty": true
+  },
+  "focused_tests": {
+    "command": "python -m unittest research.ime.test_hosted_inventory.WorkerContract.test_failed_final_progress_cannot_return_complete research.ime.test_hosted_inventory.WorkerContract.test_lifecycle_timeout_is_preserved_after_owned_cleanup -v",
+    "passed": 2,
+    "elapsed_seconds": 11.349
+  },
+  "synthetic_timeout": {
+    "exception": {
+      "kind": "TimeoutExpired",
+      "timeout_seconds": 10
+    },
+    "record": {
+      "fixture": "powershell-final-progress",
+      "lifecycle": {
+        "timeout_seconds": 10,
+        "elapsed_seconds": 10.0,
+        "ready_seconds": null,
+        "returncode": 99,
+        "reaped": true,
+        "timed_out": true,
+        "job_before_cleanup": {
+          "active": 2,
+          "total": 2,
+          "terminated": 0
+        },
+        "job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "cleanup_errors": [],
+        "error": null,
+        "outcome": null
+      }
+    }
+  },
+  "isolated_build_and_ctest": {
+    "worktree_base_commit": "27981d26e96a73a0625fc13a8d8546c13962cc9b",
+    "only_changed_file": "research/ime/test_hosted_inventory.py",
+    "test_source_sha256": "cbf2f9d27f80a92ee2f36283b7727e12a510f169b7e5c96fe6f8ab175513dee7",
+    "default": {
+      "build_passed": true,
+      "tests_passed": 39,
+      "tests_total": 40,
+      "elapsed_seconds": 309.18,
+      "failed_suites": [{"name": "shell", "issues": [36]}]
+    },
+    "candidate": {
+      "build_passed": true,
+      "tests_passed": 41,
+      "tests_total": 42,
+      "elapsed_seconds": 361.97,
+      "failed_suites": [{"name": "shell", "issues": [36, 38]}]
+    },
+    "ime_inventory": {
+      "passed_in_both_builds": true,
+      "default_elapsed_seconds": 41.62,
+      "candidate_elapsed_seconds": 41.88
+    },
+    "full_ctest_green": false,
+    "unrelated_margin_draft_included": false,
+    "local_hosted_skips_not_counted_as_passes": 3
+  },
+  "new_ci_revalidation": {
+    "implementation_commit": "b9abcaba814dd9887bb589223841eda3aa99b8e6",
+    "inventory_workflow": {
+      "run_id": 40253727745,
+      "job_id": 121350963428,
+      "conclusion": "success",
+      "tests_passed": 66,
+      "tests_elapsed_seconds": 26.382,
+      "original_timeout_seconds": 10,
+      "final_states": ["started", "ended", "failed"],
+      "ready_seconds": 2.218999999999994,
+      "elapsed_seconds": 3.9529999999999745,
+      "ast_parse_milliseconds": 73,
+      "process_reaped": true,
+      "job_active_after": 0,
+      "synthetic_timeout_negative_test_passed": true,
+      "read_only_inventory_completed": true,
+      "log_sha256": "1700f2a378335151ce986090804c626a322262dc42d19e36dbaa5ae69da85d7e"
+    },
+    "main_regression": {
+      "run_id": 40253727764,
+      "job_id": 121350963236,
+      "conclusion": "failure",
+      "windows_tests_passed": 39,
+      "windows_tests_total": 40,
+      "ime_inventory": {"result": "passed", "elapsed_seconds": 22.63},
+      "failed_suite": "shell",
+      "failure_scope": "workspace shells stage 4 and two selection fixture visibility checks",
+      "issue": 38,
+      "log_sha256": "ea2d03826d6c8f80e203d49ec1fdb39dbb35836d103bb44ae9c8f70e3243c793"
+    },
+    "root_cause_determined": false,
+    "issue_closed": false
+  },
+  "remaining_gaps": [
+    "原 CI 超时的启动、AST、调度或 worker 根因尚未确定；本机快速样本不构成修复证明。",
+    "已获取一次新专用 CI 的完整时间线，仍需重复复验，不能用旧提交或单次通过拼接成根因结论。",
+    "该纯 AST 夹具不执行真实语言配置、输入法或产品呈现。",
+    "#40 保持 OPEN；#38 和 #35 的原生阻塞不因本切片解除。"
+  ]
+}
