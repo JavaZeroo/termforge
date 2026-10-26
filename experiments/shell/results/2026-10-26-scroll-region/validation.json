@@ -1,0 +1,173 @@
+{
+  "schema": "termforge-scroll-region-validation-v1",
+  "source_commit": "d815e800e16962a309a96cd50b122295edc5f171",
+  "source_tree": "b63fcb82328d62e481a1e5db3f0112325b2adf0a",
+  "source_binding": "The fixture, scenario and independent checks were committed before the full regression. Documentation and this evidence are a separate follow-up.",
+  "scope": "Real DECSTBM local scrolling, fixed content outside the region, C/D placement and bounded history behavior. Origin/wrap, per-buffer margins, resize and the full #27 contract are excluded.",
+  "passed": false,
+  "scoped_validation_passed": true,
+  "scroll_region_verified": true,
+  "outside_preserved": true,
+  "local_scroll_history_verified": true,
+  "origin_and_wrap_modes_verified": false,
+  "margins_per_buffer_verified": false,
+  "resize_cross_verified": false,
+  "full_r1_regression_verified": false,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 local x64 10.0.26200",
+    "python": "build/r1-python/Scripts/python.exe",
+    "harness": "Owned non-input desktop and Job; no screenshots, foreground input or display-setting changes",
+    "raw_artifact_root": "build/r2-scroll-region-model",
+    "completion_handshake": "A test-only per-process named event holds the helper until candidate observations are saved"
+  },
+  "builds": {
+    "default": {"command": "cmake --build build --config Release", "passed": true},
+    "candidate": {"command": "cmake --build build/candidate-adapter --config Release", "passed": true}
+  },
+  "scenario": {
+    "command": "PYTHONUTF8=1 TERMFORGE_BIN_DIR=build/candidate-adapter/bin/Release TERMFORGE_TEST_ARTIFACTS=build/r2-scroll-region-model build/r1-python/Scripts/python.exe -m unittest experiments.shell.test_candidate_tui.CandidateTuiTests.test_real_scroll_region -v",
+    "rounds_passed": 2,
+    "tamper_cases_rejected": 16,
+    "original_scenario_timeout_seconds": 25,
+    "native_state_wait_bound_ms": 1000,
+    "source_bytes": 107,
+    "source_sha256": "f27448bdc7f3811e68ae5e6f9779d14409d179df55761b7b1355997d69afaff1",
+    "source_or_original_timeouts_changed": false,
+    "native_stage_roles": ["main-before", "main-region", "main-final"],
+    "snapshot_synchronization": "Actual native text and style are awaited before capture; a failed state still produces bounded failure evidence rather than a fabricated pass"
+  },
+  "native_console": {
+    "before_lines": ["TOP_FIXED", "REGION_A", "REGION_B", "BOTTOM_FIXED"],
+    "region_lines": ["TOP_FIXED", "REGION_C", "REGION_D", "BOTTOM_FIXED"],
+    "final_lines": ["TOP_FIXED", "REGION_C", "REGION_D", "BOTTOM_FIXED", "TF_SCROLL_DONE"],
+    "region_cursor": [8, 2],
+    "final_cursor": [0, 5],
+    "viewport_top": 0,
+    "rounds_with_identical_stage_hashes": 2,
+    "stage_hashes": {
+      "before": {
+        "text_sha256": "4279b6605b0fb08728ce75e50e7b24eaf2d75e39e3d44b12b0f41d2e6ba8343b",
+        "cells_sha256": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651"
+      },
+      "region": {
+        "text_sha256": "1efcd8e9f0115f766d76939f8b064916a377b1a743b885cbaeb0ed26edf6c1dd",
+        "cells_sha256": "d95325a590089c85fb157041eaf642c37b60397c255c488a79ad9477024d0805"
+      },
+      "final": {
+        "text_sha256": "46d087ab4e4053df72390eee4e196d5cf0751c18e0916f4d2dea754e79d8da5c",
+        "cells_sha256": "1d32db800943ecd561b04c5745469bac70affccf692cd860962a64633ed810de"
+      }
+    }
+  },
+  "candidate": {
+    "visible_lines_equal_native_final": true,
+    "discarded_rows_absent_from_retained_document": ["REGION_A", "REGION_B"],
+    "default_foreground": -1,
+    "default_background": -1,
+    "alternate_mode_enabled_at_end": false,
+    "cursor_matches_native_final": true,
+    "retained_frame_matches_full": true,
+    "presented_done": null
+  },
+  "transport": {
+    "model": "pyte==0.8.2",
+    "rounds_matching_native_final_and_cursor": 2,
+    "control_sequence_echo_required": false,
+    "reason": "ConPTY may use different repaints instead of serializing DECSTBM. Source VT, native stage snapshots and independent output replay are distinct evidence layers; the model is not original-command evidence.",
+    "rounds": [
+      {"round": 0, "bytes": 763, "sha256": "2d17c717c3efddd7cefb9ae13fcdb4c2641883892a86db64fccafaeb51b1eb16"},
+      {"round": 1, "bytes": 775, "sha256": "2723245973f8398bb1046e4d85269a30d55919657edeca2f933c86d26b8b13b7"}
+    ]
+  },
+  "targeted_regression": {
+    "candidate": {
+      "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure -R '^(candidate_core|candidate_shell_tui|runtime_observation|workflow_fixture|renderer_metrics|presentation)$'",
+      "passed": 6,
+      "failed": 0,
+      "seconds": 36.08
+    },
+    "default": {
+      "command": "ctest --test-dir build -C Release --output-on-failure -R '^(runtime_observation|workflow_fixture|renderer_metrics|presentation)$'",
+      "passed": 4,
+      "failed": 0,
+      "seconds": 29.80
+    }
+  },
+  "regression": {
+    "default": {
+      "command": "ctest --test-dir build -C Release --output-on-failure",
+      "status": "completed",
+      "exit_code": 8,
+      "total": 40,
+      "passed": 39,
+      "failed": 1,
+      "seconds": 312.22,
+      "shell_nested_errors": 2,
+      "shell_nested_skipped": 3,
+      "remaining_failures": [
+        "test_commands_unicode_editing_interrupt_and_normal_exit",
+        "test_resize_child_dimensions_and_interrupt"
+      ],
+      "existing_issue": 36,
+      "loads_or_timeouts_changed": false
+    },
+    "candidate": {
+      "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure",
+      "status": "completed",
+      "exit_code": 8,
+      "total": 42,
+      "passed": 41,
+      "failed": 1,
+      "seconds": 362.11,
+      "shell_nested_errors": 4,
+      "shell_nested_skipped": 3,
+      "remaining_failures": [
+        "test_close_during_continuous_output",
+        "test_close_while_resizing_continuous_output",
+        "test_commands_unicode_editing_interrupt_and_normal_exit",
+        "test_resize_child_dimensions_and_interrupt"
+      ],
+      "existing_issues": [36, 38],
+      "loads_or_timeouts_changed": false
+    }
+  },
+  "remote_ci": {
+    "candidate_workflow": {"run": 40246531754, "conclusion": "success"},
+    "default_workflow": {
+      "run": 40246531727,
+      "ubuntu": "success",
+      "windows": "failure",
+      "windows_total": 40,
+      "windows_passed": 39,
+      "windows_failed": 1,
+      "windows_seconds": 232.85,
+      "failed_suites": ["shell"],
+      "shell_issue": 38,
+      "inventory": "Passed in 12.56 seconds on this run; the earlier 10-second timeout is not resolved by this single success",
+      "inventory_issue": 40,
+      "previous_inventory_timeout_run": 40244057401,
+      "local_inventory_test_seconds": 1.633,
+      "inventory_root_cause": "Unresolved; pass/fail variation is observed without assigning an environment or product cause",
+      "timeout_or_skip_changes": false,
+      "logs_verified_through_rest_job_api": true
+    }
+  },
+  "binary_sha256": {
+    "default/termforge_shell.exe": "b8707da5fd5007513551c3ae751a3d907aa0dca57d4825277904df0adcba2b31",
+    "default/shell_text_client.exe": "a586c79b4d70fd855ec49d9a54ac52c7caa9c9055bfb77725603dc6345a02dc1",
+    "default/shell_test_launcher.exe": "3a0ccd7a936f106235ff6d45c4b8d2640763e018b645764b6b1717beb99d8e75",
+    "candidate/termforge_shell.exe": "336359e2ddfc0e39895e127b3c37c6add0fc2067f9056a6fcf4f0854825a04cc",
+    "candidate/shell_text_client.exe": "9bc2794a4cb2f87fe67ddebbdfd008e88117d2048a6efe22e05256b9657462c1",
+    "candidate/shell_test_launcher.exe": "98f55be477de81c057a5084ac8369f92bbba55f4c1b104d35eb10d8c7be67e0a"
+  },
+  "limitations": [
+    "This is a bounded DECSTBM scenario, not origin/wrap, independent alternate/main margins, resize-cross or full #27 acceptance. #28 remains blocked by #27.",
+    "The independent replay validates the actual output state, not the original command stream or WindTerm behavior. Transport is not required to echo control sequences.",
+    "The full R1/system regression is not green; known #36/#38/#40 failures and environment-specific evidence remain separate.",
+    "The retained DIB and frame comparison are not a presented-frame endpoint or physical-input result; presented_done remains null and no performance claim is made.",
+    "Raw private artifacts and third-party content are not published. Public fixed fixtures and sanitized hashes define the limited reproduction."
+  ]
+}
