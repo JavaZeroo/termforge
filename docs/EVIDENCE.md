@@ -8,9 +8,11 @@
 |---|---|
 | main 默认：自研核心 + 系统 ConPTY | R1 限定总验收和有限 VT/Unicode 子集；默认构建不需要 Rust |
 | main 显式候选：`termforge.4` + 系统 ConPTY | [固定来源/补丁台账](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)、[#39 字素合同](research/streaming-graphemes.md)；仅按已有合同验收 |
-| PR #50 实验：`termforge.3` + 固定官方 ConPTY | [Draft PR](https://github.com/JavaZeroo/termforge/pull/50) / [#47](https://github.com/JavaZeroo/termforge/issues/47)；尚未与 main `.4` 联合验证；[resize #51](https://github.com/JavaZeroo/termforge/issues/51)、[Console-width Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[确定性 sender fence #53](https://github.com/JavaZeroo/termforge/issues/53)仍开放，已有 completed 观察不构成部分发送取消验收 |
+| PR #50 实验：`termforge.4` + 固定官方 ConPTY | [Draft PR](https://github.com/JavaZeroo/termforge/pull/50) / [#47](https://github.com/JavaZeroo/termforge/issues/47)；[联合基线](research/joint-conpty-baseline.md)已固定，产品回归未全绿；[resize #51](https://github.com/JavaZeroo/termforge/issues/51)、[Console-width Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[确定性 sender fence #53](https://github.com/JavaZeroo/termforge/issues/53)仍开放，已有 completed 观察不构成部分发送取消验收 |
 
 R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分别只代表原记录。源 VT、原生控制台 CHAR_INFO、transport、末端状态、自有 DIB、绘制提交和真实呈现是不同检查点；未知端点保持未知。
+
+显式官方后端的旧 `.3` 实现及独立生命期/双 SHA 拒绝记录见[实验合同](research/experimental-conpty-backend.md)与[冻结验证](../experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)。联合源码 `3e5b96d` 的[三配置清单](../experiments/conpty/results/2026-10-26-joint-backend/validation.json)分别记录默认43/45、候选/system 48/48、显式官方46/48（shell套件超时，未完成项仍未知）；原resize/Vim各一红一绿、粘贴两红。新恢复/worker/工作区失败由 #61–#63 承接，旧失败不因其他轮成功变成通过。
 
 ## 产品能力的限定验收
 
@@ -44,6 +46,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 | controller B 正常结束后 cmd 退出未验收（#44） | [原失败脱敏记录](../experiments/shell/results/2026-10-26-controller-exit/validation.json)、[新退出诊断及有界重放](../experiments/shell/results/2026-10-26-controller-exit-observation/validation.json)、[关闭合同](https://github.com/JavaZeroo/termforge/issues/44) | 原 child 收完 32B、退出 0/join/Job0；cmd 只留下 close 后 0xC000013A，close 前未知。新观察分列输入、wait、pre-close 与清理；多轮未复现不构成历史修复，继续阻塞 #38。 |
 | 原 10 秒纯夹具超时的阶段保留（#40 未关闭） | [限定合同](research/inventory-timeout-checkpoints.md)、[正常与受控超时对照](../research/ime/results/2026-10-26-inventory-timeout-checkpoints/validation.json) | 保持原 10 秒期限；超时后保留有界阶段、原异常和回收。受控挂起对照已通过，但历史 CI 的阶段/根因仍未知，#40 不因此关闭。 |
 | 纯 AST 夹具的生命周期记录 | [#40](https://github.com/JavaZeroo/termforge/issues/40)、[计时、进度与回收验证](../research/ime/results/2026-10-26-inventory-lifecycle/validation.json)、[专用 CI 40253727745](https://github.com/JavaZeroo/termforge/actions/runs/40253727745) | 旧 10 秒 AST 夹具及专用 CI 记录启动、AST 和 Job0；原超时根因未确定。诊断增强见 #40 阶段保留，不由一次 CI 成功结项。 |
+| 原生 margin 逐字段合同与修复候选（#56 仍开放） | [合同、源码与路径](research/conpty-native-margin-path.md)、[独立 oracle](../experiments/conpty/margin_contract.py)、[固定运行](../experiments/conpty/results/2026-10-26-native-margin-path/validation.json) | 四阶段文字/格属性/光标独立判据；系统与官方原生 final 仍红，官方80列两次原5秒生命周期失败保留。共享单 margin 源码支持小 MIT fork 候选；patch 仅可应用，未编译、未运行、不计修复。 |
 | ConPTY 系统/固定官方后端的同源 margin A/B（#41、#47 未关闭） | [合同与第一方来源](research/conpty-margin-backends.md)、[固定 175B 与 16 case 结果](../experiments/conpty/results/2026-10-26-margin-backends/validation.json) | 相同 175B、两网格/两 mode/两 fresh：系统末端 margin 错，固定官方后端的末端正确；CHAR_INFO 仍错。禁用 VT 由窄屏反例拒绝；仅诊断可行性，不证明 PR #50 或 main 联合整合通过。 |
 | 工作区几何与交互的固定记录 | [#38](https://github.com/JavaZeroo/termforge/issues/38)、[工作区几何与输出验证](../experiments/shell/results/2026-10-26-workspace-geometry/validation.json)、[resize 限定证据](../experiments/core/results/2026-10-26-resize-replay/validation.json) | 固定 27f376d 的客户区/布局/输出、默认/候选恢复及窄屏记录；其完整回归仍有 #36/#38 红项，不代表当前所有配置或 R2 通过。 |
 | 短窗口选区夹具与 hosted 四 shell 前置（#38） | [固定锚点回归](../experiments/shell/test_shell.py)、[准备入口](../tools/prepare_hosted_shells.py)、[夹具收尾合同](research/hosted-wsl-fixture-cleanup.md)、[云端结果与剩余阻塞](https://github.com/JavaZeroo/termforge/issues/38) | 短窗口保留相同选择断言；仅指定一次性 hosted VM 准备固定 Ubuntu。夹具强制收尾与产品自然退出分列，未知归属/回收仍失败。 |

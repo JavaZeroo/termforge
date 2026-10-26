@@ -68,3 +68,6 @@ python -m unittest experiments.conpty.test_ctrl_c -v
 ## 每屏 margin 与可替换后端诊断
 
 `conpty_margin_probe` / `experiments.conpty.margin_run` 对同一固定175字节源检查四阶段真实 console capture、ConPTY EOF和候选末端。标准系统后端与固定官方 side-by-side ConPTY 的差异、关闭VT处理的窄网格反例、包身份及复现命令见[后端调查](../../docs/research/conpty-margin-backends.md)。这里只增加有界诊断，产品默认后端未改变；原生源控制台与末端结果分列，不能据末端正确关闭 #41 或宣布 R2 通过。
+
+`python -m experiments.conpty.margin_contract <capture-directory> --columns 80 --rows 24` 离线检查原175B的四阶段文字、逐格属性和光标；
+已知 native final 损坏会返回1。逐字段合同、保留的生命周期失败、固定上游原因和**未编译/未验证**的小补丁候选见[原生处理路径](../../docs/research/conpty-native-margin-path.md)。
