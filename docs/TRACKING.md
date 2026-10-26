@@ -57,6 +57,10 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 | Windows CI 回归 | [#40](https://github.com/JavaZeroo/termforge/issues/40) | 复核 `ime_inventory` 原 10 秒超时根因，保留 AST/最终进度与 OwnedJob 回收证据 | 无；作为 #38 的子项阻塞 #38，不能用本机或单次 CI 通过冒充修复 |
 | ConPTY margin 差异 | [#41](https://github.com/JavaZeroo/termforge/issues/41) | 裁决宿主/传输的每缓冲区 margin，保留原场景和独立实现证据 | #26；作为 #27 的子项阻塞 #27，不能以模型切片或差异观察代替产品验收 |
 | 显式官方 ConPTY 实验后端 | [#47](https://github.com/JavaZeroo/termforge/issues/47) | 固定同包 DLL/EXE 来源与身份，通过同一 Backend 验证实际 Session、GUI 和回收；不改变默认系统后端 | #41 的实现子项；仍需处理原生 API 与末端语义、resize、粘贴和完整工作流差异，不代表 #34 产品决定或 R2 出口 |
+| 实验后端连续 resize | [#51](https://github.com/JavaZeroo/termforge/issues/51) | 定位 stage43 的残留 OW 与 Unicode 重放差异，保持精确末端及子进程尺寸合同 | #47 的子项与阻塞；独立诊断可进行，不以裁尾通过 |
+| 实验后端 Vim | [#52](https://github.com/JavaZeroo/termforge/issues/52) | 定位最终 Console-width 下的 GUI stage59 与 native new-buffer 失败；早期 flags0 单独保留 | #47 的子项与阻塞；实际 resize、写盘、退出断言保留 |
+| 实验后端粘贴取消 | [#53](https://github.com/JavaZeroo/termforge/issues/53) | 原 3MB/768 checkpoint/16KiB 门槛下建立 sender 栅栏，验证未完成期取消与关闭 | #47 的子项与阻塞；不能把提前 completed 当作 cancelled |
+| 流式字素性能成本 | [#54](https://github.com/JavaZeroo/termforge/issues/54) | 以原 12 个诊断样本为起点冻结受控负载/端点/预算，定位 project/interactive 吞吐成本 | #34 的子项与阻塞；现有正确性不豁免性能，未建立 WindTerm 等价 |
 | More 尾部 ECH 与捕获时序 | [#42](https://github.com/JavaZeroo/termforge/issues/42) | [限定合同](research/more-capture-ech.md)：默认 ECH、完整 More 提示、q/退出/真实 EOF；候选 pending-wrap 差异保留给 #27 | 无；#38 的子项，与 margin 修复分开；完整原始输入和旧失败保留，不静默降级为 match |
 | controller 正常退出观测缺口 | [#44](https://github.com/JavaZeroo/termforge/issues/44) | 记录 wait_exit 与 close 前 cmd 状态，定位真实 child→cmd/close 转换 | 无；#38 的子项与出口阻塞；后续同合同重跑成功不覆盖原失败 |
 | 候选 GUI 合法空标题 | [#45](https://github.com/JavaZeroo/termforge/issues/45) | 修正空 UTF-8 转换，使用真实 console 标题事件验证 GUI 存活，并保留非法非空输入拒绝 | 无；#38 的子项；新最小复现与旧 normal-1 未定位异常分列 |

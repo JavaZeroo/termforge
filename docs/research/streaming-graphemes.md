@@ -51,6 +51,6 @@ cmake --build build/candidate-r39 --config Release
 ctest --test-dir build/candidate-r39 -C Release --output-on-failure
 ```
 
-性能仍有成本：同宿主交错的每路线 3 对、至少 1 秒 CPU 诊断中，project 吞吐中位数从 25.86 降至 21.66 MiB/s（约 16%），interactive 从 13.84 降至 12.54 MiB/s（约 9%）。原始 12 份样本和二进制身份全部保留；共享宿主、allocator 仍被包装的 observe=0，以及缺少呈现/传输/输入时延端点使它只能说明当前成本，不能作为性能验收通过或 WindTerm 等价。剩余成本交给 #34 的受控性能验收，不能由本项正确性证据豁免。
+性能仍有成本：同宿主交错的每路线 3 对、至少 1 秒 CPU 诊断中，project 吞吐中位数从 25.86 降至 21.66 MiB/s（约 16%），interactive 从 13.84 降至 12.54 MiB/s（约 9%）。原始 12 份样本和二进制身份全部保留；共享宿主、allocator 仍被包装的 observe=0，以及缺少呈现/传输/输入时延端点使它只能说明当前成本，不能作为性能验收通过或 WindTerm 等价。[#54](https://github.com/JavaZeroo/termforge/issues/54) 负责受控定位与预算，并阻塞 #34 的性能裁决；不能由本项正确性证据豁免。
 
 固定红/绿、规范数据哈希、源/二进制身份和实际场景结果见[验证记录](../../experiments/shell/results/2026-10-26-streaming-graphemes/validation.json)。本项不代表完整 IME、所有字体/脚本、真实跨屏、呈现完成或 WindTerm 性能等价；相关 R2 父项保持其独立出口。
