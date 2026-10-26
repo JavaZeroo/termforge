@@ -35,7 +35,7 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 
 ## R2执行切片
 
-以下覆盖[总项#7](https://github.com/JavaZeroo/termforge/issues/7)的全部工作包；详细范围、验收清单和实时状态只在对应 issue 维护。原生 sub-issue / blocked-by 是依赖关系的权威记录。
+以下覆盖[总项#7](https://github.com/JavaZeroo/termforge/issues/7)的全部工作包；出口与联合验收见 [R2 检查表](milestones/R2-local-terminal.md)，单项范围和实时状态在对应 issue 维护。原生 sub-issue / blocked-by 是依赖关系的权威记录。
 
 | 切片 | GitHub | 可验收交付 | 真实前置 |
 |---|---|---|---|

@@ -6,7 +6,7 @@
 |---|---|
 | 已经能做什么，离目标差在哪里？ | [功能与差异矩阵](FEATURES.md) |
 | 最终目标是什么，如何分阶段完成？ | [五个路标，远到近](PLAN.md) |
-| 下一阶段具体做哪些事情？ | [R2工作包与前置](PLAN.md)、[当前执行项](TRACKING.md) |
+| R2 还需完成什么、怎样验收？ | [R2 出口检查表](milestones/R2-local-terminal.md)、[当前执行项](TRACKING.md) |
 | 已验收的基础文字交互合同是什么？ | [R1 基础文字交互](milestones/R1-local-text.md) |
 | 字体、网格和真实显示如何验收？ | [R2 字体与显示合同](milestones/R2-font-display.md) |
 | 哪项可开工，谁阻塞谁？ | [GitHub 跟踪索引](TRACKING.md) |
