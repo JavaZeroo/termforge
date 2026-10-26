@@ -18,13 +18,18 @@
 
 原175字节 margin source、四阶段 native capture、区域外文字、主历史、光标、style 和 retained/full frame 均保留。新实验合同独立要求末端恢复 `REGION_C`、`REGION_D`、`BOTTOM_FIXED`，同时要求 native 继续显示已复现的 `REGION_CIXED`。源控制台与末端分列，#41 不关闭。默认 system 合同继续检查原始差异，没有删除旧失败或补发 VT。
 
-原 ESC resize 场景曾以宿主的 `CSI ?25h` 当 resize 完成信号。新宿主没有这个重绘副作用，原夹具超时。现在由真实 peer `GetConsoleScreenBufferInfo` 确认60×12并发出独立 ack，随后发送原单个 ESC；resize与输入共用原五秒预算，外层期限不变。真实 ESC 与 Vim/DSR/resize写盘场景均通过。
+原 ESC resize 场景曾以宿主的 `CSI ?25h` 当 resize 完成信号。新宿主没有这个重绘副作用，原夹具超时。现在由真实 peer `GetConsoleScreenBufferInfo` 确认60×12并发出独立 ack，随后发送原单个 ESC；resize与输入共用原五秒预算，外层期限不变。真实 ESC 两轮通过；Vim/DSR/resize写盘曾在早期flags0阶段通过两轮，不能将它用于证明最终Console-width策略通过。
 
-已通过的限定检查还包括主/备用屏、局部滚动、More完整提示→单q→EOF、四种本地shell/CWD/正常退出、基础cmd Unicode/编辑/Ctrl-C、Find、选择/zoom和split后台会话。不同源码阶段的结果分别保存，不把早期结果回写为最终同源码完整验收；固定正反结果及适用边界汇入本切片证据记录。
+最终C++源码固定在 `5030058`，随后 `0954fea` 只整合 margin Python 诊断的异常/清理修复。[公开验证记录](../../experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)包含15个源码文件的git blob哈希、四项二进制哈希、固定包/完整MIT身份、逐后端margin结果和白名单化的正反结果；未提交原始屏幕、transport或路径。
+
+最终Console-width构建的后端生命期/拒绝检查6/6、margin诊断清理检查9/9、既有TUI检查5/6；TUI中ESC、主/备用屏、局部滚动、每屏margin和完整Unicode各两轮通过。基础cmd Unicode/编辑/Ctrl-C/正常退出三轮、四种本地shell/CWD/退出两轮、持续输出关闭三轮通过。More子阶段完整提示→单q→EOF通过，但包含Vim的整套native capture失败，不能将More成功表述成整套通过。
+
+Find、选择/zoom、split后台会话以及flags0的Vim/完整native capture是较早源码阶段的限定结果。不同阶段分别保存，不把早期结果回写为最终同源码完整验收；`runtime_observation_test`此次仅构建，未执行。
 
 ## 仍未闭环的真实差异
 
 - **连续 GUI resize。** 原 `resize` 场景在stage43等待精确 `TF_SIZE_100x28`，末端实际出现 `TF_SIZE_100x28OW`，并有旧文字/位置及重放后的 Unicode 差异。Console width并未修复。没有删除尾部、替换source或放宽行匹配；需要裁决候选 resize/reflow 与新宿主同步VT/原生API状态的交叉。
+- **Vim兼容。** 最终Console-width构建在原stage59没有得到resize事件文件，命令出现在插入文字中；同批6项TUI检查为5通过、1失败，失败项第二轮未运行。独立native real-app capture也在 `new-buffer` 阶段失败，返回1，editor字节数1999；外层Job仍归零。没有改成睡眠、跳过Vim或降低既有事件文件断言，早期flags0的成功与本次失败分列。
 - **粘贴并发时序。** 原 3MB 请求、768字节 receiver checkpoint和持续输出均保留，但新宿主在GUI看到checkpoint前已经接收全部输入，transfer为completed。这个运行不能证明未完成期的Cancel/关闭行为。不能把completed当cancelled，也不能仅降低原16KiB阈值；需要保持原负载与独立回收断言的确定性sender进度栅栏，再验证实际产品取消。
 - **源 native margin。** 固定新包仍未修复 native readback 的每屏 margin；末端正确不替代原生API或依赖它的应用验证。
 - **出口。** 尚无该实验后端的完整R1同次工作流、实际IME/跨屏、长期资源、性能或WinTerm对照结论；默认Alpha、#34产品决定、#35和R2范围均未改变。
