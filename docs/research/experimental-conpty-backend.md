@@ -26,6 +26,12 @@
 
 Find、选择/zoom、split后台会话以及flags0的Vim/完整native capture是较早源码阶段的限定结果。不同阶段分别保存，不把早期结果回写为最终同源码完整验收；`runtime_observation_test`此次仅构建，未执行。
 
+## #50 评审后的测试监督器修订
+
+独立 Standards/Spec 评审确认 `test_backend.py` 的异常清理可能覆盖原始超时，并跳过 Job 关闭和记录；目录准备失败也会泄漏提前创建的 Job。修订先准备目录，再取得 Job；assignment 失败只杀仍等待 GO 的自有根进程，不发送 GO。终止、排空、Job 观察、关闭和写盘分别保障，所有清理等待共用原五秒预算；未知观察保留 `null`，首次非零 Job 与强制清理后的观察分列，不能归零后转为通过。
+
+原实现的六组纯异常负例先复现失败，修复后再加入证据/summary 写盘失败边界，`BackendCleanupFailureTests` 共8/8通过，且不受 Windows skip 限制。现有真实 `BackendTests` 6/6再跑通过（7次调用，含同包两文件各自篡改拒绝）；只复用已构建二进制和固定包。此次只修改测试监督器，不改变产品后端和下列已知红项，也不重写前述固定源码的历史验证记录。
+
 ## 仍未闭环的真实差异
 
 - **连续 GUI resize。** 原 `resize` 场景在stage43等待精确 `TF_SIZE_100x28`，末端实际出现 `TF_SIZE_100x28OW`，并有旧文字/位置及重放后的 Unicode 差异。Console width并未修复。没有删除尾部、替换source或放宽行匹配；需要裁决候选 resize/reflow 与新宿主同步VT/原生API状态的交叉。
