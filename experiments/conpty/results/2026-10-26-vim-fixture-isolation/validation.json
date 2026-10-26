@@ -13,11 +13,12 @@
   },
   "binary_sha256": {
     "old_capture": "6203c2a5ddaebf756d959456265aa64d21f9286c59730123709211120dee7941",
-    "fixed_capture": "9d0d8d186f024993915465fc52d4f9e4cba34a014baee831a96d5611b0c7e10d"
+    "fixed_capture": "9d0d8d186f024993915465fc52d4f9e4cba34a014baee831a96d5611b0c7e10d",
+    "gui_original": "54105cbfc5ac7ab34fb6d18ba2672d06ed5c187bebeaee803322084e323a9c72"
   },
   "source_files": {
-    "experiments\\conpty\\real_app_capture.cpp": "14579e51ab1f11967634e491b0e430f4cb29d370e2be6d6a67d7f3bc77655075",
-    "experiments\\differential\\test_real_app_matrix.py": "7182266c031682f422529a851726ac653b85ef6f9ca05aaab3cd21559e2764fb"
+    "experiments/conpty/real_app_capture.cpp": "14579e51ab1f11967634e491b0e430f4cb29d370e2be6d6a67d7f3bc77655075",
+    "experiments/differential/test_real_app_matrix.py": "7182266c031682f422529a851726ac653b85ef6f9ca05aaab3cd21559e2764fb"
   },
   "unchanged_contract": {
     "capture_outer_seconds": 60,
@@ -191,7 +192,13 @@
         "total": 9,
         "terminated": 0
       },
-      "desktop_gone": true
+      "desktop_gone": true,
+      "evidence_sha256": {
+        "candidate-output.bin": "c8b801ffa250aa2360d19cb671feb6540d6f652a47e3801f50f7ed1ae23c9f60",
+        "candidate-insert-log.txt": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a",
+        "candidate-resize-log.txt": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7",
+        "candidate-startup-log.txt": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+      }
     },
     {
       "passed": false,
@@ -201,7 +208,13 @@
         "total": 7,
         "terminated": 0
       },
-      "desktop_gone": true
+      "desktop_gone": true,
+      "evidence_sha256": {
+        "candidate-output.bin": "fc43e5c356005f9c32847476d4bdba5fabaf51439083d8ac4e530d3e8bb5c883",
+        "candidate-insert-log.txt": "e6de4daeba1841783e7e22f81dbf87154f341c309dc5b54405e5fc2c2f3550a6",
+        "candidate-resize-log.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "candidate-startup-log.txt": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+      }
     }
   ],
   "limitations": [
@@ -209,5 +222,21 @@
     "Historical frozen joint baseline is unchanged",
     "Capture exit_code91 is forced cleanup after new-buffer assertion failed; it is not a natural Vim exit",
     "No full current official CTest matrix, actual presentation or complete TUI acceptance is claimed"
-  ]
+  ],
+  "full_real_app_matrix": {
+    "candidate": "alacritty_terminal",
+    "version": "0.26.1-dev+termforge.4",
+    "capture_sha256": "9d0d8d186f024993915465fc52d4f9e4cba34a014baee831a96d5611b0c7e10d",
+    "core_trace_sha256": "44265fcaf1d54103eff1731c5c49cd5cca39c635ff303f2a6659c6b4ac63048e",
+    "candidate_trace_sha256": "9fd9c962e9837f2e764d91973f192f8ad77110020656d44350a9329d521828b4",
+    "runs": 3,
+    "counts": {
+      "match": 3
+    },
+    "execution_passed": true,
+    "real_application_covered": true,
+    "semantic_acceptance": false,
+    "presented_done": null,
+    "summary_sha256": "cced694562a16395e0d25cbad4a70ea639aabc9df49188351cae782f05d20c47"
+  }
 }
