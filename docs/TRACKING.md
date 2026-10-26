@@ -65,7 +65,7 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 1. **按已定核心路线整合。** [#23](https://github.com/JavaZeroo/termforge/issues/23) 已冻结[平台、架构与声明的最低系统边界](../research/windterm-2.7.0-platform-scope.md)，#24/#25 已完成候选构建与共同轨迹；#26 已形成 [ADR-0003 决定](adr/0003-core-reference-and-reuse.md)。#27 的 termforge.3 已完成兼容补丁和 [C++ 拥有值适配](../experiments/core/CANDIDATE.md)，共同矩阵 95 次一致，ID/版本/淘汰、选择/搜索/视口已独立验证；显式候选 ShellWindow 与有界输入队列已验证，默认构建保留自研回退；origin/wrap、#41 的宿主 margin 和完整 R1 回归仍待完成。
 2. **并行推进独立的显示与会话切片。** [#31](https://github.com/JavaZeroo/termforge/issues/31) 已形成[字体/显示合同](milestones/R2-font-display.md)，完成实际 glyph/fallback、私有字体度量/缺失资产检查及两台 96-DPI 显示器的[真实往返证据](../experiments/shell/results/2026-10-24-r2-monitor-font/validation.json)；不同 DPI 与实际呈现保持 OPEN。[#32](https://github.com/JavaZeroo/termforge/issues/32) 已交付[四种固定本地 shell 生命周期](../experiments/shell/results/2026-10-24-r2-shell-lifecycle/validation.json)及[主区一个真实左右分屏](../experiments/shell/results/2026-10-24-r2-main-split/validation.json)；任意嵌套、拖放/搜索/颜色和分屏持久化继续后续。
 3. **按依赖整合用户结果。** 核心路线决定后推进 #27–#30，#32 后推进 #33；真实工作流齐备后由 #34 决定产品架构，最终由 #35 验收完整开发版，不能以单项成功替代 #7 出口。
-4. **持续保留R1系统回归。** 基础动作、五组IME与同次八会话真实工作流分开运行，再核原始字节、目标、阶段资源和回收。当前 [#36](https://github.com/JavaZeroo/termforge/issues/36) 保留 normal/resize 的真实失败，[输入机制研究](research/conpty-ctrl-c-input.md)确认 ETX 正确，并把未决点收窄到洪流写入与 conhost 控制分派之间；它是 #35 的出口前置，不能用本机跳过或旧证据替代修复后的新源码验收。
+4. **持续保留R1系统回归。** 基础动作、五组IME与同次八会话真实工作流分开运行，再核原始字节、目标、阶段资源和回收。[#36](https://github.com/JavaZeroo/termforge/issues/36) 保留 normal/resize 的历史失败；本次未修改产品代码的复验和旧探针原二进制均通过，原因仍未知。[受监督原始 ConPTY 回归](../experiments/conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)固定完整负载、单次 ETX、后续命令与回收，未独立验收原生处理函数；它是 #35 的出口前置，不能把未复现写成已修复。
 5. **保持性能与UI调查并行。** 正式WindTerm基线、观测扰动、实际呈现和长期稳定继续按下表推进；真实跨屏、UI其余状态和空面板能力仍按后续合同交付。停止的手工批次不自动补跑。
 
 未提交草稿和未完成的系统验收均不计入交付。开工前核对工作树，保留已有草稿并明确归属；文档整理本身不解除功能验收门槛。
@@ -76,7 +76,7 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 |---|---|---|
 | 全量 2.7.0 目标/平台台账 | [#19](https://github.com/JavaZeroo/termforge/issues/19) | R5 的验收基础，继续并行推进；平台切片 #23 已完成[范围台账](../research/windterm-2.7.0-platform-scope.md)，其余功能域和运行观察未因此完成；声明、已观察和未知继续分开 |
 | 实际外部核心候选与 ADR-0003 重审 | [#20](https://github.com/JavaZeroo/termforge/issues/20) | 核心关卡已完成；R2 新能力按 ADR-0003 复用候选核心，产品整合由 #27–#35 验收 |
-| Windows candidate Vim 捕获 | [#37](https://github.com/JavaZeroo/termforge/issues/37) | 保留 `editor wq lifecycle failed` 和后续步骤未运行事实；不得跳过真实应用门禁或据此关闭 R2 路标 |
+| Windows candidate Vim 捕获 | [#37](https://github.com/JavaZeroo/termforge/issues/37) | 已按事件文件握手及[双平台 CI](https://github.com/JavaZeroo/termforge/actions/runs/40190890251)限定关闭；原失败保留，更多 TUI 与 R2 出口另验收 |
 | Server 2022 ConPTY 稳态 +1 句柄问题 | [#21](https://github.com/JavaZeroo/termforge/issues/21) | R4，保留严格探针和已知失败，不扩大支持声明 |
 | 自动观测、开销校准、完整记录 Schema | [#3](https://github.com/JavaZeroo/termforge/issues/3) | R4 收敛，工具工作可提前推进；停止的手工批次不补跑 |
 | 正式 WindTerm 性能基线 | [#4](https://github.com/JavaZeroo/termforge/issues/4) | R4，依赖 #3；节流/交互驱动、正确性、无插桩对照与重复批次仍需完成 |
