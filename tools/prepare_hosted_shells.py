@@ -45,6 +45,12 @@ def require_hosted(environment):
         raise PreparationError("hosted_guard")
 
 
+def public_hosted_provenance(environment):
+    require_hosted(environment)
+    return {"image_os": environment["ImageOS"], "image_version": environment["ImageVersion"],
+            "github_run_id": environment["GITHUB_RUN_ID"]}
+
+
 def require_paths(workspace, out):
     workspace, out = Path(workspace).resolve(), Path(out).resolve()
     if workspace != ROOT or out == workspace / "local" or not out.is_relative_to(workspace / "local"):
@@ -329,7 +335,8 @@ def run_step(step, out):
                     cleanup["members"] = audit.members
                     cleanup["verified_wsl_helper_count"] = sum(
                         member["role"] == "windows-wsl-host" and
-                        member["exact_job_membership_verified"] and member["query_error"] == 0
+                        member["exact_job_membership_verified"] and member["membership_query_error"] == 0 and
+                        member["image_query_error"] == 0
                         for member in audit.members)
                     write_json(private / "cleanup-members.json", audit.private)
                     if cleanup["job_before"]["active"]:
@@ -345,7 +352,7 @@ def run_step(step, out):
                         record.update(status="failed", failure_code="cleanup_failed")
                     if cleanup["job_before"]["active"]:
                         if helper_cleanup_accepted(step, record["status"] == "passed", cleanup):
-                            cleanup["helper_cleanup_policy"] = "owned-wsl-host-fixture-v1"
+                            cleanup["helper_cleanup_policy"] = "owned-disposable-wsl-check-tree-v1"
                         else:
                             cleanup["helper_cleanup_policy"] = "unverified-remaining-members"
                             record.update(status="failed", failure_code="cleanup_failed")
@@ -371,10 +378,10 @@ def run_step(step, out):
     return record
 
 
-def prepare(out):
+def prepare(out, *, hosted_provenance=None):
     report = {"schema": SCHEMA, "status": "failed", "fixed_import_rootfs_version": ROOTFS_VERSION,
               "fixed_import_rootfs_sha256": ROOTFS_SHA256, "rootfs_verified": False,
-              "steps": [], "failure_code": "none"}
+              "hosted_provenance": hosted_provenance, "steps": [], "failure_code": "none"}
     def step(name):
         record = run_step(name, out)
         report["steps"].append(record)
@@ -431,7 +438,7 @@ def main():
         print(json.dumps({"schema": SCHEMA, "status": "failed", "failure_code": "preparation_guard"}))
         return 2
     try:
-        report = prepare(out)
+        report = prepare(out, hosted_provenance=public_hosted_provenance(os.environ))
     except Exception:
         print(json.dumps({"schema": SCHEMA, "status": "failed", "failure_code": "preparation_exception"}))
         return 1

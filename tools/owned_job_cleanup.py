@@ -1,9 +1,8 @@
 """Read-only identity audit of one already-owned Job; never enumerate global processes.
 
 API contract: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-jobobject_basic_process_id_list
-WSL role: https://github.com/microsoft/WSL/blob/master/doc/docs/technical-documentation/wslhost.exe.md
-The WSL source explains background hosting, not the cause of any observed residue.
-Accepting an audited host for this disposable fixture is an explicit test policy.
+Fixture policy and limits: docs/research/hosted-wsl-fixture-cleanup.md
+Image identity is diagnostic; exact Job membership and actual exit are cleanup evidence.
 """
 from __future__ import annotations
 
@@ -52,26 +51,30 @@ class JobMembers:
         self.pids = self.process_ids()
         try:
             for index, pid in enumerate(self.pids):
-                public = {"member": index, "role": "root-worker" if pid == root_pid else "unknown",
+                public = {"schema": "termforge-owned-job-member-v2", "member": index,
+                          "role": "root-worker" if pid == root_pid else "unknown",
                           "exact_job_membership_verified": False, "image_scope": "unverified",
-                          "query_error": 0, "exited_after_cleanup": None, "exit_code_after_cleanup": None}
+                          "membership_query_error": None, "image_query_error": None, "exit_query_error": None,
+                          "exited_after_cleanup": None, "exit_code_after_cleanup": None}
                 private = {"member": index, "pid": pid, "image": None}
                 self.members.append(public); self.private.append(private)
                 handle = self.api.OpenProcess(0x1000 | 0x00100000, False, pid)
                 self.handles.append(handle)
                 if not handle:
-                    public["query_error"] = ctypes.get_last_error()
+                    public["membership_query_error"] = ctypes.get_last_error() or 1
                     continue
                 contained = wintypes.BOOL()
                 if not self.api.IsProcessInJob(handle, job.handle, ctypes.byref(contained)) or not contained.value:
-                    public["query_error"] = ctypes.get_last_error() or 1
+                    public["membership_query_error"] = ctypes.get_last_error() or 1
                     continue
                 public["exact_job_membership_verified"] = True
+                public["membership_query_error"] = 0
                 image = ctypes.create_unicode_buffer(32768)
                 count = wintypes.DWORD(len(image))
                 if not self.api.QueryFullProcessImageNameW(handle, 0, image, ctypes.byref(count)):
-                    public["query_error"] = ctypes.get_last_error()
+                    public["image_query_error"] = ctypes.get_last_error() or 1
                     continue
+                public["image_query_error"] = 0
                 private["image"] = image.value
                 if pid != root_pid:
                     public["role"], public["image_scope"] = image_role(image.value, system.value, os.environ["ProgramFiles"])
@@ -105,15 +108,16 @@ class JobMembers:
             remaining = max(0, int((deadline-time.monotonic())*1000))
             state = self.api.WaitForSingleObject(handle, remaining)
             if state not in (0, 258):
-                public["query_error"] = ctypes.get_last_error() or 1
+                public["exit_query_error"] = ctypes.get_last_error() or 1
                 continue
             public["exited_after_cleanup"] = state == 0
             if state == 0:
                 code = wintypes.DWORD()
                 if self.api.GetExitCodeProcess(handle, ctypes.byref(code)):
                     public["exit_code_after_cleanup"] = code.value
+                    public["exit_query_error"] = 0
                 else:
-                    public["query_error"] = ctypes.get_last_error() or 1
+                    public["exit_query_error"] = ctypes.get_last_error() or 1
 
     def close(self):
         for handle in self.handles:
@@ -126,14 +130,15 @@ def helper_cleanup_accepted(step, successful_worker, cleanup):
     """Fixture-only policy; product shell normal-exit contracts are unaffected."""
     before, after = cleanup.get("job_before"), cleanup.get("job_after")
     members = cleanup.get("members", [])
-    return (step in ("check-before", "check-after") and successful_worker and
+    return (step in ("check-before", "check-after") and successful_worker is True and
             cleanup.get("root_natural_exit") is True and cleanup.get("root_reaped") is True and
-            cleanup.get("root_exit_code") == 0 and cleanup.get("membership_stable") is True and
+            cleanup.get("root_exit_code") == 0 and cleanup.get("root_direct_kill_requested") is False and
+            cleanup.get("membership_stable") is True and isinstance(members, list) and bool(members) and
             isinstance(before, dict) and isinstance(after, dict) and before.get("active", 0) > 0 and
             before["active"] == len(members) and after.get("active") == 0 and
             cleanup.get("job_after_pid_count") == 0 and cleanup.get("job_termination_requests") == 1 and
-            all(member.get("role") == "windows-wsl-host" and
-                member.get("image_scope") in ("system32", "program-files-wsl") and
-                member.get("exact_job_membership_verified") is True and member.get("query_error") == 0 and
+            cleanup.get("member_cleanup_requested_count") == len(members) and
+            all(isinstance(member, dict) and member.get("exact_job_membership_verified") is True and
+                member.get("membership_query_error") == 0 and member.get("exit_query_error") == 0 and
                 member.get("exited_after_cleanup") is True and
                 type(member.get("exit_code_after_cleanup")) is int for member in members))

@@ -14,11 +14,33 @@ from tools.owned_job_cleanup import JobMembers, helper_cleanup_accepted, image_r
 
 def known_host():
     return {"member": 0, "role": "windows-wsl-host", "image_scope": "system32",
-            "exact_job_membership_verified": True, "query_error": 0,
+            "exact_job_membership_verified": True, "membership_query_error": 0,
+            "image_query_error": 0, "exit_query_error": 0,
             "exited_after_cleanup": True, "exit_code_after_cleanup": 99}
 
 
 class CleanupPolicyTests(unittest.TestCase):
+    def test_image_query_failure_is_not_failure_to_reap_an_owned_fixture_tree(self):
+        # Sanitized facts from CI 40265785235: these are policy inputs only.
+        # No hosted environment is exported and no WSL command runs here.
+        members = [{**known_host(), "member": index, "role": "unknown", "image_scope": "unverified",
+                    "membership_query_error": 0, "image_query_error": 31,
+                    "exit_query_error": 0} for index in range(2)]
+        cleanup = {"root_natural_exit": True, "root_reaped": True, "root_exit_code": 0,
+                   "root_direct_kill_requested": False, "membership_stable": True,
+                   "job_before": {"active": 2, "total": 26, "terminated": 0},
+                   "job_after": {"active": 0, "total": 26, "terminated": 0}, "job_after_pid_count": 0,
+                   "job_termination_requests": 1, "member_cleanup_requested_count": 2, "members": members}
+        self.assertTrue(helper_cleanup_accepted("check-before", True, cleanup))
+        self.assertTrue(helper_cleanup_accepted("check-after", True, cleanup))
+        self.assertEqual([member["role"] for member in cleanup["members"]], ["unknown", "unknown"])
+        self.assertEqual([member["image_query_error"] for member in cleanup["members"]], [31, 31])
+        for field, value in (("membership_query_error", 5), ("exit_query_error", 5),
+                             ("exact_job_membership_verified", False), ("exited_after_cleanup", False)):
+            with self.subTest(field=field):
+                bad = copy.deepcopy(cleanup); bad["members"][0][field] = value
+                self.assertFalse(helper_cleanup_accepted("check-before", True, bad))
+
     def test_image_name_alone_never_qualifies_an_unknown_helper(self):
         for image in (r"D:\synthetic\wslhost.exe", r"C:\Windows\System32\init",
                       r"C:\Windows\System32\wsl.exe", r"D:\synthetic\init"):
@@ -27,21 +49,23 @@ class CleanupPolicyTests(unittest.TestCase):
         self.assertEqual(image_role(r"C:\Windows\System32\wslhost.exe", r"C:\Windows\System32",
                                     r"C:\Program Files"), ("windows-wsl-host", "system32"))
 
-    def test_only_verified_check_helpers_can_use_fixture_cleanup_policy(self):
+    def test_only_owned_and_reaped_check_trees_can_use_fixture_cleanup_policy(self):
         good = {"root_natural_exit": True, "root_reaped": True, "root_exit_code": 0,
+                "root_direct_kill_requested": False, "member_cleanup_requested_count": 1,
                 "membership_stable": True, "job_before": {"active": 1, "total": 3, "terminated": 0},
                 "job_after": {"active": 0, "total": 3, "terminated": 0}, "job_after_pid_count": 0,
                 "job_termination_requests": 1, "members": [known_host()]}
         self.assertTrue(helper_cleanup_accepted("check-before", True, good))
         self.assertTrue(helper_cleanup_accepted("check-after", True, good))
         for field, value in (("root_natural_exit", False), ("root_reaped", False), ("root_exit_code", 99),
+                             ("root_direct_kill_requested", True), ("member_cleanup_requested_count", 0),
                              ("membership_stable", False), ("job_after_pid_count", 1),
                              ("job_termination_requests", 2), ("members", []), ("job_after", {"active": 1})):
             with self.subTest(field=field):
                 bad = copy.deepcopy(good); bad[field] = value
                 self.assertFalse(helper_cleanup_accepted("check-before", True, bad))
-        for field, value in (("role", "unknown"), ("image_scope", "unverified"),
-                             ("exact_job_membership_verified", False), ("query_error", 5),
+        for field, value in (("exact_job_membership_verified", False), ("membership_query_error", 5),
+                             ("exit_query_error", 5),
                              ("exited_after_cleanup", False), ("exit_code_after_cleanup", None)):
             with self.subTest(member_field=field):
                 bad = copy.deepcopy(good); bad["members"][0][field] = value
@@ -74,10 +98,11 @@ class CleanupPolicyTests(unittest.TestCase):
         self.assertEqual(result["cleanup"]["root_exit_code"], 0)
         self.assertEqual(result["cleanup"]["job_before"]["active"], 1)
         self.assertEqual(result["cleanup"]["job_after"]["active"], 0)
-        self.assertEqual(result["cleanup"]["helper_cleanup_policy"], "owned-wsl-host-fixture-v1")
+        self.assertEqual(result["cleanup"]["helper_cleanup_policy"], "owned-disposable-wsl-check-tree-v1")
         job.terminate.assert_called_once()
         unknown, _ = self.fixture_run(role="unknown")
-        self.assertEqual((unknown["status"], unknown["failure_code"]), ("failed", "cleanup_failed"))
+        self.assertEqual(unknown["status"], "passed")
+        self.assertEqual(unknown["cleanup"]["members"][0]["role"], "unknown")
         failed_worker, _ = self.fixture_run(root_code=7)
         self.assertEqual(failed_worker["status"], "failed")
 

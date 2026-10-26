@@ -11,6 +11,16 @@ from tools import prepare_hosted_shells as prep
 
 
 class HostedShellPreparationTests(unittest.TestCase):
+    def test_public_provenance_is_guarded_and_contains_only_safe_runner_identity(self):
+        facts = {"GITHUB_ACTIONS": "true", "RUNNER_ENVIRONMENT": "github-hosted", "RUNNER_OS": "Windows",
+                 "GITHUB_REPOSITORY": "JavaZeroo/termforge", "ImageOS": "win25",
+                 "ImageVersion": "20261024.1.0", "GITHUB_RUN_ID": "123456",
+                 "PRIVATE_TEST_TOKEN": "synthetic-never-publish", "PRIVATE_TEST_PATH": "synthetic-never-publish"}
+        self.assertEqual(prep.public_hosted_provenance(facts),
+                         {"image_os": "win25", "image_version": "20261024.1.0", "github_run_id": "123456"})
+        with self.assertRaises(prep.PreparationError):
+            prep.public_hosted_provenance({**facts, "RUNNER_ENVIRONMENT": "self-hosted"})
+
     def test_exact_hosted_guard_rejects_other_hosts_and_repositories(self):
         # A plain mapping is only input to the pure guard. It is never exported
         # into os.environ or used to call a worker or a subprocess.
