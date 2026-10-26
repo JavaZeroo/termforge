@@ -7,6 +7,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import time
 
 from experiments.build_paths import binary
 from experiments.candidates.alacritty.run import run_trace
@@ -112,39 +113,133 @@ def execute(executable, backend, trace, out, mode, columns, rows, *, gate=b"GO\n
     if mode not in ("vt-on", "vt-off") or (columns, rows) not in ((80,24), (12,7)):
         raise ValueError("fixed workload required")
     out.mkdir(parents=True, exist_ok=False)
-    job, process = OwnedJob(), None
-    result = {"status": "failed", "outer_job_after": None, "forced_outer_cleanup": False}
+    job = process = None
+    stdout = stderr = b""
+    result = {"status": "failed", "failure_code": None, "outer_job_after": None,
+              "outer_job_after_forced_cleanup": None, "forced_outer_cleanup": False,
+              "job_assigned": False, "process_reaped": None, "streams_drained": False,
+              "cleanup_errors": []}
+    stage = "job_create"
+
+    def cleanup_fault(code):
+        # Fixed codes only; exception text and private command paths stay out.
+        result["cleanup_errors"].append(code)
+        result["status"] = "failed"
+
     try:
+        job = OwnedJob()
+        stage = "process_start"
         process = subprocess.Popen([str(executable), backend, mode, str(out), str(columns), str(rows)],
                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    creationflags=subprocess.CREATE_NO_WINDOW)
+        stage = "job_assign"
         job.assign(process.pid)
+        result["job_assigned"] = True
+        stage = "process_communicate"
         stdout, stderr = process.communicate(gate, timeout=timeout)
+        result["streams_drained"] = True
+        stage = "stream_evidence"
         (out / "host.stdout.bin").write_bytes(stdout)
         (out / "host.stderr.bin").write_bytes(stderr)
+        stage = "native_report"
         if process.returncode != 0:
             raise ValueError("native probe failed")
         native = json.loads(stdout)
+        stage = "native_lifecycle"
         validate_lifecycle(native)
+        stage = "case_inspection"
         result.update(inspect_case(out, trace, mode, columns, rows), native=native, status="completed")
+    except BaseException:
+        result["failure_code"] = stage
+        raise
     finally:
-        if process is not None and process.poll() is None:
-            result["forced_outer_cleanup"] = True
-            job.terminate()
-            stdout, stderr = process.communicate(timeout=5)
-            (out / "host.stdout.bin").write_bytes(stdout)
-            (out / "host.stderr.bin").write_bytes(stderr)
+        # One original five-second cleanup budget covers every bounded wait.
+        # Failures are independent: none can skip kill-on-close or diagnostics,
+        # nor replace the exception from assignment, timeout or native replay.
+        cleanup_deadline = time.monotonic() + 5
+
+        def job_observation():
+            observed = job.drain(timeout=max(0, cleanup_deadline - time.monotonic()))
+            if (type(observed) is not dict or set(observed) != {"active", "total", "terminated"}
+                    or any(type(value) is not int or value < 0 for value in observed.values())):
+                raise ValueError("invalid_job_accounting")
+            return observed
+
         try:
-            result["outer_job_after"] = job.drain()
-            if result["outer_job_after"]["active"]:
-                result["forced_outer_cleanup"] = True
-                job.terminate()
-                result["outer_job_after"] = job.drain()
+            if process is not None:
+                try:
+                    running = process.poll() is None
+                except Exception:
+                    running = True
+                    cleanup_fault("process_poll")
+                if running:
+                    result["forced_outer_cleanup"] = True
+                    result["status"] = "failed"
+                    try:
+                        if result["job_assigned"]:
+                            job.terminate()
+                        else:
+                            process.kill()  # This exact root is still waiting for GO.
+                    except Exception:
+                        cleanup_fault("process_terminate")
+                    try:
+                        stdout, stderr = process.communicate(timeout=max(0, cleanup_deadline - time.monotonic()))
+                        result["streams_drained"] = True
+                    except Exception:
+                        cleanup_fault("process_communicate")
+            if job is not None and result["job_assigned"]:
+                try:
+                    result["outer_job_after"] = job_observation()
+                except Exception:
+                    cleanup_fault("job_accounting")
+                if result["outer_job_after"] is not None and result["outer_job_after"]["active"]:
+                    result["forced_outer_cleanup"] = True
+                    result["status"] = "failed"
+                    try:
+                        job.terminate()
+                    except Exception:
+                        cleanup_fault("job_terminate")
+                    try:
+                        result["outer_job_after_forced_cleanup"] = job_observation()
+                        if result["outer_job_after_forced_cleanup"]["active"]:
+                            cleanup_fault("job_not_empty")
+                    except Exception:
+                        cleanup_fault("job_accounting_after_forced_cleanup")
         finally:
-            job.close()
+            if job is not None:
+                try:
+                    job.close()  # Final containment fallback, even if terminate failed.
+                except Exception:
+                    cleanup_fault("job_close")
+        if process is not None:
+            try:
+                if not result["streams_drained"]:
+                    stdout, stderr = process.communicate(timeout=max(0, cleanup_deadline - time.monotonic()))
+                    result["streams_drained"] = True
+                result["process_reaped"] = process.poll() is not None
+                if not result["process_reaped"]:
+                    cleanup_fault("process_not_reaped")
+            except Exception:
+                cleanup_fault("process_reap_after_close")
+        for name, contents in (("host.stdout.bin", stdout), ("host.stderr.bin", stderr)):
+            try:
+                (out / name).write_bytes(contents)
+            except Exception:
+                cleanup_fault("stream_evidence_write")
+        if (result["cleanup_errors"] or result["forced_outer_cleanup"] or
+                result["outer_job_after"] is None or result["process_reaped"] is not True or
+                not result["streams_drained"]):
+            result["status"] = "failed"
+            if result["failure_code"] is None:
+                result["failure_code"] = "outer_cleanup_incomplete"
+        try:
             (out / "diagnostic.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
-    if result["forced_outer_cleanup"] or result["outer_job_after"]["active"]:
-        raise ValueError("outer cleanup incomplete")
+        except Exception:
+            cleanup_fault("diagnostic_write")
+    if (result["cleanup_errors"] or result["forced_outer_cleanup"] or
+            result["outer_job_after"] is None or result["outer_job_after"]["active"] or
+            result["process_reaped"] is not True or not result["streams_drained"]):
+        raise ValueError("outer_cleanup_incomplete")
     return result
 
 
