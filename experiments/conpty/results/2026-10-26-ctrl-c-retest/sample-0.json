@@ -1,0 +1,107 @@
+{
+  "schema": "termforge-conpty-ctrl-c-v1",
+  "status": "passed",
+  "failure_code": "none",
+  "timed_out": false,
+  "handler_delivery_verified": false,
+  "performance_claim": false,
+  "probe_sha256": "0e8db147c1418ac4c6b0e5b1b7343198987ca4bd7b1deedf0cac4cdb64905184",
+  "cleanup_errors": [],
+  "job_after_cleanup": {
+    "active": 0,
+    "total": 4,
+    "terminated": 0
+  },
+  "process_reaped": true,
+  "system_files_before": {
+    "cmd.exe": {
+      "sha256": "97ac98b1a92c286054cce55239cfccdfc23a5517bd07fe693072c9ca96c7dabb",
+      "fixed_file_version": "10.0.26100.9278",
+      "fixed_product_version": "10.0.26100.9278",
+      "file_version_string": "10.0.26100.8875 (WinBuild.160101.0800)",
+      "product_version_string": "10.0.26100.8875"
+    },
+    "conhost.exe": {
+      "sha256": "e449bce01f275cd08f3d4e64bb73b3b43ae845a0dbdb3e6131426e66537705e5",
+      "fixed_file_version": "10.0.26100.9444",
+      "fixed_product_version": "10.0.26100.9444",
+      "file_version_string": "10.0.26100.8875 (WinBuild.160101.0800)",
+      "product_version_string": "10.0.26100.8875"
+    }
+  },
+  "returncode": 0,
+  "job_after": {
+    "active": 0,
+    "total": 4,
+    "terminated": 0
+  },
+  "owned_images": {
+    "cmd.exe": true,
+    "conhost.exe": true
+  },
+  "image_query_error": false,
+  "system_files_after": {
+    "cmd.exe": {
+      "sha256": "97ac98b1a92c286054cce55239cfccdfc23a5517bd07fe693072c9ca96c7dabb",
+      "fixed_file_version": "10.0.26100.9278",
+      "fixed_product_version": "10.0.26100.9278",
+      "file_version_string": "10.0.26100.8875 (WinBuild.160101.0800)",
+      "product_version_string": "10.0.26100.8875"
+    },
+    "conhost.exe": {
+      "sha256": "e449bce01f275cd08f3d4e64bb73b3b43ae845a0dbdb3e6131426e66537705e5",
+      "fixed_file_version": "10.0.26100.9444",
+      "fixed_product_version": "10.0.26100.9444",
+      "file_version_string": "10.0.26100.8875 (WinBuild.160101.0800)",
+      "product_version_string": "10.0.26100.8875"
+    }
+  },
+  "native": {
+    "schema": "termforge-ctrl-c-native-v1",
+    "status": "passed",
+    "failure_code": "none",
+    "idle_marker": true,
+    "flood_observed": true,
+    "after_marker": true,
+    "after_marker_lines": 1,
+    "highest_busy": 8466,
+    "busy_hold_ms": 1010,
+    "after_wait_ms": 32,
+    "input_bytes": 106,
+    "flood_input_bytes": 21,
+    "output_bytes": 659025,
+    "exit_code": 37,
+    "read_error": 109,
+    "capture_overflow": false,
+    "active_children_after": 0,
+    "cleanup_complete": true,
+    "forced_process_cancel": false,
+    "forced_reader_cancel": false,
+    "elapsed_ms": 1156
+  },
+  "trace": {
+    "idle_marker_lines": 1,
+    "after_marker_lines": 1,
+    "highest_busy": 8466,
+    "busy_lines": 8466
+  },
+  "wall_seconds": 1.2189999998081475,
+  "artifacts": {
+    "input.bin": {
+      "sha256": "ee596b3083d46aba705ab9e63482733c30d17b606fd927b99e695c95632387f0",
+      "bytes": 106
+    },
+    "output.bin": {
+      "sha256": "9463f0ad032289f0f210ccda84e99ab0cacb1ac6f7c16288e72f36d06d87b107",
+      "bytes": 659025
+    },
+    "stdout.json": {
+      "sha256": "ae6f14e37d31be6b65124b4d9e4b7ba58e0351b3ad127a7f371a25ccf3f9cefa",
+      "bytes": 471
+    },
+    "stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  }
+}

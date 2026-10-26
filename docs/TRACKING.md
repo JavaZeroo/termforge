@@ -56,7 +56,7 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 | Windows 回归 | [#38](https://github.com/JavaZeroo/termforge/issues/38) | 定位工作区、交互及 CI 的真实失败 | 无；#35 的出口依赖，不能以局部几何结果代替修复 |
 | Windows CI 回归 | [#40](https://github.com/JavaZeroo/termforge/issues/40) | 复核 `ime_inventory` 原 10 秒超时根因，保留 AST/最终进度与 OwnedJob 回收证据 | 无；作为 #38 的子项阻塞 #38，不能用本机或单次 CI 通过冒充修复 |
 | ConPTY margin 差异 | [#41](https://github.com/JavaZeroo/termforge/issues/41) | 裁决宿主/传输的每缓冲区 margin，保留原场景和独立实现证据 | #26；作为 #27 的子项阻塞 #27，不能以模型切片或差异观察代替产品验收 |
-| More 尾部 ECH 与捕获时序 | [#42](https://github.com/JavaZeroo/termforge/issues/42) | 核对完整 More 提示、q/退出/输出排干及 ECH/wrap 的独立合同 | 无；作为 #38 的子项阻塞 #38，与 margin 修复分开，不能修改原始尾部或静默降级为 match |
+| More 尾部 ECH 与捕获时序 | [#42](https://github.com/JavaZeroo/termforge/issues/42) | [限定合同](research/more-capture-ech.md)：默认 ECH、完整 More 提示、q/退出/真实 EOF；候选 pending-wrap 差异保留给 #27 | 无；#38 的子项，与 margin 修复分开；完整原始输入和旧失败保留，不静默降级为 match |
 
 ## 从当前状态接着做
 
