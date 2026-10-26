@@ -62,6 +62,27 @@ class CaptureSupervisorFailureTests(unittest.TestCase):
 
 @unittest.skipUnless(os.name == "nt", "Windows native capture gate")
 class CaptureNativeGateTests(unittest.TestCase):
+    def test_sibling_captures_do_not_reuse_parent_application_fixtures(self):
+        vim = real_app_matrix.vim_executable()
+        if not vim:
+            self.skipTest("real capture fixture isolation requires Vim")
+        with tempfile.TemporaryDirectory() as temporary:
+            parent = Path(temporary)
+            stale = {"editor.txt": b"TF_VIM_REAL\n", "editor-startup.txt": b"READY\n",
+                     "editor-insert.txt": b"INSERT\n", "pager.txt": b"parent fixture\n"}
+            for name, data in stale.items():
+                (parent / name).write_bytes(data)
+            for repeat in range(2):
+                output = parent / f"capture-{repeat}"
+                manifest = real_app_matrix.run_capture(real_app_matrix.capture_binary(), Path(vim), output)
+                self.assertTrue(manifest["editor_file_verified"])
+                self.assertEqual((output / "editor-startup.txt").read_bytes(), b"READY\n")
+                self.assertEqual((output / "editor-insert.txt").read_bytes(), b"INSERT\n")
+                self.assertIn(b'"editor.txt" [New]', (output / "editor.bin").read_bytes())
+                self.assertEqual((output / "editor.txt").read_bytes(), b"TF_VIM_REAL\n")
+            for name, data in stale.items():
+                self.assertEqual((parent / name).read_bytes(), data)
+
     def test_bad_eof_and_oversized_go_leave_no_capture_or_pty_client(self):
         executable = real_app_matrix.capture_binary()
         with tempfile.TemporaryDirectory() as temporary:
@@ -121,8 +142,8 @@ class RealApplicationMatrixTests(unittest.TestCase):
         self.assertEqual(Path(manifest["editor_path"]), self.vim)
         self.assertTrue(manifest["startup_event_verified"])
         self.assertTrue(manifest["insert_event_verified"])
-        self.assertEqual((self.artifacts / "suite/editor-startup.txt").read_bytes(), b"READY\n")
-        self.assertEqual((self.artifacts / "suite/editor-insert.txt").read_bytes(), b"INSERT\n")
+        self.assertEqual((self.artifacts / "suite/capture/editor-startup.txt").read_bytes(), b"READY\n")
+        self.assertEqual((self.artifacts / "suite/capture/editor-insert.txt").read_bytes(), b"INSERT\n")
         lifecycle = json.loads((self.artifacts / "suite/capture/pager-lifecycle.json").read_text())
         self.assertTrue(lifecycle["valid"])
         self.assertTrue(lifecycle["output_eof"])

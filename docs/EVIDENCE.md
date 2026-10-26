@@ -57,6 +57,8 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 | 候选 GUI 合法空标题（#45） | [真实 GUI 前后对照](../experiments/shell/results/2026-10-26-empty-title/validation.json)、[转换入口](../experiments/presentation/render.hpp)、[持续回归](../experiments/shell/candidate_title_test.cpp) | 真实空 OSC 标题使旧 UTF 转换抛异常；修后两 fresh GUI 正常，非法非空反例保留。不回填旧 normal-1 未知异常的根因。 |
 | More 尾部 ECH 与捕获时序（#42 限定修复） | [合同及来源](research/more-capture-ech.md)、[修复前后与同输入对照](../experiments/differential/results/2026-10-26-more-ech/validation.json)、[历史触发记录](../experiments/shell/results/2026-10-26-margin-state/validation.json) | Recovery ECH 缺失和旧捕获过早分开修正，同原件 whole/byte 红→绿；完整 More 提示、单 q/自然退出/EOF/Job0 独立核对。候选 pending-wrap 差异仍保留。 |
 
+[#52 native 捕获目录隔离](research/vim-fixture-isolation.md)保留同旧 EXE 的兄弟运行红例、修后完整 cmd/More/Vim 两轮和真实 stale-fixture 反例；GUI stage59 仍有本批真实红例，不能据此关闭 #52。
+
 ## 核心路线、参考与历史验证
 
 | 范围 | 结果与复现入口 | 可以支持的结论与限制 |
