@@ -48,3 +48,19 @@ child 显式设置 `STARTF_USESTDHANDLES` 并将三个标准句柄保持 null，
 审阅后的纯合成历史记录位于 [results/2026-10-22](results/2026-10-22/manifest.json)，保存源码/二进制身份、系统版本、退出状态与资源计数；后续修复和远端系统验证不回写这些结果。`elapsed_ms` 是含启动/同步/关闭的诊断耗时，不是吞吐、输入延迟或 WindTerm 对照结果。
 
 当前已验收环境为本机 Windows 11 build 26200 和 `windows-2025` runner；不承诺整个 Windows 10/Server 系列。Server 2022 的中文回显已修复，但稳态句柄仍增加 1，未满足资源门槛，定位与修复由 [#21](https://github.com/JavaZeroo/termforge/issues/21)承接。保留[严格兼容性探针](../../.github/workflows/conpty-compat.yml)，可由代理执行 `gh workflow run conpty-compat.yml` 自动重跑；失败仍使该 workflow 失败，不用用户操作测试会话。
+
+## 持续 cmd 输出与 Ctrl+C 独立回归
+
+[#36](https://github.com/JavaZeroo/termforge/issues/36) 的原始 ConPTY 入口由 `conpty_ctrl_c_probe` 和 `experiments.conpty.ctrl_c_run` 提供，不经过窗口、TermForge 解析器或输入队列。先按根贡献指南构建；使用新输出目录：
+
+```powershell
+$env:TERMFORGE_BIN_DIR = (Resolve-Path build/bin/Release).Path
+python -m experiments.conpty.ctrl_c_run --out local/ctrl-c-new --repeats 3
+python -m unittest experiments.conpty.test_ctrl_c -v
+```
+
+也可用 `--exe` 指定本次构建的 `conpty_ctrl_c_probe.exe`。Windows 根 CTest 注册为 `conpty_ctrl_c`。原生入口等待外层 Job 的 GO，正常使用 Python 监督入口；测试不使用真实输入桌面或系统剪贴板。
+
+合同保留一百万次 `cmd for /L`，实际输出至少持续一秒后发送单个 ETX，立即发送后续命令，五秒内检查独立完整输出行；命令回显或循环自然结束不算中断。监督器检查退出与自有 Job 回收，分别记录输入/输出身份、探针/源码身份和本次自有 cmd/conhost 映像的系统文件身份。原始诊断只留在输出目录的 `_private` 子目录；公开文件不包含路径、PID 或原始异常文本。
+
+此入口验收的是固定 cmd 场景，不能单独证明所有原生控制处理函数、真实物理按键或所有 Windows 版本通过。当前条件未复现旧失败，也不能据重复通过关闭 #36；环境对照与未决点见[输入机制研究](../../docs/research/conpty-ctrl-c-input.md)。
