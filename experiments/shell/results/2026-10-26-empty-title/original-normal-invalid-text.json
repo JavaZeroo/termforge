@@ -1,0 +1,58 @@
+{
+  "schema": "termforge-original-candidate-normal-invalid-text-v1",
+  "source_commit": "4211763",
+  "source_tree": "e321dd2cd8defdd49821924bc09cb35abb6b4418",
+  "candidate_adapter": true,
+  "source_sha256": {
+    "experiments/presentation/render.hpp": "7645f92cff86d00864802cf901a802ca7f66da16f79510e7d6ab92a5f437115d",
+    "experiments/shell/shell.cpp": "c680d175326348afaf907560d8abf587d126acdef43f583da13190b2f45c9ac3",
+    "experiments/core/candidate_terminal.cpp": "b50dfbd3a2cf95e2b2cd46979759b2a776ed142c0e2a932ca1cae4fef235f2a4",
+    "experiments/candidates/alacritty/src/ffi.rs": "9d89e5d7e84cbbd0b4a5d0499f9b5eb6b739537c1dab8c154cc0351dec0dd927"
+  },
+  "binary_sha256": {
+    "build\\bin\\Release\\termforge_shell.exe": "86b4503661af9786784c237773d22d80f6d279fc994958f77a2cf3a48289c6ef",
+    "build\\bin\\Release\\terminal_trace.exe": "d39a57555820ad756e6e18e3bbd4914c8b16583055eb8270a9f3ea87db9c9836",
+    "build\\bin\\Release\\runtime_observation_test.exe": "ff7001ed009b365d78c83405a0a385eeaf6a1e3829b7bf9453a92a1365206c46",
+    "build\\bin\\Release\\conpty_ctrl_c_probe.exe": "b3ca3c4d629cbbbb6b71298c2afccc76ea3707adcff88e1856403af87b3f6f42",
+    "build\\bin\\Release\\candidate_core_test.exe": "a2a4cf7456caa65b57caef0aaa3df73dbeea7f50cc3f4ccf40ee86716f2b150f",
+    "experiments\\candidates\\alacritty\\target\\release\\termforge-alacritty-trace.exe": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66"
+  },
+  "case": {
+    "mode": "normal",
+    "repeat": 1,
+    "status": "failed",
+    "native_stage": 5,
+    "consumed_bytes": 293447,
+    "process_exit_code": 2,
+    "outer_timed_out": false,
+    "failure_code": "invalid_text",
+    "complete_tf_after_output_line_observed": true,
+    "cmd_memory_diagnostic_observed": true,
+    "job_after_cleanup": {
+      "active": 0,
+      "total": 6,
+      "terminated": 0
+    },
+    "desktop_gone": true
+  },
+  "not_recorded": {
+    "conversion_callsite": null,
+    "utf16_payload_byte_length": null,
+    "candidate_event_kind": null,
+    "candidate_event_payload_length": null,
+    "conversion_native_error": null
+  },
+  "evidence_sha256": {
+    "sample.json": "d39355e2b445e5d4672087d506d16f68e4c42929ea47b5be8404fea96d6a53e5",
+    "frame.bmp": "c01af82120d3e8c34fd9b4d114dfe7a9a85c1479e820593201eead82a772f8ab",
+    "stderr_utf8": "c9de0d47de61c5672ce1a1b352999cd367e09384302c4f64cec0fafd7fcf2d14",
+    "candidate-junit.xml": "c9cc7115c93957fbbbf5fc6d970a8af529420e6b286579ee626258b4d22efdf1",
+    "LastTest-complete.log": "a5ab0d6b45ae2e5e518eb918968d5a15a824b8f7cf5ff543385e26cb1705b58b"
+  },
+  "limits": {
+    "original_root_cause_established": false,
+    "old_event_recovered_from_later_repro": false,
+    "host_oom_established": false,
+    "new_empty_title_repro_is_separate": true
+  }
+}
