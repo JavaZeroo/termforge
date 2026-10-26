@@ -1,0 +1,216 @@
+{
+  "schema": "postmerge-real-failures-audit-v1",
+  "scope": "Artifact/source audit and issue tracking only; no UI/CI reruns or source changes",
+  "downloads": [
+    {
+      "label": "main-098f9ab",
+      "artifact_id": 12645808266,
+      "zip_sha256": "aba0043a887d91b759c04ce1e7fc88011f33184f9493efcc0404a4727fbb387f",
+      "download_count": 1,
+      "archive_bytes": 4737426,
+      "extracted_files": 10,
+      "selected_expanded_bytes": 311810,
+      "extraction_policy": "target failure plus small logs and identities",
+      "initial_full_extraction_rejected_above_128MiB": true
+    },
+    {
+      "label": "backend-af563ba",
+      "artifact_id": 12646521226,
+      "zip_sha256": "b1a22a58edd44278bd16aa0b5bb76d2908f81dded0a11900c6db8109a5c9f2cc",
+      "download_count": 1,
+      "archive_bytes": 4709004,
+      "extracted_files": 9,
+      "selected_expanded_bytes": 318382,
+      "extraction_policy": "target failure plus small logs and identities",
+      "initial_full_extraction_rejected_above_128MiB": true
+    }
+  ],
+  "failures": [
+    {
+      "issue": 72,
+      "run": 40313671258,
+      "windows_job": 121540798389,
+      "source_commit": "098f9ab9ecd3994da2ecc30c8880ce6494371e56",
+      "checkout_equals_source": true,
+      "configuration": "default self-written C++ core and system ConPTY; branch name is not backend selection",
+      "configure": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release",
+      "source_git_blobs": {
+        "experiments/shell/test_shell.py": "09782b1cae5afc938a67a6fbb783e6a103f0333f",
+        "experiments/shell/run.py": "271d8ac7b937027dd668dee0b3c3c66fc572aec5",
+        "experiments/shell/workspace_persistence_scenario.hpp": "f7f73dbd771f559384d9b4e569d815d2ef0792da",
+        "experiments/shell/transport_completion.hpp": "cc56ce3abfe642aae66f5b3c21863a8c3901f75a"
+      },
+      "host": {
+        "os": "Windows Server 2025 Datacenter 10.0.26100",
+        "runner": "2.338.0",
+        "image": "windows-2025-vs2026",
+        "image_version": "20261021.278.1"
+      },
+      "mode": "ui-workspace-save",
+      "collector_status": "failed",
+      "process_exit": 2,
+      "outer_timed_out": false,
+      "native_deadline_seconds": 30,
+      "outer_deadline_seconds": 40,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "native_child_exit": null,
+      "reader_eof": null,
+      "native_forced_cleanup": null,
+      "private_files_sha256": {
+        "persistence-failure.json": "71b9a860f70cbee2e8b52501bb0877ee8e218c8962f580321df40e215f4d6f4a",
+        "sample.json": "4dfbf947d338ed9b88aab150d3481403f37d16b55e49958ab248f5dfb620106c",
+        "workspace.layout": "e6aabc95590fcd35f1075f4ea1dc7bceea9a68161cdbf65be28005543a2f4482"
+      },
+      "related_same_job_identities": [
+        {
+          "record_sha256": "4a865639f4f322970ebf2972523764d181970e5388ab446084f02ac69d2715e0",
+          "binaries": {
+            "termforge_shell.exe": "385df22fcc17c8af4dffe2cfcb9063e2b49026644f5c01d7e58a5058818a6cf9",
+            "shell_test_launcher.exe": "67e70a9b5762310f0d6243c06d2dbfda43acc964b9ef8d96b53943285ed269a2",
+            "shell_text_client.exe": "6c129afdc0edea9e0f4baab45cf3e8c20bf3103b7f34325ff529e6648938e26a",
+            "shell_clipboard_reader.exe": "a00a994e9833dd0bc07032db1283248bacdc2cc949961bb72bdc63b9776a6f87"
+          }
+        },
+        {
+          "record_sha256": "e09c8545b2f329c4284efb19b5540833daad22fcf4ccf6f832d8ff1839619aff",
+          "binaries": {
+            "termforge_shell": "385df22fcc17c8af4dffe2cfcb9063e2b49026644f5c01d7e58a5058818a6cf9",
+            "shell_test_launcher": "67e70a9b5762310f0d6243c06d2dbfda43acc964b9ef8d96b53943285ed269a2",
+            "shell_text_client": "6c129afdc0edea9e0f4baab45cf3e8c20bf3103b7f34325ff529e6648938e26a",
+            "shell_input_client": "1ac0962e126d6aff3ec1f97de654ed420be9cbd6a942481de413c96c23990d36"
+          }
+        },
+        {
+          "record_sha256": "e4c0d6dff349f36b5f6ca1444da1f405ea95da3bcd43a8e01010cc1ab9cc5093",
+          "binaries": {
+            "termforge_shell": "385df22fcc17c8af4dffe2cfcb9063e2b49026644f5c01d7e58a5058818a6cf9",
+            "shell_test_launcher": "67e70a9b5762310f0d6243c06d2dbfda43acc964b9ef8d96b53943285ed269a2",
+            "shell_text_client": "6c129afdc0edea9e0f4baab45cf3e8c20bf3103b7f34325ff529e6648938e26a",
+            "shell_input_client": "1ac0962e126d6aff3ec1f97de654ed420be9cbd6a942481de413c96c23990d36"
+          }
+        }
+      ],
+      "binary_identity_limitation": "No per-run binary SHA; related same-job manifests are not source-to-binary proof",
+      "presented_done": null,
+      "stage": 2,
+      "repeat": 1,
+      "all_sessions_ready": true,
+      "powershell_prefix_bare_cr": true,
+      "powershell_bs_count": 0,
+      "hypothesis": "Pre-output bare CR is rejected by completion oracle; same-byte executable causal replay still required",
+      "distinct_from": [
+        61,
+        63,
+        66,
+        40,
+        44,
+        57
+      ]
+    },
+    {
+      "issue": 73,
+      "run": 40313695853,
+      "windows_job": 121540875868,
+      "source_commit": "af563ba15aa5abf90a09ca55eb9c177ac873ecf0",
+      "checkout_equals_source": true,
+      "configuration": "default self-written C++ core and system ConPTY; branch name is not backend selection",
+      "configure": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release",
+      "source_git_blobs": {
+        "experiments/shell/test_shell.py": "09782b1cae5afc938a67a6fbb783e6a103f0333f",
+        "experiments/shell/run.py": "bbd4dfc05012c55956973d7e2c69be717b48b1a9",
+        "experiments/shell/workspace_selection_scenario.hpp": "20862a8813150ece38bbc50f489fce7a44f2dc93",
+        "experiments/shell/transport_completion.hpp": "cc56ce3abfe642aae66f5b3c21863a8c3901f75a"
+      },
+      "host": {
+        "os": "Windows Server 2025 Datacenter 10.0.26100",
+        "runner": "2.338.0",
+        "image": "windows-2025-vs2026",
+        "image_version": "20261021.278.1"
+      },
+      "mode": "ui-selection",
+      "collector_status": "failed",
+      "process_exit": 2,
+      "outer_timed_out": false,
+      "native_deadline_seconds": 30,
+      "outer_deadline_seconds": 40,
+      "job_after": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "native_child_exit": null,
+      "reader_eof": null,
+      "native_forced_cleanup": null,
+      "private_files_sha256": {
+        "sample.json": "22c07bbec736190cda64367e0d67bf8c51349a224e8e202d1e09cef335ecbd24",
+        "workspace.layout": "a9309ae6634436b4d6defc730ceba468333d8f7052384f7b53e0d6b0e0b13052"
+      },
+      "related_same_job_identities": [
+        {
+          "record_sha256": "54db535f1cf9783556f92a0c4dcb15507241fa1bf236212e63628effe5679356",
+          "binaries": {
+            "termforge_shell.exe": "c167582dc096767eeae73de34b4d4e80924e397fbf59e4f47b7698f67c97d5c8",
+            "shell_test_launcher.exe": "a7a5fb66deb1c9e56131a095253e3c7fc949243f7fc1179cc94d6abf817ba634",
+            "shell_text_client.exe": "60d9403ea3b809ed6177e16fda308d22fb0225ac43e6ed65ae742b5f883abad1",
+            "shell_clipboard_reader.exe": "59bc64ca98444ff9fc077a6326da9983ea6cb8cfc67abc56fee7bd7a01b58f5c"
+          }
+        },
+        {
+          "record_sha256": "496aa0bf0add4cd1ab5df0c6ccaab1a166099cabded833331c6a3a33384dfebe",
+          "binaries": {
+            "termforge_shell": "c167582dc096767eeae73de34b4d4e80924e397fbf59e4f47b7698f67c97d5c8",
+            "shell_test_launcher": "a7a5fb66deb1c9e56131a095253e3c7fc949243f7fc1179cc94d6abf817ba634",
+            "shell_text_client": "60d9403ea3b809ed6177e16fda308d22fb0225ac43e6ed65ae742b5f883abad1",
+            "shell_input_client": "f320e5ea7215646b97423b3aec1a7b53f7d71d087133cad719918e97e47895fe"
+          }
+        },
+        {
+          "record_sha256": "04644a7cce23e5bbe25d5d840e21255423e07209d7548cae5f39a9e1ed243662",
+          "binaries": {
+            "termforge_shell": "c167582dc096767eeae73de34b4d4e80924e397fbf59e4f47b7698f67c97d5c8",
+            "shell_test_launcher": "a7a5fb66deb1c9e56131a095253e3c7fc949243f7fc1179cc94d6abf817ba634",
+            "shell_text_client": "60d9403ea3b809ed6177e16fda308d22fb0225ac43e6ed65ae742b5f883abad1",
+            "shell_input_client": "f320e5ea7215646b97423b3aec1a7b53f7d71d087133cad719918e97e47895fe"
+          }
+        }
+      ],
+      "binary_identity_limitation": "No per-run binary SHA; related same-job manifests are not source-to-binary proof",
+      "presented_done": null,
+      "stage": null,
+      "client_height": 681,
+      "first_record_retained": false,
+      "first_progress_or_final_files_present": false,
+      "hypothesis": "A pre-first-record stage0/1/2 readiness/settled/marker gate failed to advance; exact stage unknown",
+      "distinct_from": [
+        66,
+        61,
+        63,
+        40,
+        44,
+        57
+      ]
+    }
+  ],
+  "closed_issues_not_reopened": [
+    61,
+    66
+  ],
+  "original_failed_runs_preserved": true,
+  "green_pr_runs_do_not_replace_failed_push": true
+}
