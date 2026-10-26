@@ -1,0 +1,811 @@
+{
+  "schema": "termforge-sender-fence-validation-v1",
+  "date": "2026-10-26",
+  "issues": [
+    62,
+    53
+  ],
+  "source_commit": "519a3f37d52983062cd99b7efd805f183961fa4d",
+  "source_tree_git_sha1": "add42d40b4e1a5bf62bb0fc51fc4396849619d88",
+  "source_files": {
+    "CMakeLists.txt": {
+      "git_blob_sha1": "bed67f32a924786aa497927328194a81acaf4641",
+      "git_blob_sha256": "e95d1cefe78af2b86c7e8d5619f42cb9f974fcb3783daa6a09d8ad824c5d4027",
+      "checkout_sha256": "e95d1cefe78af2b86c7e8d5619f42cb9f974fcb3783daa6a09d8ad824c5d4027",
+      "checkout_relation": "identical"
+    },
+    "cmake/ConptyBackend.cmake": {
+      "git_blob_sha1": "6b0b9910fb36a31e486f9fbe2b33e906b68b43f0",
+      "git_blob_sha256": "6a9f9fb69f90a1db7ad5eb970e61d0913ce4ff75a121f267a369468344fffcde",
+      "checkout_sha256": "6a9f9fb69f90a1db7ad5eb970e61d0913ce4ff75a121f267a369468344fffcde",
+      "checkout_relation": "identical"
+    },
+    "experiments/shell/queues.hpp": {
+      "git_blob_sha1": "0cc8379a1f52d061228b3d8c442295974e2c7c2d",
+      "git_blob_sha256": "eadbfe8b6034cc436327bfc2fc49cf2c4463a52af67a809eb586f42cf1baa389",
+      "checkout_sha256": "eadbfe8b6034cc436327bfc2fc49cf2c4463a52af67a809eb586f42cf1baa389",
+      "checkout_relation": "identical"
+    },
+    "experiments/shell/sender_fence.hpp": {
+      "git_blob_sha1": "f17603ba662551664ee38e0dc0004f89913c3a77",
+      "git_blob_sha256": "04579e11de96237fafea2da48fd2895a4c97f0d407bc7bebf79848540dd1867c",
+      "checkout_sha256": "04579e11de96237fafea2da48fd2895a4c97f0d407bc7bebf79848540dd1867c",
+      "checkout_relation": "identical"
+    },
+    "experiments/shell/sender_fence_test.cpp": {
+      "git_blob_sha1": "770a6e28809e03be7099eac09870b4763016b4cb",
+      "git_blob_sha256": "de84629f788768064969eea76baffff980f02090e68c33d36e2523b4e32d094a",
+      "checkout_sha256": "de84629f788768064969eea76baffff980f02090e68c33d36e2523b4e32d094a",
+      "checkout_relation": "identical"
+    },
+    "experiments/shell/queue_probe.cpp": {
+      "git_blob_sha1": "62a3bc0c18285aa092dce9368133ad1e9148d5c0",
+      "git_blob_sha256": "d635b457f79ae0a1add9b630fc11c5ba5d5993070291fcac939252ea5863c4de",
+      "checkout_sha256": "d635b457f79ae0a1add9b630fc11c5ba5d5993070291fcac939252ea5863c4de",
+      "checkout_relation": "identical"
+    },
+    "experiments/shell/paste.hpp": {
+      "git_blob_sha1": "cc72b93d1e4e3fe4537fe950afd51581bdc1373b",
+      "git_blob_sha256": "f905a693d840256ca7c6a8ffed2601bff41f74e549413f38822db7aceb1c7c82",
+      "checkout_sha256": "f905a693d840256ca7c6a8ffed2601bff41f74e549413f38822db7aceb1c7c82",
+      "checkout_relation": "identical"
+    },
+    "experiments/shell/paste_test.cpp": {
+      "git_blob_sha1": "e3cd94fcf9f97a511144a899a34a5e7ff8889035",
+      "git_blob_sha256": "f4e056681ffd175928060191bc20cbfdc889c8d6ffa76843eda2365243dff8c4",
+      "checkout_sha256": "f4e056681ffd175928060191bc20cbfdc889c8d6ffa76843eda2365243dff8c4",
+      "checkout_relation": "identical"
+    },
+    "experiments/shell/resize.hpp": {
+      "git_blob_sha1": "20843d154fffdd982e1a9221984245eb0d4cc654",
+      "git_blob_sha256": "37d22ba31fc3fee8004a3dd555f53fa55cb398057b6576f5a2d9b5403e2f5cd0",
+      "checkout_sha256": "37d22ba31fc3fee8004a3dd555f53fa55cb398057b6576f5a2d9b5403e2f5cd0",
+      "checkout_relation": "identical"
+    },
+    "experiments/conpty/session.hpp": {
+      "git_blob_sha1": "d44f36661594a5b76b62d1ecb95cf166db22e90a",
+      "git_blob_sha256": "6945e6ffba1d61e66266f867d3cd124eb63c39da37e27662a5eaf544f60ed96b",
+      "checkout_sha256": "6945e6ffba1d61e66266f867d3cd124eb63c39da37e27662a5eaf544f60ed96b",
+      "checkout_relation": "identical"
+    },
+    "experiments/conpty/backend.hpp": {
+      "git_blob_sha1": "3195dceaefa166b1251839108d29c5fd034aa2fb",
+      "git_blob_sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489",
+      "checkout_sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489",
+      "checkout_relation": "identical"
+    },
+    "experiments/shell/test_shell.py": {
+      "git_blob_sha1": "e4d01513cf8d1169511c688b9819097c176b7360",
+      "git_blob_sha256": "ed785bc51b85b1bb47217d0430a8c8e80984140709507515a1132d051e603954",
+      "checkout_sha256": "ed785bc51b85b1bb47217d0430a8c8e80984140709507515a1132d051e603954",
+      "checkout_relation": "identical"
+    },
+    "experiments/build_paths.py": {
+      "git_blob_sha1": "3a2b2503bcee700b3adea8e832a4a619b0e1c29a",
+      "git_blob_sha256": "1236b17dceacda610ec3d6eb1518742c0165af633c05a317f1d64f361791d7d9",
+      "checkout_sha256": "1236b17dceacda610ec3d6eb1518742c0165af633c05a317f1d64f361791d7d9",
+      "checkout_relation": "identical"
+    },
+    "third_party/conpty/manifest.json": {
+      "git_blob_sha1": "a3f7fb23a92762d8decb196a07893628ac759c63",
+      "git_blob_sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "checkout_sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "checkout_relation": "identical"
+    },
+    "third_party/conpty/LICENSE": {
+      "git_blob_sha1": "8cb179cdb69492ba3b8285e61a67fc1fbfe82cb2",
+      "git_blob_sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+      "checkout_sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+      "checkout_relation": "identical"
+    }
+  },
+  "scope": "Windows actual InputQueue/PasteTransfer/ConPTY worker coordination and corrected fixture, not VT/UI/OS-backpressure acceptance",
+  "configurations": {
+    "official-console-width": {
+      "raw_build_directory_label": "candidate",
+      "configuration": "Release",
+      "architecture": "x64",
+      "probe_binaries_sha256": {
+        "shell_queue_probe.exe": "d12a1c20f9398c48047f0173294772f1d4c0364f17590990a45906fb53849377",
+        "sender_fence_test.exe": "74235824777afc99616147c24c9860aa737ca3c99f6e86df5c7e8a74e305edfc",
+        "paste_test.exe": "5138c2a5371f27735cd18002790cb36abebfe34ba948e235ca5bb0f383063806"
+      },
+      "probe_links_candidate_vt_core": false,
+      "configured_creation_flags": 24,
+      "flags_evidence": "fixed backend.hpp/configured(), package manifest and per-target build definition; JSON worker records do not independently print backend flags",
+      "runtime_flags_field_in_worker_json": null,
+      "official_pair_sha256": {
+        "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+        "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+      },
+      "cmake_cache_sha256": "339b01918f5cc2864cca3ca6342d83d7add9e781fcdcd923a42ebaa7db77b16e",
+      "probe_project_sha256": "65ac79d7794f612f60828d2883a0bd83d3558b036fa7a7dd60d064e50729fd6c",
+      "candidate_adapter_build_option": "ON",
+      "candidate_adapter_option_is_not_probe_vt_coverage": true
+    },
+    "system": {
+      "raw_build_directory_label": "candidate-system",
+      "configuration": "Release",
+      "architecture": "x64",
+      "probe_binaries_sha256": {
+        "shell_queue_probe.exe": "9df846bd32afdc5df45fdf6422cb998dd496f85f027f5d4dc76d3925a115c73c",
+        "sender_fence_test.exe": "e57b18ac11e83b36141436be02907d76276cf5431de22a2637d475c8612288ef",
+        "paste_test.exe": "56e40c363f2287b9a9e5b3b530037c5a5428e37a2b165e7857f74cb5f85dd910"
+      },
+      "probe_links_candidate_vt_core": false,
+      "configured_creation_flags": 0,
+      "flags_evidence": "fixed backend.hpp/configured(), package manifest and per-target build definition; JSON worker records do not independently print backend flags",
+      "runtime_flags_field_in_worker_json": null,
+      "official_pair_sha256": null,
+      "cmake_cache_sha256": "9691f5adb31684c5fe1433e9187b58dacf4956f9baffcac61932078aa60ed354",
+      "probe_project_sha256": "a9d786a5f72e3b084f20eccabb98ea4875873320e5afe5dc9257097f6adfc43f",
+      "candidate_adapter_build_option": "ON",
+      "candidate_adapter_option_is_not_probe_vt_coverage": true
+    }
+  },
+  "official_package": {
+    "schema": "termforge-conpty-package-v1",
+    "name": "Microsoft.Windows.Console.ConPTY",
+    "version": "1.25.260930003",
+    "architecture": "win-x64",
+    "license": "MIT",
+    "source_commit": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+    "source_tag": "v1.25.2733.0",
+    "license_source_url": "https://raw.githubusercontent.com/microsoft/terminal/dc8ae365847d41f62d1ebca93815bb00959bc12f/LICENSE",
+    "license_source_sha256": "5d177f23ecfeb0ea8e050b6a5a16355e1ae9a0b286436ca8f83ed08b3795be6b",
+    "bundled_license_sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+    "license_normalization": "CRLF to LF only; complete text verified equal",
+    "package_url": "https://github.com/microsoft/terminal/releases/download/v1.25.2733.0/Microsoft.Windows.Console.ConPTY.1.25.260930003.nupkg",
+    "package_bytes": 1750533,
+    "package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "package_members": {
+      "conpty.dll": "runtimes/win-x64/native/conpty.dll",
+      "OpenConsole.exe": "build/native/runtimes/x64/OpenConsole.exe"
+    },
+    "experimental": true,
+    "configured_creation_flags": 24,
+    "configured_glyph_width": "PSEUDOCONSOLE_GLYPH_WIDTH_CONSOLE",
+    "default_backend": false,
+    "supported_client_platforms_verified": false
+  },
+  "workload": {
+    "request_bytes": 4194304,
+    "request_content": "ASCII a repeated 4194304 times",
+    "request_sha256": "299285fc41a44cdb038b9fdaf494c76ca9d0c866672b2b266c1a0c17dda60a05",
+    "write_chunk_limit_bytes": 1024,
+    "unchanged_minimum_sent_bytes": 16384,
+    "verified_child_prefix_bytes": 16384,
+    "verified_child_prefix_sha256": "f3336bea752b5a28743033dd2c844a4a63fba08871aaee2586a2bf2d69be83a2",
+    "held_claimed_chunk_ordinal_one_based": 17,
+    "output_read_chunk_limit_bytes": 65536,
+    "output_queue_capacity_bytes": 262144,
+    "input_queue_capacity_bytes": 16384
+  },
+  "fixture_ordering": {
+    "original": "child never reads; output reader gate held before input transfer",
+    "corrected": "child really reads and checks exactly 16KiB ASCII then stops reading; actual writer holds the next claimed chunk after 16KiB sent; child prefix event is observed; original flood and reader output gate start; real stop/cancel/race follows",
+    "ordering_changed": true,
+    "original_os_backpressure_fixed_claim": false,
+    "fence_is_not_os_write_block": true,
+    "actual_transfer_or_ack_replaced": false,
+    "default_product_fence_enabled": false,
+    "queue_probe_default_uses_explicit_fence": true
+  },
+  "deadlines_seconds": {
+    "absolute_input_observation": 3,
+    "child_ready_wait": 3,
+    "child_flood_phase_wait": 3,
+    "resize_gate_wait": 3,
+    "resize_settle_wait": 3,
+    "child_size_query_wait": 3,
+    "natural_exit_wait": 3,
+    "outer_probe_process": 10,
+    "pure_missing_go_fence": 1,
+    "pure_missing_go_future_check": 2,
+    "sender_fence_ctest": 10
+  },
+  "runs": [
+    {
+      "configuration": "official-console-width",
+      "raw_configuration_label": "candidate",
+      "raw_mode_label": "ungated",
+      "process_exit": 2,
+      "outer_timeout_seconds": 10,
+      "observed_elapsed_seconds": 3.1399999998975545,
+      "probe_exe_sha256": "d12a1c20f9398c48047f0173294772f1d4c0364f17590990a45906fb53849377",
+      "stdout_sha256": "6c7b8d3e6e5c826e51f177bd11aaf91f636a86d3616470f9ec61ef0a546c642f",
+      "stderr_sha256": "10a9ae7cd1bcd8d7bfd7a78282b2afc62e8977127eda8f11c76b191b9afe2007",
+      "actual_json_records": [
+        {
+          "case": "bounded",
+          "output_high_water": 262144,
+          "input_high_water": 16384,
+          "rejected": 2
+        },
+        {
+          "case": "lifecycle-edges",
+          "stopped_uncompleted_generation": 3,
+          "input_error_preserved": true,
+          "resize_error_preserved": true
+        }
+      ],
+      "scenario": "original never-read/output-first ordering",
+      "verdict": "original observation rejected at unchanged floor",
+      "actual_stderr_json_records": [
+        {
+          "case": "writer-observation-rejected",
+          "total": 4194304,
+          "accepted": 6144,
+          "sent": 5120,
+          "paste_in_flight": 1024,
+          "queue_in_flight": 1024,
+          "state": 1,
+          "reader_entered": 1,
+          "reader_released": 0
+        }
+      ],
+      "error": "real input writer holds a chunk",
+      "job_active_after": null,
+      "job_cleanup_reported_in_this_raw_record": false
+    },
+    {
+      "configuration": "official-console-width",
+      "raw_configuration_label": "candidate",
+      "raw_mode_label": "held-stop-0",
+      "process_exit": 0,
+      "outer_timeout_seconds": 10,
+      "observed_elapsed_seconds": 2.4060000001918525,
+      "probe_exe_sha256": "d12a1c20f9398c48047f0173294772f1d4c0364f17590990a45906fb53849377",
+      "stdout_sha256": "7695b76d6631cd239a878a348e5c369e220fdc9a4a95e36f2386550c6f441687",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_json_records": [
+        {
+          "case": "bounded",
+          "output_high_water": 262144,
+          "input_high_water": 16384,
+          "rejected": 2
+        },
+        {
+          "case": "lifecycle-edges",
+          "stopped_uncompleted_generation": 3,
+          "input_error_preserved": true,
+          "resize_error_preserved": true
+        },
+        {
+          "case": "real-workers",
+          "action": "stop",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 16384,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 5,
+          "job_active_after": 0
+        },
+        {
+          "case": "real-workers",
+          "action": "cancel",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 17408,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 4,
+          "job_active_after": 0
+        },
+        {
+          "case": "real-workers",
+          "action": "cancel-stop-race",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 16384,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 5,
+          "job_active_after": 0
+        }
+      ],
+      "scenario": "verified prefix then pre-send held block, flood/output gate, real action",
+      "verdict": "passed",
+      "audited_worker_records": 3
+    },
+    {
+      "configuration": "official-console-width",
+      "raw_configuration_label": "candidate",
+      "raw_mode_label": "held-stop-1",
+      "process_exit": 0,
+      "outer_timeout_seconds": 10,
+      "observed_elapsed_seconds": 2.4840000001713634,
+      "probe_exe_sha256": "d12a1c20f9398c48047f0173294772f1d4c0364f17590990a45906fb53849377",
+      "stdout_sha256": "7695b76d6631cd239a878a348e5c369e220fdc9a4a95e36f2386550c6f441687",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_json_records": [
+        {
+          "case": "bounded",
+          "output_high_water": 262144,
+          "input_high_water": 16384,
+          "rejected": 2
+        },
+        {
+          "case": "lifecycle-edges",
+          "stopped_uncompleted_generation": 3,
+          "input_error_preserved": true,
+          "resize_error_preserved": true
+        },
+        {
+          "case": "real-workers",
+          "action": "stop",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 16384,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 5,
+          "job_active_after": 0
+        },
+        {
+          "case": "real-workers",
+          "action": "cancel",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 17408,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 4,
+          "job_active_after": 0
+        },
+        {
+          "case": "real-workers",
+          "action": "cancel-stop-race",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 16384,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 5,
+          "job_active_after": 0
+        }
+      ],
+      "scenario": "verified prefix then pre-send held block, flood/output gate, real action",
+      "verdict": "passed",
+      "audited_worker_records": 3
+    },
+    {
+      "configuration": "system",
+      "raw_configuration_label": "candidate-system",
+      "raw_mode_label": "held-stop-0",
+      "process_exit": 0,
+      "outer_timeout_seconds": 10,
+      "observed_elapsed_seconds": 0.9840000001713634,
+      "probe_exe_sha256": "9df846bd32afdc5df45fdf6422cb998dd496f85f027f5d4dc76d3925a115c73c",
+      "stdout_sha256": "7695b76d6631cd239a878a348e5c369e220fdc9a4a95e36f2386550c6f441687",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_json_records": [
+        {
+          "case": "bounded",
+          "output_high_water": 262144,
+          "input_high_water": 16384,
+          "rejected": 2
+        },
+        {
+          "case": "lifecycle-edges",
+          "stopped_uncompleted_generation": 3,
+          "input_error_preserved": true,
+          "resize_error_preserved": true
+        },
+        {
+          "case": "real-workers",
+          "action": "stop",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 16384,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 5,
+          "job_active_after": 0
+        },
+        {
+          "case": "real-workers",
+          "action": "cancel",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 17408,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 4,
+          "job_active_after": 0
+        },
+        {
+          "case": "real-workers",
+          "action": "cancel-stop-race",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 16384,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 5,
+          "job_active_after": 0
+        }
+      ],
+      "scenario": "verified prefix then pre-send held block, flood/output gate, real action",
+      "verdict": "passed",
+      "audited_worker_records": 3
+    },
+    {
+      "configuration": "system",
+      "raw_configuration_label": "candidate-system",
+      "raw_mode_label": "held-stop-1",
+      "process_exit": 0,
+      "outer_timeout_seconds": 10,
+      "observed_elapsed_seconds": 1.031999999890104,
+      "probe_exe_sha256": "9df846bd32afdc5df45fdf6422cb998dd496f85f027f5d4dc76d3925a115c73c",
+      "stdout_sha256": "7695b76d6631cd239a878a348e5c369e220fdc9a4a95e36f2386550c6f441687",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_json_records": [
+        {
+          "case": "bounded",
+          "output_high_water": 262144,
+          "input_high_water": 16384,
+          "rejected": 2
+        },
+        {
+          "case": "lifecycle-edges",
+          "stopped_uncompleted_generation": 3,
+          "input_error_preserved": true,
+          "resize_error_preserved": true
+        },
+        {
+          "case": "real-workers",
+          "action": "stop",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 16384,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 5,
+          "job_active_after": 0
+        },
+        {
+          "case": "real-workers",
+          "action": "cancel",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 17408,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 4,
+          "job_active_after": 0
+        },
+        {
+          "case": "real-workers",
+          "action": "cancel-stop-race",
+          "input_queued": 0,
+          "input_in_flight": 1024,
+          "input_joined": true,
+          "working_generation": 1,
+          "pending_generation": 3,
+          "completed_generation": 3,
+          "child_columns": 102,
+          "child_rows": 42,
+          "input_submitted_before_stop": 16384,
+          "input_accepted_before_stop": 17408,
+          "paste_in_flight_before_stop": 1024,
+          "total": 4194304,
+          "child_prefix_read": 16384,
+          "sender_fence_held": true,
+          "sent_after": 16384,
+          "accepted_after": 17408,
+          "in_flight_after": 0,
+          "retained_capacity_after": 15,
+          "state_after": 5,
+          "job_active_after": 0
+        }
+      ],
+      "scenario": "verified prefix then pre-send held block, flood/output gate, real action",
+      "verdict": "passed",
+      "audited_worker_records": 3
+    }
+  ],
+  "counts": {
+    "audited_raw_positive_probe_processes": 4,
+    "positive_probe_processes_per_configuration": 2,
+    "real_worker_records_per_positive_process": 3,
+    "audited_raw_positive_worker_records": 12,
+    "raw_official_original_order_negative_probe_processes": 1,
+    "focused_original_python_test_processes": 2,
+    "focused_python_passes_per_configuration": 1,
+    "focused_ctest_cases_per_configuration": 2,
+    "focused_ctest_passes_per_configuration": 2,
+    "focus_reexecutions_not_merged_into_raw_worker_matrix": true
+  },
+  "raw_mode_label_note": "held-stop-0/held-stop-1 are launcher labels; each positive process actually executes stop, cancel and cancel-stop-race. working/pending/completed_generation fields are resize worker generations, not sender-fence ticket generations.",
+  "state_enum_from_fixed_source": {
+    "sending": 1,
+    "cancelled": 4,
+    "failed": 5
+  },
+  "historical_evidence": {
+    "original_focus_red": {
+      "declared_source_commit": "af563ba15aa5abf90a09ca55eb9c177ac873ecf0",
+      "artifact": "original-af563-official.log",
+      "tests": 1,
+      "failures": 1,
+      "probe_exit": 2,
+      "elapsed_seconds": 3.156,
+      "error": "real input writer holds a chunk",
+      "old_probe_exe_sha256": null,
+      "binary_identity_gap_preserved": true
+    },
+    "diagnostic_red": {
+      "artifact": "diagnostic-ungated.json",
+      "exe_sha256": "2ac023b60cab1f9576deb023524dfc35d7a5382c742a0afdb1460557f4f314d3",
+      "source_commit": null,
+      "source_blob_binding_recorded": false,
+      "verdict": "diagnostic only; same low-sent state independently reproduced by the frozen final-source ungated mode"
+    },
+    "preparation_error": {
+      "artifact": "12bce48-unittest-official.log",
+      "tests_run": 0,
+      "category": "missing build prerequisite termforge_shell during Python setUpClass",
+      "product_failure": false
+    },
+    "excluded_wip_green_artifacts": [
+      "fenced-official-first.json",
+      "fenced-official-second.json"
+    ],
+    "excluded_wip_reason": "No fixed tested source/blob manifest; retained hashes only and not counted as final validation."
+  },
+  "pure_protocol_coverage": {
+    "named_ctest": "sender_fence",
+    "cases": [
+      "transfer/generation identity",
+      "single admission",
+      "release before held rejected",
+      "wrong generation release rejected",
+      "duplicate release rejected",
+      "unchanged sent floor",
+      "cancel before wait and during wait",
+      "stop abort wakes waiter",
+      "control EOF simulated by abort(control_eof)",
+      "missing GO absolute deadline",
+      "accepted==total rejected"
+    ],
+    "transport_submission_claim": false,
+    "control_eof_test_is_actual_ipc_eof": false,
+    "synthetic_acknowledgements_used_only_for_unit_state_preparation": true
+  },
+  "raw_artifacts": {
+    "519a3f3-actual.json": {
+      "bytes": 10117,
+      "sha256": "b2a97b94d2b7f23abb1fdb9ee68dfd7790c3c2c7922e9938cb5d38c10d31c692"
+    },
+    "519a3f3-ctest-official.log": {
+      "bytes": 431,
+      "sha256": "68b9733ddd7de3dce29a28d5f84c43740b6d116b2b89bd52be2edc74dce962db"
+    },
+    "519a3f3-ctest-system.log": {
+      "bytes": 445,
+      "sha256": "ff6f170436ad8b1af865dadd90232a20e79edfa1106697b08957268be6ca6707"
+    },
+    "519a3f3-unittest-official.log": {
+      "bytes": 264,
+      "sha256": "5830aaf8d029050b7a70038e11edbaad47ed6822244f11ebd7b021701d904f3b"
+    },
+    "519a3f3-unittest-system.log": {
+      "bytes": 264,
+      "sha256": "ddc73cb2e99d0a726194666dd0404b50589cd3f1b2041fd85ff988e4b3ce6ea2"
+    },
+    "original-af563-official.log": {
+      "bytes": 901,
+      "sha256": "6bec80326dc29f217d2cd675587e4b9eedfb66b3fe290e1d1029f6237775895e"
+    },
+    "diagnostic-ungated.json": {
+      "bytes": 641,
+      "sha256": "857b52ebb4fe6941bc05087066b5cf95c579ea0dcf181895b1ebd1856a733386"
+    },
+    "12bce48-unittest-official.log": {
+      "bytes": 1009,
+      "sha256": "7fe1fd6a52955471838beb59a40b6b2b40d312aa508a26ab1c377e23cfe4944d"
+    },
+    "fenced-official-first.json": {
+      "bytes": 446,
+      "sha256": "fd6c97429175e8fa1702b2a86c8a3e187945329f8b0de0b2d9663ebeb595dbb1"
+    },
+    "fenced-official-second.json": {
+      "bytes": 905,
+      "sha256": "15004e8ec93a44edbcd86db9723f772dbd41323b2618ef5c091436052a27e21a"
+    },
+    "final-focused-build.log": {
+      "bytes": 1002,
+      "sha256": "a0a67f9e7d8801adb5792d2657100cb56633e431532903f6609f139a79d4e727"
+    },
+    "focused-system-build.log": {
+      "bytes": 945,
+      "sha256": "831b74495e8d074d1235df6c0bd14c74b2af6ac4775492ff8ddbfc4968d77371"
+    },
+    "integrated-official-build.log": {
+      "bytes": 5688,
+      "sha256": "eb2dfd3ff41e0c46eb630d95cee43eea857ec4a174e049f8525a88fdac45cd53"
+    },
+    "integrated-system-build.log": {
+      "bytes": 1128,
+      "sha256": "2a02506ab66b1c40f67be7d1d92ccbbad3a414eb1b38d0267bc93878aed4829c"
+    },
+    "race-official-build.log": {
+      "bytes": 224,
+      "sha256": "4fca76e212d24f44c36174d9ad29ef8113d897a92f452b81f57bf1b4c00b2d9c"
+    },
+    "race-system-build.log": {
+      "bytes": 895,
+      "sha256": "607ed7488a999b0b06e664b7543c9b16804dbb7543c3ddd37a940ed66b5ff3d7"
+    }
+  },
+  "environment": {
+    "proof_host_platform_observed": "Windows-11-10.0.26200-SP0",
+    "per_run_cpu_power_or_idle_identity": null,
+    "known_shared_host": true,
+    "performance_claim": false,
+    "observed_elapsed_is_not_performance_sample": true
+  },
+  "limitations": [
+    "Queue probe does not link candidate VT core; candidate build directory labels do not constitute candidate terminal validation.",
+    "Fixture ordering is deliberately corrected; original never-read/output-first rejection remains reproducible with the same final EXE.",
+    "Original ungated rejection does not report post-cleanup Job count; null is retained rather than inferred from later successful runs.",
+    "Each positive worker JSON reports own Session Job zero; outer supervisor Job/desktop creation or recovery is not established by these direct subprocess runs.",
+    "No new UI cancel/close, 3000000-byte Han request, 768-byte checkpoint, system clipboard, eight-session workflow or full official regression matrix acceptance.",
+    "Pure control EOF is simulated through the in-process abort API; no actual IPC EOF regression is claimed.",
+    "The inspected sample set observes stop winning all cancel-stop races; assertions permit either bounded valid interleaving, but these runs do not prove both schedules occurred.",
+    "Ticket and flags behavior is supported by fixed source/build definitions and scoped protocol tests; worker JSON does not independently log sender ticket identity or flags.",
+    "No performance timing, long-run resource, portability, kernel buffer size or WindTerm equivalence conclusion."
+  ],
+  "privacy": "Published run objects are parsed synthetic JSON fields only; raw test paths, desktop names, process identities, unfiltered stdout/stderr and environment variables remain local.",
+  "r53_ui_accepted": false,
+  "r2_accepted": false
+}
