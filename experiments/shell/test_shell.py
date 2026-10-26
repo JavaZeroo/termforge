@@ -819,6 +819,16 @@ class ShellTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 validate_monitor_geometry(broken)
 
+    def test_local_shell_exit_waits_for_native_helper_return(self):
+        out = self.out / "shells-held-size-helper"
+        with mock.patch.dict(os.environ, {"TERMFORGE_TEST_SHELL_SIZE_FENCE": "1"}):
+            execute(self.exe, "ui-shells", out)
+        progress = [json.loads(line) for line in (out / "shells-progress.jsonl").read_text(encoding="utf-8").splitlines()]
+        self.assertEqual([(p["event"], p["stage"]) for p in progress if p["event"] in ("size-helper-held", "sizes-ready")],
+                         [("size-helper-held", 5), ("sizes-ready", 5)])
+        self.assertEqual([(p["role"], p["stage"], p["exit_code"]) for p in progress if p["event"] == "exited"],
+                         [("wsl", 6, 0), ("pwsh", 7, 0), ("powershell", 8, 0), ("cmd", 9, 0)])
+
     def test_local_shell_launch_working_directory_and_cleanup(self):
         for repeat in range(2):
             out = self.out / f"shells-{repeat}"

@@ -186,7 +186,7 @@ class ShellWindow {
             surface_ = std::make_unique<Bitmap>(renderer_->x(parser_.screen.width()), renderer_->y(parser_.screen.height()));
         }
     }
-    void query_size(bool fixture_output_only = false) {
+    void query_size(bool fixture_output_only = false, std::wstring_view release_event = {}) {
         wchar_t path[32768]{};
         const DWORD n = GetModuleFileNameW(nullptr, path, 32768);
         require(n && n < 32768, "size client path failed");
@@ -194,7 +194,9 @@ class ShellWindow {
         file = file.substr(0, file.find_last_of(L'\\')+1) + L"shell_size_client.exe";
         if (wsl_) file = tf_shell::wsl_path(file);
         // Absolute synthetic helper; it independently queries the child console.
-        const auto command=command_prefix_ + L"\"" + file + L"\"\r";
+        auto command=command_prefix_ + L"\"" + file + L"\"";
+        if(!release_event.empty()) command+=L" --wait-event \""+std::wstring(release_event)+L"\"";
+        command+=L"\r";
         if(fixture_output_only) fixture_command(command); else type(command);
     }
 
@@ -1220,7 +1222,7 @@ public:
     bool closing() const { return closing_; }
     void close() { begin_close(); }
     void command(const std::wstring& text) { type(text); }
-    void check_size() { query_size(); }
+    void check_size(std::wstring_view release_event = {}) { query_size(false,release_event); }
     void fixture_command(const std::wstring& text) {
         // Producer control for the owned history fixture, not a UI input
         // gesture: background output must be tested without typing in a view.

@@ -3,7 +3,7 @@
 #include <string_view>
 
 namespace tf_shell_test {
-// An independent transport oracle for the fixed persistence commands. This is
+// An independent transport oracle for fixed persistence and size commands. This is
 // deliberately not a terminal screen/parser: it only removes complete OSC/CSI
 // envelopes and recognizes exact literal output lines followed by our prompt.
 // The fixed ConPTY output can separate its marker and prompt with an explicit

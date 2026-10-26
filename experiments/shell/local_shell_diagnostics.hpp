@@ -12,7 +12,7 @@ inline void local_shell_progress(const std::filesystem::path& directory, std::st
                                  bool cleanup_complete = false, unsigned long active_children = 0,
                                  std::string_view output = {}) {
     require(role=="cmd" || role=="powershell" || role=="pwsh" || role=="wsl", "invalid local shell diagnostic role");
-    require(event=="started" || event=="cwd-verified" || event=="exited", "invalid local shell diagnostic event");
+    require(event=="started" || event=="cwd-verified" || event=="size-helper-held" || event=="sizes-ready" || event=="exited", "invalid local shell diagnostic event");
     require(output.size()<=8192, "local shell diagnostic output exceeds its bound");
     std::ofstream progress(directory/"shells-progress.jsonl",std::ios::binary|std::ios::app);
     progress<<"{\"schema\":\"termforge-local-shell-progress-v1\",\"role\":\""<<role

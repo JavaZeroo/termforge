@@ -1,5 +1,6 @@
 // Real local shell launch contracts on owned workspaces and isolated directories.
 #pragma once
+#include "transport_completion.hpp"
 
 inline void Workspace::scenario_shells() {
     if (image_.empty() || closing_) return;
@@ -22,10 +23,18 @@ inline void Workspace::scenario_shells() {
         return launch;
     };
     auto check_size = [&] {
-        for (const auto group : {Group::bottom, Group::main}) for (auto& tab : group_tabs(group))
-            tab.shell->check_size();
+        wchar_t fence[2]{};
+        if(GetEnvironmentVariableW(L"TERMFORGE_TEST_SHELL_SIZE_FENCE",fence,2)==1 && fence[0]==L'1') {
+            shell_size_event_=L"Local\\TermForgeShellSize-"+std::to_wstring(GetCurrentProcessId())+L"-"+std::to_wstring(GetTickCount64());
+            shell_size_release_.reset(CreateEventW(nullptr,TRUE,FALSE,shell_size_event_.c_str()));
+            require(shell_size_release_.get() && GetLastError()!=ERROR_ALREADY_EXISTS,"size helper release event creation failed");
+        }
+        for (const auto group : {Group::bottom, Group::main}) for (auto& tab : group_tabs(group)) {
+            tab.shell->begin_output_observation();
+            tab.shell->check_size(tab.launch && tab.launch->kind==L"wsl"?shell_size_event_:L"");
+        }
     };
-    auto sizes_ready = [&] {
+    auto size_markers_ready = [&] {
         for (const auto group : {Group::bottom, Group::main}) for (auto& tab : group_tabs(group)) {
             const auto [columns, rows] = tab.shell->grid_dimensions();
             if (!tab.shell->settled() || !tab.shell->contains_line("TF_SIZE_" + std::to_string(columns) + "x" + std::to_string(rows)))
@@ -33,6 +42,25 @@ inline void Workspace::scenario_shells() {
         }
         return true;
     };
+    auto sizes_ready = [&] {
+        if(!size_markers_ready()) return false;
+        for(const auto group : {Group::bottom, Group::main}) for(auto& tab : group_tabs(group)) {
+            if(!tab.launch || tab.launch->kind!=L"wsl") continue;
+            const auto [columns,rows]=tab.shell->grid_dimensions();
+            // WSL's native helper can still own console input after its marker.
+            // Wait for its shell's fresh prompt before starting sequential exits.
+            if(!tf_shell_test::transport_output_completed(tab.shell->observed_output(),
+                    "TF_SIZE_"+std::to_string(columns)+"x"+std::to_string(rows))) return false;
+        }
+        return true;
+    };
+
+    if(stage_==5 && shell_size_release_.get() && !shell_size_fence_observed_ && size_markers_ready()) {
+        require(!sizes_ready(),"size output was mistaken for shell input readiness");
+        tf_shell_test::local_shell_progress(directory,"wsl","size-helper-held",stage_);
+        require(SetEvent(shell_size_release_.get())!=FALSE,"size helper release failed");
+        shell_size_fence_observed_=true;
+    }
 
     if (stage_ == 0 && active()->ready()) {
         active()->begin_output_observation();
@@ -67,18 +95,13 @@ inline void Workspace::scenario_shells() {
     } else if (stage_ == 5 && sizes_ready()) {
         require(session_count() == 4 && tabs_.size() == 2 && main_tabs_.size() == 2,
                 "local shell targets were not isolated");
+        tf_shell_test::local_shell_progress(directory,"wsl","sizes-ready",stage_);
         Bitmap frame(physical_width_, physical_height_);
         paint(frame.dc);
         const RECT main = physical(main_terminal_), bottom = physical(terminal_);
         selected(Group::main)->render_to(frame.dc, main.left, main.top);
         selected(Group::bottom)->render_to(frame.dc, bottom.left, bottom.top);
         frame.save(image_);
-        std::ofstream out(std::filesystem::path(image_).parent_path() / "shells.json");
-        out << "{\"schema\":\"termforge-local-shells-v1\",\"shells\":[\"cmd\",\"powershell\",\"pwsh\",\"wsl-Ubuntu\"],"
-            << "\"working_directory\":";
-        termforge::Screen::quoted(out, utf8(expected_directory.c_str()));
-        out << ",\"main_sessions\":2,\"bottom_sessions\":2,\"normal_exit\":true,\"presented_done\":null}\n";
-        require(bool(out), "local shell evidence write failed");
         active()->command(L"exit\r");
         stage_ = 6;
     } else if (stage_ == 6 && collected_ == 1 && session_count() == 3) {
@@ -94,6 +117,14 @@ inline void Workspace::scenario_shells() {
         active()->command(L"exit\r");
         stage_ = 9;
     } else if (stage_ == 9 && collected_ == 4 && session_count() == 0) {
+        require(failure_.empty(),"local shell exit verification failed");
+        // Only publish normal-exit evidence after every real shell was collected.
+        std::ofstream out(directory / "shells.json");
+        out << "{\"schema\":\"termforge-local-shells-v1\",\"shells\":[\"cmd\",\"powershell\",\"pwsh\",\"wsl-Ubuntu\"],"
+            << "\"working_directory\":";
+        termforge::Screen::quoted(out, utf8(expected_directory.c_str()));
+        out << ",\"main_sessions\":2,\"bottom_sessions\":2,\"normal_exit\":true,\"presented_done\":null}\n";
+        out.close(); require(bool(out), "local shell evidence write failed");
         stage_ = 100;
         close_all();
     }
