@@ -1,5 +1,7 @@
 # R2 原生核心路线重审（#26）
 
+> 历史研究记录：2026-10-26 用户已确认保留 Alacritty 为候选并重新评估，见 [ADR-0006](../adr/0006-confirmed-project-direction.md)。本文的样本、接口及当时结论保留原义；下文的“决定”不再作为当前正式选型或用户批准依据。最终核心方案由 #34 提交用户确认。
+
 调查与决定日期：2026-10-25。固定候选为 `alacritty_terminal 0.26.0`，对照为当前自研 C++ 核心。本文记录 [#26](https://github.com/JavaZeroo/termforge/issues/26) 的平台、维护、接口和路线证据；[ADR-0003](../adr/0003-core-reference-and-reuse.md) 保存决定，[FEATURES](../FEATURES.md) 保存实际能力。没有启动 WindTerm、GUI 或截图探针，也没有把 headless 轨迹写成产品呈现。
 
 ## 决定

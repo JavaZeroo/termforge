@@ -373,6 +373,33 @@ class ShellTests(unittest.TestCase):
                                                 "tab_enter_accept": True})
             self.assertEqual((out / "input.bin").read_bytes(), b"DEFAULT_ENTER_ACCEPT\r" + b"P\xe6\xb1\x89\r" * 5000)
 
+    def test_paste_control_eof_remains_failure_after_cleanup(self):
+        failure = self._rejected_paste_control("eof", "EOF")
+        self.assertTrue(failure["eof_observed"])
+        self.assertFalse(failure["timed_out"])
+
+    def test_paste_missing_go_remains_failure_after_cleanup(self):
+        failure = self._rejected_paste_control("timeout", "missing GO")
+        self.assertFalse(failure["eof_observed"])
+        self.assertTrue(failure["timed_out"])
+
+    def _rejected_paste_control(self, mode, reason):
+        out = self.out / ("paste-control-" + mode)
+        with self.assertRaisesRegex(ValueError, "paste control " + reason + " rejected"):
+            execute(self.exe, "ui-paste-control-" + mode, out)
+        sample = json.loads((out / "sample.json").read_text())
+        self.assertEqual(sample["exit_code"], 2)
+        self.assertFalse(sample["timed_out"])
+        self.assertEqual(sample["job_after"]["active"], 0)
+        self.assertTrue(sample["desktop_gone"])
+        failure = json.loads((out / "paste-control-failure.json").read_text())
+        self.assertTrue(failure["wait_finished"])
+        self.assertEqual(failure["state"], "failed")
+        self.assertEqual(failure["in_flight"], 0)
+        self.assertLessEqual(failure["retained_capacity"], 32)
+        self.assertEqual((out / "cancel.bin").read_bytes(), b"\xe6\xb1\x89" * 256)
+        return failure
+
     @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and
                          os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",
                          "real system clipboard UI gate requires a disposable hosted VM")

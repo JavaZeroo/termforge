@@ -1,6 +1,6 @@
 # Alacritty 固定核心与候选适配工具
 
-本目录包含候选构建、状态适配、固定兼容补丁、C ABI 与核心成本实验。[ADR-0003](../../../docs/adr/0003-core-reference-and-reuse.md)决定 R2 新能力复用候选 Term/Processor；C++ 拥有值适配接入显式候选 `ShellWindow`，默认 CMake 保留自研回退。能力统一见[功能矩阵](../../../docs/FEATURES.md)，联合验收和依赖见 [R2 合同](../../../docs/milestones/R2-local-terminal.md)，本说明不维护逐批进度。
+本目录包含候选构建、状态适配、固定兼容补丁、C ABI 与核心成本实验。[ADR-0003](../../../docs/adr/0003-core-reference-and-reuse.md)及 [ADR-0006](../../../docs/adr/0006-confirmed-project-direction.md)保留 Alacritty 为待评估候选，正式核心选型待原版对标和用户确认；C++ 拥有值适配接入显式候选 `ShellWindow`，默认 CMake 保留自研回退。能力统一见[功能矩阵](../../../docs/FEATURES.md)，联合验收和依赖见 [R2 合同](../../../docs/milestones/R2-local-terminal.md)，本说明不维护逐批进度。
 
 ## 固定来源与许可
 

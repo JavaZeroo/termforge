@@ -166,5 +166,155 @@ class HostedShellPreparationTests(unittest.TestCase):
         urlopen.assert_not_called()
 
 
+class CommandBoundaryTests(unittest.TestCase):
+    @staticmethod
+    def event(command="cmd", phase="invoking", elapsed=0, code=None):
+        return {"command": command, "phase": phase, "deadline_ms": 10000,
+                "elapsed_ms": elapsed, "returncode": code}
+
+    def test_timeout_keeps_actual_command_boundary_without_private_arguments(self):
+        secret = "synthetic-private-command-path"
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "preflight"
+            directory.mkdir()
+            failure = prep.subprocess.TimeoutExpired([secret], 10, output=b"synthetic-private-output")
+            with mock.patch.object(prep.subprocess, "run", side_effect=failure) as command, \
+                 mock.patch.object(prep.time, "monotonic_ns", side_effect=[0, 10000000000]), \
+                 mock.patch.object(prep.subprocess, "CREATE_NO_WINDOW", 0, create=True):
+                with self.assertRaisesRegex(prep.PreparationError, "^command_deadline$"):
+                    prep.run_command([secret], directory, "cmd", cwd=directory)
+            command.assert_called_once()
+            self.assertEqual(command.call_args.kwargs["timeout"], 10)
+            data = json.loads((directory / "command-events.json").read_text(encoding="utf-8"))
+            self.assertEqual(data, {"events": [
+                {"command": "cmd", "phase": "invoking", "deadline_ms": 10000, "elapsed_ms": 0, "returncode": None},
+                {"command": "cmd", "phase": "timed_out", "deadline_ms": 10000, "elapsed_ms": 10000, "returncode": None}]})
+            self.assertNotIn(secret, json.dumps(data))
+            self.assertNotIn("synthetic-private-output", json.dumps(data))
+
+    def test_returned_command_and_partial_invocation_are_reported_independently(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "preflight"
+            directory.mkdir()
+            def returned(command, **kwargs):
+                kwargs["stdout"].write(b"private-native-output")
+                return prep.subprocess.CompletedProcess(command, 7)
+            with mock.patch.object(prep.subprocess, "run", side_effect=returned), \
+                 mock.patch.object(prep.time, "monotonic_ns", side_effect=[0, 123000000]), \
+                 mock.patch.object(prep.subprocess, "CREATE_NO_WINDOW", 0, create=True):
+                self.assertEqual(prep.run_command(["private-command"], directory, "cmd", cwd=directory),
+                                 (7, b"private-native-output"))
+            self.assertEqual(prep.public_command_observation(directory, "preflight"),
+                             {"status": "observed", "events": [self.event(), self.event(phase="returned", elapsed=123, code=7)]})
+            prep.write_json(directory / "command-events.json", {"events": [self.event()]})
+            self.assertEqual(prep.public_command_observation(directory, "preflight"),
+                             {"status": "observed", "events": [self.event()]})
+
+    def test_unknown_or_unordered_data_is_rejected_without_echoing_it(self):
+        good = self.event()
+        values = [
+            {"events": [{**good, "command": "private-path"}]},
+            {"events": [{**good, "argv": ["private-token"]}]},
+            {"events": [self.event(phase="returned", code=0)]},
+            {"events": [good, self.event(phase="returned", code=True)]},
+            {"events": [good, self.event(phase="timed_out", code=91)]},
+            {"events": [good, self.event(phase="returned", code=0), self.event(command="ps7")]},
+            {"events": [{**good, "deadline_ms": 11000}]},
+            {"events": [good, self.event(phase="returned", elapsed=-1, code=0)]},
+            {"events": [good] * 9},
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "preflight"
+            directory.mkdir()
+            for value in values:
+                with self.subTest(value=value):
+                    prep.write_json(directory / "command-events.json", value)
+                    self.assertEqual(prep.public_command_observation(directory, "preflight"),
+                                     {"status": "invalid", "events": []})
+            (directory / "command-events.json").write_bytes(b"private-token" * 1000)
+            self.assertEqual(prep.public_command_observation(directory, "preflight"),
+                             {"status": "invalid", "events": []})
+            (directory / "command-events.json").write_bytes(b"[" * 2000 + b"]" * 2000)
+            self.assertEqual(prep.public_command_observation(directory, "preflight"),
+                             {"status": "invalid", "events": []})
+
+    def test_trace_write_failure_cannot_replace_observed_timeout(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary) / "preflight"
+            directory.mkdir()
+            with mock.patch.object(prep.subprocess, "run", side_effect=prep.subprocess.TimeoutExpired(["synthetic"], 10)), \
+                 mock.patch.object(prep, "write_command_event", side_effect=[None, prep.PreparationError("command_observation")]), \
+                 mock.patch.object(prep.subprocess, "CREATE_NO_WINDOW", 0, create=True):
+                with self.assertRaisesRegex(prep.PreparationError, "^command_deadline$"):
+                    prep.run_command(["synthetic"], directory, "cmd", cwd=directory)
+
+    def test_trace_write_failure_preserves_command_and_marker_result(self):
+        marker = "TERMFORGE_HOSTED_CMD_READY"
+        output = (marker + "\r\n").encode("ascii")
+        write_json = prep.write_json
+        for phase in ("invoking", "returned"):
+            for code in (0, 7):
+                with self.subTest(phase=phase, code=code), tempfile.TemporaryDirectory() as temporary:
+                    directory = Path(temporary) / "preflight"
+                    directory.mkdir()
+                    def failed_write(path, value):
+                        if value["events"][-1]["phase"] == phase:
+                            raise OSError("synthetic-private-storage-error")
+                        write_json(path, value)
+                    def returned(command, **kwargs):
+                        kwargs["stdout"].write(output)
+                        return prep.subprocess.CompletedProcess(command, code)
+                    with mock.patch.object(prep, "write_json", side_effect=failed_write), \
+                         mock.patch.object(prep.subprocess, "run", side_effect=returned) as command, \
+                         mock.patch.object(prep.subprocess, "CREATE_NO_WINDOW", 0, create=True):
+                        result_code, result_output = prep.run_command(["synthetic"], directory, "cmd", cwd=directory)
+                    command.assert_called_once()
+                    self.assertEqual((result_code, result_output), (code, output))
+                    if code:
+                        with self.assertRaisesRegex(prep.PreparationError, "^shell_startup$"):
+                            prep.validate_marker(result_output, result_code, marker)
+                    else:
+                        prep.validate_marker(result_output, result_code, marker)
+                    observation = prep.public_command_observation(directory, "preflight")
+                    self.assertEqual(observation, {"status": "not_observed", "events": []} if phase == "invoking" else
+                                     {"status": "observed", "events": [self.event()]})
+
+    def test_parent_retains_command_or_worker_deadline_after_cleanup(self):
+        for worker_timeout in (False, True):
+            with self.subTest(worker_timeout=worker_timeout), tempfile.TemporaryDirectory() as temporary:
+                out = Path(temporary)
+                events = [self.event(), self.event(phase="returned", elapsed=2, code=0), self.event(command="ps51")]
+                if not worker_timeout:
+                    events.append(self.event(command="ps51", phase="timed_out", elapsed=10000))
+                process = mock.Mock(pid=123, returncode=None)
+                process.poll.side_effect = lambda: process.returncode
+                calls = []
+                def communicate(*args, **kwargs):
+                    calls.append(kwargs["timeout"])
+                    prep.write_json(out / "_private/preflight/command-events.json", {"events": events})
+                    if worker_timeout and len(calls) == 1:
+                        raise prep.subprocess.TimeoutExpired(["synthetic-worker"], 45)
+                    process.returncode = 99 if worker_timeout else 1
+                    return (b"" if worker_timeout else b'{"failure_code":"command_deadline"}', b"private-worker-error")
+                process.communicate.side_effect = communicate
+                job = mock.Mock()
+                job.drain.return_value = {"active": 0, "total": 2, "terminated": 0}
+                audit = mock.Mock(stable=True, members=[], private=[])
+                audit.process_ids.return_value = []
+                with mock.patch.object(prep, "OwnedJob", return_value=job), \
+                     mock.patch.object(prep, "JobMembers", return_value=audit), \
+                     mock.patch.object(prep.subprocess, "Popen", return_value=process), \
+                     mock.patch.object(prep.subprocess, "CREATE_NO_WINDOW", 0, create=True):
+                    result = prep.run_step("preflight", out)
+                self.assertEqual(result["status"], "failed")
+                self.assertEqual(result["failure_code"], "worker_deadline" if worker_timeout else "command_deadline")
+                self.assertEqual(result["command_observation"], {"status": "observed", "events": events})
+                self.assertTrue(result["cleanup"]["root_reaped"])
+                self.assertEqual(result["cleanup"]["root_natural_exit"], not worker_timeout)
+                self.assertEqual(result["cleanup"]["job_termination_requests"], int(worker_timeout))
+                self.assertEqual(calls, [45, 5] if worker_timeout else [45])
+                self.assertNotIn("private-worker-error", json.dumps(result))
+
+
 if __name__ == "__main__":
     unittest.main()

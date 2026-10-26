@@ -1,6 +1,11 @@
 # Working on TermForge
 
 - Read README.md, docs/PLAN.md, docs/FEATURES.md and the active milestone before making architecture decisions.
+- Follow docs/adr/0006-confirmed-project-direction.md: fully recreate WindTerm 2.7.0, with Windows 11 x64 as the first complete-version target and Windows/Linux/macOS as the final platform goal. Prioritize terminal foundations and performance before SSH/SFTP and the remaining features.
+- Preserve Alacritty as a candidate, not an approved product-core selection. Keep investigating the original code and mechanisms; internal implementation need not be identical.
+- Default to observed WindTerm 2.7.0 behavior when it conflicts with standards, third-party behavior or existing project policy. Unknown behavior requires investigation; important deviations and original-bug fixes require user confirmation.
+- The user confirms scope changes, major architecture/dependency choices, acceptance criteria and important behavior differences. Agents may autonomously research, experiment, implement, test and fix within confirmed scope. Record proposal/confirmed status and confirmation evidence in ADRs and issues; merged code or closed issues do not imply user approval.
+- Performance tolerances have no approved numeric values yet. Propose them from reliable baseline evidence and explicitly agree them with the user before using them for acceptance; keep existing diagnostic guards separate.
 - The project has a limited Windows local-shell prototype. Do not claim a daily-use release, Linux/macOS client, complete WindTerm parity or measured performance equivalence.
 - Do not lock the stack or add a large application skeleton before benchmark evidence supports it.
 - Every performance claim needs workload identity, environment, correctness checks, raw samples and limitations.
@@ -17,5 +22,5 @@
 - Keep build configurations separate in claims: default core/system backend, main candidate/system backend, and an explicit experimental backend need their own source and validation identity. Do not combine their independent successes into a joint acceptance result.
 - Source comments explain responsibilities, invariants and policy. Put changing status, batch names and future work in the owning issue; retain fixed experiment/protocol identities when they define behavior or evidence. A TODO must point to a current task rather than duplicate the roadmap.
 - Start only an issue whose real blockers are resolved. Record source observations separately from TermForge policies, implement independently, and validate the complete user-visible behavior. An unknown target behavior is an investigation item, not a passed comparison.
-- Before expanding terminal modes and common TUI implementation in R2, complete ADR-0003's actual external-core comparison; candidate build and adaptation feasibility can proceed during R1. Before product backend selection, revisit ADR-0004. Do not silently turn experimental choices into permanent architecture.
+- ADR-0003's historical external-core comparison remains evidence for continued candidate work, not user confirmation of a permanent route. Before final product core/backend/GUI selection, revisit ADR-0003/0004 under ADR-0006 and obtain the user's confirmation of a concrete evidence-backed proposal. Do not silently turn experimental choices into permanent architecture.
 - Documentation is primarily Chinese; technical identifiers and concise English summaries are welcome.

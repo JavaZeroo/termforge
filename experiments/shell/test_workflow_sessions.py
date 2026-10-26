@@ -21,6 +21,7 @@ SOURCE_FILES = (
     'experiments/shell/workflow_controller.hpp', 'experiments/shell/workflow_fixture.hpp',
     'experiments/shell/runtime_observation.hpp', 'experiments/shell/operation_observation.hpp',
     'experiments/shell/queues.hpp', 'experiments/shell/resize.hpp',
+    'experiments/shell/sender_fence.hpp', 'experiments/shell/sender_fence_pipe.hpp', 'experiments/shell/paste_checks.py',
     'experiments/shell/queue_probe.cpp',
     'experiments/shell/raw_console_receiver.hpp', 'experiments/shell/text_client.cpp', 'experiments/shell/input_client.cpp',
     'experiments/shell/test_launcher.cpp', 'experiments/shell/paste.hpp', 'experiments/shell/paste_scenario_state.hpp',
@@ -171,9 +172,12 @@ class WorkflowSessionsOracleTest(unittest.TestCase):
             out=Path(temporary)
             (out/'cancel.bin').write_bytes('汉'.encode()*6000)
             (out/'close.bin').write_bytes('汉'.encode()*256)
-            cases=[dict(name=name,target=3,total=3000000,before_sent=16384,before_accepted=18000,
+            cases=[dict(name=name,target=3,total=3000000,before_sent=16977,before_accepted=18000,
                         accepted=18000,sent=18000,in_flight=0,retained_capacity=0,checkpoint_bytes=768,
-                        received=18000 if name=='cancel' else 768,flood_observed=True,state='cancelled') for name in ('cancel','close')]
+                        received=18000 if name=='cancel' else 768,flood_observed=True,state='cancelled',
+                        fence=dict(generation=i,held=True,owned_bytes=1023,wait_finished=True,other_responsive=True,
+                                   exit='cancelled',final_state='cancelled' if name=='cancel' else 'stopped',wrong_generation_rejected=True))
+                   for i,name in enumerate(('cancel','close'),1)]
             data={'paste_cases':cases};_validate_paste_cases(out,data,3)
             for key,value in [('target',4),('in_flight',1),('retained_capacity',3000000),('checkpoint_bytes',0),('sent',17999)]:
                 broken=copy.deepcopy(data);broken['paste_cases'][0][key]=value

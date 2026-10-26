@@ -4,6 +4,8 @@
 
 每条证据仅支持其固定配置，不能把历史成功、局部模块、未合并分支拼成当前产品验收：
 
+产品方向和确认依据见 [ADR-0006](adr/0006-confirmed-project-direction.md)。历史候选比较及限定合同保留事实身份，不构成用户批准正式选型或重要差异；关键性能容差仍待可靠基线后与用户明确。
+
 | 配置 | 证据定位 |
 |---|---|
 | main 默认：自研核心 + 系统 ConPTY | R1 限定总验收和有限 VT/Unicode 子集；默认构建不需要 Rust |
@@ -51,11 +53,13 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 | 原生 margin 逐字段合同与修复候选（#56 仍开放） | [合同、源码与路径](research/conpty-native-margin-path.md)、[独立 oracle](../experiments/conpty/margin_contract.py)、[固定运行](../experiments/conpty/results/2026-10-26-native-margin-path/validation.json) | 四阶段文字/格属性/光标独立判据；系统与官方原生 final 仍红，官方80列两次原5秒生命周期失败保留。共享单 margin 源码支持小 MIT fork 候选；patch 仅可应用，未编译、未运行、不计修复。 |
 | ConPTY 系统/固定官方后端的同源 margin A/B（#41、#47 未关闭） | [合同与第一方来源](research/conpty-margin-backends.md)、[固定 175B 与 16 case 结果](../experiments/conpty/results/2026-10-26-margin-backends/validation.json) | 相同 175B、两网格/两 mode/两 fresh：系统末端 margin 错，固定官方后端的末端正确；CHAR_INFO 仍错。禁用 VT 由窄屏反例拒绝；仅诊断可行性，不证明 PR #50 或 main 联合整合通过。 |
 | 实验输入 worker 持块与停止（#62） | [sender fence 合同](research/sender-fence.md)、[固定源码与实际字段](../experiments/shell/results/2026-10-26-sender-fence/validation.json) | `519a3f3` 的系统/官方各两进程、每次 stop/cancel/竞争，共 12 条实际 worker 记录，均 join/Job0；另有各一次原 focus 单测和各 2/2 纯 CTest。明确修正旧 never-read/output-first 不能保证 16KiB 的夹具假设，同 EXE 旧顺序仍红。实现仅在 PR #50 实验整合，main 未包含；probe 未链接候选 VT，纯 EOF 为模拟，#53 UI/3MB/768B/八会话及完整官方矩阵未验收。 |
+| 实验 UI 未完成粘贴（#53） | [机制与边界](research/ui-paste-fence.md)、[旧固定记录](../experiments/shell/results/2026-10-26-ui-paste-fence/validation.json)、[组合修复](research/resize-replay-cost.md)、[最终同源码记录](../experiments/shell/results/2026-10-26-replay-cost-and-close/validation.json) | `eae4b6a` 单窗口两轮、真实EOF/无GO负例及两轮原八会话data-only通过；行键复用及关闭期间不回复分别有诊断/因果回归，原completed/stage45/退出错误保留。完整CTest54/56仍有Vim59、resize43、main7/ui52与shell180秒期限；未计真实CF/IME、完整后端或性能通过。 |
 | Native Vim 捕获目录隔离 | [原因与复验](research/vim-fixture-isolation.md)、[固定原件审计](../experiments/conpty/results/2026-10-26-vim-fixture-isolation/validation.json) | 实验分支同旧 EXE 的兄弟运行一绿一红；修正新目录隔离后完整模块9/9。仅闭合 #52 native 夹具原因；GUI stage59 仍开放，未知与受扰动探针分列。 |
 | 工作区几何与交互的固定记录 | [#38](https://github.com/JavaZeroo/termforge/issues/38)、[工作区几何与输出验证](../experiments/shell/results/2026-10-26-workspace-geometry/validation.json)、[resize 限定证据](../experiments/core/results/2026-10-26-resize-replay/validation.json) | 固定 27f376d 的客户区/布局/输出、默认/候选恢复及窄屏记录；其完整回归仍有 #36/#38 红项，不代表当前所有配置或 R2 通过。 |
 | 短窗口选区夹具与 hosted 四 shell 前置（#38） | [固定锚点回归](../experiments/shell/test_shell.py)、[准备入口](../tools/prepare_hosted_shells.py)、[夹具收尾合同](research/hosted-wsl-fixture-cleanup.md)、[云端结果与剩余阻塞](https://github.com/JavaZeroo/termforge/issues/38) | 短窗口保留相同选择断言；仅指定一次性 hosted VM 准备固定 Ubuntu。夹具强制收尾与产品自然退出分列，未知归属/回收仍失败。 |
 | 工作区恢复的运输完成端点（#38 夹具修正） | [限定合同](research/workspace-restore-transport-oracle.md)、[原失败及默认/候选验证](../experiments/shell/results/2026-10-26-workspace-transport-oracle/validation.json) | OSC 标题中的重复标记与 column-one CUP 误导旧端点；新判定保留完整 UTF-8、期限、负载及恢复断言。仅修夹具，不宣称修复产品恢复。 |
 | 工作区恢复的命令编辑前缀（#61） | [BS 因果反例及复验](../experiments/shell/results/2026-10-26-workspace-restore-bs/validation.json)、[运输完成合同](research/workspace-restore-transport-oracle.md) | 原失败中的 PowerShell 命令重绘 BS 污染当前记录；真实 LF 后仍须完整输出与新提示符，回显/拼接/非法封装拒绝保留。仅修完成 oracle，原 30/40 秒与产品断言不变。 |
+| 工作区保存的空记录重绘（#72） | [原 122 B 因果回归与三配置结果](../experiments/shell/results/2026-10-27-workspace-empty-cr/validation.json)、[运输完成合同](research/workspace-restore-transport-oracle.md) | 两次 CI 失败记录逐字节相同；空且未编辑的记录在输出前允许裸 CR，仍须完整独立标记与新提示符。默认/system、候选/system、候选/官方各两轮保存/恢复/钳制共 18 次通过；最终完整回归、跳过和未闭合项独立记录。 |
 | 候选文字观测与回显端点（#38 夹具修正） | [同源码前后对照及反事实](../experiments/shell/results/2026-10-26-native-observation/validation.json)、[标准文本投影](../experiments/core/text_projection.hpp) | 观测改用标准文本投影，回显完成后才全选；原断言和负例保留。修正夹具时序/投影，不宣称产品选择策略已变或 R2 全绿。 |
 | 拒绝负例的读取前停止（#46 夹具修正） | [原记录、反事实及 fresh 验证](../experiments/shell/results/2026-10-26-receiver-stop/validation.json)、[公开空数据夹具](../experiments/shell/fixtures/rejected-order-before-read.json) | 旧 oracle 错误拒绝“首读前已停止”；同一空数据/零读原件红→绿，正常读取约束保留。限定夹具修正，不解释 #44 的退出。 |
 | 候选 GUI 合法空标题（#45） | [真实 GUI 前后对照](../experiments/shell/results/2026-10-26-empty-title/validation.json)、[转换入口](../experiments/presentation/render.hpp)、[持续回归](../experiments/shell/candidate_title_test.cpp) | 真实空 OSC 标题使旧 UTF 转换抛异常；修后两 fresh GUI 正常，非法非空反例保留。不回填旧 normal-1 未知异常的根因。 |
@@ -67,7 +71,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 |---|---|---|
 | 构建与 CI 入口 | [贡献指南](../CONTRIBUTING.md)、[根 CMake](../CMakeLists.txt)、[CI workflow](../.github/workflows/build.yml)、[Actions 39930814167](https://github.com/JavaZeroo/termforge/actions/runs/39930814167) | 历史 2dc8d6d 的 Windows/Ubuntu 构建记录；当前入口由根 CMake/CI 定义。Linux 核心 CI 不代表 Linux 客户端。 |
 | 核心有限子集与恢复 | [核心支持合同](../experiments/core/README.md)、[Recovery 合同](../experiments/core/RECOVERY.md)、[resize 决策](adr/0005-physical-row-resize.md) | 自研有限 VT 子集、恢复与物理行裁剪合同；手写预期和拆包不能替代完整 VT/Unicode/TUI 认证。 |
-| R2 核心路线决定 | [ADR-0003](adr/0003-core-reference-and-reuse.md)、[平台/维护/接口审查](research/2026-10-25-core-route-review.md) | ADR-0003 决定 R2 新能力复用 Term/Processor，同时保留传输/呈现/自研差分。历史平台/维护评估不等于当前客户端支持；路线决定不等于整项交付。 |
+| R2 候选比较与历史路线决定 | [ADR-0003](adr/0003-core-reference-and-reuse.md)、[平台/维护/接口审查](research/2026-10-25-core-route-review.md) | 历史 Term/Processor 实验及传输/呈现/自研差分证据保留。按 ADR-0006，Alacritty 当前为待评估候选，正式核心选择由 #34 提交用户确认；历史平台/维护评估不等于客户端支持或产品选型批准。 |
 | 初始外部核心可行性（历史） | [固定版本/许可与复现入口](../experiments/candidates/alacritty/README.md)、[本地 Windows 摘要](../experiments/candidates/alacritty/results/2026-10-24-windows/summary.json)、[构建验证](../experiments/candidates/alacritty/results/2026-10-24-windows/validation.json)、[Windows/Ubuntu CI](https://github.com/JavaZeroo/termforge/actions/runs/40117504346) | 初始 crates.io 0.26.0 的固定来源、许可、构建及 headless 可行性；不是当前补丁版或产品路线验收。 |
 | 独立语义参考 | [差分入口](../experiments/differential/README.md)、[固定依赖](../experiments/differential/requirements.txt)、[2026-10-25 摘要](../experiments/differential/results/2026-10-25/summary.json) | 固定 pyte/wcwidth 的共同轨迹、精确裁决与负例；参考差异不算兼容通过，不用于性能比较。 |
 | 初始共同轨迹（历史） | [差分说明](../experiments/differential/README.md)、[逐项裁决](../experiments/differential/decisions.md)、[2026-10-25 Windows 摘要](../experiments/differential/results/2026-10-25-candidate-common-v3/summary.json) | 旧候选共同矩阵及精确参考差异；semantic_acceptance=false，保持原版本身份。 |

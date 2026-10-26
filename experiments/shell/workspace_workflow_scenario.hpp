@@ -148,7 +148,8 @@ inline void Workspace::workflow_write() {
            <<",\"before_sent\":"<<row.before.sent<<",\"before_accepted\":"<<row.before.accepted<<",\"accepted\":"<<after.accepted
            <<",\"sent\":"<<after.sent<<",\"in_flight\":"<<after.in_flight<<",\"retained_capacity\":"<<after.retained_capacity
            <<",\"state\":\""<<(after.state==tf_shell::PasteState::cancelled?"cancelled":"failed")<<"\",\"checkpoint_bytes\":"<<row.checkpoint_bytes
-           <<",\"received\":"<<row.received<<",\"flood_observed\":"<<(row.flood?"true":"false")<<'}';
+           <<",\"received\":"<<row.received<<",\"flood_observed\":"<<(row.flood?"true":"false");
+        tf_shell_test::PasteScenarioState::write_fence(out,row);out<<'}';
     }
     out<<"]}\n";out.close();require(out.good(),"workflow evidence write failed");
 }
@@ -272,20 +273,26 @@ inline void Workspace::scenario_workflow() {
         auto* target=workflow_shell("C");target->begin_output_observation();target->fixture_command(paste_scenario_.receiver_command(path));stage_=21;
     } else if(stage_==21 && paste_scenario_.receiver->ready()) {
         auto* target=workflow_shell("C");
+        target->arm_next_paste_fence(1,started_+std::chrono::milliseconds(70000));
         if(workflow_system_) {
             tf_shell_test::require_hosted_ime_input();workflow_select("C");tf_shell::write_unicode_clipboard(window_,std::u16string(paste_scenario_.large_units,u'汉'));
             workflow_system_shortcut("C",false);workflow_system_point("large-cancel-requested");stage_=221;
         } else {
             target->synthetic_paste(std::u16string(paste_scenario_.large_units,u'汉'));
             paste_scenario_.transfer=target->observed_paste();require(paste_scenario_.transfer!=nullptr,"workflow cancel transfer missing");stage_=22;
+            paste_scenario_.fence=target->observed_paste_fence();
         }
     } else if(stage_==221) {
         paste_scenario_.transfer=workflow_shell("C")->observed_paste();if(!paste_scenario_.transfer) return;
+        paste_scenario_.fence=workflow_shell("C")->observed_paste_fence();
         workflow_system_point("large-cancel-ready");stage_=22;
-    } else if(stage_==22 && paste_scenario_.transfer->progress().sent>=16384) {
+    } else if(stage_==22 && paste_scenario_.held()) {
+        paste_scenario_.other_consumed=workflow_shell("F1")->runtime_snapshot().consumed_bytes;stage_=222;
+    } else if(stage_==222 && workflow_shell("F1")->runtime_snapshot().consumed_bytes>paste_scenario_.other_consumed) {
+        paste_scenario_.pending.other_responsive=true;
         require(!tf_shell::paste_terminal(paste_scenario_.transfer->progress().state),"workflow cancel transfer completed before gate");
         paste_scenario_.receiver->allow_read();stage_=23;
-    } else if(stage_==23 && paste_scenario_.receiver->checkpoint()) {
+    } else if(stage_==23 && paste_scenario_.receiver->checkpoint() && workflow_shell("C")->observed_output().find("TF_PASTE_FLOOD")!=std::string::npos) {
         paste_scenario_.before_action(std::filesystem::path(image_).parent_path()/"cancel.bin",workflow_shell("C")->observed_output().find("TF_PASTE_FLOOD")!=std::string::npos);
         backgrounds_running();workflow_checkpoint("paste-cancel-pending",0,{"B","C"});
         workflow_select("C");paste_scenario_.key(workflow_shell("C")->handle(),VK_ESCAPE);stage_=24;
@@ -353,19 +360,25 @@ inline void Workspace::scenario_workflow() {
         auto* target=workflow_shell("C");paste_scenario_.target=target->handle();target->begin_output_observation();target->fixture_command(paste_scenario_.receiver_command(std::filesystem::path(image_).parent_path()/"close.bin"));stage_=41;
     } else if(stage_==41 && paste_scenario_.receiver->ready()) {
         auto* target=workflow_shell("C");
+        target->arm_next_paste_fence(2,started_+std::chrono::milliseconds(70000));
         if(workflow_system_) {
             tf_shell_test::require_hosted_ime_input();workflow_select("C");tf_shell::write_unicode_clipboard(window_,std::u16string(paste_scenario_.large_units,u'汉'));
             workflow_system_shortcut("C",false);workflow_system_point("large-close-requested");stage_=241;
         } else {
             target->synthetic_paste(std::u16string(paste_scenario_.large_units,u'汉'));
             paste_scenario_.transfer=target->observed_paste();require(paste_scenario_.transfer!=nullptr,"workflow close transfer missing");stage_=42;
+            paste_scenario_.fence=target->observed_paste_fence();
         }
     } else if(stage_==241) {
         paste_scenario_.transfer=workflow_shell("C")->observed_paste();if(!paste_scenario_.transfer) return;
+        paste_scenario_.fence=workflow_shell("C")->observed_paste_fence();
         workflow_system_point("large-close-ready");stage_=42;
-    } else if(stage_==42 && paste_scenario_.transfer->progress().sent>=16384) {
+    } else if(stage_==42 && paste_scenario_.held()) {
+        paste_scenario_.other_consumed=workflow_shell("F4")->runtime_snapshot().consumed_bytes;stage_=242;
+    } else if(stage_==242 && workflow_shell("F4")->runtime_snapshot().consumed_bytes>paste_scenario_.other_consumed) {
+        paste_scenario_.pending.other_responsive=true;
         require(!tf_shell::paste_terminal(paste_scenario_.transfer->progress().state),"workflow close transfer completed before gate");paste_scenario_.receiver->allow_read();stage_=43;
-    } else if(stage_==43 && paste_scenario_.receiver->checkpoint()) {
+    } else if(stage_==43 && paste_scenario_.receiver->checkpoint() && workflow_shell("C")->observed_output().find("TF_PASTE_FLOOD")!=std::string::npos) {
         paste_scenario_.before_action(std::filesystem::path(image_).parent_path()/"close.bin",workflow_shell("C")->observed_output().find("TF_PASTE_FLOOD")!=std::string::npos);
         workflow_checkpoint("paste-close-pending",5,{"B","C"});workflow_select("C");workflow_shell("C")->close();stage_=44;
     } else if(stage_==44) {

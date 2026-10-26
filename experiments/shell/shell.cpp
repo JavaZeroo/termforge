@@ -77,6 +77,8 @@ class ShellWindow {
     std::optional<tf_shell::PreparedPaste> pending_paste_;
     std::unique_ptr<tf_shell::PastePrompt> paste_prompt_;
     std::shared_ptr<tf_shell::PasteTransfer> paste_transfer_;
+    std::optional<std::pair<uint64_t,Clock::time_point>> next_paste_fence_;
+    std::shared_ptr<tf_shell_test::SenderFence> observed_paste_fence_;
     std::wstring input_status_, command_prefix_, terminal_title_;
     int wheel_remainder_ = 0;
     termforge::TextSelection selection_;
@@ -273,7 +275,13 @@ class ShellWindow {
     void start_prepared_paste(tf_shell::PreparedPaste value) {
         const auto observed_source=runtime_enabled_?std::optional<size_t>(value.source_units):std::nullopt;
         auto transfer=std::make_shared<tf_shell::PasteTransfer>(identity_,std::move(value),true);
-        if(!input_.begin_paste(transfer)) { input_status(L"Input busy; paste not started"); return; }
+        std::shared_ptr<tf_shell_test::SenderFence> fence;
+        if(next_paste_fence_) {
+            fence=std::make_shared<tf_shell_test::SenderFence>(transfer,next_paste_fence_->first,next_paste_fence_->second);
+            next_paste_fence_.reset();
+        }
+        if(!input_.begin_paste(transfer,fence)) { input_status(L"Input busy; paste not started"); return; }
+        observed_paste_fence_=std::move(fence);
         if(runtime_enabled_) runtime_paste_source_units_=observed_source;
         viewport_.bottom(parser_.screen); publish();
         paste_transfer_=std::move(transfer); input_status(L"Pasting — Escape cancels");
@@ -758,7 +766,10 @@ class ShellWindow {
         for (const auto& event : parser_.take_events()) {
             switch (event.kind) {
             case 1:
-                if (!event.bytes.empty()) require(input_.send(event.bytes), "terminal reply rejected by input queue");
+                // Closing stops input before the remaining output is drained.
+                // Queries in that output no longer have a live input peer.
+                if (!closing_ && !event.bytes.empty())
+                    require(input_.send(event.bytes), "terminal reply rejected by input queue");
                 break;
             case 2: terminal_title_ = utf16(event.bytes); break;
             case 3: terminal_title_.clear(); break;
@@ -1119,6 +1130,13 @@ public:
         return clipboard_read_?std::optional<tf_shell::ClipboardReadProgress>(clipboard_read_->progress()):std::nullopt;
     }
     std::shared_ptr<const tf_shell::PasteTransfer> observed_paste() const { return paste_transfer_; }
+    // Owned test scenarios bind before admission, including asynchronous clipboard reads.
+    void arm_next_paste_fence(uint64_t generation,Clock::time_point deadline) {
+        require(!closing_ && !paste_busy() && !next_paste_fence_ && generation && deadline>Clock::now(),
+                "paste fence must be armed before a new request");
+        next_paste_fence_=std::make_pair(generation,deadline); observed_paste_fence_.reset();
+    }
+    std::shared_ptr<tf_shell_test::SenderFence> observed_paste_fence() const { return observed_paste_fence_; }
     bool composing() const { return ime_.composing(); }
     void begin_ime_observation(unsigned generation) {
         ime_observation_.begin(generation); update_ime_caret();
@@ -1195,8 +1213,9 @@ public:
         if(had_prompt) input_status(L"Paste cancelled before sending");
         if(clipboard_read_) clipboard_read_->cancel();
         paste_prompt_.reset(); pending_paste_.reset();
+        next_paste_fence_.reset();
         if(had_prompt) restore_input_focus();
-        if(paste_transfer_) paste_transfer_->cancel();
+        input_.cancel_paste();
     }
     void synthetic_paste(std::u16string text) {
         require(!closing_ && !paste_busy(),"synthetic paste cannot replace a running operation");
@@ -1342,7 +1361,7 @@ static int application(int argc, char** argv) {
         require(argc == 1 || (argc == 4 && (std::string(argv[1]) == "--test" || std::string(argv[1]) == "--test-owned")), "termforge_shell [--test mode frame.bmp]");
         if (argc == 4) {
             mode = argv[2]; image = argv[3];
-            require(mode == "candidate-tui" || mode == "candidate-alt" || mode == "candidate-scroll" || mode == "candidate-margins" || mode == "candidate-unicode" || mode == "candidate-input-escape" || mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
+            require(mode == "candidate-tui" || mode == "candidate-alt" || mode == "candidate-scroll" || mode == "candidate-margins" || mode == "candidate-unicode" || mode == "candidate-input-escape" || mode == "normal" || mode == "close" || mode == "watchdog" || mode == "resize" || mode == "resize-close" || mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-paste-control-eof" || mode == "ui-paste-control-timeout" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions", "invalid shell test mode");
             if(mode=="ui-clipboard-system" || mode=="ui-copy-system" || mode=="ui-copy-bytes-system" || mode=="ui-copy-context-system" || mode=="ui-actions-system") tf_shell_test::require_hosted_clipboard();
             if(std::string(argv[1])=="--test") {
                 std::string gate; std::getline(std::cin, gate); require(gate == "GO", "missing owned-job gate");
@@ -1355,7 +1374,7 @@ static int application(int argc, char** argv) {
         wchar_t desktop_name[256]{}; DWORD desktop_size=0;
         require(GetUserObjectInformationW(GetThreadDesktop(GetCurrentThreadId()),UOI_NAME,desktop_name,sizeof(desktop_name),&desktop_size)!=FALSE &&
             std::wstring_view(desktop_name).find(L"TermForgeShell-")==0,"shell test requires the runner-owned desktop");
-        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions") {
+        if (mode == "ui" || mode == "ui-edit" || mode == "ui-restore" || mode == "ui-workspace-save" || mode == "ui-workspace-restore" || mode == "ui-workspace-v1" || mode == "ui-workspace-empty-create" || mode == "ui-workspace-empty" || mode == "ui-workspace-corrupt" || mode == "ui-workspace-future" || mode == "ui-workspace-write-failure" || mode == "ui-workspace-close-failure" || mode == "ui-main" || mode == "ui-dpi" || mode == "ui-monitors" || mode == "ui-shells" || mode == "ui-launch-failure" || mode == "ui-split" || mode == "ui-history" || mode == "ui-keyboard" || mode == "ui-paste" || mode == "ui-paste-system" || mode == "ui-paste-control-eof" || mode == "ui-paste-control-timeout" || mode == "ui-clipboard-system" || mode == "ui-selection" || mode == "ui-copy-system" || mode == "ui-find" || mode == "ui-find-stream" || mode == "ui-selection-bytes" || mode == "ui-copy-bytes-system" || mode == "ui-selection-context" || mode == "ui-copy-context-system" || mode == "ui-actions" || mode == "ui-actions-system" || mode == "ui-workflow-sessions") {
             Workspace window(image,mode); return window.run();
         }
         Result r;

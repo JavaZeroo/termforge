@@ -3,6 +3,19 @@ import json
 from pathlib import Path
 
 
+def validate_paste_fence(row: dict, generation: int) -> None:
+    fence = row.get("fence")
+    if (not isinstance(fence, dict) or type(fence.get("generation")) is not int or
+            fence["generation"] != generation or fence.get("held") is not True or
+            fence.get("wait_finished") is not True or fence.get("other_responsive") is not True or
+            fence.get("wrong_generation_rejected") is not True or
+            fence.get("exit") not in (("cancelled",) if row.get("name") == "cancel" else ("cancelled", "stopped")) or
+            fence.get("final_state") != ("cancelled" if row.get("name") == "cancel" else "stopped") or
+            type(fence.get("owned_bytes")) is not int or not 0 < fence["owned_bytes"] <= 1024 or
+            row["before_accepted"] - row["before_sent"] != fence["owned_bytes"]):
+        raise ValueError("window paste sender fence identity, hold, wake or isolation evidence is incomplete")
+
+
 def validate_paste_workflow(directory: Path) -> dict:
     directory = Path(directory)
     data = json.loads((directory / "paste-workflow.json").read_text(encoding="utf-8"))
@@ -18,7 +31,7 @@ def validate_paste_workflow(directory: Path) -> dict:
         raise ValueError("window paste cancellation and close evidence is incomplete")
     expected = b"\xe6\xb1\x89" * 1000000
     summary = {}
-    for row in cases:
+    for generation, row in enumerate(cases, 1):
         integers = ("target", "total", "before_sent", "before_accepted", "accepted", "sent",
                     "in_flight", "retained_capacity", "checkpoint_bytes", "received")
         if any(type(row.get(key)) is not int or row[key] < 0 for key in integers):
@@ -30,6 +43,7 @@ def validate_paste_workflow(directory: Path) -> dict:
                 row["in_flight"] or row["retained_capacity"] > 32 or row["checkpoint_bytes"] != 768 or
                 row.get("flood_observed") is not True or row.get("state") not in ("cancelled", "failed")):
             raise ValueError("window paste did not remain partial, bounded and terminal under output flood")
+        validate_paste_fence(row, generation)
         received = (directory / f"{row['name']}.bin").read_bytes()
         if (not received or len(received) != row["received"] or len(received) > row["sent"] or
                 received != expected[:len(received)]):

@@ -8,7 +8,7 @@ inline void Workspace::scenario_paste() {
     const auto directory=std::filesystem::path(image_).parent_path();
     // The close case destroys the first tab. Never retain its C++ address
     // across a message-pump turn; the saved HWND is only checked for liveness.
-    auto* first=stage_<30?tabs_.front().shell.get():nullptr;
+    auto* first=(stage_<30 || stage_==114 || stage_==120)?tabs_.front().shell.get():nullptr;
     const bool system=test_mode_=="ui-paste-system";
     auto request=[&](std::u16string text) {
         if(system) {
@@ -76,15 +76,26 @@ inline void Workspace::scenario_paste() {
         evidence.start_receiver(directory/"cancel.bin","cancel");
         first->begin_output_observation(); first->command(evidence.receiver_command(directory/"cancel.bin")); stage_=13;
     } else if(stage_==13 && evidence.receiver->ready()) {
+        const auto deadline=started_+std::chrono::milliseconds(35000);
+        first->arm_next_paste_fence(1,test_mode_=="ui-paste-control-timeout"?
+            (std::min)(deadline,Clock::now()+std::chrono::milliseconds(2000)):deadline);
         first->synthetic_paste(std::u16string(evidence.large_units,u'\u6c49'));
         evidence.transfer=first->observed_paste();
+        evidence.fence=first->observed_paste_fence();
         require(evidence.transfer!=nullptr,"cancel test could not observe its window transfer");
-        active()->command(L"\recho TF_CANCEL_RESPONSIVE\r"); stage_=14;
-    } else if(stage_==14 && evidence.transfer->progress().sent>=16384 && active()->live_contains_line("TF_CANCEL_RESPONSIVE")) {
+        stage_=14;
+    } else if(stage_==14 && evidence.held()) {
+        active()->command(L"\recho TF_CANCEL_RESPONSIVE\r"); stage_=114;
+    } else if(stage_==114 && active()->live_contains_line("TF_CANCEL_RESPONSIVE")) {
+        evidence.pending.other_responsive=true;
         require(!tf_shell::paste_terminal(evidence.transfer->progress().state),"cancel transfer completed before receiver gate");
         evidence.receiver->allow_read(); stage_=15;
-    } else if(stage_==15 && evidence.receiver->checkpoint()) {
+    } else if(stage_==15 && evidence.receiver->checkpoint() && first->observed_output().find("TF_PASTE_FLOOD")!=std::string::npos) {
         evidence.before_action(directory/"cancel.bin",first->observed_output().find("TF_PASTE_FLOOD")!=std::string::npos);
+        if(test_mode_=="ui-paste-control-eof") {
+            evidence.control->disconnect();evidence.control->dispatch();stage_=40;return;
+        }
+        if(test_mode_=="ui-paste-control-timeout") {stage_=41;return;}
         select(0); evidence.key(first->handle(),VK_ESCAPE); stage_=16;
     } else if(stage_==16 && (evidence.transfer->progress().state==tf_shell::PasteState::cancelling ||
                            evidence.transfer->progress().state==tf_shell::PasteState::cancelled)) {
@@ -97,14 +108,19 @@ inline void Workspace::scenario_paste() {
         evidence.start_receiver(directory/"close.bin","close"); evidence.target=first->handle();
         first->begin_output_observation(); first->command(evidence.receiver_command(directory/"close.bin")); stage_=19;
     } else if(stage_==19 && evidence.receiver->ready()) {
+        first->arm_next_paste_fence(2,started_+std::chrono::milliseconds(35000));
         first->synthetic_paste(std::u16string(evidence.large_units,u'\u6c49'));
         evidence.transfer=first->observed_paste();
+        evidence.fence=first->observed_paste_fence();
         require(evidence.transfer!=nullptr,"close test could not observe its window transfer");
-        select(1); active()->command(L"echo TF_CLOSE_RESPONSIVE\r"); stage_=20;
-    } else if(stage_==20 && evidence.transfer->progress().sent>=16384 && active()->live_contains_line("TF_CLOSE_RESPONSIVE")) {
+        select(1);stage_=20;
+    } else if(stage_==20 && evidence.held()) {
+        active()->command(L"echo TF_CLOSE_RESPONSIVE\r");stage_=120;
+    } else if(stage_==120 && active()->live_contains_line("TF_CLOSE_RESPONSIVE")) {
+        evidence.pending.other_responsive=true;
         require(!tf_shell::paste_terminal(evidence.transfer->progress().state),"close transfer completed before receiver gate");
         evidence.receiver->allow_read(); stage_=21;
-    } else if(stage_==21 && evidence.receiver->checkpoint()) {
+    } else if(stage_==21 && evidence.receiver->checkpoint() && first->observed_output().find("TF_PASTE_FLOOD")!=std::string::npos) {
         evidence.before_action(directory/"close.bin",first->observed_output().find("TF_PASTE_FLOOD")!=std::string::npos);
         select(0); SendMessageW(window_,WM_COMMAND,2,0); stage_=30;
     } else if(stage_==30 && collected_==1 && !IsWindow(evidence.target)) {
@@ -113,5 +129,15 @@ inline void Workspace::scenario_paste() {
         Bitmap frame(physical_width_,physical_height_); paint(frame.dc);
         const RECT rect=physical(terminal_); active()->render_to(frame.dc,rect.left,rect.top); frame.save(image_);
         stage_=100; close_all();
+    } else if(stage_==40 && evidence.transfer->progress().state==tf_shell::PasteState::failed) {
+        require(evidence.control->eof_observed() && evidence.fence->snapshot(evidence.fence->ticket()).abort_reason==
+                tf_shell_test::SenderFence::AbortReason::control_eof,"control failure requires actual pipe EOF");
+        evidence.save_control_failure(directory/"paste-control-failure.json");
+        throw std::runtime_error("paste control EOF rejected");
+    } else if(stage_==41 && evidence.transfer->progress().state==tf_shell::PasteState::failed) {
+        require(evidence.fence->snapshot(evidence.fence->ticket()).state==tf_shell_test::SenderFence::State::timed_out,
+                "missing GO requires actual fence deadline expiry");
+        evidence.save_control_failure(directory/"paste-control-failure.json");
+        throw std::runtime_error("paste control missing GO rejected");
     }
 }
