@@ -1,5 +1,7 @@
 # 性能基准
 
+当前优先建立 Windows 11 x64 上 WindTerm 2.7.0 的终端基础能力对照，吞吐、响应、CPU、内存及多会话分别留证。按 [ADR-0006](../docs/adr/0006-confirmed-project-direction.md)，具体允许波动范围在可靠基线后与用户明确，当前没有已批准的数值容差；阶段性诊断与性能验收分开。
+
 > M0/M1/M2 是协议 v0.1 的历史阶段名称；场景和测量约束继续有效，当前交付路标与执行顺序以 [R1–R5 计划](../docs/PLAN.md)及 [#3/#4 跟踪](../docs/TRACKING.md)为准。
 
 已定义 [M0 实验协议 v0.1](PROTOCOL.md)、[机器可读场景参数](cases.json) 与 [记录模板](run-template.json)。[工具使用说明](tools/README.md) 包含生成器、播放器、Windows 资源采样与自建窗口视觉诊断。已有[真实 WindTerm 诊断烟测](results/2026-10-21-windterm-smoke/README.md)，#3 的实际终端端点适配及正式开销校准仍未完成，尚无正式 WindTerm 性能基线。执行以 PROTOCOL.md 为准，本页为导航摘要。

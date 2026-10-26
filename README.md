@@ -1,10 +1,12 @@
 # TermForge
 
-**独立、完整开源地复刻 WindTerm 2.7.0，以可复现证据验证功能、交互和性能。**
+**以完整开源、可独立构建的实现复刻 WindTerm 2.7.0，优先完成 Windows 11 x64，最终覆盖 Windows、Linux、macOS。**
 
-An independent, fully open-source terminal project targeting WindTerm 2.7.0 feature, interaction and performance parity. Not affiliated with WindTerm or KingToolbox.
+An independent, fully open-source terminal project targeting WindTerm 2.7.0 feature, behavior, UI and performance parity. Windows 11 x64 first; Windows, Linux and macOS ultimately. Not affiliated with WindTerm or KingToolbox.
 
-当前是有限 Windows 本地终端原型，**R1 基础文字交互已按限定合同验收，正在推进 R2 可靠本地终端与开发版**。主线已有候选核心路线、首批流式字素、有限多会话和配置恢复；候选核心与实验 ConPTY 后端的联合配置、完整 TUI/输入、真实不同 DPI、性能预算和开发包仍需闭合。现状见[能力矩阵](docs/FEATURES.md)，接续顺序见 [R2 交付路线与验收](docs/milestones/R2-local-terminal.md)。SSH/SFTP 属于 R3，完整 UI 与 WindTerm 性能等价均未验收。`TermForge` 是暂名。
+当前是有限 Windows 本地终端原型，**R1 基础文字交互已按限定合同验收，正在推进 R2 可靠本地终端与开发版**。主线已有 Alacritty 候选实验、首批流式字素、有限多会话和配置恢复；候选核心与实验 ConPTY 后端的联合配置、完整 TUI/输入、真实不同 DPI、性能预算和开发包仍需闭合。现状见[能力矩阵](docs/FEATURES.md)，接续顺序见 [R2 交付路线与验收](docs/milestones/R2-local-terminal.md)。SSH/SFTP 属于 R3，完整 UI 与 WindTerm 性能等价均未验收。`TermForge` 是暂名。
+
+方向已经用户确认，依据见 [ADR-0006](docs/adr/0006-confirmed-project-direction.md)：原版行为优先，内部结构不强求一致，但认真研究、借鉴原版；Alacritty 保留为候选，正式选型待证据和用户确认。关键性能指标分别验收，具体允许波动范围后续与用户明确。
 
 ## 开始使用
 
@@ -24,16 +26,17 @@ An independent, fully open-source terminal project targeting WindTerm 2.7.0 feat
 |---|---|
 | 已经做了什么、还缺什么 | [当前能力与目标矩阵](docs/FEATURES.md) |
 | 最终目标与五个路标（从远到近） | [总体计划](docs/PLAN.md) |
+| 哪些方向已确认、哪些决定仍需确认 | [方向与决策权限](docs/adr/0006-confirmed-project-direction.md) |
 | 官方发行平台、架构与声明的最低系统边界 | [2.7.0 平台范围台账](research/windterm-2.7.0-platform-scope.md) |
 | R2 分几步交付，每步还缺什么 | [R2 交付路线与验收](docs/milestones/R2-local-terminal.md) |
 | 已验收的基础文字交互合同 | [R1 基础文字交互](docs/milestones/R1-local-text.md) |
 | GitHub milestones、issues 和执行顺序 | [任务跟踪](docs/TRACKING.md) |
 | 结论依据、复现命令和全部文档 | [证据索引](docs/EVIDENCE.md) · [文档导航](docs/README.md) |
 
-交付主线：**基础文字交互 → 可靠本地终端 → SSH/SFTP 远程日常版 → 高级功能/跨平台/性能 → 完整 2.7.0 复刻验收**。性能工程和定向逆向贯穿各路标，不把远期整块调查当作近期开发的前置。
+交付主线：**终端基础能力与性能 → SSH/SFTP 远程工作流 → Windows 高级功能与性能收敛 → Windows 11 x64 完整复刻验收 → Linux/macOS 扩展与全平台验收**。保留 R1–R5 编号，R5 分 Windows 和全平台两个出口；性能工程、原版研究和平台可行性调查持续推进。
 
 ## 工程原则与来源
 
-功能先通过正确性验证；性能同时衡量吞吐、交互延迟、CPU、内存、稳定性和多会话公平性。不以丢数据、无界缓冲或积压呈现换取跑分，不预设某种语言或框架必然达标。优先复用许可明确的组件，以测量和可维护性决定产品架构。
+功能先通过正确性验证；性能同时衡量吞吐、交互延迟、CPU、内存、稳定性和多会话公平性。不以丢数据、无界缓冲或积压呈现换取跑分，不预设某种语言或框架必然达标。研究原版公开代码、运行行为与关键内部机制，并比较自主实现和许可明确的组件；主要技术路线、验收门槛和重要差异经用户确认后生效。
 
 原创代码和文档采用 [MIT](LICENSE)，第三方组件保留自身许可。实现不依赖 WindTerm 二进制或专有资源；观察、静态线索和推断分别记录。详见[来源规则](docs/PROVENANCE.md)与[性能规范](benchmarks/README.md)。
