@@ -12,7 +12,7 @@
 
 ## 当前站位与下一次交付
 
-**R1 基础文字交互已按限定合同验收，当前进入R2准备。** 固定源码`ce9b24d`的[完整文字工作流及同源码回归](../experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)覆盖同一次真实八会话Copy→Paste→中文输入、后台负载、两次滚动状态/提交端点、校准阶段资源与回收。实际呈现、长期资源稳定和WindTerm性能对照仍未验收。现有空面板、有限VT核心和局部UI取证不能计作完整产品功能。
+**R1 基础文字交互已按限定合同验收，当前推进 R2，尚未达到开发版出口。** 固定源码`ce9b24d`的[完整文字工作流及同源码回归](../experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)覆盖同一次真实八会话Copy→Paste→中文输入、后台负载、两次滚动状态/提交端点、校准阶段资源与回收。实际呈现、长期资源稳定和WindTerm性能对照仍未验收。现有空面板、有限VT核心和局部UI取证不能计作完整产品功能。
 
 下一次可交付结果是：在明确支持的本地shell中可靠运行常见TUI，重启后恢复工作配置，并提供可复建的Windows开发包。平台、架构和声明的最低系统边界已由[#23](https://github.com/JavaZeroo/termforge/issues/23)的[范围台账](../research/windterm-2.7.0-platform-scope.md)冻结；[ADR-0003](adr/0003-core-reference-and-reuse.md)已决定 R2 新终端能力复用候选 Term/Processor，保留自有传输、呈现和自研差分回退。后续按该路线整合，不把路线决定当作产品能力完成。具体工作包见下文R2，执行项统一由[TRACKING](TRACKING.md)指向issues。
 

@@ -59,6 +59,7 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 | More 尾部 ECH 与捕获时序 | [#42](https://github.com/JavaZeroo/termforge/issues/42) | [限定合同](research/more-capture-ech.md)：默认 ECH、完整 More 提示、q/退出/真实 EOF；候选 pending-wrap 差异保留给 #27 | 无；#38 的子项，与 margin 修复分开；完整原始输入和旧失败保留，不静默降级为 match |
 | controller 正常退出观测缺口 | [#44](https://github.com/JavaZeroo/termforge/issues/44) | 记录 wait_exit 与 close 前 cmd 状态，定位真实 child→cmd/close 转换 | 无；#38 的子项与出口阻塞；后续同合同重跑成功不覆盖原失败 |
 | 候选 GUI 合法空标题 | [#45](https://github.com/JavaZeroo/termforge/issues/45) | 修正空 UTF-8 转换，使用真实 console 标题事件验证 GUI 存活，并保留非法非空输入拒绝 | 无；#38 的子项；新最小复现与旧 normal-1 未定位异常分列 |
+| 拒绝负例的读取前停止 | [#46](https://github.com/JavaZeroo/termforge/issues/46) | 验证 append-before-output 被拒绝时接收线程可以在首读前正常停止；只接受完整已证明的空输入停止状态 | 无；#38 的子项；与 #44 的 controller 退出问题分别验收，原完整回归失败保留 |
 
 ## 从当前状态接着做
 
