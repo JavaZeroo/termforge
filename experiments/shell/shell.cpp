@@ -5,6 +5,7 @@
 #endif
 #include "queues.hpp"
 #include "resize.hpp"
+#include "resize_trace.hpp"
 #include "keyboard.hpp"
 #include "ime.hpp"
 #include "hosted_ime_input.hpp"
@@ -38,8 +39,12 @@ class ShellWindow {
     const DWORD ui_thread_id_ = GetCurrentThreadId();
     OutputQueue output_;
     tf_conpty::Session session_;
+    tf_shell_test::ResizeTrace resize_trace_;
     InputQueue input_{session_};
-    ResizeWorker resize_{session_};
+    ResizeWorker resize_{session_, {}, [this](bool begin, unsigned generation, int rows, int columns) {
+        resize_trace_.observe(begin ? tf_shell_test::ResizeTrace::host_begin : tf_shell_test::ResizeTrace::host_end,
+                              rows, columns, generation);
+    }};
 #ifdef TERMFORGE_CANDIDATE_CORE
     termforge::CandidateTerminal parser_{24, 80, 100};
 #else
@@ -150,6 +155,7 @@ class ShellWindow {
         const int columns = std::clamp(width/renderer_->cell_width(), 1, 500);
         const int rows = std::clamp(height/renderer_->cell_height(), 1, 200);
         if (!force && !metrics_dirty_ && columns == parser_.screen.width() && rows == parser_.screen.height()) return;
+        resize_trace_.observe(tf_shell_test::ResizeTrace::desired, rows, columns, 0, stage_);
         auto surface = std::make_unique<Bitmap>(renderer_->x(columns), renderer_->y(rows));
         selection_end();
         // Preserve a current hit only across exact unchanged row projections.
@@ -158,15 +164,19 @@ class ShellWindow {
             find_resize_pending_=find_resize_anchor_.set(termforge::TextDocument(parser_.screen),*current);
             find_resize_wrapped_=find_current_->wrapped;
         }
+        resize_trace_.observe(tf_shell_test::ResizeTrace::parser_begin, rows, columns, 0, stage_);
 #ifdef TERMFORGE_CANDIDATE_CORE
         parser_.resize(rows, columns);
 #else
         parser_.screen.resize(rows, columns);
 #endif
+        resize_trace_.observe(tf_shell_test::ResizeTrace::parser_end, rows, columns, 0, stage_);
         search_changed();
         dirty_first_ = 0; dirty_last_ = rows;
         surface_ = std::move(surface); metrics_dirty_ = false; publish();
         resize_.request(rows, columns);
+        if (resize_trace_.enabled()) resize_trace_.observe(tf_shell_test::ResizeTrace::request, rows, columns,
+                                                         resize_.snapshot().requested_generation, stage_);
         require(InvalidateRect(hwnd_, nullptr, FALSE) != FALSE, "resize invalidate failed");
     }
     void change_metrics(int dpi, int zoom, bool defer_resize = false) {
@@ -717,6 +727,7 @@ class ShellWindow {
         } else if (stage_ == 40 && resize_.settled()) {
             query_size(); stage_ = 41;
         } else if (stage_ == 41 && line_is("TF_SIZE_60x12")) {
+            resize_trace_.observe(tf_shell_test::ResizeTrace::child_ack, 12, 60, 0, stage_);
             require(parser_.screen.width() == 60 && parser_.screen.height() == 12, "core size mismatch");
             ++result_.resize_verified;
             // Coalesce rapid requests without a queue of allocated surfaces.
@@ -724,6 +735,7 @@ class ShellWindow {
         } else if (stage_ == 42 && resize_.settled()) {
             query_size(); stage_ = 43;
         } else if (stage_ == 43 && line_is("TF_SIZE_100x28")) {
+            resize_trace_.observe(tf_shell_test::ResizeTrace::child_ack, 28, 100, 0, stage_);
             require(parser_.screen.width() == 100 && parser_.screen.height() == 28, "grown core size mismatch");
             ++result_.resize_verified;
             type(L"for /L %i in (1,1,1000000) do @echo TF_BUSY_%i\r"); stage_ = 4; flood_start_ = Clock::now();
@@ -772,6 +784,7 @@ class ShellWindow {
                 observed_output_.append(bytes);
                 if(observed_output_.size()>8192) observed_output_.erase(0,observed_output_.size()-8192);
             }
+            resize_trace_.observe(tf_shell_test::ResizeTrace::feed, parser_.screen.height(), parser_.screen.width(), 0, stage_, bytes);
             parser_.feed(bytes); batch += bytes.size();
 #ifdef TERMFORGE_CANDIDATE_CORE
             route_terminal_events();
@@ -955,6 +968,10 @@ public:
         DispatchMessageW(&message);
     }
     ShellWindow(std::string mode, std::string image) : mode_(std::move(mode)), image_path_(std::move(image)) {
+        wchar_t trace[2]{};
+        if ((mode_ == "resize" || mode_ == "resize-close") &&
+            GetEnvironmentVariableW(L"TERMFORGE_RESIZE_TRACE", trace, 2) == 1 && trace[0] == L'1')
+            resize_trace_.enable();
         snapshot_ = std::make_shared<const Snapshot>(viewport_.snapshot(parser_.screen), 0);
     }
     ~ShellWindow() {
@@ -1272,6 +1289,9 @@ public:
     Result collect() {
         require_ui_thread();
         if (closer_.joinable()) { closer_.join(); closer_joined_=true; }
+        if (resize_trace_.enabled() && !image_path_.empty() &&
+            !resize_trace_.save(std::filesystem::path(image_path_).parent_path()))
+            std::cerr << "resize diagnostic write failed\n";
         if(runtime_enabled_ && closer_joined_) {
             if(session_closed_on_closer_) {
                 tf_shell::RuntimeSnapshot::FinalSession final;
