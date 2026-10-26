@@ -64,6 +64,7 @@ R1 的 [#12–#17 限定合同](../../docs/milestones/R1-local-text.md)和 [#18 
 - ConPTY 输出线程将最多 64 KiB 的读取块放入 256 KiB 队列；满时等待窗口消费，正常运行不丢弃字节。
 - UI 每个 16 ms 定时消息以 8 KiB 小块消费，最多 64 KiB；块间检查 4 ms 预算，随后发布一次快照。单次 feed、快照和绘制仍可能超过预算，它不是硬实时保证。解析和快照发布同属 UI 线程；dirty 范围包含内容与旧/新光标行，多次失效可合并为一次 WM_PAINT。
 - 输入写线程独立服务至多 16 KiB 的队列，每条消息不超过 1 KiB。UI 不等待 WriteFile；容量满时拒绝该次输入并发出提示，不宣称输入已成功。关闭期间停止接收新输入。
+- PR #50 实验分支的原生 worker 测试可显式预绑定 [sender fence](../../docs/research/sender-fence.md)，main 尚未包含：仅在真实已提交至少 16KiB、领取下一块并发布 in-flight 后持住 writer，cancel/stop 使用独立唤醒路径。普通产品默认关闭。队列探针先让 child 核验恰好 16KiB 后停止读，再启动原 flood/output gate；这是对宿主预接收容量假设的明确夹具修正，旧顺序可用 `--ungated-writer-observation` 保留。两种后端实际 stop/cancel/竞争与纯协议结果见[固定验证](results/2026-10-26-sender-fence/validation.json)，不代表 OS 写阻塞、候选 VT 或 #53 的 UI/3MB/768B 工作流通过。
 - resize 由独立 worker 执行，最多一个在途和一个合并请求；UI 先更新核心与快照并继续消费字节。关闭在回收 ConPTY 之前 join 此 worker。字节流没有 resize 世代边界，不保证所有中间帧及历史与 ConPTY 自身重排完全一致。
 - 关闭工作在后台执行，UI 继续消费尾部输出；停止输入写入并反复取消该线程的同步 I/O，终止本会话 Job，关闭 ConPTY，等待读取线程退出。队列排空后执行 `finish()`、提交最终画面并销毁窗口。只终止自有 Job 内的进程，包括 shell 留下的后代。
 - 正常 `exit 37` 保留实际退出码 37；关闭正在输出的会话通过 Job 取消。外部自动监督器另建拥有范围明确的 Job：宿主收到 `GO` 前不创建 shell，超时后回收整个自有树。
