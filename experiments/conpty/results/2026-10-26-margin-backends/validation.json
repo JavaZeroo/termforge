@@ -1,0 +1,2490 @@
+{
+  "schema": "termforge-conpty-margin-backend-validation-v1",
+  "base_commit": "65988f5f20f62294ff52fcac5b5b81e563f93f3b",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "system_conhost": {
+      "sha256": "e449bce01f275cd08f3d4e64bb73b3b43ae845a0dbdb3e6131426e66537705e5",
+      "fixed_file_version": "10.0.26100.9444",
+      "fixed_product_version": "10.0.26100.9444",
+      "file_version_string": "10.0.26100.8875 (WinBuild.160101.0800)",
+      "product_version_string": "10.0.26100.8875"
+    }
+  },
+  "package": {
+    "name": "Microsoft.Windows.Console.ConPTY",
+    "version": "1.25.260930003",
+    "url": "https://github.com/microsoft/terminal/releases/download/v1.25.2733.0/Microsoft.Windows.Console.ConPTY.1.25.260930003.nupkg",
+    "bytes": 1750533,
+    "sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    }
+  },
+  "official_tag": "v1.25.2733.0",
+  "official_source_commit": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+  "official_native_files": {
+    "conpty.dll": {
+      "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "bytes": 119608,
+      "pe_machine": "0x8664",
+      "fixed_file_version": "1.25.2609.30003",
+      "fixed_product_version": "1.25.2609.30003",
+      "file_version_string": "1.25.2609.30003",
+      "product_version_string": "1.25.260930003"
+    },
+    "OpenConsole.exe": {
+      "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+      "bytes": 1089376,
+      "pe_machine": "0x8664",
+      "fixed_file_version": "1.25.2609.30003",
+      "fixed_product_version": "1.25.2609.30003",
+      "file_version_string": "1.25.2609.30003",
+      "product_version_string": "1.25.260930003"
+    }
+  },
+  "authenticode_observation": {
+    "OpenConsole.exe": "Valid",
+    "conpty.dll": "Valid",
+    "method": "Get-AuthenticodeSignature; independent read-only observation"
+  },
+  "source_sha256": {
+    "CMakeLists.txt": "f03543ecc465967750638fa51c84a4611c8415a7af362f094aa872259641d329",
+    "experiments/conpty/margin_probe.cpp": "4dc43c132f994280367d810e1066e8dbfcc2bb273897f7e6ceebae1e6780f713",
+    "experiments/conpty/margin_run.py": "5625c7d8dde798899eeb0e50dd528c3693051776f716802e5dee94baa6ae0aba",
+    "experiments/conpty/test_margin_run.py": "07dc4dc7c510e47d25bd2578c1519223fed0886efe504650f887967e636b4106",
+    "experiments/conpty/session.hpp": "f143a858df22302a2bc4a794263ff7769f4d0cfd9537307d916feb8ad638c6b6",
+    "experiments/shell/workflow_fixture.hpp": "332d73699320a6f503fc212417a4d3820b82cc2d3feb3d1fffe3930660d57453",
+    "experiments/shell/workflow_checks.py": "0d37c7625109cdcb8281b84179a13accd363a748f3b99fdcafee22fcd6ed6e19"
+  },
+  "candidate_reused_from_commit": "b47a12a",
+  "candidate_source_files_same_as_base": {
+    "count": 29,
+    "all_equal": true,
+    "includes": [
+      "Rust source",
+      "Cargo manifests",
+      "Cargo.lock"
+    ],
+    "excludes": [
+      "build output",
+      "Python harness"
+    ]
+  },
+  "fixed_source": {
+    "bytes": 175,
+    "sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+    "changed": false
+  },
+  "fresh_matrices": 4,
+  "cases_per_matrix": 4,
+  "runs": [
+    {
+      "repeat": 0,
+      "backend_name": "system",
+      "summary_sha256": "dbe1e9da58a0887147d8cf1bbc4d439708ca509a296a25ef514b845ce7ad2944",
+      "schema": "termforge-conpty-margin-backend-v1",
+      "generated_utc": "2026-10-26T07:13:02.867199+00:00",
+      "backend": "system",
+      "probe_sha256": "b531a400134fcdff6024d2a87767014562a4e246a2f55ff726d8e31ba6d08f88",
+      "candidate_trace_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+      "terminal_main_margins_restored_in_both_sizes": false,
+      "full_r2_contract_verified": false,
+      "samples": [
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-on",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 631,
+          "transport_sha256": "c7eb5457195e16bf4d38b65078ed5430043e4a4952c92dffb91d72bdbd3b2cd3",
+          "original_decstbm_forwarded": false,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_A",
+            "REGION_B",
+            "REGION_CIXED",
+            "REGION_D",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": false,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-off",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 320,
+          "transport_sha256": "033b589a8f5765d652a7d1085f157cb255d8f0d4956e8132df1894a032867fe4",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;1HTF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              4,
+              6
+            ],
+            "alt": [
+              8,
+              5
+            ],
+            "restored": [
+              8,
+              13
+            ],
+            "final": [
+              11,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-on",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 431,
+          "transport_sha256": "cc7d7fc4d76f2b43a2fc5b12994f5e4253582ce976e623428b7a6fb946472e1c",
+          "original_decstbm_forwarded": false,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DO",
+              "NE"
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_A",
+            "REGION_B",
+            "REGION_CIXED",
+            "REGION_D",
+            "TF_MARGIN_DO",
+            "NE"
+          ],
+          "terminal_main_margins_restored": false,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-off",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 470,
+          "transport_sha256": "b075d03b6e67aaa6eb7de2ad1e27af1108735f367e039e7d7332cc448b1980f3",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_F",
+              "IXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "\u001b[2;3r"
+            ],
+            "alt": [
+              "9hALT_OUTSID",
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D"
+            ],
+            "restored": [
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049",
+              "l"
+            ],
+            "final": [
+              "ALT_D\u001b[?1049",
+              "l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;",
+              "1HTF_MARGIN_",
+              "DONE",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              6,
+              6
+            ],
+            "alt": [
+              6,
+              5
+            ],
+            "restored": [
+              6,
+              1
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_A",
+            "REGION_B",
+            "REGION_C",
+            "",
+            "_",
+            "DONE"
+          ],
+          "terminal_main_margins_restored": false,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        }
+      ]
+    },
+    {
+      "repeat": 0,
+      "backend_name": "official",
+      "summary_sha256": "99b5217bacd5d9384f8f4c2366fa24da33becfb4cd9299ca4d5ff974e69f1481",
+      "schema": "termforge-conpty-margin-backend-v1",
+      "generated_utc": "2026-10-26T07:13:03.511727+00:00",
+      "backend": {
+        "name": "Microsoft.Windows.Console.ConPTY",
+        "version": "1.25.260930003",
+        "url": "https://github.com/microsoft/terminal/releases/download/v1.25.2733.0/Microsoft.Windows.Console.ConPTY.1.25.260930003.nupkg",
+        "bytes": 1750533,
+        "sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+        "files": {
+          "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+          "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+        }
+      },
+      "probe_sha256": "b531a400134fcdff6024d2a87767014562a4e246a2f55ff726d8e31ba6d08f88",
+      "candidate_trace_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+      "terminal_main_margins_restored_in_both_sizes": true,
+      "full_r2_contract_verified": false,
+      "samples": [
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-on",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-off",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;1HTF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              4,
+              6
+            ],
+            "alt": [
+              8,
+              5
+            ],
+            "restored": [
+              8,
+              13
+            ],
+            "final": [
+              11,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-on",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DO",
+              "NE"
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DO",
+            "NE"
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-off",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 222,
+          "transport_sha256": "01064e034cc1cd3c34eae65a2f656ae940936cf381e60371b8e17428ec00617d",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_F",
+              "IXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "\u001b[2;3r"
+            ],
+            "alt": [
+              "9hALT_OUTSID",
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D"
+            ],
+            "restored": [
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049",
+              "l"
+            ],
+            "final": [
+              "ALT_D\u001b[?1049",
+              "l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;",
+              "1HTF_MARGIN_",
+              "DONE",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              6,
+              6
+            ],
+            "alt": [
+              6,
+              5
+            ],
+            "restored": [
+              6,
+              1
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DO",
+            "NE"
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        }
+      ]
+    },
+    {
+      "repeat": 1,
+      "backend_name": "system",
+      "summary_sha256": "25520a2422d0297edc8fe67560e08e556f6aa8fd07a24600b14fd65e72ea7f40",
+      "schema": "termforge-conpty-margin-backend-v1",
+      "generated_utc": "2026-10-26T07:13:04.279560+00:00",
+      "backend": "system",
+      "probe_sha256": "b531a400134fcdff6024d2a87767014562a4e246a2f55ff726d8e31ba6d08f88",
+      "candidate_trace_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+      "terminal_main_margins_restored_in_both_sizes": false,
+      "full_r2_contract_verified": false,
+      "samples": [
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-on",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 602,
+          "transport_sha256": "a2634b7dd4dd7841475b21e930953dbb69abb388e1138ee65ec1e4bbeeeca4f7",
+          "original_decstbm_forwarded": false,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_A",
+            "REGION_B",
+            "REGION_CIXED",
+            "REGION_D",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": false,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-off",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 320,
+          "transport_sha256": "1564126a6dc616a68596b6dacd5bed829503de92388381a7ff5cce9d19213e31",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;1HTF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              4,
+              6
+            ],
+            "alt": [
+              8,
+              5
+            ],
+            "restored": [
+              8,
+              13
+            ],
+            "final": [
+              11,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-on",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 431,
+          "transport_sha256": "cc7d7fc4d76f2b43a2fc5b12994f5e4253582ce976e623428b7a6fb946472e1c",
+          "original_decstbm_forwarded": false,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DO",
+              "NE"
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_A",
+            "REGION_B",
+            "REGION_CIXED",
+            "REGION_D",
+            "TF_MARGIN_DO",
+            "NE"
+          ],
+          "terminal_main_margins_restored": false,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-off",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 495,
+          "transport_sha256": "f44453e70235b7463ab525977d835436d696884b1308b870c1831831288e6a2b",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_F",
+              "IXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "\u001b[2;3r"
+            ],
+            "alt": [
+              "9hALT_OUTSID",
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D"
+            ],
+            "restored": [
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049",
+              "l"
+            ],
+            "final": [
+              "ALT_D\u001b[?1049",
+              "l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;",
+              "1HTF_MARGIN_",
+              "DONE",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              6,
+              6
+            ],
+            "alt": [
+              6,
+              5
+            ],
+            "restored": [
+              6,
+              1
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_A",
+            "REGION_B",
+            "REGION_C",
+            "",
+            "_",
+            "DONE"
+          ],
+          "terminal_main_margins_restored": false,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        }
+      ]
+    },
+    {
+      "repeat": 1,
+      "backend_name": "official",
+      "summary_sha256": "8d10dddd141d7f242cc8f567813123a24057195185d337330b71a244cb22a8b5",
+      "schema": "termforge-conpty-margin-backend-v1",
+      "generated_utc": "2026-10-26T07:13:04.903082+00:00",
+      "backend": {
+        "name": "Microsoft.Windows.Console.ConPTY",
+        "version": "1.25.260930003",
+        "url": "https://github.com/microsoft/terminal/releases/download/v1.25.2733.0/Microsoft.Windows.Console.ConPTY.1.25.260930003.nupkg",
+        "bytes": 1750533,
+        "sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+        "files": {
+          "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+          "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+        }
+      },
+      "probe_sha256": "b531a400134fcdff6024d2a87767014562a4e246a2f55ff726d8e31ba6d08f88",
+      "candidate_trace_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+      "terminal_main_margins_restored_in_both_sizes": true,
+      "full_r2_contract_verified": false,
+      "samples": [
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-on",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-off",
+          "columns": 80,
+          "rows": 24,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "restored": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "\u001b[2J\u001b[HTOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "\u001b[2;3r\u001b[?1049hALT_OUTSIDE",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;1HTF_MARGIN_DONE",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              4,
+              6
+            ],
+            "alt": [
+              8,
+              5
+            ],
+            "restored": [
+              8,
+              13
+            ],
+            "final": [
+              11,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DONE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-on",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "alt": [
+              "ALT_OUTSIDE",
+              "",
+              "",
+              "ALT_C",
+              "ALT_D",
+              "",
+              ""
+            ],
+            "restored": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "",
+              ""
+            ],
+            "final": [
+              "TOP_FIXED",
+              "REGION_A",
+              "REGION_B",
+              "REGION_CIXED",
+              "REGION_D",
+              "TF_MARGIN_DO",
+              "NE"
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              0,
+              0
+            ],
+            "alt": [
+              4,
+              5
+            ],
+            "restored": [
+              0,
+              0
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": true,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DO",
+            "NE"
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "status": "completed",
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "mode": "vt-off",
+          "columns": 12,
+          "rows": 7,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 222,
+          "transport_sha256": "01064e034cc1cd3c34eae65a2f656ae940936cf381e60371b8e17428ec00617d",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_lines": {
+            "before": [
+              "\u001b[2J\u001b[HTOP_F",
+              "IXED",
+              "REGION_A",
+              "REGION_B",
+              "BOTTOM_FIXED",
+              "",
+              "\u001b[2;3r"
+            ],
+            "alt": [
+              "9hALT_OUTSID",
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D"
+            ],
+            "restored": [
+              "E",
+              "\u001b[4;1HALT_A",
+              "ALT_B\u001b[4;5r\u001b",
+              "[5;1H",
+              "ALT_C",
+              "ALT_D\u001b[?1049",
+              "l"
+            ],
+            "final": [
+              "ALT_D\u001b[?1049",
+              "l\u001b[3;1H",
+              "REGION_C",
+              "REGION_D\u001b[6;",
+              "1HTF_MARGIN_",
+              "DONE",
+              ""
+            ]
+          },
+          "native_cursor": {
+            "before": [
+              6,
+              6
+            ],
+            "alt": [
+              6,
+              5
+            ],
+            "restored": [
+              6,
+              1
+            ],
+            "final": [
+              6,
+              0
+            ]
+          },
+          "native_restore_equal_before": false,
+          "native_main_margins_restored": false,
+          "terminal_lines": [
+            "TOP_FIXED",
+            "REGION_C",
+            "REGION_D",
+            "BOTTOM_FIXED",
+            "",
+            "TF_MARGIN_DO",
+            "NE"
+          ],
+          "terminal_main_margins_restored": true,
+          "terminal_alternate": false,
+          "replay_passed": true,
+          "replay_core_sha256": "b96618ca2a06c3eda414a468e5b9479cae7da009089fa87e6c94b7deec7b1b66",
+          "product_backend_changed": false,
+          "full_r2_contract_verified": false,
+          "presented_done": null,
+          "native": {
+            "waited": true,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        }
+      ]
+    }
+  ],
+  "focused_tests": {
+    "command": "python -m unittest experiments.conpty.test_margin_run -v",
+    "passed": 6,
+    "total": 6
+  },
+  "product_backend_changed": false,
+  "native_api_margin_gap_closed": false,
+  "full_r2_contract_verified": false,
+  "screenshots_or_user_desktop_input": false,
+  "raw_transport_committed": false,
+  "presented_done": null,
+  "remaining_gaps": [
+    "Explicit product Backend API and same-family lifetime/deployment",
+    "Native CHAR_INFO still disagrees with terminal VT result",
+    "Actual GUI query, resize, cmd, PowerShell, More, Vim, close and R1 regressions",
+    "No performance, WindTerm runtime equivalence or full R2 acceptance claim"
+  ]
+}
