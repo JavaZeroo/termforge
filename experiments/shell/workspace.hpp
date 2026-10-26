@@ -49,6 +49,9 @@ class Workspace {
     std::unique_ptr<tf_shell_test::ProductImeScenarioState> ime_scenario_;
     std::unique_ptr<tf_shell_test::WorkflowScenarioState> workflow_;
     std::unique_ptr<tf_shell_test::WorkflowSystemState> workflow_system_;
+    tf_conpty::Handle shell_size_release_;
+    std::wstring shell_size_event_;
+    bool shell_size_fence_observed_ = false;
     int width_ = 1360, height_ = 860, dpi_ = 96;
     int physical_width_ = 1360, physical_height_ = 860;
     int left_ = 226, right_ = 226, left_middle_ = 289, right_middle_ = 289;

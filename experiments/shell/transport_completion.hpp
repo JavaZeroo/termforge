@@ -3,7 +3,7 @@
 #include <string_view>
 
 namespace tf_shell_test {
-// An independent transport oracle for the fixed persistence commands. This is
+// An independent transport oracle for fixed persistence and size commands. This is
 // deliberately not a terminal screen/parser: it only removes complete OSC/CSI
 // envelopes and recognizes exact literal output lines followed by our prompt.
 // The fixed ConPTY output can separate its marker and prompt with an explicit
@@ -13,17 +13,19 @@ namespace tf_shell_test {
 // A command-editor BS before output invalidates that record until a real LF;
 // it cannot erase an echo prefix or splice a marker. Unknown ESC forms,
 // malformed/incomplete envelopes and other controls remain unproven.
+// A bare CR is harmless only in an empty, unedited record after an observed
+// boundary and before marker output. It cannot discard text or end a record.
 // ShellWindow retains its independent 8192-byte observation cap.
 inline bool transport_output_completed(std::string_view raw, std::string_view marker) {
     if(marker.empty()) return false;
     for(const unsigned char byte:marker) if(byte<0x20 || byte==0x7f) return false;
     const auto prompt=[](std::string_view line) { return line=="TF>" || line=="TF> "; };
     std::string line;
-    bool output_seen=false,prompt_seen=false,literal_line=true;
+    bool output_seen=false,prompt_seen=false,literal_line=true,record_boundary=false;
     const auto end_line=[&] {
         if(literal_line && line==marker) output_seen=true;
         else if(literal_line && output_seen && prompt(line)) prompt_seen=true;
-        line.clear(); literal_line=true;
+        line.clear(); literal_line=true; record_boundary=true;
     };
     for(std::size_t i=0;i<raw.size();) {
         const auto byte=static_cast<unsigned char>(raw[i++]);
@@ -73,9 +75,11 @@ inline bool transport_output_completed(std::string_view raw, std::string_view ma
                 if(!terminated) return false;
             } else return false;
         } else if(byte=='\r') {
-            // CR alone may overwrite an echo; only a following LF proves the
-            // literal output line has completed.
-            if(i==raw.size() || raw[i]!='\n') return false;
+            // Only CRLF completes literal text. An empty redraw before the
+            // marker leaves the record empty and still needs fresh output.
+            if(i==raw.size() || raw[i]!='\n') {
+                if(!record_boundary || !line.empty() || !literal_line || output_seen) return false;
+            }
         } else if(byte=='\n') {
             end_line();
         } else if(byte=='\b') {
