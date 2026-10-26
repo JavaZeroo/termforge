@@ -35,7 +35,7 @@
 | 工作 | 责任任务 | 完成条件的归属 |
 |---|---|---|
 | 持续输出中的 Ctrl-C 历史失败 | [原始 ETX 回归 #36](https://github.com/JavaZeroo/termforge/issues/36) | 有界定位历史因果与原生交付；后续通过不回填旧因 |
-| 工作区恢复与显式后端回归 | [恢复 stage1 #61](https://github.com/JavaZeroo/termforge/issues/61) · [InputPump gate #62](https://github.com/JavaZeroo/termforge/issues/62) · [工作区 stage52 #63](https://github.com/JavaZeroo/termforge/issues/63) | 原完整回归和单项重放均保留；不放宽期限、负载或几何断言 |
+| 新增实际回归 | [恢复 oracle 修正 #61](https://github.com/JavaZeroo/termforge/issues/61) · [InputPump gate #62](https://github.com/JavaZeroo/termforge/issues/62) · [工作区 stage52 #63](https://github.com/JavaZeroo/termforge/issues/63) · [hosted reverse #66](https://github.com/JavaZeroo/termforge/issues/66) | #61 有同字节因果与两配置限定修正；其余真实失败继续开放，不放宽期限、负载或几何断言 |
 | 原 10 秒纯夹具超时 | [IME inventory 定位 #40](https://github.com/JavaZeroo/termforge/issues/40) | 阶段与清理已补齐；下一步是固定源码/宿主的有界原因定位 |
 | controller 自然退出 | [close 前退出 #44](https://github.com/JavaZeroo/termforge/issues/44) | 保留 send/wait/pre-close 与清理差异；不能以 close 后结果当自然退出 |
 | 旧 normal-1 未知异常 | [事件转换边界 #57](https://github.com/JavaZeroo/termforge/issues/57) | 独立于已修合法空标题 #45；原事件 kind/载荷未知，不能回填根因 |

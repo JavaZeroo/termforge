@@ -1,0 +1,323 @@
+{
+  "schema": "termforge-native-margin-path-v1",
+  "source_commit": "3d6d44d3b3e9a9a3e41da98e8711e9f19a211fd8",
+  "host": {
+    "system": "Windows",
+    "version": "10.0.26200",
+    "machine": "AMD64"
+  },
+  "probe_source_unchanged": true,
+  "flags": 0,
+  "child_wait_ms": 5000,
+  "outer_timeout_s": 15,
+  "cleanup_budget_s": 5,
+  "probe_binary_sha256": "82bd95882be25b304a04ec835e77e6dfac02b8d44c1daf71fed2295f2c024be5",
+  "candidate_trace_binary_sha256": "6dbe42cfefc8b5df64e652193d3b5863fbf679f12ccfa2e422d9ca1e9e1a5c3d",
+  "candidate_trace_identity": "0.26.1-dev+termforge.4 (separate frozen build, not joint product acceptance)",
+  "package": {
+    "name": "Microsoft.Windows.Console.ConPTY",
+    "version": "1.25.260930003",
+    "url": "https://github.com/microsoft/terminal/releases/download/v1.25.2733.0/Microsoft.Windows.Console.ConPTY.1.25.260930003.nupkg",
+    "bytes": 1750533,
+    "sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    }
+  },
+  "upstream_commit": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+  "upstream_source_sha256": {
+    "src/host/screenInfo.cpp": "fced7e15d63ce8e7cf791d09fd1ba57a46a7bf65430e8770a372340650b483b0",
+    "src/host/screenInfo.hpp": "a6ea94d71190d758429a8684887d5a60809cee1b5da4c7364facebfe9cfb003c",
+    "src/host/outputStream.cpp": "b83df3a1dc7f9aa80dad7d5b0d5de242f947e866cfa3b8ab69fdbefbc724181e",
+    "src/terminal/adapter/adaptDispatch.cpp": "8a3efbcb63c1023dc138e49aed90eeb36ac75f67de1a348ab969440894813560",
+    "src/terminal/adapter/adaptDispatch.hpp": "db406433e54c4b8857da7aa686ee4cc481e419b4f5b735b742dca5804e00939f",
+    "src/terminal/adapter/ut_adapter/adapterTest.cpp": "fb622455a23bd6e86a68c648662019c2facac2212c132af386837add82af3489",
+    "src/winconpty/winconpty.h": "61b125f4a7111b73a28a1d65fb0cfe1748b701707ff2ceda27590aa5af01b840",
+    "LICENSE": "5d177f23ecfeb0ea8e050b6a5a16355e1ae9a0b286436ca8f83ed08b3795be6b"
+  },
+  "patch": {
+    "path": "experiments/conpty/upstream/dc8-native-margin-candidate.patch",
+    "sha256": "dc27377e399bd0217a0b76e16cc89f087c1b781929e4c958ad30c3a475322b81",
+    "application_check_passed": true,
+    "compiled": false,
+    "upstream_test_executed": false,
+    "runtime_verified": false,
+    "application_mode": "git apply --unidiff-zero --check"
+  },
+  "samples": [
+    {
+      "backend": "official-flags0",
+      "grid": "80x24",
+      "batch": "initial",
+      "status": "failed",
+      "failure_code": "native_report",
+      "native_contract": null,
+      "host_exit_observation": {
+        "waited": false,
+        "exit_code": 3221225786,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0
+      },
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_outer_cleanup": false
+    },
+    {
+      "backend": "system",
+      "grid": "12x7",
+      "status": "completed",
+      "failure_code": null,
+      "lifecycle": {
+        "waited": true,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0
+      },
+      "forced_outer_cleanup": false,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "process_reaped": true,
+      "streams_drained": true,
+      "native_contract": {
+        "schema": "termforge-native-margin-contract-v1",
+        "columns": 12,
+        "rows": 7,
+        "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+        "initial_native_attribute": 7,
+        "stages": {
+          "before": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "alt": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "restored": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "final": {
+            "text": false,
+            "cell_text": false,
+            "cells_and_attributes": false,
+            "cursor": true,
+            "passed": false
+          }
+        },
+        "all_native_stages_passed": false,
+        "unmeasured": [
+          "styled_source",
+          "history",
+          "resize",
+          "terminal_stage_cursors"
+        ],
+        "full_r2_contract_verified": false
+      },
+      "transport_bytes": 431,
+      "transport_sha256": "cdc049f548b0b864cb2f2214ecf7fb02ad9c46e22d30cd8bd933625651efe963",
+      "terminal_main_margins_restored": false
+    },
+    {
+      "backend": "system",
+      "grid": "80x24",
+      "status": "completed",
+      "failure_code": null,
+      "lifecycle": {
+        "waited": true,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0
+      },
+      "forced_outer_cleanup": false,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "process_reaped": true,
+      "streams_drained": true,
+      "native_contract": {
+        "schema": "termforge-native-margin-contract-v1",
+        "columns": 80,
+        "rows": 24,
+        "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+        "initial_native_attribute": 7,
+        "stages": {
+          "before": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "alt": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "restored": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "final": {
+            "text": false,
+            "cell_text": false,
+            "cells_and_attributes": false,
+            "cursor": true,
+            "passed": false
+          }
+        },
+        "all_native_stages_passed": false,
+        "unmeasured": [
+          "styled_source",
+          "history",
+          "resize",
+          "terminal_stage_cursors"
+        ],
+        "full_r2_contract_verified": false
+      },
+      "transport_bytes": 631,
+      "transport_sha256": "6f6377c54ce2c83f0c3f4a3e9f581cdf44798791dd207c05efe7bfa346ede7a2",
+      "terminal_main_margins_restored": false
+    },
+    {
+      "backend": "official-flags0",
+      "grid": "12x7",
+      "status": "completed",
+      "failure_code": null,
+      "lifecycle": {
+        "waited": true,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0
+      },
+      "forced_outer_cleanup": false,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "process_reaped": true,
+      "streams_drained": true,
+      "native_contract": {
+        "schema": "termforge-native-margin-contract-v1",
+        "columns": 12,
+        "rows": 7,
+        "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+        "initial_native_attribute": 7,
+        "stages": {
+          "before": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "alt": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "restored": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "final": {
+            "text": false,
+            "cell_text": false,
+            "cells_and_attributes": false,
+            "cursor": true,
+            "passed": false
+          }
+        },
+        "all_native_stages_passed": false,
+        "unmeasured": [
+          "styled_source",
+          "history",
+          "resize",
+          "terminal_stage_cursors"
+        ],
+        "full_r2_contract_verified": false
+      },
+      "transport_bytes": 218,
+      "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+      "terminal_main_margins_restored": true
+    },
+    {
+      "backend": "official-flags0",
+      "grid": "80x24",
+      "status": "failed",
+      "failure_code": "native_report",
+      "lifecycle": null,
+      "forced_outer_cleanup": false,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "process_reaped": true,
+      "streams_drained": true,
+      "native_contract": null,
+      "transport_bytes": 218,
+      "host_exit_observation": {
+        "waited": false,
+        "exit_code": 3221225786,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0
+      }
+    }
+  ],
+  "configuration_error_batch": {
+    "preserved_privately": true,
+    "reason": "default C++ trace used instead of Rust candidate; replay rejected, excluded from semantic samples"
+  },
+  "full_r2_contract_verified": false,
+  "issue56_complete": false
+}

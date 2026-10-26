@@ -52,6 +52,14 @@ def validate_result(result, floor, expected):
         raise ValueError("mismatched requested CPU floor")
     if result.get("counter_off_is_uninstrumented") is not False:
         raise ValueError("counter-off provenance missing")
+    # Historical binaries lack this field and remain wrapped diagnostics.
+    # Requiring an absent wrapper is opt-in and must be reported explicitly by
+    # the binary; observe=0 alone never satisfies that requirement.
+    wrapper = expected.get("allocator_wrapper_compiled", True)
+    reported_wrapper = result.get("allocator_wrapper_compiled", True)
+    if (("allocator_wrapper_compiled" in expected and "allocator_wrapper_compiled" not in result) or
+            reported_wrapper is not wrapper):
+        raise ValueError("allocator wrapper build identity mismatch")
     if result["kind"] == "calibration":
         if expected["kind"] != "calibration":
             raise ValueError("unexpected calibration response")
@@ -81,11 +89,11 @@ def validate_result(result, floor, expected):
         raise ValueError("unexpected continuous interval endpoint")
     if result["receive_seconds"] is not None or result["presented_done"] is not None:
         raise ValueError("unmeasured endpoints must remain unknown")
-    if result["observe"]:
+    if result["observe"] and wrapper:
         if result["ordinary_allocations"] <= 0 or result["ordinary_allocated_bytes"] <= 0:
             raise ValueError("allocation observer did not record any work")
     elif result["ordinary_allocations"] is not None or result["ordinary_allocated_bytes"] is not None:
-        raise ValueError("counter-off counts should be unknown")
+        raise ValueError("allocation metrics must be unknown for this observer/build")
 
 
 def execute(command, floor, expected, timeout=90):

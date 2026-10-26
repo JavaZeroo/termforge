@@ -1,0 +1,48 @@
+--- a/src/terminal/adapter/adaptDispatch.hpp
++++ b/src/terminal/adapter/adaptDispatch.hpp
+@@ -330,0 +331,3 @@
++        // The alternate buffer is freshly created, while the hidden main
++        // buffer retains its own margins until it becomes active again.
++        til::inclusive_rect _mainScrollMargins{};
+--- a/src/terminal/adapter/adaptDispatch.cpp
++++ b/src/terminal/adapter/adaptDispatch.cpp
+@@ -1747,0 +1748,5 @@
++        if (!_usingAltBuffer)
++        {
++            _mainScrollMargins = _scrollMargins;
++        }
++        _scrollMargins = {};
+@@ -1752,0 +1758,4 @@
++        if (_usingAltBuffer)
++        {
++            _scrollMargins = _mainScrollMargins;
++        }
+--- a/src/terminal/adapter/ut_adapter/adapterTest.cpp
++++ b/src/terminal/adapter/ut_adapter/adapterTest.cpp
+@@ -2994,0 +2995,26 @@
++    TEST_METHOD(AlternateScreenMarginsTest)
++    {
++        _testGetSet->PrepData();
++        _pDispatch->SetTopBottomScrollingMargins(2, 3);
++        const auto mainMargins = _pDispatch->_scrollMargins;
++
++        // A redundant main-buffer request must not lose the current margins.
++        _pDispatch->ResetMode(DispatchTypes::ASB_AlternateScreenBuffer);
++        VERIFY_ARE_EQUAL(mainMargins, _pDispatch->_scrollMargins);
++
++        _pDispatch->SetMode(DispatchTypes::ASB_AlternateScreenBuffer);
++        VERIFY_ARE_EQUAL(til::inclusive_rect{}, _pDispatch->_scrollMargins);
++        _pDispatch->SetTopBottomScrollingMargins(4, 5);
++        VERIFY_ARE_EQUAL(3, _pDispatch->_scrollMargins.top);
++        VERIFY_ARE_EQUAL(4, _pDispatch->_scrollMargins.bottom);
++
++        // A new alternate replaces the previous alternate, not the main state.
++        _pDispatch->SetMode(DispatchTypes::ASB_AlternateScreenBuffer);
++        VERIFY_ARE_EQUAL(til::inclusive_rect{}, _pDispatch->_scrollMargins);
++        _pDispatch->SetTopBottomScrollingMargins(4, 5);
++        _pDispatch->ResetMode(DispatchTypes::ASB_AlternateScreenBuffer);
++        VERIFY_ARE_EQUAL(mainMargins, _pDispatch->_scrollMargins);
++        _pDispatch->ResetMode(DispatchTypes::ASB_AlternateScreenBuffer);
++        VERIFY_ARE_EQUAL(mainMargins, _pDispatch->_scrollMargins);
++    }
++

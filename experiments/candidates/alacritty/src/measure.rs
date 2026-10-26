@@ -2,9 +2,7 @@
 #[path = "main.rs"]
 mod trace;
 
-use std::alloc::{GlobalAlloc, Layout, System};
 use std::env;
-use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::time::Instant;
 
 use alacritty_terminal::term::{Config, Term};
@@ -12,27 +10,58 @@ use alacritty_terminal::vte::ansi::Processor;
 use serde_json::{Value, json};
 use trace::{Listener, Size};
 
-struct CountingAllocator;
-static OBSERVE: AtomicBool = AtomicBool::new(false);
-static ALLOCATIONS: AtomicUsize = AtomicUsize::new(0);
-static ALLOCATED_BYTES: AtomicUsize = AtomicUsize::new(0);
+#[cfg(feature = "measure-allocation-counting")]
+mod allocation {
+    use std::alloc::{GlobalAlloc, Layout, System};
+    use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
-unsafe impl GlobalAlloc for CountingAllocator {
-    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        if OBSERVE.load(Ordering::Relaxed) {
-            ALLOCATIONS.fetch_add(1, Ordering::Relaxed);
-            ALLOCATED_BYTES.fetch_add(layout.size(), Ordering::Relaxed);
+    struct CountingAllocator;
+    static OBSERVE: AtomicBool = AtomicBool::new(false);
+    static ALLOCATIONS: AtomicUsize = AtomicUsize::new(0);
+    static ALLOCATED_BYTES: AtomicUsize = AtomicUsize::new(0);
+
+    unsafe impl GlobalAlloc for CountingAllocator {
+        unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+            if OBSERVE.load(Ordering::Relaxed) {
+                ALLOCATIONS.fetch_add(1, Ordering::Relaxed);
+                ALLOCATED_BYTES.fetch_add(layout.size(), Ordering::Relaxed);
+            }
+            unsafe { System.alloc(layout) }
         }
-        unsafe { System.alloc(layout) }
+
+        unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+            unsafe { System.dealloc(ptr, layout) }
+        }
     }
 
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        unsafe { System.dealloc(ptr, layout) }
+    #[global_allocator]
+    static ALLOCATOR: CountingAllocator = CountingAllocator;
+
+    pub fn start(observe: bool) {
+        ALLOCATIONS.store(0, Ordering::Relaxed);
+        ALLOCATED_BYTES.store(0, Ordering::Relaxed);
+        OBSERVE.store(observe, Ordering::Relaxed);
+    }
+
+    pub fn stop() { OBSERVE.store(false, Ordering::Relaxed); }
+
+    pub fn counts(observe: bool) -> (Option<usize>, Option<usize>) {
+        if observe {
+            (Some(ALLOCATIONS.load(Ordering::Relaxed)), Some(ALLOCATED_BYTES.load(Ordering::Relaxed)))
+        } else { (None, None) }
     }
 }
 
-#[global_allocator]
-static ALLOCATOR: CountingAllocator = CountingAllocator;
+#[cfg(not(feature = "measure-allocation-counting"))]
+mod allocation {
+    // No #[global_allocator], atomic counters or allocator forwarding path is
+    // compiled in this mode. Projection remains independently selectable.
+    pub fn start(_: bool) {}
+    pub fn stop() {}
+    pub fn counts(_: bool) -> (Option<usize>, Option<usize>) { (None, None) }
+}
+
+fn allocator_wrapper_compiled() -> bool { cfg!(feature = "measure-allocation-counting") }
 
 #[cfg(windows)]
 mod platform {
@@ -201,6 +230,15 @@ fn duration_arg(value: &str) -> Result<f64, String> {
 
 fn run() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
+    if args.len() == 2 && args[1] == "--identity" {
+        println!("{}", json!({
+            "schema": "termforge-core-cost-build-v1",
+            "allocator_wrapper_compiled": allocator_wrapper_compiled(),
+            "timing_gates_compiled": true,
+            "projection_selectable": true,
+        }));
+        return Ok(());
+    }
     if args.len() != 5 || (args[1] != "project" && args[1] != "interactive") {
         return Err("alacritty-measure project|interactive chunk observe(0|1) min_cpu_seconds".into());
     }
@@ -235,9 +273,7 @@ fn run() -> Result<(), String> {
     }
     drop(warmup);
     let preparation = oracle_started.elapsed().as_secs_f64();
-    ALLOCATIONS.store(0, Ordering::Relaxed);
-    ALLOCATED_BYTES.store(0, Ordering::Relaxed);
-    OBSERVE.store(observe, Ordering::Relaxed);
+    allocation::start(observe);
     let mut term: Option<Term<Listener>> = None;
     let interval = measure(duration, || {
         term = Some(new_term());
@@ -254,15 +290,14 @@ fn run() -> Result<(), String> {
         }
         Ok(())
     })?;
-    OBSERVE.store(false, Ordering::Relaxed);
+    allocation::stop();
     let checks = Instant::now();
     let (final_hash, final_value) = projection(term.as_mut().unwrap(), &listener)?;
     if final_hash != expected_hash || !correct(&final_value, route) {
         return Err("final state oracle failed".into());
     }
     let oracle_seconds = checks.elapsed().as_secs_f64();
-    let allocations = ALLOCATIONS.load(Ordering::Relaxed);
-    let allocated_bytes = ALLOCATED_BYTES.load(Ordering::Relaxed);
+    let (allocations, allocated_bytes) = allocation::counts(observe);
     let peak = platform::peak_working_set()?;
     let result = json!({
         "schema_version": 2,
@@ -287,9 +322,10 @@ fn run() -> Result<(), String> {
         "final_oracle_seconds": oracle_seconds,
         "oracle_scope": if observe { "warmup and final; every measured projection also hashed" } else { "warmup and final iteration" },
         "state_fnv1a64": expected_hash.to_string(),
-        "ordinary_allocations": if observe { Some(allocations) } else { None },
-        "ordinary_allocated_bytes": if observe { Some(allocated_bytes) } else { None },
-        "allocation_scope": "Rust global allocator requests; not equivalent to C++ new or live memory",
+        "ordinary_allocations": allocations,
+        "ordinary_allocated_bytes": allocated_bytes,
+        "allocator_wrapper_compiled": allocator_wrapper_compiled(),
+        "allocation_scope": if allocator_wrapper_compiled() { "Rust global allocator requests; not equivalent to C++ new or live memory" } else { "allocator wrapper absent at compile time; allocation metrics unknown" },
         "peak_working_set_bytes": peak,
         "cpu_interval_differences": 1,
         "counted_parser_destructions": interval.iterations - 1,
@@ -303,7 +339,7 @@ fn run() -> Result<(), String> {
 
 fn main() {
     if let Err(error) = run() {
-        OBSERVE.store(false, Ordering::Relaxed);
+        allocation::stop();
         eprintln!("alacritty measure failed: {error}");
         std::process::exit(2);
     }
