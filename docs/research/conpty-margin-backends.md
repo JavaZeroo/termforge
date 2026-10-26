@@ -44,4 +44,6 @@ ctest --test-dir build -C Release -R '^conpty_margin$' --output-on-failure
 
 本机系统命令返回 1，官方固定后端返回 0；返回值只约束 `vt-on` 的两个固定末端结果。`vt-off` 是保留的反例，正常退出不等于终端语义正确。监督器将 transport、native capture 和错误原文保留在 `_private`，只发布 `summary.json`；它不下载或安装后端，固定 DLL/EXE 哈希不匹配立即拒绝。原生入口必须由监督器先加入自有 Job 再发送 GO。
 
+原生探针及其控制台进程由上述自有 Job 监督；后续候选离线回放沿用 `run_trace` 的 20 秒进程期限，没有独立 Job 观测。这两个监督范围分列，原生 Job0 不代表回放进程树已验收。
+
 下一步是显式实验 backend 接口、匹配包部署与来源、同 API 族 create/resize/close、模块生命期，以及实际 GUI 的查询/resize/cmd/PowerShell/More/Vim/关闭和 R1 关键回归。源控制台仍出现 margin 差异，依赖原生 API 的应用可能与末端不同步，必须单独处理。#41、#27、#28、#35 和 R2 保持开放；本轮没有截图、用户输入桌面、实际呈现时间、WindTerm 运行等价或性能结论。
