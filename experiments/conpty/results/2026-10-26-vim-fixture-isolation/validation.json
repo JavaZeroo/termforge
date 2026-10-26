@@ -1,0 +1,213 @@
+{
+  "schema": "termforge-vim-fixture-isolation-v1",
+  "scope": "native capture fixture isolation only; GUI stage59 remains open",
+  "base_source": "af563ba15aa5abf90a09ca55eb9c177ac873ecf0",
+  "fixed_source": "aa5fbe5f61d771b5ac7716ce4e77cb143baec3ef",
+  "backend": {
+    "identity": "reviewed-side-by-side-1.25.260930003",
+    "flags": 24
+  },
+  "application": {
+    "version": "Git for Windows MSYS Vim 9.1 patches 1-532 compiled 2024-07-09",
+    "exe_sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a"
+  },
+  "binary_sha256": {
+    "old_capture": "6203c2a5ddaebf756d959456265aa64d21f9286c59730123709211120dee7941",
+    "fixed_capture": "9d0d8d186f024993915465fc52d4f9e4cba34a014baee831a96d5611b0c7e10d"
+  },
+  "source_files": {
+    "experiments\\conpty\\real_app_capture.cpp": "14579e51ab1f11967634e491b0e430f4cb29d370e2be6d6a67d7f3bc77655075",
+    "experiments\\differential\\test_real_app_matrix.py": "7182266c031682f422529a851726ac653b85ef6f9ca05aaab3cd21559e2764fb"
+  },
+  "unchanged_contract": {
+    "capture_outer_seconds": 60,
+    "gate": "GO newline after Job assignment",
+    "real_cmd_more_vim": true,
+    "new_buffer_marker": "[New]",
+    "editor_text": "TF_VIM_REAL",
+    "reader_eof_required": 109,
+    "editor_normal_exit_required": 0,
+    "startup_milliseconds": 10000,
+    "new_buffer_milliseconds": 10000,
+    "insert_milliseconds": 10000,
+    "editor_exit_milliseconds": 15000
+  },
+  "same_parent_original": [
+    {
+      "supervision": {
+        "timed_out": false,
+        "returncode": 0,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "cleanup_errors": []
+      },
+      "editor.bin": {
+        "bytes": 2099,
+        "sha256": "698a05e6e3d717fac41e72e7af4a0eb85ba946faa35c030e5e54b7687cf97e2c"
+      },
+      "shell.bin": {
+        "bytes": 64,
+        "sha256": "9c74f9134043ae20a6dccb278951365f8f65e4d13c2eef491737b5095da4538c"
+      },
+      "pager.bin": {
+        "bytes": 508,
+        "sha256": "f51912329ea7e8f696057afc48703ceced3d2e8d582f891239ebfcc2b08b1dc0"
+      },
+      "pager-lifecycle.json": {
+        "bytes": 287,
+        "sha256": "5f9cb64fee5d7f5edcf86005ab1c73c04f4dedd9a4e8975f61495235cf40c7ef"
+      },
+      "manifest.json": {
+        "bytes": 244,
+        "sha256": "dbd4eb828fa17de859963fd736d529d888aec64510b9d6523dd684d8852d3e61"
+      }
+    },
+    {
+      "supervision": {
+        "timed_out": false,
+        "returncode": 1,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "cleanup_errors": []
+      },
+      "editor.bin": {
+        "bytes": 1999,
+        "sha256": "93adf25f57b7b31eacf242fe3229786b47e5148741c8074b74e775d43254f215"
+      },
+      "shell.bin": {
+        "bytes": 64,
+        "sha256": "9c74f9134043ae20a6dccb278951365f8f65e4d13c2eef491737b5095da4538c"
+      },
+      "pager.bin": {
+        "bytes": 508,
+        "sha256": "f51912329ea7e8f696057afc48703ceced3d2e8d582f891239ebfcc2b08b1dc0"
+      },
+      "pager-lifecycle.json": {
+        "bytes": 287,
+        "sha256": "5f9cb64fee5d7f5edcf86005ab1c73c04f4dedd9a4e8975f61495235cf40c7ef"
+      },
+      "editor-failure.json": {
+        "bytes": 270,
+        "sha256": "a2a39c3f6e40ee1b56a44a2b352abd725676727d56bbe176958ff0550fc699b4"
+      },
+      "failure": {
+        "stage": "new-buffer",
+        "error": "editor new buffer was not displayed",
+        "editor_pid": 58360,
+        "editor_exit": 91,
+        "child_signaled": true,
+        "editor_bytes": 1999,
+        "active_children": 0,
+        "cleanup_complete": true,
+        "capture_overflow": false
+      }
+    }
+  ],
+  "same_parent_fixed_with_stale_parent_fixtures": [
+    {
+      "supervision": {
+        "timed_out": false,
+        "returncode": 0,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "cleanup_errors": []
+      },
+      "editor.bin": {
+        "bytes": 2099,
+        "sha256": "698a05e6e3d717fac41e72e7af4a0eb85ba946faa35c030e5e54b7687cf97e2c"
+      },
+      "shell.bin": {
+        "bytes": 64,
+        "sha256": "9c74f9134043ae20a6dccb278951365f8f65e4d13c2eef491737b5095da4538c"
+      },
+      "pager.bin": {
+        "bytes": 508,
+        "sha256": "f51912329ea7e8f696057afc48703ceced3d2e8d582f891239ebfcc2b08b1dc0"
+      },
+      "pager-lifecycle.json": {
+        "bytes": 287,
+        "sha256": "5f9cb64fee5d7f5edcf86005ab1c73c04f4dedd9a4e8975f61495235cf40c7ef"
+      },
+      "manifest.json": {
+        "bytes": 244,
+        "sha256": "dbd4eb828fa17de859963fd736d529d888aec64510b9d6523dd684d8852d3e61"
+      }
+    },
+    {
+      "supervision": {
+        "timed_out": false,
+        "returncode": 0,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "cleanup_errors": []
+      },
+      "editor.bin": {
+        "bytes": 2099,
+        "sha256": "698a05e6e3d717fac41e72e7af4a0eb85ba946faa35c030e5e54b7687cf97e2c"
+      },
+      "shell.bin": {
+        "bytes": 64,
+        "sha256": "9c74f9134043ae20a6dccb278951365f8f65e4d13c2eef491737b5095da4538c"
+      },
+      "pager.bin": {
+        "bytes": 508,
+        "sha256": "f51912329ea7e8f696057afc48703ceced3d2e8d582f891239ebfcc2b08b1dc0"
+      },
+      "pager-lifecycle.json": {
+        "bytes": 287,
+        "sha256": "5f9cb64fee5d7f5edcf86005ab1c73c04f4dedd9a4e8975f61495235cf40c7ef"
+      },
+      "manifest.json": {
+        "bytes": 244,
+        "sha256": "dbd4eb828fa17de859963fd736d529d888aec64510b9d6523dd684d8852d3e61"
+      }
+    }
+  ],
+  "regression_test": {
+    "original_binary": "failed RuntimeError real application capture failed in 10.561s",
+    "fixed_binary": "passed in 0.688s",
+    "native_gate_module": "2 tests passed in 0.784s",
+    "full_real_app_matrix_module": "9 tests passed in 11.994s",
+    "full_real_app_log_sha256": "f721167b7bfd5f971b11396fa7bda3d0e2694142682c835bd17a91b35b2f152b"
+  },
+  "gui_original_two_runs": [
+    {
+      "passed": true,
+      "outer_timeout": false,
+      "job_after": {
+        "active": 0,
+        "total": 9,
+        "terminated": 0
+      },
+      "desktop_gone": true
+    },
+    {
+      "passed": false,
+      "outer_timeout": false,
+      "job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      },
+      "desktop_gone": true
+    }
+  ],
+  "limitations": [
+    "GUI stage59 has a fresh genuine red and is not fixed by fixture-directory isolation",
+    "Historical frozen joint baseline is unchanged",
+    "Capture exit_code91 is forced cleanup after new-buffer assertion failed; it is not a natural Vim exit",
+    "No full current official CTest matrix, actual presentation or complete TUI acceptance is claimed"
+  ]
+}
