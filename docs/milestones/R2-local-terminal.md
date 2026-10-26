@@ -44,7 +44,7 @@ flowchart LR
 
 ## 下一批的任务边界
 
-1. **在已冻结基线上逐项闭合后端回归。** #55 已交付含红的真实基线；接续 #51–#53 与 #63 的独立失败。#62 的[真实 writer 持块、取消与停止夹具](../research/sender-fence.md)不降低原 4MiB/16KiB/期限，#53 已接入默认关闭的 fence，[单窗口 UI/3MB/768B 与控制故障切片](../research/ui-paste-fence.md)及[同源码两轮原八会话data-only](../research/resize-replay-cost.md)已通过；完整官方回归仍保留resize/Vim/工作区失败和shell聚合期限，真实CF/IME组合独立验收。#51–#53 可以用原冻结输入独立定位，最终修复验收须在联合配置重建；一次未复现不自动构成因果修复。
+1. **在已冻结基线上逐项闭合后端回归。** #55 已交付含红的真实基线；接续 #51–#53、#63、[#87 八会话半行观测](https://github.com/JavaZeroo/termforge/issues/87)与 [#88 恢复 stage1](https://github.com/JavaZeroo/termforge/issues/88)的独立失败。#62 的[真实 writer 持块、取消与停止夹具](../research/sender-fence.md)不降低原 4MiB/16KiB/期限，#53 已接入默认关闭的 fence，[单窗口 UI/3MB/768B 与控制故障切片](../research/ui-paste-fence.md)及[同源码两轮原八会话data-only](../research/resize-replay-cost.md)已通过；[#51 原生 viewport 修复](../research/native-viewport-resize.md)的原 resize 与 Unicode 限定回归通过，完整官方回归中的 Vim/#88、此前 #87、历史工作区失败及聚合期限证据分别保留，真实 CF/IME 组合独立验收。#51–#53 可以用原冻结输入独立定位，最终修复验收须在联合配置重建；一次未复现不自动构成因果修复。
 2. **并行处理原版对照、平台语义与性能。** [原生语义处理路径 #56](https://github.com/JavaZeroo/termforge/issues/56)先明确 #41 原合同需要什么、哪些路径可支持；保留必要的上游或独立实现工作，不用“平台不同”豁免缺口。#3/#4 优先建立原版 Windows 本地终端基线；#54 现在冻结重复方法与完成端点并定位吞吐成本，数值预算作为提案交用户确认，不等到 #34 才补性能。
 3. **在主线推进独立行为合同。** #29 核对极窄/极短、软硬行、历史/淘汰、选择/Find、连续 resize 和 child ack；#30 核对 IME 组合/提交/取消与输出/resize/切换、应用键盘/粘贴接收、实际复制及同次八会话。已验收的 #39 只提供首批字素基础，最终配置的交叉验收仍需执行。
 4. **补终端模式和应用矩阵。** #27 明确 DECOM/DECAWM、pending-wrap、保存恢复、异常序列与 margin×resize；#28 先固定应用版本/入口/动作及协议字节预期，再逐应用完成进入、操作、resize、退出、主屏恢复。Vim 的一个修复不替代完整 TUI 验收。

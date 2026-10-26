@@ -44,3 +44,5 @@ ctest --test-dir build/candidate -C Release -R '^candidate_(core|resize_replay)$
 诊断中有两组结果不进入因果证据：只保留错误字符串的缩减最终删掉全部 resize，不能作为此缺陷的最小复现；另一次用保留旧 mtime 的文件复制恢复源码，增量构建复用了旧修复二进制。后者已按实际二进制哈希排除，重新写入源码、实际编译后恢复了原 stage43 red。公开记录保留这些排除原因。
 
 六组合成探针可公开复现；原 GUI 原件保留本地，只发布审核后的状态、哈希和固定断言结果。完整 R1/R2、实际呈现、真实 CF/IME 组合与 WindTerm 对照不从本项推导，`presented_done` 保持 null。其他真实失败由对应 issue 继续跟踪。
+
+最终产品源 `92eac12` 的显式官方配置完整 CTest 为 54/56、411.59 秒，另有 12 项内部 skip；失败为 Vim stage59（#52）和第二轮工作区恢复 stage1（#88）。同次八会话工作流通过，但此前两次编号半行失败仍由 #87 跟踪。原 resize、resize-close 和 Unicode 检查通过只验收本项限定修复，不覆盖这些独立失败。

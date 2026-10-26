@@ -1,0 +1,330 @@
+{
+  "schema": 1,
+  "started_utc": "2026-10-26T20:46:12.976424+00:00",
+  "windows": "10.0.26200",
+  "backend": {
+    "name": "Microsoft.Windows.Console.ConPTY",
+    "version": "1.25.260930003",
+    "url": "https://github.com/microsoft/terminal/releases/download/v1.25.2733.0/Microsoft.Windows.Console.ConPTY.1.25.260930003.nupkg",
+    "bytes": 1750533,
+    "sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    }
+  },
+  "creation_flags": 24,
+  "probe_sha256": "a570b55f7ef0f65be01b827112905a223fb32f37a0f645ce121ead1ed6555f59",
+  "replay_sha256": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+  "sources_sha256": {
+    "resize_native_run.py": "a7fdc198a9fde7cff00ce1f74031b680e83d130e5034a612e576340e037fa1f2",
+    "resize_native_probe.cpp": "ea0f26b3cfc322929193a89ea72d3e987a2ec9f3fda87241989f508cd431336a",
+    "session.hpp": "6945e6ffba1d61e66266f867d3cd124eb63c39da37e27662a5eaf544f60ed96b",
+    "backend.hpp": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489"
+  },
+  "cpr_replies_sent": false,
+  "diagnostic_only": true,
+  "presented_done": null,
+  "cases": [
+    {
+      "case": 0,
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_outer_cleanup": false,
+      "job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "job_after_forced_cleanup": null,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": [],
+      "native": {
+        "case": 0,
+        "child_exit": 37,
+        "active_children": 0,
+        "output_eof": true,
+        "bytes": 104,
+        "resize_offset": 68,
+        "creation_flags": 24
+      },
+      "replay": {
+        "reflow_history": {
+          "native_rows_equal": false,
+          "native_cursor_equal": false
+        },
+        "native_viewport": {
+          "native_rows_equal": true,
+          "native_cursor_equal": true
+        }
+      },
+      "files_sha256": {
+        "capture.json": "e742d9102fcc20cce032abb28ccba4f638bcc1869c0fc0697654e3afaedb9a8c",
+        "go": "4cd0e21a9a0795a14ec9aa5f0e7d1abff0492565770e43eafdf1e3e8afed1f33",
+        "native-after.json": "f2a0180d23afbc07ced80b775df853d494f2c2a4dd51c81ed0292d5805cc2bec",
+        "native-before.json": "5d5d5aad2764de6a86bbc8ae7da966a482ee551d5dd15307d15ad4e9a21dfb46",
+        "native_viewport.states.jsonl": "a821dce1d169cd0890b914cffadf792855d8e54c0f1da8cc81b864946aee4b95",
+        "native_viewport.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stdout.bin": "9ee3d5cb19a9b033cd11cfdf85e9412d93b2859a8db3beb90489bab0d97e5739",
+        "plan.txt": "b168dd8cf0feafe6cdf16f210328cfa2d7345dbf15babe3d14db2a842009c625",
+        "reflow_history.states.jsonl": "84082bce93257353c0437e76c33d67049855b327875eda74207e51726154f478",
+        "reflow_history.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source.bin": "eadc97ee8bfe9eeb07261af1dfb07977b1f87b2f7884d67014e87bf31d1a57e4",
+        "transport.bin": "3312e6a95a1897d575bddb046cb67a63e3dca21e8003ae0885fb993b359ddac6"
+      }
+    },
+    {
+      "case": 1,
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_outer_cleanup": false,
+      "job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "job_after_forced_cleanup": null,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": [],
+      "native": {
+        "case": 1,
+        "child_exit": 37,
+        "active_children": 0,
+        "output_eof": true,
+        "bytes": 104,
+        "resize_offset": 68,
+        "creation_flags": 24
+      },
+      "replay": {
+        "reflow_history": {
+          "native_rows_equal": false,
+          "native_cursor_equal": false
+        },
+        "native_viewport": {
+          "native_rows_equal": true,
+          "native_cursor_equal": true
+        }
+      },
+      "files_sha256": {
+        "capture.json": "8ab700b25ab6634943f120d5332266ca7a9e59099797ca4d6e461bce29e5705b",
+        "go": "4cd0e21a9a0795a14ec9aa5f0e7d1abff0492565770e43eafdf1e3e8afed1f33",
+        "native-after.json": "2b154f802963e89b5e9f11e8e538880f2630749d30f1f9632cb19f8e7d076da0",
+        "native-before.json": "60f447bfdf502c98b2ea3f54cb7a33fff2cac4b53d9762d57082ebe191c526c0",
+        "native_viewport.states.jsonl": "15a5ca914be318e387b5fc2ccf753ce0d70c131134b29eb976047b843ef62544",
+        "native_viewport.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stdout.bin": "019d2c63c311d523f438bfafbcdd61674c311c22270e8d867cb808b1e786d185",
+        "plan.txt": "c1bcd96e9c95e3c21cc4b408e9ea40cc5021f13b88a91d743efc22ac70003c8c",
+        "reflow_history.states.jsonl": "009dd85a20a9b9978de33275cce7eae305d8f7563a7f60bef8916a48f6d29a10",
+        "reflow_history.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source.bin": "304dcdd68af70924614c1a1bc1aee10bfdc853403af70f8923806dacc297c770",
+        "transport.bin": "356ea650a7caad777e9b0f3b87771c380e2026c6257402cbb349b94d1d10719f"
+      }
+    },
+    {
+      "case": 2,
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_outer_cleanup": false,
+      "job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "job_after_forced_cleanup": null,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": [],
+      "native": {
+        "case": 2,
+        "child_exit": 37,
+        "active_children": 0,
+        "output_eof": true,
+        "bytes": 104,
+        "resize_offset": 68,
+        "creation_flags": 24
+      },
+      "replay": {
+        "reflow_history": {
+          "native_rows_equal": false,
+          "native_cursor_equal": false
+        },
+        "native_viewport": {
+          "native_rows_equal": true,
+          "native_cursor_equal": true
+        }
+      },
+      "files_sha256": {
+        "capture.json": "3fbf908c17f86f3691db9b6a89962c229ce5cb98ebb1ba12b9638692a641fbcd",
+        "go": "4cd0e21a9a0795a14ec9aa5f0e7d1abff0492565770e43eafdf1e3e8afed1f33",
+        "native-after.json": "22b0886b647a71cd91f317097748a798905e8ebf1ee43e4105ffb7321e09807a",
+        "native-before.json": "c99e33188a761a2d3e0368422692bcb3692ebd9c472fa944f5f9e8aff8b162e6",
+        "native_viewport.states.jsonl": "a2d0e1dd831c097f1e88a7f2aa9be865ae65e016889251fd79d1eb5d35a1720f",
+        "native_viewport.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stdout.bin": "440e0bd7905556ef498bd333555f4cba948ff7dc92c81531627b5305c3bfd492",
+        "plan.txt": "c1bcd96e9c95e3c21cc4b408e9ea40cc5021f13b88a91d743efc22ac70003c8c",
+        "reflow_history.states.jsonl": "9fc4978a7851c6eeb2156f0493b183a6555880d8b5fde3ba0a08135266cae1c0",
+        "reflow_history.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source.bin": "e218a542b2a6b18a995b9ec2673f9c54d43a2422125e382a07fffa4e7c8c156a",
+        "transport.bin": "899fa3110b3bb20cea20f9f8b715fc23d48c9f92adbe3438f85b2c7ed2b5017f"
+      }
+    },
+    {
+      "case": 3,
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_outer_cleanup": false,
+      "job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "job_after_forced_cleanup": null,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": [],
+      "native": {
+        "case": 3,
+        "child_exit": 37,
+        "active_children": 0,
+        "output_eof": true,
+        "bytes": 117,
+        "resize_offset": 81,
+        "creation_flags": 24
+      },
+      "replay": {
+        "reflow_history": {
+          "native_rows_equal": false,
+          "native_cursor_equal": false
+        },
+        "native_viewport": {
+          "native_rows_equal": true,
+          "native_cursor_equal": true
+        }
+      },
+      "files_sha256": {
+        "capture.json": "e6e425e3a94f0d9eb7d9a78ba23937ef9a1043bfca06ccfc7d6422036a584865",
+        "go": "4cd0e21a9a0795a14ec9aa5f0e7d1abff0492565770e43eafdf1e3e8afed1f33",
+        "native-after.json": "84889f050c31419780cdaac335be9e3302de905f53b42d88dc8b41c9425297a6",
+        "native-before.json": "c3f863c9a6c386ca80398353201857bede3e94e7fc447d56b9496d174bc8eeb3",
+        "native_viewport.states.jsonl": "1d318b4c79c46ca3bbfcf6b564d7cba4a1beb36519d66c8fb805cddd77fc979e",
+        "native_viewport.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stdout.bin": "f35d46efc6e4f4151ca25cf94ed01cdab5bc0a09ed53bf1c17e5493b8e081990",
+        "plan.txt": "e6a9af25ca49a6fb60ef6338fcd7c507f18cdd8ab21abe618045bc535374429a",
+        "reflow_history.states.jsonl": "dff7e610f39b72e58739ab6c8dd20558d59c7c272883acfbec3a7bdbde3e5c72",
+        "reflow_history.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source.bin": "9cb572ecac93ddcf978058226140b4ace5fc6c969a71fc793b6904476503eb11",
+        "transport.bin": "56a2e81cdb18853b817137de53c7abc21b979f2f4605630e3bc10078851effc9"
+      }
+    },
+    {
+      "case": 4,
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_outer_cleanup": false,
+      "job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "job_after_forced_cleanup": null,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": [],
+      "native": {
+        "case": 4,
+        "child_exit": 37,
+        "active_children": 0,
+        "output_eof": true,
+        "bytes": 120,
+        "resize_offset": 84,
+        "creation_flags": 24
+      },
+      "replay": {
+        "reflow_history": {
+          "native_rows_equal": false,
+          "native_cursor_equal": false
+        },
+        "native_viewport": {
+          "native_rows_equal": true,
+          "native_cursor_equal": true
+        }
+      },
+      "files_sha256": {
+        "capture.json": "de391fe6ade5415ac487afb28e85927174a56ba1b87184da97aa0fe9cb8bf59c",
+        "go": "4cd0e21a9a0795a14ec9aa5f0e7d1abff0492565770e43eafdf1e3e8afed1f33",
+        "native-after.json": "590a730384f52d89474d7270070372991cbca06920cf552b6143b4d5407dc36c",
+        "native-before.json": "6b06a9e4ba13c89cbf685496c0f366f71c384b75c0da45d11c5864edfb97bc3f",
+        "native_viewport.states.jsonl": "bf314aeaa11317724d32569d029e891eec0b5fa6292c083a5538ddf4f93ab774",
+        "native_viewport.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stdout.bin": "12352f6f723177360287bd565fd73b3521a2cd62fd563874328cd6041d3ae9a5",
+        "plan.txt": "1c386f02ec8ae813e323d66b543f9f014154d66d7f54433611fafd85f0a16311",
+        "reflow_history.states.jsonl": "889bb57844746676ed1718b600cf1742979d2c31e414c1f0a357b4ed294046bf",
+        "reflow_history.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source.bin": "7e419e6d600d8ec050531c34e69485ded92323815f19e9c8a76b2ccc0f9303c7",
+        "transport.bin": "074058e95259ab33d2853655c9a461460d60dedba5a0ea5eb21504af88754641"
+      }
+    },
+    {
+      "case": 5,
+      "passed": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "forced_outer_cleanup": false,
+      "job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "job_after_forced_cleanup": null,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": [],
+      "native": {
+        "case": 5,
+        "child_exit": 37,
+        "active_children": 0,
+        "output_eof": true,
+        "bytes": 117,
+        "resize_offset": 81,
+        "creation_flags": 24
+      },
+      "replay": {
+        "reflow_history": {
+          "native_rows_equal": false,
+          "native_cursor_equal": false
+        },
+        "native_viewport": {
+          "native_rows_equal": true,
+          "native_cursor_equal": true
+        }
+      },
+      "files_sha256": {
+        "capture.json": "a11778c24628865e6b02a2ad8e8f4aa387db7d94e3952df170b66492065baaed",
+        "go": "4cd0e21a9a0795a14ec9aa5f0e7d1abff0492565770e43eafdf1e3e8afed1f33",
+        "native-after.json": "8bae95467855394186680f29db75b9556daa6888ca71c4237668759a60c11c86",
+        "native-before.json": "c3f863c9a6c386ca80398353201857bede3e94e7fc447d56b9496d174bc8eeb3",
+        "native_viewport.states.jsonl": "f9660bdcbb114d4bd713fa814b78e6c274845f82e827ae6da4b39131869e6ab9",
+        "native_viewport.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "parent.stdout.bin": "e4a81e5682d8a7fc7cd841988098ae605dca427ae0e52aa09a90b63d44218304",
+        "plan.txt": "4cc8c160bc1f563dc62bb127b145b45df5d25f3fdd3b9c260851cc8bb721c49e",
+        "reflow_history.states.jsonl": "16f7a95da0d135c06dceb9d700b491d99fa339cc4c01c4a003bdb57875050294",
+        "reflow_history.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source.bin": "9cb572ecac93ddcf978058226140b4ace5fc6c969a71fc793b6904476503eb11",
+        "transport.bin": "56a2e81cdb18853b817137de53c7abc21b979f2f4605630e3bc10078851effc9"
+      }
+    }
+  ]
+}
