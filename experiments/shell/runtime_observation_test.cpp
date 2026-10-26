@@ -58,14 +58,20 @@ static int runtime_window_case() {
         live.published_revision > initial.published_revision && !initial.window_exists,
         "independent live values survive subsequent UI output");
     window.synthetic_paste(u"RUNTIME_SENT");
-    runtime_wait(window, [&] { return !window.paste_busy(); }, "runtime synthetic transfer completes deadline");
+    runtime_wait(window, [&] {
+        return !window.paste_busy() && window.live_contains_line("TF>RUNTIME_SENT");
+    }, "runtime synthetic transfer and actual echo complete deadline");
     const auto sent = window.runtime_snapshot();
     require(!sent.paste && sent.last_terminal_paste && sent.last_terminal_paste->state == tf_shell::PasteState::completed &&
         sent.last_terminal_paste->source_units == size_t{12} && sent.last_terminal_paste->total_bytes == 12 &&
         sent.last_terminal_paste->sent_bytes == 12 && !sent.last_terminal_paste->in_flight_bytes &&
         sent.last_terminal_paste->retained_capacity_bytes <= 32,
         "terminal transfer counters survive product shared_ptr reset");
-    window.select_all_text(); window.request_find();
+    const bool echo_before_selection = window.live_contains_line("TF>RUNTIME_SENT");
+    const auto consumed_before_selection = window.runtime_snapshot().consumed_bytes;
+    window.select_all_text();
+    const bool selected_before_find = window.runtime_snapshot().selection.range.has_value();
+    window.request_find();
     require(SetWindowTextW(window.find_edit_handle(), L"TF_RUNTIME_OBSERVED") != FALSE, "runtime find literal query setup");
     runtime_wait(window, [&] { return window.search_status() == termforge::SearchStatus::complete &&
         window.current_find_range().has_value(); }, "runtime actual find finishes deadline");
@@ -75,7 +81,14 @@ static int runtime_window_case() {
         tasks.search.find_query_bytes == 19 && tasks.pending_prepared_paste && tasks.paste_prompt_present &&
         tasks.pending_prepared_bytes == 22 && tasks.pending_source_units == size_t{23} && !tasks.paste &&
         tasks.pending_prepared_capacity_bytes >= tasks.pending_prepared_bytes;
-    if (!tasks_valid) std::cerr << "runtime_tasks=" << tf_shell::runtime_snapshot_json(tasks) << '\n';
+    std::cerr << "runtime_echo_stage={\"echo_visible_before_selection\":" << (echo_before_selection?"true":"false")
+                  << ",\"selected_before_find\":" << (selected_before_find?"true":"false")
+                  << ",\"echo_visible_at_tasks\":" << (window.live_contains_line("TF>RUNTIME_SENT")?"true":"false")
+                  << ",\"consumed_before_selection\":" << consumed_before_selection
+                  << ",\"consumed_at_tasks\":" << tasks.consumed_bytes << "}\n";
+    if (!tasks_valid) {
+        std::cerr << "runtime_tasks=" << tf_shell::runtime_snapshot_json(tasks) << '\n';
+    }
     require(tasks_valid,
         "actual search selection and unsent confirmation payload are observed without copying text");
     window.close();
