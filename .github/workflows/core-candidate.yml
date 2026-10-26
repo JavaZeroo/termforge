@@ -133,3 +133,4 @@ jobs:
             build/test-artifacts/candidate-fuzz/
             build/test-artifacts/measure-compare/
             build/test-artifacts/measure-interactive/
+            !build/test-artifacts/**/_private/**

@@ -37,6 +37,19 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build build --config Release --parallel 2
+      - name: Verify shell preparation guards and oracles
+        run: python -m unittest tools.test_prepare_hosted_shells -v
+      - name: Prepare hosted Windows shell prerequisites
+        if: runner.os == 'Windows'
+        run: python -m tools.prepare_hosted_shells --out local/hosted-shells
+      - name: Preserve sanitized shell preparation result
+        if: always() && runner.os == 'Windows'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: hosted-shell-preparation
+          retention-days: 14
+          if-no-files-found: warn
+          path: local/hosted-shells/summary.json
       - name: Test
         env:
           TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD: ${{ runner.os == 'Windows' && '1' || '0' }}
@@ -55,6 +68,7 @@ jobs:
             build/test-artifacts/selection-context/
             build/test-artifacts/text-actions/
             build/test-artifacts/raw-console-receiver/
+            build/test-artifacts/conpty-ctrl-c/run-*/**/sample.json
             build/test-artifacts/workflow-fixture/run-*/validation.json
             build/test-artifacts/workflow-fixture/run-*/stdout.json
             build/test-artifacts/workflow-fixture/run-*/cases/*/capture.bin
@@ -82,6 +96,7 @@ jobs:
             build/test-artifacts/workflow-sessions/run-*/fixtures/*/capture.bin.workflow.json
             build/test-artifacts/workflow-sessions/run-*/fixtures/*/capture.bin.receiver.json
             build/test-artifacts/workflow-sessions/run-*/fixtures/*/capture.bin.progress.jsonl
+            !build/test-artifacts/**/_private/**
       - name: Full ASCII state replay
         run: python -m experiments.core.run --out build/test-artifacts/replay-ascii
       - name: Full Unicode state replay
@@ -108,3 +123,4 @@ jobs:
             !build/test-artifacts/workflow-sessions/**/*.identity
             !build/test-artifacts/workflow-sessions/**/sample.json
             !build/test-artifacts/**/_resources-private/**
+            !build/test-artifacts/**/_private/**
