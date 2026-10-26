@@ -124,7 +124,11 @@ struct PasteScenarioState {
     void finish(const std::filesystem::path& capture,bool cancelled) {
         pending.after=transfer->progress(); const auto bytes=read(capture); pending.received=bytes.size();
         pending.fence_after=fence->snapshot(fence->ticket());
+        const bool woke_cancelled=pending.fence_after.wait_exit_state==SenderFence::State::cancelled;
+        const bool woke_stopped=pending.fence_after.wait_exit_state==SenderFence::State::aborted &&
+            pending.fence_after.wait_exit_reason==SenderFence::AbortReason::stop;
         paste_check(pending.fence_after.wait_finished &&
+                    (cancelled?woke_cancelled:(woke_cancelled || woke_stopped)) &&
                     (cancelled?pending.fence_after.state==SenderFence::State::cancelled:
                         pending.fence_after.state==SenderFence::State::aborted && pending.fence_after.abort_reason==SenderFence::AbortReason::stop),
                     "UI action did not wake its held writer through cancel/stop");
@@ -147,7 +151,8 @@ struct PasteScenarioState {
            <<",\"owned_bytes\":"<<row.fence_before.owned_bytes
            <<",\"wait_finished\":"<<(row.fence_after.wait_finished?"true":"false")
            <<",\"other_responsive\":"<<(row.other_responsive?"true":"false")
-           <<",\"exit\":\""<<(row.fence_after.state==SenderFence::State::cancelled?"cancelled":"stopped")
+           <<",\"exit\":\""<<(row.fence_after.wait_exit_state==SenderFence::State::cancelled?"cancelled":"stopped")
+           <<"\",\"final_state\":\""<<(row.fence_after.state==SenderFence::State::cancelled?"cancelled":"stopped")
            <<"\",\"wrong_generation_rejected\":"<<(row.wrong_generation_rejected?"true":"false")<<'}';
     }
     void save_control_failure(const std::filesystem::path& path) const {

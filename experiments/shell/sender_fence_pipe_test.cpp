@@ -42,6 +42,22 @@ int main() {
             check(!value.go(8),"wrong generation must fail");
             check(value.go(7),"matching held GO must succeed");
             check(!value.go(7),"duplicate GO must fail");check(value.writer.get(),"GO wakes writer");
+            value.fence->abort(value.fence->ticket(),SenderFence::AbortReason::stop);
+            const auto state=value.fence->snapshot(value.fence->ticket());
+            check(state.state==SenderFence::State::aborted && state.wait_exit_state==SenderFence::State::released,
+                  "later stop cannot rewrite the actual wait exit");
+        }
+        {
+            HeldTransfer value;
+            for(unsigned i=0;i<8;++i) value.pipe.send_go(7);
+            bool rejected=false;try {value.pipe.send_go(7);} catch(const std::runtime_error&) {rejected=true;}
+            check(rejected,"ninth queued command exceeds bounded budget");
+            for(unsigned i=0;i<8;++i) value.pipe.dispatch();
+            for(unsigned i=0;i<8;++i) {
+                const auto ack=value.pipe.acknowledgement();
+                check(ack && ack->generation==7 && !ack->accepted,"saturated pipe replies preserve order and rejection");
+            }
+            check(!value.pipe.acknowledgement(),"no extra reply");
         }
         {
             HeldTransfer value;value.hold();value.pipe.disconnect();value.pipe.dispatch();

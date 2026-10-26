@@ -13,6 +13,16 @@ class SenderFencePipe {
     bool eof_=false;
     static constexpr uint64_t command_limit=8;
     static void check(bool value,const char* why) { if(!value) throw std::runtime_error(why); }
+    static void create(tf_conpty::Handle& reader,tf_conpty::Handle& writer,DWORD required) {
+        HANDLE read=nullptr,write=nullptr;
+        // On failure CreatePipe's output handles are unspecified. Adopt only
+        // successful handles, then verify the actual inbound server buffer.
+        check(CreatePipe(&read,&write,nullptr,4096)!=FALSE,"fence control pipe creation failed");
+        reader.reset(read);writer.reset(write);
+        DWORD flags=0,capacity=0;
+        check(GetNamedPipeInfo(reader.get(),&flags,nullptr,&capacity,nullptr) &&
+              (flags&PIPE_SERVER_END) && capacity>=required,"fence control pipe capacity cannot hold its command budget");
+    }
     template<size_t N> static void write(HANDLE pipe,const std::array<uint64_t,N>& message) {
         DWORD size=0;
         check(WriteFile(pipe,message.data(),sizeof(message),&size,nullptr) && size==sizeof(message),"fence control write failed");
@@ -26,8 +36,8 @@ public:
     struct Ack { uint64_t generation;bool accepted; };
     explicit SenderFencePipe(std::shared_ptr<SenderFence> fence):fence_(std::move(fence)) {
         check(fence_!=nullptr,"fence control requires a transfer binding");
-        check(CreatePipe(request_read_.put(),request_write_.put(),nullptr,4096) &&
-              CreatePipe(reply_read_.put(),reply_write_.put(),nullptr,4096),"fence control pipe creation failed");
+        create(request_read_,request_write_,static_cast<DWORD>(command_limit*2*sizeof(uint64_t)));
+        create(reply_read_,reply_write_,static_cast<DWORD>(command_limit*3*sizeof(uint64_t)));
     }
     ~SenderFencePipe() {
         const auto state=fence_->snapshot(fence_->ticket()).state;

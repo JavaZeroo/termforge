@@ -176,7 +176,7 @@ class WorkflowSessionsOracleTest(unittest.TestCase):
                         accepted=18000,sent=18000,in_flight=0,retained_capacity=0,checkpoint_bytes=768,
                         received=18000 if name=='cancel' else 768,flood_observed=True,state='cancelled',
                         fence=dict(generation=i,held=True,owned_bytes=1023,wait_finished=True,other_responsive=True,
-                                   exit='cancelled' if name=='cancel' else 'stopped',wrong_generation_rejected=True))
+                                   exit='cancelled',final_state='cancelled' if name=='cancel' else 'stopped',wrong_generation_rejected=True))
                    for i,name in enumerate(('cancel','close'),1)]
             data={'paste_cases':cases};_validate_paste_cases(out,data,3)
             for key,value in [('target',4),('in_flight',1),('retained_capacity',3000000),('checkpoint_bytes',0),('sent',17999)]:

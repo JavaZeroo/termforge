@@ -9,7 +9,8 @@ def validate_paste_fence(row: dict, generation: int) -> None:
             fence["generation"] != generation or fence.get("held") is not True or
             fence.get("wait_finished") is not True or fence.get("other_responsive") is not True or
             fence.get("wrong_generation_rejected") is not True or
-            fence.get("exit") != ("cancelled" if row.get("name") == "cancel" else "stopped") or
+            fence.get("exit") not in (("cancelled",) if row.get("name") == "cancel" else ("cancelled", "stopped")) or
+            fence.get("final_state") != ("cancelled" if row.get("name") == "cancel" else "stopped") or
             type(fence.get("owned_bytes")) is not int or not 0 < fence["owned_bytes"] <= 1024 or
             row["before_accepted"] - row["before_sent"] != fence["owned_bytes"]):
         raise ValueError("window paste sender fence identity, hold, wake or isolation evidence is incomplete")

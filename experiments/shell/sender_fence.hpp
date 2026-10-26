@@ -21,6 +21,8 @@ public:
         uint64_t generation = 0;
         State state = State::armed;
         AbortReason abort_reason = AbortReason::none;
+        State wait_exit_state = State::armed;
+        AbortReason wait_exit_reason = AbortReason::none;
         bool attached = false, ever_held = false, wait_finished = false;
         size_t owned_bytes = 0;
         tf_shell::PasteProgress held_progress;
@@ -141,6 +143,8 @@ public:
         const bool woken = changed_.wait_until(lock, deadline_, [&] { return snapshot_.state != State::held; });
         if (!woken) snapshot_.state = State::timed_out;
         snapshot_.wait_finished = true;
+        snapshot_.wait_exit_state = snapshot_.state;
+        snapshot_.wait_exit_reason = snapshot_.abort_reason;
         if (snapshot_.state != State::released && snapshot_.state != State::cancelled) rejected_wait(snapshot_.state);
     }
 };
