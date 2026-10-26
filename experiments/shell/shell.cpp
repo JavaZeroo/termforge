@@ -766,7 +766,10 @@ class ShellWindow {
         for (const auto& event : parser_.take_events()) {
             switch (event.kind) {
             case 1:
-                if (!event.bytes.empty()) require(input_.send(event.bytes), "terminal reply rejected by input queue");
+                // Closing stops input before the remaining output is drained.
+                // Queries in that output no longer have a live input peer.
+                if (!closing_ && !event.bytes.empty())
+                    require(input_.send(event.bytes), "terminal reply rejected by input queue");
                 break;
             case 2: terminal_title_ = utf16(event.bytes); break;
             case 3: terminal_title_.clear(); break;
