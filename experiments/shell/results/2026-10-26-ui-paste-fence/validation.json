@@ -668,5 +668,22 @@
     "Held payload is not measured OS backpressure; workload has synchronization and is not a performance benchmark.",
     "UI observed producer, output, state and cleanup; actual presented endpoint is unknown.",
     "Raw logs and captures remain local; only synthetic byte counts, hashes and whitelisted records published."
-  ]
+  ],
+  "vim_path_followup": {
+    "source_commit": "a15eb7f67315fb53c9d66b9c5a4424e13511a311",
+    "vim_version": "9.1 patches1-532 MSYS2",
+    "vim_sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+    "sample_sha256": "5f35275f20697c8559b0b2e1b7a460b38032b9549fe0bbb60b3ccfb0ad18da01",
+    "status": "failed",
+    "failure": "candidate-tui stage59; resize command appeared in inserted text",
+    "exit_code": 2,
+    "outer_timed_out": false,
+    "job_after": {
+      "active": 0,
+      "total": 7,
+      "terminated": 0
+    },
+    "desktop_gone": true,
+    "issue": 52
+  }
 }
