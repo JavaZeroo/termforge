@@ -1,0 +1,623 @@
+{
+  "schema": "termforge-workspace-restore-bs-v1",
+  "date": "2026-10-26",
+  "scope": "R61 test completion oracle correction only; no product restore behavior change",
+  "implementation_source_commit": "3775a8e6a93fb1e27e8df5b2055d4744d304aaa6",
+  "base_commit": "3d6d44d3b3e9a9a3e41da98e8711e9f19a211fd8",
+  "original_failure_source_commit": "3e5b96d0e0854b691b6dd41821ab10b6124b83eb",
+  "original_default_shell_sha256": "3807ed087dba1269c6a28e832dfbdfd50d9a5e5907645b2d6852d1b1bd509eeb",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "source_git_blob_sha1": {
+    "CMakeLists.txt": "e864d4223fd1ef544045933c13c81f1e57faf822",
+    "experiments/shell/transport_completion.hpp": "cc56ce3abfe642aae66f5b3c21863a8c3901f75a",
+    "experiments/shell/transport_completion_test.cpp": "1707f4d42298ac8cf6d213bad582a5bee4e7da68",
+    "experiments/shell/workspace_persistence_scenario.hpp": "f7f73dbd771f559384d9b4e569d815d2ef0792da",
+    "experiments/shell/test_shell.py": "09782b1cae5afc938a67a6fbb783e6a103f0333f",
+    "experiments/shell/run.py": "271d8ac7b937027dd668dee0b3c3c66fc572aec5",
+    "experiments/shell/workspace.hpp": "f2411d64efac1d53fbdcbeafeb2f8df2e640c0b0",
+    "experiments/shell/shell.cpp": "b3681dd0a69dc013783c3d5872b4b48847e7d32e",
+    "experiments/shell/size_client.cpp": "251220197098b1b654b7554b0a727e4a2e85d7a9",
+    "experiments/shell/shell_launch.cpp": "b7414df96a8bb0c83701860410fc030bff7831b3",
+    "experiments/shell/shell_launch.hpp": "8a72ad1e23b3889740026db56e0b954ed1385542",
+    "experiments/core/candidate_terminal.cpp": "cc12246ee7e94382bf95835cd45e6ef6b8949a19",
+    "experiments/core/candidate_terminal.hpp": "55de3176ec220b2e404cc7e108f6d0063af3c004",
+    "experiments/candidates/alacritty/Cargo.lock": "6501189a98bfe0610ebcb5e3c31d3abc2ae3f132"
+  },
+  "source_raw_sha256": {
+    "CMakeLists.txt": "f03543ecc465967750638fa51c84a4611c8415a7af362f094aa872259641d329",
+    "experiments/shell/transport_completion.hpp": "47f85232785ccade107123342019a81f013991e33cacffad7616ce8334fe69ab",
+    "experiments/shell/transport_completion_test.cpp": "1bad42507e43f3165bff0254822104ca29e15ac5ce476f8b7c54b3f325772af1",
+    "experiments/shell/workspace_persistence_scenario.hpp": "7f70d755549718d0fddb94b43cce12f3955727fcc51599a8bb124bf3e59ec263",
+    "experiments/shell/test_shell.py": "897971781f4e8c97fc601be3ebf41253eaaaa6125f2aac0d497c433cb9c2ffc1",
+    "experiments/shell/run.py": "d77454ce626be025e088e6adea9d5f12150c039296397161b2bb8e00e08c1d66",
+    "experiments/shell/workspace.hpp": "39fe452b5b5c47e863e50f29a6ca4c4dcc752a92417f4a58ac7ea786752d31de",
+    "experiments/shell/shell.cpp": "49703b00131d88b491f58287f43daa0a6f12fbf5b36a19a097d901af7d62ce44",
+    "experiments/shell/size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4",
+    "experiments/shell/shell_launch.cpp": "03fac4122d8151539adf9e88c273e9fbaf632f2e80ba10ea77c3873f588db052",
+    "experiments/shell/shell_launch.hpp": "921724b7101c5146637a49b942c834d2860d0d426105c117354ddd8680ef50eb",
+    "experiments/core/candidate_terminal.cpp": "0d0eaabe5ef896aa7b263c8151622f579f37c421bf9473fc3d69ada010a64e61",
+    "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+    "experiments/candidates/alacritty/Cargo.lock": "896c6e60909d55d61fb26d277b1a98daf9245e8aee811caff37fc3e9d06ca627"
+  },
+  "preserved_contract": {
+    "observation_cap_bytes": 8192,
+    "native_deadline_seconds": 30,
+    "outer_deadline_seconds": 40,
+    "real_commands_directories_versions": true,
+    "unicode_bytes_preserved": true,
+    "layout_geometry_resize_assertions": true,
+    "exact_independent_output_and_fresh_prompt": true,
+    "owned_job_and_desktop": true
+  },
+  "causal_observation": {
+    "raw_control_byte": 8,
+    "location": "PowerShell command-editor record before real output",
+    "original_power_shell_predicates": [
+      false,
+      false
+    ],
+    "corrected_predicates": [
+      true,
+      true
+    ],
+    "diagnostic_old_predicates_after_removing_only_bs": [
+      true,
+      true
+    ],
+    "removal_is_diagnostic_only": "The product and accepted inputs are unchanged; original raw bytes use the corrected oracle.",
+    "policy": "Taint the current pre-output record until a real LF. Never edit/concatenate its text; reject BS after output has matched."
+  },
+  "original_failures": [
+    {
+      "id": "clamped-1",
+      "original_exit_code": 2,
+      "original_stage": 1,
+      "outer_timed_out": false,
+      "original_job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "original_job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "private_files_sha256": {
+        "sample.json": "a66a8935c9dbd41ebf1703ea75fbc4720d5f1ff05565ee9873fb823cb1190c92",
+        "persistence-failure.json": "e19f964e2c540902af1885644607a8bda12594fe242a2868e224d6dfca7f3f25",
+        "workspace.layout": "c1e846eef56e4d4428844a186aa623bb4c3e61ac4f2047824b91dd6fe0d81a4c"
+      },
+      "original_predicate_replay": [
+        {
+          "case": "bottom",
+          "raw_bytes": 62,
+          "bs_count": 0,
+          "raw_sha256": "f950c09bbb93743570ae8f3fe9b26340784f7c7265583d622b819f9b0666d351",
+          "old": true,
+          "new": true,
+          "old_without_bs": true
+        },
+        {
+          "case": "cmd-dir",
+          "raw_bytes": 96,
+          "bs_count": 0,
+          "raw_sha256": "be45faaf916b878e1887b4f7de0a3584ace8d3d719d7264d31c74250c35c0424",
+          "old": true,
+          "new": true,
+          "old_without_bs": true
+        },
+        {
+          "case": "powershell-dir",
+          "raw_bytes": 941,
+          "bs_count": 1,
+          "raw_sha256": "4718a0c45843985139806efeda9eeb8d2137d6d60b8377d1a0e2d7bc0ca3c6b5",
+          "old": false,
+          "new": true,
+          "old_without_bs": true
+        },
+        {
+          "case": "powershell-major",
+          "raw_bytes": 941,
+          "bs_count": 1,
+          "raw_sha256": "4718a0c45843985139806efeda9eeb8d2137d6d60b8377d1a0e2d7bc0ca3c6b5",
+          "old": false,
+          "new": true,
+          "old_without_bs": true
+        }
+      ]
+    },
+    {
+      "id": "ordinary-restore-0",
+      "original_exit_code": 2,
+      "original_stage": 1,
+      "outer_timed_out": false,
+      "original_job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "original_job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "private_files_sha256": {
+        "sample.json": "ac100d816700411369eab2685c9575fe4199694aa32f29b97211e76b78eaf43b",
+        "persistence-failure.json": "1ddf4b253f3370f3becb92c95ba1003207a943bd350e50af30259bba14d448b1",
+        "workspace.layout": "8f7b7be7afcb15bdf7cd83f3707de6ed2ac8eadb350081ce11f9e026e021429e"
+      },
+      "original_predicate_replay": [
+        {
+          "case": "bottom",
+          "raw_bytes": 168,
+          "bs_count": 0,
+          "raw_sha256": "bafd1b1ab688a8c4365363f5565b35cffcced3fd6721d72517379cd8d3f751ee",
+          "old": true,
+          "new": true,
+          "old_without_bs": true
+        },
+        {
+          "case": "cmd-dir",
+          "raw_bytes": 214,
+          "bs_count": 0,
+          "raw_sha256": "af4da726beb8542ab909ff57454500ddb26d3b3267cedf02c1ac1f6e4e79bf25",
+          "old": true,
+          "new": true,
+          "old_without_bs": true
+        },
+        {
+          "case": "powershell-dir",
+          "raw_bytes": 409,
+          "bs_count": 1,
+          "raw_sha256": "4a2584d43a0537b420bf7e56f29ed6f3a3941659d6176ade88a0aed3f6910742",
+          "old": false,
+          "new": true,
+          "old_without_bs": true
+        },
+        {
+          "case": "powershell-major",
+          "raw_bytes": 409,
+          "bs_count": 1,
+          "raw_sha256": "4a2584d43a0537b420bf7e56f29ed6f3a3941659d6176ade88a0aed3f6910742",
+          "old": false,
+          "new": true,
+          "old_without_bs": true
+        }
+      ]
+    }
+  ],
+  "pure_regression": {
+    "assertions": 41,
+    "positive": 8,
+    "negative": 33,
+    "new_positive": 2,
+    "new_negative": 7,
+    "original_32_assertions_preserved": true,
+    "red_test_exit_code": 1,
+    "red_test_exe_sha256": "7e3b9696b18273a76c48c70da9fac18ecb96fe077ddaeae633671a3509b5f755",
+    "failure": "command redraw BS before a fresh literal output line does not poison later records"
+  },
+  "actual_configurations": [
+    {
+      "configuration": "default-system",
+      "backend": "system",
+      "candidate_version": null,
+      "unittest": "experiments.shell.test_shell.ShellTests.test_workspace_v2_multiple_shells_split_and_geometry_restore",
+      "original_method_exit_code": 0,
+      "save_rounds": 2,
+      "ordinary_restore_rounds": 2,
+      "clamped_restore_rounds": 2,
+      "binaries_sha256": {
+        "termforge_shell.exe": "ffef472a0012a43c21fe128072d2dd81dcfda8893db619d9170ce48d530de055",
+        "shell_test_launcher.exe": "972ab25b8f5b06c918fed7e37774aa417aac9677a974bfd0d58537e2d71c6bd1",
+        "shell_size_client.exe": "51870fae82777c8d3d0a65bbb33cdd594893dc9ee7be730a2df43355671a5d85",
+        "transport_completion_test.exe": "e713b8dc2cf37b797b037e1a299b1ed23e15599f9b7d0e3156ce05767f98974e"
+      },
+      "transport_completion_ctest": "passed",
+      "samples": [
+        {
+          "case": "workspace-v2-clamped-0",
+          "mode": "ui-workspace-restore",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-restore",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "5b48667bda036dc8f6385ddd619b6d6de43a5c545e39f5e3ee93ab2e0c011ecd",
+            "workspace.layout": "b26c65c5de416d70549c3f262cc5fe00fa299ad80a74005aff5e78ab045924cf",
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0"
+          }
+        },
+        {
+          "case": "workspace-v2-clamped-1",
+          "mode": "ui-workspace-restore",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-restore",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "d79bbf3f82aa499d9add0ed00e7d428931b380b99466a4f745602cb896c33d7b",
+            "workspace.layout": "9743e97ffdc9a0cc64f966f480c4b471af92569521d653d36b82e41db5b8502b",
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-0",
+          "mode": "ui-workspace-restore",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-restore",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "1ab571ddc093f89f800686ba9eaa85a2b7983bc5a70f156454c753c406083078",
+            "workspace.layout": "b299cd88e6ec1e9da762800e78fca546738cf79baedf5fcb40901ff3bdaf8250",
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-1",
+          "mode": "ui-workspace-restore",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-restore",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "39242b3b65039a633d2474ebb22de41b7017bc3e1feae69db6fcf0498cb51fde",
+            "workspace.layout": "d057f9693c2951a4bf3a717a53e7659bbcb96bde73d44f5673e60cce2ddd4124",
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638"
+          }
+        },
+        {
+          "case": "workspace-v2-save-0",
+          "mode": "ui-workspace-save",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-save",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "d3804ae71053e3e56490c15f28001022e61d265aaa6915e4fe8e2fa5cd955540",
+            "workspace.layout": "b299cd88e6ec1e9da762800e78fca546738cf79baedf5fcb40901ff3bdaf8250",
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638"
+          }
+        },
+        {
+          "case": "workspace-v2-save-1",
+          "mode": "ui-workspace-save",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-save",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "ebccb03f4153098a861fea9af529a4a02621e0b30f57fea018709a020a5f3597",
+            "workspace.layout": "d057f9693c2951a4bf3a717a53e7659bbcb96bde73d44f5673e60cce2ddd4124",
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638"
+          }
+        }
+      ]
+    },
+    {
+      "configuration": "candidate-4-system",
+      "backend": "system",
+      "candidate_version": "0.26.1-dev+termforge.4",
+      "unittest": "experiments.shell.test_shell.ShellTests.test_workspace_v2_multiple_shells_split_and_geometry_restore",
+      "original_method_exit_code": 0,
+      "save_rounds": 2,
+      "ordinary_restore_rounds": 2,
+      "clamped_restore_rounds": 2,
+      "binaries_sha256": {
+        "termforge_shell.exe": "223976126a04d50cad4f36ab69460bada9bad0827f627757dbd0809c78dc0a1a",
+        "shell_test_launcher.exe": "31385f55ad58f4f06d612585aef10814a9b81c21965fafad1017b86f715890f2",
+        "shell_size_client.exe": "2f7534c90a3df0ea37f871a6bc98e2bf1ddc3977259981103a66c2eb5d0d30e8",
+        "transport_completion_test.exe": "0ca13d0796bd615250d4e72bc4b0096661d5c6464e23174ad26572d79eff49dc"
+      },
+      "transport_completion_ctest": "passed",
+      "samples": [
+        {
+          "case": "workspace-v2-clamped-0",
+          "mode": "ui-workspace-restore",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-restore",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "a96b3f340137d08b4d8dcd49888d97f95ccc1a4b699649cefb2aa2cd865873b7",
+            "workspace.layout": "1fe13105e3d2072a5a839e0c255c7371eb477bb48a2dca1efe73a733b883e1dd",
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0"
+          }
+        },
+        {
+          "case": "workspace-v2-clamped-1",
+          "mode": "ui-workspace-restore",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-restore",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "924eb800ab1b4c13aad787be0c75b2f599a8251b04bf2d1bef60916891bdc328",
+            "workspace.layout": "7345d3b657eb0ec7cc10a46c591a9466f153edbba30f63737deb088a6f1e0492",
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-0",
+          "mode": "ui-workspace-restore",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-restore",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "dd318d72728496378d1689ef3059e1d175aed713a239873cdfc9b37383a0f0c9",
+            "workspace.layout": "2ee1643002d4b3a2f555e23f7b1508d618a5dfe119ee3da4101f4f65ed3ad27d",
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-1",
+          "mode": "ui-workspace-restore",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-restore",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "8c2e130cbee17ef6fde7debc881e9ccd9271d7cf25781bde11acdb9b3c504230",
+            "workspace.layout": "b46fda1fadf648e40302bfa41142be58d780eb01d1fa5bed9ff5acfcf2702b16",
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638"
+          }
+        },
+        {
+          "case": "workspace-v2-save-0",
+          "mode": "ui-workspace-save",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-save",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "03530bea16c31b7a1b56d88d17d02a5867cc7ca1b867cd64f011dfb1770d52a4",
+            "workspace.layout": "2ee1643002d4b3a2f555e23f7b1508d618a5dfe119ee3da4101f4f65ed3ad27d",
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638"
+          }
+        },
+        {
+          "case": "workspace-v2-save-1",
+          "mode": "ui-workspace-save",
+          "status": "passed",
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "result": {
+            "valid": true,
+            "mode": "ui-workspace-save",
+            "sessions_closed": 3,
+            "active_children_after": 0,
+            "settings_save_failed": false,
+            "presented_done": null
+          },
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "private_sha256": {
+            "sample.json": "207bbb2cc556e8299c8f8bc11a8b37110f44becf85123c14660af19bf7a5f38c",
+            "workspace.layout": "b46fda1fadf648e40302bfa41142be58d780eb01d1fa5bed9ff5acfcf2702b16",
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638"
+          }
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "This fixes the independent test oracle, not lost output or product restoration logic.",
+    "The two original red samples remain failed; raw replays explain their predicate rejection and do not rewrite original process outcomes.",
+    "The fresh default/system and candidate/system methods are separate configurations; no result is borrowed by the experimental official backend.",
+    "The full R1/R2 workflows, actual presentation, real different DPI, performance and WindTerm parity are not accepted by this local method.",
+    "Raw transports, full screens, directories, desktop identities, layouts and frame artifacts stay private; only synthetic verdicts and hashes are published.",
+    "This record does not claim full local CTest or final GitHub CI success."
+  ]
+}
