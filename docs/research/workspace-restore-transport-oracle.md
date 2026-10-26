@@ -10,6 +10,10 @@
 
 [#61](https://github.com/JavaZeroo/termforge/issues/61) 的两份默认/system 新失败具有不同原因：PowerShell 命令编辑重绘在实际输出之前带一个裸 BS（`0x08`）。旧 oracle 因它直接拒绝整个运输，即使随后已有真正 CRLF、完整目录/版本输出和新提示符。用原字节独立重放，两个 PowerShell 条件均为 false，而 cmd/底部条件为 true；仅移除前缀 BS 的诊断输入使旧条件转为 true，证实拒绝分支。修正不模拟退格或删除回显，而是把该前缀记录标记为不可信，直到真正 LF 才允许后续独立输出；[限定复验](../../experiments/shell/results/2026-10-26-workspace-restore-bs/validation.json)保留原始失败及各配置身份。这是测试完成端点修正，不是产品输出丢失或恢复功能缺陷的修复。
 
+[#72](https://github.com/JavaZeroo/termforge/issues/72) 的两次默认/system CI 保存 stage2 失败记录逐字节相同。PowerShell 的 122 B 原运输在真实 LF 后、完整输出之前含 `CSI 63X / CSI 63C / CR / CSI ?25h`；旧 helper 对空记录的裸 CR 永久拒绝。保留完整原字节的 C++ 回归先红后绿，仅移除这一 CR 的诊断对照在旧 helper 下已通过。修正只允许下述受限空记录情形，不删除运输字节或改变产品输出。源码 `4daf992` 下默认/system、候选/system、候选/官方 flags24 各两轮保存、普通恢复、钳制恢复共 18 次真实运行通过；[身份与结果](../../experiments/shell/results/2026-10-27-workspace-empty-cr/validation.json)分别保留因果回归、原始失败及各配置的实际断言与回收。局部通过不替代最终完整回归或 CI。
+
+同源码官方配置完整 CTest 为 54/56、449.38 秒；工作区保存/恢复方法也在完整 shell 套件中通过。剩余为 Vim stage59，以及 shell 的 resize/resize-close stage43、main stage7、workspace stage52，分别由 #51/#52/#63 承接。此次 shell 套件实际完成 40 方法，4 error、3 skip，用时 174.65 秒；旧批次的 180 秒聚合超时仍保留。内部可选依赖、hosted 系统输入和私有剪贴板跳过逐项记录，不写成这些能力通过。PR #78 的两条 CI 均通过，其中 Windows 默认/system 为 51/51、273.64 秒；其实际合并 checkout 与本机源码分别列明。
+
 ## 限定 oracle 合同
 
 - 独立扫描 7-bit ESC 形式的完整 OSC（BEL 或 ST 终止）和 CSI。OSC 内容不参与正文匹配，UTF-8 的所有高位正文 bytes 原样保留，包括 `目` 中的 `0x9b`。

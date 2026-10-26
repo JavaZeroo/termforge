@@ -1,0 +1,3195 @@
+{
+  "source_commit": "4daf99250a2740e1943635b6d46293d633427163",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "started_utc": "2026-10-26T16:35:57.098152+00:00",
+  "source_sha256": {
+    "CMakeLists.txt": "f5bb85e12b7a815c4feb7417da9ebc5298de58664bcd2792b277cb282729da73",
+    "experiments/shell/transport_completion.hpp": "535ff47bfbdd1038dca22820b467d1ee0d1839a29be38cd750e4de49439b602f",
+    "experiments/shell/transport_completion_test.cpp": "c9bb02bd739f916e78530590ee0f3b29bc952c58e445d31bc047ee69d301dcee",
+    "experiments/shell/workspace_persistence_scenario.hpp": "7f70d755549718d0fddb94b43cce12f3955727fcc51599a8bb124bf3e59ec263",
+    "experiments/shell/test_shell.py": "a6b63c1754b0e0dc1cc01863891f4c7c9d989f818d351838a8cfe295edaf811c",
+    "experiments/shell/run.py": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d",
+    "experiments/shell/shell.cpp": "ac4dd44861aa2928213fffe91d30cdaf3aedf19f08468aefeed22828352296cc",
+    "experiments/shell/test_launcher.cpp": "19cab4a960f47f252c02f92a36316d43eed2481da1f72b5a7e97003c4fa1c2ed",
+    "experiments/core/candidate_terminal.cpp": "3092ee2ea44ca0f897a7d3b6244c079ba8073dc109993204e435f065388a2ed1",
+    "experiments/candidates/alacritty/Cargo.lock": "896c6e60909d55d61fb26d277b1a98daf9245e8aee811caff37fc3e9d06ca627"
+  },
+  "source_git_blobs": {
+    "CMakeLists.txt": "2454a7b8dc34fa2bbd74b25b0ad77d19a71a5f18",
+    "experiments/shell/transport_completion.hpp": "e038584c5d719d2890ce58b292d5c2ac27c94ca2",
+    "experiments/shell/transport_completion_test.cpp": "70a412afaa644413460ada14f8c28c91b206d509",
+    "experiments/shell/workspace_persistence_scenario.hpp": "f7f73dbd771f559384d9b4e569d815d2ef0792da",
+    "experiments/shell/test_shell.py": "66512ac1099cf477cac8f26f225b18c301c1d3d8",
+    "experiments/shell/run.py": "bbd4dfc05012c55956973d7e2c69be717b48b1a9",
+    "experiments/shell/shell.cpp": "90b3f166e8a50ca2488f749e8e188c52cb5e4a91",
+    "experiments/shell/test_launcher.cpp": "6da0882255cd9587111aa4536b1f0b5a93b193bf",
+    "experiments/core/candidate_terminal.cpp": "9bb1fab8f6deac294d0ba1a44712b67c919d03c7",
+    "experiments/candidates/alacritty/Cargo.lock": "6501189a98bfe0610ebcb5e3c31d3abc2ae3f132"
+  },
+  "configurations": [
+    {
+      "build_config": "system-r72",
+      "candidate": false,
+      "backend": "system",
+      "binaries_sha256": {
+        "shell_clipboard_reader.exe": "6afbaba725490cc3856df97b56a8a16190251b27fa5c34024c63132a6c6bde41",
+        "shell_ime_client.exe": "2f032970045e33b80b615e0ffebe06e29ebe7b18698b7609bffc129af9b4d7df",
+        "shell_input_client.exe": "0471578cce2959b200c2e174514cbd8663e2b51db1bb973f8932ebe5a866f1b7",
+        "shell_query_client.exe": "d92be37207a6a7a4c03d4b08dd1f704ccddc2e86b7ef00085e028168d1a915e1",
+        "shell_selection_text_client.exe": "0ec9d66d66e672e98487bf38ee4db4313ac7bdad8b6852ebdc8fcd6309fd4358",
+        "shell_size_client.exe": "323583d4127d4aca27026cbe3ef9328a80390a269e99be763580f706c1cb4115",
+        "shell_test_launcher.exe": "3e72c4d5bd418eaa22062606f39891f0412acaf46a2841a3f9d219f24bc33014",
+        "shell_text_client.exe": "f151602090a8700fd48115cd4db1169a9f2cfe8e856f454bc21bf1509ddff85b",
+        "termforge_shell.exe": "433905e75f4f12699e59adc8c8775756f9098125aa68595d2dec6290c334dfeb",
+        "transport_completion_test.exe": "ba1c84b60d68d366c9d9e15e0b11e96b84e7066376c805b6ee0122c7defedc67"
+      },
+      "cmake_cache_sha256": "27b22b5286dfc2aba8325201d143f7102400812bf27667300025232fc6394500",
+      "tests": [
+        {
+          "name": "transport-completion",
+          "returncode": 0,
+          "started_utc": "2026-10-26T16:35:57.572260+00:00",
+          "elapsed_seconds": 0.141528,
+          "log_sha256": "c804b0583bcb4501edf84ab54dfe03ddcf8aeb00f7e6ffddf65d25cf6e031cb0"
+        },
+        {
+          "name": "workspace",
+          "returncode": 0,
+          "started_utc": "2026-10-26T16:35:57.713788+00:00",
+          "elapsed_seconds": 10.657289,
+          "log_sha256": "eae576610ed3c3de80350f33f0d094c51b612339639b0fcf26108f3ba3eb80c2"
+        }
+      ],
+      "cases": [
+        {
+          "case": "workspace-v2-clamped-0",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              0,
+              60,
+              2560,
+              799
+            ],
+            "client": [
+              2544,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  2544,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  210,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  69,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  1272,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  139,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0",
+            "sample.json": "78f0976c47b06a5007bd588febd69f08bf2e3c48ac4476d548896ff6a4af319f",
+            "workspace.layout": "11f3b16527405dd1119da84184d416509f384d791371fca82644f257d306e87e"
+          }
+        },
+        {
+          "case": "workspace-v2-clamped-1",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              0,
+              60,
+              2560,
+              799
+            ],
+            "client": [
+              2544,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  2544,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  210,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  69,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  1272,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  139,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0",
+            "sample.json": "2d802b2f19ac76b98bae2a8455fc094be1abb857543062072d52bdac7d27b74e",
+            "workspace.layout": "657ae2809533be0c5138485fed93babf98a75061aea17e0f18a4dc74f5913cae"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-0",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "fa0f1df0488dc2f6c7f650ade82dd1ebe12d40a14ae7b12419dc9f569928daab",
+            "workspace.layout": "59e62adef0b758158c65b56919350064f7d2c344906d2c848bab80e6f32739de"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-1",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "95b7d480f900492b5ef1cb2d75ee939eb9bb2c4aa047be9dd213fb49371525fd",
+            "workspace.layout": "37b9ad8d5a982460f484042018baed17340c713c7e5d361376a1ebd3c31fb21d"
+          }
+        },
+        {
+          "case": "workspace-v2-save-0",
+          "sample": {
+            "mode": "ui-workspace-save",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-save",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "cc79cd9828da737c892cf94466baf7fceda5844c42fee17c140dec83a6ef5275",
+            "workspace.layout": "59e62adef0b758158c65b56919350064f7d2c344906d2c848bab80e6f32739de"
+          }
+        },
+        {
+          "case": "workspace-v2-save-1",
+          "sample": {
+            "mode": "ui-workspace-save",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-save",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "1316f55f86c6af9c425b9b5d996d0d9fad6b16f3745fda847ca9b798bbe0bb1d",
+            "workspace.layout": "37b9ad8d5a982460f484042018baed17340c713c7e5d361376a1ebd3c31fb21d"
+          }
+        }
+      ]
+    },
+    {
+      "build_config": "candidate-system-r72",
+      "candidate": true,
+      "backend": "system",
+      "binaries_sha256": {
+        "shell_clipboard_reader.exe": "71faaa8009762d7bfe0186cc499422762f532581288eb57fde949d7774872e98",
+        "shell_ime_client.exe": "c671b3bcc051f2f4397467fa52029a964a721613841913e7c2e334355d4e5236",
+        "shell_input_client.exe": "a550513b18161e05bae681d4c9ddf79cb1a86d42bafb3a7518057a44105b99c2",
+        "shell_query_client.exe": "58e704e2090c4b9b0550622c84cb4ffafc6f6f42df1cdfe363a0e99e6e7db486",
+        "shell_selection_text_client.exe": "37862fcc2f1db49118d10c3e03dac1be851bf255cbebe2f0556f89062342bc18",
+        "shell_size_client.exe": "427afbd778881f5e921a1782d473ad190a1340fb691b95adce9e138a516317b5",
+        "shell_test_launcher.exe": "cb96d03fed43d7e63e820e0ced6cf0f241762b0cc4dbec094c458041f38f1e55",
+        "shell_text_client.exe": "b81cba00bdaed52c50783d6fa0a1528301e3df40d2c6c4e060aa01a9c2f81ce3",
+        "termforge_shell.exe": "6c756b03e445dfec9a1fd4fd8b5d628f031076d546defd4e3f3eb0c546e1cb4d",
+        "transport_completion_test.exe": "1945189627c71d0bedd1f8875f6bb80da6065246c687fa8651efa205346d336b"
+      },
+      "cmake_cache_sha256": "65d497ede16ae771b8f5bad312df0d7dc98e70c095622bfbec009f455c6decdb",
+      "tests": [
+        {
+          "name": "transport-completion",
+          "returncode": 0,
+          "started_utc": "2026-10-26T16:36:08.380170+00:00",
+          "elapsed_seconds": 0.144565,
+          "log_sha256": "173c950ca1f323012ddd687b96628b2bd747bbf63e28a971fef46fa28b0e2e66"
+        },
+        {
+          "name": "workspace",
+          "returncode": 0,
+          "started_utc": "2026-10-26T16:36:08.524735+00:00",
+          "elapsed_seconds": 10.226751,
+          "log_sha256": "276fc4b4f011a8e5eae6e3b748d01a83b0f907771d7463fb7677c23470b846f4"
+        }
+      ],
+      "cases": [
+        {
+          "case": "workspace-v2-clamped-0",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              0,
+              60,
+              2560,
+              799
+            ],
+            "client": [
+              2544,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  2544,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  210,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  69,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  1272,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  139,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0",
+            "sample.json": "4120d7f440c8effc70b25ba522cbc3b44a64999a4e1875f467478fe96b03245a",
+            "workspace.layout": "2b84a08b2af758e35a196ad71dc3356a5c15836c9ff301845e5a0fcc80fc767a"
+          }
+        },
+        {
+          "case": "workspace-v2-clamped-1",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              0,
+              60,
+              2560,
+              799
+            ],
+            "client": [
+              2544,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  2544,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  210,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  69,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  1272,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  139,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0",
+            "sample.json": "0b54da0e331d564807006ede5bc5141d6ebb3dcbc78fc703ec9afb84e9e835f8",
+            "workspace.layout": "b396797597866e3036655c455b67ea7f3525fb73bc83dcd4a6124740f6a6a00d"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-0",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "bb7dcffd003f6836c81ebe2c1a76add10137e75c17de550d4c79f02cf09ac770",
+            "workspace.layout": "fad7156f6463e92356c52c64121b793c2989eada6377228f502b314dcc1cd822"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-1",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "bb37ee8b05088b72c466f87a716434b2ad1eee5e83f5597a8c438de7c729415b",
+            "workspace.layout": "dff8885eeadffc72e58dc84b031fe4d6a3179edeffce82853c5f480e12c6d055"
+          }
+        },
+        {
+          "case": "workspace-v2-save-0",
+          "sample": {
+            "mode": "ui-workspace-save",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-save",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "ed0cfb5a2ddcbffb67515f70aceca1817e78da50eee4979166aeae7e07bed292",
+            "workspace.layout": "fad7156f6463e92356c52c64121b793c2989eada6377228f502b314dcc1cd822"
+          }
+        },
+        {
+          "case": "workspace-v2-save-1",
+          "sample": {
+            "mode": "ui-workspace-save",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-save",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "ab509cefe2e4a9dde03dc8d9e12b0d3060026a8b8392db9a847a004321544d1b",
+            "workspace.layout": "dff8885eeadffc72e58dc84b031fe4d6a3179edeffce82853c5f480e12c6d055"
+          }
+        }
+      ]
+    },
+    {
+      "build_config": "candidate",
+      "candidate": true,
+      "backend": "reviewed-side-by-side-1.25.260930003",
+      "binaries_sha256": {
+        "alpha_normal_smoke.exe": "36ac6dbe36c942b9850d6d9f5b3538fbfe2fc251f38ac026ea12c343b0e9abc8",
+        "candidate_core_test.exe": "6e9df1abbe2271690a1480a1be9042e219a5947779b6a4b03f529a742fbd10ce",
+        "candidate_reply_close_test.exe": "40603aa54fbad42d55a5a7ea24b7aecebefdacd8f3c802e3ac89c52ef3a4b74d",
+        "candidate_resize_replay.exe": "3d91227adb37bba4defcef8f803f0f3c2916001223300b99d18e0e2ab695de94",
+        "candidate_title_test.exe": "90db63148f6aafaf79d65d5b40e61bbdc9f54486a6be36e26523699e0b46035d",
+        "clipboard_policy_test.exe": "809815e9838cad5b3443c98620d23a4e6c7186b5304b524d0990988eb47a6da9",
+        "conpty_backend_probe.exe": "3c54962c20f04e688a0413bb822713e908582af20b0be8bcfd188fb436907ef8",
+        "conpty_ctrl_c_probe.exe": "ac5ae5ccdb77c82512a8a6d769fafbe74693bf6fc535ce4d22bf60b0c8df2bfa",
+        "conpty_margin_probe.exe": "5404b009d0e005cd940d8a65afeb0fb9caf9c9ce2a18f651a88146343c41c252",
+        "core_measure.exe": "df9df797b16239d2fb71707f8a042a1ed956ad30c407d884527cdf18d600e785",
+        "find_bar_test.exe": "030733a2396ca9b31bbd029c610f1b838ab52394338c08410274501747dd9982",
+        "history_test.exe": "035507366facfd6de00e0c2762775c8d3816f605da3e55d498995a74a3f447d2",
+        "ime_context_test.exe": "be0d71ca72aee3dbd1565c9ad2314f81f0cd0c5511ec54cb623bbd39eede9974",
+        "ime_input_expectation_test.exe": "a5ea4532a06b893d955299793b4859cb9ccf221fab64e51949e1af2ee6ba5d0b",
+        "keyboard_test.exe": "18a35c2b2ab8a6316e0c938d8c36d0b82bcc131989d683205888b08bf4d33e19",
+        "layout_state_test.exe": "307519003536ce16d7d6fc552b3a25e9de25356d50a80c2de0c01168a10784a9",
+        "paste_test.exe": "47e9a5ce33335370b6fb199b0ff11adc19e2ab55bf64657061a13c1c020a24b0",
+        "presentation_probe.exe": "b7043cace46f65b22c7295df2fc06b214f060c2fd6fe18ac5ff27e13d943e096",
+        "raw_console_receiver_test.exe": "9c05cdb80d87ff264b3275387eb01dabc8f57640adbc7ee3910b0fc44f378224",
+        "real_app_capture.exe": "011efaad94da74ce182e30a3ff8abb0c1e1f58235bc77fa8c347ec3d9dcb822e",
+        "receive.exe": "ef316e11ddcc764ddac57426fc37b8b69f599ddb28a0ffedf5c2e85a3004a9d4",
+        "recovery_probe.exe": "c84e7b1b1792773b993f2758d5cafa59b80495451c01d194c3afd6cc653f0344",
+        "renderer_metrics_test.exe": "4cebad62798ff0f8eac42641a1119c7b9725728dd5fd31befcdf7e1ecb686cfd",
+        "replay.exe": "674f96ebbf00497576951a6780a5cf5195e3b80cc4acdb7f296fa8910a6203b7",
+        "resize_test.exe": "f566c56a1fa34e2a8ff480900ac5ae5059e2ac6872554208d5dbf0e24673dde0",
+        "runtime_observation_test.exe": "dfd04533d35d78401da75ad7d0965d923d7b7e95ad304775367b6088acc341ed",
+        "scenario_tick_gate_test.exe": "06cd4e813f1034d1a8c7fea592979f49c3ef89117c97fc6636cdae5012017ce8",
+        "search_test.exe": "0f29f3ea3147cc45eb2e500e683f3bcc1db04f820470b2ff473fffcb31cdb4f4",
+        "selection_test.exe": "104576787b62c2c4bb2428e0786c7742e63a23ceb766df293c88a5ccc6a1b836",
+        "sender_fence_pipe_test.exe": "6a94ac84631434a81ae1098932813d7ceeb81f2bb33a2e4b2456834bd8972e92",
+        "sender_fence_test.exe": "ab4af3b0f148f6e6377e70c98936c6c34d0be0d3cee4b17b3f8554c39b2d3e52",
+        "sent_message_wait_test.exe": "bc3cff14f60e3f1b17b3fd6255ff1c5b507f506d897d528802efa9666be74dcf",
+        "shell_clipboard_reader.exe": "bacc4bff465ca644fae61f9d26184a7adc22df9793470feca647af1d823fece8",
+        "shell_ime_client.exe": "d787ebf702cf5895e1ad0d71f895a51b3dead34d02953b5e7deff086c2bf8eb7",
+        "shell_input_client.exe": "850c82fb8bb58de8170bf096cc6dd4f8ba34d9ba11dbd2addc41508cddc31d8c",
+        "shell_launch_test.exe": "ace9b63148848bf7b405edb4b8818ca23d52699ac2ce8ca03a90c5bc1e32622d",
+        "shell_paste_probe.exe": "1370c6381b990270dfd816f53758e5aa57c63deba050fa7cf0dbd0d5cbf4f315",
+        "shell_query_client.exe": "71419f7918bc58f4ee47d14f8e6de35aa1828ac838a73ed607797fc120f56886",
+        "shell_queue_probe.exe": "7f34d6ff66b3e00d56798e22a480fb20a5afa083cff65a9d689dcbca44dbe12d",
+        "shell_selection_text_client.exe": "dbad81a22ecce4508eada90ae445f9a75abfe1effd2571776ef31b32144c8ac4",
+        "shell_size_client.exe": "5394d9863df9a589012f0d9a31f7e4167e7bc4ea23e93f9711c0a67c540651f6",
+        "shell_test_launcher.exe": "dbde4249dc08c7df80120398ffd252aa5e4958e4ef640cc161ea4c2d28b9f291",
+        "shell_text_client.exe": "9485b03424e421a4018596cc9487e7feeb33c26d30820985aa45843fdcf315d9",
+        "termforge_conpty_probe.exe": "7dd59bc8d0309ad5b131cde1c3ed98819139b6bb70f505347c98aabe8396f618",
+        "termforge_ime_probe.exe": "788a186b5fafb6d155eeab74f78d4f7cb992a599937b3aa48c5efcf49affe993",
+        "termforge_shell.exe": "650ea74ba3ad39b91ab4773c72af3ee70e59bc9d63e76249ea8fa6745a367081",
+        "terminal_trace.exe": "40e869753f4c00515ee0990f3732eac04f965fe2c3070f1bf772717476269f3d",
+        "text_action_policy_test.exe": "535b469c9aa0da7e77670578f75d04956d98e9f912d5c9a6c310ab796ab58d4f",
+        "transport_completion_test.exe": "9f63a2f8a08ddcd459d422f69bfbeae9ceaee9527edc0198c7e4fbd07bff7dc4",
+        "workflow_fixture_test.exe": "a6624a6b1536c6f445f92e05ff72a5318ece47d455500f6adc467d94f9f04222",
+        "workspace_state_test.exe": "ac3fbc8a56d33efda33cc9040c731c183e0a8666e23fce48d368c1868797714d"
+      },
+      "cmake_cache_sha256": "d652393042e1195908894a592dda1ebf0c8e1e8ccd3e05ecacec2760b41bc2ff",
+      "tests": [
+        {
+          "name": "transport-completion",
+          "returncode": 0,
+          "started_utc": "2026-10-26T16:36:18.796351+00:00",
+          "elapsed_seconds": 0.134451,
+          "log_sha256": "2bcde71179fda986d1dab2d5b84737f9d5a4c965da407e6f2f07b4c60faa49cd"
+        },
+        {
+          "name": "workspace",
+          "returncode": 0,
+          "started_utc": "2026-10-26T16:36:18.932314+00:00",
+          "elapsed_seconds": 10.383378,
+          "log_sha256": "9004ff6178e1bec317c7c8de5c70c0a7318ef5a298aae3e48a161e85b05a2b34"
+        }
+      ],
+      "cases": [
+        {
+          "case": "workspace-v2-clamped-0",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              0,
+              60,
+              2560,
+              799
+            ],
+            "client": [
+              2544,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  2544,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  210,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  69,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  1272,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  139,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0",
+            "sample.json": "4f5443ddb183618cbe787be35499c53a9c5dc71383e1242f44b98b565ecb2794",
+            "workspace.layout": "85ad2c772bbe4ae1a16ac48dcb4d6d52dfaed5a50f60cbf818a6538d94fa32af"
+          }
+        },
+        {
+          "case": "workspace-v2-clamped-1",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              0,
+              60,
+              2560,
+              799
+            ],
+            "client": [
+              2544,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  2544,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  210,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  69,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  1272,
+                  93,
+                  1272,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  139,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0",
+            "sample.json": "88bd123a353389461c7e3f69a05baac16695a3b1a43c70dfbf4d8818f996561d",
+            "workspace.layout": "eaa185a9288a25bab6e5d3518fb87182b9959b3b591a1840a0699cb999c62fff"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-0",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "61e5af44331e37e52fc4f46e10f56e8ba11f2c1316d3a123ce79d3dbda073d2e",
+            "workspace.layout": "c5cc46a5395e488830e636e2cae90b038fe5eaac0cb3244395754c24830757fe"
+          }
+        },
+        {
+          "case": "workspace-v2-restore-1",
+          "sample": {
+            "mode": "ui-workspace-restore",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-restore",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "23088bdaea3a39e571c3407357847fc1559b62839b5a5fd13bad69bc8f0bf9d5",
+            "workspace.layout": "ce7ccde5387ee25fc6ef9e2485f794d737406942d0cdbd72970c33938bf0cd8d"
+          }
+        },
+        {
+          "case": "workspace-v2-save-0",
+          "sample": {
+            "mode": "ui-workspace-save",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-save",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "118e7fca8cedbd507e67a915eb98425603dc48d12edd50cfeee8119221788d46",
+            "workspace.layout": "c5cc46a5395e488830e636e2cae90b038fe5eaac0cb3244395754c24830757fe"
+          }
+        },
+        {
+          "case": "workspace-v2-save-1",
+          "sample": {
+            "mode": "ui-workspace-save",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "job_after_cleanup": {
+              "active": 0,
+              "total": 14,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "result": {
+              "valid": true,
+              "mode": "ui-workspace-save",
+              "sessions_closed": 3,
+              "active_children_after": 0,
+              "settings_save_failed": false,
+              "presented_done": null
+            },
+            "data_only": true
+          },
+          "geometry": {
+            "schema": "termforge-workspace-restore-v1",
+            "dpi": 96,
+            "window": [
+              90,
+              60,
+              1216,
+              799
+            ],
+            "client": [
+              1200,
+              760
+            ],
+            "ratios": [
+              0.24,
+              0.21,
+              0.57,
+              0.38,
+              0.69
+            ],
+            "sides": 0,
+            "focus_mode": 0,
+            "focused": "bottom",
+            "bottom_active": 0,
+            "main_active": 0,
+            "split_index": 1,
+            "split_active": 1,
+            "split_right_focus": 1,
+            "tabs": [
+              {
+                "group": "bottom",
+                "kind": "cmd",
+                "title": "底部 cmd",
+                "zoom": 100,
+                "rect": [
+                  0,
+                  465,
+                  1200,
+                  238
+                ],
+                "visible": 1,
+                "grid": [
+                  98,
+                  9
+                ],
+                "cell": [
+                  12,
+                  26
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "cmd",
+                "title": "主 cmd",
+                "zoom": 150,
+                "rect": [
+                  0,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  32,
+                  8
+                ],
+                "cell": [
+                  18,
+                  39
+                ]
+              },
+              {
+                "group": "main",
+                "kind": "powershell",
+                "title": "研究 PowerShell",
+                "zoom": 75,
+                "rect": [
+                  600,
+                  93,
+                  600,
+                  321
+                ],
+                "visible": 1,
+                "grid": [
+                  64,
+                  16
+                ],
+                "cell": [
+                  9,
+                  20
+                ]
+              }
+            ]
+          },
+          "raw_sha256": {
+            "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+            "sample.json": "33bb1634252634013da65fd77333a253ad2277350fdbac4ccbad07cc9e1596fa",
+            "workspace.layout": "ce7ccde5387ee25fc6ef9e2485f794d737406942d0cdbd72970c33938bf0cd8d"
+          }
+        }
+      ]
+    }
+  ],
+  "completed_utc": "2026-10-26T16:36:29.317251+00:00",
+  "local_identity_sha256": "4584b1e3190d354115907cf46ad9344d9d45a6048da4fc6babe6f61f9407aeaa",
+  "schema": "termforge-workspace-empty-cr-v1",
+  "scope": "Test completion oracle correction; no product persistence or timeout change",
+  "compiler": "MSVC 19.42.34433 x64 Release; Windows SDK 10.0.26100",
+  "alacritty": "0.26.1-dev+termforge.4",
+  "candidate_library_sha256": "aa41a9ea5749f3933a0db8bfa41dda68812c68727d47d394fc3edd859973a260",
+  "preserved_contract": {
+    "observation_cap_bytes": 8192,
+    "native_deadline_seconds": 30,
+    "outer_deadline_seconds": 40,
+    "rounds_per_configuration": 2,
+    "processes_per_round": 3,
+    "independent_exact_output_and_fresh_prompt": true,
+    "unicode_directories_and_power_shell_version": true,
+    "layout_titles_zoom_split_window_and_child_grid": true,
+    "owned_job_and_noninput_desktop": true,
+    "presented_done": null
+  },
+  "causal_observation": {
+    "original_and_repeated_failure_bytes_identical": true,
+    "failure_json_sha256": "71b9a860f70cbee2e8b52501bb0877ee8e218c8962f580321df40e215f4d6f4a",
+    "powershell_observed_bytes": 122,
+    "powershell_observed_sha256": "4c1d91f70cb82f745b1fa3eab3bca03048ac419aab0fe8c1e510cc2bc63041b5",
+    "original_run": 40313671258,
+    "original_job": 121540798389,
+    "repeated_run": 40355938302,
+    "repeated_job": 121688289054,
+    "repeated_source_head": "848cb0e621a291f732cc0e046d0b2fab6a77d962",
+    "repeated_checkout": "f72c239bb1bfa6d978c72646d88cbccf434f3fd5",
+    "repeated_artifact": 12665678304,
+    "repeated_archive_sha256": "c0b2aad326ee14b3e3c89aba06c12366bdf7f45af3a2233709729427919c4ab2",
+    "original_status": "failed",
+    "original_exit_code": 2,
+    "original_stage": 2,
+    "native_child_exit": null,
+    "reader_eof": null,
+    "native_forced_cleanup": null,
+    "no_cr_diagnostic_control_passed_old_helper": true,
+    "unchanged_captured_bytes_passed_old_helper": false,
+    "unchanged_captured_bytes_passed_corrected_helper": true,
+    "cr_removal": "diagnostic control only; accepted input and transport bytes remain unchanged"
+  },
+  "causal_runs": [
+    {
+      "phase": "red",
+      "passed": false,
+      "runtime_seconds": 0.02,
+      "files_sha256": {
+        "ctest.log": "d9d8617d9bbbebd631e88c800872fee19634c2673523b2f7348d7df4b3525a09",
+        "transport_completion.hpp": "47f85232785ccade107123342019a81f013991e33cacffad7616ce8334fe69ab",
+        "transport_completion_test.cpp": "c9bb02bd739f916e78530590ee0f3b29bc952c58e445d31bc047ee69d301dcee",
+        "transport_completion_test.exe": "62b08594caa62170468316ad65e6038954e9d2d40bddb0ce42db1342732cea9d"
+      }
+    },
+    {
+      "phase": "green",
+      "passed": true,
+      "runtime_seconds": 0.01,
+      "files_sha256": {
+        "ctest.log": "8d61cc19d56f28141ec46fdb9d22845036f434cbe5f49301bdc14d426c36c46f",
+        "transport_completion.hpp": "535ff47bfbdd1038dca22820b467d1ee0d1839a29be38cd750e4de49439b602f",
+        "transport_completion_test.cpp": "c9bb02bd739f916e78530590ee0f3b29bc952c58e445d31bc047ee69d301dcee",
+        "transport_completion_test.exe": "9f63a2f8a08ddcd459d422f69bfbeae9ceaee9527edc0198c7e4fbd07bff7dc4"
+      }
+    }
+  ],
+  "full_candidate_official": {
+    "source_commit": "4daf99250a2740e1943635b6d46293d633427163",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "started_utc": "2026-10-26T16:37:05.024869+00:00",
+    "backend": "reviewed-side-by-side-1.25.260930003",
+    "candidate": true,
+    "binaries_sha256": {
+      "alpha_normal_smoke.exe": "36ac6dbe36c942b9850d6d9f5b3538fbfe2fc251f38ac026ea12c343b0e9abc8",
+      "candidate_core_test.exe": "6e9df1abbe2271690a1480a1be9042e219a5947779b6a4b03f529a742fbd10ce",
+      "candidate_reply_close_test.exe": "40603aa54fbad42d55a5a7ea24b7aecebefdacd8f3c802e3ac89c52ef3a4b74d",
+      "candidate_resize_replay.exe": "3d91227adb37bba4defcef8f803f0f3c2916001223300b99d18e0e2ab695de94",
+      "candidate_title_test.exe": "90db63148f6aafaf79d65d5b40e61bbdc9f54486a6be36e26523699e0b46035d",
+      "clipboard_policy_test.exe": "809815e9838cad5b3443c98620d23a4e6c7186b5304b524d0990988eb47a6da9",
+      "conpty_backend_probe.exe": "3c54962c20f04e688a0413bb822713e908582af20b0be8bcfd188fb436907ef8",
+      "conpty_ctrl_c_probe.exe": "ac5ae5ccdb77c82512a8a6d769fafbe74693bf6fc535ce4d22bf60b0c8df2bfa",
+      "conpty_margin_probe.exe": "5404b009d0e005cd940d8a65afeb0fb9caf9c9ce2a18f651a88146343c41c252",
+      "core_measure.exe": "df9df797b16239d2fb71707f8a042a1ed956ad30c407d884527cdf18d600e785",
+      "find_bar_test.exe": "030733a2396ca9b31bbd029c610f1b838ab52394338c08410274501747dd9982",
+      "history_test.exe": "035507366facfd6de00e0c2762775c8d3816f605da3e55d498995a74a3f447d2",
+      "ime_context_test.exe": "be0d71ca72aee3dbd1565c9ad2314f81f0cd0c5511ec54cb623bbd39eede9974",
+      "ime_input_expectation_test.exe": "a5ea4532a06b893d955299793b4859cb9ccf221fab64e51949e1af2ee6ba5d0b",
+      "keyboard_test.exe": "18a35c2b2ab8a6316e0c938d8c36d0b82bcc131989d683205888b08bf4d33e19",
+      "layout_state_test.exe": "307519003536ce16d7d6fc552b3a25e9de25356d50a80c2de0c01168a10784a9",
+      "paste_test.exe": "47e9a5ce33335370b6fb199b0ff11adc19e2ab55bf64657061a13c1c020a24b0",
+      "presentation_probe.exe": "b7043cace46f65b22c7295df2fc06b214f060c2fd6fe18ac5ff27e13d943e096",
+      "raw_console_receiver_test.exe": "9c05cdb80d87ff264b3275387eb01dabc8f57640adbc7ee3910b0fc44f378224",
+      "real_app_capture.exe": "011efaad94da74ce182e30a3ff8abb0c1e1f58235bc77fa8c347ec3d9dcb822e",
+      "receive.exe": "ef316e11ddcc764ddac57426fc37b8b69f599ddb28a0ffedf5c2e85a3004a9d4",
+      "recovery_probe.exe": "c84e7b1b1792773b993f2758d5cafa59b80495451c01d194c3afd6cc653f0344",
+      "renderer_metrics_test.exe": "4cebad62798ff0f8eac42641a1119c7b9725728dd5fd31befcdf7e1ecb686cfd",
+      "replay.exe": "674f96ebbf00497576951a6780a5cf5195e3b80cc4acdb7f296fa8910a6203b7",
+      "resize_test.exe": "f566c56a1fa34e2a8ff480900ac5ae5059e2ac6872554208d5dbf0e24673dde0",
+      "runtime_observation_test.exe": "dfd04533d35d78401da75ad7d0965d923d7b7e95ad304775367b6088acc341ed",
+      "scenario_tick_gate_test.exe": "06cd4e813f1034d1a8c7fea592979f49c3ef89117c97fc6636cdae5012017ce8",
+      "search_test.exe": "0f29f3ea3147cc45eb2e500e683f3bcc1db04f820470b2ff473fffcb31cdb4f4",
+      "selection_test.exe": "104576787b62c2c4bb2428e0786c7742e63a23ceb766df293c88a5ccc6a1b836",
+      "sender_fence_pipe_test.exe": "6a94ac84631434a81ae1098932813d7ceeb81f2bb33a2e4b2456834bd8972e92",
+      "sender_fence_test.exe": "ab4af3b0f148f6e6377e70c98936c6c34d0be0d3cee4b17b3f8554c39b2d3e52",
+      "sent_message_wait_test.exe": "bc3cff14f60e3f1b17b3fd6255ff1c5b507f506d897d528802efa9666be74dcf",
+      "shell_clipboard_reader.exe": "bacc4bff465ca644fae61f9d26184a7adc22df9793470feca647af1d823fece8",
+      "shell_ime_client.exe": "d787ebf702cf5895e1ad0d71f895a51b3dead34d02953b5e7deff086c2bf8eb7",
+      "shell_input_client.exe": "850c82fb8bb58de8170bf096cc6dd4f8ba34d9ba11dbd2addc41508cddc31d8c",
+      "shell_launch_test.exe": "ace9b63148848bf7b405edb4b8818ca23d52699ac2ce8ca03a90c5bc1e32622d",
+      "shell_paste_probe.exe": "1370c6381b990270dfd816f53758e5aa57c63deba050fa7cf0dbd0d5cbf4f315",
+      "shell_query_client.exe": "71419f7918bc58f4ee47d14f8e6de35aa1828ac838a73ed607797fc120f56886",
+      "shell_queue_probe.exe": "7f34d6ff66b3e00d56798e22a480fb20a5afa083cff65a9d689dcbca44dbe12d",
+      "shell_selection_text_client.exe": "dbad81a22ecce4508eada90ae445f9a75abfe1effd2571776ef31b32144c8ac4",
+      "shell_size_client.exe": "5394d9863df9a589012f0d9a31f7e4167e7bc4ea23e93f9711c0a67c540651f6",
+      "shell_test_launcher.exe": "dbde4249dc08c7df80120398ffd252aa5e4958e4ef640cc161ea4c2d28b9f291",
+      "shell_text_client.exe": "9485b03424e421a4018596cc9487e7feeb33c26d30820985aa45843fdcf315d9",
+      "termforge_conpty_probe.exe": "7dd59bc8d0309ad5b131cde1c3ed98819139b6bb70f505347c98aabe8396f618",
+      "termforge_ime_probe.exe": "788a186b5fafb6d155eeab74f78d4f7cb992a599937b3aa48c5efcf49affe993",
+      "termforge_shell.exe": "650ea74ba3ad39b91ab4773c72af3ee70e59bc9d63e76249ea8fa6745a367081",
+      "terminal_trace.exe": "40e869753f4c00515ee0990f3732eac04f965fe2c3070f1bf772717476269f3d",
+      "text_action_policy_test.exe": "535b469c9aa0da7e77670578f75d04956d98e9f912d5c9a6c310ab796ab58d4f",
+      "transport_completion_test.exe": "9f63a2f8a08ddcd459d422f69bfbeae9ceaee9527edc0198c7e4fbd07bff7dc4",
+      "workflow_fixture_test.exe": "a6624a6b1536c6f445f92e05ff72a5318ece47d455500f6adc467d94f9f04222",
+      "workspace_state_test.exe": "ac3fbc8a56d33efda33cc9040c731c183e0a8666e23fce48d368c1868797714d"
+    },
+    "vim_sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+    "vim_version": [
+      "VIM - Vi IMproved 9.1 (2024 Jan 02, compiled Jul 09 2024 07:07:42)",
+      "Included patches: 1-532",
+      "Compiled by <https://www.msys2.org/>"
+    ],
+    "cmake_cache_sha256": "d652393042e1195908894a592dda1ebf0c8e1e8ccd3e05ecacec2760b41bc2ff",
+    "returncode": 8,
+    "completed_utc": "2026-10-26T16:44:34.597552+00:00",
+    "log_sha256": "2e0a4fd1afa9234461cb2598a6d52063115edcce3510017644d026125c7d37a7",
+    "last_test_sha256": "4da7c00a9422b9911c25cf4b6aba315e7e723e758132f61e285e5ca61bc0cf11",
+    "tests": [
+      {
+        "name": "shell_launch",
+        "status": "run",
+        "seconds": 0.0119766,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "candidate_title",
+        "status": "run",
+        "seconds": 0.679326,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "candidate_reply_close",
+        "status": "run",
+        "seconds": 0.331894,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "runtime_observation",
+        "status": "run",
+        "seconds": 1.42167,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "ime_input_expectation",
+        "status": "run",
+        "seconds": 0.0101662,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "sent_message_wait",
+        "status": "run",
+        "seconds": 0.272669,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "find_bar",
+        "status": "run",
+        "seconds": 0.372583,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "renderer_metrics",
+        "status": "run",
+        "seconds": 0.89513,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "ime_context",
+        "status": "run",
+        "seconds": 0.333653,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "layout_state",
+        "status": "run",
+        "seconds": 0.123253,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "workspace_state",
+        "status": "run",
+        "seconds": 0.31827,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "transport_completion",
+        "status": "run",
+        "seconds": 0.0096818,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "scenario_tick_gate",
+        "status": "run",
+        "seconds": 0.0094621,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "candidate_core",
+        "status": "run",
+        "seconds": 1.12604,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "resize_core",
+        "status": "run",
+        "seconds": 0.0141228,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "history_core",
+        "status": "run",
+        "seconds": 0.0160041,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "selection_core",
+        "status": "run",
+        "seconds": 0.0736148,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "search_core",
+        "status": "run",
+        "seconds": 0.104065,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "paste",
+        "status": "run",
+        "seconds": 0.0100795,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "sender_fence",
+        "status": "run",
+        "seconds": 1.01974,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "sender_fence_pipe",
+        "status": "run",
+        "seconds": 0.377036,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "clipboard_policy",
+        "status": "run",
+        "seconds": 0.0080975,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "keyboard",
+        "status": "run",
+        "seconds": 0.0083753,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "text_action_policy",
+        "status": "run",
+        "seconds": 0.0075863,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "candidate_resize_replay",
+        "status": "run",
+        "seconds": 0.456575,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "candidate_shell_tui",
+        "status": "fail",
+        "seconds": 30.2581,
+        "failed": true,
+        "skipped": false
+      },
+      {
+        "name": "core",
+        "status": "run",
+        "seconds": 5.70024,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "recovery",
+        "status": "run",
+        "seconds": 8.93909,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "measure",
+        "status": "run",
+        "seconds": 3.92379,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "binary_paths",
+        "status": "run",
+        "seconds": 0.190192,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "conpty_margin_contract",
+        "status": "run",
+        "seconds": 0.292098,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "benchmark_tools",
+        "status": "run",
+        "seconds": 5.29884,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "differential",
+        "status": "run",
+        "seconds": 2.9914,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "ime_inventory",
+        "status": "run",
+        "seconds": 48.3912,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "text_actions",
+        "status": "run",
+        "seconds": 5.26478,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "workflow_fixture",
+        "status": "run",
+        "seconds": 22.4382,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "workflow_sessions",
+        "status": "run",
+        "seconds": 73.5678,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "workflow_resources",
+        "status": "run",
+        "seconds": 0.473082,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "workflow_resource_phases",
+        "status": "run",
+        "seconds": 4.20935,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "workflow_system_content",
+        "status": "run",
+        "seconds": 0.139848,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "workflow_system_runner",
+        "status": "run",
+        "seconds": 0.59471,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "copy_error_frame",
+        "status": "run",
+        "seconds": 0.122081,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "paste_fence_evidence",
+        "status": "run",
+        "seconds": 0.101017,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "resize_trace",
+        "status": "run",
+        "seconds": 0.115742,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "research_guards",
+        "status": "run",
+        "seconds": 4.75846,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "receive",
+        "status": "run",
+        "seconds": 0.195176,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "conpty",
+        "status": "run",
+        "seconds": 23.2193,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "conpty_ctrl_c",
+        "status": "run",
+        "seconds": 4.26167,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "conpty_margin",
+        "status": "run",
+        "seconds": 0.348728,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "conpty_backend",
+        "status": "run",
+        "seconds": 1.13411,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "presentation",
+        "status": "run",
+        "seconds": 4.02108,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "shell",
+        "status": "fail",
+        "seconds": 174.653,
+        "failed": true,
+        "skipped": false
+      },
+      {
+        "name": "selection_bytes",
+        "status": "run",
+        "seconds": 3.80834,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "selection_context",
+        "status": "run",
+        "seconds": 3.77349,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "raw_console_receiver",
+        "status": "run",
+        "seconds": 0.364619,
+        "failed": false,
+        "skipped": false
+      },
+      {
+        "name": "paste_system",
+        "status": "run",
+        "seconds": 7.74685,
+        "failed": false,
+        "skipped": false
+      }
+    ],
+    "internal_skips": [
+      {
+        "test": "setUpClass (test_candidate_compare.CandidateComparisonTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_capability_matrix.CapabilityMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_fuzz_matrix.FuzzMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_real_app_matrix.RealApplicationMatrixTests)",
+        "reason": "optional real application capture dependencies are not built"
+      },
+      {
+        "test": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice)",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM"
+      },
+      {
+        "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails)",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "test": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard)",
+        "reason": "system copy UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close)",
+        "reason": "product clipboard read gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver)",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice)",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard)",
+        "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified."
+      }
+    ],
+    "failed_methods": [
+      "test_real_fullscreen_editor_and_cursor_reply",
+      "test_close_while_resizing_continuous_output",
+      "test_main_and_bottom_sessions_focus_geometry_and_cleanup",
+      "test_resize_child_dimensions_and_interrupt",
+      "test_workspace_sessions_resize_and_cleanup"
+    ],
+    "observed_failures": [
+      {
+        "case": "candidate-tui-0",
+        "sample": {
+          "mode": "candidate-tui",
+          "status": "failed",
+          "timed_out": false,
+          "exit_code": 2,
+          "job_after": {
+            "active": 0,
+            "total": 7,
+            "terminated": 0
+          },
+          "desktop_gone": true
+        },
+        "stage": 59,
+        "raw_sample_sha256": "556fb95b611df35afd43c36b79c5ecd471b4fc524addcff9568b1178972bb265"
+      },
+      {
+        "case": "main-2",
+        "sample": {
+          "mode": "ui-main",
+          "status": "failed",
+          "timed_out": false,
+          "exit_code": 2,
+          "job_after": {
+            "active": 0,
+            "total": 16,
+            "terminated": 0
+          },
+          "desktop_gone": true
+        },
+        "stage": 7,
+        "raw_sample_sha256": "3958d53e4a69819bd3aa9db04c2fe09d26b78aba22d76db904102b257ea59340"
+      },
+      {
+        "case": "resize-0",
+        "sample": {
+          "mode": "resize",
+          "status": "failed",
+          "timed_out": false,
+          "exit_code": 2,
+          "job_after": {
+            "active": 0,
+            "total": 8,
+            "terminated": 0
+          },
+          "desktop_gone": true
+        },
+        "stage": 43,
+        "raw_sample_sha256": "eab4ad23688907b4cfe66756203e088ccfcfbc251d271e2497f64ee9375ac043"
+      },
+      {
+        "case": "resize-close-0",
+        "sample": {
+          "mode": "resize-close",
+          "status": "failed",
+          "timed_out": false,
+          "exit_code": 2,
+          "job_after": {
+            "active": 0,
+            "total": 8,
+            "terminated": 0
+          },
+          "desktop_gone": true
+        },
+        "stage": 43,
+        "raw_sample_sha256": "24ce02899ca5110cc20fabc847725d28ea73da6866f9b2a387e7620760829700"
+      },
+      {
+        "case": "ui-2",
+        "sample": {
+          "mode": "ui",
+          "status": "failed",
+          "timed_out": false,
+          "exit_code": 2,
+          "job_after": {
+            "active": 0,
+            "total": 12,
+            "terminated": 0
+          },
+          "desktop_gone": true
+        },
+        "stage": 52,
+        "raw_sample_sha256": "fe0985a95d8c70063e214bebec6476afdb651413f554ade5a199d46d79428d18"
+      }
+    ],
+    "persistence_method_passed": true,
+    "all_tests_completed": true,
+    "total_seconds": 449.38,
+    "limitations": [
+      "Candidate/official full regression retains actual failures and internal skips.",
+      "Standalone persistence passes do not replace the failing aggregate shell suite.",
+      "No actual presented endpoint, long-run stability or WindTerm performance equivalence."
+    ]
+  },
+  "ci": {
+    "source_head": "4daf99250a2740e1943635b6d46293d633427163",
+    "checkout": "c5d397999fbc00a83dd4055d975d8c12f855af5e",
+    "workflows": [
+      {
+        "run": 40360427005,
+        "name": "Build and synthetic regression",
+        "conclusion": "success",
+        "windows_job": 121704057921,
+        "windows_tests": 51,
+        "windows_failed": 0,
+        "windows_seconds": 273.64
+      },
+      {
+        "run": 40360426973,
+        "name": "External core candidate",
+        "conclusion": "success",
+        "windows_job": 121704056881
+      }
+    ],
+    "normalized_local_job_logs_sha256": {
+      "121704057921": "939a15bf59996dd31ce5a90cdefb240af0450060087d5b8e2b712b651bfb9310",
+      "121704056881": "26b187a507ac46184e0dec9da964e08fb82ffdab0a725c58a5979dd7e37acd7e"
+    },
+    "limitation": "CI source is the experimental stack; a separate main-line patch requires its own merge-checkout validation."
+  }
+}
