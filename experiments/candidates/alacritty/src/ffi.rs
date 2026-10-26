@@ -178,14 +178,36 @@ pub unsafe extern "C" fn tf_terminal_resize(
     error: *mut c_uchar,
     error_capacity: usize,
 ) -> c_int {
+    unsafe { resize_terminal(value, rows, columns, false, error, error_capacity) }
+}
+
+unsafe fn resize_terminal(
+    value: *mut c_void, rows: usize, columns: usize, preserve_viewport: bool,
+    error: *mut c_uchar, error_capacity: usize,
+) -> c_int {
     guard(error, error_capacity, || {
         if rows == 0 || rows > 200 || columns == 0 || columns > 500 {
             return Err("invalid candidate dimensions".into());
         }
         let value = unsafe { terminal(value)? };
-        value.term.resize(Size { columns, rows });
+        if preserve_viewport {
+            value.term.resize_native_viewport(Size { columns, rows });
+        } else {
+            value.term.resize(Size { columns, rows });
+        }
         drain_events(value)
     })
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn tf_terminal_resize_native_viewport(
+    value: *mut c_void,
+    rows: usize,
+    columns: usize,
+    error: *mut c_uchar,
+    error_capacity: usize,
+) -> c_int {
+    unsafe { resize_terminal(value, rows, columns, true, error, error_capacity) }
 }
 
 #[unsafe(no_mangle)]
@@ -253,6 +275,15 @@ fn cell_text(cell: &Cell) -> String {
     text
 }
 
+fn wrap_padding(row: &alacritty_terminal::grid::Row<Cell>, column: usize) -> bool {
+    // A short retained continuation can need physical padding to keep the
+    // native viewport boundary. Its wrap marker does not turn that padding
+    // into a written space. Other cell contents or attributes remain visible.
+    row.wrap_columns() > 0 && row.wrap_columns() < row.len() && column >= row.wrap_columns()
+        && row.last().is_some_and(|cell| cell.flags.contains(Flags::WRAPLINE))
+        && row[Column(column)] == Cell { flags: Flags::WRAPLINE, ..Cell::default() }
+}
+
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn tf_terminal_cell_meta(
     value: *mut c_void,
@@ -270,7 +301,8 @@ pub unsafe extern "C" fn tf_terminal_cell_meta(
     }
     let cell = &row[Column(column)];
     let _ = line;
-    let text = cell_text(cell);
+    let padding = wrap_padding(row, column);
+    let text = if padding { String::new() } else { cell_text(cell) };
     let flags = cell.flags();
     let result = CellMeta {
         width: if flags.contains(Flags::WIDE_CHAR) {
@@ -284,8 +316,8 @@ pub unsafe extern "C" fn tf_terminal_cell_meta(
         bg: color(cell.bg),
         bold: flags.contains(Flags::BOLD),
         marks: cell.zerowidth().map_or(0, |marks| marks.len()),
-        written: !cell.is_empty() || !text.is_empty() ||
-            flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER | Flags::LEADING_WIDE_CHAR_SPACER),
+        written: !padding && (!cell.is_empty() || !text.is_empty() ||
+            flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER | Flags::LEADING_WIDE_CHAR_SPACER)),
         text_len: text.len(),
         clipped: flags.contains(Flags::CLIPPED_GRAPHEME),
         grapheme_fragment: cell.grapheme_fragment(),
@@ -312,7 +344,7 @@ pub unsafe extern "C" fn tf_terminal_cell_text(
     if column >= value.term.grid().columns() {
         return 1;
     }
-    let text = cell_text(&row[Column(column)]);
+    let text = if wrap_padding(row, column) { String::new() } else { cell_text(&row[Column(column)]) };
     unsafe { *needed = text.len() };
     if capacity < text.len() || (output.is_null() && !text.is_empty()) {
         return 1;

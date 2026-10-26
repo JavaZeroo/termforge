@@ -1,6 +1,6 @@
 # 固定候选来源与本地补丁
 
-当前适配版本为 `alacritty_terminal 0.26.1-dev+termforge.4`，不是 crates.io 原始 `0.26.0`。
+当前适配版本为 `alacritty_terminal 0.26.1-dev+termforge.5`，不是 crates.io 原始 `0.26.0`。
 
 ## 上游身份
 
@@ -52,6 +52,15 @@
 5. 本地规范测试资料 `tests/data/GraphemeBreakTest-17.0.0.txt` 来自 Unicode 17 官方数据，SHA-256 `e2d134d2c52919bace503ebb6a551c1855fe1a1faec18478c78fff254a1793ec`，766 个用例；附独立 `UNICODE-LICENSE.txt`。这不是声称复制了被排除的 Alacritty 全部录制。
 
 完整控制/宽度/资源和字体策略见[流式字素合同](../../../docs/research/streaming-graphemes.md)。固定 WindTerm 的运行时字素/宽度仍未知。
+
+## termforge.5 补丁
+
+1. `Term::resize_native_viewport` 与 Grid 的显式策略：增高在可见区底部补空行；增宽合并可见行时移动光标并保留底行；历史和原生可见区分别 reflow，不把历史拉进原生控制台的坐标。
+2. 保留历史跨边界的软换行和实际 `wrap_columns`；后续 reflow 只移除本策略产生的默认填充，不丢弃实际文本或样式。C ABI 对同一填充返回一致的未写格/空文本，避免选择复制插入空格。
+3. 原 `Term::resize`、C ABI 和 C++ 默认策略继续采用 `reflow_history`。只有显式官方后端候选 `ShellWindow` 选择 `native_viewport`；新增 ABI 而不改变原函数签名。未新增第三方依赖。
+4. 独立原生 `ReadConsoleOutputW` 的六组合成样本、公开适配器回归与原 GUI 反馈见[原生 resize 对照](../../../docs/research/native-viewport-resize.md)。修改为本项目依据观察独立编写，未复制 WindTerm 或 Microsoft 私有代码；既有上游 Apache-2.0 归属保留。
+
+这是固定后端的兼容实验，不是 WindTerm resize 等价或最终产品策略确认；#29/#34 继续承担完整合同及选型。
 
 ## 历史基线
 

@@ -14,8 +14,11 @@ struct CandidateEvent {
     std::string bytes;
 };
 
+enum class CandidateResizePolicy { reflow_history, native_viewport };
+
 class CandidateTerminal {
     void* impl_ = nullptr;
+    const CandidateResizePolicy resize_policy_;
     uint64_t mode_bits_ = 0, grapheme_overflows_ = 0;
     std::unordered_map<uint64_t, uint64_t> versions_;
     std::vector<CandidateEvent> events_;
@@ -37,7 +40,8 @@ class CandidateTerminal {
 public:
     Screen screen;
 
-    CandidateTerminal(int rows = 24, int columns = 80, size_t history = 100);
+    CandidateTerminal(int rows = 24, int columns = 80, size_t history = 100,
+                      CandidateResizePolicy resize_policy = CandidateResizePolicy::reflow_history);
     ~CandidateTerminal();
     CandidateTerminal(const CandidateTerminal&) = delete;
     CandidateTerminal& operator=(const CandidateTerminal&) = delete;

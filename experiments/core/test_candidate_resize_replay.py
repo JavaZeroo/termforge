@@ -13,12 +13,12 @@ class CandidateResizeReplayTests(unittest.TestCase):
     def setUpClass(cls):
         cls.executable = binary('candidate_resize_replay')
 
-    def replay(self, plan, payload=b'abc'):
+    def replay(self, plan, payload=b'abc', options=()):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             (root / 'transport.bin').write_bytes(payload)
             (root / 'plan.txt').write_text(plan, encoding='ascii')
-            return subprocess.run([str(self.executable), str(root / 'transport.bin'), str(root / 'plan.txt')],
+            return subprocess.run([str(self.executable), str(root / 'transport.bin'), str(root / 'plan.txt'), *options],
                                   capture_output=True, timeout=10)
 
     def test_complete_lines_and_final_line_without_newline_are_valid(self):
@@ -28,6 +28,19 @@ class CandidateResizeReplayTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 states = [json.loads(line) for line in result.stdout.splitlines()]
                 self.assertEqual(states[-1]['offset'], 3)
+
+    def test_explicit_native_viewport_retains_history_outside_visible_coordinates(self):
+        payload = b'H0\r\nH1\r\nTOP\r\nMID\r\nBOT'
+        plan = f'R 3 8\nF 0 {len(payload)}\nR 6 8\n'
+        for options, expected_top, history in [((), 'H0', []), (('--native-viewport',), 'TOP', ['H0', 'H1'])]:
+            with self.subTest(options=options):
+                result = self.replay(plan, payload, options)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                final = json.loads(result.stdout.splitlines()[-1])['state']
+                self.assertEqual(final['lines'][0].rstrip(), expected_top)
+                self.assertEqual([line.rstrip() for line in final['history']], history)
+        self.assertNotEqual(self.replay(plan, payload, ('--unknown',)).returncode, 0)
+        self.assertNotEqual(self.replay(plan, payload, ('--native-viewport', 'extra')).returncode, 0)
 
     def test_trailing_partial_unknown_extra_and_overflow_records_are_rejected(self):
         cases = ('R 12', 'F 3', 'X', 'X 1 2', 'R 12 60 extra', 'F 3 0 extra',

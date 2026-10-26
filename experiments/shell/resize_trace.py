@@ -122,6 +122,8 @@ def main():
     parser.add_argument('capture', type=Path)
     parser.add_argument('output', type=Path)
     parser.add_argument('--exe', required=True, type=Path)
+    parser.add_argument('--native-viewport', action='store_true',
+                        help='use the explicit native viewport resize policy')
     args = parser.parse_args()
     trace_path = args.capture / 'resize-trace.json'
     transport_path = args.capture / 'resize-trace.transport.bin'
@@ -136,8 +138,10 @@ def main():
     # Full snapshots contain the captured terminal text. They are private artifacts.
     timed_out = False
     try:
-        process = subprocess.run([str(args.exe.resolve(strict=True)), str(transport_path.resolve()),
-                                  str(plan_path.resolve())], capture_output=True, timeout=10)
+        command = [str(args.exe.resolve(strict=True)), str(transport_path.resolve()), str(plan_path.resolve())]
+        if args.native_viewport:
+            command.append('--native-viewport')
+        process = subprocess.run(command, capture_output=True, timeout=10)
         stdout, stderr, exit_code = process.stdout, process.stderr, process.returncode
     except subprocess.TimeoutExpired as error:
         stdout, stderr, exit_code = error.stdout or b'', error.stderr or b'', None
@@ -145,6 +149,7 @@ def main():
     (args.output / 'states.jsonl').write_bytes(stdout)
     (args.output / 'stderr.txt').write_bytes(stderr)
     summary = dict(schema=1, replay_exit_code=exit_code, timed_out=timed_out,
+                   resize_policy='native_viewport' if args.native_viewport else 'reflow_history',
                    trace_sha256=sha(trace_path), transport_sha256=sha(transport_path),
                    plan_sha256=sha(plan_path), replay_exe_sha256=sha(args.exe),
                    captured_bytes=len(transport), replay_steps=len(plan.splitlines()),

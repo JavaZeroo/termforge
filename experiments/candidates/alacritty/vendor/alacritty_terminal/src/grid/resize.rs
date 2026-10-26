@@ -16,18 +16,27 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         T: ResetDiscriminant<D>,
         D: PartialEq,
     {
+        self.resize_with_viewport(reflow, lines, columns, false);
+    }
+
+    pub(crate) fn resize_with_viewport<D>(
+        &mut self, reflow: bool, lines: usize, columns: usize, preserve_viewport: bool,
+    ) where
+        T: ResetDiscriminant<D>,
+        D: PartialEq,
+    {
         // Use empty template cell for resetting cells due to resize.
         let template = mem::take(&mut self.cursor.template);
 
         match self.lines.cmp(&lines) {
-            Ordering::Less => self.grow_lines(lines),
+            Ordering::Less => self.grow_lines(lines, preserve_viewport),
             Ordering::Greater => self.shrink_lines(lines),
             Ordering::Equal => (),
         }
 
         match self.columns.cmp(&columns) {
-            Ordering::Less => self.grow_columns(reflow, columns),
-            Ordering::Greater => self.shrink_columns(reflow, columns),
+            Ordering::Less => self.grow_columns(reflow, columns, preserve_viewport),
+            Ordering::Greater => self.shrink_columns(reflow, columns, preserve_viewport),
             Ordering::Equal => (),
         }
 
@@ -40,11 +49,30 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
     /// Alacritty keeps the cursor at the bottom of the terminal as long as there
     /// is scrollback available. Once scrollback is exhausted, new lines are
     /// simply added to the bottom of the screen.
-    fn grow_lines<D>(&mut self, target: usize)
+    fn grow_lines<D>(&mut self, target: usize, preserve_viewport: bool)
     where
         T: ResetDiscriminant<D>,
         D: PartialEq,
     {
+        if preserve_viewport {
+            let original_lines = self.lines;
+            let history_size = self.history_size();
+            let added = target - original_lines;
+            self.raw.grow_visible_lines(target);
+            self.lines = target;
+
+            // Storage growth exposes preceding history at the top. Move every
+            // retained row back to its original logical coordinate and append
+            // empty rows below the viewport without scrolling or eviction.
+            for row in (-(history_size as i32)..original_lines as i32).map(Line) {
+                self.raw.swap(row, row + added);
+            }
+            for row in (original_lines as i32..target as i32).map(Line) {
+                self.raw[row].renew_identity();
+                self.raw[row].reset(&self.cursor.template);
+            }
+            return;
+        }
         let lines_added = target - self.lines;
 
         // Need to resize before updating buffer.
@@ -97,8 +125,27 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         self.lines = target;
     }
 
+    /// Remove only padding introduced at a retained/native boundary before a
+    /// later reflow. A cell with actual text or attributes prevents removal.
+    fn trim_reflow_padding(row: &mut Row<T>) {
+        let used = row.wrap_columns();
+        if used == 0 || used >= row.len() {
+            return;
+        }
+        let empty = T::default();
+        let mut marker = T::default();
+        marker.flags_mut().insert(Flags::WRAPLINE);
+        let last = row.len() - 1;
+        if row[Column(last)] != marker || (used..last).any(|column| row[Column(column)] != empty) {
+            return;
+        }
+        row[Column(last)].flags_mut().remove(Flags::WRAPLINE);
+        row.shrink(used);
+        row[Column(used - 1)].flags_mut().insert(Flags::WRAPLINE);
+    }
+
     /// Grow number of columns in each row, reflowing if necessary.
-    fn grow_columns(&mut self, reflow: bool, columns: usize) {
+    fn grow_columns(&mut self, reflow: bool, columns: usize, preserve_viewport: bool) {
         // Check if a row needs to be wrapped.
         let should_reflow = |row: &Row<T>| -> bool {
             let len = Column(row.len());
@@ -109,6 +156,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
         let mut reversed: Vec<Row<T>> = Vec::with_capacity(self.raw.len());
         let mut cursor_line_delta = 0;
+        let mut removed_visible = 0;
 
         // Remove the linewrap special case, by moving the cursor outside of the grid.
         if self.cursor.input_needs_wrap && reflow {
@@ -119,9 +167,25 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         let mut rows = self.raw.take_all();
 
         for (i, mut row) in rows.drain(..).enumerate().rev() {
+            if preserve_viewport && i >= self.lines {
+                Self::trim_reflow_padding(&mut row);
+            }
+            // A native console cannot reflow text that only the terminal's
+            // scrollback retains. Preserve the continuation without merging
+            // the first visible row into its historical predecessor.
+            if preserve_viewport && i + 1 == self.lines {
+                if let Some(previous) = reversed.last_mut().filter(|row| should_reflow(row)) {
+                    if let Some(cell) = previous.last_mut() {
+                        cell.flags_mut().remove(Flags::WRAPLINE);
+                    }
+                    previous.set_wrap_columns(previous.len());
+                    previous.grow(columns);
+                    previous[Column(columns - 1)].flags_mut().insert(Flags::WRAPLINE);
+                }
+            }
             // Check if reflowing should be performed.
             let last_row = match reversed.last_mut() {
-                Some(last_row) if should_reflow(last_row) => last_row,
+                Some(last_row) if (!preserve_viewport || i + 1 != self.lines) && should_reflow(last_row) => last_row,
                 _ => {
                     reversed.push(row);
                     continue;
@@ -163,6 +227,9 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
             // Add removed cells to previous row and reflow content.
             last_row.append(&mut cells);
+            if preserve_viewport {
+                last_row.set_wrap_columns(last_row.len());
+            }
 
             let cursor_buffer_line = self.lines - self.cursor.point.line.0 as usize - 1;
 
@@ -182,11 +249,17 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                 let line_delta = self.cursor.point.line - target.line;
 
                 if line_delta != 0 && row.is_clear() {
+                    if preserve_viewport && i < self.lines {
+                        removed_visible += 1;
+                    }
                     continue;
                 }
 
                 cursor_line_delta += line_delta.0 as usize;
             } else if row.is_clear() {
+                if preserve_viewport && i < self.lines {
+                    removed_visible += 1;
+                }
                 if i < self.display_offset {
                     // Since we removed a line, rotate down the viewport.
                     self.display_offset = self.display_offset.saturating_sub(1);
@@ -209,6 +282,13 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
             reversed.push(row);
         }
 
+        // Merged visible rows become empty rows below the viewport. They do
+        // not create space into which historical rows may be pulled.
+        if removed_visible != 0 {
+            reversed.resize_with(reversed.len() + removed_visible, || Row::new(columns));
+            self.cursor.point.line = max(self.cursor.point.line - removed_visible, Line(0));
+        }
+
         // Make sure we have at least the viewport filled.
         if reversed.len() < self.lines {
             let delta = (self.lines - reversed.len()) as i32;
@@ -219,11 +299,17 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         // Pull content down to put cursor in correct position, or move cursor up if there's no
         // more lines to delete below the cursor.
         if cursor_line_delta != 0 {
-            let cursor_buffer_line = self.lines - self.cursor.point.line.0 as usize - 1;
-            let available = min(cursor_buffer_line, reversed.len() - self.lines);
-            let overflow = cursor_line_delta.saturating_sub(available);
-            reversed.truncate(reversed.len() + overflow - cursor_line_delta);
-            self.cursor.point.line = max(self.cursor.point.line - overflow, Line(0));
+            if preserve_viewport {
+                // A partial merge can move the cursor while both rows remain.
+                // No row below the cursor may be discarded to hold it still.
+                self.cursor.point.line = max(self.cursor.point.line - cursor_line_delta, Line(0));
+            } else {
+                let cursor_buffer_line = self.lines - self.cursor.point.line.0 as usize - 1;
+                let available = min(cursor_buffer_line, reversed.len() - self.lines);
+                let overflow = cursor_line_delta.saturating_sub(available);
+                reversed.truncate(reversed.len() + overflow - cursor_line_delta);
+                self.cursor.point.line = max(self.cursor.point.line - overflow, Line(0));
+            }
         }
 
         // Reverse iterator and fill all rows that are still too short.
@@ -242,7 +328,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
     }
 
     /// Shrink number of columns in each row, reflowing if necessary.
-    fn shrink_columns(&mut self, reflow: bool, columns: usize) {
+    fn shrink_columns(&mut self, reflow: bool, columns: usize, preserve_viewport: bool) {
         self.columns = columns;
 
         // Remove the linewrap special case, by moving the cursor outside of the grid.
@@ -256,6 +342,9 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
         let mut rows = self.raw.take_all();
         for (i, mut row) in rows.drain(..).enumerate().rev() {
+            if preserve_viewport && i >= self.lines {
+                Self::trim_reflow_padding(&mut row);
+            }
             // Append lines left over from the previous row.
             if let Some(buffered) = buffered.take() {
                 // Add a column for every cell added before the cursor, if it goes beyond the new
@@ -287,6 +376,18 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                             Vec::new()
                         } else {
                             // Since it fits, just push the existing line without any reflow.
+                            if preserve_viewport && row.len() < columns {
+                                let used = row.len();
+                                let wraps = row.last().is_some_and(|cell| cell.flags().contains(Flags::WRAPLINE));
+                                if wraps {
+                                    row[Column(used - 1)].flags_mut().remove(Flags::WRAPLINE);
+                                }
+                                row.grow(columns);
+                                if wraps {
+                                    row[Column(columns - 1)].flags_mut().insert(Flags::WRAPLINE);
+                                    row.set_wrap_columns(used);
+                                }
+                            }
                             new_raw.push(row);
                             break;
                         }
@@ -344,11 +445,13 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                     cell.flags_mut().insert(Flags::WRAPLINE);
                 }
 
+                let viewport_boundary = preserve_viewport && i == self.lines && wrapped.last()
+                    .is_some_and(|cell| cell.flags().contains(Flags::WRAPLINE));
                 if wrapped
                     .last()
                     .map(|c| c.flags().contains(Flags::WRAPLINE) && i >= 1)
                     .unwrap_or(false)
-                    && wrapped.len() < columns
+                    && wrapped.len() < columns && !viewport_boundary
                 {
                     // Make sure previous wrap flag doesn't linger around.
                     if let Some(cell) = wrapped.last_mut() {
@@ -376,10 +479,23 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
                     // Make sure new row is at least as long as new width.
                     let occ = wrapped.len();
+                    if viewport_boundary && occ < columns {
+                        if let Some(cell) = wrapped.last_mut() {
+                            cell.flags_mut().remove(Flags::WRAPLINE);
+                        }
+                    }
                     if occ < columns {
                         wrapped.resize_with(columns, T::default);
                     }
+                    if viewport_boundary && occ < columns {
+                        wrapped[columns - 1].flags_mut().insert(Flags::WRAPLINE);
+                    }
                     row = Row::from_vec(wrapped, occ);
+                    if viewport_boundary && occ < columns {
+                        // Padding keeps physical columns aligned with the
+                        // native viewport, but is not part of the logical line.
+                        row.set_wrap_columns(occ);
+                    }
 
                     if i < self.display_offset {
                         // Since we added a new line, rotate up the viewport.

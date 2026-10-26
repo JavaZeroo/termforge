@@ -29,11 +29,13 @@ size_t decimal(const std::string& token) {
 
 int main(int argc, char** argv) {
     try {
-        if (argc != 3) throw std::runtime_error("usage: candidate_resize_replay transport.bin plan.txt");
+        if (argc != 3 && (argc != 4 || std::string(argv[3]) != "--native-viewport"))
+            throw std::runtime_error("usage: candidate_resize_replay transport.bin plan.txt [--native-viewport]");
         const auto bytes = read_bounded(argv[1]);
         const auto commands = read_bounded(argv[2]);
         std::istringstream plan(commands);
-        termforge::CandidateTerminal terminal;
+        termforge::CandidateTerminal terminal(24,80,100, argc == 4
+            ? termforge::CandidateResizePolicy::native_viewport : termforge::CandidateResizePolicy::reflow_history);
         size_t offset = 0, step = 0, traced_cells = 0;
         std::string line;
         while (std::getline(plan, line)) {

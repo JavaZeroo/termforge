@@ -510,6 +510,77 @@ void resize_and_errors() {
     try { terminal.feed(std::string(1024 * 1024 + 1, 'x')); } catch (const std::runtime_error&) { rejected = true; }
     require(rejected, "oversized feed was accepted");
 }
+
+void native_viewport_resize() {
+    struct Case {
+        int rows, columns, new_rows, new_columns;
+        const char* source;
+        std::vector<std::string> expected;
+        int row, column;
+    };
+    // Fixed synthetic native CHAR_INFO observations: the native viewport has
+    // no access to rows already retained in the terminal's scrollback.
+    const Case cases[] = {
+        {3,8,6,8,"H0\r\nH1\r\nTOP\r\nMID\r\nBOT",{"TOP","MID","BOT","","",""},2,3},
+        {3,8,3,16,"H0\r\nH1\r\n123456789\r\nP>",{"123456789","P>",""},1,2},
+        {3,8,3,16,"H0\r\nH1\r\nH2\r\n123456789",{"H2","123456789",""},1,9},
+        {3,8,3,5,"H0\r\n123456789012345678901234567890",{"90123","45678","90"},2,2},
+        {4,8,4,10,"H0\r\nH1\r\nABCDEFGHIJKLMNO\r\nBOTTOM\x1b[3;2H",{"H1","ABCDEFGHIJ","KLMNO","BOTTOM"},1,9},
+        {3,8,3,16,"H0\r\n123456789012345678901234567890",{"9012345678901234","567890",""},1,6},
+    };
+    for (const auto& test : cases) {
+        termforge::CandidateTerminal terminal(test.rows,test.columns,100,
+            termforge::CandidateResizePolicy::native_viewport);
+        terminal.feed(std::string("\x1b[2J\x1b[H") + test.source);
+        require(!terminal.screen.history.empty(), "native resize fixture lacks history");
+        const auto retained = terminal.screen.history.front().id;
+        const auto copy_text = [&] {
+            termforge::TextDocument document(terminal.screen);
+            size_t last = document.size() - 1;
+            while (last && document.line(last).projection.text.empty()) --last;
+            const auto length = document.line(last).projection.text.size();
+            termforge::TextSelection selection;
+            require(selection.set(document, {*document.position(0, 0), *document.position(last, length)}),
+                    "native viewport whole-text selection failed");
+            const auto copied = selection.copy(document, 4096);
+            require(copied.status == termforge::SelectionCopyStatus::ok, "native viewport whole-text copy failed");
+            return copied.text;
+        };
+        std::string expected_text = test.source;
+        if (const auto cursor_move = expected_text.find('\x1b'); cursor_move != std::string::npos)
+            expected_text.resize(cursor_move);
+        require(copy_text() == expected_text, "native viewport source text differs before resize");
+        terminal.resize(test.new_rows,test.new_columns);
+        require(terminal.screen.lines.size() == test.expected.size(), "native viewport row count differs");
+        for (size_t row=0; row<test.expected.size(); ++row)
+            require(text(terminal.screen.lines[row]) == test.expected[row], "native viewport text differs");
+        require(terminal.screen.row == test.row && terminal.screen.column == test.column,
+                "native viewport cursor differs");
+        require(!terminal.screen.history.empty() && terminal.screen.history.front().id == retained &&
+                text(terminal.screen.history.front()) == "H0", "native viewport lost retained history");
+        const auto copied_text = copy_text();
+        require(copied_text == expected_text, "native viewport changed logical copy text");
+        terminal.resize(test.new_rows, 16);
+        require(copy_text() == expected_text, "repeated native viewport resize changed logical copy text");
+    }
+    for (const size_t limit : {size_t{0}, size_t{2}, size_t{100}}) {
+        termforge::CandidateTerminal terminal(3,16,limit,termforge::CandidateResizePolicy::native_viewport);
+        for (size_t row=0; row<limit+5; ++row) terminal.feed("ROW" + std::to_string(row) + "\r\n");
+        const auto before = terminal.screen;
+        terminal.resize(6,16);
+        require(terminal.screen.history.size() == before.history.size() &&
+                terminal.screen.discarded == before.discarded && terminal.screen.row == before.row,
+                "native viewport growth changed bounded history or cursor");
+        for (size_t row=0; row<before.history.size(); ++row)
+            require(terminal.screen.history[row].id == before.history[row].id &&
+                    text(terminal.screen.history[row]) == text(before.history[row]),
+                    "native viewport growth lost a retained row");
+        for (size_t row=0; row<before.lines.size(); ++row)
+            require(terminal.screen.lines[row].id == before.lines[row].id &&
+                    text(terminal.screen.lines[row]) == text(before.lines[row]),
+                    "native viewport growth moved an existing row");
+    }
+}
 } // namespace
 
 int main(int argc, char** argv) {
@@ -529,6 +600,7 @@ int main(int argc, char** argv) {
         linebreaks();
         scrolling_and_erase();
         resize_and_errors();
+        native_viewport_resize();
         std::cout << "candidate terminal adapter checks passed\n";
         return 0;
     } catch (const std::exception& error) {

@@ -33,8 +33,9 @@ std::string cell_text(void* impl, size_t row, size_t column, size_t size) {
 }
 } // namespace
 
-CandidateTerminal::CandidateTerminal(int rows, int columns, size_t history)
+CandidateTerminal::CandidateTerminal(int rows, int columns, size_t history, CandidateResizePolicy resize_policy)
     : impl_(tf_terminal_new(static_cast<size_t>(rows), static_cast<size_t>(columns), history)),
+      resize_policy_(resize_policy),
       screen(rows, columns, history) {
     if (!impl_) throw std::invalid_argument("invalid candidate terminal dimensions");
     synchronize();
@@ -258,8 +259,10 @@ void CandidateTerminal::finish() {
 
 void CandidateTerminal::resize(int rows, int columns) {
     std::array<uint8_t, 256> error{};
-    check(tf_terminal_resize(impl_, static_cast<size_t>(rows), static_cast<size_t>(columns),
-                             error.data(), error.size()), "candidate resize failed");
+    const auto resize = resize_policy_ == CandidateResizePolicy::native_viewport
+        ? tf_terminal_resize_native_viewport : tf_terminal_resize;
+    check(resize(impl_, static_cast<size_t>(rows), static_cast<size_t>(columns),
+                 error.data(), error.size()), "candidate resize failed");
     begin_replay();
     screen.resize(rows, columns);
     synchronize();
