@@ -1,6 +1,6 @@
 # 核心连续区间计量与校准
 
-`core_measure` 使用原创固定输入与独立状态检查。v2 修正了 v1 将很多短轮次 CPU 差值相加的计量问题；仍未完成解码、屏幕更新、历史的独立归因，不能据此判断 WindTerm 性能差距。
+`core_measure` 使用原创固定输入与独立状态检查。v2 修正了 v1 将很多短轮次 CPU 差值相加的计量问题；`compare.py` 另提供自研/候选 project 与 interactive 成本诊断。解码、屏幕更新、历史仍未完整独立归因，不能据此判断 WindTerm 性能差距。R2 流式字素成本的受控定位与预算由 [#54](https://github.com/JavaZeroo/termforge/issues/54)承接，完整产品性能和跨目标基线仍按 [R4 工作包 #9](https://github.com/JavaZeroo/termforge/issues/9)验收。
 
 ```powershell
 # 先按 CONTRIBUTING.md 从仓库根目录构建。输出目录必须不存在。
@@ -56,7 +56,7 @@ python experiments/measure/compare.py --route interactive --out local/core-inter
 
 `ordinary_allocations` / `ordinary_allocated_bytes` 是区间内普通 C++ new/new[] 的累计请求次数/字节，不包含对齐分配、C/runtime 分配，也不是存活内存。Windows 的 peak working set 是整个进程峰值，包含准备和检查；Linux 暂为 null。
 
-接收和呈现不在此探针中，保持 null；屏幕更新与历史维护仍混合，当前只覆盖 ASCII 滚动。剩余的解码/状态/历史独立归因、Unicode 和不同历史规模、无插桩对照及受控重复样本由 [R4 性能工作包 #9](https://github.com/JavaZeroo/termforge/issues/9)承接；不得据此发布速度排名或认定数据结构瓶颈。
+接收和呈现不在这些核心探针中，保持 null；屏幕更新与历史维护仍混合。`core_measure` 负载为 ASCII 滚动，`compare.py` 的 interactive 另含固定 ASCII 编辑回放；二者都不代表真实输入到呈现延迟。剩余的解码/状态/历史独立归因、Unicode 和不同历史规模、无插桩对照及受控重复样本由 [R4 性能工作包 #9](https://github.com/JavaZeroo/termforge/issues/9)承接；不得据此发布速度排名或认定数据结构瓶颈。
 
 ## v1 历史结果（未改写）
 

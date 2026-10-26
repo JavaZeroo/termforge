@@ -1,8 +1,8 @@
 # 本地 shell 工作区
 
-受控编号日志、洪流、八会话data-only场景及资源接缝见 [WORKFLOW](WORKFLOW.md)。E2在真实工作区验证有限并发负载、文字状态及反复回收；同次实际Copy→Paste→IME完整工作流、资源阶段校准和滚动提交端点已按[限定合同验收](results/2026-10-24-r1-system-workflow/validation.json)，实时状态见 [#18](https://github.com/JavaZeroo/termforge/issues/18)。
+本说明负责工作区的运行、接口、所有权和验证入口。当前能力统一见[功能矩阵](../../docs/FEATURES.md)，剩余联合验收见 [R2 合同](../../docs/milestones/R2-local-terminal.md)，执行状态见[跟踪索引](../../docs/TRACKING.md)。受控编号日志、洪流、八会话 data-only 场景及资源接缝见 [WORKFLOW](WORKFLOW.md)。
 
-这是可从源码运行的 Windows 本地交互原型：真实 `cmd.exe` → ConPTY → 有界输出队列 → Recovery 核心 → 历史视口/只读快照 → DirectWrite/Direct2D → 自有 HWND；窗口输入经有界队列回到 ConPTY。核心、窗口与子进程尺寸同步，当前按 [R1 合同](../../docs/milestones/R1-local-text.md)推进基础文字交互，仍未达到日常开发版验收。
+这是可从源码运行的 Windows 本地交互原型：真实 shell → ConPTY → 有界输出队列 → 核心 → 历史视口/只读快照 → DirectWrite/Direct2D → 自有 HWND；窗口输入经有界队列回到 ConPTY。默认构建使用自研 Recovery 核心；显式 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 构建使用候选 Term/Processor，接口见[候选适配说明](../core/CANDIDATE.md)。两条路径分别验证，不能把候选核心的能力算给默认构建，也不能把默认核心的限制算成候选能力缺失。R1 的固定基础文字验收不代替 R2 日常开发版出口。
 
 ## 运行
 
@@ -20,7 +20,7 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 
 `ShellLaunch` 将可执行文件、参数、工作目录和命令差异放在同一启动描述中。默认仍为原 cmd；固定测试另覆盖 Windows PowerShell 5.1、PowerShell 7 和显式 Ubuntu WSL。PowerShell 原生命令使用 `&`，WSL helper 将绝对 Windows 路径转换为 `/mnt/<drive>/...`，不能用同一字符串拼法处理三种 shell。两轮真实启动/目录/尺寸/逐个正常退出及启动失败恢复见[验证](results/2026-10-24-r2-shell-lifecycle/validation.json)；通用分屏/排序、任意 profile/参数和全部运行时错误提示尚未完成。
 
-默认 1360×860 逻辑内容区（以 96 DPI 为基准），底部真实 ShellPane，每会话保留最多 100 行历史；网格按扣除原生滚动条的客户区和实际单元格计算。窗口支持拖动缩放/最大化，网格范围为 1–500 列、1–200 行。采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄会截去右侧内容，增宽不会恢复，也没有逻辑行重排。历史、选择复制、系统粘贴、查找、固定拼音输入和统一文字动作均已有 R1 限定验收；八会话data-only与完整真实Copy→Paste→IME组合均已按各自限定合同验收，SSH、备用屏和完整 TUI 尚未实现。不实现终端查询回复，未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。逐格布局来自 [V1](../presentation/README.md)，布局缓存至多 1,024 项，满时清空重建；尚未做产品级缓存策略或性能对比。
+默认 1360×860 逻辑内容区（以 96 DPI 为基准），底部真实 ShellPane，每会话保留最多 100 行历史；网格按扣除原生滚动条的客户区和实际单元格计算。窗口支持拖动缩放/最大化，网格范围为 1–500 列、1–200 行。默认自研路径采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄会截去右侧内容，增宽不会恢复；不执行备用屏、滚动区域和终端查询，未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。候选路径具有独立的备用屏、滚动区域、真实回复、流式字素和 reflow 切片，完整 resize 合同仍由 [#29](https://github.com/JavaZeroo/termforge/issues/29)验收，不能由上游行为直接替换产品策略。共享[逐格 renderer](../presentation/README.md)的布局缓存至多 1,024 项，满时清空重建；这不是产品级缓存或性能验收。
 
 ## 基础文字操作
 
@@ -32,14 +32,14 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 - 当前独立粘贴策略：最多 1 Mi 个 UTF-16 单元、4 MiB UTF-8，换行规范化为 CR，拒绝不完整 UTF-16 和不支持的控制字符；不宣称已对齐 WindTerm 默认策略，也不无条件发送 bracketed-paste 包装。
 - 键盘处理包含 Tab/Shift+Tab、Home/End/Insert/Delete/Page、修饰键、AltGr 和跨消息 UTF-16。IME 采用每终端独立原生上下文，只发送已提交文字；候选位置使用物理网格。固定 Microsoft 拼音的组合、候选、提交/取消已有五组实际产品验收；其他输入法和真实跨屏仍未验收，见 [IME 工具](../../research/ime/README.md)。
 
-基础能力与统一文字动作已按 [#12–#17 的各自限定合同](../../docs/milestones/R1-local-text.md)验收；当前能力与边界统一见[功能矩阵](../../docs/FEATURES.md)。[#18](https://github.com/JavaZeroo/termforge/issues/18)的E2受控场景覆盖实际8会话/拒绝第9个、五路有限洪流、前台文字操作、合成粘贴取消/关闭和5次8→6→8，本地及同源码hosted各两fresh已通过限定复验。该数据场景不访问系统剪贴板、不调用真实IME；同源码[系统组合及整体回归](results/2026-10-24-r1-system-workflow/validation.json)另验收，资源记录不构成性能通过。
+R1 的 [#12–#17 限定合同](../../docs/milestones/R1-local-text.md)和 [#18 八会话数据场景](results/2026-10-24-r1-eight-sessions/validation.json)分别保留历史身份。数据场景覆盖有限并发负载、文字操作及反复回收，不访问系统剪贴板、不调用真实 IME；[实际 Copy→Paste→IME 系统组合](results/2026-10-24-r1-system-workflow/validation.json)有独立验收。资源记录不构成性能通过，后续核心或传输变更需要在相应构建重新验证。
 
 ## 工作区操作与已知差异
 
 - `Ctrl+Shift+T`、主区 `+` 或 Session → New main session 新建主区本地 cmd；`Ctrl+T` 或底部 `+` 新建底部 shell。两个区域合计最多 8 个，各自保留选中的标签，可同时显示终端。
 - 点击终端、标签或右侧 Sessions 列表改变当前操作区域；状态栏显示 `Focus: Main/Shell`。`Ctrl+Tab` 在该区域切换，`Ctrl+W` 关闭该区域选中的会话，标签 `x` 关闭它所在的会话。主工具栏提供新建、关闭、重命名和只读本地目标说明。
-- 主区 `Alt+-` 创建一个真实左右 split，两个独立会话并排显示；`Alt+Left/Right` 切换 pane，`Alt+Z` 隐藏/恢复而不终止进程，`Alt+X` 关闭当前 pane。隐藏标签继续接收输出，关闭只影响目标会话。当前仅一个主区左右 split，[两轮验证](results/2026-10-24-r2-main-split/validation.json)不表示任意嵌套、拖放或分屏持久化已完成。
-- `Ctrl++` / `Ctrl+-` 或 View 菜单放大/缩小当前会话文字，每次 25%，范围 50%–200%；也支持数字键盘加减。`Ctrl+0` 重置 100%，状态栏显示比例。其他会话保持原比例，重命名时不触发终端缩放。比例暂不跨进程保存。
+- 主区 `Alt+-` 创建一个真实左右 split，两个独立会话并排显示；`Alt+Left/Right` 切换 pane，`Alt+Z` 隐藏/恢复而不终止进程，`Alt+X` 关闭当前 pane。隐藏标签继续接收输出，关闭只影响目标会话。仅支持一个主区左右 split，[独立操作验证](results/2026-10-24-r2-main-split/validation.json)与下文 v2 工作区恢复分别留证；任意嵌套和拖放不在此范围。
+- `Ctrl++` / `Ctrl+-` 或 View 菜单放大/缩小当前会话文字，每次 25%，范围 50%–200%；也支持数字键盘加减。`Ctrl+0` 重置 100%，状态栏显示比例。其他会话保持原比例，重命名时不触发终端缩放；每会话比例随下文 v2 工作区保存与恢复。
 - `F2`、标签中键或 Session → Rename shell 重命名；支持 Unicode，Enter 提交、Esc 取消，切换焦点时提交。空白、控制字符或不完整 UTF-16 不接受，最多 64 个 UTF-16 单元；标签与 Sessions 列表同步，标题不写入终端。
 - `F11` / View → Focus shell 扩大底部终端；在此模式新建/选择主区会话会先恢复普通布局，再把焦点交给可见的主终端。View → Side panels 显示/隐藏两侧区域。Session 菜单可新建、关闭和退出。
 - 拖动左右两列、底部 Shell、左侧与右侧上下区域的五条分隔线调整布局。线宽 1，命中宽 5；拖出窗口仍限于比例边界，Esc 或丢失鼠标捕获取消本次拖动。
@@ -79,7 +79,7 @@ $env:TERMFORGE_BIN_DIR = (Resolve-Path build/bin/Release).Path
 python -m unittest experiments.shell.test_shell -v
 python experiments/shell/run.py --bin-dir build/bin/Release --out local/experiments/shell-new --repeats 3
 
-# E2专用驱动：两个fresh rounds，启用资源采样；目录取新路径。
+# 八会话数据场景：两次 fresh rounds，启用资源采样；目录取新路径。
 $env:TERMFORGE_TEST_ARTIFACTS = Join-Path (Get-Location) 'local/workflow-check'
 python -m unittest experiments.shell.test_workflow_sessions -v
 ```
@@ -117,7 +117,7 @@ E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单�
 | `candidate-tui` / `candidate-input-escape` | 仅显式候选构建：真实 Vim 进入/插入/60×12 resize/退出写盘，主屏恢复、独立 `CSI 6n` 光标回复及独立 ESC 接收 | `test_candidate_tui.py` 各连续两轮；固定 `candidate-vim.vim` 以短 `-S` 命令加载，避免交互式 cmd 拆分长命令；以 Vim 写入的真实 `VimEnter`/`InsertEnter` 事件文件为启动握手，以 `Ctrl-O` 调用命令保存实际 `&columns/&lines`，核对脚本、文件、子进程尺寸及 InputQueue 字节；有界合成输出另存 `candidate-output.bin`，私有 desktop/Job，无截图。不把该路径写成 Vim Escape 或备用屏验收，不替代 #28/#29 或实际呈现验收 |
 | `candidate-alt` | 仅显式候选构建：两次 1049h/1049l、主屏文字/样式/光标恢复、历史隔离 | [两轮限定验证](results/2026-10-26-alternate-screen/validation.json)独立核对源 VT、五阶段真实 `CHAR_INFO`、transport 和候选状态；原生恢复快照一致，备用屏文字不进入主历史。夹具按实际控制台状态有界同步，不把切换前快照误记为切换后；origin/wrap、独立 margin、resize 和 #27 整项未验收，`presented_done=null` |
 | `candidate-scroll` | 仅显式候选构建：DECSTBM 局部滚动、区域外保持、有限历史语义 | [两轮限定验证](results/2026-10-26-scroll-region/validation.json)独立核对源 VT、三阶段真实 `CHAR_INFO`、候选保留文档及 `pyte==0.8.2` transport 重放；区域外不变、C/D 位于正确区域、A/B 不混入主历史。origin/wrap、独立 margin、resize 和 #27 整项未验收，`presented_done=null` |
-| `candidate-margins` | 仅显式候选构建：主屏 `2;3r`、备用屏 `4;5r`、恢复后局部滚动及四阶段真实控制台快照 | [限定验证](results/2026-10-26-margin-state/validation.json)分别核对公开源 VT 的恢复、resize/RIS 与真实 ConPTY 的宿主差异；当前宿主出现 `REGION_CIXED`，由 [#41](https://github.com/JavaZeroo/termforge/issues/41) 保留。两轮差异观察均为 `margins_per_buffer_verified=false`，不是能力通过；无截图或前台输入，`presented_done=null` |
+| `candidate-margins` | 仅显式候选构建：主屏 `2;3r`、备用屏 `4;5r`、恢复后局部滚动及四阶段真实控制台快照 | [限定验证](results/2026-10-26-margin-state/validation.json)分别核对公开源 VT 的恢复、resize/RIS 与真实 ConPTY 的宿主差异；该批固定系统宿主出现 `REGION_CIXED`，由 [#41](https://github.com/JavaZeroo/termforge/issues/41) 保留。两轮差异观察均为 `margins_per_buffer_verified=false`，不是能力通过；无截图或前台输入，`presented_done=null` |
 | `candidate-unicode` | 仅显式候选构建：固定分解组合、单 emoji、ZWJ/keycap 的真实 ConPTY 原文、子控制台 `CHAR_INFO`、整格宽度、实际 DWrite 单 glyph 与产品拖选复制 | v2 按[流式字素合同](../../docs/research/streaming-graphemes.md)两轮核对初始/真实 100×30 resize；保留源/运输/原生映射的区别，缺字、分裂 glyph、半字复制和伪尺寸被拒绝。限定四样本，不声明完整 Unicode/IME 或 WindTerm 等价；`presented_done=null` |
 | `ui-workflow-sessions` | 8真实会话/拒绝第9个、五路有限洪流、阅读/Find/输入/缩放/淘汰、合成粘贴取消/关闭、5次8→6→8 | `test_workflow_sessions`独立literal/raw/journal/UI和回收校验；每轮26检查点、18身份、235/256观测，资源scope=launcher-tree。data-only，不代替同次实际CF/IME、native阶段校准或操作提交端点 |
 | `ui` / `ui-edit` / `ui-restore` | 多标签、五处分隔线、重命名、捕获/Escape 回滚、新进程恢复布局 | 真实子进程尺寸、保存文件、焦点与回收；只新建会话，不恢复原进程，恢复范围见工作区保存 |
