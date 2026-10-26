@@ -246,6 +246,57 @@ def validate_fixture_case(directory, *, expected_role, expected_generation, expe
                 console_window=console)
 
 
+def controller_observations(host):
+    """Retain fixed scalar observations even when native status is failed.
+
+    Process identities and raw transport stay private. This does not validate
+    success: a timed-out pre-close exit remains false/null after cleanup.
+    """
+    _require(type(host) is dict and host.get('schema') == 'termforge-workflow-controller-test-v1',
+             'controller host identity')
+    rows = host.get('cases')
+    _require(type(rows) is list and len(rows) == 3, 'controller case count')
+    integers = ('generation', 'observed_generation', 'child_exit_code', 'cmd_exit_code',
+                'cmd_native_wait_result_before_exit_input', 'cmd_native_wait_error_before_exit_input',
+                'cmd_native_wait_result', 'cmd_native_wait_error',
+                'exit_input_bytes', 'cmd_exit_wait_ms', 'transport_bytes_before_exit_input',
+                'transport_bytes_before_close', 'prompt_count_before_exit_input',
+                'prompt_count_before_close', 'inner_job_active_after')
+    booleans = ('launched_through_existing_cmd', 'identity_verified', 'child_joined',
+                'phases_complete', 'parent_order_rejected', 'target_job_cancelled',
+                'abnormal_completion_rejected', 'stopped_event', 'child_finished',
+                'cmd_exited_before_exit_input', 'cmd_wait_exit_result', 'forced_process_cancel',
+                'forced_reader_cancel', 'cleanup_complete', 'passed')
+    results = []
+    for row, (name, role) in zip(rows, [('B graceful', 'B'), ('A phases', 'A'), ('B closed', 'B')]):
+        _require(type(row) is dict and row.get('name') == name and row.get('role') == role,
+                 'controller case identity')
+        value = dict(name=name, role=role)
+        for key in integers:
+            value[key] = _uint(row.get(key), f'controller {key}')
+        for key in booleans:
+            _require(type(row.get(key)) is bool, f'controller {key}')
+            value[key] = row[key]
+        for key in ('cmd_exit_code_before_exit_input', 'preclose_cmd_exit_code'):
+            item = row.get(key)
+            value[key] = None if item is None else _uint(item, f'controller {key}')
+        results.append(value)
+    return results
+
+
+def validate_controller_exit(row, *, closed):
+    """A code read after closing ConPTY cannot stand in for natural cmd exit."""
+    expected = 91 if closed else 0
+    _require(row.get('cmd_wait_exit_result') is True and
+             type(row.get('cmd_native_wait_result')) is int and row['cmd_native_wait_result'] == 0 and
+             type(row.get('cmd_native_wait_error')) is int and row['cmd_native_wait_error'] == 0 and
+             type(row.get('preclose_cmd_exit_code')) is int and
+             row['preclose_cmd_exit_code'] == expected and
+             type(row.get('exit_input_bytes')) is int and row['exit_input_bytes'] == (0 if closed else 5) and
+             row.get('forced_process_cancel') is False and row.get('forced_reader_cancel') is False,
+             'controller pre-close exit/input/cleanup')
+
+
 def validate_fixture_host(directory, host):
     """Validate five actual host cases, including transport; outer Job is caller-owned."""
     directory = Path(directory)

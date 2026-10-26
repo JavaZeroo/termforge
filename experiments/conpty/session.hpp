@@ -167,8 +167,12 @@ public:
         const HRESULT hr = backend_.resize(console_, {columns, rows});
         if (FAILED(hr)) fail("ResizePseudoConsole", static_cast<DWORD>(hr));
     }
-    bool wait_exit(unsigned timeout_ms) {
-        child_signaled = WaitForSingleObject(process_.get(), timeout_ms) == WAIT_OBJECT_0;
+    bool wait_exit(unsigned timeout_ms, DWORD* observed_wait_result = nullptr, DWORD* observed_wait_error = nullptr) {
+        const auto result = WaitForSingleObject(process_.get(), timeout_ms);
+        const DWORD error = result == WAIT_FAILED ? GetLastError() : ERROR_SUCCESS;
+        if (observed_wait_result) *observed_wait_result = result;
+        if (observed_wait_error) *observed_wait_error = error;
+        child_signaled = result == WAIT_OBJECT_0;
         if (child_signaled && !GetExitCodeProcess(process_.get(), &exit_code)) fail("GetExitCodeProcess");
         return child_signaled;
     }

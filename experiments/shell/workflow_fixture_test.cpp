@@ -23,6 +23,11 @@ void save(const std::filesystem::path& path,const std::string& bytes) {
     std::ofstream file(path,std::ios::binary); file.write(bytes.data(),static_cast<std::streamsize>(bytes.size()));
     file.close(); check(file.good(),"workflow transport save failed");
 }
+size_t occurrences(const std::string& value,const std::string& needle) {
+    size_t count=0,position=0;
+    while((position=value.find(needle,position))!=std::string::npos) { ++count;position+=needle.size(); }
+    return count;
+}
 struct Events {
     static constexpr const wchar_t* names[]{L"ready",L"output",L"output-done",L"append",L"append-done",L"evict",L"evict-done",L"stop",L"stopped"};
     std::array<tf_conpty::Handle,9> values;
@@ -168,8 +173,22 @@ bool controller_case(const std::filesystem::path& directory,const std::string& r
         controller.stop(); // Safe after the actual target died; only its owned event is signaled.
     } else finished=controller.finished();
     const DWORD child_exit=controller.exit_code();
-    if(!close_target) session.send("exit\r");
-    const bool cmd_exited=session.wait_exit(5000);session.close();save(directory/L"transport.bin",session.output());
+    // Observation only: do not wait for a fresh prompt or change the original
+    // input, five-second exit deadline, or close/cleanup contract. In particular
+    // the code observed after close must not replace a missing pre-close exit.
+    const auto before_exit_input=session.output();
+    DWORD before_input_wait_result=MAXDWORD,before_input_wait_error=0;
+    const bool cmd_exited_before_input=session.wait_exit(0,&before_input_wait_result,&before_input_wait_error);
+    const DWORD cmd_code_before_input=session.exit_code;
+    size_t exit_input_bytes=0;
+    if(!close_target) session.send("exit\r",[&](size_t written) { exit_input_bytes+=written; });
+    const auto wait_begun=GetTickCount64();
+    DWORD cmd_wait_result=MAXDWORD,cmd_wait_error=0;
+    const bool cmd_exited=session.wait_exit(5000,&cmd_wait_result,&cmd_wait_error);
+    const auto exit_wait_ms=GetTickCount64()-wait_begun;
+    const DWORD preclose_exit_code=session.exit_code;
+    const auto before_close=session.output();
+    session.close();save(directory/L"transport.bin",session.output());
     bool payload=true;
     if(role=="A") {
         const auto source=read(capture.wstring()+L".source.bin");
@@ -184,6 +203,17 @@ bool controller_case(const std::filesystem::path& directory,const std::string& r
         <<",\"phases_complete\":"<<(phases?"true":"false")<<",\"parent_order_rejected\":"<<(order_rejected?"true":"false")<<",\"target_job_cancelled\":"<<(close_target?"true":"false")
         <<",\"abnormal_completion_rejected\":"<<(abnormal_rejected?"true":"false")<<",\"stopped_event\":"<<(controller.stopped_event()?"true":"false")
         <<",\"child_finished\":"<<(finished?"true":"false")<<",\"child_exit_code\":"<<child_exit<<",\"cmd_exit_code\":"<<session.exit_code
+        <<",\"cmd_exited_before_exit_input\":"<<(cmd_exited_before_input?"true":"false")<<",\"cmd_exit_code_before_exit_input\":"
+        <<(cmd_exited_before_input?std::to_string(cmd_code_before_input):"null")
+        <<",\"cmd_native_wait_result_before_exit_input\":"<<before_input_wait_result<<",\"cmd_native_wait_error_before_exit_input\":"<<before_input_wait_error
+        <<",\"exit_input_bytes\":"<<exit_input_bytes<<",\"cmd_wait_exit_result\":"<<(cmd_exited?"true":"false")
+        <<",\"cmd_native_wait_result\":"<<cmd_wait_result<<",\"cmd_native_wait_error\":"<<cmd_wait_error
+        <<",\"preclose_cmd_exit_code\":"<<(cmd_exited?std::to_string(preclose_exit_code):"null")<<",\"cmd_exit_wait_ms\":"<<exit_wait_ms
+        <<",\"transport_bytes_before_exit_input\":"<<before_exit_input.size()<<",\"transport_bytes_before_close\":"<<before_close.size()
+        <<",\"prompt_count_before_exit_input\":"<<occurrences(before_exit_input,"TF_CONTROLLER>")
+        <<",\"prompt_count_before_close\":"<<occurrences(before_close,"TF_CONTROLLER>")
+        <<",\"forced_process_cancel\":"<<(session.forced_process_cancel?"true":"false")
+        <<",\"forced_reader_cancel\":"<<(session.forced_reader_cancel?"true":"false")
         <<",\"inner_job_active_after\":"<<session.active_after<<",\"cleanup_complete\":"<<(session.cleanup_complete?"true":"false")<<",\"passed\":"<<(passed?"true":"false")<<'}';
     return passed;
 }
