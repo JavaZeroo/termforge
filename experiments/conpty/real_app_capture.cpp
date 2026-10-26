@@ -70,7 +70,10 @@ int main(int argc, char** argv) {
         if (!IsProcessInJob(GetCurrentProcess(), nullptr, &contained) || !contained) return 2;
         const std::filesystem::path out = argv[1], vim = argv[2];
         require(std::filesystem::create_directories(out), "output directory already exists");
-        const auto root = out.parent_path();
+        // Each newly created capture owns its application fixtures as well as
+        // its traces. Sibling captures must not reuse editor contents or event
+        // files from an earlier run in their shared parent directory.
+        const auto root = out;
         unsigned long long shell_bytes = 0, pager_bytes = 0, editor_bytes = 0;
         {
             tf_conpty::Session session;
