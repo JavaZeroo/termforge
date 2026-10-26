@@ -2,6 +2,7 @@
 #pragma once
 #include "../conpty/session.hpp"
 #include "paste.hpp"
+#include "sender_fence.hpp"
 #include <deque>
 #include <memory>
 
@@ -58,6 +59,7 @@ class InputQueue {
     std::exception_ptr error_;
     std::thread writer_;
     std::shared_ptr<tf_shell::PasteTransfer> paste_;
+    std::shared_ptr<tf_shell_test::SenderFence> sender_fence_;
 public:
     struct Snapshot {
         size_t queued_bytes = 0, in_flight_bytes = 0, high_water_bytes = 0, rejected = 0;
@@ -87,17 +89,27 @@ public:
                         (paste_ && !tf_shell::paste_terminal(paste_->progress().state)); });
                     if (stopping_) break;
                     std::string bytes;
+                    std::shared_ptr<tf_shell_test::SenderFence> fence;
                     writing_paste.reset();
                     if (!chunks_.empty()) {
                         bytes = std::move(chunks_.front()); chunks_.pop_front(); bytes_ -= bytes.size();
                     } else {
                         writing_paste = paste_; bytes = writing_paste->take_chunk();
+                        fence = sender_fence_;
                         high_water = (std::max)(high_water, bytes.size());
                     }
                     in_flight_bytes_ = bytes.size();
                     lock.unlock();
                     if (bytes.empty()) continue; // Cancelled between the predicate and take.
                     if (writing_paste) {
+                        if (fence) {
+                            fence->before_send(writing_paste, bytes.size());
+                            // A CV wait is not cancelled by CancelSynchronousIo.
+                            // stop() first publishes stopping and wakes it; do
+                            // not start a new write after that observation.
+                            std::lock_guard<std::mutex> stopped(mutex_);
+                            if (stopping_) throw std::runtime_error("input stopped at sender fence");
+                        }
                         session_.send(bytes, [&](size_t written) { writing_paste->acknowledge_written(written); });
                         writing_paste->finish_chunk();
                     } else session_.send(bytes);
@@ -132,15 +144,30 @@ public:
     // handle and target identity; later tab switches never retarget this queue.
     // Previously accepted keystrokes drain first. New keystrokes are rejected
     // while pasting, so they cannot interleave with clipboard bytes.
-    bool begin_paste(const std::shared_ptr<tf_shell::PasteTransfer>& paste) {
+    bool begin_paste(const std::shared_ptr<tf_shell::PasteTransfer>& paste,
+                     const std::shared_ptr<tf_shell_test::SenderFence>& fence = {}) {
         std::lock_guard<std::mutex> lock(mutex_);
         if (error_) std::rethrow_exception(error_);
-        if (stopping_ || !paste || (paste_ && !tf_shell::paste_terminal(paste_->progress().state)) || !paste->claim_writer()) return false;
-        paste_ = paste; ready_.notify_one(); return true;
+        if (stopping_ || !paste || (paste_ && !tf_shell::paste_terminal(paste_->progress().state))) return false;
+        if (fence && !fence->attach(paste)) return false;
+        if (!paste->claim_writer()) {
+            if (fence) fence->abort(fence->ticket());
+            return false;
+        }
+        paste_ = paste; sender_fence_ = fence; ready_.notify_one(); return true;
+    }
+    void cancel_paste() {
+        std::shared_ptr<tf_shell_test::SenderFence> fence;
+        { std::lock_guard<std::mutex> lock(mutex_);
+          if (paste_) paste_->cancel();
+          fence = sender_fence_; ready_.notify_all(); }
+        if (fence) fence->cancelled(fence->ticket());
     }
     void stop() noexcept {
+        std::shared_ptr<tf_shell_test::SenderFence> fence;
         { std::lock_guard<std::mutex> lock(mutex_); stopping_ = true; chunks_.clear(); bytes_ = 0;
-          if (paste_) paste_->cancel(); ready_.notify_all(); }
+          if (paste_) paste_->cancel(); fence = sender_fence_; ready_.notify_all(); }
+        if (fence) fence->abort(fence->ticket(), tf_shell_test::SenderFence::AbortReason::stop);
         if (writer_.joinable()) {
             // Retry covers the race where cancellation runs just before WriteFile.
             while (WaitForSingleObject(writer_.native_handle(), 10) == WAIT_TIMEOUT)

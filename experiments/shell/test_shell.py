@@ -463,6 +463,18 @@ class ShellTests(unittest.TestCase):
     def test_queues_apply_bounded_backpressure_and_reject_input(self):
         result = subprocess.run([str(binary("shell_queue_probe"))], capture_output=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
+        rows = [json.loads(line) for line in result.stdout.decode("utf-8").splitlines() if line.startswith("{")]
+        actual = [row for row in rows if row.get("case") == "real-workers"]
+        self.assertEqual(len(actual), 1, result.stdout)
+        row = actual[0]
+        for field, value in dict(total=4 * 1024 * 1024, input_submitted_before_stop=16384,
+                                 input_accepted_before_stop=17408, input_in_flight=1024,
+                                 paste_in_flight_before_stop=1024, child_prefix_read=16384,
+                                 sender_fence_held=True, input_joined=True, input_queued=0,
+                                 working_generation=1, pending_generation=3, completed_generation=3,
+                                 child_columns=102, child_rows=42, job_active_after=0).items():
+            with self.subTest(field=field):
+                self.assertEqual(row.get(field), value)
 
     def test_invalid_arguments_create_no_session(self):
         result = subprocess.run([str(self.exe), "--test", "invalid", "unused.bmp"],

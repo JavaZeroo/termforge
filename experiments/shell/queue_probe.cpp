@@ -20,7 +20,7 @@ static std::wstring executable_path() {
     if (!size || size == path.size()) tf_conpty::fail("GetModuleFileName");
     path.resize(size); return path;
 }
-static int child(const wchar_t* ready_name) {
+static int child(const wchar_t* ready_name, bool prime_input) {
     tf_conpty::Handle ready(OpenEventW(EVENT_MODIFY_STATE, FALSE, ready_name));
     if (!ready.get()) tf_conpty::fail("OpenEvent(queue child)");
     const std::wstring query_name = std::wstring(ready_name) + L"-query";
@@ -31,8 +31,27 @@ static int child(const wchar_t* ready_name) {
         !SetConsoleMode(output, ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING))
         tf_conpty::fail("SetConsoleMode(queue child)");
     if (!SetEvent(ready.get())) tf_conpty::fail("SetEvent(queue child)");
-    // Never reads input. Real console output fills while the parent reader is
-    // held at an explicit gate. No system clipboard or desktop input is used.
+    size_t prefix_read = 0;
+    if (prime_input) {
+        tf_conpty::Handle primed(OpenEventW(EVENT_MODIFY_STATE, FALSE, (std::wstring(ready_name) + L"-primed").c_str()));
+        tf_conpty::Handle flood(OpenEventW(SYNCHRONIZE, FALSE, (std::wstring(ready_name) + L"-flood").c_str()));
+        check(primed.get() && flood.get(), "open queue input phase gates");
+        // A host's unread-input capacity is not a portable 16 KiB guarantee.
+        // Consume and verify exactly that prefix, then never read again. The
+        // sender still submits the original 4 MiB through the real InputQueue.
+        while (prefix_read < 16384) {
+            char bytes[256]; DWORD count = 0;
+            check(ReadFile(input, bytes, sizeof bytes, &count, nullptr) && count && count <= 16384 - prefix_read,
+                  "read queue priming prefix");
+            check(std::string_view(bytes, count).find_first_not_of('a') == std::string_view::npos,
+                  "queue priming prefix differs from independent ASCII oracle");
+            prefix_read += count;
+        }
+        check(SetEvent(primed.get()) != FALSE, "signal verified queue priming prefix");
+        check(WaitForSingleObject(flood.get(), 3000) == WAIT_OBJECT_0, "queue flood phase release");
+    }
+    // From this point input is never read. Output fills while the parent reader
+    // is held at its explicit gate; the old observation mode never primes input.
     const std::string bytes(65536, 'F');
     for (;;) {
         if (WaitForSingleObject(query.get(), 0) == WAIT_OBJECT_0) {
@@ -44,7 +63,8 @@ static int child(const wchar_t* ready_name) {
                 std::this_thread::yield();
             }
             const std::string reply = "\r\nTFQUEUE-SIZE:" + std::to_string(dimensions.dwSize.X) + "x" +
-                                      std::to_string(dimensions.dwSize.Y) + ":END\r\n";
+                                      std::to_string(dimensions.dwSize.Y) + ":END\r\nTFQUEUE-PRIMED:" +
+                                      std::to_string(prefix_read) + ":END\r\n";
             DWORD count = 0;
             if (!WriteFile(output, reply.data(), static_cast<DWORD>(reply.size()), &count, nullptr) || count != reply.size())
                 tf_conpty::fail("WriteFile(queue size)");
@@ -128,9 +148,10 @@ static void lifecycle_edges() {
     std::cout << "{\"case\":\"lifecycle-edges\",\"stopped_uncompleted_generation\":3,\"input_error_preserved\":true,"
                  "\"resize_error_preserved\":true}\n";
 }
-static void real_workers() {
+static void real_workers(bool fence_sender) {
     std::mutex gate_mutex; std::condition_variable gate_changed;
     bool reader_entered = false, reader_released = false, resize_entered=false, resize_released=false;
+    bool reader_gate_enabled = !fence_sender;
     OutputQueue output;
     tf_conpty::Session session;
     InputQueue input(session);
@@ -154,27 +175,72 @@ static void real_workers() {
     if (!ready.get()) tf_conpty::fail("CreateEvent(queue ready)");
     tf_conpty::Handle query(CreateEventW(nullptr, FALSE, FALSE, (name + L"-query").c_str()));
     if (!query.get()) tf_conpty::fail("CreateEvent(queue query)");
+    tf_conpty::Handle primed(CreateEventW(nullptr, TRUE, FALSE, (name + L"-primed").c_str()));
+    tf_conpty::Handle flood(CreateEventW(nullptr, TRUE, FALSE, (name + L"-flood").c_str()));
+    check(primed.get() && flood.get(), "create queue input phase gates");
     try {
-        session.start(executable_path(), L"--queue-child \"" + name + L"\"", [&](std::string_view bytes) {
-            { std::unique_lock<std::mutex> lock(gate_mutex); reader_entered = true; gate_changed.notify_all();
-              gate_changed.wait(lock, [&] { return reader_released; }); }
+        session.start(executable_path(), (fence_sender ? L"--queue-child-primed \"" : L"--queue-child \"") + name + L"\"", [&](std::string_view bytes) {
+            { std::unique_lock<std::mutex> lock(gate_mutex);
+              if (reader_gate_enabled) {
+                  reader_entered = true; gate_changed.notify_all();
+                  gate_changed.wait(lock, [&] { return reader_released; });
+              } }
             output.push(bytes);
         });
         check(WaitForSingleObject(ready.get(), 3000) == WAIT_OBJECT_0, "real console child ready");
-        { std::unique_lock<std::mutex> lock(gate_mutex);
+        if (!fence_sender) { std::unique_lock<std::mutex> lock(gate_mutex);
           check(gate_changed.wait_for(lock, std::chrono::seconds(3), [&] { return reader_entered; }), "real output reader reached gate"); }
         tf_shell::PreparedPaste prepared; prepared.bytes.assign(4 * 1024 * 1024, 'a');
         auto transfer = std::make_shared<tf_shell::PasteTransfer>(1, std::move(prepared));
-        check(input.begin_paste(transfer), "real input transfer accepted"); input.start();
+        const auto observation_deadline = std::chrono::steady_clock::now() + std::chrono::seconds(3);
+        auto fence = fence_sender ? std::make_shared<tf_shell_test::SenderFence>(transfer, 1, observation_deadline) : nullptr;
+        check(input.begin_paste(transfer, fence), "real input transfer accepted"); input.start();
         InputQueue::Snapshot held{};
-        await([&] { held = input.snapshot(); return held.in_flight_bytes && transfer->progress().sent >= 16384; },
-              "real input writer holds a chunk");
+        try {
+            while (true) {
+                held = input.snapshot();
+                const bool held_fence = !fence || fence->snapshot(fence->ticket()).state == tf_shell_test::SenderFence::State::held;
+                if (held_fence && held.in_flight_bytes && transfer->progress().sent >= 16384) break;
+                check(std::chrono::steady_clock::now() < observation_deadline, "real input writer holds a chunk");
+                std::this_thread::yield();
+            }
+        } catch (...) {
+            const auto observed = transfer->progress();
+            std::cerr << "{\"case\":\"writer-observation-rejected\",\"total\":" << observed.total
+                      << ",\"accepted\":" << observed.accepted << ",\"sent\":" << observed.sent
+                      << ",\"paste_in_flight\":" << observed.in_flight << ",\"queue_in_flight\":" << held.in_flight_bytes
+                      << ",\"state\":" << static_cast<unsigned>(observed.state)
+                      << ",\"reader_entered\":" << reader_entered << ",\"reader_released\":" << reader_released << "}\n";
+            throw;
+        }
+        if (fence_sender) {
+            while (WaitForSingleObject(primed.get(), 0) != WAIT_OBJECT_0) {
+                check(std::chrono::steady_clock::now() < observation_deadline, "real child verified the 16 KiB prefix");
+                std::this_thread::yield();
+            }
+            { std::lock_guard<std::mutex> lock(gate_mutex); reader_gate_enabled = true; }
+            check(SetEvent(flood.get()) != FALSE, "release real queue child output flood");
+            std::unique_lock<std::mutex> lock(gate_mutex);
+            check(gate_changed.wait_until(lock, observation_deadline, [&] { return reader_entered; }), "real output reader reached gate");
+        }
         check(!held.queued_bytes && held.in_flight_bytes <= 1024 && held.started && !held.joined && !held.stopping && !held.failed,
               "dequeued input remains in flight");
         const auto before_stop = transfer->progress();
         input.stop(); const auto joined_input = input.snapshot();
         check(joined_input.started && joined_input.joined && joined_input.stopping && !joined_input.queued_bytes &&
               !joined_input.in_flight_bytes && !joined_input.failed, "input stop joins and releases held payload");
+        if (fence_sender) {
+            const auto stopped_fence = fence->snapshot(fence->ticket());
+            const auto stopped_paste = transfer->progress();
+            check(stopped_fence.ever_held && stopped_fence.wait_finished &&
+                  stopped_fence.state == tf_shell_test::SenderFence::State::aborted &&
+                  stopped_fence.abort_reason == tf_shell_test::SenderFence::AbortReason::stop,
+                  "stop wakes the held writer without a control GO");
+            check(stopped_paste.state == tf_shell::PasteState::failed && !stopped_paste.in_flight &&
+                  stopped_paste.sent == before_stop.sent && stopped_paste.accepted == before_stop.accepted &&
+                  stopped_paste.retained_capacity <= 32,
+                  "stopped pre-send chunk is released without a fabricated write acknowledgement");
+        }
         resize.request(40, 100); resize.start();
         {std::unique_lock<std::mutex> lock(gate_mutex);
          check(gate_changed.wait_for(lock,std::chrono::seconds(3),[&] {return resize_entered;}),"resize worker reaches explicit pre-API gate");}
@@ -196,12 +262,13 @@ static void real_workers() {
         check(joined_resize.started && joined_resize.joined && joined_resize.stopping && !joined_resize.working && !joined_resize.pending,
               "resize stop joins worker");
         if (!SetEvent(query.get())) tf_conpty::fail("SetEvent(queue size query)");
-        std::string tail;
+        std::string tail; bool size_seen = false, prefix_seen = false;
         await([&] {
             tail += output.take(65536);
-            const bool found = tail.find("TFQUEUE-SIZE:102x42:END") != std::string::npos;
+            size_seen = size_seen || tail.find("TFQUEUE-SIZE:102x42:END") != std::string::npos;
+            prefix_seen = prefix_seen || tail.find(fence_sender ? "TFQUEUE-PRIMED:16384:END" : "TFQUEUE-PRIMED:0:END") != std::string::npos;
             if (tail.size() > 128) tail.erase(0, tail.size() - 128);
-            return found;
+            return size_seen && prefix_seen;
         }, "real child observes latest requested dimensions");
         check(session.wait_exit(3000) && session.exit_code == 0, "real queue child exits normally after size report");
         cleanup();
@@ -212,6 +279,10 @@ static void real_workers() {
                   << coalesced.working_generation << ",\"pending_generation\":" << coalesced.pending_generation
                   << ",\"completed_generation\":" << complete.completed_generation
                   << ",\"child_columns\":102,\"child_rows\":42,\"input_submitted_before_stop\":" << before_stop.sent
+                  << ",\"input_accepted_before_stop\":" << before_stop.accepted
+                  << ",\"paste_in_flight_before_stop\":" << before_stop.in_flight
+                  << ",\"total\":" << before_stop.total << ",\"child_prefix_read\":" << (fence_sender ? 16384 : 0)
+                  << ",\"sender_fence_held\":" << (fence_sender ? "true" : "false")
                   << ",\"job_active_after\":0}\n";
     } catch (...) {
         const auto original = std::current_exception();
@@ -221,14 +292,17 @@ static void real_workers() {
 }
 int wmain(int argc, wchar_t** argv) {
     try {
-        if (argc == 3 && std::wstring(argv[1]) == L"--queue-child") return child(argv[2]);
+        if (argc == 3 && std::wstring(argv[1]) == L"--queue-child") return child(argv[2], false);
+        if (argc == 3 && std::wstring(argv[1]) == L"--queue-child-primed") return child(argv[2], true);
+        bool fence_sender = true;
+        if (argc == 2 && std::wstring(argv[1]) == L"--ungated-writer-observation") { fence_sender = false; argc = 1; }
         if (argc == 2 && std::wstring(argv[1]) == L"--supervised") {
             std::string command;
             check(static_cast<bool>(std::getline(std::cin, command)) && command == "GO", "owned supervisor gate");
             argc = 1;
         }
         check(argc == 1, "unknown queue probe arguments");
-        bounded_queues(); lifecycle_edges(); real_workers();
+        bounded_queues(); lifecycle_edges(); real_workers(fence_sender);
         std::cout << "bounded queues, backpressure, ordering, in-flight resize and stop verified\n";
         return 0;
     } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 2; }
