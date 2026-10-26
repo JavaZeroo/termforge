@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iterator>
 #include <sstream>
+#include <string_view>
+#include "clipboard_failure.hpp"
 #include "scenario_tick_gate.hpp"
 
 inline void Workspace::scenario_selection_bytes() {
@@ -17,6 +19,7 @@ inline void Workspace::scenario_selection_bytes() {
     static std::array<std::pair<int,int>,2> initial_grids{};
     static std::array<BYTE,256> saved_keys{};
     static bool restore_keys = false;
+    static unsigned hold_clipboard = 0;
     static tf_shell_test::TwoSessionTickGate phase_ticks;
     const auto begin_phase = [&]() {
         phase_ticks.begin({bottom->observed_tick_count(),main ? main->observed_tick_count() : 0});
@@ -87,16 +90,85 @@ inline void Workspace::scenario_selection_bytes() {
             require(false, "selection bytes key could not enter the real Workspace message loop");
         }
     };
+    const auto observe_clipboard_error = [&](bool writing, const tf_shell::ClipboardError& error) noexcept {
+        // Observe only after the failure. These separate API queries do not
+        // identify who held the clipboard when OpenClipboard failed; a null
+        // open window also does not prove that the clipboard was unlocked.
+        try {
+            const auto relation = [&](HWND candidate) {
+                if (!candidate) return "not-reported";
+                DWORD process = 0;
+                if (!GetWindowThreadProcessId(candidate,&process) || !process) return "unresolved";
+                if (candidate == window_) return "workspace-window";
+                return process == GetCurrentProcessId() ? "same-process-window" : "other-process-window";
+            };
+            const auto open_window = relation(GetOpenClipboardWindow());
+            const auto data_owner = relation(GetClipboardOwner());
+            const bool opening = std::string_view(error.what()).rfind("OpenClipboard: ",0) == 0;
+            const auto path = directory / "selection-clipboard-failure.json";
+            const auto temporary = directory / "selection-clipboard-failure.json.tmp";
+            std::ofstream out(temporary,std::ios::binary | std::ios::trunc);
+            out << "{\"schema\":\"termforge-selection-clipboard-failure-v1\",\"stage\":" << stage_
+                << ",\"operation\":\"" << (writing ? "sentinel-write" : "readback")
+                << "\",\"native_operation\":\"" << (opening ? "OpenClipboard" : "other-clipboard-operation")
+                << "\",\"native_error\":" << error.code
+                << ",\"observation\":\"after-error-nonatomic\",\"open_window\":\"" << open_window
+                << "\",\"data_owner\":\"" << data_owner << "\"}\n";
+            out.close();
+            if (out.good()) MoveFileExW(temporary.c_str(),path.c_str(),MOVEFILE_REPLACE_EXISTING);
+        } catch (...) {
+            // Missing diagnostics cannot replace the original clipboard error.
+        }
+    };
+    const auto held_clipboard = [&](bool writing) {
+        std::unique_ptr<tf_shell_test::ClipboardScenarioOwner> owner;
+        if ((writing && stage_ == 6 && hold_clipboard == 1) ||
+            (!writing && stage_ == 7 && hold_clipboard == 2)) {
+            owner = std::make_unique<tf_shell_test::ClipboardScenarioOwner>(false);
+            require(owner->occupied(),"selection clipboard fault owner did not acquire the actual clipboard");
+        }
+        return owner;
+    };
+    const auto release_held_clipboard = [&](auto& owner) {
+        if (!owner) return;
+        owner->release();
+        const auto released = owner->finish(); owner.reset();
+        require(released.reason == tf_shell_test::ClipboardReleaseReason::ordinary && !released.expected_requester_gone,
+            "selection clipboard fault owner did not finish an ordinary release");
+        const auto& value = released.observation;
+        std::ostringstream out;
+        out << "{\"release_event\":" << (value.release_event ? "true" : "false")
+            << ",\"thread_exited\":" << (value.thread_exited ? "true" : "false")
+            << ",\"native_error\":" << value.native_error << ",\"worker_error\":" << value.worker_error
+            << ",\"secondary_native_error\":" << value.secondary_native_error
+            << ",\"secondary_worker_error\":" << value.secondary_worker_error << "}\n";
+        try { save(directory / "selection-clipboard-owner-release.json",out.str()); }
+        catch (...) {} // Keep the native failure even if its cleanup record cannot be saved.
+    };
     const auto sentinel = [&]() {
         require(system, "local selection bytes mode must not write the system clipboard");
         tf_shell_test::require_hosted_clipboard();
-        tf_shell::write_unicode_clipboard(window_,u"TF_BYTES_SENTINEL 中文 e\u0301");
+        auto owner = held_clipboard(true);
+        try {
+            tf_shell::write_unicode_clipboard(window_,u"TF_BYTES_SENTINEL 中文 e\u0301");
+        } catch (const tf_shell::ClipboardError& error) {
+            observe_clipboard_error(true,error);
+            tf_shell_test::rethrow_clipboard_failure([&] { release_held_clipboard(owner); },std::cerr);
+        }
+        require(!owner,"occupied selection clipboard write unexpectedly succeeded");
     };
     const auto read_clipboard = [&]() {
         require(system, "local selection bytes mode must not read the system clipboard");
         tf_shell_test::require_hosted_clipboard();
-        const auto value = tf_shell::read_unicode_clipboard(window_);
-        const std::wstring wide(value.begin(),value.end()); return utf8(wide.c_str());
+        auto owner = held_clipboard(false);
+        try {
+            const auto value = tf_shell::read_unicode_clipboard(window_);
+            require(!owner,"occupied selection clipboard read unexpectedly succeeded");
+            const std::wstring wide(value.begin(),value.end()); return utf8(wide.c_str());
+        } catch (const tf_shell::ClipboardError& error) {
+            observe_clipboard_error(false,error);
+            tf_shell_test::rethrow_clipboard_failure([&] { release_held_clipboard(owner); },std::cerr);
+        }
     };
     const auto copy_if_system = [&]() {
         if (system) { sentinel(); queued_key('C',true,true); }
@@ -168,6 +240,13 @@ inline void Workspace::scenario_selection_bytes() {
     if (stage_ == 0 && bottom->ready()) {
         samples.clear();
         if (system) tf_shell_test::require_hosted_clipboard();
+        wchar_t held[16]{};
+        const auto count = GetEnvironmentVariableW(L"TERMFORGE_TEST_SELECTION_CLIPBOARD_HOLD",held,16);
+        require(count < 16,"selection clipboard fault mode is too long");
+        const std::wstring mode(held);
+        require(mode.empty() || (system && (mode == L"sentinel-write" || mode == L"readback")),
+            "selection clipboard fault mode requires its hosted system scenario");
+        hold_clipboard = mode == L"sentinel-write" ? 1 : mode == L"readback" ? 2 : 0;
         add(Group::main); stage_ = 1;
     } else if (stage_ == 1 && main && main->ready() && settled()) {
         transition(96); stage_ = 2;

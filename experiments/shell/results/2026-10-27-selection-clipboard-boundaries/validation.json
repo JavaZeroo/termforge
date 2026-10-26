@@ -1,0 +1,357 @@
+{
+  "schema": "termforge-selection-clipboard-boundaries-v1",
+  "source": {
+    "commit": "0774d33b82745444e5629d14c758a09e2dd562bf",
+    "base": "79352f2b36f9f2a8828368ced089f6e2a6fda078",
+    "configuration": "default-core/system-ConPTY",
+    "files": [
+      {
+        "path": "experiments/shell/workspace_selection_bytes_scenario.hpp",
+        "file_sha256": "ed2c2131fc6ef7634dec8d81fc7d4d22287f989cc75b7d5658f3bfa4f8057d35",
+        "git_blob_content_sha256": "ed2c2131fc6ef7634dec8d81fc7d4d22287f989cc75b7d5658f3bfa4f8057d35"
+      },
+      {
+        "path": "experiments/shell/test_selection_bytes.py",
+        "file_sha256": "03705399c8802475b83fc3ef22fce78133a7f87f01754b4d70338e0c135f8d14",
+        "git_blob_content_sha256": "03705399c8802475b83fc3ef22fce78133a7f87f01754b4d70338e0c135f8d14"
+      },
+      {
+        "path": "experiments/shell/clipboard_failure.hpp",
+        "file_sha256": "f37a9867e83b95eaa084211c9ab47bb4bf400682c2c02c59b941bbafbfac0bca",
+        "git_blob_content_sha256": "f37a9867e83b95eaa084211c9ab47bb4bf400682c2c02c59b941bbafbfac0bca"
+      },
+      {
+        "path": "experiments/shell/clipboard_policy_test.cpp",
+        "file_sha256": "780567c70cb5028c9ace2ed50944177808f62fc42365572f9d48ff7fda5f26a3",
+        "git_blob_content_sha256": "780567c70cb5028c9ace2ed50944177808f62fc42365572f9d48ff7fda5f26a3"
+      },
+      {
+        "path": "experiments/shell/clipboard_scenario_state.hpp",
+        "file_sha256": "0824d44ff250ff9f4d62468aa710f07833ac4b48e5c496b5c750cc39a15aa408",
+        "git_blob_content_sha256": "0824d44ff250ff9f4d62468aa710f07833ac4b48e5c496b5c750cc39a15aa408"
+      }
+    ]
+  },
+  "environment": {
+    "os": "Windows",
+    "version": "10.0.26200",
+    "architecture": "AMD64",
+    "python": "3.12.10",
+    "dependencies": {
+      "psutil": "7.2.2",
+      "pyte": "0.8.2",
+      "wcwidth": "0.2.13"
+    },
+    "private_venv": true,
+    "real_system_clipboard_executed_locally": false
+  },
+  "binaries": [
+    {
+      "identity": "termforge_shell.exe",
+      "bytes": 1229312,
+      "sha256": "1a72cef854d61b7c3fe31187336531d9c3ed377fed7a2d6f80d83dc183a637ca"
+    },
+    {
+      "identity": "clipboard_policy_test.exe",
+      "bytes": 31232,
+      "sha256": "2bb88bce7d48001865148d30331a9ee1e55cd7a8fbe187b97a18e820d1c9bf3a"
+    },
+    {
+      "identity": "shell_test_launcher.exe",
+      "bytes": 47616,
+      "sha256": "1ec7cc313dbbebc8c6fbfae670036bd02ffd5d001572900df06b81de8e332a90"
+    },
+    {
+      "identity": "shell_clipboard_reader.exe",
+      "bytes": 22528,
+      "sha256": "5c25fc64a1b02c4c1007e86392008f3b3e7309011d94cecd9a44111f7cb1083f"
+    }
+  ],
+  "original_hosted_failure": {
+    "head": "79352f2b36f9f2a8828368ced089f6e2a6fda078",
+    "checkout": "939866f1cfd7ccc96fb9fdee0c6a493b6ebd3c07",
+    "run_id": 40377249027,
+    "job_id": 121763560184,
+    "artifact_id": 12677990045,
+    "artifact": {
+      "identity": "original-hosted-failure.zip",
+      "bytes": 4714691,
+      "sha256": "7575a5d82fec271625affe62a19a5f21edf97ae2a6bcd6b005f070070bcfa28f"
+    },
+    "ctest": {
+      "passed": 45,
+      "total": 46,
+      "seconds": 265.77
+    },
+    "configuration": "default-core/system-ConPTY",
+    "completed_phases": [
+      "forward",
+      "reverse"
+    ],
+    "initial_main_columns": 74,
+    "completed_clipboard_bytes_match_fixed_width_fixture": true,
+    "system_repeat_1_started": false,
+    "final_result_present": false,
+    "sample": {
+      "status": "failed",
+      "timed_out": false,
+      "exit_code": 2,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      }
+    },
+    "native_error": "OpenClipboard: 5",
+    "failed_operation": null,
+    "cause": null,
+    "raw_evidence": [
+      {
+        "identity": "original-sample.json",
+        "bytes": 481,
+        "sha256": "f84883962d70b5e0aace2e5d574ca1a9ac365752fe3fe94f877e9d11a87bb70d"
+      },
+      {
+        "identity": "original-selection-bytes-progress.jsonl",
+        "bytes": 2894,
+        "sha256": "f4a716f536ed72f08291ffeca4b994046ff099950b7b2e0a8634f6cadd2d4e01"
+      }
+    ]
+  },
+  "cleanup_error_regression": {
+    "scope": "pure exception-handling seam extracted from the original unprotected cleanup order; no Win32 clipboard calls",
+    "red_exit_code": 1,
+    "red_output": "synthetic private cleanup detail",
+    "same_test_and_callers": true,
+    "red_evidence": [
+      {
+        "identity": "valid-cleanup-red/clipboard_failure.hpp",
+        "bytes": 565,
+        "sha256": "959e77e0dd29f8990d70d7d0e8284118819886130052fe1c5c8bc0bfc1a99806"
+      },
+      {
+        "identity": "valid-cleanup-red/clipboard_policy_test.cpp",
+        "bytes": 7485,
+        "sha256": "780567c70cb5028c9ace2ed50944177808f62fc42365572f9d48ff7fda5f26a3"
+      },
+      {
+        "identity": "valid-cleanup-red/workspace_selection_bytes_scenario.hpp",
+        "bytes": 19512,
+        "sha256": "ed2c2131fc6ef7634dec8d81fc7d4d22287f989cc75b7d5658f3bfa4f8057d35"
+      },
+      {
+        "identity": "valid-cleanup-red/build.log",
+        "bytes": 1122,
+        "sha256": "1965de11fc8061bba42682cbc068cfbbf0815d2ffd79c2f80a00d261cf5eaa18"
+      },
+      {
+        "identity": "valid-cleanup-red/test.log",
+        "bytes": 34,
+        "sha256": "ecfdfa0cd38f96c5230de1918adf8a2a9f401a3347ca36a10eb965110fea9b70"
+      }
+    ],
+    "green_combinations": 4,
+    "checks": [
+      "primary exception type/code/text",
+      "cleanup exactly once",
+      "fixed safe secondary diagnostic",
+      "failed diagnostic stream preserves primary"
+    ],
+    "excluded_experiment": "Earlier object-address assertions failed with both helpers; retained locally and not counted as causal evidence."
+  },
+  "validation": {
+    "targeted": {
+      "passed": 2,
+      "total": 2,
+      "seconds": 3.57
+    },
+    "full": {
+      "passed": 46,
+      "total": 46,
+      "seconds": 285.53
+    },
+    "selection_module": {
+      "run": 10,
+      "passed": 8,
+      "skipped": 2
+    },
+    "internal_skips": [
+      {
+        "ctest": "differential",
+        "unittest": "setUpClass (test_candidate_compare.CandidateComparisonTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "ctest": "differential",
+        "unittest": "setUpClass (test_capability_matrix.CapabilityMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "ctest": "differential",
+        "unittest": "setUpClass (test_fuzz_matrix.FuzzMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "ctest": "differential",
+        "unittest": "setUpClass (test_real_app_matrix.RealApplicationMatrixTests)",
+        "reason": "optional real application capture dependencies are not built"
+      },
+      {
+        "ctest": "text_actions",
+        "unittest": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice)",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM"
+      },
+      {
+        "ctest": "research_guards",
+        "unittest": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails)",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "ctest": "shell",
+        "unittest": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard)",
+        "reason": "system copy UI gate requires a disposable hosted VM"
+      },
+      {
+        "ctest": "shell",
+        "unittest": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close)",
+        "reason": "product clipboard read gate requires a disposable hosted VM"
+      },
+      {
+        "ctest": "shell",
+        "unittest": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver)",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM"
+      },
+      {
+        "ctest": "selection_bytes",
+        "unittest": "test_owned_clipboard_contention_preserves_write_and_read_failures (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_owned_clipboard_contention_preserves_write_and_read_failures)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "ctest": "selection_bytes",
+        "unittest": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "ctest": "selection_context",
+        "unittest": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice)",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+      },
+      {
+        "ctest": "paste_system",
+        "unittest": "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard)",
+        "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified. Evidence: retained locally"
+      }
+    ],
+    "logs": [
+      {
+        "identity": "configure-venv.log",
+        "bytes": 386,
+        "sha256": "3c69d2ff8721653805b03dc61816afdd7805bbed37d70518274d9ec2ceccd0e7"
+      },
+      {
+        "identity": "build-value-error.log",
+        "bytes": 4759,
+        "sha256": "1dba038c383273dee6494bb03a18afa41f25441af71af972e5f16e707546ca62"
+      },
+      {
+        "identity": "targeted-final.log",
+        "bytes": 421,
+        "sha256": "4877e6197902f940067ac07acfd4b2a8a3ff4efa48536eec15b2753cab5e438c"
+      },
+      {
+        "identity": "targeted-final-detail.log",
+        "bytes": 3555,
+        "sha256": "9740a7c330949e5af29e1760d0d36e0ed22db5dd825a368a6f008b29c9a43c04"
+      },
+      {
+        "identity": "full-final.log",
+        "bytes": 5043,
+        "sha256": "8688e5c64460bd7961d81c2e111da9e9d78809ffec6949b560c291ae690a19a1"
+      }
+    ],
+    "junit": {
+      "identity": "local-r85-final.xml",
+      "bytes": 36835,
+      "sha256": "1c17f563005adfaf23272382b6634c66a8025afcf87430840f71453da432e457"
+    },
+    "untruncated_test_detail": {
+      "identity": "full-final-LastTest.log",
+      "bytes": 125694,
+      "sha256": "eaee290733c350b1147540f7c90fa280385f10246331fa6b710f0d48196a2511"
+    },
+    "initial_missing_dependencies": {
+      "passed": 41,
+      "total": 46,
+      "seconds": 234.7,
+      "failures": [
+        {
+          "test": "benchmark_tools",
+          "missing_modules": [
+            "psutil"
+          ]
+        },
+        {
+          "test": "differential",
+          "missing_modules": [
+            "pyte"
+          ]
+        },
+        {
+          "test": "workflow_sessions",
+          "missing_modules": [
+            "psutil",
+            "pyte"
+          ]
+        },
+        {
+          "test": "workflow_resources",
+          "missing_modules": [
+            "psutil"
+          ]
+        },
+        {
+          "test": "workflow_resource_phases",
+          "missing_modules": [
+            "psutil"
+          ]
+        }
+      ],
+      "junit": {
+        "identity": "initial-local-r85.xml",
+        "bytes": 57973,
+        "sha256": "8b4d5eb4f9677e31d89da148adc3e0e9e507d287a5d657a47851f4412c68b5cc"
+      },
+      "log": {
+        "identity": "full-missing-deps.log",
+        "bytes": 31688,
+        "sha256": "f8bef464a366a08874fd7016d712011ed66f6cad47db38b835fc03723e7018a1"
+      }
+    }
+  },
+  "hosted_controls": {
+    "status": "not-run-in-this-local-proof",
+    "operations": [
+      {
+        "stage": 6,
+        "purpose": "sentinel-write"
+      },
+      {
+        "stage": 7,
+        "purpose": "readback"
+      }
+    ],
+    "guard": "existing disposable GitHub-hosted system-clipboard guard; never impersonated locally"
+  },
+  "limits": [
+    "Original hosted operation and cause remain unknown; no original-cause fix claimed.",
+    "After-error ownership queries are separate and nonatomic; null open window does not prove unlocked.",
+    "Original nine phases, two normal rounds, queued shortcut, exact bytes and deadlines unchanged.",
+    "No product retry/feedback changes; no candidate/official, actual presentation, performance or WindTerm-equivalence acceptance."
+  ]
+}
