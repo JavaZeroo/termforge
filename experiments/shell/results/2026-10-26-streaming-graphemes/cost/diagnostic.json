@@ -1,0 +1,108 @@
+{
+  "records": [
+    {
+      "route": "project",
+      "variant": "baseline",
+      "repeat": 0,
+      "mib_s": 35.13313248743142,
+      "valid": true
+    },
+    {
+      "route": "project",
+      "variant": "candidate",
+      "repeat": 0,
+      "mib_s": 23.99623214998744,
+      "valid": true
+    },
+    {
+      "route": "project",
+      "variant": "candidate",
+      "repeat": 1,
+      "mib_s": 20.181988135698283,
+      "valid": true
+    },
+    {
+      "route": "project",
+      "variant": "baseline",
+      "repeat": 1,
+      "mib_s": 25.864392294883505,
+      "valid": true
+    },
+    {
+      "route": "project",
+      "variant": "baseline",
+      "repeat": 2,
+      "mib_s": 25.618390174831767,
+      "valid": true
+    },
+    {
+      "route": "project",
+      "variant": "candidate",
+      "repeat": 2,
+      "mib_s": 21.65593524971545,
+      "valid": true
+    },
+    {
+      "route": "interactive",
+      "variant": "baseline",
+      "repeat": 0,
+      "mib_s": 11.921779104981667,
+      "valid": true
+    },
+    {
+      "route": "interactive",
+      "variant": "candidate",
+      "repeat": 0,
+      "mib_s": 12.011916408888272,
+      "valid": true
+    },
+    {
+      "route": "interactive",
+      "variant": "candidate",
+      "repeat": 1,
+      "mib_s": 12.540056052875373,
+      "valid": true
+    },
+    {
+      "route": "interactive",
+      "variant": "baseline",
+      "repeat": 1,
+      "mib_s": 14.566102322864767,
+      "valid": true
+    },
+    {
+      "route": "interactive",
+      "variant": "baseline",
+      "repeat": 2,
+      "mib_s": 13.841216054068614,
+      "valid": true
+    },
+    {
+      "route": "interactive",
+      "variant": "candidate",
+      "repeat": 2,
+      "mib_s": 13.759937264193896,
+      "valid": true
+    }
+  ],
+  "medians": {
+    "project": {
+      "baseline": 25.864392294883505,
+      "candidate": 21.65593524971545
+    },
+    "interactive": {
+      "baseline": 13.841216054068614,
+      "candidate": 12.540056052875373
+    }
+  },
+  "binary_sha256": {
+    "baseline": "8fd16ce2487bedfab4bd43297baac5a61b2db83cbfc29cbee449799fe18303c1",
+    "candidate": "a11098f0bd20796c9c95520a7cf9b78dbc0d498bf099f211f1a5bad0f4b79c89"
+  },
+  "performance_equivalence_claim": false,
+  "limitations": [
+    "Host shared with other agents",
+    "No presentation/transport/input-latency timing",
+    "Observe0 is counter-off but allocator still wrapped"
+  ]
+}

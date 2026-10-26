@@ -13,7 +13,8 @@ namespace {
 bool same_cell(const Cell& a, const Cell& b) {
     return a.text == b.text && a.width == b.width && a.style.fg == b.style.fg &&
         a.style.bg == b.style.bg && a.style.bold == b.style.bold && a.marks == b.marks &&
-        a.written == b.written;
+        a.written == b.written && a.clipped == b.clipped &&
+        a.grapheme_fragment == b.grapheme_fragment && a.leading_spacer == b.leading_spacer;
 }
 
 bool same_line(const Line& a, const Line& b) {
@@ -76,7 +77,8 @@ std::string replay_key(const Line& line) {
     for (size_t index = first; index < last; ++index) {
         const auto& cell = line[index];
         out << cell.text.size() << ':' << cell.text << cell.width << ',' << cell.style.fg << ','
-            << cell.style.bg << ',' << cell.style.bold << ',' << cell.marks << ',' << cell.written << ';';
+            << cell.style.bg << ',' << cell.style.bold << ',' << cell.marks << ',' << cell.written
+            << ',' << cell.clipped << ',' << cell.grapheme_fragment << ',' << cell.leading_spacer << ';';
     }
     return out.str();
 }
@@ -285,6 +287,7 @@ void CandidateTerminal::synchronize() {
     TfTerminalMeta meta{};
     check(tf_terminal_meta(impl_, &meta), "candidate metadata failed");
     mode_bits_ = meta.mode_bits;
+    grapheme_overflows_ = meta.grapheme_overflows;
     std::unordered_map<uint64_t, const Line*> previous;
     for (const auto& line : screen.history) previous.emplace(line.id, &line);
     for (const auto& line : screen.lines) previous.emplace(line.id, &line);
@@ -306,7 +309,7 @@ void CandidateTerminal::synchronize() {
             check(tf_terminal_cell_meta(impl_, r, c, &cell), "candidate cell metadata failed");
             std::string text = cell_text(impl_, r, c, cell.text_len);
             if (text.empty() && cell.width != 0) text = " ";
-            line[c] = {std::move(text), cell.width, {cell.fg, cell.bg, cell.bold}, cell.marks, cell.written != 0};
+            line[c] = {std::move(text), cell.width, {cell.fg, cell.bg, cell.bold}, cell.marks, cell.written != 0, cell.clipped, cell.grapheme_fragment, cell.leading_spacer};
         }
         retained[r] = std::move(line);
     }

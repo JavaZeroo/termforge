@@ -15,6 +15,7 @@ typedef struct TfTerminalMeta {
     int32_t fg, bg;
     bool bold;
     uint64_t mode_bits;
+    uint64_t grapheme_overflows;
 } TfTerminalMeta;
 
 typedef struct TfRowMeta {
@@ -29,6 +30,7 @@ typedef struct TfCellMeta {
     size_t marks;
     bool written;
     size_t text_len;
+    bool clipped, grapheme_fragment, leading_spacer;
 } TfCellMeta;
 
 void* tf_terminal_new(size_t rows, size_t columns, size_t history);

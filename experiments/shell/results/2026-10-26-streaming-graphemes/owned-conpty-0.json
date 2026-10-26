@@ -1,0 +1,369 @@
+{
+  "repeat": 0,
+  "status": "passed",
+  "timed_out": false,
+  "supervisor_exit_code": 0,
+  "desktop_gone": true,
+  "job_after": {
+    "active": 0,
+    "total": 8,
+    "terminated": 0
+  },
+  "job_after_cleanup": {
+    "active": 0,
+    "total": 8,
+    "terminated": 0
+  },
+  "frame_sha256": "f32b396e098ce7ff162b8e7b6b42dcea2de33e2af3b851c4fcb434d6341f81d7",
+  "result": {
+    "exit_code": 37,
+    "active_children_after": 0,
+    "cleanup_complete": true,
+    "command_verified": true,
+    "presented_done": null
+  },
+  "phases": [
+    {
+      "schema": "termforge-candidate-unicode-v2",
+      "phase": "initial",
+      "native_size_marker": null,
+      "grapheme_overflows": 0,
+      "columns": 80,
+      "rows": 24,
+      "dpi": 96,
+      "cell_width": 12,
+      "cell_height": 26,
+      "frame_matches_full": true,
+      "presented_done": null
+    },
+    {
+      "schema": "termforge-candidate-unicode-v2",
+      "phase": "resized",
+      "native_size_marker": "TF_SIZE_100x30",
+      "grapheme_overflows": 0,
+      "columns": 100,
+      "rows": 30,
+      "dpi": 96,
+      "cell_width": 12,
+      "cell_height": 26,
+      "frame_matches_full": true,
+      "presented_done": null
+    }
+  ],
+  "validated_unicode": {
+    "samples": [
+      {
+        "label": "TF_U_DECOMPOSE",
+        "text": "é",
+        "cells": [
+          {
+            "column": 15,
+            "width": 1,
+            "text": "é",
+            "glyphs": 1,
+            "faces": [
+              "Consolas"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "TF_U_EMOJI",
+        "text": "🙂",
+        "cells": [
+          {
+            "column": 11,
+            "width": 2,
+            "text": "🙂",
+            "glyphs": 1,
+            "faces": [
+              "Segoe UI Emoji"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "TF_U_ZWJ",
+        "text": "👩‍💻",
+        "cells": [
+          {
+            "column": 9,
+            "width": 2,
+            "text": "👩‍💻",
+            "glyphs": 1,
+            "faces": [
+              "Segoe UI Emoji"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "TF_U_KEYCAP",
+        "text": "1️⃣",
+        "cells": [
+          {
+            "column": 12,
+            "width": 2,
+            "text": "1️⃣",
+            "glyphs": 1,
+            "faces": [
+              "Segoe UI Emoji"
+            ]
+          }
+        ]
+      }
+    ],
+    "selections": [
+      {
+        "label": "TF_U_DECOMPOSE",
+        "copied": "é",
+        "begin": 15,
+        "end": 16
+      },
+      {
+        "label": "TF_U_EMOJI",
+        "copied": "🙂",
+        "begin": 11,
+        "end": 13
+      },
+      {
+        "label": "TF_U_ZWJ",
+        "copied": "👩‍💻",
+        "begin": 9,
+        "end": 11
+      },
+      {
+        "label": "TF_U_KEYCAP",
+        "copied": "1️⃣",
+        "begin": 12,
+        "end": 14
+      }
+    ],
+    "console_samples": [
+      {
+        "label": "TF_U_DECOMPOSE",
+        "projection": "original",
+        "widths": [
+          1,
+          1
+        ]
+      },
+      {
+        "label": "TF_U_EMOJI",
+        "projection": "replacement-non-bmp",
+        "widths": [
+          2,
+          0
+        ]
+      },
+      {
+        "label": "TF_U_ZWJ",
+        "projection": "replacement-non-bmp",
+        "widths": [
+          2,
+          0,
+          1,
+          2,
+          0
+        ]
+      },
+      {
+        "label": "TF_U_KEYCAP",
+        "projection": "original",
+        "widths": [
+          1,
+          1,
+          1
+        ]
+      }
+    ],
+    "source_sha256": "a3b951ab67ca5d079f7e91ee8f1cd25dfde82ae4b08ed40c406c911e0ccdf8c2",
+    "transport_sha256": "f45368de27a5185c1bd31ce7513595d654d52131ecfa8102444672728f18cd53",
+    "transport_bytes": 753,
+    "scoped_validation_passed": true,
+    "scope": "fixed-four-streaming-graphemes-width-selection-glyph",
+    "complex_grapheme_rendering_verified": true,
+    "whole_cluster_width_policy_verified": true,
+    "resized_native_console_verified": false,
+    "windterm_runtime_equivalence_verified": false,
+    "complete_unicode_ime_verified": false,
+    "presented_done": null,
+    "resize": {
+      "samples": [
+        {
+          "label": "TF_U_DECOMPOSE",
+          "text": "é",
+          "cells": [
+            {
+              "column": 15,
+              "width": 1,
+              "text": "é",
+              "glyphs": 1,
+              "faces": [
+                "Consolas"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "TF_U_EMOJI",
+          "text": "🙂",
+          "cells": [
+            {
+              "column": 11,
+              "width": 2,
+              "text": "🙂",
+              "glyphs": 1,
+              "faces": [
+                "Segoe UI Emoji"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "TF_U_ZWJ",
+          "text": "👩‍💻",
+          "cells": [
+            {
+              "column": 9,
+              "width": 2,
+              "text": "👩‍💻",
+              "glyphs": 1,
+              "faces": [
+                "Segoe UI Emoji"
+              ]
+            }
+          ]
+        },
+        {
+          "label": "TF_U_KEYCAP",
+          "text": "1️⃣",
+          "cells": [
+            {
+              "column": 12,
+              "width": 2,
+              "text": "1️⃣",
+              "glyphs": 1,
+              "faces": [
+                "Segoe UI Emoji"
+              ]
+            }
+          ]
+        }
+      ],
+      "selections": [
+        {
+          "label": "TF_U_DECOMPOSE",
+          "copied": "é",
+          "begin": 15,
+          "end": 16
+        },
+        {
+          "label": "TF_U_EMOJI",
+          "copied": "🙂",
+          "begin": 11,
+          "end": 13
+        },
+        {
+          "label": "TF_U_ZWJ",
+          "copied": "👩‍💻",
+          "begin": 9,
+          "end": 11
+        },
+        {
+          "label": "TF_U_KEYCAP",
+          "copied": "1️⃣",
+          "begin": 12,
+          "end": 14
+        }
+      ],
+      "console_samples": [
+        {
+          "label": "TF_U_DECOMPOSE",
+          "projection": "original",
+          "widths": [
+            1,
+            1
+          ]
+        },
+        {
+          "label": "TF_U_EMOJI",
+          "projection": "replacement-non-bmp",
+          "widths": [
+            2,
+            0
+          ]
+        },
+        {
+          "label": "TF_U_ZWJ",
+          "projection": "replacement-non-bmp",
+          "widths": [
+            2,
+            0,
+            1,
+            2,
+            0
+          ]
+        },
+        {
+          "label": "TF_U_KEYCAP",
+          "projection": "original",
+          "widths": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_sha256": "a3b951ab67ca5d079f7e91ee8f1cd25dfde82ae4b08ed40c406c911e0ccdf8c2",
+      "transport_sha256": "e2ea6aa721725d163831125be5cbef94a415d715fe699307f1ce603c7a67f1f2",
+      "transport_bytes": 1373,
+      "scoped_validation_passed": true,
+      "scope": "fixed-four-streaming-graphemes-width-selection-glyph",
+      "complex_grapheme_rendering_verified": true,
+      "whole_cluster_width_policy_verified": true,
+      "resized_native_console_verified": true,
+      "windterm_runtime_equivalence_verified": false,
+      "complete_unicode_ime_verified": false,
+      "presented_done": null
+    }
+  },
+  "artifact_identity": {
+    "candidate-unicode-resized.json": {
+      "bytes": 28255,
+      "sha256": "09c59f740443f50d0a1a326d2544d5c03d49ebc5a346e72e87adddf057ac8f80"
+    },
+    "candidate-unicode-resized.transport.bin": {
+      "bytes": 1373,
+      "sha256": "e2ea6aa721725d163831125be5cbef94a415d715fe699307f1ce603c7a67f1f2"
+    },
+    "candidate-unicode.cells.bin": {
+      "bytes": 7680,
+      "sha256": "86c36ff9ab2fb4aa9b3b4883da7079b21176981052d6f9d8e7293e387380e1f8"
+    },
+    "candidate-unicode.console.bin": {
+      "bytes": 3834,
+      "sha256": "6b6d7218f098f18cd3ebd077e73566fb850f2dc8adf7e4230ffa56f44db65f79"
+    },
+    "candidate-unicode.console.json": {
+      "bytes": 438,
+      "sha256": "86130298c82b7902c05ed129888c14fe5d579e35cffec345c9d88c146dd0312b"
+    },
+    "candidate-unicode.json": {
+      "bytes": 10520,
+      "sha256": "45fd8d68c7ba9da54d1b2af6450e3193b08c7d104a19baae4abc3710f3d6e7bc"
+    },
+    "candidate-unicode.source.bin": {
+      "bytes": 91,
+      "sha256": "a3b951ab67ca5d079f7e91ee8f1cd25dfde82ae4b08ed40c406c911e0ccdf8c2"
+    },
+    "candidate-unicode.transport.bin": {
+      "bytes": 753,
+      "sha256": "f45368de27a5185c1bd31ce7513595d654d52131ecfa8102444672728f18cd53"
+    },
+    "frame.bmp": {
+      "bytes": 3744054,
+      "sha256": "f32b396e098ce7ff162b8e7b6b42dcea2de33e2af3b851c4fcb434d6341f81d7"
+    }
+  }
+}

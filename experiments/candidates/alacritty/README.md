@@ -6,10 +6,10 @@
 
 | 项目 | 当前固定值 | 来源 |
 |---|---|---|
-| `alacritty_terminal` | `0.26.1-dev+termforge.3`，Apache-2.0 | [上游 commit `5421470`](https://github.com/alacritty/alacritty/commit/542147067dd016fc5f49120ef0ba605a98a4e3a7)与[来源/补丁台账](PROVENANCE.md) |
-| 本地补丁 | ED1/ED2、稳定 Row ID/换行元数据/淘汰、安全完整 Row swap、每缓冲区滚动区域 | `vendor/alacritty_terminal/src/`；所有文件哈希进入结果 manifest |
+| `alacritty_terminal` | `0.26.1-dev+termforge.4`，Apache-2.0 | [上游 commit `5421470`](https://github.com/alacritty/alacritty/commit/542147067dd016fc5f49120ef0ba605a98a4e3a7)与[来源/补丁台账](PROVENANCE.md) |
+| 本地补丁 | ED1/ED2、稳定 Row ID/换行元数据/淘汰、安全完整 Row swap、每缓冲区滚动区域、流式字素与明确剪裁 | `vendor/alacritty_terminal/src/`；所有文件哈希进入结果 manifest |
 | 工具链 | Rust/cargo 1.92.0 | 本机与候选 CI 显式选择；当前锁定图最高声明 Rust 1.85 |
-| 传递依赖 | 58 个注册表包 + 根适配器与固定 vendor 两个 path crate，共 60 个包 | `Cargo.lock` 与 `cargo metadata --locked --format-version 1` |
+| 传递依赖 | 59 个注册表包 + 根适配器与固定 vendor 两个 path crate，共 61 个包 | `Cargo.lock` 与 `cargo metadata --locked --format-version 1` |
 
 根 `Cargo.toml` 使用固定 path 依赖并关闭默认 serde feature。上游只复制 manifest、changelog、许可证和约 426 KiB 的 `src/`，不复制约 46 MiB 行为录制；内联测试保留。补丁不冒充 crates.io 原始 0.26.0，也不把第三方代码改标 MIT。候选二进制当前只用于本地/CI 实验，不进入 Alpha 或产品发行包；以后分发须完成全部依赖许可与通知审计。
 
@@ -32,7 +32,7 @@ cmake --build build/candidate-adapter --config Release
 ctest --test-dir build/candidate-adapter -C Release --output-on-failure
 ```
 
-Linux/macOS 使用相同 Cargo 命令和相应 CMake 配置。默认 trace 为 `target/release/termforge-alacritty-trace[.exe]`；可用 `TERMFORGE_ALACRITTY_TRACE` 显式选择另一构建，缺失文件会失败。候选 workflow 在 Windows/Ubuntu 构建并运行固定 crate 的 141 个单元测试、1 个 doc test 和 C++ 适配器。
+Linux/macOS 使用相同 Cargo 命令和相应 CMake 配置。默认 trace 为 `target/release/termforge-alacritty-trace[.exe]`；可用 `TERMFORGE_ALACRITTY_TRACE` 显式选择另一构建，缺失文件会失败。候选 workflow 在 Windows/Ubuntu 构建并运行固定 crate 的单元测试与 doc test 和 C++ 适配器。
 
 ## Trace、C ABI 与检查内容
 
@@ -43,6 +43,8 @@ Linux/macOS 使用相同 Cargo 命令和相应 CMake 配置。默认 trace 为 `
 `src/ffi.rs` 与 `include/termforge_candidate.h` 提供 staticlib C ABI；`experiments/core/candidate_terminal.{hpp,cpp}` 将其包装为现有 `Screen`/`Line` 拥有值。feed、事件、行/格文本都经调用方缓冲区返回，不跨 FFI 暴露 Rust 引用或异常。C++ 同步稳定 ID、版本、ending/next_id/wrap_columns、样式和历史淘汰；[接口与边界](../../core/CANDIDATE.md)另列。
 
 ## 当前结果与历史边界
+
+- termforge.4 增加[流式字素合同](../../../docs/research/streaming-graphemes.md)：Unicode 17 分段/宽度、固定 ZWJ/keycap 的整格/光标/选择、bounded lossless spill、1列 resize 和实际 DWrite keycap 整形。默认自研仍为固定 Unicode 15；新结果不改写以下历史批次。
 
 - termforge.3 的[共同矩阵](../../differential/results/2026-10-26-candidate-common-v6/summary.json)为 95 次一致；[扩展能力](../../differential/results/2026-10-26-capabilities-v5/summary.json)分类不变；[fuzz](../../differential/results/2026-10-26-fuzz-v4/summary.json)为 2 次固定已知差异、6 次一致；[真实应用](../../differential/results/2026-10-26-real-applications-v6/summary.json)固定 3 次一致。[margin 验证](../../shell/results/2026-10-26-margin-state/validation.json)区分公开源 VT 的恢复与真实 ConPTY 的宿主限制；#41 的宿主 margin 和 #42 的 More 尾部 ECH/捕获时序仍未闭合，不是完整产品 TUI。
 - termforge.2 的[共同矩阵](../../differential/results/2026-10-25-candidate-common-v5/summary.json)为 95 次、1011 检查点全部一致；旧 ED 差异不再以 `reference_difference` 放行。[扩展能力](../../differential/results/2026-10-25-capabilities-v4/summary.json)保持 15 次自研未支持、5 次一致、5 次 resize 差异；[真实应用](../../differential/results/2026-10-25-real-applications-v3/summary.json)3 次全部一致；[fuzz](../../differential/results/2026-10-25-fuzz-v3/summary.json)为 2 次固定已知差异、6 次一致。均不是完整语义接受或产品 TUI。

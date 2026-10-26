@@ -26,14 +26,15 @@ use crate::vte::ansi::{
     StandardCharset,
 };
 
+mod grapheme;
 pub mod cell;
 pub mod color;
 pub mod search;
 
 /// Minimum number of columns.
 ///
-/// A minimum of 2 is necessary to hold fullwidth unicode characters.
-pub const MIN_COLUMNS: usize = 2;
+/// One-column windows retain full grapheme text in an explicitly clipped cell.
+pub const MIN_COLUMNS: usize = 1;
 
 /// Minimum number of visible lines.
 pub const MIN_SCREEN_LINES: usize = 1;
@@ -328,6 +329,10 @@ pub struct Term<T> {
     /// Information about damaged cells.
     damage: TermDamageState,
 
+    /// One visible, editable trailing extended grapheme and bounded diagnostic.
+    grapheme: grapheme::StreamingGrapheme,
+    grapheme_overflows: u64,
+
     /// Config directly for the terminal.
     config: Config,
 }
@@ -426,6 +431,8 @@ impl<T> Term<T> {
         let damage = TermDamageState::new(num_cols, num_lines);
 
         Term {
+            grapheme: Default::default(),
+            grapheme_overflows: 0,
             inactive_grid,
             inactive_scroll_region: scroll_region.clone(),
             scroll_region,
@@ -652,11 +659,13 @@ impl<T> Term<T> {
 
     /// Mutable access to the raw grid data structure.
     pub fn grid_mut(&mut self) -> &mut Grid<Cell> {
+        self.seal_grapheme();
         &mut self.grid
     }
 
     /// Resize terminal to new dimensions.
     pub fn resize<S: Dimensions>(&mut self, size: S) {
+        self.seal_grapheme();
         let old_cols = self.columns();
         let old_lines = self.screen_lines();
 
@@ -717,6 +726,7 @@ impl<T> Term<T> {
 
     /// Swap primary and alternate screen buffer.
     pub fn swap_alt(&mut self) {
+        self.seal_grapheme();
         if !self.mode.contains(TermMode::ALT_SCREEN) {
             // Set alt screen cursor to the current primary screen cursor.
             self.inactive_grid.cursor = self.grid.cursor.clone();
@@ -1068,85 +1078,12 @@ impl<T: EventListener> Handler for Term<T> {
     /// A character to be displayed.
     #[inline(never)]
     fn input(&mut self, c: char) {
-        // Number of cells the char will occupy.
-        let width = match c.width() {
-            Some(width) => width,
-            None => return,
-        };
-
-        // Handle zero-width characters.
-        if width == 0 {
-            // Get previous column.
-            let mut column = self.grid.cursor.point.column;
-            if !self.grid.cursor.input_needs_wrap {
-                column.0 = column.saturating_sub(1);
-            }
-
-            // Put zerowidth characters over first fullwidth character cell.
-            let line = self.grid.cursor.point.line;
-            if self.grid[line][column].flags.contains(Flags::WIDE_CHAR_SPACER) {
-                column.0 = column.saturating_sub(1);
-            }
-
-            self.grid[line][column].push_zerowidth(c);
-            return;
-        }
-
-        // Move cursor to next line.
-        if self.grid.cursor.input_needs_wrap {
-            self.wrapline();
-        }
-
-        // If in insert mode, first shift cells to the right.
-        let columns = self.columns();
-        if self.mode.contains(TermMode::INSERT) && self.grid.cursor.point.column + width < columns {
-            let line = self.grid.cursor.point.line;
-            let col = self.grid.cursor.point.column;
-            let row = &mut self.grid[line][..];
-
-            for col in (col.0..(columns - width)).rev() {
-                row.swap(col + width, col);
-            }
-        }
-
-        if width == 1 {
-            self.write_at_cursor(c);
-        } else {
-            if self.grid.cursor.point.column + 1 >= columns {
-                if self.mode.contains(TermMode::LINE_WRAP) {
-                    // Insert placeholder before wide char if glyph does not fit in this row.
-                    self.grid.cursor.template.flags.insert(Flags::LEADING_WIDE_CHAR_SPACER);
-                    self.write_at_cursor(' ');
-                    self.grid.cursor.template.flags.remove(Flags::LEADING_WIDE_CHAR_SPACER);
-                    self.wrapline();
-                } else {
-                    // Prevent out of bounds crash when linewrapping is disabled.
-                    self.grid.cursor.input_needs_wrap = true;
-                    return;
-                }
-            }
-
-            // Write full width glyph to current cursor cell.
-            self.grid.cursor.template.flags.insert(Flags::WIDE_CHAR);
-            self.write_at_cursor(c);
-            self.grid.cursor.template.flags.remove(Flags::WIDE_CHAR);
-
-            // Write spacer to cell following the wide glyph.
-            self.grid.cursor.point.column += 1;
-            self.grid.cursor.template.flags.insert(Flags::WIDE_CHAR_SPACER);
-            self.write_at_cursor(' ');
-            self.grid.cursor.template.flags.remove(Flags::WIDE_CHAR_SPACER);
-        }
-
-        if self.grid.cursor.point.column + 1 < columns {
-            self.grid.cursor.point.column += 1;
-        } else {
-            self.grid.cursor.input_needs_wrap = true;
-        }
+        self.input_grapheme(c);
     }
 
     #[inline]
     fn decaln(&mut self) {
+        self.seal_grapheme();
         trace!("Decalnning");
 
         for line in (0..self.screen_lines()).map(Line::from) {
@@ -1162,6 +1099,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn goto(&mut self, line: i32, col: usize) {
+        self.seal_grapheme();
         let line = Line(line);
         let col = Column(col);
 
@@ -1181,18 +1119,21 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn goto_line(&mut self, line: i32) {
+        self.seal_grapheme();
         trace!("Going to line: {line}");
         self.goto(line, self.grid.cursor.point.column.0)
     }
 
     #[inline]
     fn goto_col(&mut self, col: usize) {
+        self.seal_grapheme();
         trace!("Going to column: {col}");
         self.goto(self.grid.cursor.point.line.0, col)
     }
 
     #[inline]
     fn insert_blank(&mut self, count: usize) {
+        self.seal_grapheme();
         let cursor = &self.grid.cursor;
         let bg = cursor.template.bg;
 
@@ -1221,6 +1162,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn move_up(&mut self, lines: usize) {
+        self.seal_grapheme();
         trace!("Moving up: {lines}");
 
         let line = self.grid.cursor.point.line - lines;
@@ -1230,6 +1172,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn move_down(&mut self, lines: usize) {
+        self.seal_grapheme();
         trace!("Moving down: {lines}");
 
         let line = self.grid.cursor.point.line + lines;
@@ -1239,6 +1182,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn move_forward(&mut self, cols: usize) {
+        self.seal_grapheme();
         trace!("Moving forward: {cols}");
         let last_column = cmp::min(self.grid.cursor.point.column + cols, self.last_column());
 
@@ -1251,6 +1195,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn move_backward(&mut self, cols: usize) {
+        self.seal_grapheme();
         trace!("Moving backward: {cols}");
         let column = self.grid.cursor.point.column.saturating_sub(cols);
 
@@ -1294,6 +1239,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn push_keyboard_mode(&mut self, mode: KeyboardModes) {
+        self.seal_grapheme();
         if !self.config.kitty_keyboard {
             return;
         }
@@ -1314,6 +1260,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn pop_keyboard_modes(&mut self, to_pop: u16) {
+        self.seal_grapheme();
         if !self.config.kitty_keyboard {
             return;
         }
@@ -1329,6 +1276,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn set_keyboard_mode(&mut self, mode: KeyboardModes, apply: KeyboardModesApplyBehavior) {
+        self.seal_grapheme();
         if !self.config.kitty_keyboard {
             return;
         }
@@ -1355,6 +1303,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn move_down_and_cr(&mut self, lines: usize) {
+        self.seal_grapheme();
         trace!("Moving down and cr: {lines}");
 
         let line = self.grid.cursor.point.line + lines;
@@ -1363,6 +1312,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn move_up_and_cr(&mut self, lines: usize) {
+        self.seal_grapheme();
         trace!("Moving up and cr: {lines}");
 
         let line = self.grid.cursor.point.line - lines;
@@ -1372,6 +1322,7 @@ impl<T: EventListener> Handler for Term<T> {
     /// Insert tab at cursor position.
     #[inline]
     fn put_tab(&mut self, mut count: u16) {
+        self.seal_grapheme();
         // A tab after the last column is the same as a linebreak.
         if self.grid.cursor.input_needs_wrap {
             self.wrapline();
@@ -1404,6 +1355,7 @@ impl<T: EventListener> Handler for Term<T> {
     /// Backspace.
     #[inline]
     fn backspace(&mut self) {
+        self.seal_grapheme();
         trace!("Backspace");
 
         if self.grid.cursor.point.column > Column(0) {
@@ -1418,6 +1370,7 @@ impl<T: EventListener> Handler for Term<T> {
     /// Carriage return.
     #[inline]
     fn carriage_return(&mut self) {
+        self.seal_grapheme();
         trace!("Carriage return");
         let new_col = 0;
         let line = self.grid.cursor.point.line.0 as usize;
@@ -1429,6 +1382,7 @@ impl<T: EventListener> Handler for Term<T> {
     /// Linefeed.
     #[inline]
     fn linefeed(&mut self) {
+        self.seal_grapheme();
         trace!("Linefeed");
         let current = self.grid.cursor.point.line;
         let wrapped = self.grid[current].last().is_some_and(|cell| cell.flags.contains(Flags::WRAPLINE));
@@ -1452,6 +1406,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn substitute(&mut self) {
+        self.seal_grapheme();
         trace!("[unimplemented] Substitute");
     }
 
@@ -1479,6 +1434,7 @@ impl<T: EventListener> Handler for Term<T> {
     /// on it.
     #[inline]
     fn newline(&mut self) {
+        self.seal_grapheme();
         self.linefeed();
 
         if self.mode.contains(TermMode::LINE_FEED_NEW_LINE) {
@@ -1488,24 +1444,28 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn set_horizontal_tabstop(&mut self) {
+        self.seal_grapheme();
         trace!("Setting horizontal tabstop");
         self.tabs[self.grid.cursor.point.column] = true;
     }
 
     #[inline]
     fn scroll_up(&mut self, lines: usize) {
+        self.seal_grapheme();
         let origin = self.scroll_region.start;
         self.scroll_up_relative(origin, lines);
     }
 
     #[inline]
     fn scroll_down(&mut self, lines: usize) {
+        self.seal_grapheme();
         let origin = self.scroll_region.start;
         self.scroll_down_relative(origin, lines);
     }
 
     #[inline]
     fn insert_blank_lines(&mut self, lines: usize) {
+        self.seal_grapheme();
         trace!("Inserting blank {lines} lines");
 
         let origin = self.grid.cursor.point.line;
@@ -1516,6 +1476,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn delete_lines(&mut self, lines: usize) {
+        self.seal_grapheme();
         let origin = self.grid.cursor.point.line;
         let lines = cmp::min(self.screen_lines() - origin.0 as usize, lines);
 
@@ -1528,6 +1489,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn erase_chars(&mut self, count: usize) {
+        self.seal_grapheme();
         let cursor = &self.grid.cursor;
 
         trace!("Erasing chars: count={}, col={}", count, cursor.point.column);
@@ -1547,6 +1509,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn delete_chars(&mut self, count: usize) {
+        self.seal_grapheme();
         let columns = self.columns();
         let cursor = &self.grid.cursor;
         let bg = cursor.template.bg;
@@ -1576,6 +1539,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn move_backward_tabs(&mut self, count: u16) {
+        self.seal_grapheme();
         trace!("Moving backward {count} tabs");
 
         let old_col = self.grid.cursor.point.column.0;
@@ -1601,6 +1565,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn move_forward_tabs(&mut self, count: u16) {
+        self.seal_grapheme();
         trace!("Moving forward {count} tabs");
 
         let num_cols = self.columns();
@@ -1628,6 +1593,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn save_cursor_position(&mut self) {
+        self.seal_grapheme();
         trace!("Saving cursor position");
 
         self.grid.saved_cursor = self.grid.cursor.clone();
@@ -1635,6 +1601,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn restore_cursor_position(&mut self) {
+        self.seal_grapheme();
         trace!("Restoring cursor position");
 
         self.damage_cursor();
@@ -1644,6 +1611,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn clear_line(&mut self, mode: ansi::LineClearMode) {
+        self.seal_grapheme();
         trace!("Clearing line: {mode:?}");
 
         let cursor = &self.grid.cursor;
@@ -1759,6 +1727,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn clear_screen(&mut self, mode: ansi::ClearMode) {
+        self.seal_grapheme();
         trace!("Clearing screen: {mode:?}");
         let bg = self.grid.cursor.template.bg;
 
@@ -1817,6 +1786,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn clear_tabs(&mut self, mode: ansi::TabulationClearMode) {
+        self.seal_grapheme();
         trace!("Clearing tabs: {mode:?}");
         match mode {
             ansi::TabulationClearMode::Current => {
@@ -1831,6 +1801,7 @@ impl<T: EventListener> Handler for Term<T> {
     /// Reset all important fields in the term struct.
     #[inline]
     fn reset_state(&mut self) {
+        self.seal_grapheme();
         if self.mode.contains(TermMode::ALT_SCREEN) {
             mem::swap(&mut self.grid, &mut self.inactive_grid);
         }
@@ -1858,6 +1829,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn reverse_index(&mut self) {
+        self.seal_grapheme();
         trace!("Reversing index");
         // If cursor is at the top.
         if self.grid.cursor.point.line == self.scroll_region.start {
@@ -1931,6 +1903,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn set_private_mode(&mut self, mode: PrivateMode) {
+        self.seal_grapheme();
         let mode = match mode {
             PrivateMode::Named(mode) => mode,
             PrivateMode::Unknown(mode) => {
@@ -1994,6 +1967,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn unset_private_mode(&mut self, mode: PrivateMode) {
+        self.seal_grapheme();
         let mode = match mode {
             PrivateMode::Named(mode) => mode,
             PrivateMode::Unknown(mode) => {
@@ -2095,6 +2069,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn set_mode(&mut self, mode: ansi::Mode) {
+        self.seal_grapheme();
         let mode = match mode {
             ansi::Mode::Named(mode) => mode,
             ansi::Mode::Unknown(mode) => {
@@ -2112,6 +2087,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn unset_mode(&mut self, mode: ansi::Mode) {
+        self.seal_grapheme();
         let mode = match mode {
             ansi::Mode::Named(mode) => mode,
             ansi::Mode::Unknown(mode) => {
@@ -2152,6 +2128,7 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn set_scrolling_region(&mut self, top: usize, bottom: Option<usize>) {
+        self.seal_grapheme();
         // Fallback to the last line as default.
         let bottom = bottom.unwrap_or_else(|| self.screen_lines());
 
@@ -2177,24 +2154,28 @@ impl<T: EventListener> Handler for Term<T> {
 
     #[inline]
     fn set_keypad_application_mode(&mut self) {
+        self.seal_grapheme();
         trace!("Setting keypad application mode");
         self.mode.insert(TermMode::APP_KEYPAD);
     }
 
     #[inline]
     fn unset_keypad_application_mode(&mut self) {
+        self.seal_grapheme();
         trace!("Unsetting keypad application mode");
         self.mode.remove(TermMode::APP_KEYPAD);
     }
 
     #[inline]
     fn configure_charset(&mut self, index: CharsetIndex, charset: StandardCharset) {
+        self.seal_grapheme();
         trace!("Configuring charset {index:?} as {charset:?}");
         self.grid.cursor.charsets[index] = charset;
     }
 
     #[inline]
     fn set_active_charset(&mut self, index: CharsetIndex) {
+        self.seal_grapheme();
         trace!("Setting active charset {index:?}");
         self.active_charset = index;
     }

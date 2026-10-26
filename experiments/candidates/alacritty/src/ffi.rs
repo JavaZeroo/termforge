@@ -33,6 +33,7 @@ pub struct TerminalMeta {
     bg: i32,
     bold: bool,
     mode_bits: u64,
+    grapheme_overflows: u64,
 }
 
 #[repr(C)]
@@ -52,6 +53,9 @@ pub struct CellMeta {
     marks: usize,
     written: bool,
     text_len: usize,
+    clipped: bool,
+    grapheme_fragment: bool,
+    leading_spacer: bool,
 }
 
 fn color(value: Color) -> i32 {
@@ -204,6 +208,7 @@ pub unsafe extern "C" fn tf_terminal_meta(value: *mut c_void, output: *mut Termi
         bg: color(cursor.template.bg),
         bold: cursor.template.flags.contains(Flags::BOLD),
         mode_bits: value.term.mode().bits() as u64,
+        grapheme_overflows: value.term.grapheme_overflows(),
     };
     unsafe { *output = result };
     0
@@ -282,6 +287,9 @@ pub unsafe extern "C" fn tf_terminal_cell_meta(
         written: !cell.is_empty() || !text.is_empty() ||
             flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER | Flags::LEADING_WIDE_CHAR_SPACER),
         text_len: text.len(),
+        clipped: flags.contains(Flags::CLIPPED_GRAPHEME),
+        grapheme_fragment: cell.grapheme_fragment(),
+        leading_spacer: flags.contains(Flags::LEADING_WIDE_CHAR_SPACER),
     };
     unsafe { *output = result };
     0

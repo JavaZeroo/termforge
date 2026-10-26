@@ -1,7 +1,6 @@
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, Ordering};
 
-use arrayvec::ArrayVec;
 use bitflags::bitflags;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -14,7 +13,7 @@ use crate::vte::ansi::{Color, Hyperlink as VteHyperlink, NamedColor};
 ///
 /// This enforces an upper bound on memory usage per cell, to ensure
 /// malicous applications cannot use this as a DoS vector.
-const MAX_ZEROWIDTH_CHARS: usize = 9;
+pub(crate) const MAX_ZEROWIDTH_CHARS: usize = 63;
 
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -37,6 +36,8 @@ bitflags! {
         const UNDERCURL                 = 0b0001_0000_0000_0000;
         const DOTTED_UNDERLINE          = 0b0010_0000_0000_0000;
         const DASHED_UNDERLINE          = 0b0100_0000_0000_0000;
+        /// Full grapheme text is retained in a clipped one/two-cell footprint.
+        const CLIPPED_GRAPHEME          = 0b1000_0000_0000_0000;
         const ALL_UNDERLINES            = Self::UNDERLINE.bits() | Self::DOUBLE_UNDERLINE.bits()
                                         | Self::UNDERCURL.bits() | Self::DOTTED_UNDERLINE.bits()
                                         | Self::DASHED_UNDERLINE.bits();
@@ -75,7 +76,10 @@ impl From<VteHyperlink> for Hyperlink {
 
 impl From<Hyperlink> for VteHyperlink {
     fn from(val: Hyperlink) -> Self {
-        VteHyperlink { id: Some(val.id().to_owned()), uri: val.uri().to_owned() }
+        VteHyperlink {
+            id: Some(val.id().to_owned()),
+            uri: val.uri().to_owned(),
+        }
     }
 }
 
@@ -94,10 +98,12 @@ impl HyperlinkInner {
         let id = match id {
             Some(id) => id.to_string(),
             None => {
-                let mut id = HYPERLINK_ID_SUFFIX.fetch_add(1, Ordering::Relaxed).to_string();
+                let mut id = HYPERLINK_ID_SUFFIX
+                    .fetch_add(1, Ordering::Relaxed)
+                    .to_string();
                 id.push_str("_alacritty");
                 id
-            },
+            }
         };
 
         Self { id, uri }
@@ -130,9 +136,47 @@ impl ResetDiscriminant<Color> for Cell {
 #[derive(Default, Debug, Clone, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct CellExtra {
-    zerowidth: ArrayVec<char, MAX_ZEROWIDTH_CHARS>,
+    #[cfg_attr(feature = "serde", serde(deserialize_with = "deserialize_suffix"))]
+    zerowidth: Vec<char>,
+    #[cfg_attr(feature = "serde", serde(default))]
+    grapheme_fragment: bool,
     underline_color: Option<Color>,
     hyperlink: Option<Hyperlink>,
+}
+
+// Keep the optional upstream serde seam bounded as well as live Handler input.
+// Consume at most one scalar past the limit; never deserialize an unbounded Vec
+// and then reject it after allocation.
+#[cfg(feature = "serde")]
+fn deserialize_suffix<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Vec<char>, D::Error> {
+    struct SuffixVisitor;
+    impl<'de> serde::de::Visitor<'de> for SuffixVisitor {
+        type Value = Vec<char>;
+        fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(
+                formatter,
+                "at most {MAX_ZEROWIDTH_CHARS} grapheme suffix scalars"
+            )
+        }
+        fn visit_seq<A: serde::de::SeqAccess<'de>>(
+            self,
+            mut sequence: A,
+        ) -> Result<Self::Value, A::Error> {
+            let mut suffix = Vec::new();
+            while let Some(c) = sequence.next_element::<char>()? {
+                if suffix.len() == MAX_ZEROWIDTH_CHARS {
+                    return Err(serde::de::Error::custom(
+                        "grapheme suffix exceeds bounded cell budget",
+                    ));
+                }
+                suffix.push(c);
+            }
+            Ok(suffix)
+        }
+    }
+    deserializer.deserialize_seq(SuffixVisitor)
 }
 
 /// Content and attributes of a single cell in the terminal grid.
@@ -168,17 +212,45 @@ impl Cell {
 
     /// Write a new zerowidth character to this cell.
     #[inline]
-    pub fn push_zerowidth(&mut self, character: char) {
+    pub fn push_zerowidth(&mut self, character: char) -> bool {
         let extra = self.extra.get_or_insert(Default::default());
-        let _ = Arc::make_mut(extra).zerowidth.try_push(character);
+        let suffix = &mut Arc::make_mut(extra).zerowidth;
+        if suffix.len() == MAX_ZEROWIDTH_CHARS {
+            return false;
+        }
+        suffix.push(character);
+        true
+    }
+
+    /// Replace a bounded grapheme suffix. Scalars may have nonzero isolated width.
+    pub(crate) fn set_grapheme_suffix(
+        &mut self,
+        suffix: impl Iterator<Item = char>,
+        fragment: bool,
+    ) {
+        let extra = self.extra.get_or_insert(Default::default());
+        let extra = Arc::make_mut(extra);
+        extra.zerowidth.clear();
+        extra.zerowidth.extend(suffix);
+        assert!(extra.zerowidth.len() <= MAX_ZEROWIDTH_CHARS);
+        extra.grapheme_fragment = fragment;
+    }
+
+    pub fn grapheme_fragment(&self) -> bool {
+        self.extra
+            .as_ref()
+            .is_some_and(|extra| extra.grapheme_fragment)
     }
 
     /// Remove all wide char data from a cell.
     #[inline(never)]
     pub fn clear_wide(&mut self) {
-        self.flags.remove(Flags::WIDE_CHAR);
+        self.flags
+            .remove(Flags::WIDE_CHAR | Flags::CLIPPED_GRAPHEME);
         if let Some(extra) = self.extra.as_mut() {
-            Arc::make_mut(extra).zerowidth = ArrayVec::new();
+            let extra = Arc::make_mut(extra);
+            extra.zerowidth = Vec::new();
+            extra.grapheme_fragment = false;
         }
         self.c = ' ';
     }
@@ -257,14 +329,20 @@ impl GridCell for Cell {
 
     #[inline]
     fn reset(&mut self, template: &Self) {
-        *self = Cell { bg: template.bg, ..Cell::default() };
+        *self = Cell {
+            bg: template.bg,
+            ..Cell::default()
+        };
     }
 }
 
 impl From<Color> for Cell {
     #[inline]
     fn from(color: Color) -> Self {
-        Self { bg: color, ..Cell::default() }
+        Self {
+            bg: color,
+            ..Cell::default()
+        }
     }
 }
 
@@ -304,6 +382,26 @@ mod tests {
     use crate::grid::Row;
     use crate::index::Column;
 
+    #[cfg(feature = "serde")]
+    #[test]
+    fn serde_suffix_budget_rejects_an_unbounded_external_cell() {
+        let mut value = serde_json::to_value(CellExtra::default()).unwrap();
+        value["zerowidth"] = serde_json::json!(vec!['\u{301}'; 63]);
+        assert!(serde_json::from_value::<CellExtra>(value.clone()).is_ok());
+        value["zerowidth"] = serde_json::json!(vec!['\u{301}'; 64]);
+        assert!(
+            serde_json::from_value::<CellExtra>(value).is_err(),
+            "serde bypassed the bounded runtime suffix policy"
+        );
+    }
+    #[cfg(feature = "serde")]
+    #[test]
+    fn serde_legacy_extra_without_fragment_field_stays_compatible() {
+        let mut value = serde_json::to_value(CellExtra::default()).unwrap();
+        value.as_object_mut().unwrap().remove("grapheme_fragment");
+        let extra = serde_json::from_value::<CellExtra>(value).unwrap();
+        assert!(!extra.grapheme_fragment);
+    }
     #[test]
     fn cell_size_is_below_cap() {
         // Expected cell size on 64-bit architectures.

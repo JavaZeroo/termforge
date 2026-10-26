@@ -122,6 +122,7 @@ pub(crate) fn snapshot(term: &mut Term<Listener>, listener: &Listener, offset: u
             "current_style": current_style,
         },
         "mode_bits": term.mode().bits(),
+        "grapheme_overflows": term.grapheme_overflows(),
         "replies": replies,
     })
 }
@@ -138,7 +139,7 @@ fn run() -> Result<(), String> {
             .ok_or("invalid resize option")?;
         let rows = rows.parse::<usize>().map_err(|_| "invalid resize rows")?;
         let columns = columns.parse::<usize>().map_err(|_| "invalid resize columns")?;
-        if rows == 0 || columns < 2 {
+        if rows == 0 || columns == 0 {
             return Err("resize dimensions exceed the trace budget".into());
         }
         Some((rows, columns))
@@ -148,7 +149,7 @@ fn run() -> Result<(), String> {
     let rows = args[2].parse::<usize>().map_err(|_| "invalid rows")?;
     let columns = args[3].parse::<usize>().map_err(|_| "invalid columns")?;
     let history = args[4].parse::<usize>().map_err(|_| "invalid history")?;
-    if rows == 0 || rows > 1000 || !(2..=1000).contains(&columns) || history > 100000 {
+    if rows == 0 || rows > 1000 || !(1..=1000).contains(&columns) || history > 100000 {
         return Err("candidate dimensions or history exceed the trace budget".into());
     }
     let data = fs::read(&args[1]).map_err(|error| error.to_string())?;
