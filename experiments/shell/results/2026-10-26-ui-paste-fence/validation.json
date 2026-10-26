@@ -1,0 +1,672 @@
+{
+  "schema": "termforge-ui-paste-fence-validation-v1",
+  "date": "2026-10-26",
+  "issue": 53,
+  "status": "partial_issue_remains_open",
+  "source_commit": "a15eb7f67315fb53c9d66b9c5a4424e13511a311",
+  "source_tree": "b2a2d7b5b5e1f74de1be4aa3ccb8b692cb4c9fec",
+  "source_files": {
+    "CMakeLists.txt": {
+      "git_blob": "4f29e60930e0ce5f5aed359a6ee94c2b178dbdd2",
+      "checkout_sha256": "fa0bc11bd7821cab83dc0076d2d1fd305410febca7ccba96dd14c7bfa4b39fcf"
+    },
+    "experiments/shell/paste_checks.py": {
+      "git_blob": "3de07a7a49726e1365daba541054ae94ad609e7e",
+      "checkout_sha256": "3e565ed0c297c94573589230bcff57c5e6f4a043d5b63ac605a79cd46a0ae18e"
+    },
+    "experiments/shell/paste_scenario_state.hpp": {
+      "git_blob": "77db7d43dc22777596e4597ec4081078acd994e6",
+      "checkout_sha256": "52fdef856fe365b3a39aa27360d31c9d88979366b39de7d618c49942b0fc5433"
+    },
+    "experiments/shell/sender_fence.hpp": {
+      "git_blob": "56e092f0397d6052e278b464cfc08add2cbee8ec",
+      "checkout_sha256": "fefdd87fff5840b7a0e03f1c682a2ca626249b48536b483fac8a12e8cf882987"
+    },
+    "experiments/shell/sender_fence_pipe.hpp": {
+      "git_blob": "aca1566dfd9224c9c4e798c4d7435aced680c3b1",
+      "checkout_sha256": "ee3b862a6496b060ad2312c234221570ac081ebbf2e24cfccbec3ced57bdeb03"
+    },
+    "experiments/shell/sender_fence_pipe_test.cpp": {
+      "git_blob": "64580c0c831eab4e52ded57a36bfd7d2b07c5368",
+      "checkout_sha256": "424c5645246dec064bfc76129553a273f1ae8c3cb0104be91b19269c69b8a59a"
+    },
+    "experiments/shell/shell.cpp": {
+      "git_blob": "cd112860aa377857cdbd749cc2ef44973c80360b",
+      "checkout_sha256": "b369968152bbff107c699181d4e23f271e62a5732f0c41793159b3efc3609321"
+    },
+    "experiments/shell/test_paste_checks.py": {
+      "git_blob": "0c53e0532c74bb5e936389f24eb002c818489894",
+      "checkout_sha256": "fdb2a4ceff178d07e18facaa8e30226670d1b0c4a4c0b69b2fd21fd2f0327d1c"
+    },
+    "experiments/shell/test_shell.py": {
+      "git_blob": "66512ac1099cf477cac8f26f225b18c301c1d3d8",
+      "checkout_sha256": "a6b63c1754b0e0dc1cc01863891f4c7c9d989f818d351838a8cfe295edaf811c"
+    },
+    "experiments/shell/test_workflow_sessions.py": {
+      "git_blob": "de6cef3be06725d606b91ae68eb1cc45eb744fb5",
+      "checkout_sha256": "6c968a443c46b30e75a929f880228e6a23bf2b92d9221bbbf18816933babd6e7"
+    },
+    "experiments/shell/workflow_sessions_checks.py": {
+      "git_blob": "8369b412abe893393bf316430ccedd22e9eb75ba",
+      "checkout_sha256": "b976d3504837eef57ff13319daed254870727741f36f265412a6b14b4cb3faae"
+    },
+    "experiments/shell/workspace.hpp": {
+      "git_blob": "7d4fa607b4878add7e0b5c411c711cc3e60abe3d",
+      "checkout_sha256": "5669a13701b2fe60e8bd567a122edb970bdc4aadcb98ceb3927905f0c000275e"
+    },
+    "experiments/shell/workspace_paste_scenario.hpp": {
+      "git_blob": "2a22a036696ecf3ce6d2ff2a0b7aed3decad49b4",
+      "checkout_sha256": "d55b7568f345373784c288f496e97e0b3bfc336c47f4b59378d4c51409e0b128"
+    },
+    "experiments/shell/workspace_workflow_scenario.hpp": {
+      "git_blob": "029ef4bcf9393be4ab6194bbbe95d145e98ff70b",
+      "checkout_sha256": "467571556440f4e89305bc1261d389bb8f24ba84f607b8cd36b8078a58314369"
+    }
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "architecture": "AMD64",
+    "compiler": "MSVC 19.42.34433",
+    "configuration": "Release x64",
+    "candidate": "alacritty_terminal 0.26.1-dev+termforge.4",
+    "backend": "Microsoft.Windows.Console.ConPTY 1.25.260930003",
+    "glyph_width_flags": 24
+  },
+  "binaries": {
+    "termforge_shell.exe": "0a1fee632cb640dff4599fdcca277c959038d31ec88bfed8cff893b3271d26a6",
+    "shell_test_launcher.exe": "dbde4249dc08c7df80120398ffd252aa5e4958e4ef640cc161ea4c2d28b9f291",
+    "shell_input_client.exe": "850c82fb8bb58de8170bf096cc6dd4f8ba34d9ba11dbd2addc41508cddc31d8c",
+    "shell_text_client.exe": "9485b03424e421a4018596cc9487e7feeb33c26d30820985aa45843fdcf315d9",
+    "sender_fence_test.exe": "ab4af3b0f148f6e6377e70c98936c6c34d0be0d3cee4b17b3f8554c39b2d3e52",
+    "sender_fence_pipe_test.exe": "6a94ac84631434a81ae1098932813d7ceeb81f2bb33a2e4b2456834bd8972e92",
+    "conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+    "conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+  },
+  "request": {
+    "utf8_bytes": 3000000,
+    "utf16_units": 1000000,
+    "literal": "U+6C49 repeated 1000000",
+    "sha256": "0ba67970de9941c1bc33e97869b116a0e129c8a859e3b4c0087e20c51f6a404b",
+    "minimum_sent": 16384,
+    "receiver_checkpoint_bytes": 768
+  },
+  "deadlines_ms": {
+    "standalone_ui": 35000,
+    "standalone_outer": 40000,
+    "receiver_gate": 15000,
+    "eight_session_ui": 70000,
+    "workflow_fixture": 55000,
+    "missing_go_negative_only": 2000
+  },
+  "controls": [
+    {
+      "case": "paste-0",
+      "sample_sha256": "aa28ff969ef47debda3f78e9d5eeb2e414492e30ecea5d354cfbb2d7857997a9",
+      "status": "passed",
+      "exit_code": 0,
+      "outer_timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 12,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "captures": {
+        "cancel.bin": {
+          "bytes": 18414,
+          "sha256": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6"
+        },
+        "close.bin": {
+          "bytes": 768,
+          "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+        },
+        "input.bin": {
+          "bytes": 25021,
+          "sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2"
+        }
+      }
+    },
+    {
+      "case": "paste-1",
+      "sample_sha256": "d769fff8294f3b933520464be2a710863cbc1c2cbc4d48b09ce04fdb09fc9d27",
+      "status": "passed",
+      "exit_code": 0,
+      "outer_timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 12,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "captures": {
+        "cancel.bin": {
+          "bytes": 18414,
+          "sha256": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6"
+        },
+        "close.bin": {
+          "bytes": 768,
+          "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+        },
+        "input.bin": {
+          "bytes": 25021,
+          "sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2"
+        }
+      }
+    },
+    {
+      "case": "paste-control-eof",
+      "sample_sha256": "577e1a5125a10f42ba176cafcc8bd4b72d92271be33ae8ec6b4f0e1ba61a71dc",
+      "status": "failed",
+      "exit_code": 2,
+      "outer_timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "expected_failure": {
+        "eof_observed": true,
+        "timed_out": false,
+        "wait_finished": true,
+        "state": "failed",
+        "in_flight": 0,
+        "retained_capacity": 15
+      },
+      "captures": {
+        "cancel.bin": {
+          "bytes": 768,
+          "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+        },
+        "input.bin": {
+          "bytes": 25021,
+          "sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2"
+        }
+      }
+    },
+    {
+      "case": "paste-control-timeout",
+      "sample_sha256": "2a5b36750f15d093e34ad81a29363e33ea84c4ea21e2798af96dc5702960e19b",
+      "status": "failed",
+      "exit_code": 2,
+      "outer_timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "expected_failure": {
+        "eof_observed": false,
+        "timed_out": true,
+        "wait_finished": true,
+        "state": "failed",
+        "in_flight": 0,
+        "retained_capacity": 15
+      },
+      "captures": {
+        "cancel.bin": {
+          "bytes": 768,
+          "sha256": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c"
+        },
+        "input.bin": {
+          "bytes": 25021,
+          "sha256": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2"
+        }
+      }
+    }
+  ],
+  "eight_session_runs": [
+    {
+      "source_commit": "62226af2d1f636cef1920ac0ef9998935a7dd243",
+      "resource_sampling": true,
+      "diagnostic_only": false,
+      "sample_sha256": "93be8809499aa33081e411df03e20c879d63e4c4bf4940f85fcab8e1d992059f",
+      "sessions_sha256": "063739d6e17ff15a2861fd13f247dffd40fe7d1f92a4835e040f9a04b0d61106",
+      "exit_code": 2,
+      "outer_timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "failure": "workflow sessions scenario timeout at stage 45",
+      "foreground_fixture_failure": "workflow control deadline expired",
+      "foreground_fixture_sha256": "48a40aec11a95182dd5a55b5f7c3e5eceb58b093f36ad02674aae6ba103325d5",
+      "phases": [
+        {
+          "phase": "paste-cancel-pending",
+          "elapsed_ms": 14371
+        },
+        {
+          "phase": "paste-cancelled",
+          "elapsed_ms": 15111
+        },
+        {
+          "phase": "background-complete",
+          "elapsed_ms": 51158
+        },
+        {
+          "phase": "paste-close-pending",
+          "elapsed_ms": 61806
+        }
+      ],
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "wake_evidence": "legacy_exit_is_final_state_not_actual_wake"
+    },
+    {
+      "source_commit": "62226af2d1f636cef1920ac0ef9998935a7dd243",
+      "resource_sampling": true,
+      "diagnostic_only": false,
+      "sample_sha256": "6bcd382eca3ec3e09bdd3ab59f1aba530e1fe9670fb3423d9adda2a941920635",
+      "sessions_sha256": "dd918bc9fc472bfa6ff8bd851fc13467143185f740a9d5bca6348e5492c8a26a",
+      "exit_code": 2,
+      "outer_timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "failure": "workflow sessions scenario timeout at stage 45",
+      "foreground_fixture_failure": "workflow control deadline expired",
+      "foreground_fixture_sha256": "48a40aec11a95182dd5a55b5f7c3e5eceb58b093f36ad02674aae6ba103325d5",
+      "phases": [
+        {
+          "phase": "paste-cancel-pending",
+          "elapsed_ms": 14766
+        },
+        {
+          "phase": "paste-cancelled",
+          "elapsed_ms": 15730
+        },
+        {
+          "phase": "background-complete",
+          "elapsed_ms": 52546
+        },
+        {
+          "phase": "paste-close-pending",
+          "elapsed_ms": 63096
+        }
+      ],
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "wake_evidence": "legacy_exit_is_final_state_not_actual_wake"
+    },
+    {
+      "source_commit": "a15eb7f67315fb53c9d66b9c5a4424e13511a311",
+      "resource_sampling": false,
+      "diagnostic_only": true,
+      "sample_sha256": "e762d5d0caf2d016959572ec2c60272ba791a7d994b0ff006627406776d3250d",
+      "sessions_sha256": "5762dc068ce78233fdc40d06ebfa28734d263f0b4557c258f0146147fd6b25ef",
+      "exit_code": 2,
+      "outer_timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "failure": "workflow sessions scenario timeout at stage 45",
+      "foreground_fixture_failure": "workflow control deadline expired",
+      "foreground_fixture_sha256": "48a40aec11a95182dd5a55b5f7c3e5eceb58b093f36ad02674aae6ba103325d5",
+      "phases": [
+        {
+          "phase": "paste-cancel-pending",
+          "elapsed_ms": 14071
+        },
+        {
+          "phase": "paste-cancelled",
+          "elapsed_ms": 14785
+        },
+        {
+          "phase": "background-complete",
+          "elapsed_ms": 50262
+        },
+        {
+          "phase": "paste-close-pending",
+          "elapsed_ms": 60948
+        }
+      ],
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "wake_evidence": "immutable_wait_exit_and_final_state"
+    }
+  ],
+  "original_red": {
+    "source_commit": "abe5a850343cdeb96606961a7d1bfc062fc52d2a",
+    "binaries": {
+      "build\\candidate\\bin\\Release\\termforge_shell.exe": {
+        "sha256": "62d57a551746f6c9379fba73af87230f1cb1edc9b74de9bc8136a38441fd33c6",
+        "bytes": 1741312
+      },
+      "build\\candidate\\bin\\Release\\conpty-backend\\manifest.json": {
+        "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+        "bytes": 1467
+      },
+      "build\\candidate\\bin\\Release\\conpty-backend\\conpty.dll": {
+        "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+        "bytes": 119608
+      },
+      "build\\candidate\\bin\\Release\\conpty-backend\\OpenConsole.exe": {
+        "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+        "bytes": 1089376
+      }
+    },
+    "samples": [
+      {
+        "sample_sha256": "27341653ab0979ffc5a6feb9904a9abaa146bc37a956780c5a4b63b33d92ba01",
+        "exit_code": 2,
+        "outer_timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "failure": "paste action did not occur during a partial transfer with consumed bytes and output flood; checkpoint=768 flood=1 sent=3000000 accepted=3000000 total=3000000 state=3"
+      },
+      {
+        "sample_sha256": "16213745702fcc944287229eafc9c4029de21dd4c2a4651f244eb983e93848ff",
+        "exit_code": 2,
+        "outer_timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "failure": "cancel transfer completed before receiver gate"
+      }
+    ]
+  },
+  "fence_without_ui_notify": {
+    "base": "abe5a850343cdeb96606961a7d1bfc062fc52d2a",
+    "patch_sha256": "fef9501e555c5ba103da297e320df903cbd100f4864e9847e38844aa1f410cd0",
+    "exe_sha256": "6f5c95e32ff688768ac02383735a4864b5acf84f38b49faeaab04392a8f3ba03",
+    "status": "failed at original 35000ms UI deadline; original one-line UI cancel changed after this run"
+  },
+  "full_suite": {
+    "source_commit": "62226af2d1f636cef1920ac0ef9998935a7dd243",
+    "ctest_passed": 52,
+    "ctest_total": 55,
+    "failed": [
+      "candidate_shell_tui: Vim absent from process PATH",
+      "workflow_sessions: stage45, original B fixture deadline expired",
+      "shell: 180s CTest aggregate deadline; resize stage43 and workspace main7/ui52 failures retained"
+    ],
+    "log_sha256": "4295f3d895b289cb326b182fa3f1d30e09ea521d096ea95c768cb49aff746c07"
+  },
+  "reviewed_targeted_checks": {
+    "ctest": [
+      "sender_fence",
+      "sender_fence_pipe",
+      "paste_fence_evidence"
+    ],
+    "ctest_passed": 3,
+    "ui_positive_processes": 2,
+    "ui_expected_failure_processes": 2,
+    "go_ack": "actual anonymous Win32 pipes with same-process endpoints; positive GO uses unit-level payload simulation only",
+    "pipe_capacity": "actual inbound server buffer checked against whole128B request/192B reply budgets; saturation8+8 and ninthrejection tested"
+  },
+  "limitations": [
+    "Full eight-session acceptance still failed; issue53 and parent47 remain open.",
+    "Candidate/system and default/system have no success claimed from these official-backend samples.",
+    "No hosted system-clipboard or IME acceptance is claimed here.",
+    "Held payload is not measured OS backpressure; workload has synchronization and is not a performance benchmark.",
+    "UI observed producer, output, state and cleanup; actual presented endpoint is unknown.",
+    "Raw logs and captures remain local; only synthetic byte counts, hashes and whitelisted records published."
+  ]
+}
