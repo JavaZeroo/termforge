@@ -104,6 +104,14 @@ static void scenario(const std::string& backend, int dpi, int zoom, float baseli
     const auto& fallback = renderer.layout("\xe4\xb8\xad", false);
     require(fallback.missing == 0 && !fallback.faces.empty() && !fallback.faces.count("Consolas"),
             "CJK fallback identity was not resolved");
+    if (backend == "dwrite") {
+        for (const std::string text : {"👩\xe2\x80\x8d💻", "1\xef\xb8\x8f\xe2\x83\xa3"}) {
+            const auto& emoji = renderer.layout(text, false, 2);
+            require(emoji.missing == 0 && emoji.glyphs == 1 &&
+                    emoji.faces == std::set<std::string>{"Segoe UI Emoji"},
+                    "whole emoji cluster was split across glyphs or fonts");
+        }
+    }
     const auto& missing = renderer.layout("\xf4\x8f\xbf\xbf", false);
     require(missing.missing > 0 && !missing.faces.empty(), "missing-glyph control failed");
 

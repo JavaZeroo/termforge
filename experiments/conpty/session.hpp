@@ -36,8 +36,8 @@ public:
 
 // Output has its own draining thread: ClosePseudoConsole must not block the
 // only reader. Input calls are deliberately small in this lifecycle probe.
-// A1 supplies an external bounded streaming consumer and input worker. The
-// default capture path and --child invocation remain the T1 probe contract.
+// The local shell supplies an external bounded streaming consumer and input
+// worker; the lifecycle probe uses bounded capture and its --child entry point.
 class Session {
     // Destroy this last: callbacks, reader and HPCON must stop while their
     // selected API module is still loaded.

@@ -1,4 +1,4 @@
-// Shared original fixed-grid renderer for V1 and A1.
+// Shared fixed-grid renderer for the presentation probe and local shell.
 #pragma once
 #include <windows.h>
 #include <d2d1.h>
@@ -215,6 +215,13 @@ public:
         Layout result; const auto wide = utf16(text);
         check(write_->CreateTextLayout(wide.data(),static_cast<UINT32>(wide.size()),formats_[bold].Get(),
             64.0f*zoom_percent_/100.0f,logical_y(1),result.text.GetAddressOf()));
+        // UTS #51 fully-qualified keycap sequences must shape as one cluster.
+        // Starting fallback from the ASCII digit's Consolas face splits the
+        // enclosing keycap into an unrelated Segoe UI Symbol glyph.
+        const bool keycap = text.size() == 7 &&
+            ((text[0] >= '0' && text[0] <= '9') || text[0] == '#' || text[0] == '*') &&
+            text.compare(1, 6, "\xef\xb8\x8f\xe2\x83\xa3") == 0;
+        if (keycap) check(result.text->SetFontFamilyName(L"Segoe UI Emoji", {0,static_cast<UINT32>(wide.size())}));
         const float available = float(cell_width_*columns)*96.0f/dpi_;
         DWRITE_TEXT_METRICS metrics{}; check(result.text->GetMetrics(&metrics));
         if (metrics.widthIncludingTrailingWhitespace > available+0.01f) {

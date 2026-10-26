@@ -4,6 +4,7 @@
 
 - 已实现能力、未实现功能及证据边界：[FEATURES](FEATURES.md)。
 - 从完整 WindTerm 2.7.0 复刻倒推的五个路标：[PLAN](PLAN.md)。
-- 下一路标的详细事项、依赖和验收：[R1 基础文字交互](milestones/R1-local-text.md)。
+- 当前路标的交付顺序、剩余事项和验收：[R2 本地终端与开发版](milestones/R2-local-terminal.md)。
+- 已验收的基础文字交互合同：[R1 基础文字交互](milestones/R1-local-text.md)。
 - 正在等待实施的任务及真实状态：[TRACKING](TRACKING.md)。
 - 已完成验证与历史材料：[EVIDENCE](EVIDENCE.md)、[归档说明](archive/README.md)。

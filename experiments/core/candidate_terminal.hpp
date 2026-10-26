@@ -16,7 +16,7 @@ struct CandidateEvent {
 
 class CandidateTerminal {
     void* impl_ = nullptr;
-    uint64_t mode_bits_ = 0;
+    uint64_t mode_bits_ = 0, grapheme_overflows_ = 0;
     std::unordered_map<uint64_t, uint64_t> versions_;
     std::vector<CandidateEvent> events_;
     struct IdentityAlias { uint64_t id = 0, version = 0; };
@@ -46,6 +46,7 @@ public:
     void finish();
     void resize(int rows, int columns);
     uint64_t mode_bits() const { return mode_bits_; }
+    uint64_t grapheme_overflows() const { return grapheme_overflows_; }
     std::vector<CandidateEvent> take_events();
 };
 } // namespace termforge

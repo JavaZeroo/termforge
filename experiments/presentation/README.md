@@ -1,6 +1,6 @@
-# 限定窗口呈现探针（V1 受限验收）
+# 限定窗口呈现探针
 
-当前核心生成 3×32 的固定场景，复制成带版本号的只读快照，再通过 GDI 或 DirectWrite/Direct2D 软件 DC target 绘制。程序创建自己的非输入 desktop 和真实 `WS_VISIBLE` HWND；从不切换用户的 desktop，不接收用户点击，不捕获用户桌面。`InvalidateRect → UpdateWindow → WM_PAINT → BeginPaint` 以及消息泵驱动绘制，结束后销毁窗口、注销窗口类，GUI 线程退出后由父线程关闭 desktop。这个探针仍是独立实验；共享的 `render.hpp` 另用于[本地 shell 工作区](../shell/README.md)。
+探针用自研核心生成 3×32 的固定场景，复制成带版本号的只读快照，再通过 GDI 或 DirectWrite/Direct2D 软件 DC target 绘制。程序创建自己的非输入 desktop 和真实 `WS_VISIBLE` HWND；从不切换用户的 desktop，不接收用户点击，不捕获用户桌面。`InvalidateRect → UpdateWindow → WM_PAINT → BeginPaint` 以及消息泵驱动绘制，结束后销毁窗口、注销窗口类，GUI 线程退出后由父线程关闭 desktop。这个探针是独立实验；共享的 `render.hpp` 另用于[本地 shell 工作区](../shell/README.md)，其候选字素绘制另由[流式字素合同](../../docs/research/streaming-graphemes.md)验证，不能用此处固定场景替代。
 
 ```powershell
 # Windows；先按 CONTRIBUTING.md 从根目录构建。

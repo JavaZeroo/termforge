@@ -1,6 +1,6 @@
 # 核心连续区间计量与校准
 
-`core_measure` 使用原创固定输入与独立状态检查。v2 修正了 v1 将很多短轮次 CPU 差值相加的计量问题；仍未完成解码、屏幕更新、历史的独立归因，不能据此判断 WindTerm 性能差距。
+`core_measure` 使用原创固定输入与独立状态检查。v2 修正了 v1 将很多短轮次 CPU 差值相加的计量问题；`compare.py` 另提供自研/候选 project 与 interactive 成本诊断。解码、屏幕更新、历史仍未完整独立归因，不能据此判断 WindTerm 性能差距。R2 流式字素成本的受控定位与预算由 [#54](https://github.com/JavaZeroo/termforge/issues/54)承接，完整产品性能和跨目标基线仍按 [R4 工作包 #9](https://github.com/JavaZeroo/termforge/issues/9)验收。
 
 ```powershell
 # 先按 CONTRIBUTING.md 从仓库根目录构建。输出目录必须不存在。
@@ -41,6 +41,8 @@ python experiments/measure/compare.py --route interactive --out local/core-inter
 
 普通 C++ `new` 与 Rust global allocator 统计范围不同，不是等价内存指标；peak working set 包含整个进程准备/检查。观察开启/关闭不是无插桩 A/B，任何差值都不扣除。当前仅覆盖固定 ASCII 长输出与编辑回放，无插桩对照、真实输入/接收/呈现、跨平台与维护成本另审；`performance_gate=not_evaluated`，不能据此作最终路线决定或 WindTerm 性能结论。
 
+候选 `.4` 为完整 trace 投影新增 `grapheme_overflows: 0`，因此 project / interactive 的全对象摘要分别从 `11966868740884721388` / `8035857386658397897` 迁移为 `16178973312633948535` / `6154007251599136798`。屏幕、历史、光标、样式、模式和回复逐字段不变；字段继续进入哈希，不排除计数器来维持旧摘要。独立构造的完整固定负载状态、旧/新摘要迁移及实际 trace 对象由 `test_compare.py` 验证，实际计量批次继续覆盖全部块大小与观察开关，错误摘要继续拒绝。旧结果原样保留；首次 CI 红反馈及身份见[迁移记录](results/2026-10-26-projection-digest/validation.json)。这次修复仅更新诊断身份合同，没有改变产品、负载、计时或性能验收标准。
+
 ## 校准能回答什么
 
 `core_measure calibrate seconds [observe_first]` 提供两个可重复诊断：
@@ -54,7 +56,7 @@ python experiments/measure/compare.py --route interactive --out local/core-inter
 
 `ordinary_allocations` / `ordinary_allocated_bytes` 是区间内普通 C++ new/new[] 的累计请求次数/字节，不包含对齐分配、C/runtime 分配，也不是存活内存。Windows 的 peak working set 是整个进程峰值，包含准备和检查；Linux 暂为 null。
 
-接收和呈现不在此探针中，保持 null；屏幕更新与历史维护仍混合，当前只覆盖 ASCII 滚动。剩余的解码/状态/历史独立归因、Unicode 和不同历史规模、无插桩对照及受控重复样本由 [R4 性能工作包 #9](https://github.com/JavaZeroo/termforge/issues/9)承接；不得据此发布速度排名或认定数据结构瓶颈。
+接收和呈现不在这些核心探针中，保持 null；屏幕更新与历史维护仍混合。`core_measure` 负载为 ASCII 滚动，`compare.py` 的 interactive 另含固定 ASCII 编辑回放；二者都不代表真实输入到呈现延迟。剩余的解码/状态/历史独立归因、Unicode 和不同历史规模、无插桩对照及受控重复样本由 [R4 性能工作包 #9](https://github.com/JavaZeroo/termforge/issues/9)承接；不得据此发布速度排名或认定数据结构瓶颈。
 
 ## v1 历史结果（未改写）
 

@@ -1,0 +1,95 @@
+{
+  "schema": "termforge-measure-projection-migration-v1",
+  "ci_red": {
+    "run_id": 40292096700,
+    "attempt": 1,
+    "head_sha": "23616d13c6f16e5ad1ca671cafc45dd166788a24",
+    "checkout_merge_sha": "cb001e0825bf591a54d068322a6033b8974002a7",
+    "url": "https://github.com/JavaZeroo/termforge/actions/runs/40292096700",
+    "jobs": [
+      {
+        "id": 121469315574,
+        "platform": "ubuntu-24.04"
+      },
+      {
+        "id": 121469315818,
+        "platform": "windows-2025"
+      }
+    ],
+    "first_failed_step": 28,
+    "step": "Compare interleaved project costs",
+    "error": "RuntimeError: unexpected state digest",
+    "original_decoded_logs": {
+      "local_retention": "local/ci-r39-red-40292096700; GitHub decoded log text preserved with LF newlines",
+      "sha256": {
+        "121469315574": "45c3dc8dc9476ef7290554c134a64fb1d9d4f63fa8c37c28c6b03d302e928a9b",
+        "121469315818": "d401dc3561a751da5cff61fe3273c0778c1749f97ee620b54fd01ad44f54f550"
+      }
+    }
+  },
+  "cause": "The full snapshot gained grapheme_overflows:0; all other fields are byte-equivalent after canonical serialization. Obsolete fixed full-projection digests caused the measurement contract failure; not a terminal state mismatch.",
+  "baseline_git_commit": "65988f5f20f62294ff52fcac5b5b81e563f93f3b",
+  "candidate_product_freeze": "821b9e6282e41822d5c977914aeca10fe8329c98",
+  "routes": {
+    "project": {
+      "baseline_digest": "11966868740884721388",
+      "candidate_digest": "16178973312633948535",
+      "only_difference": {
+        "grapheme_overflows": [
+          null,
+          0
+        ]
+      },
+      "binaries": {
+        "baseline": "d74970c2101fa05f9d894285937e78662ea9a84690be1e60844c0f0f6cbb6663",
+        "candidate": "6dbe42cfefc8b5df64e652193d3b5863fbf679f12ccfa2e422d9ca1e9e1a5c3d"
+      },
+      "fixture_bytes": 78000,
+      "fixture_sha256": "02ff60ca95c13ab3e41909685634ee6a800310dc39a07a98ac6965b0c57f2b14"
+    },
+    "interactive": {
+      "baseline_digest": "8035857386658397897",
+      "candidate_digest": "6154007251599136798",
+      "only_difference": {
+        "grapheme_overflows": [
+          null,
+          0
+        ]
+      },
+      "binaries": {
+        "baseline": "d74970c2101fa05f9d894285937e78662ea9a84690be1e60844c0f0f6cbb6663",
+        "candidate": "6dbe42cfefc8b5df64e652193d3b5863fbf679f12ccfa2e422d9ca1e9e1a5c3d"
+      },
+      "fixture_bytes": 22000,
+      "fixture_sha256": "405d574c15d33d81e17745173dac95ed8c0082884e9692c71fbc67b5a588c148"
+    }
+  },
+  "independent_expectation": {
+    "description": "Literal 24x80 screen: 23 completed rows plus one empty row, 100 completed history rows, cursor23:0, default style/modes, no replies, no overflow; project completed row is 76 x; interactive row is abcdeQgh.",
+    "full_object_equal": true,
+    "legacy_hash_reproduced": true,
+    "counter_included_in_full_hash": true,
+    "counter_mutation_changes_hash": true,
+    "actual_all_chunk_measurement_and_observer_cases_passed": true,
+    "wrong_digest_negatives_still_reject": true
+  },
+  "verification": {
+    "red_command": "python -m unittest experiments.measure.test_compare.CandidateProjectionIdentityTests -v",
+    "red_tests": 2,
+    "red_subtest_failures": 4,
+    "red_log_sha256": "b1ab5c5279ed8863c3769f805ca4c3084b8b5513b4530945ee2fe3cfa417f83b",
+    "green_command": "python -m unittest experiments.measure.test_compare experiments.measure.test_measure -v",
+    "green_tests": 17,
+    "green_failed": 0,
+    "green_skipped": 0,
+    "green_seconds": 19.489,
+    "green_log_sha256": "abcbc4692fe63f1142537452e23f8c9d4d100633e90e24f4b1dcb6a59c224df1"
+  },
+  "source_sha256": {
+    "experiments/measure/compare.py": "d165b63b694dc6c8127a7dd5610a9660a774dbef0603be482dd9512babe726fb",
+    "experiments/measure/test_compare.py": "7cb017383a8f6dc354586ac643b38e29bfdebb9e1d01607d04210480ce1e2718",
+    "experiments/measure/README.md": "fe5e494d7e6492ba9f13681e748eae58bdfe489abcb6480ae5b5e2ec338cc55f"
+  },
+  "changes": "Only fixed digest identities, independent regression tests, documentation and proof; product, fixture, timer, rejection gates and historical results unchanged.",
+  "performance_gate": "not_evaluated"
+}

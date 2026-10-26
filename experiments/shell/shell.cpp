@@ -509,16 +509,23 @@ class ShellWindow {
             stage_ = 1;
             return;
         }
-        if (stage_ != 1 || !live_contains_line("TF_U_DONE") || !resize_.settled()) return;
+        if ((stage_ != 1 && stage_ != 2 && stage_ != 3) || !live_contains_line("TF_U_DONE") || !resize_.settled()) return;
+        if (stage_ == 2) { query_size(); stage_ = 3; return; }
+        const bool resized = stage_ == 3;
+        if (resized && !line_is("TF_SIZE_100x30")) return;
+        if (resized && (parser_.screen.width() != 100 || parser_.screen.height() != 30)) return;
+        const std::string suffix = resized ? "-resized" : "";
         const auto save = [](const std::filesystem::path& path, const std::string& bytes) {
             std::ofstream out(path, std::ios::binary | std::ios::trunc);
             out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
             out.close(); require(bool(out), "Unicode evidence write failed");
         };
-        save(directory / "candidate-unicode.transport.bin", observed_output_);
+        save(directory / ("candidate-unicode" + suffix + ".transport.bin"), observed_output_);
         require(frame_matches_full(), "Unicode retained frame mismatch");
         std::ostringstream out;
-        out << "{\"schema\":\"termforge-candidate-unicode-v1\",\"columns\":" << parser_.screen.width()
+        out << "{\"schema\":\"termforge-candidate-unicode-v2\",\"phase\":\"" << (resized ? "resized" : "initial")
+            << "\",\"native_size_marker\":" << (resized ? "\"TF_SIZE_100x30\"" : "null")
+            << ",\"grapheme_overflows\":" << parser_.grapheme_overflows() << ",\"columns\":" << parser_.screen.width()
             << ",\"rows\":" << parser_.screen.height() << ",\"dpi\":" << renderer_->dpi()
             << ",\"cell_width\":" << renderer_->cell_width() << ",\"cell_height\":" << renderer_->cell_height()
             << ",\"frame_matches_full\":true,\"presented_done\":null,\"lines\":[";
@@ -536,7 +543,8 @@ class ShellWindow {
                 const Layout* layout = nullptr;
                 if (cell.width && cell.text != " ") layout = &renderer_->layout(cell.text, cell.style.bold, cell.width);
                 out << "{\"column\":" << column << ",\"width\":" << cell.width
-                    << ",\"marks\":" << cell.marks << ",\"written\":true,\"text\":";
+                    << ",\"marks\":" << cell.marks << ",\"written\":true,\"clipped\":" << (cell.clipped ? "true" : "false")
+                    << ",\"fragment\":" << (cell.grapheme_fragment ? "true" : "false") << ",\"text\":";
                 termforge::Screen::quoted(out, cell.text);
                 out << ",\"glyphs\":" << (layout ? layout->glyphs : 0)
                     << ",\"missing\":" << (layout ? layout->missing : 0)
@@ -553,8 +561,39 @@ class ShellWindow {
             }
             out << "]}";
         }
+        out << "],\"selections\":[";
+        const std::vector<std::pair<std::string, std::string>> samples = {
+            {"TF_U_DECOMPOSE", "e\xcc\x81"}, {"TF_U_EMOJI", "🙂"},
+            {"TF_U_ZWJ", "👩\xe2\x80\x8d💻"}, {"TF_U_KEYCAP", "1\xef\xb8\x8f\xe2\x83\xa3"},
+        };
+        for (size_t sample = 0; sample < samples.size(); ++sample) {
+            const auto& [label, value] = samples[sample];
+            size_t row = 0;
+            while (row < snapshot_->lines.size() && termforge::project_line(snapshot_->lines[row]).text != label + " " + value) ++row;
+            require(row < snapshot_->lines.size(), "Unicode selection literal row missing");
+            const int column = static_cast<int>(label.size() + 1);
+            const int width = sample ? 2 : 1;
+            // Start inside a wide trailing cell, through the product hit-test and
+            // drag methods; copied text must still contain the complete cluster.
+            const int x = renderer_->x(column + (width == 2 ? 1 : 0)) + 1;
+            const int y = renderer_->y(static_cast<int>(row)) + renderer_->cell_height()/2;
+            selection_down(x, y, 1);
+            selection_move(renderer_->x(column + width), y);
+            selection_end();
+            const auto copy = selected_text();
+            require(copy.status == termforge::SelectionCopyStatus::ok, "Unicode product selection copy failed");
+            const auto range = selection_.range();
+            require(range.has_value(), "Unicode product selection range missing");
+            if (sample) out << ',';
+            out << "{\"label\":"; termforge::Screen::quoted(out, label);
+            out << ",\"copied\":"; termforge::Screen::quoted(out, copy.text);
+            out << ",\"begin\":" << range->begin.column << ",\"end\":" << range->end.column << '}';
+        }
+        selection_.clear(); publish();
+        require(frame_matches_full(), "Unicode selection clear frame mismatch");
         out << "]}";
-        save(directory / "candidate-unicode.json", out.str());
+        save(directory / ("candidate-unicode" + suffix + ".json"), out.str());
+        if (!resized) { resize_window(100, 30); stage_ = 2; return; }
         result_.normal = true;
         type(L"exit 37\r");
         stage_ = 6;

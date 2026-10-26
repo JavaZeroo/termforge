@@ -1,0 +1,683 @@
+{
+  "schema": "termforge-streaming-graphemes-proof-v1",
+  "date": "2026-10-26",
+  "issue": 39,
+  "scope": "candidate first fixed streaming graphemes, adapters, selection, history/resize, actual DWrite glyph and owned ConPTY",
+  "baseline": {
+    "git_commit": "65988f5f20f62294ff52fcac5b5b81e563f93f3b",
+    "candidate_version": "0.26.1-dev+termforge.3",
+    "fresh_build": true,
+    "tracked_tree_clean": true
+  },
+  "candidate": {
+    "version": "0.26.1-dev+termforge.4",
+    "source_identity": "source_sha256 below identifies the pre-commit worktree; final commit is the commit containing this proof",
+    "last_after_focused_change": "only cfg(test) exact normative corpus count assertion; no product runtime changes"
+  },
+  "source_sha256": {
+    "CMakeLists.txt": "98843df715c78b64b58c9aba979cf177b96ce4b52e4e5d1b2c8b6216db4a75f8",
+    "docs/EVIDENCE.md": "d83d785b7351eaf3cba561d35279caa075166616473f85d4eb9d9ccdd4763b83",
+    "docs/FEATURES.md": "73f4790bc738aacbc16840c627301373d439bac83bfe391e5cc7e137b15b3dfe",
+    "docs/milestones/R2-font-display.md": "04e08f5fef0a9d0e4eaabbb45c828dbd4f5e82c56323d9cdd8e64226d7046bf5",
+    "docs/research/streaming-graphemes.md": "d933ce4a4fe643626d58620a687f6bc1894bbbf46fea69ad4beec3fc6417283b",
+    "experiments/candidates/alacritty/Cargo.lock": "051c783ab917c4a25ac588fe780751cef6c453f08661100b96638c0bc375f6c8",
+    "experiments/candidates/alacritty/Cargo.toml": "c5f89fda48ab73f30adfdcc4437fb3eeb1779647886d85364d91395bf8beec86",
+    "experiments/candidates/alacritty/PROVENANCE.md": "6105b1aa65ac6bb4e14d7fd6b0c2c907dd12947b74191870d61b26d658d84ba5",
+    "experiments/candidates/alacritty/README.md": "8193bd9ad305c973d010fa4418d89c1d2ee41cb7eb5569eb6e9432c606c998da",
+    "experiments/candidates/alacritty/grapheme_checks.py": "0654cb6868a94bb6a7cdb0a328dc8e854966aa5dd8c14d075d334a6a4fd983f0",
+    "experiments/candidates/alacritty/include/termforge_candidate.h": "6f6f6df22d65354e1ef0d39d6eca3ed0608a45a6cf8c41381b6287122fbab17b",
+    "experiments/candidates/alacritty/run.py": "c00b24ae170fc512b7fe15159c4245457f7b2d2fc9656f9074621526cd4fb289",
+    "experiments/candidates/alacritty/src/ffi.rs": "0ae1b36f2f23cdb5af5670ffb0b4201bec13578dfbf0152c3d1f14f7163a0804",
+    "experiments/candidates/alacritty/src/main.rs": "95c16e8ff9487396693ba9021c3cee676955e5a388d4952f4e134e26be7b1d17",
+    "experiments/candidates/alacritty/test_candidate.py": "e140ba53406b87696688dff8f335275af0a0e0b9aaf3bf1bee113d4e6a16a6f0",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "6b60e0b2db23e5d1fe16f23978fe7f6f9965c8663419cd6cce8e2b1e73df5b93",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "ce093c7624f7035f56e7a186460774c8348c8687a54334842f7e8d5f95a79bf6",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/cell.rs": "8b31cf5389398c74f141bd1f3e7945a1dbde8944bb754f5fd623313c73262496",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/grapheme.rs": "e09d3b858c303864c6ad029089387b5c42442b34528f6c5043feb32f0ff3932c",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "4a86c3e0a18400539a6e7c1d6117024f3ba868de278992140f6c7aa38c252f6e",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/tests/data/GraphemeBreakTest-17.0.0.txt": "e2d134d2c52919bace503ebb6a551c1855fe1a1faec18478c78fff254a1793ec",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/tests/data/UNICODE-LICENSE.txt": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96",
+    "experiments/core/CANDIDATE.md": "22a7f99c4bdc22a05f28d3d10ff0512b28b7926e7a47d7cfd3c83792cb57ceeb",
+    "experiments/core/candidate_terminal.cpp": "7db1064a5f5b69dfad58f806f8d0e477b87eca07330e8e1b5104d20fc11dacae",
+    "experiments/core/candidate_terminal.hpp": "1fa9dc00063c10e7cf76accc2d626693baba2494bf51dd9902d96fc04df8ca45",
+    "experiments/core/candidate_terminal_test.cpp": "533695d6ebdc90213ef270907500ea4525334d640bed1f747fa4121d549d2953",
+    "experiments/core/screen.hpp": "8b8bf2c21084060637327091d00c07c827fc5dc0bf8719a3b8c3bfa43fd8de68",
+    "experiments/core/text_projection.hpp": "7e4b401bc40b0e4909af6b98fb84661e7fa96228c42df4706375c632f2199a82",
+    "experiments/presentation/render.hpp": "4c67f74e7a3791526630aaa1a8cab685356b7a7c88da25f70ea25be8dd633db2",
+    "experiments/presentation/renderer_metrics_test.cpp": "b3094cde0641aefb1795ba46676e4e292e694bda947d4dad810e7823d353ae2f",
+    "experiments/shell/README.md": "a0bda14582d3144330d44fc74cfe53bf0e94508fc845cf23da32cf8cb8579ca1",
+    "experiments/shell/shell.cpp": "552b38c185cc3a8579ad7913d9c70403bc1f02de80968a3b1756b04e43e31d4b",
+    "experiments/shell/test_candidate_tui.py": "37c42ec6e18fd2711c19c4a3705badf38de9e6228d53574ed0e22f38b85f1b4f",
+    "experiments/shell/unicode_checks.py": "267622788537c5b12bce94f27aa196cdc7dd102124baa51fc5db3592eb485d37"
+  },
+  "binaries": {
+    "build/candidate-r39/bin/Release/termforge_shell.exe": {
+      "bytes": 1725440,
+      "sha256": "6d62785febc99423b8b84d830df28d75c29ad90ac87c24bc73dd7e6ed7424cae"
+    },
+    "build/candidate-r39/bin/Release/shell_text_client.exe": {
+      "bytes": 147968,
+      "sha256": "1df0479cf229bed2939e5c77d049c11b6a61ad382ed907c2b5cab5c2e505c3f7"
+    },
+    "build/candidate-r39/bin/Release/shell_size_client.exe": {
+      "bytes": 17408,
+      "sha256": "836131bdb41d534a9637a52cb76ae8ea961cfcfffaa7cc399259ebf94e3d4b36"
+    },
+    "build/candidate-r39/bin/Release/candidate_core_test.exe": {
+      "bytes": 660992,
+      "sha256": "77cee5a7eaa8af95c2090c76374416bb43e7bfd53e013eb6399841206a437273"
+    },
+    "build/candidate-r39/bin/Release/renderer_metrics_test.exe": {
+      "bytes": 129024,
+      "sha256": "5feae9ec997512b51ff963faed862e64fa23087ce66abba88a54bd4e8dfdcd94"
+    },
+    "experiments/candidates/alacritty/target/release/alacritty-measure.exe": {
+      "bytes": 572928,
+      "sha256": "a11098f0bd20796c9c95520a7cf9b78dbc0d498bf099f211f1a5bad0f4b79c89"
+    },
+    "baseline/experiments/candidates/alacritty/target/release/alacritty-measure.exe": {
+      "bytes": 516096,
+      "sha256": "8fd16ce2487bedfab4bd43297baac5a61b2db83cbfc29cbee449799fe18303c1"
+    },
+    "experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe": {
+      "bytes": 570368,
+      "sha256": "6dbe42cfefc8b5df64e652193d3b5863fbf679f12ccfa2e422d9ca1e9e1a5c3d"
+    },
+    "baseline/experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe": {
+      "bytes": 510976,
+      "sha256": "d74970c2101fa05f9d894285937e78662ea9a84690be1e60844c0f0f6cbb6663"
+    }
+  },
+  "contracts": [
+    "feed/snapshot/query/SGR do not seal; first scalar owns cluster style; current prefix cursor is immediately observable",
+    "mutating terminal events seal; Unicode 17 extended grapheme segmentation and unicode-width 0.2.2 non-CJK string width",
+    "1-to-2 right-margin growth wraps whole cluster; 2-to-1 retains already committed wrap/scroll; INSERT uses bounded local width-delta changes",
+    "one-column/no-autowrap footprints explicitly clip while preserving full scalars",
+    "64 scalars/256 UTF-8 bytes per lossless fragment, saturating overflow counter; overflow layout is not claimed as one complete EGC",
+    "leading wrap padding is explicitly distinguished from real written spaces; wide pairs are cleared atomically before INSERT shift; zero-width Prepend retains forward context"
+  ],
+  "fixed_feedback": {
+    "command": "python -m experiments.candidates.alacritty.grapheme_checks --trace <binary> --out <new-dir>",
+    "baseline": "baseline-red/summary.json",
+    "baseline_expected_failures": 4,
+    "candidate": "candidate-green/summary.json",
+    "candidate_passed": 4
+  },
+  "verification": {
+    "rust": {
+      "command": "cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --workspace --locked",
+      "vendor_tests": 157,
+      "ffi_tests": 2,
+      "measure_tests": 2,
+      "main_tests": 2,
+      "doc_tests": 1,
+      "total_passed": 164,
+      "failed": 0,
+      "ignored": 0,
+      "log_sha256": "cb9e06b959d7ad193fa8633d4287e0b2f1added92bb1c9bc47b4c5702e604188"
+    },
+    "python": {
+      "command": "python -m unittest experiments.candidates.alacritty.test_candidate",
+      "passed": 6,
+      "failed": 0,
+      "log_sha256": "a9416731ee6f37117a9afa8596cdcd0b617e6d935582ea8c405ddb8bdda2e00f"
+    },
+    "earlier_full_ctest": {
+      "tests": 46,
+      "failures": 1,
+      "skipped": 0,
+      "seconds": 348,
+      "cases": [
+        {
+          "name": "shell_launch",
+          "passed": true
+        },
+        {
+          "name": "candidate_title",
+          "passed": true
+        },
+        {
+          "name": "runtime_observation",
+          "passed": true
+        },
+        {
+          "name": "ime_input_expectation",
+          "passed": true
+        },
+        {
+          "name": "sent_message_wait",
+          "passed": true
+        },
+        {
+          "name": "find_bar",
+          "passed": true
+        },
+        {
+          "name": "renderer_metrics",
+          "passed": true
+        },
+        {
+          "name": "ime_context",
+          "passed": true
+        },
+        {
+          "name": "layout_state",
+          "passed": true
+        },
+        {
+          "name": "workspace_state",
+          "passed": true
+        },
+        {
+          "name": "transport_completion",
+          "passed": true
+        },
+        {
+          "name": "candidate_core",
+          "passed": true
+        },
+        {
+          "name": "resize_core",
+          "passed": true
+        },
+        {
+          "name": "history_core",
+          "passed": true
+        },
+        {
+          "name": "selection_core",
+          "passed": true
+        },
+        {
+          "name": "search_core",
+          "passed": true
+        },
+        {
+          "name": "paste",
+          "passed": true
+        },
+        {
+          "name": "clipboard_policy",
+          "passed": true
+        },
+        {
+          "name": "keyboard",
+          "passed": true
+        },
+        {
+          "name": "text_action_policy",
+          "passed": true
+        },
+        {
+          "name": "candidate_shell_tui",
+          "passed": false
+        },
+        {
+          "name": "core",
+          "passed": true
+        },
+        {
+          "name": "recovery",
+          "passed": true
+        },
+        {
+          "name": "measure",
+          "passed": true
+        },
+        {
+          "name": "binary_paths",
+          "passed": true
+        },
+        {
+          "name": "benchmark_tools",
+          "passed": true
+        },
+        {
+          "name": "differential",
+          "passed": true
+        },
+        {
+          "name": "ime_inventory",
+          "passed": true
+        },
+        {
+          "name": "text_actions",
+          "passed": true
+        },
+        {
+          "name": "workflow_fixture",
+          "passed": true
+        },
+        {
+          "name": "workflow_sessions",
+          "passed": true
+        },
+        {
+          "name": "workflow_resources",
+          "passed": true
+        },
+        {
+          "name": "workflow_resource_phases",
+          "passed": true
+        },
+        {
+          "name": "workflow_system_content",
+          "passed": true
+        },
+        {
+          "name": "workflow_system_runner",
+          "passed": true
+        },
+        {
+          "name": "copy_error_frame",
+          "passed": true
+        },
+        {
+          "name": "research_guards",
+          "passed": true
+        },
+        {
+          "name": "receive",
+          "passed": true
+        },
+        {
+          "name": "conpty",
+          "passed": true
+        },
+        {
+          "name": "conpty_ctrl_c",
+          "passed": true
+        },
+        {
+          "name": "presentation",
+          "passed": true
+        },
+        {
+          "name": "shell",
+          "passed": true
+        },
+        {
+          "name": "selection_bytes",
+          "passed": true
+        },
+        {
+          "name": "selection_context",
+          "passed": true
+        },
+        {
+          "name": "raw_console_receiver",
+          "passed": true
+        },
+        {
+          "name": "paste_system",
+          "passed": true
+        }
+      ],
+      "original_log_sha256": "ef1fc3dd0fcf1be91e506cd4781bece24efaa2d5f4b23c0a793f4de203510e8e"
+    },
+    "final_focused_ctest": {
+      "tests": 10,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 42,
+      "cases": [
+        {
+          "name": "candidate_title",
+          "passed": true
+        },
+        {
+          "name": "runtime_observation",
+          "passed": true
+        },
+        {
+          "name": "renderer_metrics",
+          "passed": true
+        },
+        {
+          "name": "candidate_core",
+          "passed": true
+        },
+        {
+          "name": "resize_core",
+          "passed": true
+        },
+        {
+          "name": "history_core",
+          "passed": true
+        },
+        {
+          "name": "selection_core",
+          "passed": true
+        },
+        {
+          "name": "search_core",
+          "passed": true
+        },
+        {
+          "name": "candidate_shell_tui",
+          "passed": true
+        },
+        {
+          "name": "differential",
+          "passed": true
+        }
+      ],
+      "original_log_sha256": "df9a200367b56b165d59ead5df5bb5339c1969c06d5120e1ff72f77a15f7229a"
+    },
+    "ctest_scope_note": "Earlier full run was 45/46 before independent review fixes; only failure was Vim not found in process PATH, with a differential Vim internal skip. Final post-review rebuild reran whole candidate_shell_tui and differential with existing Git/usr/bin in child-process PATH only: all 10 focused tests passed, including all three real applications without Vim skip. This is not a claim that final full 46/46 was rerun.",
+    "comparison_suites": {
+      "candidate_common": {
+        "schema": 1,
+        "version": "0.26.1-dev+termforge.4",
+        "counts": {
+          "match": 95
+        },
+        "passed": true,
+        "differences_adjudicated": true,
+        "original_sha256": "59159c23e9c4a58cf7edc0b536e5965481b7e272621bfbc26d1e19c82a2821ee"
+      },
+      "capabilities": {
+        "schema": 1,
+        "version": "0.26.1-dev+termforge.4",
+        "counts": {
+          "core_unsupported": 15,
+          "match": 5,
+          "resize_difference": 5
+        },
+        "passed": true,
+        "original_sha256": "a823c1baa4be1a521da3cb02641caf6adbda46aec36675a8e6ceb209ecff887e"
+      },
+      "fuzz": {
+        "schema": 1,
+        "version": "0.26.1-dev+termforge.4",
+        "counts": {
+          "known_failure": 2,
+          "match": 6
+        },
+        "passed": true,
+        "original_sha256": "9d381324134d98890557e10cd9080ccbf42f9cb3907726b5d6dc1cd87dafac89"
+      },
+      "default_differential": {
+        "schema": 1,
+        "counts": {
+          "expected_difference": 25,
+          "match": 70
+        },
+        "passed": true,
+        "original_sha256": "b4f0c7306d7dc431ed96a527138cf43202b2fe5cc612b078c97d657be781a144"
+      },
+      "real_applications": {
+        "schema": 1,
+        "version": "0.26.1-dev+termforge.4",
+        "counts": {
+          "match": 3
+        },
+        "passed": true,
+        "original_sha256": "1ec0b2ee7afce7c7ce9225cc3a80915fa3687f28e8d8bc85da11551edb39dc46"
+      }
+    },
+    "normative_boundary_cases": 766,
+    "normative_scope": "stream-segmentation helper boundaries only, not full Term/VT correctness",
+    "owned_conpty_runs": [
+      {
+        "repeat": 0,
+        "evidence": "owned-conpty-0.json",
+        "sha256": "be68687554de4b935c58f769bfe8cc53ca7658a7482fe1efa138fec91732c32c"
+      },
+      {
+        "repeat": 1,
+        "evidence": "owned-conpty-1.json",
+        "sha256": "279662a4db1747aef7b2a46d2271d2fcc08d99da6a4834004cf1923279df7960"
+      }
+    ],
+    "renderer_metrics": {
+      "scenarios": 32,
+      "scope": "DWrite DPI/zoom/backend metrics; fixed emoji actual one glyph/Segoe UI Emoji; missing-glyph negative retained"
+    }
+  },
+  "review_regressions": [
+    {
+      "finding": "copy included leading wrap padding",
+      "trace": "ABC1️⃣ at 3x4",
+      "fix": "explicit leading_spacer metadata skipped by text projection, preserving actual written spaces",
+      "coverage": "actual CandidateTerminal whole/byte select_all/copy, true-space negative, resize and history"
+    },
+    {
+      "finding": "INSERT starting on a wide trailer detached old pair (also reproducible with pre-existing literal ASCII path)",
+      "trace": "中ABCDEF ESC[1;2H ESC[4h 1️⃣",
+      "fix": "clear hit wide pair before tail shift; remove cropped wide lead",
+      "coverage": "ASCII/keycap/VS15 whole/byte pair invariant and actual adapter copy"
+    },
+    {
+      "finding": "zero-width U+070F Prepend overwritten by following A",
+      "trace": "܏A",
+      "fix": "forward pending prefix identified by same segmentation engine",
+      "coverage": "whole/byte actual Term plus prefix observation and adapter original-text copy"
+    }
+  ],
+  "dependency": {
+    "unicode_segmentation": {
+      "version": "1.13.3",
+      "unicode": "17.0.0",
+      "license": "MIT OR Apache-2.0",
+      "msrv": "1.85.0",
+      "runtime_dependencies": 0,
+      "crate_bytes": 112325,
+      "sha256": "c6f5d3c3b1bf09027a88a6bc961fc00497d651009560b5463668dc81b0fa87a8"
+    },
+    "unicode_width": {
+      "version": "0.2.2",
+      "unicode": "17.0.0"
+    },
+    "default_core_unicode": "15.0.0 (unchanged)",
+    "registry_packages": 59,
+    "path_packages": 2,
+    "actual_toolchain": "1.92.0",
+    "normative_data": {
+      "cases": 766,
+      "bytes": 126570,
+      "sha256": "e2d134d2c52919bace503ebb6a551c1855fe1a1faec18478c78fff254a1793ec",
+      "license": "Unicode License V3",
+      "license_sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
+    }
+  },
+  "cost_diagnostic": {
+    "raw_directory": "cost",
+    "raw_samples": 12,
+    "pairs_per_route": 3,
+    "minimum_cpu_seconds": 1.0,
+    "chunk_bytes": 4096,
+    "observe": false,
+    "interleaved_order": [
+      {
+        "route": "project",
+        "variant": "baseline",
+        "repeat": 0,
+        "mib_s": 35.13313248743142,
+        "valid": true
+      },
+      {
+        "route": "project",
+        "variant": "candidate",
+        "repeat": 0,
+        "mib_s": 23.99623214998744,
+        "valid": true
+      },
+      {
+        "route": "project",
+        "variant": "candidate",
+        "repeat": 1,
+        "mib_s": 20.181988135698283,
+        "valid": true
+      },
+      {
+        "route": "project",
+        "variant": "baseline",
+        "repeat": 1,
+        "mib_s": 25.864392294883505,
+        "valid": true
+      },
+      {
+        "route": "project",
+        "variant": "baseline",
+        "repeat": 2,
+        "mib_s": 25.618390174831767,
+        "valid": true
+      },
+      {
+        "route": "project",
+        "variant": "candidate",
+        "repeat": 2,
+        "mib_s": 21.65593524971545,
+        "valid": true
+      },
+      {
+        "route": "interactive",
+        "variant": "baseline",
+        "repeat": 0,
+        "mib_s": 11.921779104981667,
+        "valid": true
+      },
+      {
+        "route": "interactive",
+        "variant": "candidate",
+        "repeat": 0,
+        "mib_s": 12.011916408888272,
+        "valid": true
+      },
+      {
+        "route": "interactive",
+        "variant": "candidate",
+        "repeat": 1,
+        "mib_s": 12.540056052875373,
+        "valid": true
+      },
+      {
+        "route": "interactive",
+        "variant": "baseline",
+        "repeat": 1,
+        "mib_s": 14.566102322864767,
+        "valid": true
+      },
+      {
+        "route": "interactive",
+        "variant": "baseline",
+        "repeat": 2,
+        "mib_s": 13.841216054068614,
+        "valid": true
+      },
+      {
+        "route": "interactive",
+        "variant": "candidate",
+        "repeat": 2,
+        "mib_s": 13.759937264193896,
+        "valid": true
+      }
+    ],
+    "medians": [
+      {
+        "route": "project",
+        "baseline_mib_s": 25.864392294883505,
+        "candidate_mib_s": 21.65593524971545,
+        "throughput_ratio": 0.8372876115863519,
+        "throughput_reduction_percent": 16.27123884136481
+      },
+      {
+        "route": "interactive",
+        "baseline_mib_s": 13.841216054068614,
+        "candidate_mib_s": 12.540056052875373,
+        "throughput_ratio": 0.9059938089174784,
+        "throughput_reduction_percent": 9.400619108252162
+      }
+    ],
+    "summary": "cost/diagnostic.json",
+    "remaining_acceptance_issue": 34,
+    "performance_acceptance_passed": false,
+    "windterm_equivalence_claim": false,
+    "limitations": [
+      "Host shared with other agents",
+      "No presentation/transport/input-latency timing",
+      "Observe0 is counter-off but allocator still wrapped"
+    ]
+  },
+  "unknowns": {
+    "windterm_runtime_equivalence": false,
+    "complete_unicode_ime": false,
+    "all_fonts_scripts": false,
+    "real_cross_monitor": false,
+    "presented_done": null
+  },
+  "privacy": "Published JSON is derived from synthetic fixtures and explicit whitelists; raw session command lines, stdout/screens, private absolute paths and desktop names are omitted.",
+  "source_git_blob_commit": "821b9e6282e41822d5c977914aeca10fe8329c98",
+  "source_git_blob_sha256": {
+    "CMakeLists.txt": "98843df715c78b64b58c9aba979cf177b96ce4b52e4e5d1b2c8b6216db4a75f8",
+    "docs/EVIDENCE.md": "270671d48531dcc2abf4dd0ee4b032ff81904d8b81ec59b248fd80697762dd89",
+    "docs/FEATURES.md": "ad2edcf9ed03801a0ba7c7831cc6ce5b7efb83df45e666e58c3d6f42ef29efa3",
+    "docs/milestones/R2-font-display.md": "c62363e991b7018d1261e035e89bad3bcf45aa50342f7adacf2c7bda87ab77af",
+    "docs/research/streaming-graphemes.md": "d61e2c774b55b09878cbc5ef1c4d831720ab0420d661d3523770f411afeaa85a",
+    "experiments/candidates/alacritty/Cargo.lock": "896c6e60909d55d61fb26d277b1a98daf9245e8aee811caff37fc3e9d06ca627",
+    "experiments/candidates/alacritty/Cargo.toml": "c5f89fda48ab73f30adfdcc4437fb3eeb1779647886d85364d91395bf8beec86",
+    "experiments/candidates/alacritty/PROVENANCE.md": "c27d90c196dab7481c56169a227c3c02aec68ebfa2152c7f21105b0bbc4f1f15",
+    "experiments/candidates/alacritty/README.md": "41b7dbabf5dbb40885298b1737bbc8811031e248a474ea22887d386cdbbd0a17",
+    "experiments/candidates/alacritty/grapheme_checks.py": "2a3c816068638a78bc7e5e53be9c29e52ceb9e9e237beb5bb744ff5f0614ef87",
+    "experiments/candidates/alacritty/include/termforge_candidate.h": "999c635ecd6d4482303d39d6548312afb3179edaeb17d14d4683688d83334ecc",
+    "experiments/candidates/alacritty/run.py": "e84bfcd530a7a79bcb9e722e507257f9b92a60b2c3ca8043c15da432b6220a01",
+    "experiments/candidates/alacritty/src/ffi.rs": "8c6fffa0559f0ab5f6e776bab03a35a1375b2b9f977c047da9bc62b8e5c30bfa",
+    "experiments/candidates/alacritty/src/main.rs": "078f238ded11e2eb6780140d29fb3eb1d41c66bbe2ecc4ed62f40304c43d6260",
+    "experiments/candidates/alacritty/test_candidate.py": "776fec0e62084e3a5626ca61abebf9a8605307c539faac9fb0ff70dfaef358f4",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "bce82942276bab9c4967998d654316f9c85e698babd0945c66a55fcb91ef2333",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "4907427c9488435f1e1ee624629bc8445c4dde5399f0349955d1bbc2042080c4",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/cell.rs": "8b31cf5389398c74f141bd1f3e7945a1dbde8944bb754f5fd623313c73262496",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/grapheme.rs": "1ef6450b8bf8735b85e7a6fc3bb55c849e317f04778d297020ba3cb4dd7ecf74",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "b4a6fdaa4f8c3fdf56b614689ed381408acc68407bd05c8ea592fb6fd0021f78",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/tests/data/GraphemeBreakTest-17.0.0.txt": "e2d134d2c52919bace503ebb6a551c1855fe1a1faec18478c78fff254a1793ec",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/tests/data/UNICODE-LICENSE.txt": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96",
+    "experiments/core/CANDIDATE.md": "0571f25d9ba42af2beb75cea0d7ca54211d83c0d3969b817d58ead22967a86c2",
+    "experiments/core/candidate_terminal.cpp": "0d0eaabe5ef896aa7b263c8151622f579f37c421bf9473fc3d69ada010a64e61",
+    "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+    "experiments/core/candidate_terminal_test.cpp": "df0ee08e4f1ecfcdeaae5286b6204740308fed69a2ffbdb2dcbe3faa0ae04c4a",
+    "experiments/core/screen.hpp": "fa80d3e67375b0cfacfe4ad640ecef0a47c36ca493499c0054ab5b3e7abf46c1",
+    "experiments/core/text_projection.hpp": "3853bcf053964e54ea00bb7acfd0d302abd536ae0ed4eddfe791a6bcffdb6914",
+    "experiments/presentation/render.hpp": "bc360fcf671d36e7e3510c845011c69f81225b8f6dbb7dc5c93db97b0c350b3a",
+    "experiments/presentation/renderer_metrics_test.cpp": "cfdf2bcc443b92b9cd0152fa4603695d5654b1a98488f21901baa24a51561514",
+    "experiments/shell/README.md": "bee8bcab9e0eff91e134d7fabf2324ff93b2d29d323930a00c6e45659dd908ef",
+    "experiments/shell/shell.cpp": "49703b00131d88b491f58287f43daa0a6f12fbf5b36a19a097d901af7d62ce44",
+    "experiments/shell/test_candidate_tui.py": "ccbab94cf0b9587a9c914c84cd8bec5ae9caabe516767b84457a6be7ff294ed8",
+    "experiments/shell/unicode_checks.py": "95fffb54274b695be2b857d942555dd8001801eeec5e3f020a9d448cbe1a82e5"
+  },
+  "source_newline_normalization": {
+    "scope": "The original source_sha256 records actual tested pre-commit worktree bytes and remains unchanged. source_git_blob_sha256 identifies canonical Git blob bytes at the fixed freeze commit, independent of checkout newline conversion. This follow-up changes documentation/proof metadata only, with no product source change or new test matrix claim.",
+    "normalized_files": 29,
+    "map": {
+      "docs/EVIDENCE.md": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "docs/FEATURES.md": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "docs/milestones/R2-font-display.md": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "docs/research/streaming-graphemes.md": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/Cargo.lock": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/PROVENANCE.md": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/README.md": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/grapheme_checks.py": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/include/termforge_candidate.h": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/run.py": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/src/ffi.rs": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/src/main.rs": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/test_candidate.py": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/grapheme.rs": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/core/CANDIDATE.md": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/core/candidate_terminal.cpp": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/core/candidate_terminal.hpp": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/core/candidate_terminal_test.cpp": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/core/screen.hpp": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/core/text_projection.hpp": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/presentation/render.hpp": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/presentation/renderer_metrics_test.cpp": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/shell/README.md": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/shell/shell.cpp": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/shell/test_candidate_tui.py": "CRLF worktree bytes -> LF committed blob; no other byte changes",
+      "experiments/shell/unicode_checks.py": "CRLF worktree bytes -> LF committed blob; no other byte changes"
+    }
+  }
+}

@@ -11,8 +11,8 @@ from experiments.shell.workflow_checks import validate_console_window
 SAMPLES = (
     ("TF_U_DECOMPOSE", "e\u0301", 1),
     ("TF_U_EMOJI", "🙂", 2),
-    ("TF_U_ZWJ", "👩\u200d💻", None),
-    ("TF_U_KEYCAP", "1\ufe0f\u20e3", None),
+    ("TF_U_ZWJ", "👩\u200d💻", 2),
+    ("TF_U_KEYCAP", "1\ufe0f\u20e3", 2),
 )
 DONE = "TF_U_DONE"
 
@@ -58,7 +58,7 @@ def _cell_observations(cells, columns, dpi, cell_width):
                  "actual DWrite glyph, missing-glyph, font or grid-width check")
 
 
-def validate_candidate_unicode(data, console, source, transport):
+def validate_candidate_unicode(data, console, source, transport, *, resized=False):
     _require(source == expected_source(), "Unicode source literal differs")
     _require(type(transport) is bytes and 0 < len(transport) <= 8192, "Unicode transport bound")
     position = 0
@@ -89,14 +89,20 @@ def validate_candidate_unicode(data, console, source, transport):
         console_samples.append({"label": label, "projection": "original" if original else "replacement-non-bmp",
                                 "widths": [2 if attributes & 0x100 else 0 if attributes & 0x200 else 1
                                            for _, attributes in sample_cells]})
-    _require(type(data) is dict and data.get("schema") == "termforge-candidate-unicode-v1" and
-             data.get("columns") == console["columns"] and data.get("rows") == console["rows"] and
+    _require(type(data) is dict and data.get("schema") == "termforge-candidate-unicode-v2" and
+             data.get("phase") == ("resized" if resized else "initial") and
+             data.get("columns") == (100 if resized else console["columns"]) and
+             data.get("rows") == (30 if resized else console["rows"]) and
+             type(data.get("grapheme_overflows")) is int and data["grapheme_overflows"] == 0 and
+             data.get("native_size_marker") == ("TF_SIZE_100x30" if resized else None) and
              type(data.get("dpi")) is int and 48 <= data["dpi"] <= 768 and
              type(data.get("cell_width")) is int and data["cell_width"] > 0 and
              type(data.get("cell_height")) is int and data["cell_height"] > 0 and
              data.get("frame_matches_full") is True and data.get("presented_done") is None and
              type(data.get("lines")) is list and len(data["lines"]) == data["rows"],
              "candidate window identity, geometry or frame")
+    if resized:
+        _require(b"TF_SIZE_100x30" in transport, "native resized console acknowledgement missing")
     lines = data["lines"]
     _require(all(type(line) is dict and line.get("row") == row and type(line.get("text")) is str
                  for row, line in enumerate(lines)), "candidate visible rows")
@@ -117,6 +123,11 @@ def validate_candidate_unicode(data, console, source, transport):
             _require(following["column"] == previous["column"] + previous["width"],
                      "candidate scalar cells are not contiguous: " + label)
         cell = cells[0]
+        _require(cell.get("clipped") is False and cell.get("fragment") is False,
+                 "fixed Unicode sample was clipped or fragmented")
+        if label in ("TF_U_EMOJI", "TF_U_ZWJ", "TF_U_KEYCAP"):
+            _require(cell["glyphs"] == 1 and cell["faces"] == ["Segoe UI Emoji"],
+                     "emoji cluster was split across actual glyphs or fallback fonts")
         if width is not None:
             _require(len(cells) == 1 and cell["text"] == text and cell["width"] == width,
                      "candidate established cell policy differs: " + label)
@@ -128,13 +139,23 @@ def validate_candidate_unicode(data, console, source, transport):
         accepted.append({"label": label, "text": text, "cells": [
             {"column": value["column"], "width": value["width"], "text": value["text"],
              "glyphs": value["glyphs"], "faces": value["faces"]} for value in cells]})
-    return {"samples": accepted, "console_samples": console_samples,
+    selections = data.get("selections")
+    _require(type(selections) is list and len(selections) == len(SAMPLES),
+             "product Unicode selections missing")
+    for selection, (label, text, width) in zip(selections, SAMPLES):
+        _require(type(selection) is dict and selection.get("label") == label and
+                 selection.get("copied") == text and selection.get("begin") == len(label) + 1 and
+                 selection.get("end") == len(label) + 1 + width,
+                 "product drag split, changed or omitted a grapheme")
+    return {"samples": accepted, "selections": selections, "console_samples": console_samples,
             "source_sha256": hashlib.sha256(source).hexdigest(),
             "transport_sha256": hashlib.sha256(transport).hexdigest(),
             "transport_bytes": len(transport), "scoped_validation_passed": True,
-            "scope": "scalar-preservation-and-glyph-only",
-            "complex_grapheme_rendering_verified": False,
-            "whole_cluster_width_policy_verified": False,
+            "scope": "fixed-four-streaming-graphemes-width-selection-glyph",
+            "complex_grapheme_rendering_verified": True,
+            "whole_cluster_width_policy_verified": True,
+            "resized_native_console_verified": resized,
+            "windterm_runtime_equivalence_verified": False,
             "complete_unicode_ime_verified": False, "presented_done": None}
 
 
@@ -153,4 +174,9 @@ def validate_unicode_output(directory):
                                      prefix="candidate-unicode")
     source = _bounded(directory / "candidate-unicode.source.bin", 4096)
     transport = _bounded(directory / "candidate-unicode.transport.bin", 8192)
-    return validate_candidate_unicode(data, console, source, transport)
+    initial = validate_candidate_unicode(data, console, source, transport)
+    resized = json.loads(_bounded(directory / "candidate-unicode-resized.json", 512000).decode("utf-8"))
+    resized_transport = _bounded(directory / "candidate-unicode-resized.transport.bin", 8192)
+    after = validate_candidate_unicode(resized, console, source, resized_transport, resized=True)
+    initial["resize"] = after
+    return initial

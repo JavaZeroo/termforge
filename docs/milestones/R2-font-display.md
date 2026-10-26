@@ -6,13 +6,13 @@
 
 - 工作区 UI 使用独立获取的 Roboto Mono Regular，9pt，SIL OFL 1.1；固定上游提交、原始字节和 SHA-256 见[字体来源](../../assets/fonts/README.md)。通过 `AddFontResourceExW(..., FR_PRIVATE, ...)` 仅对进程加载，缺失、注册失败或实际 `GetTextFaceW` 不是 Roboto Mono 时明确失败，不静默替换。`renderer_metrics` 独立复核实际 GDI face、em 高度与 `TEXTMETRIC.tmHeight`；96/120/144/192 DPI 的 em 为 12/15/18/24，行高为 16/20/24/32，不能把二者混为“字符高度”。
 - 终端绘制当前使用系统 Consolas，DirectWrite `CreateTextFormat` 与 GDI `CreateFontW` 是独立路径。系统字体不分发；Microsoft 系统字体可用性、实际 fallback 和缺字必须由实际绘制路径证明。
-- DirectWrite `GlyphAudit` 读取实际被绘制的 `IDWriteTextLayout`，记录 glyph run 的字体身份、glyph 数和 glyph index 0。控件字体、请求的 family 和最终 glyph 字体不能混为一谈。
+- DirectWrite `GlyphAudit` 读取实际被绘制的 `IDWriteTextLayout`，记录 glyph run 的字体身份、glyph 数和 glyph index 0。控件字体、请求的 family 和最终 glyph 字体不能混为一谈。固定 ZWJ/合格 keycap 按[流式字素合同](../research/streaming-graphemes.md)另要求整段为 1 个 Segoe UI Emoji glyph；keycap 整段指定该系统字体，避免数字与方框被两个不同 fallback 字体拆开。
 - 不复制 WindTerm 字体、Nerd Font 或主题资源。新增可携带字体或 fallback 资产必须另行审核许可。
 
 ## 固定网格设计决定
 
 - 当前终端在 96 DPI / 100% zoom 下使用 **12×26 物理像素**单元格，Consolas 字号为 18 DIP；这是 TermForge 的固定网格设计，不是从实际 glyph advance 推导的度量，也不宣称与 WindTerm 像素等价。
-- 超过当前一格/两格物理宽度的 DWrite 文字布局按可用宽度缩小字号，不扩大网格；布局缓存区分单元格宽度，并在调整后重新检查实际 glyph 和最终宽度。布局宽度指标不等于逐像素过冲或上屏验收。该规则不决定复杂字素如何聚类或应占几格，完整 ZWJ/keycap 合同归 [#39](https://github.com/JavaZeroo/termforge/issues/39)。
+- 超过当前一格/两格物理宽度的 DWrite 文字布局按可用宽度缩小字号，不扩大网格；布局缓存区分单元格宽度，并在调整后重新检查实际 glyph 和最终宽度。布局宽度指标不等于逐像素过冲或上屏验收。该规则不决定复杂字素如何聚类或应占几格；首批 ZWJ/keycap 合同由 [#39](https://github.com/JavaZeroo/termforge/issues/39)限定验收，完整输入整合由 #30 继续负责。
 - DPI 与 50%–200% zoom 通过同一整数缩放产生单元格尺寸；x/y 布局、脏区、裁剪、光标、IME caret 和鼠标命中共用这些整数，避免不同子系统各自舍入。
 - 行列由终端 HWND 客户区扣除原生滚动条后除以单元格尺寸得到；DPI/zoom 改变后，窗口、核心与 ConPTY 尺寸必须同步。物理行裁剪/reflow 仍遵循 ADR-0005 和 #29，不在本合同暗中改变。
 - `renderer_metrics` 必须继续覆盖 GDI/DirectWrite、96/120/144/192 DPI 和 50/100/125/200% zoom，检查实际 glyph、缺字、dirty/full 图像和网格边界；另用不含 `assets/` 的独立进程验证私有 UI 字体缺失时明确失败。固定网格通过不代表复杂字素或字体 fallback 完整。

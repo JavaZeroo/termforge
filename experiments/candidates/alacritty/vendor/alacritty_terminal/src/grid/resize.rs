@@ -273,6 +273,13 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                 let mut wrapped = match row.shrink(columns) {
                     Some(wrapped) if reflow => wrapped,
                     _ => {
+                        // The adapter supports one-column windows. Preserve a
+                        // whole glyph in a clipped footprint in the non-reflow
+                        // alternate buffer as well.
+                        if columns == 1 && row[Column(0)].flags().contains(Flags::WIDE_CHAR) {
+                            row[Column(0)].flags_mut().remove(Flags::WIDE_CHAR);
+                            row[Column(0)].flags_mut().insert(Flags::CLIPPED_GRAPHEME);
+                        }
                         let cursor_buffer_line = self.lines - self.cursor.point.line.0 as usize - 1;
                         if reflow && i == cursor_buffer_line && self.cursor.point.column > columns {
                             // If there are empty cells before the cursor, we assume it is explicit
@@ -286,8 +293,27 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                     },
                 };
 
+                // A two-cell glyph cannot be reflowed into a one-column
+                // grid: repeatedly pushing it to the next row never converges.
+                // Retain the entire cell text and remove only its owned spacer.
+                if columns == 1 && row[Column(0)].flags().contains(Flags::WIDE_CHAR) {
+                    row[Column(0)].flags_mut().remove(Flags::WIDE_CHAR);
+                    row[Column(0)].flags_mut().insert(Flags::CLIPPED_GRAPHEME);
+                    if wrapped.first().is_some_and(|cell| cell.flags().contains(Flags::WIDE_CHAR_SPACER)) {
+                        wrapped.remove(0);
+                        let cursor_buffer_line = self.lines - self.cursor.point.line.0 as usize - 1;
+                        if i == cursor_buffer_line && self.cursor.point.column.0 > 0 {
+                            self.cursor.point.column -= 1;
+                        }
+                    }
+                    if wrapped.is_empty() {
+                        new_raw.push(row);
+                        break;
+                    }
+                }
+
                 // Insert spacer if a wide char would be wrapped into the last column.
-                if row.len() >= columns
+                if columns > 1 && row.len() >= columns
                     && row[Column(columns - 1)].flags().contains(Flags::WIDE_CHAR)
                 {
                     let mut spacer = T::default();

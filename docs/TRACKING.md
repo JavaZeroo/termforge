@@ -1,96 +1,68 @@
 # 任务跟踪
 
-执行状态以 [GitHub issues](https://github.com/JavaZeroo/termforge/issues) 和原生父子/阻塞关系为准。本页维护路标与任务映射，不再复制逐批进度。当前能力见 [FEATURES](FEATURES.md)，交付合同见 [PLAN](PLAN.md)，旧 TODO 归属见[迁移表](archive/README.md)。
+本页只导航到 GitHub 任务，不维护第二份进度表。能力与构建配置见 [FEATURES](FEATURES.md)，R1–R5 范围见 [PLAN](PLAN.md)，当前接续顺序与完成条件见 [R2 交付路线与验收](milestones/R2-local-terminal.md)。实时状态、原生父子/阻塞关系和验收记录以各 issue 为准。
 
-## 路标（远到近）
+## 产品路标
 
-| 路标 | GitHub milestone | 总项与工作包 |
+| 路标（远到近） | GitHub milestone | 总项 |
 |---|---|---|
-| R5 · WindTerm 2.7.0 完整开源复刻验收 | [milestone 6](https://github.com/JavaZeroo/termforge/milestone/6) | [#10](https://github.com/JavaZeroo/termforge/issues/10) |
-| R4 · 高级功能、跨平台与性能收敛 | [milestone 5](https://github.com/JavaZeroo/termforge/milestone/5) | [#9](https://github.com/JavaZeroo/termforge/issues/9) |
-| R3 · SSH/SFTP 远程日常版 | [milestone 4](https://github.com/JavaZeroo/termforge/milestone/4) | [#8](https://github.com/JavaZeroo/termforge/issues/8) |
-| R2 · 可靠本地终端与开发版 | [milestone 3](https://github.com/JavaZeroo/termforge/milestone/3) | [#7](https://github.com/JavaZeroo/termforge/issues/7) |
-| R1 · 基础文字交互复刻 | [milestone 2](https://github.com/JavaZeroo/termforge/milestone/2) | [#6](https://github.com/JavaZeroo/termforge/issues/6) |
+| R5 · WindTerm 2.7.0 完整复刻验收 | [milestone 6](https://github.com/JavaZeroo/termforge/milestone/6) | [完整目标验收](https://github.com/JavaZeroo/termforge/issues/10) |
+| R4 · 高级功能、跨平台与性能收敛 | [milestone 5](https://github.com/JavaZeroo/termforge/milestone/5) | [高级工作流](https://github.com/JavaZeroo/termforge/issues/9) |
+| R3 · SSH/SFTP 远程日常版 | [milestone 4](https://github.com/JavaZeroo/termforge/milestone/4) | [远程日常版](https://github.com/JavaZeroo/termforge/issues/8) |
+| R2 · 可靠本地终端与开发版 | [milestone 3](https://github.com/JavaZeroo/termforge/milestone/3) | [当前路标](https://github.com/JavaZeroo/termforge/issues/7) |
+| R1 · 基础文字交互 | [milestone 2](https://github.com/JavaZeroo/termforge/milestone/2) | [限定验收](https://github.com/JavaZeroo/termforge/issues/6) |
 
-路标总项保存出口条件；近期任务是可验收切片，远期总项保持工作包粒度。R1 → R5 是交付主线，不意味着每项调查必须等前一路标全部完成。
+## R2 实施与联合验收入口
 
-## 已验收的R1任务
+`ready-for-agent` 表示任务的独立工作可以开始，不表示优先级相同或最终联合配置已经通过。聚合项有未完成硬前置时保持 `blocked`；旧配置的独立诊断与最终联合验收条件分别写明。
 
-R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据](../experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)与同源码回归分列。下表保留切片及其原始依赖；当前执行状态仍以GitHub为准。
-
-| 切片 | GitHub | 交付 | 真实前置 |
-|---|---|---|---|
-| R1-01 | [#11](https://github.com/JavaZeroo/termforge/issues/11) | 冻结 WindTerm 2.7.0 基础文字交互契约 | 无 |
-| R1-02 | [#12](https://github.com/JavaZeroo/termforge/issues/12) | 浏览有界历史并保持每会话阅读位置 | 无 |
-| R1-03 | [#13](https://github.com/JavaZeroo/termforge/issues/13) | 选择屏幕与历史文字并精确复制 | [#11](https://github.com/JavaZeroo/termforge/issues/11)、[#12](https://github.com/JavaZeroo/termforge/issues/12) |
-| R1-04 | [#14](https://github.com/JavaZeroo/termforge/issues/14) | 将大段 Unicode 文本可靠、可取消地粘贴到目标会话 | 无 |
-| R1-05 | [#15](https://github.com/JavaZeroo/termforge/issues/15) | 在有界历史中查找、跳转和取消搜索 | [#11](https://github.com/JavaZeroo/termforge/issues/11)、[#12](https://github.com/JavaZeroo/termforge/issues/12) |
-| R1-06 | [#16](https://github.com/JavaZeroo/termforge/issues/16) | 基础键盘与中文 IME 完整输入闭环 | 无 |
-| R1-07 | [#17](https://github.com/JavaZeroo/termforge/issues/17) | 统一文字动作上下文并完成 WindTerm 交互对照 | [#11](https://github.com/JavaZeroo/termforge/issues/11)、[#13](https://github.com/JavaZeroo/termforge/issues/13)、[#14](https://github.com/JavaZeroo/termforge/issues/14)、[#15](https://github.com/JavaZeroo/termforge/issues/15)、[#16](https://github.com/JavaZeroo/termforge/issues/16) |
-| R1-08 | [#18](https://github.com/JavaZeroo/termforge/issues/18) | 验收完整文字工作流与多会话资源边界 | [#17](https://github.com/JavaZeroo/termforge/issues/17) |
-
-## Alpha 交付切片
-
-[#22](https://github.com/JavaZeroo/termforge/issues/22)已交付首个 [v0.1.0-alpha.1](https://github.com/JavaZeroo/termforge/releases/tag/v0.1.0-alpha.1) Windows x64 免安装预发布包；静态运行库、精确清单、最终 ZIP 启动与发布下载均已[核验](releases/v0.1.0-alpha.1-validation.json)。它交付 R1 体验包；R2 的完整开发版出口保持不变。发布说明见 [Alpha 1](releases/v0.1.0-alpha.1.md)。
-
-## R2执行切片
-
-以下覆盖[总项#7](https://github.com/JavaZeroo/termforge/issues/7)的全部工作包；出口与联合验收见 [R2 检查表](milestones/R2-local-terminal.md)，单项范围和实时状态在对应 issue 维护。原生 sub-issue / blocked-by 是依赖关系的权威记录。
-
-| 切片 | GitHub | 可验收交付 | 真实前置 |
-|---|---|---|---|
-| R2-00 | [#23](https://github.com/JavaZeroo/termforge/issues/23) | 冻结产品路线所需平台、架构与最低系统边界 | 无；父项为全量台账 #19 |
-| R2-01 | [#24](https://github.com/JavaZeroo/termforge/issues/24) | 原生候选干净构建及 headless 状态/历史投影 | 无；父项为核心关卡 #20 |
-| R2-02 | [#25](https://github.com/JavaZeroo/termforge/issues/25) | 共同轨迹、真实应用、六类差异与持续 fuzz 比较 | #24 |
-| R2-03 | [#26](https://github.com/JavaZeroo/termforge/issues/26) | 候选成本测量与 ADR-0003 核心路线决定 | #23、#25 |
-| R2-04 | [#27](https://github.com/JavaZeroo/termforge/issues/27) | 备用屏、滚动区域及关联模式 | #26；真实 ConPTY margin 差异由子项 [#41](https://github.com/JavaZeroo/termforge/issues/41) 阻塞 |
-| R2-05 | [#28](https://github.com/JavaZeroo/termforge/issues/28) | 终端回复、输入/输出模式及固定真实 TUI | #27 |
-| R2-06 | [#29](https://github.com/JavaZeroo/termforge/issues/29) | resize、逻辑行与历史语义 | #26 |
-| R2-07 | [#30](https://github.com/JavaZeroo/termforge/issues/30) | 复杂 Unicode、IME、键盘与选择语义；完整流式字素聚类与宽度由子项 [#39](https://github.com/JavaZeroo/termforge/issues/39) 承担 | #26、#39（完整聚类与宽度合同） |
-| R2-08 | [#31](https://github.com/JavaZeroo/termforge/issues/31) | 字体网格及真实 DPI/跨显示器验收 | 无 |
-| R2-09 | [#32](https://github.com/JavaZeroo/termforge/issues/32) | 固定本地 shell 与真正的分屏/标签工作流 | 无 |
-| R2-10 | [#33](https://github.com/JavaZeroo/termforge/issues/33) | 会话配置、窗口与工作区恢复及迁移/损坏处理 | #32 |
-| R2-11 | [#34](https://github.com/JavaZeroo/termforge/issues/34) | 产品 GUI/平台、核心历史接口与呈现隔离决定 | #23、#26、#28–#33 |
-| R2-12 | [#35](https://github.com/JavaZeroo/termforge/issues/35) | Windows R2 日常开发版与路标出口验收 | #27–#34、#36、#38 |
-| R1 回归 | [#36](https://github.com/JavaZeroo/termforge/issues/36) | 定位持续 cmd 输出时 ETX 不中断并恢复 normal/resize 与完整 CTest | 无；不得减少负载或仅延长超时 |
-| Windows 回归 | [#38](https://github.com/JavaZeroo/termforge/issues/38) | 定位工作区、交互及 CI 的真实失败 | 无；#35 的出口依赖，不能以局部几何结果代替修复 |
-| Windows CI 回归 | [#40](https://github.com/JavaZeroo/termforge/issues/40) | 复核 `ime_inventory` 原 10 秒超时根因，保留 AST/最终进度与 OwnedJob 回收证据 | 无；作为 #38 的子项阻塞 #38，不能用本机或单次 CI 通过冒充修复 |
-| ConPTY margin 差异 | [#41](https://github.com/JavaZeroo/termforge/issues/41) | 裁决宿主/传输的每缓冲区 margin，保留原场景和独立实现证据 | #26；作为 #27 的子项阻塞 #27，不能以模型切片或差异观察代替产品验收 |
-| 显式官方 ConPTY 实验后端 | [#47](https://github.com/JavaZeroo/termforge/issues/47) | 固定同包 DLL/EXE 来源与身份，通过同一 Backend 验证实际 Session、GUI 和回收；不改变默认系统后端 | #41 的实现子项；仍需处理原生 API 与末端语义、resize、粘贴和完整工作流差异，不代表 #34 产品决定或 R2 出口 |
-| More 尾部 ECH 与捕获时序 | [#42](https://github.com/JavaZeroo/termforge/issues/42) | [限定合同](research/more-capture-ech.md)：默认 ECH、完整 More 提示、q/退出/真实 EOF；候选 pending-wrap 差异保留给 #27 | 无；#38 的子项，与 margin 修复分开；完整原始输入和旧失败保留，不静默降级为 match |
-| controller 正常退出观测缺口 | [#44](https://github.com/JavaZeroo/termforge/issues/44) | 记录 wait_exit 与 close 前 cmd 状态，定位真实 child→cmd/close 转换 | 无；#38 的子项与出口阻塞；后续同合同重跑成功不覆盖原失败 |
-| 候选 GUI 合法空标题 | [#45](https://github.com/JavaZeroo/termforge/issues/45) | 修正空 UTF-8 转换，使用真实 console 标题事件验证 GUI 存活，并保留非法非空输入拒绝 | 无；#38 的子项；新最小复现与旧 normal-1 未定位异常分列 |
-| 拒绝负例的读取前停止 | [#46](https://github.com/JavaZeroo/termforge/issues/46) | 验证 append-before-output 被拒绝时接收线程可以在首读前正常停止；只接受完整已证明的空输入停止状态 | 无；#38 的子项；与 #44 的 controller 退出问题分别验收，原完整回归失败保留 |
-
-## 从当前状态接着做
-
-以下为选题顺序；各项已做/待做和验收结果只在对应 issue 维护。`ready-for-agent` 表示可以开工，不代表全仓库所有 ready 项优先级相同。
-
-1. **按已定核心路线整合。** [#23](https://github.com/JavaZeroo/termforge/issues/23) 已冻结[平台、架构与声明的最低系统边界](../research/windterm-2.7.0-platform-scope.md)，#24/#25 已完成候选构建与共同轨迹；#26 已形成 [ADR-0003 决定](adr/0003-core-reference-and-reuse.md)。#27 的 termforge.3 已完成兼容补丁和 [C++ 拥有值适配](../experiments/core/CANDIDATE.md)，共同矩阵 95 次一致，ID/版本/淘汰、选择/搜索/视口已独立验证；显式候选 ShellWindow 与有界输入队列已验证，默认构建保留自研回退；origin/wrap、#41 的宿主 margin 和完整 R1 回归仍待完成。
-2. **并行推进独立的显示与会话切片。** [#31](https://github.com/JavaZeroo/termforge/issues/31) 已形成[字体/显示合同](milestones/R2-font-display.md)，完成实际 glyph/fallback、私有字体度量/缺失资产检查及两台 96-DPI 显示器的[真实往返证据](../experiments/shell/results/2026-10-24-r2-monitor-font/validation.json)；不同 DPI 与实际呈现保持 OPEN。[#32](https://github.com/JavaZeroo/termforge/issues/32) 已交付[四种固定本地 shell 生命周期](../experiments/shell/results/2026-10-24-r2-shell-lifecycle/validation.json)及[主区一个真实左右分屏](../experiments/shell/results/2026-10-24-r2-main-split/validation.json)；任意嵌套、拖放/搜索/颜色和分屏持久化继续后续。
-3. **按依赖整合用户结果。** 核心路线决定后推进 #27–#30，#32 后推进 #33；真实工作流齐备后由 #34 决定产品架构，最终由 #35 验收完整开发版，不能以单项成功替代 #7 出口。
-4. **持续保留R1系统回归。** 基础动作、五组IME与同次八会话真实工作流分开运行，再核原始字节、目标、阶段资源和回收。[#36](https://github.com/JavaZeroo/termforge/issues/36) 保留 normal/resize 的历史失败；本次未修改产品代码的复验和旧探针原二进制均通过，原因仍未知。[受监督原始 ConPTY 回归](../experiments/conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)固定完整负载、单次 ETX、后续命令与回收，未独立验收原生处理函数；它是 #35 的出口前置，不能把未复现写成已修复。
-5. **保持性能与UI调查并行。** 正式WindTerm基线、观测扰动、实际呈现和长期稳定继续按下表推进；真实跨屏、UI其余状态和空面板能力仍按后续合同交付。停止的手工批次不自动补跑。
-
-未提交草稿和未完成的系统验收均不计入交付。开工前核对工作树，保留已有草稿并明确归属；文档整理本身不解除功能验收门槛。
-
-## 并行调查与遗留门槛
-
-| 项目 | GitHub | 归属与处理 |
+| 工作 | 责任任务 | 硬前置或联合条件 |
 |---|---|---|
-| 全量 2.7.0 目标/平台台账 | [#19](https://github.com/JavaZeroo/termforge/issues/19) | R5 的验收基础，继续并行推进；平台切片 #23 已完成[范围台账](../research/windterm-2.7.0-platform-scope.md)，其余功能域和运行观察未因此完成；声明、已观察和未知继续分开 |
-| 实际外部核心候选与 ADR-0003 重审 | [#20](https://github.com/JavaZeroo/termforge/issues/20) | 核心关卡已完成；R2 新能力按 ADR-0003 复用候选核心，产品整合由 #27–#35 验收 |
-| Windows candidate Vim 捕获 | [#37](https://github.com/JavaZeroo/termforge/issues/37) | 已按事件文件握手及[双平台 CI](https://github.com/JavaZeroo/termforge/actions/runs/40190890251)限定关闭；原失败保留，更多 TUI 与 R2 出口另验收 |
-| Server 2022 ConPTY 稳态 +1 句柄问题 | [#21](https://github.com/JavaZeroo/termforge/issues/21) | R4，保留严格探针和已知失败，不扩大支持声明 |
-| 自动观测、开销校准、完整记录 Schema | [#3](https://github.com/JavaZeroo/termforge/issues/3) | R4 收敛，工具工作可提前推进；停止的手工批次不补跑 |
-| 正式 WindTerm 性能基线 | [#4](https://github.com/JavaZeroo/termforge/issues/4) | R4，依赖 #3；节流/交互驱动、正确性、无插桩对照与重复批次仍需完成 |
+| 主线候选与官方后端的联合基线 | [联合配置基线 #55](https://github.com/JavaZeroo/termforge/issues/55) | 从明确的 main 与 Draft 身份整合；可带已知 red 如实结项，不等待所有后端问题先修好 |
+| 原生 API / VT 末端 margin 的处理路径 | [平台语义与方案 #56](https://github.com/JavaZeroo/termforge/issues/56) | 可用固定探针独立推进；不能以策略说明豁免 #41 原合同 |
+| 实验后端连续 resize | [残尾与 Unicode 重放 #51](https://github.com/JavaZeroo/termforge/issues/51) | 原冻结配置可诊断；最终修复验收使用 #55 联合基线 |
+| 实验后端 Vim | [Console-width Vim #52](https://github.com/JavaZeroo/termforge/issues/52) | 同上；GUI stage59 与 native new-buffer 分列，早期 flags0 成功不替代最终配置 |
+| 实验后端未完成粘贴取消 | [确定性 sender fence #53](https://github.com/JavaZeroo/termforge/issues/53) | 保留 3MB/768 checkpoint/16KiB 门槛；最终验收使用 #55，completed 不算 cancelled |
+| 终端模式、备用屏与滚动区 | [终端行为 #27](https://github.com/JavaZeroo/termforge/issues/27) | 核心前置 #26 已验；整体验收由 #41 阻塞 |
+| resize、逻辑行与历史 | [resize 合同 #29](https://github.com/JavaZeroo/termforge/issues/29) | 核心前置 #26 已验；与 #27/#28 联合核对模式、区域、历史和实际 child 尺寸 |
+| 查询回复、应用模式与真实 TUI | [固定应用矩阵 #28](https://github.com/JavaZeroo/termforge/issues/28) | #27；完成时核对 #29 的 resize 合同及目标配置 |
+| 完整 Unicode、IME 与选择/键盘 | [输入工作流 #30](https://github.com/JavaZeroo/termforge/issues/30) | #26/#39 已验；首批字素基础不替代最终配置的真实输入与同次八会话 |
+| 字体、真实不同 DPI 与跨屏 | [真实显示 #31](https://github.com/JavaZeroo/termforge/issues/31) | 当前为实际环境缺口；自动环境准备可并行，不反复运行相同 96-DPI 场景 |
+| 字素吞吐成本定位与预算 | [受控性能 #54](https://github.com/JavaZeroo/termforge/issues/54) | 独立并行；固定负载/端点/重复方法与预算依据，再优化，不等 #34 最后才研究 |
 
-自有分层计量的剩余归因/Unicode/大历史/无插桩工作由 R4 总项承接，相关基础测量贯穿 R1–R3。官方 baseline、真实呈现端点、完整 TUI 和跨平台客户端均未因本次整理变成已完成。
+## R2 可靠性与聚合关卡
 
-## 旧任务处理与维护
+| 工作 | 责任任务 | 完成条件的归属 |
+|---|---|---|
+| 持续输出中的 Ctrl-C 历史失败 | [原始 ETX 回归 #36](https://github.com/JavaZeroo/termforge/issues/36) | 有界定位历史因果与原生交付；后续通过不回填旧因 |
+| 原 10 秒纯夹具超时 | [IME inventory 定位 #40](https://github.com/JavaZeroo/termforge/issues/40) | 阶段与清理已补齐；下一步是固定源码/宿主的有界原因定位 |
+| controller 自然退出 | [close 前退出 #44](https://github.com/JavaZeroo/termforge/issues/44) | 保留 send/wait/pre-close 与清理差异；不能以 close 后结果当自然退出 |
+| 旧 normal-1 未知异常 | [事件转换边界 #57](https://github.com/JavaZeroo/termforge/issues/57) | 独立于已修合法空标题 #45；原事件 kind/载荷未知，不能回填根因 |
+| Windows 工作流可靠性 | [回归汇总 #38](https://github.com/JavaZeroo/termforge/issues/38) | #40/#44/#57；已闭合切片和旧失败保留在该总项，不再排入当前队列 |
+| 显式官方 ConPTY 整合 | [后端汇总 #47](https://github.com/JavaZeroo/termforge/issues/47) | #55/#51/#52/#53，实验可选不等于产品默认或日常验收 |
+| 每缓冲区 margin 端到端合同 | [margin 汇总 #41](https://github.com/JavaZeroo/termforge/issues/41) | #47/#56；原生 API、transport 和末端分别验证 |
+| 产品 GUI/平台与核心边界 | [架构定案 #34](https://github.com/JavaZeroo/termforge/issues/34) | #28–#31/#54，结合已验 #23/#26/#32/#33；维护正式 ADR |
+| 最终 Windows 开发版 | [产物与持续运行 #35](https://github.com/JavaZeroo/termforge/issues/35) | #27–#34/#36/#38；在最终产物上执行完整合同后核对 #7 出口 |
 
-- #1/#2 保留关闭，正文压缩为已交付范围和证据。
-- #5 按最小规格、临时 ADR 和首个自动实验的原范围结项；外部原生候选及最终核心路线由 [#20](https://github.com/JavaZeroo/termforge/issues/20) 承接，产品架构决策留在 R2。
-- #3/#4 保留开放并归入 R4。旧 [M0 milestone](https://github.com/JavaZeroo/termforge/milestone/1)以“已迁移”归档，不表示其正式基线目标完成。
-- `ready-for-agent` 表示范围明确、阻塞已解除；`blocked` 表示存在真实前置；`needs-breakdown` 表示进入实施前需细拆。每次开工核对实时状态。
-- 变更合同先更新对应规格，再同步 issue；完成任务填写验收证据并更新功能矩阵，不能只在聊天或批次记录中报完成。关系使用 GitHub 原生 sub-issue / blocked-by，正文同步可阅读的前置链接。
+## 已交付基础与历史入口
+
+| 范围 | 入口 |
+|---|---|
+| R1 基础文字与同次八会话限定验收 | [R1 总项 #6](https://github.com/JavaZeroo/termforge/issues/6)、[组合验收 #18](https://github.com/JavaZeroo/termforge/issues/18)、[合同](milestones/R1-local-text.md) |
+| Alpha 1 Windows x64 体验包 | [发布切片 #22](https://github.com/JavaZeroo/termforge/issues/22)、[发布说明](releases/v0.1.0-alpha.1.md)、[下载与验证](releases/v0.1.0-alpha.1-validation.json) |
+| R2 平台与核心前置 | [平台 #23](https://github.com/JavaZeroo/termforge/issues/23)归属 [全量台账 #19](https://github.com/JavaZeroo/termforge/issues/19)；[候选 #24](https://github.com/JavaZeroo/termforge/issues/24)、[差分 #25](https://github.com/JavaZeroo/termforge/issues/25)、[成本/路线 #26](https://github.com/JavaZeroo/termforge/issues/26)归属 [核心关卡 #20](https://github.com/JavaZeroo/termforge/issues/20) |
+| 有限本地会话与配置恢复 | [本地会话 #32](https://github.com/JavaZeroo/termforge/issues/32)、[持久化 #33](https://github.com/JavaZeroo/termforge/issues/33)，能力边界见 [FEATURES](FEATURES.md) |
+| 首批流式字素、宽度与 glyph | [字素合同 #39](https://github.com/JavaZeroo/termforge/issues/39)、[来源与合同](research/streaming-graphemes.md)，完整输入由 #30 继续验收 |
+| 已闭合的回归/夹具与参考捕获 | #38 的原生子项及 [EVIDENCE](EVIDENCE.md)保留 #37/#42/#45/#46 等固定原因和证据，不再次当作待做功能 |
+| 旧 M0/G1、批次规格与审查 | [归档说明与迁移表](archive/README.md)；历史记录不作为当前 TODO |
+
+## 可提前推进的远期调查
+
+| 工作 | 责任任务与边界 |
+|---|---|
+| WindTerm 2.7.0 全量目标与平台台账 | [全量目标 #19](https://github.com/JavaZeroo/termforge/issues/19)，R5 验收基础；#23 平台切片完成不代表其余行为已取证 |
+| 自动观测、扰动校准与完整 Schema | [观测工具 #3](https://github.com/JavaZeroo/termforge/issues/3)，R4 收敛；停止的手工批次不默认重启 |
+| 正式 WindTerm 性能基线 | [受控对照 #4](https://github.com/JavaZeroo/termforge/issues/4)，依赖 #3；不能用自有微基准替代 |
+| Server 2022 ConPTY 稳态句柄 | [兼容性 #21](https://github.com/JavaZeroo/termforge/issues/21)，R4；严格门槛与已知失败保留，不扩大支持声明 |
+
+任务完成时更新责任 issue、能力行与证据索引。修改合同时同步规格和原生关系；记录未知或整理文档本身不解除产品出口。维护规则见 [issue tracker 约定](agents/issue-tracker.md)。

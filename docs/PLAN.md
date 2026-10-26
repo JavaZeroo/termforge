@@ -12,11 +12,9 @@
 
 ## 当前站位与下一次交付
 
-**R1 基础文字交互已按限定合同验收，当前推进 R2，尚未达到开发版出口。** 固定源码`ce9b24d`的[完整文字工作流及同源码回归](../experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)覆盖同一次真实八会话Copy→Paste→中文输入、后台负载、两次滚动状态/提交端点、校准阶段资源与回收。实际呈现、长期资源稳定和WindTerm性能对照仍未验收。现有空面板、有限VT核心和局部UI取证不能计作完整产品功能。
+**R1 基础文字交互已按限定合同验收，当前推进 R2，尚未达到开发版出口。** 下一次产品交付是在明确支持的 Windows 环境中可靠运行本地 shell 和固定 TUI、恢复工作配置，并提供可复建的开发包。当前各构建配置已做什么见 [FEATURES](FEATURES.md)；R2 的接续顺序、并行工作和出口检查只在 [R2 交付路线与验收](milestones/R2-local-terminal.md)维护，实时进度由 [GitHub 执行项](TRACKING.md)承接。
 
-下一次可交付结果是：在明确支持的本地shell中可靠运行常见TUI，重启后恢复工作配置，并提供可复建的Windows开发包。平台、架构和声明的最低系统边界已由[#23](https://github.com/JavaZeroo/termforge/issues/23)的[范围台账](../research/windterm-2.7.0-platform-scope.md)冻结；[ADR-0003](adr/0003-core-reference-and-reuse.md)已决定 R2 新终端能力复用候选 Term/Processor，保留自有传输、呈现和自研差分回退。后续按该路线整合，不把路线决定当作产品能力完成。具体工作包见下文R2，执行项统一由[TRACKING](TRACKING.md)指向issues。
-
-本地会话、布局、受控DPI和R1完整基础文字流程已有**限定验收**；完整TUI、复杂文字、真实跨屏、持久化、远程和跨平台客户端仍有**产品能力缺口**。R1不代表可日常替代WindTerm。参考取证、实现和验收分列，详细边界只在能力矩阵维护。
+[平台范围](../research/windterm-2.7.0-platform-scope.md)与 [ADR-0003](adr/0003-core-reference-and-reuse.md)已为 R2 确定候选核心的实施路线。最终产品核心/GUI/平台边界仍由 #34 使用实际工作流与性能证据定案；局部路线决定、原型或 Alpha 均不代表可日常替代 WindTerm。
 
 “完整复刻”同时包含功能、行为、UI、性能和交付，不能用单一完成比例概括。全量目标台账必须提前建立；性能测量和定向逆向从现在持续进行，远期路标表示验收位置，而不是推迟开始的日期。
 
@@ -113,7 +111,7 @@
 | 产品架构决策 | 根据已实现工作流与测量结果，确定产品 GUI/平台边界、核心与历史接口、传输/呈现隔离、依赖和维护策略 | 在扩大跨平台/远程产品整合前形成 ADR；现有 Win32/DirectWrite 实验不自动锁定最终架构，也不因规划而盲目重写 |
 | 开发版构建与交付 | 清理实验与产品入口、可分发构建、字体/依赖来源、使用说明、诊断与长时回归 | 干净机器可以构建和使用；功能声明对应可下载产物与真实测试；重复开关会话资源稳定 |
 
-**硬门槛：** [ADR-0003](adr/0003-core-reference-and-reuse.md) 的候选构建与核心路线重审不能因 UI 已投入开发而跳过。[#20](https://github.com/JavaZeroo/termforge/issues/20) 分两个节点推进：R1 期间可并行检查候选版本/许可、构建、共同子集和历史投影适配的可行性；R2 扩大终端模式与常用 TUI 的实现投入前，完成实际候选与共同轨迹比较并作路线决定。核心与 GUI 的产品路线决定须使用 [#19](https://github.com/JavaZeroo/termforge/issues/19) 的平台切片 [#23](https://github.com/JavaZeroo/termforge/issues/23) 已冻结的平台/架构/最低系统边界，明确候选的支持缺口；#19 的其余全量功能取证不阻塞候选构建或本决策。不要求先自研补齐候选的全部功能，也不等待正式 WindTerm 性能基线。产品架构需要后续明确决策；现有局部 ADR 和原型验证不自动成为完整产品架构的结论。
+**前置与架构门槛：** [平台切片 #23](https://github.com/JavaZeroo/termforge/issues/23)和[核心关卡 #20](https://github.com/JavaZeroo/termforge/issues/20)已有明确结论，新终端能力按 [ADR-0003](adr/0003-core-reference-and-reuse.md)实施。[全量目标台账 #19](https://github.com/JavaZeroo/termforge/issues/19)的其余调查继续并行。#34 必须使用平台边界、真实工作流、依赖维护成本及性能证据重审产品架构；现有 Win32/DirectWrite 或实验后端不自动成为最终选择。
 
 **出口条件：** 固定本地真实任务、TUI、文字输入、配置恢复、真实 DPI 和干净环境发布全部通过；实际支持与已知差异进入功能矩阵。详细验收、证据边界与近期执行顺序见 [R2 出口检查表](milestones/R2-local-terminal.md)。仅普通命令可运行不等同于可靠本地终端。
 

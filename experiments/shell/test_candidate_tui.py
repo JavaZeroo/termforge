@@ -194,7 +194,8 @@ class CandidateTuiTests(unittest.TestCase):
             self.assertEqual([sample["label"] for sample in summary["samples"]],
                              ["TF_U_DECOMPOSE", "TF_U_EMOJI", "TF_U_ZWJ", "TF_U_KEYCAP"])
             self.assertFalse(summary["complete_unicode_ime_verified"])
-            self.assertFalse(summary["whole_cluster_width_policy_verified"])
+            self.assertTrue(summary["whole_cluster_width_policy_verified"])
+            self.assertTrue(summary["resize"]["resized_native_console_verified"])
             self.assertIsNone(summary["presented_done"])
             data = json.loads((out / "candidate-unicode.json").read_text(encoding="utf-8"))
             console = validate_console_window(out, expected_role="unicode", expected_generation=1,
@@ -202,7 +203,7 @@ class CandidateTuiTests(unittest.TestCase):
             source = (out / "candidate-unicode.source.bin").read_bytes()
             transport = (out / "candidate-unicode.transport.bin").read_bytes()
             validate_candidate_unicode(data, console, source, transport)
-            for corruption in ("missing", "width", "cluster", "source", "frame"):
+            for corruption in ("missing", "width", "cluster", "source", "frame", "glyph-split", "selection", "clipped", "fragment", "counter-type"):
                 changed = copy.deepcopy(data)
                 if corruption == "missing":
                     next(cell for line in changed["lines"] for cell in line["cells"]
@@ -215,6 +216,16 @@ class CandidateTuiTests(unittest.TestCase):
                          if cell["text"] in ("👩\u200d", "👩\u200d💻"))["text"] = "👩"
                 elif corruption == "frame":
                     changed["frame_matches_full"] = False
+                elif corruption == "glyph-split":
+                    next(cell for line in changed["lines"] for cell in line["cells"]
+                         if cell["text"] == "1\ufe0f\u20e3")["glyphs"] = 2
+                elif corruption == "selection":
+                    changed["selections"][2]["copied"] = "👩"
+                elif corruption == "counter-type":
+                    changed["grapheme_overflows"] = False
+                elif corruption in ("clipped", "fragment"):
+                    next(cell for line in changed["lines"] for cell in line["cells"]
+                         if cell["text"] == "👩\u200d💻")[corruption] = True
                 with self.subTest(repeat=repeat, corruption=corruption):
                     with self.assertRaises(ValueError):
                         validate_candidate_unicode(changed, console, b"" if corruption == "source" else source,
