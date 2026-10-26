@@ -1,0 +1,3845 @@
+{
+  "schema": "termforge-wsl-size-return-v1",
+  "source_commit": "2b85fef48149f022b50d9d8878f62539e02c92ba",
+  "base_commit": "c8206911fb511bc2996579f2bb108ef54ae7acbd",
+  "scope": "ui-shells WSL native-size-helper to shell input-readiness synchronization",
+  "original_ci": {
+    "run_id": 40363003416,
+    "job_id": 121713140988,
+    "head": "c8206911fb511bc2996579f2bb108ef54ae7acbd",
+    "merge_checkout_prefix": "9b62087",
+    "configuration": "default/system",
+    "tests_passed": 45,
+    "tests_total": 46,
+    "artifact_id": 12669796699,
+    "artifact_bytes": 4710638,
+    "artifact_sha256": "caa86b6a6d376977f28fa6e1301518ac56cfaa835c08968777a5ed0f46ae1574",
+    "failure": "workspace shells scenario timeout at stage 6",
+    "inner_timeout_s": 30,
+    "outer_timeout_s": 40,
+    "same_cause_as_controlled_reproduction": "unproven: original CI did not capture the native-helper input boundary"
+  },
+  "original_local": {
+    "source_commit": "c8206911fb511bc2996579f2bb108ef54ae7acbd",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "binaries_sha256": {
+      "shell_clipboard_reader.exe": "c433be2a3a334d4276a1e890dd3c474030192a5772cdd5904938788b090a3239",
+      "shell_ime_client.exe": "fb740808c3378f8f9d4045365718ac9bf81ad7d9de23754a5f0ae44a5aa9c352",
+      "shell_input_client.exe": "7c4dd1b8959560152ac2edd2e2b200f1e7e93615108c581cd685f26037a1fefe",
+      "shell_query_client.exe": "4e2185e79c9b8d17ccf47837e9e145d99017e13b92af1fc380f7295383ea54a7",
+      "shell_selection_text_client.exe": "9721866f1b23e395e01566993c6089728f0e5e48d2b5ed99cc0e14b6a2f1784c",
+      "shell_size_client.exe": "1adb9041d49b3b59d9370222378b36e0df63d4a80e64674e3d329d48899a54a1",
+      "shell_test_launcher.exe": "e9eb4b9ec945ab5996b5bc6ac02e18a10e72205fd7dc51581ac3a27d852f5efb",
+      "shell_text_client.exe": "1b2f15b9ac29b1cd8888632c0449fb84a017fa02204475334b02113339dc62a8",
+      "termforge_shell.exe": "2e1868d238d6c63fdc2808e9f4d98f5a863eb949999d7d08e14b6c0a388fb8da"
+    },
+    "identity_sha256": "a794dd55843280268f8cf57cecdbc10c4e3dd5de1aee056dcf7aace5235afefe",
+    "max_cases": 6,
+    "stop": "first failure or six cases",
+    "cases": [
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-0",
+        "raw_sample_sha256": "d3d2a7c4bef046d68ce8de731d0f36d1406b6d0fc23cea6cecb1afecdac96358",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 514,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 688,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 908,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 489,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "52b86ca9977ae2036844a199a8b074cb50141d8c58327ebb1a80792fbbf8c673",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "0b51485f7c4fe6cfbbf46a37dc676305fd13f14f7d2f5252182fe79eade3aa97",
+          "sample.json": "d3d2a7c4bef046d68ce8de731d0f36d1406b6d0fc23cea6cecb1afecdac96358",
+          "shells-progress.jsonl": "52b86ca9977ae2036844a199a8b074cb50141d8c58327ebb1a80792fbbf8c673",
+          "shells.json": "6ebe3a9910944d46872ba9eb864395820ba890fb7eb12de88f4b47f896f2b37a",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "e1e0b092997b26bb250af79927ffe284fe3307af5d9e785d623456f27255d6f4",
+          "_private/local-shells/powershell.output.bin": "a16d80ba340c339f8d2d94a4fd57fb57ee2f176954550d1620bec4a8f6429c4c",
+          "_private/local-shells/pwsh.output.bin": "d51d8afaa4889ae8045676d82e6ddd6a7258920f7d09319a9638cb7a6da93259",
+          "_private/local-shells/wsl.output.bin": "4aec26c9b9ca3db88e4b2861eba7ec12bc4348ffd66f8e42aed13d70ca122bfd"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-1",
+        "raw_sample_sha256": "54c7e176ad072487433a9672cf0f4a9ff367b54093ecec475a06c8c92e72fb8e",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 514,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 1143,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 897,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 489,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "93307c578d52f8cd18db3e84d48c2237ec7c6419c45a217d9d7e9598e1b44060",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "a4349ce05e019f741cebe7930449beb5b50417efe1891e474bf95ae43d0841af",
+          "sample.json": "54c7e176ad072487433a9672cf0f4a9ff367b54093ecec475a06c8c92e72fb8e",
+          "shells-progress.jsonl": "93307c578d52f8cd18db3e84d48c2237ec7c6419c45a217d9d7e9598e1b44060",
+          "shells.json": "c8fc8e0488666c6622b533675ad02f9d50d0641fd064755a614f9a4a7a95dfce",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "708b9c8caa1b97b243bb57bfe8e2cb9448ae5c987911484ce6ed5064a63087b3",
+          "_private/local-shells/powershell.output.bin": "de8775df958a3a84eb4b1646ca87c6c2a97ec1b698eae6677f66545ae9fca6c5",
+          "_private/local-shells/pwsh.output.bin": "e0e1f2b9f88af3eca1d0774cb89126b4d4a2ac3a92a42fed8921df344f5fced9",
+          "_private/local-shells/wsl.output.bin": "3bd22c647e5b9d06bd197f5553bd2a259a687a793b44d54a6301b61a748a331f"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-2",
+        "raw_sample_sha256": "805a394bcb439cb885be45c0d73b1aa6f2c8825c85035a3601806b0b57ff784c",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 514,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 682,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 777,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 489,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "740f8839a8f33159bc93c72114748591f13688147a09f9e2e22df4da38ed40ae",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "45fd5957265c0c44383c29247d4e272702812975c3f7aada2fae8fada6291ca0",
+          "sample.json": "805a394bcb439cb885be45c0d73b1aa6f2c8825c85035a3601806b0b57ff784c",
+          "shells-progress.jsonl": "740f8839a8f33159bc93c72114748591f13688147a09f9e2e22df4da38ed40ae",
+          "shells.json": "76b4139803ce36816fe41ed036f4e4d58ca8cb05f1b0d2657f6c27d9b05fb800",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "0f49068a5428d335cd850b3ebfd88f126a8a1e927c57302bb4ec994870d2302a",
+          "_private/local-shells/powershell.output.bin": "05998ffa6fce35d6e26fc16889b053385e449511e2c16472a3817b8c48a93033",
+          "_private/local-shells/pwsh.output.bin": "92e0183880b568df3f1f75163b3908ab1498d98ac1a635c78e4ac8a0363da551",
+          "_private/local-shells/wsl.output.bin": "894c263127e2a621e40c868e005587ed726620c328a198f6971ce8ffa2599ad9"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-3",
+        "raw_sample_sha256": "a3533ddc5270f1d57382fa633b1b0acec16503d06dcb1c927900bb754a01a9b7",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 514,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 791,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 1036,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 489,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "71b9da809b943301364c1774bc4f6abe9aa219905ab5fe7e75af283987838724",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "2026afbd7ccbfd5b0e092bf9bb93bc3c114937ef34dd4ee3f24d4e284d81c483",
+          "sample.json": "a3533ddc5270f1d57382fa633b1b0acec16503d06dcb1c927900bb754a01a9b7",
+          "shells-progress.jsonl": "71b9da809b943301364c1774bc4f6abe9aa219905ab5fe7e75af283987838724",
+          "shells.json": "5dd3dbabbb4d21f941fe273bb6053df708f41fab352652d7abb2cbc1f1e23a2d",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "3b275b72957b9e63dd3ea210017c699c2c72381018e7736f8a897451919c7406",
+          "_private/local-shells/powershell.output.bin": "1bf6f54cd58d19b2f1833c48ee8d7ffd1ab290504b28b2716114d0079ca3bdf4",
+          "_private/local-shells/pwsh.output.bin": "adae0e41d3d370de1caab3a616574b0f4a8e92aaf8663c11eb49035e49ca1902",
+          "_private/local-shells/wsl.output.bin": "8a248a00cdd7a9c63841d00a0c649f895d1ff4078fd2091bec0388c4ff224503"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-4",
+        "raw_sample_sha256": "b97ee6a7c2627676a506f19188838b32b31731626e7ef2ab3cb099bbe8e82d6e",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 514,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 682,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 1054,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 489,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "3d4fff9d014acc0a864174e436e1e659806fd1761b913bc7e2d69a8b2b025625",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "1524199f4475aec7490b369dd2d198cc0cb85cbbf47335151c11f7aae0cf63af",
+          "sample.json": "b97ee6a7c2627676a506f19188838b32b31731626e7ef2ab3cb099bbe8e82d6e",
+          "shells-progress.jsonl": "3d4fff9d014acc0a864174e436e1e659806fd1761b913bc7e2d69a8b2b025625",
+          "shells.json": "f48af346870211e18f2e26b1f70b522b4974456f0864e7f29776d2303be07677",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "010904ca6f11a7c744a2d2c54e6f54a7060ca6cf60e71bfc2d25ed7a56d15dfc",
+          "_private/local-shells/powershell.output.bin": "a8f0e046c845043059c31aa429d2354583cb326575006ada5523f83c0ec157c3",
+          "_private/local-shells/pwsh.output.bin": "0aeb7ca26717e3ece57e4fd3c905af1c0dac41e56042193a4fe9a08655ba62da",
+          "_private/local-shells/wsl.output.bin": "f447950137d317acc8ebebd57f51334cc8aa3b7d2d2284c72aad4174b78246fc"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-5",
+        "raw_sample_sha256": "1d85c85a5b0b2eb5be6d760747b6f666e92c4b444b6080579f7287bccac1bf3f",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 514,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 719,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 777,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 489,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "c192f502200c9734485d9da2f5ee7a2acfa43c0fdb4c2322809097b98e34bc09",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "43c2959965d4cbb1921fff62d4d15d01ba96e03c25b7c3c27b0e1b9265783c57",
+          "sample.json": "1d85c85a5b0b2eb5be6d760747b6f666e92c4b444b6080579f7287bccac1bf3f",
+          "shells-progress.jsonl": "c192f502200c9734485d9da2f5ee7a2acfa43c0fdb4c2322809097b98e34bc09",
+          "shells.json": "7b5527f41a69627f09baeb75ec5d81db168770b1f2cc37768cf34db09e247dac",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "221db48c07a71f5312bf555403e0def86663ecc9e61c437a58ced2bfc0dcd29f",
+          "_private/local-shells/powershell.output.bin": "7282871ed05075836015a492a7705b0f24805c46655129833c312e07164f7bd7",
+          "_private/local-shells/pwsh.output.bin": "72661720295a095f8afd139b79834063282148ffe717656cbe7ae33503d79951",
+          "_private/local-shells/wsl.output.bin": "82b86682adc1f858582c5b21d6b6c23d797fbc4c060556a1ed3c79e81e8a1975"
+        }
+      }
+    ]
+  },
+  "controlled_native_hold": {
+    "source_commit": "c8206911fb511bc2996579f2bb108ef54ae7acbd",
+    "source_sha256": {
+      "experiments\\shell\\shell.cpp": "b2f0da8114bc0ec03e86a155ea33cd4bded509936aa7f8c82fa479d3237519c5",
+      "experiments\\shell\\size_client.cpp": "d23964236c05cbb849bf8743ba345c04094fb0939ad79aab138e985cd4eace23"
+    },
+    "binaries_sha256": {
+      "shell_clipboard_reader.exe": "c433be2a3a334d4276a1e890dd3c474030192a5772cdd5904938788b090a3239",
+      "shell_ime_client.exe": "fb740808c3378f8f9d4045365718ac9bf81ad7d9de23754a5f0ae44a5aa9c352",
+      "shell_input_client.exe": "7c4dd1b8959560152ac2edd2e2b200f1e7e93615108c581cd685f26037a1fefe",
+      "shell_query_client.exe": "4e2185e79c9b8d17ccf47837e9e145d99017e13b92af1fc380f7295383ea54a7",
+      "shell_selection_text_client.exe": "9721866f1b23e395e01566993c6089728f0e5e48d2b5ed99cc0e14b6a2f1784c",
+      "shell_size_client.exe": "1c7ad1826bc8bca870de031521bcb7129d298106a5a8458b5a1e4ccea3e248f9",
+      "shell_test_launcher.exe": "e9eb4b9ec945ab5996b5bc6ac02e18a10e72205fd7dc51581ac3a27d852f5efb",
+      "shell_text_client.exe": "1b2f15b9ac29b1cd8888632c0449fb84a017fa02204475334b02113339dc62a8",
+      "termforge_shell.exe": "b62d460a91a384f1d3aad3f524e0cb8ac222f0f834dbfd28b124bfab86958b06"
+    },
+    "identity_sha256": "d8221e997ff9d5fbc606895c2e8601ef4b3f3d82c6328ebe2113b3e7e40d5e7b",
+    "instrumentation_patch_sha256": "56b85bb5aed568e6ee8cadf4b2f8ee1abbf1972143fa1c6f5a7e766ef15af6fd",
+    "max_cases": 1,
+    "diagnostic_only": true,
+    "input_observation": "PeekConsoleInputW; never consumes input; helper exits after observing exit CR",
+    "observed_native_input_hex": "657869740d",
+    "case": {
+      "mode": "ui-shells",
+      "status": "failed",
+      "timed_out": false,
+      "exit_code": 2,
+      "stderr": "workspace shells scenario timeout at stage 6\r\n",
+      "job_after": {
+        "active": 0,
+        "total": 20,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 20,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "case": "case-0",
+      "raw_sample_sha256": "4a9a81af9f6423c8486ee4ff74886d9cb82d22fd55dd33f16d9fd912e1ffef0c",
+      "progress": [
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "cmd",
+          "event": "started",
+          "stage": 0,
+          "availability_preflight_performed": false,
+          "exit_code": null,
+          "cleanup_complete": false,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 0,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "cmd",
+          "event": "cwd-verified",
+          "stage": 1,
+          "availability_preflight_performed": false,
+          "exit_code": null,
+          "cleanup_complete": false,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 0,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "powershell",
+          "event": "started",
+          "stage": 1,
+          "availability_preflight_performed": false,
+          "exit_code": null,
+          "cleanup_complete": false,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 0,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "powershell",
+          "event": "cwd-verified",
+          "stage": 2,
+          "availability_preflight_performed": false,
+          "exit_code": null,
+          "cleanup_complete": false,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 0,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "pwsh",
+          "event": "started",
+          "stage": 2,
+          "availability_preflight_performed": false,
+          "exit_code": null,
+          "cleanup_complete": false,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 0,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "pwsh",
+          "event": "cwd-verified",
+          "stage": 3,
+          "availability_preflight_performed": false,
+          "exit_code": null,
+          "cleanup_complete": false,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 0,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "wsl",
+          "event": "started",
+          "stage": 3,
+          "availability_preflight_performed": false,
+          "exit_code": null,
+          "cleanup_complete": false,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 0,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "wsl",
+          "event": "cwd-verified",
+          "stage": 4,
+          "availability_preflight_performed": false,
+          "exit_code": null,
+          "cleanup_complete": false,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 0,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "powershell",
+          "event": "exited",
+          "stage": 6,
+          "availability_preflight_performed": false,
+          "exit_code": 91,
+          "cleanup_complete": true,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 1015,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "pwsh",
+          "event": "exited",
+          "stage": 6,
+          "availability_preflight_performed": false,
+          "exit_code": 91,
+          "cleanup_complete": true,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 623,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "wsl",
+          "event": "exited",
+          "stage": 6,
+          "availability_preflight_performed": false,
+          "exit_code": 91,
+          "cleanup_complete": true,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 486,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-local-shell-progress-v1",
+          "role": "cmd",
+          "event": "exited",
+          "stage": 6,
+          "availability_preflight_performed": false,
+          "exit_code": 91,
+          "cleanup_complete": true,
+          "active_children_after": 0,
+          "observed_output_tail_bytes": 419,
+          "presented_done": null
+        }
+      ],
+      "progress_sha256": "874fefdf656c34649700496f8eae93fcc59b66c4ccef7c990241a3e2442b5200",
+      "shells_json_exists": true,
+      "artifacts_sha256": {
+        "frame.bmp": "50127471b37b6be563d766c214d3db3333a121f9694ff4a2e10778e564249280",
+        "r80-native-input.bin": "2638f1c1c2018567a46a4cae049dd90db2d468e1538d60d328f2707d071f73c5",
+        "sample.json": "4a9a81af9f6423c8486ee4ff74886d9cb82d22fd55dd33f16d9fd912e1ffef0c",
+        "shells-progress.jsonl": "874fefdf656c34649700496f8eae93fcc59b66c4ccef7c990241a3e2442b5200",
+        "shells.json": "047e1672e4ad7235b12180828f3581fc1fbe6e878a52d8f5ce778dcbd02a8b0d",
+        "workspace.layout": "3e487bc3a1404db9f2408b13e577f39a309ff9c6ac145e0e608e0fc3cec4492b",
+        "_private/local-shells/cmd.output.bin": "353a16faef9526970c5d64e8cd7b3fa75b6892afff7c914a696236c088113f06",
+        "_private/local-shells/powershell.output.bin": "ce0ff301ca3e6e29e9f8c419729eae0c8243f8dea0f51511e3f32f451196d6cd",
+        "_private/local-shells/pwsh.output.bin": "a01e6433960f2ffe45da8a054fec6238d9c26476302a6e0b7ab42b8e724fcc27",
+        "_private/local-shells/wsl.output.bin": "4dc7e6ffe969c5d4c83fcd93587bbe97323c2924356eb7b7f1bdcad0cb868a70"
+      }
+    }
+  },
+  "gate_red": {
+    "base_commit": "c8206911fb511bc2996579f2bb108ef54ae7acbd",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "core": "default",
+    "backend": "system",
+    "source_sha256": {
+      "experiments/shell/local_shell_diagnostics.hpp": "3e7bb71f7b7bae0072795316c81cdde87902dd0485b1ae555944b91f3208e396",
+      "experiments/shell/shell.cpp": "cc3830a52aebfad69871d974fed6c3f295f58e1e75feb451f7cfc11e0e56a3ef",
+      "experiments/shell/size_client.cpp": "28d41fd5bbe01f60653de1ea8473707ac36969bb8d6b17c93e87294ff8cf7487",
+      "experiments/shell/test_shell.py": "db1baad242e0be1ec6d7eaa156d94f894f5db98398bb13d194c5bbe46ea03ddd",
+      "experiments/shell/workspace.hpp": "75063983f4047efb88b254406cf25aaab6de113a44fde30fcdbe2eb7809bfc16",
+      "experiments/shell/workspace_shells_scenario.hpp": "8723831c38340aeef7b5dd7a696f664e32aa77b9d915dfdc00c9239f5c3ebde1"
+    },
+    "binaries_sha256": {
+      "shell_clipboard_reader.exe": "c433be2a3a334d4276a1e890dd3c474030192a5772cdd5904938788b090a3239",
+      "shell_ime_client.exe": "fb740808c3378f8f9d4045365718ac9bf81ad7d9de23754a5f0ae44a5aa9c352",
+      "shell_input_client.exe": "7c4dd1b8959560152ac2edd2e2b200f1e7e93615108c581cd685f26037a1fefe",
+      "shell_query_client.exe": "4e2185e79c9b8d17ccf47837e9e145d99017e13b92af1fc380f7295383ea54a7",
+      "shell_selection_text_client.exe": "9721866f1b23e395e01566993c6089728f0e5e48d2b5ed99cc0e14b6a2f1784c",
+      "shell_size_client.exe": "21ff01043ee54dc8134ddb2df6f148253abe587c97ae9e8e7b4d4144f3613222",
+      "shell_test_launcher.exe": "e9eb4b9ec945ab5996b5bc6ac02e18a10e72205fd7dc51581ac3a27d852f5efb",
+      "shell_text_client.exe": "1b2f15b9ac29b1cd8888632c0449fb84a017fa02204475334b02113339dc62a8",
+      "termforge_shell.exe": "c1bdc32f19467efef359d5a97b29b511337e79a434d5373f94325955107117d8"
+    },
+    "cache_sha256": "e91d2a5a0c8e11fc8c7e9ce356b8fae108f3430ef455efa4c3cfcad510460ad2",
+    "identity_sha256": "d9ba9b7ed4fc2a567b82d41aa91e71896192665d6edfd69a95ddefa078bb6c8d",
+    "source_patch_sha256": "9311aee0d6b909f00469e373e289f99cb20cb5097142bf0bae83342858f98916",
+    "test_log_sha256": "c626cb958a8dc511fdb4179c2e2e154885383e8881c561ee71e5b2c233618699",
+    "unittest_tail": [
+      "",
+      "----------------------------------------------------------------------",
+      "Ran 1 test in 4.795s",
+      "",
+      "FAILED (errors=1)"
+    ],
+    "cases": [
+      {
+        "mode": "ui-shells",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "stderr": "size output was mistaken for shell input readiness\r\n",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "case": "shells-held-size-helper",
+        "raw_sample_sha256": "1a646b84b4d785a6029de8167e19e2a5117b304effb90a69394107429dd9d76c",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": 91,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 292,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": 91,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 293,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": 91,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 265,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": 91,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 412,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "2d89761d78eca1425d382a7f6867539e8fbbd264ef64a028784686a0c072f044",
+        "shells_json_exists": false,
+        "artifacts_sha256": {
+          "sample.json": "1a646b84b4d785a6029de8167e19e2a5117b304effb90a69394107429dd9d76c",
+          "shells-progress.jsonl": "2d89761d78eca1425d382a7f6867539e8fbbd264ef64a028784686a0c072f044",
+          "workspace.layout": "9a393cc4ec48e836512ae78f7bc161c8bee613513d188ac88a7ca25afde09fb7",
+          "_private/local-shells/cmd.output.bin": "c853a85f115a1cae2ded4ef96586787f36af1509653c1b5fc5051ac4bd47baca",
+          "_private/local-shells/powershell.output.bin": "f531b5f3ef667ace73cd6d76dc3ff5b98d6f8842fd93b9304c2b2b2f422f0ea1",
+          "_private/local-shells/pwsh.output.bin": "7f0f3aa9f6ac8aeddde13e251aae64c69ae1a2b24417fe9127782f99d2c3d638",
+          "_private/local-shells/wsl.output.bin": "821a33f24dfe22f1bce404b1fecd5519bd59aa09f215227ec03eefee76f9442b"
+        }
+      }
+    ]
+  },
+  "rejected_all_shell_prompt_gate": {
+    "base_commit": "c8206911fb511bc2996579f2bb108ef54ae7acbd",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "core": "default",
+    "backend": "system",
+    "source_sha256": {
+      "experiments/shell/local_shell_diagnostics.hpp": "3e7bb71f7b7bae0072795316c81cdde87902dd0485b1ae555944b91f3208e396",
+      "experiments/shell/shell.cpp": "cc3830a52aebfad69871d974fed6c3f295f58e1e75feb451f7cfc11e0e56a3ef",
+      "experiments/shell/size_client.cpp": "28d41fd5bbe01f60653de1ea8473707ac36969bb8d6b17c93e87294ff8cf7487",
+      "experiments/shell/test_shell.py": "db1baad242e0be1ec6d7eaa156d94f894f5db98398bb13d194c5bbe46ea03ddd",
+      "experiments/shell/transport_completion.hpp": "535f9c1cf238061781a56ca597dd7222308a0f57aa96e3e5959fbca9a1d34602",
+      "experiments/shell/workspace.hpp": "75063983f4047efb88b254406cf25aaab6de113a44fde30fcdbe2eb7809bfc16",
+      "experiments/shell/workspace_shells_scenario.hpp": "238f9d839da86bc5d410521c64c68034e3ee2cf6d8a4e34d347e9046b9bbdf1c"
+    },
+    "binaries_sha256": {
+      "shell_clipboard_reader.exe": "c433be2a3a334d4276a1e890dd3c474030192a5772cdd5904938788b090a3239",
+      "shell_ime_client.exe": "fb740808c3378f8f9d4045365718ac9bf81ad7d9de23754a5f0ae44a5aa9c352",
+      "shell_input_client.exe": "7c4dd1b8959560152ac2edd2e2b200f1e7e93615108c581cd685f26037a1fefe",
+      "shell_query_client.exe": "4e2185e79c9b8d17ccf47837e9e145d99017e13b92af1fc380f7295383ea54a7",
+      "shell_selection_text_client.exe": "9721866f1b23e395e01566993c6089728f0e5e48d2b5ed99cc0e14b6a2f1784c",
+      "shell_size_client.exe": "21ff01043ee54dc8134ddb2df6f148253abe587c97ae9e8e7b4d4144f3613222",
+      "shell_test_launcher.exe": "e9eb4b9ec945ab5996b5bc6ac02e18a10e72205fd7dc51581ac3a27d852f5efb",
+      "shell_text_client.exe": "1b2f15b9ac29b1cd8888632c0449fb84a017fa02204475334b02113339dc62a8",
+      "termforge_shell.exe": "e9d4d844a83613411bf486d2b2c9b9154ceb804683999972a46d7aeee3751ba6"
+    },
+    "cache_sha256": "e91d2a5a0c8e11fc8c7e9ce356b8fae108f3430ef455efa4c3cfcad510460ad2",
+    "identity_sha256": "00df23cd276bed4089cc4e67e1b28e91271d968dd401312949a999539824adaa",
+    "source_patch_sha256": "ae4363f6bab5d3be8c57b696ef49b8acf9d1d169fe92f79de84f832963d9a811",
+    "test_log_sha256": "607b9eb83b160d5fbe3d0d0ff918551ffaa4269a0eb07735a24836ab51948399",
+    "unittest_tail": [
+      "",
+      "----------------------------------------------------------------------",
+      "Ran 2 tests in 38.175s",
+      "",
+      "FAILED (errors=1)"
+    ],
+    "cases": [
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-0",
+        "raw_sample_sha256": "63e6be4cdeb19d606306c9b19b99d88d7bd9e0bfd7eba8a897ca3e707be65f10",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "sizes-ready",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 218,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 439,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 438,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 332,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "5a33826ea8cfd7808455313e49627236c4dab6618bf89123218bda1ceb0ef004",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "dd07ab06e9ebc68b3c2a70a6197881dd9fa363a373af001ae90f790fbdde8a7e",
+          "sample.json": "63e6be4cdeb19d606306c9b19b99d88d7bd9e0bfd7eba8a897ca3e707be65f10",
+          "shells-progress.jsonl": "5a33826ea8cfd7808455313e49627236c4dab6618bf89123218bda1ceb0ef004",
+          "shells.json": "0bfa9c1a21dc4fe706ec45a514ec2ca10e34e5d32578b782377b9faa1d5e5bf8",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "82a1f8fba966d0a10e001195852730a54b1607219c70d329d68ccda2876c0e4b",
+          "_private/local-shells/powershell.output.bin": "0300d10485dc9a732ff6916ad536eb2e97a40d3b65b5957efd1aa700be2dacce",
+          "_private/local-shells/pwsh.output.bin": "d9d2ea5fdd6887cd77aaf486530d692dc0c192f7f96dddf5155a79f614c5325d",
+          "_private/local-shells/wsl.output.bin": "82b919878dd8af8ff509b17dc4f6da514330532061f9ea331a26275ce9852b8d"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "stderr": "workspace shells scenario timeout at stage 5\r\n",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "case": "shells-1",
+        "raw_sample_sha256": "f6f0d4a5e696bb7ea29d7e42b36550bae9de5b12ffdacf35d5879afa818c4c1f",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": 91,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 212,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": 91,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 308,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": 91,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 286,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": 91,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 286,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "604dfa37f4af03a9522b4de1a9d2088794e40f862471720e174b6efa9c4206cf",
+        "shells_json_exists": false,
+        "artifacts_sha256": {
+          "frame.bmp": "63ba56c86e44cd31fb87f74d2417ff791e91a49a6c409afa10555a065fdf6775",
+          "sample.json": "f6f0d4a5e696bb7ea29d7e42b36550bae9de5b12ffdacf35d5879afa818c4c1f",
+          "shells-progress.jsonl": "604dfa37f4af03a9522b4de1a9d2088794e40f862471720e174b6efa9c4206cf",
+          "workspace.layout": "c854b35980162df1a2ad2812c72a20a7bf255010962ee23ee5fda40854d79ed8",
+          "_private/local-shells/cmd.output.bin": "89333797864eb6dcfa3b20c330c6cc67a9c6b313884ccfe288805d9b5b56ca6c",
+          "_private/local-shells/powershell.output.bin": "09740a5a9270aca20ed2862b957bb403c6bf6521a5417334d20359b10bdea291",
+          "_private/local-shells/pwsh.output.bin": "2717096f65aaf70cd85ac6858ea15ef1fb50ae59ca1f2b880d05dc80d5319b79",
+          "_private/local-shells/wsl.output.bin": "e6d7c41a263d4dbcd0d22e2115ea505c7eb07c60e02f08001ab5d10ed4996066"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-held-size-helper",
+        "raw_sample_sha256": "3b98e9710e6484cc585c3215a0a33e3c7387fdd2b3a62f813381d5d59e5b888d",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "size-helper-held",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "sizes-ready",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 275,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 318,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 312,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 331,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "0de108aa2d25afdc42873c4e85f3d966bdaf513df9d0deb8649927f7cf5b16f5",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "377f9d8f2ba3d2784dd96b2159c1386e6f0e02346a54c338a0f05c37b8e4fcb4",
+          "sample.json": "3b98e9710e6484cc585c3215a0a33e3c7387fdd2b3a62f813381d5d59e5b888d",
+          "shells-progress.jsonl": "0de108aa2d25afdc42873c4e85f3d966bdaf513df9d0deb8649927f7cf5b16f5",
+          "shells.json": "d6c181e4d6fdfbb9b5381d0fbe9fcec02c912995c6e2990abfe95800ccbcb6fe",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "73bc9b5d39801a9869d77d2b4893648c2f8704f0844ee34c2e9a375e22fe0a73",
+          "_private/local-shells/powershell.output.bin": "569b434eb5667cd483e28b5e3f4ad6db45a0c0044878e15bb0a14faa6566631a",
+          "_private/local-shells/pwsh.output.bin": "b46c29afe92de87aeee72399814de4dd5f149753d2162ce4b3f0e3d67325d523",
+          "_private/local-shells/wsl.output.bin": "56b2ff37b1aae4e586b0a9a8716fb7468bd34d7a576c3c21678cdca1eaa4971b"
+        }
+      }
+    ]
+  },
+  "focused": {
+    "base_commit": "c8206911fb511bc2996579f2bb108ef54ae7acbd",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "core": "default",
+    "backend": "system",
+    "source_sha256": {
+      "experiments/shell/local_shell_diagnostics.hpp": "3e7bb71f7b7bae0072795316c81cdde87902dd0485b1ae555944b91f3208e396",
+      "experiments/shell/shell.cpp": "cc3830a52aebfad69871d974fed6c3f295f58e1e75feb451f7cfc11e0e56a3ef",
+      "experiments/shell/size_client.cpp": "28d41fd5bbe01f60653de1ea8473707ac36969bb8d6b17c93e87294ff8cf7487",
+      "experiments/shell/test_shell.py": "db1baad242e0be1ec6d7eaa156d94f894f5db98398bb13d194c5bbe46ea03ddd",
+      "experiments/shell/transport_completion.hpp": "535f9c1cf238061781a56ca597dd7222308a0f57aa96e3e5959fbca9a1d34602",
+      "experiments/shell/workspace.hpp": "75063983f4047efb88b254406cf25aaab6de113a44fde30fcdbe2eb7809bfc16",
+      "experiments/shell/workspace_shells_scenario.hpp": "aaf5624cf5ab8883e3dca5197a9637fc95ee005d3056acbefdce781fd8af2720"
+    },
+    "binaries_sha256": {
+      "shell_clipboard_reader.exe": "c433be2a3a334d4276a1e890dd3c474030192a5772cdd5904938788b090a3239",
+      "shell_ime_client.exe": "fb740808c3378f8f9d4045365718ac9bf81ad7d9de23754a5f0ae44a5aa9c352",
+      "shell_input_client.exe": "7c4dd1b8959560152ac2edd2e2b200f1e7e93615108c581cd685f26037a1fefe",
+      "shell_query_client.exe": "4e2185e79c9b8d17ccf47837e9e145d99017e13b92af1fc380f7295383ea54a7",
+      "shell_selection_text_client.exe": "9721866f1b23e395e01566993c6089728f0e5e48d2b5ed99cc0e14b6a2f1784c",
+      "shell_size_client.exe": "21ff01043ee54dc8134ddb2df6f148253abe587c97ae9e8e7b4d4144f3613222",
+      "shell_test_launcher.exe": "e9eb4b9ec945ab5996b5bc6ac02e18a10e72205fd7dc51581ac3a27d852f5efb",
+      "shell_text_client.exe": "1b2f15b9ac29b1cd8888632c0449fb84a017fa02204475334b02113339dc62a8",
+      "termforge_shell.exe": "4a3eb410a64bf527b74d574db6022c66d814cf333d8cc8891d5929b48aa460f5"
+    },
+    "cache_sha256": "e91d2a5a0c8e11fc8c7e9ce356b8fae108f3430ef455efa4c3cfcad510460ad2",
+    "identity_sha256": "a36d51dd5d9682f58570fcbabcd240fd57cff61410c7d1d7f9b81f37f0355c17",
+    "source_patch_sha256": "c5baab9d1090a8ee19d2d6606be6451260251b41881c727c510dce8fc2f8ccdc",
+    "test_log_sha256": "2e8128396b60f7acb89349c3947476347bfc7ba2601e3182939b11f99365d8d1",
+    "unittest_tail": [
+      "..",
+      "----------------------------------------------------------------------",
+      "Ran 2 tests in 10.872s",
+      "",
+      "OK"
+    ],
+    "cases": [
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-0",
+        "raw_sample_sha256": "d04c8492b27294271ae6ed4b82ca5f6a2f6ce7dd133c9b03a9753e1892136d85",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "sizes-ready",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 218,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 312,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 179,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 331,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "97be27ceec69f16f0470d95673d706a8eed112d9c816e422535280cc1fad5cd6",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "6dda525f28461edef903a018670ef6c879b0d03b0aa126aba07424ef69b32768",
+          "sample.json": "d04c8492b27294271ae6ed4b82ca5f6a2f6ce7dd133c9b03a9753e1892136d85",
+          "shells-progress.jsonl": "97be27ceec69f16f0470d95673d706a8eed112d9c816e422535280cc1fad5cd6",
+          "shells.json": "4f0257ecc1112e344c9bb4cd0660597f279c25b5e450e72cb5292b54bedd9f8f",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "73bc9b5d39801a9869d77d2b4893648c2f8704f0844ee34c2e9a375e22fe0a73",
+          "_private/local-shells/powershell.output.bin": "e036c52f4483c16f67b7f0874ba60f4cf9bc4a2cc9d2db269e7f9dc69d909a13",
+          "_private/local-shells/pwsh.output.bin": "99cdcd4783b04e85cbe9abfe7d56aed4a22ddfe3af30a117d4c9359f3132e648",
+          "_private/local-shells/wsl.output.bin": "82b919878dd8af8ff509b17dc4f6da514330532061f9ea331a26275ce9852b8d"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-1",
+        "raw_sample_sha256": "162c53a3642c6562c90c888b6c7a6d750b6eeb2e1d3e0f9e6a6ce41e37313377",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "sizes-ready",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 218,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 312,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 312,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 331,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "0160cf1088a7738208a28f13e02dd9cc0d8886a7772d719066b129dd80d08613",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "d477801ccfc2a474a3a3fe471dde4a599c3648d556ad6851d4db0f85c607214d",
+          "sample.json": "162c53a3642c6562c90c888b6c7a6d750b6eeb2e1d3e0f9e6a6ce41e37313377",
+          "shells-progress.jsonl": "0160cf1088a7738208a28f13e02dd9cc0d8886a7772d719066b129dd80d08613",
+          "shells.json": "535b256e9aea719ca91a9f5117ccfbb3bb31b91d12618babe8806304a49bc021",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "1a41cc8ffadb653801817b29de7dc206cff577ddda7d0c5bf181de0408e8a836",
+          "_private/local-shells/powershell.output.bin": "569b434eb5667cd483e28b5e3f4ad6db45a0c0044878e15bb0a14faa6566631a",
+          "_private/local-shells/pwsh.output.bin": "99cdcd4783b04e85cbe9abfe7d56aed4a22ddfe3af30a117d4c9359f3132e648",
+          "_private/local-shells/wsl.output.bin": "8bf6a531e693925a07f90346fe629864432c36b5cc04e3b0476504314ef8176b"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-held-size-helper",
+        "raw_sample_sha256": "5769f35b92f5472b8e4680919ebfa28afde61a1e4408f205467dac44bade8e64",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "size-helper-held",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "sizes-ready",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 275,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 312,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 312,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 331,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "1bc9d6c6796926db8b2008091fc85c11120672a02f64004f2243094af66d6706",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "cbdbfbe9c472400dd1f5d85cdacac1f177023c78f824b727743e4e1a0525b037",
+          "sample.json": "5769f35b92f5472b8e4680919ebfa28afde61a1e4408f205467dac44bade8e64",
+          "shells-progress.jsonl": "1bc9d6c6796926db8b2008091fc85c11120672a02f64004f2243094af66d6706",
+          "shells.json": "2aafc6104eb8644a1c7f16e09b09b1233c018c3dcc900908b96e21e947881166",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "1a41cc8ffadb653801817b29de7dc206cff577ddda7d0c5bf181de0408e8a836",
+          "_private/local-shells/powershell.output.bin": "569b434eb5667cd483e28b5e3f4ad6db45a0c0044878e15bb0a14faa6566631a",
+          "_private/local-shells/pwsh.output.bin": "99cdcd4783b04e85cbe9abfe7d56aed4a22ddfe3af30a117d4c9359f3132e648",
+          "_private/local-shells/wsl.output.bin": "6f26205c0786f5569f4a6a61851ee1e871e6abef7d3b17aedfb92020c4a35f18"
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "Original hosted failure has no direct native input ownership trace; causal identity remains unknown.",
+    "This fixes test synchronization; it does not buffer interactive typeahead across WSL/native process transitions.",
+    "The intermediate all-shell prompt gate rejected cmd redraw in round1; retained as a failed experiment, not accepted.",
+    "Default core/system Windows11 only here; candidate, official backend, hosted integration and R2 completion require separate evidence.",
+    "Data/model/cleanup observations do not establish actual presentation, WindTerm parity or performance equivalence."
+  ],
+  "full_regression": {
+    "base_commit": "c8206911fb511bc2996579f2bb108ef54ae7acbd",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "core": "default",
+    "backend": "system",
+    "source_sha256": {
+      "experiments/shell/local_shell_diagnostics.hpp": "3e7bb71f7b7bae0072795316c81cdde87902dd0485b1ae555944b91f3208e396",
+      "experiments/shell/shell.cpp": "cc3830a52aebfad69871d974fed6c3f295f58e1e75feb451f7cfc11e0e56a3ef",
+      "experiments/shell/size_client.cpp": "28d41fd5bbe01f60653de1ea8473707ac36969bb8d6b17c93e87294ff8cf7487",
+      "experiments/shell/test_shell.py": "db1baad242e0be1ec6d7eaa156d94f894f5db98398bb13d194c5bbe46ea03ddd",
+      "experiments/shell/transport_completion.hpp": "535f9c1cf238061781a56ca597dd7222308a0f57aa96e3e5959fbca9a1d34602",
+      "experiments/shell/workspace.hpp": "75063983f4047efb88b254406cf25aaab6de113a44fde30fcdbe2eb7809bfc16",
+      "experiments/shell/workspace_shells_scenario.hpp": "aaf5624cf5ab8883e3dca5197a9637fc95ee005d3056acbefdce781fd8af2720"
+    },
+    "binaries_sha256": {
+      "alpha_normal_smoke.exe": "fc4dfb8f78fafaf0047eae0dc21a325629c978b1f249613a0acf4c41f0fee28d",
+      "clipboard_policy_test.exe": "d918a6b80f18f2e54835446e43f9565deb7fb4368f6e691f66acb243a037243a",
+      "conpty_ctrl_c_probe.exe": "91e6953446211cb38891c07c6cb873c742a38e16ceb502717f480ef5c3586fd0",
+      "conpty_margin_probe.exe": "b8bebee108d10dd3fc61741fa25c0af2de0b2079ab55fd06e296ab361544baab",
+      "core_measure.exe": "0ebbed4912fa6209b8b060c76b161dfbb854aa38d170d0aaf41fed71fb653638",
+      "find_bar_test.exe": "4ecae23ccc00c768a493c9b44d1dd322b97ec9808c0d7ff060f83dfbbb0ad17f",
+      "history_test.exe": "22beea091befd033048d9dfa1e955fd2a1f11e279ad6c834c1c10bae42aec95c",
+      "ime_context_test.exe": "5fd86edaf389b4dd1430539a943bbfc84be8b6a4617099aa2994e41a135e13a5",
+      "ime_input_expectation_test.exe": "f7e753e483bff1deb7a914420b568ee992902c751fbcfc2700d407c7c3cab261",
+      "keyboard_test.exe": "f4fd7a19cdd6d954eb6d13aa4dd0e791d5ad74c69b6ceac843ab337e79453b8e",
+      "layout_state_test.exe": "d09c2179a1a25c382eeff23a2cfa0b3a293e3e2a170391678987873c11d4cbbb",
+      "paste_test.exe": "a68a6870810ab79ec67bcea6782a7ffb38b393a02a5fc73ec41de8fc51e3e839",
+      "presentation_probe.exe": "52c4448dee0d91d64aa2abef4fc6ccc8b96979eac94e7ead60f4a66e884dd1fc",
+      "raw_console_receiver_test.exe": "3f2165afbf1e559468a5043abd359103c7c507c994edd8bf61e4d5015952864a",
+      "real_app_capture.exe": "ed3ff84f860213a598109c31b8a609ce66c789cae4af11c00e316fd65378b499",
+      "receive.exe": "09ce1c562dc2654190a1b1f5633e7f0052821e28f87152bc5a2b3325f78e1d77",
+      "recovery_probe.exe": "6afb47e363a214ecf7ed23f8963242e1ac31f591814e4ea537061f31fb35cf15",
+      "renderer_metrics_test.exe": "fa4fe0628f4a7bdf6aac6719f94d9ed558135bee628d6cc36c8a4f97d053b487",
+      "replay.exe": "6ec43fc095f0390ab74fc044acdf1b462597a777fec8b8587fa3d0267667f800",
+      "resize_test.exe": "166bc7075bc57f7a8b284ebb8f7932c8728611195559864e02f52d009d01c20e",
+      "runtime_observation_test.exe": "987d1f6212c8d155b7b2abde20774d0a8d70acf921cee43382f5d766b584ec73",
+      "scenario_tick_gate_test.exe": "99bb4fa1b5f25f846bb5e39844654123546c7cbd61f5640ae0ba553176d239ec",
+      "search_test.exe": "846108cf18dc58dd99effd4ebfe023d989ef8aa113f09080aeb195e8436aad92",
+      "selection_test.exe": "a7fc54fade91e6ebc3303f013cb42560f8cd11c5eab89729e64046a276e82fba",
+      "sent_message_wait_test.exe": "9280f4ff8504a7ed3c5251454a4c88f46af2a0604327beeaf529f94a6f449d5b",
+      "shell_clipboard_reader.exe": "c433be2a3a334d4276a1e890dd3c474030192a5772cdd5904938788b090a3239",
+      "shell_ime_client.exe": "fb740808c3378f8f9d4045365718ac9bf81ad7d9de23754a5f0ae44a5aa9c352",
+      "shell_input_client.exe": "7c4dd1b8959560152ac2edd2e2b200f1e7e93615108c581cd685f26037a1fefe",
+      "shell_launch_test.exe": "340d0e5f89df0275395de894c026a8ac3d6d58d2e93b0f0f860671547252ad73",
+      "shell_paste_probe.exe": "92c2088be07c0d2fd9b0bb7c988fcb3087658a3dd1fe9eb3454c3a4b430e4a47",
+      "shell_query_client.exe": "4e2185e79c9b8d17ccf47837e9e145d99017e13b92af1fc380f7295383ea54a7",
+      "shell_queue_probe.exe": "1b30b06326ce11150237731e283a46ab50b084076389d2dceb15b933b2bad1e6",
+      "shell_selection_text_client.exe": "9721866f1b23e395e01566993c6089728f0e5e48d2b5ed99cc0e14b6a2f1784c",
+      "shell_size_client.exe": "21ff01043ee54dc8134ddb2df6f148253abe587c97ae9e8e7b4d4144f3613222",
+      "shell_test_launcher.exe": "e9eb4b9ec945ab5996b5bc6ac02e18a10e72205fd7dc51581ac3a27d852f5efb",
+      "shell_text_client.exe": "1b2f15b9ac29b1cd8888632c0449fb84a017fa02204475334b02113339dc62a8",
+      "termforge_conpty_probe.exe": "5960d1f429cd23b13a1813f83bd28b44804633d224fec1197f205335270e7c81",
+      "termforge_ime_probe.exe": "09bac8b3df6d4455dd0f9b8930fe8b515738ecebb2b82829c327bc1e0ed87600",
+      "termforge_shell.exe": "4a3eb410a64bf527b74d574db6022c66d814cf333d8cc8891d5929b48aa460f5",
+      "terminal_trace.exe": "a4ea946f921fe521f73645b030ddf62bf30a7709983a6a2d3f13adf644857cf5",
+      "text_action_policy_test.exe": "ea6b92cd9e269016e78d569b7513f95aa360f07ed3c59b805300106099347392",
+      "transport_completion_test.exe": "64f9bda9d967c3b096ede014e9c9aaca64b9c4f31b21a9727123eaefd75fdd8a",
+      "workflow_fixture_test.exe": "89337ca02016928d44921c9b2e4b4420361a5c0c862fe2fdee98e789f62e5bae",
+      "workspace_state_test.exe": "727d2984bb9427944bd98407773c90c6876337b8883785c2daa9e79247fff5b6"
+    },
+    "cache_sha256": "e91d2a5a0c8e11fc8c7e9ce356b8fae108f3430ef455efa4c3cfcad510460ad2",
+    "returncode": 0,
+    "elapsed_seconds": 284.030999999959,
+    "log_sha256": "e17cc9f1438f023f43b010a2336dfa36663abd9604ad8ba4d11b2c17353c9b37",
+    "xml_sha256": "cd19e32cd17cd2d31455e06dc74e5e1d6afb2cee9a8aa8e06af21a21b741e946",
+    "clipboard_requirement": null,
+    "size_fence_opt_in": null,
+    "tests": [
+      {
+        "name": "shell_launch",
+        "time_seconds": 0.0163373,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "runtime_observation",
+        "time_seconds": 1.68495,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "ime_input_expectation",
+        "time_seconds": 0.0254881,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "sent_message_wait",
+        "time_seconds": 0.275501,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "find_bar",
+        "time_seconds": 0.346027,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "renderer_metrics",
+        "time_seconds": 0.874288,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "ime_context",
+        "time_seconds": 0.323607,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "layout_state",
+        "time_seconds": 0.131451,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "workspace_state",
+        "time_seconds": 0.335757,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "transport_completion",
+        "time_seconds": 0.0187543,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "scenario_tick_gate",
+        "time_seconds": 0.0151226,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "resize_core",
+        "time_seconds": 0.0184188,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "history_core",
+        "time_seconds": 0.0209491,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "selection_core",
+        "time_seconds": 0.0921621,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "search_core",
+        "time_seconds": 0.139604,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "paste",
+        "time_seconds": 0.0203769,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "clipboard_policy",
+        "time_seconds": 0.0154507,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "keyboard",
+        "time_seconds": 0.0162567,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "text_action_policy",
+        "time_seconds": 0.0150721,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "core",
+        "time_seconds": 5.7688,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "recovery",
+        "time_seconds": 9.61058,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "measure",
+        "time_seconds": 4.33807,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "binary_paths",
+        "time_seconds": 0.181757,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "conpty_margin_contract",
+        "time_seconds": 0.283105,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "benchmark_tools",
+        "time_seconds": 5.43988,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "differential",
+        "time_seconds": 2.95371,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "ime_inventory",
+        "time_seconds": 50.3972,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "text_actions",
+        "time_seconds": 5.06765,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "workflow_fixture",
+        "time_seconds": 22.9644,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "workflow_sessions",
+        "time_seconds": 40.9418,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "workflow_resources",
+        "time_seconds": 0.484218,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "workflow_resource_phases",
+        "time_seconds": 4.35113,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "workflow_system_content",
+        "time_seconds": 0.170467,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "workflow_system_runner",
+        "time_seconds": 0.669165,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "copy_error_frame",
+        "time_seconds": 0.132512,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "research_guards",
+        "time_seconds": 4.99645,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "receive",
+        "time_seconds": 0.205596,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "conpty",
+        "time_seconds": 16.7023,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "conpty_ctrl_c",
+        "time_seconds": 4.45893,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "conpty_margin",
+        "time_seconds": 0.369461,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "presentation",
+        "time_seconds": 4.0678,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "shell",
+        "time_seconds": 81.8714,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "selection_bytes",
+        "time_seconds": 3.59858,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "selection_context",
+        "time_seconds": 3.4759,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "raw_console_receiver",
+        "time_seconds": 0.395358,
+        "status": "run",
+        "failed": false
+      },
+      {
+        "name": "paste_system",
+        "time_seconds": 5.55271,
+        "status": "run",
+        "failed": false
+      }
+    ],
+    "last_test_log_sha256": "c70d5ecd69ed87a733c88a5b5451c1ed9fcfd8466f28a0bdc1cda0bc41ca491a",
+    "internal_skips": [
+      "setUpClass (test_candidate_compare.CandidateComparisonTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks",
+      "setUpClass (test_capability_matrix.CapabilityMatrixTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks",
+      "setUpClass (test_fuzz_matrix.FuzzMatrixTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks",
+      "setUpClass (test_real_app_matrix.RealApplicationMatrixTests) ... skipped 'optional real application capture dependencies are not built",
+      "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice) ... skipped 'actual system Copy/Paste requires a disposable hosted VM",
+      "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails) ... skipped 'opt-in pinned reference failure injection",
+      "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard) ... skipped 'system copy UI gate requires a disposable hosted VM",
+      "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close) ... skipped 'product clipboard read gate requires a disposable hosted VM",
+      "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver) ... skipped 'real system clipboard UI gate requires a disposable hosted VM",
+      "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice) ... skipped 'system CF requires a disposable hosted VM",
+      "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice) ... skipped 'real CF/EDIT Copy requires a disposable hosted VM",
+      "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard) ... skipped 'Private window station OpenClipboard denied (5); system API gate remains unverified."
+    ],
+    "local_shell_methods": [
+      "test_local_shell_exit_waits_for_native_helper_return (experiments.shell.test_shell.ShellTests.test_local_shell_exit_waits_for_native_helper_return) ... ok",
+      "test_local_shell_launch_working_directory_and_cleanup (experiments.shell.test_shell.ShellTests.test_local_shell_launch_working_directory_and_cleanup) ... ok"
+    ],
+    "shell_unittest_summary": [
+      "Ran 39 tests in 81.664s",
+      "OK (skipped=3)"
+    ],
+    "local_shell_cases": [
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-0",
+        "raw_sample_sha256": "3d261fc9905d3e3b7c39e5dc0a0625f5ca40507d10af4f90c5f4544c1b46f02f",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "sizes-ready",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 218,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 179,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 179,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 331,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "3898372fbd0b28f9924e38e6089cfb1b2dad464fb98679207f44c0d9db3689c4",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "fa9cd42b5f24109cb4a080b1f29d1cb5361910c9f90e711a11495acedbedca9f",
+          "sample.json": "3d261fc9905d3e3b7c39e5dc0a0625f5ca40507d10af4f90c5f4544c1b46f02f",
+          "shells-progress.jsonl": "3898372fbd0b28f9924e38e6089cfb1b2dad464fb98679207f44c0d9db3689c4",
+          "shells.json": "6416f7d973fe9835b17cefa513a2292135eb9e64235d734b81aaba7985545274",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "1a41cc8ffadb653801817b29de7dc206cff577ddda7d0c5bf181de0408e8a836",
+          "_private/local-shells/powershell.output.bin": "e036c52f4483c16f67b7f0874ba60f4cf9bc4a2cc9d2db269e7f9dc69d909a13",
+          "_private/local-shells/pwsh.output.bin": "53b28aa03e6dae0039e7cff35d21f7233728fa1c16430ddccdffe5e4b91a26e4",
+          "_private/local-shells/wsl.output.bin": "8bf6a531e693925a07f90346fe629864432c36b5cc04e3b0476504314ef8176b"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-1",
+        "raw_sample_sha256": "689e4d4e9e6d2366a08031cd0571524f63f4e5b0786bd6e3bf87588ce1ca5186",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "sizes-ready",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 218,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 312,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 317,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 331,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "c597718eef8397735f9dc853d2445d4bd707dd3df737bf69e2c01f64f686b7c2",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "d926e39791422fc5bafc5e65f24296b82fd08e0c7d280298d0ec5d6ebae13c92",
+          "sample.json": "689e4d4e9e6d2366a08031cd0571524f63f4e5b0786bd6e3bf87588ce1ca5186",
+          "shells-progress.jsonl": "c597718eef8397735f9dc853d2445d4bd707dd3df737bf69e2c01f64f686b7c2",
+          "shells.json": "71697e7d6b69730bb597d6dc1c70d45f9dc11fcc69cf6f499ba305964548992b",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "81adb705c08853ff58fdeeff9b28d19f3382e54ca5faf798b422bca35ed4d462",
+          "_private/local-shells/powershell.output.bin": "4205182c1aad4e6d1beb78be95a4aba4e198722e0de7be7c6b1a580200b6eb02",
+          "_private/local-shells/pwsh.output.bin": "baaa68db748972448b04982d28afe769608b62814db07bcbbd19eef4c22e45cf",
+          "_private/local-shells/wsl.output.bin": "82b919878dd8af8ff509b17dc4f6da514330532061f9ea331a26275ce9852b8d"
+        }
+      },
+      {
+        "mode": "ui-shells",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-shells",
+          "shells_verified": 4,
+          "sessions_closed": 4,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "case": "shells-held-size-helper",
+        "raw_sample_sha256": "6294930c75f0d17efaa4aa92348013afc4e6c3fa088bd35e082ec33eca458b97",
+        "progress": [
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "started",
+            "stage": 0,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "cwd-verified",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "started",
+            "stage": 1,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "cwd-verified",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "started",
+            "stage": 2,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "cwd-verified",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "started",
+            "stage": 3,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "cwd-verified",
+            "stage": 4,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "size-helper-held",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "sizes-ready",
+            "stage": 5,
+            "availability_preflight_performed": false,
+            "exit_code": null,
+            "cleanup_complete": false,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 0,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "wsl",
+            "event": "exited",
+            "stage": 6,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 275,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "pwsh",
+            "event": "exited",
+            "stage": 7,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 179,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "powershell",
+            "event": "exited",
+            "stage": 8,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 312,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-local-shell-progress-v1",
+            "role": "cmd",
+            "event": "exited",
+            "stage": 9,
+            "availability_preflight_performed": false,
+            "exit_code": 0,
+            "cleanup_complete": true,
+            "active_children_after": 0,
+            "observed_output_tail_bytes": 331,
+            "presented_done": null
+          }
+        ],
+        "progress_sha256": "b8afa12a28e563cc90c9b94bc1f64330b4e4ebb0aa6cfc4ca924ba671f8c6b5c",
+        "shells_json_exists": true,
+        "artifacts_sha256": {
+          "frame.bmp": "7e62405d02391d373d3d672f2b0e4cb67778704fecc794c4e76ff035f6dd59c4",
+          "sample.json": "6294930c75f0d17efaa4aa92348013afc4e6c3fa088bd35e082ec33eca458b97",
+          "shells-progress.jsonl": "b8afa12a28e563cc90c9b94bc1f64330b4e4ebb0aa6cfc4ca924ba671f8c6b5c",
+          "shells.json": "30f36780f1f5cadb80c55864b7e7f50720a240dee668a462e33f92d851ae3511",
+          "workspace.layout": "2f5aa8bdc59a1e4dd417945b83b1b66d5f9729e85373dedbbc7bd4d033d18636",
+          "_private/local-shells/cmd.output.bin": "1a41cc8ffadb653801817b29de7dc206cff577ddda7d0c5bf181de0408e8a836",
+          "_private/local-shells/powershell.output.bin": "8cb682de571cbd87e2e394c54236e39366ece0ec5c103ec93e054e45f5cdd5d2",
+          "_private/local-shells/pwsh.output.bin": "9ff7552636fde52bc94f7835bece9a704d3487e5330cdbf0754fa2fd98a67674",
+          "_private/local-shells/wsl.output.bin": "fa895e9a26760b50a0548f1c43314aa49e682301b53f79148ab7a163272caf9b"
+        }
+      }
+    ]
+  }
+}
