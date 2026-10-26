@@ -39,6 +39,7 @@ class Parser {
         case 'H': case 'f': screen.move(n - 1, params.size() < 2 || params[1] == 0 ? 0 : params[1] - 1); break;
         case 'J': screen.erase_display(params[0]); break;
         case 'K': screen.erase_line(params[0]); break;
+        case 'X': screen.erase_characters(n); break;
         default: throw InputError("unsupported CSI command");
         }
     }

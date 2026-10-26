@@ -229,6 +229,13 @@ public:
         erase_range(lines[row], mode == 0 ? column : 0, mode == 1 ? column + 1 : width());
         wrap_pending = false; invalidate_attachment();
     }
+    void erase_characters(int count) {
+        if (count < 1) throw InputError("invalid erase character count");
+        erase_range(lines[row], column, column + (std::min)(count, width() - column));
+        // ECH edits the current physical row without moving the cursor. The
+        // Microsoft Terminal ECH contract explicitly cancels delayed wrapping.
+        wrap_pending = false; invalidate_attachment();
+    }
     void erase_display(int mode) {
         if (mode > 2) throw InputError("unsupported erase mode");
         for (int r = 0; r < height(); ++r)
