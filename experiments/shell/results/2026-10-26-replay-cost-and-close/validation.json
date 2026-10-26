@@ -1,0 +1,1513 @@
+{
+  "schema": "termforge-replay-cost-closing-reply-v1",
+  "date": "2026-10-26",
+  "issue": 53,
+  "source_commit": "eae4b6a4ef3e044ebfebbbbfeccf9aec74cd7f0d",
+  "source_tree": "b07036829c5c8bd61ede6a8aa46f655e541ada1b",
+  "source_files": {
+    "CMakeLists.txt": {
+      "git_blob": "2454a7b8dc34fa2bbd74b25b0ad77d19a71a5f18",
+      "checkout_sha256": "f5bb85e12b7a815c4feb7417da9ebc5298de58664bcd2792b277cb282729da73"
+    },
+    "experiments/core/candidate_terminal.cpp": {
+      "git_blob": "9bb1fab8f6deac294d0ba1a44712b67c919d03c7",
+      "checkout_sha256": "3092ee2ea44ca0f897a7d3b6244c079ba8073dc109993204e435f065388a2ed1"
+    },
+    "experiments/shell/shell.cpp": {
+      "git_blob": "90b3f166e8a50ca2488f749e8e188c52cb5e4a91",
+      "checkout_sha256": "ac4dd44861aa2928213fffe91d30cdaf3aedf19f08468aefeed22828352296cc"
+    },
+    "experiments/shell/candidate_reply_close_test.cpp": {
+      "git_blob": "1a5e0149c553469645dbfe3ddb217908b1958d42",
+      "checkout_sha256": "453ab888fb57d4f918bcfa583da7167a21463ce185be2a3d67caec74505fc424"
+    },
+    "experiments/shell/test_workflow_sessions.py": {
+      "git_blob": "de6cef3be06725d606b91ae68eb1cc45eb744fb5",
+      "checkout_sha256": "6c968a443c46b30e75a929f880228e6a23bf2b92d9221bbbf18816933babd6e7"
+    },
+    "experiments/shell/test_shell.py": {
+      "git_blob": "66512ac1099cf477cac8f26f225b18c301c1d3d8",
+      "checkout_sha256": "a6b63c1754b0e0dc1cc01863891f4c7c9d989f818d351838a8cfe295edaf811c"
+    },
+    "experiments/shell/run.py": {
+      "git_blob": "bbd4dfc05012c55956973d7e2c69be717b48b1a9",
+      "checkout_sha256": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d"
+    },
+    "experiments/shell/workflow_sessions_checks.py": {
+      "git_blob": "8369b412abe893393bf316430ccedd22e9eb75ba",
+      "checkout_sha256": "b976d3504837eef57ff13319daed254870727741f36f265412a6b14b4cb3faae"
+    }
+  },
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "architecture": "AMD64",
+    "compiler": "MSVC 19.42.34433",
+    "configuration": "Release x64",
+    "candidate": "alacritty_terminal 0.26.1-dev+termforge.4",
+    "backend": "Microsoft.Windows.Console.ConPTY 1.25.260930003",
+    "glyph_width_flags": 24
+  },
+  "request": {
+    "utf8_bytes": 3000000,
+    "utf16_units": 1000000,
+    "literal": "U+6C49 repeated 1000000",
+    "sha256": "0ba67970de9941c1bc33e97869b116a0e129c8a859e3b4c0087e20c51f6a404b",
+    "minimum_sent": 16384,
+    "receiver_checkpoint_bytes": 768
+  },
+  "deadlines_ms": {
+    "standalone_ui": 35000,
+    "standalone_outer": 40000,
+    "receiver_gate": 15000,
+    "eight_session_ui": 70000,
+    "workflow_fixture": 55000,
+    "missing_go_negative_only": 2000
+  },
+  "binaries": {
+    "alpha_normal_smoke.exe": "36ac6dbe36c942b9850d6d9f5b3538fbfe2fc251f38ac026ea12c343b0e9abc8",
+    "candidate_core_test.exe": "6e9df1abbe2271690a1480a1be9042e219a5947779b6a4b03f529a742fbd10ce",
+    "candidate_reply_close_test.exe": "662a331701e49885ce56328ae19ddc2166347c5f802d7faa2787eef46e25b000",
+    "candidate_resize_replay.exe": "3d91227adb37bba4defcef8f803f0f3c2916001223300b99d18e0e2ab695de94",
+    "candidate_title_test.exe": "a9591c36d5a54a1f54cf30ec8f8b0e7ff047096f5adf2e2a74169252ab041852",
+    "clipboard_policy_test.exe": "809815e9838cad5b3443c98620d23a4e6c7186b5304b524d0990988eb47a6da9",
+    "conpty_backend_probe.exe": "3c54962c20f04e688a0413bb822713e908582af20b0be8bcfd188fb436907ef8",
+    "conpty_ctrl_c_probe.exe": "ac5ae5ccdb77c82512a8a6d769fafbe74693bf6fc535ce4d22bf60b0c8df2bfa",
+    "conpty_margin_probe.exe": "5404b009d0e005cd940d8a65afeb0fb9caf9c9ce2a18f651a88146343c41c252",
+    "core_measure.exe": "df9df797b16239d2fb71707f8a042a1ed956ad30c407d884527cdf18d600e785",
+    "find_bar_test.exe": "030733a2396ca9b31bbd029c610f1b838ab52394338c08410274501747dd9982",
+    "history_test.exe": "035507366facfd6de00e0c2762775c8d3816f605da3e55d498995a74a3f447d2",
+    "ime_context_test.exe": "be0d71ca72aee3dbd1565c9ad2314f81f0cd0c5511ec54cb623bbd39eede9974",
+    "ime_input_expectation_test.exe": "a5ea4532a06b893d955299793b4859cb9ccf221fab64e51949e1af2ee6ba5d0b",
+    "keyboard_test.exe": "18a35c2b2ab8a6316e0c938d8c36d0b82bcc131989d683205888b08bf4d33e19",
+    "layout_state_test.exe": "307519003536ce16d7d6fc552b3a25e9de25356d50a80c2de0c01168a10784a9",
+    "paste_test.exe": "47e9a5ce33335370b6fb199b0ff11adc19e2ab55bf64657061a13c1c020a24b0",
+    "presentation_probe.exe": "b7043cace46f65b22c7295df2fc06b214f060c2fd6fe18ac5ff27e13d943e096",
+    "raw_console_receiver_test.exe": "9c05cdb80d87ff264b3275387eb01dabc8f57640adbc7ee3910b0fc44f378224",
+    "real_app_capture.exe": "011efaad94da74ce182e30a3ff8abb0c1e1f58235bc77fa8c347ec3d9dcb822e",
+    "receive.exe": "ef316e11ddcc764ddac57426fc37b8b69f599ddb28a0ffedf5c2e85a3004a9d4",
+    "recovery_probe.exe": "c84e7b1b1792773b993f2758d5cafa59b80495451c01d194c3afd6cc653f0344",
+    "renderer_metrics_test.exe": "4cebad62798ff0f8eac42641a1119c7b9725728dd5fd31befcdf7e1ecb686cfd",
+    "replay.exe": "674f96ebbf00497576951a6780a5cf5195e3b80cc4acdb7f296fa8910a6203b7",
+    "resize_test.exe": "f566c56a1fa34e2a8ff480900ac5ae5059e2ac6872554208d5dbf0e24673dde0",
+    "runtime_observation_test.exe": "b721e08397dc0a1b80cff3cc9b3354d5ba81c59d9ef3e0934a7ec27fb2f5eebe",
+    "scenario_tick_gate_test.exe": "06cd4e813f1034d1a8c7fea592979f49c3ef89117c97fc6636cdae5012017ce8",
+    "search_test.exe": "0f29f3ea3147cc45eb2e500e683f3bcc1db04f820470b2ff473fffcb31cdb4f4",
+    "selection_test.exe": "104576787b62c2c4bb2428e0786c7742e63a23ceb766df293c88a5ccc6a1b836",
+    "sender_fence_pipe_test.exe": "6a94ac84631434a81ae1098932813d7ceeb81f2bb33a2e4b2456834bd8972e92",
+    "sender_fence_test.exe": "ab4af3b0f148f6e6377e70c98936c6c34d0be0d3cee4b17b3f8554c39b2d3e52",
+    "sent_message_wait_test.exe": "bc3cff14f60e3f1b17b3fd6255ff1c5b507f506d897d528802efa9666be74dcf",
+    "shell_clipboard_reader.exe": "bacc4bff465ca644fae61f9d26184a7adc22df9793470feca647af1d823fece8",
+    "shell_ime_client.exe": "d787ebf702cf5895e1ad0d71f895a51b3dead34d02953b5e7deff086c2bf8eb7",
+    "shell_input_client.exe": "850c82fb8bb58de8170bf096cc6dd4f8ba34d9ba11dbd2addc41508cddc31d8c",
+    "shell_launch_test.exe": "ace9b63148848bf7b405edb4b8818ca23d52699ac2ce8ca03a90c5bc1e32622d",
+    "shell_paste_probe.exe": "1370c6381b990270dfd816f53758e5aa57c63deba050fa7cf0dbd0d5cbf4f315",
+    "shell_query_client.exe": "71419f7918bc58f4ee47d14f8e6de35aa1828ac838a73ed607797fc120f56886",
+    "shell_queue_probe.exe": "7f34d6ff66b3e00d56798e22a480fb20a5afa083cff65a9d689dcbca44dbe12d",
+    "shell_selection_text_client.exe": "dbad81a22ecce4508eada90ae445f9a75abfe1effd2571776ef31b32144c8ac4",
+    "shell_size_client.exe": "5394d9863df9a589012f0d9a31f7e4167e7bc4ea23e93f9711c0a67c540651f6",
+    "shell_test_launcher.exe": "dbde4249dc08c7df80120398ffd252aa5e4958e4ef640cc161ea4c2d28b9f291",
+    "shell_text_client.exe": "9485b03424e421a4018596cc9487e7feeb33c26d30820985aa45843fdcf315d9",
+    "termforge_conpty_probe.exe": "7dd59bc8d0309ad5b131cde1c3ed98819139b6bb70f505347c98aabe8396f618",
+    "termforge_ime_probe.exe": "788a186b5fafb6d155eeab74f78d4f7cb992a599937b3aa48c5efcf49affe993",
+    "termforge_shell.exe": "9c01fa0577d8fc922d239d8a711ac13d1e4989104aad68795230bfcd998b4eb6",
+    "terminal_trace.exe": "40e869753f4c00515ee0990f3732eac04f965fe2c3070f1bf772717476269f3d",
+    "text_action_policy_test.exe": "535b469c9aa0da7e77670578f75d04956d98e9f912d5c9a6c310ab796ab58d4f",
+    "transport_completion_test.exe": "b83b797cacd8aaa05bfe8697b54f86da4d0ffe618b37b9b7080dbe05a0e99ad9",
+    "workflow_fixture_test.exe": "a6624a6b1536c6f445f92e05ff72a5318ece47d455500f6adc467d94f9f04222",
+    "workspace_state_test.exe": "ac3fbc8a56d33efda33cc9040c731c183e0a8666e23fce48d368c1868797714d",
+    "conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+    "conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+  },
+  "vim": {
+    "version": "9.1 patches 1-532, MSYS2",
+    "sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+    "scope": "test-process PATH only"
+  },
+  "final_ctest": {
+    "started_at": "2026-10-26T15:52:21.7023013Z",
+    "completed_at": "2026-10-26T16:00:07.0924704Z",
+    "exit_code": 8,
+    "tests": [
+      {
+        "number": 1,
+        "name": "shell_launch",
+        "result": "Passed",
+        "elapsed_seconds": 0.01
+      },
+      {
+        "number": 2,
+        "name": "candidate_title",
+        "result": "Passed",
+        "elapsed_seconds": 0.78
+      },
+      {
+        "number": 3,
+        "name": "candidate_reply_close",
+        "result": "Passed",
+        "elapsed_seconds": 0.36
+      },
+      {
+        "number": 4,
+        "name": "runtime_observation",
+        "result": "Passed",
+        "elapsed_seconds": 1.66
+      },
+      {
+        "number": 5,
+        "name": "ime_input_expectation",
+        "result": "Passed",
+        "elapsed_seconds": 0.01
+      },
+      {
+        "number": 6,
+        "name": "sent_message_wait",
+        "result": "Passed",
+        "elapsed_seconds": 0.3
+      },
+      {
+        "number": 7,
+        "name": "find_bar",
+        "result": "Passed",
+        "elapsed_seconds": 0.37
+      },
+      {
+        "number": 8,
+        "name": "renderer_metrics",
+        "result": "Passed",
+        "elapsed_seconds": 0.92
+      },
+      {
+        "number": 9,
+        "name": "ime_context",
+        "result": "Passed",
+        "elapsed_seconds": 0.35
+      },
+      {
+        "number": 10,
+        "name": "layout_state",
+        "result": "Passed",
+        "elapsed_seconds": 0.13
+      },
+      {
+        "number": 11,
+        "name": "workspace_state",
+        "result": "Passed",
+        "elapsed_seconds": 0.34
+      },
+      {
+        "number": 12,
+        "name": "transport_completion",
+        "result": "Passed",
+        "elapsed_seconds": 0.01
+      },
+      {
+        "number": 13,
+        "name": "scenario_tick_gate",
+        "result": "Passed",
+        "elapsed_seconds": 0.01
+      },
+      {
+        "number": 14,
+        "name": "candidate_core",
+        "result": "Passed",
+        "elapsed_seconds": 1.17
+      },
+      {
+        "number": 15,
+        "name": "resize_core",
+        "result": "Passed",
+        "elapsed_seconds": 0.02
+      },
+      {
+        "number": 16,
+        "name": "history_core",
+        "result": "Passed",
+        "elapsed_seconds": 0.02
+      },
+      {
+        "number": 17,
+        "name": "selection_core",
+        "result": "Passed",
+        "elapsed_seconds": 0.09
+      },
+      {
+        "number": 18,
+        "name": "search_core",
+        "result": "Passed",
+        "elapsed_seconds": 0.12
+      },
+      {
+        "number": 19,
+        "name": "paste",
+        "result": "Passed",
+        "elapsed_seconds": 0.01
+      },
+      {
+        "number": 20,
+        "name": "sender_fence",
+        "result": "Passed",
+        "elapsed_seconds": 1.03
+      },
+      {
+        "number": 21,
+        "name": "sender_fence_pipe",
+        "result": "Passed",
+        "elapsed_seconds": 0.38
+      },
+      {
+        "number": 22,
+        "name": "clipboard_policy",
+        "result": "Passed",
+        "elapsed_seconds": 0.01
+      },
+      {
+        "number": 23,
+        "name": "keyboard",
+        "result": "Passed",
+        "elapsed_seconds": 0.01
+      },
+      {
+        "number": 24,
+        "name": "text_action_policy",
+        "result": "Passed",
+        "elapsed_seconds": 0.01
+      },
+      {
+        "number": 25,
+        "name": "candidate_resize_replay",
+        "result": "Passed",
+        "elapsed_seconds": 0.56
+      },
+      {
+        "number": 26,
+        "name": "candidate_shell_tui",
+        "result": "***Failed",
+        "elapsed_seconds": 30.68
+      },
+      {
+        "number": 27,
+        "name": "core",
+        "result": "Passed",
+        "elapsed_seconds": 6.15
+      },
+      {
+        "number": 28,
+        "name": "recovery",
+        "result": "Passed",
+        "elapsed_seconds": 9.89
+      },
+      {
+        "number": 29,
+        "name": "measure",
+        "result": "Passed",
+        "elapsed_seconds": 4.03
+      },
+      {
+        "number": 30,
+        "name": "binary_paths",
+        "result": "Passed",
+        "elapsed_seconds": 0.18
+      },
+      {
+        "number": 31,
+        "name": "conpty_margin_contract",
+        "result": "Passed",
+        "elapsed_seconds": 0.36
+      },
+      {
+        "number": 32,
+        "name": "benchmark_tools",
+        "result": "Passed",
+        "elapsed_seconds": 5.57
+      },
+      {
+        "number": 33,
+        "name": "differential",
+        "result": "Passed",
+        "elapsed_seconds": 3.67
+      },
+      {
+        "number": 34,
+        "name": "ime_inventory",
+        "result": "Passed",
+        "elapsed_seconds": 50.6
+      },
+      {
+        "number": 35,
+        "name": "text_actions",
+        "result": "Passed",
+        "elapsed_seconds": 5.6
+      },
+      {
+        "number": 36,
+        "name": "workflow_fixture",
+        "result": "Passed",
+        "elapsed_seconds": 22.74
+      },
+      {
+        "number": 37,
+        "name": "workflow_sessions",
+        "result": "Passed",
+        "elapsed_seconds": 77.08
+      },
+      {
+        "number": 38,
+        "name": "workflow_resources",
+        "result": "Passed",
+        "elapsed_seconds": 0.6
+      },
+      {
+        "number": 39,
+        "name": "workflow_resource_phases",
+        "result": "Passed",
+        "elapsed_seconds": 4.35
+      },
+      {
+        "number": 40,
+        "name": "workflow_system_content",
+        "result": "Passed",
+        "elapsed_seconds": 0.16
+      },
+      {
+        "number": 41,
+        "name": "workflow_system_runner",
+        "result": "Passed",
+        "elapsed_seconds": 0.67
+      },
+      {
+        "number": 42,
+        "name": "copy_error_frame",
+        "result": "Passed",
+        "elapsed_seconds": 0.17
+      },
+      {
+        "number": 43,
+        "name": "paste_fence_evidence",
+        "result": "Passed",
+        "elapsed_seconds": 0.12
+      },
+      {
+        "number": 44,
+        "name": "resize_trace",
+        "result": "Passed",
+        "elapsed_seconds": 0.13
+      },
+      {
+        "number": 45,
+        "name": "research_guards",
+        "result": "Passed",
+        "elapsed_seconds": 5.06
+      },
+      {
+        "number": 46,
+        "name": "receive",
+        "result": "Passed",
+        "elapsed_seconds": 0.25
+      },
+      {
+        "number": 47,
+        "name": "conpty",
+        "result": "Passed",
+        "elapsed_seconds": 23.48
+      },
+      {
+        "number": 48,
+        "name": "conpty_ctrl_c",
+        "result": "Passed",
+        "elapsed_seconds": 4.42
+      },
+      {
+        "number": 49,
+        "name": "conpty_margin",
+        "result": "Passed",
+        "elapsed_seconds": 0.36
+      },
+      {
+        "number": 50,
+        "name": "conpty_backend",
+        "result": "Passed",
+        "elapsed_seconds": 1.24
+      },
+      {
+        "number": 51,
+        "name": "presentation",
+        "result": "Passed",
+        "elapsed_seconds": 4.05
+      },
+      {
+        "number": 52,
+        "name": "shell",
+        "result": "***Timeout",
+        "elapsed_seconds": 180.05
+      },
+      {
+        "number": 53,
+        "name": "selection_bytes",
+        "result": "Passed",
+        "elapsed_seconds": 3.65
+      },
+      {
+        "number": 54,
+        "name": "selection_context",
+        "result": "Passed",
+        "elapsed_seconds": 3.91
+      },
+      {
+        "number": 55,
+        "name": "raw_console_receiver",
+        "result": "Passed",
+        "elapsed_seconds": 0.41
+      },
+      {
+        "number": 56,
+        "name": "paste_system",
+        "result": "Passed",
+        "elapsed_seconds": 6.7
+      }
+    ],
+    "ctest_log_sha256": "8aafbb86aff94166f27131a0730ae9f89047eabfd573df3009c1b2be7d60bef2",
+    "last_test_log_sha256": "c7c335df7b947320a6fcd0fdd22287d8bdb13aed18bc9ed95377b8c8dc2e64a2"
+  },
+  "diagnostic_artifacts": [
+    "headless-ordinary.json",
+    "headless-resize.json",
+    "ui-profiles.json",
+    "intermediate-workflows.json",
+    "closing-reply.json"
+  ],
+  "limitations": [
+    "Only candidate .4 with explicit official backend validated here",
+    "Data-only eight-session contract; no hosted real clipboard or IME acceptance",
+    "Shared-host diagnostics are not R54 formal samples or WindTerm performance equivalence",
+    "No user-approved numeric budget; presentation endpoint unknown",
+    "Unrelated Vim, resize and workspace failures remain open"
+  ],
+  "eight_session_runs": [
+    {
+      "run": "run-40c6fff18ecd453684ad2ee06a44c669",
+      "sample": {
+        "mode": "ui-workflow-sessions",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-workflow-sessions",
+          "sessions_closed": 18,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "frame_sha256": "68fb528174c7f7edf2916ca1b6f1f7d2a6b80deeb4cec787539fb051bb344ee5",
+        "sessions_workflow": {
+          "schema": "termforge-workflow-sessions-identity-validation-v1",
+          "live_sessions": 8,
+          "checkpoints": 26,
+          "rejected_ninth": true,
+          "load_foreground_verified": true,
+          "data_workflow_verified": true,
+          "complete_workflow_verified": false,
+          "system_clipboard_verified": false,
+          "ime_verified": false
+        },
+        "resources": {
+          "summary": "resource-summary.json",
+          "scope": "launcher-tree",
+          "performance_gate": "not_evaluated"
+        },
+        "error_kind": null
+      },
+      "data_only": true,
+      "system_clipboard": false,
+      "ime": false,
+      "checkpoints": [
+        {
+          "phase": "eight-ready",
+          "elapsed_ms": 571,
+          "cycle": 0
+        },
+        {
+          "phase": "reject-ninth",
+          "elapsed_ms": 574,
+          "cycle": 0
+        },
+        {
+          "phase": "load-started",
+          "elapsed_ms": 731,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-before-append",
+          "elapsed_ms": 749,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-after-append",
+          "elapsed_ms": 877,
+          "cycle": 0
+        },
+        {
+          "phase": "search-running",
+          "elapsed_ms": 1021,
+          "cycle": 0
+        },
+        {
+          "phase": "find-complete",
+          "elapsed_ms": 6355,
+          "cycle": 0
+        },
+        {
+          "phase": "foreground-input",
+          "elapsed_ms": 6493,
+          "cycle": 0
+        },
+        {
+          "phase": "zoom-75",
+          "elapsed_ms": 6626,
+          "cycle": 0
+        },
+        {
+          "phase": "switch-zoom",
+          "elapsed_ms": 6775,
+          "cycle": 0
+        },
+        {
+          "phase": "history-evicted",
+          "elapsed_ms": 7020,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancel-pending",
+          "elapsed_ms": 7606,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancelled",
+          "elapsed_ms": 7975,
+          "cycle": 0
+        },
+        {
+          "phase": "background-complete",
+          "elapsed_ms": 26268,
+          "cycle": 0
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 26584,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 27859,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 28160,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 29429,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 29734,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 31003,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 31326,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 32562,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 32875,
+          "cycle": 5
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 34169,
+          "cycle": 5
+        },
+        {
+          "phase": "paste-close-pending",
+          "elapsed_ms": 34461,
+          "cycle": 5
+        },
+        {
+          "phase": "after-paste-close",
+          "elapsed_ms": 34675,
+          "cycle": 5
+        }
+      ],
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "raw_sha256": {
+        "cancel.bin": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6",
+        "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+        "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "close.bin.before.json": "42d48c9b60c19059b0fd753b871521787ece886f5976aef804fe05baa7db1584",
+        "frame.bmp": "68fb528174c7f7edf2916ca1b6f1f7d2a6b80deeb4cec787539fb051bb344ee5",
+        "resource-observations.jsonl": "39a33bf36d3da8512f99e18c617bb8ae9d2ce18bd45d8fb923ea89e3bc6fd15c",
+        "resource-phases.jsonl": "3d4bed0243cafdcb17e067cf7a80fc0a8deab7b297a4976cd4ca3fab6595b100",
+        "resource-summary.json": "8084b1234602e26ee63f26be0067a9fc8845eef227e9db7277c7092ea0528273",
+        "sample.json": "efb0f88de0d82b21f38592e2858c3937c9e4c56a0f57c9cbfc128b8cdb5ef818",
+        "sample.public.json": "9507843aee6d9088fd93fb35fb925f64d9b854f0d0c307dc5bc6676422ff7604",
+        "sessions.json": "953d27af5461179b5cfa672022f9ab7d7f1c50670b20f3acba9fb9bb046f7f28",
+        "validation.json": "0449c92f202590a5255928fb7df1f5ab615821d26656a3675c9b78a50c7692ef",
+        "workspace.layout": "9a96d62943f54727e7c50ce5785a571efbfa6cbece6248f6a6d144257c1e1d58"
+      }
+    },
+    {
+      "run": "run-529ed519a8f145f191c850d0218abb04",
+      "sample": {
+        "mode": "ui-workflow-sessions",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "result": {
+          "valid": true,
+          "mode": "ui-workflow-sessions",
+          "sessions_closed": 18,
+          "active_children_after": 0,
+          "presented_done": null
+        },
+        "frame_sha256": "4443a91feb73693650c2a6f8ac4feb91fa9fe3fee9e1340086892c2257db1990",
+        "sessions_workflow": {
+          "schema": "termforge-workflow-sessions-identity-validation-v1",
+          "live_sessions": 8,
+          "checkpoints": 26,
+          "rejected_ninth": true,
+          "load_foreground_verified": true,
+          "data_workflow_verified": true,
+          "complete_workflow_verified": false,
+          "system_clipboard_verified": false,
+          "ime_verified": false
+        },
+        "resources": {
+          "summary": "resource-summary.json",
+          "scope": "launcher-tree",
+          "performance_gate": "not_evaluated"
+        },
+        "error_kind": null
+      },
+      "data_only": true,
+      "system_clipboard": false,
+      "ime": false,
+      "checkpoints": [
+        {
+          "phase": "eight-ready",
+          "elapsed_ms": 570,
+          "cycle": 0
+        },
+        {
+          "phase": "reject-ninth",
+          "elapsed_ms": 574,
+          "cycle": 0
+        },
+        {
+          "phase": "load-started",
+          "elapsed_ms": 730,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-before-append",
+          "elapsed_ms": 752,
+          "cycle": 0
+        },
+        {
+          "phase": "reading-after-append",
+          "elapsed_ms": 881,
+          "cycle": 0
+        },
+        {
+          "phase": "search-running",
+          "elapsed_ms": 1038,
+          "cycle": 0
+        },
+        {
+          "phase": "find-complete",
+          "elapsed_ms": 6482,
+          "cycle": 0
+        },
+        {
+          "phase": "foreground-input",
+          "elapsed_ms": 6642,
+          "cycle": 0
+        },
+        {
+          "phase": "zoom-75",
+          "elapsed_ms": 6791,
+          "cycle": 0
+        },
+        {
+          "phase": "switch-zoom",
+          "elapsed_ms": 6946,
+          "cycle": 0
+        },
+        {
+          "phase": "history-evicted",
+          "elapsed_ms": 7233,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancel-pending",
+          "elapsed_ms": 7992,
+          "cycle": 0
+        },
+        {
+          "phase": "paste-cancelled",
+          "elapsed_ms": 8387,
+          "cycle": 0
+        },
+        {
+          "phase": "background-complete",
+          "elapsed_ms": 27312,
+          "cycle": 0
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 27632,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 28930,
+          "cycle": 1
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 29255,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 30560,
+          "cycle": 2
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 30907,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 32144,
+          "cycle": 3
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 32466,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 33763,
+          "cycle": 4
+        },
+        {
+          "phase": "cycle-six",
+          "elapsed_ms": 34105,
+          "cycle": 5
+        },
+        {
+          "phase": "cycle-eight",
+          "elapsed_ms": 35332,
+          "cycle": 5
+        },
+        {
+          "phase": "paste-close-pending",
+          "elapsed_ms": 35604,
+          "cycle": 5
+        },
+        {
+          "phase": "after-paste-close",
+          "elapsed_ms": 35808,
+          "cycle": 5
+        }
+      ],
+      "paste_cases": [
+        {
+          "name": "cancel",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 18414,
+          "flood_observed": true,
+          "fence": {
+            "generation": 1,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "cancelled",
+            "wrong_generation_rejected": true
+          }
+        },
+        {
+          "name": "close",
+          "target": 1,
+          "total": 3000000,
+          "before_sent": 17391,
+          "before_accepted": 18414,
+          "accepted": 18414,
+          "sent": 18414,
+          "in_flight": 0,
+          "retained_capacity": 15,
+          "state": "cancelled",
+          "checkpoint_bytes": 768,
+          "received": 768,
+          "flood_observed": true,
+          "fence": {
+            "generation": 2,
+            "held": true,
+            "owned_bytes": 1023,
+            "wait_finished": true,
+            "other_responsive": true,
+            "exit": "cancelled",
+            "final_state": "stopped",
+            "wrong_generation_rejected": true
+          }
+        }
+      ],
+      "raw_sha256": {
+        "cancel.bin": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6",
+        "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+        "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "close.bin.before.json": "42d48c9b60c19059b0fd753b871521787ece886f5976aef804fe05baa7db1584",
+        "frame.bmp": "4443a91feb73693650c2a6f8ac4feb91fa9fe3fee9e1340086892c2257db1990",
+        "resource-observations.jsonl": "4a24473a1c2c48d3f96098f18dd8c99b16e1e33c30856900727c20af6cd4a832",
+        "resource-phases.jsonl": "4ddef626506c4410572d43f8daaa521487ce6121bc26fadca51c17a3ed73dc50",
+        "resource-summary.json": "a1c3b5a9b1c224c2ee9bd398ee72edecfc0046aacd464998ed68d20171dd5a59",
+        "sample.json": "d8abba7266e09bfbfab499957e620b1fd2e111c0b26aab6994baf0222108f3cf",
+        "sample.public.json": "2a0f6f9d77f7a858d372dcc0ad139b74b6e5e27550af87acb11f099df85986ed",
+        "sessions.json": "29bea82e4c709a55704b9dc6491e7a9c9a1cba08dfb42e4ef0564e765128aacf",
+        "validation.json": "1cc474b79845172d40b6544689ef261a331cdd7ebb4760d908c55c8d21fa9c41",
+        "workspace.layout": "9a96d62943f54727e7c50ce5785a571efbfa6cbece6248f6a6d144257c1e1d58"
+      }
+    }
+  ],
+  "internal_skips": [
+    "setUpClass (test_candidate_compare.CandidateComparisonTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks'",
+    "setUpClass (test_capability_matrix.CapabilityMatrixTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks'",
+    "setUpClass (test_fuzz_matrix.FuzzMatrixTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks'",
+    "setUpClass (test_real_app_matrix.RealApplicationMatrixTests) ... skipped 'optional real application capture dependencies are not built'",
+    "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice) ... skipped 'actual system Copy/Paste requires a disposable hosted VM'",
+    "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails) ... skipped 'opt-in pinned reference failure injection'",
+    "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard) ... skipped 'system copy UI gate requires a disposable hosted VM'",
+    "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close) ... skipped 'product clipboard read gate requires a disposable hosted VM'",
+    "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver) ... skipped 'real system clipboard UI gate requires a disposable hosted VM'",
+    "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice) ... skipped 'system CF requires a disposable hosted VM'",
+    "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice) ... skipped 'real CF/EDIT Copy requires a disposable hosted VM'",
+    "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard) ... skipped 'Private window station OpenClipboard denied (5); system API gate remains unverified."
+  ],
+  "shell_unit_status": [
+    {
+      "name": "test_clipboard_evidence_rejects_leaks_missing_phases_and_false_cleanup",
+      "status": "ok"
+    },
+    {
+      "name": "test_hosted_guards_reject_missing_or_partial_identity_before_any_work",
+      "status": "ok"
+    },
+    {
+      "name": "test_native_clipboard_mode_refuses_non_hosted_before_window_creation",
+      "status": "ok"
+    },
+    {
+      "name": "test_actual_client_bounds_drive_geometry",
+      "status": "ok"
+    },
+    {
+      "name": "test_native_copy_return_highlight_cf_and_target_are_independent_gates",
+      "status": "ok"
+    },
+    {
+      "name": "test_occupied_product_copy_keeps_original_error_sentinel_target_and_strict_join",
+      "status": "ok"
+    },
+    {
+      "name": "test_old_v3_is_readable_but_never_claims_the_new_copy_popup_gate",
+      "status": "ok"
+    },
+    {
+      "name": "test_assignment_failure_reaps_gated_launcher_and_preserves_failure",
+      "status": "ok"
+    },
+    {
+      "name": "test_close_during_continuous_output",
+      "status": "ok"
+    },
+    {
+      "name": "test_close_while_resizing_continuous_output",
+      "status": "ERROR"
+    },
+    {
+      "name": "test_commands_unicode_editing_interrupt_and_normal_exit",
+      "status": "ok"
+    },
+    {
+      "name": "test_desktop_creation_failure_closes_job_and_keeps_evidence",
+      "status": "ok"
+    },
+    {
+      "name": "test_find_continuous_output_partial_navigation_replace_cancel_and_target_close",
+      "status": "ok"
+    },
+    {
+      "name": "test_find_real_edit_navigation_unicode_output_isolation_and_cancel",
+      "status": "ok"
+    },
+    {
+      "name": "test_invalid_arguments_create_no_session",
+      "status": "ok"
+    },
+    {
+      "name": "test_keyboard_message_path_to_real_console_bytes",
+      "status": "ok"
+    },
+    {
+      "name": "test_launch_failure_is_visible_and_recoverable",
+      "status": "ok"
+    },
+    {
+      "name": "test_local_shell_launch_working_directory_and_cleanup",
+      "status": "ok"
+    },
+    {
+      "name": "test_main_and_bottom_sessions_focus_geometry_and_cleanup",
+      "status": "ERROR"
+    },
+    {
+      "name": "test_main_split_background_restore_close_and_focus",
+      "status": "ok"
+    },
+    {
+      "name": "test_mouse_selection_copy_model_zoom_sessions_and_eviction",
+      "status": "ok"
+    },
+    {
+      "name": "test_mouse_selection_to_real_system_clipboard",
+      "status": "skipped"
+    },
+    {
+      "name": "test_paste_confirmation_and_hidden_target_preserve_visible_focus",
+      "status": "ok"
+    },
+    {
+      "name": "test_paste_control_eof_remains_failure_after_cleanup",
+      "status": "ok"
+    },
+    {
+      "name": "test_paste_missing_go_remains_failure_after_cleanup",
+      "status": "ok"
+    },
+    {
+      "name": "test_per_session_zoom_and_controlled_dpi_transitions",
+      "status": "ok"
+    },
+    {
+      "name": "test_queues_apply_bounded_backpressure_and_reject_input",
+      "status": "ok"
+    },
+    {
+      "name": "test_real_history_scroll_anchor_eviction_and_hidden_sessions",
+      "status": "ok"
+    },
+    {
+      "name": "test_real_monitor_round_trip_preserves_workspace",
+      "status": "ok"
+    },
+    {
+      "name": "test_resize_child_dimensions_and_interrupt",
+      "status": "ERROR"
+    },
+    {
+      "name": "test_selection_autoscroll_with_short_and_tall_workspace",
+      "status": "ok"
+    },
+    {
+      "name": "test_system_clipboard_product_read_errors_cancel_and_close",
+      "status": "skipped"
+    },
+    {
+      "name": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver",
+      "status": "skipped"
+    },
+    {
+      "name": "test_watchdog_contains_real_shell_tree",
+      "status": "ok"
+    },
+    {
+      "name": "test_workspace_rename_drag_and_fresh_process_restore",
+      "status": "ok"
+    },
+    {
+      "name": "test_workspace_sessions_resize_and_cleanup",
+      "status": "ERROR"
+    },
+    {
+      "name": "test_workspace_v1_empty_and_invalid_recovery",
+      "status": "ok"
+    },
+    {
+      "name": "test_workspace_v2_empty_session_roundtrip",
+      "status": "ok"
+    }
+  ],
+  "shell_module_complete": false,
+  "shell_module_limitation": "CTest killed aggregate at original 180s; listed method statuses do not make the complete module pass",
+  "standalone_paste_runs": [
+    {
+      "run": "paste-0",
+      "sample": {
+        "mode": "ui-paste",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 12,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 12,
+          "terminated": 0
+        },
+        "desktop_gone": true
+      },
+      "raw_sha256": {
+        "cancel.bin": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6",
+        "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+        "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "close.bin.before.json": "42d48c9b60c19059b0fd753b871521787ece886f5976aef804fe05baa7db1584",
+        "confirmation.bmp": "2b63b1d079427584b5bb4be1739dc221535af2291ef0b062994c3e5903a7c6a8",
+        "frame.bmp": "6e947f9d4d723f67da816440e3182629b4c4321a9ccb5876c87a4fa2ea06b9ce",
+        "input.bin": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+        "paste-workflow.json": "6c971df3ae4711bcbf07ecf4f5336211e7da3256a0ffcf694c7a9b06574f464b",
+        "sample.json": "f14a5f6d1977734e06a599aeed4b01da1f9ff17e523953f8035cf4b1544726f1",
+        "workspace.layout": "4c271282879f651f87a060c325ff62287a9ddd86cda103c86855a3133b209b13"
+      },
+      "workflow": {
+        "schema": "termforge-window-paste-v2",
+        "keyboard": {
+          "default_enter_accept": true,
+          "default_escape_cancel": true,
+          "tab_enter_accept": true
+        },
+        "cases": [
+          {
+            "name": "cancel",
+            "target": 1,
+            "total": 3000000,
+            "before_sent": 17391,
+            "before_accepted": 18414,
+            "accepted": 18414,
+            "sent": 18414,
+            "in_flight": 0,
+            "retained_capacity": 15,
+            "state": "cancelled",
+            "checkpoint_bytes": 768,
+            "received": 18414,
+            "flood_observed": true,
+            "fence": {
+              "generation": 1,
+              "held": true,
+              "owned_bytes": 1023,
+              "wait_finished": true,
+              "other_responsive": true,
+              "exit": "cancelled",
+              "final_state": "cancelled",
+              "wrong_generation_rejected": true
+            }
+          },
+          {
+            "name": "close",
+            "target": 1,
+            "total": 3000000,
+            "before_sent": 17391,
+            "before_accepted": 18414,
+            "accepted": 18414,
+            "sent": 18414,
+            "in_flight": 0,
+            "retained_capacity": 15,
+            "state": "cancelled",
+            "checkpoint_bytes": 768,
+            "received": 768,
+            "flood_observed": true,
+            "fence": {
+              "generation": 2,
+              "held": true,
+              "owned_bytes": 1023,
+              "wait_finished": true,
+              "other_responsive": true,
+              "exit": "cancelled",
+              "final_state": "stopped",
+              "wrong_generation_rejected": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "run": "paste-1",
+      "sample": {
+        "mode": "ui-paste",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 12,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 12,
+          "terminated": 0
+        },
+        "desktop_gone": true
+      },
+      "raw_sha256": {
+        "cancel.bin": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6",
+        "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+        "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "close.bin.before.json": "42d48c9b60c19059b0fd753b871521787ece886f5976aef804fe05baa7db1584",
+        "confirmation.bmp": "2b63b1d079427584b5bb4be1739dc221535af2291ef0b062994c3e5903a7c6a8",
+        "frame.bmp": "6e947f9d4d723f67da816440e3182629b4c4321a9ccb5876c87a4fa2ea06b9ce",
+        "input.bin": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+        "paste-workflow.json": "6c971df3ae4711bcbf07ecf4f5336211e7da3256a0ffcf694c7a9b06574f464b",
+        "sample.json": "d52d098a6e8be6cf6e415bee3659f3add3d6d9998e3ed1bc702ceeda70da81c1",
+        "workspace.layout": "4c271282879f651f87a060c325ff62287a9ddd86cda103c86855a3133b209b13"
+      },
+      "workflow": {
+        "schema": "termforge-window-paste-v2",
+        "keyboard": {
+          "default_enter_accept": true,
+          "default_escape_cancel": true,
+          "tab_enter_accept": true
+        },
+        "cases": [
+          {
+            "name": "cancel",
+            "target": 1,
+            "total": 3000000,
+            "before_sent": 17391,
+            "before_accepted": 18414,
+            "accepted": 18414,
+            "sent": 18414,
+            "in_flight": 0,
+            "retained_capacity": 15,
+            "state": "cancelled",
+            "checkpoint_bytes": 768,
+            "received": 18414,
+            "flood_observed": true,
+            "fence": {
+              "generation": 1,
+              "held": true,
+              "owned_bytes": 1023,
+              "wait_finished": true,
+              "other_responsive": true,
+              "exit": "cancelled",
+              "final_state": "cancelled",
+              "wrong_generation_rejected": true
+            }
+          },
+          {
+            "name": "close",
+            "target": 1,
+            "total": 3000000,
+            "before_sent": 17391,
+            "before_accepted": 18414,
+            "accepted": 18414,
+            "sent": 18414,
+            "in_flight": 0,
+            "retained_capacity": 15,
+            "state": "cancelled",
+            "checkpoint_bytes": 768,
+            "received": 768,
+            "flood_observed": true,
+            "fence": {
+              "generation": 2,
+              "held": true,
+              "owned_bytes": 1023,
+              "wait_finished": true,
+              "other_responsive": true,
+              "exit": "cancelled",
+              "final_state": "stopped",
+              "wrong_generation_rejected": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "run": "paste-control-eof",
+      "sample": {
+        "mode": "ui-paste-control-eof",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "desktop_gone": true
+      },
+      "raw_sha256": {
+        "cancel.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+        "confirmation.bmp": "2b63b1d079427584b5bb4be1739dc221535af2291ef0b062994c3e5903a7c6a8",
+        "input.bin": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+        "paste-control-failure.json": "b0fd2d17e5d7fa2d635cae3416293e4a2c1d11e240a48f829b5da4552b51d68c",
+        "sample.json": "2f9a3caf3ad18d64dd7d6f542c465c52db071c462dfbac552096ed01d127a1f5",
+        "workspace.layout": "a26afdba5f7a4c7a7056bab7530fc98f0866419b5d87087cd85142d4243b163c"
+      },
+      "observed_failure": "paste control EOF rejected",
+      "control_failure": {
+        "eof_observed": true,
+        "timed_out": false,
+        "wait_finished": true,
+        "state": "failed",
+        "in_flight": 0,
+        "retained_capacity": 15
+      },
+      "receiver_bytes": 768
+    },
+    {
+      "run": "paste-control-timeout",
+      "sample": {
+        "mode": "ui-paste-control-timeout",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "desktop_gone": true
+      },
+      "raw_sha256": {
+        "cancel.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+        "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+        "confirmation.bmp": "2b63b1d079427584b5bb4be1739dc221535af2291ef0b062994c3e5903a7c6a8",
+        "input.bin": "d4acd50607214fe6614644e1f5502d7f1043dc3e0d38ca87bbdaf66f12e527b2",
+        "paste-control-failure.json": "e296e5fa38603e2d8818e9332d52248bb5a68c32c42c0593b84cfb311d473ec1",
+        "sample.json": "fbf107cba73ca6b72f1f78ae14cdbc94c3809b2cd5c919a3002c9a5c6828ee3c",
+        "workspace.layout": "a26afdba5f7a4c7a7056bab7530fc98f0866419b5d87087cd85142d4243b163c"
+      },
+      "observed_failure": "paste control missing GO rejected",
+      "control_failure": {
+        "eof_observed": false,
+        "timed_out": true,
+        "wait_finished": true,
+        "state": "failed",
+        "in_flight": 0,
+        "retained_capacity": 15
+      },
+      "receiver_bytes": 768
+    }
+  ],
+  "other_shell_failures": [
+    {
+      "run": "resize-0",
+      "stage": 43,
+      "sample": {
+        "mode": "resize",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "desktop_gone": true
+      },
+      "expected_exact_line": "TF_SIZE_100x28",
+      "observed_line": "TF_SIZE_100x28OW",
+      "local_raw_sample_sha256": "ac6f650ce3bd87b934755ca47072f65b689be5662ea3396cb7939c41e847d7da"
+    },
+    {
+      "run": "resize-close-0",
+      "stage": 43,
+      "sample": {
+        "mode": "resize-close",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "desktop_gone": true
+      },
+      "expected_exact_line": "TF_SIZE_100x28",
+      "observed_line": "TF_SIZE_100x28OW",
+      "local_raw_sample_sha256": "6489fa48ad6bb446e5c5395f3b133829d9f8852479f352f15926a126a8308c2f"
+    },
+    {
+      "run": "main-2",
+      "stage": 7,
+      "sample": {
+        "mode": "ui-main",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "job_after": {
+          "active": 0,
+          "total": 16,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 16,
+          "terminated": 0
+        },
+        "desktop_gone": true
+      },
+      "expected_exact_line": null,
+      "observed_line": null,
+      "local_raw_sample_sha256": "8ca836c302b4bdf21a81dbfd1668381978d7c55c45fb05140bbcbad596712926"
+    },
+    {
+      "run": "ui-2",
+      "stage": 52,
+      "sample": {
+        "mode": "ui",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "job_after": {
+          "active": 0,
+          "total": 12,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 12,
+          "terminated": 0
+        },
+        "desktop_gone": true
+      },
+      "expected_exact_line": null,
+      "observed_line": null,
+      "local_raw_sample_sha256": "de287a2da956ccb3a75985ec690146d8097ca61da63517c9fd61f33b02bc99d4"
+    }
+  ]
+}

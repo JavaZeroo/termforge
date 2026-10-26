@@ -1,6 +1,6 @@
 # 未完成 UI 粘贴的确定性取消与关闭
 
-对应 [#53](https://github.com/JavaZeroo/termforge/issues/53)，属于 [#50](https://github.com/JavaZeroo/termforge/pull/50) 的实验后端整合。实现源 `a15eb7f67315fb53c9d66b9c5a4424e13511a311` 的单窗口两轮取消/关闭及控制故障检查通过，**完整八会话仍失败，#53 保持开放**。[固定源码、二进制、原始记录哈希与逐字段结果](../../experiments/shell/results/2026-10-26-ui-paste-fence/validation.json)分列原 red、针对性验证与整体验证，不能互相替代。
+对应 [#53](https://github.com/JavaZeroo/termforge/issues/53)，属于 [#50](https://github.com/JavaZeroo/termforge/pull/50) 的实验后端整合。实现源 `a15eb7f67315fb53c9d66b9c5a4424e13511a311` 的单窗口两轮取消/关闭及控制故障检查通过，**该源码的完整八会话仍失败**。后续在 `eae4b6a` 上通过两轮原 data-only 合同，见[行键成本与关闭回复修复](resize-replay-cost.md)；本页保留修复前证据。[固定源码、二进制、原始记录哈希与逐字段结果](../../experiments/shell/results/2026-10-26-ui-paste-fence/validation.json)分列原 red、针对性验证与整体验证，不能互相替代。
 
 ## 原失败与修改
 
