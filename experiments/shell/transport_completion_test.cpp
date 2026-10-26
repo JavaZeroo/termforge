@@ -31,6 +31,23 @@ int main() {
               line+"TF>",marker),"command redraw BS before a fresh literal output line does not poison later records");
         check(transport_output_completed("echo old\b\r\n"+line+"TF_PS_MAJOR=5\r\nTF> ",marker),
               "fresh output remains independent of a prior edited command record");
+        const std::string wrapped_cmd="\x1b[2;4Hf\x1b[2;5H\x1b[2;5Hor %I in (\"%CD%\") do @echo T \r"
+              "\x1b[3;1H\x1b[3;1HF_CMD_DIR=%~nxI\x1b[3;16H\x1b[3;16H\r\n"+
+              title+"\x1b\\"+line+"\x1b]0;cmd.exe\x1b\\\r\nTF>";
+        auto no_echo_cr=wrapped_cmd;
+        no_echo_cr.erase(no_echo_cr.find("\r\x1b[3;1H"),1);
+        check(transport_output_completed(no_echo_cr,marker),
+              "removing only the wrapped command echo CR isolates its rejection");
+        check(transport_output_completed(wrapped_cmd,marker),
+              "wrapped command echo must not hide later independent output and prompt");
+        check(transport_output_completed("echo old\rredraw\r\n"+line+"TF> ",marker),
+              "real LF separates an edited echo from new literal output");
+        check(!transport_output_completed("echo \r\x1b[3;1H"+marker+"\x1b[4;1HTF>\r\nTF>",marker),
+              "CUP cannot recover a CR-edited record to invent output");
+        check(!transport_output_completed("echo \r\x1b[3;1H"+marker+"\r\nTF>",marker),
+              "LF cannot retroactively turn a CR-edited echo into output");
+        check(!transport_output_completed("echo \r\x1b[3;1Htail\r\n"+line,marker),
+              "a discarded wrapped echo still requires a fresh prompt");
         const std::string save="\x1b[?25l\x1b[1;3H> \x1b[93mWrite-Output \x1b[36m"
               "'TF_SAVE_PS'                                   \x1b[m\r\n"
               "\x1b[63X\x1b[63C\r\x1b[?25hTF_SAVE_PS\r\nTF> ";

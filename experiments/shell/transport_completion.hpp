@@ -10,10 +10,11 @@ namespace tf_shell_test {
 // column-one CUP. This is a record boundary, without assuming the initial cursor
 // row or claiming that the marker still occupies a separate visible screen row.
 // Complete CSI envelopes are omitted without interpreting their semantics.
-// A command-editor BS before output invalidates that record until a real LF;
+// A command-editor BS or nonempty-record CR before output invalidates that
+// record until a real LF;
 // it cannot erase an echo prefix or splice a marker. Unknown ESC forms,
 // malformed/incomplete envelopes and other controls remain unproven.
-// A bare CR is harmless only in an empty, unedited record after an observed
+// A bare CR leaves an empty, unedited record unchanged after an observed
 // boundary and before marker output. It cannot discard text or end a record.
 // ShellWindow retains its independent 8192-byte observation cap.
 inline bool transport_output_completed(std::string_view raw, std::string_view marker) {
@@ -75,10 +76,13 @@ inline bool transport_output_completed(std::string_view raw, std::string_view ma
                 if(!terminated) return false;
             } else return false;
         } else if(byte=='\r') {
-            // Only CRLF completes literal text. An empty redraw before the
-            // marker leaves the record empty and still needs fresh output.
+            // Only CRLF completes literal text. A wrapped command echo may use
+            // bare CR/CUP, but that edited record cannot supply marker output.
+            // Only a later real LF permits a fresh independent output record.
             if(i==raw.size() || raw[i]!='\n') {
-                if(!record_boundary || !line.empty() || !literal_line || output_seen) return false;
+                if(output_seen) return false;
+                if(!line.empty() || !literal_line) literal_line=false;
+                else if(!record_boundary) return false;
             }
         } else if(byte=='\n') {
             end_line();
