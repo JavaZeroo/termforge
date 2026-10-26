@@ -6,6 +6,7 @@
 |---|---|
 | 已经能做什么，离目标差在哪里？ | [功能与差异矩阵](FEATURES.md) |
 | 最终目标是什么，如何分阶段完成？ | [五个路标，远到近](PLAN.md) |
+| 用户确认了什么，哪些决策仍待确认？ | [ADR-0006：方向与决策权限](adr/0006-confirmed-project-direction.md) |
 | R2 分几步交付，当前先做什么、怎样验收？ | [R2 交付路线与验收](milestones/R2-local-terminal.md) |
 | 已验收的基础文字交互合同是什么？ | [R1 基础文字交互](milestones/R1-local-text.md) |
 | 字体、网格和真实显示如何验收？ | [R2 字体与显示合同](milestones/R2-font-display.md) |

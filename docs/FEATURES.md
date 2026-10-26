@@ -4,6 +4,8 @@
 
 比较目标固定为 **WindTerm 2.7.0**。功能范围依据[固定提交的官方 README](https://github.com/kingToolbox/WindTerm/blob/a8336c1d1e3dd1a981500dae8ef9eb42066de95f/README.md)、[2.7.0 release](https://github.com/kingToolbox/WindTerm/releases/tag/2.7.0)及仓库内的发行物/运行时研究。官方声明说明目标包含什么，不证明已经在本机验证了其行为，更不证明 TermForge 已实现。各平台、版本限制和具体交互仍需逐项形成可重复场景。
 
+用户确认的目标和权限见 [ADR-0006](adr/0006-confirmed-project-direction.md)：首个完整版本验收 Windows 11 x64，最终覆盖 Windows/Linux/macOS；原版实际行为优先。Alacritty 保留为候选，正式核心和 GUI/后端选型待确认；关键性能指标逐项达标，具体波动范围后续与用户明确。以下历史限定验收描述实现证据，不自动表示用户批准了最终策略或已达到原版一致性。
+
 状态定义：**限定验收**指表中明确范围已有实现与独立回归；**实现中，未验收**指已有实现，但整项目标场景或整合验收未完成；**未实现**指尚无相应产品能力；**待取证**指目标行为或比较结论未知；**限定测量**仅说明已有指定范围的观测，不代表性能预算通过。每行的“路标”表示主要交付位置，不表示之前的路标已完成。
 
 ## 构建配置与证据边界
@@ -11,7 +13,7 @@
 | 配置 | 当前定位 | 可以引用的证据与限制 |
 |---|---|---|
 | 默认 main：自研核心 + 系统 ConPTY | 默认构建与已发布 Alpha 的基础路线，不需要 Rust | 已有 R1 限定验收；VT/Unicode 能力仍为有限子集，不能引用候选核心的字素或 TUI 结果 |
-| 显式候选 main：`termforge.4` + 系统 ConPTY | `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON`；按 [ADR-0003](adr/0003-core-reference-and-reuse.md)推进 R2 新终端能力 | [固定来源](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)与 [#39 字素合同](research/streaming-graphemes.md)；候选正确性通过不关闭系统 ConPTY 或 R2 父项 |
+| 显式候选 main：`termforge.4` + 系统 ConPTY | `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON`；按 [ADR-0003](adr/0003-core-reference-and-reuse.md)保留为可评估实验，正式核心选型待用户确认 | [固定来源](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)与 [#39 字素合同](research/streaming-graphemes.md)；候选正确性通过不关闭系统 ConPTY 或 R2 父项 |
 | 实验分支：`termforge.4` + 固定官方 ConPTY | [PR #50（Draft）](https://github.com/JavaZeroo/termforge/pull/50)，联合源码 `3e5b96d` 已重建并[冻结真实基线](research/joint-conpty-baseline.md)，尚未合并或通过产品整体验收 | [#47](https://github.com/JavaZeroo/termforge/issues/47) 跟踪后端整合；终端 margin 与原生状态分列。[resize 残尾 #51](https://github.com/JavaZeroo/termforge/issues/51)、[Console-width Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[未完成粘贴的确定性取消夹具 #53](https://github.com/JavaZeroo/termforge/issues/53)仍开放，现有 completed 观察不能证明部分发送取消通过或产品 Cancel 故障；worker gate [#62](https://github.com/JavaZeroo/termforge/issues/62) 已有[独立夹具修正与双后端实际 worker 验证](research/sender-fence.md)，默认产品路径不启用 fence，也不替代 #53 的 UI 取消/关闭；工作区 [#63](https://github.com/JavaZeroo/termforge/issues/63) 回归仍开放 |
 
 以下能力默认指已合并实现；某个配置的通过结果不能转用于另一个配置。R1 的真实系统 CF/拼音验收属于固定自研核心配置，不外推到候选 `.4` 或实验后端联合配置。
@@ -68,9 +70,9 @@
 | 活体资源与滚动端点 | **限定测量**：普通启动默认关闭；[R1 组合审计](../experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)绑定实际接收、state 与同 revision 的 WM_PAINT/BitBlt/GdiFlush 提交，保留跨时钟校准与阶段资源，可离线重算 | launcher-tree 不等于 UI 归因；观察进程成本不等于增量采样成本，短命进程及退出 CPU 可能漏采。短驻留不证明长期无泄漏，`presented_done=null`，不构成性能通过 | R1；扩展 R4 / R5 |
 | 自动正确性与构建 | **限定验收**：Windows shell/ConPTY/呈现及 Windows/Linux 核心 CI、差分/恢复/队列/生命周期场景 | 产品打包、干净机器使用、依赖升级、长期回归和更广平台矩阵；#40 的 CI 纯夹具超时，以及后续保存 stage2 #72 / 窄窗口选择 #73 的独立失败仍未闭合 | R2 / R4 |
 | Windows 产品交付 | **实现中，未验收**：首个 [v0.1.0-alpha.1 预发布](releases/v0.1.0-alpha.1.md)提供 Windows x64、静态 MSVC 运行库、附资源许可和构建身份的免安装 ZIP；未签名，已验环境限 Windows 11 本机与 Server 2025 CI，布局仍写入 LOCALAPPDATA | 这是 R1 体验包，尚非 R2 日常开发版；干净机器与更广平台矩阵、签名/安装、配置升级及持续运行仍待完成。Windows 10 未验收，Server 2022 已知资源门槛未过 | R2 / R3 |
-| Linux/macOS 与其他架构 | **未实现**客户端；Linux 核心 CI 已有。[官方平台范围台账](../research/windterm-2.7.0-platform-scope.md)已固定 2.7.0 的 Windows x86/x64、macOS x64、Linux x64 资产及声明下限；这不是 TermForge 支持或实测结论 | 各平台 PTY/输入/字体/UI/安装与架构覆盖。Windows 7/8/10、macOS 10.13–12、Linux glibc 2.17+ 和未列出的 ARM/旧新系统等按台账分别验收或保留未知，不能由核心 CI 推断产品支持 | R4 / R5 |
-| 吞吐、响应、内存与稳定性 | **实现中，未验收**：已有机制实验、连续 CPU 区间校准与合成回归；候选字素改动的受限诊断中 project/interactive 吞吐中位数约下降 16%/9%，由 [#54](https://github.com/JavaZeroo/termforge/issues/54) 跟踪 | 共享宿主、allocator 包装与缺少真实呈现/输入时延端点使该诊断不构成正式预算。仍需同负载/同正确性、无插桩对照、观测开销、长期/多会话公平性和可复核预算；与 WindTerm 的实际差距**待取证** | 持续工作；R4 / R5 收敛 |
+| Linux/macOS 与其他架构 | **未实现**客户端；Linux 核心 CI 已有。[官方平台范围台账](../research/windterm-2.7.0-platform-scope.md)已固定 2.7.0 的 Windows x86/x64、macOS x64、Linux x64 资产及声明下限；这不是 TermForge 支持或实测结论 | 最终需真实 Linux/macOS 客户端；平台调查可提前进行，整合及完整验收排在 Windows 11 x64 完整版本之后。其他系统版本、最低版本和架构由用户后续明确；旧系统及 ARM 等保持调查记录，不自动承诺或排除，也不能由核心 CI 推断产品支持 | 持续调查；R5 全平台出口 |
+| 吞吐、响应、内存与稳定性 | **实现中，未验收**：已有机制实验、连续 CPU 区间校准与合成回归；候选字素改动的受限诊断中 project/interactive 吞吐中位数约下降 16%/9%，由 [#54](https://github.com/JavaZeroo/termforge/issues/54) 跟踪 | 共享宿主、allocator 包装与缺少真实呈现/输入时延端点使该诊断不构成正式预算。仍需同负载/同正确性、无插桩对照、观测开销和长期/多会话公平性；可靠原版基线后提出逐项预算及允许波动范围，**由用户明确确认**。与 WindTerm 的实际差距**待取证** | 当前优先；贯穿 R1–R5 |
 | 大历史与动态内存压缩 | **未实现**产品能力；WindTerm 压缩属于官方性能声明，内部机制尚未证实 | 1/10/100 万行等明确规模下的内存/滚动/搜索/淘汰实验；根据瓶颈决定独立存储/压缩实现 | R4 |
-| 完整目标验收 | **待取证**：已有固定版本和局部观察，没有完整行为/性能对照矩阵 | 全部目标行均有实现、验收与来源；剩余差异有明确裁决，支持平台可从源码复建；不依赖 WindTerm 二进制或专有资源 | R5 |
+| 完整目标验收 | **待取证**：已有固定版本和局部观察，没有完整行为/性能对照矩阵 | 先在 Windows 11 x64 完整验收功能/行为/UI/性能及独立构建，再完成 Linux/macOS 全平台出口；重要差异和性能容差须有用户确认，Windows 通过不代表全平台完成；不依赖 WindTerm 二进制或专有资源 | R5 分平台出口 |
 
-官方已知限制属于对照边界，不自动变成必须新增的功能或必须重现的缺陷。例如 tmux 嵌套及其与 Sender/SyncInput 的限制、Windows ZMODEM 非 ASCII 文件名问题，应记录实际差异。项目完整开源不要求复制 WindTerm 的私有实现、资源或错误；行为兼容与独立改进须明确标注。
+官方已知限制属于对照边界，默认以固定原版实际行为为准。例如 tmux 嵌套及其与 Sender/SyncInput 的限制、Windows ZMODEM 非 ASCII 文件名问题，应记录原版证据和差异；明确缺陷的修正或重要独立改进先提交用户确认。项目完整开源不要求内部实现一致，但不能以规范、第三方核心或现有项目策略自动豁免行为差距。

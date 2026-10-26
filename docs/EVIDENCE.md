@@ -4,6 +4,8 @@
 
 每条证据仅支持其固定配置，不能把历史成功、局部模块、未合并分支拼成当前产品验收：
 
+产品方向和确认依据见 [ADR-0006](adr/0006-confirmed-project-direction.md)。历史候选比较及限定合同保留事实身份，不构成用户批准正式选型或重要差异；关键性能容差仍待可靠基线后与用户明确。
+
 | 配置 | 证据定位 |
 |---|---|
 | main 默认：自研核心 + 系统 ConPTY | R1 限定总验收和有限 VT/Unicode 子集；默认构建不需要 Rust |
@@ -67,7 +69,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 |---|---|---|
 | 构建与 CI 入口 | [贡献指南](../CONTRIBUTING.md)、[根 CMake](../CMakeLists.txt)、[CI workflow](../.github/workflows/build.yml)、[Actions 39930814167](https://github.com/JavaZeroo/termforge/actions/runs/39930814167) | 历史 2dc8d6d 的 Windows/Ubuntu 构建记录；当前入口由根 CMake/CI 定义。Linux 核心 CI 不代表 Linux 客户端。 |
 | 核心有限子集与恢复 | [核心支持合同](../experiments/core/README.md)、[Recovery 合同](../experiments/core/RECOVERY.md)、[resize 决策](adr/0005-physical-row-resize.md) | 自研有限 VT 子集、恢复与物理行裁剪合同；手写预期和拆包不能替代完整 VT/Unicode/TUI 认证。 |
-| R2 核心路线决定 | [ADR-0003](adr/0003-core-reference-and-reuse.md)、[平台/维护/接口审查](research/2026-10-25-core-route-review.md) | ADR-0003 决定 R2 新能力复用 Term/Processor，同时保留传输/呈现/自研差分。历史平台/维护评估不等于当前客户端支持；路线决定不等于整项交付。 |
+| R2 候选比较与历史路线决定 | [ADR-0003](adr/0003-core-reference-and-reuse.md)、[平台/维护/接口审查](research/2026-10-25-core-route-review.md) | 历史 Term/Processor 实验及传输/呈现/自研差分证据保留。按 ADR-0006，Alacritty 当前为待评估候选，正式核心选择由 #34 提交用户确认；历史平台/维护评估不等于客户端支持或产品选型批准。 |
 | 初始外部核心可行性（历史） | [固定版本/许可与复现入口](../experiments/candidates/alacritty/README.md)、[本地 Windows 摘要](../experiments/candidates/alacritty/results/2026-10-24-windows/summary.json)、[构建验证](../experiments/candidates/alacritty/results/2026-10-24-windows/validation.json)、[Windows/Ubuntu CI](https://github.com/JavaZeroo/termforge/actions/runs/40117504346) | 初始 crates.io 0.26.0 的固定来源、许可、构建及 headless 可行性；不是当前补丁版或产品路线验收。 |
 | 独立语义参考 | [差分入口](../experiments/differential/README.md)、[固定依赖](../experiments/differential/requirements.txt)、[2026-10-25 摘要](../experiments/differential/results/2026-10-25/summary.json) | 固定 pyte/wcwidth 的共同轨迹、精确裁决与负例；参考差异不算兼容通过，不用于性能比较。 |
 | 初始共同轨迹（历史） | [差分说明](../experiments/differential/README.md)、[逐项裁决](../experiments/differential/decisions.md)、[2026-10-25 Windows 摘要](../experiments/differential/results/2026-10-25-candidate-common-v3/summary.json) | 旧候选共同矩阵及精确参考差异；semantic_acceptance=false，保持原版本身份。 |
