@@ -24,6 +24,6 @@ python -m unittest discover -s experiments/differential -p test_real_app_matrix.
 
 ## 尚未闭合
 
-原 GUI `candidate-tui` 两轮本批仍为一绿一红；红例在 resize 后没有产生 InsertLeave，`:call writefile(...)` 成为插入内容，stage59 到原期限失败。两轮都回收为 Job0、私有 desktop 消失。目录隔离不影响此入口，尚无根因或修复结论。历史冻结基线、完整 TUI、呈现端点和后端整体回归仍分别保留。
+原 GUI `candidate-tui` 两轮本批仍为一绿一红；红例在 resize 后没有产生 InsertLeave，`:call writefile(...)` 成为插入内容，stage59 到原期限失败。两轮都回收为 Job0、私有 desktop 消失。目录隔离不影响此入口；该批尚无根因或修复结论，后续输入边界见下文链接。历史冻结基线、完整 TUI、呈现端点和后端整体回归仍分别保留。
 
-有停止条件的 GUI 探针也未形成修复：strace 包装的两次运行在 Vim 启动时触发另一种 `c0000005`，不计原症状；临时观察真实 WriteFile 成功字节的三轮均绿，其中两轮 Ctrl-O 命令先于 CPR，否定了“这个先后关系必然导致红例”的假设。观察代码已移除，重新构建的原入口两轮均绿，事件/写盘/回复原检查保持；这仍不能解释已保存的真实 stage59 红例。探针二进制未在还原前记录哈希，证据明确保留该身份缺口并排除为验收。下一次需定位真实控制台输入到 Vim resize/按键处理的边界，不能用这批绿例关闭 GUI 问题。
+有停止条件的 GUI 探针也未形成修复：strace 包装的两次运行在 Vim 启动时触发另一种 `c0000005`，不计原症状；临时观察真实 WriteFile 成功字节的三轮均绿，其中两轮 Ctrl-O 命令先于 CPR，否定了“这个先后关系必然导致红例”的假设。观察代码已移除，重新构建的原入口两轮均绿，事件/写盘/回复原检查保持；这仍不能解释已保存的真实 stage59 红例。探针二进制未在还原前记录哈希，证据明确保留该身份缺口并排除为验收。该批绿例不能关闭 GUI 问题。后续[真实输入边界观测](vim-msys-input-boundary.md)已捕获 MSYS 消耗 Ctrl-O 的调用顺序，仍没有产品修复验收。
