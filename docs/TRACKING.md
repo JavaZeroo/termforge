@@ -35,7 +35,7 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 
 ## R2执行切片
 
-以下覆盖[总项#7](https://github.com/JavaZeroo/termforge/issues/7)的全部工作包；详细范围、验收清单和实时状态只在对应 issue 维护。原生 sub-issue / blocked-by 是依赖关系的权威记录。
+以下覆盖[总项#7](https://github.com/JavaZeroo/termforge/issues/7)的全部工作包；出口与联合验收见 [R2 检查表](milestones/R2-local-terminal.md)，单项范围和实时状态在对应 issue 维护。原生 sub-issue / blocked-by 是依赖关系的权威记录。
 
 | 切片 | GitHub | 可验收交付 | 真实前置 |
 |---|---|---|---|
@@ -56,6 +56,7 @@ R1已按[限定合同](milestones/R1-local-text.md)验收，[完整组合证据]
 | Windows 回归 | [#38](https://github.com/JavaZeroo/termforge/issues/38) | 定位工作区、交互及 CI 的真实失败 | 无；#35 的出口依赖，不能以局部几何结果代替修复 |
 | Windows CI 回归 | [#40](https://github.com/JavaZeroo/termforge/issues/40) | 复核 `ime_inventory` 原 10 秒超时根因，保留 AST/最终进度与 OwnedJob 回收证据 | 无；作为 #38 的子项阻塞 #38，不能用本机或单次 CI 通过冒充修复 |
 | ConPTY margin 差异 | [#41](https://github.com/JavaZeroo/termforge/issues/41) | 裁决宿主/传输的每缓冲区 margin，保留原场景和独立实现证据 | #26；作为 #27 的子项阻塞 #27，不能以模型切片或差异观察代替产品验收 |
+| 显式官方 ConPTY 实验后端 | [#47](https://github.com/JavaZeroo/termforge/issues/47) | 固定同包 DLL/EXE 来源与身份，通过同一 Backend 验证实际 Session、GUI 和回收；不改变默认系统后端 | #41 的实现子项；仍需处理原生 API 与末端语义、resize、粘贴和完整工作流差异，不代表 #34 产品决定或 R2 出口 |
 | More 尾部 ECH 与捕获时序 | [#42](https://github.com/JavaZeroo/termforge/issues/42) | [限定合同](research/more-capture-ech.md)：默认 ECH、完整 More 提示、q/退出/真实 EOF；候选 pending-wrap 差异保留给 #27 | 无；#38 的子项，与 margin 修复分开；完整原始输入和旧失败保留，不静默降级为 match |
 | controller 正常退出观测缺口 | [#44](https://github.com/JavaZeroo/termforge/issues/44) | 记录 wait_exit 与 close 前 cmd 状态，定位真实 child→cmd/close 转换 | 无；#38 的子项与出口阻塞；后续同合同重跑成功不覆盖原失败 |
 | 候选 GUI 合法空标题 | [#45](https://github.com/JavaZeroo/termforge/issues/45) | 修正空 UTF-8 转换，使用真实 console 标题事件验证 GUI 存活，并保留非法非空输入拒绝 | 无；#38 的子项；新最小复现与旧 normal-1 未定位异常分列 |
