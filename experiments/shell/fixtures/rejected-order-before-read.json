@@ -1,0 +1,78 @@
+{
+  "manifest": {
+    "schema": "termforge-workflow-fixture-v1",
+    "fixture": "r108-console-v1",
+    "role": "F2",
+    "generation": 5,
+    "status": "failed",
+    "failure": "workflow command order invalid",
+    "source_bytes": 0,
+    "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "records": 0,
+    "worker_joined": true,
+    "console_window": false,
+    "receiver": {
+      "units": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "joined": true,
+      "error": 0
+    },
+    "stages": []
+  },
+  "receiver": {
+    "schema": "termforge-raw-console-receiver-v1",
+    "state": "stopped",
+    "stop_requested": true,
+    "worker_joined": true,
+    "last_read_success": false,
+    "last_read_count": 0,
+    "last_read_error": 0,
+    "worker_error": 0,
+    "failure_step": "",
+    "zero_read_accepted": false,
+    "reads_entered": 0,
+    "reads_completed": 0,
+    "cancel_calls": 1,
+    "cancel_successes": 0,
+    "last_cancel_error": 1168,
+    "received_units": 0,
+    "saved_bytes": 0,
+    "unexpected_cancel_observed": false,
+    "unexpected_cancel_error": 0,
+    "last_wait_result": 0,
+    "last_wait_error": 0
+  },
+  "events": [
+    {
+      "schema": "termforge-workflow-progress-v1",
+      "seq": 1,
+      "elapsed_ms": 0,
+      "event": "ready",
+      "phase": null,
+      "source_bytes": 0,
+      "records": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "schema": "termforge-workflow-progress-v1",
+      "seq": 2,
+      "elapsed_ms": 0,
+      "event": "event-rejected",
+      "phase": "append",
+      "source_bytes": 0,
+      "records": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "schema": "termforge-workflow-progress-v1",
+      "seq": 3,
+      "elapsed_ms": 16,
+      "event": "stopped",
+      "phase": null,
+      "source_bytes": 0,
+      "records": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

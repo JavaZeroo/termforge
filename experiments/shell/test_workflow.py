@@ -80,7 +80,66 @@ def synthetic_console(directory, role='F1', generation=1, columns=80, lines=None
     return metadata
 
 
+def captured_rejected_order(directory):
+    """The 0e1fb585 failure record, with no process identities or private paths."""
+    fixture = Path(__file__).with_name('fixtures') / 'rejected-order-before-read.json'
+    record = json.loads(fixture.read_text(encoding='utf-8'))
+    for suffix in ('', '.source.bin'):
+        (directory / ('capture.bin' + suffix)).write_bytes(b'')
+    for key, suffix in [('manifest', '.workflow.json'), ('receiver', '.receiver.json')]:
+        (directory / ('capture.bin' + suffix)).write_text(json.dumps(record[key]), encoding='utf-8')
+    (directory / 'capture.bin.progress.jsonl').write_text(
+        ''.join(json.dumps(event) + '\n' for event in record['events']), encoding='utf-8')
+    return record
+
+
 class WorkflowOracleTest(unittest.TestCase):
+    def test_captured_rejected_order_can_stop_before_first_read(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            captured_rejected_order(directory)
+            result = validate_rejected_order(directory, expected_generation=5)
+            self.assertTrue(result['expected_rejection'])
+            self.assertFalse(result['normal_completion'])
+            self.assertEqual(result['reason'], 'workflow command order invalid')
+
+    def test_before_first_read_rejection_requires_complete_clean_stop(self):
+        defects = [('reads_entered', 1), ('reads_entered', False), ('reads_completed', 1),
+                   ('worker_joined', False), ('stop_requested', False), ('worker_error', 5),
+                   ('failure_step', 'ReadConsoleW'), ('state', 'failed'),
+                   ('received_units', 1), ('saved_bytes', 1),
+                   ('cancel_calls', 0), ('cancel_successes', 1), ('last_cancel_error', 0),
+                   ('last_cancel_error', 5), ('unexpected_cancel_observed', True),
+                   ('unexpected_cancel_error', 5), ('last_wait_result', 258), ('last_wait_error', 5),
+                   ('last_read_success', True), ('last_read_count', 1), ('last_read_error', 995),
+                   ('zero_read_accepted', True)]
+        for field, value in defects:
+            with self.subTest(field=field, value=value), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                record = captured_rejected_order(directory)
+                record['receiver'][field] = value
+                (directory / 'capture.bin.receiver.json').write_text(json.dumps(record['receiver']), encoding='utf-8')
+                with self.assertRaises(ValueError):
+                    validate_rejected_order(directory, expected_generation=5)
+        for suffix in ('', '.source.bin'):
+            with self.subTest(nonempty=suffix), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                captured_rejected_order(directory)
+                (directory / ('capture.bin' + suffix)).write_bytes(b'x')
+                with self.assertRaises(ValueError):
+                    validate_rejected_order(directory, expected_generation=5)
+
+    def test_before_first_read_is_not_accepted_for_normal_fixture_cases(self):
+        for role in ('A', 'B'):
+            with self.subTest(role=role), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                captured = captured_rejected_order(directory)
+                synthetic_case(directory, role)
+                (directory / 'capture.bin.receiver.json').write_text(json.dumps(captured['receiver']), encoding='utf-8')
+                with self.assertRaises(ValueError):
+                    validate_fixture_case(directory, expected_role=role, expected_generation=1,
+                                          expected_input=b'' if role == 'A' else (PREFIX + '你好').encode())
+
     def test_console_window_requires_bounded_identity_and_complete_unicode(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
