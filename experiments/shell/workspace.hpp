@@ -618,7 +618,7 @@ class Workspace {
                 else if(self->test_mode_=="ui-split") self->scenario_split();
                 else if(self->test_mode_=="ui-history") self->scenario_history();
                 else if(self->test_mode_=="ui-keyboard") self->scenario_keyboard();
-                else if(self->test_mode_=="ui-paste" || self->test_mode_=="ui-paste-system") self->scenario_paste();
+                else if(self->test_mode_.rfind("ui-paste",0)==0) self->scenario_paste();
                 else if(self->test_mode_=="ui-clipboard-system") self->scenario_clipboard();
                 else if(self->test_mode_=="ui-selection" || self->test_mode_=="ui-copy-system") self->scenario_selection();
                 else if(self->test_mode_=="ui-selection-bytes" || self->test_mode_=="ui-copy-bytes-system") self->scenario_selection_bytes();
@@ -779,7 +779,7 @@ public:
             require(stage_==100 && collected_==1,"workspace keyboard scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\"ui-keyboard\",\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && (test_mode_=="ui-paste" || test_mode_=="ui-paste-system" || test_mode_=="ui-clipboard-system")) {
+        if(!image_.empty() && (test_mode_.rfind("ui-paste",0)==0 || test_mode_=="ui-clipboard-system")) {
             require(stage_==100 && collected_==2,"workspace paste scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":2,\"active_children_after\":0,\"presented_done\":null}\n";
         }
@@ -796,7 +796,7 @@ public:
             require(stage_==100 && collected_==3,"workspace selection context incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"sessions_closed\":3,\"active_children_after\":0,\"presented_done\":null}\n";
         }
-        if(!image_.empty() && !tf_shell_test::is_product_ime_mode(utf16(test_mode_.c_str())) && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-monitors" && test_mode_!="ui-shells" && test_mode_!="ui-launch-failure" && test_mode_!="ui-split" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_!="ui-paste" && test_mode_!="ui-paste-system" && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find" && test_mode_!="ui-find-stream" && test_mode_!="ui-selection-bytes" && test_mode_!="ui-copy-bytes-system" && test_mode_!="ui-selection-context" && test_mode_!="ui-copy-context-system" && test_mode_!="ui-actions" && test_mode_!="ui-actions-system") {
+        if(!image_.empty() && !tf_shell_test::is_product_ime_mode(utf16(test_mode_.c_str())) && test_mode_!="ui" && test_mode_!="ui-main" && test_mode_!="ui-dpi" && test_mode_!="ui-monitors" && test_mode_!="ui-shells" && test_mode_!="ui-launch-failure" && test_mode_!="ui-split" && test_mode_!="ui-history" && test_mode_!="ui-keyboard" && test_mode_.rfind("ui-paste",0)!=0 && test_mode_!="ui-clipboard-system" && test_mode_!="ui-selection" && test_mode_!="ui-copy-system" && test_mode_!="ui-find" && test_mode_!="ui-find-stream" && test_mode_!="ui-selection-bytes" && test_mode_!="ui-copy-bytes-system" && test_mode_!="ui-selection-context" && test_mode_!="ui-copy-context-system" && test_mode_!="ui-actions" && test_mode_!="ui-actions-system") {
             require(stage_==100 && collected_==1,"workspace interaction scenario incomplete");
             std::cout<<"{\"valid\":true,\"mode\":\""<<test_mode_<<"\",\"interactions_verified\":true,\"sessions_closed\":1,\"active_children_after\":0,\"presented_done\":null}\n";
         }

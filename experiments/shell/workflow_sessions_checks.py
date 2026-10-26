@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import re
 from experiments.shell.workflow_checks import validate_fixture_case
+from experiments.shell.paste_checks import validate_paste_fence
 
 NAMES = ('A', 'B', 'C', 'F1', 'F2', 'F3', 'F4', 'F5')
 EMPTY_SHA256 = hashlib.sha256(b'').hexdigest()
@@ -447,7 +448,7 @@ def _validate_paste_cases(out, data, target):
     cases = data.get('paste_cases')
     _require(type(cases) is list and [row.get('name') for row in cases] == ['cancel', 'close'], 'both actual paste cases required')
     expected = '汉'.encode('utf-8') * 1000000
-    for row in cases:
+    for generation, row in enumerate(cases, 1):
         for key in ('target', 'total', 'before_sent', 'before_accepted', 'accepted', 'sent',
                     'in_flight', 'retained_capacity', 'checkpoint_bytes', 'received'):
             _integer(row.get(key), f'paste {key}')
@@ -457,6 +458,7 @@ def _validate_paste_cases(out, data, target):
                  row['accepted'] >= row['before_accepted'] and row['in_flight'] == 0 and
                  row['retained_capacity'] <= 32 and row['checkpoint_bytes'] == 768 and
                  row.get('flood_observed') is True and row.get('state') in ('cancelled', 'failed'), 'paste did not remain bounded/partial/terminal')
+        validate_paste_fence(row, generation)
         raw = _bounded(out / (row['name']+'.bin'), 3000000)
         _require(0 < len(raw) == row['received'] <= row['sent'] and raw == expected[:len(raw)] and len(raw)%3 == 0,
                  'gated receiver differs from exact complete Unicode prefix')

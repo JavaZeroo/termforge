@@ -373,6 +373,41 @@ class ShellTests(unittest.TestCase):
                                                 "tab_enter_accept": True})
             self.assertEqual((out / "input.bin").read_bytes(), b"DEFAULT_ENTER_ACCEPT\r" + b"P\xe6\xb1\x89\r" * 5000)
 
+    def test_paste_control_eof_remains_failure_after_cleanup(self):
+        out = self.out / "paste-control-eof"
+        with self.assertRaisesRegex(ValueError, "paste control EOF rejected"):
+            execute(self.exe, "ui-paste-control-eof", out)
+        sample = json.loads((out / "sample.json").read_text())
+        self.assertEqual(sample["exit_code"], 2)
+        self.assertFalse(sample["timed_out"])
+        self.assertEqual(sample["job_after"]["active"], 0)
+        self.assertTrue(sample["desktop_gone"])
+        failure = json.loads((out / "paste-control-failure.json").read_text())
+        self.assertTrue(failure["eof_observed"])
+        self.assertTrue(failure["wait_finished"])
+        self.assertEqual(failure["state"], "failed")
+        self.assertEqual(failure["in_flight"], 0)
+        self.assertLessEqual(failure["retained_capacity"], 32)
+        self.assertEqual((out / "cancel.bin").read_bytes(), b"\xe6\xb1\x89" * 256)
+
+    def test_paste_missing_go_remains_failure_after_cleanup(self):
+        out = self.out / "paste-control-timeout"
+        with self.assertRaisesRegex(ValueError, "paste control missing GO rejected"):
+            execute(self.exe, "ui-paste-control-timeout", out)
+        sample = json.loads((out / "sample.json").read_text())
+        self.assertEqual(sample["exit_code"], 2)
+        self.assertFalse(sample["timed_out"])
+        self.assertEqual(sample["job_after"]["active"], 0)
+        self.assertTrue(sample["desktop_gone"])
+        failure = json.loads((out / "paste-control-failure.json").read_text())
+        self.assertFalse(failure["eof_observed"])
+        self.assertTrue(failure["timed_out"])
+        self.assertTrue(failure["wait_finished"])
+        self.assertEqual(failure["state"], "failed")
+        self.assertEqual(failure["in_flight"], 0)
+        self.assertLessEqual(failure["retained_capacity"], 32)
+        self.assertEqual((out / "cancel.bin").read_bytes(), b"\xe6\xb1\x89" * 256)
+
     @unittest.skipUnless(os.environ.get("GITHUB_ACTIONS") == "true" and
                          os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",
                          "real system clipboard UI gate requires a disposable hosted VM")
