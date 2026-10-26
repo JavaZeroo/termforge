@@ -31,6 +31,19 @@ int main() {
               line+"TF>",marker),"command redraw BS before a fresh literal output line does not poison later records");
         check(transport_output_completed("echo old\b\r\n"+line+"TF_PS_MAJOR=5\r\nTF> ",marker),
               "fresh output remains independent of a prior edited command record");
+        const std::string save="\x1b[?25l\x1b[1;3H> \x1b[93mWrite-Output \x1b[36m"
+              "'TF_SAVE_PS'                                   \x1b[m\r\n"
+              "\x1b[63X\x1b[63C\r\x1b[?25hTF_SAVE_PS\r\nTF> ";
+        auto no_empty_cr=save;
+        no_empty_cr.erase(no_empty_cr.find("\r\x1b[?25h"),1);
+        check(transport_output_completed(no_empty_cr,"TF_SAVE_PS"),
+              "removing only the empty-record CR isolates the captured rejection");
+        check(transport_output_completed(save,"TF_SAVE_PS"),
+              "captured PowerShell empty-record CR must not hide independent output and prompt");
+        check(transport_output_completed("echo old\r\n\r"+line+"TF>",marker),
+              "an empty record CR preserves a later exact output and prompt");
+        check(transport_output_completed("echo old\b\r\n\x1b[63X\x1b[63C\r\r"+line+"TF> ",marker),
+              "LF restores an independent record before repeated empty redraw CRs");
 
         check(!transport_output_completed("TF>echo "+line+"TF>",marker),"command echo is not independent output");
         check(!transport_output_completed(title+"\a\r\nTF>",marker),"OSC BEL payload is not output");
@@ -69,6 +82,22 @@ int main() {
         check(!transport_output_completed(line+"\bTF>",marker),"BS after a marker cannot manufacture prompt");
         check(!transport_output_completed(line+"TF>\b",marker),"trailing prompt BS remains unknown");
         check(!transport_output_completed("\t\r\n"+line+"TF>",marker),"other bare controls remain rejected");
+        check(!transport_output_completed("\r"+line+"TF>",marker),
+              "initial bare CR lacks an observed record boundary");
+        check(!transport_output_completed("echo\r\nTF>echo \r"+line+"TF>",marker),
+              "CR cannot erase a nonempty echo prefix");
+        check(!transport_output_completed("echo\r\n\b\r"+line+"TF>",marker),
+              "CR cannot reset an empty BS-tainted record");
+        check(!transport_output_completed("echo\r\nTF_CMD_DIR=\rrestore-cmd \xe7\x9b\xae\xe5\xbd\x95\r\nTF>",marker),
+              "CR-separated marker fragments do not form literal output");
+        check(!transport_output_completed("echo\r\n\rTF>echo "+line+"TF>",marker),
+              "empty-record CR does not admit a later command echo");
+        check(!transport_output_completed("echo\r\n\rTF_CMD_DIR=restore-cmd \xe7\x9b\xfe\xe5\xbd\x95\r\nTF>",marker),
+              "empty-record CR does not repair corrupted UTF-8 marker bytes");
+        check(!transport_output_completed("echo\r\n\r"+line+"\x1b[31",marker),
+              "empty-record CR does not admit an incomplete trailing envelope");
+        check(!transport_output_completed(line+"\rTF>",marker),
+              "bare CR after matched output does not manufacture a prompt");
         std::cout<<"transport completion checks passed\n";
     } catch(const std::exception& error) {
         std::cerr<<error.what()<<'\n'; return 1;
