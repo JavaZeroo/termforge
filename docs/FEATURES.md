@@ -12,6 +12,7 @@
 
 | 能力 | 当前状态与边界 | 目标差距 | 路标 |
 |---|---|---|---|
+| 显式官方 ConPTY 后端 | **实现中，未验收**：[实验构建](research/experimental-conpty-backend.md)固定同包双文件与完整 MIT，通过同 API 族与模块生命期检查；原 175B margin 的候选末端恢复正确。默认仍为系统后端，此路径未进入已发布 Alpha | [#47](https://github.com/JavaZeroo/termforge/issues/47) 仍有连续 resize 残尾/Unicode、最终 Console-width 的 Vim、3MB 粘贴取消时序及原生 margin 缺口；早期 flags0 成功不代表最终配置。完整 R1、实际 IME/显示、持续运行与性能未验收，#34 产品选择及 #41 均未关闭 | R2 |
 | 本地命令输入/输出 | **部分；历史回归原因未明**：Windows cmd → ConPTY → 有界队列 → Recovery → HWND；普通字符、中文字符消息、回车、退格、四方向键和退出回收仍有限验证。[#36](https://github.com/JavaZeroo/termforge/issues/36) 保留持续 `cmd for /L` 的 normal/resize 历史超时；本次未修改产品代码时各十轮通过，旧探针原二进制也通过；[固定回归入口](../experiments/conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)保留完整负载、单次 ETX、原始字节与回收 | 旧失败与本次成功的因果差异未知，原生控制处理函数交付仍未独立验收；不能把未复现宣称为产品修复。中文消息不等于 IME；完整键盘模式与其他 shell 未验收 | R1 / R2 |
 | 历史浏览 | **已验证（有限）**：100 行有界物理行历史、只读投影、滚轮/翻页/原生滚动条与每会话阅读锚点；编号内容、隐藏输出、淘汰、缩放与回收已有[重复回归证据](../experiments/shell/results/2026-10-23-r1-foundations/validation.json)，符合 [#12](https://github.com/JavaZeroo/termforge/issues/12) 限定合同 | 基础动作对照见统一文字动作；完整组合见已验收的 #18，reflow、外部核心替换与大规模历史性能未验收 | R1；扩展 R2 / R4 |
 | 选择与复制 | **已验证（有限）**：屏幕/100行有界历史的拖选、词/行、全选、自动滚动及每会话高亮；菜单/快捷键和实际 CF_UNICODETEXT 精确往返。[最终系统审计](../experiments/shell/results/2026-10-24-r1-selection-accepted/validation.json)覆盖占用反馈/保持/重试、live覆盖失效、同组标签、原生rename EDIT复制与关闭后目标隔离；[带样式尾空格/软硬行/受控DPI](../experiments/shell/results/2026-10-24-r1-styled-system-copy/validation.json)另有两轮系统证据 | 普通尾空格经 ConPTY 规范化后不保留；显式空白端点策略未对照，词规则与容量为本项目策略。限定动作与参考差异见统一文字动作，完整组合见 #18 的独立验收；矩形选择归 R4，受控 DPI 不等于真实跨显示器 | R1；扩展 R2 / R4 |

@@ -8,6 +8,7 @@
 
 | 结论 | 实现/命令入口 | 已有结果与限制 |
 |---|---|---|
+| 显式官方 ConPTY 实验整合（#47 Draft） | [接口与已知失败](research/experimental-conpty-backend.md)、[冻结源码及正反记录](../experiments/conpty/results/2026-10-26-reviewed-backend/validation.json) | 同包双 SHA、同 API 族与 DLL 生命期有真实检查；固定 Console-width 的 TUI 为5/6，Vim resize/new-buffer 失败，连续 resize 残尾与粘贴提前 completed 仍未闭环。More 子阶段成功不等于整套 capture 通过；源码阶段、后续清理修订分别列示。默认 system 不变，native margin 仍错，不代表 #41、#34 或 R2 出口 |
 | 原 10 秒纯夹具超时的阶段保留（#40 未关闭） | [限定合同](research/inventory-timeout-checkpoints.md)、[正常与受控超时对照](../research/ime/results/2026-10-26-inventory-timeout-checkpoints/validation.json) | GO 后即使最终 JSON 尚未返回，也可读取有界白名单阶段；实际同一 Try AST 在 ended 回调挂起仍抛原 TimeoutExpired，保留 progress-ended、回收与 Job0，不补造 failed/complete。旧父 runner 对同生产端丢观察的反事实成立；54 项原套件通过不回填历史 CI 的未知阶段或原因 |
 | ConPTY 系统/固定官方后端的同源 margin A/B（#41、#47 未关闭） | [合同与第一方来源](research/conpty-margin-backends.md)、[固定 175B 与 16 case 结果](../experiments/conpty/results/2026-10-26-margin-backends/validation.json) | 系统后端末端 REGION_CIXED；官方固定 1.25 同包双文件保留 DECSTBM，候选末端恢复正确。禁用 VT processing 路线被合法窄屏反例拒绝；源 CHAR_INFO 仍错，末端正确不等于原生 API 正确。全部 child37/EOF109/Job0；这里只建立后端可行路径，默认产品后端未改，实际 GUI、resize、粘贴及 R1 整合另由 #47 验收 |
 | 拒绝负例的读取前停止（#46 夹具修正） | [原记录、反事实及 fresh 验证](../experiments/shell/results/2026-10-26-receiver-stop/validation.json)、[公开空数据夹具](../experiments/shell/fixtures/rejected-order-before-read.json) | F2 预期拒绝可先于首读完成停止；旧 oracle 误要求至少读过并成功取消一次。仅拒绝路径接受已证明的零读/空数据/停止并 join/无错误状态，正常读取门槛保留。原记录及 fresh 再现的同一零读字节在旧判定失败、新判定通过；12 项纯测试含字段反例，原模块14/14通过，native EXE身份未变且所有Job0。原完整回归红保留，#44 的退出根因仍未知 |
