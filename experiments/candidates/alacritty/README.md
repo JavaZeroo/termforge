@@ -1,6 +1,6 @@
-# Alacritty 原生核心候选（R2-01 / #24）
+# Alacritty 固定核心与候选适配工具
 
-本目录包含候选构建、状态适配、固定兼容补丁、C ABI 与核心成本实验。[ADR-0003](../../../docs/adr/0003-core-reference-and-reuse.md)已决定 R2 新能力复用候选 Term/Processor；C++ 拥有值适配已接入显式候选 `ShellWindow`，默认 CMake 保留自研回退，不把 headless 结果写成产品 TUI。
+本目录包含候选构建、状态适配、固定兼容补丁、C ABI 与核心成本实验。[ADR-0003](../../../docs/adr/0003-core-reference-and-reuse.md)决定 R2 新能力复用候选 Term/Processor；C++ 拥有值适配接入显式候选 `ShellWindow`，默认 CMake 保留自研回退。能力统一见[功能矩阵](../../../docs/FEATURES.md)，联合验收和依赖见 [R2 合同](../../../docs/milestones/R2-local-terminal.md)，本说明不维护逐批进度。
 
 ## 固定来源与许可
 
@@ -20,9 +20,8 @@
 从仓库根目录执行；输出目录必须不存在：
 
 ```powershell
-rustup default 1.92.0
-cargo build --manifest-path experiments/candidates/alacritty/Cargo.toml --release --locked
-cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --locked --workspace
+cargo +1.92.0 build --manifest-path experiments/candidates/alacritty/Cargo.toml --release --locked
+cargo +1.92.0 test --manifest-path experiments/candidates/alacritty/Cargo.toml --locked --workspace
 python experiments/candidates/alacritty/run.py --out local/candidate-alacritty-new
 python -m unittest experiments.candidates.alacritty.test_candidate -v
 
@@ -32,7 +31,7 @@ cmake --build build/candidate-adapter --config Release
 ctest --test-dir build/candidate-adapter -C Release --output-on-failure
 ```
 
-Linux/macOS 使用相同 Cargo 命令和相应 CMake 配置。默认 trace 为 `target/release/termforge-alacritty-trace[.exe]`；可用 `TERMFORGE_ALACRITTY_TRACE` 显式选择另一构建，缺失文件会失败。候选 workflow 在 Windows/Ubuntu 构建并运行固定 crate 的单元测试与 doc test 和 C++ 适配器。
+Linux/macOS 使用相同 Cargo 命令和相应 CMake 配置；工具链须预先存在，命令中的 `+1.92.0` 不改变全局默认。默认 trace 为 `target/release/termforge-alacritty-trace[.exe]`；可用 `TERMFORGE_ALACRITTY_TRACE` 显式选择另一构建，缺失文件会失败。候选 workflow 在 Windows/Ubuntu 构建并运行固定 crate 的单元测试与 doc test 和 C++ 适配器。
 
 ## Trace、C ABI 与检查内容
 
@@ -42,13 +41,12 @@ Linux/macOS 使用相同 Cargo 命令和相应 CMake 配置。默认 trace 为 `
 
 `src/ffi.rs` 与 `include/termforge_candidate.h` 提供 staticlib C ABI；`experiments/core/candidate_terminal.{hpp,cpp}` 将其包装为现有 `Screen`/`Line` 拥有值。feed、事件、行/格文本都经调用方缓冲区返回，不跨 FFI 暴露 Rust 引用或异常。C++ 同步稳定 ID、版本、ending/next_id/wrap_columns、样式和历史淘汰；[接口与边界](../../core/CANDIDATE.md)另列。
 
-## 当前结果与历史边界
+## 语义与验收边界
 
-- termforge.4 增加[流式字素合同](../../../docs/research/streaming-graphemes.md)：Unicode 17 分段/宽度、固定 ZWJ/keycap 的整格/光标/选择、bounded lossless spill、1列 resize 和实际 DWrite keycap 整形。默认自研仍为固定 Unicode 15；新结果不改写以下历史批次。
-
-- termforge.3 的[共同矩阵](../../differential/results/2026-10-26-candidate-common-v6/summary.json)为 95 次一致；[扩展能力](../../differential/results/2026-10-26-capabilities-v5/summary.json)分类不变；[fuzz](../../differential/results/2026-10-26-fuzz-v4/summary.json)为 2 次固定已知差异、6 次一致；[真实应用](../../differential/results/2026-10-26-real-applications-v6/summary.json)固定 3 次一致。[margin 验证](../../shell/results/2026-10-26-margin-state/validation.json)区分公开源 VT 的恢复与真实 ConPTY 的宿主限制；#41 的宿主 margin 和 #42 的 More 尾部 ECH/捕获时序仍未闭合，不是完整产品 TUI。
-- termforge.2 的[共同矩阵](../../differential/results/2026-10-25-candidate-common-v5/summary.json)为 95 次、1011 检查点全部一致；旧 ED 差异不再以 `reference_difference` 放行。[扩展能力](../../differential/results/2026-10-25-capabilities-v4/summary.json)保持 15 次自研未支持、5 次一致、5 次 resize 差异；[真实应用](../../differential/results/2026-10-25-real-applications-v3/summary.json)3 次全部一致；[fuzz](../../differential/results/2026-10-25-fuzz-v3/summary.json)为 2 次固定已知差异、6 次一致。均不是完整语义接受或产品 TUI。
-- C++ 适配器验证分块一致性、真实回复、备用屏/滚动区、ED、Unicode、resize、ID/版本、选择、搜索和 HistoryViewport。显式候选 `ShellWindow` 已运行两轮真实 Vim、60×12 resize、主屏恢复及经有界 InputQueue 的真实光标回复，并修复普通空格背景残留；证据见 [validation](../../core/results/2026-10-25-candidate-adapter/validation.json)。默认构建保留自研回退；#29 的限定 resize/历史切片已有验证，#36/#38 的真实回归、#41 的宿主 margin、完整 R1 回归和实际呈现仍未关闭。
-- #25 的[逐项裁决](../../differential/decisions.md)保留旧 0.26.0 差异；#26 的[路线审查](../../../docs/research/2026-10-25-core-route-review.md)与 project/interactive 计量是原始 0.26.0 历史基线，termforge.1 是更早 headless 切片，均不覆盖 termforge.2。
+- [流式字素合同](../../../docs/research/streaming-graphemes.md)定义 Unicode 17 分段/宽度、首样式、固定 ZWJ/keycap、无损有界分片、单列 resize 和实际 DWrite 整形。默认自研仍为固定 Unicode 15。固定样本的[红/绿与实际场景验证](../../shell/results/2026-10-26-streaming-graphemes/validation.json)不扩展为全部文字系统或 WindTerm 运行时等价；吞吐成本由 [#54](https://github.com/JavaZeroo/termforge/issues/54)独立裁决。
+- C++ 适配器验证分块一致性、真实回复、备用屏/滚动区、ED、Unicode、resize、ID/版本、选择、搜索和 HistoryViewport。核心模型、真实 ConPTY、实际 GUI 与系统输入是不同层，不能用其中一层代替完整 [#27](https://github.com/JavaZeroo/termforge/issues/27) / [#28](https://github.com/JavaZeroo/termforge/issues/28)验收。
+- [margin 研究](../../../docs/research/conpty-margin-backends.md)区分公开源 VT、宿主原生控制台与末端状态；[More 合同](../../../docs/research/more-capture-ech.md)分开捕获完成、默认 ECH 修复与候选 pending-wrap 差异，不把旧失败或差异观察改判为通过。
 - 默认/ANSI 16 色映射为现有数值；其他颜色以 `-2` 保留未投影。上游 `Cell::is_empty` 合并空格和空单元格，不能裁决显式尾空格。`replies` 是相邻检查点的新回复，不是累计队列。
-- resize/reflow 合同归 #29，不能由候选行为静默替换。候选可构建不等于支持 [#23 平台台账](../../../research/windterm-2.7.0-platform-scope.md)的全部系统；Windows 7 非 ConPTY、macOS 10.13、glibc 2.17、x86 和 ARM 缺口继续归 #34/R4。#37 的限定 Windows Vim CI 已通过，其他 shell/生命周期回归由 #36/#38 保留。
+- resize/reflow 合同归 [#29](https://github.com/JavaZeroo/termforge/issues/29)，不能由候选行为静默替换。候选可构建不等于支持[平台台账](../../../research/windterm-2.7.0-platform-scope.md)的全部系统；产品 GUI/平台与长期接口决定归 [#34](https://github.com/JavaZeroo/termforge/issues/34)。
+
+固定补丁的逐版来源在 [PROVENANCE](PROVENANCE.md)，共同矩阵、能力、真实应用与 fuzz 的机制及历史结果索引在[差分说明](../../differential/README.md)，跨模块审核结果统一见[证据地图](../../../docs/EVIDENCE.md)。旧 0.26.0 与 termforge.1/.2/.3 结果保留原版本，不覆盖后续补丁，也不拼接成性能对照。

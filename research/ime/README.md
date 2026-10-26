@@ -1,6 +1,8 @@
-# R1 键盘与系统 IME 验证
+# 键盘与系统 IME 验证工具
 
-本目录提供 R1-06 的自动验证入口。原生 HWND/HIMC 生命周期和键盘字节合同已可独立运行；**固定 Microsoft Pinyin 的独立探针及四组产品窗口交叉场景均已通过限定 hosted 验收**，见[独立审计](results/2026-10-24-product-ime-accepted/validation.json)。`real_ime_workflow_verified: false` 永远不是通过。本次四场景覆盖真实终端会话、切换、rename、输出和受控 DPI/zoom；其他输入法、真实跨屏及完整动作矩阵不据此扩大。
+本目录提供键盘、原生 HWND/HIMC 生命周期、hosted 环境盘点与真实 IME 的独立验证入口。真实系统输入只允许在指定的一次性 hosted 环境执行；本地 schema、清理和合成夹具不代替输入观察。能力与边界见[功能矩阵](../../docs/FEATURES.md)，R2 输入出口由 [#30](https://github.com/JavaZeroo/termforge/issues/30)承接。
+
+固定 Microsoft Pinyin 的 R1 独立探针、四场景及后续 reading/八会话组合的历史结果在下文分别链接，不能混成一次运行；`real_ime_workflow_verified: false` 永远不是通过。受控 DPI 不代表真实跨屏，固定 provider 的结果不扩展到其他输入法。
 
 ## 可复现入口
 
@@ -21,7 +23,7 @@ python research/ime/run_probe.py --exe build/bin/Release/termforge_ime_probe.exe
 - `character` 保留 NUL，跨消息收齐 UTF-16 代理对；孤立代理用 U+FFFD；失焦 `reset` 丢弃尚未提交的半个代理。Ctrl+Alt 保留给 AltGr，工作区快捷键也须检查 Alt 状态。
 - 每个终端 HWND 拥有自己的 `ImeContext`，只在 UI 线程使用。窗口创建后 `attach`；原生消息先交给 `handle`；只向 PTY 发送 `committed`，不发送 `preedit`。失焦取消旧上下文，晚到提交不转给新会话。
 - `set_caret` 接收物理客户区坐标；移动、resize、DPI、zoom 或输出改变光标后刷新。`detach` 返回 HIMC 销毁结果；应在窗口销毁前调用。单次结果/预编辑上限 256 UTF-16 单元，非法结果显式失败。
-- 工作区动作和普通按键不能抢走正在进行的真实组合；应用光标/键盘模式、第三方 IME 全矩阵仍属后续范围。以上为 TermForge 原创合同，不能冒充 WindTerm 已观察行为。
+- 工作区动作和普通按键不能抢走正在进行的真实组合；应用光标/键盘模式见 [#28](https://github.com/JavaZeroo/termforge/issues/28)，完整输入交叉矩阵见 [#30](https://github.com/JavaZeroo/termforge/issues/30)。以上为 TermForge 原创合同，不能冒充 WindTerm 已观察行为。
 
 ## 桌面生命周期与耗时结论
 
@@ -81,7 +83,7 @@ python -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_
 
 原生 launcher/产品分别等待外层与内层 GO；两个 kill-on-close Job 都必须归零。只查询现有 input desktop，不创建/切换/删除系统输入桌面。原始 stdout/stderr、阶段进度、独立接收文件和结果分别保存；已有目录拒绝覆盖，超时仍保留原始失败。候选既检查同一原生实例的相对移动，也按实测单元格/OS DPI/显示器工作区检查绝对锚定，允许向上排布和右边界夹紧。
 
-当前代码的同源码回归见[ce9b24d / verify 40045686776](../../experiments/shell/results/2026-10-24-r1-system-workflow/regression.json)：旧五模式28检查点、11个空前缀及回收已独立复核。同run另由显式workflow_system_runner完成两个fresh八会话真实Copy→Paste→IME及阶段资源，使用[独立整体验收](../../experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)，旧五模式不与新组合混计。
+固定历史源码 ce9b24d 的回归见[verify 40045686776](../../experiments/shell/results/2026-10-24-r1-system-workflow/regression.json)：旧五模式28检查点、11个空前缀及回收已独立复核。同run另由显式workflow_system_runner完成两个fresh八会话真实Copy→Paste→IME及阶段资源，使用[独立整体验收](../../experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)，旧五模式不与新组合混计，也不表示后续代码自动继承验收。
 
 本地 schema/清理测试不代替真实输入。[6a165c8 / verify 40029638833](results/2026-10-24-product-ime-contexts/validation.json) 已独立重算五模式28检查点、9个 reading 上下文、精确接收字节/原始进度与内外 Job0，并核对 Find/rename 候选消失和双 Escape；[自有帧复核](results/2026-10-24-product-ime-contexts/visual-validation.json)仅代表最终 retained DIB，不是原生候选过程截图或实际上屏计时。该批不代替 #18 完整流程与八会话资源验收。[154dc48 的显式 run 40017974845](results/2026-10-24-product-ime-accepted/validation.json)已独立复核四场景22检查点、字节/候选/画面和回收；8个正常receiver exit0，组合中关闭的目标由Job取消exit91且空接收。受控DPI不代表实际跨显示器，后续行为变更仍需重验。
 

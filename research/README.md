@@ -1,12 +1,12 @@
-# 无界面定向研究
+# WindTerm 定向研究工具
 
-新增独立的 [UI 运行时探测](ui/README.md)：会执行固定目标的自有副本；下文原有 headless 入口仍只做静态分析。
+本目录提供两种独立入口：[UI 运行时探测](ui/README.md)会执行固定目标的自有副本；下文 headless 入口只做静态分析。结论索引统一见[证据地图](../docs/EVIDENCE.md)，能力与未来工作不在工具说明中重复维护。
 
 入口仅分析固定官方 WindTerm 2.7.0 Windows x64，不执行目标。原始索引、数据库、反编译和汇编输出全部保留在 gitignored `local/`。公开结论见[首轮报告](../docs/research/windterm-headless-2026-10-22.md)。这不是客户端启动器，也不测量运行时性能。
 
 ## 固定环境
 
-本轮使用 Python 3.12.10、Ghidra 12.1.4、Temurin JDK 21.0.12.1+1。以下下载校验值已实测核对；先校验再解压到 `local/toolchains/`，无需安装到系统 PATH。
+首轮静态研究固定 Python 3.12.10、Ghidra 12.1.4、Temurin JDK 21.0.12.1+1。以下下载校验值已实测核对；先校验再解压到 `local/toolchains/`，无需安装到系统 PATH。
 
 | 来源 | 文件 | SHA-256 |
 |---|---|---|

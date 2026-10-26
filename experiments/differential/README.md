@@ -1,6 +1,6 @@
-# 参考实现差分（C1）
+# 参考实现差分与核心轨迹工具
 
-此实验把 TermForge 的 C++ 核心与 **pyte 0.8.2 + wcwidth 0.2.13** 放到同一组原始字节、屏幕尺寸和分块输入下，逐检查点比较。参考只用于语义验证；本实验没有计时，不把 Python 的速度用作 C++ 性能目标，也不把 pyte 选为产品依赖。
+本目录提供自研 C++ 核心与 **pyte 0.8.2 + wcwidth 0.2.13** 的逐检查点比较，以及固定候选核心的共同矩阵、能力、真实应用捕获与有界 fuzz。双方使用同一组原始字节、屏幕尺寸和分块输入；参考用于语义验证，没有计时，不把 Python 的速度用作 C++ 性能目标，也不把 pyte 选为产品依赖。能力与路线分别由[功能矩阵](../../docs/FEATURES.md)和 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)维护。
 
 ## 固定来源
 
@@ -74,29 +74,25 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 共同投影只额外统一 NFC 与空白/空单元格表示；显式空格、`mode_bits` 和回复不在这一投影裁决，样式、宽度、光标、屏幕和历史仍逐格比较。`expected` 仅是自研核心字段位置、`actual` 是候选，二者都不是真值。`execution_passed=true` 只表示执行与分块检查通过，`semantic_acceptance` 固定为 false，差异不得自动视为兼容通过或任一实现错误。
 
-2026-10-25 [候选 Windows 摘要](results/2026-10-25-candidate-common-v3/summary.json)为 95 次、1011 检查点，90 次一致、5 次已裁决参考差异；[pyte 摘要](results/2026-10-25/summary.json)为 70 次一致、25 次保留的已知差异。`erase_display` 的最早差异随分块检查点位置而不同，[ED1/ED2 已分开裁决](decisions.md#erase_display-的-ed1ed2-分离裁决)，当时的 `candidate-known-differences.json` 按五种计划固定输入、最早差异和最终状态；新输入不能复用旧裁决。新增 4 个自动门槛与原有 8 个差分测试共同通过；候选 workflow 在 Windows/Ubuntu 构建两个原生 trace 并运行同一矩阵。未构建可选 Rust 候选的通用主回归会明确跳过这 4 项，candidate workflow 不以该跳过代替执行。六类 pyte 差异与 `erase_display` 均已有[逐项裁决](decisions.md)，`differences_adjudicated=true` 只覆盖当前差异，`semantic_acceptance=false` 不把它们算作兼容一致。真实应用和 fuzz 仍由 #25 后续处理，本切片不完成核心路线决定。
+2026-10-25 的原始候选批次见[Windows 摘要](results/2026-10-25-candidate-common-v3/summary.json)，pyte 批次见[独立摘要](results/2026-10-25/summary.json)。`erase_display` 的最早差异随分块检查点位置而不同，[ED1/ED2 已分开裁决](decisions.md#erase_display-的-ed1ed2-分离裁决)；原批次按五种计划固定输入、最早差异和最终状态，新输入或新补丁不能复用旧裁决。`differences_adjudicated=true` 只覆盖该批已裁决的差异，`semantic_acceptance=false` 不把它们算作兼容一致。未构建可选 Rust 候选的通用主回归会明确跳过候选项，candidate workflow 强制构建并执行，不能以跳过代替通过。
 
 ## 扩展能力轨迹（#25）
 
 `capability_matrix.py` 另跑备用屏、滚动区、光标查询、异常恢复和 resize 各 5 种分块，共 25 次。严格模式未支持的自研功能记为 `core_unsupported`，必须同时满足候选执行成功，不能当作兼容通过或静默跳过。Recovery 由测试 trace 的显式 `--recovery` 启用，非法 UTF-8、未知 CSI 和 OSC 流与候选逐检查点一致。
 
-[2026-10-25 摘要](results/2026-10-25-capabilities-v2/summary.json)为 15 次 `core_unsupported`、5 次 `match`、5 次 `resize_difference`。自动断言包括备用屏恢复后的 `A/BZ` 主屏、滚动区结果 `B/D/X`、真实回复 `ESC[1;2R`、Recovery 的 `ABC U+FFFD D` 及双方分块不变性。新增 4 个门槛后，差分与能力测试合计 16 项通过；未构建候选时主回归明确跳过这些可选项，candidate workflow 强制执行。
+自动断言包括备用屏恢复后的 `A/BZ` 主屏、滚动区结果 `B/D/X`、真实回复 `ESC[1;2R`、Recovery 的 `ABC U+FFFD D` 及双方分块不变性；[原始批次摘要](results/2026-10-25-capabilities-v2/summary.json)保留具体分类。未构建候选时主回归明确跳过可选项，candidate workflow 强制执行。
 
 两个测试 trace 在同一输入结束点执行 `--resize=2x6` 并追加同偏移检查点。双方实际尺寸均为 2×6，候选重排为 `123456`/`7890`、光标列 4，自研物理裁剪保留列 5，故记为 `resize_difference` 而非一致。`resize_covered=true`，但 `real_application_covered=false`、`semantic_acceptance=false`；重排合同由 #29 决定，本矩阵不提前实现产品功能。
 
 ## 真实应用核心轨迹（#25）
 
-More 捕获现在等待完整英文提示，再发送一个 q；进程退出后继续读到真实管道 EOF，所有尾部模式关闭与 ECH 原样保存。捕获宿主有 GO/Job 监督；提示偏移、q 字节数、EOF、退出与回收由独立门槛核对。[#42 合同与固定字节回归](../../docs/research/more-capture-ech.md)明确默认 ECH 和保留的候选 pending-wrap 差异，不以部分捕获或自动差异豁免代替通过。
+More 捕获等待完整英文提示，再发送一个 q；进程退出后继续读到真实管道 EOF，所有尾部模式关闭与 ECH 原样保存。捕获宿主有 GO/Job 监督；提示偏移、q 字节数、EOF、退出与回收由独立门槛核对。[#42 合同与固定字节回归](../../docs/research/more-capture-ech.md)明确默认 ECH 和保留的候选 pending-wrap 差异，不以部分捕获或自动差异豁免代替通过。
 
 `real_app_capture` 通过 ConPTY 启动真实 Windows cmd、`more.com` 和 Vim，分别验证正常退出、`q` 退出及无配置/无交换文件/无 viminfo 的编辑 `:wq` 与文件内容。Vim 握手要求 `VimEnter` 写入 `READY`、`InsertEnter` 写入 `INSERT`，并观察到 `[New]` 和实际插入文本，再发送 Escape 与 `:wq`，不以一个 ESC 或固定延时代替状态；等待真实事件文件，不依赖消息是否被重绘覆盖。manifest 记录真实编辑器路径和事件验证结果，事件文件一并保留。失败时保存阶段、错误、退出码、合成输出和 Job 清理结果，真实负例验证这些证据可用。`real_app_matrix.py` 将捕获字节原样交给双方核心，自研使用产品同源的 Recovery 模式；它不是截图或 GUI 验收。
 
-[2026-10-25 摘要](results/2026-10-25-real-applications/summary.json)记录应用版本、二进制/源码哈希和退出/文件结果：分页器和 Vim 为 `match`，shell 仅有已裁决的 ED2 历史策略 `reference_difference`。新增 3 个门槛后，差分、能力和真实应用测试合计 19 项通过；Windows candidate workflow 强制构建并执行，其他平台或缺少 Vim/捕获依赖时明确跳过可选测试。
+[原始应用摘要](results/2026-10-25-real-applications/summary.json)记录应用版本、二进制/源码哈希和退出/文件结果；[握手与失败诊断](results/2026-10-25-real-applications-v4/validation.json)与[事件文件握手](results/2026-10-25-real-applications-v5/validation.json)保留各自历史身份。Vim 的 `echon` 消息可能被后续重绘覆盖，因此握手依赖实际事件文件。[固定 Windows CI](https://github.com/JavaZeroo/termforge/actions/runs/40190890251)的限定结果与后续回归分别留证，不用本地通过代替远端执行。
 
-[握手与失败诊断切片](results/2026-10-25-real-applications-v4/validation.json)在本地 Windows 验证三应用 3 次一致、真实编辑器路径和负例回收；真实应用 Python 为 4 项，differential CTest 通过。#37 仍需 Windows Server 2025 CI 的真实应用、fuzz 和计量自然结束，不能据此提前关闭。
-
-[真实事件文件切片](results/2026-10-25-real-applications-v5/validation.json)改用 Vim 写入的 `VimEnter`/`InsertEnter` 文件握手，保留 `READY`、`INSERT` 和实际 60×12 证据。原始输出证明 `echon` 插入消息可能被后续重绘覆盖，故不依赖消息显示时机。候选聚焦 4 项、连续 3 轮场景、真实应用 Python 4 项和 differential 均通过；完整 CI 未通过前 #37 保持开放。
-
-`real_application_covered=true` 仅指这三条真实核心轨迹，`presented_done=null`、`semantic_acceptance=false`，不代表产品 TUI 已交付、所有应用已兼容或 #26 已决定。持续 fuzz 与最小失败复现仍由 #25 后续完成。
+Windows candidate workflow 强制构建并执行，其他平台或缺少 Vim/捕获依赖时明确跳过可选测试。`real_application_covered=true` 仅指固定三条真实核心轨迹，`presented_done=null`、`semantic_acceptance=false`；这不代表产品 TUI 已交付或所有应用已兼容，完整用户工作流由 [#28](https://github.com/JavaZeroo/termforge/issues/28)验收。
 
 ## 有界 fuzz 与固定回归（#25）
 
@@ -104,7 +100,7 @@ More 捕获现在等待完整英文提示，再发送一个 q；进程退出后�
 
 首个 seed 3 是行首组合标记后接宽字：自研按 Recovery 合同替换无相邻基字标记，候选附着到后续宽字，属于参考行为差异而非通过。逆序删除得到最小例 `81 e4 b8 ad 1b 5b 48`，保留同一 `.screen.cells[0][0].text` 差异。`fuzz-known-failures.json` 固定原输入和最小例的输入哈希、最早差异与双方最终状态；改变输入不能复用旧裁决。
 
-[2026-10-25 摘要](results/2026-10-25-fuzz/summary.json)覆盖 seed 0–3 的 8 次 whole/byte：2 次已知失败、2 次一致、4 次已裁决参考差异；[首次失败与最小化](results/2026-10-25-fuzz/first-failure.json)独立保留。新增 4 个门槛后，差分、能力、真实应用和 fuzz 测试合计 23 项通过，candidate workflow 持续运行同一小矩阵。该种子范围不是广泛兼容证明，扩大范围发现的新差异仍需逐项裁决；#26 才评估成本与路线。
+[原始摘要](results/2026-10-25-fuzz/summary.json)保留 seed 0–3 的 8 次 whole/byte 分类，[首次失败与最小化](results/2026-10-25-fuzz/first-failure.json)独立保留。candidate workflow 持续运行固定小矩阵；该种子范围不是广泛兼容证明，扩大范围发现的新差异仍需逐项裁决，性能由独立[计量工具](../measure/README.md)观测。
 
 ## 2026-10-22 实际验证
 
@@ -112,20 +108,14 @@ More 捕获现在等待完整英文提示，再发送一个 q；进程退出后�
 
 自动测试覆盖实际运行整个矩阵、故意制造额外差异、截断序列执行失败、错误分块计划，以及中间状态恢复的漏检回归。变更已知差异前须核查规范和用例，再审查预期；测试不会自动更新预期。
 
-## termforge.1 兼容补丁结果（#27）
+## 固定补丁的历史结果索引
 
-当前固定 `0.26.1-dev+termforge.1` 的[来源与补丁](../../experiments/candidates/alacritty/PROVENANCE.md)纳入上游资源修复、ED1/ED2 和稳定行元数据。[v4 共同矩阵](results/2026-10-25-candidate-common-v4/summary.json)为 95 次、1011 检查点全部一致，旧 ED 差异不再放行；[真实应用 v2](results/2026-10-25-real-applications-v2/summary.json)3 次全部一致；[fuzz v2](results/2026-10-25-fuzz-v2/summary.json)为 2 次固定已知差异、6 次一致。[扩展能力 v3](results/2026-10-25-capabilities-v3/summary.json)仍是 15 次自研未支持、5 次一致、5 次 resize 差异，未把 resize 合同提前关闭。
+补丁内容和当前版本只在[来源台账](../candidates/alacritty/PROVENANCE.md)维护。下列结果按各自版本保留，不表示重新验证了后续代码，也不拼接性能统计；共同矩阵一致、已裁决差异与产品验收仍是不同结论。
 
-全部 vendor 文件纳入结果哈希，23 个差分 Python 测试、140 个固定 crate 单元测试和 doc test 通过。上述旧 0.26.0 结果继续作为原始基线，不能改写版本或拼接性能统计；新结果仍不是完整语义接受或产品 TUI。
+| 固定补丁 | 共同矩阵 | 扩展能力 | 真实应用 | fuzz |
+|---|---|---|---|---|
+| termforge.1：ED 与行元数据 | [v4](results/2026-10-25-candidate-common-v4/summary.json) | [v3](results/2026-10-25-capabilities-v3/summary.json) | [v2](results/2026-10-25-real-applications-v2/summary.json) | [v2](results/2026-10-25-fuzz-v2/summary.json) |
+| termforge.2：拥有值适配 | [v5](results/2026-10-25-candidate-common-v5/summary.json) | [v4](results/2026-10-25-capabilities-v4/summary.json) | [v3](results/2026-10-25-real-applications-v3/summary.json) | [v3](results/2026-10-25-fuzz-v3/summary.json) |
+| termforge.3：每缓冲区 margin | [v6](results/2026-10-26-candidate-common-v6/summary.json) | [v5](results/2026-10-26-capabilities-v5/summary.json) | [v6](results/2026-10-26-real-applications-v6/summary.json) | [v4](results/2026-10-26-fuzz-v4/summary.json) |
 
-## termforge.2 拥有值适配结果（#27）
-
-`0.26.1-dev+termforge.2` 增加滚动复用/初始 ID 顺序、历史淘汰和实际 C++/C ABI 适配。[v5 共同矩阵](results/2026-10-25-candidate-common-v5/summary.json)继续 95 次全部一致，[真实应用 v3](results/2026-10-25-real-applications-v3/summary.json)3 次一致，[fuzz v3](results/2026-10-25-fuzz-v3/summary.json)为 2 已知差异+6 一致，[扩展能力 v4](results/2026-10-25-capabilities-v4/summary.json)分类不变。142 个固定 crate 单元测试、doc test、23 个差分 Python、15 个计量与 C++ candidate_core 均通过；[适配验证](../../experiments/core/results/2026-10-25-candidate-adapter/validation.json)另行记录。默认 shell 和产品 TUI 仍未验收。
-
-## termforge.3 每缓冲区 margin 与宿主差异（#27/#41）
-
-`0.26.1-dev+termforge.3` 随主/备用网格保存独立滚动区域，并在 resize/RIS 同时重置。[v6 共同矩阵](results/2026-10-26-candidate-common-v6/summary.json)为 95 次一致，[扩展能力 v5](results/2026-10-26-capabilities-v5/summary.json)分类不变，[fuzz v4](results/2026-10-26-fuzz-v4/summary.json)为 2 已知差异+6 一致，[真实应用 v6](results/2026-10-26-real-applications-v6/summary.json)的固定新鲜捕获为 3 次一致。141 个固定 crate 单元测试、1 个 doc test 与 C++ `candidate_core` 均通过。
-
-[margin 验证](../../experiments/shell/results/2026-10-26-margin-state/validation.json)分别保留源 VT 的整段/逐字节恢复、resize/RIS 和真实 ConPTY 的宿主差异。真实宿主未恢复主屏 margin 由 #41 保留，差异观察不作为能力通过。另一 366 字节 More 捕获的尾部 `CR + CSI 79X` 暴露 Recovery 擦除差异与捕获同步问题，旧、新候选均与 pyte 一致，由 #42 保留，不自动改判 match 或归因于 margin 修复。
-
-路线判断见 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)。
+termforge.4 的流式字素与实际绘制验证见[专门合同](../../docs/research/streaming-graphemes.md)。跨模块结果统一由[证据地图](../../docs/EVIDENCE.md)索引；宿主 margin、完整 resize、模式和用户工作流仍受 [R2 联合验收](../../docs/milestones/R2-local-terminal.md)约束。

@@ -6,7 +6,7 @@
 |---|---|
 | 已经能做什么，离目标差在哪里？ | [功能与差异矩阵](FEATURES.md) |
 | 最终目标是什么，如何分阶段完成？ | [五个路标，远到近](PLAN.md) |
-| R2 还需完成什么、怎样验收？ | [R2 出口检查表](milestones/R2-local-terminal.md)、[当前执行项](TRACKING.md) |
+| R2 分几步交付，当前先做什么、怎样验收？ | [R2 交付路线与验收](milestones/R2-local-terminal.md) |
 | 已验收的基础文字交互合同是什么？ | [R1 基础文字交互](milestones/R1-local-text.md) |
 | 字体、网格和真实显示如何验收？ | [R2 字体与显示合同](milestones/R2-font-display.md) |
 | 哪项可开工，谁阻塞谁？ | [GitHub 跟踪索引](TRACKING.md) |
@@ -19,4 +19,4 @@
 | 哪些材料可以进入完整开源项目？ | [来源与公开边界](PROVENANCE.md)、[字体来源](../assets/fonts/README.md) |
 | 旧 M0/G1、批次审查和规格去哪里了？ | [历史归档及迁移表](archive/README.md) |
 
-更新约定：功能完成更新矩阵；目标变化更新路标/规格；执行状态更新 issue；新增事实放研究/结果；批次审查放归档。不再在多个计划文件中追加同一段过程。
+维护分工：FEATURES 说明已合并能力和配置边界；PLAN 维护 R1–R5 范围；当前路标维护交付顺序与验收；TRACKING 只作 issue 导航；GitHub 保存实时状态、阻塞和执行清单；EVIDENCE 索引固定来源。新增事实进入研究/结果，历史审查进入归档，不再在多个计划文件中追加同一段过程。

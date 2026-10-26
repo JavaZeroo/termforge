@@ -5,7 +5,7 @@
 ## 构建与验证
 
 ```powershell
-cargo build --manifest-path experiments/candidates/alacritty/Cargo.toml --release --locked --lib
+cargo +1.92.0 build --manifest-path experiments/candidates/alacritty/Cargo.toml --release --locked --lib
 cmake -S . -B build/candidate-adapter -A x64 -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=ON -DPython3_EXECUTABLE="$PWD/.venv/Scripts/python.exe"
 cmake --build build/candidate-adapter --config Release
 ctest --test-dir build/candidate-adapter -C Release --output-on-failure
@@ -32,7 +32,7 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 
 `candidate-scroll` 通过真实辅助进程设置 DECSTBM 2;3r 并在区域底部连续换行，保存 before、region、final 的真实控制台状态。两轮[限定验证](../shell/results/2026-10-26-scroll-region/validation.json)要求区域外文字保持、C/D 位于正确区域、A/B 不混入主历史，光标与原生最终状态一致。ConPTY 的 transport 可能采用不同重绘方式，因此独立使用固定源 VT、原生阶段快照及 `pyte==0.8.2` 重放，不要求原样回显控制序列。origin/wrap、主/备用屏各自 margin 和 resize 交叉仍未验收。
 
-`candidate-margins` 固定主屏 `2;3r`、备用屏 `4;5r`，保存源 VT、四阶段真实控制台快照和 transport。[限定证据](../shell/results/2026-10-26-margin-state/validation.json)分别检查公开 feed 的主屏 margin 恢复、resize/RIS 边界与真实 ConPTY 的宿主差异。源 VT 的整段/逐字节候选回归通过；当前真实 ConPTY 只恢复主屏内容/样式/光标，未恢复主屏 margin，最终出现 `REGION_CIXED`，由 [#41](https://github.com/JavaZeroo/termforge/issues/41) 保留。真实观察返回 `margins_per_buffer_verified=false`，不是能力通过；源 LF 保持列与 transport 的 CRLF 分别核对，未修改输入或注入恢复命令。
+`candidate-margins` 固定主屏 `2;3r`、备用屏 `4;5r`，保存源 VT、四阶段真实控制台快照和 transport。[限定证据](../shell/results/2026-10-26-margin-state/validation.json)分别检查公开 feed 的主屏 margin 恢复、resize/RIS 边界与真实 ConPTY 的宿主差异。源 VT 的整段/逐字节候选回归通过；该批固定系统后端只恢复主屏内容/样式/光标，未恢复主屏 margin，最终出现 `REGION_CIXED`，由 [#41](https://github.com/JavaZeroo/termforge/issues/41) 保留。该次观察返回 `margins_per_buffer_verified=false`，不是能力通过；源 LF 保持列与 transport 的 CRLF 分别核对，未修改输入或注入恢复命令。系统/官方后端 A/B 的不同端点见[后端调查](../../docs/research/conpty-margin-backends.md)。
 
 `candidate-unicode` v2 使用真实辅助进程输出固定分解组合、单 emoji、ZWJ 和 keycap，保存源字节、真实控制台 `CHAR_INFO`、ConPTY transport、候选单元格及实际 DWrite glyph。按[流式字素合同](../../docs/research/streaming-graphemes.md)，两阶段检查 80×24→100×30 的子控制台尺寸确认、单 lead/两格宽度、产品拖尾选择复制、实际 1 glyph/Segoe UI Emoji 与网格适配。旧 [v1 原文/glyph 证据](../shell/results/2026-10-26-unicode-renderer/validation.json)保留原始分格观测；它不覆盖 v2，也不改写为聚类通过。当前 v2 验证限定首批四样本，不是完整 Unicode/IME、所有脚本或 WindTerm 运行时等价。
 
@@ -42,4 +42,4 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 
 `candidate_core_test` 覆盖 whole/逐字节、Unicode/组合标记、备用屏恢复、真实光标回复、空载荷事件、稳定 ID/版本/淘汰、选择/搜索/HistoryViewport、软硬换行、滚动区、ED1/ED2、resize 和错误参数。新增真实 ConPTY 重放的唯一行身份、Find 增量收敛、整篇/局部选区、连续同步、历史合并/清空及超限释放检查。证据见[适配验证](results/2026-10-25-candidate-adapter/validation.json)和[resize/历史验证](results/2026-10-26-resize-replay/validation.json)。
 
-候选整合不表示 #27 已关闭；#29 的限定 resize/历史实现与证据不表示完整 R1 或 R2 已通过。完整 CTest 及 #36/#38/#42 的原始失败在新记录同步；#28 的更多真实 TUI、#31 的 DPI/呈现、#35 的交付和性能验收保持开放。#37 的独立 Windows CI 验收已通过。
+各验证记录只证明其固定源码与构建配置；旧失败保留在原记录，不随新版本改判。当前能力统一见 [FEATURES](../../docs/FEATURES.md)，跨模块证据见 [EVIDENCE](../../docs/EVIDENCE.md)，联合配置和剩余验收见 [R2 交付路线](../../docs/milestones/R2-local-terminal.md)。本适配说明不维护动态 issue 状态或把核心结果外推为完整 R1/R2、真实显示或性能通过。

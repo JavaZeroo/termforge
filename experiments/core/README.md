@@ -1,6 +1,6 @@
 # 最小终端状态回放与有界恢复
 
-本组件把分块字节流变成可检查的屏幕、光标和有界历史状态，供离线回放、接收实验和[本地 shell 工作区](../shell/README.md)使用。独立 C++17 实现，不依赖 WindTerm、Qt 或私有实现；支持范围仍是有限 VT 子集，产品核心路线见 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)。
+本说明描述**默认自研 C++17 核心**：把分块字节流变成可检查的屏幕、光标和有界历史状态，供离线回放、接收实验和[本地 shell 工作区](../shell/README.md)使用，不依赖 WindTerm、Qt 或私有实现。显式候选构建的 Term/Processor 能力与 [C ABI / C++ 拥有值适配](CANDIDATE.md)另列，不受下表的自研支持范围约束；产品核心路线见 [ADR-0003](../../docs/adr/0003-core-reference-and-reuse.md)。
 
 解析器提供默认 `strict` 和显式 `ParseMode::recovery` 两种模式。replay/receive、trace 默认值和共同子集差分使用严格模式，本地 shell 选择恢复模式；测试 trace 可用第七个参数 `--recovery` 比较恢复行为，或 `--resize=RxC` 在输入结束点 resize 并追加检查点。[恢复策略](RECOVERY.md)定义未知控制序列、非法 UTF-8、超长输入、取消及 EOF 的有界处理；下表未支持输入的失败规则适用于严格模式。
 
@@ -104,4 +104,4 @@ build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 
 每个配置只跑一次，是正确性与计量端点烟测，没有预热和统计对照。`parse_ms` 在文件回放中是整个 feed 循环，在管道中是各块 feed 的墙钟耗时总和；后者包含计时开销及可能的线程抢占，排除队列等待和字节比较。它已经包含于整体运行时间，不能重复相加。解析、屏幕更新和历史维护尚未各自计量。管道原有的队列到校验延迟字段在解析模式下结束于 feed 之后，不能与旧的纯字节校验样本直接等同比较。
 
-以上 v0.2 历史样本未测显示或输入响应，也没有覆盖完整终端协议。单元格模型改变了成本，不能用历史单次计时声称性能改善。[pyte 参考差分](../differential/README.md)的六类边界差异与核心路线由 [#20](https://github.com/JavaZeroo/termforge/issues/20)承接；[长批次计量](../measure/README.md)尚不足以完整归因或排名。当前窗口集成及其验证见[本地 shell 工作区](../shell/README.md)；备用屏幕、滚动区域、文字兼容性等剩余范围见 [R2](https://github.com/JavaZeroo/termforge/issues/7)及[功能矩阵](../../docs/FEATURES.md)。
+以上 v0.2 历史样本未测显示或输入响应，也没有覆盖完整终端协议。单元格模型改变了成本，不能用历史单次计时声称性能改善。[pyte 参考差分与逐项裁决](../differential/README.md)保留各自输入和边界；[长批次计量](../measure/README.md)尚不足以完整归因或排名。窗口集成及其验证见[本地 shell 工作区](../shell/README.md)；剩余能力以 [R2 合同](../../docs/milestones/R2-local-terminal.md)及[功能矩阵](../../docs/FEATURES.md)为准。

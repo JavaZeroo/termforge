@@ -1,4 +1,4 @@
-// Shared original fixed-grid renderer for V1 and A1.
+// Shared fixed-grid renderer for the presentation probe and local shell.
 #pragma once
 #include <windows.h>
 #include <d2d1.h>
