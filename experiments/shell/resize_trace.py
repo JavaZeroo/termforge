@@ -7,46 +7,108 @@ import subprocess
 
 
 KINDS = {'desired', 'parser_begin', 'parser_end', 'request', 'host_begin', 'host_end', 'feed', 'child_ack'}
+TRACE_FIELDS = {'schema', 'observer_order_only', 'qpc_frequency', 'events_overflow',
+                'transport_overflow', 'consumed_bytes', 'events'}
+EVENT_FIELDS = {'kind', 'qpc', 'offset', 'generation', 'rows', 'columns', 'stage', 'bytes'}
+# Schema 1 records the ShellWindow parser from its fixed construction geometry.
+INITIAL_GRID = (24, 80)
+
+
+def integer(value, minimum, maximum):
+    return type(value) is int and minimum <= value <= maximum
 
 
 def replay_plan(trace, transport):
-    if (not isinstance(trace, dict) or trace.get('schema') != 1 or
+    if (not isinstance(trace, dict) or set(trace) != TRACE_FIELDS or
+            type(trace.get('schema')) is not int or trace['schema'] != 1 or
             trace.get('observer_order_only') is not True or
-            trace.get('events_overflow') is not False or trace.get('transport_overflow') is not False):
+            trace.get('events_overflow') is not False or trace.get('transport_overflow') is not False or
+            not integer(trace.get('qpc_frequency'), 1, (1 << 63) - 1)):
         raise ValueError('incomplete or unknown resize trace')
     events = trace.get('events')
     if (not isinstance(events, list) or not events or len(events) > 1024 or
-            len(transport) > 128 * 1024 or type(trace.get('consumed_bytes')) is not int or
+            not isinstance(transport, bytes) or len(transport) > 128 * 1024 or
+            type(trace.get('consumed_bytes')) is not int or
             trace['consumed_bytes'] != len(transport)):
         raise ValueError('invalid resize trace size')
-    offset, plan, resizing = 0, [], None
+    offset, plan, grid, last_qpc = 0, [], INITIAL_GRID, -1
+    ui_phase, desired = 'idle', None
+    requests, active_host, last_host_generation = {}, None, 0
     for event in events:
-        if not isinstance(event, dict) or event.get('kind') not in KINDS:
+        if (not isinstance(event, dict) or set(event) != EVENT_FIELDS or
+                type(event.get('kind')) is not str or event['kind'] not in KINDS):
             raise ValueError('unknown resize trace event')
-        if (type(event.get('offset')) is not int or event['offset'] != offset or
-                type(event.get('bytes')) is not int or event['bytes'] < 0):
+        if (not integer(event['offset'], 0, len(transport)) or event['offset'] != offset or
+                not integer(event['bytes'], 0, len(transport))):
             raise ValueError('resize trace byte ordering invalid')
+        if (not integer(event['qpc'], 0, (1 << 64) - 1) or event['qpc'] < last_qpc or
+                not integer(event['generation'], 0, (1 << 32) - 1) or
+                not integer(event['stage'], 0, (1 << 31) - 1)):
+            raise ValueError('resize trace clock or generation invalid')
+        last_qpc = event['qpc']
+        if not integer(event['rows'], 1, 200) or not integer(event['columns'], 1, 500):
+            raise ValueError('resize trace dimensions invalid')
+        dimensions = event['rows'], event['columns']
         kind = event['kind']
+        generation = event['generation']
+        if kind != 'feed' and event['bytes']:
+            raise ValueError('non-feed trace event owns bytes')
+        if kind in ('host_begin', 'host_end'):
+            if not generation or event['stage'] != 0:
+                raise ValueError('resize trace host identity invalid')
+            if kind == 'host_begin':
+                if active_host is not None or generation <= last_host_generation:
+                    raise ValueError('resize trace host calls overlap or regress')
+                # The worker can record begin/end before the UI records request.
+                # A coalesced request need not have a host call, and a worker
+                # already holding an older generation can run after newer UI
+                # requests. Neither observation is a completion fence.
+                if generation in requests:
+                    expected = requests[generation]
+                elif generation == len(requests) + 1 and ui_phase == 'request':
+                    expected = grid
+                else:
+                    raise ValueError('resize trace host generation has no request')
+                if dimensions != expected:
+                    raise ValueError('resize trace host request dimensions differ')
+                active_host = generation, dimensions
+                last_host_generation = generation
+            else:
+                if active_host != (generation, dimensions):
+                    raise ValueError('resize trace host boundary invalid')
+                active_host = None
+            continue
+        if kind != 'request' and generation:
+            raise ValueError('resize trace UI generation invalid')
         if kind == 'feed':
             count = event['bytes']
-            if not count or count > len(transport) - offset or resizing is not None:
+            if not count or count > len(transport) - offset or ui_phase != 'idle' or dimensions != grid:
                 raise ValueError('resize trace feed partition invalid')
             plan.append(f'F {offset} {count}\n')
             offset += count
         else:
-            if event['bytes']:
-                raise ValueError('non-feed trace event owns bytes')
-            if kind == 'parser_begin':
-                rows, columns = event.get('rows'), event.get('columns')
-                if type(rows) is not int or type(columns) is not int or not 1 <= rows <= 200 or not 1 <= columns <= 500 or resizing is not None:
-                    raise ValueError('resize trace dimensions invalid')
-                resizing = rows, columns
-                plan.append(f'R {rows} {columns}\n')
-            elif kind == 'parser_end':
-                if resizing != (event.get('rows'), event.get('columns')):
+            if kind == 'desired':
+                if ui_phase != 'idle':
+                    raise ValueError('resize trace desired boundary invalid')
+                desired, ui_phase = dimensions, 'parser_begin'
+            elif kind == 'parser_begin':
+                if ui_phase != 'parser_begin' or dimensions != desired:
                     raise ValueError('resize trace parser boundary invalid')
-                resizing = None
-    if offset != len(transport) or resizing is not None:
+                ui_phase = 'parser_end'
+                plan.append(f'R {dimensions[0]} {dimensions[1]}\n')
+            elif kind == 'parser_end':
+                if ui_phase != 'parser_end' or dimensions != desired:
+                    raise ValueError('resize trace parser boundary invalid')
+                grid, ui_phase = dimensions, 'request'
+            elif kind == 'request':
+                if ui_phase != 'request' or dimensions != grid or generation != len(requests) + 1:
+                    raise ValueError('resize trace request boundary invalid')
+                requests[generation] = dimensions
+                desired, ui_phase = None, 'idle'
+            elif kind == 'child_ack':
+                if ui_phase != 'idle' or dimensions != grid:
+                    raise ValueError('resize trace child acknowledgement geometry invalid')
+    if offset != len(transport) or ui_phase != 'idle' or active_host is not None:
         raise ValueError('resize trace does not cover transport')
     return ''.join(plan)
 

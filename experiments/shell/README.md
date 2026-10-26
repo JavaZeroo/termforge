@@ -96,6 +96,8 @@ resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子
 
 候选构建提供 `candidate_resize_replay`，可用 `python -m experiments.shell.resize_trace <capture> <new-output> --exe <candidate_resize_replay.exe>` 在 10 秒监督期限内，按实际 feed 分段与 UI parser resize 次序离线重放。校验器拒绝溢出、不完整字节分区和未知事件；回放成功只表示执行了所捕获的模型操作，不表示原场景通过，也不证明原生宿主状态、真实 glyph 或性能。原运输和逐步完整屏幕可含测试启动路径，保留在 `local/`，公开结果仅发布经审查的身份及脱敏结论。
 
+Schema 1 必须包含 recorder 的全部字段与有效整数范围、非递减 QPC、初始 24×80 网格及每次 parser resize 后一致的 feed 网格。UI 的 desired/parser_begin/parser_end/request 和 worker 的 generation/begin/end 分别配对；worker 观察可以早于对应 request 观察，也允许请求被合并而没有 host 调用，不据观察次序补造同步保证。回放计划每行仅允许 `R rows columns` 或 `F offset bytes` 的完整十进制记录；残缺、未知、多余字段、空行和整数溢出都失败，末行可无换行。边界拒绝与三份原离线复验见[校验器验证](results/2026-10-26-resize-replay-guards/validation.json)，不改变原 #51 失败。
+
 每次运行依次验证普通命令、中文、退格、左右方向键编辑，再运行一百万轮的输出命令。至少持续一秒且消费 64 KiB 后发送 Ctrl-C，再执行 `echo TF_AFTER`；确认对应状态与已提交帧后 `exit 37`。[#36](https://github.com/JavaZeroo/termforge/issues/36) 保留历史中断超时与根因缺口；本次 normal/resize 各十轮未复现，不能写成产品修复。独立的[原始 ConPTY 回归](../conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)另保留输入/输出与系统文件身份。另测输出中关闭，正常/关闭各重复三次，检查 Job 活跃进程归零与自有 desktop 消失。监督器用真实存活 shell 验证超时清理。独立队列探针验证容量、背压、顺序、停止唤醒与输入拒绝。短回归不代表长时无泄漏。
 
 产品真实 IME 单独由 [`research.ime.product_runner`](../../research/ime/README.md) 显式托管运行，使用严格受控的真实 `SendInput`，不在这些私有 desktop 场景中合成 IME 消息。五个 `ui-ime-*` 场景有独立输入桌面/焦点/代次检查和内外 Job/GO 门控，开发机拒绝运行；历史/Find 与 rename 双 Escape 已有[固定源码系统审计](../../research/ime/results/2026-10-24-product-ime-contexts/validation.json)。

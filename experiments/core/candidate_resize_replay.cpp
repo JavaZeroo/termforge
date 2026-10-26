@@ -1,6 +1,7 @@
 // Reproduce a captured parser/feed ordering without a console or UI.
 // Input and full screen snapshots can contain local paths; keep them private.
 #include "candidate_terminal.hpp"
+#include <charconv>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -16,6 +17,14 @@ std::string read_bounded(const std::filesystem::path& path) {
     if (!input) throw std::runtime_error("resize replay input read failed");
     return out.str();
 }
+
+size_t decimal(const std::string& token) {
+    size_t value = 0;
+    const auto parsed = std::from_chars(token.data(), token.data() + token.size(), value);
+    if (parsed.ec != std::errc{} || parsed.ptr != token.data() + token.size())
+        throw std::runtime_error("resize replay integer invalid");
+    return value;
+}
 }
 
 int main(int argc, char** argv) {
@@ -25,25 +34,32 @@ int main(int argc, char** argv) {
         const auto commands = read_bounded(argv[2]);
         std::istringstream plan(commands);
         termforge::CandidateTerminal terminal;
-        char kind; size_t a, b, offset = 0, step = 0, traced_cells = 0;
-        while (plan >> kind >> a >> b) {
+        size_t offset = 0, step = 0, traced_cells = 0;
+        std::string line;
+        while (std::getline(plan, line)) {
             if (++step > 1024) throw std::runtime_error("resize replay event limit exceeded");
-            if (kind == 'R') {
+            std::istringstream record(line);
+            std::string kind, first, second, extra;
+            if (!(record >> kind >> first >> second) || (record >> extra) ||
+                (kind != "R" && kind != "F"))
+                throw std::runtime_error("resize replay record invalid");
+            const auto a = decimal(first), b = decimal(second);
+            if (kind == "R") {
                 if (a < 1 || a > 200 || b < 1 || b > 500)
                     throw std::runtime_error("resize replay dimensions invalid");
                 terminal.resize(static_cast<int>(a), static_cast<int>(b));
-            } else if (kind == 'F') {
+            } else {
                 if (a != offset || !b || b > bytes.size() - offset)
                     throw std::runtime_error("resize replay feed partition invalid");
                 terminal.feed(std::string_view(bytes).substr(offset, b)); offset += b;
-            } else throw std::runtime_error("resize replay event invalid");
+            }
             const auto cells = (terminal.screen.history.size() + terminal.screen.lines.size()) * terminal.screen.width();
             if (cells > 1000000 - traced_cells) throw std::runtime_error("resize replay snapshot limit exceeded");
             traced_cells += cells;
             std::cout << "{\"step\":" << step << ",\"offset\":" << offset << ",\"kind\":\"" << kind << "\",\"state\":";
             terminal.screen.json(std::cout); std::cout << "}\n";
         }
-        if (!plan.eof() || offset != bytes.size()) throw std::runtime_error("resize replay plan incomplete");
+        if (!plan.eof() || !step || offset != bytes.size()) throw std::runtime_error("resize replay plan incomplete");
         return 0;
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }
