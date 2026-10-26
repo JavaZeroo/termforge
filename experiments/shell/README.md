@@ -92,13 +92,17 @@ E2驱动是唯一默认传入`resources=True`的场景驱动，依赖项目Pytho
 
 resize 两类场景各重复三次，通过真实 `SetWindowPos` 缩放并由子进程查询实际尺寸；包括快速连续请求、洪流中缩放、随后 Ctrl-C 或关闭。正常 resize 验证 60×12、100×28、72×18；关闭场景只查询前两个尺寸。脚本还将自有窗口移至非输入 desktop 右下边缘，验证 retained DIB 不依赖可见更新矩形。每次绘制与全量重绘作 RGB 对比；这些带检查的样本不能作为低开销延迟数据。
 
-每次运行依次验证普通命令、中文、退格、左右方向键编辑，再运行一百万轮的输出命令。至少持续一秒且消费 64 KiB 后发送 Ctrl-C，再执行 `echo TF_AFTER`；确认对应状态与已提交帧后 `exit 37`。当前 Windows 11 上 normal/resize 在该中断阶段超时，由 #36 保留，完整 CTest 不能记为通过。另测输出中关闭，正常/关闭各重复三次，检查 Job 活跃进程归零与自有 desktop 消失。监督器用真实存活 shell 验证超时清理。独立队列探针验证容量、背压、顺序、停止唤醒与输入拒绝。短回归不代表长时无泄漏。
+每次运行依次验证普通命令、中文、退格、左右方向键编辑，再运行一百万轮的输出命令。至少持续一秒且消费 64 KiB 后发送 Ctrl-C，再执行 `echo TF_AFTER`；确认对应状态与已提交帧后 `exit 37`。[#36](https://github.com/JavaZeroo/termforge/issues/36) 保留历史中断超时与根因缺口；本次 normal/resize 各十轮未复现，不能写成产品修复。独立的[原始 ConPTY 回归](../conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)另保留输入/输出与系统文件身份。另测输出中关闭，正常/关闭各重复三次，检查 Job 活跃进程归零与自有 desktop 消失。监督器用真实存活 shell 验证超时清理。独立队列探针验证容量、背压、顺序、停止唤醒与输入拒绝。短回归不代表长时无泄漏。
 
 产品真实 IME 单独由 [`research.ime.product_runner`](../../research/ime/README.md) 显式托管运行，使用严格受控的真实 `SendInput`，不在这些私有 desktop 场景中合成 IME 消息。五个 `ui-ime-*` 场景有独立输入桌面/焦点/代次检查和内外 Job/GO 门控，开发机拒绝运行；历史/Find 与 rename 双 Escape 已有[固定源码系统审计](../../research/ime/results/2026-10-24-product-ime-contexts/validation.json)。
 
 测试的 `scripted_input_to_state_ms` 从 Ctrl-C 的 WM_CHAR 被处理开始，到后续 `TF_AFTER` 完整输出行进入快照；`scripted_input_to_submit_ms` 到包含该行的 WM_PAINT BitBlt/GdiFlush 完成。两者包含中断、后续命令和调度，不能当作单键延迟。自有 DIB 截图不是合成器呈现，`presented_done=null`。关闭场景没有该标记，相关字段为 null，不参与延迟统计。
 
 默认监督时限为 40 秒，原生基础场景为 25 秒，主区、DPI、选择和查找场景为 30 秒；`ui-clipboard-system` 的监督/原生场景分别为 60/45 秒，watchdog 场景在 3 秒后强制回收。stdout/stderr、失败状态、最终自有 BMP、身份与环境均保留。CTest 产物在 `TERMFORGE_TEST_ARTIFACTS/shell`，默认 `build/test-artifacts/shell`；runner 输出目录必须不存在。只有审核过的合成记录可公开，日常用户会话不会自动录制或上传。
+
+`ui-shells` 要求四种固定入口全部可用，缺少 Ubuntu 不作为跳过。指定一次性 GitHub Windows VM 在运行严格测试前，由 [prepare_hosted_shells](../../tools/prepare_hosted_shells.py) 检查真实启动；仅 Ubuntu 未注册时导入固定 SHA-256 的官方 rootfs。已有 Ubuntu 启动失败仍失败，不替换发行版、不启用系统功能或更改默认项。该入口拒绝普通本机环境；纯 guard/oracle 检查用 `python -m unittest tools.test_prepare_hosted_shells -v`，不执行导入。
+
+四 shell 场景的 `shells-progress.jsonl` 保留阶段、退出及回收事实。提前退出立即失败，最多 8 KiB 的真实输出尾部只写入场景 `_private/local-shells/`；CI 不上传 `_private`。选择场景先把原固定内容锚点滚入可见区再拖动，另以 681/860 两种客户区高度回归；内容、淘汰和复制断言保持相同。
 
 E2产物在`TERMFORGE_TEST_ARTIFACTS/workflow-sessions/run-*`；公开白名单包含合成source/raw/progress、`sessions.json`、脱敏`sample.public.json`、`resource-observations.jsonl`和`resource-summary.json`。原始`sample.json`、controller `stdout.private.json`、`.identity`、`transport.bin`、私有stderr和整个`_resources-private/`均不上传，失败兜底也排除。资源公开记录在CI本地与raw逐条比对，下载后可离线重算脱敏观测；无法从公开artifact重哈希未上传的原始传输和二进制。
 
