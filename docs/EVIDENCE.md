@@ -8,6 +8,7 @@
 
 | 结论 | 实现/命令入口 | 已有结果与限制 |
 |---|---|---|
+| 候选 GUI 合法空标题（#45） | [真实 GUI 前后对照](../experiments/shell/results/2026-10-26-empty-title/validation.json)、[转换入口](../experiments/presentation/render.hpp)、[持续回归](../experiments/shell/candidate_title_test.cpp) | 自有 console 实际发出完整空 OSC 标题后，旧转换抛出 invalid text；空 UTF-8 合法转换为空 UTF-16 后，两 fresh GUI 存活且正常回收。混合 Unicode 与四类非法非空反例保留，旧二进制反事实仍失败。首次未观察到空 OSC 的尝试不算复现；旧候选 normal-1 的异常调用点和载荷未知，不能由新复现回填其根因；不是完整 R2 或 WindTerm 等价验收 |
 | 工作区恢复的运输完成端点（#38 夹具修正） | [限定合同](research/workspace-restore-transport-oracle.md)、[原失败及默认/候选验证](../experiments/shell/results/2026-10-26-workspace-transport-oracle/validation.json) | 完整 OSC 标题重复标记使旧 rfind 取错位置；真实 ConPTY 另有完整输出后以 column-one CUP 返回提示符的分支。独立判定保留 UTF-8、排除标题和命令回显，32 条断言及默认/候选原场景均通过；12 个样本的哈希、三会话关闭、Job0 与 desktop 删除另经复核。原期限/负载/恢复断言保留，原失败不回填；这是测试端点修正，不是产品恢复故障修复 |
 | 持续 cmd 输出与原始 Ctrl-C 回归（#36 未关闭） | [受监督入口](../experiments/conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)、[三次 fresh 公开记录及本地字节复核](../experiments/conpty/results/2026-10-26-ctrl-c-retest/validation.json) | 完整一百万次循环、一次洪流 ETX、立即后续命令、原五秒期限及退出 37；三次原始输入/输出哈希、独立标记与 Job0 已本地重算。cmd 固定版本 9278、conhost 9444；旧失败与本次成功原因未知，未修改产品 Ctrl-C 路径。原始运输仅本地保留，公开哈希不能单独复核全部原始断言；未验原生控制处理函数、独立构建或性能，不能关闭 #36 |
 | controller B 正常结束后 cmd 退出未验收（#44） | [原失败脱敏记录](../experiments/shell/results/2026-10-26-controller-exit/validation.json)、[待补诊断及关闭合同](https://github.com/JavaZeroo/termforge/issues/44) | child 精确接收32字节、正常退出0且已join，内外Job0；cmd仅记录close后的0xC000013A，wait_exit布尔和close前状态未知。随后同合同两轮通过不能覆盖原失败；probe未链接候选适配器，根因与候选关联均未证明，继续阻塞#38 |
