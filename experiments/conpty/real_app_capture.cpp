@@ -75,8 +75,9 @@ int main(int argc, char** argv) {
         {
             tf_conpty::Session session;
             session.start(L"C:\\Windows\\System32\\cmd.exe", L"/d /q /c \"echo TF_REAL_SHELL\"");
-            require(session.wait_exit(10000) && session.exit_code == 0, "real shell lifecycle failed");
+            const bool shell_exited = session.wait_exit(10000);
             write_bytes(out / "shell.bin", session.output());
+            require(shell_exited && session.exit_code == 0, "real shell lifecycle failed");
             session.close();
             require_output_eof(session);
             require(!session.capture_overflow, "real shell capture overflow");
