@@ -1,4 +1,5 @@
 #include "workflow_checkpoint.hpp"
+#include "output_record_checkpoint.hpp"
 #include "../core/terminal.hpp"
 #ifdef TERMFORGE_CANDIDATE_CORE
 #include "../core/candidate_terminal.hpp"
@@ -33,10 +34,41 @@ template<class Terminal> void chunk_boundary(Terminal& terminal) {
     const auto partial=termforge::project_line(terminal.screen.lines.back()).text;
     check(partial=="TF_R108_F5_00127 中文 é............","literal partial row differs from captured failure");
     check(!ready(terminal),"numbered prefix must not admit an unfinished consumer row");
-    terminal.feed(std::string_view(bytes).substr(8192));
+    tf_shell_test::OutputRecordCheckpoint checkpoint;
+    checkpoint.arm(false,tf_shell_test::OutputRecordCheckpoint::Clock::now()+std::chrono::seconds(60));
+    size_t consumed=8192;
+    while(!checkpoint.held()) {
+        const auto budget=checkpoint.read_budget(8192);
+        const auto part=std::string_view(bytes).substr(consumed,budget);
+        terminal.feed(part);checkpoint.consumed(part);consumed+=part.size();
+    }
+    check(consumed==8217 && checkpoint.read_budget(8192)==0,"checkpoint must hold immediately after the actual record suffix");
     check(ready(terminal),"remaining real bytes must make the checkpoint ready");
     check(termforge::project_line(terminal.screen.lines[terminal.screen.height()-2]).text==
           "TF_R108_F5_00127 中文 é...................................","later bytes did not complete the same record");
+    checkpoint.release();
+    check(checkpoint.read_budget(8192)==8192,"release must restore the original consumer budget");
+}
+void checkpoint_bounds() {
+    using Fence=tf_shell_test::OutputRecordCheckpoint;
+    Fence fence;
+    check(fence.read_budget(8192)==8192 && !fence.held(),"ordinary output must not be held");
+    fence.arm(true,Fence::Clock::now()+std::chrono::seconds(60));
+    check(fence.held() && fence.read_budget(8192)==0,"an existing empty boundary must stay stable");
+    fence.release();
+    fence.arm(false,Fence::Clock::now()+std::chrono::seconds(60));
+    for(size_t i=0;i<Fence::byte_limit;++i) {
+        check(fence.read_budget(8192)==1,"seeking must keep its bounded one-byte read");
+        fence.consumed("x");
+    }
+    bool rejected=false;
+    try { (void)fence.read_budget(8192); } catch(const std::runtime_error&) { rejected=true; }
+    check(rejected,"missing LF must fail at the byte limit");
+    fence.release();
+    check(fence.read_budget(8192)==8192,"close/release must remove a failed checkpoint");
+    rejected=false;
+    try { fence.arm(false,Fence::Clock::now()-std::chrono::seconds(1)); } catch(const std::invalid_argument&) { rejected=true; }
+    check(rejected && fence.read_budget(8192)==8192,"expired arm must leave normal output active");
 }
 template<class Terminal> void boundary_states(Terminal& terminal) {
     terminal.feed("\x1b[2J\x1b[H");
@@ -59,6 +91,7 @@ template<class Terminal> void boundary_states(Terminal& terminal) {
 }
 int main() {
     int failures=0;
+    try { checkpoint_bounds(); } catch(const std::exception& error) { std::cerr<<error.what()<<'\n';++failures; }
     const auto run=[&](const char* name,auto& terminal) {
         try { chunk_boundary(terminal);std::cout<<name<<": passed\n"; }
         catch(const std::exception& error) { std::cerr<<name<<": "<<error.what()<<'\n';++failures; }

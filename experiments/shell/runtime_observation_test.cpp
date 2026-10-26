@@ -124,7 +124,11 @@ static void runtime_default_off_case() {
     require(!window.runtime_observation_enabled(), "normal live window keeps observation disabled");
     require(!window.operation_observation_enabled() && window.operation_observations().empty(),
         "normal live window keeps operation observation disabled");
+    require(!window.output_record_checkpoint_active(),"ordinary live output has no record checkpoint");
+    window.arm_output_record_checkpoint(std::chrono::steady_clock::now()+std::chrono::seconds(5));
+    require(window.output_record_checkpoint_active(),"explicit output checkpoint must arm");
     window.close();
+    require(!window.output_record_checkpoint_active(),"close must release an armed output record checkpoint");
     runtime_wait(window, [&] { return IsWindow(window.handle()) == FALSE; }, "unobserved real shell closes deadline");
     const auto result = window.collect();
     require(result.complete && !result.runtime_before_close && !result.runtime_final &&

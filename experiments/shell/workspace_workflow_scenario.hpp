@@ -344,12 +344,19 @@ inline void Workspace::scenario_workflow() {
         if(!gate("F4").ready() || !gate("F5").ready()) return;
         gate("F4").start(tf_shell_test::WorkflowPhase::output);gate("F5").start(tf_shell_test::WorkflowPhase::output);stage_=35;
     } else if(stage_==35) {
+        bool held=true;
         for(const std::string name:{"F4","F5"}) {
-            if(std::filesystem::file_size(gate(name).path.wstring()+L".source.bin")<4096) return;
-            const auto* shell=workflow_shell(name);
-            if(!tf_shell_test::workflow_checkpoint_ready(name,shell->observed_document_lines(),shell->visible_snapshot())) return;
+            if(std::filesystem::file_size(gate(name).path.wstring()+L".source.bin")<4096) {held=false;continue;}
+            auto* shell=workflow_shell(name);
+            const auto document=shell->observed_document_lines();
+            if(!tf_shell_test::workflow_numbered_output_started(name,document)) {held=false;continue;}
+            shell->arm_output_record_checkpoint(started_+std::chrono::milliseconds(70000));
+            if(!shell->output_record_checkpoint_held()) {held=false;continue;}
+            require(tf_shell_test::workflow_checkpoint_ready(name,document,shell->visible_snapshot()),"workflow checkpoint did not reach an empty record boundary");
         }
+        if(!held) return;
         workflow_checkpoint("cycle-eight",evidence.cycle);
+        for(const std::string name:{"F4","F5"}) workflow_shell(name)->release_output_record_checkpoint();
         if(evidence.cycle<5) {++evidence.cycle;stage_=30;} else stage_=40;
     } else if(stage_==40) {
         paste_scenario_.start_receiver(std::filesystem::path(image_).parent_path()/"close.bin","close");
