@@ -12,7 +12,7 @@
 |---|---|---|
 | 默认 main：自研核心 + 系统 ConPTY | 默认构建与已发布 Alpha 的基础路线，不需要 Rust | 已有 R1 限定验收；VT/Unicode 能力仍为有限子集，不能引用候选核心的字素或 TUI 结果 |
 | 显式候选 main：`termforge.4` + 系统 ConPTY | `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON`；按 [ADR-0003](adr/0003-core-reference-and-reuse.md)推进 R2 新终端能力 | [固定来源](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)与 [#39 字素合同](research/streaming-graphemes.md)；候选正确性通过不关闭系统 ConPTY 或 R2 父项 |
-| 实验分支：`termforge.3` + 固定官方 ConPTY | [PR #50（Draft）](https://github.com/JavaZeroo/termforge/pull/50)，尚未合并，也未与 main 的 `.4` 联合验收 | [#47](https://github.com/JavaZeroo/termforge/issues/47) 跟踪后端整合；终端 margin 与原生状态分列。[resize 残尾 #51](https://github.com/JavaZeroo/termforge/issues/51)、[Console-width Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[未完成粘贴的确定性取消夹具 #53](https://github.com/JavaZeroo/termforge/issues/53)仍开放，现有 completed 观察不能证明部分发送取消通过或产品 Cancel 故障 |
+| 实验分支：`termforge.4` + 固定官方 ConPTY | [PR #50（Draft）](https://github.com/JavaZeroo/termforge/pull/50)，联合源码 `3e5b96d` 已重建并[冻结真实基线](research/joint-conpty-baseline.md)，尚未合并或通过产品整体验收 | [#47](https://github.com/JavaZeroo/termforge/issues/47) 跟踪后端整合；终端 margin 与原生状态分列。[resize 残尾 #51](https://github.com/JavaZeroo/termforge/issues/51)、[Console-width Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[未完成粘贴的确定性取消夹具 #53](https://github.com/JavaZeroo/termforge/issues/53)仍开放，现有 completed 观察不能证明部分发送取消通过或产品 Cancel 故障；另有 worker gate [#62](https://github.com/JavaZeroo/termforge/issues/62) 和工作区 [#63](https://github.com/JavaZeroo/termforge/issues/63) 回归 |
 
 以下能力默认指已合并实现；某个配置的通过结果不能转用于另一个配置。R1 的真实系统 CF/拼音验收属于固定自研核心配置，不外推到候选 `.4` 或实验后端联合配置。
 
@@ -43,7 +43,7 @@
 | 基础窗口操作 | **限定验收**：新建/切换/关闭/重命名、五条分隔线、面板显隐、底部焦点模式 | 完整会话动作/快捷键、命令面板、目标 Focus/SyncInput 行为 | R1 / R4 |
 | 工作区外观 | **实现中，未验收**：两种逻辑尺寸下部分外框/层级依据直接取证；UI 字体来自独立 OFL 来源，私有加载、实际 GDI face/em/行高与缺失资产失败有自动检查 | 不是像素等价；图标、主题/透明度、多语言及所有状态仍缺。Explorer/Filer/Outline 当前为空区域 | R2 / R3 / R4 |
 | DPI 与文字缩放 | **限定验收**：每会话 50%–200%，受控 96→144→192→96；[字体/显示合同](milestones/R2-font-display.md)明确 12×26 基准网格。两台真实 96-DPI 显示器间往返两次保持窗口、rename 焦点、隐藏标签和网格，[证据](../experiments/shell/results/2026-10-24-r2-monitor-font/validation.json)明确 `distinct_dpi=false`；v2 会话恢复另覆盖 100%/150%/75% zoom | 不同 DPI 的真实跨屏、实际呈现和真实 IME 跨屏仍未验收；恢复证据为同一 96-DPI 私有 desktop，目标字形/逐字形 fallback 未等价 | R2 |
-| 配置与会话持久化 | **限定验收**：有界 v2、原子替换、v1 迁移、空会话与损坏/未知版本保护；[多会话恢复](../experiments/shell/results/2026-10-25-workspace-restore-multi/validation.json)覆盖 shell 类型/目录/标题/zoom/split/窗口，[迁移回退](../experiments/shell/results/2026-10-25-workspace-recovery-guards/validation.json)及[写失败与关闭策略](../experiments/shell/results/2026-10-25-workspace-write-failure/validation.json)均有真实验证。只重建白名单 shell，不恢复原进程/历史；保存失败保留窗口，显式放弃保存才跳过 | 仅当前单工作区、正常窗口和白名单本地会话；偏好、分组/搜索、最大化/多窗口与文字标记恢复归后续。真实 DPI、呈现和 #38 等独立回归不因此视为通过，R2 出口未宣告完成 | R2 / R3 / R4 |
+| 配置与会话持久化 | **限定验收**：有界 v2、原子替换、v1 迁移、空会话与损坏/未知版本保护；[多会话恢复](../experiments/shell/results/2026-10-25-workspace-restore-multi/validation.json)覆盖 shell 类型/目录/标题/zoom/split/窗口，[迁移回退](../experiments/shell/results/2026-10-25-workspace-recovery-guards/validation.json)及[写失败与关闭策略](../experiments/shell/results/2026-10-25-workspace-write-failure/validation.json)均有真实验证。只重建白名单 shell，不恢复原进程/历史；保存失败保留窗口，显式放弃保存才跳过 | 仅当前单工作区、正常窗口和白名单本地会话；偏好、分组/搜索、最大化/多窗口与文字标记恢复归后续。联合基线默认配置出现恢复 stage1 超时，由 [#61](https://github.com/JavaZeroo/termforge/issues/61) 定位；真实 DPI、呈现和 #38 等独立回归不因此视为通过，R2 出口未宣告完成 | R2 / R3 / R4 |
 | 文本增强与辅助面板 | **未实现** | 高亮/时间戳/折叠/outline、补全与 Fish 增强、命令历史、Sender/QuickBar、Free Type Mode（输入模式，行为待取证）、vim 本地/远程键位、锁屏、Sysmon | R4 |
 
 ## 远程、文件与协议
