@@ -46,3 +46,5 @@ ctest --test-dir build/candidate -C Release -R '^candidate_(core|resize_replay)$
 六组合成探针可公开复现；原 GUI 原件保留本地，只发布审核后的状态、哈希和固定断言结果。完整 R1/R2、实际呈现、真实 CF/IME 组合与 WindTerm 对照不从本项推导，`presented_done` 保持 null。其他真实失败由对应 issue 继续跟踪。
 
 最终产品源 `92eac12` 的显式官方配置完整 CTest 为 54/56、411.59 秒，另有 12 项内部 skip；失败为 Vim stage59（#52）和第二轮工作区恢复 stage1（#88）。同次八会话工作流通过，但此前两次编号半行失败仍由 #87 跟踪。原 resize、resize-close 和 Unicode 检查通过只验收本项限定修复，不覆盖这些独立失败。
+
+后续 [#63 工作区核验](workspace-native-viewport.md)用同EXE单变量策略、原生快照与实际运输回放，确认本策略还覆盖原UI stage52及主区场景stage7的底部残尾；该项的无插桩原三轮重复和完整shell验收另有固定身份，不改写以上历史整套结果。
