@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <sstream>
 
 namespace tf_shell_test {
 inline void paste_check(bool ok, const char* why) { if(!ok) throw std::runtime_error(why); }
@@ -80,9 +81,15 @@ struct PasteScenarioState {
         paste_check(transfer!=nullptr && receiver->checkpoint(),"paste action requires a live transfer and receiver checkpoint");
         pending.before=transfer->progress(); pending.flood=flood;
         pending.checkpoint_bytes=read(capture).size();
-        paste_check(pending.checkpoint_bytes==768 && flood && pending.before.sent>=16384 &&
-                    pending.before.accepted<pending.before.total && !tf_shell::paste_terminal(pending.before.state),
-                    "paste action did not occur during a partial transfer with consumed bytes and output flood");
+        if (!(pending.checkpoint_bytes==768 && flood && pending.before.sent>=16384 &&
+              pending.before.accepted<pending.before.total && !tf_shell::paste_terminal(pending.before.state))) {
+            std::ostringstream details;
+            details << "paste action did not occur during a partial transfer with consumed bytes and output flood"
+                    << "; checkpoint=" << pending.checkpoint_bytes << " flood=" << flood
+                    << " sent=" << pending.before.sent << " accepted=" << pending.before.accepted
+                    << " total=" << pending.before.total << " state=" << static_cast<unsigned>(pending.before.state);
+            throw std::runtime_error(details.str());
+        }
     }
     void finish(const std::filesystem::path& capture,bool cancelled) {
         pending.after=transfer->progress(); const auto bytes=read(capture); pending.received=bytes.size();

@@ -48,12 +48,12 @@ def backend_path(value):
     return str(path)
 
 
-def validate_lifecycle(native):
+def validate_lifecycle(native, side_by_side=False):
     expected = {
         "waited": True, "exit_code": 37, "read_error": 109,
         "capture_overflow": False, "forced_reader_cancel": False,
         "forced_process_cancel": False, "cleanup_complete": True,
-        "active_children_after": 0,
+        "active_children_after": 0, "side_by_side": side_by_side, "creation_flags": 0,
     }
     if (type(native) is not dict or native.keys() != expected.keys() or
             any(type(native[key]) is not type(value) or native[key] != value
@@ -125,7 +125,7 @@ def execute(executable, backend, trace, out, mode, columns, rows, *, gate=b"GO\n
         if process.returncode != 0:
             raise ValueError("native probe failed")
         native = json.loads(stdout)
-        validate_lifecycle(native)
+        validate_lifecycle(native, side_by_side=backend != "system")
         result.update(inspect_case(out, trace, mode, columns, rows), native=native, status="completed")
     finally:
         if process is not None and process.poll() is None:
@@ -166,7 +166,7 @@ def main():
                for columns, rows in ((80,24), (12,7)) for mode in ("vt-on", "vt-off")]
     valid = all(sample["terminal_main_margins_restored"] for sample in samples if sample["mode"] == "vt-on")
     summary = {
-        "schema": "termforge-conpty-margin-backend-v1", "generated_utc": datetime.now(timezone.utc).isoformat(),
+        "schema": "termforge-conpty-margin-backend-v2", "generated_utc": datetime.now(timezone.utc).isoformat(),
         "backend": "system" if backend == "system" else PACKAGE,
         "probe_sha256": sha256(executable), "candidate_trace_sha256": sha256(trace),
         "terminal_main_margins_restored_in_both_sizes": valid, "full_r2_contract_verified": False,

@@ -483,7 +483,8 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
                 validate_history(json.loads((out / "history.json").read_text(encoding="utf-8")))
                 validate_native_scroll([json.loads(line) for line in (out / "native-scroll.jsonl").read_text(encoding="utf-8").splitlines()])
             if mode == "candidate-margins":
-                record["margins_output"] = validate_margins_output(out)
+                record["margins_output"] = validate_margins_output(out,
+                    expected_backend=os.environ.get("TERMFORGE_EXPECT_CONPTY_BACKEND", "system"))
             if mode == "candidate-scroll":
                 record["scroll_output"] = validate_scroll_output(out)
             if mode == "candidate-alt":

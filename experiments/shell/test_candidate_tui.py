@@ -10,7 +10,7 @@ from experiments.shell.run import execute
 from experiments.shell.unicode_checks import validate_candidate_unicode
 from experiments.shell.alternate_checks import STAGES, validate_candidate_alternate
 from experiments.shell.scroll_checks import STAGES as SCROLL_STAGES, validate_candidate_scroll
-from experiments.shell.margin_checks import STAGES as MARGIN_STAGES, validate_candidate_margins
+from experiments.shell.margin_checks import STAGES as MARGIN_STAGES, REVIEWED_BACKEND, validate_candidate_margins
 from experiments.shell.workflow_checks import validate_console_window
 
 
@@ -130,6 +130,9 @@ class CandidateTuiTests(unittest.TestCase):
                                                  transport.replace(b"REGION_C", b"REGION_X") if corruption == "transport" else transport)
 
     def test_real_conpty_margin_difference(self):
+        expected_backend = os.environ.get("TERMFORGE_EXPECT_CONPTY_BACKEND", "system")
+        self.assertIn(expected_backend, ("system", REVIEWED_BACKEND))
+        terminal_restored = expected_backend == REVIEWED_BACKEND
         for repeat in range(2):
             out = self.out / f"candidate-margins-{repeat}"
             record = execute(binary("termforge_shell"), "candidate-margins", out, timeout=20)
@@ -138,7 +141,9 @@ class CandidateTuiTests(unittest.TestCase):
             self.assertFalse(summary["margins_per_buffer_verified"])
             self.assertFalse(summary["native_main_margins_restored"])
             self.assertTrue(summary["conpty_margin_difference_observed"])
-            self.assertTrue(summary["candidate_matches_native"])
+            self.assertEqual(summary["conpty_backend"], expected_backend)
+            self.assertEqual(summary["terminal_main_margins_restored"], terminal_restored)
+            self.assertEqual(summary["candidate_matches_native"], not terminal_restored)
             self.assertTrue(summary["native_main_restored"])
             self.assertFalse(summary["windterm_runtime_equivalence_verified"])
             self.assertFalse(summary["full_r2_contract_verified"])
@@ -173,7 +178,13 @@ class CandidateTuiTests(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         validate_candidate_margins(changed, changed_consoles,
                                                   b"" if corruption == "source" else source,
-                                                  transport.replace(b"\x1b[?1049h", b"\x1b[?1048h") if corruption == "transport" else transport)
+                                                  transport.replace(b"\x1b[?1049h", b"\x1b[?1048h") if corruption == "transport" else transport,
+                                                  expected_backend=expected_backend)
+            if terminal_restored:
+                for margin in (b"\x1b[2;3r", b"\x1b[4;5r"):
+                    with self.subTest(repeat=repeat, missing_margin=margin), self.assertRaises(ValueError):
+                        validate_candidate_margins(data, consoles, source, transport.replace(margin, b""),
+                                                   expected_backend=expected_backend)
 
     def test_real_unicode_scalar_preservation_and_glyphs(self):
         for repeat in range(2):

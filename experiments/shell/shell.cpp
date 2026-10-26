@@ -451,7 +451,9 @@ class ShellWindow {
         require(frame_matches_full(), "alternate retained frame mismatch");
         std::ostringstream out;
         out << "{\"schema\":\"" << (scroll ? "termforge-candidate-scroll-v1" : margins ? "termforge-candidate-margins-v1" : "termforge-candidate-alt-v1")
-            << "\",\"columns\":" << parser_.screen.width()
+            << "\",\"conpty_backend\":\"" << session_.backend_identity()
+            << "\",\"conpty_creation_flags\":" << session_.backend_creation_flags()
+            << ",\"columns\":" << parser_.screen.width()
             << ",\"rows\":" << parser_.screen.height() << ",\"cursor_row\":" << parser_.screen.row
             << ",\"cursor_column\":" << parser_.screen.column
             << ",\"alternate_enabled\":" << ((parser_.mode_bits() & (1 << 12)) ? "true" : "false")
@@ -580,7 +582,7 @@ class ShellWindow {
                 begin_output_observation(); resize_window(60, 12); stage_ = 61;
             } else if (stage_ == 61 && resize_.settled() &&
                        parser_.screen.width() == 60 && parser_.screen.height() == 12 &&
-                       observed_output_.find("\x1b[?25h") != std::string::npos) {
+                       live_contains_line("TF_QUERY_RESIZED_60x12")) {
                 fixture_command(std::wstring(1, 27)); stage_ = 62;
             } else if (stage_ == 62 && live_contains_line("TF_ESCAPE_DONE")) {
                 std::ifstream stream("candidate-escape.bin", std::ios::binary);

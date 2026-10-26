@@ -38,7 +38,7 @@ class MarginDiagnosticTests(unittest.TestCase):
     def test_lifecycle_requires_exact_observed_types_and_values(self):
         sample = dict(waited=True, exit_code=37, read_error=109, capture_overflow=False,
                       forced_reader_cancel=False, forced_process_cancel=False,
-                      cleanup_complete=True, active_children_after=0)
+                      cleanup_complete=True, active_children_after=0, side_by_side=False, creation_flags=0)
         validate_lifecycle(sample)
         for key, value in sample.items():
             for replacement in (None, not value if type(value) is bool else value + 1,

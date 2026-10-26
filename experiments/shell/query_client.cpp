@@ -28,8 +28,24 @@ int wmain(int argc, wchar_t** argv) {
         require(bool(file), "query response file failed");
         output("TF_QUERY_READY\r\n", 16);
         if (argc == 3) {
+            // Observe the actual peer console size, rather than relying on
+            // a particular ConPTY renderer to emit a cursor-show side effect.
+            // Resize and ESC delivery share the existing five-second budget.
+            const auto deadline = GetTickCount64() + 5000;
             for (;;) {
-                require(WaitForSingleObject(input, 5000) == WAIT_OBJECT_0, "escape input timeout");
+                CONSOLE_SCREEN_BUFFER_INFO info{};
+                require(GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info),
+                        "escape console dimensions unavailable");
+                if (info.dwSize.X == 60 && info.dwSize.Y == 12) break;
+                require(GetTickCount64() < deadline, "escape resize timeout");
+                Sleep(1);
+            }
+            constexpr char resized[] = "TF_QUERY_RESIZED_60x12\r\n";
+            output(resized, sizeof(resized)-1);
+            for (;;) {
+                const auto now = GetTickCount64();
+                require(now < deadline && WaitForSingleObject(input, static_cast<DWORD>(deadline-now)) == WAIT_OBJECT_0,
+                        "escape input timeout");
                 wchar_t value = 0;
                 DWORD count = 0;
                 require(ReadConsoleW(input, &value, 1, &count, nullptr) && count == 1 && value == 27,
