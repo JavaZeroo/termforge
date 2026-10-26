@@ -86,12 +86,11 @@ std::string replay_key(const Line& line) {
 template<class History, class Lines>
 std::vector<std::string> replay_keys(const History& history, const Lines& lines) {
     std::vector<std::string> result;
-    const auto append = [&](const Line& line) {
-        auto key = replay_key(line);
-        if (!key.empty()) result.push_back(std::move(key));
-    };
-    for (const auto& line : history) append(line);
-    for (const auto& line : lines) append(line);
+    result.reserve(history.size() + lines.size());
+    // Keep empty entries aligned with their rows so reconciliation can reuse
+    // each serialization while scanning the original and incoming order.
+    for (const auto& line : history) result.push_back(replay_key(line));
+    for (const auto& line : lines) result.push_back(replay_key(line));
     return result;
 }
 } // namespace
@@ -150,17 +149,18 @@ std::unordered_set<uint64_t> CandidateTerminal::reconcile_replay(std::vector<Lin
     const auto expected = replay_keys(source.history, source.lines);
     const auto actual = replay_keys(std::vector<Line>{}, retained);
     std::unordered_map<std::string, size_t> old_counts, new_counts;
-    for (const auto& key : expected) ++old_counts[key];
-    for (const auto& key : actual) ++new_counts[key];
+    for (const auto& key : expected) if (!key.empty()) ++old_counts[key];
+    for (const auto& key : actual) if (!key.empty()) ++new_counts[key];
     std::vector<Line> origin;
     origin.insert(origin.end(), source.history.begin(), source.history.end());
     origin.insert(origin.end(), source.lines.begin(), source.lines.end());
     std::unordered_set<uint64_t> mapped;
     size_t origin_index = 0;
-    for (auto& line : retained) {
-        const auto key = replay_key(line);
+    for (size_t index = 0; index < retained.size(); ++index) {
+        auto& line = retained[index];
+        const auto& key = actual[index];
         if (key.empty() || old_counts[key] != 1 || new_counts[key] != 1) continue;
-        while (origin_index < origin.size() && replay_key(origin[origin_index]) != key) ++origin_index;
+        while (origin_index < origin.size() && expected[origin_index] != key) ++origin_index;
         if (origin_index == origin.size()) break;
         line.id = origin[origin_index].id;
         line.version = origin[origin_index].version;
