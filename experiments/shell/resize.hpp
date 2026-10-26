@@ -9,6 +9,7 @@ class ResizeWorker {
     // performs Session::resize; a working generation means worker ownership,
     // not proof that the kernel call is blocked or a child applied the size.
     std::function<void()> before_resize_;
+    std::function<void(bool, unsigned, int, int)> observation_;
     mutable std::mutex mutex_;
     std::condition_variable ready_;
     std::thread thread_;
@@ -24,8 +25,9 @@ public:
         unsigned requested_generation = 0, completed_generation = 0, working_generation = 0, pending_generation = 0;
         bool working = false, pending = false, stopping = false, started = false, joined = false, failed = false;
     };
-    explicit ResizeWorker(tf_conpty::Session& session,std::function<void()> before_resize={})
-        : session_(session),before_resize_(std::move(before_resize)) {}
+    explicit ResizeWorker(tf_conpty::Session& session,std::function<void()> before_resize={},
+                          std::function<void(bool, unsigned, int, int)> observation={})
+        : session_(session),before_resize_(std::move(before_resize)),observation_(std::move(observation)) {}
     ~ResizeWorker() { stop(); }
     Snapshot snapshot() const {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -49,7 +51,9 @@ public:
                     working_ = true; working_generation_ = generation;
                     lock.unlock();
                     if(before_resize_) before_resize_();
+                    if(observation_) observation_(true, generation, rows, columns);
                     session_.resize(static_cast<short>(columns), static_cast<short>(rows));
+                    if(observation_) observation_(false, generation, rows, columns);
                     lock.lock(); completed_ = generation; working_ = false; working_generation_ = 0;
                 }
             } catch (...) {
