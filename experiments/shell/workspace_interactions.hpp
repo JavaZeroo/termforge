@@ -2,6 +2,7 @@
 #pragma once
 #include <cwctype>
 #include "edit_actions.hpp"
+#include "local_shell_diagnostics.hpp"
 
 inline Workspace::Divider Workspace::divider_at(int x,int y) const {
     if(state_.focus || closing_) return Divider::none;
@@ -94,6 +95,15 @@ inline void Workspace::collect_child(ShellWindow* child) {
             try {
                 const Result result=child->collect();
                 require(result.complete && result.active_children==0,"workspace child cleanup failed");
+                if(test_mode_=="ui-shells" && !image_.empty()) {
+                    const auto kind=tabs[i].launch?tabs[i].launch->kind:L"cmd";
+                    const auto role=kind==L"powershell"?"powershell":kind==L"pwsh"?"pwsh":kind==L"wsl"?"wsl":"cmd";
+                    tf_shell_test::local_shell_progress(std::filesystem::path(image_).parent_path(),role,"exited",stage_,
+                        result.exit_code,result.complete,result.active_children,child->observed_output());
+                    if(!closing_ && failure_.empty() && (stage_<6 || result.exit_code!=0))
+                        failure_="workspace local shell exited before verification or normal exit: "+std::string(role)+
+                            " stage="+std::to_string(stage_)+" exit="+std::to_string(result.exit_code);
+                }
             } catch(const std::exception& error) { failure_=error.what(); }
             if(workflow_) {
                 try { workflow_collected(child,tabs[i].id); }

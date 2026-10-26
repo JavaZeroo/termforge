@@ -35,21 +35,33 @@ inline void Workspace::scenario_shells() {
     };
 
     if (stage_ == 0 && active()->ready()) {
+        active()->begin_output_observation();
+        tf_shell_test::local_shell_progress(directory,"cmd","started",stage_);
         active()->command(L"if /I \"%CD%\"==\"" + expected_directory + L"\" echo TF_CMD_CWD_OK\r");
         stage_ = 1;
     } else if (stage_ == 1 && active()->contains_line("TF_CMD_CWD_OK")) {
+        tf_shell_test::local_shell_progress(directory,"cmd","cwd-verified",stage_);
         add(Group::main, with_directory(tf_shell::powershell(false)));
+        active()->begin_output_observation();
+        tf_shell_test::local_shell_progress(directory,"powershell","started",stage_);
         active()->command(L"if ($PWD.Path -eq '" + expected_directory + L"') { 'TF_PS51_CWD_OK' }\r");
         stage_ = 2;
     } else if (stage_ == 2 && active()->contains_line("TF_PS51_CWD_OK")) {
+        tf_shell_test::local_shell_progress(directory,"powershell","cwd-verified",stage_);
         add(Group::bottom, with_directory(tf_shell::powershell(true)));
+        active()->begin_output_observation();
+        tf_shell_test::local_shell_progress(directory,"pwsh","started",stage_);
         active()->command(L"if ($PWD.Path -eq '" + expected_directory + L"') { 'TF_PS7_CWD_OK' }\r");
         stage_ = 3;
     } else if (stage_ == 3 && active()->contains_line("TF_PS7_CWD_OK")) {
+        tf_shell_test::local_shell_progress(directory,"pwsh","cwd-verified",stage_);
         add(Group::main, tf_shell::wsl(L"Ubuntu", expected_directory));
+        active()->begin_output_observation();
+        tf_shell_test::local_shell_progress(directory,"wsl","started",stage_);
         active()->command(L"printf '\\nTF_WSL\\n'; test \"$PWD\" = '" + std::wstring(expected_wsl_directory.begin(), expected_wsl_directory.end()) + L"' && printf 'TF_WSL_CWD_OK\\n'\r");
         stage_ = 4;
     } else if (stage_ == 4 && active()->contains_line("TF_WSL_CWD_OK")) {
+        tf_shell_test::local_shell_progress(directory,"wsl","cwd-verified",stage_);
         check_size();
         stage_ = 5;
     } else if (stage_ == 5 && sizes_ready()) {
