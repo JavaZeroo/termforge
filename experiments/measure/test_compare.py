@@ -1,4 +1,5 @@
 """Candidate measurement contracts and interleaved raw-sample gates; no speed assertions."""
+import copy
 import json
 from pathlib import Path
 import tempfile
@@ -6,6 +7,69 @@ import unittest
 
 from experiments.measure.compare import CANDIDATE_STATE, WORKLOADS, candidate_binary, run_batch
 from experiments.measure.run import execute
+from experiments.candidates.alacritty.run import run_trace, trace_binary
+
+
+def expected_candidate_projection(route):
+    """Derive the fixed fixture's terminal state without replaying a parser.
+
+    Each of 1,000 CR/LF-terminated rows fills fewer than 80 columns. The final
+    screen has 23 completed rows and one empty row; the last 100 completed rows
+    occupy history. Interactive editing changes abcdefgh to abcdeQgh. Neither
+    fixture changes default style/modes, generates replies or overflows an EGC.
+    """
+    text = "x" * 76 if route == "project" else "abcdeQgh"
+    style = dict(fg=-1, bg=-1, bold=False)
+
+    def row(value):
+        return [dict(text=value[c] if c < len(value) else "",
+                     width=1 if c < len(value) else 0, style=style.copy())
+                for c in range(80)]
+
+    return dict(offset=0, mode_bits=163969, replies=[], grapheme_overflows=0,
+                screen=dict(row=23, column=0, wrap_pending=False,
+                            current_style=style, cells=[row(text) for _ in range(23)] + [row("")],
+                            history=[row(text) for _ in range(100)]))
+
+
+def projection_digest(value):
+    # serde_json's default map is key-sorted and serializes compact UTF-8.
+    result = 14695981039346656037
+    for byte in json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8"):
+        result = ((result ^ byte) * 1099511628211) & ((1 << 64) - 1)
+    return str(result)
+
+
+class CandidateProjectionIdentityTests(unittest.TestCase):
+    def test_overflow_counter_migrates_the_full_projection_digest(self):
+        legacy = dict(project="11966868740884721388", interactive="8035857386658397897")
+        for route, workload in WORKLOADS.items():
+            with self.subTest(route=route):
+                expected = expected_candidate_projection(route)
+                old = copy.deepcopy(expected)
+                del old["grapheme_overflows"]
+                self.assertEqual(projection_digest(old), legacy[route])
+                self.assertEqual(projection_digest(expected), workload["states"]["alacritty"])
+                # Keep the diagnostic field in the hash; do not exempt it to
+                # preserve an obsolete identity or accept a corrupted counter.
+                changed = copy.deepcopy(expected)
+                changed["grapheme_overflows"] = 1
+                self.assertNotEqual(projection_digest(changed), workload["states"]["alacritty"])
+
+    def test_actual_fixture_projection_matches_independent_complete_state(self):
+        candidate = trace_binary()
+        with tempfile.TemporaryDirectory() as folder:
+            for route, workload in WORKLOADS.items():
+                with self.subTest(route=route):
+                    payload = workload["fixture"]
+                    report, records = run_trace(candidate, payload, 24, 80, 100, [len(payload)],
+                                                Path(folder) / route)
+                    self.assertTrue(report["passed"], report)
+                    actual = records[-1]
+                    self.assertEqual(actual["offset"], len(payload))
+                    actual["offset"] = 0  # measure.rs snapshots at observation offset zero.
+                    self.assertEqual(actual, expected_candidate_projection(route))
+                    self.assertEqual(projection_digest(actual), workload["states"]["alacritty"])
 
 
 class CandidateMeasurementTests(unittest.TestCase):

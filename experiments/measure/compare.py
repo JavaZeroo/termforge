@@ -17,7 +17,9 @@ from experiments.build_paths import binary
 from experiments.candidates.alacritty.run import vendor_sources
 from experiments.measure.run import EXPECTED_STATE, execute
 
-CANDIDATE_STATE = "11966868740884721388"
+# Full snapshot identity includes grapheme_overflows:0 since termforge.4.
+# test_compare independently derives both fixture states and the legacy hashes.
+CANDIDATE_STATE = "16178973312633948535"
 ENDPOINT = ("same 78,000-byte project workload and continuous interval; observation off excludes projection, "
             "observation on includes projection/JSON and allocation counting; counters are not an uninstrumented baseline")
 WORKLOADS = {
@@ -30,7 +32,7 @@ WORKLOADS = {
         bytes_per_round=22000,
         endpoint=("same 22,000-byte interactive workload and continuous interval; observation off excludes projection, "
                   "observation on includes projection/JSON and allocation counting; counters are not an uninstrumented baseline"),
-        states=dict(termforge="8292075482910706113", alacritty="8035857386658397897")),
+        states=dict(termforge="8292075482910706113", alacritty="6154007251599136798")),
 }
 
 
