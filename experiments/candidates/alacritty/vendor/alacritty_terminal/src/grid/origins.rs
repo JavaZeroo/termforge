@@ -1,6 +1,6 @@
-//! Sparse physical-cell origins for one synchronous resize operation.
+//! Sparse physical-cell origins for one synchronous resize or feed transaction.
 
-/// A contiguous run of cells moved from one pre-resize row.
+/// A contiguous run of surviving cells from one pre-transaction row.
 ///
 /// Both coordinates count physical cells. A clipped wide glyph retains its
 /// lead-cell origin; its logical width still belongs to the source cell.
@@ -12,10 +12,11 @@ pub struct OriginSpan {
     pub len: usize,
 }
 
-/// Origins carried beside a row or a temporary row fragment during resize.
+/// Origins carried beside a row or temporary fragment during a transaction.
 ///
 /// `columns` includes gaps and padding without origins. The optional hard
 /// boundary is independent of cells, so an empty hard line remains observable.
+/// Feed writes remove old origins even when the replacement text is equal.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct RowOrigins {
     pub columns: usize,
@@ -137,6 +138,53 @@ impl RowOrigins {
         // Removing the final physical cells does not erase their hard boundary.
         self.append(suffix, at);
         self.hard_boundary = boundary;
+    }
+
+    /// Forget overwritten cells without moving their surviving neighbors.
+    pub(crate) fn invalidate_range(&mut self, at: usize, len: usize) {
+        let at = at.min(self.columns);
+        let end = at + len.min(self.columns - at);
+        if at == end {
+            return;
+        }
+
+        let spans = std::mem::take(&mut self.spans);
+        for span in spans {
+            let span_end = span.column + span.len;
+            if span_end <= at || span.column >= end {
+                self.push(span);
+                continue;
+            }
+            if span.column < at {
+                self.push(OriginSpan { len: at - span.column, ..span });
+            }
+            if span_end > end {
+                self.push(OriginSpan {
+                    source_column: span.source_column + end - span.column,
+                    column: end,
+                    len: span_end - end,
+                    ..span
+                });
+            }
+        }
+    }
+
+    /// Exchange two physical cells, carrying gaps and origins with them.
+    pub(crate) fn swap_cells(&mut self, a: usize, b: usize) {
+        if a == b {
+            return;
+        }
+        let (left, right) = if a < b { (a, b) } else { (b, a) };
+        assert!(right < self.columns, "origin swap exceeds row extent");
+
+        let mut left_cell = self.split_off(left);
+        let mut between = left_cell.split_off(1);
+        let mut right_cell = between.split_off(right - left - 1);
+        let suffix = right_cell.split_off(1);
+        self.append(right_cell, left);
+        self.append(between, left + 1);
+        self.append(left_cell, right);
+        self.append(suffix, right + 1);
     }
 
     fn push(&mut self, span: OriginSpan) {

@@ -64,6 +64,11 @@ typedef struct TfResizeSpan {
 void* tf_terminal_new(size_t rows, size_t columns, size_t history);
 void tf_terminal_free(void* terminal);
 int tf_terminal_feed(void* terminal, const uint8_t* data, size_t len, uint8_t* error, size_t error_capacity);
+// Opt-in feed transaction tracking. New writes/erases have no old-cell origin,
+// even when bytes are unchanged; surviving cells carry their old row/column.
+// Uses the same physical-source record layout as resize, through feed queries.
+// Does not seal a pending grapheme. Ordinary feed performs no origin capture.
+int tf_terminal_feed_mapped(void* terminal, const uint8_t* data, size_t len, uint8_t* error, size_t error_capacity);
 int tf_terminal_finish(void* terminal, uint8_t* error, size_t error_capacity);
 int tf_terminal_resize(void* terminal, size_t rows, size_t columns, uint8_t* error, size_t error_capacity);
 // Owned-value queries for the latest resize only. alternate selects the named
@@ -81,6 +86,22 @@ int tf_terminal_resize_row(void* terminal, uint64_t epoch, bool alternate, bool 
                            size_t index, TfResizeRowMeta* output);
 int tf_terminal_resize_span(void* terminal, uint64_t epoch, bool alternate, bool removed,
                             size_t row, size_t index, TfResizeSpan* output);
+// A map is available for only its actual operation. A mapped feed expires the
+// resize map, and resize expires the feed map. Both share the monotonic epoch
+// and mutation/invalid-query rules above. Missing origins identify replaced or
+// newly created cells; removed fragments are not a complete erase event log.
+// Removal records are events within the transaction, not permission to retain
+// external history: a later ED3/RIS can clear a source after its earlier removal.
+// TerminalMeta.history_clear_epoch invalidates old external history, but its
+// final value does not order removals around clears: do not clear then blindly
+// append every removed fragment from the same feed.
+int tf_terminal_feed_map_meta(void* terminal, bool alternate, TfResizeMapMeta* output);
+int tf_terminal_feed_source(void* terminal, uint64_t epoch, bool alternate,
+                            size_t index, TfResizeSourceMeta* output);
+int tf_terminal_feed_row(void* terminal, uint64_t epoch, bool alternate, bool removed,
+                         size_t index, TfResizeRowMeta* output);
+int tf_terminal_feed_span(void* terminal, uint64_t epoch, bool alternate, bool removed,
+                          size_t row, size_t index, TfResizeSpan* output);
 int tf_terminal_meta(void* terminal, TfTerminalMeta* output);
 // Evict an exact oldest primary-history prefix. Validate all IDs before mutation;
 // return the cumulative native eviction count without changing history capacity.

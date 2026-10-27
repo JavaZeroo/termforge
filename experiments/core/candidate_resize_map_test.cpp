@@ -158,12 +158,67 @@ void active_alternate_keeps_primary_origins_and_empty_hard_line() {
     require(tf_terminal_meta(terminal.get(), &restored) == 0 && restored.history == 1,
             "primary history did not survive return from alternate");
 }
+
+void feed_mapping_and_lifetime() {
+    std::unique_ptr<void, decltype(&tf_terminal_free)> terminal(tf_terminal_new(2, 8, 8), tf_terminal_free);
+    require(terminal != nullptr, "could not create feed candidate");
+    const std::string_view initial = "ABCDEFGH\r\nX";
+    require(tf_terminal_feed(terminal.get(), reinterpret_cast<const uint8_t*>(initial.data()),
+                             initial.size(), nullptr, 0) == 0, "initial feed failed");
+    TfRowMeta source{};
+    require(tf_terminal_row_meta(terminal.get(), 0, &source) == 0, "feed source missing");
+    require(tf_terminal_resize(terminal.get(), 2, 8, nullptr, 0) == 0, "identity resize failed");
+    TfResizeMapMeta resize{};
+    require(tf_terminal_resize_map_meta(terminal.get(), false, &resize) == 0, "identity resize map missing");
+    const std::string_view rewrite = "\x1b[1;3HCD";
+    require(tf_terminal_feed_mapped(terminal.get(), reinterpret_cast<const uint8_t*>(rewrite.data()),
+                                    rewrite.size(), nullptr, 0) == 0, "mapped feed failed");
+    TfResizeMapMeta map{};
+    require(tf_terminal_feed_map_meta(terminal.get(), false, &map) == 0 &&
+            map.epoch > resize.epoch && map.source_rows == 2 && map.target_rows == 2,
+            "feed map metadata or shared epoch differs");
+    require(tf_terminal_resize_map_meta(terminal.get(), false, &resize) == 1,
+            "feed map leaked through resize queries");
+    TfResizeRowMeta row{};
+    require(tf_terminal_feed_row(terminal.get(), map.epoch, false, false, 0, &row) == 0 &&
+            row.spans == 2 && row.hard_boundary == source.id, "feed row origins differ");
+    TfResizeSourceMeta old{};
+    require(tf_terminal_feed_source(terminal.get(), map.epoch, false, 0, &old) == 0 &&
+            old.id == source.id && old.columns == 8 && old.hard_break,
+            "feed source metadata differs");
+    TfResizeSpan span{};
+    require(tf_terminal_feed_span(terminal.get(), map.epoch, false, false, 0, 0, &span) == 0 &&
+            span.source_row == source.id && span.source_column == 0 && span.column == 0 && span.len == 2,
+            "unchanged prefix source missing");
+    require(tf_terminal_feed_span(terminal.get(), map.epoch, false, false, 0, 1, &span) == 0 &&
+            span.source_row == source.id && span.source_column == 4 && span.column == 4 && span.len == 4,
+            "same-text rewrite kept stale origins or removed its unchanged suffix");
+    require(tf_terminal_feed_span(terminal.get(), resize.epoch, false, false, 0, 1, &span) == 1 &&
+            span.source_column == 4, "stale epoch changed feed span output");
+    require(tf_terminal_feed_mapped(terminal.get(), nullptr, 1, nullptr, 0) == 1 &&
+            tf_terminal_feed_map_meta(terminal.get(), false, &map) == 0,
+            "rejected mapped feed discarded valid metadata");
+    require(tf_terminal_feed(terminal.get(), nullptr, 0, nullptr, 0) == 0 &&
+            tf_terminal_feed_map_meta(terminal.get(), false, &map) == 1,
+            "ordinary feed retained stale origins");
+    require(tf_terminal_feed_mapped(terminal.get(), nullptr, 0, nullptr, 0) == 0 &&
+            tf_terminal_feed_map_meta(terminal.get(), false, &map) == 0,
+            "empty mapped feed did not return an identity map");
+    require(tf_terminal_resize(terminal.get(), 2, 4, nullptr, 0) == 0 &&
+            tf_terminal_feed_map_meta(terminal.get(), false, &map) == 1,
+            "resize retained the old feed map");
+    require(tf_terminal_feed_mapped(terminal.get(), nullptr, 0, nullptr, 0) == 0 &&
+            tf_terminal_finish(terminal.get(), nullptr, 0) == 0 &&
+            tf_terminal_feed_map_meta(terminal.get(), false, &map) == 1,
+            "finish retained the old feed map");
+}
 } // namespace
 
 int main() {
     try {
         capacity_mapping_and_lifetime();
         active_alternate_keeps_primary_origins_and_empty_hard_line();
+        feed_mapping_and_lifetime();
         std::cout << "candidate resize map ABI checks passed\n";
         return 0;
     } catch (const std::exception& error) {

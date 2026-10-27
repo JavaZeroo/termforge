@@ -9,7 +9,7 @@
 | 配置 | 证据定位 |
 |---|---|
 | main 默认：自研核心 + 系统 ConPTY | R1 限定总验收和有限 VT/Unicode 子集；默认构建不需要 Rust |
-| 当前源码显式候选：`termforge.8` + 系统 ConPTY | [固定来源/补丁台账](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)、[#39 字素合同](research/streaming-graphemes.md)；历史限定结果保留，长行复制回归仍红 |
+| 当前源码显式候选：`termforge.9` + 系统 ConPTY | [固定来源/补丁台账](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)、[#39 字素合同](research/streaming-graphemes.md)；历史限定结果保留，长行复制回归仍红 |
 | PR #50 实验：`termforge.4` + 固定官方 ConPTY | [Draft PR](https://github.com/JavaZeroo/termforge/pull/50) / [#47](https://github.com/JavaZeroo/termforge/issues/47)；[联合基线](research/joint-conpty-baseline.md)已固定，产品回归未全绿；[resize #51](https://github.com/JavaZeroo/termforge/issues/51)、[GUI Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[工作区 #63](https://github.com/JavaZeroo/termforge/issues/63)仍开放。[#53 的未完成粘贴、负例及原八会话证据](https://github.com/JavaZeroo/termforge/blob/848cb0e621a291f732cc0e046d0b2fab6a77d962/docs/research/resize-replay-cost.md)已按限定合同整合到实验父分支；不包含同次真实 CF/IME 或完整官方矩阵验收 |
 
 R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分别只代表原记录。源 VT、原生控制台 CHAR_INFO、transport、末端状态、自有 DIB、绘制提交和真实呈现是不同检查点；未知端点保持未知。

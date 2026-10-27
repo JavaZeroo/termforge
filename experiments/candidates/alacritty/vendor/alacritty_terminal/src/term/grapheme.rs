@@ -126,6 +126,7 @@ impl<T: EventListener> Term<T> {
                 point.column.0 = point.column.saturating_sub(1);
             }
             if self.grid[point].push_zerowidth(c) {
+                self.grid[point.line].invalidate_origins(point.column.0, 1);
                 self.damage
                     .damage_point(Point::new(point.line.0 as usize, point.column));
                 self.grapheme = pending;
@@ -187,7 +188,7 @@ impl<T: EventListener> Term<T> {
             let line = self.grid.cursor.point.line;
             let col = self.grid.cursor.point.column;
             for col in (col.0..(columns - width)).rev() {
-                self.grid[line][..].swap(col + width, col);
+                self.grid[line].swap_cells(col + width, col);
             }
             self.clip_inserted_right_edge();
         }
@@ -281,6 +282,7 @@ impl<T: EventListener> Term<T> {
             if width < pending.width && self.mode.contains(TermMode::INSERT) {
                 self.shift_grapheme_tail(point, pending.width, width);
             }
+            self.grid[point.line].invalidate_origins(point.column.0, 1);
             let cell = &mut self.grid[point];
             *cell = pending.template.clone();
             cell.c = pending.text.chars().next().unwrap();
@@ -301,16 +303,17 @@ impl<T: EventListener> Term<T> {
 
     fn shift_grapheme_tail(&mut self, point: Point, old_width: usize, new_width: usize) {
         let columns = self.columns();
-        let row = &mut self.grid[point.line][..];
+        let row = &mut self.grid[point.line];
         if new_width > old_width {
             for column in ((point.column.0 + old_width)..columns - 1).rev() {
-                row.swap(column + 1, column);
+                row.swap_cells(column + 1, column);
             }
         } else {
             for column in (point.column.0 + new_width)..columns - 1 {
-                row.swap(column, column + 1);
+                row.swap_cells(column, column + 1);
             }
-            row[columns - 1] = Cell::default();
+            row.invalidate_origins(columns - 1, 1);
+            row[Column(columns - 1)] = Cell::default();
         }
         self.clip_inserted_right_edge();
         self.damage
@@ -323,6 +326,7 @@ impl<T: EventListener> Term<T> {
         let line = self.grid.cursor.point.line;
         let last = Column(self.columns() - 1);
         if self.grid[line][last].flags.contains(Flags::WIDE_CHAR) {
+            self.grid[line].invalidate_origins(last.0, 1);
             self.grid[line][last].clear_wide();
         }
     }

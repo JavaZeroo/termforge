@@ -21,7 +21,7 @@ pub use self::row::Row;
 use self::origins::RowOrigins;
 use self::storage::Storage;
 
-/// A physical source row immediately before one resize transaction.
+/// A physical source row immediately before one resize or feed transaction.
 #[derive(Clone, Debug)]
 pub struct ResizeSourceRow {
     pub id: u64,
@@ -56,7 +56,11 @@ pub struct ResizeRemoval {
     pub reason: ResizeRemovalReason,
 }
 
-/// Cell movement during one resize, separate from later writes or text policy.
+/// Old cell origins surviving one resize or feed, separate from text policy.
+///
+/// The type name is retained from the resize record format. A feed records only
+/// surviving old origins, not a complete log of writes, erasures, or their order.
+/// Newly written cells and new hard boundaries have no pre-transaction origin.
 #[derive(Clone, Debug)]
 pub struct GridResizeMap {
     pub before_rows: usize,
@@ -69,6 +73,10 @@ pub struct GridResizeMap {
     pub discarded_after: u64,
     pub source_rows: Vec<ResizeSourceRow>,
     pub target_rows: Vec<ResizeMappedRow>,
+    /// Removal events observed during the transaction, not final retention grants.
+    /// A later ED3 or reset in the same feed can clear an earlier removed source.
+    /// Consumers must honor history-clear state and cannot restore all these rows
+    /// merely because they occurred before the final map was returned.
     pub removed_rows: Vec<ResizeRemoval>,
 }
 
@@ -242,7 +250,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         }
         map.removed_rows = self.resize_removed.take().unwrap_or_default();
         // Storage retains inactive allocation slots after height changes. They
-        // must not carry origins into a later resize or row reuse.
+        // must not carry origins into a later transaction or row reuse.
         self.raw.clear_resize_origins();
         map
     }

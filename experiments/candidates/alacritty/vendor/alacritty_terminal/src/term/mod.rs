@@ -39,7 +39,10 @@ pub const MIN_COLUMNS: usize = 1;
 /// Minimum number of visible lines.
 pub const MIN_SCREEN_LINES: usize = 1;
 
-/// Owned movement maps for both buffers in one terminal resize transaction.
+/// Owned origin maps for both named buffers in one resize or feed transaction.
+///
+/// The existing resize record type is also used by explicit feed capture. It
+/// identifies surviving old sources; it does not define external text retention.
 #[derive(Clone, Debug)]
 pub struct TerminalResizeMap {
     pub primary: GridResizeMap,
@@ -750,6 +753,43 @@ impl<T> Term<T> {
         }
     }
 
+    /// Parse one input transaction while tracking its surviving old cell origins.
+    ///
+    /// Observation is transparent to the editable trailing grapheme. In
+    /// particular, neither boundary seals it or changes parser state. The named
+    /// buffers remain stable even when the input enters or leaves the alternate
+    /// screen during this transaction.
+    pub fn feed_with_origin_map(
+        &mut self,
+        processor: &mut ansi::Processor,
+        bytes: &[u8],
+    ) -> TerminalResizeMap
+    where
+        T: EventListener,
+    {
+        let active_before = self.grid.begin_resize_map();
+        let inactive_before = self.inactive_grid.begin_resize_map();
+        let (primary_before, alternate_before) = if self.mode.contains(TermMode::ALT_SCREEN) {
+            (inactive_before, active_before)
+        } else {
+            (active_before, inactive_before)
+        };
+
+        processor.advance(self, bytes);
+
+        if self.mode.contains(TermMode::ALT_SCREEN) {
+            TerminalResizeMap {
+                primary: self.inactive_grid.finish_resize_map(primary_before),
+                alternate: self.grid.finish_resize_map(alternate_before),
+            }
+        } else {
+            TerminalResizeMap {
+                primary: self.grid.finish_resize_map(primary_before),
+                alternate: self.inactive_grid.finish_resize_map(alternate_before),
+            }
+        }
+    }
+
     /// Active terminal modes.
     #[inline]
     pub fn mode(&self) -> &TermMode {
@@ -1016,6 +1056,7 @@ impl<T> Term<T> {
         let point = self.grid.cursor.point;
         self.grid.cursor_cell().flags.insert(Flags::WRAPLINE);
         self.grid[point.line].set_wrap_columns(point.column.0 + 1);
+        self.grid[point.line].set_hard_break(false);
 
         if self.grid.cursor.point.line + 1 >= self.scroll_region.end {
             self.linefeed();
@@ -1038,28 +1079,35 @@ impl<T> Term<T> {
         let flags = self.grid.cursor.template.flags;
         let extra = self.grid.cursor.template.extra.clone();
 
-        let mut cursor_cell = self.grid.cursor_cell();
+        let point = self.grid.cursor.point;
+        let old_flags = self.grid[point.line][point.column].flags;
 
         // Clear all related cells when overwriting a fullwidth cell.
-        if cursor_cell.flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER) {
+        if old_flags.intersects(Flags::WIDE_CHAR | Flags::WIDE_CHAR_SPACER) {
             // Remove wide char and spacer.
-            let wide = cursor_cell.flags.contains(Flags::WIDE_CHAR);
-            let point = self.grid.cursor.point;
+            let wide = old_flags.contains(Flags::WIDE_CHAR);
             if wide && point.column < self.last_column() {
+                if self.grid[point.line][point.column + 1].flags.contains(Flags::WIDE_CHAR_SPACER) {
+                    self.grid[point.line].invalidate_origins(point.column.0 + 1, 1);
+                }
                 self.grid[point.line][point.column + 1].flags.remove(Flags::WIDE_CHAR_SPACER);
             } else if point.column > 0 {
+                self.grid[point.line].invalidate_origins(point.column.0 - 1, 1);
                 self.grid[point.line][point.column - 1].clear_wide();
             }
 
             // Remove leading spacers.
             if point.column <= 1 && point.line != self.topmost_line() {
                 let column = self.last_column();
+                if self.grid[point.line - 1i32][column].flags.contains(Flags::LEADING_WIDE_CHAR_SPACER) {
+                    self.grid[point.line - 1i32].invalidate_origins(column.0, 1);
+                }
                 self.grid[point.line - 1i32][column].flags.remove(Flags::LEADING_WIDE_CHAR_SPACER);
             }
-
-            cursor_cell = self.grid.cursor_cell();
         }
 
+        self.grid[point.line].invalidate_origins(point.column.0, 1);
+        let cursor_cell = self.grid.cursor_cell();
         cursor_cell.c = c;
         cursor_cell.fg = fg;
         cursor_cell.bg = bg;
@@ -1119,6 +1167,8 @@ impl<T: EventListener> Handler for Term<T> {
         trace!("Decalnning");
 
         for line in (0..self.screen_lines()).map(Line::from) {
+            let columns = self.columns();
+            self.grid[line].invalidate_origins(0, columns);
             for column in 0..self.columns() {
                 let cell = &mut self.grid[line][Column(column)];
                 *cell = Cell::default();
@@ -1179,15 +1229,16 @@ impl<T: EventListener> Handler for Term<T> {
         let line = cursor.point.line;
         self.damage.damage_line(line.0 as usize, 0, self.columns() - 1);
 
-        let row = &mut self.grid[line][..];
+        let row = &mut self.grid[line];
 
         for offset in (0..num_cells).rev() {
-            row.swap(destination + offset, source.0 + offset);
+            row.swap_cells(destination + offset, source.0 + offset);
         }
 
         // Cells were just moved out toward the end of the line;
         // fill in between source and dest with blanks.
-        for cell in &mut row[source.0..destination] {
+        row.invalidate_origins(source.0, count);
+        for cell in &mut row[..][source.0..destination] {
             *cell = bg.into();
         }
     }
@@ -1368,6 +1419,8 @@ impl<T: EventListener> Handler for Term<T> {
             let cell = self.grid.cursor_cell();
             if cell.c == ' ' {
                 cell.c = c;
+                let point = self.grid.cursor.point;
+                self.grid[point.line].invalidate_origins(point.column.0, 1);
             }
 
             loop {
@@ -1534,6 +1587,7 @@ impl<T: EventListener> Handler for Term<T> {
         let line = cursor.point.line;
         self.damage.damage_line(line.0 as usize, start.0, end.0);
         let row = &mut self.grid[line];
+        row.invalidate_origins(start.0, end.0 - start.0);
         for cell in &mut row[start..end] {
             *cell = bg.into();
         }
@@ -1555,16 +1609,17 @@ impl<T: EventListener> Handler for Term<T> {
 
         let line = cursor.point.line;
         self.damage.damage_line(line.0 as usize, 0, self.columns() - 1);
-        let row = &mut self.grid[line][..];
+        let row = &mut self.grid[line];
 
         for offset in 0..num_cells {
-            row.swap(start + offset, end + offset);
+            row.swap_cells(start + offset, end + offset);
         }
 
         // Clear last `count` cells in the row. If deleting 1 char, need to delete
         // 1 cell.
         let end = columns - count;
-        for cell in &mut row[end..] {
+        row.invalidate_origins(end, count);
+        for cell in &mut row[..][end..] {
             *cell = bg.into();
         }
     }
@@ -1660,6 +1715,7 @@ impl<T: EventListener> Handler for Term<T> {
         self.damage.damage_line(point.line.0 as usize, left.0, right.0 - 1);
 
         let row = &mut self.grid[point.line];
+        row.invalidate_origins(left.0, right.0 - left.0);
         for cell in &mut row[left..right] {
             *cell = bg.into();
         }
@@ -1784,6 +1840,7 @@ impl<T: EventListener> Handler for Term<T> {
 
                 // Clear up to the current column in the current line.
                 let end = cmp::min(cursor.column + 1, Column(self.columns()));
+                self.grid[cursor.line].invalidate_origins(0, end.0);
                 for cell in &mut self.grid[cursor.line][..end] {
                     *cell = bg.into();
                 }
@@ -1793,6 +1850,8 @@ impl<T: EventListener> Handler for Term<T> {
             },
             ansi::ClearMode::Below => {
                 let cursor = self.grid.cursor.point;
+                let count = self.columns() - cursor.column.0;
+                self.grid[cursor.line].invalidate_origins(cursor.column.0, count);
                 for cell in &mut self.grid[cursor.line][cursor.column..] {
                     *cell = bg.into();
                 }

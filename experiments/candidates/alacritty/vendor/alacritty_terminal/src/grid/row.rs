@@ -38,7 +38,7 @@ pub struct Row<T> {
     hard_break: bool,
     #[cfg_attr(feature = "serde", serde(skip))]
     wrap_columns: usize,
-    /// Present only while a synchronous resize is recording cell origins.
+    /// Present only while a synchronous resize or feed records cell origins.
     #[cfg_attr(feature = "serde", serde(skip))]
     origins: Option<Box<RowOrigins>>,
 }
@@ -142,7 +142,7 @@ impl<T> Row<T> {
         self.wrap_columns
     }
 
-    /// Temporary cell origins for the current resize, if capture is enabled.
+    /// Temporary origins for the current resize or feed, if capture is enabled.
     pub fn origins(&self) -> Option<&RowOrigins> {
         self.origins.as_deref()
     }
@@ -159,6 +159,25 @@ impl<T> Row<T> {
         self.origins = origins;
     }
 
+    /// Record an actual cell replacement while leaving other origins in place.
+    #[inline]
+    pub(crate) fn invalidate_origins(&mut self, at: usize, len: usize) {
+        if let Some(origins) = self.origins.as_mut() {
+            origins.invalidate_range(at, len);
+        }
+    }
+
+    /// Swap actual cells and their optional origins as one operation.
+    #[inline]
+    pub(crate) fn swap_cells(&mut self, a: usize, b: usize) {
+        // Match the dirty extent of the mutable full-row slice used for edits.
+        self.occ = self.inner.len();
+        self.inner.swap(a, b);
+        if let Some(origins) = self.origins.as_mut() {
+            origins.swap_cells(a, b);
+        }
+    }
+
     #[inline]
     pub(crate) fn renew_identity(&mut self) {
         self.id = next_row_id();
@@ -168,6 +187,11 @@ impl<T> Row<T> {
     #[inline]
     pub(crate) fn set_hard_break(&mut self, value: bool) {
         self.hard_break = value;
+        if !value {
+            if let Some(origins) = self.origins.as_mut() {
+                origins.hard_boundary = None;
+            }
+        }
     }
 
     #[inline]

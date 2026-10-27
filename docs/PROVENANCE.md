@@ -24,7 +24,7 @@
 
 - `experiments/core/unicode_width.hpp`：通过原创生成器从 Python 3.12.10 `unicodedata` 所带 Unicode 15.0.0 属性数据生成，含项目自己的宽度/拒绝策略。未复制 CPython 实现源码。Unicode 数据保留[官方许可](../experiments/core/UNICODE-LICENSE.txt)与归属，来源为 [Unicode](https://www.unicode.org/)；正常构建使用固定生成文件。此数据不归项目 MIT 许可覆盖。
 
-- 外部核心候选当前使用 `alacritty_terminal 0.26.1-dev+termforge.8`（Apache-2.0），固定上游 commit `542147067dd016fc5f49120ef0ba605a98a4e3a7` 的 manifest/changelog/许可证与 `src/`，并保留 ED、稳定行身份/淘汰、安全 swap、每缓冲区滚动区域、流式字素、显式历史清空代次、原生历史前缀淘汰、重排断行/容量计账及一次 resize 来源映射补丁；精确传递依赖及校验值由 `Cargo.lock` 固定。未复制上游 46 MiB 行为录制，候选不进入当前产品包；默认 CMake 不依赖 Rust，显式适配器构建使用 staticlib。原始 0.26.0 身份、当前来源、许可证和补丁清单见[候选来源台账](../experiments/candidates/alacritty/PROVENANCE.md)。
+- 外部核心候选当前使用 `alacritty_terminal 0.26.1-dev+termforge.9`（Apache-2.0），固定上游 commit `542147067dd016fc5f49120ef0ba605a98a4e3a7` 的 manifest/changelog/许可证与 `src/`，并保留 ED、稳定行身份/淘汰、安全 swap、每缓冲区滚动区域、流式字素、显式历史清空代次、原生历史前缀淘汰、重排断行/容量计账及一次 resize 来源映射补丁；精确传递依赖及校验值由 `Cargo.lock` 固定。未复制上游 46 MiB 行为录制，候选不进入当前产品包；默认 CMake 不依赖 Rust，显式适配器构建使用 staticlib。原始 0.26.0 身份、当前来源、许可证和补丁清单见[候选来源台账](../experiments/candidates/alacritty/PROVENANCE.md)。
 
 - 候选新增精确锁定 `unicode-segmentation 1.13.3`（Unicode 17，MIT OR Apache-2.0），官方来源为 [unicode-rs](https://github.com/unicode-rs/unicode-segmentation) 与 [crates.io 固定版本](https://crates.io/crates/unicode-segmentation/1.13.3)。保留原依赖许可证；与既有 `unicode-width 0.2.2` 同使用 Unicode 17，默认自研核心仍使用 Unicode 15。版本、包哈希、MSRV、依赖成本和修改边界见[候选来源台账](../experiments/candidates/alacritty/PROVENANCE.md)。
 

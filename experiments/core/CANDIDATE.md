@@ -2,9 +2,9 @@
 
 按 [ADR-0006](../../docs/adr/0006-confirmed-project-direction.md)，用户确认保留本候选代码继续评估，尚未确认最终采用。下述实现、来源与回归结果继续保留；与 WindTerm 2.7.0 的重要差异、性能容差及正式选型分别提交用户确认。
 
-`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.8` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
+`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.9` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
 
-`.7` 已修复原生 resize 的硬/软边界传递及缩宽容量淘汰计数，结果保留在[工作检查点](results/2026-10-28-reflow-metadata/README.md)。当前 `.8` 增加一次 resize 的来源映射，来源见[补丁台账](../candidates/alacritty/PROVENANCE.md#termforge8-补丁)。C++ 长行 resize/repaint 的整段复制回归仍失败：旧历史行与原生片段重复，来源归属和统一视图映射仍由 #29 继续处理。这些原生修复不构成候选完整正确性通过。
+`.7` 已修复原生 resize 的硬/软边界传递及缩宽容量淘汰计数，结果保留在[工作检查点](results/2026-10-28-reflow-metadata/README.md)。`.8` 增加一次 resize 来源映射，当前 `.9` 扩展到一次真实 feed，来源见[补丁台账](../candidates/alacritty/PROVENANCE.md#termforge9-补丁)。C++ 长行 resize/repaint 的整段复制回归仍失败：旧历史行与原生片段重复，来源归属和统一视图映射仍由 #29 继续处理。这些原生修复不构成候选完整正确性通过。
 
 ## 一次 resize 的来源映射
 
@@ -15,6 +15,12 @@
 原生淘汰数累计实际超出历史容量的物理行，包括一次多行滚动中移出容量的原可见行。扩高时仅为补空行而执行的内部滚动不计淘汰；显式清空、物理行合并及非容量裁剪仍分别处理。删除片段数量不是通用的逻辑文本损失计数。
 
 `candidate_resize_map_test` 从 C++ 调用真实静态库，验证字段布局、容量片段、映射生命周期、主/备用屏命名和空硬行。Rust FFI 测试覆盖拆分、相同文字的不同来源合并、宽字 spacer 和高度缩小的来源移除。当前 C++ 历史合并尚未消费此映射，后续覆盖写入、源文本归属、复制/Find 和视口坐标仍需实现与完整验证；该接口不裁决原版历史覆盖策略，也未测量新增来源表的资源成本。
+
+## 一次 feed 的来源映射
+
+`tf_terminal_feed_mapped` 是显式来源捕获入口；普通 `tf_terminal_feed` 不捕获。记录结构沿用 `TfResize*` 命名与物理坐标，只通过 `tf_terminal_feed_*` 查询读取 feed 结果。实际写入或擦除使旧来源消失，文字相同也不保留旧身份；移动保留来源，待续字素不会因捕获而被封闭。一次操作仅有一种映射，resize/feed 查询不能互用，均受共享 epoch 和后续成功修改的失效规则约束。
+
+feed 的 `removed_rows` 只记录过程中的移除事件。它不是完整擦除日志或最终保留政策；同一 feed 中 ED3/RIS 可能出现在移除之前或之后，最终 `history_clear_epoch` 不提供事件顺序。消费方必须避免复活清空前的来源，不能先清空再无条件追加整份 removed 列表。最终目标来源、清空与外部历史的保留规则仍须由上层一致处理。
 
 ## 构建与验证
 

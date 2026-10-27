@@ -13,13 +13,16 @@ use alacritty_terminal::term::{Config, Term, TermMode, TerminalResizeMap, cell::
 use alacritty_terminal::vte::ansi::{Color, NamedColor, Processor};
 use trace::{Listener, Size};
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum OriginOperation { Resize, Feed }
+
 struct Terminal {
     term: Term<Listener>,
     parser: Processor,
     listener: Listener,
     events: VecDeque<Event>,
-    resize_epoch: u64,
-    resize_map: Option<TerminalResizeMap>,
+    origin_epoch: u64,
+    origin_map: Option<(OriginOperation, TerminalResizeMap)>,
 }
 
 #[repr(C)]
@@ -159,7 +162,7 @@ pub extern "C" fn tf_terminal_new(rows: usize, columns: usize, history: usize) -
         let config = Config { scrolling_history: history, ..Config::default() };
         let term = Term::new(config, &Size { columns, rows }, listener.clone());
         let value = Terminal { term, parser: Processor::new(), listener, events: VecDeque::new(),
-                               resize_epoch: 0, resize_map: None };
+                               origin_epoch: 0, origin_map: None };
         Box::into_raw(Box::new(value)).cast::<c_void>()
     }))
     .unwrap_or(std::ptr::null_mut())
@@ -172,13 +175,13 @@ pub unsafe extern "C" fn tf_terminal_free(value: *mut c_void) {
     }
 }
 
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn tf_terminal_feed(
+unsafe fn feed(
     value: *mut c_void,
     data: *const c_uchar,
     len: usize,
     error: *mut c_uchar,
     error_capacity: usize,
+    capture: bool,
 ) -> c_int {
     guard(error, error_capacity, || {
         if len > 1024 * 1024 {
@@ -193,10 +196,39 @@ pub unsafe extern "C" fn tf_terminal_feed(
         } else {
             unsafe { std::slice::from_raw_parts(data, len) }
         };
-        value.resize_map = None;
-        value.parser.advance(&mut value.term, bytes);
-        drain_events(value)
+        let epoch = if capture {
+            Some(value.origin_epoch.checked_add(1).ok_or("origin map epoch exhausted")?)
+        } else { None };
+        value.origin_map = None;
+        let map = if capture {
+            Some(value.term.feed_with_origin_map(&mut value.parser, bytes))
+        } else {
+            value.parser.advance(&mut value.term, bytes);
+            None
+        };
+        drain_events(value)?;
+        if let (Some(map), Some(epoch)) = (map, epoch) {
+            value.origin_epoch = epoch;
+            value.origin_map = Some((OriginOperation::Feed, map));
+        }
+        Ok(())
     })
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn tf_terminal_feed(
+    value: *mut c_void, data: *const c_uchar, len: usize,
+    error: *mut c_uchar, error_capacity: usize,
+) -> c_int {
+    unsafe { feed(value, data, len, error, error_capacity, false) }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn tf_terminal_feed_mapped(
+    value: *mut c_void, data: *const c_uchar, len: usize,
+    error: *mut c_uchar, error_capacity: usize,
+) -> c_int {
+    unsafe { feed(value, data, len, error, error_capacity, true) }
 }
 
 #[unsafe(no_mangle)]
@@ -206,7 +238,7 @@ pub unsafe extern "C" fn tf_terminal_finish(
     error_capacity: usize,
 ) -> c_int {
     guard(error, error_capacity, || {
-        unsafe { terminal(value)? }.resize_map = None;
+        unsafe { terminal(value)? }.origin_map = None;
         Ok(())
     })
 }
@@ -224,18 +256,19 @@ pub unsafe extern "C" fn tf_terminal_resize(
             return Err("invalid candidate dimensions".into());
         }
         let value = unsafe { terminal(value)? };
-        let epoch = value.resize_epoch.checked_add(1).ok_or("resize map epoch exhausted")?;
-        value.resize_map = None;
+        let epoch = value.origin_epoch.checked_add(1).ok_or("origin map epoch exhausted")?;
+        value.origin_map = None;
         let map = value.term.resize_with_map(Size { columns, rows });
         drain_events(value)?;
-        value.resize_epoch = epoch;
-        value.resize_map = Some(map);
+        value.origin_epoch = epoch;
+        value.origin_map = Some((OriginOperation::Resize, map));
         Ok(())
     })
 }
 
-fn resize_buffer(value: &Terminal, alternate: bool) -> Option<&GridResizeMap> {
-    let map = value.resize_map.as_ref()?;
+fn origin_buffer(value: &Terminal, alternate: bool, operation: OriginOperation) -> Option<&GridResizeMap> {
+    let (actual, map) = value.origin_map.as_ref()?;
+    if *actual != operation { return None; }
     Some(if alternate { &map.alternate } else { &map.primary })
 }
 
@@ -254,15 +287,15 @@ fn resize_row(map: &GridResizeMap, removed: bool, index: usize) -> Option<(&Resi
     }
 }
 
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn tf_terminal_resize_map_meta(
+unsafe fn origin_map_meta(
     value: *mut c_void, alternate: bool, output: *mut ResizeMapMeta,
+    operation: OriginOperation,
 ) -> c_int {
     if output.is_null() { return 1; }
     let Ok(value) = (unsafe { terminal(value) }) else { return 1 };
-    let Some(map) = resize_buffer(value, alternate) else { return 1 };
+    let Some(map) = origin_buffer(value, alternate, operation) else { return 1 };
     unsafe { *output = ResizeMapMeta {
-        epoch: value.resize_epoch,
+        epoch: value.origin_epoch,
         before_rows: map.before_rows, before_columns: map.before_columns, before_history: map.before_history,
         after_rows: map.after_rows, after_columns: map.after_columns, after_history: map.after_history,
         discarded_before: map.discarded_before, discarded_after: map.discarded_after,
@@ -272,13 +305,27 @@ pub unsafe extern "C" fn tf_terminal_resize_map_meta(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn tf_terminal_resize_source(
+pub unsafe extern "C" fn tf_terminal_resize_map_meta(
+    value: *mut c_void, alternate: bool, output: *mut ResizeMapMeta,
+) -> c_int {
+    unsafe { origin_map_meta(value, alternate, output, OriginOperation::Resize) }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn tf_terminal_feed_map_meta(
+    value: *mut c_void, alternate: bool, output: *mut ResizeMapMeta,
+) -> c_int {
+    unsafe { origin_map_meta(value, alternate, output, OriginOperation::Feed) }
+}
+
+unsafe fn origin_source(
     value: *mut c_void, epoch: u64, alternate: bool, index: usize, output: *mut ResizeSourceMeta,
+    operation: OriginOperation,
 ) -> c_int {
     if output.is_null() { return 1; }
     let Ok(value) = (unsafe { terminal(value) }) else { return 1 };
-    if epoch != value.resize_epoch { return 1; }
-    let Some(map) = resize_buffer(value, alternate) else { return 1 };
+    if epoch != value.origin_epoch { return 1; }
+    let Some(map) = origin_buffer(value, alternate, operation) else { return 1 };
     let Some(row) = map.source_rows.get(index) else { return 1 };
     unsafe { *output = ResizeSourceMeta {
         id: row.id, line: row.line, columns: row.columns, hard_break: row.hard_break, wrap: row.wrap,
@@ -287,14 +334,28 @@ pub unsafe extern "C" fn tf_terminal_resize_source(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn tf_terminal_resize_row(
+pub unsafe extern "C" fn tf_terminal_resize_source(
+    value: *mut c_void, epoch: u64, alternate: bool, index: usize, output: *mut ResizeSourceMeta,
+) -> c_int {
+    unsafe { origin_source(value, epoch, alternate, index, output, OriginOperation::Resize) }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn tf_terminal_feed_source(
+    value: *mut c_void, epoch: u64, alternate: bool, index: usize, output: *mut ResizeSourceMeta,
+) -> c_int {
+    unsafe { origin_source(value, epoch, alternate, index, output, OriginOperation::Feed) }
+}
+
+unsafe fn origin_row(
     value: *mut c_void, epoch: u64, alternate: bool, removed: bool,
     index: usize, output: *mut ResizeRowMeta,
+    operation: OriginOperation,
 ) -> c_int {
     if output.is_null() { return 1; }
     let Ok(value) = (unsafe { terminal(value) }) else { return 1 };
-    if epoch != value.resize_epoch { return 1; }
-    let Some(map) = resize_buffer(value, alternate) else { return 1 };
+    if epoch != value.origin_epoch { return 1; }
+    let Some(map) = origin_buffer(value, alternate, operation) else { return 1 };
     let Some((row, reason)) = resize_row(map, removed, index) else { return 1 };
     unsafe { *output = ResizeRowMeta {
         id: row.id, hard_boundary: row.origins.hard_boundary.unwrap_or(0), line: row.line,
@@ -304,20 +365,48 @@ pub unsafe extern "C" fn tf_terminal_resize_row(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn tf_terminal_resize_span(
+pub unsafe extern "C" fn tf_terminal_resize_row(
+    value: *mut c_void, epoch: u64, alternate: bool, removed: bool, index: usize, output: *mut ResizeRowMeta,
+) -> c_int {
+    unsafe { origin_row(value, epoch, alternate, removed, index, output, OriginOperation::Resize) }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn tf_terminal_feed_row(
+    value: *mut c_void, epoch: u64, alternate: bool, removed: bool, index: usize, output: *mut ResizeRowMeta,
+) -> c_int {
+    unsafe { origin_row(value, epoch, alternate, removed, index, output, OriginOperation::Feed) }
+}
+
+unsafe fn origin_span(
     value: *mut c_void, epoch: u64, alternate: bool, removed: bool,
     row: usize, index: usize, output: *mut ResizeSpan,
+    operation: OriginOperation,
 ) -> c_int {
     if output.is_null() { return 1; }
     let Ok(value) = (unsafe { terminal(value) }) else { return 1 };
-    if epoch != value.resize_epoch { return 1; }
-    let Some(map) = resize_buffer(value, alternate) else { return 1 };
+    if epoch != value.origin_epoch { return 1; }
+    let Some(map) = origin_buffer(value, alternate, operation) else { return 1 };
     let Some((row, _)) = resize_row(map, removed, row) else { return 1 };
     let Some(span) = row.origins.spans.get(index) else { return 1 };
     unsafe { *output = ResizeSpan {
         source_row: span.source_row, source_column: span.source_column, column: span.column, len: span.len,
     } };
     0
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn tf_terminal_resize_span(
+    value: *mut c_void, epoch: u64, alternate: bool, removed: bool, row: usize, index: usize, output: *mut ResizeSpan,
+) -> c_int {
+    unsafe { origin_span(value, epoch, alternate, removed, row, index, output, OriginOperation::Resize) }
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn tf_terminal_feed_span(
+    value: *mut c_void, epoch: u64, alternate: bool, removed: bool, row: usize, index: usize, output: *mut ResizeSpan,
+) -> c_int {
+    unsafe { origin_span(value, epoch, alternate, removed, row, index, output, OriginOperation::Feed) }
 }
 
 #[unsafe(no_mangle)]
@@ -375,7 +464,7 @@ pub unsafe extern "C" fn tf_terminal_discard_history(
                 return Err("history eviction prefix identity differs".into());
             }
         }
-        value.resize_map = None;
+        value.origin_map = None;
         value.term.grid_mut().discard_oldest_history(count);
         unsafe { *discarded = value.term.grid().discarded() };
         Ok(())
