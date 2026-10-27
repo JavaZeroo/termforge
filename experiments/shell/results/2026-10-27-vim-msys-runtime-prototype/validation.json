@@ -1,0 +1,655 @@
+{
+  "schema_version": 1,
+  "purpose": "isolated source-rebuilt MSYS runtime prototype for issue 52",
+  "status": "rebuilt baseline reproduced stage59; patched runtime passed four original GUI cases; original fixed-runtime acceptance remains open",
+  "termforge": {
+    "source_commit": "ed55a8758423b3273fbd98f07e0bfd77d88e46ac",
+    "product_code_same_as": "c662011",
+    "product_and_test_changes": false,
+    "binary_sha256": "7f26395942f107297565f50402568650e1e17c5eb23924bee1bfb02c50c60d16",
+    "candidate": "0.26.1-dev+termforge.5",
+    "backend": "reviewed-side-by-side-1.25.260930003",
+    "conpty_flags": 24,
+    "source_files_sha256": {
+      "experiments/shell/shell.cpp": "b4f6fe98812d1d23fa5f5bbcc7376437404af6cdb67cd6cdcdf448b57cb31fe9",
+      "experiments/shell/test_candidate_tui.py": "a300380b97ad424c5af06219a021a256de6178c3af7fb7e933e24bb8142201ee",
+      "experiments/shell/run.py": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d"
+    }
+  },
+  "environment": {
+    "os_version_observed_after_batch": [
+      "11",
+      "10.0.26200",
+      "SP0",
+      "Multiprocessor Free"
+    ],
+    "architecture": "x64",
+    "personal_installation_unchanged_hash_check": true,
+    "fixture_files_original_sha256": {
+      "vim.exe": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+      "msys-ncursesw6.dll": "73ff8bc8b1f515e57b185e57d25d9ad29067057ff0819a8e588677c65ca61629",
+      "msys-2.0.dll": "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f",
+      "msys-intl-8.dll": "23d30f4bcbc0a258cf5ecfe29e707f9b05d51c32d5b16a910f1012b889136c12",
+      "msys-iconv-2.dll": "9cbf5613b946be7bad403ac0d7277efbd514a35faa644c6a0d6e7f6cc0b40780"
+    },
+    "same_active_fixture_path_across_variants": true,
+    "fixture_runtime_files_not_copied": true,
+    "loaded_module_paths_observed": false,
+    "diagnostic_instrumentation": false
+  },
+  "runtime": {
+    "source_commit": "2e2ef940151485490aff0c7b00c00965ef7a71a4",
+    "original_dll_sha256": "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f",
+    "sdk_commit": "36b102843d99c4993084b29d839dc6f5ef4db2f9",
+    "headers_commit": "eb069c08fe8ef4d2f19dc6b99c4816a4c51fd2ae",
+    "win32_headers": "msys2-w32api-headers 12.0.0.r0.g819a6ec2e-1; both w32api-prefixed and bare paths pinned",
+    "c_compiler": "gcc 16.2.0, GNU17, -Wno-error=old-style-definition",
+    "cxx_compiler": "g++ 16.2.0, GNU++17, -O2 -g -Wno-error -Wno-narrowing -Wno-use-after-free",
+    "build_script_sha256": "13d47fb56cec438c591861e996b2954214869c541d3b2540e623912c82844fa9",
+    "packages_sha256": "0c10cee128f4d02add7fd28c9e5d4df6035c3cddca2a80cdc8c15600eade5f67",
+    "package_inventory_path": "research/msys-runtime-window-prefix/build-packages.txt",
+    "selected_build_packages": {
+      "gcc": "16.2.0-1",
+      "binutils": "2.47-1",
+      "make": "4.4.1-3",
+      "cocom": "0.996-6",
+      "zlib-devel": "1.3.2-1"
+    },
+    "build_object_count": 310,
+    "changed_build_object_count": 6,
+    "changed_build_objects": {
+      "fhandler/console.o": {
+        "base": "308e4d37447fd48dbb4b06b511abf5ffe16ccd0899bea8e08506fd765ef9867b",
+        "window-prefix": "06a2a4519d4f7fd74f240aae0fc91b262bbafceff36f2b4414928e8a59e47b27"
+      },
+      "libdll.a": {
+        "base": "6c12fadc029325b2f683ccaa1a391a2ba50c385a2bd36fc0cba1e3065285d57c",
+        "window-prefix": "03c56b71231c3f8b224c10009531a94baad6c5ebd8a2bcdfb92efa03b61c7b80"
+      },
+      "msysdll.a": {
+        "base": "e8e3b40bbcc8de7f7b266c57e7d64e9f147f71d1fcfcb9bff00f0126f859f14a",
+        "window-prefix": "f3768c0c931ba35c3050a23cb062c2a39a1ed93410e8e06ee6722076b3d142fc"
+      },
+      "new-msys-2.0.dll": {
+        "base": "d9e490fdbe31c233eab6578168fb4f2bda84f53252be3898d0cdd0e8610db721",
+        "window-prefix": "dd792766fa976b031cbff0540744b6f3d2b3fc0d695ed764a01457b65eab6258"
+      },
+      "version.o": {
+        "base": "3a669b9dac2aed0a7619052d974d5819e48846d1af3fa8de41bc1cda9da7efd5",
+        "window-prefix": "51bc7e867867b7eec6694f40618f13ebf66eb8317a8e7ff22b71342b18ef836a"
+      },
+      "winver.o": {
+        "base": "b5cd6766287393c78274b5c16a85ac94009cbec3603096d94cf6533642ca584b",
+        "window-prefix": "c52d7f4fe56736b0a55f2b4f32676efd0a0f7786933731185f5bc0b60e45e24f"
+      }
+    },
+    "variants": {
+      "base": {
+        "dll_sha256": "d9e490fdbe31c233eab6578168fb4f2bda84f53252be3898d0cdd0e8610db721",
+        "console_source_sha256": "00d73637398314b74b81f6fabf4bd32176056dd088ce825f4546b2c4b38726b8",
+        "source_status": "",
+        "private_identity_sha256": "c8f08c4544fa76a1355900000dbe34cdc5676c7f183f853a6c8aa55fcf6c15d3"
+      },
+      "window-prefix": {
+        "dll_sha256": "dd792766fa976b031cbff0540744b6f3d2b3fc0d695ed764a01457b65eab6258",
+        "console_source_sha256": "5d2b1b4c1fecefa15518d8e3ff6a375a5a00f8c91fee0267a96a1c4e08eb3fc1",
+        "source_status": " M winsup/cygwin/fhandler/console.cc\n",
+        "private_identity_sha256": "be5d87b794b709ad4dd63bc9ea1a6cb594e99ffd74b92a2b5f531556072755d0"
+      }
+    }
+  },
+  "patch": {
+    "path": "research/msys-runtime-window-prefix/window-prefix.patch",
+    "sha256": "e942c2d08b7cc5a294203bf0a52f7414b9b19f3cd675624644feadf907418c77",
+    "changed_source_file": "winsup/cygwin/fhandler/console.cc",
+    "insertions": 12,
+    "deletions": 6,
+    "apply_check_and_resulting_source_hash_verified": true,
+    "license": "LGPL-3.0-or-later with upstream CYGWIN_LICENSE linking exception",
+    "license_files_sha256": {
+      "CYGWIN_LICENSE": "794433752103cf4bbb4a84a1bdb8fbc150abb1762704bb35fecc9f7f820be984",
+      "COPYING.LIB": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "COPYING": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    }
+  },
+  "method": {
+    "name": "CandidateTuiTests.test_real_fullscreen_editor_and_cursor_reply",
+    "original_repetitions": 2,
+    "inner_timeout_seconds": 25,
+    "outer_timeout_seconds_per_case": 40,
+    "max_methods": {
+      "original": 1,
+      "base": 2,
+      "window-prefix": 2
+    },
+    "stops": [
+      "Original relocated DLL: one method only.",
+      "Rebuilt base: stop on first stage59 or other failure.",
+      "Patched: run only after rebuilt stage59; stop on any failure or after two methods.",
+      "Do not switch runtime until all preceding owned Jobs are inactive and desktops gone."
+    ],
+    "actual_methods": 4,
+    "actual_cases": 7,
+    "passed_cases": 5,
+    "stage59_cases": 2,
+    "patched_passed_cases": 4,
+    "no_extra_gui_runs_during_export": true
+  },
+  "methods": [
+    {
+      "id": "original-method-0",
+      "variant": "original",
+      "started_utc": "2026-10-27T00:43:09.383669+00:00",
+      "runtime_sha256": "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f",
+      "outcome": "stage59",
+      "test_success": false,
+      "tests_run": 1,
+      "skips": 0,
+      "original_assertions_offline_rechecked_for_successful_cases": true,
+      "samples": [
+        {
+          "index": 0,
+          "status": "passed",
+          "failure_stage": null,
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "result": {
+            "valid": true,
+            "candidate_tui_start": true,
+            "candidate_tui": true,
+            "candidate_resize": true,
+            "candidate_replies": true,
+            "command_verified": true,
+            "exit_code": 37,
+            "active_children_after": 0,
+            "cleanup_complete": true,
+            "input_rejected": 0,
+            "columns": 60,
+            "rows": 12,
+            "presented_done": null
+          },
+          "files": {
+            "candidate-input.bin": {
+              "bytes": 115,
+              "sha256": "4bd689a84f1eb7336afb3b607dec760d117caef3d83f3e8e1b6b1f83d70b4b68"
+            },
+            "candidate-insert-log.txt": {
+              "bytes": 58,
+              "sha256": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a"
+            },
+            "candidate-resize-log.txt": {
+              "bytes": 5,
+              "sha256": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7"
+            },
+            "candidate-startup-log.txt": {
+              "bytes": 6,
+              "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+            },
+            "candidate-vim.vim": {
+              "bytes": 334,
+              "sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797"
+            },
+            "candidate-tui.txt": {
+              "bytes": 17,
+              "sha256": "d9d3b8d10b660a808ece2b2c46b3767713ba4e74631c56b376b492eadf511dec"
+            },
+            "candidate-replies.bin": {
+              "bytes": 7,
+              "sha256": "39cb2fc06ace6ef92a7015a38ab2e7fe1f03a846af0313e27ec7cdceca6643ff"
+            },
+            "sample.json": {
+              "bytes": 6004,
+              "sha256": "1da51ee58c0342cc6c35ece841fe5ceb2c53d34886cc58f142eb2ea3665b584d"
+            }
+          },
+          "empty_input_file_is_not_a_complete_input_trace": false
+        },
+        {
+          "index": 1,
+          "status": "failed",
+          "failure_stage": 59,
+          "exit_code": 2,
+          "outer_timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 7,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 7,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "result": null,
+          "files": {
+            "candidate-input.bin": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "candidate-insert-log.txt": {
+              "bytes": 221,
+              "sha256": "e6de4daeba1841783e7e22f81dbf87154f341c309dc5b54405e5fc2c2f3550a6"
+            },
+            "candidate-resize-log.txt": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "candidate-startup-log.txt": {
+              "bytes": 6,
+              "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+            },
+            "candidate-vim.vim": {
+              "bytes": 334,
+              "sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797"
+            },
+            "sample.json": {
+              "bytes": 2315,
+              "sha256": "e756a2193be5abaf109f8f1560088a9a107581ec3fb18ca2201a4877c004169f"
+            }
+          },
+          "empty_input_file_is_not_a_complete_input_trace": true
+        }
+      ],
+      "private_artifact_hashes": {
+        "identity.json": "fe45dbd34bb82fea0a9a401cdc8424bf7fab2ec04c112f8f59612953a621a4fd",
+        "outcome.json": "e4906807e67e3bd88cc49f9cd92e4304d17f8c839e91e76a6a48a6c677f0d569",
+        "unittest.log": "20433d14432af18e521d5419b02c90f33d485c2d279c6c0f61f79bb7dcfa6ca1"
+      }
+    },
+    {
+      "id": "base-method-0",
+      "variant": "base",
+      "started_utc": "2026-10-27T00:44:15.818364+00:00",
+      "runtime_sha256": "d9e490fdbe31c233eab6578168fb4f2bda84f53252be3898d0cdd0e8610db721",
+      "outcome": "stage59",
+      "test_success": false,
+      "tests_run": 1,
+      "skips": 0,
+      "original_assertions_offline_rechecked_for_successful_cases": true,
+      "samples": [
+        {
+          "index": 0,
+          "status": "failed",
+          "failure_stage": 59,
+          "exit_code": 2,
+          "outer_timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 7,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 7,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "result": null,
+          "files": {
+            "candidate-input.bin": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "candidate-insert-log.txt": {
+              "bytes": 221,
+              "sha256": "e6de4daeba1841783e7e22f81dbf87154f341c309dc5b54405e5fc2c2f3550a6"
+            },
+            "candidate-resize-log.txt": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "candidate-startup-log.txt": {
+              "bytes": 6,
+              "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+            },
+            "candidate-vim.vim": {
+              "bytes": 334,
+              "sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797"
+            },
+            "sample.json": {
+              "bytes": 2315,
+              "sha256": "9bbb1c8b4112cb0bd4018fc1b84ae38ee6922f1eced471759e9504a0df3b0c62"
+            }
+          },
+          "empty_input_file_is_not_a_complete_input_trace": true
+        }
+      ],
+      "private_artifact_hashes": {
+        "identity.json": "9a99e3bd48c3170adaf9c8740bc997c0411409311e4baf5677ebe131343e951f",
+        "outcome.json": "b2daaab684843847a1fbc02fb4c951684aefb65a5367a6d66336ff3af02ae326",
+        "unittest.log": "1f06d393a95d0ce3a57280bfea3196b1e3fd3c3d341da71f1d25a016dee8a34d"
+      }
+    },
+    {
+      "id": "window-prefix-method-0",
+      "variant": "window-prefix",
+      "started_utc": "2026-10-27T00:48:45.063902+00:00",
+      "runtime_sha256": "dd792766fa976b031cbff0540744b6f3d2b3fc0d695ed764a01457b65eab6258",
+      "outcome": "green",
+      "test_success": true,
+      "tests_run": 1,
+      "skips": 0,
+      "original_assertions_offline_rechecked_for_successful_cases": true,
+      "samples": [
+        {
+          "index": 0,
+          "status": "passed",
+          "failure_stage": null,
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "result": {
+            "valid": true,
+            "candidate_tui_start": true,
+            "candidate_tui": true,
+            "candidate_resize": true,
+            "candidate_replies": true,
+            "command_verified": true,
+            "exit_code": 37,
+            "active_children_after": 0,
+            "cleanup_complete": true,
+            "input_rejected": 0,
+            "columns": 60,
+            "rows": 12,
+            "presented_done": null
+          },
+          "files": {
+            "candidate-input.bin": {
+              "bytes": 115,
+              "sha256": "4bd689a84f1eb7336afb3b607dec760d117caef3d83f3e8e1b6b1f83d70b4b68"
+            },
+            "candidate-insert-log.txt": {
+              "bytes": 58,
+              "sha256": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a"
+            },
+            "candidate-resize-log.txt": {
+              "bytes": 5,
+              "sha256": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7"
+            },
+            "candidate-startup-log.txt": {
+              "bytes": 6,
+              "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+            },
+            "candidate-vim.vim": {
+              "bytes": 334,
+              "sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797"
+            },
+            "candidate-tui.txt": {
+              "bytes": 17,
+              "sha256": "d9d3b8d10b660a808ece2b2c46b3767713ba4e74631c56b376b492eadf511dec"
+            },
+            "candidate-replies.bin": {
+              "bytes": 7,
+              "sha256": "39cb2fc06ace6ef92a7015a38ab2e7fe1f03a846af0313e27ec7cdceca6643ff"
+            },
+            "sample.json": {
+              "bytes": 6004,
+              "sha256": "34e6041be10d8d7fceb26fc8c20b2f5f4429787425d032a3ff01c31cda557c0d"
+            }
+          },
+          "empty_input_file_is_not_a_complete_input_trace": false
+        },
+        {
+          "index": 1,
+          "status": "passed",
+          "failure_stage": null,
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "result": {
+            "valid": true,
+            "candidate_tui_start": true,
+            "candidate_tui": true,
+            "candidate_resize": true,
+            "candidate_replies": true,
+            "command_verified": true,
+            "exit_code": 37,
+            "active_children_after": 0,
+            "cleanup_complete": true,
+            "input_rejected": 0,
+            "columns": 60,
+            "rows": 12,
+            "presented_done": null
+          },
+          "files": {
+            "candidate-input.bin": {
+              "bytes": 115,
+              "sha256": "4bd689a84f1eb7336afb3b607dec760d117caef3d83f3e8e1b6b1f83d70b4b68"
+            },
+            "candidate-insert-log.txt": {
+              "bytes": 58,
+              "sha256": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a"
+            },
+            "candidate-resize-log.txt": {
+              "bytes": 5,
+              "sha256": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7"
+            },
+            "candidate-startup-log.txt": {
+              "bytes": 6,
+              "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+            },
+            "candidate-vim.vim": {
+              "bytes": 334,
+              "sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797"
+            },
+            "candidate-tui.txt": {
+              "bytes": 17,
+              "sha256": "d9d3b8d10b660a808ece2b2c46b3767713ba4e74631c56b376b492eadf511dec"
+            },
+            "candidate-replies.bin": {
+              "bytes": 7,
+              "sha256": "39cb2fc06ace6ef92a7015a38ab2e7fe1f03a846af0313e27ec7cdceca6643ff"
+            },
+            "sample.json": {
+              "bytes": 6004,
+              "sha256": "f85f7d92aa9f83a148d5d6fc21073deaf5e8dad217c2e3dcaeba15c19bff1810"
+            }
+          },
+          "empty_input_file_is_not_a_complete_input_trace": false
+        }
+      ],
+      "private_artifact_hashes": {
+        "identity.json": "5fa7f66913bc8be1ce699e5bfa8eae126f2bc9d1cacea6e9c446b146fbd39550",
+        "outcome.json": "f444c8c30a9d9732aea35e120cbf6813205b65f90e7641ec9fcdc660b214ef37",
+        "unittest.log": "e40d466f8594611cc5a2653d807819bad8c30c9aba126cce1bd2a1b6a9818e12"
+      }
+    },
+    {
+      "id": "window-prefix-method-1",
+      "variant": "window-prefix",
+      "started_utc": "2026-10-27T00:49:03.977836+00:00",
+      "runtime_sha256": "dd792766fa976b031cbff0540744b6f3d2b3fc0d695ed764a01457b65eab6258",
+      "outcome": "green",
+      "test_success": true,
+      "tests_run": 1,
+      "skips": 0,
+      "original_assertions_offline_rechecked_for_successful_cases": true,
+      "samples": [
+        {
+          "index": 0,
+          "status": "passed",
+          "failure_stage": null,
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "result": {
+            "valid": true,
+            "candidate_tui_start": true,
+            "candidate_tui": true,
+            "candidate_resize": true,
+            "candidate_replies": true,
+            "command_verified": true,
+            "exit_code": 37,
+            "active_children_after": 0,
+            "cleanup_complete": true,
+            "input_rejected": 0,
+            "columns": 60,
+            "rows": 12,
+            "presented_done": null
+          },
+          "files": {
+            "candidate-input.bin": {
+              "bytes": 115,
+              "sha256": "4bd689a84f1eb7336afb3b607dec760d117caef3d83f3e8e1b6b1f83d70b4b68"
+            },
+            "candidate-insert-log.txt": {
+              "bytes": 58,
+              "sha256": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a"
+            },
+            "candidate-resize-log.txt": {
+              "bytes": 5,
+              "sha256": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7"
+            },
+            "candidate-startup-log.txt": {
+              "bytes": 6,
+              "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+            },
+            "candidate-vim.vim": {
+              "bytes": 334,
+              "sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797"
+            },
+            "candidate-tui.txt": {
+              "bytes": 17,
+              "sha256": "d9d3b8d10b660a808ece2b2c46b3767713ba4e74631c56b376b492eadf511dec"
+            },
+            "candidate-replies.bin": {
+              "bytes": 7,
+              "sha256": "39cb2fc06ace6ef92a7015a38ab2e7fe1f03a846af0313e27ec7cdceca6643ff"
+            },
+            "sample.json": {
+              "bytes": 6004,
+              "sha256": "9ccfd04084e5417ca36cc66c03748580f58e5a9cd355ee6c96cfbc4f1bdf5b6f"
+            }
+          },
+          "empty_input_file_is_not_a_complete_input_trace": false
+        },
+        {
+          "index": 1,
+          "status": "passed",
+          "failure_stage": null,
+          "exit_code": 0,
+          "outer_timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 9,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "result": {
+            "valid": true,
+            "candidate_tui_start": true,
+            "candidate_tui": true,
+            "candidate_resize": true,
+            "candidate_replies": true,
+            "command_verified": true,
+            "exit_code": 37,
+            "active_children_after": 0,
+            "cleanup_complete": true,
+            "input_rejected": 0,
+            "columns": 60,
+            "rows": 12,
+            "presented_done": null
+          },
+          "files": {
+            "candidate-input.bin": {
+              "bytes": 115,
+              "sha256": "4bd689a84f1eb7336afb3b607dec760d117caef3d83f3e8e1b6b1f83d70b4b68"
+            },
+            "candidate-insert-log.txt": {
+              "bytes": 58,
+              "sha256": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a"
+            },
+            "candidate-resize-log.txt": {
+              "bytes": 5,
+              "sha256": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7"
+            },
+            "candidate-startup-log.txt": {
+              "bytes": 6,
+              "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+            },
+            "candidate-vim.vim": {
+              "bytes": 334,
+              "sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797"
+            },
+            "candidate-tui.txt": {
+              "bytes": 17,
+              "sha256": "d9d3b8d10b660a808ece2b2c46b3767713ba4e74631c56b376b492eadf511dec"
+            },
+            "candidate-replies.bin": {
+              "bytes": 7,
+              "sha256": "39cb2fc06ace6ef92a7015a38ab2e7fe1f03a846af0313e27ec7cdceca6643ff"
+            },
+            "sample.json": {
+              "bytes": 6006,
+              "sha256": "9a83660ad5eb603a378cf3db037dc92e78b98276c4159901b935e8d05803b76b"
+            }
+          },
+          "empty_input_file_is_not_a_complete_input_trace": false
+        }
+      ],
+      "private_artifact_hashes": {
+        "identity.json": "bfda2110a737353912cafed36e6b3c401e1eca36b840e39fcc9ad3dfb2db7e36",
+        "outcome.json": "a23be95c07a043b02f3a869d0ca403b0cf17f2168652e3783258978c07490c97",
+        "unittest.log": "143f43a9096edec23651fa9c4f968d76e7ad6509ce7d9976da9e84b9cfd6bc49"
+      }
+    }
+  ],
+  "limitations": [
+    "The toolchain differs from the distributed 2024 DLL; this is an independent source rebuild, not a byte-identical rebuild.",
+    "The sole intentional source change is the WINDOW_BUFFER_SIZE_EVENT branch; six build artifacts differ, including regenerated version metadata.",
+    "No API probe or loaded-module path observation was performed in this batch; input-boundary call evidence belongs to the earlier separate diagnostic.",
+    "Failed Vim input files are empty and unflushed; they do not prove absent input or a complete equal input trace.",
+    "Only the original Vim GUI method was run; MOUSE_EVENT, actual signal-handler longjmp, other applications and full CTest were not validated.",
+    "Signal delivery still unlocks/relocks structurally; that is not a longjmp regression test.",
+    "The existing ReadConsoleInputW error handling was not strengthened or fault-injected.",
+    "Four patched cases support the queue-prefix diagnosis; they do not establish universal reliability, performance equivalence or WindTerm parity.",
+    "No product runtime adoption, compatibility strategy or fixed-target acceptance change is made; issue 52 remains open."
+  ]
+}
