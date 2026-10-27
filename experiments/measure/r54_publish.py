@@ -11,10 +11,17 @@ from experiments.measure.r54_contract import ROOT, SEEDS
 from experiments.measure.r54_hosted import hosted_identity
 from experiments.measure.r54_inputs import require
 
+EXPERIMENTS = {
+    'cost': dict(branch='perf/grapheme-hosted-r54', raw_schema='termforge-r54-hosted-v1',
+                 publication_schema='termforge-r54-hosted-publication-v1'),
+    'cpu-boundary': dict(branch='perf/grapheme-cpu-hosted-r54', raw_schema='termforge-r54-cpu-hosted-v1',
+                         publication_schema='termforge-r54-cpu-hosted-publication-v1'),
+}
+
 
 def public_environment(value):
     """CPU counters remain; process names/PIDs and unrecognized fields do not."""
-    fields = ('status', 'host', 'started_utc', 'finished_utc', 'intervals', 'declaration', 'policy', 'power_policy', 'error')
+    fields = ('status', 'host', 'started_utc', 'finished_utc', 'intervals', 'declaration', 'policy', 'power_policy', 'error', 'scope')
     result = {name: value[name] for name in fields if name in value}
     if 'host' in result:
         host = value['host']
@@ -22,9 +29,9 @@ def public_environment(value):
     return result
 
 
-def validate_raw_identity(root, identity):
+def validate_raw_identity(root, identity, schema='termforge-r54-hosted-v1'):
     value = json.loads((root / 'hosted.json').read_text(encoding='utf-8'))
-    require(value['schema'] == 'termforge-r54-hosted-v1' and value['hosted_identity'] == identity and
+    require(value['schema'] == schema and value['hosted_identity'] == identity and
             value['source'] == identity['GITHUB_SHA'], 'raw evidence belongs to another run, attempt or source')
 
 
@@ -74,8 +81,9 @@ def publish_jsonl(original, replacements):
     return redact_paths(original, replacements), status
 
 
-def selected_paths(root):
+def selected_paths(root, experiment='cost'):
     """No recursive directory export: only named builder and runner artifacts."""
+    require(experiment in EXPERIMENTS, 'unknown experiment')
     names = ['hosted.json', 'environment-declaration.json']
     names += ['bundle/' + name for name in ('preparation.json', 'plan-v1.json', 'build-plan.json', 'build-audit.json')]
     for variant in ('baseline', 'candidate'):
@@ -84,24 +92,35 @@ def selected_paths(root):
             names += [f'bundle/{variant}-{step}.{suffix}' for suffix in ('stdout', 'stderr', 'process.json')]
         for route in ('project', 'interactive'):
             names += [f'bundle/sanity-{variant}-{route}/{stream}.bin' for stream in ('stdout', 'stderr')]
-    for seed in SEEDS:
-        prefix = f'batch-{seed}/'
-        names += [prefix + name for name in ('manifest.json', 'runner.json', 'environment.json', 'environment-policy.json',
-                  'environment-declaration.json', 'samples/context.json', 'samples/manifest.json', 'samples/samples.jsonl', 'samples/summary.json')]
-        for directory in ('baseline-identity', 'candidate-identity', 'power-policy', 'power-policy-after'):
+    if experiment == 'cost':
+        for seed in SEEDS:
+            prefix = f'batch-{seed}/'
+            names += [prefix + name for name in ('manifest.json', 'runner.json', 'environment.json', 'environment-policy.json',
+                      'environment-declaration.json', 'samples/context.json', 'samples/manifest.json', 'samples/samples.jsonl', 'samples/summary.json')]
+            for directory in ('baseline-identity', 'candidate-identity', 'power-policy', 'power-policy-after'):
+                names += [prefix + directory + '/' + name for name in ('record.json', 'stdout.bin', 'stderr.bin')]
+            for sequence in range(112):
+                names += [prefix + f'samples/{sequence:03d}/' + name for name in ('record.json', 'stdout.bin', 'stderr.bin')]
+    else:
+        prefix = 'diagnostic/'
+        names += [prefix + name for name in ('manifest.json', 'runner.json', 'environment.json', 'binding.json',
+                  'plan-v1.json', 'observations/context.json', 'observations/protocol.json', 'observations/manifest.json')]
+        for directory in ('baseline-identity', 'candidate-identity'):
             names += [prefix + directory + '/' + name for name in ('record.json', 'stdout.bin', 'stderr.bin')]
-        for sequence in range(112):
-            names += [prefix + f'samples/{sequence:03d}/' + name for name in ('record.json', 'stdout.bin', 'stderr.bin')]
+        for sequence in range(6):
+            names += [prefix + f'observations/{sequence:03d}/' + name for name in ('record.json', 'stdout.bin', 'stderr.bin')]
     return [Path(name) for name in names if (root / name).is_file()]
 
 
-def publish(root, output):
-    identity = hosted_identity()
+def publish(root, output, experiment='cost'):
+    require(experiment in EXPERIMENTS, 'unknown experiment')
+    spec = EXPERIMENTS[experiment]
+    identity = hosted_identity(spec['branch'])
     root, output = Path(root).resolve(), Path(output).resolve()
     require(root.is_relative_to(ROOT / 'local') and output.is_relative_to(ROOT / 'local'), 'publication paths must stay in workspace local')
     require(root != output and not output.is_relative_to(root), 'public output must be separate from raw records')
     require(not output.exists(), 'public output already exists')
-    validate_raw_identity(root, identity)
+    validate_raw_identity(root, identity, spec['raw_schema'])
     staging = output.with_name(output.name + '.partial')
     require(staging.is_relative_to(ROOT / 'local'), 'staging path escaped workspace')
     staging.mkdir(parents=True, exist_ok=False)
@@ -116,13 +135,13 @@ def publish(root, output):
 
     def transform(value):
         if isinstance(value, dict):
-            return {key: transform(item) for key, item in value.items()}
+            return {key: transform(item) for key, item in value.items() if key != 'child_pid'}
         if isinstance(value, list):
             return [transform(item) for item in value]
         return text(value) if isinstance(value, str) else value
 
     inventory = []
-    for relative in selected_paths(root):
+    for relative in selected_paths(root, experiment):
         source = root / relative
         require(source.resolve().is_relative_to(root), 'artifact path escaped raw directory')
         original = source.read_bytes()
@@ -130,7 +149,7 @@ def publish(root, output):
         # The measurement EXE consumes only public, fixed synthetic workloads.
         # Preserve its raw streams even on failure. Other logs can contain host
         # path prefixes; redact those without discarding their full contents.
-        raw_sample = bool(re.fullmatch(r'(?:batch-\d+/samples/\d{3}|bundle/sanity-(?:baseline|candidate)-(?:project|interactive))/(?:stdout|stderr)\.bin', relative.as_posix()))
+        raw_sample = bool(re.fullmatch(r'(?:batch-\d+/samples/\d{3}|bundle/sanity-(?:baseline|candidate)-(?:project|interactive)|diagnostic/(?:observations/\d{3}|(?:baseline|candidate)-identity))/(?:stdout|stderr)\.bin', relative.as_posix()))
         if raw_sample:
             data, treatment = original, 'byte_exact_owned_synthetic_stream'
         elif relative.suffix == '.json':
@@ -152,7 +171,7 @@ def publish(root, output):
                               original_sha256=hashlib.sha256(original).hexdigest(),
                               published_bytes=len(data), published_sha256=sha(target), treatment=treatment,
                               jsonl_status=jsonl_status))
-    write_json(staging / 'publication.json', dict(schema='termforge-r54-hosted-publication-v1',
+    write_json(staging / 'publication.json', dict(schema=spec['publication_schema'],
         hosted_identity=identity, artifacts=inventory, raw_process_identities_published=False,
         full_environment_variables_published=False, performance_gate='not_evaluated',
         limitation='guest CPU evidence cannot establish exclusive physical host or stable frequency'))
@@ -164,8 +183,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--raw', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--experiment', choices=EXPERIMENTS, default='cost')
     args = parser.parse_args()
-    print(json.dumps(publish(args.raw, args.out)))
+    print(json.dumps(publish(args.raw, args.out, args.experiment)))
 
 
 if __name__ == '__main__':
