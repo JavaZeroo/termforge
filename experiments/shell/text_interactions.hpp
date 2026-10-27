@@ -7,8 +7,8 @@ inline std::optional<termforge::TextPosition> ShellWindow::selection_position(in
     const int row=std::clamp(y/renderer_->cell_height(),0,snapshot_->rows()-1);
     const int column=std::clamp((x+(nearest?renderer_->cell_width()/2:0))/renderer_->cell_width(),0,snapshot_->columns());
     termforge::TextDocument document(parser_.screen);
-    const auto index=document.index_of(snapshot_->lines[static_cast<size_t>(row)].id);
-    return index?document.position(*index,static_cast<size_t>(column)):std::nullopt;
+    return snapshot_->mapping.hit(document,static_cast<size_t>(row),static_cast<size_t>(column),
+                                  termforge::ViewAffinity::leading);
 }
 
 inline void ShellWindow::selection_end() {
@@ -65,12 +65,11 @@ inline void ShellWindow::selection_autoscroll() {
 
 inline void ShellWindow::selection_overlay(termforge::ViewSnapshot& view) {
     termforge::TextDocument document(parser_.screen);
-    for(size_t row=0;row<view.lines.size();++row) {
-        const auto columns=selection_.columns(document,view.viewport.top+row);
-        if(!columns) continue;
-        for(size_t column=columns->begin;column<columns->end && column<view.lines[row].size();++column) {
+    if(!selection_.range()) return;
+    for(const auto& span:view.mapping.project(document,*selection_.range())) {
+        for(size_t column=span.column_begin;column<span.column_end;++column) {
             // Alter this owned presentation copy, never parser/history cells.
-            view.lines[row][column].style.bg=4; view.lines[row][column].style.fg=15;
+            view.lines[span.row][column].style.bg=4; view.lines[span.row][column].style.fg=15;
         }
     }
 }

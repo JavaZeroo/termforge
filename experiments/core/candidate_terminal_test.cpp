@@ -994,6 +994,164 @@ void conpty_resize_replay(const std::filesystem::path& path) {
     }
 }
 
+void cached_history_viewport_projects_complete_source() {
+    const std::string expected = "ABCDEFGH\r\nB\r\nC\r\nD";
+    termforge::CandidateTerminal terminal(2, 8, 16);
+    terminal.feed(expected);
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+
+    termforge::TextDocument document(terminal.screen);
+    termforge::TextSelection whole;
+    const auto begin = document.position(0, 0);
+    const auto end = document.position(terminal.screen.history.size() + 1, 1);
+    require(begin && end && whole.set(document, {*begin, *end}) &&
+            whole.copy(document, 128).text == expected, "history viewport source fixture differs");
+
+    termforge::HistoryViewport viewport;
+    viewport.scroll_to(terminal.screen, 0);
+    const auto top = viewport.snapshot(terminal.screen);
+    require(top.lines.size() == 4 && top.cursor_row == -1, "historical page shape or caret differs");
+    for (const auto& line : top.lines)
+        require(line.size() == 4, "history viewport supplied a nonrectangular renderer page");
+    require(text(top.lines[0]) == "ABCD" && text(top.lines[1]) == "EFGH" &&
+            text(top.lines[2]) == "B" && text(top.lines[3]) == "C",
+            "history viewport did not expose the complete long source at four columns");
+
+    viewport.scroll_by(terminal.screen, 1);
+    const auto next = viewport.snapshot(terminal.screen);
+    require(next.lines.size() == 4, "scrolled history page height differs");
+    for (const auto& line : next.lines)
+        require(line.size() == 4, "scrolled history page is not rectangular");
+    require(text(next.lines[0]) == "EFGH" && text(next.lines[1]) == "B" &&
+            text(next.lines[2]) == "C" && text(next.lines[3]) == "D",
+            "history viewport cannot reach the next source line in display order");
+    const auto copy = whole.copy(document, 128);
+    require(document.valid(*begin) && document.valid(*end) &&
+            copy.status == termforge::SelectionCopyStatus::ok && copy.text == expected,
+            "view projection clipped or changed the complete source document");
+}
+
+void cached_history_viewport_selects_displayed_text() {
+    termforge::CandidateTerminal terminal(2, 8, 16);
+    terminal.feed("ABCDEFGH\r\nB\r\nC\r\nD");
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    termforge::TextDocument document(terminal.screen);
+    termforge::HistoryViewport viewport;
+    viewport.scroll_to(terminal.screen, 0);
+    const auto page = viewport.snapshot(terminal.screen);
+    const auto begin = page.mapping.hit(document, 1, 0, termforge::ViewAffinity::leading);
+    const auto end = page.mapping.hit(document, 1, 4, termforge::ViewAffinity::trailing);
+    require(begin && end && *begin == *document.position(0, 4) && *end == *document.position(0, 8),
+            "displayed EFGH endpoints did not map to the original source columns");
+    termforge::TextSelection selection;
+    require(selection.set(document, {*begin, *end}) && selection.copy(document, 64).text == "EFGH",
+            "dragging across displayed EFGH copied different text");
+    const auto spans = page.mapping.project(document, *selection.range());
+    require(spans.size() == 1 && spans[0].row == 1 &&
+            spans[0].column_begin == 0 && spans[0].column_end == 4,
+            "EFGH selection did not highlight exactly its displayed row");
+    const auto c = page.mapping.hit(document, 0, 2, termforge::ViewAffinity::leading);
+    const auto f = page.mapping.hit(document, 1, 2, termforge::ViewAffinity::trailing);
+    require(c && f, "cross-fragment drag endpoints are missing");
+    for (const auto range : {termforge::TextRange{*c, *f}, termforge::TextRange{*f, *c}}) {
+        require(selection.set(document, range) && selection.copy(document, 64).text == "CDEF",
+                "cross-fragment drag inserted a break or changed text");
+        const auto highlight = page.mapping.project(document, *selection.range());
+        require(highlight.size() == 2 && highlight[0].row == 0 && highlight[0].column_begin == 2 &&
+                highlight[0].column_end == 4 && highlight[1].row == 1 &&
+                highlight[1].column_begin == 0 && highlight[1].column_end == 2,
+                "forward or reverse cross-fragment highlight differs");
+    }
+    const auto g = page.mapping.hit(document, 1, 2, termforge::ViewAffinity::leading);
+    const auto b = page.mapping.hit(document, 2, 1, termforge::ViewAffinity::trailing);
+    require(g && b && selection.set(document, {*g, *b}) && selection.copy(document, 64).text == "GH\r\nB",
+            "display projection lost a source hard break during drag selection");
+}
+
+void cached_history_viewport_reveals_find_position() {
+    termforge::CandidateTerminal terminal(2, 8, 16);
+    terminal.feed("ABCDEFGH\r\nB\r\nC\r\nD");
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    termforge::TextDocument document(terminal.screen);
+    termforge::TextSearch search;
+    const auto generation = search.start(document, "EFGH");
+    for (int step = 0; step < 100 && search.status() == termforge::SearchStatus::running; ++step)
+        search.step(document, generation, 64);
+    const auto match = search.match(document, 0);
+    require(search.status() == termforge::SearchStatus::complete && search.matches().size() == 1 && match,
+            "viewport Find fixture did not locate one EFGH");
+    termforge::HistoryViewport viewport;
+    viewport.bottom(terminal.screen);
+    require(viewport.reveal(terminal.screen, match->range.begin).has_value(), "live Find position was rejected");
+    const auto page = viewport.snapshot(terminal.screen);
+    require(text(page.lines[0]) == "EFGH" && text(page.lines[1]) == "B" &&
+            text(page.lines[2]) == "C" && text(page.lines[3]) == "D",
+            "Find reveal lost the source column and displayed the start of the old long row");
+    const auto spans = page.mapping.project(document, match->range);
+    require(spans.size() == 1 && spans[0].row == 0 && spans[0].column_begin == 0 && spans[0].column_end == 4,
+            "Find match was not highlighted in the revealed fragment");
+    termforge::TextSelection selection;
+    require(selection.set(document, match->range), "Find selection failed");
+    terminal.resize(4, 8);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    require(text(viewport.snapshot(terminal.screen).lines[0]) == "ABCDEFGH" &&
+            selection.copy(document, 64).text == "EFGH", "width growth lost the source selection or reading row");
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    require(text(viewport.snapshot(terminal.screen).lines[0]) == "EFGH" &&
+            selection.copy(document, 64).text == "EFGH", "restored width lost the second-fragment reading anchor");
+    terminal.feed("\x1b[3J");
+    const termforge::TextDocument cleared(terminal.screen);
+    require(!page.mapping.hit(cleared, 0, 0, termforge::ViewAffinity::leading) &&
+            page.mapping.project(cleared, match->range).empty() &&
+            !viewport.reveal(terminal.screen, match->range.begin) && !search.match(cleared, 0) &&
+            selection.copy(cleared, 64).status == termforge::SelectionCopyStatus::invalidated,
+            "cleared history remained accessible through an old display map");
+}
+
+void cached_history_viewport_reflows_wide_wrap_gap() {
+    termforge::CandidateTerminal terminal(2, 4, 16);
+    terminal.feed("ABC\xe7\x95\x8cZ\r\nB\r\nC\r\nD");
+    terminal.resize(4, 3);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    const auto& history = terminal.screen.history;
+    require(history.size() >= 2 && history[0].size() == 4 && history[0][3].leading_spacer &&
+            termforge::continues_into(history[0], history[1]) && history[1][0].text == "\xe7\x95\x8c" &&
+            history[1][0].width == 2 && history[1][1].width == 0 && history[1][2].text == "Z",
+            "wide-wrap viewport source fixture differs");
+    termforge::HistoryViewport viewport;
+    viewport.scroll_to(terminal.screen, 0);
+    const auto page = viewport.snapshot(terminal.screen);
+    require(page.lines.size() == 4 && text(page.lines[0]) == "ABC" &&
+            termforge::project_line(page.lines[1]).text == "\xe7\x95\x8cZ" &&
+            text(page.lines[2]) == "B" && text(page.lines[3]) == "C",
+            "history viewport retained an obsolete wide-wrap gap in its display order");
+    require(page.lines[1][0].text == "\xe7\x95\x8c" && page.lines[1][0].width == 2 &&
+            page.lines[1][1].width == 0 && page.lines[1][2].text == "Z",
+            "history viewport misplaced the wide glyph after reflow");
+    termforge::CandidateTerminal narrow(2, 4, 16);
+    narrow.feed("\xe7\x95\x8cZ\r\nB\r\nC\r\nD");
+    narrow.resize(4, 1);
+    narrow.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    termforge::HistoryViewport single;
+    single.scroll_to(narrow.screen, 0);
+    const auto clipped = single.snapshot(narrow.screen);
+    require(clipped.lines[0].size() == 1 && clipped.lines[0][0].text == "\xe7\x95\x8c" &&
+            clipped.lines[0][0].width == 1 && clipped.lines[0][0].clipped,
+            "single-column history lost the complete wide glyph");
+    const termforge::TextDocument narrow_document(narrow.screen);
+    const auto lead = clipped.mapping.hit(narrow_document, 0, 0, termforge::ViewAffinity::leading);
+    const auto tail = clipped.mapping.hit(narrow_document, 0, 1, termforge::ViewAffinity::trailing);
+    require(lead && tail && lead->column == 0 && tail->column == 2, "clipped glyph did not retain its full source span");
+    termforge::TextSelection selected;
+    for (const auto range : {termforge::TextRange{*lead, *tail}, termforge::TextRange{*tail, *lead}})
+        require(selected.set(narrow_document, range) && selected.copy(narrow_document, 64).text == "\xe7\x95\x8c",
+                "clipped wide glyph selection lost text in one drag direction");
+}
+
 void selection_search_and_viewport() {
     termforge::CandidateTerminal terminal(2, 8, 4);
     terminal.feed("alpha\r\nbeta\r\ngamma");
@@ -1101,6 +1259,22 @@ int main(int argc, char** argv) {
         }
         if (argc > 1 && std::string_view(argv[1]) == "--source-partial-capacity") {
             cached_history_partial_capacity_keeps_unremoved_source();
+            return 0;
+        }
+        if (argc > 1 && std::string_view(argv[1]) == "--history-viewport-projection") {
+            cached_history_viewport_projects_complete_source();
+            return 0;
+        }
+        if (argc > 1 && std::string_view(argv[1]) == "--history-viewport-text") {
+            cached_history_viewport_selects_displayed_text();
+            return 0;
+        }
+        if (argc > 1 && std::string_view(argv[1]) == "--history-viewport-wide") {
+            cached_history_viewport_reflows_wide_wrap_gap();
+            return 0;
+        }
+        if (argc > 1 && std::string_view(argv[1]) == "--history-viewport-find") {
+            cached_history_viewport_reveals_find_position();
             return 0;
         }
         fragmentation();

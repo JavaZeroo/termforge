@@ -79,15 +79,20 @@ static unsigned color(int index, bool background) {
     return index < 0 ? (background ? 0x101010 : 0xe0e0e0) : palette[index];
 }
 static COLORREF gdi_color(unsigned rgb) { return RGB((rgb>>16)&255, (rgb>>8)&255, rgb&255); }
-// Copy once at the ownership boundary. No concurrent publication or reflow claim.
+// Copy once at the ownership boundary. All rows share the explicit page width;
+// source-document coordinates are independent of this presentation rectangle.
 struct Snapshot {
     const std::vector<termforge::Line> lines;
+    const termforge::ViewMapping mapping;
+    const int column_count;
     const int cursor_row, cursor_column, revision;
-    explicit Snapshot(const termforge::Screen& s, int rev) : lines(s.lines), cursor_row(s.row), cursor_column(s.column), revision(rev) {}
+    explicit Snapshot(const termforge::Screen& s, int rev)
+        : lines(s.lines), column_count(s.width()), cursor_row(s.row), cursor_column(s.column), revision(rev) {}
     explicit Snapshot(termforge::ViewSnapshot view, int rev)
-        : lines(std::move(view.lines)), cursor_row(view.cursor_row), cursor_column(view.cursor_column), revision(rev) {}
+        : lines(std::move(view.lines)), mapping(std::move(view.mapping)), column_count(view.columns),
+          cursor_row(view.cursor_row), cursor_column(view.cursor_column), revision(rev) {}
     int rows() const { return static_cast<int>(lines.size()); }
-    int columns() const { return static_cast<int>(lines.front().size()); }
+    int columns() const { return column_count; }
 };
 static std::vector<int> changed_rows(const Snapshot& a, const Snapshot& b) {
     std::set<int> changed;

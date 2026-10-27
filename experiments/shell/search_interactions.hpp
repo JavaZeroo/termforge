@@ -58,7 +58,7 @@ inline void ShellWindow::navigate_find(termforge::SearchDirection direction) {
         return;
     }
     find_current_=found; find_initial_=false; find_pending_directions_.clear();
-    viewport_.reveal(parser_.screen,found->match.range.begin.line_id);
+    viewport_.reveal(parser_.screen,found->match.range.begin);
     if(find_) find_->set_status(partial?L"Searching… partial match (no wrap)":
         std::to_wstring(found->index+1)+L" / "+std::to_wstring(search_.matches().size())+
         (search_.status()==termforge::SearchStatus::capped?L" — result limit reached":L"")+
@@ -136,17 +136,11 @@ inline void ShellWindow::search_overlay(termforge::ViewSnapshot& view) {
     if(view.lines.empty()) return;
     termforge::TextDocument document(parser_.screen);
     for(size_t index=0;index<search_.matches().size();++index) {
-        const auto& candidate=search_.matches()[index].range;
-        if(candidate.end.line_id<view.lines.front().id || candidate.begin.line_id>view.lines.back().id) continue;
         const auto match=search_.match(document,index); if(!match) continue;
-        const auto& range=match->range;
-        for(auto& row:view.lines) {
-            if(row.id<range.begin.line_id || row.id>range.end.line_id) continue;
-            const size_t first=row.id==range.begin.line_id?range.begin.column:0;
-            const size_t last=row.id==range.end.line_id?range.end.column:row.size();
-            for(size_t column=first;column<last && column<row.size();++column) {
-                row[column].style.bg=find_current_ && find_current_->index==index?11:3;
-                row[column].style.fg=0;
+        for(const auto& span:view.mapping.project(document,match->range)) {
+            for(size_t column=span.column_begin;column<span.column_end;++column) {
+                view.lines[span.row][column].style.bg=find_current_ && find_current_->index==index?11:3;
+                view.lines[span.row][column].style.fg=0;
             }
         }
     }
