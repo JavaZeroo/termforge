@@ -1,0 +1,616 @@
+{
+  "case": "original-post-DSR-fenced-state-CUP",
+  "status": "one completed bounded observation; no product acceptance or policy selection",
+  "actual_runs": 1,
+  "limits": {
+    "rea_observation_seconds": 45,
+    "scenario_deadline_ms": 43000,
+    "outer_cli_timeout_seconds": 60
+  },
+  "original_identity": {
+    "product": "WindTerm",
+    "version": "2.7.0",
+    "platform": "Windows x64",
+    "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "copied_files": 4047,
+    "canonical_distribution_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
+  },
+  "frozen_plan_sha256": "2181352f2b1df81a8a103e1ef70615d40b27c311c633af32e268d31fea945a65",
+  "frozen_source_manifest_sha256": "211d5a60c21fb3c6a306198ccce9ed0b90490177b01e46919768e48dee480793",
+  "frozen_source_file_sha256": {
+    "plan.json": "2181352f2b1df81a8a103e1ef70615d40b27c311c633af32e268d31fea945a65",
+    "prepare_probe.py": "c0a9c90b0422abfcdc217abc260b61002cc302c6e2af34d6fe96a2ee3efedcd6",
+    "validate_and_freeze.py": "a706b1c0a3ba2a3b363d74b17a9e09549dd27d89b2ef19675b3c37d4526f0e91",
+    "launch.py": "96f11ec10374b3bcf5fbd9c2377a21edbf0ba6deaca1a3400d0e4a829db7dffc",
+    "peer.py": "741755bcf9dd715ebb06bf26784947d26bf654795c1a9a2688123eaee9f41bc8",
+    "qt_r1_text.js": "267c40af273e671e75d51b44f757674375203831471382c3f3d7990fe931cb3c",
+    "r1_menu_wrap.js": "249337c6e48c14184e9f79c61d2c86c940a8f40637f7d2215d42482086552b55",
+    "input-original.bin": "9474531ee34ea08ddd5c3c6b9a19c446852c2aff784dea484c54a91138724b3e",
+    "input-original.json": "c37f68e63d8a9f7beb2743639b3e96771f4ca1ce5cc0a893228cdabd86a78342",
+    "expected-phases.json": "f20d1a208a1214b2cfc98e380a0ceaadd90f7f2fc42ec126e481ba8589c725cf",
+    "pre-cup-state.json": "e8660fa9cfe15d20f81bcce76b9bd0e81b30d36974a05909a6e3ef33486082ac",
+    "provider-source-manifest.json": "b2d0fe975a294a1e54cb12d7bdd0998b8628162259a3d0d7ba0ff866fc6d0417",
+    "preparation-verification.json": "73811868702a5177e20c8bf27f937fd012b751c2ab4f37bb8ff95f866744a3a1",
+    "distribution-verification.json": "82ea4ae069153b53d615d37acc5a9bacda61745f44a7f112304c7fd3bdd44129",
+    "offline-validation.json": "253fa43da0277439959d8a470b5c56cddcb9ad19d7855fe6011613e09b534b8a"
+  },
+  "actual_probe_sha256": "e559af1182cbbb5c737fc033f02dafac7135e0e73ba85d5ba629709c142043b1",
+  "probe_template_sha256": "ab1819af4796ddba1bf47e5d9fb41b88f6474f94478adb33c2f0e6b5b04ab9ce",
+  "evidence_id": "ev_4afb2d0daf461e4e895628deceafc76fb325250738d6e6bb363faf565c492de4",
+  "private_artifact_sha256": {
+    "evidence.json": "cfe109d9d15687821546a31d3d620f67a269f13e932d1a5fc98a235226d339c7",
+    "probe.js": "e559af1182cbbb5c737fc033f02dafac7135e0e73ba85d5ba629709c142043b1",
+    "run.json": "466ccd6690c4608f92f6f825b4f31afa0c2226068d2f6429e1a09a49779ba587",
+    "peer.json": "900356beb2e0e12ea1c76dfd0ff3e78d212ab71ab1ec9006fbfc87861221d4be",
+    "input-00.bin": "9474531ee34ea08ddd5c3c6b9a19c446852c2aff784dea484c54a91138724b3e",
+    "input-01.bin": "d907695b104f1c48f93ac2a6f8f6826688a7b359b4b101b26af46022778dbf72",
+    "input-02.bin": "49c5a60820f6774abddedce417cf750d22736c419cea9f42e124337d6321e2f6",
+    "fenced-state-gate.json": "6ec20c1ab25d4379fd60089fc0ed7e1d529d88e687824439c1d5586c893be5c2",
+    "gate-verified-before-cup.json": "eed80c5e25bb275b59a9080c7b6cac32f7ab658339ac9a97cdd8015d13f605a7",
+    "cleanup.json": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d",
+    "surface-cleanup.json": "2947878016d582f50a3241f5dfaf0c923671e6ddee62cd57e00a78a988ae7954",
+    "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1",
+    "complete-finite-query-export": "4b74fdeb5cf51d7b6aabe658517b36face7248a230df65995f0a848c9fa8126a",
+    "private-analysis-summary": "8e36c1e59acaf1c7a4271226b5e7122eeae96a75dbfc4f2c8b1a32008545754b"
+  },
+  "finite_query_scope": {
+    "indices": [
+      0,
+      127
+    ],
+    "slots_per_complete_sample": 128,
+    "known_nonempty_text_slots": 42,
+    "end_alias_indices": [
+      42,
+      127
+    ],
+    "end_alias_count": 86,
+    "end_alias_text": "",
+    "end_alias_start_end": 1038,
+    "end_alias_visible_line": 43,
+    "end_alias_start_end_rect": [
+      203,
+      306,
+      0,
+      18
+    ],
+    "alias_interpretation": "Repeated terminal document-end aliases, not86 real empty logical rows.",
+    "alias_values_apply_to": [
+      "restore-fenced",
+      "after-cup"
+    ]
+  },
+  "naws_sequence": [
+    [
+      80,
+      25
+    ],
+    [
+      80,
+      26
+    ],
+    [
+      62,
+      26
+    ],
+    [
+      80,
+      26
+    ],
+    [
+      80,
+      18
+    ],
+    [
+      80,
+      26
+    ]
+  ],
+  "phases": [
+    {
+      "phase": "baseline",
+      "elapsed_ms": 2640,
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "peer_naws": [
+        80,
+        26
+      ],
+      "editor_rect": [
+        0,
+        0,
+        817,
+        470
+      ],
+      "scrollbar": {
+        "value": 19,
+        "max": 19,
+        "page": 26
+      },
+      "text_metadata": {
+        "scroll": 19,
+        "visibleLineCount": 44,
+        "capacity": 26,
+        "caret": 1038,
+        "anchor": 1038,
+        "selection": "R29-END\r\n",
+        "queried_slots": 128
+      },
+      "complete_equal_sample_elapsed_ms": [
+        2375,
+        2640
+      ],
+      "complete_equal_sample_interval_ms": 265,
+      "complete_sample_query_slots_each": 128
+    },
+    {
+      "phase": "narrow-width",
+      "elapsed_ms": 3422,
+      "requested_outer": [
+        1010,
+        887
+      ],
+      "peer_naws": [
+        62,
+        26
+      ],
+      "editor_rect": [
+        0,
+        0,
+        671,
+        470
+      ],
+      "scrollbar": {
+        "value": 20,
+        "max": 20,
+        "page": 26
+      },
+      "text_metadata": {
+        "scroll": 20,
+        "visibleLineCount": 46,
+        "capacity": 26,
+        "caret": 1038,
+        "anchor": 1038,
+        "selection": "R29-END\r\n",
+        "queried_slots": 128
+      },
+      "complete_equal_sample_elapsed_ms": [
+        3156,
+        3422
+      ],
+      "complete_equal_sample_interval_ms": 266,
+      "complete_sample_query_slots_each": 128
+    },
+    {
+      "phase": "restore-width",
+      "elapsed_ms": 4218,
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "peer_naws": [
+        80,
+        26
+      ],
+      "editor_rect": [
+        0,
+        0,
+        817,
+        470
+      ],
+      "scrollbar": {
+        "value": 19,
+        "max": 19,
+        "page": 26
+      },
+      "text_metadata": {
+        "scroll": 19,
+        "visibleLineCount": 44,
+        "capacity": 26,
+        "caret": 1038,
+        "anchor": 1038,
+        "selection": "R29-END\r\n",
+        "queried_slots": 128
+      },
+      "complete_equal_sample_elapsed_ms": [
+        3953,
+        4218
+      ],
+      "complete_equal_sample_interval_ms": 265,
+      "complete_sample_query_slots_each": 128
+    },
+    {
+      "phase": "short-height",
+      "elapsed_ms": 5047,
+      "requested_outer": [
+        1230,
+        679
+      ],
+      "peer_naws": [
+        80,
+        18
+      ],
+      "editor_rect": [
+        0,
+        0,
+        817,
+        331
+      ],
+      "scrollbar": {
+        "value": 26,
+        "max": 26,
+        "page": 18
+      },
+      "text_metadata": {
+        "scroll": 26,
+        "visibleLineCount": 44,
+        "capacity": 18,
+        "caret": 1038,
+        "anchor": 1038,
+        "selection": "R29-END\r\n",
+        "queried_slots": 128
+      },
+      "complete_equal_sample_elapsed_ms": [
+        4765,
+        5047
+      ],
+      "complete_equal_sample_interval_ms": 282,
+      "complete_sample_query_slots_each": 128
+    },
+    {
+      "phase": "restore-height",
+      "elapsed_ms": 5937,
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "peer_naws": [
+        80,
+        26
+      ],
+      "editor_rect": [
+        0,
+        0,
+        817,
+        470
+      ],
+      "scrollbar": {
+        "value": 19,
+        "max": 19,
+        "page": 26
+      },
+      "text_metadata": {
+        "scroll": 19,
+        "visibleLineCount": 44,
+        "capacity": 26,
+        "caret": 1038,
+        "anchor": 1038,
+        "selection": "R29-END\r\n",
+        "queried_slots": 128
+      },
+      "complete_equal_sample_elapsed_ms": [
+        5609,
+        5937
+      ],
+      "complete_equal_sample_interval_ms": 328,
+      "complete_sample_query_slots_each": 128
+    },
+    {
+      "phase": "restore-fenced",
+      "elapsed_ms": 6797,
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "peer_naws": [
+        80,
+        26
+      ],
+      "editor_rect": [
+        0,
+        0,
+        817,
+        470
+      ],
+      "scrollbar": {
+        "value": 26,
+        "max": 26,
+        "page": 26
+      },
+      "text_metadata": {
+        "scroll": 26,
+        "visibleLineCount": 44,
+        "capacity": 26,
+        "caret": 1038,
+        "anchor": 1038,
+        "selection": "R29-END\r\n",
+        "queried_slots": 128
+      },
+      "complete_equal_sample_elapsed_ms": [
+        6468,
+        6797
+      ],
+      "complete_equal_sample_interval_ms": 329,
+      "complete_sample_query_slots_each": 128
+    },
+    {
+      "phase": "after-cup",
+      "elapsed_ms": 7687,
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "peer_naws": [
+        80,
+        26
+      ],
+      "editor_rect": [
+        0,
+        0,
+        817,
+        470
+      ],
+      "scrollbar": {
+        "value": 26,
+        "max": 26,
+        "page": 26
+      },
+      "text_metadata": {
+        "scroll": 26,
+        "visibleLineCount": 44,
+        "capacity": 26,
+        "caret": 1038,
+        "anchor": 1038,
+        "selection": "R29-END\r\n",
+        "queried_slots": 128
+      },
+      "complete_equal_sample_elapsed_ms": [
+        7343,
+        7687
+      ],
+      "complete_equal_sample_interval_ms": 344,
+      "complete_sample_query_slots_each": 128
+    }
+  ],
+  "old_path_gates": {
+    "five_phase_projections_matched": true,
+    "historical_entry_content_markers": [
+      "R29-H0019|history",
+      "R29-H0020|history",
+      "R29-H0021|history",
+      "R29-H0022|history",
+      "R29-H0023|history",
+      "R29-H0024|history",
+      "R29-H0025|history"
+    ],
+    "h0019_document_range": [
+      342,
+      359
+    ],
+    "h0019_short_start_rect": [
+      147,
+      -126,
+      8,
+      18
+    ],
+    "h0019_restored_start_rect": [
+      147,
+      0,
+      8,
+      18
+    ]
+  },
+  "pre_cup_gate": {
+    "accepted": true,
+    "checks": {
+      "exact_state": true,
+      "exact_reply": true,
+      "two_complete_samples": true,
+      "separation": true
+    },
+    "expected_state_sha256": "e8660fa9cfe15d20f81bcce76b9bd0e81b30d36974a05909a6e3ef33486082ac",
+    "elapsed_ms": 6797,
+    "complete_samples_equal_to_frozen_state": true,
+    "complete_sample_elapsed_ms": [
+      6468,
+      6797
+    ],
+    "gate_record_sha256": "6ec20c1ab25d4379fd60089fc0ed7e1d529d88e687824439c1d5586c893be5c2",
+    "peer_receipt_sha256": "eed80c5e25bb275b59a9080c7b6cac32f7ab658339ac9a97cdd8015d13f605a7",
+    "raw_message_ordinal_gate": 35,
+    "raw_message_ordinal_cup_request": 36,
+    "gate_written_read_back_then_peer_verified_before_send": true,
+    "peer_receipt_verified_before_input_sequence": 2,
+    "receipt_and_send_share_coarse_timestamp": true,
+    "ordering_basis": "Complete gate file was written/read back before command; peer independently validated it and persisted its receipt before the third send. Equal coarse timestamps do not measure a positive interval.",
+    "raw_message_ordinal_base": 0
+  },
+  "input_and_reply_order": {
+    "peer_clock_origin": "first input send-start; separate from driver elapsed clock",
+    "send_start_relative_ms": [
+      0,
+      4140,
+      5015
+    ],
+    "reply_observed_relative_ms": [
+      4140,
+      5015
+    ]
+  },
+  "post_cup_comparison": {
+    "changed_slots": [
+      {
+        "index": 26,
+        "before": {
+          "index": 26,
+          "text": "R29-H0026|history",
+          "start": 468,
+          "end": 485,
+          "visibleLine": 26,
+          "startRect": [
+            147,
+            0,
+            8,
+            18
+          ],
+          "endRect": [
+            283,
+            0,
+            17,
+            18
+          ]
+        },
+        "after": {
+          "index": 26,
+          "text": "CUP@TOP26|history",
+          "start": 468,
+          "end": 485,
+          "visibleLine": 26,
+          "startRect": [
+            147,
+            0,
+            8,
+            18
+          ],
+          "endRect": [
+            283,
+            0,
+            17,
+            18
+          ]
+        }
+      }
+    ],
+    "other127_slots_all_fields_equal": true,
+    "all128_nontext_slot_fields_equal": true,
+    "all_other_state_fields_equal": true,
+    "old_h0026_full_text_occurrences_after": 0,
+    "other41_old_known_texts_each_occur_once": true,
+    "cup_marker_occurrences_after": 1,
+    "h0019_before": {
+      "index": 19,
+      "text": "R29-H0019|history",
+      "start": 342,
+      "end": 359,
+      "visibleLine": 19,
+      "startRect": [
+        147,
+        -126,
+        8,
+        18
+      ],
+      "endRect": [
+        283,
+        -126,
+        17,
+        18
+      ]
+    },
+    "h0019_after": {
+      "index": 19,
+      "text": "R29-H0019|history",
+      "start": 342,
+      "end": 359,
+      "visibleLine": 19,
+      "startRect": [
+        147,
+        -126,
+        8,
+        18
+      ],
+      "endRect": [
+        283,
+        -126,
+        17,
+        18
+      ]
+    },
+    "tail_before": {
+      "index": 41,
+      "text": "R29-END",
+      "start": 1031,
+      "end": 1038,
+      "visibleLine": 43,
+      "startRect": [
+        147,
+        306,
+        8,
+        18
+      ],
+      "endRect": [
+        203,
+        306,
+        0,
+        18
+      ]
+    },
+    "tail_after": {
+      "index": 41,
+      "text": "R29-END",
+      "start": 1031,
+      "end": 1038,
+      "visibleLine": 43,
+      "startRect": [
+        147,
+        306,
+        8,
+        18
+      ],
+      "endRect": [
+        203,
+        306,
+        0,
+        18
+      ]
+    }
+  },
+  "protocol_reply_and_selection_fields": [
+    {
+      "phase": "restore-fenced",
+      "reply_hex": "1b5b31383b3852",
+      "reported_row": 18,
+      "reported_column": 8,
+      "selectionCaretP": 1038,
+      "selectionAnchorP": 1038
+    },
+    {
+      "phase": "after-cup",
+      "reply_hex": "1b5b313b3852",
+      "reported_row": 1,
+      "reported_column": 8,
+      "selectionCaretP": 1038,
+      "selectionAnchorP": 1038
+    }
+  ],
+  "completion": {
+    "scenario_complete_elapsed_ms": 7687,
+    "phase_count": 7,
+    "rea_exit": 0,
+    "exec_exit": 0,
+    "messages_truncated": false,
+    "probe_errors": 0,
+    "job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "peer_closed_without_error": true,
+    "surfaces": {
+      "desktop_handle_closed": true,
+      "station_handle_closed": true,
+      "original_station_restored": true
+    },
+    "synthetic_session_count": 1
+  },
+  "limitations": [
+    "Only this previously queried post-DSR state and complete17-byte CUP+DSR sequence.",
+    "No conclusion about unqueried grow, DSR causality, physical cells, active-buffer ownership or general overwrite policy.",
+    "selectionCaretP/AnchorP remained1038 while the DSR report changed18;8 to1;8; they must not be used as terminal cursor coordinates.",
+    "Stable sampling means two equal finite samples; not continuous stability throughout the45-second attach window.",
+    "Markers are content, not native stableIDs; empty out-of-range aliases are not additional logical rows.",
+    "No presentation, ConPTY, performance, selection/Find or Unicode acceptance.",
+    "No full raw query sets, application/profile content, private process/desktop identifiers or extraction scripts are published."
+  ]
+}
