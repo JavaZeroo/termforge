@@ -1,8 +1,8 @@
 # 保留原生与末端 margin 合同的实现路径
 
-[#56](https://github.com/JavaZeroo/termforge/issues/56) 的当前交付是可执行的逐字段原生 oracle、固定上游的补丁候选及下一次构建入口。
-**原生缺口仍存在，尚无经过真实运行证明的完整修复路径。** 补丁仅检查可应用，没有编译或替换任何后端。
-这保留 [#41](https://github.com/JavaZeroo/termforge/issues/41) 的原合同与开放状态，不改变 #34 产品决定。
+本文保留 2026-10-26 的逐字段原生 oracle、固定上游补丁候选与当时结果；其中“未编译/未运行”仅指该历史批次。
+后续[同源源码构建与运行对照](conpty-source-margin-runtime.md)已取得原175B两尺寸的 native red→green，VT-off反例保持一致。
+样式、历史、resize交叉及完整产品仍未验收，[#56](https://github.com/JavaZeroo/termforge/issues/56)与[#41](https://github.com/JavaZeroo/termforge/issues/41)继续开放；不改变 #34 产品决定或下文原失败。
 
 ## 逐字段合同与测量边界
 
@@ -35,7 +35,7 @@ Microsoft [每缓冲区 scrolling margins 声明](https://learn.microsoft.com/en
 oracle 同时比较两个原生读入口的文字、完整格/属性和光标。初始颜色由原夹具外部默认决定，因此只验证其跨阶段保持，
 不把某次默认颜色推为所有宿主的硬合同。历史、resize、改变样式和末端各阶段光标仍明确列为未测。
 
-## 本批固定运行与失败保留
+## 2026-10-26 固定运行与失败保留
 
 [白名单证据](../../experiments/conpty/results/2026-10-26-native-margin-path/validation.json) 固定 main `3d6d44d` 的未修改原生探针、
 单独冻结的候选 `.4` trace、官方同包 DLL/EXE 双 SHA、源码、flags、期限与生命周期；原件只留 `local/`。
@@ -68,7 +68,7 @@ oracle 同时比较两个原生读入口的文字、完整格/属性和光标。
 这是固定源码和运行现象共同支持的待证伪原因，尚缺仅改变该状态归属的真实 red→green。
 Microsoft 文档仍声明 per-buffer；目前没有上游确认允许把这种差异当成设计豁免，也没有证据证明其他上游版本已修复。
 
-## 路径比较与具体下一步
+## 2026-10-26 路径比较与后续入口
 
 | 路径 | 当前证据与边界 | 维护和采用条件 |
 |---|---|---|

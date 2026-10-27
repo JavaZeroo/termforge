@@ -62,7 +62,7 @@ public:
     Session& operator=(const Session&) = delete;
     ~Session() { close(); }
     const char* backend_identity() const {
-        return backend_.side_by_side() ? "reviewed-side-by-side-1.25.260930003" : "system";
+        return backend_.identity();
     }
     DWORD backend_creation_flags() const { return backend_.creation_flags(); }
 

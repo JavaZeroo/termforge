@@ -68,7 +68,11 @@ int wmain(int argc, wchar_t** argv) {
         if (std::wstring(argv[1]) != L"system") {
             const std::filesystem::path dll(argv[1]);
             require(dll.is_absolute() && dll.filename() == L"conpty.dll", "absolute conpty.dll path required");
+#ifdef TERMFORGE_CONPTY_SOURCE_EXPERIMENT
+            backend = tf_conpty::Backend::reviewed_source_side_by_side(dll.parent_path());
+#else
             backend = tf_conpty::Backend::reviewed_side_by_side(dll.parent_path());
+#endif
         }
         wchar_t self[32768]{};
         const DWORD length = GetModuleFileNameW(nullptr, self, 32768);
@@ -90,7 +94,11 @@ int wmain(int argc, wchar_t** argv) {
           << ",\"forced_reader_cancel\":" << session.forced_reader_cancel
           << ",\"forced_process_cancel\":" << session.forced_process_cancel
           << ",\"cleanup_complete\":" << session.cleanup_complete
-          << ",\"active_children_after\":" << session.active_after << "}\n";
+          << ",\"active_children_after\":" << session.active_after;
+#ifdef TERMFORGE_CONPTY_SOURCE_EXPERIMENT
+        std::cout << ",\"backend_identity\":\"" << session.backend_identity() << '"';
+#endif
+        std::cout << "}\n";
         return waited && session.exit_code == 37 && session.cleanup_complete ? 0 : 1;
     } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 2; }
 }

@@ -62,21 +62,36 @@ int wmain(int argc, wchar_t** argv) {
         require(GetModuleHandleW(L"conpty.dll") == nullptr, "backend unexpectedly loaded before selection");
         const bool side_by_side = std::wstring(argv[2]) != L"system";
         const auto select = [&] {
+#ifdef TERMFORGE_CONPTY_SOURCE_EXPERIMENT
+            return side_by_side ? tf_conpty::Backend::reviewed_source_side_by_side(argv[2], tf_conpty::Backend::GlyphWidth::Console)
+                                : tf_conpty::Backend::system();
+#else
             return side_by_side ? tf_conpty::Backend::reviewed_side_by_side(argv[2], tf_conpty::Backend::GlyphWidth::Console)
                                 : tf_conpty::Backend::system();
+#endif
         };
         if (std::wstring(argv[1]) == L"--identity") {
             auto backend = select();
-            std::cout << "{\"identity_accepted\":true}\n";
+            std::cout << "{\"identity_accepted\":true";
+#ifdef TERMFORGE_CONPTY_SOURCE_EXPERIMENT
+            std::cout << ",\"backend_identity\":\"" << backend.identity() << '"';
+#endif
+            std::cout << "}\n";
             return 0;
         }
         bool loaded_during_session = false, loaded_after_close = false;
         DWORD exit_code = STILL_ACTIVE, active_after = MAXDWORD, read_error = 0;
         bool cleanup_complete = false, forced_reader = false, forced_process = false;
+#ifdef TERMFORGE_CONPTY_SOURCE_EXPERIMENT
+        std::string selected_identity;
+#endif
         {
             // The selected temporary is destroyed at this semicolon. The
             // Session's shared API ownership must retain the DLL thereafter.
             tf_conpty::Session session(select());
+#ifdef TERMFORGE_CONPTY_SOURCE_EXPERIMENT
+            selected_identity = session.backend_identity();
+#endif
             loaded_during_session = GetModuleHandleW(L"conpty.dll") != nullptr;
             session.start(self_path(), L"--client");
             require(session.wait_text("TF_BACKEND_READY_80x24", 5000), "backend initial marker missing");
@@ -100,7 +115,11 @@ int wmain(int argc, wchar_t** argv) {
             << ",\"module_unloaded_after_session\":" << module_unloaded << ",\"exit_code\":" << exit_code
             << ",\"active_children_after\":" << active_after << ",\"read_error\":" << read_error
             << ",\"cleanup_complete\":" << cleanup_complete << ",\"forced_reader_cancel\":" << forced_reader
-            << ",\"forced_process_cancel\":" << forced_process << "}\n";
+            << ",\"forced_process_cancel\":" << forced_process;
+#ifdef TERMFORGE_CONPTY_SOURCE_EXPERIMENT
+        std::cout << ",\"backend_identity\":\"" << selected_identity << '"';
+#endif
+        std::cout << "}\n";
         return valid ? 0 : 1;
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 2; }
 }

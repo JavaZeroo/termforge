@@ -49,13 +49,15 @@ def backend_path(value):
     return str(path)
 
 
-def validate_lifecycle(native, side_by_side=False):
+def validate_lifecycle(native, side_by_side=False, *, backend_identity=None):
     expected = {
         "waited": True, "exit_code": 37, "read_error": 109,
         "capture_overflow": False, "forced_reader_cancel": False,
         "forced_process_cancel": False, "cleanup_complete": True,
         "active_children_after": 0, "side_by_side": side_by_side, "creation_flags": 0,
     }
+    if backend_identity is not None:
+        expected["backend_identity"] = backend_identity
     if (type(native) is not dict or native.keys() != expected.keys() or
             any(type(native[key]) is not type(value) or native[key] != value
                 for key, value in expected.items())):
@@ -109,7 +111,8 @@ def inspect_case(out, trace, mode, columns, rows):
     }
 
 
-def execute(executable, backend, trace, out, mode, columns, rows, *, gate=b"GO\n", timeout=15):
+def execute(executable, backend, trace, out, mode, columns, rows, *, gate=b"GO\n", timeout=15,
+            backend_identity=None):
     if mode not in ("vt-on", "vt-off") or (columns, rows) not in ((80,24), (12,7)):
         raise ValueError("fixed workload required")
     out.mkdir(parents=True, exist_ok=False)
@@ -146,7 +149,7 @@ def execute(executable, backend, trace, out, mode, columns, rows, *, gate=b"GO\n
             raise ValueError("native probe failed")
         native = json.loads(stdout)
         stage = "native_lifecycle"
-        validate_lifecycle(native, side_by_side=backend != "system")
+        validate_lifecycle(native, side_by_side=backend != "system", backend_identity=backend_identity)
         stage = "case_inspection"
         result.update(inspect_case(out, trace, mode, columns, rows), native=native, status="completed")
     except BaseException:

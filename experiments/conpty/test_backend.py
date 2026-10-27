@@ -21,7 +21,7 @@ class BackendTests(unittest.TestCase):
         self.out = Path(tempfile.mkdtemp(prefix="run-", dir=base))
         self.serial = 0
 
-    def invoke(self, directory, mode="--host"):
+    def invoke(self, directory, mode="--host", *, executable=None):
         job = process = None
         stdout = stderr = b""
         result = {"status": "failed", "failure_code": None, "returncode": None,
@@ -42,7 +42,7 @@ class BackendTests(unittest.TestCase):
         try:
             job = OwnedJob()
             stage = "process_start"
-            process = subprocess.Popen([str(binary("conpty_backend_probe")), mode, str(directory)],
+            process = subprocess.Popen([str(executable or binary("conpty_backend_probe")), mode, str(directory)],
                                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                        creationflags=subprocess.CREATE_NO_WINDOW)
             stage = "job_assign"

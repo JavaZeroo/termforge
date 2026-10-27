@@ -4,6 +4,7 @@
 #include <bcrypt.h>
 #include <array>
 #include <filesystem>
+#include <initializer_list>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -16,6 +17,7 @@ public:
 private:
     struct Api {
         HMODULE module = nullptr;
+        const char* identity = "system";
         decltype(&::CreatePseudoConsole) create = ::CreatePseudoConsole;
         decltype(&::ResizePseudoConsole) resize = ::ResizePseudoConsole;
         decltype(&::ClosePseudoConsole) close = ::ClosePseudoConsole;
@@ -75,22 +77,26 @@ private:
         for (const auto byte : bytes) { value += hex[byte >> 4]; value += hex[byte & 15]; }
         return value;
     }
-public:
-    static Backend system() {
-        static const auto api = std::make_shared<const Api>();
-        return Backend(api);
-    }
-    static Backend reviewed_side_by_side(const std::filesystem::path& directory,
-                                        GlyphWidth width = GlyphWidth::Default) {
+    struct ReviewedPair {
+        const char* dll_sha256;
+        const char* host_sha256;
+        const char* identity;
+    };
+    static Backend load_reviewed_pair(const std::filesystem::path& directory, GlyphWidth width,
+                                      std::initializer_list<ReviewedPair> pairs) {
         if (sizeof(void*) != 8 || !directory.is_absolute())
             throw std::runtime_error("ConPTY reviewed backend requires x64 and an absolute directory");
         const auto canonical = std::filesystem::canonical(directory);
         const auto dll = canonical / L"conpty.dll";
         File dll_file(dll), host_file(canonical / L"OpenConsole.exe");
-        if (digest(dll_file.get()) != "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a" ||
-            digest(host_file.get()) != "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586")
-            throw std::runtime_error("ConPTY reviewed backend identity mismatch");
+        const auto dll_hash = digest(dll_file.get()), host_hash = digest(host_file.get());
+        const char* identity = nullptr;
+        for (const auto& pair : pairs) {
+            if (dll_hash == pair.dll_sha256 && host_hash == pair.host_sha256) identity = pair.identity;
+        }
+        if (!identity) throw std::runtime_error("ConPTY reviewed backend identity mismatch");
         auto api = std::make_shared<Api>();
+        api->identity = identity;
         api->module = LoadLibraryExW(dll.c_str(), nullptr,
                                     LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
         if (!api->module) throw std::runtime_error("ConPTY reviewed backend load failed");
@@ -105,10 +111,36 @@ public:
             throw std::runtime_error("ConPTY reviewed backend module identity differs");
         if (width != GlyphWidth::Default && width != GlyphWidth::Console)
             throw std::runtime_error("ConPTY reviewed glyph width policy invalid");
-        // Fixed official 1.25 conpty.h: GLYPH_WIDTH_CONSOLE=0x18. This is
+        // Fixed official 1.25 and source dc8 conpty.h: GLYPH_WIDTH_CONSOLE=0x18. This is
         // a console API compatibility policy, not the removed passthrough.
         return Backend(std::move(api), width == GlyphWidth::Console ? 0x18 : 0);
     }
+public:
+    static Backend system() {
+        static const auto api = std::make_shared<const Api>();
+        return Backend(api);
+    }
+    static Backend reviewed_side_by_side(const std::filesystem::path& directory,
+                                        GlyphWidth width = GlyphWidth::Default) {
+        return load_reviewed_pair(directory, width, {{
+            "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+            "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+            "reviewed-side-by-side-1.25.260930003"}});
+    }
+#ifdef TERMFORGE_CONPTY_SOURCE_EXPERIMENT
+    // Available only to separately compiled research probes. The official
+    // factory above continues to accept exactly its original matching pair.
+    static Backend reviewed_source_side_by_side(const std::filesystem::path& directory,
+                                               GlyphWidth width = GlyphWidth::Default) {
+        return load_reviewed_pair(directory, width, {
+            {"9d165745cce4b29a5818a45c23f68e962b3a3140c2e00566bd17fee970fdd9d1",
+             "fabdc934d9755c405fe848251905e8c0e70a2bf7702b8ed7ccd104eec6591588",
+             "source-dc8-r56-baseline-run40449292015"},
+            {"9d165745cce4b29a5818a45c23f68e962b3a3140c2e00566bd17fee970fdd9d1",
+             "1c8f071f6e4779ec297fb041af4eaea39be29b6920cef625ab91d1cbc20c79cb",
+             "source-dc8-r56-patched-run40449292015"}});
+    }
+#endif
     static Backend configured() {
 #ifdef TERMFORGE_CONPTY_SIDEBYSIDE
         wchar_t image[32768]{};
@@ -127,6 +159,7 @@ public:
     HRESULT resize(HPCON console, COORD size) const { return api_->resize(console, size); }
     void close(HPCON console) const { api_->close(console); }
     bool side_by_side() const { return api_->module != nullptr; }
+    const char* identity() const { return api_->identity; }
     DWORD creation_flags() const { return creation_flags_; }
 };
 } // namespace tf_conpty

@@ -1,0 +1,1035 @@
+{
+  "schema": "termforge-source-conpty-margin-v1",
+  "generated_utc": "2026-10-27T04:36:45.581770+00:00",
+  "upstream_source": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+  "build_run": "40449292015",
+  "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+  "termforge_source": "fdee94fe94d48e83f5a61f191bddfc812d43a2f8",
+  "working_tree_dirty": false,
+  "source_files": {
+    "CMakeLists.txt": "44f3b6bb99d1836b9fd5597213080e55dfe6b5d09ce13ca4afe6d9be7f6fa46a",
+    "experiments/conpty/backend.hpp": "af672718af8c05e90a26576e317b6ac9295fbee76f3f0298371060a9d167f5bb",
+    "experiments/conpty/session.hpp": "242ac8aa13f3fd56675b2ddefaaf207e5f4c8d3ef8e703260aaed2f0c41677aa",
+    "experiments/conpty/margin_probe.cpp": "2316c237785a367772c5adcd98e09b38e31bd9eef0bdc154a204287070244335",
+    "experiments/conpty/margin_run.py": "99e6caf18224ce7b41307355066db70eacb810bc0626b15d3af09c9a89439ed2",
+    "experiments/conpty/margin_contract.py": "f6ff82099b4675d7f64c9bbebcd226b9c3d5da1998a20c8477945956eadd3561",
+    "experiments/conpty/source_margin_run.py": "26d07c9f912b1bb68b89d33a989ee80189230002869df83a572a22e7b2f6f657"
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "probe_sha256": "9b2debc8060f1addb2e348f28e3468a99851ca35484039163becc3b588d009ba",
+  "trace_sha256": "5941d4569d0ae146eb005f12ecfb15014bc06c18ee48d1c9460824ab65df93d3",
+  "pair_receipts": {
+    "baseline": {
+      "schema": "termforge-upstream-conpty-variant-v1",
+      "upstream_source": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+      "workflow_run": "40449292015",
+      "production_patch_applied": false,
+      "focused_adapter_result": "expected-failure",
+      "full_adapter_verified": false,
+      "patch_sha256": "dc27377e399bd0217a0b76e16cc89f087c1b781929e4c958ad30c3a475322b81",
+      "files": {
+        "OpenConsole.exe": {
+          "sha256": "fabdc934d9755c405fe848251905e8c0e70a2bf7702b8ed7ccd104eec6591588",
+          "bytes": 1146880
+        },
+        "conpty.dll": {
+          "sha256": "9d165745cce4b29a5818a45c23f68e962b3a3140c2e00566bd17fee970fdd9d1",
+          "bytes": 108544
+        }
+      }
+    },
+    "patched": {
+      "schema": "termforge-upstream-conpty-variant-v1",
+      "upstream_source": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+      "workflow_run": "40449292015",
+      "production_patch_applied": true,
+      "focused_adapter_result": "passed",
+      "full_adapter_verified": true,
+      "patch_sha256": "dc27377e399bd0217a0b76e16cc89f087c1b781929e4c958ad30c3a475322b81",
+      "files": {
+        "OpenConsole.exe": {
+          "sha256": "1c8f071f6e4779ec297fb041af4eaea39be29b6920cef625ab91d1cbc20c79cb",
+          "bytes": 1147392
+        },
+        "conpty.dll": {
+          "sha256": "9d165745cce4b29a5818a45c23f68e962b3a3140c2e00566bd17fee970fdd9d1",
+          "bytes": 108544
+        }
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "columns": 80,
+      "rows": 24,
+      "baseline_expected_native_failure": true,
+      "patched_all_native_stages_passed": true,
+      "both_terminal_finals_passed": true,
+      "vt_off_unchanged": true,
+      "passed": true
+    },
+    {
+      "columns": 12,
+      "rows": 7,
+      "baseline_expected_native_failure": true,
+      "patched_all_native_stages_passed": true,
+      "both_terminal_finals_passed": true,
+      "vt_off_unchanged": true,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "full_r2_contract_verified": false,
+  "product_backend_selected": false,
+  "presented_done": null,
+  "unmeasured": [
+    "styled_source",
+    "history",
+    "resize_cross_margin",
+    "terminal_stage_cursors",
+    "full_product_workflows",
+    "performance",
+    "WindTerm_equivalence"
+  ],
+  "samples": {
+    "baseline-80x24-vt-on": {
+      "status": "completed",
+      "mode": "vt-on",
+      "columns": 80,
+      "rows": 24,
+      "source_bytes": 175,
+      "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+      "transport_bytes": 218,
+      "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+      "original_decstbm_forwarded": true,
+      "source_equal_transport": false,
+      "native": {
+        "waited": true,
+        "side_by_side": true,
+        "creation_flags": 0,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0,
+        "backend_identity": "source-dc8-r56-baseline-run40449292015"
+      },
+      "native_contract": {
+        "schema": "termforge-native-margin-contract-v1",
+        "columns": 80,
+        "rows": 24,
+        "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+        "initial_native_attribute": 7,
+        "stages": {
+          "before": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "alt": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "restored": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "final": {
+            "text": false,
+            "cell_text": false,
+            "cells_and_attributes": false,
+            "cursor": true,
+            "passed": false
+          }
+        },
+        "all_native_stages_passed": false,
+        "unmeasured": [
+          "styled_source",
+          "history",
+          "resize",
+          "terminal_stage_cursors"
+        ],
+        "full_r2_contract_verified": false
+      },
+      "native_cell_sha256": {
+        "before": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651",
+        "alt": "0fd582bf6115b38b1dbe57084658f686392c74b4d6b1340f945cfcbca4ff7635",
+        "restored": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651",
+        "final": "00896cdf02c29564c82f4b2f7b118e6c1ac5cb8a0b8f8f5a0d91be3556a94421"
+      },
+      "native_main_margins_restored": false,
+      "terminal_main_margins_restored": true,
+      "terminal_alternate": false,
+      "replay_passed": true,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_outer_cleanup": false,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": []
+    },
+    "patched-80x24-vt-on": {
+      "status": "completed",
+      "mode": "vt-on",
+      "columns": 80,
+      "rows": 24,
+      "source_bytes": 175,
+      "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+      "transport_bytes": 218,
+      "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+      "original_decstbm_forwarded": true,
+      "source_equal_transport": false,
+      "native": {
+        "waited": true,
+        "side_by_side": true,
+        "creation_flags": 0,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0,
+        "backend_identity": "source-dc8-r56-patched-run40449292015"
+      },
+      "native_contract": {
+        "schema": "termforge-native-margin-contract-v1",
+        "columns": 80,
+        "rows": 24,
+        "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+        "initial_native_attribute": 7,
+        "stages": {
+          "before": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "alt": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "restored": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "final": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          }
+        },
+        "all_native_stages_passed": true,
+        "unmeasured": [
+          "styled_source",
+          "history",
+          "resize",
+          "terminal_stage_cursors"
+        ],
+        "full_r2_contract_verified": false
+      },
+      "native_cell_sha256": {
+        "before": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651",
+        "alt": "0fd582bf6115b38b1dbe57084658f686392c74b4d6b1340f945cfcbca4ff7635",
+        "restored": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651",
+        "final": "1dc413a54e0b457e9a301fb6dc2eb9d40733314e5fb589a60c6a8951edd29800"
+      },
+      "native_main_margins_restored": true,
+      "terminal_main_margins_restored": true,
+      "terminal_alternate": false,
+      "replay_passed": true,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_outer_cleanup": false,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": []
+    },
+    "baseline-80x24-vt-off": {
+      "status": "completed",
+      "mode": "vt-off",
+      "columns": 80,
+      "rows": 24,
+      "source_bytes": 175,
+      "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+      "transport_bytes": 218,
+      "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+      "original_decstbm_forwarded": true,
+      "source_equal_transport": false,
+      "native": {
+        "waited": true,
+        "side_by_side": true,
+        "creation_flags": 0,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0,
+        "backend_identity": "source-dc8-r56-baseline-run40449292015"
+      },
+      "native_cell_sha256": {
+        "before": "d1c4bf6e7fe26f05575ef2c2b14b99774a1396ecc521b71e25937f302302f57d",
+        "alt": "29e73cec4d64d55aaac58b0278ba0baeaacacb6751d33c65eb2e0e80c1eadd28",
+        "restored": "6ac38720c2b51b66f34cb786408f6a2967b5a8023ca5546044c91f7ed4f2e154",
+        "final": "5374bda9fdcf2000436f66d7d6a9acce59149362247208987ea7935e3f462766"
+      },
+      "native_main_margins_restored": false,
+      "terminal_main_margins_restored": true,
+      "terminal_alternate": false,
+      "replay_passed": true,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_outer_cleanup": false,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": []
+    },
+    "patched-80x24-vt-off": {
+      "status": "completed",
+      "mode": "vt-off",
+      "columns": 80,
+      "rows": 24,
+      "source_bytes": 175,
+      "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+      "transport_bytes": 218,
+      "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+      "original_decstbm_forwarded": true,
+      "source_equal_transport": false,
+      "native": {
+        "waited": true,
+        "side_by_side": true,
+        "creation_flags": 0,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0,
+        "backend_identity": "source-dc8-r56-patched-run40449292015"
+      },
+      "native_cell_sha256": {
+        "before": "d1c4bf6e7fe26f05575ef2c2b14b99774a1396ecc521b71e25937f302302f57d",
+        "alt": "29e73cec4d64d55aaac58b0278ba0baeaacacb6751d33c65eb2e0e80c1eadd28",
+        "restored": "6ac38720c2b51b66f34cb786408f6a2967b5a8023ca5546044c91f7ed4f2e154",
+        "final": "5374bda9fdcf2000436f66d7d6a9acce59149362247208987ea7935e3f462766"
+      },
+      "native_main_margins_restored": false,
+      "terminal_main_margins_restored": true,
+      "terminal_alternate": false,
+      "replay_passed": true,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_outer_cleanup": false,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": []
+    },
+    "baseline-12x7-vt-on": {
+      "status": "completed",
+      "mode": "vt-on",
+      "columns": 12,
+      "rows": 7,
+      "source_bytes": 175,
+      "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+      "transport_bytes": 218,
+      "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+      "original_decstbm_forwarded": true,
+      "source_equal_transport": false,
+      "native": {
+        "waited": true,
+        "side_by_side": true,
+        "creation_flags": 0,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0,
+        "backend_identity": "source-dc8-r56-baseline-run40449292015"
+      },
+      "native_contract": {
+        "schema": "termforge-native-margin-contract-v1",
+        "columns": 12,
+        "rows": 7,
+        "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+        "initial_native_attribute": 7,
+        "stages": {
+          "before": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "alt": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "restored": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "final": {
+            "text": false,
+            "cell_text": false,
+            "cells_and_attributes": false,
+            "cursor": true,
+            "passed": false
+          }
+        },
+        "all_native_stages_passed": false,
+        "unmeasured": [
+          "styled_source",
+          "history",
+          "resize",
+          "terminal_stage_cursors"
+        ],
+        "full_r2_contract_verified": false
+      },
+      "native_cell_sha256": {
+        "before": "323107891dd2f32c2be1fecd7ae03379c96f8fe38eff938ece8f19eeebe6dbf3",
+        "alt": "c7b9b5456a0566673db0a45765f1de63ac3ae76501da1be8cc3f0aadf848b3b7",
+        "restored": "323107891dd2f32c2be1fecd7ae03379c96f8fe38eff938ece8f19eeebe6dbf3",
+        "final": "86cdf8cc46178d0eff6f3b801d3ce2eab0bb714db9fedd98e018ee46538489ea"
+      },
+      "native_main_margins_restored": false,
+      "terminal_main_margins_restored": true,
+      "terminal_alternate": false,
+      "replay_passed": true,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_outer_cleanup": false,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": []
+    },
+    "patched-12x7-vt-on": {
+      "status": "completed",
+      "mode": "vt-on",
+      "columns": 12,
+      "rows": 7,
+      "source_bytes": 175,
+      "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+      "transport_bytes": 218,
+      "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+      "original_decstbm_forwarded": true,
+      "source_equal_transport": false,
+      "native": {
+        "waited": true,
+        "side_by_side": true,
+        "creation_flags": 0,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0,
+        "backend_identity": "source-dc8-r56-patched-run40449292015"
+      },
+      "native_contract": {
+        "schema": "termforge-native-margin-contract-v1",
+        "columns": 12,
+        "rows": 7,
+        "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+        "initial_native_attribute": 7,
+        "stages": {
+          "before": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "alt": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "restored": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          },
+          "final": {
+            "text": true,
+            "cell_text": true,
+            "cells_and_attributes": true,
+            "cursor": true,
+            "passed": true
+          }
+        },
+        "all_native_stages_passed": true,
+        "unmeasured": [
+          "styled_source",
+          "history",
+          "resize",
+          "terminal_stage_cursors"
+        ],
+        "full_r2_contract_verified": false
+      },
+      "native_cell_sha256": {
+        "before": "323107891dd2f32c2be1fecd7ae03379c96f8fe38eff938ece8f19eeebe6dbf3",
+        "alt": "c7b9b5456a0566673db0a45765f1de63ac3ae76501da1be8cc3f0aadf848b3b7",
+        "restored": "323107891dd2f32c2be1fecd7ae03379c96f8fe38eff938ece8f19eeebe6dbf3",
+        "final": "9f777d4471731af76d13ae779cc060c1920a8e4b0e5a41aa38858bb14bc41440"
+      },
+      "native_main_margins_restored": true,
+      "terminal_main_margins_restored": true,
+      "terminal_alternate": false,
+      "replay_passed": true,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_outer_cleanup": false,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": []
+    },
+    "baseline-12x7-vt-off": {
+      "status": "completed",
+      "mode": "vt-off",
+      "columns": 12,
+      "rows": 7,
+      "source_bytes": 175,
+      "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+      "transport_bytes": 222,
+      "transport_sha256": "01064e034cc1cd3c34eae65a2f656ae940936cf381e60371b8e17428ec00617d",
+      "original_decstbm_forwarded": true,
+      "source_equal_transport": false,
+      "native": {
+        "waited": true,
+        "side_by_side": true,
+        "creation_flags": 0,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0,
+        "backend_identity": "source-dc8-r56-baseline-run40449292015"
+      },
+      "native_cell_sha256": {
+        "before": "fff7ff68ab09ddf930d4f85b4d59f50336bcaca7e891b36c7171607d74d693ef",
+        "alt": "feb6fabd4a576f1f15af2cdf03adf188f7269eb61d676684d81113e3661c4bc0",
+        "restored": "2f8d6538d3f8570df2eca932c4a8ad9292b35cd231d367c9a75a571723f00ea9",
+        "final": "b19f6d442b71d2bb273dd991216132b25b0d753572084cc5761bbced02a9128f"
+      },
+      "native_main_margins_restored": false,
+      "terminal_main_margins_restored": true,
+      "terminal_alternate": false,
+      "replay_passed": true,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_outer_cleanup": false,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": []
+    },
+    "patched-12x7-vt-off": {
+      "status": "completed",
+      "mode": "vt-off",
+      "columns": 12,
+      "rows": 7,
+      "source_bytes": 175,
+      "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+      "transport_bytes": 222,
+      "transport_sha256": "01064e034cc1cd3c34eae65a2f656ae940936cf381e60371b8e17428ec00617d",
+      "original_decstbm_forwarded": true,
+      "source_equal_transport": false,
+      "native": {
+        "waited": true,
+        "side_by_side": true,
+        "creation_flags": 0,
+        "exit_code": 37,
+        "read_error": 109,
+        "capture_overflow": false,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false,
+        "cleanup_complete": true,
+        "active_children_after": 0,
+        "backend_identity": "source-dc8-r56-patched-run40449292015"
+      },
+      "native_cell_sha256": {
+        "before": "fff7ff68ab09ddf930d4f85b4d59f50336bcaca7e891b36c7171607d74d693ef",
+        "alt": "feb6fabd4a576f1f15af2cdf03adf188f7269eb61d676684d81113e3661c4bc0",
+        "restored": "2f8d6538d3f8570df2eca932c4a8ad9292b35cd231d367c9a75a571723f00ea9",
+        "final": "b19f6d442b71d2bb273dd991216132b25b0d753572084cc5761bbced02a9128f"
+      },
+      "native_main_margins_restored": false,
+      "terminal_main_margins_restored": true,
+      "terminal_alternate": false,
+      "replay_passed": true,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_outer_cleanup": false,
+      "process_reaped": true,
+      "streams_drained": true,
+      "cleanup_errors": []
+    }
+  },
+  "same_source_build": {
+    "head": "5c073e49ecef6722f997cdc9a7d3b8dd97e594ee",
+    "actual_checkout": "ad857d448dfe64c0c11d10254043a8b893e7546a",
+    "run_id": 40449292015,
+    "job_id": 122007975668,
+    "summary_sha256": "8132695b32162ff22e61d2de166a31fad508f0b63cbb46de8d1612bd197e1ded",
+    "artifacts": {
+      "summary": {
+        "id": 12710186210,
+        "sha256": "681f2337cbb6e666110230871671057ab5c8468b1013914051e5c1e0132ee2fe"
+      },
+      "baseline": {
+        "id": 12710186222,
+        "sha256": "770a1a1bb77adca8039fef6e6dc777e187afee18db5f9e7a46f1e685958e1c7b"
+      },
+      "patched": {
+        "id": 12710146241,
+        "sha256": "7efed8379ac0e66a0a7cd0720d2f342c72d446b4a7f8bfb22548e787ad9b08df"
+      }
+    }
+  },
+  "backend_checks": {
+    "schema": "termforge-source-conpty-backend-check-v1",
+    "build_run": "40449292015",
+    "probe_sha256": {
+      "conpty_source_backend_probe.exe": "604c4815bb9329bdae1700137a5ee57b87c494a6bc93e0e1cf4124586ea85003",
+      "conpty_backend_probe.exe": "2d921cc7d82f912ab87a9a6d0c73d9e6e7acfcde00d0d88020d3997d5732d1c7"
+    },
+    "native_cases": {
+      "baseline-identity": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 0,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": {
+          "identity_accepted": true,
+          "backend_identity": "source-dc8-r56-baseline-run40449292015"
+        },
+        "error": null
+      },
+      "baseline-lifecycle": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 0,
+        "outer_job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": {
+          "valid": true,
+          "side_by_side": true,
+          "creation_flags": 24,
+          "loaded_during_session": true,
+          "loaded_after_close": true,
+          "module_unloaded_after_session": true,
+          "exit_code": 37,
+          "active_children_after": 0,
+          "read_error": 109,
+          "cleanup_complete": true,
+          "forced_reader_cancel": false,
+          "forced_process_cancel": false,
+          "backend_identity": "source-dc8-r56-baseline-run40449292015"
+        },
+        "error": null
+      },
+      "official-rejects-baseline": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "baseline-rejects-conpty.dll-tamper": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "baseline-rejects-OpenConsole.exe-tamper": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "patched-identity": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 0,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": {
+          "identity_accepted": true,
+          "backend_identity": "source-dc8-r56-patched-run40449292015"
+        },
+        "error": null
+      },
+      "patched-lifecycle": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 0,
+        "outer_job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": {
+          "valid": true,
+          "side_by_side": true,
+          "creation_flags": 24,
+          "loaded_during_session": true,
+          "loaded_after_close": true,
+          "module_unloaded_after_session": true,
+          "exit_code": 37,
+          "active_children_after": 0,
+          "read_error": 109,
+          "cleanup_complete": true,
+          "forced_reader_cancel": false,
+          "forced_process_cancel": false,
+          "backend_identity": "source-dc8-r56-patched-run40449292015"
+        },
+        "error": null
+      },
+      "official-rejects-patched": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "patched-rejects-conpty.dll-tamper": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "patched-rejects-OpenConsole.exe-tamper": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "source-rejects-official": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "source-rejects-relative": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "source-rejects-missing": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "source-rejects-unknown": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 2,
+        "outer_job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": null,
+        "error": "identity_rejected"
+      },
+      "system-lifecycle": {
+        "status": "completed",
+        "failure_code": null,
+        "returncode": 0,
+        "outer_job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "outer_job_after_forced_cleanup": null,
+        "forced_cleanup": false,
+        "job_assigned": true,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": [],
+        "native": {
+          "valid": true,
+          "side_by_side": false,
+          "creation_flags": 0,
+          "loaded_during_session": false,
+          "loaded_after_close": false,
+          "module_unloaded_after_session": true,
+          "exit_code": 37,
+          "active_children_after": 0,
+          "read_error": 109,
+          "cleanup_complete": true,
+          "forced_reader_cancel": false,
+          "forced_process_cancel": false,
+          "backend_identity": "system"
+        },
+        "error": null
+      }
+    },
+    "receipt_rejections": [
+      "baseline-wrong-variant",
+      "baseline-numeric-boolean",
+      "baseline-summary-bytes",
+      "baseline-binary-bytes",
+      "patched-wrong-variant",
+      "patched-numeric-boolean",
+      "patched-summary-bytes",
+      "patched-binary-bytes"
+    ],
+    "passed": true,
+    "product_backend_selected": false,
+    "full_r2_contract_verified": false
+  },
+  "backend_check_source": {
+    "commit": "08ec4708afa347d87b584def73a3dba5021f7870",
+    "script_sha256": "4ea7a8feded7caa5ea5d2aedd4db335f8aee5a2a9d0b827a6bfa0b1de539bd0f"
+  },
+  "preserved_failures": [
+    {
+      "scope": "first local margin test invocation",
+      "result": "2 setup errors: explicit build directory omitted; no native invocation in these two tests",
+      "resolution": "set TERMFORGE_BIN_DIR to the actual new build; original 13 tests passed without source or deadline change"
+    },
+    {
+      "scope": "backend-check-1",
+      "result": "new checker incorrectly required total Job members=1; known official rejection and source rejection both recorded total2/active0",
+      "resolution": "retain observed total, require active0/terminated0 and no force; corrected checker passed 15 native cases and 8 receipt rejections; original backend contracts unchanged"
+    },
+    {
+      "scope": "push candidate/system CI 40449286764",
+      "result": "candidate-scroll original20s timeout after correct final frame; parent build-only source did not alter this path",
+      "issue": 97,
+      "causal_fix": false
+    }
+  ],
+  "validation": {
+    "original_margin_and_cleanup_tests": {
+      "passed": 13,
+      "seconds": 0.377,
+      "evidence_kind": "session-command-output-only",
+      "standalone_stdout_log_saved": false
+    },
+    "existing_system_and_official_loader_checks": {
+      "passed": 14,
+      "seconds": 1.551,
+      "evidence_kind": "session-command-output-only",
+      "standalone_stdout_log_saved": false
+    },
+    "source_native_cases": 15,
+    "source_receipt_rejections": 8,
+    "source_matrix_executions": 8,
+    "native_matrix_deadlines": {
+      "child_wait_seconds": 5,
+      "outer_seconds": 15,
+      "cleanup_seconds": 5
+    },
+    "api_lifetime_probe_outer_seconds": 20
+  }
+}
