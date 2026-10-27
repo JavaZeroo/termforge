@@ -1,0 +1,912 @@
+{
+  "scope": "Original runtime research input; not a confirmed product policy or acceptance result.",
+  "observed_version": "WindTerm 2.7.0 Windows x64",
+  "os": "Windows 11 Pro 10.0.26200 x64",
+  "transport": "Synthetic loopback Telnet; NAWS received independently by the owned peer.",
+  "planned_runs": 2,
+  "actual_runs": 2,
+  "instrumentation_limit_seconds_per_run": 45,
+  "scenario_deadline_seconds": 43,
+  "cli_timeout_seconds": 60,
+  "settle_rule": "Two identical bounded projections at least 250 ms apart; not a performance threshold.",
+  "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "distribution_files": 4047,
+  "distribution_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "payload_sha256": "0d4997d10e0c1c051dae19fbb59f5f3316967c487359953132403a21a4ce8f13",
+  "probe_template_sha256": "1c0a5d4399ea28169bed29d3af21ab6c864db2c81a3c44ffa1fbb01e0309265a",
+  "peer_script_sha256": "112217343bc7d663b0adacb7231bb4cd313be11e281b9ecb3a0365445af2b586",
+  "frozen_plan_sha256": "a17e98ceec0fe5eb833d0d2e9fa34c3d082ebd0da14bc917f65ce387c7d54e44",
+  "frozen_probe_manifest_sha256": "5f345e2a95e6d76daeb72935dab850ffcfecbc3bf0b99a900f49892409717bf7",
+  "same_input_and_phase_text_projections_in_both_runs": true,
+  "all_45_input_texts_and_document_positions_preserved": true,
+  "sampled_logical_lines": [
+    6,
+    7,
+    8
+  ],
+  "characters_per_phase": 339,
+  "line_end_positions_per_phase": 3,
+  "all_long_character_rect_y_negative_at_initial_bottom": true,
+  "point_tuple": [
+    "ascii_offset",
+    "document_position",
+    "x",
+    "y",
+    "width",
+    "height",
+    "visibleLineFromPosition",
+    "lineFromPosition",
+    "visibleLineStart"
+  ],
+  "segment_offset_end_is_exclusive": true,
+  "coordinates": "Script text-view coordinates; not presented pixels or physical cells.",
+  "common_phases": [
+    {
+      "phase": "wide-bottom",
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "naws": [
+        80,
+        26
+      ],
+      "scrollTop": 22,
+      "visibleLineCount": 47,
+      "screenLineCapacity": 26,
+      "character_groups": [
+        [
+          80,
+          80,
+          25
+        ],
+        [
+          77
+        ],
+        [
+          77
+        ]
+      ]
+    },
+    {
+      "phase": "wide-history-3",
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "naws": [
+        80,
+        26
+      ],
+      "scrollTop": 3,
+      "visibleLineCount": 47,
+      "screenLineCapacity": 26,
+      "character_groups": [
+        [
+          80,
+          80,
+          25
+        ],
+        [
+          77
+        ],
+        [
+          77
+        ]
+      ]
+    },
+    {
+      "phase": "narrow-history",
+      "requested_outer": [
+        1010,
+        887
+      ],
+      "naws": [
+        62,
+        26
+      ],
+      "scrollTop": 3,
+      "visibleLineCount": 49,
+      "screenLineCapacity": 26,
+      "character_groups": [
+        [
+          62,
+          62,
+          61
+        ],
+        [
+          62,
+          15
+        ],
+        [
+          62,
+          15
+        ]
+      ]
+    },
+    {
+      "phase": "narrow-history-10",
+      "requested_outer": [
+        1010,
+        887
+      ],
+      "naws": [
+        62,
+        26
+      ],
+      "scrollTop": 10,
+      "visibleLineCount": 49,
+      "screenLineCapacity": 26,
+      "character_groups": [
+        [
+          62,
+          62,
+          61
+        ],
+        [
+          62,
+          15
+        ],
+        [
+          62,
+          15
+        ]
+      ]
+    },
+    {
+      "phase": "narrow-history-3",
+      "requested_outer": [
+        1010,
+        887
+      ],
+      "naws": [
+        62,
+        26
+      ],
+      "scrollTop": 3,
+      "visibleLineCount": 49,
+      "screenLineCapacity": 26,
+      "character_groups": [
+        [
+          62,
+          62,
+          61
+        ],
+        [
+          62,
+          15
+        ],
+        [
+          62,
+          15
+        ]
+      ]
+    },
+    {
+      "phase": "restore-width-history",
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "naws": [
+        80,
+        26
+      ],
+      "scrollTop": 3,
+      "visibleLineCount": 47,
+      "screenLineCapacity": 26,
+      "character_groups": [
+        [
+          80,
+          80,
+          25
+        ],
+        [
+          77
+        ],
+        [
+          77
+        ]
+      ]
+    },
+    {
+      "phase": "restore-bottom",
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "naws": [
+        80,
+        26
+      ],
+      "scrollTop": 22,
+      "visibleLineCount": 47,
+      "screenLineCapacity": 26,
+      "character_groups": [
+        [
+          80,
+          80,
+          25
+        ],
+        [
+          77
+        ],
+        [
+          77
+        ]
+      ]
+    }
+  ],
+  "coordinate_layouts": [
+    {
+      "phase": "wide-history-3",
+      "scrollTop": 3,
+      "long_lines": [
+        {
+          "logical_line": 6,
+          "document_start": 108,
+          "document_end": 293,
+          "ascii_characters": 185,
+          "segments": [
+            {
+              "offset_begin": 0,
+              "offset_end_exclusive": 80,
+              "characters": 80,
+              "visible_line": 6,
+              "visible_line_start_position": 108,
+              "first_document_position": 108,
+              "last_document_position": 187,
+              "first_rect": [
+                147,
+                54,
+                8,
+                18
+              ],
+              "last_rect": [
+                779,
+                54,
+                8,
+                18
+              ]
+            },
+            {
+              "offset_begin": 80,
+              "offset_end_exclusive": 160,
+              "characters": 80,
+              "visible_line": 7,
+              "visible_line_start_position": 188,
+              "first_document_position": 188,
+              "last_document_position": 267,
+              "first_rect": [
+                147,
+                72,
+                8,
+                18
+              ],
+              "last_rect": [
+                779,
+                72,
+                8,
+                18
+              ]
+            },
+            {
+              "offset_begin": 160,
+              "offset_end_exclusive": 185,
+              "characters": 25,
+              "visible_line": 8,
+              "visible_line_start_position": 268,
+              "first_document_position": 268,
+              "last_document_position": 292,
+              "first_rect": [
+                147,
+                90,
+                8,
+                18
+              ],
+              "last_rect": [
+                339,
+                90,
+                8,
+                18
+              ]
+            }
+          ]
+        },
+        {
+          "logical_line": 7,
+          "document_start": 294,
+          "document_end": 371,
+          "ascii_characters": 77,
+          "segments": [
+            {
+              "offset_begin": 0,
+              "offset_end_exclusive": 77,
+              "characters": 77,
+              "visible_line": 9,
+              "visible_line_start_position": 294,
+              "first_document_position": 294,
+              "last_document_position": 370,
+              "first_rect": [
+                147,
+                108,
+                8,
+                18
+              ],
+              "last_rect": [
+                755,
+                108,
+                8,
+                18
+              ]
+            }
+          ]
+        },
+        {
+          "logical_line": 8,
+          "document_start": 372,
+          "document_end": 449,
+          "ascii_characters": 77,
+          "segments": [
+            {
+              "offset_begin": 0,
+              "offset_end_exclusive": 77,
+              "characters": 77,
+              "visible_line": 10,
+              "visible_line_start_position": 372,
+              "first_document_position": 372,
+              "last_document_position": 448,
+              "first_rect": [
+                147,
+                126,
+                8,
+                18
+              ],
+              "last_rect": [
+                755,
+                126,
+                8,
+                18
+              ]
+            }
+          ]
+        }
+      ],
+      "soft_line_boundary_samples": [
+        [
+          61,
+          169,
+          635,
+          54,
+          8,
+          18,
+          6,
+          6,
+          108
+        ],
+        [
+          62,
+          170,
+          643,
+          54,
+          8,
+          18,
+          6,
+          6,
+          108
+        ],
+        [
+          79,
+          187,
+          779,
+          54,
+          8,
+          18,
+          6,
+          6,
+          108
+        ],
+        [
+          80,
+          188,
+          147,
+          72,
+          8,
+          18,
+          7,
+          6,
+          188
+        ],
+        [
+          123,
+          231,
+          491,
+          72,
+          8,
+          18,
+          7,
+          6,
+          188
+        ],
+        [
+          124,
+          232,
+          499,
+          72,
+          8,
+          18,
+          7,
+          6,
+          188
+        ],
+        [
+          159,
+          267,
+          779,
+          72,
+          8,
+          18,
+          7,
+          6,
+          188
+        ],
+        [
+          160,
+          268,
+          147,
+          90,
+          8,
+          18,
+          8,
+          6,
+          268
+        ],
+        [
+          184,
+          292,
+          339,
+          90,
+          8,
+          18,
+          8,
+          6,
+          268
+        ]
+      ]
+    },
+    {
+      "phase": "narrow-history",
+      "scrollTop": 3,
+      "long_lines": [
+        {
+          "logical_line": 6,
+          "document_start": 108,
+          "document_end": 293,
+          "ascii_characters": 185,
+          "segments": [
+            {
+              "offset_begin": 0,
+              "offset_end_exclusive": 62,
+              "characters": 62,
+              "visible_line": 6,
+              "visible_line_start_position": 108,
+              "first_document_position": 108,
+              "last_document_position": 169,
+              "first_rect": [
+                147,
+                54,
+                8,
+                18
+              ],
+              "last_rect": [
+                635,
+                54,
+                8,
+                18
+              ]
+            },
+            {
+              "offset_begin": 62,
+              "offset_end_exclusive": 124,
+              "characters": 62,
+              "visible_line": 7,
+              "visible_line_start_position": 170,
+              "first_document_position": 170,
+              "last_document_position": 231,
+              "first_rect": [
+                147,
+                72,
+                8,
+                18
+              ],
+              "last_rect": [
+                635,
+                72,
+                8,
+                18
+              ]
+            },
+            {
+              "offset_begin": 124,
+              "offset_end_exclusive": 185,
+              "characters": 61,
+              "visible_line": 8,
+              "visible_line_start_position": 232,
+              "first_document_position": 232,
+              "last_document_position": 292,
+              "first_rect": [
+                147,
+                90,
+                8,
+                18
+              ],
+              "last_rect": [
+                627,
+                90,
+                8,
+                18
+              ]
+            }
+          ]
+        },
+        {
+          "logical_line": 7,
+          "document_start": 294,
+          "document_end": 371,
+          "ascii_characters": 77,
+          "segments": [
+            {
+              "offset_begin": 0,
+              "offset_end_exclusive": 62,
+              "characters": 62,
+              "visible_line": 9,
+              "visible_line_start_position": 294,
+              "first_document_position": 294,
+              "last_document_position": 355,
+              "first_rect": [
+                147,
+                108,
+                8,
+                18
+              ],
+              "last_rect": [
+                635,
+                108,
+                8,
+                18
+              ]
+            },
+            {
+              "offset_begin": 62,
+              "offset_end_exclusive": 77,
+              "characters": 15,
+              "visible_line": 10,
+              "visible_line_start_position": 356,
+              "first_document_position": 356,
+              "last_document_position": 370,
+              "first_rect": [
+                147,
+                126,
+                8,
+                18
+              ],
+              "last_rect": [
+                259,
+                126,
+                8,
+                18
+              ]
+            }
+          ]
+        },
+        {
+          "logical_line": 8,
+          "document_start": 372,
+          "document_end": 449,
+          "ascii_characters": 77,
+          "segments": [
+            {
+              "offset_begin": 0,
+              "offset_end_exclusive": 62,
+              "characters": 62,
+              "visible_line": 11,
+              "visible_line_start_position": 372,
+              "first_document_position": 372,
+              "last_document_position": 433,
+              "first_rect": [
+                147,
+                144,
+                8,
+                18
+              ],
+              "last_rect": [
+                635,
+                144,
+                8,
+                18
+              ]
+            },
+            {
+              "offset_begin": 62,
+              "offset_end_exclusive": 77,
+              "characters": 15,
+              "visible_line": 12,
+              "visible_line_start_position": 434,
+              "first_document_position": 434,
+              "last_document_position": 448,
+              "first_rect": [
+                147,
+                162,
+                8,
+                18
+              ],
+              "last_rect": [
+                259,
+                162,
+                8,
+                18
+              ]
+            }
+          ]
+        }
+      ],
+      "soft_line_boundary_samples": [
+        [
+          61,
+          169,
+          635,
+          54,
+          8,
+          18,
+          6,
+          6,
+          108
+        ],
+        [
+          62,
+          170,
+          147,
+          72,
+          8,
+          18,
+          7,
+          6,
+          170
+        ],
+        [
+          79,
+          187,
+          283,
+          72,
+          8,
+          18,
+          7,
+          6,
+          170
+        ],
+        [
+          80,
+          188,
+          291,
+          72,
+          8,
+          18,
+          7,
+          6,
+          170
+        ],
+        [
+          123,
+          231,
+          635,
+          72,
+          8,
+          18,
+          7,
+          6,
+          170
+        ],
+        [
+          124,
+          232,
+          147,
+          90,
+          8,
+          18,
+          8,
+          6,
+          232
+        ],
+        [
+          159,
+          267,
+          427,
+          90,
+          8,
+          18,
+          8,
+          6,
+          232
+        ],
+        [
+          160,
+          268,
+          435,
+          90,
+          8,
+          18,
+          8,
+          6,
+          232
+        ],
+        [
+          184,
+          292,
+          627,
+          90,
+          8,
+          18,
+          8,
+          6,
+          232
+        ]
+      ]
+    }
+  ],
+  "scroll_changes": [
+    {
+      "from": "narrow-history",
+      "to": "narrow-history-10",
+      "sampled_positions": 342,
+      "scrollTop_delta": 7,
+      "uniform_y_delta": -126,
+      "all_other_point_fields_unchanged": true
+    },
+    {
+      "from": "narrow-history-10",
+      "to": "narrow-history-3",
+      "sampled_positions": 342,
+      "scrollTop_delta": -7,
+      "uniform_y_delta": 126,
+      "all_other_point_fields_unchanged": true
+    }
+  ],
+  "restore_width_projection_exact": true,
+  "restore_bottom_projection_exact": true,
+  "runs": [
+    {
+      "run": "run-1",
+      "evidence_id": "ev_690a21bd685478bbd6595af7a8c14ec0be7ead2cbcd20f07b7c88abb5221c8f4",
+      "probe_sha256": "724e41efe047ae0b7160e4e0e580cd594d26cea14b03741cc9ccaa7f507b0ccd",
+      "completed_phases": 7,
+      "naws": [
+        [
+          80,
+          25
+        ],
+        [
+          80,
+          26
+        ],
+        [
+          62,
+          26
+        ],
+        [
+          80,
+          26
+        ]
+      ],
+      "phase_text_projection_sha256": {
+        "wide-bottom": "7d0b13e759a95859f6d306ca9d53e163f915dc93dcd3e7b181a26cef12704ce0",
+        "wide-history-3": "84159e3511fccc00b8f9fc2c8633b99bd3a1f76b4a0ceb087aa96b6f33c6072d",
+        "narrow-history": "541a163bd2aa33e2695a567dd0dbf76cf51a5bd989e2a31d7db4f38428883476",
+        "narrow-history-10": "5ddcd47173bcab9a626894f9ab7301529741f5d01cbb48f420cb3aa85ab605b4",
+        "narrow-history-3": "541a163bd2aa33e2695a567dd0dbf76cf51a5bd989e2a31d7db4f38428883476",
+        "restore-width-history": "84159e3511fccc00b8f9fc2c8633b99bd3a1f76b4a0ceb087aa96b6f33c6072d",
+        "restore-bottom": "7d0b13e759a95859f6d306ca9d53e163f915dc93dcd3e7b181a26cef12704ce0"
+      },
+      "verified": {
+        "all_4047_copied_file_hashes": true,
+        "payload_reconstructed_exactly": true,
+        "all_input_texts_and_document_positions_preserved": true,
+        "no_observation_errors": true,
+        "only_synthetic_session": true,
+        "peer_closed": true
+      },
+      "cleanup": {
+        "job_active": 0,
+        "job_total": 3,
+        "desktop_handle_closed": true,
+        "station_handle_closed": true,
+        "original_station_restored": true
+      },
+      "private_artifact_sha256": {
+        "evidence.json": "ea347ad57bc9168f50f4d0bda78d10103ba790f401536064acac263ee9209793",
+        "run.json": "490a65fa8452b6cf9d08811f43cbf3c2058268894f26598800210541c5345958",
+        "files.json": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8",
+        "payload.bin": "0d4997d10e0c1c051dae19fbb59f5f3316967c487359953132403a21a4ce8f13",
+        "payload.json": "d9da84f6bfde3771454d883dd6f9d730e4f2f62c75bd5beef2d9433e6d711d52",
+        "peer.json": "09ddc2fb9ef88c40be9cffe1c636dd201f7ae8b0b4ac422f2a0fb85d8f3ebf1c",
+        "probe.js": "724e41efe047ae0b7160e4e0e580cd594d26cea14b03741cc9ccaa7f507b0ccd",
+        "cleanup.json": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d",
+        "surface-cleanup.json": "2947878016d582f50a3241f5dfaf0c923671e6ddee62cd57e00a78a988ae7954",
+        "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      }
+    },
+    {
+      "run": "run-2",
+      "evidence_id": "ev_cd5b7836ab6a72077113df2db3c583cb5190d65907c9e85579e9d91230ea2f6b",
+      "probe_sha256": "7a81455140286168274da8e5057b83bd38cc709d9e50c19ed4606d8245daf4ae",
+      "completed_phases": 7,
+      "naws": [
+        [
+          80,
+          25
+        ],
+        [
+          80,
+          26
+        ],
+        [
+          62,
+          26
+        ],
+        [
+          80,
+          26
+        ]
+      ],
+      "phase_text_projection_sha256": {
+        "wide-bottom": "7d0b13e759a95859f6d306ca9d53e163f915dc93dcd3e7b181a26cef12704ce0",
+        "wide-history-3": "84159e3511fccc00b8f9fc2c8633b99bd3a1f76b4a0ceb087aa96b6f33c6072d",
+        "narrow-history": "541a163bd2aa33e2695a567dd0dbf76cf51a5bd989e2a31d7db4f38428883476",
+        "narrow-history-10": "5ddcd47173bcab9a626894f9ab7301529741f5d01cbb48f420cb3aa85ab605b4",
+        "narrow-history-3": "541a163bd2aa33e2695a567dd0dbf76cf51a5bd989e2a31d7db4f38428883476",
+        "restore-width-history": "84159e3511fccc00b8f9fc2c8633b99bd3a1f76b4a0ceb087aa96b6f33c6072d",
+        "restore-bottom": "7d0b13e759a95859f6d306ca9d53e163f915dc93dcd3e7b181a26cef12704ce0"
+      },
+      "verified": {
+        "all_4047_copied_file_hashes": true,
+        "payload_reconstructed_exactly": true,
+        "all_input_texts_and_document_positions_preserved": true,
+        "no_observation_errors": true,
+        "only_synthetic_session": true,
+        "peer_closed": true
+      },
+      "cleanup": {
+        "job_active": 0,
+        "job_total": 3,
+        "desktop_handle_closed": true,
+        "station_handle_closed": true,
+        "original_station_restored": true
+      },
+      "private_artifact_sha256": {
+        "evidence.json": "1399cb1eb5a20110f2c71f4bbe1905c8087a5e43e82a9fe39daaa8312d6826e0",
+        "run.json": "5cd1fd459d5f442cf2b52b024e620ca91808535c9849a6737470b5ece5ba8375",
+        "files.json": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8",
+        "payload.bin": "0d4997d10e0c1c051dae19fbb59f5f3316967c487359953132403a21a4ce8f13",
+        "payload.json": "d9da84f6bfde3771454d883dd6f9d730e4f2f62c75bd5beef2d9433e6d711d52",
+        "peer.json": "09ddc2fb9ef88c40be9cffe1c636dd201f7ae8b0b4ac422f2a0fb85d8f3ebf1c",
+        "probe.js": "7a81455140286168274da8e5057b83bd38cc709d9e50c19ed4606d8245daf4ae",
+        "cleanup.json": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d",
+        "surface-cleanup.json": "2947878016d582f50a3241f5dfaf0c923671e6ddee62cd57e00a78a988ae7954",
+        "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      }
+    }
+  ],
+  "unknown": [
+    "physical terminal cells and cursor semantics",
+    "actual presented frames",
+    "ConPTY child acknowledgement",
+    "performance",
+    "selection preservation or copy",
+    "Find",
+    "Unicode graphemes and widths",
+    "XY point-to-position hit testing",
+    "word boundaries and whitespace",
+    "overwriting or redraw after resize",
+    "complete VT reflow and all configurations"
+  ],
+  "provenance": "Whitelist export of synthetic input, factual coordinate summaries and hashes. No app/profile, private identifiers, paths, or extraction scripts."
+}

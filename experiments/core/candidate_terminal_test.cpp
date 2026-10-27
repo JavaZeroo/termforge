@@ -554,6 +554,44 @@ void cached_history_survives_noop() {
             "clear did not invalidate cached history text actions");
 }
 
+void cached_history_resize_replay_preserves_long_text() {
+    const std::string expected = "ABCDEFGH\r\nB\r\nC\r\nD";
+    for (const bool fragmented : {false, true}) {
+        termforge::CandidateTerminal terminal(2, 8, 16);
+        const auto feed = [&](std::string_view bytes) {
+            if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+            else terminal.feed(bytes);
+        };
+        feed(expected);
+        terminal.resize(4, 4);
+        feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+
+        termforge::TextDocument document(terminal.screen);
+        termforge::TextSearch search;
+        const auto generation = search.start(document, "EFGH");
+        for (int step = 0; step < 100 && search.status() == termforge::SearchStatus::running; ++step)
+            search.step(document, generation, 64);
+        const auto match = search.match(document, 0);
+        require(search.status() == termforge::SearchStatus::complete && search.matches().size() == 1 && match,
+                "resize replay lost or duplicated the long history row's Find result");
+        termforge::TextSelection found;
+        require(found.set(document, match->range) && found.copy(document, 64).text == "EFGH",
+                "resize replay Find cannot select the original text beyond the new width");
+
+        // The repaint writes C/D into the first two visible rows. Include all
+        // retained history, but stop at D rather than copying unused screen rows.
+        const auto begin = document.position(0, 0);
+        const auto end = document.position(terminal.screen.history.size() + 1, 1);
+        termforge::TextSelection whole;
+        require(begin && end && whole.set(document, {*begin, *end}),
+                "resize replay whole-text selection failed");
+        const auto copied = whole.copy(document, 64);
+        require(copied.status == termforge::SelectionCopyStatus::ok && copied.text == expected,
+                fragmented ? "bytewise resize replay duplicated or lost original history text" :
+                             "whole-feed resize replay duplicated or lost original history text");
+    }
+}
+
 void cached_history_stays_with_primary(bool fragmented) {
     termforge::CandidateTerminal terminal(2, 8, 4);
     terminal.feed("A\r\nB\r\nC\r\nD");
@@ -756,6 +794,7 @@ void conpty_resize_replay(const std::filesystem::path& path) {
     incomplete_replay_is_bounded();
     pending_replay_keeps_resized_grid();
     cached_history_survives_noop();
+    cached_history_resize_replay_preserves_long_text();
     cached_history_stays_with_primary(false);
     cached_history_stays_with_primary(true);
     for (const bool fragmented : {false, true}) {

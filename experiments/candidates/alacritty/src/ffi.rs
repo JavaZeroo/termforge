@@ -446,6 +446,63 @@ mod tests {
     }
 
     #[test]
+    fn width_reflow_exports_logical_line_ends() {
+        let value = Handle(tf_terminal_new(2, 8, 8));
+        assert!(!value.0.is_null());
+        value.feed(b"ABCDEFGH\r\nIJKLMNOP\r\nQRSTUVWX");
+        for (columns, expected) in [
+            (4, vec![(false, true, 4), (true, false, 0),
+                     (false, true, 4), (true, false, 0),
+                     (false, true, 4), (false, false, 0)]),
+            (8, vec![(true, false, 0), (true, false, 0), (false, false, 0)]),
+        ] {
+            assert_eq!(unsafe { tf_terminal_resize(value.0, 2, columns, null_mut(), 0) }, 0);
+            let meta = value.meta();
+            let actual: Vec<_> = (0..meta.history + meta.rows).map(|index| {
+                let mut row = MaybeUninit::<RowMeta>::uninit();
+                assert_eq!(unsafe { tf_terminal_row_meta(value.0, index, row.as_mut_ptr()) }, 0);
+                let row = unsafe { row.assume_init() };
+                (row.hard_break, row.wrap, row.wrap_columns)
+            }).collect();
+            assert_eq!(actual, expected);
+            assert_eq!(meta.discarded, 0, "merging physical containers is not history eviction");
+        }
+    }
+
+    #[test]
+    fn width_reflow_counts_capacity_eviction_once() {
+        let value = Handle(tf_terminal_new(2, 8, 1));
+        assert!(!value.0.is_null());
+        value.feed(b"ABCDEFGH\r\nIJKLMNOP\r\nQRSTUVWX");
+        assert_eq!(value.meta().history, 1);
+        assert_eq!(value.meta().discarded, 0);
+
+        assert_eq!(unsafe { tf_terminal_resize(value.0, 2, 4, null_mut(), 0) }, 0);
+        let meta = value.meta();
+        assert_eq!((meta.history, meta.rows, meta.columns), (1, 2, 4));
+        let mut actual = Vec::new();
+        for row in 0..3 {
+            for column in 0..4 {
+                let mut text = [0; 8];
+                let mut needed = 0;
+                assert_eq!(unsafe {
+                    tf_terminal_cell_text(value.0, row, column, text.as_mut_ptr(), text.len(), &mut needed)
+                }, 0);
+                actual.extend_from_slice(&text[..needed]);
+            }
+        }
+        assert_eq!(actual, b"MNOPQRSTUVWX");
+        assert_eq!(meta.discarded, 3, "three oldest reflowed rows exceeded history capacity");
+
+        value.feed(b"");
+        assert_eq!(unsafe { tf_terminal_resize(value.0, 2, 4, null_mut(), 0) }, 0);
+        assert_eq!(value.meta().discarded, 3, "unchanged geometry must not recount eviction");
+        value.feed(b"\x1b[3J");
+        assert_eq!(value.meta().history, 0);
+        assert_eq!(value.meta().discarded, 3, "explicit history clear is not capacity eviction");
+    }
+
+    #[test]
     fn history_eviction_checks_entire_prefix_before_mutating() {
         let value = Handle(tf_terminal_new(2, 8, 4));
         assert!(!value.0.is_null());

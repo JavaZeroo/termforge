@@ -182,6 +182,9 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                 let line_delta = self.cursor.point.line - target.line;
 
                 if line_delta != 0 && row.is_clear() {
+                    // The consumed continuation can carry a hard boundary even
+                    // when its remaining cells are empty.
+                    last_row.set_hard_break(row.hard_break());
                     continue;
                 }
 
@@ -196,6 +199,10 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                 if i < cursor_buffer_line {
                     self.cursor.point.line += 1;
                 }
+
+                // A physical row may disappear; its logical end must survive
+                // on the row which received its cells.
+                last_row.set_hard_break(row.hard_break());
 
                 // Don't push line into the new buffer.
                 continue;
@@ -232,6 +239,13 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
             if row.len() < columns {
                 row.grow(columns);
             }
+            if reflow {
+                let wrapped = row.last().is_some_and(|cell| cell.flags().contains(Flags::WRAPLINE));
+                row.set_wrap_columns(if wrapped { columns } else { 0 });
+                if wrapped {
+                    row.set_hard_break(false);
+                }
+            }
             new_raw.push(row);
         }
 
@@ -256,6 +270,10 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
         let mut rows = self.raw.take_all();
         for (i, mut row) in rows.drain(..).enumerate().rev() {
+            // The logical end belongs to the final fragment, not to the
+            // physical container retained for the first fragment.
+            let hard_break = row.hard_break();
+
             // Append lines left over from the previous row.
             if let Some(buffered) = buffered.take() {
                 // Add a column for every cell added before the cursor, if it goes beyond the new
@@ -380,6 +398,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                         wrapped.resize_with(columns, T::default);
                     }
                     row = Row::from_vec(wrapped, occ);
+                    row.set_hard_break(hard_break);
 
                     if i < self.display_offset {
                         // Since we added a new line, rotate up the viewport.
@@ -391,7 +410,21 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
         // Reverse iterator and use it as the new grid storage.
         let mut reversed: Vec<Row<T>> = new_raw.drain(..).rev().collect();
+        // Reflow can create more physical rows than the history capacity holds.
+        // These are real oldest-history evictions, not merged row identities.
+        let evicted = reversed.len().saturating_sub(self.max_scroll_limit + self.lines);
+        self.discarded = self.discarded.checked_add(evicted as u64)
+            .expect("history discarded exhausted");
         reversed.truncate(self.max_scroll_limit + self.lines);
+        if reflow {
+            for row in &mut reversed {
+                let wrapped = row.last().is_some_and(|cell| cell.flags().contains(Flags::WRAPLINE));
+                row.set_wrap_columns(if wrapped { columns } else { 0 });
+                if wrapped {
+                    row.set_hard_break(false);
+                }
+            }
+        }
         self.raw.replace_inner(reversed);
 
         // Clamp display offset in case some lines went off.

@@ -156,7 +156,10 @@ fn test_iter() {
     assert_eq!(&4, iter.cell());
 
     // Test that iter ends at end of grid.
-    let mut final_iter = grid.iter_from(Point { line: Line(4), column: Column(4) });
+    let mut final_iter = grid.iter_from(Point {
+        line: Line(4),
+        column: Column(4),
+    });
     assert_eq!(None, final_iter.next());
     assert_indexed(23, final_iter.prev());
 }
@@ -346,6 +349,146 @@ fn shrink_reflow_disabled() {
     assert_eq!(grid[Line(0)].len(), 2);
     assert_eq!(grid[Line(0)][Column(0)], cell('1'));
     assert_eq!(grid[Line(0)][Column(1)], cell('2'));
+}
+
+#[test]
+fn resize_boundary_shrink_hard_line() {
+    let mut grid = Grid::<Cell>::new(1, 8, 8);
+    boundary_row(&mut grid, 0, "ABCDEFGH", true, false);
+
+    grid.resize(true, 1, 3);
+
+    assert_boundary_rows(
+        &grid,
+        &[
+            ("ABC", false, true, 3),
+            ("DEF", false, true, 3),
+            ("GH ", true, false, 0),
+        ],
+    );
+}
+
+#[test]
+fn resize_boundary_shrink_soft_chain() {
+    let mut grid = Grid::<Cell>::new(2, 8, 8);
+    boundary_row(&mut grid, 0, "ABCDEFGH", false, true);
+    boundary_row(&mut grid, 1, "IJKL", true, false);
+
+    grid.resize(true, 2, 4);
+
+    assert_boundary_rows(
+        &grid,
+        &[
+            ("ABCD", false, true, 4),
+            ("EFGH", false, true, 4),
+            ("IJKL", true, false, 0),
+        ],
+    );
+}
+
+#[test]
+fn resize_boundary_shrink_buffered_continuation() {
+    let mut grid = Grid::<Cell>::new(2, 5, 8);
+    boundary_row(&mut grid, 0, "ABCDE", false, true);
+    boundary_row(&mut grid, 1, "FG", true, false);
+
+    grid.resize(true, 2, 3);
+
+    assert_boundary_rows(
+        &grid,
+        &[
+            ("ABC", false, true, 3),
+            ("DEF", false, true, 3),
+            ("G  ", true, false, 0),
+        ],
+    );
+}
+
+#[test]
+fn resize_boundary_grow_complete_line() {
+    let mut grid = Grid::<Cell>::new(2, 4, 8);
+    boundary_row(&mut grid, 0, "ABCD", false, true);
+    boundary_row(&mut grid, 1, "EFGH", true, false);
+
+    grid.resize(true, 2, 8);
+
+    assert_boundary_rows(
+        &grid,
+        &[("ABCDEFGH", true, false, 0), ("        ", false, false, 0)],
+    );
+}
+
+#[test]
+fn resize_boundary_grow_partial_line() {
+    let mut grid = Grid::<Cell>::new(3, 4, 8);
+    boundary_row(&mut grid, 0, "ABCD", false, true);
+    boundary_row(&mut grid, 1, "EFGH", false, true);
+    boundary_row(&mut grid, 2, "IJKL", true, false);
+
+    grid.resize(true, 3, 6);
+
+    assert_boundary_rows(
+        &grid,
+        &[
+            ("ABCDEF", false, true, 6),
+            ("GHIJKL", true, false, 0),
+            ("      ", false, false, 0),
+        ],
+    );
+}
+
+#[test]
+fn resize_boundary_grow_empty_hard_continuation() {
+    let mut grid = Grid::<Cell>::new(3, 4, 8);
+    boundary_row(&mut grid, 0, "ABCD", false, true);
+    boundary_row(&mut grid, 1, "", true, false);
+    boundary_row(&mut grid, 2, "", true, false);
+
+    grid.resize(true, 3, 8);
+
+    // The empty continuation ends ABCD. The next hard empty row is a separate
+    // logical line, so there must still be two distinct hard boundaries.
+    assert_boundary_rows(
+        &grid,
+        &[
+            ("ABCD    ", true, false, 0),
+            ("        ", true, false, 0),
+            ("        ", false, false, 0),
+        ],
+    );
+}
+
+fn boundary_row(grid: &mut Grid<Cell>, line: i32, text: &str, hard: bool, soft: bool) {
+    let columns = grid.columns();
+    let row = &mut grid[Line(line)];
+    for (column, c) in text.chars().enumerate() {
+        row[Column(column)] = cell(c);
+    }
+    row.set_hard_break(hard);
+    row.set_wrap_columns(if soft { columns } else { 0 });
+    if soft {
+        row[Column(columns - 1)].flags.insert(Flags::WRAPLINE);
+    }
+}
+
+fn assert_boundary_rows(grid: &Grid<Cell>, expected: &[(&str, bool, bool, usize)]) {
+    let actual: Vec<_> = (-(grid.history_size() as i32)..grid.screen_lines() as i32)
+        .map(|line| {
+            let row = &grid[Line(line)];
+            let text: String = row.into_iter().map(|cell| cell.c).collect();
+            (
+                text,
+                row.hard_break(),
+                row.last().unwrap().flags.contains(Flags::WRAPLINE),
+                row.wrap_columns(),
+            )
+        })
+        .collect();
+    let expected: Vec<_> = expected
+        .iter()
+        .map(|&(text, hard, soft, columns)| (text.to_owned(), hard, soft, columns))
+        .collect();
+    assert_eq!(actual, expected);
 }
 
 #[test]
