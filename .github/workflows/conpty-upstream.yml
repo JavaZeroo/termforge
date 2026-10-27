@@ -1,0 +1,67 @@
+name: Fixed upstream ConPTY build experiment
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/conpty-upstream.yml'
+      - 'experiments/conpty/upstream/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upstream:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    env:
+      PYTHONUTF8: '1'
+      NUGET_CLI_LANGUAGE: en-us
+      VCPKG_DISABLE_METRICS: '1'
+      VCPKG_MAX_CONCURRENCY: '1'
+    steps:
+      - name: Preserve canonical source bytes in disposable checkouts
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: project
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: microsoft/terminal
+          ref: dc8ae365847d41f62d1ebca93815bb00959bc12f
+          path: upstream
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: microsoft/vcpkg
+          ref: 927f62e4b8838bd7e441e9c45103a16ffd75007e
+          path: vcpkg
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Test result rejection gates
+        working-directory: project
+        run: python -m unittest experiments.conpty.upstream.test_taef_result -v
+      - name: Build and test fixed upstream variants
+        shell: pwsh
+        run: >-
+          ./project/experiments/conpty/upstream/build_hosted.ps1
+          -Source ./upstream -Vcpkg ./vcpkg -Out ./upstream-result
+      - name: Preserve source and test identity
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: conpty-upstream-summary
+          retention-days: 14
+          if-no-files-found: warn
+          path: upstream-result/public/
+      - name: Preserve experimental pair after adapter verification
+        if: success()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: conpty-upstream-experimental-pair
+          retention-days: 14
+          if-no-files-found: error
+          path: upstream-result/pair/
