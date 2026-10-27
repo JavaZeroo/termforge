@@ -132,6 +132,12 @@ try {
     [void](Invoke-Native 'baseline-patch-check' 'git' @('apply', '--unidiff-zero', "--include=$testFile", '--check', $patch))
     [void](Invoke-Native 'baseline-test-patch' 'git' @('apply', '--unidiff-zero', "--include=$testFile", $patch))
     if ((@(& git diff --name-only) -join ',') -ne $testFile) { throw 'Baseline changed production source.' }
+    # Single-project builds do not inherit OpenConsole.slnx BuildDependency edges.
+    Build-Project 'baseline-proxy-build' 'src/host/proxy/Host.Proxy.vcxproj'
+    Build-Project 'baseline-types-build' 'src/types/lib/types.vcxproj'
+    Build-Project 'baseline-buffer-build' 'src/buffer/out/lib/bufferout.vcxproj'
+    Build-Project 'baseline-render-base-build' 'src/renderer/base/lib/base.vcxproj'
+    Build-Project 'baseline-render-gdi-build' 'src/renderer/gdi/lib/gdi.vcxproj'
     Build-Project 'baseline-adapter-build' 'src/terminal/adapter/ut_adapter/Adapter.UnitTests.vcxproj'
     Test-Adapter 'baseline-regression' 'red'
 
@@ -143,6 +149,7 @@ try {
     Test-Adapter 'patched-regression' 'focused-green'
     Test-Adapter 'patched-adapter' 'full-green' -Full
     $state.adapter_tests_verified = $true
+    Build-Project 'patched-propsheet-build' 'src/propsheet/propsheet.vcxproj'
     Build-Project 'patched-host-build' 'src/host/exe/Host.EXE.vcxproj'
     Build-Project 'patched-dll-build' 'src/winconpty/dll/winconptydll.vcxproj'
 

@@ -39,6 +39,7 @@ vcpkg 工具 2026-04-08 的发布 SHA、现有 patch 与关键源码 SHA；在�
 临时宿主的 checkout 同时固定 `core.autocrlf=false` 和 `core.eol=lf`，避免 `text=auto` 在 Windows 上改变补丁字节；原 SHA 校验保持严格。
 vcpkg 使用完整 Git 历史，HEAD 仍固定在原 baseline；[历史 port 的 tree 对象不能由 shallow checkout 保证](https://learn.microsoft.com/en-us/vcpkg/users/versioning-troubleshooting)。
 上游 NuGet 锁定版本、vcpkg overlay 和 terminal feature 均保留。宿主镜像与实际编译器版本/哈希另记，不能据 runner 名称假定工具不变。
+单项目入口显式补齐固定 `OpenConsole.slnx` 的顺序依赖：adapter 前构建 Proxy/Types/Buffer/Render Base/GDI，生成所需接口头；Host.EXE 前构建 Propsheet。
 
 [脚本](build_hosted.ps1)先只应用已有测试，编译并要求一次 `AlternateScreenMarginsTest` 的明确 margin 断言失败；
 缺包、编译错误、加载错误、零测试、跳过或超时均不算 red。再仅应用两个实现文件的 patch，重建并分别执行一次 focused 和完整 adapter 测试，
