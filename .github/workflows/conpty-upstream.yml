@@ -21,7 +21,9 @@ jobs:
       VCPKG_MAX_CONCURRENCY: '1'
     steps:
       - name: Preserve canonical source bytes in disposable checkouts
-        run: git config --global core.autocrlf false
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: project

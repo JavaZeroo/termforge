@@ -87,8 +87,8 @@ try {
         if ((Digest (Join-Path $Source $file)) -ne $prior.upstream_source_sha256[$file]) { throw "Source hash differs: $file" }
     }
     $patch = "$PSScriptRoot/dc8-native-margin-candidate.patch"
-    if ((Digest $patch) -ne 'dc27377e399bd0217a0b76e16cc89f087c1b781929e4c958ad30c3a475322b81') { throw 'Patch identity differs.' }
     $state.patch_sha256 = Digest $patch
+    if ($state.patch_sha256 -ne 'dc27377e399bd0217a0b76e16cc89f087c1b781929e4c958ad30c3a475322b81') { throw 'Patch identity differs.' }
     $state.source_hashes_verified = $true
     $triplet = Get-Content -Raw -LiteralPath "$Source/dep/vcpkg-overlay-triplets/x64-windows-static.cmake"
     if ($triplet -notmatch 'set\(VCPKG_PLATFORM_TOOLSET v145\)') { throw 'Unexpected upstream toolset requirement.' }
