@@ -682,6 +682,13 @@ impl<T> Term<T> {
         &mut self.grid
     }
 
+    /// Evict an oldest history prefix without ending the visible trailing grapheme.
+    ///
+    /// This maintenance changes neither visible cells nor cursor coordinates.
+    pub fn discard_oldest_history(&mut self, count: usize) {
+        self.grid.discard_oldest_history(count);
+    }
+
     /// Resize terminal to new dimensions.
     pub fn resize<S: Dimensions>(&mut self, size: S) {
         self.seal_grapheme();

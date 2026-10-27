@@ -465,7 +465,7 @@ pub unsafe extern "C" fn tf_terminal_discard_history(
             }
         }
         value.origin_map = None;
-        value.term.grid_mut().discard_oldest_history(count);
+        value.term.discard_oldest_history(count);
         unsafe { *discarded = value.term.grid().discarded() };
         Ok(())
     })
@@ -895,6 +895,104 @@ mod tests {
         value.feed(b"\x1b[3J");
         assert_eq!(value.meta().history, 0);
         assert_eq!(value.meta().discarded, 3, "explicit history clear is not capacity eviction");
+    }
+
+
+    fn open_grapheme_with_history() -> (Handle, ResizeMapMeta) {
+        let value = Handle(tf_terminal_new(2, 8, 2));
+        assert!(!value.0.is_null());
+        let input = "A\r\nB\r\n\u{1f469}".as_bytes();
+        assert_eq!(unsafe {
+            tf_terminal_feed_mapped(value.0, input.as_ptr(), input.len(), null_mut(), 0)
+        }, 0);
+        let meta = value.meta();
+        assert_eq!((meta.history, meta.row, meta.column, meta.discarded), (1, 1, 2, 0));
+        let mut map = MaybeUninit::<ResizeMapMeta>::uninit();
+        assert_eq!(unsafe { tf_terminal_feed_map_meta(value.0, false, map.as_mut_ptr()) }, 0);
+        (value, unsafe { map.assume_init() })
+    }
+
+    fn expect_joined_grapheme_after_history_eviction(value: &Handle, previous_epoch: u64) {
+        let suffix = "\u{200d}\u{1f4bb}".as_bytes();
+        assert_eq!(unsafe {
+            tf_terminal_feed_mapped(value.0, suffix.as_ptr(), suffix.len(), null_mut(), 0)
+        }, 0);
+        let meta = value.meta();
+        assert_eq!((meta.row, meta.column), (1, 2), "history maintenance sealed the visible grapheme");
+        let row = meta.history + 1;
+        let mut lead = MaybeUninit::<CellMeta>::uninit();
+        assert_eq!(unsafe { tf_terminal_cell_meta(value.0, row, 0, lead.as_mut_ptr()) }, 0);
+        let lead = unsafe { lead.assume_init() };
+        assert_eq!((lead.width, lead.marks, lead.written), (2, 2, true));
+        assert!(!lead.clipped && !lead.grapheme_fragment && !lead.leading_spacer);
+        let mut text = [0; 32];
+        let mut needed = 0;
+        assert_eq!(unsafe {
+            tf_terminal_cell_text(value.0, row, 0, text.as_mut_ptr(), text.len(), &mut needed)
+        }, 0);
+        assert_eq!(&text[..needed], "\u{1f469}\u{200d}\u{1f4bb}".as_bytes());
+        let mut spacer = MaybeUninit::<CellMeta>::uninit();
+        assert_eq!(unsafe { tf_terminal_cell_meta(value.0, row, 1, spacer.as_mut_ptr()) }, 0);
+        assert_eq!(unsafe { spacer.assume_init() }.width, 0);
+        let mut following = MaybeUninit::<CellMeta>::uninit();
+        assert_eq!(unsafe { tf_terminal_cell_meta(value.0, row, 2, following.as_mut_ptr()) }, 0);
+        assert!(!unsafe { following.assume_init() }.written, "suffix created another lead");
+        let mut next_map = MaybeUninit::<ResizeMapMeta>::uninit();
+        assert_eq!(unsafe { tf_terminal_feed_map_meta(value.0, false, next_map.as_mut_ptr()) }, 0);
+        assert!(unsafe { next_map.assume_init() }.epoch > previous_epoch);
+    }
+
+    #[test]
+    fn history_eviction_empty_prefix_preserves_open_grapheme() {
+        let (value, mut map) = open_grapheme_with_history();
+        let epoch = map.epoch;
+        let mut discarded = u64::MAX;
+        assert_eq!(unsafe {
+            tf_terminal_discard_history(value.0, std::ptr::null(), 0, &mut discarded, null_mut(), 0)
+        }, 0);
+        assert_eq!(discarded, 0);
+        let meta = value.meta();
+        assert_eq!((meta.history, meta.row, meta.column), (1, 1, 2));
+        assert_eq!(unsafe { tf_terminal_feed_map_meta(value.0, false, &mut map) }, 1);
+        assert_eq!(map.epoch, epoch, "expired-map query changed the output");
+        expect_joined_grapheme_after_history_eviction(&value, epoch);
+    }
+
+    #[test]
+    fn history_eviction_valid_prefix_preserves_open_grapheme() {
+        let (value, mut map) = open_grapheme_with_history();
+        let epoch = map.epoch;
+        let prefix = value.rows()[0].0;
+        let mut discarded = u64::MAX;
+        assert_eq!(unsafe {
+            tf_terminal_discard_history(value.0, &prefix, 1, &mut discarded, null_mut(), 0)
+        }, 0);
+        assert_eq!(discarded, 1);
+        let meta = value.meta();
+        assert_eq!((meta.history, meta.row, meta.column), (0, 1, 2));
+        assert_eq!(value.rows()[0].1, b'B');
+        assert_eq!(unsafe { tf_terminal_feed_map_meta(value.0, false, &mut map) }, 1);
+        assert_eq!(map.epoch, epoch, "expired-map query changed the output");
+        expect_joined_grapheme_after_history_eviction(&value, epoch);
+    }
+
+    #[test]
+    fn history_eviction_rejected_prefix_preserves_open_grapheme() {
+        let (value, mut map) = open_grapheme_with_history();
+        let epoch = map.epoch;
+        let before = value.rows();
+        let wrong_prefix = before[0].0 ^ 1;
+        let mut discarded = u64::MAX;
+        assert_eq!(unsafe {
+            tf_terminal_discard_history(value.0, &wrong_prefix, 1, &mut discarded, null_mut(), 0)
+        }, 1);
+        assert_eq!(discarded, u64::MAX);
+        assert_eq!(value.rows(), before);
+        let meta = value.meta();
+        assert_eq!((meta.history, meta.row, meta.column, meta.discarded), (1, 1, 2, 0));
+        assert_eq!(unsafe { tf_terminal_feed_map_meta(value.0, false, &mut map) }, 0);
+        assert_eq!(map.epoch, epoch, "rejected eviction expired the map");
+        expect_joined_grapheme_after_history_eviction(&value, epoch);
     }
 
     #[test]
