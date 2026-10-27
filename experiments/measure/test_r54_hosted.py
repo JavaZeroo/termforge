@@ -28,6 +28,15 @@ class BuildBoundaryTests(unittest.TestCase):
 
 
 class PublicationBoundaryTests(unittest.TestCase):
+    def test_public_logs_redact_long_short_escaped_and_case_variants_without_changing_other_bytes(self):
+        from experiments.measure.r54_publish import replacement_forms, redact_paths
+        forms = replacement_forms([(r'C:\Users\runneradmin', '${PROFILE}'),
+                                   (r'C:\Users\RUNNER~1', '${PROFILE}')])
+        original = (b'C:\\Users\\runneradmin\\Temp\\a C:\\\\Users\\\\RUNNER~1\\\\Temp\\\\b '
+                    b'c:/users/runner~1/Temp/c\xff\n')
+        self.assertEqual(redact_paths(original, forms),
+                         b'${PROFILE}\\Temp\\a ${PROFILE}\\\\Temp\\\\b ${PROFILE}/Temp/c\xff\n')
+
     def test_interrupted_jsonl_tail_remains_visible_without_losing_complete_samples(self):
         from experiments.measure.r54_publish import publish_jsonl
         original = b'{"command":["/ci/work/tool.exe"],"cpu":2.0}\n{"command":['

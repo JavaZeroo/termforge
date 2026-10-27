@@ -163,5 +163,6 @@ python -m unittest experiments.shell.test_workflow_sessions -v
 |---|---|---|
 | 候选 `.3`→`.4` 字素改动 | [固定字素验证](../experiments/shell/results/2026-10-26-streaming-graphemes/validation.json)、[性能限制与原始样本身份](research/streaming-graphemes.md)、[#54](https://github.com/JavaZeroo/termforge/issues/54) | 同宿主交错诊断中 project/interactive 吞吐中位数约下降 16%/9%；共享宿主、allocator 包装、无真实呈现/输入时延，使其不能作为正式预算或性能通过。#54 受控定位仍阻塞 #34 的性能裁决。 |
 | 固定字素成本的批次协议与执行 | [R54 v1 合同和构建/环境记录](../experiments/measure/R54-COST.md)、[执行器](../experiments/measure/r54_batch.py)、[合成进程回归](../experiments/measure/test_r54_batch.py)、[实际预检及限定验证](../experiments/measure/results/2026-10-27-r54-runner/validation.json) | 固定两个种子、各 112 个位置，字节原样保留、首错停止、完整批次后逐组配对统计。共享工作站十区间活动预检未通过，未启动成本样本；测量相关 26 项测试通过，首次 Linux 候选 CI 的采样依赖导入错误及修正分别留证。5% 是环境诊断护栏，并非产品性能容差；实际批次、扰动归因及用户预算确认由 #54 接续。 |
+| 首次 hosted 字素成本批次 | [来源、停止位置与归档](../experiments/measure/results/2026-10-27-r54-hosted/README.md)、[机器可读记录](../experiments/measure/results/2026-10-27-r54-hosted/validation.json) | 两份固定构建与4次sanity通过，空闲预检通过；第24位置的未归属CPU活动估计5.410%触发原5%护栏，保留23个有效记录和1个失败记录，第二批未启动。全部24次输出正确，但批次不完整，不生成配对成本摘要；临时VM逐进程归因、完整受控批次和预算仍未完成。 |
 
 目前没有足够证据判断 TermForge 距离 WindTerm 快或慢多少。正式结论必须同时提供负载/配置/环境身份、正确性、完成端点、观测开销、重复样本与限制。未知字段保持未知；历史校准未完成不转成要求用户反复手动运行的前置。执行规则见 [ADR-0002](adr/0002-automation-first-investigation.md)，核心选型重审见 [ADR-0003](adr/0003-core-reference-and-reuse.md)。
