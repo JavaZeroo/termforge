@@ -14,7 +14,7 @@ class CpuHostedBoundaryTests(unittest.TestCase):
         from experiments.measure import r54_publish as publisher
         identity = dict(GITHUB_RUN_ID='123', GITHUB_RUN_ATTEMPT='1', GITHUB_SHA='a' * 40)
         with tempfile.TemporaryDirectory() as folder:
-            root = Path(folder)
+            root = Path(folder).resolve()
             raw = root / 'local/raw'
             raw.mkdir(parents=True)
             output = root / 'local/public'
@@ -52,6 +52,10 @@ class CpuHostedBoundaryTests(unittest.TestCase):
         with patch.dict(os.environ, identity, clear=True), patch.object(os, 'name', 'nt'), \
                 patch.object(hosted, 'git', return_value='a' * 40):
             self.assertEqual(hosted.hosted_identity('perf/grapheme-cpu-hosted-r54')['GITHUB_SHA'], 'a' * 40)
+            with patch.dict(os.environ, GITHUB_REF='refs/heads/perf/grapheme-cpu-hosted-r54-setup2'):
+                self.assertEqual(hosted.hosted_identity(hosted.CPU_BOUNDARY_BRANCHES)['GITHUB_SHA'], 'a' * 40)
+                with self.assertRaises(ValueError):
+                    hosted.hosted_identity()
             with self.assertRaises(ValueError):
                 hosted.hosted_identity()
             for key, value in (('GITHUB_RUN_ATTEMPT', '2'), ('GITHUB_SHA', 'b' * 40)):
@@ -62,7 +66,7 @@ class CpuHostedBoundaryTests(unittest.TestCase):
         from experiments.measure import r54_publish as publisher
         identity = dict(GITHUB_RUN_ID='123', GITHUB_RUN_ATTEMPT='1', GITHUB_SHA='a' * 40)
         with tempfile.TemporaryDirectory() as folder:
-            root = Path(folder)
+            root = Path(folder).resolve()
             raw = root / 'local/raw'
             raw.mkdir(parents=True)
             (raw / 'hosted.json').write_text(json.dumps(dict(schema='termforge-r54-cpu-hosted-v1',

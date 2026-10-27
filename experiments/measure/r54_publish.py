@@ -8,13 +8,13 @@ import re
 
 from experiments.measure.r54_batch import sha, write_json
 from experiments.measure.r54_contract import ROOT, SEEDS
-from experiments.measure.r54_hosted import hosted_identity
+from experiments.measure.r54_hosted import CPU_BOUNDARY_BRANCHES, hosted_identity
 from experiments.measure.r54_inputs import require
 
 EXPERIMENTS = {
     'cost': dict(branch='perf/grapheme-hosted-r54', raw_schema='termforge-r54-hosted-v1',
                  publication_schema='termforge-r54-hosted-publication-v1'),
-    'cpu-boundary': dict(branch='perf/grapheme-cpu-hosted-r54', raw_schema='termforge-r54-cpu-hosted-v1',
+    'cpu-boundary': dict(branch=CPU_BOUNDARY_BRANCHES, raw_schema='termforge-r54-cpu-hosted-v1',
                          publication_schema='termforge-r54-cpu-hosted-publication-v1'),
 }
 

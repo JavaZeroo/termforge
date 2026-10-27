@@ -9,6 +9,8 @@ from experiments.measure.r54_build import prepare_builds
 from experiments.measure.r54_contract import ROOT, SEEDS
 from experiments.measure.r54_inputs import git, require
 
+CPU_BOUNDARY_BRANCHES = ('perf/grapheme-cpu-hosted-r54', 'perf/grapheme-cpu-hosted-r54-setup2')
+
 
 def hosted_identity(branch='perf/grapheme-hosted-r54'):
     names = ('GITHUB_ACTIONS', 'RUNNER_ENVIRONMENT', 'RUNNER_OS', 'GITHUB_REPOSITORY',
@@ -19,7 +21,8 @@ def hosted_identity(branch='perf/grapheme-hosted-r54'):
             identity['RUNNER_OS'] == 'Windows' and os.name == 'nt', 'requires an actual GitHub-hosted Windows job')
     require(identity['GITHUB_REPOSITORY'] == 'JavaZeroo/termforge' and identity['GITHUB_EVENT_NAME'] == 'push',
             'unexpected repository or event')
-    require(identity['GITHUB_REF'] == 'refs/heads/' + branch, 'unexpected experiment branch')
+    branches = (branch,) if isinstance(branch, str) else branch
+    require(identity['GITHUB_REF'] in ('refs/heads/' + name for name in branches), 'unexpected experiment branch')
     require(identity['GITHUB_RUN_ATTEMPT'] == '1', 'a workflow rerun must not replace the first attempt')
     require(identity['GITHUB_SHA'] == git(ROOT, 'rev-parse', 'HEAD'), 'workflow/source identity mismatch')
     return identity
