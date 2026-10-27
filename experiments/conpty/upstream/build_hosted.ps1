@@ -81,6 +81,8 @@ try {
     Save-State
     if ((& git -C $Source rev-parse HEAD) -ne $state.upstream_source) { throw 'Wrong Terminal source.' }
     if ((& git -C $Vcpkg rev-parse HEAD) -ne $state.vcpkg_source) { throw 'Wrong vcpkg source.' }
+    $state.vcpkg_shallow = (& git -C $Vcpkg rev-parse --is-shallow-repository)
+    if ($LASTEXITCODE -ne 0 -or $state.vcpkg_shallow -ne 'false') { throw 'Pinned port versions require the full vcpkg Git history.' }
     if (@(& git -C $Source status --porcelain).Count -ne 0) { throw 'Upstream checkout is dirty.' }
     $prior = Get-Content -Raw -LiteralPath "$repo/experiments/conpty/results/2026-10-26-native-margin-path/validation.json" | ConvertFrom-Json -AsHashtable
     foreach ($file in $prior.upstream_source_sha256.Keys) {

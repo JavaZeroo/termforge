@@ -38,6 +38,7 @@ jobs:
         with:
           repository: microsoft/vcpkg
           ref: 927f62e4b8838bd7e441e9c45103a16ffd75007e
+          fetch-depth: 0
           path: vcpkg
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
