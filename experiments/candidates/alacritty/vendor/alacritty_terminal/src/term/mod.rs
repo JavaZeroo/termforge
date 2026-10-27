@@ -14,7 +14,7 @@ use log::{debug, trace};
 use unicode_width::UnicodeWidthChar;
 
 use crate::event::{Event, EventListener};
-use crate::grid::{Dimensions, Grid, GridIterator, Scroll};
+use crate::grid::{Dimensions, Grid, GridIterator, GridResizeMap, Scroll};
 use crate::index::{self, Boundary, Column, Direction, Line, Point, Side};
 use crate::selection::{Selection, SelectionRange, SelectionType};
 use crate::term::cell::{Cell, Flags, LineLength};
@@ -38,6 +38,13 @@ pub const MIN_COLUMNS: usize = 1;
 
 /// Minimum number of visible lines.
 pub const MIN_SCREEN_LINES: usize = 1;
+
+/// Owned movement maps for both buffers in one terminal resize transaction.
+#[derive(Clone, Debug)]
+pub struct TerminalResizeMap {
+    pub primary: GridResizeMap,
+    pub alternate: GridResizeMap,
+}
 
 /// Max size of the window title stack.
 const TITLE_STACK_MAX_DEPTH: usize = 4096;
@@ -725,6 +732,22 @@ impl<T> Term<T> {
 
         // Resize damage information.
         self.damage.resize(num_cols, num_lines);
+    }
+
+    /// Resize while recording physical cell origins, then remove all tracing
+    /// state from the grids. The returned map describes only this operation.
+    pub fn resize_with_map<S: Dimensions>(&mut self, size: S) -> TerminalResizeMap {
+        self.seal_grapheme();
+        let active_before = self.grid.begin_resize_map();
+        let inactive_before = self.inactive_grid.begin_resize_map();
+        self.resize(size);
+        let active = self.grid.finish_resize_map(active_before);
+        let inactive = self.inactive_grid.finish_resize_map(inactive_before);
+        if self.mode.contains(TermMode::ALT_SCREEN) {
+            TerminalResizeMap { primary: inactive, alternate: active }
+        } else {
+            TerminalResizeMap { primary: active, alternate: inactive }
+        }
     }
 
     /// Active terminal modes.

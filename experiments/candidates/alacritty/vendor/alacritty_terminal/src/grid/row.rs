@@ -9,6 +9,7 @@ use std::{iter, slice};
 use serde::{Deserialize, Serialize};
 
 use crate::grid::GridCell;
+use crate::grid::origins::RowOrigins;
 use crate::index::Column;
 use crate::term::cell::ResetDiscriminant;
 
@@ -37,6 +38,9 @@ pub struct Row<T> {
     hard_break: bool,
     #[cfg_attr(feature = "serde", serde(skip))]
     wrap_columns: usize,
+    /// Present only while a synchronous resize is recording cell origins.
+    #[cfg_attr(feature = "serde", serde(skip))]
+    origins: Option<Box<RowOrigins>>,
 }
 
 impl<T: Default> Default for Row<T> {
@@ -55,7 +59,7 @@ impl<T: Default> Row<T> {
     /// Create a new terminal row.
     pub fn new(columns: usize) -> Row<T> {
         let inner = iter::repeat_with(T::default).take(columns).collect();
-        Row { inner, occ: 0, id: next_row_id(), hard_break: false, wrap_columns: 0 }
+        Row { inner, occ: 0, id: next_row_id(), hard_break: false, wrap_columns: 0, origins: None }
     }
 
     /// Increase the number of columns in the row.
@@ -112,6 +116,7 @@ impl<T: Default> Row<T> {
         self.occ = 0;
         self.hard_break = false;
         self.wrap_columns = 0;
+        self.origins = None;
     }
 }
 
@@ -119,7 +124,7 @@ impl<T: Default> Row<T> {
 impl<T> Row<T> {
     #[inline]
     pub fn from_vec(vec: Vec<T>, occ: usize) -> Row<T> {
-        Row { inner: vec, occ, id: next_row_id(), hard_break: false, wrap_columns: 0 }
+        Row { inner: vec, occ, id: next_row_id(), hard_break: false, wrap_columns: 0, origins: None }
     }
 
     #[inline]
@@ -137,9 +142,27 @@ impl<T> Row<T> {
         self.wrap_columns
     }
 
+    /// Temporary cell origins for the current resize, if capture is enabled.
+    pub fn origins(&self) -> Option<&RowOrigins> {
+        self.origins.as_deref()
+    }
+
+    pub(crate) fn begin_origins(&mut self) {
+        self.origins = Some(Box::new(RowOrigins::new(self.id, self.len(), self.hard_break)));
+    }
+
+    pub(crate) fn take_origins(&mut self) -> Option<Box<RowOrigins>> {
+        self.origins.take()
+    }
+
+    pub(crate) fn set_origins(&mut self, origins: Option<Box<RowOrigins>>) {
+        self.origins = origins;
+    }
+
     #[inline]
     pub(crate) fn renew_identity(&mut self) {
         self.id = next_row_id();
+        self.origins = None;
     }
 
     #[inline]

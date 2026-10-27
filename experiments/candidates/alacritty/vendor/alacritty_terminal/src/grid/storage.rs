@@ -146,6 +146,12 @@ impl<T> Storage<T> {
         self.len
     }
 
+    pub(super) fn clear_resize_origins(&mut self) {
+        for row in &mut self.inner {
+            row.take_origins();
+        }
+    }
+
     /// Swap complete rows, including their identity and linebreak metadata.
     pub fn swap(&mut self, a: Line, b: Line) {
         let a = self.compute_index(a);

@@ -2,9 +2,19 @@
 
 按 [ADR-0006](../../docs/adr/0006-confirmed-project-direction.md)，用户确认保留本候选代码继续评估，尚未确认最终采用。下述实现、来源与回归结果继续保留；与 WindTerm 2.7.0 的重要差异、性能容差及正式选型分别提交用户确认。
 
-`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.7` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
+`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.8` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
 
-当前 `.7` 修复原生 resize 的硬/软边界传递及缩宽容量淘汰计数，来源见[补丁台账](../candidates/alacritty/PROVENANCE.md#termforge7-补丁)，结果见[工作检查点](results/2026-10-28-reflow-metadata/README.md)。C++ 长行 resize/repaint 的整段复制回归仍失败：旧历史行与原生片段重复，来源归属和统一视图映射仍由 #29 继续处理。这些原生修复不构成候选完整正确性通过。
+`.7` 已修复原生 resize 的硬/软边界传递及缩宽容量淘汰计数，结果保留在[工作检查点](results/2026-10-28-reflow-metadata/README.md)。当前 `.8` 增加一次 resize 的来源映射，来源见[补丁台账](../candidates/alacritty/PROVENANCE.md#termforge8-补丁)。C++ 长行 resize/repaint 的整段复制回归仍失败：旧历史行与原生片段重复，来源归属和统一视图映射仍由 #29 继续处理。这些原生修复不构成候选完整正确性通过。
+
+## 一次 resize 的来源映射
+
+`tf_terminal_resize` 导出主屏和备用屏各自的旧行、目标行和被移除片段，不因当前激活哪个屏幕而改变两者名称。每个稀疏区间描述旧行 ID、旧物理列、目标物理列和长度；硬换行边界独立保存旧行 ID，因此空硬行也有身份。新补 padding/leading spacer 不假造旧来源；单列裁剪宽字保留 lead cell 来源，逻辑宽度仍属于原始 cell。移除原因区分容量、光标重定位、底部高度裁剪和非 reflow 列裁剪，缺失 padding/spacer 不等于逻辑文本丢失证明。
+
+映射只描述同步 resize 本身。C ABI 返回拥有值并校验 epoch；下一次成功 feed（包括空输入）、finish、历史淘汰或 resize 使旧映射失效，非法尺寸和未通过前缀校验的淘汰请求保持原映射。后续写入可能复用原生行 ID，调用方不能用本映射推断写入后的来源。普通 Rust `Term::resize` 不启用追踪；`resize_with_map` 结束时清理所有存储槽中的临时来源，包括非活动缓存槽。
+
+原生淘汰数累计实际超出历史容量的物理行，包括一次多行滚动中移出容量的原可见行。扩高时仅为补空行而执行的内部滚动不计淘汰；显式清空、物理行合并及非容量裁剪仍分别处理。删除片段数量不是通用的逻辑文本损失计数。
+
+`candidate_resize_map_test` 从 C++ 调用真实静态库，验证字段布局、容量片段、映射生命周期、主/备用屏命名和空硬行。Rust FFI 测试覆盖拆分、相同文字的不同来源合并、宽字 spacer 和高度缩小的来源移除。当前 C++ 历史合并尚未消费此映射，后续覆盖写入、源文本归属、复制/Find 和视口坐标仍需实现与完整验证；该接口不裁决原版历史覆盖策略，也未测量新增来源表的资源成本。
 
 ## 构建与验证
 

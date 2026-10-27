@@ -6,7 +6,7 @@
 
 | 项目 | 当前固定值 | 来源 |
 |---|---|---|
-| `alacritty_terminal` | `0.26.1-dev+termforge.7`，Apache-2.0 | [上游 commit `5421470`](https://github.com/alacritty/alacritty/commit/542147067dd016fc5f49120ef0ba605a98a4e3a7)与[来源/补丁台账](PROVENANCE.md) |
+| `alacritty_terminal` | `0.26.1-dev+termforge.8`，Apache-2.0 | [上游 commit `5421470`](https://github.com/alacritty/alacritty/commit/542147067dd016fc5f49120ef0ba605a98a4e3a7)与[来源/补丁台账](PROVENANCE.md) |
 | 本地补丁 | ED1/ED2、稳定 Row ID/换行元数据/淘汰、安全完整 Row swap、每缓冲区滚动区域、流式字素与明确剪裁 | `vendor/alacritty_terminal/src/`；所有文件哈希进入结果 manifest |
 | 工具链 | Rust/cargo 1.92.0 | 本机与候选 CI 显式选择；当前锁定图最高声明 Rust 1.85 |
 | 传递依赖 | 59 个注册表包 + 根适配器与固定 vendor 两个 path crate，共 61 个包 | `Cargo.lock` 与 `cargo metadata --locked --format-version 1` |

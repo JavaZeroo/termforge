@@ -13,7 +13,7 @@
 | 配置 | 当前定位 | 可以引用的证据与限制 |
 |---|---|---|
 | 默认 main：自研核心 + 系统 ConPTY | 默认构建与已发布 Alpha 的基础路线，不需要 Rust | 已有 R1 限定验收；VT/Unicode 能力仍为有限子集，不能引用候选核心的字素或 TUI 结果 |
-| 当前源码显式候选：`termforge.7` + 系统 ConPTY | `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON`；按 [ADR-0003](adr/0003-core-reference-and-reuse.md)保留为可评估实验，正式核心选型待用户确认 | [固定来源](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)与 [#39 字素合同](research/streaming-graphemes.md)；候选正确性通过不关闭系统 ConPTY 或 R2 父项 |
+| 当前源码显式候选：`termforge.8` + 系统 ConPTY | `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON`；按 [ADR-0003](adr/0003-core-reference-and-reuse.md)保留为可评估实验，正式核心选型待用户确认 | [固定来源](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)与 [#39 字素合同](research/streaming-graphemes.md)；候选正确性通过不关闭系统 ConPTY 或 R2 父项 |
 | 实验分支：`termforge.4` + 固定官方 ConPTY | [PR #50（Draft）](https://github.com/JavaZeroo/termforge/pull/50)，联合源码 `3e5b96d` 的[原基线](research/joint-conpty-baseline.md)保留；后续限定修复已整合，尚未合入 main 或通过产品整体验收 | [#47](https://github.com/JavaZeroo/termforge/issues/47) 跟踪后端整合；终端 margin 与原生状态分列。[resize #51](https://github.com/JavaZeroo/termforge/issues/51)、[GUI Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[工作区 #63](https://github.com/JavaZeroo/termforge/issues/63) 仍开放。[#53](https://github.com/JavaZeroo/termforge/issues/53) 的原 3MB/768B/16KiB 未完成粘贴取消/关闭、负例及八会话 data-only 两轮已限定验证并整合到实验父分支；同次真实 CF/IME 与完整官方矩阵未通过。fence 默认关闭，不由实验结果选择产品后端 |
 
 以下能力以所读源码版本及各自固定证据为准；某个配置的通过结果不能转用于另一个配置。R1 的真实系统 CF/拼音验收属于固定自研核心配置，不外推到当前候选 或实验后端联合配置。

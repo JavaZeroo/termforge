@@ -11,13 +11,66 @@ use crate::term::cell::{Flags, ResetDiscriminant};
 use crate::vte::ansi::{CharsetIndex, StandardCharset};
 
 pub mod resize;
+pub mod origins;
 mod row;
 mod storage;
 #[cfg(test)]
 mod tests;
 
 pub use self::row::Row;
+use self::origins::RowOrigins;
 use self::storage::Storage;
+
+/// A physical source row immediately before one resize transaction.
+#[derive(Clone, Debug)]
+pub struct ResizeSourceRow {
+    pub id: u64,
+    pub line: i32,
+    pub columns: usize,
+    pub hard_break: bool,
+    pub wrap: bool,
+}
+
+/// The source cells carried by a retained or removed physical row.
+#[derive(Clone, Debug)]
+pub struct ResizeMappedRow {
+    pub id: u64,
+    /// Native grid line at capture; negative values denote history.
+    pub line: i32,
+    pub columns: usize,
+    pub origins: RowOrigins,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[repr(u32)]
+pub enum ResizeRemovalReason {
+    Capacity = 1,
+    CursorReposition = 2,
+    HeightCrop = 3,
+    ColumnCrop = 4,
+}
+
+#[derive(Clone, Debug)]
+pub struct ResizeRemoval {
+    pub row: ResizeMappedRow,
+    pub reason: ResizeRemovalReason,
+}
+
+/// Cell movement during one resize, separate from later writes or text policy.
+#[derive(Clone, Debug)]
+pub struct GridResizeMap {
+    pub before_rows: usize,
+    pub before_columns: usize,
+    pub before_history: usize,
+    pub after_rows: usize,
+    pub after_columns: usize,
+    pub after_history: usize,
+    pub discarded_before: u64,
+    pub discarded_after: u64,
+    pub source_rows: Vec<ResizeSourceRow>,
+    pub target_rows: Vec<ResizeMappedRow>,
+    pub removed_rows: Vec<ResizeRemoval>,
+}
 
 pub trait GridCell: Sized {
     /// Check if the cell contains any content.
@@ -138,6 +191,9 @@ pub struct Grid<T> {
 
     #[cfg_attr(feature = "serde", serde(skip))]
     discarded: u64,
+
+    #[cfg_attr(feature = "serde", serde(skip))]
+    resize_removed: Option<Vec<ResizeRemoval>>,
 }
 
 impl<T: GridCell + Default + PartialEq> Grid<T> {
@@ -146,12 +202,57 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
             raw: Storage::with_capacity(lines, columns),
             max_scroll_limit,
             discarded: 0,
+            resize_removed: None,
             display_offset: 0,
             saved_cursor: Cursor::default(),
             cursor: Cursor::default(),
             lines,
             columns,
         }
+    }
+
+    pub(crate) fn begin_resize_map(&mut self) -> GridResizeMap {
+        self.raw.clear_resize_origins();
+        self.resize_removed = Some(Vec::new());
+        let history = self.history_size();
+        let mut source_rows = Vec::with_capacity(history + self.lines);
+        for line in -(history as i32)..self.lines as i32 {
+            let row = &mut self.raw[Line(line)];
+            source_rows.push(ResizeSourceRow {
+                id: row.id(), line, columns: row.len(), hard_break: row.hard_break(),
+                wrap: row.last().is_some_and(|cell| cell.flags().contains(Flags::WRAPLINE)),
+            });
+            row.begin_origins();
+        }
+        GridResizeMap {
+            before_rows: self.lines, before_columns: self.columns, before_history: history,
+            after_rows: self.lines, after_columns: self.columns, after_history: history,
+            discarded_before: self.discarded, discarded_after: self.discarded,
+            source_rows, target_rows: Vec::new(), removed_rows: Vec::new(),
+        }
+    }
+
+    pub(crate) fn finish_resize_map(&mut self, mut map: GridResizeMap) -> GridResizeMap {
+        map.after_rows = self.lines;
+        map.after_columns = self.columns;
+        map.after_history = self.history_size();
+        map.discarded_after = self.discarded;
+        for line in -(map.after_history as i32)..self.lines as i32 {
+            map.target_rows.push(Self::take_resize_row(&mut self.raw[Line(line)], line));
+        }
+        map.removed_rows = self.resize_removed.take().unwrap_or_default();
+        // Storage retains inactive allocation slots after height changes. They
+        // must not carry origins into a later resize or row reuse.
+        self.raw.clear_resize_origins();
+        map
+    }
+
+    fn take_resize_row(row: &mut Row<T>, line: i32) -> ResizeMappedRow {
+        let columns = row.len();
+        let origins = row.take_origins().map(|value| *value).unwrap_or_else(|| RowOrigins {
+            columns, ..RowOrigins::default()
+        });
+        ResizeMappedRow { id: row.id(), line, columns, origins }
     }
 
     /// Update the size of the scrollback history.
@@ -261,6 +362,14 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         T: ResetDiscriminant<D>,
         D: PartialEq,
     {
+        self.scroll_up_inner(region, positions, true);
+    }
+
+    fn scroll_up_inner<D>(&mut self, region: &Range<Line>, positions: usize, count_evictions: bool)
+    where
+        T: ResetDiscriminant<D>,
+        D: PartialEq,
+    {
         // When rotating the entire region with fixed lines at the top, just reset everything.
         if region.end - region.start <= positions && region.start != 0 {
             for i in (region.start.0..region.end.0).map(Line::from) {
@@ -279,12 +388,25 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         // Only rotate the entire history if the active region starts at the top.
         if region.start == 0 {
             let available = self.max_scroll_limit - self.history_size();
-            let evicted = if self.max_scroll_limit == 0 {
-                positions
-            } else {
-                min(positions.saturating_sub(available), self.history_size())
-            };
-            self.discarded = self.discarded.checked_add(evicted as u64).expect("history discarded exhausted");
+            let evicted = positions.saturating_sub(available);
+            let oldest = -(self.history_size() as i32);
+            if let Some(records) = &mut self.resize_removed {
+                // A large rotation can also discard visible rows when the
+                // history capacity is smaller than the scroll distance.
+                for line in oldest..oldest + evicted as i32 {
+                    let row = &mut self.raw[Line(line)];
+                    if row.origins().is_some() {
+                        records.push(ResizeRemoval {
+                            row: Self::take_resize_row(row, line),
+                            reason: ResizeRemovalReason::Capacity,
+                        });
+                    }
+                }
+            }
+            if count_evictions {
+                self.discarded = self.discarded.checked_add(evicted as u64)
+                    .expect("history discarded exhausted");
+            }
 
             // Create scrollback for the new lines.
             self.increase_scroll_limit(positions);

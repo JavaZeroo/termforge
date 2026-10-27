@@ -7,7 +7,18 @@ use crate::index::{Boundary, Column, Line};
 use crate::term::cell::{Flags, ResetDiscriminant};
 
 use crate::grid::row::Row;
-use crate::grid::{Dimensions, Grid, GridCell};
+use crate::grid::origins::RowOrigins;
+use crate::grid::{Dimensions, Grid, GridCell, ResizeMappedRow, ResizeRemoval, ResizeRemovalReason};
+
+fn origin_extent(origins: &mut Option<Box<RowOrigins>>, columns: usize) {
+    if let Some(origins) = origins {
+        if columns < origins.columns {
+            origins.truncate(columns);
+        } else if columns > origins.columns {
+            origins.insert_gap(origins.columns, columns - origins.columns);
+        }
+    }
+}
 
 impl<T: GridCell + Default + PartialEq> Grid<T> {
     /// Resize the grid's width and/or height.
@@ -57,7 +68,8 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         // Move existing lines up for every line that couldn't be pulled from history.
         if from_history != lines_added {
             let delta = lines_added - from_history;
-            self.scroll_up(&(Line(0)..Line(target as i32)), delta);
+            // This rotation removes newly allocated rows, not retained history.
+            self.scroll_up_inner(&(Line(0)..Line(target as i32)), delta, false);
         }
 
         // Move cursor down for every line pulled from history.
@@ -92,6 +104,17 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         // Clamp saved cursor, since only primary cursor is scrolled into viewport.
         self.saved_cursor.point.line = min(self.saved_cursor.point.line, Line(target as i32 - 1));
 
+        if let Some(records) = &mut self.resize_removed {
+            for line in target..self.lines {
+                let row = &mut self.raw[Line(line as i32)];
+                if row.origins().is_some() {
+                    records.push(ResizeRemoval {
+                        row: Self::take_resize_row(row, line as i32),
+                        reason: ResizeRemovalReason::HeightCrop,
+                    });
+                }
+            }
+        }
         self.raw.rotate((self.lines - target) as isize);
         self.raw.shrink_visible_lines(target);
         self.lines = target;
@@ -134,21 +157,27 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
             }
 
             // Remove leading spacers when reflowing wide char to the previous line.
+            let mut last_origins = last_row.take_origins();
             let mut last_len = last_row.len();
             if last_len >= 1
                 && last_row[Column(last_len - 1)].flags().contains(Flags::LEADING_WIDE_CHAR_SPACER)
             {
                 last_row.shrink(last_len - 1);
                 last_len -= 1;
+                origin_extent(&mut last_origins, last_len);
             }
 
             // Don't try to pull more cells from the next line than available.
             let mut num_wrapped = columns - last_len;
             let len = min(row.len(), num_wrapped);
+            let mut origins = row.take_origins();
+            let hard_origin = origins.as_ref().and_then(|origins| origins.hard_boundary);
+            let mut moved_columns = len;
 
             // Insert leading spacer when there's not enough room for reflowing wide char.
             let mut cells = if row[Column(len - 1)].flags().contains(Flags::WIDE_CHAR) {
                 num_wrapped -= 1;
+                moved_columns -= 1;
 
                 let mut cells = row.front_split_off(len - 1);
 
@@ -160,6 +189,27 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
             } else {
                 row.front_split_off(len)
             };
+
+            let mut moved_origins = origins.as_mut().map(|origins| {
+                Box::new(origins.take_prefix(moved_columns))
+            });
+            origin_extent(&mut moved_origins, cells.len());
+            // The continuation's hard boundary moves only if that row is
+            // actually consumed, including the cursor-sensitive empty case.
+            if let Some(origins) = &mut origins {
+                origins.hard_boundary = hard_origin;
+            }
+            if let Some(mut moved) = moved_origins {
+                moved.hard_boundary = None;
+                let previous = last_origins.get_or_insert_with(|| Box::new(RowOrigins {
+                    columns: last_len, ..RowOrigins::default()
+                }));
+                previous.append(*moved, last_len);
+            } else if let Some(previous) = &mut last_origins {
+                previous.insert_gap(last_len, cells.len());
+                previous.hard_boundary = None;
+            }
+            row.set_origins(origins);
 
             // Add removed cells to previous row and reflow content.
             last_row.append(&mut cells);
@@ -185,6 +235,10 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                     // The consumed continuation can carry a hard boundary even
                     // when its remaining cells are empty.
                     last_row.set_hard_break(row.hard_break());
+                    if let Some(origins) = &mut last_origins {
+                        origins.hard_boundary = hard_origin;
+                    }
+                    last_row.set_origins(last_origins);
                     continue;
                 }
 
@@ -203,6 +257,10 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                 // A physical row may disappear; its logical end must survive
                 // on the row which received its cells.
                 last_row.set_hard_break(row.hard_break());
+                if let Some(origins) = &mut last_origins {
+                    origins.hard_boundary = hard_origin;
+                }
+                last_row.set_origins(last_origins);
 
                 // Don't push line into the new buffer.
                 continue;
@@ -212,6 +270,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                 // Set wrap flag if next line still has cells.
                 cell.flags_mut().insert(Flags::WRAPLINE);
             }
+            last_row.set_origins(last_origins);
 
             reversed.push(row);
         }
@@ -229,7 +288,17 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
             let cursor_buffer_line = self.lines - self.cursor.point.line.0 as usize - 1;
             let available = min(cursor_buffer_line, reversed.len() - self.lines);
             let overflow = cursor_line_delta.saturating_sub(available);
-            reversed.truncate(reversed.len() + overflow - cursor_line_delta);
+            let retained = reversed.len() + overflow - cursor_line_delta;
+            let history = reversed.len() - self.lines;
+            if let Some(records) = &mut self.resize_removed {
+                for index in retained..reversed.len() {
+                    records.push(ResizeRemoval {
+                        row: Self::take_resize_row(&mut reversed[index], index as i32 - history as i32),
+                        reason: ResizeRemovalReason::CursorReposition,
+                    });
+                }
+            }
+            reversed.truncate(retained);
             self.cursor.point.line = max(self.cursor.point.line - overflow, Line(0));
         }
 
@@ -238,6 +307,9 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         for mut row in reversed.drain(..).rev() {
             if row.len() < columns {
                 row.grow(columns);
+                let mut origins = row.take_origins();
+                origin_extent(&mut origins, columns);
+                row.set_origins(origins);
             }
             if reflow {
                 let wrapped = row.last().is_some_and(|cell| cell.flags().contains(Flags::WRAPLINE));
@@ -267,15 +339,27 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
         let mut new_raw = Vec::with_capacity(self.raw.len());
         let mut buffered: Option<Vec<T>> = None;
+        let mut buffered_origins: Option<Box<RowOrigins>> = None;
 
         let mut rows = self.raw.take_all();
         for (i, mut row) in rows.drain(..).enumerate().rev() {
             // The logical end belongs to the final fragment, not to the
             // physical container retained for the first fragment.
             let hard_break = row.hard_break();
+            let hard_origin = row.origins().and_then(|origins| origins.hard_boundary);
 
             // Append lines left over from the previous row.
             if let Some(buffered) = buffered.take() {
+                let width = buffered.len();
+                let mut origins = row.take_origins();
+                if let Some(prefix) = buffered_origins.take() {
+                    let origins = origins.get_or_insert_with(|| Box::new(RowOrigins {
+                        columns: row.len(), ..RowOrigins::default()
+                    }));
+                    origins.prepend(*prefix, width);
+                } else if let Some(origins) = &mut origins {
+                    origins.insert_gap(0, width);
+                }
                 // Add a column for every cell added before the cursor, if it goes beyond the new
                 // width it is then later reflown.
                 let cursor_buffer_line = self.lines - self.cursor.point.line.0 as usize - 1;
@@ -284,13 +368,37 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                 }
 
                 row.append_front(buffered);
+                row.set_origins(origins);
             }
 
             loop {
+                let mut origins = row.take_origins();
+                let mut wrapped_origins = origins.as_mut().map(|origins| {
+                    Box::new(origins.split_off(columns))
+                });
                 // Remove all cells which require reflowing.
-                let mut wrapped = match row.shrink(columns) {
+                let removed = row.shrink(columns);
+                let mut wrapped = match removed {
                     Some(wrapped) if reflow => wrapped,
-                    _ => {
+                    removed => {
+                        if !reflow {
+                            if let Some(origins) = &mut wrapped_origins {
+                                origins.hard_boundary = None;
+                                origins.truncate(removed.as_ref().map_or(0, Vec::len));
+                            }
+                            if let (Some(removed), Some(origins), Some(records)) =
+                                (removed, wrapped_origins.take(), &mut self.resize_removed)
+                            {
+                                if !origins.spans.is_empty() {
+                                    records.push(ResizeRemoval {
+                                        row: ResizeMappedRow { id: row.id(),
+                                            line: self.lines as i32 - i as i32 - 1,
+                                            columns: removed.len(), origins: *origins },
+                                        reason: ResizeRemovalReason::ColumnCrop,
+                                    });
+                                }
+                            }
+                        }
                         // The adapter supports one-column windows. Preserve a
                         // whole glyph in a clipped footprint in the non-reflow
                         // alternate buffer as well.
@@ -304,12 +412,18 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                             // whitespace and need to wrap it like normal content.
                             Vec::new()
                         } else {
+                            if let Some(origins) = &mut origins {
+                                origins.hard_boundary = hard_origin;
+                            }
+                            origin_extent(&mut origins, row.len());
+                            row.set_origins(origins);
                             // Since it fits, just push the existing line without any reflow.
                             new_raw.push(row);
                             break;
                         }
                     },
                 };
+                origin_extent(&mut wrapped_origins, wrapped.len());
 
                 // A two-cell glyph cannot be reflowed into a one-column
                 // grid: repeatedly pushing it to the next row never converges.
@@ -319,12 +433,19 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                     row[Column(0)].flags_mut().insert(Flags::CLIPPED_GRAPHEME);
                     if wrapped.first().is_some_and(|cell| cell.flags().contains(Flags::WIDE_CHAR_SPACER)) {
                         wrapped.remove(0);
+                        if let Some(origins) = &mut wrapped_origins {
+                            origins.remove_range(0, 1);
+                        }
                         let cursor_buffer_line = self.lines - self.cursor.point.line.0 as usize - 1;
                         if i == cursor_buffer_line && self.cursor.point.column.0 > 0 {
                             self.cursor.point.column -= 1;
                         }
                     }
                     if wrapped.is_empty() {
+                        if let Some(origins) = &mut origins {
+                            origins.hard_boundary = hard_origin;
+                        }
+                        row.set_origins(origins);
                         new_raw.push(row);
                         break;
                     }
@@ -339,6 +460,19 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
                     let wide_char = mem::replace(&mut row[Column(columns - 1)], spacer);
                     wrapped.insert(0, wide_char);
+                    let leading = origins.as_mut().map(|origins| {
+                        let leading = origins.split_off(columns - 1);
+                        origins.insert_gap(columns - 1, 1);
+                        leading
+                    });
+                    if let Some(leading) = leading {
+                        let suffix = wrapped_origins.get_or_insert_with(|| Box::new(RowOrigins {
+                            columns: wrapped.len() - 1, ..RowOrigins::default()
+                        }));
+                        suffix.prepend(leading, 1);
+                    } else if let Some(origins) = &mut wrapped_origins {
+                        origins.insert_gap(0, 1);
+                    }
                 }
 
                 // Remove wide char spacer before shrinking.
@@ -346,15 +480,18 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                 if len > 0 && wrapped[len - 1].flags().contains(Flags::LEADING_WIDE_CHAR_SPACER) {
                     if len == 1 {
                         row[Column(columns - 1)].flags_mut().insert(Flags::WRAPLINE);
+                        row.set_origins(origins);
                         new_raw.push(row);
                         break;
                     } else {
                         // Remove the leading spacer from the end of the wrapped row.
                         wrapped[len - 2].flags_mut().insert(Flags::WRAPLINE);
                         wrapped.truncate(len - 1);
+                        origin_extent(&mut wrapped_origins, wrapped.len());
                     }
                 }
 
+                row.set_origins(origins);
                 new_raw.push(row);
 
                 // Set line as wrapped if cells got removed.
@@ -375,6 +512,7 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
 
                     // Add removed cells to start of next row.
                     buffered = Some(wrapped);
+                    buffered_origins = wrapped_origins;
                     break;
                 } else {
                     // Reflow cursor if a line below it is deleted.
@@ -397,8 +535,10 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
                     if occ < columns {
                         wrapped.resize_with(columns, T::default);
                     }
+                    origin_extent(&mut wrapped_origins, wrapped.len());
                     row = Row::from_vec(wrapped, occ);
                     row.set_hard_break(hard_break);
+                    row.set_origins(wrapped_origins);
 
                     if i < self.display_offset {
                         // Since we added a new line, rotate up the viewport.
@@ -415,6 +555,15 @@ impl<T: GridCell + Default + PartialEq> Grid<T> {
         let evicted = reversed.len().saturating_sub(self.max_scroll_limit + self.lines);
         self.discarded = self.discarded.checked_add(evicted as u64)
             .expect("history discarded exhausted");
+        if let Some(records) = &mut self.resize_removed {
+            let limit = self.max_scroll_limit + self.lines;
+            for index in (limit..reversed.len()).rev() {
+                records.push(ResizeRemoval {
+                    row: Self::take_resize_row(&mut reversed[index], self.lines as i32 - index as i32 - 1),
+                    reason: ResizeRemovalReason::Capacity,
+                });
+            }
+        }
         reversed.truncate(self.max_scroll_limit + self.lines);
         if reflow {
             for row in &mut reversed {
