@@ -5,17 +5,6 @@ inline void Workspace::scenario_clipboard() {
     require(ms(started_)<45000,"clipboard window scenario timeout");
     auto& evidence=clipboard_scenario_;
     const auto directory=std::filesystem::path(image_).parent_path();
-    // [DEBUG-r99] Read current UI state at each observation. A close action can
-    // invalidate the earlier target pointer before its corresponding end event.
-    const auto trace=[&](const char* event) {
-        if(!evidence.debug_trace_r99.enabled()) return;
-        const bool gone=evidence.index==3 && stage_>=5;
-        const auto* observed=gone || tabs_.empty()?nullptr:tabs_.front().shell.get();
-        evidence.debug_trace_r99.record(directory,evidence.index,stage_,static_cast<uint64_t>(ms(started_)),event,
-            observed?std::optional<bool>{observed->paste_busy()}:std::nullopt,evidence.helper.get(),evidence.owner.get());
-    };
-    if(evidence.debug_trace_r99.enabled()) evidence.debug_trace_r99.turn();
-    trace("tick");
     const bool target_gone=evidence.index==3 && stage_>=5;
     auto* first=target_gone?nullptr:tabs_.front().shell.get();
     auto* other=tabs_.size()>1?tabs_[1].shell.get():(target_gone?tabs_.front().shell.get():nullptr);
@@ -58,7 +47,6 @@ inline void Workspace::scenario_clipboard() {
     } else if(stage_==3 && evidence.receiver->checkpoint()) {
         require(captured()==evidence.baseline(),"clipboard receiver baseline differs");
         evidence.receiver->release();
-        trace("prepare-owner-begin");
         try {
             if(evidence.index==0) {
                 tf_shell::write_unicode_clipboard(window_,u"OCCUPIED_MUST_NOT_SEND");
@@ -69,7 +57,6 @@ inline void Workspace::scenario_clipboard() {
             throw std::runtime_error(std::string("clipboard case=")+evidence.name()+
                 " phase=prepare-owner before-product-paste: "+error.what());
         }
-        trace("prepare-owner-end");
         select(0); SendMessageW(window_,WM_COMMAND,12,0);
         const auto progress=first->observed_clipboard_read();
         require(progress && progress->state==tf_shell::ClipboardReadState::running && first->paste_busy(),
@@ -106,7 +93,6 @@ inline void Workspace::scenario_clipboard() {
         evidence.pending.target_closed=target_gone;
         if(evidence.index==2) require(first->status_text()==L"clipboard read cancelled","Escape did not cancel the product read");
         if(evidence.owner) {
-            trace("owner-release-begin");
             if(evidence.index<2) evidence.owner->release();
             else {
                 tf_shell_test::ClipboardReleaseProof proof;
@@ -115,34 +101,24 @@ inline void Workspace::scenario_clipboard() {
                 evidence.owner->release_after_requester_exit(evidence.helper.get(),target_gone?
                     tf_shell_test::ClipboardReleaseReason::target_closed:tf_shell_test::ClipboardReleaseReason::requester_cancelled,proof);
             }
-            trace("owner-release-end");
         }
         stage_=6;
     } else if(stage_==6 && (!evidence.owner || evidence.owner->released())) {
-        trace("owner-finish-begin");
         if(evidence.owner) evidence.pending.owner_release=evidence.owner->finish();
-        trace("owner-finish-end");
         evidence.owner.reset();
-        trace("owner-reset-end");
-        trace("after-marker-begin");
         select(target_gone?0:1); ordinary(other,"echo "+evidence.marker(true)+"\r"); stage_=7;
-        trace("after-marker-end");
     } else if(stage_==7 && other->live_contains_line(evidence.marker(true))) {
         evidence.pending.other_after=true; no_payload();
         if(target_gone) {
             finish_case(); evidence.save(directory/"clipboard-workflow.json");
             Bitmap frame(physical_width_,physical_height_); paint(frame.dc);
             const RECT rect=physical(terminal_); active()->render_to(frame.dc,rect.left,rect.top); frame.save(image_);
-            stage_=100; trace("complete-before-close"); close_all();
+            stage_=100; close_all();
         } else {
             require(!first->paste_busy(),"late clipboard result restarted input after cancellation/error");
             select(0); const auto retry=evidence.retry();
-            trace("retry-clipboard-begin");
             tf_shell::write_unicode_clipboard(window_,std::u16string(retry.begin(),retry.end()));
-            trace("retry-clipboard-end");
-            trace("retry-command-begin");
             SendMessageW(window_,WM_COMMAND,12,0); stage_=8;
-            trace("retry-command-end");
         }
     } else if(stage_==8 && !first->paste_busy() && captured()==evidence.baseline()+evidence.retry()) {
         require(!first->paste_prompt_handle(),"single-line retry unexpectedly confirmed");

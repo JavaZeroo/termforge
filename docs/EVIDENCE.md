@@ -18,6 +18,8 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 
 后续合并推送的两个独立失败见[原件审计](../experiments/shell/results/2026-10-26-postmerge-ci/validation.json)：main `098f9ab` 工作区第二轮保存 stage2 [#72](https://github.com/JavaZeroo/termforge/issues/72)，实验分支源码 `af563ba` 的 681 高度选择场景 [#73](https://github.com/JavaZeroo/termforge/issues/73)。两次 CI 实际均为默认自研核心/system；return2、Job0、desktop 已删除，原生退出/EOF 与逐运行 EXE 绑定仍未知。它们不等同已修 #61/#66，另一批 PR 成功不能覆盖这些失败。
 
+[#99 剪贴板阶段观测](research/clipboard-stage-observation.md)保存原两轮四 case、无内容阶段记录及完整 CI 的独立失败。该批未复现 45 秒超时，临时观测已撤回；不能据此关闭 #99，另一个选择复制入口的 OpenClipboard5 由 #85 继续跟踪。
+
 ## 产品能力的限定验收
 
 | 范围 | 结果与复现入口 | 可以支持的结论与限制 |

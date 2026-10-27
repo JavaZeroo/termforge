@@ -37,27 +37,6 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build build --config Release --parallel 2
-      - name: Bind clipboard diagnostic binaries
-        if: runner.os == 'Windows' && github.event_name == 'push' && github.ref == 'refs/heads/diagnose/clipboard-stages-r99'
-        shell: pwsh
-        run: |
-          # [DEBUG-r99] Hash only this clean build's fixed synthetic entry points.
-          $diagnosticFiles = @{}
-          foreach ($diagnosticName in @('termforge_shell.exe', 'shell_test_launcher.exe', 'shell_clipboard_reader.exe', 'shell_input_client.exe')) {
-            $diagnosticPath = Join-Path 'build/bin/Release' $diagnosticName
-            $diagnosticFiles[$diagnosticName] = @{
-              sha256 = (Get-FileHash -LiteralPath $diagnosticPath -Algorithm SHA256).Hash.ToLowerInvariant()
-              bytes = (Get-Item -LiteralPath $diagnosticPath).Length
-            }
-          }
-          $diagnosticSource = git rev-parse HEAD
-          if ($LASTEXITCODE -ne 0) { throw 'diagnostic source identity failed' }
-          New-Item -ItemType Directory -Force -Path 'build/test-artifacts/shell' | Out-Null
-          @{
-            schema = 'termforge-clipboard-stage-build-r99-v1'
-            source = $diagnosticSource
-            files = $diagnosticFiles
-          } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath 'build/test-artifacts/shell/clipboard-stage-build.json' -Encoding utf8
       - name: Verify shell preparation guards and oracles
         run: python -m unittest tools.test_prepare_hosted_shells tools.test_owned_job_cleanup -v
       - name: Prepare hosted Windows shell prerequisites
@@ -74,8 +53,6 @@ jobs:
       - name: Test
         env:
           TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD: ${{ runner.os == 'Windows' && '1' || '0' }}
-          # [DEBUG-r99] One diagnostic branch's original push/default gate.
-          TERMFORGE_R99_STAGE_TRACE: ${{ runner.os == 'Windows' && github.event_name == 'push' && github.ref == 'refs/heads/diagnose/clipboard-stages-r99' && '1' || '0' }}
         run: ctest --test-dir build -C Release --output-on-failure --output-junit test-results.xml
       - name: Preserve clipboard and window integration evidence
         if: always() && runner.os == 'Windows'
