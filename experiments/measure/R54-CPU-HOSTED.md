@@ -12,7 +12,7 @@
 
 GitHub的[路径过滤规则](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#git-diff-comparisons)依赖push文件差异，空差异不运行工作流。上述缺席与新分支在已发布commit上创建、两个工作流均有路径过滤相符，但事件实际文件列表未留存。为消除入口对此差异计算的依赖，本诊断移除paths过滤，仍保留明确分支白名单、创建push条件和attempt1检查。
 
-下一入口预声明为`perf/grapheme-cpu-hosted-r54-entry3`的新创建push，使用修订后新source/run身份，一次完成原构建及六位置诊断。前三个入口的实际状态分别保留，不重建旧分支、不重跑旧run、不增加或替换任何已存在的测量样本；后续修订push仍不会执行诊断。该入口变化不改测量代码、oracle、停止条件或产品容差。
+第三入口预声明为`perf/grapheme-cpu-hosted-r54-entry3`的新创建push，使用修订后新source/run身份，一次完成原构建及六位置诊断。前三个入口的实际状态分别保留，不重建旧分支、不重跑旧run、不增加或替换任何已存在的测量样本；后续修订push仍不会执行诊断。该入口变化不改测量代码、oracle、停止条件或产品容差。[实际run40512310499及归档复核](results/2026-10-27-r54-cpu-hosted/README.md)已完成：六个位置输出正确、计量完整，扣除自身完整工作后仍有3.333%–5.263%的余额；没有成本或性能验收结论。
 
 一个新的`windows-2025` VM依次准备Python3.12、psutil7.2.2、Rust1.92.0，执行合同测试，然后[复建并审计](r54_build.py)原固定 `.3/.4` 及四次短正确性。仍是MSVC x64、Release、locked/offline、no-default-features、jobs1、独立target及两个共同harness覆盖；80/84来源文件、原锁文件、真实编译/链接日志和EXE哈希保持可追溯。它是新构建，不借用本地或上次hosted二进制身份。
 
