@@ -21,7 +21,7 @@ foreach ($path in @($Source, $Vcpkg, $Out)) {
 if (Test-Path -LiteralPath $Out) { throw 'A fresh output directory is required.' }
 New-Item -ItemType Directory -Path "$Out/public", "$Out/_private", "$Out/cache" | Out-Null
 $state = [ordered]@{
-    schema = 'termforge-upstream-conpty-build-v1'
+    schema = 'termforge-upstream-conpty-build-v2'
     purpose = 'isolated source-build and adapter experiment; not an official ConPTY package'
     status = 'running'
     termforge_source = (& git -C $repo rev-parse HEAD)
@@ -62,6 +62,22 @@ function Build-Project([string]$Name, [string]$Project) {
         '/p:Configuration=Release', '/p:Platform=x64', '/p:PlatformToolset=v145',
         '/p:WindowsTargetPlatformVersion=10.0.26100.0', '/p:CL_MPCount=1', '/p:UseMultiToolTask=false',
         "/p:VCToolsVersion=$env:VCToolsVersion", "/p:SolutionDir=$Source\", "/p:VcpkgRoot=$Vcpkg\"))
+}
+function Build-HostPair([string]$Prefix) {
+    Build-Project "$Prefix-propsheet-build" 'src/propsheet/propsheet.vcxproj'
+    Build-Project "$Prefix-host-build" 'src/host/exe/Host.EXE.vcxproj'
+    Build-Project "$Prefix-dll-build" 'src/winconpty/dll/winconptydll.vcxproj'
+}
+function Copy-Pair([string]$Directory) {
+    New-Item -ItemType Directory -Path "$Out/$Directory" | Out-Null
+    $files = [ordered]@{}
+    foreach ($name in @('OpenConsole.exe', 'conpty.dll')) {
+        $binary = "$Source/bin/x64/Release/$name"
+        $files[$name] = [ordered]@{sha256=(Digest $binary); bytes=(Get-Item -LiteralPath $binary).Length}
+        Copy-Item -LiteralPath $binary -Destination "$Out/$Directory/$name"
+        if ((Digest "$Out/$Directory/$name") -ne $files[$name].sha256) { throw 'Copied pair identity differs.' }
+    }
+    return $files
 }
 function Test-Adapter([string]$Name, [string]$Expected, [switch]$Full) {
     $testBinary = "$Source/bin/x64/Release/ConAdapter.Unit.Tests.dll"
@@ -140,6 +156,9 @@ try {
     Build-Project 'baseline-render-gdi-build' 'src/renderer/gdi/lib/gdi.vcxproj'
     Build-Project 'baseline-adapter-build' 'src/terminal/adapter/ut_adapter/Adapter.UnitTests.vcxproj'
     Test-Adapter 'baseline-regression' 'red'
+    Build-HostPair 'baseline'
+    $currentStage = 'baseline-artifact-identity'
+    $state.baseline_files = Copy-Pair 'baseline-pair'
 
     [void](Invoke-Native 'production-patch-check' 'git' @('apply', '--unidiff-zero', "--exclude=$testFile", '--check', $patch))
     [void](Invoke-Native 'production-patch' 'git' @('apply', '--unidiff-zero', "--exclude=$testFile", $patch))
@@ -149,18 +168,10 @@ try {
     Test-Adapter 'patched-regression' 'focused-green'
     Test-Adapter 'patched-adapter' 'full-green' -Full
     $state.adapter_tests_verified = $true
-    Build-Project 'patched-propsheet-build' 'src/propsheet/propsheet.vcxproj'
-    Build-Project 'patched-host-build' 'src/host/exe/Host.EXE.vcxproj'
-    Build-Project 'patched-dll-build' 'src/winconpty/dll/winconptydll.vcxproj'
+    Build-HostPair 'patched'
 
     $currentStage = 'artifact-identity'
-    New-Item -ItemType Directory -Path "$Out/pair" | Out-Null
-    $state.files = [ordered]@{}
-    foreach ($name in @('OpenConsole.exe', 'conpty.dll')) {
-        $binary = "$Source/bin/x64/Release/$name"
-        $state.files[$name] = [ordered]@{sha256=(Digest $binary); bytes=(Get-Item -LiteralPath $binary).Length}
-        Copy-Item -LiteralPath $binary -Destination "$Out/pair/$name"
-    }
+    $state.files = Copy-Pair 'pair'
     $state.nuget_packages = @()
     foreach ($package in Get-ChildItem -LiteralPath "$Source/packages" -Filter '*.nupkg' -Recurse -File) {
         $state.nuget_packages += [ordered]@{name=$package.Name; sha256=(Digest $package.FullName)}
@@ -168,7 +179,16 @@ try {
     $state.vcpkg_status_sha256 = Digest "$Source/obj/x64/vcpkg/vcpkg/status"
     $state.status = 'adapter-verified-runtime-unverified'
     Save-State
-    Copy-Item -LiteralPath "$Out/public/summary.json", $patch, "$Source/LICENSE", "$Source/NOTICE.md" -Destination "$Out/pair"
+    foreach ($directory in @('baseline-pair', 'pair')) {
+        $patched = $directory -eq 'pair'
+        [ordered]@{schema='termforge-upstream-conpty-variant-v1'; upstream_source=$state.upstream_source;
+            workflow_run=$state.workflow_run; production_patch_applied=$patched;
+            focused_adapter_result=$(if ($patched) { 'passed' } else { 'expected-failure' });
+            full_adapter_verified=$patched;
+            patch_sha256=$state.patch_sha256; files=$(if ($patched) { $state.files } else { $state.baseline_files })
+        } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath "$Out/$directory/variant.json" -Encoding utf8
+        Copy-Item -LiteralPath "$Out/public/summary.json", $patch, "$Source/LICENSE", "$Source/NOTICE.md" -Destination "$Out/$directory"
+    }
 } catch {
     $state.status = 'failed'
     $state.failed_stage = $currentStage

@@ -1,0 +1,73 @@
+{
+  "schema": "termforge-upstream-margin-build-evidence-v1",
+  "date_utc": "2026-10-27",
+  "issue": 56,
+  "pull_request": 96,
+  "head": "b56058e9c4becb30f6afda3100b73acf1e552ff7",
+  "tree": "e5031af701d8cd1d8c710624fb7e1a2ce3b61c74",
+  "run_url": "https://github.com/JavaZeroo/termforge/actions/runs/40447628163",
+  "job_id": 122002564243,
+  "summary_artifact": {
+    "id": 12708429315,
+    "zip_sha256": "ec391e524557e163aa40149dc9f5c3d801a0b7cede3b67ac52aaf15dc3fe5238"
+  },
+  "pair_artifact": {
+    "id": 12708509216,
+    "zip_sha256": "60367bbde7a1ac5839ddb3718b19604869313e8f28df60bc33b22bdaa4d8eb31"
+  },
+  "captured_summary_sha256": "c1f7d41e60417c50524c299ac8c9ca6617ebd90244ac9e756c51d29f39bd61c5",
+  "summary_representation": "build-summary.json preserves parsed fields; UTF-8/LF JSON normalization is not the captured byte identity",
+  "tests": {
+    "baseline-regression": {
+      "expected": "red",
+      "exit_code": 1,
+      "counts": {
+        "total": 1,
+        "passed": 0,
+        "failed": 1,
+        "blocked": 0,
+        "not_run": 0,
+        "skipped": 0
+      },
+      "accepted": true
+    },
+    "patched-regression": {
+      "expected": "focused-green",
+      "exit_code": 0,
+      "counts": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "blocked": 0,
+        "not_run": 0,
+        "skipped": 0
+      },
+      "accepted": true
+    },
+    "patched-adapter": {
+      "expected": "full-green",
+      "exit_code": 0,
+      "counts": {
+        "total": 412,
+        "passed": 412,
+        "failed": 0,
+        "blocked": 0,
+        "not_run": 0,
+        "skipped": 0
+      },
+      "accepted": true
+    }
+  },
+  "baseline_failure": "expected default alternate margins; actual top=1,bottom=2 at adapterTest.cpp:3006",
+  "first_success_only_patched_pair": true,
+  "same_source_baseline_pair_built": false,
+  "native_runtime_verified": false,
+  "full_r2_contract_verified": false,
+  "product_backend_selected": false,
+  "limitations": [
+    "Adapter state tests do not establish native console or downstream transport behavior.",
+    "This v1 build contains no unpatched native pair; same-source native red/green remains unmeasured.",
+    "Artifacts are temporary research outputs; no WindTerm files or upstream binary bytes are committed.",
+    "Earlier checkout, shallow-history and build-order failures remain in PR96 and issue56."
+  ]
+}

@@ -2,15 +2,16 @@
 
 `dc8-native-margin-candidate.patch` 是针对 Microsoft Terminal
 `dc8ae365847d41f62d1ebca93815bb00959bc12f` 的独立候选改动，随附
-[Microsoft MIT 原许可](MICROSOFT-LICENSE.txt)。原作者版权保留。它目前只通过完整固定文件的
-`git apply --unidiff-zero --check`，**未编译、未运行上游测试、未生成后端、未证明修复**。
+[Microsoft MIT 原许可](MICROSOFT-LICENSE.txt)。原作者版权保留。
+[首次真实构建记录](../results/2026-10-27-upstream-margin-build/validation.json)包含原实现的断言失败、
+补丁后的 focused 1/1、完整 adapter 412/412 及同源 EXE/DLL 身份；**这些不证明原生运行时或完整合同修复**。
 原问题、逐字段合同与有界运行见 [#56 调查](../../../docs/research/conpty-native-margin-path.md)。
 
 候选在同一 `AdaptDispatch` 中保存隐藏主屏 margin，新建备用屏使用默认 margin，返回主屏恢复保存值；
 重复 `1049h` 不覆盖隐藏主屏值，重复 `1049l` 不清空主屏当前值。它没有改源 fixture、运输、API 表、宽度 flag、
-TermForge 默认后端或现有官方双 SHA 校验。附加的上游 `AlternateScreenMarginsTest` 也尚未执行。
+TermForge 默认后端或现有官方双 SHA 校验。附加的上游 `AlternateScreenMarginsTest` 固定主/备用屏切换的 margin 回归。
 
-## 下一次隔离构建的具体入口
+## 隔离构建的具体入口
 
 在单独的 Microsoft Terminal 源码 checkout 固定上述提交，校验 [validation.json](../results/2026-10-26-native-margin-path/validation.json)
 的源文件 SHA 后，先用 `git apply --unidiff-zero --check` 检查、再以同一选项应用本 patch。完整保留上游许可证、依赖锁和构建日志。
@@ -28,7 +29,7 @@ TermForge 默认后端或现有官方双 SHA 校验。附加的上游 `Alternate
 - `src/host/exe/Host.EXE.vcxproj`：生成 `OpenConsole.exe`，包含本次 adapter 修订。
 - `src/winconpty/dll/winconptydll.vcxproj`：从同一完整提交/依赖/配置生成配套 DLL。
 
-这些入口来自同一提交的 `OpenConsole.slnx`；不是已执行或已验证的构建命令结果。
+这些入口来自同一提交的 `OpenConsole.slnx`；实际执行身份和结果由对应 PR/#56 记录。
 测试入口可用上游 `Invoke-OpenConsoleTests -Test adapter`，其映射在 `tools/tests.xml`，须限制为无交互 unit 路径。
 
 ### 一次性 hosted 构建入口
@@ -42,14 +43,18 @@ vcpkg 使用完整 Git 历史，HEAD 仍固定在原 baseline；[历史 port 的
 单项目入口显式补齐固定 `OpenConsole.slnx` 的顺序依赖：adapter 前构建 Proxy/Types/Buffer/Render Base/GDI，生成所需接口头；Host.EXE 前构建 Propsheet。
 
 [脚本](build_hosted.ps1)先只应用已有测试，编译并要求一次 `AlternateScreenMarginsTest` 的明确 margin 断言失败；
-缺包、编译错误、加载错误、零测试、跳过或超时均不算 red。再仅应用两个实现文件的 patch，重建并分别执行一次 focused 和完整 adapter 测试，
-通过后才从同源构建 EXE/DLL。TAEF focused/session 期限分别为60/600秒，整个构建 job 最长45分钟，没有自动重试。
+缺包、编译错误、加载错误、零测试、跳过或超时均不算 red。随后构建并单独保存原生产代码的 baseline EXE/DLL，
+再仅应用两个实现文件的 patch，重建并分别执行一次 focused 和完整 adapter 测试，通过后构建 patched EXE/DLL。
+两组都来自同一 source/工具/依赖，variant 清单分别记录是否应用生产补丁及实际双 SHA，不能互相混配。
+baseline 的 variant 标明 focused 预期失败、完整 adapter 未验；共享 summary 中的 adapter 通过仅指 patched 变体。
+TAEF focused/session 期限分别为60/600秒，整个构建 job 最长45分钟，没有自动重试。
 [判据](taef_result.py)和[拒绝用例](test_taef_result.py)防止把进程失败、缺失执行或局部测试当作完整结果。
 TAEF 参数语义来自 [Microsoft 文档](https://learn.microsoft.com/en-us/windows-hardware/drivers/taef/te-exe-command-line-parameters)，
 单失败 red 只接受退出码1；[harness/超时高位](https://learn.microsoft.com/en-us/windows-hardware/drivers/taef/exit-codes-for-taef)不得混作断言失败。
 
 workflow 保存白名单 summary、实际包/工具/双文件 SHA；完整日志仅在 CI 日志中，额外文件留在不上传的 `_private`。
-测试通过后的短期实验 artifact 带上游 LICENSE/NOTICE 和补丁，不包含 TAEF、NuGet 工具或 WindTerm 文件。
+全部门槛通过后才上传两组短期实验 artifact，均带上游 LICENSE/NOTICE 和候选补丁；baseline 清单明确该生产补丁未应用。
+它们不包含 TAEF、NuGet 工具或 WindTerm 文件。
 这些是可执行的验证步骤；其实际结果由对应 PR/#56 记录，入口存在不表示已经编译或通过。
 即使 adapter 通过，仍须新 fork 身份、原175B四阶段、原生/运输/候选末端及反例验证；不能加载为现有官方包或据此结项。
 
