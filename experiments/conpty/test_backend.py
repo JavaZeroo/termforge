@@ -21,7 +21,7 @@ class BackendTests(unittest.TestCase):
         self.out = Path(tempfile.mkdtemp(prefix="run-", dir=base))
         self.serial = 0
 
-    def invoke(self, directory, mode="--host", *, executable=None):
+    def invoke(self, directory, mode="--host", *, executable=None, arguments=(), timeout=20):
         job = process = None
         stdout = stderr = b""
         result = {"status": "failed", "failure_code": None, "returncode": None,
@@ -42,14 +42,15 @@ class BackendTests(unittest.TestCase):
         try:
             job = OwnedJob()
             stage = "process_start"
-            process = subprocess.Popen([str(executable or binary("conpty_backend_probe")), mode, str(directory)],
+            process = subprocess.Popen([str(executable or binary("conpty_backend_probe")), mode, str(directory),
+                                        *map(str, arguments)],
                                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                        creationflags=subprocess.CREATE_NO_WINDOW)
             stage = "job_assign"
             job.assign(process.pid)
             result["job_assigned"] = True
             stage = "process_communicate"
-            stdout, stderr = process.communicate(b"GO\n", timeout=20)
+            stdout, stderr = process.communicate(b"GO\n", timeout=timeout)
             result["streams_drained"] = True
             stage = "stream_evidence"
             (private / "host.stdout.bin").write_bytes(stdout)

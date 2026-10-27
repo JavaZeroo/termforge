@@ -24,7 +24,7 @@
 
 ## 隔离入口与身份拒绝
 
-`TERMFORGE_BUILD_SOURCE_CONPTY_EXPERIMENT` 默认 OFF，仅建立 `conpty_source_margin_probe` 与 `conpty_source_backend_probe`，不能与产品 `TERMFORGE_CONPTY_BACKEND_DIR` 同时启用。只有这两个目标编译新的 source factory；默认及官方 factory 仍严格接受各自原身份。产品 bundle、默认后端和 PR #50 的固定官方配置均未切换。
+`TERMFORGE_BUILD_SOURCE_CONPTY_EXPERIMENT` 默认 OFF，本次使用 `conpty_source_margin_probe` 与 `conpty_source_backend_probe`；后续[补充对照](conpty-source-margin-controls.md)另增加 `conpty_source_margin_controls`。只有这三个独立目标编译 source factory，不能与产品 `TERMFORGE_CONPTY_BACKEND_DIR` 同时启用；默认及官方 factory 仍严格接受各自原身份。产品 bundle、默认后端和 PR #50 的固定官方配置均未切换。
 
 source factory 只允许表中两个 SHA 对，分别报告 `source-dc8-r56-baseline-run40449292015` / `source-dc8-r56-patched-run40449292015`。Python 入口另核对原始 summary、patch、精确 variant 字段与类型、文件大小和 SHA；布尔值不能以 0/1 代替。DLL 与 EXE 在加载期间保持只读共享句柄；create/resize/close 使用同一模块，模块存活至会话和子进程回收之后。
 
@@ -63,6 +63,6 @@ python -m experiments.conpty.source_margin_run --baseline local/source-baseline 
 python -m experiments.conpty.source_backend_check --baseline local/source-baseline --patched local/source-patched --official local/official-conpty-1.25 --probe-directory local/source-margin-build/bin/Release --output local/source-backend-new
 ```
 
-待补无备用屏、重复 h/l、默认 margin、非零光标和显式样式、历史隔离、resize、查询及 API 写入的真实交叉；上游 focused 测试虽覆盖重复 h/l，不能代替这些原生运行。之后仍需实际产品联合源码、支持平台、资源与维护/升级验证，并由 #34 提出正式方案供用户确认。
+无备用屏、重复 h/l、默认 margin 的后续 12 次[原生补充对照](conpty-source-margin-controls.md)已单独记录，不更改或扩充本批 175B 结果。非零光标和显式样式、历史隔离、resize、查询及 API 写入仍待真实交叉；之后还需实际产品联合源码、支持平台、资源与维护/升级验证，并由 #34 提出正式方案供用户确认。
 
 独立的 [#97 candidate-scroll 退出超时](https://github.com/JavaZeroo/termforge/issues/97)发生于 parent `5c073e4` 的 candidate/system push CI：正确末帧已经产生，但原 20 秒期限未自然结束。它不是本 175B 输入，同 HEAD 的其他 CI 成功不能覆盖该失败；此处的源构建修补也不构成其因果修复。原官方 80 列 5 秒失败、Vim #52、完整 R2、WindTerm 行为等价、性能与实际呈现均没有由本实验验收。
