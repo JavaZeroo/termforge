@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "scope": "Experimental candidate resize origin map and real scroll eviction accounting; not complete #29/R2 acceptance",
+  "source_commit": "66f1942324060e56974d85ebad3bff04749e7395",
+  "source_tree": "7dd044c0cb8d2499a747f5abc70eb1b5d665d08a",
+  "candidate_version": "0.26.1-dev+termforge.8",
+  "configuration": "Windows x64, explicit candidate adapter, system backend; selected native core checks only",
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "rust_toolchain": "1.92.0",
+    "cmake_configuration": "Release"
+  },
+  "source_identity_note": "Tests ran on the equivalent pre-commit Git contents; resize.rs line endings were normalized before the final release rebuild. No code changed after those builds.",
+  "checks": [
+    {
+      "command": "cargo test --workspace --locked",
+      "exit_code": 0,
+      "result": "163 vendor + 10 FFI + 2 measure + 2 trace + 1 doctest passed",
+      "local_log": "local/r29-origin-map/workspace-final.log",
+      "log_sha256": "902c5005a11eb58ca1794ac88cea4565bc2f0f22509627fb2b3f5e514822d674"
+    },
+    {
+      "command": "ctest --test-dir build/candidate-adapter -C Release -R '^candidate_(core|resize_map)$' --output-on-failure",
+      "exit_code": 8,
+      "result": "candidate_resize_map passed; candidate_core failed at existing whole-feed history-copy regression",
+      "local_log": "local/r29-origin-map/ctest-final.log",
+      "log_sha256": "d2ea20fca33b393d32aacb7f04fbc55830477b289fea60525a03eed28a9730a5"
+    },
+    {
+      "command": "python -m unittest experiments.candidates.alacritty.test_candidate -v",
+      "exit_code": 0,
+      "result": "6 passed against rebuilt trace",
+      "local_log": "local/r29-origin-map/runner-final.log",
+      "log_sha256": "c013c10660dccd5fae887773ca8c6e7d366e974f6abe4b9325419ba8350fff83"
+    },
+    {
+      "command": "cargo check --locked -p alacritty_terminal --features serde",
+      "exit_code": 0,
+      "result": "passed",
+      "local_log": "local/r29-origin-map/serde-final.log",
+      "log_sha256": "caf1b09d20c09a89573134e3929e071fd25a7001ef4fdd533af832b224709389"
+    }
+  ],
+  "red_green": [
+    {
+      "kind": "initial failing split boundary",
+      "local_log": "local/r29-origin-map/split-red.log",
+      "sha256": "69a7633e9a4cc0bc741ac7a6355541dfe063927029d383baa1e8292d6917f71c"
+    },
+    {
+      "kind": "split corrected",
+      "local_log": "local/r29-origin-map/split-green.log",
+      "sha256": "a1f0a4bf61635d1a73c2e84ccd079012df9b26a1154fda39c4a590e876f9c59f"
+    },
+    {
+      "kind": "initial merge check already green",
+      "local_log": "local/r29-origin-map/merge-initial-green.log",
+      "sha256": "43102717505ede280f98774f560bd3c99c70d0cc5ba6d242a7eb4dd85fce9cbf"
+    },
+    {
+      "kind": "deliberate removal of mapped grow showed failing merge",
+      "local_log": "local/r29-origin-map/merge-negative-control.log",
+      "sha256": "248cdcf5483d46ac0a76027edcee9281a54dfc961c69ceea252e37b0baa96250"
+    },
+    {
+      "kind": "restored implementation passed split and merge",
+      "local_log": "local/r29-origin-map/split-merge-green.log",
+      "sha256": "e5c920c340e234f671475b6395cddd27b4ad49f232fdddd99b9436d379275c28"
+    },
+    {
+      "kind": "height capture missing two rows",
+      "local_log": "local/r29-origin-map/height-red.log",
+      "sha256": "7d7ad14538215e5fb0ace7ee9f3a0158dce2cbaf401de945587b3fd9f41c228e"
+    },
+    {
+      "kind": "height capture corrected",
+      "local_log": "local/r29-origin-map/height-green.log",
+      "sha256": "feee2cf5314cd934cca3d545349bfef38494e35c23fb65a1514a1ad64b8934d6"
+    },
+    {
+      "kind": "actual eviction counted as zero",
+      "local_log": "local/r29-origin-map/counter-red.log",
+      "sha256": "d85a403dca7aa310d9bf6d3e4b84556e85cb94aa461a1482f9325bb489c1e428"
+    },
+    {
+      "kind": "test fixture correction: unwritten cell_text is empty, not an ASCII space",
+      "local_log": "local/r29-origin-map/counter-content-oracle-failure.log",
+      "sha256": "fb0e6e2494e11d4d34830af52c112e2e2013e99a9f71b050188251bd2dcb13cc"
+    },
+    {
+      "kind": "counter behavior and corrected empty-text fixture passed",
+      "local_log": "local/r29-origin-map/counter-green.log",
+      "sha256": "22e323531320780380ee3a699ba17696997ae8c3a0e3e1995cfb849ef2674905"
+    }
+  ],
+  "artifacts": {
+    "build/candidate-adapter/bin/Release/candidate_resize_map_test.exe": "3ab0ba0e2355b6e3862a7a253dbfae50c71347b89c4a33a5de88f884f6137e51",
+    "build/candidate-adapter/bin/Release/candidate_core_test.exe": "ff5d02828cb5ad0a971aee23c9eac9cb9ff07e6c8a0fd6f50b82a62d80b6aa8a",
+    "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib": "09b97ccccefaf0e452d35ad55890b46108d922a22f123f2b238b83430fc7ac1e",
+    "experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe": "c98df74fac5a222a27a6fc71eeaf2ade8691c0fadb43f882a076065690b9e833"
+  },
+  "limitations": [
+    "C++ cached history does not consume the new origins yet; source duplication, blank hard-line loss, Find and viewport ownership remain unresolved.",
+    "candidate_core stops at its first whole-feed assertion; later bytewise cases did not execute in that run.",
+    "No full shell/TUI/clipboard/IME/DPI/experimental backend suite was run for this source.",
+    "No performance or WindTerm equality measurement; temporary origins allocate by physical row and fragment.",
+    "One-shot mapping expires before writes and cannot establish partial-overwrite provenance.",
+    "The 10800-transaction and 960-continuous-resize diagnostics preceded the final counter correction; they are supplemental observations, not a combined final acceptance."
+  ],
+  "reviews": {
+    "base": "a8fd664a27e208cecff7d4c24a3c3915cc4ff86b",
+    "target": "66f1942324060e56974d85ebad3bff04749e7395",
+    "standards_findings": 0,
+    "spec_findings": 0,
+    "scope": "Read-only two-axis review of the fixed implementation commit; known incomplete C++ history ownership remains open."
+  },
+  "supplemental_final_source_check": {
+    "transactions": 480,
+    "scope": "Bounded origin completeness/uniqueness, hard boundaries and cell text/colors after cursor, erase, margin, insert/delete and scroll mutations; not product parity",
+    "local_log": "local/r29-origins-spec/completeness.log",
+    "sha256": "161585b3df11d7ae1ece4071a6f171ebc7ceeeddef9a8bc0915349fe7892cb9a"
+  }
+}

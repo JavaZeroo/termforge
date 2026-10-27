@@ -1,0 +1,1049 @@
+{
+  "scope": "Independent first-grow research observation; valid planned precondition stop, not a product policy or acceptance result.",
+  "observed_version": "WindTerm 2.7.0 Windows x64",
+  "os": "Windows 11 Pro 10.0.26200 x64",
+  "transport": "Synthetic loopback Telnet; actual dimensions from the owned peer NAWS.",
+  "actual_target_runs": 1,
+  "case_a_runs": 1,
+  "case_b_runs": 0,
+  "instrumentation_limit_seconds": 45,
+  "observed_phases": 2,
+  "stop_reason": "no-new-historical-text-in-view",
+  "historical_entry_markers": [],
+  "cup_sent": false,
+  "ed2_sent": false,
+  "redraw_sent": false,
+  "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "distribution_files_previously_verified": 4047,
+  "distribution_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "probe_sha256": "06838cb7014bf27f4a95f7c0b355dc2f7cd1f3bcb74a6296f5035d4dfa44da52",
+  "probe_template_sha256": "0ee2e293b55bbbc8b94417881654870fdbba02c206cbde44d03df1a07c556b51",
+  "peer_script_sha256": "e094a504f450696a55a2bd3ce22ffb2878b14ed900af7be6d4da6165e102213c",
+  "frozen_plan_sha256": "3e59a253cdb0ee431de99e96c3ac9f724d95cfcd000ad5078428f1eca6d43076",
+  "evidence_id": "ev_77c41a98da715ac7a7d5f0d9e3432bc932c61bf5b177d3aa74288390f4d5d9dc",
+  "body_sha256": "c7efff3c2d919395cf3d499b0e5e005de514ae509a72bbcb46ff96c2d189758f",
+  "wire_sha256": "1062aeca1d4be780c3a168844f05df98a6be447eb38384645d3ace85d0b82875",
+  "input_reconstructed_exactly": true,
+  "only_initial_input_sent": true,
+  "dsr_fence": {
+    "query_hex": "1b5b366e",
+    "reply_hex": "1b5b31383b3952",
+    "replies": 1,
+    "meaning": "Peer-received reply bytes used only as an initial-input processing fence; no physical cursor or presentation interpretation."
+  },
+  "phases": [
+    {
+      "phase": "short-bottom",
+      "requested_outer": [
+        1230,
+        679
+      ],
+      "naws": [
+        80,
+        18
+      ],
+      "visibleLineCount": 43,
+      "screenLineCapacity": 18,
+      "scrollTop": 25,
+      "scrollbar": {
+        "value": 25,
+        "max": 25,
+        "page": 18
+      },
+      "selectionCaretP_document_position": 1016,
+      "queried_index_range_inclusive": [
+        0,
+        127
+      ],
+      "known_nonempty_texts": 43,
+      "query_slots_sha256": "0559e7ce193ee5163c7d410f980a657fd55b34ef4742709878216594a1e71e57"
+    },
+    {
+      "phase": "grown-bottom",
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "naws": [
+        80,
+        26
+      ],
+      "visibleLineCount": 43,
+      "screenLineCapacity": 26,
+      "scrollTop": 25,
+      "scrollbar": {
+        "value": 25,
+        "max": 25,
+        "page": 26
+      },
+      "selectionCaretP_document_position": 1016,
+      "queried_index_range_inclusive": [
+        0,
+        127
+      ],
+      "known_nonempty_texts": 43,
+      "query_slots_sha256": "0559e7ce193ee5163c7d410f980a657fd55b34ef4742709878216594a1e71e57"
+    }
+  ],
+  "all_128_query_slots_text_positions_and_coordinates_identical": true,
+  "common_known_slot_columns": [
+    "queried_index",
+    "document_start",
+    "document_end",
+    "visibleLine",
+    "startRect_xywh",
+    "endRect_xywh"
+  ],
+  "common_known_slots": [
+    [
+      0,
+      0,
+      23,
+      0,
+      [
+        147,
+        -450,
+        8,
+        18
+      ],
+      [
+        331,
+        -450,
+        17,
+        18
+      ]
+    ],
+    [
+      1,
+      24,
+      47,
+      1,
+      [
+        147,
+        -432,
+        8,
+        18
+      ],
+      [
+        331,
+        -432,
+        17,
+        18
+      ]
+    ],
+    [
+      2,
+      48,
+      71,
+      2,
+      [
+        147,
+        -414,
+        8,
+        18
+      ],
+      [
+        331,
+        -414,
+        17,
+        18
+      ]
+    ],
+    [
+      3,
+      72,
+      95,
+      3,
+      [
+        147,
+        -396,
+        8,
+        18
+      ],
+      [
+        331,
+        -396,
+        17,
+        18
+      ]
+    ],
+    [
+      4,
+      96,
+      119,
+      4,
+      [
+        147,
+        -378,
+        8,
+        18
+      ],
+      [
+        331,
+        -378,
+        17,
+        18
+      ]
+    ],
+    [
+      5,
+      120,
+      143,
+      5,
+      [
+        147,
+        -360,
+        8,
+        18
+      ],
+      [
+        331,
+        -360,
+        17,
+        18
+      ]
+    ],
+    [
+      6,
+      144,
+      167,
+      6,
+      [
+        147,
+        -342,
+        8,
+        18
+      ],
+      [
+        331,
+        -342,
+        17,
+        18
+      ]
+    ],
+    [
+      7,
+      168,
+      191,
+      7,
+      [
+        147,
+        -324,
+        8,
+        18
+      ],
+      [
+        331,
+        -324,
+        17,
+        18
+      ]
+    ],
+    [
+      8,
+      192,
+      215,
+      8,
+      [
+        147,
+        -306,
+        8,
+        18
+      ],
+      [
+        331,
+        -306,
+        17,
+        18
+      ]
+    ],
+    [
+      9,
+      216,
+      239,
+      9,
+      [
+        147,
+        -288,
+        8,
+        18
+      ],
+      [
+        331,
+        -288,
+        17,
+        18
+      ]
+    ],
+    [
+      10,
+      240,
+      263,
+      10,
+      [
+        147,
+        -270,
+        8,
+        18
+      ],
+      [
+        331,
+        -270,
+        17,
+        18
+      ]
+    ],
+    [
+      11,
+      264,
+      287,
+      11,
+      [
+        147,
+        -252,
+        8,
+        18
+      ],
+      [
+        331,
+        -252,
+        17,
+        18
+      ]
+    ],
+    [
+      12,
+      288,
+      311,
+      12,
+      [
+        147,
+        -234,
+        8,
+        18
+      ],
+      [
+        331,
+        -234,
+        17,
+        18
+      ]
+    ],
+    [
+      13,
+      312,
+      335,
+      13,
+      [
+        147,
+        -216,
+        8,
+        18
+      ],
+      [
+        331,
+        -216,
+        17,
+        18
+      ]
+    ],
+    [
+      14,
+      336,
+      359,
+      14,
+      [
+        147,
+        -198,
+        8,
+        18
+      ],
+      [
+        331,
+        -198,
+        17,
+        18
+      ]
+    ],
+    [
+      15,
+      360,
+      383,
+      15,
+      [
+        147,
+        -180,
+        8,
+        18
+      ],
+      [
+        331,
+        -180,
+        17,
+        18
+      ]
+    ],
+    [
+      16,
+      384,
+      407,
+      16,
+      [
+        147,
+        -162,
+        8,
+        18
+      ],
+      [
+        331,
+        -162,
+        17,
+        18
+      ]
+    ],
+    [
+      17,
+      408,
+      431,
+      17,
+      [
+        147,
+        -144,
+        8,
+        18
+      ],
+      [
+        331,
+        -144,
+        17,
+        18
+      ]
+    ],
+    [
+      18,
+      432,
+      455,
+      18,
+      [
+        147,
+        -126,
+        8,
+        18
+      ],
+      [
+        331,
+        -126,
+        17,
+        18
+      ]
+    ],
+    [
+      19,
+      456,
+      479,
+      19,
+      [
+        147,
+        -108,
+        8,
+        18
+      ],
+      [
+        331,
+        -108,
+        17,
+        18
+      ]
+    ],
+    [
+      20,
+      480,
+      503,
+      20,
+      [
+        147,
+        -90,
+        8,
+        18
+      ],
+      [
+        331,
+        -90,
+        17,
+        18
+      ]
+    ],
+    [
+      21,
+      504,
+      527,
+      21,
+      [
+        147,
+        -72,
+        8,
+        18
+      ],
+      [
+        331,
+        -72,
+        17,
+        18
+      ]
+    ],
+    [
+      22,
+      528,
+      551,
+      22,
+      [
+        147,
+        -54,
+        8,
+        18
+      ],
+      [
+        331,
+        -54,
+        17,
+        18
+      ]
+    ],
+    [
+      23,
+      552,
+      575,
+      23,
+      [
+        147,
+        -36,
+        8,
+        18
+      ],
+      [
+        331,
+        -36,
+        17,
+        18
+      ]
+    ],
+    [
+      24,
+      576,
+      599,
+      24,
+      [
+        147,
+        -18,
+        8,
+        18
+      ],
+      [
+        331,
+        -18,
+        17,
+        18
+      ]
+    ],
+    [
+      25,
+      600,
+      623,
+      25,
+      [
+        147,
+        0,
+        8,
+        18
+      ],
+      [
+        331,
+        0,
+        17,
+        18
+      ]
+    ],
+    [
+      26,
+      624,
+      647,
+      26,
+      [
+        147,
+        18,
+        8,
+        18
+      ],
+      [
+        331,
+        18,
+        17,
+        18
+      ]
+    ],
+    [
+      27,
+      648,
+      671,
+      27,
+      [
+        147,
+        36,
+        8,
+        18
+      ],
+      [
+        331,
+        36,
+        17,
+        18
+      ]
+    ],
+    [
+      28,
+      672,
+      695,
+      28,
+      [
+        147,
+        54,
+        8,
+        18
+      ],
+      [
+        331,
+        54,
+        17,
+        18
+      ]
+    ],
+    [
+      29,
+      696,
+      719,
+      29,
+      [
+        147,
+        72,
+        8,
+        18
+      ],
+      [
+        331,
+        72,
+        17,
+        18
+      ]
+    ],
+    [
+      30,
+      720,
+      743,
+      30,
+      [
+        147,
+        90,
+        8,
+        18
+      ],
+      [
+        331,
+        90,
+        17,
+        18
+      ]
+    ],
+    [
+      31,
+      744,
+      767,
+      31,
+      [
+        147,
+        108,
+        8,
+        18
+      ],
+      [
+        331,
+        108,
+        17,
+        18
+      ]
+    ],
+    [
+      32,
+      768,
+      791,
+      32,
+      [
+        147,
+        126,
+        8,
+        18
+      ],
+      [
+        331,
+        126,
+        17,
+        18
+      ]
+    ],
+    [
+      33,
+      792,
+      815,
+      33,
+      [
+        147,
+        144,
+        8,
+        18
+      ],
+      [
+        331,
+        144,
+        17,
+        18
+      ]
+    ],
+    [
+      34,
+      816,
+      839,
+      34,
+      [
+        147,
+        162,
+        8,
+        18
+      ],
+      [
+        331,
+        162,
+        17,
+        18
+      ]
+    ],
+    [
+      35,
+      840,
+      863,
+      35,
+      [
+        147,
+        180,
+        8,
+        18
+      ],
+      [
+        331,
+        180,
+        17,
+        18
+      ]
+    ],
+    [
+      36,
+      864,
+      887,
+      36,
+      [
+        147,
+        198,
+        8,
+        18
+      ],
+      [
+        331,
+        198,
+        17,
+        18
+      ]
+    ],
+    [
+      37,
+      888,
+      911,
+      37,
+      [
+        147,
+        216,
+        8,
+        18
+      ],
+      [
+        331,
+        216,
+        17,
+        18
+      ]
+    ],
+    [
+      38,
+      912,
+      935,
+      38,
+      [
+        147,
+        234,
+        8,
+        18
+      ],
+      [
+        331,
+        234,
+        17,
+        18
+      ]
+    ],
+    [
+      39,
+      936,
+      959,
+      39,
+      [
+        147,
+        252,
+        8,
+        18
+      ],
+      [
+        331,
+        252,
+        17,
+        18
+      ]
+    ],
+    [
+      40,
+      960,
+      983,
+      40,
+      [
+        147,
+        270,
+        8,
+        18
+      ],
+      [
+        331,
+        270,
+        17,
+        18
+      ]
+    ],
+    [
+      41,
+      984,
+      1007,
+      41,
+      [
+        147,
+        288,
+        8,
+        18
+      ],
+      [
+        331,
+        288,
+        17,
+        18
+      ]
+    ],
+    [
+      42,
+      1008,
+      1016,
+      42,
+      [
+        147,
+        306,
+        8,
+        18
+      ],
+      [
+        211,
+        306,
+        0,
+        18
+      ]
+    ]
+  ],
+  "known_slot_texts": "For indices 0..42, exact text equals logical_input_lines[index] in windterm-first-grow-input.json.",
+  "tail_common": {
+    "index": 42,
+    "text": "W29-TAIL",
+    "start": 1008,
+    "end": 1016,
+    "visibleLine": 42,
+    "startRect": [
+      147,
+      306,
+      8,
+      18
+    ],
+    "endRect": [
+      211,
+      306,
+      0,
+      18
+    ]
+  },
+  "empty_end_aliases_common": {
+    "queried_index_range_inclusive": [
+      43,
+      127
+    ],
+    "query_count": 85,
+    "text": "",
+    "start": 1016,
+    "end": 1016,
+    "visibleLine": 42,
+    "startRect": [
+      211,
+      306,
+      0,
+      18
+    ],
+    "endRect": [
+      211,
+      306,
+      0,
+      18
+    ],
+    "interpretation": "Identical empty end-position returns; not a count of actual empty logical lines."
+  },
+  "queried_document_boundary_min": 0,
+  "queried_document_boundary_max": 1016,
+  "distinct_queried_document_boundaries": [
+    0,
+    23,
+    24,
+    47,
+    48,
+    71,
+    72,
+    95,
+    96,
+    119,
+    120,
+    143,
+    144,
+    167,
+    168,
+    191,
+    192,
+    215,
+    216,
+    239,
+    240,
+    263,
+    264,
+    287,
+    288,
+    311,
+    312,
+    335,
+    336,
+    359,
+    360,
+    383,
+    384,
+    407,
+    408,
+    431,
+    432,
+    455,
+    456,
+    479,
+    480,
+    503,
+    504,
+    527,
+    528,
+    551,
+    552,
+    575,
+    576,
+    599,
+    600,
+    623,
+    624,
+    647,
+    648,
+    671,
+    672,
+    695,
+    696,
+    719,
+    720,
+    743,
+    744,
+    767,
+    768,
+    791,
+    792,
+    815,
+    816,
+    839,
+    840,
+    863,
+    864,
+    887,
+    888,
+    911,
+    912,
+    935,
+    936,
+    959,
+    960,
+    983,
+    984,
+    1007,
+    1008,
+    1016
+  ],
+  "new_queried_document_boundaries_after_grow": [],
+  "blank_position_observation": "No new document boundary appeared in these finite queries. Physical blank cells or unexposed blank document positions remain unknown.",
+  "first_nonnegative_known_text_common": {
+    "index": 25,
+    "text": "W29-L0025|KEEP-0025|END",
+    "start": 600,
+    "end": 623,
+    "startRect": [
+      147,
+      0,
+      8,
+      18
+    ]
+  },
+  "cleanup": {
+    "job_active": 0,
+    "job_total": 3,
+    "peer_closed": true,
+    "desktop_handle_closed": true,
+    "station_handle_closed": true,
+    "original_station_restored": true,
+    "only_synthetic_session": true
+  },
+  "private_artifact_sha256": {
+    "evidence.json": "e2ba68900780556620da2579201eb5f9ff9a30d7afb9c54fed85f439405815fa",
+    "run.json": "98c2650cef41806f4c3f60aab287325db2ee24b2c6c21ea2a29f9c21e6d6177c",
+    "files.json": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8",
+    "probe.js": "06838cb7014bf27f4a95f7c0b355dc2f7cd1f3bcb74a6296f5035d4dfa44da52",
+    "input-00.bin": "1062aeca1d4be780c3a168844f05df98a6be447eb38384645d3ace85d0b82875",
+    "input-00.json": "8a383788bbd36b772ab2530ed283aa647592eefc0edafe37e8230e4c4c4268a2",
+    "peer.json": "ed2fb8f42deb6b632ae41feddf03a6b794e116b2f7d0952a32e306eef2f68ca2",
+    "cleanup.json": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d",
+    "surface-cleanup.json": "2947878016d582f50a3241f5dfaf0c923671e6ddee62cd57e00a78a988ae7954",
+    "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+  },
+  "limitations": [
+    "Synthetic text labels are content markers, not native stable IDs.",
+    "Different input and resize history from the earlier shrink-and-restore observation; no general grow rule follows.",
+    "No CUP, ED2 or redraw was sent, so overwrite policy remains unknown.",
+    "No physical grid/cursor, presented frames, ConPTY child acknowledgement or performance conclusion.",
+    "No selection preservation, copy, Find, Unicode or complete VT reflow validation."
+  ]
+}
