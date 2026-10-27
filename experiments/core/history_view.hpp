@@ -9,6 +9,8 @@ struct ViewportState {
     bool following = true;
 };
 struct ViewSnapshot {
+    // Fragments may share their first source line's id/version. Text actions
+    // resolve original document coordinates through the mapping, not these ids.
     std::vector<Line> lines;
     ViewportState viewport;
     ViewMapping mapping;
@@ -119,14 +121,15 @@ class HistoryViewport {
     }
 
     static size_t locate(const Layout& display, size_t source_row, size_t column) {
-        size_t nearest = display.rows.size() - 1;
+        std::optional<size_t> nearest;
         for (size_t index = 0; index < display.rows.size(); ++index) {
             const auto& row = display.rows[index];
             if (row.physical) {
-                if (row.source_row >= source_row) return index;
+                if (row.source_row == source_row) return index;
+                if (row.source_row > source_row) return nearest.value_or(index);
                 continue;
             }
-            if (row.source_row > source_row) return nearest == display.rows.size() - 1 ? index : nearest;
+            if (row.source_row > source_row) return nearest.value_or(index);
             if (row.source_row == source_row) nearest = index;
             for (const auto& piece : row.pieces) {
                 if (piece.source_row != source_row) continue;
@@ -134,7 +137,7 @@ class HistoryViewport {
                 if (column < piece.source_column + piece.length) return index;
             }
         }
-        return nearest;
+        return nearest.value_or(display.rows.size() - 1);
     }
 
     void set_anchor(const Screen& screen, const DisplayRow& row) {

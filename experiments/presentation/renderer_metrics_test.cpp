@@ -13,6 +13,17 @@ static void verify_text_conversion() {
     }
 }
 
+static void verify_snapshot_shape() {
+    termforge::Parser parser(2, 4);
+    termforge::HistoryViewport viewport;
+    auto page = viewport.snapshot(parser.screen);
+    page.lines[1].pop_back();
+    bool rejected = false;
+    try { Snapshot invalid(std::move(page), 0); }
+    catch (const std::runtime_error&) { rejected = true; }
+    require(rejected, "nonrectangular page reached the fixed-width renderer snapshot");
+}
+
 static void expect_rejected(const std::string& backend, int dpi, int zoom) {
     bool rejected = false;
     try { Renderer renderer(backend, dpi, zoom); }
@@ -163,6 +174,7 @@ int main(int argc, char** argv) {
             return 1;
         }
         require(argc == 1, "unexpected renderer metrics arguments");
+        verify_snapshot_shape();
         verify_missing_font();
         for (const int dpi : {-1,0,47,769}) expect_rejected("dwrite", dpi, 100);
         for (const int zoom : {-1,0,49,201}) expect_rejected("gdi", 96, zoom);

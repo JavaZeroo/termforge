@@ -86,11 +86,18 @@ struct Snapshot {
     const termforge::ViewMapping mapping;
     const int column_count;
     const int cursor_row, cursor_column, revision;
+private:
+    void validate_shape() const {
+        require(column_count > 0 && !lines.empty(), "empty presentation snapshot");
+        for (const auto& line : lines)
+            require(line.size() == static_cast<size_t>(column_count), "presentation snapshot row width mismatch");
+    }
+public:
     explicit Snapshot(const termforge::Screen& s, int rev)
-        : lines(s.lines), column_count(s.width()), cursor_row(s.row), cursor_column(s.column), revision(rev) {}
+        : lines(s.lines), column_count(s.width()), cursor_row(s.row), cursor_column(s.column), revision(rev) { validate_shape(); }
     explicit Snapshot(termforge::ViewSnapshot view, int rev)
         : lines(std::move(view.lines)), mapping(std::move(view.mapping)), column_count(view.columns),
-          cursor_row(view.cursor_row), cursor_column(view.cursor_column), revision(rev) {}
+          cursor_row(view.cursor_row), cursor_column(view.cursor_column), revision(rev) { validate_shape(); }
     int rows() const { return static_cast<int>(lines.size()); }
     int columns() const { return column_count; }
 };

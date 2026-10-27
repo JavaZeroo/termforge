@@ -1032,6 +1032,27 @@ void cached_history_viewport_projects_complete_source() {
             "view projection clipped or changed the complete source document");
 }
 
+void cached_history_viewport_keeps_empty_anchor() {
+    termforge::CandidateTerminal terminal(2, 8, 16);
+    terminal.feed("A\r\n\r\nC\r\nD");
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    const auto& history = terminal.screen.history;
+    require(history.size() == 2 && history[1].size() == 8 &&
+            history[1].ending == termforge::LineEnding::hard_break && termforge::project_line(history[1]).text.empty(),
+            "empty history anchor source fixture differs");
+    termforge::HistoryViewport viewport;
+    viewport.scroll_to(terminal.screen, 1);
+    const auto page = viewport.snapshot(terminal.screen);
+    require(page.viewport.top == 1 && text(page.lines[0]).empty() && text(page.lines[1]) == "C",
+            "scrolling to an empty cached hard line skipped to the active grid");
+    const termforge::TextDocument document(terminal.screen);
+    viewport.bottom(terminal.screen);
+    require(viewport.reveal(terminal.screen, *document.position(1, 8)).has_value() &&
+            viewport.snapshot(terminal.screen).viewport.top == 1,
+            "revealing an empty source end skipped its display row");
+}
+
 void cached_history_viewport_selects_displayed_text() {
     termforge::CandidateTerminal terminal(2, 8, 16);
     terminal.feed("ABCDEFGH\r\nB\r\nC\r\nD");
@@ -1263,6 +1284,7 @@ int main(int argc, char** argv) {
         }
         if (argc > 1 && std::string_view(argv[1]) == "--history-viewport-projection") {
             cached_history_viewport_projects_complete_source();
+            cached_history_viewport_keeps_empty_anchor();
             return 0;
         }
         if (argc > 1 && std::string_view(argv[1]) == "--history-viewport-text") {
