@@ -13,6 +13,28 @@ def capture(lines, cursor, columns=12, rows=7):
             "cursor_row": cursor[0], "cursor_column": cursor[1]}
 
 
+def styled_capture(columns=12, rows=7):
+    def state(lines, cursor):
+        return capture(lines, cursor, columns, rows)
+
+    sample = {
+        "before": state(["TOP_FIXED", "REGION_A", "REGION_B", "BOTTOM_FIXED"], (2, 5)),
+        "alt": state(["ALT_OUTSIDE", "", "", "ALT_C", "ALT_D"], (4, 7)),
+        "restored": state(["TOP_FIXED", "REGION_A", "REGION_B", "BOTTOM_FIXED"], (2, 5)),
+        "after-write": state(["TOP_FIXED", "REGION_A", "REGIOM_B", "BOTTOM_FIXED"], (2, 6)),
+        "final": state(["TOP_FIXED", "REGION_C", "REGION_D", "BOTTOM_FIXED", "", "SGR_DONE"], (5, 8)),
+    }
+    # Independent literal Win32 color values: green/magenta, red/blue.
+    for row in (3, 4):
+        sample["alt"]["cells"][row] = [(character, 0x52) for character, _ in sample["alt"]["cells"][row]]
+    sample["after-write"]["cells"][2][5] = (ord("M"), 0x14)
+    for row in (1, 2):
+        sample["final"]["cells"][row] = [(character, 0x14) for character, _ in sample["final"]["cells"][row]]
+    for column, character in enumerate("SGR_DONE"):
+        sample["final"]["cells"][5][column] = (ord(character), 0x14)
+    return sample
+
+
 class NativeMarginControlTests(unittest.TestCase):
     def main_only(self):
         return {"before": capture(["TOP_FIXED", "REGION_A", "REGION_B", "BOTTOM_FIXED"], (0, 0)),
@@ -65,6 +87,20 @@ class NativeMarginControlTests(unittest.TestCase):
         old["restored"]["cells"][0][0] = (ord("T"), 4)
         self.assertFalse(matches_unpatched_prediction(old, "repeat-alt", 12, 7))
 
+    def test_styled_main_cursor_restores_and_scroll_retains_explicit_attributes(self):
+        for columns, rows in ((12, 7), (80, 24)):
+            sample = styled_capture(columns, rows)
+            self.assertTrue(evaluate_native(sample, "styled-cursor", columns, rows)["passed"])
+            for stage, row, column in (("after-write", 2, 5), ("alt", 3, columns - 1), ("final", 1, columns - 1)):
+                changed = copy.deepcopy(sample)
+                character, _ = changed[stage]["cells"][row][column]
+                changed[stage]["cells"][row][column] = (character, 7)
+                with self.subTest(stage=stage, columns=columns):
+                    self.assertFalse(evaluate_native(changed, "styled-cursor", columns, rows)["passed"])
+            changed = copy.deepcopy(sample)
+            changed["restored"]["cursor_column"] = 0
+            self.assertFalse(evaluate_native(changed, "styled-cursor", columns, rows)["passed"])
+
     def test_missing_stage_and_wrong_grid_are_rejected(self):
         with self.assertRaises(ValueError):
             evaluate_native({"before": self.main_only()["before"]}, "main-only", 12, 7)
@@ -72,6 +108,56 @@ class NativeMarginControlTests(unittest.TestCase):
             evaluate_native(self.main_only(), "main-only", 80, 24)
         with self.assertRaises(ValueError):
             evaluate_native(self.main_only(), "unknown", 12, 7)
+
+    def test_styled_baseline_requires_the_specific_old_margin_cells_and_attributes(self):
+        sample = styled_capture()
+        sample["final"] = capture(["TOP_FIXED", "REGION_A", "REGIOM_B", "REGION_CIXED", "REGION_D", "SGR_DONE"], (5, 8))
+        sample["final"]["cells"][2][5] = (ord("M"), 0x14)
+        for row in (3, 4, 5):
+            for column in range(8):
+                character, _ = sample["final"]["cells"][row][column]
+                sample["final"]["cells"][row][column] = (character, 0x14)
+        result = evaluate_native(sample, "styled-cursor", 12, 7)
+        self.assertEqual([name for name, stage in result["stages"].items() if not stage["passed"]], ["final"])
+        self.assertTrue(matches_unpatched_prediction(sample, "styled-cursor", 12, 7))
+        for stage, row, column in (("before", 0, 1), ("after-write", 2, 5), ("final", 3, 9)):
+            changed = copy.deepcopy(sample)
+            character, _ = changed[stage]["cells"][row][column]
+            changed[stage]["cells"][row][column] = (character, 0x52)
+            self.assertFalse(matches_unpatched_prediction(changed, "styled-cursor", 12, 7))
+
+    def test_actual_terminal_final_requires_colors_cursor_and_restored_current_style(self):
+        from experiments.conpty.margin_controls import evaluate_terminal
+
+        lines = ["TOP_FIXED", "REGION_C", "REGION_D", "BOTTOM_FIXED", "", "SGR_DONE", ""]
+        default = {"fg": -1, "bg": -1, "bold": False}
+        explicit = {"fg": 1, "bg": 4, "bold": False}
+        # The trace represents untouched default blanks as empty/zero-width;
+        # a blank with an explicit background is a space/one-width cell.
+        cells = [[{"text": character, "width": 1, "style": default.copy()} for character in line]
+                 + [{"text": "", "width": 0, "style": default.copy()} for _ in range(12 - len(line))]
+                 for line in lines]
+        for row in (1, 2):
+            for cell in cells[row]:
+                cell.update(text=cell["text"] or " ", width=1, style=explicit.copy())
+        for cell in cells[5][:8]:
+            cell["style"] = explicit.copy()
+        record = {"mode_bits": 0, "screen": {"cells": cells, "row": 5, "column": 8, "current_style": explicit.copy()}}
+        self.assertTrue(evaluate_terminal(record, "styled-cursor", 12, 7)["passed"])
+        changes = (
+            lambda row: row["screen"].update(column=0),
+            lambda row: row.update(mode_bits=1 << 12),
+            lambda row: row["screen"]["current_style"].update(fg=2),
+            lambda row: row["screen"]["cells"][1][-1]["style"].update(fg=-1),
+            lambda row: row["screen"]["cells"][1][-1]["style"].update(bg=-1),
+            lambda row: row["screen"]["cells"][0][0].update(text="X"),
+            lambda row: row["screen"]["cells"][2][0].update(width=2),
+            lambda row: row["screen"]["cells"][4][0].update(text=" ", width=1),
+        )
+        for change in changes:
+            changed = copy.deepcopy(record)
+            change(changed)
+            self.assertFalse(evaluate_terminal(changed, "styled-cursor", 12, 7)["passed"])
 
 
 if __name__ == "__main__":

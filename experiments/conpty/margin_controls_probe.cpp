@@ -24,7 +24,16 @@ static void write(const std::string& bytes) {
             "control output failed");
 }
 static std::vector<std::pair<std::string, std::string>> stages(const std::wstring& name, int rows) {
-    require(name == L"main-only" || name == L"default-alt" || name == L"repeat-alt", "fixed control required");
+    require(name == L"main-only" || name == L"default-alt" || name == L"repeat-alt" || name == L"styled-cursor", "fixed control required");
+    if (name == L"styled-cursor") return {
+        {"before", "\x1b[0m\x1b[2J\x1b[HTOP_FIXED\r\nREGION_A\r\nREGION_B\r\nBOTTOM_FIXED\r\n"
+                   "\x1b[2;3r\x1b[31;44m\x1b[3;6H"},
+        {"alt", "\x1b[?1049h\x1b[0m\x1b[2J\x1b[HALT_OUTSIDE\r\n\x1b[4;1HALT_A\r\nALT_B"
+                "\x1b[4;5r\x1b[32;45m\x1b[5;1H\nALT_C\nALT_D\x1b[5;8H"},
+        {"restored", "\x1b[?1049l"},
+        {"after-write", "M"},
+        {"final", "\x1b[3;1H\nREGION_C\nREGION_D\x1b[6;1HSGR_DONE"},
+    };
     std::vector<std::pair<std::string, std::string>> result{{"before",
         "\x1b[2J\x1b[HTOP_FIXED\r\nREGION_A\r\nREGION_B\r\nBOTTOM_FIXED\r\n\x1b[2;3r"}};
     if (name != L"main-only") {

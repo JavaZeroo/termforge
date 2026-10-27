@@ -41,4 +41,4 @@ python -m experiments.conpty.source_margin_controls --baseline local/source-base
 python -m unittest experiments.conpty.test_margin_controls -v
 ```
 
-本次只补无备用屏、默认备用屏区域、重复 h/l 的真实交叉。显式样式、非零光标保存恢复、历史隔离/压力、resize、查询/API 写入、完整产品工作流、性能及维护升级仍未验证；原 175B 的 VT-off 证据属于前一批，不能合并成同批更大矩阵。原系统/官方失败、#52、#97 和 #99 的独立失败继续保留。正式方案仍由 #34 提交证据及取舍，经用户确认后生效。
+本次只补无备用屏、默认备用屏区域、重复 h/l 的真实交叉。显式样式与非零光标的后续[独立对照](conpty-source-margin-styles.md)记录原生通过及末端空白前景色差异，不回写本批结果。历史隔离/压力、resize、查询/API 写入、完整产品工作流、性能及维护升级仍未验证；原 175B 的 VT-off 证据属于前一批，不能合并成同批更大矩阵。原系统/官方失败、#52、#97 和 #99 的独立失败继续保留。正式方案仍由 #34 提交证据及取舍，经用户确认后生效。

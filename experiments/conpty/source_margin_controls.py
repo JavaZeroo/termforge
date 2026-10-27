@@ -1,4 +1,4 @@
-"""One bounded source-pair comparison for three additional native controls."""
+"""One bounded source-pair comparison for fixed native control workloads."""
 from __future__ import annotations
 
 import argparse
@@ -10,7 +10,7 @@ import subprocess
 
 from experiments.candidates.alacritty.run import run_trace
 from experiments.conpty.margin_controls import (
-    evaluate_native, expected_native, expected_source, matches_unpatched_prediction,
+    evaluate_native, evaluate_terminal, expected_native, expected_source, matches_unpatched_prediction,
 )
 from experiments.conpty.margin_run import sha256, validate_lifecycle
 from experiments.conpty.source_margin_run import identity, reviewed_pair, ROOT, RUN, UPSTREAM
@@ -37,9 +37,7 @@ def inspect_case(directory, trace, case, columns, rows):
     if report["passed"] is not True:
         raise ValueError("control replay rejected")
     final = records[-1]
-    lines = ["".join(cell["text"] for cell in line if cell.get("width", 1)).rstrip()
-             for line in final["screen"]["cells"]]
-    alternate = bool(final["mode_bits"] & (1 << 12))
+    terminal = evaluate_terminal(final, case, columns, rows)
     return {"source_bytes": len(source), "source_sha256": sha256(directory / "source.bin"),
             "transport_bytes": len(transport), "transport_sha256": sha256(directory / "transport.bin"),
             "native_contract": evaluate_native(states, case, columns, rows),
@@ -47,14 +45,16 @@ def inspect_case(directory, trace, case, columns, rows):
             "native_lines": {stage: row["lines"] for stage, row in states.items()},
             "native_cursor": {stage: [row["cursor_row"], row["cursor_column"]] for stage, row in states.items()},
             "native_cell_sha256": {stage: sha256(directory / (stage + ".cells.bin")) for stage in expected},
-            "terminal_lines": lines, "terminal_alternate": alternate,
-            "terminal_final_passed": lines == expected["final"]["lines"] and not alternate}
+            "terminal_lines": terminal["lines"], "terminal_alternate": terminal["alternate"],
+            "terminal_cursor": [final["screen"]["row"], final["screen"]["column"]],
+            "terminal_current_style": final["screen"]["current_style"],
+            "terminal_contract": terminal["fields"], "terminal_final_passed": terminal["passed"]}
 
 
-def compare(samples):
+def compare(samples, cases=CASES):
     results = []
     for columns, rows in GRIDS:
-        for case in CASES:
+        for case in cases:
             baseline = samples[f"baseline-{columns}x{rows}-{case}"]
             patched = samples[f"patched-{columns}x{rows}-{case}"]
             completed = all(row.get("status") == "completed" for row in (baseline, patched))
@@ -69,7 +69,8 @@ def compare(samples):
     return results
 
 
-def run(baseline, patched, probe, trace, output):
+def run(baseline, patched, probe, trace, output, *, styled_cursor=False):
+    cases = ("styled-cursor",) if styled_cursor else CASES
     pairs = {name: reviewed_pair(folder, name) for name, folder in
              (("baseline", baseline), ("patched", patched))}
     probe, trace = Path(probe).resolve(strict=True), Path(trace).resolve(strict=True)
@@ -83,7 +84,8 @@ def run(baseline, patched, probe, trace, output):
                "experiments/conpty/margin_run.py", "experiments/conpty/source_margin_run.py",
                "experiments/conpty/run.py", "experiments/candidates/alacritty/run.py",
                "experiments/shell/workflow_fixture.hpp", "experiments/shell/workflow_checks.py"]
-    summary = {"schema": "termforge-source-margin-controls-v1", "upstream_source": UPSTREAM,
+    schema = "termforge-source-margin-styled-controls-v1" if styled_cursor else "termforge-source-margin-controls-v1"
+    summary = {"schema": schema, "upstream_source": UPSTREAM,
                "generated_utc": datetime.now(timezone.utc).isoformat(), "build_run": RUN,
                "source": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
                "working_tree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT)),
@@ -91,11 +93,13 @@ def run(baseline, patched, probe, trace, output):
                "platform": platform.platform(), "probe_sha256": sha256(probe), "trace_sha256": sha256(trace),
                "pair_receipts": {name: receipt for name, (_, receipt) in pairs.items()},
                "deadlines": {"child_seconds": 5, "outer_seconds": 15, "cleanup_seconds": 5},
-               "planned_executions": 12, "samples": {}, "comparisons": [], "passed": False,
+               "cases": list(cases), "planned_executions": len(cases) * len(GRIDS) * len(pairs),
+               "samples": {}, "comparisons": [], "passed": False,
                "full_r2_contract_verified": False, "product_backend_selected": False,
                "presented_done": None,
-               "unmeasured": ["styled_source", "history_stress", "resize", "queries_and_api_writes",
-                              "terminal_stage_cursors", "full_product", "performance", "WindTerm_equivalence"]}
+               "unmeasured": ["history_stress", "resize", "queries_and_api_writes", "terminal_intermediate_stages",
+                              "other_SGR_and_truecolor", "full_product", "performance", "WindTerm_equivalence"] +
+                             ([] if styled_cursor else ["styled_source", "terminal_final_styles_and_cursor"])}
 
     def save():
         (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
@@ -103,7 +107,7 @@ def run(baseline, patched, probe, trace, output):
     try:
         # Exactly one execution per planned cell; failed cells remain failed.
         for columns, rows in GRIDS:
-            for case in CASES:
+            for case in cases:
                 for variant, (directory, _) in pairs.items():
                     name = f"{variant}-{columns}x{rows}-{case}"
                     folder = output / "_private" / name
@@ -128,7 +132,7 @@ def run(baseline, patched, probe, trace, output):
                         sample["failure_stage"] = stage
                     summary["samples"][name] = sample
                     save()
-        summary["comparisons"] = compare(summary["samples"])
+        summary["comparisons"] = compare(summary["samples"], cases)
         summary["passed"] = all(row["passed"] for row in summary["comparisons"])
     finally:
         save()
@@ -139,8 +143,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("baseline", "patched", "probe", "candidate-trace", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--styled-cursor", action="store_true",
+                        help="Run only the fixed four-execution SGR/cursor matrix")
     args = parser.parse_args()
-    result = run(args.baseline, args.patched, args.probe, args.candidate_trace, args.output)
+    result = run(args.baseline, args.patched, args.probe, args.candidate_trace, args.output,
+                 styled_cursor=args.styled_cursor)
     print(json.dumps({"passed": result["passed"], "comparisons": result["comparisons"]}))
     return int(not result["passed"])
 
