@@ -3,6 +3,7 @@ import copy
 import json
 import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -144,6 +145,14 @@ print(json.dumps(record['result']))
 
 
 class EnvironmentTests(unittest.TestCase):
+    def test_pure_environment_statistics_import_without_site_packages(self):
+        command = [sys.executable, '-S', '-c',
+                   'from experiments.measure.r54_environment import cpu_delta, qualify_idle; print("imported")']
+        result = subprocess.run(command, cwd=Path(__file__).resolve().parents[2],
+                                capture_output=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stderr.decode('utf-8', errors='replace'))
+        self.assertEqual(result.stdout.strip(), b'imported')
+
     def test_environment_qualification_does_not_hide_one_busy_interval(self):
         from experiments.measure.r54_environment import qualify_idle, cpu_delta
         # Windows user + system + idle count all logical CPUs. interrupt/dpc
