@@ -1,0 +1,1 @@
+replay kept a selection at the old columns after moving its text

@@ -26,6 +26,8 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 - 不走 JSON。Rust/C++ 文本由调用方拥有，未做增量 FFI 或性能验收；候选 damage 的产品化仍属后续。
 - `screen.resize` 与候选 `Term::resize` 同步尺寸；默认自研回退继续采用 ADR-0005 的物理行裁剪，候选不把它称为完整 reflow。真实 ConPTY 重放可能先由上游把历史拉入可见区再覆盖，候选在完整重放后合并有界历史，按 ID 和完整行键去重，保留 Find/选区所需的稳定身份，且不让冲突产生重复 ID。连续同步缓存原始 FFI ID 与最终身份的映射，仅在需要重放的未知旧 ID 时回退到完整键匹配，不重复扫描全部历史。真实淘汰不恢复，显式清空不复活；普通空白行、未决 reflow、备用屏/滚动区全语义不在此保证内。合同与验证见 [resize/历史记录](results/2026-10-26-resize-replay/validation.json)。
 
+回放行键与后续缓存匹配同时保留文字的起始列，只忽略末尾未写 padding。相同 `ABC` 从第 0 列移到第 2 列（或反向）不能沿用旧版本供选择/Find 使用；原选区失效，Find 重扫后命中实际列。独立[列位置回归](results/2026-10-27-replay-coordinates/README.md)覆盖回放中/回放后、整段/逐字节和原位对照。这不补足冻结快照尺寸、回放期间清空或原版行为的验证；已有历史清空证据只覆盖回放完成后的场景。
+
 ## 真实产品场景
 
 `candidate_shell_tui` 在同一 `ShellWindow` 和 ConPTY 路径上连续执行两轮真实 Vim：进入全屏编辑、插入文字、resize 到 60×12、退出写盘、确认主屏 shell 返回。本机 Vim 输出未发送 `1049/1047/47`，所以此场景不计作备用屏验收；1049 的固定核心用例与真实 Vim 证据分开。固定自动命令写入 `candidate-vim.vim` 并以短 `-S` 命令加载，避免交互式 cmd 拆分长启动命令。启动和插入由 Vim 写入的真实 `VimEnter`/`InsertEnter` 事件文件确认，避免 `echon` 消息被重绘覆盖；随后通过插入模式的 `Ctrl-O` 调用 Vim 命令，实际保存 `&columns/&lines` 并检查 60×12，再以 `Ctrl-O:wq` 写盘退出。不把 ConPTY 重绘或 `ResizePseudoConsole` 返回当作 Vim 已就绪。本路径不声称验证 Vim 的 Escape 行为，独立控制台 ESC 接收另测。`-W` 日志核对插入文本与 `:wq` 顺序，其中可能含 Vim 内部特殊键，不能冒充纯键盘字节。随后用独立 `shell_query_client.exe` 发出真实 `CSI 6n`，保存终端经 `InputQueue` 返回的光标报告，并用 `shell_size_client.exe` 核对子进程尺寸。另有 resize 后独立 ESC 接收检查。

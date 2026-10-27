@@ -1,0 +1,450 @@
+{
+  "scope": "R2 #29 candidate adapter text coordinate regression; not complete resize acceptance",
+  "source_commit": "fbcbe3844b49d3151dea60c71d0aee066ead6283",
+  "reviewed_local_commit": "f8692d4203bdcae9a362fc1dc6ace88567bf9511",
+  "identical_source_tree": "258b3a6424cf834c37f0fcc3a6aa6f30c7085e96",
+  "base_commit": "8a13782aaac03780617e177b56ec55d3cb9c79be",
+  "source_files": [
+    {
+      "path": "experiments/core/candidate_terminal.cpp",
+      "git_blob": "9904c6d23c0c7eebbe5f35d9311ed270cbbd7cfb",
+      "worktree_sha256": "da248c7751f51fa2fea7881c73383318b87c210381a34735a5137b4b2fcb1f29"
+    },
+    {
+      "path": "experiments/core/candidate_terminal_test.cpp",
+      "git_blob": "63efa4dc10daee1e1a630b564b8e544c69d88438",
+      "worktree_sha256": "fb17722042567a25b81f46c9530d973deba235379d8f78f3d433f4ffc3e5cf55"
+    },
+    {
+      "path": "experiments/core/candidate_terminal.hpp",
+      "git_blob": "55de3176ec220b2e404cc7e108f6d0063af3c004",
+      "worktree_sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997"
+    },
+    {
+      "path": "experiments/core/screen.hpp",
+      "git_blob": "c05d37f131a170dfd47aa2d65c73795f2488669f",
+      "worktree_sha256": "fa80d3e67375b0cfacfe4ad640ecef0a47c36ca493499c0054ab5b3e7abf46c1"
+    },
+    {
+      "path": "experiments/core/text_projection.hpp",
+      "git_blob": "fcef22e60e8ad61aec9b055088bca08dd3bb30d7",
+      "worktree_sha256": "3853bcf053964e54ea00bb7acfd0d302abd536ae0ed4eddfe791a6bcffdb6914"
+    },
+    {
+      "path": "experiments/core/text_document.hpp",
+      "git_blob": "96465ee7eb94652378d5c4db8848bf879eff569a",
+      "worktree_sha256": "87efae9d6a9fccb88dd353cdd1be6a570480b6942fabbdf3c9dac2c6370e026a"
+    },
+    {
+      "path": "experiments/core/text_selection.hpp",
+      "git_blob": "8af73a58512d79b67cd38eb2d5421c396677c42d",
+      "worktree_sha256": "7d41d58d434ad3c32ce2f67c043e337277abbbc69e4a7a2b6bdf7e519f9f5462"
+    },
+    {
+      "path": "experiments/core/text_search.hpp",
+      "git_blob": "5e964dcc8bdfba2fb23671fa70401a6db9aeac14",
+      "worktree_sha256": "fcc64b96c1f8d39b3a09dc45ffe537e7dc0fd70727b4d46768706ab55467caac"
+    },
+    {
+      "path": "experiments/candidates/alacritty/src/ffi.rs",
+      "git_blob": "4f56d33ffdca519f249bae95aa5d943c9b926427",
+      "worktree_sha256": "8c6fffa0559f0ab5f6e776bab03a35a1375b2b9f977c047da9bc62b8e5c30bfa"
+    },
+    {
+      "path": "experiments/candidates/alacritty/include/termforge_candidate.h",
+      "git_blob": "9ab501e9cac70b18691fc5bfc6feacdf491f5133",
+      "worktree_sha256": "999c635ecd6d4482303d39d6548312afb3179edaeb17d14d4683688d83334ecc"
+    },
+    {
+      "path": "experiments/candidates/alacritty/Cargo.lock",
+      "git_blob": "6501189a98bfe0610ebcb5e3c31d3abc2ae3f132",
+      "worktree_sha256": "896c6e60909d55d61fb26d277b1a98daf9245e8aee811caff37fc3e9d06ca627"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "git_blob": "e5b3e38afdb2edca99bba8b3fafc91e90cb19e28",
+      "worktree_sha256": "0763ec046daa5e932583012021a0058351844b28aecf314657ede1f4a2c64603"
+    }
+  ],
+  "configuration": {
+    "candidate": "0.26.1-dev+termforge.4",
+    "adapter": true,
+    "backend": "system ConPTY",
+    "build_type": "Release",
+    "os": "Windows 11 Pro 10.0.26200 x64",
+    "msvc": "19.42.34433.0",
+    "windows_sdk": "10.0.26100.0",
+    "rust": "1.92.0",
+    "python": "3.12.10"
+  },
+  "binaries": [
+    {
+      "path": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+      "sha256": "07c3a716d65ace8f5922ac9b91b3881a152edf83290cb26f94a7b6989564a9c1"
+    },
+    {
+      "path": "build/candidate-adapter/bin/Release/termforge_shell.exe",
+      "sha256": "23daa6fb173ce5d483c07c52437fb7ef10b89d4f4c8875d3862e89a764cf2d7c"
+    },
+    {
+      "path": "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib",
+      "sha256": "2278140a6f189fbdcb606242d83d103e227bd1ea129bd5b0d92c27e708c155b8"
+    }
+  ],
+  "negative_controls": [
+    {
+      "name": "original implementation with initial single public-interface regression",
+      "exit_code": 1,
+      "output": "red-selection.txt",
+      "complete_binary_identity_retained": false
+    },
+    {
+      "name": "new full replay key but old cached alias comparison",
+      "exit_code": 1,
+      "test_source_git_blob": "63efa4dc10daee1e1a630b564b8e544c69d88438",
+      "mutation": "same_replay_line guard restored to a_last - a_first != b_last - b_first",
+      "output": "red-alias-control.txt",
+      "complete_binary_identity_retained": false
+    }
+  ],
+  "public_interface_cases": {
+    "count": 12,
+    "columns": [
+      [
+        0,
+        2
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        2
+      ]
+    ],
+    "stage": [
+      "during resize replay",
+      "subsequent ordinary output"
+    ],
+    "feed": [
+      "whole",
+      "one byte"
+    ],
+    "new_find_columns": [
+      [
+        2,
+        5
+      ],
+      [
+        0,
+        3
+      ]
+    ],
+    "unchanged_control": "selection still copies ABC"
+  },
+  "ctest": {
+    "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure",
+    "total": 49,
+    "passed": 48,
+    "failed": 1,
+    "skipped": 0,
+    "tests": [
+      {
+        "name": "shell_launch",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0186761
+      },
+      {
+        "name": "candidate_title",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.977466
+      },
+      {
+        "name": "runtime_observation",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 2.22933
+      },
+      {
+        "name": "ime_input_expectation",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0239317
+      },
+      {
+        "name": "sent_message_wait",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.302373
+      },
+      {
+        "name": "find_bar",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.392337
+      },
+      {
+        "name": "renderer_metrics",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.902099
+      },
+      {
+        "name": "ime_context",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.687326
+      },
+      {
+        "name": "layout_state",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.117694
+      },
+      {
+        "name": "workspace_state",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.28399
+      },
+      {
+        "name": "transport_completion",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0129886
+      },
+      {
+        "name": "scenario_tick_gate",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0127553
+      },
+      {
+        "name": "candidate_core",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 1.47503
+      },
+      {
+        "name": "resize_core",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0135294
+      },
+      {
+        "name": "history_core",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0161851
+      },
+      {
+        "name": "selection_core",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0744326
+      },
+      {
+        "name": "search_core",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.111531
+      },
+      {
+        "name": "paste",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0164571
+      },
+      {
+        "name": "clipboard_policy",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0135761
+      },
+      {
+        "name": "keyboard",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0154536
+      },
+      {
+        "name": "text_action_policy",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.0134497
+      },
+      {
+        "name": "candidate_shell_tui",
+        "status": "failed",
+        "elapsed_seconds_diagnostic_only": 31.5453
+      },
+      {
+        "name": "core",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 4.66261
+      },
+      {
+        "name": "recovery",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 8.69672
+      },
+      {
+        "name": "measure",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 4.07593
+      },
+      {
+        "name": "binary_paths",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.164067
+      },
+      {
+        "name": "conpty_margin_contract",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.31854
+      },
+      {
+        "name": "benchmark_tools",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 5.40389
+      },
+      {
+        "name": "differential",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 2.53997
+      },
+      {
+        "name": "ime_inventory",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 50.6506
+      },
+      {
+        "name": "text_actions",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 7.25059
+      },
+      {
+        "name": "workflow_fixture",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 22.5549
+      },
+      {
+        "name": "workflow_sessions",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 40.8189
+      },
+      {
+        "name": "workflow_resources",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.456499
+      },
+      {
+        "name": "workflow_resource_phases",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 4.23949
+      },
+      {
+        "name": "workflow_system_content",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.154572
+      },
+      {
+        "name": "workflow_system_runner",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.631644
+      },
+      {
+        "name": "copy_error_frame",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.120771
+      },
+      {
+        "name": "research_guards",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 4.92514
+      },
+      {
+        "name": "receive",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.180502
+      },
+      {
+        "name": "conpty",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 16.5922
+      },
+      {
+        "name": "conpty_ctrl_c",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 4.37408
+      },
+      {
+        "name": "conpty_margin",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.359594
+      },
+      {
+        "name": "presentation",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 3.95394
+      },
+      {
+        "name": "shell",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 84.8579
+      },
+      {
+        "name": "selection_bytes",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 3.64536
+      },
+      {
+        "name": "selection_context",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 3.60959
+      },
+      {
+        "name": "raw_console_receiver",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 0.370588
+      },
+      {
+        "name": "paste_system",
+        "status": "passed",
+        "elapsed_seconds_diagnostic_only": 5.12561
+      }
+    ],
+    "failure": {
+      "name": "candidate_shell_tui",
+      "python_tests": 6,
+      "passed": 5,
+      "errors": 1,
+      "scenario": "candidate-tui",
+      "stage": 50,
+      "observed_message": "'vim' is not recognized as an internal or external command",
+      "classification": "missing Vim in test process PATH; editor did not start"
+    }
+  },
+  "public_logs": [
+    {
+      "path": "red-selection.txt",
+      "sha256": "ca8c825916bc1b45dc3084dea80c4c5ca7f65448c799896548dc72824fd02928",
+      "raw_local_sha256": "79d536375b53df703428075ef00a0fb162d18ea26c0ea8ab995bce85d13192d2",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "red-alias-control.txt",
+      "sha256": "ca8c825916bc1b45dc3084dea80c4c5ca7f65448c799896548dc72824fd02928",
+      "raw_local_sha256": "79d536375b53df703428075ef00a0fb162d18ea26c0ea8ab995bce85d13192d2",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "green-matrix.txt",
+      "sha256": "caa3a5ad900c2d7cc0db5bcef2dfc69f45c6b326703df025f09701c4ebb04c05",
+      "raw_local_sha256": "f249f16080e7539f36f1dc3103a9b03e5366fbdc5ef7166c21bea21f1a334a71",
+      "normalization": "UTF-8 LF"
+    }
+  ],
+  "limitations": [
+    "No WindTerm runtime comparison or performance measurement",
+    "No complete resize, history-clear-during-replay or pending-grid-dimension acceptance",
+    "No experimental official ConPTY backend or actual distinct-DPI acceptance",
+    "No full R1 system clipboard/IME combination or R2 acceptance",
+    "CTest times are diagnostics, not performance results"
+  ],
+  "focused_retry": {
+    "command": "ctest --test-dir build/candidate-adapter -C Release -R '^candidate_shell_tui$' --output-on-failure",
+    "change": "prepend existing Git for Windows usr/bin to test process PATH only",
+    "vim_version": "MSYS2 Vim 9.1 patches 1-532, compiled 2024-07-09",
+    "vim_exe_sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+    "same_source_and_binaries": true,
+    "ctest_total": 1,
+    "ctest_passed": 1,
+    "python_tests": 6,
+    "repeats_per_scenario": 2,
+    "elapsed_seconds_diagnostic_only": 7.84349,
+    "does_not_replace_original_full_run": true
+  }
+}
