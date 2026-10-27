@@ -1,0 +1,808 @@
+{
+  "schema_version": 1,
+  "purpose": "bounded original WindTerm behavior observation, not product acceptance",
+  "source_commit": "b60cd65b9fa6af724279780faa8d78847eb5cef0",
+  "reference_version": "WindTerm 2.7.0 Windows x64",
+  "environment": {
+    "observed_cmd_banner_windows_version": "10.0.26200.9457",
+    "rea_cli_version": "6.7.0",
+    "window_station": "per-run-owned-non-input",
+    "profile": "one-synthetic-local-shell"
+  },
+  "observations": [
+    {
+      "id": "entry",
+      "declared_maximum_runs": 1,
+      "actual_runs": 1,
+      "source_commit_recorded_in_plan": null,
+      "rea_duration_seconds": 30,
+      "scenario_timeout_ms": 28000,
+      "status": "observed",
+      "stage": 5,
+      "scenario_elapsed_ms_diagnostic_only": 2010,
+      "scenario_error": null,
+      "script_sha256": "e8774e12a08eedf872ae87aa045057b76fb2c91b125a289e43fbf6c555834b3f",
+      "template_sha256": "30c93bba80eff6881dca333fdbcda21838475ea0eb44aed7664dff434967e1a7",
+      "fixture_sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797",
+      "probe_files_sha256": {
+        "launch.py": "8b5ffe020fd3c92f23b188e5673b32396c882d9e6d1cdfc8b57fd14cc2ffee2d",
+        "qt_r1_text.js": "30c93bba80eff6881dca333fdbcda21838475ea0eb44aed7664dff434967e1a7",
+        "driver.js": "cf445845d21860f3102f8f546dfe3f452e2908badc0b62ad8d6dde634fa034fa",
+        "candidate-vim.vim": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797",
+        "launcher.patch": "a3c3163fde217b5198fae8b1c80f45e9fb4f843df83ad6cc8de347eac1e0a411"
+      },
+      "source_files_sha256": {
+        "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+        "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+        "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f"
+      },
+      "helper_exe_sha256": {},
+      "reference_identity": {
+        "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
+      },
+      "provider": {
+        "evidence_id": "ev_8e744c8ba99a794f4c59caeade8fc5fb62bdea0169cfc89c21cd2981660f06f1",
+        "name": "Frida",
+        "version": null,
+        "confidence": "observed",
+        "subject": null,
+        "environment": null,
+        "captured_state": "running",
+        "messages_truncated": false,
+        "cleanup_error": null,
+        "limitations": [
+          "Artifact identity is unavailable for this observation.",
+          "The target operating system and architecture were not reported by this observation."
+        ]
+      },
+      "backend_calls": [
+        {
+          "function": "winpty_open",
+          "success": true,
+          "size": null
+        },
+        {
+          "function": "winpty_spawn",
+          "success": true,
+          "size": null
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            91,
+            23
+          ]
+        }
+      ],
+      "probe_error": {
+        "count": 0,
+        "kind": null
+      },
+      "profile_check": {
+        "only_synthetic_session": true,
+        "session_count": 1
+      },
+      "outer_cleanup": {
+        "job_accounting": {
+          "active": 0,
+          "total": 13,
+          "terminated": 0
+        },
+        "deliberate_termination_requested": true,
+        "termination_counter_is_not_natural_exit_proof": true
+      },
+      "raw_files": {
+        "run.json": {
+          "bytes": 615,
+          "sha256": "df015ba174dc04e60906175a9205f996d629d8ae29c7d07b696ca407dfe8eb6f"
+        },
+        "probe.js": {
+          "bytes": 17645,
+          "sha256": "e8774e12a08eedf872ae87aa045057b76fb2c91b125a289e43fbf6c555834b3f"
+        },
+        "probe-result.json": {
+          "bytes": 137,
+          "sha256": "0f9b75e9023dfa3b034e8b69d3fa75e732274233dd87f0307cfc9ae29f50c267"
+        },
+        "profile-check.json": {
+          "bytes": 52,
+          "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+        },
+        "cleanup.json": {
+          "bytes": 43,
+          "sha256": "43174a2e069f646c7d5370c56c5b4aedae68af7b4735434b0aba110f7442a969"
+        },
+        "evidence.json": {
+          "bytes": 35278,
+          "sha256": "78edce088914731eb60d070c4695463cb2d9c1fd491fa4d35ad86d4fe5f210f1"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "files.json": {
+          "bytes": 637666,
+          "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+        }
+      },
+      "synthetic_artifacts": {
+        "candidate-input.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "candidate-insert-log.txt": {
+          "bytes": 39,
+          "sha256": "dd1833a26b6aa08e7d20b2e6731bb15db71a01c24705592ef26670f4d3639665"
+        },
+        "candidate-startup-log.txt": {
+          "bytes": 6,
+          "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+        },
+        "candidate-vim.vim": {
+          "bytes": 334,
+          "sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797"
+        }
+      },
+      "limitations": [
+        "Vim is started by cmd /k instead of a typed launch command in this entry feasibility probe.",
+        "No resize/Ctrl-O/write/exit/CPR or full original method is claimed.",
+        "Qt/Frida observation perturbs scheduling; not physical input or performance.",
+        "The Vim input log may remain unflushed because this pilot deliberately ends by owned cleanup."
+      ],
+      "full_vim_contract_verified": false,
+      "presented_done": null,
+      "coverage": {
+        "direct_cmd_start": true,
+        "ready": true,
+        "insert_marker": true,
+        "resize": false,
+        "save": false,
+        "normal_shell_exit": false
+      },
+      "runtime_files_sha256": {
+        "msys-2.0.dll": "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f",
+        "msys-iconv-2.dll": "9cbf5613b946be7bad403ac0d7277efbd514a35faa644c6a0d6e7f6cc0b40780",
+        "msys-intl-8.dll": "23d30f4bcbc0a258cf5ecfe29e707f9b05d51c32d5b16a910f1012b889136c12",
+        "msys-ncursesw6.dll": "73ff8bc8b1f515e57b185e57d25d9ad29067057ff0819a8e588677c65ca61629",
+        "vim.exe": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a"
+      }
+    },
+    {
+      "id": "vim",
+      "declared_maximum_runs": 1,
+      "actual_runs": 1,
+      "source_commit_recorded_in_plan": "b60cd65b9fa6af724279780faa8d78847eb5cef0",
+      "rea_duration_seconds": 30,
+      "scenario_timeout_ms": 25000,
+      "status": "failed",
+      "stage": 56,
+      "scenario_elapsed_ms_diagnostic_only": 25088,
+      "scenario_error": "Error: scenario timeout",
+      "script_sha256": "9ec842a01202da3e4a25207a3aa368074b2662443052612d120fd6a8add3f4df",
+      "template_sha256": "144caee2c053240eca713a5d4b42f12bb6324400f3c5c6eafe5ead618bad8a4c",
+      "fixture_sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797",
+      "probe_files_sha256": {
+        "launch.py": "c24a82e3f0e546ae176b2ba3f463c5a1f576bf6e226110567208703b4738203c",
+        "launcher.patch": "1e440626b2bc20a9b2a6a5ea5263c4437ab06fe5285ce931cfb8b153bc475f9a",
+        "candidate-vim.vim": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797",
+        "driver.js": "95177a635e6c5bfca11eb17c394957d8aa5e0dcb6dcec96d77809b2331bc490f",
+        "qt_r1_text.js": "144caee2c053240eca713a5d4b42f12bb6324400f3c5c6eafe5ead618bad8a4c"
+      },
+      "source_files_sha256": {
+        "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+        "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+        "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+        "experiments/shell/shell.cpp": "b4f6fe98812d1d23fa5f5bbcc7376437404af6cdb67cd6cdcdf448b57cb31fe9",
+        "experiments/shell/test_candidate_tui.py": "a300380b97ad424c5af06219a021a256de6178c3af7fb7e933e24bb8142201ee",
+        "experiments/shell/query_client.cpp": "10d982efc87fa6a832fb674a43b515e2d993dcf8b40bcfa845aae5a2e7ae0545",
+        "experiments/shell/size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4"
+      },
+      "helper_exe_sha256": {
+        "shell_query_client.exe": "691b440e9c500c76c1c09c448aafbe2316793bf341ffe69bbc2bf70e41be64cc",
+        "shell_size_client.exe": "a7a45db0976dd1e157871b6a9b50b1362ceb8cb8ea604470e58791920805d408"
+      },
+      "reference_identity": {
+        "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
+      },
+      "provider": {
+        "evidence_id": "ev_1958f096bb4e6fe83d95cadf88cd600433cd9f39ec5172e577cbde3a1e8bc21b",
+        "name": "Frida",
+        "version": null,
+        "confidence": "observed",
+        "subject": null,
+        "environment": null,
+        "captured_state": "running",
+        "messages_truncated": false,
+        "cleanup_error": null,
+        "limitations": [
+          "Artifact identity is unavailable for this observation.",
+          "The target operating system and architecture were not reported by this observation."
+        ]
+      },
+      "backend_calls": [
+        {
+          "function": "winpty_open",
+          "success": true,
+          "size": null
+        },
+        {
+          "function": "winpty_conin_name",
+          "success": true,
+          "size": null
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            91,
+            23
+          ]
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            52,
+            12
+          ]
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            60,
+            12
+          ]
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            91,
+            23
+          ]
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            60,
+            12
+          ]
+        }
+      ],
+      "probe_error": {
+        "count": 1,
+        "kind": "shell-handle-argument-type"
+      },
+      "profile_check": {
+        "only_synthetic_session": true,
+        "session_count": 1
+      },
+      "outer_cleanup": {
+        "job_accounting": {
+          "active": 0,
+          "total": 14,
+          "terminated": 0
+        },
+        "deliberate_termination_requested": true,
+        "termination_counter_is_not_natural_exit_proof": true
+      },
+      "raw_files": {
+        "run.json": {
+          "bytes": 614,
+          "sha256": "4008e44a44e3d601afae3fb6d08e77f5e88715281ba4d01eb49bac54bc4ecc23"
+        },
+        "probe.js": {
+          "bytes": 23964,
+          "sha256": "9ec842a01202da3e4a25207a3aa368074b2662443052612d120fd6a8add3f4df"
+        },
+        "probe-result.json": {
+          "bytes": 378,
+          "sha256": "d33a9b0c3348921efeeee60187254405066026aa1af20ef60931fd67fdc1c4f1"
+        },
+        "profile-check.json": {
+          "bytes": 52,
+          "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+        },
+        "cleanup.json": {
+          "bytes": 43,
+          "sha256": "b77999aca40acf28442897d9e5eea89029418b73111973255ec0d654bba760c8"
+        },
+        "evidence.json": {
+          "bytes": 101735,
+          "sha256": "99e68d373210e3dc735d2b434e0db3f5dd88317531ba191c82ecd7cee847d978"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "files.json": {
+          "bytes": 637666,
+          "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+        }
+      },
+      "synthetic_artifacts": {
+        "candidate-input.bin": {
+          "bytes": 115,
+          "sha256": "4bd689a84f1eb7336afb3b607dec760d117caef3d83f3e8e1b6b1f83d70b4b68"
+        },
+        "candidate-insert-log.txt": {
+          "bytes": 58,
+          "sha256": "3d07108bcc44f0831b31530265fac711c1d1e69194aa9309897e4440c26de65a"
+        },
+        "candidate-resize-log.txt": {
+          "bytes": 5,
+          "sha256": "2d3db728e657a0e1ab99b23acb6b2d08c586c4eaba6e65a66ab65e7fb47693b7"
+        },
+        "candidate-startup-log.txt": {
+          "bytes": 6,
+          "sha256": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5"
+        },
+        "candidate-tui.txt": {
+          "bytes": 17,
+          "sha256": "d9d3b8d10b660a808ece2b2c46b3767713ba4e74631c56b376b492eadf511dec"
+        },
+        "candidate-vim.vim": {
+          "bytes": 334,
+          "sha256": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797"
+        }
+      },
+      "limitations": [
+        "Qt/Frida hooks perturb scheduling; reference geometry and event-loop timing differ from TermForge.",
+        "The reference uses its observed WinPTY backend; there is no ConPTY flags24 equivalence.",
+        "Input is Qt synthetic key delivery, not physical input.",
+        "Original runtime files are pinned but actual Vim loaded-module paths are not observed.",
+        "WinPTY input-pipe WriteFile calls are observed only after matching its named pipe; asynchronous completions may be incomplete.",
+        "Whole WindTerm process is deliberately reclaimed after observation; only the shell exit handle may prove shell natural exit.",
+        "No full57 regression, repeatability or presentation/performance acceptance."
+      ],
+      "full_vim_contract_verified": false,
+      "presented_done": null,
+      "coverage": {
+        "typed_original_launch": true,
+        "ready_and_new": true,
+        "insert_marker": true,
+        "vim_resize_60x12": true,
+        "exact_input_115_bytes": true,
+        "exact_event_file": true,
+        "exact_saved_file": true,
+        "restored_main_prompt": true,
+        "original_native_size_gate_passed": false,
+        "cpr_ran": false,
+        "normal_shell_exit_observed": false
+      },
+      "prelaunch_geometry_calibration": [
+        {
+          "pixels": [
+            1360,
+            860
+          ],
+          "size": [
+            91,
+            23
+          ]
+        },
+        {
+          "pixels": [
+            895,
+            563
+          ],
+          "size": [
+            52,
+            12
+          ]
+        },
+        {
+          "pixels": [
+            990,
+            563
+          ],
+          "size": [
+            60,
+            12
+          ]
+        }
+      ],
+      "target_pixels": [
+        990,
+        563
+      ],
+      "input_capture": {
+        "named_pipe_matched": true,
+        "write_records": 0,
+        "zero_records_is_not_zero_input": true,
+        "actual_vim_input_log_exact": true,
+        "expected_input_sha256": "4bd689a84f1eb7336afb3b607dec760d117caef3d83f3e8e1b6b1f83d70b4b68"
+      },
+      "runtime_files_sha256": {
+        "msys-2.0.dll": "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f",
+        "msys-iconv-2.dll": "9cbf5613b946be7bad403ac0d7277efbd514a35faa644c6a0d6e7f6cc0b40780",
+        "msys-intl-8.dll": "23d30f4bcbc0a258cf5ecfe29e707f9b05d51c32d5b16a910f1012b889136c12",
+        "msys-ncursesw6.dll": "73ff8bc8b1f515e57b185e57d25d9ad29067057ff0819a8e588677c65ca61629",
+        "vim.exe": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a"
+      }
+    },
+    {
+      "id": "native",
+      "declared_maximum_runs": 1,
+      "actual_runs": 1,
+      "source_commit_recorded_in_plan": "b60cd65b9fa6af724279780faa8d78847eb5cef0",
+      "rea_duration_seconds": 30,
+      "scenario_timeout_ms": 25000,
+      "status": "failed",
+      "stage": 52,
+      "scenario_elapsed_ms_diagnostic_only": 25049,
+      "scenario_error": "Error: scenario timeout",
+      "script_sha256": "6fdf5b858f28053425b91db6120650b6fecfb04501865c9bd347c585451d36a0",
+      "template_sha256": "50372e7df493445fec62ed9a93b37725f2bc5e1805173c8126e9b15d4d2513eb",
+      "fixture_sha256": "e3712da5d12d088868de039835041d634dbefe6714077292ad9d97b484913939",
+      "probe_files_sha256": {
+        "native_size.py": "e3712da5d12d088868de039835041d634dbefe6714077292ad9d97b484913939",
+        "launch.py": "1fe09af15a7f21eae90e2750e9ddd8fb6660ac6a50dc3029f3f96b4336b6f390",
+        "launcher.patch": "b8248a3db99e6bf9e0c57f2e2bfaf955f0d79eb13c66113b75c2df6341b5ee47",
+        "driver.js": "4ba8d4a737e1b07785028189bf1e7c375e08e049bef9e358d920a3e7277a609c",
+        "qt_r1_text.js": "50372e7df493445fec62ed9a93b37725f2bc5e1805173c8126e9b15d4d2513eb"
+      },
+      "source_files_sha256": {
+        "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+        "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+        "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+        "experiments/shell/size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4",
+        "experiments/shell/query_client.cpp": "10d982efc87fa6a832fb674a43b515e2d993dcf8b40bcfa845aae5a2e7ae0545"
+      },
+      "helper_exe_sha256": {
+        "shell_size_client.exe": "a7a45db0976dd1e157871b6a9b50b1362ceb8cb8ea604470e58791920805d408",
+        "shell_query_client.exe": "691b440e9c500c76c1c09c448aafbe2316793bf341ffe69bbc2bf70e41be64cc"
+      },
+      "reference_identity": {
+        "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
+      },
+      "provider": {
+        "evidence_id": "ev_a30c2cddfec137471e5583ee699123e5472cfca1e56d70c4191e92355c7a175a",
+        "name": "Frida",
+        "version": null,
+        "confidence": "observed",
+        "subject": null,
+        "environment": null,
+        "captured_state": "running",
+        "messages_truncated": false,
+        "cleanup_error": null,
+        "limitations": [
+          "Artifact identity is unavailable for this observation.",
+          "The target operating system and architecture were not reported by this observation."
+        ]
+      },
+      "backend_calls": [
+        {
+          "function": "winpty_open",
+          "success": true,
+          "size": null
+        },
+        {
+          "function": "winpty_spawn",
+          "success": true,
+          "size": null
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            91,
+            23
+          ]
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            60,
+            12
+          ]
+        }
+      ],
+      "probe_error": {
+        "count": 0,
+        "kind": null
+      },
+      "profile_check": {
+        "only_synthetic_session": true,
+        "session_count": 1
+      },
+      "outer_cleanup": {
+        "job_accounting": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "deliberate_termination_requested": true,
+        "termination_counter_is_not_natural_exit_proof": true
+      },
+      "raw_files": {
+        "run.json": {
+          "bytes": 615,
+          "sha256": "11ffb4a721570976ddfee849b6bfa144035cc0b07bbdae772d33c922ddeac4c3"
+        },
+        "probe.js": {
+          "bytes": 20813,
+          "sha256": "6fdf5b858f28053425b91db6120650b6fecfb04501865c9bd347c585451d36a0"
+        },
+        "probe-result.json": {
+          "bytes": 413,
+          "sha256": "ad10920cb07300b7ee2d1eaac0722a44718f3c1573803a063b09596e3f627c14"
+        },
+        "profile-check.json": {
+          "bytes": 52,
+          "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+        },
+        "cleanup.json": {
+          "bytes": 43,
+          "sha256": "61cfd944477da214d7cdeb0ea35df03f50b15c61527b13979bbc78ee05c1b3a6"
+        },
+        "evidence.json": {
+          "bytes": 36505,
+          "sha256": "55001f84f47c90b633300697747a7b5ac16dc51a8ea9e943d538f9bd9ca44f33"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "files.json": {
+          "bytes": 637666,
+          "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+        }
+      },
+      "synthetic_artifacts": {
+        "candidate-replies.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "native-size.json": {
+          "bytes": 127,
+          "sha256": "665c0ee3dd9ecb263e8773262c403cf64bacfd909ace63c8c70216519a7e06db"
+        },
+        "native_size.py": {
+          "bytes": 1386,
+          "sha256": "e3712da5d12d088868de039835041d634dbefe6714077292ad9d97b484913939"
+        }
+      },
+      "limitations": [
+        "No Vim in this independent sample; never combine it with the prior sample as one full scenario.",
+        "Qt/Frida scheduling and synthetic input; not physical input or performance.",
+        "Original dwSize60x12 assertion remains unchanged even if viewport is60x12.",
+        "The earlier shell-handle hook passed a Boolean where Frida required an integer; this sample corrects only that probe argument.",
+        "No input-pipe WriteFile tracking; prior unmatched writes are not a zero-input claim.",
+        "CPR origin may be the native console rather than WindTerm itself; this sample does not trace the producer.",
+        "Outer WindTerm cleanup deliberately terminates its owned process tree; only recorded shell exit can be natural."
+      ],
+      "full_vim_contract_verified": false,
+      "presented_done": null,
+      "native": {
+        "buffer": [
+          60,
+          3000
+        ],
+        "window": [
+          0,
+          0,
+          59,
+          11
+        ],
+        "viewport": [
+          60,
+          12
+        ],
+        "cursor": [
+          0,
+          9
+        ],
+        "attributes": 7,
+        "maximum": [
+          60,
+          172
+        ]
+      },
+      "size_helper": "TF_SIZE_60x3000",
+      "original_buffer_60x12_matches": false,
+      "cpr": {
+        "response_bytes": 0,
+        "observed": false,
+        "producer": null,
+        "query_exit_code": null,
+        "shell_exit_command_sent": false
+      }
+    },
+    {
+      "id": "mode",
+      "declared_maximum_runs": 1,
+      "actual_runs": 1,
+      "source_commit_recorded_in_plan": "b60cd65b9fa6af724279780faa8d78847eb5cef0",
+      "rea_duration_seconds": 30,
+      "scenario_timeout_ms": 25000,
+      "status": "observed-mode-variant",
+      "stage": 6,
+      "scenario_elapsed_ms_diagnostic_only": 2072,
+      "scenario_error": null,
+      "script_sha256": "d4d7eb7e8cddc0f247ab5fdd6699c172d10828d38bf0de7c0e349335c33c008a",
+      "template_sha256": "3eaf2aaa122bc95424e84316e8b2c0f010122a750d6ddcdd0d1fb2a1d9167d50",
+      "fixture_sha256": "4c2022640afe72e8811c80beadb580fa7237e0710373666b7399735078931e80",
+      "probe_files_sha256": {
+        "launch.py": "f173292c0407d2032173dd40ef8e250cd1fee268ab8adc9f3c89ca17b342d92d",
+        "launcher.patch": "f94ebb59f80b43d75b60a11457da110685be325c394fc20e92d189d0932672a3",
+        "cpr_mode.py": "4c2022640afe72e8811c80beadb580fa7237e0710373666b7399735078931e80",
+        "driver.js": "34bb3f4ded92d2bc254cf232e92a17c0f2c89c539037939759706915ddcca240",
+        "stages.js": "599d0fa733e680551752a359f0b1721d9b0251b9cca9e3171f6d7e99555a0bb1",
+        "qt_r1_text.js": "3eaf2aaa122bc95424e84316e8b2c0f010122a750d6ddcdd0d1fb2a1d9167d50"
+      },
+      "source_files_sha256": {},
+      "helper_exe_sha256": {
+        "shell_query_client.exe": "691b440e9c500c76c1c09c448aafbe2316793bf341ffe69bbc2bf70e41be64cc",
+        "shell_size_client.exe": "a7a45db0976dd1e157871b6a9b50b1362ceb8cb8ea604470e58791920805d408"
+      },
+      "reference_identity": {
+        "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
+      },
+      "provider": {
+        "evidence_id": "ev_bd0edb379354ad528be42fae8d14ff68867cd44937736efc85d25ce6d9814369",
+        "name": "Frida",
+        "version": null,
+        "confidence": "observed",
+        "subject": null,
+        "environment": null,
+        "captured_state": "running",
+        "messages_truncated": false,
+        "cleanup_error": null,
+        "limitations": [
+          "Artifact identity is unavailable for this observation.",
+          "The target operating system and architecture were not reported by this observation."
+        ]
+      },
+      "backend_calls": [
+        {
+          "function": "winpty_open",
+          "success": true,
+          "size": null
+        },
+        {
+          "function": "winpty_spawn",
+          "success": true,
+          "size": null
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            91,
+            23
+          ]
+        },
+        {
+          "function": "winpty_set_size",
+          "success": true,
+          "size": [
+            60,
+            12
+          ]
+        }
+      ],
+      "probe_error": {
+        "count": 0,
+        "kind": null
+      },
+      "profile_check": {
+        "only_synthetic_session": true,
+        "session_count": 1
+      },
+      "outer_cleanup": {
+        "job_accounting": {
+          "active": 0,
+          "total": 10,
+          "terminated": 0
+        },
+        "deliberate_termination_requested": true,
+        "termination_counter_is_not_natural_exit_proof": true
+      },
+      "raw_files": {
+        "run.json": {
+          "bytes": 615,
+          "sha256": "237437dbba6364c627abe4070ee6ace480899e30ffa1e4bd4af70ad7e2846703"
+        },
+        "probe.js": {
+          "bytes": 20385,
+          "sha256": "d4d7eb7e8cddc0f247ab5fdd6699c172d10828d38bf0de7c0e349335c33c008a"
+        },
+        "probe-result.json": {
+          "bytes": 599,
+          "sha256": "0403786252a7645516ce01828290c2da87fe24c783aaa364e7fd5442eda5c55c"
+        },
+        "profile-check.json": {
+          "bytes": 52,
+          "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+        },
+        "cleanup.json": {
+          "bytes": 43,
+          "sha256": "4eb92b3fbbccaaafadac2890d56ca14e7f057cc9be16207dd90f81ec823c5ef6"
+        },
+        "evidence.json": {
+          "bytes": 51939,
+          "sha256": "01686e0703da3a1d0fb4183a702e76b03bd15f352e44ede465c3d4c81489d4af"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "files.json": {
+          "bytes": 637666,
+          "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+        }
+      },
+      "synthetic_artifacts": {
+        "candidate-replies.bin": {
+          "bytes": 6,
+          "sha256": "492cbb9f988cb4c7cd28d78fa972aff059026fcca9efb775699dda04999ceea4"
+        },
+        "cpr-mode.json": {
+          "bytes": 383,
+          "sha256": "0d5c4d3c47895a73217abac0330a895fb479bfb29dc4130880c6e204c460e6ca"
+        },
+        "cpr_mode.py": {
+          "bytes": 1975,
+          "sha256": "4c2022640afe72e8811c80beadb580fa7237e0710373666b7399735078931e80"
+        }
+      },
+      "limitations": [
+        "The added mode-setting wrapper is a different fixture configuration, not a pass of the original unmodified entry.",
+        "No input flush, no external application/runtime changes, no product/test source change.",
+        "This is one new sample, not a controlled same-process replay of the earlier failure.",
+        "CPR producer is not traced; native console may answer rather than WindTerm.",
+        "Parent supervision bounds a possible blocking ReadConsoleW beyond the original client WaitForSingleObject; it is not a product deadline change.",
+        "No Vim or native-size acceptance in this sample; do not combine runs as one complete workflow.",
+        "Qt/Frida synthetic input and deliberate outer cleanup; no performance or presentation claim."
+      ],
+      "full_vim_contract_verified": false,
+      "presented_done": null,
+      "mode_observation": {
+        "output_mode_before": 3,
+        "input_mode_before": 503,
+        "requested_output_mode": 7,
+        "query_client_unchanged": true,
+        "query_supervision_seconds": 7,
+        "timed_out": false,
+        "exit_code": 0,
+        "output_mode_active": 7,
+        "input_mode_after_query": 512,
+        "output_restore_ok": true,
+        "input_restore_ok": true,
+        "output_mode_restored": 3,
+        "input_mode_restored": 503
+      },
+      "cpr": {
+        "response_bytes": 6,
+        "response_hex": "1b5b373b3152",
+        "producer": null,
+        "query_exit_code": 0
+      },
+      "natural_shell_exit_code": 37,
+      "original_unmodified_entry_passed": false
+    }
+  ],
+  "all_owned_jobs_empty_after_cleanup": true,
+  "same_run_complete_vim_size_cpr_exit": false,
+  "termforge_tests_changed": false,
+  "runtime_patch_adopted": false,
+  "product_backend_selected": false,
+  "original_fixed_runtime_official_ctest_latest": {
+    "passed": 56,
+    "total": 57,
+    "seconds": 402.66,
+    "internal_skips": 8,
+    "rerun_in_this_batch": false
+  },
+  "performance_acceptance": false,
+  "presented_done": null
+}
