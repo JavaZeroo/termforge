@@ -2,7 +2,7 @@
 
 固定同源 margin 补丁在本次五阶段原生检查中全部通过：备用屏退出后，主屏光标和红字蓝底属性恢复，后续滚动仍使用主屏 `2;3r`。未修补版前四阶段正确，最后一阶段出现预先固定的旧区域错误。不过，两版实际 transport 的候选末端都有滚动空白格的前景色元数据差异，**完整末端属性比较仍失败**。文字、背景色、光标和当前绘制属性通过，不代表完整合同通过。
 
-这是 [#56](https://github.com/JavaZeroo/termforge/issues/56) 在[三个原生 controls](conpty-source-margin-controls.md)之后的独立实验。WindTerm 2.7.0 对该场景的实际行为尚未观测；本记录不选择产品后端，不批准候选核心策略，也不关闭 #56/#41。
+这是 [#56](https://github.com/JavaZeroo/termforge/issues/56) 在[三个原生 controls](conpty-source-margin-controls.md)之后的独立实验。本批运行时尚未观测 WindTerm 2.7.0；后续[原版单次对照](windterm-styled-margin-reference.md)发现相同输入的原生及 UI 文字含 `REGION_CIXED` 残尾，具体样式与原生坐标边界另列。原版末端颜色仍未知，修补路线有待确认的行为差异；本记录不选择产品后端，不批准候选核心策略，也不关闭 #56/#41。
 
 ## 运行前固定的场景
 
