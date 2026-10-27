@@ -1,0 +1,102 @@
+{
+  "status": "in_progress_known_failing_core_regression",
+  "source_commit": "67ac9c12447884584098657f06742dcd3e0f3d59",
+  "source_tree": "476e25606ce93359c4d855726de93777e752139d",
+  "base_commit": "b59badb135b6ab53dcc55cd5b1a4c3493273ae6d",
+  "candidate_version": "0.26.1-dev+termforge.7",
+  "rust_toolchain": "1.92.0",
+  "configuration": "Windows x64 Release candidate core; no product/backend workflow exercised",
+  "source_sha256": {
+    "experiments/candidates/alacritty/src/ffi.rs": "3a906b85b4ee5afd71a0c689d037a0961595693db1890e5d80ad91bb4c34715a",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "f24af4b2ed88f1e56d7909956978af1879c929f91b0f9d36d677a5efa92b6222",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/tests.rs": "2d3e07a5baebe021f597e2e3ee4489c7d8f4e96373d5e9d188af2aea57b4fdf3",
+    "experiments/core/candidate_terminal_test.cpp": "17064470dc959f764571f0b94d24f898121d6bdaf35a405fda3fa5b9d2ae557a",
+    "experiments/core/candidate_terminal.cpp": "e0d856ce47510df93baf950a8ba36d1ab8e3db313f501cfa7207e707099e3f11",
+    "experiments/candidates/alacritty/Cargo.lock": "35c15e1c3212b9dca758f89d5deaabcbcf750234083e6429e4c45f96eb11390d"
+  },
+  "binary_sha256": {
+    "build/candidate-adapter/bin/Release/candidate_core_test.exe": "d7317c8063196aca89df577eb8db72f5a30c6c01a27c403ac74ab9e39c727fc4",
+    "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib": "cb27c96b5d0dec2a111d7fa39becb228fa4bebc155513fae19e472a074f00f4b",
+    "experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe": "d6f4ecb1fa40f113ddc7a1d18baad7e320246fc887d3060935f6ebed38444ebd"
+  },
+  "private_artifacts_sha256": {
+    "metadata-red.txt": "9c5e2409e496328b457e9e01ba68caf6d5655c50affbe0d6f74b14f3a91545da",
+    "metadata-green.txt": "16ae9cbd2ffe3dab9bb701d838f906f4aff0cf13bc869ecf7ed89f9b8bd122c9",
+    "eviction-red.log": "5dcb95a077f288c267351f9b4047fbe885535056566ef31e7905ace88337f868",
+    "eviction-green.log": "19539a931d57fa957b383d4da0266528810fa0bd9e7d39e1ae8d34d1c60bc16d",
+    "ctest.log": "e6acc85db52bc307c1d4093887a54e11d7716fdc836f334789733245b081d230",
+    "rust-workspace-final.log": "2c6c1bec7007444b87a6975a80a823903fad15bf8487e0f278bcb52f68ec58b2",
+    "final-runner.log": "2e167ccae53d1fa4d63efd457d1dbfbe7acd512949d9c5a19385e8ff12f2fa36",
+    "final-core-build.log": "59cc7f6c601d0392a450b9e42a588d7948c5e4091f2946baf11454e09f871840",
+    "final-core.log": "b284440086395a8caa596ae63483917ca952f590a8e949a663bf66cc73ed2016",
+    "results.jsonl": "9caeaa0cfde848c51f751bf613328f29ed469d75d51277f3102397564170da1e",
+    "identity-before.json": "bd49905e949906095a23e8f8a170b592f66d491f20ed6f343ccc5c5a418a9e8e",
+    "identity-after.json": "180692eb0ff27b716a563469923c7f6a87f310380db94df4ace83505553f6b76"
+  },
+  "native_metadata_red": {
+    "tests": 6,
+    "passed": 0
+  },
+  "native_metadata_green": {
+    "tests": 6,
+    "passed": 6
+  },
+  "capacity_eviction": {
+    "expected": 3,
+    "before": 0,
+    "after": 3,
+    "retained_ascii": "MNOPQRSTUVWX",
+    "explicit_clear_not_eviction": true
+  },
+  "final_rust": {
+    "command": "cargo test --workspace --locked",
+    "exit": 0,
+    "vendor_unit": 163,
+    "ffi": 5,
+    "measure": 2,
+    "trace": 2,
+    "doc": 1
+  },
+  "final_runner": {
+    "command": "python -X utf8 -m unittest experiments.candidates.alacritty.test_candidate -v",
+    "exit": 0,
+    "passed": 6
+  },
+  "final_candidate_core": {
+    "command": "ctest --test-dir build/candidate-adapter -C Release -R '^candidate_core$' --output-on-failure",
+    "exit": 8,
+    "passed": 0,
+    "failed": 1,
+    "failure": "whole-feed resize replay duplicated or lost original history text",
+    "bytewise_branch_executed": false
+  },
+  "public_api_probe": {
+    "cases": 12,
+    "phases_per_case": 3,
+    "records": 36,
+    "input_kind": "synthetic",
+    "same_source_tree_and_hashes_before_after": true,
+    "single_full_copy": "ABCDEFGH\r\nABCDB\r\nC\r\nD\r\n\r\n",
+    "soft_ascii_copy": "ABCDEFGHABCDIJKL\r\nC\r\nD\r\n\r\n",
+    "soft_ascii_ghij_hits": 0,
+    "blank_history_copy": "B\r\nC\r\nD\r\n\r\n"
+  },
+  "review": {
+    "standards_required_remaining": 0,
+    "spec_new_findings": 0,
+    "optional_duplicate_normalization_retained": true
+  },
+  "not_verified": [
+    "source ownership",
+    "mixed-width viewport",
+    "complete resize/reflow",
+    "copy/Find parity",
+    "original post-resize overwrite behavior",
+    "full CMake suite",
+    "actual rendering",
+    "ConPTY child acknowledgement",
+    "experimental backend",
+    "performance",
+    "R2 acceptance"
+  ]
+}

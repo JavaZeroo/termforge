@@ -4,7 +4,7 @@
 
 `CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.7` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
 
-当前 `.7` 修复原生 resize 的硬/软边界传递及缩宽容量淘汰计数，来源见[补丁台账](../candidates/alacritty/PROVENANCE.md#termforge7-补丁)。C++ 长行 resize/repaint 的整段复制回归仍失败：旧历史行与原生片段重复，来源归属和统一视图映射仍由 #29 继续处理。这些原生修复不构成候选完整正确性通过。
+当前 `.7` 修复原生 resize 的硬/软边界传递及缩宽容量淘汰计数，来源见[补丁台账](../candidates/alacritty/PROVENANCE.md#termforge7-补丁)，结果见[工作检查点](results/2026-10-28-reflow-metadata/README.md)。C++ 长行 resize/repaint 的整段复制回归仍失败：旧历史行与原生片段重复，来源归属和统一视图映射仍由 #29 继续处理。这些原生修复不构成候选完整正确性通过。
 
 ## 构建与验证
 
