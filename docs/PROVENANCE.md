@@ -18,6 +18,8 @@
 
 ## 已使用的第三方数据
 
+- `research/msys-runtime-window-prefix/`：外部运行库的隔离研究补丁，来源为 `git-for-windows/msys2-runtime` 固定提交 `2e2ef940151485490aff0c7b00c00965ef7a71a4` 的 `winsup/cygwin/fhandler/console.cc`；修改 resize 输入前缀的消费顺序，适用上游 LGPLv3-or-later 及 `CYGWIN_LICENSE` 中的 Linking Exception。完整上游许可、补丁与来源见[目录说明](../research/msys-runtime-window-prefix/README.md)。这不是 WindTerm 源码，不是产品依赖，也不进入默认构建或发布包；不由项目 MIT 覆盖。编译/隔离 Vim 结果及未验边界见[实验记录](research/vim-msys-runtime-prototype.md)。
+
 - `assets/fonts/RobotoMono-Regular.ttf`：从 Google Fonts 的 RobotoMono 官方仓库固定提交独立取得，未修改；适用 SIL Open Font License 1.1，完整版权与许可证随字体分发。字体源码、固定版本、原始链接、字节数和 SHA-256 见[字体来源](../assets/fonts/README.md)。只在 TermForge 进程内作为工作区 UI 字体加载；不是从 WindTerm 提取的资源，不受项目 MIT 许可证覆盖。
 
 - 差分测试依赖 `pyte 0.8.2`（LGPLv3）和 `wcwidth 0.2.13`（MIT），固定 wheel 哈希并保留原包许可；没有复制其源码或将其作为产品组件。版本、官方来源与适配边界见[差分说明](../experiments/differential/README.md)。原创项目许可证不替代这些依赖的许可证。

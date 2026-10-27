@@ -5,3 +5,6 @@
 *.py text eol=lf
 *.ps1 text eol=crlf
 experiments/core/fixtures/*.bin binary
+# Preserve upstream license bytes and unified-diff context prefixes.
+research/msys-runtime-window-prefix/CYGWIN_LICENSE whitespace=-blank-at-eol,-blank-at-eof
+research/msys-runtime-window-prefix/window-prefix.patch whitespace=-blank-at-eol,-space-before-tab

@@ -1,6 +1,6 @@
 # Vim resize 后 Ctrl-O 的输入边界
 
-[#52](https://github.com/JavaZeroo/termforge/issues/52) 的 GUI stage59 仍未修复。新的有界运行时记录将捕获到的失败定位在 MSYS 控制台事件到 `read(0)` 的转换：TermForge 成功写出完整 93 B，原生输入也包含 Ctrl-O，但 Vim 收到的读结果仅剩其后 92 B。本文记录诊断，不改变固定应用、输入、期限或验收合同。
+[#52](https://github.com/JavaZeroo/termforge/issues/52) 的原固定运行库 GUI stage59 验收仍未完成。本文的有界运行时记录将捕获到的失败定位在 MSYS 控制台事件到 `read(0)` 的转换：TermForge 成功写出完整 93 B，原生输入也包含 Ctrl-O，但 Vim 收到的读结果仅剩其后 92 B。本文记录诊断，不改变固定应用、输入、期限或验收合同；后续[隔离运行库修补实验](vim-msys-runtime-prototype.md)单独记录重建基点 red 与修补四轮 green，不替代原固定目标验收。
 
 ## 固定身份与观测范围
 
@@ -32,7 +32,7 @@
 
 ## 源码解释与未完成项
 
-固定源码的 [`send_winch_maybe`](https://github.com/git-for-windows/msys2-runtime/blob/2e2ef940151485490aff0c7b00c00965ef7a71a4/winsup/cygwin/fhandler/console.cc#L935) 在发送SIGWINCH时临时释放、再取得 `input_mutex`；[`process_input_message`](https://github.com/git-for-windows/msys2-runtime/blob/2e2ef940151485490aff0c7b00c00965ef7a71a4/winsup/cygwin/fhandler/console.cc#L1124) 先Peek并处理旧快照，再按旧数量Read清理。同期 [`cons_master_thread`](https://github.com/git-for-windows/msys2-runtime/blob/2e2ef940151485490aff0c7b00c00965ef7a71a4/winsup/cygwin/fhandler/console.cc#L363) 可以移除resize并写回键盘记录。由此推断旧快照在释放锁期间失效，与实际调用顺序吻合；尚没有单变量修补后的因果红绿，不宣称已完成修复。
+固定源码的 [`send_winch_maybe`](https://github.com/git-for-windows/msys2-runtime/blob/2e2ef940151485490aff0c7b00c00965ef7a71a4/winsup/cygwin/fhandler/console.cc#L935) 在发送SIGWINCH时临时释放、再取得 `input_mutex`；[`process_input_message`](https://github.com/git-for-windows/msys2-runtime/blob/2e2ef940151485490aff0c7b00c00965ef7a71a4/winsup/cygwin/fhandler/console.cc#L1124) 先Peek并处理旧快照，再按旧数量Read清理。同期 [`cons_master_thread`](https://github.com/git-for-windows/msys2-runtime/blob/2e2ef940151485490aff0c7b00c00965ef7a71a4/winsup/cygwin/fhandler/console.cc#L363) 可以移除resize并写回键盘记录。由此推断旧快照在释放锁期间失效，与实际调用顺序吻合；本诊断批次没有修补后的因果红绿，后续独立实验见上文链接，不混用其运行身份。
 
 这个释放锁的代码来自[避免less信号处理longjmp导致死锁的上游修正](https://github.com/git-for-windows/msys2-runtime/commit/76e1edeb27a573a955ebf3ae5a7a7fd1a75b290f)。后续方案必须同时保留这项约束，不能简单删除解锁，也不能补发Ctrl-O、延长等待、换应用或跳过原断言来结项。可继续准备隔离的最小运行库修补与真实输入回归；外部应用或运行库升级的诊断结果不能自动替换原固定验收目标，正式兼容方案另行提出。
 

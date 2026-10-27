@@ -1,0 +1,27 @@
+--- a/winsup/cygwin/fhandler/console.cc
++++ b/winsup/cygwin/fhandler/console.cc
+@@ -1486,12 +1486,18 @@
+ 	  break;
+ 
+ 	case WINDOW_BUFFER_SIZE_EVENT:
+-	  if (send_winch_maybe ())
+-	    {
+-	      stat = input_winch;
+-	      goto out;
+-	    }
+-	  /* fall through */
++	  {
++	    /* Retire the peeked prefix while input_mutex still protects it.
++	       send_winch_maybe releases that mutex for signal delivery, so
++	       neither the queue prefix nor the remaining peek is valid after
++	       it returns.  A non-resizing event starts a fresh input pass. */
++	    DWORD discarded = 0;
++	    acquire_attach_mutex (mutex_timeout);
++	    ReadConsoleInputW (get_handle (), input_rec, i + 1, &discarded);
++	    release_attach_mutex ();
++	    con.num_processed -= min (con.num_processed, discarded);
++	    return send_winch_maybe () ? input_winch : stat;
++	  }
+ 	default:
+ 	  continue;
+ 	}
