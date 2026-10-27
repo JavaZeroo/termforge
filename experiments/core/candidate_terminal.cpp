@@ -63,7 +63,7 @@ bool same_replay_line(const Line& a, const Line& b) {
     if (a.ending != b.ending || a.wrap_columns != b.wrap_columns || a.cropped != b.cropped) return false;
     size_t a_first, a_last, b_first, b_last;
     replay_bounds(a, a_first, a_last); replay_bounds(b, b_first, b_last);
-    if (a_first == a_last || b_first == b_last || a_last - a_first != b_last - b_first) return false;
+    if (a_first == a_last || b_first == b_last || a_first != b_first || a_last != b_last) return false;
     return std::equal(a.begin() + a_first, a.begin() + a_last, b.begin() + b_first, same_cell);
 }
 
@@ -73,7 +73,9 @@ std::string replay_key(const Line& line) {
     if (first == last) return {};
     std::ostringstream out;
     out.imbue(std::locale::classic());
-    out << static_cast<int>(line.ending) << ':' << line.wrap_columns << ':' << line.cropped << ':';
+    // Leading padding locates the text: equal bytes at different columns cannot
+    // retain a version used by selection and Find. Only trailing padding is inert.
+    out << static_cast<int>(line.ending) << ':' << line.wrap_columns << ':' << line.cropped << ':' << first << ':';
     for (size_t index = first; index < last; ++index) {
         const auto& cell = line[index];
         out << cell.text.size() << ':' << cell.text << cell.width << ',' << cell.style.fg << ','

@@ -417,11 +417,64 @@ void history_clear_does_not_resurrect() {
     }
 }
 
+void replay_text_coordinates(int from, int to, bool during_replay, bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed(from == 0 ? "H\r\nABC\r\nTAIL" : "H\r\n\x1b[3GABC\r\nTAIL");
+    termforge::TextDocument initial(terminal.screen);
+    termforge::TextSelection selection;
+    require(selection.set(initial, {*initial.position(1, from), *initial.position(1, from + 3)}) &&
+            selection.copy(initial, 64).text == "ABC", "shift fixture selection differs");
+    termforge::TextSearch search;
+    const auto generation = search.start(initial, "ABC");
+    for (int step = 0; step < 200 && search.status() == termforge::SearchStatus::running; ++step)
+        search.step(initial, generation, 64);
+    const auto before = search.match(initial, 0);
+    require(search.status() == termforge::SearchStatus::complete && search.matches().size() == 1 &&
+            before && before->range.begin.column == static_cast<size_t>(from) &&
+            before->range.end.column == static_cast<size_t>(from + 3),
+            "shift fixture Find coordinates differ");
+
+    terminal.resize(2, 10);
+    if (!during_replay) terminal.feed("\x1b[?25l\x1b[?25h");
+    // Exercise both resize replay and subsequent output, in both directions.
+    // Keeping column 2 unchanged is the control for harmless trailing padding.
+    std::string bytes = "\x1b[1;1H\x1b[2K";
+    bytes += to == 0 ? "ABC\r\n" : "\x1b[1;3HABC\r\n";
+    if (during_replay) bytes = "\x1b[?25l" + bytes + "\x1b[?25h";
+    if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+    else terminal.feed(bytes);
+    termforge::TextDocument shifted(terminal.screen);
+    require(shifted.line(1).projection.text == (to == 0 ? "ABC" : "  ABC"), "shifted live text differs");
+    if (from != to) {
+        require(selection.copy(shifted, 64).status == termforge::SelectionCopyStatus::invalidated,
+                "replay kept a selection at the old columns after moving its text");
+        require(!search.match(shifted, 0), "replay kept a Find hit at the old columns after moving its text");
+    } else {
+        const auto copy = selection.copy(shifted, 64);
+        require(copy.status == termforge::SelectionCopyStatus::ok && copy.text == "ABC",
+                "unchanged text coordinates invalidated a selection");
+    }
+
+    const auto changed = search.notify_change(shifted);
+    for (int step = 0; step < 200 && search.status() == termforge::SearchStatus::running; ++step)
+        search.step(shifted, changed, 64);
+    const auto after = search.match(shifted, 0);
+    require(search.status() == termforge::SearchStatus::complete && search.matches().size() == 1 &&
+            after && after->range.begin.column == static_cast<size_t>(to) &&
+            after->range.end.column == static_cast<size_t>(to + 3),
+            "Find did not converge to the moved text's actual columns");
+}
+
 void conpty_resize_replay(const std::filesystem::path& path) {
     replay_case(path, false);
     replay_case(path, true);
     incomplete_replay_is_bounded();
     history_clear_does_not_resurrect();
+    for (const bool during_replay : {true, false}) for (const bool fragmented : {false, true}) {
+        replay_text_coordinates(0, 2, during_replay, fragmented);
+        replay_text_coordinates(2, 0, during_replay, fragmented);
+        replay_text_coordinates(2, 2, during_replay, fragmented);
+    }
 }
 
 void selection_search_and_viewport() {
