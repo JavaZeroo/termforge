@@ -237,6 +237,13 @@ public:
     }
     ~ClipboardScenarioOwner() { stop(); }
     bool entered() const { return clipboard_event(entered_.get()); }
+    // [DEBUG-r99] Observation only: manual-reset event, fixed step names and
+    // independent atomics. This is not a coherent acceptance snapshot.
+    void debug_record_r99(std::ostream& out) const {
+        out<<",\"owner_step\":\""<<step_.load()<<"\",\"owner_released_wait\":"
+           <<WaitForSingleObject(released_.get(),0)<<",\"owner_worker_error\":"<<error_.load()
+           <<",\"owner_native_error\":"<<native_error_.load();
+    }
     bool released() const {
         // The individual atomics do not form a coherent publication tuple
         // while WM_RENDERFORMAT is still writing it. Its release event is the
@@ -292,6 +299,44 @@ struct ClipboardWindowCase {
     std::optional<ClipboardOwnerReleaseResult> owner_release;
     size_t receiver_bytes=0;
 };
+// [DEBUG-r99] Bounded, opt-in fixture trace. No clipboard or terminal content,
+// process/window identity, waits, or changes to the scenario's decisions.
+class ClipboardStageTraceR99 {
+    bool checked_=false, enabled_=false;
+    unsigned records_=0, turns_=0, previous_case_=~0u;
+    int previous_stage_=-1;
+    uint64_t last_ms_=0;
+public:
+    bool enabled() {
+        if(!checked_) {
+            wchar_t value[2]{};
+            enabled_=GetEnvironmentVariableW(L"TERMFORGE_R99_STAGE_TRACE",value,2)==1 && value[0]==L'1';
+            if(enabled_) require_hosted_clipboard();
+            checked_=true;
+        }
+        return enabled_;
+    }
+    void turn() { ++turns_; }
+    void record(const std::filesystem::path& directory,unsigned index,int stage,uint64_t elapsed,
+                const char* event,std::optional<bool> busy,HANDLE helper,const ClipboardScenarioOwner* owner) {
+        if(records_>=256) return;
+        const bool changed=previous_stage_!=stage || previous_case_!=index;
+        if(!changed && std::string(event)=="tick" && elapsed-last_ms_<1000) return;
+        std::ofstream out(directory/"clipboard-stage-trace.jsonl",std::ios::binary|
+            (records_?std::ios::app:std::ios::trunc));
+        out<<"{\"schema\":\"termforge-clipboard-stage-r99-v1\",\"tag\":\"[DEBUG-r99]\",\"record\":"<<records_
+           <<",\"turn\":"<<turns_<<",\"elapsed_ms\":"<<elapsed<<",\"case\":"<<index
+           <<",\"stage\":"<<stage<<",\"event\":\""<<event<<"\",\"paste_busy\":";
+        if(busy) out<<(*busy?"true":"false"); else out<<"null";
+        out<<",\"helper_wait\":";
+        if(helper) out<<WaitForSingleObject(helper,0); else out<<"null";
+        if(owner) owner->debug_record_r99(out);
+        else out<<",\"owner_step\":null,\"owner_released_wait\":null,\"owner_worker_error\":null,\"owner_native_error\":null";
+        out<<",\"truncated\":"<<(records_==255?"true":"false")<<"}\n";
+        out.close(); paste_check(out.good(),"[DEBUG-r99] clipboard stage trace write failed");
+        ++records_; previous_case_=index; previous_stage_=stage; last_ms_=elapsed;
+    }
+};
 struct ClipboardScenarioState {
     unsigned index=0;
     std::unique_ptr<ClipboardScenarioOwner> owner;
@@ -300,6 +345,7 @@ struct ClipboardScenarioState {
     HWND target=nullptr;
     ClipboardWindowCase pending;
     std::vector<ClipboardWindowCase> cases;
+    ClipboardStageTraceR99 debug_trace_r99;
     const char* name() const { return index==0?"occupied":index==1?"oversize":index==2?"cancel":"close"; }
     std::string retry() const { return std::string("RETRY_")+name(); }
     std::string baseline() const { return std::string(256,'B'); }
