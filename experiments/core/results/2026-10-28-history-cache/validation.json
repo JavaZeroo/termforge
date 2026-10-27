@@ -1,0 +1,507 @@
+{
+  "scope": "R2 #29 primary history cache ownership, transparent feed and capacity eviction; incomplete resize acceptance",
+  "source_commit": "1c1a64e59803e2cd0be6e07a4cd4a052705f5a7e",
+  "reviewed_local_code_commit": "4940050655e94cb445c88e3b08d9675788c0bc61",
+  "identical_source_tree": "ea13b9db473eb456225fa953e5c1c684d6b1bc46",
+  "base_commit": "6a108e1d15f00dc9497dac79a8bf75a3559469f8",
+  "source_files": [
+    {
+      "path": "experiments/candidates/alacritty/Cargo.lock",
+      "git_blob": "80d1c6262af07dc6dbb8036b8652de757555b580",
+      "worktree_sha256": "64a6e71b8972f05e0710c1a9bb876fb29648dfdfef1de7dcd067d1ecdfcf3b6d"
+    },
+    {
+      "path": "experiments/candidates/alacritty/PROVENANCE.md",
+      "git_blob": "659f7d130af0d78e379f173fe005fb40f592d7ab",
+      "worktree_sha256": "c07b79501fcadda65baf966902edadbe5933ccbbf7c10c2ed235dbc236786754"
+    },
+    {
+      "path": "experiments/candidates/alacritty/include/termforge_candidate.h",
+      "git_blob": "53ba25baabffb501aaf5e35f001ce974b67b103d",
+      "worktree_sha256": "ea78826c5be2194e42266e0d34ba6378d826b860014e7c5d221c370afc95f664"
+    },
+    {
+      "path": "experiments/candidates/alacritty/run.py",
+      "git_blob": "2a6a29d6a9804288958b389479ec3b7b73105c43",
+      "worktree_sha256": "2c8efbbd0ad2c72d2e2c0a543b94ffda96f1da1fa570d4a97193c3bf96c13c3c"
+    },
+    {
+      "path": "experiments/candidates/alacritty/src/ffi.rs",
+      "git_blob": "43cf61391518d1477ede9fa4f764ec33a0b6606d",
+      "worktree_sha256": "78cc39dbada42a55ce7422032e30852bb322d5bb63777bbba3e798bea8ec245f"
+    },
+    {
+      "path": "experiments/candidates/alacritty/test_candidate.py",
+      "git_blob": "5335ab93181bde5cf6bdad62d943b84aed5de0a0",
+      "worktree_sha256": "07860a851ec44b25c0f2b24c8d84855e9f62ad0335ce0761687c012940fbc7ed"
+    },
+    {
+      "path": "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml",
+      "git_blob": "0ea940886fd7111ac7eec58a36d3176ed5202a35",
+      "worktree_sha256": "32dac1a8741538ddbeb4a7f7099f2b61ff01a8e67e61496e4634fd990e86338e"
+    },
+    {
+      "path": "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/mod.rs",
+      "git_blob": "ca8ddd1ea48a66608d1b3b2e4aee839e97e51fde",
+      "worktree_sha256": "0c9c18ef9df4f59ec4e16a3175a09070c0366816ffaa8b67d78c3c4b3db9d799"
+    },
+    {
+      "path": "experiments/core/candidate_terminal.cpp",
+      "git_blob": "7dc18eb72ac63e3f00ebc4df24fb96087a3c21b2",
+      "worktree_sha256": "e0d856ce47510df93baf950a8ba36d1ab8e3db313f501cfa7207e707099e3f11"
+    },
+    {
+      "path": "experiments/core/candidate_terminal.hpp",
+      "git_blob": "9b228a9d95c39151d6bd71ba2974f39c9857b4a5",
+      "worktree_sha256": "85a9860695edfed329699a07e9613f79ad2de16292524c7a395673092f72b9dc"
+    },
+    {
+      "path": "experiments/core/candidate_terminal_test.cpp",
+      "git_blob": "ae72b282088b975bcca0499337a3836d5078ee92",
+      "worktree_sha256": "37462e25a7911d09f1e8d3cc7d0278665cf6efec0e58587df25b92a5d4609ef6"
+    }
+  ],
+  "configuration": {
+    "os": "Windows 11 Pro 10.0.26200 x64",
+    "candidate": "0.26.1-dev+termforge.6",
+    "adapter": true,
+    "backend": "system ConPTY",
+    "build_type": "Release",
+    "rust": "1.92.0",
+    "python": "3.12.10",
+    "msvc": "19.42.34433.0",
+    "windows_sdk": "10.0.26100.0",
+    "registered_dependencies": 59,
+    "path_crates": 2,
+    "vim": {
+      "version": "9.1 patches 1-532",
+      "sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+      "path_policy": "Existing Git for Windows usr/bin prepended only in test process environment"
+    }
+  },
+  "binaries": [
+    {
+      "path": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+      "sha256": "488bba51708779ffd8317c09946fb9182acc7313f73ee7c3e09ec2fa6f1112dd"
+    },
+    {
+      "path": "build/candidate-adapter/bin/Release/termforge_shell.exe",
+      "sha256": "92705678c27406f0cd7779e16910fb5b67953bb3ebbfc642eb3d563beb643a57"
+    },
+    {
+      "path": "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib",
+      "sha256": "c2f9769629caa45794d49bfb256484748e5c5719fa8e32cc76b0654665efef71"
+    },
+    {
+      "path": "experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe",
+      "sha256": "7c20a69c2450ce55209def718064c8f25581fd0c6eb6d07389a2f2a87caff620"
+    }
+  ],
+  "validation": {
+    "commands": [
+      {
+        "log": "local/r29-history/build-final.txt",
+        "finished_utc": "2026-10-27T16:28:48.9072391Z",
+        "started_utc": "2026-10-27T16:27:50.0260715Z",
+        "name": "build-final",
+        "exit_code": 0,
+        "sha256": "5e10b2c2eef7a83e90ecdb317811983fc30c60c115b69110380cde720b6ad604"
+      },
+      {
+        "log": "local/r29-history/rust-final.txt",
+        "finished_utc": "2026-10-27T16:28:53.6216294Z",
+        "started_utc": "2026-10-27T16:28:48.9516626Z",
+        "name": "rust-final",
+        "exit_code": 0,
+        "sha256": "56560f85a08370a4c036525a99351ba9c3a21d87fdd0a1be7a01684b78a72596"
+      },
+      {
+        "log": "local/r29-history/build-trace-final.txt",
+        "finished_utc": "2026-10-27T16:28:53.8677439Z",
+        "started_utc": "2026-10-27T16:28:53.6249355Z",
+        "name": "build-trace-final",
+        "exit_code": 0,
+        "sha256": "dbc2c037c3ab59d8b8aa7c39426e1a2bc5a3640f1666ff60efa0c197a5c60686"
+      },
+      {
+        "log": "local/r29-history/runner-final.txt",
+        "finished_utc": "2026-10-27T16:28:54.2853320Z",
+        "started_utc": "2026-10-27T16:28:53.8706619Z",
+        "name": "runner-final",
+        "exit_code": 0,
+        "sha256": "4c10d89bb8d4e85573fa1706c57a740cc090471465f53759579c4e53262b5c6b"
+      },
+      {
+        "log": "local/r29-history/ctest-final.txt",
+        "finished_utc": "2026-10-27T16:33:58.9842335Z",
+        "started_utc": "2026-10-27T16:28:54.2879219Z",
+        "name": "ctest-final",
+        "exit_code": 0,
+        "sha256": "b851dceceb541f2f0edd2a2f84555537e100483f2500b651a1acd9c2ccbe7e04"
+      }
+    ],
+    "ctest": {
+      "tests": 49,
+      "failures": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "name": "shell_launch",
+          "status": "run"
+        },
+        {
+          "name": "candidate_title",
+          "status": "run"
+        },
+        {
+          "name": "runtime_observation",
+          "status": "run"
+        },
+        {
+          "name": "ime_input_expectation",
+          "status": "run"
+        },
+        {
+          "name": "sent_message_wait",
+          "status": "run"
+        },
+        {
+          "name": "find_bar",
+          "status": "run"
+        },
+        {
+          "name": "renderer_metrics",
+          "status": "run"
+        },
+        {
+          "name": "ime_context",
+          "status": "run"
+        },
+        {
+          "name": "layout_state",
+          "status": "run"
+        },
+        {
+          "name": "workspace_state",
+          "status": "run"
+        },
+        {
+          "name": "transport_completion",
+          "status": "run"
+        },
+        {
+          "name": "scenario_tick_gate",
+          "status": "run"
+        },
+        {
+          "name": "candidate_core",
+          "status": "run"
+        },
+        {
+          "name": "resize_core",
+          "status": "run"
+        },
+        {
+          "name": "history_core",
+          "status": "run"
+        },
+        {
+          "name": "selection_core",
+          "status": "run"
+        },
+        {
+          "name": "search_core",
+          "status": "run"
+        },
+        {
+          "name": "paste",
+          "status": "run"
+        },
+        {
+          "name": "clipboard_policy",
+          "status": "run"
+        },
+        {
+          "name": "keyboard",
+          "status": "run"
+        },
+        {
+          "name": "text_action_policy",
+          "status": "run"
+        },
+        {
+          "name": "candidate_shell_tui",
+          "status": "run"
+        },
+        {
+          "name": "core",
+          "status": "run"
+        },
+        {
+          "name": "recovery",
+          "status": "run"
+        },
+        {
+          "name": "measure",
+          "status": "run"
+        },
+        {
+          "name": "binary_paths",
+          "status": "run"
+        },
+        {
+          "name": "conpty_margin_contract",
+          "status": "run"
+        },
+        {
+          "name": "benchmark_tools",
+          "status": "run"
+        },
+        {
+          "name": "differential",
+          "status": "run"
+        },
+        {
+          "name": "ime_inventory",
+          "status": "run"
+        },
+        {
+          "name": "text_actions",
+          "status": "run"
+        },
+        {
+          "name": "workflow_fixture",
+          "status": "run"
+        },
+        {
+          "name": "workflow_sessions",
+          "status": "run"
+        },
+        {
+          "name": "workflow_resources",
+          "status": "run"
+        },
+        {
+          "name": "workflow_resource_phases",
+          "status": "run"
+        },
+        {
+          "name": "workflow_system_content",
+          "status": "run"
+        },
+        {
+          "name": "workflow_system_runner",
+          "status": "run"
+        },
+        {
+          "name": "copy_error_frame",
+          "status": "run"
+        },
+        {
+          "name": "research_guards",
+          "status": "run"
+        },
+        {
+          "name": "receive",
+          "status": "run"
+        },
+        {
+          "name": "conpty",
+          "status": "run"
+        },
+        {
+          "name": "conpty_ctrl_c",
+          "status": "run"
+        },
+        {
+          "name": "conpty_margin",
+          "status": "run"
+        },
+        {
+          "name": "presentation",
+          "status": "run"
+        },
+        {
+          "name": "shell",
+          "status": "run"
+        },
+        {
+          "name": "selection_bytes",
+          "status": "run"
+        },
+        {
+          "name": "selection_context",
+          "status": "run"
+        },
+        {
+          "name": "raw_console_receiver",
+          "status": "run"
+        },
+        {
+          "name": "paste_system",
+          "status": "run"
+        }
+      ],
+      "internal_skips": [
+        {
+          "ctest": "paste_system",
+          "test": "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard)",
+          "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified."
+        }
+      ],
+      "junit": {
+        "path": "build/candidate-adapter/local-final.xml",
+        "sha256": "f81d530522d011417ad36c643ba15e35659b053d8e95958a2a296f5cb1a318a8"
+      }
+    },
+    "rust": {
+      "vendor_unit": 157,
+      "adapter_and_program_unit": 7,
+      "doc": 1
+    },
+    "runner": {
+      "tests": 6,
+      "failures": 0
+    },
+    "adapter_after_origin_fix": {
+      "path": "local/r29-history/origin-green.txt",
+      "sha256": "f249f16080e7539f36f1dc3103a9b03e5366fbdc5ef7166c21bea21f1a334a71"
+    }
+  },
+  "counterexamples": [
+    {
+      "name": "resident native prefix reimport",
+      "product_red_commit": "b966adcc7f71178ec7803c4e8753b11141ed45f7",
+      "probe_source_sha256": "767696f173de3cae54aed56de035ac21d6224bddf02fd6113eaa1519233ba785",
+      "red": {
+        "path": "local/r29-interleaved/red.txt",
+        "sha256": "9783bf36a2a705c7ae7a54766dd1139556b44df1e375c4d6181bc1d4744e8bf1",
+        "exit_code": 1,
+        "observed": "B|C|D|E| discarded 1 -> 2 after empty feed"
+      },
+      "green": {
+        "path": "local/r29-interleaved/green.txt",
+        "sha256": "217ddf2aa56216497e2c1027fa7de9be73dc4f433d80d10281105363ad097e55",
+        "source_commit": "4940050655e94cb445c88e3b08d9675788c0bc61",
+        "exit_code": 0,
+        "observed": "B|C|D|E| discarded 1 -> 1 after empty feed"
+      }
+    },
+    {
+      "name": "cache-only row retained by old replay origin",
+      "product_red_commit": "93b18db094310599c93bb1579640800058607021",
+      "probe_source_sha256": "79dbadc992b422cf9aeac8380a640f4cbd0ef01a72ec74ece6e46a954d560247",
+      "red": {
+        "path": "local/r29-spec-cache-origin/result.txt",
+        "sha256": "6e0827477011e1169ea5991759313bd1cdec8f8b16826201eed0b4b9e1aa27ac",
+        "exit_code": 1,
+        "observed": "B|C|D|| discarded 1 -> 2 -> 3 -> 4 after three empty feeds"
+      },
+      "green": {
+        "path": "local/r29-spec-cache-origin/green.txt",
+        "sha256": "f964600058ce4ddcac00717a70ab63705fb98097bcca752daf949cacd8551506",
+        "source_commit": "4940050655e94cb445c88e3b08d9675788c0bc61",
+        "exit_code": 0,
+        "observed": "B|C|D|| discarded remains 1 after three empty feeds"
+      },
+      "independent_review_green": {
+        "path": "local/r29-spec-cache-origin/fixed-result.txt",
+        "sha256": "f964600058ce4ddcac00717a70ab63705fb98097bcca752daf949cacd8551506"
+      }
+    }
+  ],
+  "incremental_diagnostics": {
+    "identity_limit": "Intermediate working-tree snapshots were not all independently frozen; these logs are diagnostic history, not separate pinned acceptance runs.",
+    "failure_logs": [
+      {
+        "path": "local/r29-history/noop-red.txt",
+        "sha256": "d24cce242cce0943d27a35bf195f34784fbd5d150070d55ed27968f2041628ac"
+      },
+      {
+        "path": "local/r29-history/alt-red.txt",
+        "sha256": "3dfd9adbcd5fc29ec075bdbe66c47cba4b9a6c7fbda502ff0c46f0f19c8fcee0"
+      },
+      {
+        "path": "local/r29-history/interrupted-red.txt",
+        "sha256": "3319e7af926e1e64057fe9c0acc7cf108f2138c08474be87a9b234bb2ce3dd21"
+      },
+      {
+        "path": "local/r29-history/eviction-red.txt",
+        "sha256": "05309c92e31bc94568248a30419a17e2b78e09d464b3c32783b4c08547c2ccdd"
+      },
+      {
+        "path": "local/r29-history/eviction-green.txt",
+        "sha256": "be19abab14693305b9dace97abd343d1be972be9f459de163eacfce3e748ac00"
+      },
+      {
+        "path": "local/r29-history/eviction-diagnostic.txt",
+        "sha256": "999060a3da70f7a8ce04dc9e2003a6dbe42040a161a43b8c02d0fcafad368ef9"
+      },
+      {
+        "path": "local/r29-history/eviction-identities.txt",
+        "sha256": "c1190a7582d6c0ec06139b5e4a7d92a0be89e862ef3d0e3095e4e23007be4066"
+      },
+      {
+        "path": "local/r29-history/native-prefix-red.txt",
+        "sha256": "c85a2f4f7c54d612836cee526abe7206cb1bc745e23ba8b6e15c8f3068519d77"
+      }
+    ],
+    "note": "eviction-green.txt is a retained failed attempt despite its filename."
+  },
+  "earlier_full_runs": [
+    {
+      "source_commit": "b966adcc7f71178ec7803c4e8753b11141ed45f7",
+      "ctest_passed": 49,
+      "record": {
+        "path": "local/r29-history/pre-review-validation.json",
+        "sha256": "08738458db8100b0897a2b6623a0e7f97c21370f63f40a804bd4f5f5bb4894c6"
+      },
+      "limitation": "Did not cover the native-prefix counterexample; not final acceptance."
+    },
+    {
+      "source_commit": "93b18db094310599c93bb1579640800058607021",
+      "ctest_passed": 49,
+      "record": {
+        "path": "local/r29-history/review93/frozen-validation.json",
+        "sha256": "7554af16fd8f2043b2d051dadf012e8d6e3dddaec724d0590062e79fd5e9efdb"
+      },
+      "limitation": "Did not cover the cache-origin counterexample; not final acceptance."
+    }
+  ],
+  "known_failure": {
+    "source_commit": "4940050655e94cb445c88e3b08d9675788c0bc61",
+    "probe_source_sha256": "4d7bbf2004775095db4353d249b050876d08bbede1517297b9bce529b2612f66",
+    "binary_sha256": "8de021490aed198052ee8124dd06cbe95a1ceafff63229675221e328153705c8",
+    "result": {
+      "path": "local/r29-shape-final/result.txt",
+      "sha256": "90b755b98cc0809c7ab62cdd85a69a6cb5b3fdb24e8af2cc2901a873f2233f15"
+    },
+    "exit_code": 1,
+    "observed_columns": 4,
+    "viewport_row_widths": [
+      8,
+      8,
+      4,
+      4
+    ],
+    "history_after_empty_feed": 2,
+    "actual_rendering_executed": false,
+    "note": "Probe initially failed to compile because it used Screen.columns instead of width(); corrected probe then reproduced the shape failure. This is not an observed rendering crash."
+  },
+  "review": {
+    "code_source": "4940050655e94cb445c88e3b08d9675788c0bc61",
+    "standards_findings": 0,
+    "spec_findings": 0,
+    "earlier_spec_findings": "Two separate P2 eviction counterexamples reproduced and repaired; red evidence retained."
+  },
+  "provenance": "Independent TermForge cache/ABI implementation and changes to pinned Apache-2.0 Alacritty. No WindTerm code, decompiled output, private resources or new dependencies.",
+  "windterm_runtime_executed_this_slice": false,
+  "performance_measured": false,
+  "limitations": [
+    "History viewport mixed-width row shape still fails; no clipping or rendering workaround claimed.",
+    "Full chronological resize/reflow, all buffer/scroll-region/continuous-resize crossings and original behavior mapping remain open.",
+    "No acceptance of experimental official ConPTY backend, real different-DPI behavior, complete IME/clipboard combination or actual presentation.",
+    "Prior baseline/core/reliability failures remain separate; #29 and R2 remain open; Alacritty is a candidate.",
+    "Local raw logs contain environment paths and remain private; only hashes and sanitized observations are published."
+  ]
+}

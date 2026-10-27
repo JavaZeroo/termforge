@@ -2,7 +2,7 @@
 
 按 [ADR-0006](../../docs/adr/0006-confirmed-project-direction.md)，用户确认保留本候选代码继续评估，尚未确认最终采用。下述实现、来源与回归结果继续保留；与 WindTerm 2.7.0 的重要差异、性能容差及正式选型分别提交用户确认。
 
-`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.5` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
+`CandidateTerminal` 是 #27 的拥有值适配层，不是自研核心的替代品声明。它把固定 `0.26.1-dev+termforge.6` 的 `Term/Processor` 接到现有 `Screen`/`Line`；默认 CMake 保留自研核心且不需要 Rust，候选产品由 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 显式启用。
 
 ## 构建与验证
 
@@ -28,7 +28,9 @@ Linux 使用相应 CMake 配置。候选 workflow 在 Windows/Ubuntu 构建 `can
 
 回放行键与后续缓存匹配同时保留文字的起始列，只忽略末尾未写 padding。相同 `ABC` 从第 0 列移到第 2 列（或反向）不能沿用旧版本供选择/Find 使用；原选区失效，Find 重扫后命中实际列。独立[列位置回归](results/2026-10-27-replay-coordinates/README.md)覆盖回放中/回放后、整段/逐字节和原位对照。
 
-等待回放时冻结最近一份完整的 resize 后状态，旧尺寸快照只用于完成时匹配身份。解析器实际执行主屏 ED3（含 `03J`）或 RIS 后，`.5` 的清空代次经 C ABI 释放旧回放/缓存，不等 `?25h` 才显示清空；ED2 不清历史，清空不计为淘汰。[快照与清空回归](results/2026-10-27-resize-snapshot/README.md)记录固定可见网格和清空边界。跨宽度历史行的显示、零原生历史缓存启发式及备用屏缓存仍未完整验证；不能把这些局部结果称为完整历史合同。[原版文本接口观察](../../docs/research/windterm-resize-text.md)仅证明固定序列的文本保留和投影恢复，不验证本项目清空或冻结策略。
+等待回放时冻结最近一份完整的 resize 后状态，旧尺寸快照只用于完成时匹配身份。解析器实际执行主屏 ED3（含 `03J`）或 RIS 后，`.5` 的清空代次经 C ABI 释放旧回放/缓存，不等 `?25h` 才显示清空；ED2 不清历史，清空不计为淘汰。[快照与清空回归](results/2026-10-27-resize-snapshot/README.md)记录固定可见网格和清空边界。跨宽度历史行的显示仍有行宽不一致反例，完整历史合同未完成。[原版文本接口观察](../../docs/research/windterm-resize-text.md)仅证明固定序列的文本保留和投影恢复，不验证本项目清空或冻结策略。
+
+`.6` 将主屏缓存、原生身份映射与淘汰端点一起保存在拥有值快照中，跨备用屏切换挂起/恢复；空原生历史不再推断为显式清空。容量淘汰同时失效旧回放中的缓存行；仍驻留 Rust 的旧行经 C ABI 核对整个最旧前缀的 ID 后从实际历史删除，原生与缓存独有行的淘汰各计一次。ED3/RIS 的解析器清空代次继续优先。相关[缓存与淘汰回归](results/2026-10-28-history-cache/README.md)覆盖透明输入、主/备用屏切换、回放中断、清空和实际淘汰；它不验证完整 reflow 或混宽历史的绘制。
 
 ## 真实产品场景
 

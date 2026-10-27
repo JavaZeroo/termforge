@@ -49,4 +49,4 @@ API 依据是 [Microsoft ResizePseudoConsole](https://learn.microsoft.com/en-us/
 
 命令、哈希、默认/候选完整回归及未满足项见[重放与历史验证记录](../../experiments/core/results/2026-10-26-resize-replay/validation.json)。
 
-相同文字左右移位后的选区失效和 Find 重新定位另见[列位置回归](../../experiments/core/results/2026-10-27-replay-coordinates/README.md)。`.5` 在主屏 ED3/RIS 实际执行时递增清空代次，经 C ABI 立即释放旧回放和历史缓存；原生历史为空也报告，ED2 不清历史，清空不冒充淘汰。[快照与清空回归](../../experiments/core/results/2026-10-27-resize-snapshot/README.md)覆盖固定尺寸、清空前/中/后/同 feed、选择/Find 失效与后续不复活。跨宽度历史的显示、零历史缓存启发式、备用屏和完整交叉仍未闭合；这些修复不裁决 WindTerm 的完整重排、清空或选择保留策略。
+相同文字左右移位后的选区失效和 Find 重新定位另见[列位置回归](../../experiments/core/results/2026-10-27-replay-coordinates/README.md)。`.5` 在主屏 ED3/RIS 实际执行时递增清空代次，经 C ABI 立即释放旧回放和历史缓存；原生历史为空也报告，ED2 不清历史，清空不冒充淘汰。[快照与清空回归](../../experiments/core/results/2026-10-27-resize-snapshot/README.md)覆盖固定尺寸、清空前/中/后/同 feed、选择/Find 失效与后续不复活。`.6` 的[缓存归属与淘汰回归](../../experiments/core/results/2026-10-28-history-cache/README.md)移除零原生历史的清空推断，保持主屏缓存跨备用屏，并将容量淘汰同步到原生存储及旧回放快照。跨宽度历史显示和完整 resize/备用屏/滚动区交叉仍未闭合；这些修复不裁决 WindTerm 的完整重排、清空或选择保留策略。
