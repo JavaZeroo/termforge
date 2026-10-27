@@ -52,10 +52,11 @@ class CpuHostedBoundaryTests(unittest.TestCase):
         with patch.dict(os.environ, identity, clear=True), patch.object(os, 'name', 'nt'), \
                 patch.object(hosted, 'git', return_value='a' * 40):
             self.assertEqual(hosted.hosted_identity('perf/grapheme-cpu-hosted-r54')['GITHUB_SHA'], 'a' * 40)
-            with patch.dict(os.environ, GITHUB_REF='refs/heads/perf/grapheme-cpu-hosted-r54-setup2'):
-                self.assertEqual(hosted.hosted_identity(hosted.CPU_BOUNDARY_BRANCHES)['GITHUB_SHA'], 'a' * 40)
-                with self.assertRaises(ValueError):
-                    hosted.hosted_identity()
+            for branch in ('perf/grapheme-cpu-hosted-r54-setup2', 'perf/grapheme-cpu-hosted-r54-entry3'):
+                with patch.dict(os.environ, GITHUB_REF='refs/heads/' + branch):
+                    self.assertEqual(hosted.hosted_identity(hosted.CPU_BOUNDARY_BRANCHES)['GITHUB_SHA'], 'a' * 40)
+                    with self.assertRaises(ValueError):
+                        hosted.hosted_identity()
             with self.assertRaises(ValueError):
                 hosted.hosted_identity()
             for key, value in (('GITHUB_RUN_ATTEMPT', '2'), ('GITHUB_SHA', 'b' * 40)):
