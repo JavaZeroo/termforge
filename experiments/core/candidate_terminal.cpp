@@ -99,9 +99,188 @@ std::vector<std::string> replay_keys(const History& history, const Lines& lines)
 } // namespace
 
 void CandidateTerminal::begin_replay() {
-    replay_origin_ = std::make_unique<Publication>(screen, identity_aliases_, native_discarded_, preserve_history_);
+    replay_origin_ = std::make_unique<Publication>(screen, identity_aliases_, published_sources_, native_discarded_, preserve_history_);
     replay_bytes_ = 0;
     replay_pending_ = replay_hide_ = replay_show_ = false;
+}
+
+uint64_t CandidateTerminal::allocate_source() {
+    if (next_source_ == (std::numeric_limits<uint64_t>::max)())
+        throw std::overflow_error("candidate cell source exhausted");
+    return next_source_++;
+}
+
+bool CandidateTerminal::covers(const RowSources& owner, const RowSources& value) {
+    if (value.hard_boundary && owner.hard_boundary != value.hard_boundary) return false;
+    for (const auto& span : value.cells) {
+        size_t cursor = span.source_column;
+        const auto end = cursor + span.length;
+        while (cursor < end) {
+            size_t next = cursor;
+            for (const auto& owned : owner.cells)
+                if (owned.source == span.source && owned.source_column <= cursor &&
+                    owned.source_column + owned.length > cursor)
+                    next = (std::max)(next, (std::min)(end, owned.source_column + owned.length));
+            if (next == cursor) return false;
+            cursor = next;
+        }
+    }
+    return !value.cells.empty() || value.hard_boundary != 0;
+}
+
+bool CandidateTerminal::intersects(const RowSources& a, const RowSources& b) {
+    if (a.hard_boundary && a.hard_boundary == b.hard_boundary) return true;
+    for (const auto& first : a.cells) for (const auto& second : b.cells)
+        if (first.source == second.source && first.source_column < second.source_column + second.length &&
+            second.source_column < first.source_column + first.length) return true;
+    return false;
+}
+
+CandidateTerminal::RowSources CandidateTerminal::projected_sources(const Line& line, const RowSources& origins) {
+    RowSources result;
+    result.hard_boundary = origins.hard_boundary;
+    size_t end = line.size();
+    while (end && !line[end - 1].written) --end;
+    // A blank physical history row still occupies one retained slot. Its old
+    // padding origins distinguish an unchanged row from an explicit erasure.
+    if (!end && !origins.hard_boundary) return origins;
+    for (const auto& span : origins.cells) {
+        if (span.column >= end) continue;
+        auto copied = span;
+        copied.length = (std::min)(copied.length, end - copied.column);
+        result.cells.push_back(copied);
+    }
+    return result;
+}
+
+void CandidateTerminal::compose_sources(bool resize, bool seed_publication) {
+    const auto meta_query = resize ? tf_terminal_resize_map_meta : tf_terminal_feed_map_meta;
+    const auto source_query = resize ? tf_terminal_resize_source : tf_terminal_feed_source;
+    const auto row_query = resize ? tf_terminal_resize_row : tf_terminal_feed_row;
+    const auto span_query = resize ? tf_terminal_resize_span : tf_terminal_feed_span;
+    constexpr uint64_t alternate_mask = uint64_t{1} << 12;
+    const size_t published_buffer = (mode_bits_ & alternate_mask) ? 1 : 0;
+    for (size_t buffer = 0; buffer < native_sources_.size(); ++buffer) {
+        TfResizeMapMeta meta{};
+        check(meta_query(impl_, buffer != 0, &meta), "candidate source map metadata failed");
+        auto& before = native_sources_[buffer];
+        for (size_t index = 0; index < meta.source_rows; ++index) {
+            TfResizeSourceMeta source{};
+            check(source_query(impl_, meta.epoch, buffer != 0, index, &source), "candidate source row failed");
+            auto found = before.find(source.id);
+            if (found == before.end()) {
+                RowSources origins;
+                if (source.columns) origins.cells.push_back({allocate_source(), 0, 0, source.columns});
+                found = before.emplace(source.id, std::move(origins)).first;
+            }
+            if (source.hard_break && !found->second.hard_boundary)
+                found->second.hard_boundary = allocate_source();
+            if (!source.hard_break) found->second.hard_boundary = 0;
+            if (seed_publication && buffer == published_buffer) {
+                const auto alias = identity_aliases_.find(source.id);
+                if (alias != identity_aliases_.end()) published_sources_[alias->second.id] = found->second;
+            }
+        }
+        const auto compose = [&](bool removed, size_t row_index, TfResizeRowMeta& row) {
+            check(row_query(impl_, meta.epoch, buffer != 0, removed, row_index, &row), "candidate mapped row failed");
+            RowSources result;
+            if (row.hard_boundary) {
+                const auto source = before.find(row.hard_boundary);
+                if (source == before.end()) throw std::runtime_error("candidate hard boundary source missing");
+                result.hard_boundary = source->second.hard_boundary;
+            }
+            for (size_t index = 0; index < row.spans; ++index) {
+                TfResizeSpan span{};
+                check(span_query(impl_, meta.epoch, buffer != 0, removed, row_index, index, &span),
+                      "candidate mapped span failed");
+                const auto source = before.find(span.source_row);
+                if (source == before.end()) throw std::runtime_error("candidate cell source missing");
+                for (const auto& old : source->second.cells) {
+                    const auto first = (std::max)(span.source_column, old.column);
+                    const auto last = (std::min)(span.source_column + span.len, old.column + old.length);
+                    if (first < last) result.cells.push_back({old.source, old.source_column + first - old.column,
+                        span.column + first - span.source_column, last - first});
+                }
+            }
+            std::sort(result.cells.begin(), result.cells.end(), [](const SourceSpan& a, const SourceSpan& b) {
+                return a.column < b.column;
+            });
+            if (!removed) {
+                // A gap has no old origin. Give the final new cells a fresh source
+                // for the next transaction, without guessing from their text.
+                std::vector<SourceSpan> complete;
+                size_t column = 0;
+                for (const auto& span : result.cells) {
+                    if (span.column < column || span.column + span.length > row.columns)
+                        throw std::runtime_error("candidate mapped source bounds differ");
+                    if (column < span.column)
+                        complete.push_back({allocate_source(), 0, column, span.column - column});
+                    complete.push_back(span);
+                    column = span.column + span.length;
+                }
+                if (column < row.columns) complete.push_back({allocate_source(), 0, column, row.columns - column});
+                result.cells = std::move(complete);
+            }
+            return result;
+        };
+        SourceBindings after;
+        for (size_t index = 0; index < meta.target_rows; ++index) {
+            TfResizeRowMeta row{};
+            auto origins = compose(false, index, row);
+            after.emplace(row.id, std::move(origins));
+        }
+        if (buffer == 0) for (size_t index = 0; index < meta.removed_rows; ++index) {
+            TfResizeRowMeta row{};
+            auto origins = compose(true, index, row);
+            if (row.removal_reason == 1) capacity_sources_.push_back(std::move(origins));
+        }
+        before = std::move(after);
+    }
+}
+
+void CandidateTerminal::subtract_capacity_sources(SourceBindings& bindings) {
+    if (capacity_sources_.empty()) return;
+    for (auto& entry : bindings) for (const auto& removed : capacity_sources_) {
+        auto& owner = entry.second;
+        if (removed.hard_boundary && owner.hard_boundary == removed.hard_boundary)
+            owner.hard_boundary = 0;
+        for (const auto& lost : removed.cells) {
+            std::vector<SourceSpan> surviving;
+            for (const auto& span : owner.cells) {
+                const auto first = (std::max)(span.source_column, lost.source_column);
+                const auto last = (std::min)(span.source_column + span.length, lost.source_column + lost.length);
+                if (span.source != lost.source || first >= last) {
+                    surviving.push_back(span);
+                    continue;
+                }
+                if (span.source_column < first)
+                    surviving.push_back({span.source, span.source_column, span.column, first - span.source_column});
+                if (last < span.source_column + span.length)
+                    surviving.push_back({span.source, last, span.column + last - span.source_column,
+                                         span.source_column + span.length - last});
+            }
+            owner.cells = std::move(surviving);
+        }
+    }
+}
+
+Line CandidateTerminal::remaining_source_cells(const Line& line, RowSources& origins) {
+    Line result = line;
+    result.clear();
+    // Origins retain the old physical columns until publication. Copy complete
+    // Cell values, including styles and wide spacers, without rebuilding text.
+    for (auto& span : origins.cells) {
+        const auto column = span.column;
+        span.column = result.size();
+        if (column > line.size() || span.length > line.size() - column)
+            throw std::runtime_error("candidate archived source bounds differ");
+        result.insert(result.end(), line.begin() + column, line.begin() + column + span.length);
+    }
+    if (line.ending == LineEnding::hard_break && !origins.hard_boundary)
+        result.ending = LineEnding::none;
+    if (result.ending == LineEnding::soft_wrap)
+        result.wrap_columns = (std::min)(result.wrap_columns, result.size());
+    return result;
 }
 
 void CandidateTerminal::scan_replay(std::string_view bytes) {
@@ -173,82 +352,108 @@ std::unordered_set<uint64_t> CandidateTerminal::reconcile_replay(std::vector<Lin
 }
 
 std::unordered_set<uint64_t> CandidateTerminal::merge_history(std::vector<Line>& retained,
-    std::vector<uint64_t>& original_ids, size_t& history, uint64_t& discarded, uint64_t& native_discarded) {
+    std::vector<uint64_t>& original_ids, std::vector<RowSources>& sources,
+    size_t& history, uint64_t& discarded, uint64_t& native_discarded) {
     if (!preserve_history_) return {};
     const auto& source = replay_origin_ ? replay_origin_->screen : screen;
-    const auto& aliases = replay_origin_ ? replay_origin_->aliases : identity_aliases_;
-    const auto source_discarded = replay_origin_ ? replay_origin_->native_discarded : native_discarded_;
-    std::deque<Line> previous = source.history;
-    if (native_discarded > source_discarded) {
-        // Native eviction cannot identify cache-only rows by their ordinal.
-        // Remove old rows backed by native identities that are actually gone.
-        const std::unordered_set<uint64_t> current(original_ids.begin(), original_ids.end());
-        std::unordered_set<uint64_t> removed;
-        for (const auto& alias : aliases)
-            if (current.find(alias.first) == current.end()) removed.insert(alias.second.id);
-        previous.erase(std::remove_if(previous.begin(), previous.end(), [&](const Line& line) {
-            return removed.find(line.id) != removed.end();
-        }), previous.end());
+    const auto& old_sources = replay_origin_ ? replay_origin_->sources : published_sources_;
+    std::vector<std::pair<uint64_t, RowSources>> native_history;
+    for (size_t index = 0; index < history; ++index)
+        native_history.emplace_back(original_ids[index], projected_sources(retained[index], sources[index]));
+    RowSources resident;
+    std::unordered_set<uint64_t> resident_boundaries;
+    for (const auto& origins : sources) {
+        resident.cells.insert(resident.cells.end(), origins.cells.begin(), origins.cells.end());
+        if (origins.hard_boundary) resident_boundaries.insert(origins.hard_boundary);
+    }
+    std::deque<Line> previous;
+    SourceBindings previous_sources;
+    for (const auto& line : source.history) {
+        const auto old = old_sources.find(line.id);
+        if (old == old_sources.end() || (old->second.cells.empty() && !old->second.hard_boundary)) continue;
+        auto origins = old->second;
+        auto remaining = remaining_source_cells(line, origins);
+        // A full old owner can span several final native rows across the
+        // history/viewport boundary. Do not restore its duplicate if those
+        // rows together still contain all its meaningful source intervals.
+        // Owners wholly in history retain their existing publication identity.
+        resident.hard_boundary = resident_boundaries.count(origins.hard_boundary) ? origins.hard_boundary : 0;
+        const auto meaningful = projected_sources(remaining, origins);
+        bool visible = false;
+        if (covers(resident, meaningful)) {
+            for (size_t index = history; index < retained.size(); ++index)
+                if (intersects(meaningful, projected_sources(retained[index], sources[index]))) { visible = true; break; }
+        }
+        if (visible) continue;
+        previous.push_back(std::move(remaining));
+        previous_sources.emplace(line.id, std::move(origins));
     }
     if (previous.empty()) return {};
-    std::unordered_set<uint64_t> raw_ids;
-    for (size_t index = 0; index < history; ++index) raw_ids.insert(retained[index].id);
-    std::unordered_set<uint64_t> candidates, unchanged_history, unchanged_visible;
-    for (const auto& line : previous)
-        if (replay_origin_ || raw_ids.find(line.id) == raw_ids.end()) candidates.insert(line.id);
-    for (const auto& line : previous) {
-        if (candidates.find(line.id) == candidates.end()) continue;
-        const auto key = replay_key(line);
-        if (key.empty()) continue;
-        for (size_t index = 0; index < history; ++index)
-            if (retained[index].id == line.id && replay_key(retained[index]) == key) {
-                unchanged_history.insert(line.id);
-                break;
-            }
-        for (size_t index = history; index < retained.size(); ++index)
-            if (retained[index].id == line.id && replay_key(retained[index]) == key) {
-                unchanged_visible.insert(line.id);
-                break;
-            }
+
+    for (size_t index = 0; index < history;) {
+        const bool owned = std::any_of(previous.begin(), previous.end(), [&](const Line& line) {
+            return covers(previous_sources.at(line.id), projected_sources(retained[index], sources[index]));
+        });
+        if (!owned) { ++index; continue; }
+        retained.erase(retained.begin() + index);
+        original_ids.erase(original_ids.begin() + index);
+        sources.erase(sources.begin() + index);
+        --history;
     }
-    screen.normalize_identities(retained);
+    size_t insertion = 0;
     for (auto& line : previous) {
-        if (candidates.find(line.id) == candidates.end() || !line.id || replay_key(line).empty() ||
-            unchanged_history.find(line.id) != unchanged_history.end() ||
-            unchanged_visible.find(line.id) != unchanged_visible.end()) continue;
-        const auto position = std::lower_bound(retained.begin(), retained.begin() + history, line.id,
-            [](const Line& candidate, uint64_t id) { return candidate.id < id; });
-        const auto index = static_cast<size_t>(position - retained.begin());
+        const auto origins = previous_sources.at(line.id);
+        const auto index = insertion++;
+        const auto position = retained.begin() + index;
         retained.insert(position, std::move(line));
         original_ids.insert(original_ids.begin() + index, 0);
+        sources.insert(sources.begin() + index, origins);
         ++history;
     }
     std::vector<uint64_t> evicted_native;
+    std::vector<RowSources> evicted_sources;
     std::unordered_set<uint64_t> evicted;
     while (history > screen.history_limit) {
         if (discarded == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("candidate discarded history exhausted");
         ++discarded;
         evicted.insert(retained.front().id);
-        if (original_ids.front()) evicted_native.push_back(original_ids.front());
+        evicted_sources.push_back(projected_sources(retained.front(), sources.front()));
         retained.erase(retained.begin());
         original_ids.erase(original_ids.begin());
+        sources.erase(sources.begin());
         --history;
+    }
+    // A cached owner can cover native fragments omitted from the publication.
+    // Retire their exact native prefix too, so an empty feed cannot import them
+    // again and charge the same eviction twice.
+    for (const auto& native : native_history) {
+        if (!native.first || !std::any_of(evicted_sources.begin(), evicted_sources.end(), [&](const RowSources& old) {
+            return covers(old, native.second);
+        })) break;
+        evicted_native.push_back(native.first);
     }
     if (!evicted_native.empty()) {
         // Remove still-resident native rows too: otherwise they reappear on the
         // next import or height growth and get counted as evicted repeatedly.
         std::array<uint8_t, 256> error{};
+        const auto native_before = native_discarded;
         check(tf_terminal_discard_history(impl_, evicted_native.data(), evicted_native.size(),
             &native_discarded, error.data(), error.size()), "candidate history eviction failed");
+        for (const auto id : evicted_native) native_sources_[0].erase(id);
+        const auto native_count = native_discarded - native_before;
+        if (native_count > evicted.size()) discarded += native_count - evicted.size();
     }
     return evicted;
 }
 
 void CandidateTerminal::feed(std::string_view bytes) {
     std::array<uint8_t, 256> error{};
-    check(tf_terminal_feed(impl_, reinterpret_cast<const uint8_t*>(bytes.data()), bytes.size(),
+    const auto feed = tracking_sources_ ? tf_terminal_feed_mapped : tf_terminal_feed;
+    check(feed(impl_, reinterpret_cast<const uint8_t*>(bytes.data()), bytes.size(),
                            error.data(), error.size()), "candidate feed failed");
+    // Native lineage advances even while a pending repaint freezes publication.
+    if (tracking_sources_) compose_sources(false);
     scan_replay(bytes);
     synchronize();
     uint32_t kind = 0;
@@ -283,6 +488,8 @@ void CandidateTerminal::resize(int rows, int columns) {
     std::array<uint8_t, 256> error{};
     check(tf_terminal_resize(impl_, static_cast<size_t>(rows), static_cast<size_t>(columns),
                              error.data(), error.size()), "candidate resize failed");
+    compose_sources(true, !tracking_sources_);
+    tracking_sources_ = true;
     begin_replay();
     screen.resize(rows, columns);
     synchronize();
@@ -306,9 +513,18 @@ void CandidateTerminal::synchronize() {
         suspended_primary_.reset();
         preserve_history_ = false;
         identity_aliases_.clear();
+        published_sources_.clear();
+        capacity_sources_.clear();
         replay_pending_ = replay_hide_ = replay_show_ = false;
         replay_bytes_ = 0;
     }
+    // Apply removal events to every snapshot that could later restore an old
+    // owner. Keep only surviving intervals, so pending replay cannot resurrect
+    // a resize eviction after the transaction's event list has been released.
+    subtract_capacity_sources(published_sources_);
+    if (replay_origin_) subtract_capacity_sources(replay_origin_->sources);
+    if (suspended_primary_) subtract_capacity_sources(suspended_primary_->sources);
+    capacity_sources_.clear();
     // mode_bits carries the pinned candidate's TermMode::ALT_SCREEN bit.
     constexpr uint64_t alternate_mask = uint64_t{1} << 12;
     const bool alternate = (meta.mode_bits & alternate_mask) != 0;
@@ -318,7 +534,7 @@ void CandidateTerminal::synchronize() {
             // A buffer switch ends the primary replay. Its old history must
             // survive even if the pending repaint has already replaced it.
             suspended_primary_ = replay_pending_ && replay_origin_ ? std::move(replay_origin_) :
-                std::make_unique<Publication>(screen, identity_aliases_, native_discarded_, preserve_history_);
+                std::make_unique<Publication>(screen, identity_aliases_, published_sources_, native_discarded_, preserve_history_);
             if (replay_pending_) suspended_primary_->preserve_history = true;
         }
         replay_origin_.reset();
@@ -348,6 +564,8 @@ void CandidateTerminal::synchronize() {
     std::vector<Line> retained(meta.history + meta.rows);
     std::vector<uint64_t> raw_ids;
     raw_ids.reserve(retained.size());
+    std::vector<RowSources> row_sources;
+    row_sources.reserve(retained.size());
     for (size_t r = 0; r < retained.size(); ++r) {
         TfRowMeta row{};
         check(tf_terminal_row_meta(impl_, r, &row), "candidate row metadata failed");
@@ -356,6 +574,16 @@ void CandidateTerminal::synchronize() {
         raw_ids.push_back(line.id);
         line.ending = row.wrap ? LineEnding::soft_wrap : row.hard_break ? LineEnding::hard_break : LineEnding::none;
         line.wrap_columns = row.wrap_columns;
+        RowSources origins;
+        if (tracking_sources_) {
+            auto found = native_sources_[alternate ? 1 : 0].find(row.id);
+            if (found == native_sources_[alternate ? 1 : 0].end())
+                throw std::runtime_error("candidate publication source missing");
+            if (line.ending == LineEnding::hard_break && !found->second.hard_boundary)
+                found->second.hard_boundary = allocate_source();
+            origins = found->second;
+        }
+        row_sources.push_back(std::move(origins));
         line.resize(meta.columns);
         for (size_t c = 0; c < meta.columns; ++c) {
             TfCellMeta cell{};
@@ -378,7 +606,7 @@ void CandidateTerminal::synchronize() {
         meta.discarded += cached_history_discarded_;
         const auto before_merge = meta.discarded;
         const auto native_before_merge = native_discarded;
-        evicted = merge_history(retained, raw_ids, meta.history, meta.discarded, native_discarded);
+        evicted = merge_history(retained, raw_ids, row_sources, meta.history, meta.discarded, native_discarded);
         cached_history_discarded_ += (meta.discarded - before_merge) - (native_discarded - native_before_merge);
     }
     screen.normalize_identities(retained);
@@ -415,8 +643,12 @@ void CandidateTerminal::synchronize() {
     screen.lines.assign(retained.begin() + meta.history, retained.end());
     versions_ = std::move(versions);
     identity_aliases_.clear();
-    for (size_t index = 0; index < retained.size(); ++index)
+    published_sources_.clear();
+    for (size_t index = 0; index < retained.size(); ++index) {
         if (raw_ids[index]) identity_aliases_.emplace(raw_ids[index], IdentityAlias{retained[index].id, retained[index].version});
+        if (tracking_sources_) published_sources_.emplace(retained[index].id, std::move(row_sources[index]));
+    }
+    capacity_sources_.clear();
     if (replay_origin_ && !evicted.empty()) {
         // Retire evicted cache rows from the old replay too. Delay mutation until
         // version comparisons have finished using pointers into this snapshot.

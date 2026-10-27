@@ -592,6 +592,154 @@ void cached_history_resize_replay_preserves_long_text() {
     }
 }
 
+void cached_history_preserves_empty_hard_boundaries() {
+    const std::string expected = "\r\n\r\nABCDEFGH\r\nB\r\nC\r\nD";
+    for (const bool fragmented : {false, true}) {
+        termforge::CandidateTerminal terminal(2, 8, 16);
+        const auto feed = [&](std::string_view bytes) {
+            if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+            else terminal.feed(bytes);
+        };
+        feed(expected);
+        terminal.resize(4, 4);
+        feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+        termforge::TextDocument document(terminal.screen);
+        const auto begin = document.position(0, 0);
+        const auto end = document.position(terminal.screen.history.size() + 1, 1);
+        termforge::TextSelection selection;
+        require(begin && end && selection.set(document, {*begin, *end}), "empty-boundary selection failed");
+        const auto copy = selection.copy(document, 128);
+        require(copy.status == termforge::SelectionCopyStatus::ok && copy.text == expected,
+                "resize replay lost consecutive empty hard boundaries");
+    }
+}
+
+void cached_history_preserves_cross_soft_find() {
+    const std::string expected = "ABCDEFGHIJKL\r\nB\r\nC\r\nD";
+    for (const bool fragmented : {false, true}) {
+        termforge::CandidateTerminal terminal(2, 8, 16);
+        const auto feed = [&](std::string_view bytes) {
+            if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+            else terminal.feed(bytes);
+        };
+        feed(expected);
+        terminal.resize(4, 4);
+        feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+        termforge::TextDocument document(terminal.screen);
+        termforge::TextSearch search;
+        const auto generation = search.start(document, "GHIJ");
+        for (int step = 0; step < 100 && search.status() == termforge::SearchStatus::running; ++step)
+            search.step(document, generation, 64);
+        const auto match = search.match(document, 0);
+        termforge::TextSelection selection;
+        require(search.status() == termforge::SearchStatus::complete && search.matches().size() == 1 && match &&
+                selection.set(document, match->range) && selection.copy(document, 128).text == "GHIJ",
+                "resize replay lost or duplicated a Find hit across the original soft boundary");
+        const auto begin = document.position(0, 0);
+        const auto end = document.position(terminal.screen.history.size() + 1, 1);
+        require(begin && end && selection.set(document, {*begin, *end}) &&
+                selection.copy(document, 128).text == expected, "cross-soft replay copy differs");
+    }
+}
+
+void cached_history_partial_visibility() {
+    termforge::CandidateTerminal terminal(2, 8, 16);
+    terminal.feed("ABCDEFGH\r\nB\r\nC\r\nD");
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2;1H\x1b[2K\x1b[?25h");
+    termforge::TextDocument document(terminal.screen);
+    std::cout << state(terminal) << '\n';
+    termforge::TextSelection selection;
+    const auto begin = document.position(0, 0), end = document.position(document.size() - 1, 1);
+    require(begin && end && selection.set(document, {*begin, *end}), "partial history selection failed");
+    std::cout << "copy=";
+    termforge::Screen::quoted(std::cout, selection.copy(document, 128).text);
+    std::cout << '\n';
+    termforge::TextSearch search;
+    auto generation = search.start(document, "EFGH");
+    for (int step = 0; step < 100 && search.status() == termforge::SearchStatus::running; ++step)
+        search.step(document, generation, 64);
+    std::cout << "EFGH matches=" << search.matches().size() << '\n';
+}
+
+void cached_history_visible_suffix_is_not_duplicated() {
+    const std::string expected = "ABCDEFGH\r\nB\r\nC\r\nD";
+    termforge::CandidateTerminal terminal(2, 8, 16);
+    terminal.feed(expected);
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[?25h");
+    termforge::TextDocument document(terminal.screen);
+    termforge::TextSelection selection;
+    const auto begin = document.position(0, 0), end = document.position(document.size() - 1, 1);
+    require(begin && end && selection.set(document, {*begin, *end}), "visible suffix selection failed");
+    const auto copied = selection.copy(document, 128);
+    require(copied.status == termforge::SelectionCopyStatus::ok && copied.text == expected,
+            "unchanged visible suffix was duplicated by its archived owner");
+}
+
+void cached_history_keeps_new_native_background() {
+    for (const bool replay : {false, true}) {
+        termforge::CandidateTerminal terminal(2, 12, 16);
+        terminal.feed("ABCDEFGHIJKL\r\nB\r\nC\r\nD");
+        terminal.resize(5, 4);
+        std::string bytes = "\x1b[1;4H\x1b[41m\x1b[X\x1b[0m\x1b[5;1H\n";
+        if (replay) bytes = "\x1b[?25l" + bytes + "\x1b[?25h";
+        terminal.feed(bytes);
+        bool background = false;
+        for (const auto& line : terminal.screen.history)
+            for (const auto& cell : line)
+                background |= cell.style.bg == 1;
+        require(background, replay ? "cached owner swallowed new native background" :
+                                    "native background control fixture failed");
+    }
+}
+
+void cached_history_partial_capacity_keeps_unremoved_source() {
+    for (const bool fragmented : {false, true}) {
+        termforge::CandidateTerminal terminal(2, 12, 1);
+        const auto feed = [&](std::string_view bytes) {
+            if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+            else terminal.feed(bytes);
+        };
+        feed("ABCDEFGHIJKL\r\nB\r\nC");
+        termforge::TextDocument original(terminal.screen);
+        termforge::TextSelection old_prefix;
+        const auto old_begin = original.position(0, 0), old_end = original.position(0, 4);
+        require(old_begin && old_end && old_prefix.set(original, {*old_begin, *old_end}),
+                "partial capacity original selection failed");
+        terminal.resize(3, 4);
+        require(terminal.screen.history.size() == 1 && text(terminal.screen.history[0]) == "EFGH" &&
+                text(terminal.screen.lines[0]) == "IJKL" && terminal.screen.discarded == 1,
+                "partial capacity native fixture differs");
+        feed("\x1b[?25l\x1b[2J\x1b[HB\r\nC\x1b[?25h");
+        termforge::TextDocument document(terminal.screen);
+        require(!document.valid(*old_begin) &&
+                old_prefix.copy(document, 128).status == termforge::SelectionCopyStatus::invalidated,
+                "partial capacity retained a selection of the evicted prefix");
+        termforge::TextSelection selection;
+        const auto begin = document.position(0, 0), end = document.position(terminal.screen.history.size() + 1, 1);
+        require(begin && end && selection.set(document, {*begin, *end}), "partial capacity selection failed");
+        const auto copied = selection.copy(document, 128);
+        std::ostringstream failure;
+        failure << "capacity removal lost surviving source or restored an evicted prefix: ";
+        termforge::Screen::quoted(failure, copied.text);
+        require(copied.status == termforge::SelectionCopyStatus::ok && copied.text == "EFGHIJKL\r\nB\r\nC",
+                failure.str().c_str());
+        termforge::TextSearch search;
+        const auto generation = search.start(document, "IJKL");
+        for (int step = 0; step < 100 && search.status() == termforge::SearchStatus::running; ++step)
+            search.step(document, generation, 64);
+        const auto match = search.match(document, 0);
+        require(search.status() == termforge::SearchStatus::complete && search.matches().size() == 1 && match &&
+                selection.set(document, match->range) && selection.copy(document, 128).text == "IJKL",
+                "partial capacity survivor is not selectable through Find");
+        const auto unchanged = state(terminal);
+        feed("");
+        require(state(terminal) == unchanged && terminal.screen.discarded == 1,
+                "partial capacity empty feed repeated removal or changed its count");
+    }
+}
+
 void cached_history_stays_with_primary(bool fragmented) {
     termforge::CandidateTerminal terminal(2, 8, 4);
     terminal.feed("A\r\nB\r\nC\r\nD");
@@ -795,6 +943,8 @@ void conpty_resize_replay(const std::filesystem::path& path) {
     pending_replay_keeps_resized_grid();
     cached_history_survives_noop();
     cached_history_resize_replay_preserves_long_text();
+    cached_history_preserves_empty_hard_boundaries();
+    cached_history_preserves_cross_soft_find();
     cached_history_stays_with_primary(false);
     cached_history_stays_with_primary(true);
     for (const bool fragmented : {false, true}) {
@@ -911,6 +1061,24 @@ void resize_and_errors() {
 
 int main(int argc, char** argv) {
     try {
+        // Named scenarios allow independent source-ownership regression checks.
+        // The partial-write observation reports state without choosing policy.
+        if (argc > 1 && std::string_view(argv[1]) == "--source-partial-visible") {
+            cached_history_partial_visibility();
+            return 0;
+        }
+        if (argc > 1 && std::string_view(argv[1]) == "--source-visible-suffix") {
+            cached_history_visible_suffix_is_not_duplicated();
+            return 0;
+        }
+        if (argc > 1 && std::string_view(argv[1]) == "--source-new-background") {
+            cached_history_keeps_new_native_background();
+            return 0;
+        }
+        if (argc > 1 && std::string_view(argv[1]) == "--source-partial-capacity") {
+            cached_history_partial_capacity_keeps_unremoved_source();
+            return 0;
+        }
         fragmentation();
         streaming_graphemes_selection_and_history();
         streaming_margin_padding_is_not_copied_as_an_inserted_space();
