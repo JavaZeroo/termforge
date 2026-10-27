@@ -1,0 +1,50 @@
+{
+  "case": "original-five-phase-restore-then-standalone-DSR",
+  "initial_input": {
+    "logical_text_source": {
+      "repository_path": "experiments/core/results/2026-10-27-resize-snapshot/windterm-input.json",
+      "git_blob_id": "839362216853d4f3c0ad82b0741bf6fe2083cb9f",
+      "git_blob_sha256": "ea445181775da8f6604880dd5d74a0bc1d104950c988245f37371b1d679879e0"
+    },
+    "logical_input_count": 42,
+    "encoding": "UTF-8",
+    "first_peer_naws": [
+      80,
+      25
+    ],
+    "preamble_hex": "1b5b324a1b5b481b5b3f3768",
+    "hard_separator_hex": "0d0a",
+    "final_newline": false,
+    "wire_bytes": 1091,
+    "wire_sha256": "9474531ee34ea08ddd5c3c6b9a19c446852c2aff784dea484c54a91138724b3e",
+    "appended_dsr": false
+  },
+  "after_restore_input": {
+    "sequence": 1,
+    "action": "standalone DSR",
+    "peer_naws": [
+      80,
+      26
+    ],
+    "wire_hex": "1b5b366e",
+    "wire_bytes": 4,
+    "wire_sha256": "d907695b104f1c48f93ac2a6f8f6826688a7b359b4b101b26af46022778dbf72",
+    "observed_reply_hex": [
+      "1b5b31383b3852"
+    ],
+    "reply_interpretation": "peer-received byte-processing fence only"
+  },
+  "actual_wire_input_bytes": [
+    1091,
+    4
+  ],
+  "cup_sent": false,
+  "not_executed": [
+    "17-byte CUP@TOP plus DSR",
+    "post-CUP scrolling",
+    "additional ED2",
+    "B case",
+    "second run"
+  ],
+  "publication": "Reviewed synthetic input, finite-query summaries and hashes only; app, profiles, full raw observations and extraction scripts remain private."
+}

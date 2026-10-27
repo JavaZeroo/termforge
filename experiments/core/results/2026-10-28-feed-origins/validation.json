@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "scope": "Experimental parser-feed origin tracking and C ABI; C++ history composition remains incomplete",
+  "source_commit": "5cb61a84ec2a3a8e494c7970fc1c65985002b0f7",
+  "source_tree": "5aa5eb9a21b1fd4a44b4f1f10c12e926d6a8c57a",
+  "candidate_version": "0.26.1-dev+termforge.9",
+  "configuration": "Windows x64 explicit candidate adapter; native core and ABI only, no transport exercised",
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "rust_toolchain": "1.92.0",
+    "cmake_configuration": "Release"
+  },
+  "source_identity_note": "Tests ran before commit on the same implementation contents; tested physical-file hashes are recorded separately from Git blob identity.",
+  "checks": [
+    {
+      "command": "cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --workspace --locked",
+      "exit_code": 0,
+      "result": "163 vendor + 10 FFI + 2 measure + 2 trace + 24 public feed-origin integration + 1 doctest passed",
+      "log": "workspace-final.log"
+    },
+    {
+      "command": "ctest --test-dir build/candidate-adapter -C Release -R '^candidate_(core|resize_map)$' --output-on-failure",
+      "exit_code": 8,
+      "result": "candidate_resize_map passed; candidate_core stopped at the existing whole-feed duplicate/lost-history assertion; later bytewise branch did not run",
+      "log": "ctest-final.log"
+    },
+    {
+      "command": "python -m unittest experiments.candidates.alacritty.test_candidate -v",
+      "exit_code": 0,
+      "result": "6 passed against rebuilt trace",
+      "log": "runner-final.log"
+    },
+    {
+      "command": "cargo check --manifest-path experiments/candidates/alacritty/Cargo.toml --locked -p alacritty_terminal --features serde",
+      "exit_code": 0,
+      "result": "passed",
+      "log": "serde-final.log"
+    }
+  ],
+  "local_logs": {
+    "local/r29-feed-origins/workspace-final.log": "802666440a864148aabf271537d29d312a03caaff1cf4388f7959f0535c02030",
+    "local/r29-feed-origins/build-final.log": "ffa19be302b1cdfb802f29c3770e66792f141cc8f226683cc951a6e1ca01f0b8",
+    "local/r29-feed-origins/ctest-final.log": "b84ec83f24695e26a9cbb1f8d88b1015a27ef6a5d1d3f3b78225dadf12b3a143",
+    "local/r29-feed-origins/trace-build-final.log": "5d0ca788d2e31ec1ab5c5b5ecc9d70820f2ed3ae740a00fee4bef72048658cc9",
+    "local/r29-feed-origins/runner-final.log": "9d2a62eff20dc792f57fefbb0c74b90014dd3e77ddb26eba101dedc47f9f854d",
+    "local/r29-feed-origins/serde-final.log": "0f73f9764a1efff532705be43050a12c318575cbaf77af456013f784e3437e8d",
+    "local/r29-feed-origins/equal-write-red.log": "1a56ba53b07b76ba8644cad272a110703d0394ebff7489c0642bb9338c8d4557",
+    "local/r29-feed-origins/keycap-red.log": "05df7aa4ebb0c5fc6fa4740e8ecf6f7d40c80bc5307fb2ea40f837045cc44ea5",
+    "local/r29-feed-origins/equal-keycap-green.log": "61760f7be2055f6b01ebdd6034f6bee006418db62e0529a9e4e2e52deb129bbe",
+    "local/r29-feed-origins/insert-red.log": "7b67566a2ed27a91fe58c7447428e4ad95bdf1eeb86e54bc779332ae5c614405",
+    "local/r29-feed-origins/insert-green.log": "5e099360a4f6d5cdf0c995e0608a6cd51880fc4e608be024c63d67f935cb83a9",
+    "local/r29-feed-origins/automatic-wrap-metadata-red.log": "bf3125f042866b2642f1b07c52cccf9da1ad35e326fc0cfdcc62172b60bfb39e",
+    "local/r29-feed-origins/automatic-wrap-metadata-green.log": "3d28fde15a7cf0222f2fed9dd122e813ef253a6b34ae6ceef7af1c5919ad2421",
+    "local/r29-feed-origins/parser-transparency-fixture-type-error.log": "9ba50746ee2014397c8b2ba8edcc7e1175f893d335f55727c2cb67aae42d02ed",
+    "local/r29-feed-origins/scroll-alt-fixture-index-error.log": "ea75ea19751ca7886a52dbc0ea668965ec4072fb6b99b5fbea81287ff76b54ad"
+  },
+  "artifacts": {
+    "build/candidate-adapter/bin/Release/candidate_resize_map_test.exe": "e09d71f72b0ced6f99ba3ed80c3ab9c3317c042c7ab94af2eb0a2fb3b3a4a2c5",
+    "build/candidate-adapter/bin/Release/candidate_core_test.exe": "5f1af95f46e69f3b957aebe002dd6a35596b3a19db19c13d4f04099572c95de5",
+    "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib": "cc6283118d3b50fc0980e712ea17bf67a3c3d4beb7ed2c9f92bf5d104753d81c",
+    "experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe": "3bdd62d6adc0b050356e17bc6707e10abefde24d0617a1d93afaae582567b869"
+  },
+  "physical_source_sha256": {
+    "docs/EVIDENCE.md": "7773ebadac211b20dc880e29d1586968d23ff71a780f47b699ba27960dd6d2c1",
+    "docs/FEATURES.md": "48d45744966ca33f23c86484ab2b6164aee53eec348d54bd97a306c840811dcb",
+    "docs/PROVENANCE.md": "ca0df4fc83eee25928682ae74361d10a3f14de2def935ee5335b8fec67295e46",
+    "experiments/candidates/alacritty/Cargo.lock": "1827b6b388c90865c56019760caa65ec7253441873cd21df2904b8270c6a8ca1",
+    "experiments/candidates/alacritty/PROVENANCE.md": "dc71e743871ce9a8fce3cc0fcb1ba2ed07029864b2d04d28bb88111424aa7e60",
+    "experiments/candidates/alacritty/README.md": "87e168ab6cfefb004ff76b798659bf155ea77de75996dd826a33ad42bdd9b458",
+    "experiments/candidates/alacritty/include/termforge_candidate.h": "d9217eba71f93f37347bc99f4f66972ab0c72e433f460edfb366042fe0edd038",
+    "experiments/candidates/alacritty/run.py": "bcd33dab56bacd92348c3a82a530373960cadb8330adb0ee70bd1ecf20dbf6fe",
+    "experiments/candidates/alacritty/src/ffi.rs": "92bcd8f0f2cdf719bb901885926e2c1586c1071a0b03e1cc456a64cd03152319",
+    "experiments/candidates/alacritty/test_candidate.py": "678655de0227eb1ace66221d5e0b754a9aa7aec0dbdf88a1001abe9aa7eac24e",
+    "experiments/candidates/alacritty/tests/feed_origins.rs": "54e386340ae7a093f422d461dec90b022d260d3f315957096fe0be99d7d7e050",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "2dd3cdbbbbfe23855c15ccb44f97942718840c94af94c357edc5f5a4b1780983",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/mod.rs": "53547b09ac165e788a814b308499d79d686cbddd585b7a2ca37107a4d5f42fa7",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/origins.rs": "8f44ef735fbf48072654e07f3740b63d9e376547e51c5770dcfda14748a77eb0",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/row.rs": "1cb8956d77a9da2f59b3a66f0ce23b1dfa6773dc89ece087d9e860f0310e8326",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/grapheme.rs": "b325e9a91294c74267ee34564fdd7a92a3c4700c197c18b640f3e738121a506c",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "515c4b787d1878194c3ea224d4ade64596e0ed9d64eee7f9d3ab640a6f523be3",
+    "experiments/core/CANDIDATE.md": "3c202ea08f500e81a4913b9068b2235dbb89ac7233d7778dd0bae1a584d0ddfe",
+    "experiments/core/candidate_resize_map_test.cpp": "bd2b6f64d986e76aa99f6c302dc51a40a5a83459ab558fc0dc8eb08ed6ef109d"
+  },
+  "red_green": [
+    {
+      "case": "equal text explicitly rewritten",
+      "red": "equal-write-red.log",
+      "green": "equal-keycap-green.log"
+    },
+    {
+      "case": "cross-feed keycap extends pending grapheme without retaining old lead source",
+      "red": "keycap-red.log",
+      "green": "equal-keycap-green.log"
+    },
+    {
+      "case": "ICH moves old source cells",
+      "red": "insert-red.log",
+      "green": "insert-green.log"
+    },
+    {
+      "case": "automatic soft wrap clears stale hard-boundary metadata; text, cursor, cells and WRAPLINE already correct",
+      "red": "automatic-wrap-metadata-red.log",
+      "green": "automatic-wrap-metadata-green.log"
+    }
+  ],
+  "fixture_failures": [
+    "parser-transparency-fixture-type-error.log is a test-fixture type error, not a product failure.",
+    "scroll-alt-fixture-index-error.log used a target ordinal instead of its native line; it is not a product red."
+  ],
+  "limitations": [
+    "C++ cached history has not consumed the maps; repeated text, empty hard-line loss, Find and viewport ownership remain unresolved.",
+    "Maps identify surviving pre-feed physical sources; no origin is assigned to newly written or erased cells, including equal-text rewrites.",
+    "Removed fragments are events, not a complete write/erase/order log or permission to retain external history. Final history_clear_epoch cannot order evictions before/after a clear.",
+    "No full shell/TUI/clipboard/IME/DPI/experimental-backend or performance validation ran for this source.",
+    "Ordinary feeds allocate no origin tables; added branch costs and opt-in capture allocation have not been measured.",
+    "WindTerm overwrite policy remains unknown. The independent restore/DSR observation stopped before CUP and cannot establish it."
+  ],
+  "reviews": {
+    "base": "2bccddb8e8796b3b244a7252bbf4e1390ee13dbb",
+    "target": "5cb61a84ec2a3a8e494c7970fc1c65985002b0f7",
+    "standards_findings": 0,
+    "spec_findings": 0,
+    "standards_hard_violations": 0,
+    "standards_substantive_smells": 0,
+    "scope": "Independent fixed-commit Standards/Spec read-only review; no new diagnostic or original run; unfinished C++ ownership remains explicit."
+  }
+}

@@ -1,0 +1,608 @@
+{
+  "case": "original-five-phase-restore-then-standalone-DSR",
+  "observed_version": "WindTerm 2.7.0 Windows x64",
+  "planned_runs": 1,
+  "actual_runs": 1,
+  "instrumentation_limit_seconds": 45,
+  "result": "valid-precondition-stop-with-post-DSR-state-change",
+  "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "distribution_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "distribution_files": 4047,
+  "source_hashes": {
+    "frozen_manifest_sha256": "4f80abea89731cc3427fd9758368734c17a9a7a646255b412d0b499d45a35449",
+    "probe_sha256": "c60f5dadf4c1c2d5da8534a4e012c146592a6d462c2f6e3eecefbcb9c82c0fa9",
+    "peer_sha256": "7f03b91378fdb56253d8d01dc842868bdd761924c8e3505f5f151033b0e1910d",
+    "template_sha256": "40aaa81a10d9fec334bcdc790d3e5e37d146ba60312ac970a93ddefbe5561e14"
+  },
+  "initial_logical_text_source": {
+    "repository_path": "experiments/core/results/2026-10-27-resize-snapshot/windterm-input.json",
+    "git_blob_id": "839362216853d4f3c0ad82b0741bf6fe2083cb9f",
+    "git_blob_sha256": "ea445181775da8f6604880dd5d74a0bc1d104950c988245f37371b1d679879e0"
+  },
+  "evidence_id": "ev_5cc64eb6655d9e6a92a9976d58312a818ee79d2d7b1d76b0873c8e704dce0893",
+  "raw_artifact_sha256": {
+    "evidence.json": "c076b774f91ba906fb8209001806b16daa1bf24f0f19ea58ab3ee2827e1c11ae",
+    "run.json": "27d89c8154a78636406f1a443a4aa19eef2f40ab792af49b8be2aaf668b31ab3",
+    "files.json": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8",
+    "probe.js": "c60f5dadf4c1c2d5da8534a4e012c146592a6d462c2f6e3eecefbcb9c82c0fa9",
+    "peer.json": "63433fe11f1f202a5c60111b1c83a66e944b1cfc9c1346a3a52d039569680103",
+    "input-00.bin": "9474531ee34ea08ddd5c3c6b9a19c446852c2aff784dea484c54a91138724b3e",
+    "input-00.json": "0b24907ee8defc134f9e57767019a9bdea984641814b23dd0a791ec27709d488",
+    "input-01.bin": "d907695b104f1c48f93ac2a6f8f6826688a7b359b4b101b26af46022778dbf72",
+    "input-01.json": "b075ed12d102461d7feb98d9bf350c10fa2f5eeaca839ab6eb7e597986b0a8f0",
+    "cleanup.json": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d",
+    "surface-cleanup.json": "2947878016d582f50a3241f5dfaf0c923671e6ddee62cd57e00a78a988ae7954",
+    "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+  },
+  "complete_private_finite_query_artifact": {
+    "filename": "text-observations.json",
+    "sha256": "ce1e7c0d8a4cf33f67b6dd423a7a6e838fe3c478dceffcf230e5e543ca4bc52c",
+    "phase_count": 6,
+    "queried_slot_range_inclusive": [
+      0,
+      127
+    ],
+    "slots_per_phase": 128
+  },
+  "finite_query_comparison": {
+    "all_six_phases_all_128_text_start_end_identical": true,
+    "all_six_phases_document_boundary_sets_identical": true,
+    "all_42_known_texts_match_referenced_input_in_exact_order_each_phase": true,
+    "nonempty_slot_range_inclusive": [
+      0,
+      41
+    ],
+    "common_document_boundary_count": 84,
+    "common_document_boundary_min_max": [
+      0,
+      1038
+    ],
+    "common_128_text_start_end_canonical_json_sha256": "1b9836186c1b6f830cb0ca9a071de3439fa36ee0844a34e94763e1dd3cb1b34a",
+    "end_marker": {
+      "text": "R29-END",
+      "queried_index": 41,
+      "document_range": [
+        1031,
+        1038
+      ]
+    },
+    "empty_aliases_all_phases": {
+      "slot_range_inclusive": [
+        42,
+        127
+      ],
+      "count": 86,
+      "text": "",
+      "start": 1038,
+      "end": 1038,
+      "meaning": "end-position aliases, not 86 real empty logical lines"
+    }
+  },
+  "phase_summaries": [
+    {
+      "phase": "baseline",
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "naws": [
+        80,
+        26
+      ],
+      "visibleLineCount": 44,
+      "capacity": 26,
+      "caret_document_position": 1038,
+      "anchor_document_position": 1038,
+      "scrollTop": 19,
+      "scrollbar": {
+        "value": 19,
+        "max": 19,
+        "page": 26
+      },
+      "h0019_start_rect": [
+        147,
+        0,
+        8,
+        18
+      ],
+      "end_marker_start_rect": [
+        147,
+        432,
+        8,
+        18
+      ],
+      "empty_end_alias_rect": [
+        203,
+        432,
+        0,
+        18
+      ],
+      "empty_end_alias_visibleLineFromLine": 43
+    },
+    {
+      "phase": "narrow-width",
+      "requested_outer": [
+        1010,
+        887
+      ],
+      "naws": [
+        62,
+        26
+      ],
+      "visibleLineCount": 46,
+      "capacity": 26,
+      "caret_document_position": 1038,
+      "anchor_document_position": 1038,
+      "scrollTop": 20,
+      "scrollbar": {
+        "value": 20,
+        "max": 20,
+        "page": 26
+      },
+      "h0019_start_rect": [
+        147,
+        -18,
+        8,
+        18
+      ],
+      "end_marker_start_rect": [
+        147,
+        450,
+        8,
+        18
+      ],
+      "empty_end_alias_rect": [
+        203,
+        450,
+        0,
+        18
+      ],
+      "empty_end_alias_visibleLineFromLine": 45
+    },
+    {
+      "phase": "restore-width",
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "naws": [
+        80,
+        26
+      ],
+      "visibleLineCount": 44,
+      "capacity": 26,
+      "caret_document_position": 1038,
+      "anchor_document_position": 1038,
+      "scrollTop": 19,
+      "scrollbar": {
+        "value": 19,
+        "max": 19,
+        "page": 26
+      },
+      "h0019_start_rect": [
+        147,
+        0,
+        8,
+        18
+      ],
+      "end_marker_start_rect": [
+        147,
+        432,
+        8,
+        18
+      ],
+      "empty_end_alias_rect": [
+        203,
+        432,
+        0,
+        18
+      ],
+      "empty_end_alias_visibleLineFromLine": 43
+    },
+    {
+      "phase": "short-height",
+      "requested_outer": [
+        1230,
+        679
+      ],
+      "naws": [
+        80,
+        18
+      ],
+      "visibleLineCount": 44,
+      "capacity": 18,
+      "caret_document_position": 1038,
+      "anchor_document_position": 1038,
+      "scrollTop": 26,
+      "scrollbar": {
+        "value": 26,
+        "max": 26,
+        "page": 18
+      },
+      "h0019_start_rect": [
+        147,
+        -126,
+        8,
+        18
+      ],
+      "end_marker_start_rect": [
+        147,
+        306,
+        8,
+        18
+      ],
+      "empty_end_alias_rect": [
+        203,
+        306,
+        0,
+        18
+      ],
+      "empty_end_alias_visibleLineFromLine": 43
+    },
+    {
+      "phase": "restore-height",
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "naws": [
+        80,
+        26
+      ],
+      "visibleLineCount": 44,
+      "capacity": 26,
+      "caret_document_position": 1038,
+      "anchor_document_position": 1038,
+      "scrollTop": 19,
+      "scrollbar": {
+        "value": 19,
+        "max": 19,
+        "page": 26
+      },
+      "h0019_start_rect": [
+        147,
+        0,
+        8,
+        18
+      ],
+      "end_marker_start_rect": [
+        147,
+        432,
+        8,
+        18
+      ],
+      "empty_end_alias_rect": [
+        203,
+        432,
+        0,
+        18
+      ],
+      "empty_end_alias_visibleLineFromLine": 43
+    },
+    {
+      "phase": "restore-fenced",
+      "requested_outer": [
+        1230,
+        887
+      ],
+      "naws": [
+        80,
+        26
+      ],
+      "visibleLineCount": 44,
+      "capacity": 26,
+      "caret_document_position": 1038,
+      "anchor_document_position": 1038,
+      "scrollTop": 26,
+      "scrollbar": {
+        "value": 26,
+        "max": 26,
+        "page": 26
+      },
+      "h0019_start_rect": [
+        147,
+        -126,
+        8,
+        18
+      ],
+      "end_marker_start_rect": [
+        147,
+        306,
+        8,
+        18
+      ],
+      "empty_end_alias_rect": [
+        203,
+        306,
+        0,
+        18
+      ],
+      "empty_end_alias_visibleLineFromLine": 43
+    }
+  ],
+  "seven_history_markers": [
+    {
+      "text": "R29-H0019|history",
+      "queried_index": 19,
+      "document_range": [
+        342,
+        359
+      ],
+      "short_start_rect": [
+        147,
+        -126,
+        8,
+        18
+      ],
+      "restored_start_rect": [
+        147,
+        0,
+        8,
+        18
+      ],
+      "after_DSR_start_rect": [
+        147,
+        -126,
+        8,
+        18
+      ]
+    },
+    {
+      "text": "R29-H0020|history",
+      "queried_index": 20,
+      "document_range": [
+        360,
+        377
+      ],
+      "short_start_rect": [
+        147,
+        -108,
+        8,
+        18
+      ],
+      "restored_start_rect": [
+        147,
+        18,
+        8,
+        18
+      ],
+      "after_DSR_start_rect": [
+        147,
+        -108,
+        8,
+        18
+      ]
+    },
+    {
+      "text": "R29-H0021|history",
+      "queried_index": 21,
+      "document_range": [
+        378,
+        395
+      ],
+      "short_start_rect": [
+        147,
+        -90,
+        8,
+        18
+      ],
+      "restored_start_rect": [
+        147,
+        36,
+        8,
+        18
+      ],
+      "after_DSR_start_rect": [
+        147,
+        -90,
+        8,
+        18
+      ]
+    },
+    {
+      "text": "R29-H0022|history",
+      "queried_index": 22,
+      "document_range": [
+        396,
+        413
+      ],
+      "short_start_rect": [
+        147,
+        -72,
+        8,
+        18
+      ],
+      "restored_start_rect": [
+        147,
+        54,
+        8,
+        18
+      ],
+      "after_DSR_start_rect": [
+        147,
+        -72,
+        8,
+        18
+      ]
+    },
+    {
+      "text": "R29-H0023|history",
+      "queried_index": 23,
+      "document_range": [
+        414,
+        431
+      ],
+      "short_start_rect": [
+        147,
+        -54,
+        8,
+        18
+      ],
+      "restored_start_rect": [
+        147,
+        72,
+        8,
+        18
+      ],
+      "after_DSR_start_rect": [
+        147,
+        -54,
+        8,
+        18
+      ]
+    },
+    {
+      "text": "R29-H0024|history",
+      "queried_index": 24,
+      "document_range": [
+        432,
+        449
+      ],
+      "short_start_rect": [
+        147,
+        -36,
+        8,
+        18
+      ],
+      "restored_start_rect": [
+        147,
+        90,
+        8,
+        18
+      ],
+      "after_DSR_start_rect": [
+        147,
+        -36,
+        8,
+        18
+      ]
+    },
+    {
+      "text": "R29-H0025|history",
+      "queried_index": 25,
+      "document_range": [
+        450,
+        467
+      ],
+      "short_start_rect": [
+        147,
+        -18,
+        8,
+        18
+      ],
+      "restored_start_rect": [
+        147,
+        108,
+        8,
+        18
+      ],
+      "after_DSR_start_rect": [
+        147,
+        -18,
+        8,
+        18
+      ]
+    }
+  ],
+  "restore_to_after_DSR": {
+    "all_128_slot_fields_except_rectangle_y_unchanged": true,
+    "all_256_start_and_end_rectangle_y_deltas": [
+      -126
+    ],
+    "main_and_editor_rects_unchanged": true,
+    "editor_rect": [
+      0,
+      0,
+      817,
+      470
+    ],
+    "text_state_except_scrollTop_unchanged": true,
+    "scrollTop_before_after": [
+      19,
+      26
+    ],
+    "scrollbar_value_before_after": [
+      19,
+      26
+    ],
+    "scrollbar_max_before_after": [
+      19,
+      26
+    ],
+    "scrollbar_page_before_after": [
+      26,
+      26
+    ],
+    "caret_before_after": [
+      1038,
+      1038
+    ],
+    "anchor_before_after": [
+      1038,
+      1038
+    ],
+    "visibleLineCount_before_after": [
+      44,
+      44
+    ],
+    "capacity_before_after": [
+      26,
+      26
+    ],
+    "NAWS_before_after": [
+      [
+        80,
+        26
+      ],
+      [
+        80,
+        26
+      ]
+    ],
+    "first_nonnegative_known_index_before_after": [
+      19,
+      26
+    ]
+  },
+  "actual_wire_input_bytes": [
+    1091,
+    4
+  ],
+  "dsr_reply_hex": [
+    "1b5b31383b3852"
+  ],
+  "stop_reason": "state-changed-after-standalone-DSR",
+  "cup_sent": false,
+  "cleanup": {
+    "active": 0,
+    "total": 3,
+    "terminated": 0
+  },
+  "surface_cleanup": {
+    "desktop_handle_closed": true,
+    "station_handle_closed": true,
+    "original_station_restored": true
+  },
+  "profile_check": {
+    "only_synthetic_session": true,
+    "session_count": 1
+  },
+  "limits": [
+    "Only one bounded case ran. No CUP was sent; overwrite policy remains unknown.",
+    "Change was observed after standalone DSR; DSR-specific cause, subsequent input processing and delayed resize work were not isolated.",
+    "Content markers are not native stable IDs; text slots/rectangles and DSR bytes do not establish physical grid, cursor or presentation.",
+    "No ConPTY, performance, selection, Find or Unicode acceptance; no general grow rule.",
+    "Empty end-position aliases do not establish hidden blank document positions or physical blank cells.",
+    "Earlier first-grow and five-phase observations retain their separate inputs and scope."
+  ],
+  "publication": "Reviewed synthetic input, finite-query summaries and hashes only; app, profiles, full raw observations and extraction scripts remain private.",
+  "peer_cleanup": {
+    "closed": true,
+    "error": null
+  },
+  "rea_result": {
+    "ok": true,
+    "messages_truncated": false,
+    "probe_errors": 0
+  }
+}
