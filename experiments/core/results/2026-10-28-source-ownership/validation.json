@@ -1,0 +1,980 @@
+{
+  "schema_version": 1,
+  "status": "Implementation checkpoint with unresolved source-order, viewport and product failures",
+  "source_commit": "95cd2c38ad36b5c4bc756192b9a8780466936a0a",
+  "source_tree": "9a77b750f5621115fb042be693956149ee11e3c9",
+  "candidate_version": "0.26.1-dev+termforge.10",
+  "configuration": "Windows 11 x64; Release; explicit candidate adapter; system ConPTY",
+  "environment": {
+    "os_build": "10.0.26200",
+    "generator": "Visual Studio 17 2022 x64",
+    "rust_toolchain": "1.92.0",
+    "process_local_vim_path": "Git bundled usr/bin",
+    "PYTHONUTF8": "1"
+  },
+  "checks": [
+    {
+      "kind": "Rust workspace",
+      "command": "cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --workspace --locked",
+      "command_exit_source": "root-tool-observation",
+      "exit_code": 0,
+      "RUSTUP_TOOLCHAIN": "1.92.0",
+      "log": {
+        "path": "local/r29-source-integration/workspace-final.log",
+        "sha256": "f91253a7e095b7e6387077ccbca34856ad0e9655a685fd3641c682d77484c44e"
+      },
+      "test_results": [
+        {
+          "target_label_from_log": "unittests src/lib.rs",
+          "status": "ok",
+          "passed": 163,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "target_label_from_log": "unittests src/ffi.rs",
+          "status": "ok",
+          "passed": 13,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "target_label_from_log": "unittests src/measure.rs",
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "target_label_from_log": "unittests src/main.rs",
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "target_label_from_log": "tests/feed_origins.rs",
+          "status": "ok",
+          "passed": 24,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "target_label_from_log": "Doc-tests alacritty_terminal",
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ],
+      "source_commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c"
+    },
+    {
+      "kind": "CMake build",
+      "command": "cmake --build build/candidate-adapter --config Release --parallel 2",
+      "command_exit_source": "root-tool-observation",
+      "exit_code": 0,
+      "RUSTUP_TOOLCHAIN": "1.92.0",
+      "log": {
+        "path": "local/r29-source-integration/build-final.log",
+        "sha256": "4bf6a9d1b3fd39b5a2f192767657fd467e81fa89e41a85c3c3afba6aee9ed68c"
+      },
+      "source_commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c"
+    },
+    {
+      "kind": "full CTest",
+      "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure",
+      "command_exit_source": "root-tool-observation and before-style-frozen.json",
+      "exit_code": 8,
+      "configuration": "explicit candidate adapter, system backend, Windows Release",
+      "total": 53,
+      "passed": 52,
+      "failed": 1,
+      "failed_ctest": "shell",
+      "ctest_level_skipped": 0,
+      "internal_skipped": 9,
+      "clipboard_skipped": 8,
+      "reference_failure_injection_skipped": 1,
+      "shell_unittest": {
+        "ran": 39,
+        "errors": 2,
+        "skipped": 3
+      },
+      "errors": [
+        {
+          "test": "test_real_history_scroll_anchor_eviction_and_hidden_sessions",
+          "message": "shell probe failed: history retained frame differs from full redraw"
+        },
+        {
+          "test": "test_selection_autoscroll_with_short_and_tall_workspace",
+          "subtest": "client_height=681",
+          "message": "shell probe failed: render API failed"
+        }
+      ],
+      "logs": [
+        {
+          "path": "local/r29-source-integration/ctest-before-style.log",
+          "sha256": "dec6bae5cb8ac3190628ad0211b17afa37d26d79649c5a37947976bc4d626c0b"
+        },
+        {
+          "path": "local/r29-source-integration/last-test-before-style.log",
+          "sha256": "8e87f17660f166187e9a2cc61b92558bb6ae39fa64ab19c576ca5f801adc3446"
+        }
+      ],
+      "limitations": [
+        "Passed parent CTest does not mean internally skipped clipboard/reference cases ran.",
+        "No performance claim; elapsed test duration intentionally omitted."
+      ],
+      "source_commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c"
+    },
+    {
+      "kind": "full CTest after style fix",
+      "source_commit": "95cd2c38ad36b5c4bc756192b9a8780466936a0a",
+      "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure",
+      "exit_code": 8,
+      "total": 53,
+      "passed": 52,
+      "failed": 1,
+      "internal_skipped": 9,
+      "failed_cases": [
+        "shell"
+      ],
+      "log": "local/r29-source-integration/ctest-after-style.log",
+      "limitations": [
+        "A later result never erases the prior failed matrix or diagnoses its cause."
+      ]
+    },
+    {
+      "kind": "final product build",
+      "source_commit": "95cd2c38ad36b5c4bc756192b9a8780466936a0a",
+      "exit_code": 0,
+      "command": "cmake --build build/candidate-adapter --config Release --parallel 2",
+      "log": "local/r29-source-integration/build-after-style.log"
+    },
+    {
+      "kind": "rebuilt candidate trace",
+      "source_commit": "95cd2c38ad36b5c4bc756192b9a8780466936a0a",
+      "exit_code": 0,
+      "command": "cargo build --manifest-path experiments/candidates/alacritty/Cargo.toml --release --locked --bin termforge-alacritty-trace",
+      "log": "local/r29-source-integration/trace-build-final.log"
+    },
+    {
+      "kind": "trace reporting regression",
+      "source_commit": "95cd2c38ad36b5c4bc756192b9a8780466936a0a",
+      "exit_code": 0,
+      "passed": 6,
+      "command": "python -X utf8 -m unittest experiments.candidates.alacritty.test_candidate -v",
+      "log": "local/r29-source-integration/runner-final.log"
+    },
+    {
+      "kind": "partial-visible observation only",
+      "source_commit": "95cd2c38ad36b5c4bc756192b9a8780466936a0a",
+      "exit_code": 0,
+      "command": "build/candidate-adapter/bin/Release/candidate_core_test.exe --source-partial-visible",
+      "result": "B before ABCDEFGH; EFGH matches=1; correctness remains failed",
+      "log": "local/r29-source-integration/partial-visible-final.log"
+    }
+  ],
+  "before_style_source_identity": [
+    {
+      "path": "CMakeLists.txt",
+      "physical_sha256": "420231ef0c0a69504a6ebbaa0d545b1b1d103ad8353eeb94630a4b785202ae30",
+      "git_blob_sha256": "420231ef0c0a69504a6ebbaa0d545b1b1d103ad8353eeb94630a4b785202ae30",
+      "commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c",
+      "equivalence": "exact bytes or LF/CRLF only"
+    },
+    {
+      "path": "experiments/core/candidate_terminal.cpp",
+      "physical_sha256": "6aeea757dbb5a89cf7c85340e6dc03ca1f4a9f8b6535df9ac4c5e30a42f4f47c",
+      "git_blob_sha256": "6aeea757dbb5a89cf7c85340e6dc03ca1f4a9f8b6535df9ac4c5e30a42f4f47c",
+      "commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c",
+      "equivalence": "exact bytes or LF/CRLF only"
+    },
+    {
+      "path": "experiments/core/candidate_terminal.hpp",
+      "physical_sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b",
+      "git_blob_sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b",
+      "commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c",
+      "equivalence": "exact bytes or LF/CRLF only"
+    },
+    {
+      "path": "experiments/core/candidate_terminal_test.cpp",
+      "physical_sha256": "596e236984856efe2773720250311c76424631ab329201217275176dd55abdc6",
+      "git_blob_sha256": "596e236984856efe2773720250311c76424631ab329201217275176dd55abdc6",
+      "commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c",
+      "equivalence": "exact bytes or LF/CRLF only"
+    },
+    {
+      "path": "experiments/candidates/alacritty/src/ffi.rs",
+      "physical_sha256": "ac0e7a7f8bb5eff27363de4c525a8f8898b59e3e1f9c7c1e3d8b0b025f7ff243",
+      "git_blob_sha256": "ac0e7a7f8bb5eff27363de4c525a8f8898b59e3e1f9c7c1e3d8b0b025f7ff243",
+      "commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c",
+      "equivalence": "exact bytes or LF/CRLF only"
+    },
+    {
+      "path": "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs",
+      "physical_sha256": "f79ac363f6fb046eec9b28d114bcea8390fb581084edf8643d07b64880bdf4d7",
+      "git_blob_sha256": "f79ac363f6fb046eec9b28d114bcea8390fb581084edf8643d07b64880bdf4d7",
+      "commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c",
+      "equivalence": "exact bytes or LF/CRLF only"
+    },
+    {
+      "path": "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml",
+      "physical_sha256": "5eb92aa34f551ab98424a99f5f20ec5ecbb773d6a56fb20931387ceb83398ccd",
+      "git_blob_sha256": "5eb92aa34f551ab98424a99f5f20ec5ecbb773d6a56fb20931387ceb83398ccd",
+      "commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c",
+      "equivalence": "exact bytes or LF/CRLF only"
+    },
+    {
+      "path": "experiments/candidates/alacritty/Cargo.lock",
+      "physical_sha256": "df83cd8bec1fd2ac5c8f84c27aded75b7e726ee385b108bd99b94024f215d5cc",
+      "git_blob_sha256": "df83cd8bec1fd2ac5c8f84c27aded75b7e726ee385b108bd99b94024f215d5cc",
+      "commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c",
+      "equivalence": "exact bytes or LF/CRLF only"
+    }
+  ],
+  "current_cpp_source_identity": [
+    {
+      "path": "experiments/core/candidate_terminal.cpp",
+      "physical_sha256": "ac6945bca9d803f05cbf81193a63f9fa364775f240135d4453c6cb0c66cfb70c",
+      "git_blob_sha256": "ac6945bca9d803f05cbf81193a63f9fa364775f240135d4453c6cb0c66cfb70c",
+      "commit": "95cd2c38ad36b5c4bc756192b9a8780466936a0a",
+      "equivalence": "exact bytes or LF/CRLF only"
+    },
+    {
+      "path": "experiments/core/candidate_terminal.hpp",
+      "physical_sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b",
+      "git_blob_sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b",
+      "commit": "95cd2c38ad36b5c4bc756192b9a8780466936a0a",
+      "equivalence": "exact bytes or LF/CRLF only"
+    },
+    {
+      "path": "experiments/core/candidate_terminal_test.cpp",
+      "physical_sha256": "35414ded20bcef4f1750924d04d71c6c8ba7e399e95096b3e14c432d86ad97de",
+      "git_blob_sha256": "35414ded20bcef4f1750924d04d71c6c8ba7e399e95096b3e14c432d86ad97de",
+      "commit": "95cd2c38ad36b5c4bc756192b9a8780466936a0a",
+      "equivalence": "exact bytes or LF/CRLF only"
+    }
+  ],
+  "before_style_artifacts": {
+    "build/candidate-adapter/bin/Release/alpha_normal_smoke.exe": "f14bf500afc054575c72a80cf22167bd64a0100ffdd43997cce8f56cbfd70812",
+    "build/candidate-adapter/bin/Release/candidate_core_test.exe": "ab4191af6be220d64eaac986dfe1221914d413485ca2ec857c53a402fcaa141f",
+    "build/candidate-adapter/bin/Release/candidate_resize_map_test.exe": "d1744502b116d812bef62d0da345a8467c8fc44e19bc3e0a6af57ea564ee6827",
+    "build/candidate-adapter/bin/Release/candidate_title_test.exe": "50f19cc23686b5b18fa64e1d9733ec89a195d1ff287e430de880df7cbbfb3763",
+    "build/candidate-adapter/bin/Release/clipboard_policy_test.exe": "36b98b15162aa95c3fb5ba634a3cc831022303d5966d8c43d71c2e36c8ac4e2d",
+    "build/candidate-adapter/bin/Release/conpty_ctrl_c_probe.exe": "2883537e3a90c27308a00c6a203161b472b231b456733b621fe8973c186c61d8",
+    "build/candidate-adapter/bin/Release/conpty_margin_probe.exe": "da640b5f4150fde8f6d1c4c838ba52c1318dfe834b85cc47e564096706156a34",
+    "build/candidate-adapter/bin/Release/core_measure.exe": "4fd604217e1874e7f3cb4d62ef77e85fe32ad73577383ed93bc97a58e55f75f7",
+    "build/candidate-adapter/bin/Release/find_bar_test.exe": "b1fa4befd1e70c1dd9d12a9cc413a9c0a6fe902f9c19fab78ef1f34e4b254f01",
+    "build/candidate-adapter/bin/Release/history_test.exe": "34694a7422e660de5a58e2e5d68b60423d923288a7e893f1c2a71ab36a8b1e0c",
+    "build/candidate-adapter/bin/Release/ime_context_test.exe": "e7bd99a75a0738e1e8d24e57ce39fac89752411ad11f11bcf1d590e85b23b932",
+    "build/candidate-adapter/bin/Release/ime_input_expectation_test.exe": "a3febd8e1f02c8ffa7c050f2542569ce520488b8c226ed6a7c057f483e7c5680",
+    "build/candidate-adapter/bin/Release/keyboard_test.exe": "22bfedc16265cf4063082e5aa0cc82e74b9d2b3af87bebafb87261e4a6331feb",
+    "build/candidate-adapter/bin/Release/layout_state_test.exe": "5a94a47ee125737fd1835cbb43585aaab4f91ddc95192a9f919178cbd90ce59d",
+    "build/candidate-adapter/bin/Release/paste_test.exe": "d698700223cf42208a2aa379c5f7dcb894519788f3f53fb3ca85ecde050128c0",
+    "build/candidate-adapter/bin/Release/presentation_probe.exe": "39c2e9463a35cc73df7aa0bdad381519592228efcfc6407fb16520f8dab1b58d",
+    "build/candidate-adapter/bin/Release/raw_console_receiver_test.exe": "2f3214c9ccb57f9bfaf6f228015ffd5838e61fbababd087b72a3baf14b9642b9",
+    "build/candidate-adapter/bin/Release/real_app_capture.exe": "72d26bda61af90b21b83bdb6cee3a048abec2d277494aaf86bfd99ded2a4368a",
+    "build/candidate-adapter/bin/Release/receive.exe": "a4d914f1c804c7cb240be00c987801bbfbbe1ed0006423e1a97b1d301d1f78df",
+    "build/candidate-adapter/bin/Release/recovery_probe.exe": "ef2e7c61ca875d0dbb02220f8c4df2646332f278863fd64673679c7102af6596",
+    "build/candidate-adapter/bin/Release/renderer_metrics_test.exe": "f9b99a24bc568a87aa21f546a932118b1802bb74198db15caf6fe1bbce08cf01",
+    "build/candidate-adapter/bin/Release/replay.exe": "37dfecd9adfdf89b2ee44b581863da0114d6fa486ee5d669c7f073ae0581505a",
+    "build/candidate-adapter/bin/Release/resize_test.exe": "c5ad023c3076574466b9284102751218436bd40333eedeb70f41e964f22f8dcf",
+    "build/candidate-adapter/bin/Release/runtime_observation_test.exe": "b1c01f58c01d237adc6e4d4d904dac1735b71e1b465e0a7c3377a47a7c6c2773",
+    "build/candidate-adapter/bin/Release/scenario_tick_gate_test.exe": "87ebac936c81caa8306b981307da218ac97d432c366a2b21cce93b7f4dc6c67b",
+    "build/candidate-adapter/bin/Release/search_test.exe": "77a88b31c54547cc64bb188abb201e203a6792a1492bb231449c8c41b605fbd2",
+    "build/candidate-adapter/bin/Release/selection_test.exe": "5a32e5219ca4d6ccf96be6616bdad92f24ee5ae49a10ecc6aee27d9eefadd0d1",
+    "build/candidate-adapter/bin/Release/sent_message_wait_test.exe": "02633453bb43ee175380b32d9d74c5e810e18373fc7ae0b9d281b480ececd70d",
+    "build/candidate-adapter/bin/Release/shell_clipboard_reader.exe": "7fcd3e07232000c276c85e5667b2525cff67926342cb870d0980b88a84273377",
+    "build/candidate-adapter/bin/Release/shell_ime_client.exe": "75c0b15ed5e79b9abf4815e6036c657fa2713531318d0ab256c98f420dcba97b",
+    "build/candidate-adapter/bin/Release/shell_input_client.exe": "4c70b7cd5fc8b31df2e33f9af8fc714e2ff3fff8b709499768e26943c146b97b",
+    "build/candidate-adapter/bin/Release/shell_launch_test.exe": "7fa6d0080ad05bdc93716f9c9ee0f4dc4e9aa181b4dac17dc0bdc1876bb86002",
+    "build/candidate-adapter/bin/Release/shell_paste_probe.exe": "59a978d4657e419b14a362ece8a6ca83c01283aa13c11293007b1d3386334040",
+    "build/candidate-adapter/bin/Release/shell_query_client.exe": "d9a74b89e702cb21bb3d2b79989bb488d764e33027df6e52f1dd296657754c5d",
+    "build/candidate-adapter/bin/Release/shell_queue_probe.exe": "1e05519f1bc802d81407b0836cbc8a25ce8a01f9354c12a03e91f3d5bde0b0d5",
+    "build/candidate-adapter/bin/Release/shell_selection_text_client.exe": "a87359d579e4d897c84e542a83b750b2993cf5cab7fb7fe9a525551134d9ead6",
+    "build/candidate-adapter/bin/Release/shell_size_client.exe": "67764272d9e53298b4f8eefe351b63f74dc36fe31fb9b8550a93d7c700da33da",
+    "build/candidate-adapter/bin/Release/shell_test_launcher.exe": "3923d6cd21b6b5ceffe0d91d4167d67ee4b8c2b946194ffcb079bd9ac041bad3",
+    "build/candidate-adapter/bin/Release/shell_text_client.exe": "9ccd38100fc77e2e39e1eee811e68aac9a656c2cfb8c3585121c38dc7a3b3bde",
+    "build/candidate-adapter/bin/Release/termforge_conpty_probe.exe": "b48137edad63d1e204e94431fbe950a59d7ca9785c690ba0ee60d7fb236df1f6",
+    "build/candidate-adapter/bin/Release/termforge_ime_probe.exe": "5bfded9b7605ddadd87908729ded01fd29af366a938c98ab0167248a70789cea",
+    "build/candidate-adapter/bin/Release/termforge_shell.exe": "77861d5a63d62725624d4879eb0206fced4bb05375257dc289940fd9520d424a",
+    "build/candidate-adapter/bin/Release/terminal_trace.exe": "446f45870fffbc121d3099ff31e6f6751429d3a1bdb0c4e6eb79e88b394277bf",
+    "build/candidate-adapter/bin/Release/text_action_policy_test.exe": "1945dcdd963dcff679334669df943dc8462bbca2096020120a355d0e4c344baa",
+    "build/candidate-adapter/bin/Release/transport_completion_test.exe": "82236eb238ccc1f8ef34d62da8d68bdbb0b5966b92375b0920e055ba376ea1bc",
+    "build/candidate-adapter/bin/Release/workflow_fixture_test.exe": "7fa7bea14776ca254e23ef14e070eb40656fe35badf017f31063d3d25abbf8ad",
+    "build/candidate-adapter/bin/Release/workspace_state_test.exe": "e6510653716daa1a7ca9128da937e53aa80652add940b1cfc09bb9e76b74a523"
+  },
+  "final_artifacts": {
+    "build/candidate-adapter/bin/Release/alpha_normal_smoke.exe": "f14bf500afc054575c72a80cf22167bd64a0100ffdd43997cce8f56cbfd70812",
+    "build/candidate-adapter/bin/Release/candidate_core_test.exe": "f5f9ff93236f8f6e4a70b76adc682262245b525d5825b9edbb3fff47c6bb80e4",
+    "build/candidate-adapter/bin/Release/candidate_resize_map_test.exe": "d1744502b116d812bef62d0da345a8467c8fc44e19bc3e0a6af57ea564ee6827",
+    "build/candidate-adapter/bin/Release/candidate_title_test.exe": "a2980cf8beb093514177898bff68243845e670e8e53264fe0f644a94435bf23e",
+    "build/candidate-adapter/bin/Release/clipboard_policy_test.exe": "36b98b15162aa95c3fb5ba634a3cc831022303d5966d8c43d71c2e36c8ac4e2d",
+    "build/candidate-adapter/bin/Release/conpty_ctrl_c_probe.exe": "2883537e3a90c27308a00c6a203161b472b231b456733b621fe8973c186c61d8",
+    "build/candidate-adapter/bin/Release/conpty_margin_probe.exe": "da640b5f4150fde8f6d1c4c838ba52c1318dfe834b85cc47e564096706156a34",
+    "build/candidate-adapter/bin/Release/core_measure.exe": "4fd604217e1874e7f3cb4d62ef77e85fe32ad73577383ed93bc97a58e55f75f7",
+    "build/candidate-adapter/bin/Release/find_bar_test.exe": "b1fa4befd1e70c1dd9d12a9cc413a9c0a6fe902f9c19fab78ef1f34e4b254f01",
+    "build/candidate-adapter/bin/Release/history_test.exe": "34694a7422e660de5a58e2e5d68b60423d923288a7e893f1c2a71ab36a8b1e0c",
+    "build/candidate-adapter/bin/Release/ime_context_test.exe": "e7bd99a75a0738e1e8d24e57ce39fac89752411ad11f11bcf1d590e85b23b932",
+    "build/candidate-adapter/bin/Release/ime_input_expectation_test.exe": "a3febd8e1f02c8ffa7c050f2542569ce520488b8c226ed6a7c057f483e7c5680",
+    "build/candidate-adapter/bin/Release/keyboard_test.exe": "22bfedc16265cf4063082e5aa0cc82e74b9d2b3af87bebafb87261e4a6331feb",
+    "build/candidate-adapter/bin/Release/layout_state_test.exe": "5a94a47ee125737fd1835cbb43585aaab4f91ddc95192a9f919178cbd90ce59d",
+    "build/candidate-adapter/bin/Release/paste_test.exe": "d698700223cf42208a2aa379c5f7dcb894519788f3f53fb3ca85ecde050128c0",
+    "build/candidate-adapter/bin/Release/presentation_probe.exe": "39c2e9463a35cc73df7aa0bdad381519592228efcfc6407fb16520f8dab1b58d",
+    "build/candidate-adapter/bin/Release/raw_console_receiver_test.exe": "2f3214c9ccb57f9bfaf6f228015ffd5838e61fbababd087b72a3baf14b9642b9",
+    "build/candidate-adapter/bin/Release/real_app_capture.exe": "72d26bda61af90b21b83bdb6cee3a048abec2d277494aaf86bfd99ded2a4368a",
+    "build/candidate-adapter/bin/Release/receive.exe": "a4d914f1c804c7cb240be00c987801bbfbbe1ed0006423e1a97b1d301d1f78df",
+    "build/candidate-adapter/bin/Release/recovery_probe.exe": "ef2e7c61ca875d0dbb02220f8c4df2646332f278863fd64673679c7102af6596",
+    "build/candidate-adapter/bin/Release/renderer_metrics_test.exe": "f9b99a24bc568a87aa21f546a932118b1802bb74198db15caf6fe1bbce08cf01",
+    "build/candidate-adapter/bin/Release/replay.exe": "37dfecd9adfdf89b2ee44b581863da0114d6fa486ee5d669c7f073ae0581505a",
+    "build/candidate-adapter/bin/Release/resize_test.exe": "c5ad023c3076574466b9284102751218436bd40333eedeb70f41e964f22f8dcf",
+    "build/candidate-adapter/bin/Release/runtime_observation_test.exe": "b5b61f0a2b1dbf43e75e271880d4df992d65021e03638dcff6a43d2faaf9d7d4",
+    "build/candidate-adapter/bin/Release/scenario_tick_gate_test.exe": "87ebac936c81caa8306b981307da218ac97d432c366a2b21cce93b7f4dc6c67b",
+    "build/candidate-adapter/bin/Release/search_test.exe": "77a88b31c54547cc64bb188abb201e203a6792a1492bb231449c8c41b605fbd2",
+    "build/candidate-adapter/bin/Release/selection_test.exe": "5a32e5219ca4d6ccf96be6616bdad92f24ee5ae49a10ecc6aee27d9eefadd0d1",
+    "build/candidate-adapter/bin/Release/sent_message_wait_test.exe": "02633453bb43ee175380b32d9d74c5e810e18373fc7ae0b9d281b480ececd70d",
+    "build/candidate-adapter/bin/Release/shell_clipboard_reader.exe": "7fcd3e07232000c276c85e5667b2525cff67926342cb870d0980b88a84273377",
+    "build/candidate-adapter/bin/Release/shell_ime_client.exe": "75c0b15ed5e79b9abf4815e6036c657fa2713531318d0ab256c98f420dcba97b",
+    "build/candidate-adapter/bin/Release/shell_input_client.exe": "4c70b7cd5fc8b31df2e33f9af8fc714e2ff3fff8b709499768e26943c146b97b",
+    "build/candidate-adapter/bin/Release/shell_launch_test.exe": "7fa6d0080ad05bdc93716f9c9ee0f4dc4e9aa181b4dac17dc0bdc1876bb86002",
+    "build/candidate-adapter/bin/Release/shell_paste_probe.exe": "59a978d4657e419b14a362ece8a6ca83c01283aa13c11293007b1d3386334040",
+    "build/candidate-adapter/bin/Release/shell_query_client.exe": "d9a74b89e702cb21bb3d2b79989bb488d764e33027df6e52f1dd296657754c5d",
+    "build/candidate-adapter/bin/Release/shell_queue_probe.exe": "1e05519f1bc802d81407b0836cbc8a25ce8a01f9354c12a03e91f3d5bde0b0d5",
+    "build/candidate-adapter/bin/Release/shell_selection_text_client.exe": "a87359d579e4d897c84e542a83b750b2993cf5cab7fb7fe9a525551134d9ead6",
+    "build/candidate-adapter/bin/Release/shell_size_client.exe": "67764272d9e53298b4f8eefe351b63f74dc36fe31fb9b8550a93d7c700da33da",
+    "build/candidate-adapter/bin/Release/shell_test_launcher.exe": "3923d6cd21b6b5ceffe0d91d4167d67ee4b8c2b946194ffcb079bd9ac041bad3",
+    "build/candidate-adapter/bin/Release/shell_text_client.exe": "9ccd38100fc77e2e39e1eee811e68aac9a656c2cfb8c3585121c38dc7a3b3bde",
+    "build/candidate-adapter/bin/Release/termforge_conpty_probe.exe": "b48137edad63d1e204e94431fbe950a59d7ca9785c690ba0ee60d7fb236df1f6",
+    "build/candidate-adapter/bin/Release/termforge_ime_probe.exe": "5bfded9b7605ddadd87908729ded01fd29af366a938c98ab0167248a70789cea",
+    "build/candidate-adapter/bin/Release/termforge_shell.exe": "360d180011ab9a4e3bc6e9ea93353dacda18181207e4e690a7a2ddaa62fb261d",
+    "build/candidate-adapter/bin/Release/terminal_trace.exe": "446f45870fffbc121d3099ff31e6f6751429d3a1bdb0c4e6eb79e88b394277bf",
+    "build/candidate-adapter/bin/Release/text_action_policy_test.exe": "1945dcdd963dcff679334669df943dc8462bbca2096020120a355d0e4c344baa",
+    "build/candidate-adapter/bin/Release/transport_completion_test.exe": "82236eb238ccc1f8ef34d62da8d68bdbb0b5966b92375b0920e055ba376ea1bc",
+    "build/candidate-adapter/bin/Release/workflow_fixture_test.exe": "7fa7bea14776ca254e23ef14e070eb40656fe35badf017f31063d3d25abbf8ad",
+    "build/candidate-adapter/bin/Release/workspace_state_test.exe": "e6510653716daa1a7ca9128da937e53aa80652add940b1cfc09bb9e76b74a523"
+  },
+  "final_native_artifacts": {
+    "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib": "bd9ce457ecd1d64822d23e877ea44daa01e4e63747c7a3ad0b07e64a870bf39b",
+    "experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe": "75e3964fa590c799ce8216449f35a8cb71234e2c0e3cb9671ad6b000542bd8e3"
+  },
+  "final_shell_failures": [
+    {
+      "case": "history-0",
+      "sample": {
+        "mode": "ui-history",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "history retained frame differs from full redraw\r\n",
+        "job_after": {
+          "active": 0,
+          "total": 13,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 13,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "error": "shell probe failed: history retained frame differs from full redraw"
+      },
+      "local_artifact_directory": "build/test-artifacts/shell/run-bq6w_jfc/history-0",
+      "raw_file_sha256": {
+        "native-scroll.jsonl": "d46a879fac54c911e01fa03e81d906e3ffb357270ecf263728e4e1404901adc0",
+        "sample.json": "f09fb21dbc6ca747f193868c6a36b1d11613c12e69b6795c6fd5399b36f1e795",
+        "workspace.layout": "bf48acf03f30b7b947c3f2a351dac62be6e81dbb75672b27b2c15a1203d3ed3c"
+      }
+    },
+    {
+      "case": "selection-height-681",
+      "sample": {
+        "mode": "ui-selection",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 3221226525,
+        "stdout": "",
+        "stderr": "",
+        "job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "error": "shell probe failed: "
+      },
+      "local_artifact_directory": "build/test-artifacts/shell/run-bq6w_jfc/selection-height-681",
+      "raw_file_sha256": {
+        "sample.json": "0124938b19f82782dcfb7b9c11655365cce14de982cef5439c05ecea26192b8c",
+        "selection-base.jsonl": "998a7d795747f10648a9c5c84391db26a5c1fe3951c0b2726c0b5662d4a24158",
+        "workspace.layout": "58a15cf3e3e4101a5239edcb0ad7d43c31d01337b0499885c9e4b31ff14735ea"
+      }
+    }
+  ],
+  "source_ownership_logs": [
+    {
+      "path": "local/r29-source-ownership/build-frozen-probes.log",
+      "sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": null,
+      "classification": "build output; process exit not recorded"
+    },
+    {
+      "path": "local/r29-source-ownership/build-partial-capacity-identity.log",
+      "sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": null,
+      "classification": "build output; process exit not recorded"
+    },
+    {
+      "path": "local/r29-source-ownership/core-capacity-frozen.log",
+      "sha256": "3d7ca02ffd7486699a996c9037e88c4276157115eafe3d643ee1895c993b0a5a",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": 0,
+      "classification": "named checkpoint completed successfully"
+    },
+    {
+      "path": "local/r29-source-ownership/core-frozen.log",
+      "sha256": "2130f9a0b2d172e571c94ba7dd1c6c5c8f562267976a1fa84ff8c5d8c565d20e",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": null,
+      "classification": "historical failure; not final green",
+      "failure_message": "ConPTY replay changed the logical row identity or text"
+    },
+    {
+      "path": "local/r29-source-ownership/new-background-capacity-frozen.log",
+      "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": 0,
+      "classification": "named checkpoint completed successfully"
+    },
+    {
+      "path": "local/r29-source-ownership/partial-capacity-detail-red.log",
+      "sha256": "aff720a8da785b28f46dbc0e9b83fcea7fcadf2e146b0473207aaf4110ea6649",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": null,
+      "classification": "historical assertion failure; exit code not recorded",
+      "failure_message": "capacity removal lost surviving source or restored an evicted prefix: \"ABCDEFGHIJKL\\u000d\\u000aB\\u000d\\u000aC\""
+    },
+    {
+      "path": "local/r29-source-ownership/partial-capacity-frozen.log",
+      "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": 0,
+      "classification": "named checkpoint completed successfully"
+    },
+    {
+      "path": "local/r29-source-ownership/partial-capacity-identity.log",
+      "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": 0,
+      "classification": "named checkpoint completed successfully"
+    },
+    {
+      "path": "local/r29-source-ownership/partial-capacity-red.log",
+      "sha256": "5fd97b1cb702bdedaee43c71d1cd9263ee5bbae58565f22af59b0553e8d218de",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": null,
+      "classification": "historical assertion failure; exit code not recorded",
+      "failure_message": "capacity removal lost surviving source or restored an evicted prefix"
+    },
+    {
+      "path": "local/r29-source-ownership/partial-visible-capacity-frozen.log",
+      "sha256": "f8afae989a01a69b0a8f1572f3449dc89405629cb287c3c84053c3dfd5c44e52",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": 0,
+      "classification": "observation only; not an acceptance test",
+      "observation": {
+        "history": [
+          "B       ",
+          "ABCD"
+        ],
+        "visible": [
+          "EFGH",
+          "    ",
+          "C   ",
+          "D   "
+        ],
+        "copy": "B\r\nABCDEFGH\r\n\r\nC\r\nD",
+        "EFGH_matches": 1,
+        "unresolved": "B precedes ABCDEFGH; exit 0 only records completion of observation."
+      }
+    },
+    {
+      "path": "local/r29-source-ownership/partial-visible-final.log",
+      "sha256": "8c85c093c56979ccf5ec1076b31a319119bdb9c860bbed2301e6984c821fc16d",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": null,
+      "classification": "observation only; not an acceptance test",
+      "observation": {
+        "history": [
+          "B       ",
+          "ABCD"
+        ],
+        "visible": [
+          "EFGH",
+          "    ",
+          "C   ",
+          "D   "
+        ],
+        "copy": "B\r\nABCDEFGH\r\n\r\nC\r\nD",
+        "EFGH_matches": 1,
+        "unresolved": "B precedes ABCDEFGH; exit 0 only records completion of observation."
+      }
+    },
+    {
+      "path": "local/r29-source-ownership/partial-visible-frozen.log",
+      "sha256": "8c85c093c56979ccf5ec1076b31a319119bdb9c860bbed2301e6984c821fc16d",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": null,
+      "classification": "observation only; not an acceptance test",
+      "observation": {
+        "history": [
+          "B       ",
+          "ABCD"
+        ],
+        "visible": [
+          "EFGH",
+          "    ",
+          "C   ",
+          "D   "
+        ],
+        "copy": "B\r\nABCDEFGH\r\n\r\nC\r\nD",
+        "EFGH_matches": 1,
+        "unresolved": "B precedes ABCDEFGH; exit 0 only records completion of observation."
+      }
+    },
+    {
+      "path": "local/r29-source-ownership/visible-suffix-capacity-frozen.log",
+      "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": 0,
+      "classification": "named checkpoint completed successfully"
+    },
+    {
+      "path": "local/r29-source-ownership/visible-suffix-red.log",
+      "sha256": "f4167b9c916e503eda2558f0d7afeca03269dd090e8da4d102d3de5e87a140ae",
+      "command": null,
+      "command_status": "not recorded in supplied log",
+      "exit_code": null,
+      "classification": "historical assertion failure; exit code not recorded",
+      "failure_message": "unchanged visible suffix was duplicated by its archived owner",
+      "diagnostic_counts": {
+        "EFGH_matches": 2,
+        "B_matches": 2
+      }
+    }
+  ],
+  "stale_capture_warning": {
+    "path": "experiments/core/candidate_terminal_test.cpp",
+    "captured_sha256": "8cbcbc09549ed4093c40872b03697cacbb1ffa20cc098f836c3530ea64655745",
+    "reason": "The test changed after this snapshot to add an identity assertion. This old test hash and associated binary are not the final b6764a7 test identity.",
+    "later_log": {
+      "path": "local/r29-source-ownership/partial-capacity-identity.log",
+      "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627"
+    },
+    "later_log_exit_code": 0,
+    "later_run_source_binary_hashes": null,
+    "final_identity_source": "Use before-style-frozen.json for the full rebuilt matrix; do not invent a map from the later identity-only log to the older binary."
+  },
+  "discard_grapheme_red_green": [
+    {
+      "path": "local/r29-discard-grapheme/red-validation.json",
+      "sha256": "b1a5aa8b248827e0ece7860cb06802125467e1c37907e196f806642d8332afef",
+      "stage": "red",
+      "exit_code": 101,
+      "passed": 2,
+      "failed": 2,
+      "ignored": 0,
+      "filtered": 9,
+      "command": "cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --locked -p termforge-alacritty-trace --lib history_eviction_ -- --nocapture --test-threads=1",
+      "command_source": "local/r29-discard-grapheme/red-validation.json",
+      "RUSTUP_TOOLCHAIN": "1.92.0",
+      "recorded_sha256": {
+        "experiments/candidates/alacritty/src/ffi.rs": "1d863d951d15d426843578f7ee8fb73c5cfab9f990ceca5637d9d44ae7690558",
+        "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "515c4b787d1878194c3ea224d4ade64596e0ed9d64eee7f9d3ab640a6f523be3",
+        "experiments/candidates/alacritty/target/debug/deps/termforge_alacritty_core-205ebf5c426fc1e2.exe": "12b31dd43492a075c203ab8156c1b5160ded0d5f963d874042ba563b920d0c4f",
+        "local/r29-discard-grapheme/red.log": "50b64ce6c0affea3b69407132e5973928c2876efd94de8137312af21cba088fb",
+        "local/r29-discard-grapheme/red-exit.txt": "bdc830287616dae1818ced3e7c186e1387155900ad30d5983ec02da1519c4a95"
+      },
+      "recorded_head": null,
+      "candidate_version_during_run": "0.26.1-dev+termforge.9",
+      "scope": "debug public C ABI tests before version bump"
+    },
+    {
+      "path": "local/r29-discard-grapheme/green-validation.json",
+      "sha256": "04e51c96a03c43946c52ae10ecafeff0e33074b3a3377ac7006d15f28999d194",
+      "stage": "green-frozen",
+      "exit_code": 0,
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 9,
+      "command": "cargo test --manifest-path experiments/candidates/alacritty/Cargo.toml --locked -p termforge-alacritty-trace --lib history_eviction_ -- --nocapture --test-threads=1",
+      "command_source": "local/r29-discard-grapheme/green-validation.json",
+      "RUSTUP_TOOLCHAIN": "1.92.0",
+      "recorded_sha256": {
+        "experiments/candidates/alacritty/src/ffi.rs": "ac0e7a7f8bb5eff27363de4c525a8f8898b59e3e1f9c7c1e3d8b0b025f7ff243",
+        "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "f79ac363f6fb046eec9b28d114bcea8390fb581084edf8643d07b64880bdf4d7",
+        "experiments/candidates/alacritty/target/debug/deps/termforge_alacritty_core-205ebf5c426fc1e2.exe": "3e64655df0b6a6634b6146f6b24e53a97d7e1451f3f4bdb3705f0dcc8a8d597b",
+        "local/r29-discard-grapheme/green.log": "77eca7a31625f1516af42f3b78a6ec4006cdba2fe52e2e6d76fe1a9e7adf1f52",
+        "local/r29-discard-grapheme/green-exit.txt": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+      },
+      "recorded_head": "b6764a763b118b86d79f62df7168a58badbad669",
+      "candidate_version_during_run": "0.26.1-dev+termforge.9",
+      "scope": "debug public C ABI tests before version bump"
+    }
+  ],
+  "style_red_green": [
+    {
+      "path": "local/r29-source-style/red-validation.json",
+      "sha256": "a50229511d59bd216ee7ff6f69269b547482a02541c370177a78661dcce68b27",
+      "stage": "red",
+      "recorded_head": "caeb5bfd1accc93c3eea7ff1a9d25a256e3149f5",
+      "recorded_files": [
+        {
+          "path": "experiments/core/candidate_terminal.cpp",
+          "sha256": "6aeea757dbb5a89cf7c85340e6dc03ca1f4a9f8b6535df9ac4c5e30a42f4f47c"
+        },
+        {
+          "path": "experiments/core/candidate_terminal.hpp",
+          "sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b"
+        },
+        {
+          "path": "experiments/core/candidate_terminal_test.cpp",
+          "sha256": "35414ded20bcef4f1750924d04d71c6c8ba7e399e95096b3e14c432d86ad97de"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+          "sha256": "dd287292968893416664ba8375c02ba9e890d1cc5330f378ce78284734e14e4a"
+        },
+        {
+          "path": "local/r29-source-style/build-red.log",
+          "sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467"
+        },
+        {
+          "path": "local/r29-source-style/bold-space-red.log",
+          "sha256": "2b0c0cdd92d68793f071f3b13d203a1064c50c9f74f71aedb5a758a17fabdfea"
+        }
+      ],
+      "exit_code": 1,
+      "command": "build/candidate-adapter/bin/Release/candidate_core_test.exe --source-new-background",
+      "command_source": "author-agent report relayed by root; exit and log hashes in captured JSON",
+      "scope": "background and new bold-space case, each ordinary/replay path; not full CTest",
+      "logs": [
+        {
+          "path": "local/r29-source-style/build-red.log",
+          "exit_code": null,
+          "command": null
+        },
+        {
+          "path": "local/r29-source-style/bold-space-red.log",
+          "exit_code": 1,
+          "command": "build/candidate-adapter/bin/Release/candidate_core_test.exe --source-new-background"
+        }
+      ],
+      "source_identity": "eea3a2c implementation plus the new test from 95cd2c3"
+    },
+    {
+      "path": "local/r29-source-style/green-validation.json",
+      "sha256": "6aeaf6b3102d43977ab62a0ebb253e15b20393362ce4e51138c674cba04859c6",
+      "stage": "green",
+      "recorded_head": "caeb5bfd1accc93c3eea7ff1a9d25a256e3149f5",
+      "recorded_files": [
+        {
+          "path": "experiments/core/candidate_terminal.cpp",
+          "sha256": "ac6945bca9d803f05cbf81193a63f9fa364775f240135d4453c6cb0c66cfb70c"
+        },
+        {
+          "path": "experiments/core/candidate_terminal.hpp",
+          "sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b"
+        },
+        {
+          "path": "experiments/core/candidate_terminal_test.cpp",
+          "sha256": "35414ded20bcef4f1750924d04d71c6c8ba7e399e95096b3e14c432d86ad97de"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+          "sha256": "f5f9ff93236f8f6e4a70b76adc682262245b525d5825b9edbb3fff47c6bb80e4"
+        },
+        {
+          "path": "local/r29-source-style/build-green.log",
+          "sha256": "4722a25358f604c7062ebea67c3a54d19051c54278bffab77ef2fea913a63b12"
+        },
+        {
+          "path": "local/r29-source-style/bold-space-green.log",
+          "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627"
+        }
+      ],
+      "exit_code": 0,
+      "command": "build/candidate-adapter/bin/Release/candidate_core_test.exe --source-new-background",
+      "command_source": "author-agent report relayed by root; exit and log hashes in captured JSON",
+      "scope": "background and new bold-space case, each ordinary/replay path; not full CTest",
+      "logs": [
+        {
+          "path": "local/r29-source-style/build-green.log",
+          "exit_code": null,
+          "command": null
+        },
+        {
+          "path": "local/r29-source-style/bold-space-green.log",
+          "exit_code": 0,
+          "command": "build/candidate-adapter/bin/Release/candidate_core_test.exe --source-new-background"
+        }
+      ],
+      "source_identity": "95cd2c38ad36b5c4bc756192b9a8780466936a0a"
+    },
+    {
+      "path": "local/r29-source-style/frozen-validation.json",
+      "sha256": "8ff5baab71bf6a1228a4f300c1bd12a034a668ec73956d102f35fc2f52f0f681",
+      "stage": "frozen",
+      "recorded_head": "caeb5bfd1accc93c3eea7ff1a9d25a256e3149f5",
+      "recorded_files": [
+        {
+          "path": "experiments/core/candidate_terminal.cpp",
+          "sha256": "ac6945bca9d803f05cbf81193a63f9fa364775f240135d4453c6cb0c66cfb70c"
+        },
+        {
+          "path": "experiments/core/candidate_terminal.hpp",
+          "sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b"
+        },
+        {
+          "path": "experiments/core/candidate_terminal_test.cpp",
+          "sha256": "35414ded20bcef4f1750924d04d71c6c8ba7e399e95096b3e14c432d86ad97de"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+          "sha256": "f5f9ff93236f8f6e4a70b76adc682262245b525d5825b9edbb3fff47c6bb80e4"
+        },
+        {
+          "path": "local/r29-source-style/build-green.log",
+          "sha256": "4722a25358f604c7062ebea67c3a54d19051c54278bffab77ef2fea913a63b12"
+        },
+        {
+          "path": "local/r29-source-style/bold-space-green.log",
+          "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627"
+        },
+        {
+          "path": "local/r29-source-style/core-regression.log",
+          "sha256": "3d7ca02ffd7486699a996c9037e88c4276157115eafe3d643ee1895c993b0a5a"
+        },
+        {
+          "path": "local/r29-source-style/visible-suffix-regression.log",
+          "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627"
+        },
+        {
+          "path": "local/r29-source-style/partial-capacity-regression.log",
+          "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627"
+        }
+      ],
+      "exit_code": null,
+      "scope": "core and source ownership only; shell not run",
+      "logs": [
+        {
+          "path": "local/r29-source-style/build-green.log",
+          "exit_code": null,
+          "command": null
+        },
+        {
+          "path": "local/r29-source-style/bold-space-green.log",
+          "exit_code": 0,
+          "command": null
+        },
+        {
+          "path": "local/r29-source-style/core-regression.log",
+          "exit_code": 0,
+          "command": null
+        },
+        {
+          "path": "local/r29-source-style/visible-suffix-regression.log",
+          "exit_code": 0,
+          "command": null
+        },
+        {
+          "path": "local/r29-source-style/partial-capacity-regression.log",
+          "exit_code": 0,
+          "command": null
+        }
+      ],
+      "source_identity": "95cd2c38ad36b5c4bc756192b9a8780466936a0a"
+    }
+  ],
+  "local_log_sha256": {
+    "local/r29-source-integration/workspace-final.log": "f91253a7e095b7e6387077ccbca34856ad0e9655a685fd3641c682d77484c44e",
+    "local/r29-source-integration/build-final.log": "4bf6a9d1b3fd39b5a2f192767657fd467e81fa89e41a85c3c3afba6aee9ed68c",
+    "local/r29-source-integration/ctest-before-style.log": "dec6bae5cb8ac3190628ad0211b17afa37d26d79649c5a37947976bc4d626c0b",
+    "local/r29-source-integration/last-test-before-style.log": "8e87f17660f166187e9a2cc61b92558bb6ae39fa64ab19c576ca5f801adc3446",
+    "local/r29-source-ownership/build-partial-capacity-final.log": "51738d0a56d352c98f09d369a55638f66266af2f7fd40732e263b442e8d5e875",
+    "local/r29-source-ownership/partial-capacity-detail-red.log": "aff720a8da785b28f46dbc0e9b83fcea7fcadf2e146b0473207aaf4110ea6649",
+    "local/r29-source-ownership/partial-capacity-frozen.log": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+    "local/r29-source-ownership/core-capacity-frozen.log": "3d7ca02ffd7486699a996c9037e88c4276157115eafe3d643ee1895c993b0a5a",
+    "local/r29-source-ownership/visible-suffix-capacity-frozen.log": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+    "local/r29-source-ownership/new-background-capacity-frozen.log": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+    "local/r29-source-ownership/partial-visible-capacity-frozen.log": "f8afae989a01a69b0a8f1572f3449dc89405629cb287c3c84053c3dfd5c44e52",
+    "local/r29-discard-grapheme/red.log": "50b64ce6c0affea3b69407132e5973928c2876efd94de8137312af21cba088fb",
+    "local/r29-discard-grapheme/red-exit.txt": "bdc830287616dae1818ced3e7c186e1387155900ad30d5983ec02da1519c4a95",
+    "local/r29-discard-grapheme/green.log": "77eca7a31625f1516af42f3b78a6ec4006cdba2fe52e2e6d76fe1a9e7adf1f52",
+    "local/r29-discard-grapheme/green-exit.txt": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354",
+    "local/r29-source-style/build-red.log": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+    "local/r29-source-style/bold-space-red.log": "2b0c0cdd92d68793f071f3b13d203a1064c50c9f74f71aedb5a758a17fabdfea",
+    "local/r29-source-style/build-green.log": "4722a25358f604c7062ebea67c3a54d19051c54278bffab77ef2fea913a63b12",
+    "local/r29-source-style/bold-space-green.log": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+    "local/r29-source-style/core-regression.log": "3d7ca02ffd7486699a996c9037e88c4276157115eafe3d643ee1895c993b0a5a",
+    "local/r29-source-style/visible-suffix-regression.log": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+    "local/r29-source-style/partial-capacity-regression.log": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+    "local/r29-source-integration/build-after-style.log": "6426e47aeb0618ff2a0b4a292ca602081d0c3c93d559f89a10e59b855a0e9bae",
+    "local/r29-source-integration/ctest-after-style.log": "65c5b0ea4b6a2e007bab55c82eebfe5b258185194edd69671db136504a792c37",
+    "local/r29-source-integration/last-test-after-style.log": "0a91231b47f8927d9f4b3174fc4852a76338026620717283d842afd5c75b978d",
+    "local/r29-source-integration/trace-build-final.log": "08fe3f075a16643d29a49ec8bfe75d629f54508155e7a797cde15412d8e45f14",
+    "local/r29-source-integration/runner-final.log": "ef004522aab5552fe83b1e32263326d5406b235e993f81fd304c7f70339b23ac",
+    "local/r29-source-integration/partial-visible-final.log": "8c85c093c56979ccf5ec1076b31a319119bdb9c860bbed2301e6984c821fc16d"
+  },
+  "isolated_old_binary_reproductions": {
+    "source_commit": "eea3a2c7d79ceffba95065a2544a5fe6f67aed3c",
+    "runs_each": 1,
+    "cases": [
+      {
+        "case": "ui-history",
+        "invocations": 1,
+        "target_exit_code": 2,
+        "target_exit_hex": "0x00000002",
+        "original_stderr": "history retained frame differs from full redraw\r\n",
+        "stderr": "history retained frame differs from full redraw\r\n",
+        "stdout": "",
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 13,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 13,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "cleanup_errors": [],
+        "verdict": "original_error_reproduced",
+        "native_scroll_count": 2,
+        "failed_phase": "not persisted by original runner"
+      },
+      {
+        "case": "selection-height-681",
+        "invocations": 1,
+        "target_exit_code": 3221226525,
+        "target_exit_hex": "0xC000041D",
+        "original_stderr": "render API failed\r\n",
+        "stderr": "",
+        "stdout": "",
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 10,
+          "terminated": 0
+        },
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 10,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "cleanup_errors": [],
+        "verdict": "different_failure_original_render_error_unresolved",
+        "selection_phases": [
+          "empty",
+          "forward",
+          "reverse",
+          "word",
+          "line",
+          "zoom-before"
+        ],
+        "selection_base_equals_original": true
+      }
+    ],
+    "summary_sha256": "c7dd77cfa3954a2b2b7bffd5d225024452b0bd445e2ebc0c14e3d30bde15cd36",
+    "frozen_binaries_manifest_sha256": "3720864e36d98a479a975951046316c4ea6efd3ae6fe6461ee8b1e318fdbc203",
+    "preserved_executables": 13,
+    "distributed_font_files": 3,
+    "scope": "Original 40-second runner limit and cleanup; private non-input desktop in current station. No root-cause claim."
+  },
+  "reviews": {
+    "source_composition": {
+      "standards_hard": 0,
+      "standards_smells": 1,
+      "smell": "Parallel Line/native ID/source arrays; nonblocking maintenance suggestion",
+      "spec_p2": "Styled blank source loss, independently reproduced and fixed in 95cd2c3"
+    },
+    "native_lifecycle": {
+      "standards": 0,
+      "spec": 0
+    },
+    "style_fix": {
+      "standards": 0,
+      "spec": 0
+    }
+  },
+  "known_unfinished": [
+    {
+      "item": "Partial visible repaint document order",
+      "status": "observed unresolved counterexample",
+      "evidence": "local/r29-source-ownership/partial-visible-capacity-frozen.log",
+      "detail": "Copy puts B before ABCDEFGH; one EFGH match removes the earlier duplicate but does not fix chronology."
+    },
+    {
+      "item": "Mixed native row partial-source splitting and multi-owner union suppression",
+      "status": "implementation/validation gap; not a passed comparison",
+      "source": "parent task and prior source review; no new execution in this draft"
+    },
+    {
+      "item": "Dedicated equal-text independent-source adapter counterexample",
+      "status": "not newly validated by this slice; existing equal-output regression is narrower"
+    },
+    {
+      "item": "Complete candidate product matrix",
+      "status": "Final full CTest still has failures; original failures remain separately preserved"
+    },
+    {
+      "item": "Original behavior, final architecture, performance, full R2 acceptance",
+      "status": "not established by these records"
+    }
+  ],
+  "limits": [
+    "No experimental backend, actual different-DPI, full system input or presentation acceptance.",
+    "No performance measurement or approved tolerance; no final core/GUI selection.",
+    "Partial-visible diagnostic exit zero is observation only; B-before-A order remains wrong.",
+    "The mixed-width indexing path is a source finding, not the proven cause of either runtime failure.",
+    "Private raw artifacts and frozen executables stay local; no WindTerm binary/resources/code are published."
+  ]
+}
