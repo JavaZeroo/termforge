@@ -140,7 +140,10 @@ CandidateTerminal::RowSources CandidateTerminal::projected_sources(const Line& l
     RowSources result;
     result.hard_boundary = origins.hard_boundary;
     size_t end = line.size();
-    while (end && !line[end - 1].written) --end;
+    // A cell without copyable text can still carry visible style or glyph
+    // metadata. Only complete default padding is inert for source ownership.
+    const Cell padding;
+    while (end && same_cell(line[end - 1], padding)) --end;
     // A blank physical history row still occupies one retained slot. Its old
     // padding origins distinguish an unchanged row from an explicit erasure.
     if (!end && !origins.hard_boundary) return origins;

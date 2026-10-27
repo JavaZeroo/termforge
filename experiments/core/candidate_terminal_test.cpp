@@ -694,6 +694,29 @@ void cached_history_keeps_new_native_background() {
     }
 }
 
+void cached_history_keeps_new_native_bold_space() {
+    for (const bool replay : {false, true}) {
+        termforge::CandidateTerminal terminal(2, 12, 16);
+        terminal.feed("ABCDEFGHIJKL\r\nB\r\nC\r\nD");
+        terminal.resize(5, 4);
+        std::string bytes = "\x1b[1;4H\x1b[1m \x1b[0m\x1b[5;1H\n";
+        if (replay) bytes = "\x1b[?25l" + bytes + "\x1b[?25h";
+        terminal.feed(bytes);
+        size_t bold_spaces = 0;
+        for (const auto& line : terminal.screen.history) {
+            if (line.size() <= 3) continue;
+            const auto& cell = line[3];
+            if (!cell.style.bold) continue;
+            require(cell.text == " " && cell.width == 1 && cell.style.fg == -1 && cell.style.bg == -1 &&
+                    !cell.written && cell.marks == 0 && !cell.clipped && !cell.grapheme_fragment &&
+                    !cell.leading_spacer, "native bold-space Cell attributes differ");
+            ++bold_spaces;
+        }
+        require(bold_spaces == 1, replay ? "cached owner swallowed new native bold space" :
+                                          "native bold-space control fixture failed");
+    }
+}
+
 void cached_history_partial_capacity_keeps_unremoved_source() {
     for (const bool fragmented : {false, true}) {
         termforge::CandidateTerminal terminal(2, 12, 1);
@@ -1073,6 +1096,7 @@ int main(int argc, char** argv) {
         }
         if (argc > 1 && std::string_view(argv[1]) == "--source-new-background") {
             cached_history_keeps_new_native_background();
+            cached_history_keeps_new_native_bold_space();
             return 0;
         }
         if (argc > 1 && std::string_view(argv[1]) == "--source-partial-capacity") {
