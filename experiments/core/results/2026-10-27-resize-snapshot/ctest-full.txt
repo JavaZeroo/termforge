@@ -1,0 +1,104 @@
+Internal ctest changing into directory: <WORKTREE>/build/candidate-adapter
+Test project <WORKTREE>/build/candidate-adapter
+      Start  1: shell_launch
+ 1/49 Test  #1: shell_launch .....................   Passed    0.02 sec
+      Start  2: candidate_title
+ 2/49 Test  #2: candidate_title ..................   Passed    1.31 sec
+      Start  3: runtime_observation
+ 3/49 Test  #3: runtime_observation ..............   Passed    3.65 sec
+      Start  4: ime_input_expectation
+ 4/49 Test  #4: ime_input_expectation ............   Passed    0.06 sec
+      Start  5: sent_message_wait
+ 5/49 Test  #5: sent_message_wait ................   Passed    0.38 sec
+      Start  6: find_bar
+ 6/49 Test  #6: find_bar .........................   Passed    1.19 sec
+      Start  7: renderer_metrics
+ 7/49 Test  #7: renderer_metrics .................   Passed    1.30 sec
+      Start  8: ime_context
+ 8/49 Test  #8: ime_context ......................   Passed    1.35 sec
+      Start  9: layout_state
+ 9/49 Test  #9: layout_state .....................   Passed    0.18 sec
+      Start 10: workspace_state
+10/49 Test #10: workspace_state ..................   Passed    0.46 sec
+      Start 11: transport_completion
+11/49 Test #11: transport_completion .............   Passed    0.02 sec
+      Start 12: scenario_tick_gate
+12/49 Test #12: scenario_tick_gate ...............   Passed    0.02 sec
+      Start 13: candidate_core
+13/49 Test #13: candidate_core ...................   Passed    1.68 sec
+      Start 14: resize_core
+14/49 Test #14: resize_core ......................   Passed    0.03 sec
+      Start 15: history_core
+15/49 Test #15: history_core .....................   Passed    0.02 sec
+      Start 16: selection_core
+16/49 Test #16: selection_core ...................   Passed    0.10 sec
+      Start 17: search_core
+17/49 Test #17: search_core ......................   Passed    0.13 sec
+      Start 18: paste
+18/49 Test #18: paste ............................   Passed    0.02 sec
+      Start 19: clipboard_policy
+19/49 Test #19: clipboard_policy .................   Passed    0.02 sec
+      Start 20: keyboard
+20/49 Test #20: keyboard .........................   Passed    0.02 sec
+      Start 21: text_action_policy
+21/49 Test #21: text_action_policy ...............   Passed    0.02 sec
+      Start 22: candidate_shell_tui
+22/49 Test #22: candidate_shell_tui ..............   Passed   15.28 sec
+      Start 23: core
+23/49 Test #23: core .............................   Passed    6.08 sec
+      Start 24: recovery
+24/49 Test #24: recovery .........................   Passed   10.64 sec
+      Start 25: measure
+25/49 Test #25: measure ..........................   Passed    4.59 sec
+      Start 26: binary_paths
+26/49 Test #26: binary_paths .....................   Passed    0.25 sec
+      Start 27: conpty_margin_contract
+27/49 Test #27: conpty_margin_contract ...........   Passed    0.41 sec
+      Start 28: benchmark_tools
+28/49 Test #28: benchmark_tools ..................   Passed    5.65 sec
+      Start 29: differential
+29/49 Test #29: differential .....................   Passed   20.29 sec
+      Start 30: ime_inventory
+30/49 Test #30: ime_inventory ....................   Passed   57.39 sec
+      Start 31: text_actions
+31/49 Test #31: text_actions .....................   Passed    7.87 sec
+      Start 32: workflow_fixture
+32/49 Test #32: workflow_fixture .................   Passed   23.38 sec
+      Start 33: workflow_sessions
+33/49 Test #33: workflow_sessions ................   Passed   45.73 sec
+      Start 34: workflow_resources
+34/49 Test #34: workflow_resources ...............   Passed    0.61 sec
+      Start 35: workflow_resource_phases
+35/49 Test #35: workflow_resource_phases .........   Passed    4.59 sec
+      Start 36: workflow_system_content
+36/49 Test #36: workflow_system_content ..........   Passed    0.22 sec
+      Start 37: workflow_system_runner
+37/49 Test #37: workflow_system_runner ...........   Passed    0.72 sec
+      Start 38: copy_error_frame
+38/49 Test #38: copy_error_frame .................   Passed    0.17 sec
+      Start 39: research_guards
+39/49 Test #39: research_guards ..................   Passed    5.43 sec
+      Start 40: receive
+40/49 Test #40: receive ..........................   Passed    0.25 sec
+      Start 41: conpty
+41/49 Test #41: conpty ...........................   Passed   17.36 sec
+      Start 42: conpty_ctrl_c
+42/49 Test #42: conpty_ctrl_c ....................   Passed    4.46 sec
+      Start 43: conpty_margin
+43/49 Test #43: conpty_margin ....................   Passed    0.46 sec
+      Start 44: presentation
+44/49 Test #44: presentation .....................   Passed    4.45 sec
+      Start 45: shell
+45/49 Test #45: shell ............................   Passed  124.99 sec
+      Start 46: selection_bytes
+46/49 Test #46: selection_bytes ..................   Passed    4.66 sec
+      Start 47: selection_context
+47/49 Test #47: selection_context ................   Passed    4.58 sec
+      Start 48: raw_console_receiver
+48/49 Test #48: raw_console_receiver .............   Passed    0.40 sec
+      Start 49: paste_system
+49/49 Test #49: paste_system .....................   Passed   15.62 sec
+
+100% tests passed, 0 tests failed out of 49
+
+Total Test time (real) = 398.60 sec

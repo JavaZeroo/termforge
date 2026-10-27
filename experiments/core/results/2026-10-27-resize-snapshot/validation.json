@@ -1,0 +1,246 @@
+{
+  "scope": "R2 #29 pending visible snapshot and explicit primary-history clear regressions; not complete resize acceptance",
+  "source_commit": "3a7510a8f6df95309b62d0531d150cd592aea825",
+  "reviewed_local_code_commit": "eedb5770ffed441af36e8760f54c0d2a479a7980",
+  "identical_source_tree": "4d35b8e660de80023b21a1ba9d0506fbca33806b",
+  "base_commit": "678a7f41df8323e550b2804f664f2a3d7510d0a4",
+  "source_files": [
+    {
+      "path": "experiments/candidates/alacritty/Cargo.lock",
+      "git_blob": "7a002fd05e0a4efcdff68284d5901da72c7fd4df",
+      "worktree_sha256": "f7b8906cc63b6a5d66943f15c50a78c51f773face60229fcddf24b2d02911736"
+    },
+    {
+      "path": "experiments/candidates/alacritty/PROVENANCE.md",
+      "git_blob": "0a2ca5d2d63e67b917cba7ee150b315ca62f5699",
+      "worktree_sha256": "6421adc4ffa583c5c1b962784452e50886471c877d00d88774c7db75e2019581"
+    },
+    {
+      "path": "experiments/candidates/alacritty/include/termforge_candidate.h",
+      "git_blob": "21fffc272f0cb871c048cecb07dc3982bfe6997e",
+      "worktree_sha256": "aeec8b32439f9b774406054c4f2bb963bb75f5b253b8de1b2f1886dcf25b1be9"
+    },
+    {
+      "path": "experiments/candidates/alacritty/run.py",
+      "git_blob": "25bf3584c170dbda30799988db81570ee38fed43",
+      "worktree_sha256": "2d83240506bf03b4da92f7b2dc85adf40446aff25cd0f0dbe08132b611c2627e"
+    },
+    {
+      "path": "experiments/candidates/alacritty/src/ffi.rs",
+      "git_blob": "5a70d6e19a2e0e385b92e22585d91db1d03a5288",
+      "worktree_sha256": "21fce51795e9ba2e2aa59a5b199a7dca53c521997f7b4760208ef497b20a8fbb"
+    },
+    {
+      "path": "experiments/candidates/alacritty/test_candidate.py",
+      "git_blob": "8e3f56a92cec7c5b19dcd419c7a40d30905117ad",
+      "worktree_sha256": "80b19e6fcd9416d4a34c43a5e50525857e6504f1a485827045f209d4dae4f106"
+    },
+    {
+      "path": "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml",
+      "git_blob": "0755589b25d651443e1258c46f0d7c0725725be9",
+      "worktree_sha256": "2b5fc3bab139b7f141fbe39ae32364617cf526c4d6a5ec2ce12efc97379e42b7"
+    },
+    {
+      "path": "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs",
+      "git_blob": "618fbb2c2572cb287dbac7c7679056d5bf8312df",
+      "worktree_sha256": "86dc351a502c0b75f8c027da81025a2e81648ede3b25ffb5bb25098d50035750"
+    },
+    {
+      "path": "experiments/core/candidate_terminal.cpp",
+      "git_blob": "d90332ea613b21087cd4c36b917001abcdb91a89",
+      "worktree_sha256": "386158ec9aff3a4f4a9a508eae2a8905ab27690a8815f2c993532a7b11e81c60"
+    },
+    {
+      "path": "experiments/core/candidate_terminal.hpp",
+      "git_blob": "3cfe92cdcfe78edbcf9e219ec17a189f7cb21e86",
+      "worktree_sha256": "0cc344ca834f1532319e3fb2a2ca68e118568a747c1a52da13232f06f959752b"
+    },
+    {
+      "path": "experiments/core/candidate_terminal_test.cpp",
+      "git_blob": "787c5ddd02bcb16629af1b54d03de34dee47ede7",
+      "worktree_sha256": "b8639d4380e571594c81db00296f0d39d124f9c23855e64bf9761abc94a427c1"
+    }
+  ],
+  "configuration": {
+    "os": "Windows 11 Pro 10.0.26200 x64",
+    "candidate": "0.26.1-dev+termforge.5",
+    "adapter": true,
+    "backend": "system ConPTY",
+    "build_type": "Release",
+    "rust": "1.92.0",
+    "python": "3.12.10",
+    "msvc": "19.42.34433.0",
+    "windows_sdk": "10.0.26100.0",
+    "vim": {
+      "version": "9.1 patches 1-532",
+      "sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+      "path_policy": "Existing Git for Windows usr/bin prepended only in the test process environment"
+    }
+  },
+  "binaries": [
+    {
+      "path": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+      "sha256": "db1f04d77bd93d387720c4dc0ff1bf31c2e332d4271e8a8de413e79eb87d6191"
+    },
+    {
+      "path": "build/candidate-adapter/bin/Release/termforge_shell.exe",
+      "sha256": "152299f6e8a2085fbf0e44688cc36652f71e609dc4d9d2333f8862f47d60348e"
+    },
+    {
+      "path": "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib",
+      "sha256": "8805dd45b97726329058ee7beedbb8068d4544c9321f9cad65637846529bfcb3"
+    },
+    {
+      "path": "experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe",
+      "sha256": "a60aa224a1005c1d620360a43d490e833c9adebc493381dcb05bfd1fe8f4c035"
+    }
+  ],
+  "negative_controls": [
+    {
+      "name": "Original pending publication restores old rows under new dimensions",
+      "source_base": "678a7f41df8323e550b2804f664f2a3d7510d0a4",
+      "test": "pending_replay_keeps_resized_grid",
+      "exit_code": 1,
+      "output": "pending-red.txt",
+      "complete_binary_identity_retained": false
+    },
+    {
+      "name": "After pending fix, primary history clear during coalesced replay resurrects old rows",
+      "input": "ESC[?25l ESC[03J ESC[?25h",
+      "exit_code": 1,
+      "output": "clear-red.txt",
+      "complete_binary_identity_retained": false
+    }
+  ],
+  "public_interface_cases": {
+    "pending_dimensions_rows_columns": [
+      [
+        2,
+        16
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        3,
+        5
+      ]
+    ],
+    "clear_combinations": 24,
+    "clear_sequences": [
+      "ED3",
+      "CSI 03J",
+      "RIS"
+    ],
+    "clear_phases": [
+      "before hide",
+      "pending",
+      "after show",
+      "coalesced transaction"
+    ],
+    "feed_shapes": [
+      "whole",
+      "byte"
+    ],
+    "empty_native_history_cases": 2,
+    "ED2_controls": 2,
+    "existing_861B_coordinate_and_bounded_replay_cases_retained": true
+  },
+  "validation": {
+    "cpp_and_rust_source_commit": "14db86856af5653bf769b9f844878465783d39a4",
+    "source_note": "Full CTest and Rust workspace ran with the core/test code at 14db868. eedb577 changes only the independent Python report version and its test; that runner was rebuilt/tested separately. All C++/Rust sources are identical between these commits.",
+    "ctest": {
+      "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure --output-junit local-full.xml",
+      "exit_code": 0,
+      "passed": 49,
+      "failed": 0,
+      "skipped_ctest": 0,
+      "junit_raw_local_sha256": "470304aa558daa918cf45d5dc3f19ef76fcdb14b947ceeb27fcca28ff56696c3",
+      "output": "ctest-full.txt"
+    },
+    "rust_workspace": {
+      "command": "cargo +1.92.0 test --manifest-path experiments/candidates/alacritty/Cargo.toml --locked --workspace",
+      "exit_code": 0,
+      "upstream_unit_passed": 157,
+      "adapter_and_bin_unit_passed": 6,
+      "doc_passed": 1,
+      "failed": 0,
+      "raw_local_sha256": "46abe49391d56cc743ba133533cb134a0dd91adc333a09b6be140efb1e95f017"
+    },
+    "candidate_report_runner": {
+      "source_commit": "eedb5770ffed441af36e8760f54c0d2a479a7980",
+      "command": "python -m unittest experiments.candidates.alacritty.test_candidate -v",
+      "exit_code": 0,
+      "passed": 6,
+      "output": "candidate-runner-tests.txt"
+    },
+    "reviews": {
+      "standards": "version report mismatch found and fixed in eedb577; re-review 0 findings",
+      "spec": "0 findings for the bounded code slice; full issue remains open"
+    }
+  },
+  "logs": [
+    {
+      "public_file": "pending-red.txt",
+      "raw_local_sha256": "37dd7338924d27a3e3d6fd6edc394a6de162c034a62cddfea7f9686e9f4f2fe7",
+      "public_lf_sha256": "44e320ba64a1febb60f444fe80707144788e9ed31fdc2aa65f2eaba15ebcf80d"
+    },
+    {
+      "public_file": "clear-red.txt",
+      "raw_local_sha256": "dada20af1f28966710730374f3c4448ff6426604871cc8046562a31065035400",
+      "public_lf_sha256": "ba3ba26417544aa077a44f7c171309cf6bdd48d53a38c60adfa3b39d6343c7f4"
+    },
+    {
+      "public_file": "pending-green.txt",
+      "raw_local_sha256": "f249f16080e7539f36f1dc3103a9b03e5366fbdc5ef7166c21bea21f1a334a71",
+      "public_lf_sha256": "caa3a5ad900c2d7cc0db5bcef2dfc69f45c6b326703df025f09701c4ebb04c05"
+    },
+    {
+      "public_file": "clear-green.txt",
+      "raw_local_sha256": "f249f16080e7539f36f1dc3103a9b03e5366fbdc5ef7166c21bea21f1a334a71",
+      "public_lf_sha256": "caa3a5ad900c2d7cc0db5bcef2dfc69f45c6b326703df025f09701c4ebb04c05"
+    },
+    {
+      "public_file": "clear-matrix.txt",
+      "raw_local_sha256": "f249f16080e7539f36f1dc3103a9b03e5366fbdc5ef7166c21bea21f1a334a71",
+      "public_lf_sha256": "caa3a5ad900c2d7cc0db5bcef2dfc69f45c6b326703df025f09701c4ebb04c05"
+    },
+    {
+      "public_file": "ctest-full.txt",
+      "raw_local_sha256": "979cc2f93873dc542c395dbb9357b8f27a753ba0f3513b4e735a6e1d749bf696",
+      "public_lf_sha256": "13076cf06550edde98feae4ab833c07a0bff34a0c37ac1ca3e05b079421e1472"
+    },
+    {
+      "public_file": "candidate-runner-tests.txt",
+      "raw_local_sha256": "0a0b6664859cbba4c83d4fd82adb2e968395cdf54dbed34191d527b1413e6095",
+      "public_lf_sha256": "f7a72e44bb80ac1985fb5d9d564caf17f4cc7dfb3abe940aaeb110ad751e605d"
+    }
+  ],
+  "setup_failures_not_semantic_red": [
+    {
+      "file": "build-pending-red.txt",
+      "reason": "CMake configuration had not completed; cache unavailable",
+      "sha256": "12e30ef2597665c5a3ee0c6218381d618df1c59d9316af83ebcfbd90c63219f0"
+    },
+    {
+      "file": "build-clear-compile-failed.txt",
+      "reason": "ClearMode has no PartialEq; corrected to matches! before semantic validation",
+      "sha256": "31b8bab99eb872668500419a051bcd6cb5c4fd348dc6da5bcd7e48d48d89be32"
+    }
+  ],
+  "windterm_runtime_evidence": "windterm-observations.json",
+  "limitations": [
+    "Not complete history reflow or rectangular retained history",
+    "Mixed-width cached history and zero-native-history heuristic remain unresolved",
+    "Alternate-screen cache and full margin/resize cross-product not accepted",
+    "No new ConPTY child ack, actual presentation, DPI or performance equivalence claim",
+    "Default and experimental official backend configurations not validated by this candidate/system run",
+    "WindTerm Telnet text observations do not validate this candidate clear or freeze policy",
+    "Hosted CI tracked in the PR and issue; local checks do not imply its result"
+  ]
+}

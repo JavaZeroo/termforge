@@ -1,0 +1,11 @@
+test_fixed_streaming_grapheme_samples (experiments.candidates.alacritty.test_candidate.AlacrittyCandidateTests.test_fixed_streaming_grapheme_samples) ... ok
+test_identity_and_limitations_are_recorded (experiments.candidates.alacritty.test_candidate.AlacrittyCandidateTests.test_identity_and_limitations_are_recorded) ... ok
+test_invalid_chunk_plan_is_an_execution_failure (experiments.candidates.alacritty.test_candidate.AlacrittyCandidateTests.test_invalid_chunk_plan_is_an_execution_failure) ... ok
+test_missing_binary_is_not_a_pass (experiments.candidates.alacritty.test_candidate.AlacrittyCandidateTests.test_missing_binary_is_not_a_pass) ... ok
+test_real_candidate_checks_pass (experiments.candidates.alacritty.test_candidate.AlacrittyCandidateTests.test_real_candidate_checks_pass) ... ok
+test_summary_rejects_a_changed_real_result (experiments.candidates.alacritty.test_candidate.AlacrittyCandidateTests.test_summary_rejects_a_changed_real_result) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.062s
+
+OK

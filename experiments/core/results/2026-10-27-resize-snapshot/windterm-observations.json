@@ -1,0 +1,376 @@
+{
+  "scope": "default synthetic loopback Telnet session, instrumented non-input window station, five fixed geometries",
+  "observed_version": "WindTerm 2.7.0 Windows x64",
+  "os": "Windows 11 Pro 10.0.26200 x64",
+  "planned_runs": 2,
+  "actual_runs": 2,
+  "instrumentation_limit_seconds_per_run": 45,
+  "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "distribution_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "distribution_files": 4047,
+  "payload_sha256": "9474531ee34ea08ddd5c3c6b9a19c446852c2aff784dea484c54a91138724b3e",
+  "probe_template_sha256": "838a193715199003ce12298d345c572b0076beeab95917735948141b5797bd6e",
+  "peer_script_sha256": "6d4411dfaff8990f0248d5b5604aafc1624596a86dd0ef6e99f9ebe4ffc45cf6",
+  "analysis_script_sha256": "c11b4fe6cce995c5818fc45581f8bd2dfafe126e4d6b85f819c25839b1a584cf",
+  "runs": [
+    {
+      "run": "run-1",
+      "gates": {
+        "rea_ok": true,
+        "no_observation_errors": true,
+        "completed_five_phases": true,
+        "exe_identity": true,
+        "distribution_identity": true,
+        "script_identity": true,
+        "payload_identity": true,
+        "peer_closed_without_error": true,
+        "job_drained": true,
+        "surfaces_closed": true,
+        "profile_only_synthetic": true
+      },
+      "evidence_id": "ev_5c506d0c81a5fbe5cca264c9f96b96c4196db7f646cb5cfbf5163ad8bdccc777",
+      "probe_sha256": "6698e9d4f1d1da2405d041b5390495345bd8ef1c1610ff0c1185e472332b1251",
+      "naws_history": [
+        {
+          "sequence": 0,
+          "columns": 80,
+          "rows": 25
+        },
+        {
+          "sequence": 1,
+          "columns": 80,
+          "rows": 26
+        },
+        {
+          "sequence": 2,
+          "columns": 62,
+          "rows": 26
+        },
+        {
+          "sequence": 3,
+          "columns": 80,
+          "rows": 26
+        },
+        {
+          "sequence": 4,
+          "columns": 80,
+          "rows": 18
+        },
+        {
+          "sequence": 5,
+          "columns": 80,
+          "rows": 26
+        }
+      ],
+      "cleanup": {
+        "active": 0,
+        "total": 3,
+        "terminated": 0
+      },
+      "surface_cleanup": {
+        "desktop_handle_closed": true,
+        "station_handle_closed": true,
+        "original_station_restored": true
+      },
+      "observations": [
+        {
+          "phase": "baseline",
+          "naws": [
+            80,
+            26
+          ],
+          "requested_outer": [
+            1230,
+            887
+          ],
+          "scroll_top": 19,
+          "visibleLineCount_api": 44,
+          "screenLineCapacity_api": 26,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": true,
+          "history_row_19_start_rect_y": 0,
+          "topLine_serialized": false
+        },
+        {
+          "phase": "narrow-width",
+          "naws": [
+            62,
+            26
+          ],
+          "requested_outer": [
+            1010,
+            887
+          ],
+          "scroll_top": 20,
+          "visibleLineCount_api": 46,
+          "screenLineCapacity_api": 26,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": false,
+          "history_row_19_start_rect_y": -18,
+          "topLine_serialized": false
+        },
+        {
+          "phase": "restore-width",
+          "naws": [
+            80,
+            26
+          ],
+          "requested_outer": [
+            1230,
+            887
+          ],
+          "scroll_top": 19,
+          "visibleLineCount_api": 44,
+          "screenLineCapacity_api": 26,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": true,
+          "history_row_19_start_rect_y": 0,
+          "topLine_serialized": false
+        },
+        {
+          "phase": "short-height",
+          "naws": [
+            80,
+            18
+          ],
+          "requested_outer": [
+            1230,
+            679
+          ],
+          "scroll_top": 26,
+          "visibleLineCount_api": 44,
+          "screenLineCapacity_api": 18,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": false,
+          "history_row_19_start_rect_y": -126,
+          "topLine_serialized": false
+        },
+        {
+          "phase": "restore-height",
+          "naws": [
+            80,
+            26
+          ],
+          "requested_outer": [
+            1230,
+            887
+          ],
+          "scroll_top": 19,
+          "visibleLineCount_api": 44,
+          "screenLineCapacity_api": 26,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": true,
+          "history_row_19_start_rect_y": 0,
+          "topLine_serialized": false
+        }
+      ],
+      "private_artifact_sha256": {
+        "evidence.json": "e712ebc98c3b53d64a2ace339d8983083aeea2cf0e4c2370dee6bf08a31e0a1c",
+        "run.json": "08ce50ea41d4df0e047b610502c30e97a706b1ed73281d7115cbf1bcdc4e8377",
+        "files.json": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8",
+        "payload.bin": "9474531ee34ea08ddd5c3c6b9a19c446852c2aff784dea484c54a91138724b3e",
+        "payload.json": "0fbbdcc406c283c8e8ded0b04f5022700437269b764992214a5d9178c0e3da2e",
+        "peer.json": "446c3875b99d4bdc5aee6b4a9c502be4c497f9ed7e3cbb331c8aac4550b53dea",
+        "probe.js": "6698e9d4f1d1da2405d041b5390495345bd8ef1c1610ff0c1185e472332b1251",
+        "cleanup.json": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d",
+        "surface-cleanup.json": "2947878016d582f50a3241f5dfaf0c923671e6ddee62cd57e00a78a988ae7954",
+        "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      }
+    },
+    {
+      "run": "run-2",
+      "gates": {
+        "rea_ok": true,
+        "no_observation_errors": true,
+        "completed_five_phases": true,
+        "exe_identity": true,
+        "distribution_identity": true,
+        "script_identity": true,
+        "payload_identity": true,
+        "peer_closed_without_error": true,
+        "job_drained": true,
+        "surfaces_closed": true,
+        "profile_only_synthetic": true
+      },
+      "evidence_id": "ev_be2b43633c5b58e8f9b6e2e2b25a47aafd9cbfac5d7fb98e00a8a6d60d0d1588",
+      "probe_sha256": "b2e9d4361514f97c6f1975dac0457c7f89b946f1fdeac3b60f98bb5b3154f8e9",
+      "naws_history": [
+        {
+          "sequence": 0,
+          "columns": 80,
+          "rows": 25
+        },
+        {
+          "sequence": 1,
+          "columns": 80,
+          "rows": 26
+        },
+        {
+          "sequence": 2,
+          "columns": 62,
+          "rows": 26
+        },
+        {
+          "sequence": 3,
+          "columns": 80,
+          "rows": 26
+        },
+        {
+          "sequence": 4,
+          "columns": 80,
+          "rows": 18
+        },
+        {
+          "sequence": 5,
+          "columns": 80,
+          "rows": 26
+        }
+      ],
+      "cleanup": {
+        "active": 0,
+        "total": 3,
+        "terminated": 0
+      },
+      "surface_cleanup": {
+        "desktop_handle_closed": true,
+        "station_handle_closed": true,
+        "original_station_restored": true
+      },
+      "observations": [
+        {
+          "phase": "baseline",
+          "naws": [
+            80,
+            26
+          ],
+          "requested_outer": [
+            1230,
+            887
+          ],
+          "scroll_top": 19,
+          "visibleLineCount_api": 44,
+          "screenLineCapacity_api": 26,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": true,
+          "history_row_19_start_rect_y": 0,
+          "topLine_serialized": false
+        },
+        {
+          "phase": "narrow-width",
+          "naws": [
+            62,
+            26
+          ],
+          "requested_outer": [
+            1010,
+            887
+          ],
+          "scroll_top": 20,
+          "visibleLineCount_api": 46,
+          "screenLineCapacity_api": 26,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": false,
+          "history_row_19_start_rect_y": -18,
+          "topLine_serialized": false
+        },
+        {
+          "phase": "restore-width",
+          "naws": [
+            80,
+            26
+          ],
+          "requested_outer": [
+            1230,
+            887
+          ],
+          "scroll_top": 19,
+          "visibleLineCount_api": 44,
+          "screenLineCapacity_api": 26,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": true,
+          "history_row_19_start_rect_y": 0,
+          "topLine_serialized": false
+        },
+        {
+          "phase": "short-height",
+          "naws": [
+            80,
+            18
+          ],
+          "requested_outer": [
+            1230,
+            679
+          ],
+          "scroll_top": 26,
+          "visibleLineCount_api": 44,
+          "screenLineCapacity_api": 18,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": false,
+          "history_row_19_start_rect_y": -126,
+          "topLine_serialized": false
+        },
+        {
+          "phase": "restore-height",
+          "naws": [
+            80,
+            26
+          ],
+          "requested_outer": [
+            1230,
+            887
+          ],
+          "scroll_top": 19,
+          "visibleLineCount_api": 44,
+          "screenLineCapacity_api": 26,
+          "input_logical_line_count": 42,
+          "all_input_texts_exact_in_lineText": true,
+          "input_line_start_end_equal_baseline": true,
+          "text_projection_exact_baseline": true,
+          "history_row_19_start_rect_y": 0,
+          "topLine_serialized": false
+        }
+      ],
+      "private_artifact_sha256": {
+        "evidence.json": "f1472f336e93d2221dc0b00645cab63becdc158e2c9ceac99562da5658c5b37c",
+        "run.json": "6569a9f8bc4bc9eda1f5b2e54ce012967832c78c85127699be2272b1412c46e5",
+        "files.json": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8",
+        "payload.bin": "9474531ee34ea08ddd5c3c6b9a19c446852c2aff784dea484c54a91138724b3e",
+        "payload.json": "0fbbdcc406c283c8e8ded0b04f5022700437269b764992214a5d9178c0e3da2e",
+        "peer.json": "446c3875b99d4bdc5aee6b4a9c502be4c497f9ed7e3cbb331c8aac4550b53dea",
+        "probe.js": "b2e9d4361514f97c6f1975dac0457c7f89b946f1fdeac3b60f98bb5b3154f8e9",
+        "cleanup.json": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d",
+        "surface-cleanup.json": "2947878016d582f50a3241f5dfaf0c923671e6ddee62cd57e00a78a988ae7954",
+        "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      }
+    }
+  ],
+  "unknown": [
+    "topLine was undefined and omitted by JSON serialization",
+    "lineText index and visibleLineCount have different granularity; extra indices alias end position",
+    "physical-cell and cursor-coordinate equivalence",
+    "complete reflow and Unicode cell-width behavior",
+    "actual presented frames",
+    "local-shell ConPTY child acknowledgement",
+    "all configuration and sequence behavior",
+    "performance and product acceptance"
+  ],
+  "publication": "Reviewed synthetic facts only; app, profiles, complete raw evidence and scripts remain local."
+}
