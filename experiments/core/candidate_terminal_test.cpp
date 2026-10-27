@@ -400,6 +400,41 @@ void incomplete_replay_is_bounded() {
             "finish did not release the actual state after an incomplete replay");
 }
 
+void pending_replay_keeps_resized_grid() {
+    for (const auto dimensions : {std::pair<int, int>{2, 16}, {2, 4}, {1, 1}, {3, 5}}) {
+        termforge::CandidateTerminal terminal(2, 8, 4);
+        terminal.feed("ABCDE中");
+        terminal.resize(dimensions.first, dimensions.second);
+        const auto resized = state(terminal);
+        const auto check_grid = [&] {
+            const auto& screen = terminal.screen;
+            require(screen.height() == dimensions.first && screen.width() == dimensions.second,
+                    "pending replay reverted the published resize dimensions");
+            require(screen.row >= 0 && screen.row < screen.height() &&
+                    screen.column >= 0 && screen.column < screen.width(), "pending replay cursor exceeds its grid");
+            for (const auto& line : screen.lines) {
+                require(line.size() == static_cast<size_t>(screen.width()), "pending replay row width differs");
+                for (size_t column = 0; column < line.size(); ++column) {
+                    if (line[column].width == 2)
+                        require(column + 1 < line.size() && line[column + 1].width == 0, "pending replay orphan lead");
+                    if (line[column].width == 0)
+                        require(column && line[column - 1].width == 2, "pending replay orphan trailer");
+                }
+            }
+        };
+        check_grid();
+        const std::string incomplete = "\x1b[?25lX";
+        for (const char byte : incomplete) {
+            terminal.feed(std::string_view(&byte, 1));
+            check_grid();
+            require(state(terminal) == resized, "pending replay changed its last complete resized snapshot");
+        }
+        terminal.feed("\x1b[?25h");
+        check_grid();
+        require(state(terminal) != resized, "completed replay failed to publish its actual writes");
+    }
+}
+
 void history_clear_does_not_resurrect() {
     termforge::CandidateTerminal terminal(2, 8, 4);
     terminal.feed("A\r\nB\r\nC\r\nD");
@@ -415,6 +450,77 @@ void history_clear_does_not_resurrect() {
         const auto& value = document.line(index).projection.text;
         require(value != "A" && value != "B", "new output resurrected explicitly cleared history");
     }
+}
+
+enum class ReplayClearPhase { before, pending, completed, coalesced };
+
+void history_clear_replay_boundaries(std::string_view clear, ReplayClearPhase phase, bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed("A\r\nB\r\nC\r\nD");
+    termforge::TextDocument before(terminal.screen);
+    termforge::TextSelection selection;
+    require(selection.select_line(before, 0) && selection.copy(before, 64).text == "A",
+            "clear-during-replay selection fixture differs");
+    termforge::TextSearch search;
+    const auto generation = search.start(before, "A");
+    for (int step = 0; step < 100 && search.status() == termforge::SearchStatus::running; ++step)
+        search.step(before, generation, 64);
+    require(search.match(before, 0).has_value(), "clear-during-replay Find fixture differs");
+    terminal.resize(2, 9);
+    const auto feed = [&](std::string_view bytes) {
+        if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+        else terminal.feed(bytes);
+    };
+    const auto discarded = terminal.screen.discarded;
+    if (phase == ReplayClearPhase::coalesced) feed("\x1b[?25l" + std::string(clear) + "\x1b[?25h");
+    else {
+        if (phase != ReplayClearPhase::before) feed("\x1b[?25l");
+        if (phase == ReplayClearPhase::completed) feed("\x1b[?25h");
+        feed(clear);
+    }
+    require(terminal.screen.history.empty(), "clear during replay resurrected old history");
+    require(terminal.screen.discarded == discarded, "explicit clear was counted as history eviction");
+    termforge::TextDocument cleared(terminal.screen);
+    require(selection.copy(cleared, 64).status == termforge::SelectionCopyStatus::invalidated &&
+            !search.match(cleared, 0), "cleared history kept a stale selection or Find hit");
+    if (phase == ReplayClearPhase::pending) feed("\x1b[?25h");
+    terminal.feed("E\r\nF");
+    for (size_t index = 0; index < terminal.screen.retained_size(); ++index) {
+        const auto value = termforge::project_line(terminal.screen.retained_line(index)).text;
+        require(value != "A" && value != "B", "later output resurrected history cleared during replay");
+    }
+}
+
+void clear_cached_history_with_empty_native_grid(bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed("A\r\nB\r\nC\r\nD");
+    terminal.resize(4, 8);
+    // Height growth pulls A/B into the native viewport; repaint replaces them.
+    // Completed replay retains A/B in the adapter's history cache.
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    require(terminal.screen.history.size() == 2 && text(terminal.screen.history[0]) == "A" &&
+            text(terminal.screen.history[1]) == "B", "empty-native-history cache fixture differs");
+    terminal.resize(4, 9);
+    terminal.feed("\x1b[?25l");
+    const std::string clear = "\x1b[03J";
+    if (fragmented) for (const char byte : clear) terminal.feed(std::string_view(&byte, 1));
+    else terminal.feed(clear);
+    require(terminal.screen.history.empty(), "clear missed adapter history when native history was empty");
+    terminal.feed("\x1b[?25h");
+    require(terminal.screen.history.empty(), "replay completion resurrected cleared adapter history");
+}
+
+void erase_screen_keeps_replay_history(bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed("A\r\nB\r\nC\r\nD");
+    terminal.resize(2, 9);
+    const std::string erase = "\x1b[?25l\x1b[2J\x1b[?25h";
+    if (fragmented) for (const char byte : erase) terminal.feed(std::string_view(&byte, 1));
+    else terminal.feed(erase);
+    require(terminal.screen.history.size() == 2 && text(terminal.screen.history[0]) == "A" &&
+            text(terminal.screen.history[1]) == "B", "ED2 incorrectly cleared replay history");
+    require(text(terminal.screen.lines[0]).empty() && text(terminal.screen.lines[1]).empty(),
+            "ED2 did not erase the visible screen");
 }
 
 void replay_text_coordinates(int from, int to, bool during_replay, bool fragmented) {
@@ -469,7 +575,16 @@ void conpty_resize_replay(const std::filesystem::path& path) {
     replay_case(path, false);
     replay_case(path, true);
     incomplete_replay_is_bounded();
+    pending_replay_keeps_resized_grid();
     history_clear_does_not_resurrect();
+    for (const bool fragmented : {false, true}) {
+        for (const auto clear : {"\x1b[3J", "\x1b[03J", "\x1b" "c"})
+            for (const auto phase : {ReplayClearPhase::before, ReplayClearPhase::pending,
+                                    ReplayClearPhase::completed, ReplayClearPhase::coalesced})
+                history_clear_replay_boundaries(clear, phase, fragmented);
+        clear_cached_history_with_empty_native_grid(fragmented);
+        erase_screen_keeps_replay_history(fragmented);
+    }
     for (const bool during_replay : {true, false}) for (const bool fragmented : {false, true}) {
         replay_text_coordinates(0, 2, during_replay, fragmented);
         replay_text_coordinates(2, 0, during_replay, fragmented);

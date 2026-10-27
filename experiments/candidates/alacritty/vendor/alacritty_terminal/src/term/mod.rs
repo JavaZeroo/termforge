@@ -333,6 +333,9 @@ pub struct Term<T> {
     grapheme: grapheme::StreamingGrapheme,
     grapheme_overflows: u64,
 
+    /// Explicit primary-history clears, including clears while the grid is empty.
+    history_clear_epoch: u64,
+
     /// Config directly for the terminal.
     config: Config,
 }
@@ -433,6 +436,7 @@ impl<T> Term<T> {
         Term {
             grapheme: Default::default(),
             grapheme_overflows: 0,
+            history_clear_epoch: 0,
             inactive_grid,
             inactive_scroll_region: scroll_region.clone(),
             scroll_region,
@@ -453,6 +457,11 @@ impl<T> Term<T> {
             title: Default::default(),
             mode: Default::default(),
         }
+    }
+
+    /// Generation of explicit primary-history clears, distinct from eviction.
+    pub fn history_clear_epoch(&self) -> u64 {
+        self.history_clear_epoch
     }
 
     /// Collect the information about the changes in the lines, which
@@ -1729,6 +1738,13 @@ impl<T: EventListener> Handler for Term<T> {
     fn clear_screen(&mut self, mode: ansi::ClearMode) {
         self.seal_grapheme();
         trace!("Clearing screen: {mode:?}");
+        if matches!(mode, ansi::ClearMode::Saved) && !self.mode.contains(TermMode::ALT_SCREEN) {
+            // Consumers can retain history outside the native grid, so an empty
+            // grid must still notify them that an explicit clear was executed.
+            self.history_clear_epoch = self.history_clear_epoch
+                .checked_add(1)
+                .expect("history clear epoch exhausted");
+        }
         let bg = self.grid.cursor.template.bg;
 
         let screen_lines = self.screen_lines();
@@ -1802,6 +1818,9 @@ impl<T: EventListener> Handler for Term<T> {
     #[inline]
     fn reset_state(&mut self) {
         self.seal_grapheme();
+        self.history_clear_epoch = self.history_clear_epoch
+            .checked_add(1)
+            .expect("history clear epoch exhausted");
         if self.mode.contains(TermMode::ALT_SCREEN) {
             mem::swap(&mut self.grid, &mut self.inactive_grid);
         }

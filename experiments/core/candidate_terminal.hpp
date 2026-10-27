@@ -17,6 +17,7 @@ struct CandidateEvent {
 class CandidateTerminal {
     void* impl_ = nullptr;
     uint64_t mode_bits_ = 0, grapheme_overflows_ = 0;
+    uint64_t history_clear_epoch_ = 0;
     std::unordered_map<uint64_t, uint64_t> versions_;
     std::vector<CandidateEvent> events_;
     struct IdentityAlias { uint64_t id = 0, version = 0; };

@@ -1,6 +1,6 @@
 # 固定候选来源与本地补丁
 
-当前适配版本为 `alacritty_terminal 0.26.1-dev+termforge.4`，不是 crates.io 原始 `0.26.0`。
+当前适配版本为 `alacritty_terminal 0.26.1-dev+termforge.5`，不是 crates.io 原始 `0.26.0`。
 
 ## 上游身份
 
@@ -52,6 +52,12 @@
 5. 本地规范测试资料 `tests/data/GraphemeBreakTest-17.0.0.txt` 来自 Unicode 17 官方数据，SHA-256 `e2d134d2c52919bace503ebb6a551c1855fe1a1faec18478c78fff254a1793ec`，766 个用例；附独立 `UNICODE-LICENSE.txt`。这不是声称复制了被排除的 Alacritty 全部录制。
 
 完整控制/宽度/资源和字体策略见[流式字素合同](../../../docs/research/streaming-graphemes.md)。固定 WindTerm 的运行时字素/宽度仍未知。
+
+## termforge.5 补丁
+
+1. `src/term/mod.rs`：记录解析器实际执行的主屏 `ED3` 和 `RIS` 清空代次，区分显式清空与历史淘汰；原生历史为空时仍通知外部缓存。备用屏 `ED3` 和 `ED2` 不递增代次，`RIS` 清空两屏后继续保留单调代次。
+2. C ABI 与 C++ 适配器同步读取代次，在 resize 回放期间释放旧历史和身份缓存，避免显式清空后复活。公开 `feed/resize/Screen/TextSelection/TextSearch` 接口回归覆盖该行为，不依靠对原始字节搜索 `CSI 3J`。
+3. 版本升为 `0.26.1-dev+termforge.5`，未改变固定上游 commit、第三方依赖版本或许可证。此补丁仍是候选实验，不代表正式产品选型或 WindTerm 清空行为已对照。
 
 ## 历史基线
 

@@ -16,6 +16,7 @@ typedef struct TfTerminalMeta {
     bool bold;
     uint64_t mode_bits;
     uint64_t grapheme_overflows;
+    uint64_t history_clear_epoch;
 } TfTerminalMeta;
 
 typedef struct TfRowMeta {

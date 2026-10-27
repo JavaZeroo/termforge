@@ -274,20 +274,23 @@ std::vector<CandidateEvent> CandidateTerminal::take_events() {
 }
 
 void CandidateTerminal::synchronize() {
-    if (replay_pending_) {
-        if (replay_origin_) {
-            screen.row = replay_origin_->row;
-            screen.column = replay_origin_->column;
-            screen.wrap_pending = replay_origin_->wrap_pending;
-            screen.discarded = replay_origin_->discarded;
-            screen.style = replay_origin_->style;
-            screen.history = replay_origin_->history;
-            screen.lines = replay_origin_->lines;
-        }
-        return;
-    }
     TfTerminalMeta meta{};
     check(tf_terminal_meta(impl_, &meta), "candidate metadata failed");
+    if (meta.history_clear_epoch != history_clear_epoch_) {
+        // A parsed clear invalidates cached history even in an incomplete replay.
+        // The generation also covers clears when the native history is empty.
+        history_clear_epoch_ = meta.history_clear_epoch;
+        replay_origin_.reset();
+        preserve_history_ = false;
+        identity_aliases_.clear();
+        replay_pending_ = replay_hide_ = replay_show_ = false;
+        replay_bytes_ = 0;
+    }
+    if (replay_pending_) {
+        // Keep the last complete publication, including its resized dimensions.
+        // The pre-resize origin is for identity reconciliation, not presentation.
+        return;
+    }
     mode_bits_ = meta.mode_bits;
     grapheme_overflows_ = meta.grapheme_overflows;
     std::unordered_map<uint64_t, const Line*> previous;

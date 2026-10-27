@@ -34,6 +34,7 @@ pub struct TerminalMeta {
     bold: bool,
     mode_bits: u64,
     grapheme_overflows: u64,
+    history_clear_epoch: u64,
 }
 
 #[repr(C)]
@@ -209,6 +210,7 @@ pub unsafe extern "C" fn tf_terminal_meta(value: *mut c_void, output: *mut Termi
         bold: cursor.template.flags.contains(Flags::BOLD),
         mode_bits: value.term.mode().bits() as u64,
         grapheme_overflows: value.term.grapheme_overflows(),
+        history_clear_epoch: value.term.history_clear_epoch(),
     };
     unsafe { *output = result };
     0
