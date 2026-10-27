@@ -1,0 +1,163 @@
+{
+  "schema": "termforge-r54-runner-validation-v1",
+  "scope": "frozen batch executor, build binding, raw artifacts, paired statistics and environment guard",
+  "performance_gate": "not_evaluated",
+  "budget_status": "not_set",
+  "formal_cost_samples": 0,
+  "protocol_sha256": "fb86f093a1c526979816574ef65896501eaeb9e9c34e7d9a6f2fdd5b61a8e7f6",
+  "build_harness_source": "8a13782aaac03780617e177b56ec55d3cb9c79be",
+  "builds": {
+    "baseline": {
+      "source": "65988f5f20f62294ff52fcac5b5b81e563f93f3b",
+      "version": "0.26.1-dev+termforge.3",
+      "tracked_candidate_files": 80,
+      "binary": {
+        "bytes": 523264,
+        "sha256": "33cb90beebffc57f07aa993b8ea635eaf461b49d86c143939a41f6242c087b6d"
+      }
+    },
+    "candidate": {
+      "source": "3d6d44d3b3e9a9a3e41da98e8711e9f19a211fd8",
+      "version": "0.26.1-dev+termforge.4",
+      "tracked_candidate_files": 84,
+      "binary": {
+        "bytes": 579584,
+        "sha256": "d4d068be44a0a9ec733ad17f0323765ee38ffbf775e6efacb4632c1dce6b3f01"
+      }
+    }
+  },
+  "actual_preflight": {
+    "runner_source": "fb5557c5519d9e0684ddca8332c6c57d6914a91f",
+    "source_attestation": "orchestrator recorded clean commit before invocation; this initial runner omitted runner.json on rejected preflight",
+    "status": "failed",
+    "environment_status": "rejected_busy_host",
+    "started_utc": "2026-10-27T09:34:09.959438+00:00",
+    "finished_utc": "2026-10-27T09:34:21.403306+00:00",
+    "attempted_cost_samples": 0,
+    "valid_cost_samples": 0,
+    "policy": {
+      "schema": "termforge-r54-environment-guard-v1",
+      "idle_intervals": 10,
+      "idle_interval_seconds": 1,
+      "max_busy_percent": 5.0,
+      "max_unattributed_busy_percent": 5.0,
+      "product_performance_budget": false,
+      "measurement": "GetSystemTimes; user + kernel - idle; all logical CPUs, at most 64",
+      "scope": "guest-visible CPU activity only; physical host contention and frequency stability remain unknown"
+    },
+    "windows": {
+      "CurrentBuildNumber": "26200",
+      "UBR": 9711,
+      "DisplayVersion": "25H2"
+    },
+    "cpu": {
+      "ProcessorNameString": "Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz",
+      "Identifier": "Intel64 Family 6 Model 158 Stepping 13"
+    },
+    "cpu_logical": 8,
+    "cpu_physical": 8,
+    "busy_percent_each_interval": [
+      11.9140625,
+      18.26923076923077,
+      11.153846153846153,
+      21.27659574468085,
+      25.436893203883496,
+      32.88461538461539,
+      31.73076923076923,
+      17.348927875243664,
+      16.184971098265898,
+      17.692307692307693
+    ],
+    "known_context": "shared workstation; personal desktop apps and read-only review remained; no known concurrent builds or tests",
+    "raw_evidence": {
+      "manifest.json": {
+        "bytes": 360,
+        "sha256": "fddc5f6daa6a387d329b8634e9aa7115c923cbbc83b7c212b2eaafa9a0704c6f"
+      },
+      "environment.json": {
+        "bytes": 240917,
+        "sha256": "2c789e8ce31972d82ee6f2fe34466c8bc405625b00298fde51a479f4216b1c4b"
+      },
+      "environment-policy.json": {
+        "bytes": 421,
+        "sha256": "2a002340e31ad68b80195d3c1d5b0d4902c89fb1a4795d58cf080d50f9091f4d"
+      },
+      "inputs/binding.json": {
+        "bytes": 4266,
+        "sha256": "9bad6e1b46d49cb707a05366fb2c72cb96c06f5117e0c3f0dbadd9b72f348441"
+      },
+      "baseline-identity/stdout.bin": {
+        "bytes": 135,
+        "sha256": "633be0c64cddc9990f89fc1c635d320a1d7561202cc16fd0b59187ed5713a611"
+      },
+      "candidate-identity/stdout.bin": {
+        "bytes": 135,
+        "sha256": "633be0c64cddc9990f89fc1c635d320a1d7561202cc16fd0b59187ed5713a611"
+      }
+    },
+    "process_identities_published": false,
+    "private_paths_published": false,
+    "repeated_after_rejection": false
+  },
+  "related_regression": {
+    "source": "f72d13605b11493a8d9a8d8d438145c170b47d8e",
+    "cmake_configuration": "Windows x64, Release, default core, core_measure target only",
+    "native_build_source": "fb5557c5519d9e0684ddca8332c6c57d6914a91f",
+    "ctest_filter": "^measure$",
+    "ctest_exit_code": 0,
+    "python_tests": 25,
+    "python_elapsed_seconds": 12.868,
+    "native_measure_source_unchanged_since_build": true,
+    "logs": {
+      "0.stdout": {
+        "bytes": 786,
+        "sha256": "4142bee10ec21c168c53689bdc641f143d5977945aed8ada1f74e3cc8b224185"
+      },
+      "0.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "1.stdout": {
+        "bytes": 294,
+        "sha256": "53171f7fc96805b2101a008dc99b9ce8d949b66fca649e6798f845ad0275ff36"
+      },
+      "1.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "ctest-final.stdout": {
+        "bytes": 6138,
+        "sha256": "1c3df9c5aa4f662ccf738f136ea9a2e52ad3f9a27459b0dfbc97dcc494310d19"
+      },
+      "ctest-final.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "synthetic_process_fixture_calls_in_order_test": 112,
+    "synthetic_fixture_times_are_measurements": false,
+    "full_application_regression": "not run locally; delegated to normal CI after publication"
+  },
+  "review_repairs": {
+    "source": "f72d13605b11493a8d9a8d8d438145c170b47d8e",
+    "changes": [
+      "record runner identity before preparation can fail",
+      "strict UTF-8 decoding before JSON while retaining original bytes",
+      "unique atomic-write temporary names preserve interruption recording"
+    ],
+    "each_counterexample_observed_failing_then_passing": true,
+    "original_preflight_artifacts_rewritten": false
+  },
+  "remaining": [
+    "two original 112-sample cost batches on a controlled host",
+    "allocator and projection perturbation diagnosis",
+    "component cost attribution",
+    "user-confirmed numerical budget",
+    "any optimization and full correctness regression"
+  ],
+  "endpoints": {
+    "receive_seconds": null,
+    "input_latency_seconds": null,
+    "presented_done": null
+  }
+}
