@@ -99,7 +99,7 @@ std::vector<std::string> replay_keys(const History& history, const Lines& lines)
 } // namespace
 
 void CandidateTerminal::begin_replay() {
-    replay_origin_ = std::make_unique<Screen>(screen);
+    replay_origin_ = std::make_unique<Publication>(screen, identity_aliases_, native_discarded_, preserve_history_);
     replay_bytes_ = 0;
     replay_pending_ = replay_hide_ = replay_show_ = false;
 }
@@ -148,7 +148,7 @@ std::unordered_set<uint64_t> CandidateTerminal::reconcile_replay(std::vector<Lin
         }
         if (!full) return mapped;
     }
-    const auto& source = replay_origin_ ? *replay_origin_ : screen;
+    const auto& source = replay_origin_ ? replay_origin_->screen : screen;
     const auto expected = replay_keys(source.history, source.lines);
     const auto actual = replay_keys(std::vector<Line>{}, retained);
     std::unordered_map<std::string, size_t> old_counts, new_counts;
@@ -172,16 +172,25 @@ std::unordered_set<uint64_t> CandidateTerminal::reconcile_replay(std::vector<Lin
     return mapped;
 }
 
-void CandidateTerminal::merge_history(std::vector<Line>& retained, std::vector<uint64_t>& original_ids, size_t& history, uint64_t& discarded) {
-    if (!preserve_history_) return;
-    const auto& source = replay_origin_ ? *replay_origin_ : screen;
+std::unordered_set<uint64_t> CandidateTerminal::merge_history(std::vector<Line>& retained,
+    std::vector<uint64_t>& original_ids, size_t& history, uint64_t& discarded, uint64_t& native_discarded) {
+    if (!preserve_history_) return {};
+    const auto& source = replay_origin_ ? replay_origin_->screen : screen;
+    const auto& aliases = replay_origin_ ? replay_origin_->aliases : identity_aliases_;
+    const auto source_discarded = replay_origin_ ? replay_origin_->native_discarded : native_discarded_;
     std::deque<Line> previous = source.history;
-    if (discarded > source.discarded) {
-        const auto removed = discarded - source.discarded;
-        if (removed >= previous.size()) previous.clear();
-        else previous.erase(previous.begin(), previous.begin() + static_cast<std::ptrdiff_t>(removed));
+    if (native_discarded > source_discarded) {
+        // Native eviction cannot identify cache-only rows by their ordinal.
+        // Remove old rows backed by native identities that are actually gone.
+        const std::unordered_set<uint64_t> current(original_ids.begin(), original_ids.end());
+        std::unordered_set<uint64_t> removed;
+        for (const auto& alias : aliases)
+            if (current.find(alias.first) == current.end()) removed.insert(alias.second.id);
+        previous.erase(std::remove_if(previous.begin(), previous.end(), [&](const Line& line) {
+            return removed.find(line.id) != removed.end();
+        }), previous.end());
     }
-    if (previous.empty()) return;
+    if (previous.empty()) return {};
     std::unordered_set<uint64_t> raw_ids;
     for (size_t index = 0; index < history; ++index) raw_ids.insert(retained[index].id);
     std::unordered_set<uint64_t> candidates, unchanged_history, unchanged_visible;
@@ -214,14 +223,26 @@ void CandidateTerminal::merge_history(std::vector<Line>& retained, std::vector<u
         original_ids.insert(original_ids.begin() + index, 0);
         ++history;
     }
+    std::vector<uint64_t> evicted_native;
+    std::unordered_set<uint64_t> evicted;
     while (history > screen.history_limit) {
         if (discarded == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("candidate discarded history exhausted");
         ++discarded;
+        evicted.insert(retained.front().id);
+        if (original_ids.front()) evicted_native.push_back(original_ids.front());
         retained.erase(retained.begin());
         original_ids.erase(original_ids.begin());
         --history;
     }
+    if (!evicted_native.empty()) {
+        // Remove still-resident native rows too: otherwise they reappear on the
+        // next import or height growth and get counted as evicted repeatedly.
+        std::array<uint8_t, 256> error{};
+        check(tf_terminal_discard_history(impl_, evicted_native.data(), evicted_native.size(),
+            &native_discarded, error.data(), error.size()), "candidate history eviction failed");
+    }
+    return evicted;
 }
 
 void CandidateTerminal::feed(std::string_view bytes) {
@@ -276,15 +297,41 @@ std::vector<CandidateEvent> CandidateTerminal::take_events() {
 void CandidateTerminal::synchronize() {
     TfTerminalMeta meta{};
     check(tf_terminal_meta(impl_, &meta), "candidate metadata failed");
-    if (meta.history_clear_epoch != history_clear_epoch_) {
+    const bool history_cleared = meta.history_clear_epoch != history_clear_epoch_;
+    if (history_cleared) {
         // A parsed clear invalidates cached history even in an incomplete replay.
         // The generation also covers clears when the native history is empty.
         history_clear_epoch_ = meta.history_clear_epoch;
+        replay_origin_.reset();
+        suspended_primary_.reset();
+        preserve_history_ = false;
+        identity_aliases_.clear();
+        replay_pending_ = replay_hide_ = replay_show_ = false;
+        replay_bytes_ = 0;
+    }
+    // mode_bits carries the pinned candidate's TermMode::ALT_SCREEN bit.
+    constexpr uint64_t alternate_mask = uint64_t{1} << 12;
+    const bool alternate = (meta.mode_bits & alternate_mask) != 0;
+    bool restoring_primary = false;
+    if ((meta.mode_bits ^ mode_bits_) & alternate_mask) {
+        if (alternate && !history_cleared) {
+            // A buffer switch ends the primary replay. Its old history must
+            // survive even if the pending repaint has already replaced it.
+            suspended_primary_ = replay_pending_ && replay_origin_ ? std::move(replay_origin_) :
+                std::make_unique<Publication>(screen, identity_aliases_, native_discarded_, preserve_history_);
+            if (replay_pending_) suspended_primary_->preserve_history = true;
+        }
         replay_origin_.reset();
         preserve_history_ = false;
         identity_aliases_.clear();
         replay_pending_ = replay_hide_ = replay_show_ = false;
         replay_bytes_ = 0;
+        replay_tail_.clear();
+        if (!alternate && suspended_primary_) {
+            replay_origin_ = std::move(suspended_primary_);
+            preserve_history_ = replay_origin_->preserve_history;
+            restoring_primary = true;
+        }
     }
     if (replay_pending_) {
         // Keep the last complete publication, including its resized dimensions.
@@ -294,8 +341,9 @@ void CandidateTerminal::synchronize() {
     mode_bits_ = meta.mode_bits;
     grapheme_overflows_ = meta.grapheme_overflows;
     std::unordered_map<uint64_t, const Line*> previous;
-    for (const auto& line : screen.history) previous.emplace(line.id, &line);
-    for (const auto& line : screen.lines) previous.emplace(line.id, &line);
+    const auto& previous_screen = restoring_primary ? replay_origin_->screen : screen;
+    for (const auto& line : previous_screen.history) previous.emplace(line.id, &line);
+    for (const auto& line : previous_screen.lines) previous.emplace(line.id, &line);
 
     std::vector<Line> retained(meta.history + meta.rows);
     std::vector<uint64_t> raw_ids;
@@ -320,10 +368,19 @@ void CandidateTerminal::synchronize() {
     }
     const auto preserved = reconcile_replay(retained);
     if (replay_show_) preserve_history_ = true;
-    if (preserve_history_ && !replay_origin_ && meta.history == 0 && meta.discarded == screen.discarded)
-        preserve_history_ = false;
-    merge_history(retained, raw_ids, meta.history, meta.discarded);
-    if (replay_show_) replay_origin_.reset();
+    auto native_discarded = meta.discarded;
+    std::unordered_set<uint64_t> evicted;
+    if (!alternate) {
+        // The native counter cannot include rows evicted only by our cache.
+        // Explicit clears preserve this count; alternate output has its own.
+        if (cached_history_discarded_ > (std::numeric_limits<uint64_t>::max)() - meta.discarded)
+            throw std::overflow_error("candidate discarded history exhausted");
+        meta.discarded += cached_history_discarded_;
+        const auto before_merge = meta.discarded;
+        const auto native_before_merge = native_discarded;
+        evicted = merge_history(retained, raw_ids, meta.history, meta.discarded, native_discarded);
+        cached_history_discarded_ += (meta.discarded - before_merge) - (native_discarded - native_before_merge);
+    }
     screen.normalize_identities(retained);
     for (size_t r = 0; r + 1 < retained.size(); ++r)
         if (retained[r].ending == LineEnding::soft_wrap) retained[r].next_id = retained[r + 1].id;
@@ -352,6 +409,7 @@ void CandidateTerminal::synchronize() {
     screen.column = static_cast<int>(meta.column);
     screen.wrap_pending = meta.wrap_pending;
     screen.discarded = meta.discarded;
+    native_discarded_ = native_discarded;
     screen.style = {meta.fg, meta.bg, meta.bold};
     screen.history.assign(retained.begin(), retained.begin() + meta.history);
     screen.lines.assign(retained.begin() + meta.history, retained.end());
@@ -359,5 +417,19 @@ void CandidateTerminal::synchronize() {
     identity_aliases_.clear();
     for (size_t index = 0; index < retained.size(); ++index)
         if (raw_ids[index]) identity_aliases_.emplace(raw_ids[index], IdentityAlias{retained[index].id, retained[index].version});
+    if (replay_origin_ && !evicted.empty()) {
+        // Retire evicted cache rows from the old replay too. Delay mutation until
+        // version comparisons have finished using pointers into this snapshot.
+        auto& history = replay_origin_->screen.history;
+        history.erase(std::remove_if(history.begin(), history.end(), [&](const Line& line) {
+            return evicted.find(line.id) != evicted.end();
+        }), history.end());
+        auto& aliases = replay_origin_->aliases;
+        for (auto entry = aliases.begin(); entry != aliases.end();) {
+            if (evicted.find(entry->second.id) != evicted.end()) entry = aliases.erase(entry);
+            else ++entry;
+        }
+    }
+    if (replay_show_ || restoring_primary) replay_origin_.reset();
 }
 } // namespace termforge

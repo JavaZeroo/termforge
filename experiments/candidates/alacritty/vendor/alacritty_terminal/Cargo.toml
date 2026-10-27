@@ -1,6 +1,6 @@
 [package]
 name = "alacritty_terminal"
-version = "0.26.1-dev+termforge.5"
+version = "0.26.1-dev+termforge.6"
 authors = ["Christian Duerr <contact@christianduerr.com>", "Joe Wilm <joe@jwilm.com>"]
 license = "Apache-2.0"
 description = "Library for writing terminal emulators"

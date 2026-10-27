@@ -405,6 +405,15 @@ impl<T> Grid<T> {
         self.display_offset = 0;
     }
 
+    /// Evict an oldest history prefix without changing the configured capacity.
+    pub fn discard_oldest_history(&mut self, count: usize) {
+        assert!(count <= self.history_size(), "history eviction exceeds retained rows");
+        let discarded = self.discarded.checked_add(count as u64).expect("history discarded exhausted");
+        self.raw.shrink_lines(count);
+        self.display_offset = min(self.display_offset, self.history_size());
+        self.discarded = discarded;
+    }
+
     /// This is used only for initializing after loading ref-tests.
     #[inline]
     pub fn initialize_all(&mut self)

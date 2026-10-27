@@ -40,6 +40,10 @@ int tf_terminal_feed(void* terminal, const uint8_t* data, size_t len, uint8_t* e
 int tf_terminal_finish(void* terminal, uint8_t* error, size_t error_capacity);
 int tf_terminal_resize(void* terminal, size_t rows, size_t columns, uint8_t* error, size_t error_capacity);
 int tf_terminal_meta(void* terminal, TfTerminalMeta* output);
+// Evict an exact oldest primary-history prefix. Validate all IDs before mutation;
+// return the cumulative native eviction count without changing history capacity.
+int tf_terminal_discard_history(void* terminal, const uint64_t* ids, size_t count,
+                                uint64_t* discarded, uint8_t* error, size_t error_capacity);
 int tf_terminal_row_meta(void* terminal, size_t index, TfRowMeta* output);
 int tf_terminal_cell_meta(void* terminal, size_t index, size_t column, TfCellMeta* output);
 int tf_terminal_cell_text(void* terminal, size_t index, size_t column, uint8_t* output,

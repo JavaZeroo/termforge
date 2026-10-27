@@ -13,7 +13,7 @@ dependencies = [
 
 [[package]]
 name = "alacritty_terminal"
-version = "0.26.1-dev+termforge.5"
+version = "0.26.1-dev+termforge.6"
 dependencies = [
  "arrayvec",
  "base64",

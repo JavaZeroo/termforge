@@ -18,11 +18,24 @@ class CandidateTerminal {
     void* impl_ = nullptr;
     uint64_t mode_bits_ = 0, grapheme_overflows_ = 0;
     uint64_t history_clear_epoch_ = 0;
+    uint64_t cached_history_discarded_ = 0;
     std::unordered_map<uint64_t, uint64_t> versions_;
     std::vector<CandidateEvent> events_;
     struct IdentityAlias { uint64_t id = 0, version = 0; };
     std::unordered_map<uint64_t, IdentityAlias> identity_aliases_;
-    std::unique_ptr<Screen> replay_origin_;
+    uint64_t native_discarded_ = 0;
+    struct Publication {
+        Screen screen;
+        std::unordered_map<uint64_t, IdentityAlias> aliases;
+        uint64_t native_discarded;
+        bool preserve_history;
+        Publication(const Screen& value, const std::unordered_map<uint64_t, IdentityAlias>& ids,
+                    uint64_t discarded, bool preserve)
+            : screen(value), aliases(ids), native_discarded(discarded), preserve_history(preserve) {}
+    };
+    std::unique_ptr<Publication> replay_origin_;
+    // The alternate grid has no primary scrollback; retain its owner separately.
+    std::unique_ptr<Publication> suspended_primary_;
     std::string replay_tail_;
     size_t replay_bytes_ = 0;
     bool replay_pending_ = false, replay_hide_ = false, replay_show_ = false;
@@ -31,7 +44,8 @@ class CandidateTerminal {
     void begin_replay();
     void scan_replay(std::string_view bytes);
     std::unordered_set<uint64_t> reconcile_replay(std::vector<Line>& retained);
-    void merge_history(std::vector<Line>& retained, std::vector<uint64_t>& original_ids, size_t& history, uint64_t& discarded);
+    std::unordered_set<uint64_t> merge_history(std::vector<Line>& retained, std::vector<uint64_t>& original_ids,
+                                             size_t& history, uint64_t& discarded, uint64_t& native_discarded);
     void synchronize();
     static void check(int status, const char* message);
 

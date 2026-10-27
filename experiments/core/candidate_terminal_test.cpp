@@ -523,6 +523,185 @@ void erase_screen_keeps_replay_history(bool fragmented) {
             "ED2 did not erase the visible screen");
 }
 
+void cached_history_survives_noop() {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed("A\r\nB\r\nC\r\nD");
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    require(terminal.screen.history.size() == 2 && text(terminal.screen.history[0]) == "A" &&
+            text(terminal.screen.history[1]) == "B", "cached history no-op fixture differs");
+    termforge::TextDocument before(terminal.screen);
+    termforge::TextSelection selection;
+    require(selection.select_line(before, 0), "cached history selection fixture failed");
+    termforge::TextSearch search;
+    const auto generation = search.start(before, "A");
+    for (int step = 0; step < 100 && search.status() == termforge::SearchStatus::running; ++step)
+        search.step(before, generation, 64);
+    require(search.match(before, 0).has_value(), "cached history Find fixture failed");
+    const auto expected = state(terminal);
+    for (const auto bytes : {std::string_view{}, std::string_view("\0", 1), std::string_view("\x1b[6n")}) {
+        terminal.feed(bytes);
+        require(state(terminal) == expected, "transparent feed discarded cached history");
+    }
+    termforge::TextDocument after(terminal.screen);
+    require(selection.copy(after, 64).status == termforge::SelectionCopyStatus::ok &&
+            selection.copy(after, 64).text == "A", "empty feed invalidated cached history selection");
+    require(search.match(after, 0).has_value(), "transparent feed invalidated cached history Find hit");
+    terminal.feed("\x1b[3J");
+    termforge::TextDocument cleared(terminal.screen);
+    require(terminal.screen.history.empty() && !search.match(cleared, 0) &&
+            selection.copy(cleared, 64).status == termforge::SelectionCopyStatus::invalidated,
+            "clear did not invalidate cached history text actions");
+}
+
+void cached_history_stays_with_primary(bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed("A\r\nB\r\nC\r\nD");
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    require(terminal.screen.history.size() == 2, "primary cached history fixture differs");
+    const auto first = terminal.screen.history[0].id, second = terminal.screen.history[1].id;
+    const auto feed = [&](std::string_view bytes) {
+        if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+        else terminal.feed(bytes);
+    };
+    feed("\x1b[?1049h");
+    require(terminal.screen.history.empty(), "primary cached history leaked into alternate screen");
+    feed("\x1b[HALT\r\nX\r\nY\r\nZ\r\nQ\x1b[3J");
+    require(terminal.screen.history.empty(), "alternate output retained primary history");
+    feed("\x1b[?1049l");
+    require(terminal.screen.history.size() == 2 && text(terminal.screen.history[0]) == "A" &&
+            text(terminal.screen.history[1]) == "B" && terminal.screen.history[0].id == first &&
+            terminal.screen.history[1].id == second, "alternate switch lost primary cached history");
+    termforge::TextDocument restored(terminal.screen);
+    termforge::TextSelection selection;
+    require(selection.select_line(restored, 0) && selection.copy(restored, 64).text == "A",
+            "restored history cannot be selected");
+    termforge::TextSearch search;
+    const auto generation = search.start(restored, "A");
+    for (int step = 0; step < 100 && search.status() == termforge::SearchStatus::running; ++step)
+        search.step(restored, generation, 64);
+    const auto match = search.match(restored, 0);
+    require(match && match->range.begin.line_id == first && match->range.begin.column == 0,
+            "restored history Find coordinates differ");
+    feed("\x1b[?1049h\x1b[HALT\x1b[?1049l");
+    require(terminal.screen.history.size() == 2 && text(terminal.screen.history[0]) == "A" &&
+            text(terminal.screen.history[1]) == "B", "coalesced buffer switch lost cached history");
+}
+
+void alternate_interrupts_pending_history_replay(bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed("A\r\nB\r\nC\r\nD");
+    terminal.resize(4, 4);
+    const auto feed = [&](std::string_view bytes) {
+        if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+        else terminal.feed(bytes);
+    };
+    feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD");
+    feed("\x1b[?1049h\x1b[HALT");
+    require(terminal.screen.history.empty(), "interrupted primary history leaked into alternate screen");
+    feed("\x1b[?1049l\x1b[?25h");
+    require(terminal.screen.history.size() == 2 && text(terminal.screen.history[0]) == "A" &&
+            text(terminal.screen.history[1]) == "B", "alternate interrupted replay lost primary history");
+}
+
+void cached_history_eviction_count_is_stable(bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed("A\r\nB\r\nC\r\nD");
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    const auto discarded = terminal.screen.discarded;
+    const auto feed = [&](std::string_view bytes) {
+        if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+        else terminal.feed(bytes);
+    };
+    feed("\x1b[4;1HE\r\nF\r\nG\r\n");
+    require(terminal.screen.history.size() == 4 && text(terminal.screen.history[0]) == "B" &&
+            text(terminal.screen.history[1]) == "C" && text(terminal.screen.history[2]) == "D" &&
+            text(terminal.screen.history[3]).empty(), "cached eviction retained the wrong rows");
+    require(terminal.screen.discarded == discarded + 1, "cached eviction count differs");
+    terminal.feed("");
+    require(terminal.screen.discarded == discarded + 1, "empty feed reset cached eviction count");
+    feed("H\r\nI\r\n");
+    require(terminal.screen.discarded == discarded + 3, "native and cached eviction counts were not combined");
+    require(terminal.screen.history.size() == 4 && text(terminal.screen.history[0]) == "D" &&
+            text(terminal.screen.history[1]).empty() && text(terminal.screen.history[2]) == "E" &&
+            text(terminal.screen.history[3]) == "F", "native and cached eviction retained the wrong rows");
+    feed("\x1b[3J");
+    require(terminal.screen.history.empty() && terminal.screen.discarded == discarded + 3,
+            "explicit clear changed accumulated eviction count");
+}
+
+void cached_history_resize_and_reset_in_alternate(bool reset, bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed("A\r\nB\r\nC\r\nD");
+    terminal.resize(4, 4);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    const auto feed = [&](std::string_view bytes) {
+        if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+        else terminal.feed(bytes);
+    };
+    feed("\x1b[?1049h");
+    terminal.resize(3, 6);
+    feed("\x1b[?25l\x1b[HALT\x1b[?25h");
+    require(terminal.screen.history.empty(), "alternate resize leaked cached primary history");
+    feed(reset ? "\x1b" "c" : "\x1b[3J");
+    feed("\x1b[?1049l");
+    require(!(terminal.mode_bits() & (1 << 12)), "primary screen was not restored");
+    if (reset) require(terminal.screen.history.empty(), "RIS resurrected suspended primary history");
+    else require(terminal.screen.history.size() >= 2 && text(terminal.screen.history[0]) == "A" &&
+                 text(terminal.screen.history[1]) == "B", "alternate ED3 or resize cleared primary history");
+}
+
+void cached_history_evicts_native_prefix(bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    terminal.feed("A\r\nB\r\nC\r\nD\r\nE\r\nF");
+    terminal.resize(3, 8);
+    terminal.feed("\x1b[?25l\x1b[2J\x1b[HE\r\nF\x1b[?25h");
+    const std::string output = "\x1b[3;1HG\r\n";
+    if (fragmented) for (const char byte : output) terminal.feed(std::string_view(&byte, 1));
+    else terminal.feed(output);
+    require(terminal.screen.history.size() == 4 && text(terminal.screen.history[0]) == "B" &&
+            text(terminal.screen.history[1]) == "C" && text(terminal.screen.history[2]) == "D" &&
+            text(terminal.screen.history[3]) == "E" && terminal.screen.discarded == 1,
+            "interleaved history eviction differs");
+    const auto expected = state(terminal);
+    for (int repeat = 0; repeat < 3; ++repeat) {
+        terminal.feed("");
+        require(state(terminal) == expected, "native prefix was reimported and evicted again");
+    }
+    terminal.resize(7, 8);
+    for (size_t index = 0; index < terminal.screen.retained_size(); ++index)
+        require(text(terminal.screen.retained_line(index)) != "A", "height growth resurrected an evicted native row");
+}
+
+void cached_eviction_invalidates_replay_origin(bool fragmented) {
+    termforge::CandidateTerminal terminal(2, 8, 4);
+    const auto feed = [&](std::string_view bytes) {
+        if (fragmented) for (const char byte : bytes) terminal.feed(std::string_view(&byte, 1));
+        else terminal.feed(bytes);
+    };
+    feed("A\r\nB\r\nC\r\nD");
+    terminal.resize(4, 8);
+    feed("\x1b[?25l\x1b[2J\x1b[HC\r\nD\x1b[?25h");
+    require(terminal.screen.history.size() == 2, "old replay cache fixture differs");
+    feed("\x1b[4;1H");
+    terminal.resize(1, 8);
+    require(terminal.screen.history.size() == 4 && text(terminal.screen.history[0]) == "B" &&
+            text(terminal.screen.history[1]) == "C" && text(terminal.screen.history[2]) == "D" &&
+            text(terminal.screen.history[3]).empty() && terminal.screen.discarded == 1,
+            "resize cache eviction differs");
+    const auto expected = state(terminal);
+    for (int repeat = 0; repeat < 3; ++repeat) {
+        terminal.feed("");
+        require(state(terminal) == expected, "old replay restored an evicted cache row");
+    }
+    feed("\x1b[?25l\x1b[?1049hALT\x1b[?1049l\x1b[?25h");
+    require(terminal.screen.discarded == 1, "buffer switch re-evicted an old replay cache row");
+    for (const auto& line : terminal.screen.history)
+        require(text(line) != "A", "buffer switch restored an evicted old replay row");
+}
+
 void replay_text_coordinates(int from, int to, bool during_replay, bool fragmented) {
     termforge::CandidateTerminal terminal(2, 8, 4);
     terminal.feed(from == 0 ? "H\r\nABC\r\nTAIL" : "H\r\n\x1b[3GABC\r\nTAIL");
@@ -576,6 +755,17 @@ void conpty_resize_replay(const std::filesystem::path& path) {
     replay_case(path, true);
     incomplete_replay_is_bounded();
     pending_replay_keeps_resized_grid();
+    cached_history_survives_noop();
+    cached_history_stays_with_primary(false);
+    cached_history_stays_with_primary(true);
+    for (const bool fragmented : {false, true}) {
+        alternate_interrupts_pending_history_replay(fragmented);
+        cached_history_eviction_count_is_stable(fragmented);
+        cached_history_resize_and_reset_in_alternate(false, fragmented);
+        cached_history_resize_and_reset_in_alternate(true, fragmented);
+        cached_history_evicts_native_prefix(fragmented);
+        cached_eviction_invalidates_replay_origin(fragmented);
+    }
     history_clear_does_not_resurrect();
     for (const bool fragmented : {false, true}) {
         for (const auto clear : {"\x1b[3J", "\x1b[03J", "\x1b" "c"})

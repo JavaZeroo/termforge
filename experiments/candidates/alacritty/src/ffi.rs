@@ -9,7 +9,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use alacritty_terminal::event::Event;
 use alacritty_terminal::grid::{Dimensions, GridCell};
 use alacritty_terminal::index::{Column, Line};
-use alacritty_terminal::term::{Config, Term, cell::{Cell, Flags}};
+use alacritty_terminal::term::{Config, Term, TermMode, cell::{Cell, Flags}};
 use alacritty_terminal::vte::ansi::{Color, NamedColor, Processor};
 use trace::{Listener, Size};
 
@@ -216,6 +216,40 @@ pub unsafe extern "C" fn tf_terminal_meta(value: *mut c_void, output: *mut Termi
     0
 }
 
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn tf_terminal_discard_history(
+    value: *mut c_void,
+    ids: *const u64,
+    count: usize,
+    discarded: *mut u64,
+    error: *mut c_uchar,
+    error_capacity: usize,
+) -> c_int {
+    guard(error, error_capacity, || {
+        if count > 10000 || discarded.is_null() || (count != 0 && ids.is_null()) {
+            return Err("invalid history eviction buffer".into());
+        }
+        let value = unsafe { terminal(value)? };
+        if value.term.mode().contains(TermMode::ALT_SCREEN) {
+            return Err("primary history eviction on alternate screen".into());
+        }
+        let grid = value.term.grid();
+        let history = grid.history_size();
+        if count > history {
+            return Err("history eviction exceeds retained rows".into());
+        }
+        let ids = if count == 0 { &[] } else { unsafe { std::slice::from_raw_parts(ids, count) } };
+        for (index, id) in ids.iter().enumerate() {
+            if grid[Line(index as i32 - history as i32)].id() != *id {
+                return Err("history eviction prefix identity differs".into());
+            }
+        }
+        value.term.grid_mut().discard_oldest_history(count);
+        unsafe { *discarded = value.term.grid().discarded() };
+        Ok(())
+    })
+}
+
 fn row_at<'a>(value: &'a Terminal, index: usize) -> Result<(Line, &'a alacritty_terminal::grid::Row<Cell>), String> {
     let grid = value.term.grid();
     let history = grid.history_size();
@@ -369,4 +403,95 @@ pub unsafe extern "C" fn tf_terminal_next_event(
     }
     value.events.pop_front();
     1
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::mem::MaybeUninit;
+    use std::ptr::null_mut;
+
+    struct Handle(*mut c_void);
+
+    impl Drop for Handle {
+        fn drop(&mut self) {
+            unsafe { tf_terminal_free(self.0) };
+        }
+    }
+
+    impl Handle {
+        fn feed(&self, bytes: &[u8]) {
+            assert_eq!(unsafe { tf_terminal_feed(self.0, bytes.as_ptr(), bytes.len(), null_mut(), 0) }, 0);
+        }
+
+        fn meta(&self) -> TerminalMeta {
+            let mut meta = MaybeUninit::uninit();
+            assert_eq!(unsafe { tf_terminal_meta(self.0, meta.as_mut_ptr()) }, 0);
+            unsafe { meta.assume_init() }
+        }
+
+        fn rows(&self) -> Vec<(u64, u8)> {
+            let meta = self.meta();
+            (0..meta.history + meta.rows).map(|index| {
+                let mut row = MaybeUninit::<RowMeta>::uninit();
+                assert_eq!(unsafe { tf_terminal_row_meta(self.0, index, row.as_mut_ptr()) }, 0);
+                let mut text = [0; 8];
+                let mut needed = 0;
+                assert_eq!(unsafe {
+                    tf_terminal_cell_text(self.0, index, 0, text.as_mut_ptr(), text.len(), &mut needed)
+                }, 0);
+                (unsafe { row.assume_init() }.id, text[0])
+            }).collect()
+        }
+    }
+
+    #[test]
+    fn history_eviction_checks_entire_prefix_before_mutating() {
+        let value = Handle(tf_terminal_new(2, 8, 4));
+        assert!(!value.0.is_null());
+        value.feed(b"A\r\nB\r\nC\r\nD\r\nE\r\nF");
+        let before = value.rows();
+        let prefix = [before[0].0, before[1].0];
+        let mut discarded = u64::MAX;
+        let wrong_second = [prefix[0], prefix[0]];
+        assert_eq!(unsafe {
+            tf_terminal_discard_history(value.0, wrong_second.as_ptr(), 2, &mut discarded, null_mut(), 0)
+        }, 1);
+        assert_eq!(discarded, u64::MAX);
+        assert_eq!(value.rows(), before);
+        assert_eq!(value.meta().discarded, 0);
+
+        value.feed(b"\x1b[?1049hALT");
+        let alternate = value.rows();
+        assert_eq!(unsafe {
+            tf_terminal_discard_history(value.0, prefix.as_ptr(), 2, &mut discarded, null_mut(), 0)
+        }, 1);
+        assert_eq!(value.rows(), alternate);
+        value.feed(b"\x1b[?1049l");
+        assert_eq!(value.rows(), before);
+
+        let initial = value.meta();
+        assert_eq!(unsafe {
+            tf_terminal_discard_history(value.0, prefix.as_ptr(), 2, &mut discarded, null_mut(), 0)
+        }, 0);
+        let after = value.meta();
+        assert_eq!(discarded, 2);
+        assert_eq!(after.history, 2);
+        assert_eq!(value.rows(), before[2..]);
+        assert_eq!((after.row, after.column, after.history_clear_epoch),
+                   (initial.row, initial.column, initial.history_clear_epoch));
+        assert_eq!(unsafe {
+            tf_terminal_discard_history(value.0, std::ptr::null(), 0, &mut discarded, null_mut(), 0)
+        }, 0);
+        assert_eq!(discarded, 2);
+
+        value.feed(b"\r\nG\r\nH");
+        assert_eq!(value.meta().history, 4, "eviction must not reduce configured capacity");
+        assert_eq!(value.meta().discarded, 2);
+        value.feed(b"\r\nI");
+        assert_eq!(value.meta().discarded, 3);
+        assert_eq!(unsafe { tf_terminal_resize(value.0, 8, 8, null_mut(), 0) }, 0);
+        assert!(value.rows().iter().all(|(_, text)| !b"ABC".contains(text)),
+                "height growth must not recover evicted storage rows");
+    }
 }
