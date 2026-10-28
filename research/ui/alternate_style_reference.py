@@ -44,8 +44,8 @@ def peer_class():
     replacements = {
         'if self.state["rows"] and selected is None:': 'if self.state["rows"] and selected is None and (self.directory / "fixture-ready").exists():',
         'selected = phases(self.state["rows"])': 'self.state["frozen_grid"] = [self.state["columns"], self.state["rows"]]\n                    selected = phases(self.state["rows"], self.state["columns"])',
-        'if len(received) > 65536:': 'if self.state.get("frozen_grid") and self.state["frozen_grid"] != [self.state["columns"], self.state["rows"]]:\n                    raise RuntimeError("NAWS changed after fixture freeze")\n                if len(received) > 65536:',
-        'def _record(self):\n        temporary': 'def _record(self):\n        grid = [self.state["columns"], self.state["rows"]]\n        history = self.state.setdefault("naws_history", [])\n        if grid[0] and (not history or history[-1] != grid):\n            history.append(grid)\n        temporary',
+        'self.state["rows"] = int.from_bytes(sub[3:5], "big")': 'self.state["rows"] = int.from_bytes(sub[3:5], "big")\n                                self._on_naws()',
+        'def _record(self):\n        temporary': 'def _on_naws(self):\n        grid = [self.state["columns"], self.state["rows"]]\n        history = self.state.setdefault("naws_history", [])\n        if len(history) >= 64:\n            raise RuntimeError("NAWS event bound")\n        history.append(grid)\n        self._record()\n        if self.state.get("frozen_grid") and self.state["frozen_grid"] != grid:\n            raise RuntimeError("NAWS changed after fixture freeze")\n\n    def _record(self):\n        temporary',
     }
     for old, new in replacements.items():
         require(source.count(old) == 1, "Existing protected peer source changed")

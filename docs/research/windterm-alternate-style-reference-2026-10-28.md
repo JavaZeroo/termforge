@@ -10,7 +10,9 @@
 
 复用独立 WindowStation/Desktop、挂起创建后分配 OwnedJob、独立 HOME 和一个合成 Telnet profile，只监听 `127.0.0.1`。没有切换用户输入桌面、访问剪贴板或修改 DPI。固定计划在运行前保存于 ignored 的 `local/alternate-style-plan.json`，规定最多一次原版执行；实际一次，无重试。REA Frida Evidence ID 为 `ev_8c052576b1180d02c769570300f871cce11cdd828903f04952a3367627115639`。
 
-本次保留 NAWS 历史 `91×24 → 91×25`，等待 UI capacity 与 NAWS 连续稳定后才释放源并冻结 **91×25**，冻结后任何网格改变均由 peer 报错。11 条精确源各发送一次，再追加 `CSI 6n`；下一阶段必须等待独立 UI 确认文件。收到 11 条无 `?` 前缀的 DSR、11 份 UI 快照和 11 次确认，没有其他应用回复字节。不声称覆盖任意 TCP 分块或逐字节解析。
+本次保留的 NAWS **接收块末态**为 `91×24 → 91×25`，等待 UI capacity 与 NAWS 末态连续稳定后才释放源，以 **91×25** 作为源生成尺寸。执行用的 peer 在整个 `recv` 块解析后才记录并检查尺寸；同一块内先改变再恢复可能漏记，因此不能证明冻结后逐事件不变。摘要保留原记录，`naws_changed_after_freeze=null`、`all_naws_events_captured=false`；11 份 UI 快照的 capacity 均为 25，但不是缺失 NAWS 事件的替代品。
+
+11 条精确源各发送一次，再追加 `CSI 6n`；下一阶段必须等待独立 UI 确认文件。收到 11 条无 `?` 前缀的 DSR、11 份 UI 快照和 11 次确认，没有其他应用回复字节。不声称覆盖任意 TCP 分块或逐字节解析。
 
 `rea_capture_seconds=45` 是 REA 捕获时长，`cli_wait_timeout_seconds=60` 是复用启动器的 CLI 等待超时。原版更早恢复运行，中间有单独 2 秒等待，CLI 返回后还会回收资源；没有 45 秒或 60 秒整程生命周期保证。动态插桩只用于正确性，不计时或比较性能。
 
@@ -35,7 +37,7 @@
 
 第 8 阶段先定位主屏 `(3,91)`，写 `W`，紧接 `1049h` 和备用标记 `TFA4`。第 9 阶段为 `1049l` 紧接 `X`，返回 DSR **`(4,2)`**。`W` 与进入备用屏之间、退出备用屏与 `X` 之间均没有插入 DSR。独立控制在 `(6,91)` 连续写 `VZ`，得到 DSR **`(7,2)`**。
 
-这支持该固定输入中退出备用屏后保留延迟换行的可观察效果。原版文档把 `WX`、`VZ` 分别投影为相连文字；协议坐标用于判断换到下一物理行，不能拿逻辑文档行号代替。它不证明内部用了同名 pending-wrap 字段，也不外推到 margin、origin、宽字、resize 或其他保存恢复序列。
+这支持该固定输入中退出备用屏后保留延迟换行的可观察效果。原版文档把 `WX`、`VZ` 分别投影为相连文字；协议坐标用于判断换到下一物理行，不能拿逻辑文档行号代替。它不证明内部用了同名 pending-wrap 字段，也不外推到 margin、origin、宽字、resize 或其他保存恢复序列。由于旧 peer 没有保留全部 NAWS 事件，该结论只对应已读接收块末态和快照，不额外证明两个快照间未发生瞬时尺寸改变。
 
 ## 颜色观测为何保持未知
 
@@ -52,5 +54,9 @@ REA 正常返回，无脚本错误、消息截断、清理错误或 stderr；Job
 [导出器](../../research/ui/export_alternate_style_reference.py)用显式 `require/ValueError`，在普通与 `python -O` 下对同一原件导出完全相同的 `partial-mode-and-wrap-observation`；校验失败前不创建公开文件。仅导出固定合成源、真实模式值、矩形和脱敏 scalar。原始包、profile、绝对路径、PID、插桩与日志保留在 `local/alternate-style-reference-0`。
 
 [公共回归](../../research/ui/test_export_alternate_style_reference.py)以自造记录验证普通/优化 CLI：无匹配必须导出为样式未知的 partial，非夹具文字、未调用模式 getter、错误原版身份必须拒绝。没有使用原版资源或新增原版执行。
+
+审查后，[当前 peer](../../research/ui/alternate_style_reference.py)已在每条完整 NAWS 解码时立即记录并检查，保留重复及往返事件。[自有 loopback 反例](../../research/ui/test_alternate_style_peer.py)用一个受控 `recv` 批次递交 `91×25 → 92×25 → 91×25`：旧代码漏报、只记录最终值的两项用例先复现失败；修订后冻结时在 `92×25` 立即拒绝，冻结前保留全部三条事件。普通及 `python -O` 的两项 loopback＋四项导出回归均通过，已注册到 `windterm_alternate_style_reference` CTest。测试仅创建自有 TCP peer，不启动原版。
+
+修订后的 peer **没有用于本次原版运行**。执行时的旧生产源已按原字节[归档](../../research/ui/reference_sources/alternate_style_reference_20261028.py.txt)，SHA 与原计划一致；导出用该归档核对执行来源，原 `probe_files_sha256`、注入脚本 SHA、所有原始文件及 11 阶段内容保持不变。普通/优化离线重导一致，不给旧原件补造 NAWS 事件，也不把新 peer 的通过转记成旧运行的逐事件尺寸保证。
 
 本次可为 C++ 切片提供模式状态、四标记消失和该延迟换行往返的原版合同；进入继承/退出当前样式、完整清屏及其他交叉仍未解除。#123、#27 和 R2 不能由本次部分取证关闭；本地 Shell 的原生 margin 问题继续由各自任务处理。

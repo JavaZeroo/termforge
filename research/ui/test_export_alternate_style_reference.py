@@ -12,6 +12,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
 from research.ui.alternate_style_reference import phases
+from research.ui.export_alternate_style_reference import EXECUTED_SOURCE_ARCHIVES
 
 
 def fixture(root):
@@ -33,7 +34,7 @@ def fixture(root):
     names=("research/ui/alternate_style_reference.py","research/ui/alternate_style_reference.js","research/ui/alternate_reference.py","research/ui/r1_launch.py","research/ui/qt_r1_text.js")
     plan={"issue":123,"maximum_original_runs":1,"source_base_commit":"d91eb589f04be6b54a29d237b87c5b05ad243908",
           "rea_capture_seconds":45,"cli_wait_timeout_seconds":60,"whole_lifecycle_bound_seconds":None,"phase_count":11,
-          "probe_files_sha256":{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in names},
+          "probe_files_sha256":{name:hashlib.sha256((ROOT/EXECUTED_SOURCE_ARCHIVES.get(name,name)).read_bytes()).hexdigest() for name in names},
           "reference_exe_sha256":"7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
           "reference_files_manifest_sha256":"e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"}
     data={"run.json":{"sha256":plan["reference_exe_sha256"],"files_sha256":plan["reference_files_manifest_sha256"],"script_sha256":hashlib.sha256(script).hexdigest()},
@@ -78,6 +79,8 @@ class PartialStyleExportTests(unittest.TestCase):
                     self.assertIsNone(summary["paint_observation_attempt"]["entry_style_inheritance"])
                     self.assertIsNone(summary["paint_observation_attempt"]["exit_style_restoration"])
                     self.assertEqual(summary["paint_observation_attempt"]["result"],"unmatched")
+                    self.assertIsNone(summary["naws_changed_after_freeze"])
+                    self.assertFalse(summary["all_naws_events_captured"])
 
     def test_unmatched_painting_exports_only_as_partial_unknown(self):
         self.check_cli()
