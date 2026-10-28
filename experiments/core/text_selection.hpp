@@ -65,6 +65,8 @@ public:
     // both the saved and live rows have no text or spans.
     bool reconcile(const TextDocument& document) {
         if (!range_) return !invalidated_;
+        if (range_->begin.epoch != document.epoch() || range_->end.epoch != document.epoch())
+            return invalidate();
         const auto begin = document.index_of(range_->begin.line_id);
         if (!begin || saved_.size() > document.size() - *begin) return invalidate();
         for (size_t i = 0; i < saved_.size(); ++i) {
