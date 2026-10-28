@@ -1,5 +1,4 @@
 """Pure public-protocol tests; importing this module never launches a probe."""
-import copy
 import unittest
 
 from experiments.measure.recovery import validate_identity, validate_sample
@@ -54,6 +53,9 @@ def sample(wrapper=True, observe=0, route="project"):
         "ordinary_allocations": 200 if wrapper and observe else None,
         "ordinary_allocated_bytes": 6400 if wrapper and observe else None,
         "warmup_and_oracle_seconds": .01, "final_oracle_seconds": .01,
+        "cpu_clock": "GetProcessTimes kernel plus user", "cpu_representation_unit_seconds": 1e-7,
+        "wall_clock": "std::chrono::steady_clock", "wall_clock_is_steady": True,
+        "wall_representation_unit_seconds": 1e-9,
         "peak_working_set_bytes": 4000000, "receive_seconds": None, "presented_done": None,
     })
     return value
