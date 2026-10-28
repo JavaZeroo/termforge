@@ -1,6 +1,7 @@
 // Public Qt IME events and queries, own rendering, and an independent receiver.
 #include "terminal_widget.hpp"
 #include "session_tabs.hpp"
+#include "ime_receiver_fixture.hpp"
 #include <QApplication>
 #include <QCryptographicHash>
 #include <QDir>
@@ -306,9 +307,71 @@ static QJsonObject context_isolation(const QString& receiver, const QString& dir
             {"second_hex", QString::fromLatin1(b.toHex())}, {"cancelled_bytes", 0},
             {"natural_receivers", 2}, {"cancelled_receivers", 1}, {"failed_target_verified", true}};
 }
+static QRectF public_cursor(QWidget& target) {
+    QInputMethodQueryEvent request(Qt::ImCursorRectangle);
+    QApplication::sendEvent(&target, &request);
+    require(request.value(Qt::ImCursorRectangle).isValid(), "IME cursor query is unavailable");
+    return request.value(Qt::ImCursorRectangle).toRectF();
+}
+static QJsonArray rectangle(const QRectF& value) {
+    return {value.x(), value.y(), value.width(), value.height()};
+}
+static QJsonObject output_and_geometry(const QString& directory) {
+    termforge::qt::ime_fixture::ControlledReceiver receiver(directory + QStringLiteral("/ime-output.bin"));
+    SessionModel model; TerminalWidget terminal(model); focus(terminal);
+    require(model.start(QCoreApplication::applicationFilePath().toStdWString(), receiver.arguments(), directory.toStdWString()),
+            "controlled IME receiver could not start");
+    await([&] { return receiver.ready() && has_text(model.screen(), "TF_QT_IME_READY"); },
+          "controlled IME receiver was not ready");
+    auto* method = QGuiApplication::inputMethod(); require(method != nullptr, "Qt input method interface is missing");
+    QJsonArray changed_rectangles;
+    QObject listener;
+    QObject::connect(method, &QInputMethod::cursorRectangleChanged, &listener, [&] {
+        changed_rectangles.append(rectangle(method->cursorRectangle()));
+    });
+    require(ime_event(terminal, {}, QStringLiteral("live"), {{QInputMethodEvent::Cursor, 4, 1, QColor(0, 255, 255)}}),
+            "output preedit was rejected");
+    const auto before = public_cursor(terminal);
+    const auto events_before_output = changed_rectangles.size();
+    receiver.output();
+    await([&] { return has_text(model.screen(), "TF_QT_IME_OUTPUT") && model.screen().row == 5 && model.screen().column == 12; },
+          "independent child output did not reach the terminal cursor");
+    const auto after_output = public_cursor(terminal);
+    require(after_output.x() > before.x() && after_output.y() > before.y(),
+            "IME anchor did not follow independent child output");
+    require(changed_rectangles.size() > events_before_output,
+            "output did not notify the public Qt input-method cursor signal");
+    require(coloured_pixels(rendered(terminal), QColor(0, 255, 255)) > 0,
+            "output lost the active preedit cursor");
+    terminal.resize(terminal.width() + 72, terminal.height() + 44); QApplication::processEvents();
+    const auto after_resize = public_cursor(terminal);
+    require(coloured_pixels(rendered(terminal), QColor(0, 255, 255)) > 0,
+            "resize lost the active preedit cursor");
+    auto larger = terminal.font(); larger.setPointSize(18); terminal.setFont(larger); QApplication::processEvents();
+    const auto after_font = public_cursor(terminal);
+    require(after_font.height() > after_resize.height() &&
+            coloured_pixels(rendered(terminal), QColor(0, 255, 255)) > 0,
+            "font change did not update active preedit geometry");
+    require(ime_event(terminal, QStringLiteral("OUT")), "output test IME commit was rejected");
+    await([&] { return received(receiver.path) == QByteArray("OUT"); }, "controlled receiver did not receive the literal commit");
+    receiver.stop(); await([&] { return model.finished(); }, "controlled IME receiver did not finish");
+    require(model.natural_exit() && model.exit_code() == 0 && model.cleanup_verified() &&
+            model.active_processes_after() == 0 && model.output_eof(), "controlled receiver cleanup was not natural and verified");
+    require(!query(terminal).value("enabled").toBool(), "finished controlled target still enabled IME");
+    return {{"case", "independent-output-resize-font-query"}, {"received_hex", "4f5554"},
+            {"before_output", rectangle(before)}, {"after_output", rectangle(after_output)},
+            {"after_resize", rectangle(after_resize)}, {"after_font", rectangle(after_font)},
+            {"public_cursor_rectangle_changes", changed_rectangles}, {"receiver_exit_code", 0}};
+}
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+    if (argc == 4 && std::string_view(argv[1]) == "--ime-output-child") {
+        BOOL child_owned = FALSE;
+        if (!IsProcessInJob(GetCurrentProcess(), nullptr, &child_owned) || !child_owned) return 2;
+        QCoreApplication child(argc, argv);
+        return termforge::qt::ime_fixture::child(child.arguments().at(2), child.arguments().at(3));
+    }
     char gate[3]{}; DWORD count = 0; BOOL owned = FALSE;
     if (!ReadFile(GetStdHandle(STD_INPUT_HANDLE), gate, sizeof(gate), &count, nullptr) ||
         count != sizeof(gate) || std::string_view(gate, count) != "GO\n" ||
@@ -331,7 +394,8 @@ int main(int argc, char** argv) {
         const QJsonObject result{{"schema", "termforge-qt-ime-input-v1"},
                                  {"cases", QJsonArray{literal_ime_commit(receiver, workspace.path()),
                                                        limits_and_literal_boundaries(receiver, workspace.path()),
-                                                       context_isolation(receiver, workspace.path())}},
+                                                       context_isolation(receiver, workspace.path()),
+                                                       output_and_geometry(workspace.path())}},
                                  {"actual_os_ime", false}, {"presented_done", QJsonValue()}};
         std::cout << QJsonDocument(result).toJson(QJsonDocument::Compact).constData() << '\n';
         return 0;
