@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import platform
@@ -13,7 +14,52 @@ from experiments.candidates.alacritty.run import VERSION as CANDIDATE_VERSION
 from experiments.candidates.alacritty.run import trace_binary as candidate_trace_binary, vendor_sources
 
 
+def reference_status(case, plan, difference, core, candidate, known):
+    """Adjudicate only one complete ordered projection, never a prefix/final shortcut."""
+    signature = dict(input_sha256=hashlib.sha256(case.data).hexdigest(),
+                     rows=case.rows, columns=case.columns, history=case.history,
+                     first_difference={key: value for key, value in difference.items() if key != "checkpoint"},
+                     final_core_sha256=state_sha(core[-1]["screen"]),
+                     final_candidate_sha256=state_sha(candidate[-1]["screen"]),
+                     canonical_core_trace_sha256=state_sha(core),
+                     canonical_candidate_trace_sha256=state_sha(candidate),
+                     core_checkpoints=len(core), candidate_checkpoints=len(candidate))
+    expected = known.get(case.name, {}).get("plans", {}).get(plan)
+    return "reference_difference" if expected == signature else "difference"
+
+
 def common_projection(records):
+    def validate_style(style):
+        if (not isinstance(style, dict) or not {"fg", "bg", "bold"}.issubset(style)
+                or type(style["fg"]) is not int or type(style["bg"]) is not int
+                or type(style["bold"]) is not bool):
+            raise ValueError("missing or invalid style projection fields")
+
+    # Missing fields must fail even when both malformed traces would compare equal.
+    for record in records:
+        if not isinstance(record, dict) or type(record.get("offset")) is not int or record["offset"] < 0:
+            raise ValueError("invalid checkpoint offset")
+        screen = record.get("screen")
+        required = {"row", "column", "wrap_pending", "cells", "history", "current_style"}
+        if not isinstance(screen, dict) or not required.issubset(screen):
+            raise ValueError("missing screen projection fields")
+        validate_style(screen["current_style"])
+        for group in ("cells", "history"):
+            if not isinstance(screen[group], list) or any(not isinstance(row, list) for row in screen[group]):
+                raise ValueError("invalid projected row collection")
+            for row in screen[group]:
+                for cell in row:
+                    if (not isinstance(cell, dict) or not {"text", "width", "style"}.issubset(cell)
+                            or not isinstance(cell["text"], str) or type(cell["width"]) is not int
+                            or cell["width"] < 0):
+                        raise ValueError("missing or invalid cell projection fields")
+                    validate_style(cell["style"])
+        cells = screen["cells"]
+        if (not cells or not cells[0] or any(len(row) != len(cells[0]) for row in cells)
+                or type(screen["row"]) is not int or not 0 <= screen["row"] < len(cells)
+                or type(screen["column"]) is not int or not 0 <= screen["column"] < len(cells[0])
+                or type(screen["wrap_pending"]) is not bool):
+            raise ValueError("invalid screen geometry or cursor projection")
     canonicalize_core(records)
     result = []
     for record in records:
@@ -25,6 +71,20 @@ def common_projection(records):
                         cell["text"], cell["width"] = "", 0
         result.append(dict(offset=record["offset"], screen=screen))
     return result
+
+
+def validate_checkpoints(records, sizes, arguments, input_length=None):
+    """Require every requested feed checkpoint, including an explicit resize tail."""
+    offsets = [0]
+    for size in sizes:
+        if type(size) is not int or size <= 0:
+            raise ValueError("invalid requested chunk size")
+        offsets.append(offsets[-1] + size)
+    if any(argument.startswith("--resize=") for argument in arguments):
+        offsets.append(offsets[-1])
+    if (input_length is not None and offsets[-1] != input_length
+            or [record["offset"] for record in records] != offsets):
+        raise ValueError("missing or unexpected ordered checkpoint")
 
 
 def execute(binary, prefix, case, sizes, output, arguments=()):
@@ -43,8 +103,7 @@ def execute(binary, prefix, case, sizes, output, arguments=()):
     if returncode == 0:
         try:
             records = common_projection([json.loads(line) for line in stdout.decode("utf-8").splitlines()])
-            if not records or records[-1]["offset"] != len(case.data):
-                raise ValueError("missing final checkpoint")
+            validate_checkpoints(records, sizes, arguments, len(case.data))
         except (ValueError, KeyError, TypeError) as exc:
             error = str(exc)
     return records, returncode, error
@@ -63,15 +122,9 @@ def run_case(core_binary, candidate_binary, case, plan, output, core_arguments=(
         difference = compare_traces(core, candidate)
     status = "execution_failure" if core_code != 0 or candidate_code != 0 or core_error or candidate_error else "match"
     if difference:
-        signature = dict(input_sha256=sha(output / "input.bin"), rows=case.rows, columns=case.columns,
-                         history=case.history,
-                         first_difference={key: value for key, value in difference.items() if key != "checkpoint"},
-                         final_core_sha256=state_sha(core[-1]["screen"]),
-                         final_candidate_sha256=state_sha(candidate[-1]["screen"]))
         known_path = Path(__file__).with_name("candidate-known-differences.json")
         known = json.loads(known_path.read_text(encoding="utf-8")) if known_path.exists() else {}
-        expected = known.get(case.name, {}).get("plans", {}).get(plan)
-        status = "reference_difference" if expected == signature else "difference"
+        status = reference_status(case, plan, difference, core, candidate, known)
     report = dict(case=case.name, plan=plan, input_sha256=sha(output / "input.bin"),
                   bytes=len(case.data), rows=case.rows, columns=case.columns, history=case.history,
                   chunk_sizes=sizes, checkpoints=len(core), status=status,
