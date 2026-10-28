@@ -1,7 +1,5 @@
 """Public plan/profile/text/launcher seams; never launch an original target."""
 from __future__ import annotations
-import copy
-import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -19,6 +17,14 @@ def missing():return {'status':'unavailable','type':'undefined','value':None}
 
 
 class SettingsTests(unittest.TestCase):
+    def test_fixed_public_proposal_has_no_actual_values_or_execution_authorization(self):
+        plan=json.loads((settings.ROOT/'benchmarks/tools/results/2026-10-29-c0-settings-proposal/plan.json').read_text())
+        self.assertFalse(plan['execution_authorized']);self.assertEqual(plan['actual_original_runs'],0)
+        self.assertIsNone(plan['actual_settings']);self.assertFalse(plan['c0_verified'])
+        self.assertEqual(len(plan['workload']['lines']),14);self.assertEqual(plan['workload']['payload_bytes'],536)
+        self.assertEqual(plan['requested_session']['window.rows'],40);self.assertEqual(plan['static_config_hints']['session']['window.rows'],24)
+        self.assertEqual(plan['source_files_sha256'],{name:settings.sha(settings.ROOT/name) for name in settings.SOURCE_FILES})
+
     def snapshot(self):
         return {'screen_line_capacity':23,'widget_geometry':[0,0,905,428],'widget_font':{'family':'Synthetic Fallback','point_size':9,'pixel_size':-1},
                 'view_lookup':[{'method':'activeView','type':'object'}],
