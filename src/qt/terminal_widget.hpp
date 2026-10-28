@@ -45,6 +45,7 @@ class TerminalWidget final : public QWidget {
     void keyPressEvent(QKeyEvent* event) override {
         std::string bytes;
         auto next = keyboard_;
+        bool character_text = false;
         if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C) bytes = std::string(1, '\x03');
         else if (event->modifiers().testFlag(Qt::ControlModifier) || event->modifiers().testFlag(Qt::AltModifier)) {
             QWidget::keyPressEvent(event); return;
@@ -59,9 +60,16 @@ class TerminalWidget final : public QWidget {
             case Qt::Key_Left: bytes = "\x1b[D"; break;
             default:
                 if (event->text().isEmpty()) { QWidget::keyPressEvent(event); return; }
-                for (const auto character : event->text()) bytes += next.character(character.unicode());
+                character_text = true;
+                for (const auto character : event->text()) {
+                    bytes += next.character(character.unicode());
+                    // InputQueue rejects this whole packet. Bound temporary
+                    // encoding too, without changing the committed encoder.
+                    if (bytes.size() > 1024) break;
+                }
             }
         }
+        if (!character_text) bytes = next.finish() + bytes;
         if (bytes.empty() || model_.send(bytes)) {
             keyboard_ = next;
             event->accept();
