@@ -2,6 +2,7 @@
 #include "terminal_widget.hpp"
 #include "session_tabs.hpp"
 #include "ime_receiver_fixture.hpp"
+#include "ime_native_observer.hpp"
 #include <QApplication>
 #include <QCryptographicHash>
 #include <QDir>
@@ -384,6 +385,8 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
     QApplication::setQuitOnLastWindowClosed(false);
     try {
+        if (app.arguments().size() == 3 && app.arguments().at(1) == QStringLiteral("--native-ime-observer"))
+            return termforge::qt::ime_native::run(app, app.arguments().at(2));
         const auto artifacts = qEnvironmentVariable("TERMFORGE_TEST_ARTIFACTS");
         if (!artifacts.isEmpty()) require(QDir().mkpath(artifacts), "IME artifact directory could not be created");
         QTemporaryDir workspace(artifacts.isEmpty() ? QString() : artifacts + QStringLiteral("/qt-ime-XXXXXX"));
