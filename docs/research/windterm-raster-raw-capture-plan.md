@@ -1,6 +1,6 @@
-# #129 raw-capture-v1：采集与分析分离，等待复核
+# #129 raw-capture-v1：采集与分析分离
 
-本方案只完成离线准备，**没有启动新原版**，私有计划为 `execution_authorized=false`。旧 [#126 的 0 grab 停止](windterm-1049-raster-reference-2026-10-28.md)和 [#129 的 3 grab partial](windterm-raster-selection-reference-2026-10-29.md)随 [PR #132](https://github.com/JavaZeroo/termforge/pull/132) 独立保留，均未改写，也没有关闭 parent 颜色调查。
+本方案完成复核后，另建授权计划并执行一次新原版，已取得[五阶段完整 raw ROI 与离线签名证据](windterm-raster-raw-reference-2026-10-29.md)。原 `execution_authorized=false` proposal 保持不可运行且未修改。旧 [#126 的 0 grab 停止](windterm-1049-raster-reference-2026-10-28.md)和 [#129 的 3 grab partial](windterm-raster-selection-reference-2026-10-29.md)随 [PR #132](https://github.com/JavaZeroo/termforge/pull/132) 独立保留，均未改写，也没有关闭 parent 颜色调查。
 
 新 case 为 `raw-capture-v1`，独立工作树及分支 `research/windterm-raster-raw-capture`，固定生产源 `f6d9a97e2b2685b6ce39c83dc7107cb52aec7a6a`。[不可运行计划](../../research/ui/results/2026-10-29-raster-raw-proposal/plan.json)列出七个生产源 SHA、分析源 SHA、四个完整模块 SHA、五段输入的 hex/长度/SHA 与单次预算。最终复核及明确运行指令后，必须另建新授权计划和唯一目录，不能把此 false proposal 改为 true 或复用旧批目录。
 
@@ -50,4 +50,4 @@ Qt5 API/ABI 沿用已核实的完整模块 SHA、实际模块路径与固定导�
 
 [公共测试](../../research/ui/test_raster_raw_reference.py)与[合成 Qt 边界](../../research/ui/test_raster_raw_native.js)按已确认的采集入口/离线 CLI seam 逐项红→绿：旧逻辑遇 tie 只留 1/4 ROI，新逻辑收全 4；tie 分类从异常变为 null/candidates；重复 marker、重复 ROI 和错误完整 label 从可通过变为拒绝。完整合成五阶段即使 phase2 tie 也能导出全部 ROI；同 histogram 但不同排列不匹配，别名及无墨迹保持未知。另覆盖普通/优化解释器的隐私/身份/结构拒绝不得生成公开输出、32B sret 和异常析构边界，以及 false proposal 不得启动或产生 attempt。
 
-离线普通及 `python -O` 各 11 项通过，相关 CTest `windterm_raster_style_reference`、`windterm_raster_selection_proposal`、`windterm_raster_raw_proposal` 在 Debug 配置下 3/3 通过。`core.autocrlf=true` 的 fresh checkout 也核对新 JS 与 Qt 前缀 SHA 一致。未启动新原版，不提供新的样式或完整采集事实；最终源与计划交 root 复核后等待独立明确授权。
+离线普通及 `python -O` 各 11 项通过，相关 CTest `windterm_raster_style_reference`、`windterm_raster_selection_proposal`、`windterm_raster_raw_proposal` 在 Debug 配置下 3/3 通过。`core.autocrlf=true` 的 fresh checkout 也核对新 JS 与 Qt 前缀 SHA 一致。后续唯一授权执行及独立离线审计见[结果报告](windterm-raster-raw-reference-2026-10-29.md)；该结果只支持固定样本输出事实，不提升为内部样式、完整栅格、presented 或产品验收。
