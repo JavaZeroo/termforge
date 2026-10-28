@@ -1,6 +1,18 @@
 # Qt 基础动态网格与真实 child 尺寸
 
-本结果仅覆盖 [#143](https://github.com/JavaZeroo/termforge/issues/143) 的基础窗口/核心/固定 ConPTY 尺寸同步，父项 [#29](https://github.com/JavaZeroo/termforge/issues/29) 继续负责完整 resize、历史与内容策略。实际实现源码为 **`678299d54454e26ac04ef6d1c46237ab6b33752b`**，基于 `730404de` 开工并合入 main **`4d7bd8a`** 的 CRT/1049 基础后冻结；后续报告修改另作 docs 提交。[validation.json](validation.json)保留完整查询、各阶段源码/二进制及私有原始记录身份。
+本结果仅覆盖 [#143](https://github.com/JavaZeroo/termforge/issues/143) 的基础窗口/核心/固定 ConPTY 尺寸同步，父项 [#29](https://github.com/JavaZeroo/termforge/issues/29) 继续负责完整 resize、历史与内容策略。初次冻结源码为 **`678299d54454e26ac04ef6d1c46237ab6b33752b`**，基于 `730404de` 开工并合入 main **`4d7bd8a`** 的 CRT/1049 基础；其离屏完整矩阵与随后原生失败均保留。夹具修订源码为 **`0ff783cb14f23dfa641b6b6f45894c038cca048c`**，生产实现没有变化。[原验证身份](validation.json)与[平台可用区域补充记录](platform-area-validation.json)分列，不拼接成一次验收。
+
+## 原生反例与可用区域夹具修订
+
+678 的 offscreen 完整 57 项通过后，同一 40 文件包在隔离 Win11 **26300.9711、Session 1、windows 插件**实际执行失败：root exit 1，非超时、无强制结束，v2 Job active 0 / total 8、cleanup true。80×24→60×12→100×30→80×24 正常；请求 1×24 时，事件派发前记录 widget 25×574、core 1×24，随后实际 HWND 外框宽 136px，Q107..234 共 128 次 child window/buffer 均为 **11×24**，最终独立尺寸 oracle 失败。135 条完整 child 回复及原生窗口记录均保留。此时不能把调用成功或初始 widget 请求当作稳定可用区域，也不能据此断言 transport 损坏；原记录没有最后的 core 观测，平台调整的因果仍待新原生记录确认。此环境与 CRT 原测试的 26300.9457 / Session 2 分列。
+
+本地旧包曾在现有桌面上用 OwnedJob 复现 exit 1、Job 0/4/0，但遗漏独立 WindowStation/Desktop；这份记录明确带隔离缺口，不计隔离原生验证，后续本机只执行 offscreen。原包、原 full、失败 raw 均未覆盖。
+
+0ff 仅修订测试：字面 80×24→60×12→100×30→80×24、1×24、80×1、实际 1px×1px 对应 1×1、回到 80×24 和重复，放入可见 owned parent 的子区域，避免顶层标题栏的最小宽度影响夹具输入。原字面预期、独立 nonce/CSBI、5 秒/128 条/10ms 查询预算及 25 秒外层监督均未改。另保留原独立顶层的一列请求，记录 requested pixels → 事件派发后的 actual widget area → 当前字体独立推导的 effective grid → core/transport/child；不把预期硬改成 11。超界 600×240 区域仍核对实际 core/child 500×200，改为可见 owner 内的大 child；5416×5326 的 child 只在 1200×900 owner 内可见，明确属于裁剪的网格上限验证，不计完整上屏。
+
+修订后 targeted offscreen 1/1 通过；固定 0ff source/tree 后，**新的唯一完整矩阵 57/57、exit 0，13 条内部 skip**，与 678 的完整矩阵分开。7329 个冻结文件 post-run 零变化（source 2786，其他输入/运行时数量与旧记录一致）；原 Qt smoke Job 0/26/0、新 resize Job 0/27/0，均无超时/强制回收。主序列保留全部 12 条旧/新回复及 8 个 Qt 事件；2 MiB 输出实际读取 2,097,195 字节、队列 high-water 262,144、自然退出 37。CTest 302.43s、resize 11.01s 为诊断记录。新 [40 文件运行时清单](resize-child-region-runtime.json)及私有 ZIP 另绑 0ff，**本补充记录不含新源码 guest 运行**，因此不把离屏通过称为原生反例已修复。
+
+0ff 完整矩阵结束、审计完成后再合入 main `ae985443` 的独立 SGR1 研究工具与离线测试；该合并没有 Qt/core/runtime 实现变更，未为它重跑产品完整矩阵。完整 57 项和新包身份均继续只属于 0ff；后续合并配置的 CI 和原生复验另列。
 
 ## 实现边界
 
@@ -21,7 +33,7 @@ GUI 线程继续拥有 Parser/Screen。单个 latest-size 槽限制待处理控�
 
 前三组增量发生在 CRT 合并前的本机配置，字体组及最终配置使用合并后的固定 app-local CRT，分别绑定源码，未把不同配置拼成一组比较。前三组中的 native/error 二进制及字体二进制已私有冻结；最早 GUI-only 红绿 EXE 在覆盖前没有冻结，身份明确为 null，没有补造。一次新增测试编译失败来自字符串字面量的 `send` 重载歧义，改成显式 `std::string`；它不计产品行为红例。
 
-## 最终一次完整矩阵
+## 初次源码 678 的唯一完整矩阵
 
 环境为 Windows 11 Pro 10.0.26200 x64、VS 2022 / VC Tools 14.42.34433（compiler self 19.42.34433.0）、CMake 3.31.0、Python 3.12.10、Release。Qt 6.10.3 官方 MSVC 2022 x64 SDK、固定 ConPTY 1.25.260930003 与 CRT 14.51.36247.0 均在本工作树全新离线准备；candidate adapter 关闭，Qt 使用 **offscreen**。
 
@@ -43,4 +55,4 @@ Qt 两项与其余 55 项既有/独立诊断分列：
 
 Screen 继续采用现有物理行裁剪，不回填历史、恢复被裁掉的内容或宣称目标 reflow 已实现。完整 WindTerm 尺寸/样式对照、真实 TUI、Unicode/IME/选择/Find、实际不同 DPI、物理键盘与呈现、性能、完整 #29/#31/R2 均未由本项验收，`presented_done=null`。本机既有诊断通过也不解释或修复 hosted system 路线的 [#80](https://github.com/JavaZeroo/termforge/issues/80)、[#144](https://github.com/JavaZeroo/termforge/issues/144)、[#145](https://github.com/JavaZeroo/termforge/issues/145) 原失败。
 
-源码 678 的 resize 独立运行时已按冻结的 40 个文件逐项核对并打成私有 ZIP，包含自身 manifest，供后续 `windows` 插件原生确认；本轮没有执行该包或操作 guest。那份补充结果、CI 和双轴审查由 PR 接续，不回填为本次 offscreen 57 项的成功。
+源码 678 的 resize 独立运行时按冻结的 40 个文件逐项核对并打成私有 ZIP，包含自身 manifest；随后 `windows` 插件执行的失败已在上方及补充记录保留，不回填为本次 offscreen 57 项的成功。0ff 新包、后续原生复验、CI 和双轴审查继续使用各自身份。
