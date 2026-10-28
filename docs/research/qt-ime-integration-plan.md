@@ -1,6 +1,6 @@
 # Qt IME 基础接线计划（#155）
 
-状态：**test-only 准备，尚未编译或执行**。依据 [#155](https://github.com/JavaZeroo/termforge/issues/155)、[ADR-0008](../adr/0008-cpp-core-qt-widgets.md) 和 [R2 合同](../milestones/R2-local-terminal.md)。基点 main a0aed8a643a0a99b09e16c7836e5a4e3ad26daed 已包含 #147 的 Qt 键盘文本；旧原件保持不变。本页是本切片技术边界，不宣告现有能力或验收通过。
+状态：**初始计划历史记录**，描述源761bb2c执行前的test-only准备；下文“当前”仅指当时基线，不是最新实现状态。实施/实测由 [#155](https://github.com/JavaZeroo/termforge/issues/155)维护，后续原生计划见 [N1](qt-ime-native-observation-plan.md)。依据 [ADR-0008](../adr/0008-cpp-core-qt-widgets.md) 和 [R2 合同](../milestones/R2-local-terminal.md)。初始基点 main a0aed8a643a0a99b09e16c7836e5a4e3ad26daed 已包含 #147 的 Qt 键盘文本；旧原件保持不变。本页不宣告最新能力或验收通过。
 
 ## 已知事实与首个反例
 

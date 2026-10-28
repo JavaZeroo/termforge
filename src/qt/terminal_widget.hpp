@@ -168,8 +168,8 @@ class TerminalWidget final : public QWidget {
             model_.send(std::string{});
             event->ignore(); return;
         }
-        // The input context owns composing keystrokes; they must not become a
-        // second text path into the child while preedit is still active.
+        // The input context owns composing text; it must not become a second
+        // text path. The already-supported interrupt remains explicit below.
         const bool interrupt = event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C;
         if (!composition_.text.isEmpty() && !interrupt) { QWidget::keyPressEvent(event); return; }
         std::string bytes;
