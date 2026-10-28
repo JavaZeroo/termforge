@@ -98,17 +98,19 @@ def read_diagnostic_trace(stderr, root_pid):
         return read_checkpoints(stderr, root_pid)
     except CheckpointError as error:
         result = trace_result(error.observations)
-        result["protocol_error"] = str(error)
+        result.update(complete=False, protocol_error=str(error))
         return result
 
 
 def observation_status(record):
     """Judge one child observation independently of batch expectations."""
-    if record["status"] != "timed_out" and record["primary_exception"] is None:
-        if (record.get("exit_code") == 0 and record["cleanup_verified"] and record["trace"]["complete"] and
-                not record["forced_job_termination"] and record["stdout"] == NORMAL_STDOUT):
-            return "passed"
-    return record["status"]
+    if record["status"] == "timed_out":
+        return "timed_out"
+    if (record["primary_exception"] is None and record.get("exit_code") == 0 and record["cleanup_verified"] and
+            record["trace"]["complete"] and "protocol_error" not in record["trace"] and
+            not record["forced_job_termination"] and record["stdout"] == NORMAL_STDOUT):
+        return "passed"
+    return "failed"
 
 
 def diagnose_node(node, case):
@@ -220,7 +222,7 @@ def diagnose_node(node, case):
 
 def expected_observation(row):
     """Recognize this fixed diagnostic plan without changing child verdicts."""
-    if not row["cleanup_verified"] or row["trace"].get("protocol_error"):
+    if not row["cleanup_verified"] or "protocol_error" in row["trace"]:
         return False
     if row["case"] == "normal":
         return row["status"] == "passed"

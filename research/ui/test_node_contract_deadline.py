@@ -87,6 +87,8 @@ class LauncherVerdictTests(unittest.TestCase):
                 self.assertIn("protocol_error", row["trace"])
                 self.assertEqual(len(row["trace"]["observations"]), 23)
                 self.assertEqual(row["trace"]["last_observed_stage"], "final")
+                stale_complete = {**row, "trace": {**row["trace"], "complete": True}}
+                self.assertEqual(observation_status(stale_complete), "failed")
 
 
 class PlanTests(unittest.TestCase):

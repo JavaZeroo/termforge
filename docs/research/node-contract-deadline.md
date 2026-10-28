@@ -12,6 +12,8 @@
 
 执行预算为原 **10 秒**；进程创建返回后的 Job/GO 设置占用同一预算，不另加等待。同步进程创建本身和准备/哈希不具备整程硬时限，所以 `whole_lifecycle_bound_seconds=null`。超时保留 `TimeoutExpired`、已收到的 stdout/stderr 和最后有效 checkpoint；截断或非法的下一条记录不删除此前有效前缀。检查点的数量、顺序、PID、字段和单调时钟不合约时，不能报告完整成功。
 
+即使全部23个必需 checkpoint 已出现，后续多余或非法记录仍使 `trace.complete=false`，子记录判为 `failed`；正常 stdout、exit0 和 Job 回收不能覆盖协议错误。状态判定也独立拒绝带有 `protocol_error` 的旧完整标记，前缀仍保留供诊断。
+
 回收使用独立、共享的 **5 秒**预算，验证根已回收及自有 Job active=0；不能验证时不派发下一 case。Job 仅约束该可信、无外部代理调用的自包含测试进程及正常继承成员，不是通用沙箱或外部服务回收证明。原错误、退出码、是否强杀与回收结果分别保留；清理成功不会把超时或异常变成通过。
 
 ## 固定计划
@@ -33,3 +35,9 @@ python -B -X utf8 -m research.ui.node_contract_deadline prepare-plan --plan loca
 公开边界为计划/launcher 和 checkpoint 记录。`research.ui.test_node_contract_deadline` 检查前缀保留、顺序/PID/字段/时钟拒绝、假 final、false/漂移计划拒绝，以及 Windows OwnedJob 中正常、受控挂起和异常三条独立路径。后两条不能因 Job 清空而转为通过。
 
 原件、环境路径、stderr 栈和观察数据留 `local/` 待审查；本说明不发布新样本或为旧超时填写根因。#144、#38 和 R2 继续开放。
+
+## 预审发现与限定修正
+
+`5ddecd4` 预审发现：完整23条前缀后追加非法/多余 checkpoint 时，解析错误保留完整前缀，原子状态判定却只检查前缀的 `complete`，可能误报 `passed`。批次层已有拒绝仍不足以保证子记录正确。该缺陷属于新诊断工具，与旧 CI 的10秒超时没有因果关系。
+
+公开 trace-data/launcher 判定边界的两个负例在 `66a0391` 均实际失败：正常 stdout、exit0、清理成功时，非法 JSON 尾和额外事件仍被旧子判定返回 `passed`。修正同时清除错误轨迹的完整标记、在子判定直接拒绝协议错误，并保留23条有效前缀；测试另保留完整合法对照及带错误的旧 `complete=true` 输入。相关纯测试的普通/`-O` 运行身份与原始记录留新的 `local/node-deadline-p2/`，不重跑此前的 Node/受控10秒挂起观察，也不改写旧计划或原件。
