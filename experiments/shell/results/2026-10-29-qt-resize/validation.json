@@ -1,0 +1,4149 @@
+{
+  "schema": "termforge-qt-resize-validation-v1",
+  "issue": 143,
+  "parent_issue": 29,
+  "status": "limited_dynamic_grid_and_real_child_size_verified_full_R2_incomplete",
+  "source": {
+    "implementation_commit": "678299d54454e26ac04ef6d1c46237ab6b33752b",
+    "implementation_tree": "fed25085f02ac7455072601a3e8bfbfd1cc00f7e",
+    "initial_base": "730404de3d6d59dd139fb8d669ad194ee6ccb218",
+    "merged_main": "4d7bd8a7c822135b1fdee5935262af3205ee565f",
+    "clean_at_freeze": true,
+    "selected_file_identities": [
+      {
+        "path": "CMakeLists.txt",
+        "bytes": 25519,
+        "sha256": "97b8c3bb607e19819ade1c726f07923023384f5165952372f09fb6845b60ba77"
+      },
+      {
+        "path": ".github/workflows/qt-cpp.yml",
+        "bytes": 3424,
+        "sha256": "6001c95d6f8baaf90f104107b7051adc7fb1088aad03339539be0486d37ed14c"
+      },
+      {
+        "path": "src/qt/terminal_session.hpp",
+        "bytes": 13989,
+        "sha256": "ea2139d4430da528ce1f1498640c8b4afed6559d9a66a67b3e67f1a017d85468"
+      },
+      {
+        "path": "src/qt/terminal_widget.hpp",
+        "bytes": 8118,
+        "sha256": "ca81e611cefec1ead3609a8af84ad415c77f60c650c6f5a9988cc4767ab6949b"
+      },
+      {
+        "path": "src/qt/session_tabs.hpp",
+        "bytes": 6998,
+        "sha256": "db6008517b7a859a6e05f25e2f783e1110fcc9b0ed35065bbabac40ecf56afcd"
+      },
+      {
+        "path": "src/qt/resize_smoke.cpp",
+        "bytes": 26052,
+        "sha256": "b50435e9f03b4ffb6537642e165a53478244e676137cf060925a5fef5c9a492f"
+      },
+      {
+        "path": "src/qt/resize_fixture.hpp",
+        "bytes": 10084,
+        "sha256": "a855779e06b45b2c68daf413108172ee2d51bcb75fd55911263505d7dc6be300"
+      },
+      {
+        "path": "src/qt/shell_smoke.cpp",
+        "bytes": 25287,
+        "sha256": "86022250a4c5d50824e112d6748c56bb549cb055c0737288f8a3c88f3733c8d0"
+      },
+      {
+        "path": "src/qt/run_smoke.py",
+        "bytes": 4287,
+        "sha256": "25f4d6adec4e9bfad77698300c44d9162511ac1ebb722993d5a52cdb8a863983"
+      },
+      {
+        "path": "experiments/conpty/session.hpp",
+        "bytes": 11072,
+        "sha256": "7b3934715948a05c1996bcccb02ef2eb58ea11baf26bf97c2e728a52d58becda"
+      },
+      {
+        "path": "experiments/conpty/backend.hpp",
+        "bytes": 6815,
+        "sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489"
+      },
+      {
+        "path": "experiments/shell/queues.hpp",
+        "bytes": 7224,
+        "sha256": "9087944a7749176789a489bce0522c55764461342b59c138611743b6947845b6"
+      },
+      {
+        "path": "experiments/core/screen.hpp",
+        "bytes": 17242,
+        "sha256": "04c19f09ebc0c468efbef8dd4c9da8f4bcd44e94000a87c56239756c0df1b474"
+      },
+      {
+        "path": "experiments/core/terminal.hpp",
+        "bytes": 12270,
+        "sha256": "ed3c030611a6df38df26057a8c2834f2808cd05306e73aead79927b1f76fe5ca"
+      },
+      {
+        "path": "tools/prepare_qt_build.py",
+        "bytes": 12912,
+        "sha256": "1e89ff4340cfbab5edd7d45e9637fcd34ab98f0bac19061d053efa0f23ef37b3"
+      },
+      {
+        "path": "tools/msvc_runtime.py",
+        "bytes": 8085,
+        "sha256": "24c78545bf0da2c6ba67c0a4e0ba266088c34a5078757ccbe851a9d8666de6d1"
+      },
+      {
+        "path": "third_party/qt/manifest.json",
+        "bytes": 5806,
+        "sha256": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd"
+      },
+      {
+        "path": "third_party/conpty/manifest.json",
+        "bytes": 1467,
+        "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+      },
+      {
+        "path": "third_party/msvc_runtime/manifest.json",
+        "bytes": 4123,
+        "sha256": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+      }
+    ]
+  },
+  "environment": {
+    "build": "Release x64",
+    "version": "10.0.26200",
+    "os": "Microsoft Windows 11 \u4e13\u4e1a\u7248",
+    "architecture": "AMD64",
+    "generator": "Visual Studio 17 2022",
+    "compiler_self_version": "19.42.34433.0",
+    "vc_tools_directory_version": "14.42.34433",
+    "windows_sdk": "10.0.26100.0",
+    "cmake": "3.31.0",
+    "python": "3.12.10",
+    "qt": "6.10.3",
+    "qt_platform": "offscreen",
+    "candidate_adapter": false,
+    "backend": "bundled fixed Microsoft ConPTY 1.25.260930003",
+    "app_local_crt": "14.51.36247.0"
+  },
+  "preparation": {
+    "schema": "termforge-qt-build-preparation-v1",
+    "status": "passed",
+    "qt_version": "6.10.3",
+    "qt_architecture": "win64_msvc2022_64",
+    "qt_archive_sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7",
+    "input_manifests": {
+      "qt": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+      "conpty": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "msvc_runtime": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+    },
+    "preparation_script_sha256": "1e89ff4340cfbab5edd7d45e9637fcd34ab98f0bac19061d053efa0f23ef37b3",
+    "sdk_transformation": "bin/qt.conf contains [Paths] and Prefix=..; no binary or .prl patch",
+    "sdk": {
+      "files": 4358,
+      "tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266"
+    },
+    "conpty_version": "1.25.260930003",
+    "conpty_package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "conpty_files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "msvc_runtime": {
+      "version": "14.51.36247.0",
+      "architecture": "windows-x64",
+      "package_sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+      "files": {
+        "concrt140.dll": "54716f0738af891f283d213b5c8d11b25896bb8ee3097d301eae718560cf974e",
+        "msvcp140_1.dll": "206c931bf90fdad8816de3b5e2ef80b2bcaa9406c89ecc05fe6fddffe251e982",
+        "msvcp140_2.dll": "d50d7883f20d1dc6191768d3746f52dd9cac89c346ffaed5be1f110c2f34a838",
+        "msvcp140_atomic_wait.dll": "3d0cbfaa1bf3eecf5a3f4491d2960ee803cb994f30292c6adc4a07c498f60e2b",
+        "msvcp140_codecvt_ids.dll": "8a65c7596ef2e6938731f5a1058e7e40145b6d97967cc649231a076b9a608d78",
+        "msvcp140.dll": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+        "vccorlib140.dll": "09f93d5ff96ae09767f3e1af3cdd43a5a58f2598654fc63089429bb6f9f4737f",
+        "vcruntime140_1.dll": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+        "vcruntime140_threads.dll": "40f39e8cee5f5a531b4010e18b807e8fe265b908dc58f959ecb7ebc6ea6cb11a",
+        "vcruntime140.dll": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7"
+      },
+      "license_sha256": "08651651a7602fc7c0e2763de0fde1ff9f868df2780597cd1775ee9d6441c783",
+      "notice_sha256": "510781c94971ea19adae55d2c42207d942b0646deee29d5c401f189cc25d415f"
+    },
+    "scope": "Windows local/CI build inputs only; no product package or platform acceptance"
+  },
+  "freeze": {
+    "schema": "termforge-qt-resize-frozen-inputs-v1",
+    "source_commit": "678299d54454e26ac04ef6d1c46237ab6b33752b",
+    "source_tree": "fed25085f02ac7455072601a3e8bfbfd1cc00f7e",
+    "counts": {
+      "source": 2781,
+      "qt_sdk": 4358,
+      "conpty_input": 2,
+      "crt_input": 12,
+      "original_archives": 4,
+      "product_runtime": 38,
+      "shell_smoke_runtime": 40,
+      "resize_smoke_runtime": 40,
+      "legacy_diagnostic_runtime": 49
+    },
+    "frozen_manifest": {
+      "bytes": 1393636,
+      "sha256": "067aba6db36f5780f5e48fe1053fa030d02efacd1145fd084dcb3d45461a8c8d"
+    }
+  },
+  "post_run": {
+    "schema": "termforge-qt-resize-post-run-v1",
+    "status": "passed",
+    "source_commit": "678299d54454e26ac04ef6d1c46237ab6b33752b",
+    "files_checked": 7324,
+    "changes": []
+  },
+  "tdd": {
+    "gui_core_grid": {
+      "red": {
+        "source_commit": "cd1b0b048b734e33455562f751935d1db6c27a8b",
+        "raw_record": {
+          "name": "03-grid-red.log",
+          "bytes": 2054,
+          "sha256": "0c58aefcaf89c6e5aa058cd8ed356aa09259a1f0351b212fa96bc1b7a64cc62a",
+          "published": false
+        },
+        "binary": null,
+        "binary_identity_gap": "Not frozen before overwrite; not reconstructed",
+        "observations": [
+          {
+            "schema": "termforge-qt-resize-grid-v1",
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "core_columns": 80,
+            "core_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574
+          },
+          {
+            "schema": "termforge-qt-cpp-supervisor-v1",
+            "status": "failed",
+            "timed_out": false,
+            "exit_code": 1,
+            "job_after": {
+              "active": 0,
+              "total": 4,
+              "terminated": 0
+            },
+            "error": "Qt smoke failed or left owned processes active"
+          }
+        ]
+      },
+      "green": {
+        "source_commit": "542d98888dd4840d933557bdedf960821825f156",
+        "raw_record": {
+          "name": "05-grid-green.log",
+          "bytes": 1829,
+          "sha256": "97854054dc3c10aaf35c0566a181231396a9feeda321ff1aadc31224cb9bd854",
+          "published": false
+        },
+        "binary": null,
+        "binary_identity_gap": "Not frozen before overwrite; not reconstructed",
+        "observations": [
+          {
+            "schema": "termforge-qt-resize-grid-v1",
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "core_columns": 60,
+            "core_rows": 12,
+            "widget_width": 556,
+            "widget_height": 310
+          },
+          {
+            "schema": "termforge-qt-cpp-supervisor-v1",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 4,
+              "terminated": 0
+            },
+            "sample": {
+              "schema": "termforge-qt-resize-smoke-v1",
+              "core_columns": 60,
+              "core_rows": 12,
+              "cleanup_verified": true,
+              "presented_done": null
+            }
+          }
+        ]
+      },
+      "scope": "Public QWidget resize and Core grid only; no native child acknowledgement in this first slice"
+    },
+    "real_child_size": {
+      "red": {
+        "source_commit": "be1d393134fe3d364d06f038f82f7b23b4ca59cc",
+        "raw_record": {
+          "name": "07-child-red.log",
+          "bytes": 25014,
+          "sha256": "b54762600952822bc175b4b0c6ed3347c0b0eb066da64209115447ff43efaef6",
+          "published": false
+        },
+        "binary": {
+          "name": "qt_cpp_resize_smoke.exe",
+          "bytes": 155136,
+          "sha256": "9ec56e9d20ad4817126e24039e0824fecc839fa0e94a99a1f036690b259d0093",
+          "published": false
+        },
+        "binary_identity_gap": null,
+        "observations": [
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-grid-v1",
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "core_columns": 60,
+            "core_rows": 12,
+            "widget_width": 556,
+            "widget_height": 310
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 101,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 102,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 103,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 104,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 105,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 106,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 107,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 108,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 109,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 110,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 111,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 112,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 113,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 114,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 115,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 116,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 117,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 118,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 119,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 120,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 121,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 122,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 123,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 124,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 125,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 126,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 127,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 128,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 129,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 130,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 131,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 132,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 133,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 134,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 135,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 136,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 137,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 138,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 139,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 140,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 141,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 142,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 143,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 144,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 145,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 146,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 147,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 148,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 149,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 150,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 151,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 152,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 153,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 154,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 155,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 156,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 157,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 158,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 159,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 160,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 161,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 162,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 163,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 164,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 165,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 166,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 167,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 168,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 169,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 170,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 171,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 172,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 173,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 174,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 175,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 176,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 177,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 178,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 179,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 180,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 181,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 182,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 183,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 184,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 185,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 186,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 187,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 188,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 189,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 190,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 191,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 192,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 193,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 194,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 195,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 196,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 197,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 198,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 199,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 200,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 201,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 202,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 203,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 204,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 205,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 206,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 207,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 208,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 209,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 210,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 211,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 212,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 213,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 214,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 215,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 216,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 217,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 218,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 219,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 220,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 221,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 222,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 223,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 224,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 225,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 226,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 227,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 228,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-cpp-supervisor-v1",
+            "status": "failed",
+            "timed_out": false,
+            "exit_code": 1,
+            "job_after": {
+              "active": 0,
+              "total": 4,
+              "terminated": 0
+            },
+            "error": "Qt smoke failed or left owned processes active"
+          }
+        ]
+      },
+      "green": {
+        "source_commit": "e3abef5a7f52b8f8bd352b3a6aaff1f9cd2ba98b",
+        "raw_record": {
+          "name": "09-child-green.log",
+          "bytes": 2385,
+          "sha256": "ddd421fcdfb90baceee94cafdbd50a477e2c75493df6c6ea9966334fc196edc7",
+          "published": false
+        },
+        "binary": {
+          "name": "qt_cpp_resize_smoke.exe",
+          "bytes": 156160,
+          "sha256": "7415888138c9898efb4e0cc52d9a705048e26052950871212e6b57cc4bf195a0",
+          "published": false
+        },
+        "binary_identity_gap": null,
+        "observations": [
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-grid-v1",
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "core_columns": 60,
+            "core_rows": 12,
+            "widget_width": 556,
+            "widget_height": 310
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 101,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 102,
+            "query_error": 0,
+            "buffer_columns": 60,
+            "buffer_rows": 12,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 59,
+            "window_bottom": 11
+          },
+          {
+            "schema": "termforge-qt-cpp-supervisor-v1",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 4,
+              "terminated": 0
+            },
+            "sample": {
+              "schema": "termforge-qt-resize-smoke-v1",
+              "core_columns": 60,
+              "core_rows": 12,
+              "child_ack_replies": 2,
+              "cleanup_verified": true,
+              "presented_done": null
+            }
+          }
+        ]
+      },
+      "scope": "All 128 old 80x24 observations retained in red; old/new replies retained in green; same pre-CRT-merge local configuration"
+    },
+    "invalid_geometry_error": {
+      "red": {
+        "source_commit": "038ff288b4d10c95d0cde0a3c07834fcd4305854",
+        "raw_record": {
+          "name": "11-error-red.log",
+          "bytes": 2836,
+          "sha256": "c4360b7e99627cdde824dbd2a18215037410dab09a1b29ed4a155f21e4adbc3d",
+          "published": false
+        },
+        "binary": {
+          "name": "qt_cpp_resize_smoke.exe",
+          "bytes": 158208,
+          "sha256": "fe549df0c351a423ebef73aa3050065f29b85c1d1a539306898ab79260f3a040",
+          "published": false
+        },
+        "binary_identity_gap": null,
+        "observations": [
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-grid-v1",
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "core_columns": 60,
+            "core_rows": 12,
+            "widget_width": 556,
+            "widget_height": 310
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 101,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 102,
+            "query_error": 0,
+            "buffer_columns": 60,
+            "buffer_rows": 12,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 59,
+            "window_bottom": 11
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-error-v1",
+            "accepting": 1,
+            "pending": 1,
+            "error_visible": 1
+          },
+          {
+            "schema": "termforge-qt-cpp-supervisor-v1",
+            "status": "failed",
+            "timed_out": false,
+            "exit_code": 1,
+            "job_after": {
+              "active": 0,
+              "total": 6,
+              "terminated": 0
+            },
+            "error": "Qt smoke failed or left owned processes active"
+          }
+        ]
+      },
+      "green": {
+        "source_commit": "1c4deaabfbb08a2753877d04719a4d4bd31003b0",
+        "raw_record": {
+          "name": "13-error-green.log",
+          "bytes": 2652,
+          "sha256": "4f1dc15418ed598398eb8283727b0a2def1f261ad7968f06dc4f5adea058c7c5",
+          "published": false
+        },
+        "binary": {
+          "name": "qt_cpp_resize_smoke.exe",
+          "bytes": 158208,
+          "sha256": "3b60d72f7905a57905a6969e853af80ccb94ca8300d90d76253ecac3801e4a81",
+          "published": false
+        },
+        "binary_identity_gap": null,
+        "observations": [
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-grid-v1",
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "core_columns": 60,
+            "core_rows": 12,
+            "widget_width": 556,
+            "widget_height": 310
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 101,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 102,
+            "query_error": 0,
+            "buffer_columns": 60,
+            "buffer_rows": 12,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 59,
+            "window_bottom": 11
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-error-v1",
+            "accepting": 0,
+            "pending": 0,
+            "error_visible": 1
+          },
+          {
+            "schema": "termforge-qt-cpp-supervisor-v1",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 6,
+              "terminated": 0
+            },
+            "sample": {
+              "schema": "termforge-qt-resize-smoke-v1",
+              "core_columns": 60,
+              "core_rows": 12,
+              "child_ack_replies": 2,
+              "cleanup_verified": true,
+              "presented_done": null
+            }
+          }
+        ]
+      },
+      "scope": "Invalid public grid request must stop pending control and finish owned cleanup; old error_visible field meant nonempty model error, not presentation"
+    },
+    "current_font_metrics": {
+      "red": {
+        "source_commit": "b803319ced15b0d863a2badc0608421f34621aa9",
+        "raw_record": {
+          "name": "19-font-red.log",
+          "bytes": 7848,
+          "sha256": "bb1fbee24fbbb8731fe17abe6d8e48fc841ac3023f7324308d37dafa8fb8c558",
+          "published": false
+        },
+        "binary": {
+          "name": "qt_cpp_resize_smoke.exe",
+          "bytes": 167424,
+          "sha256": "8cb5779ddb42a37436016439af40d0a6e1a2a0271b4533a4f77544c56efc1c5c",
+          "published": false
+        },
+        "binary_identity_gap": null,
+        "observations": [
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 0,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 0,
+            "transport_revision": 0,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 1,
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "widget_width": 556,
+            "widget_height": 310,
+            "core_columns": 60,
+            "core_rows": 12,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 1,
+            "transport_revision": 0,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 101,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 102,
+            "query_error": 0,
+            "buffer_columns": 60,
+            "buffer_rows": 12,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 59,
+            "window_bottom": 11
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 1,
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "widget_width": 556,
+            "widget_height": 310,
+            "core_columns": 60,
+            "core_rows": 12,
+            "transport_columns": 60,
+            "transport_rows": 12,
+            "requested_revision": 1,
+            "transport_revision": 1,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 2,
+            "requested_columns": 100,
+            "requested_rows": 30,
+            "widget_width": 916,
+            "widget_height": 706,
+            "core_columns": 100,
+            "core_rows": 30,
+            "transport_columns": 60,
+            "transport_rows": 12,
+            "requested_revision": 2,
+            "transport_revision": 1,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 103,
+            "query_error": 0,
+            "buffer_columns": 100,
+            "buffer_rows": 30,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 99,
+            "window_bottom": 29
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 2,
+            "requested_columns": 100,
+            "requested_rows": 30,
+            "widget_width": 916,
+            "widget_height": 706,
+            "core_columns": 100,
+            "core_rows": 30,
+            "transport_columns": 100,
+            "transport_rows": 30,
+            "requested_revision": 2,
+            "transport_revision": 2,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 3,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 100,
+            "transport_rows": 30,
+            "requested_revision": 3,
+            "transport_revision": 2,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 104,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 3,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 3,
+            "transport_revision": 3,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 4,
+            "requested_columns": 1,
+            "requested_rows": 1,
+            "widget_width": 1,
+            "widget_height": 1,
+            "core_columns": 1,
+            "core_rows": 1,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 4,
+            "transport_revision": 3,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 105,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 106,
+            "query_error": 0,
+            "buffer_columns": 1,
+            "buffer_rows": 1,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 0,
+            "window_bottom": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 4,
+            "requested_columns": 1,
+            "requested_rows": 1,
+            "widget_width": 1,
+            "widget_height": 1,
+            "core_columns": 1,
+            "core_rows": 1,
+            "transport_columns": 1,
+            "transport_rows": 1,
+            "requested_revision": 4,
+            "transport_revision": 4,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 5,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 1,
+            "transport_rows": 1,
+            "requested_revision": 5,
+            "transport_revision": 4,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 107,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 5,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 5,
+            "transport_revision": 5,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 6,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 5,
+            "transport_revision": 5,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 108,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 6,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 5,
+            "transport_revision": 5,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 109,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 700,
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "widget_width": 616,
+            "widget_height": 323,
+            "core_columns": 66,
+            "core_rows": 12,
+            "transport_columns": 66,
+            "transport_rows": 12,
+            "requested_revision": 1,
+            "transport_revision": 1,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-cpp-supervisor-v1",
+            "status": "failed",
+            "timed_out": false,
+            "exit_code": 1,
+            "job_after": {
+              "active": 0,
+              "total": 6,
+              "terminated": 0
+            },
+            "error": "Qt smoke failed or left owned processes active"
+          }
+        ]
+      },
+      "green": {
+        "source_commit": "82d97d144fcd6dd4aa775b613505c4e7dcdbbd03",
+        "raw_record": {
+          "name": "21-font-green.log",
+          "bytes": 8305,
+          "sha256": "32d5f5803ec0e2dba172f8c1d8210a4cd8766d39a8aa5017bb3372abb539c80c",
+          "published": false
+        },
+        "binary": {
+          "name": "qt_cpp_resize_smoke.exe",
+          "bytes": 167424,
+          "sha256": "2eaedd479e6e9dec7293246081bf3c67dbacaabd12a01001128e0741cf0e51d1",
+          "published": false
+        },
+        "binary_identity_gap": null,
+        "observations": [
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 0,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 0,
+            "transport_revision": 0,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 1,
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "widget_width": 556,
+            "widget_height": 310,
+            "core_columns": 60,
+            "core_rows": 12,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 1,
+            "transport_revision": 0,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 101,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 102,
+            "query_error": 0,
+            "buffer_columns": 60,
+            "buffer_rows": 12,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 59,
+            "window_bottom": 11
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 1,
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "widget_width": 556,
+            "widget_height": 310,
+            "core_columns": 60,
+            "core_rows": 12,
+            "transport_columns": 60,
+            "transport_rows": 12,
+            "requested_revision": 1,
+            "transport_revision": 1,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 2,
+            "requested_columns": 100,
+            "requested_rows": 30,
+            "widget_width": 916,
+            "widget_height": 706,
+            "core_columns": 100,
+            "core_rows": 30,
+            "transport_columns": 60,
+            "transport_rows": 12,
+            "requested_revision": 2,
+            "transport_revision": 1,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 103,
+            "query_error": 0,
+            "buffer_columns": 100,
+            "buffer_rows": 30,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 99,
+            "window_bottom": 29
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 2,
+            "requested_columns": 100,
+            "requested_rows": 30,
+            "widget_width": 916,
+            "widget_height": 706,
+            "core_columns": 100,
+            "core_rows": 30,
+            "transport_columns": 100,
+            "transport_rows": 30,
+            "requested_revision": 2,
+            "transport_revision": 2,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 3,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 100,
+            "transport_rows": 30,
+            "requested_revision": 3,
+            "transport_revision": 2,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 104,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 3,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 3,
+            "transport_revision": 3,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 4,
+            "requested_columns": 1,
+            "requested_rows": 1,
+            "widget_width": 1,
+            "widget_height": 1,
+            "core_columns": 1,
+            "core_rows": 1,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 4,
+            "transport_revision": 3,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 105,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 106,
+            "query_error": 0,
+            "buffer_columns": 1,
+            "buffer_rows": 1,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 0,
+            "window_bottom": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 4,
+            "requested_columns": 1,
+            "requested_rows": 1,
+            "widget_width": 1,
+            "widget_height": 1,
+            "core_columns": 1,
+            "core_rows": 1,
+            "transport_columns": 1,
+            "transport_rows": 1,
+            "requested_revision": 4,
+            "transport_revision": 4,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 5,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 1,
+            "transport_rows": 1,
+            "requested_revision": 5,
+            "transport_revision": 4,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 107,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 5,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 5,
+            "transport_revision": 5,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 6,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 5,
+            "transport_revision": 5,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 108,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 6,
+            "requested_columns": 80,
+            "requested_rows": 24,
+            "widget_width": 736,
+            "widget_height": 574,
+            "core_columns": 80,
+            "core_rows": 24,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 5,
+            "transport_revision": 5,
+            "accepting": 1,
+            "pending": 0
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 109,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-state-v1",
+            "stage": 700,
+            "requested_columns": 60,
+            "requested_rows": 12,
+            "widget_width": 616,
+            "widget_height": 323,
+            "core_columns": 60,
+            "core_rows": 12,
+            "transport_columns": 80,
+            "transport_rows": 24,
+            "requested_revision": 2,
+            "transport_revision": 0,
+            "accepting": 1,
+            "pending": 1
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 701,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 702,
+            "query_error": 0,
+            "buffer_columns": 60,
+            "buffer_rows": 12,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 59,
+            "window_bottom": 11
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 0,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23
+          },
+          {
+            "schema": "termforge-qt-resize-error-v1",
+            "accepting": 0,
+            "pending": 0,
+            "error_visible": 1
+          },
+          {
+            "schema": "termforge-qt-cpp-supervisor-v1",
+            "status": "passed",
+            "timed_out": false,
+            "exit_code": 0,
+            "job_after": {
+              "active": 0,
+              "total": 8,
+              "terminated": 0
+            },
+            "sample": {
+              "schema": "termforge-qt-resize-smoke-v1",
+              "grid_sequence_cases": 6,
+              "child_ack_replies": 8,
+              "qt_heartbeat_events": 6,
+              "child_exit": 37,
+              "cleanup_verified": true,
+              "presented_done": null
+            }
+          }
+        ]
+      },
+      "scope": "Current public font changed from 11pt to 12pt: old implementation computed 66 instead of 60 columns; fixed without new font dependency"
+    }
+  },
+  "full_matrix": {
+    "ctest_exit": 0,
+    "total": 57,
+    "passed": 57,
+    "failed": 0,
+    "qt_tests": 2,
+    "other_independent_or_legacy_diagnostics": 55,
+    "ctest_total_seconds": 301.08,
+    "internal_skips": [
+      {
+        "ctest_number": 33,
+        "test": "setUpClass (test_candidate_compare.CandidateComparisonTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "ctest_number": 33,
+        "test": "setUpClass (test_capability_matrix.CapabilityMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "ctest_number": 33,
+        "test": "setUpClass (test_fuzz_matrix.FuzzMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "ctest_number": 33,
+        "test": "setUpClass (test_real_app_matrix.RealApplicationMatrixTests)",
+        "reason": "optional real application capture dependencies are not built"
+      },
+      {
+        "ctest_number": 35,
+        "test": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice)",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM"
+      },
+      {
+        "ctest_number": 43,
+        "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails)",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "ctest_number": 51,
+        "test": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard)",
+        "reason": "system copy UI gate requires a disposable hosted VM"
+      },
+      {
+        "ctest_number": 51,
+        "test": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close)",
+        "reason": "product clipboard read gate requires a disposable hosted VM"
+      },
+      {
+        "ctest_number": 51,
+        "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver)",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM"
+      },
+      {
+        "ctest_number": 52,
+        "test": "test_owned_clipboard_contention_preserves_write_and_read_failures (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_owned_clipboard_contention_preserves_write_and_read_failures)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "ctest_number": 52,
+        "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "ctest_number": 53,
+        "test": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice)",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+      },
+      {
+        "ctest_number": 55,
+        "test": "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard)",
+        "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified. Evidence: <private raw artifact>",
+        "private_path_redacted": true,
+        "original_reason_sha256": "adb03c2a8ce73ad7c73da4807fda62369dbab90094dbb3b1ba3256f315fe6b1d",
+        "diagnostic_artifact": {
+          "name": "private-clipboard.json",
+          "bytes": 677,
+          "sha256": "011913503203eee30289c896d4fcfece7b543416d731acda4a687944578e307c",
+          "published": false
+        }
+      }
+    ],
+    "internal_skip_count": 13,
+    "qt_original": {
+      "schema": "termforge-qt-cpp-supervisor-v1",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 26,
+        "terminated": 0
+      },
+      "sample": {
+        "schema": "termforge-qt-cpp-smoke-v1",
+        "qt": "6.10.3",
+        "core": "cpp",
+        "backend": "fixed-microsoft-conpty",
+        "arithmetic": 750,
+        "child_exit": 37,
+        "cleanup_verified": true,
+        "image_changed": true,
+        "startup_error_visible": true,
+        "manual_close_reclaimed": true,
+        "tabs": {
+          "arithmetic": [
+            750,
+            427
+          ],
+          "survivor_after_close": 778,
+          "survivor_after_startup_failure": 147,
+          "natural_exit": 41,
+          "input_isolation": true,
+          "answer_ink_visible": true,
+          "independent_close": true,
+          "startup_error_visible": true,
+          "window_close_reclaimed": true,
+          "all_exited_status": 41,
+          "failed_only_kept_visible": true
+        },
+        "app_exec": {
+          "window_close": true,
+          "last_tab_close": true,
+          "failed_only_close": true,
+          "completed_tab_close": true,
+          "cleanup_before_quit": true,
+          "manual_status": 0
+        },
+        "presented_done": null
+      }
+    },
+    "qt_resize": {
+      "schema": "termforge-qt-cpp-supervisor-v1",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 25,
+        "terminated": 0
+      },
+      "sample": {
+        "schema": "termforge-qt-resize-smoke-v1",
+        "grid_sequence_cases": 8,
+        "child_ack_replies": 14,
+        "qt_heartbeat_events": 8,
+        "output_bytes": 2097195,
+        "output_queue_high_water": 262144,
+        "same_size_cmd_output_retained": true,
+        "child_exit": 37,
+        "cleanup_verified": true,
+        "presented_done": null
+      }
+    },
+    "all_resize_observations_in_order": [
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 0,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 0,
+        "requested_columns": 80,
+        "requested_rows": 24,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 80,
+        "core_rows": 24,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 0,
+        "transport_revision": 0,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 1,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 556,
+        "widget_height": 310,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 1,
+        "transport_revision": 0,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 101,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 102,
+        "query_error": 0,
+        "buffer_columns": 60,
+        "buffer_rows": 12,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 59,
+        "window_bottom": 11
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 1,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 556,
+        "widget_height": 310,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 60,
+        "transport_rows": 12,
+        "requested_revision": 1,
+        "transport_revision": 1,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 2,
+        "requested_columns": 100,
+        "requested_rows": 30,
+        "widget_width": 916,
+        "widget_height": 706,
+        "core_columns": 100,
+        "core_rows": 30,
+        "transport_columns": 60,
+        "transport_rows": 12,
+        "requested_revision": 2,
+        "transport_revision": 1,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 103,
+        "query_error": 0,
+        "buffer_columns": 100,
+        "buffer_rows": 30,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 99,
+        "window_bottom": 29
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 2,
+        "requested_columns": 100,
+        "requested_rows": 30,
+        "widget_width": 916,
+        "widget_height": 706,
+        "core_columns": 100,
+        "core_rows": 30,
+        "transport_columns": 100,
+        "transport_rows": 30,
+        "requested_revision": 2,
+        "transport_revision": 2,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 3,
+        "requested_columns": 80,
+        "requested_rows": 24,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 80,
+        "core_rows": 24,
+        "transport_columns": 100,
+        "transport_rows": 30,
+        "requested_revision": 3,
+        "transport_revision": 2,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 104,
+        "query_error": 0,
+        "buffer_columns": 100,
+        "buffer_rows": 30,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 99,
+        "window_bottom": 29
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 105,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 3,
+        "requested_columns": 80,
+        "requested_rows": 24,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 80,
+        "core_rows": 24,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 3,
+        "transport_revision": 3,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 4,
+        "requested_columns": 1,
+        "requested_rows": 24,
+        "widget_width": 25,
+        "widget_height": 574,
+        "core_columns": 1,
+        "core_rows": 24,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 4,
+        "transport_revision": 3,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 106,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 107,
+        "query_error": 0,
+        "buffer_columns": 1,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 0,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 4,
+        "requested_columns": 1,
+        "requested_rows": 24,
+        "widget_width": 25,
+        "widget_height": 574,
+        "core_columns": 1,
+        "core_rows": 24,
+        "transport_columns": 1,
+        "transport_rows": 24,
+        "requested_revision": 4,
+        "transport_revision": 4,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 5,
+        "requested_columns": 80,
+        "requested_rows": 1,
+        "widget_width": 736,
+        "widget_height": 68,
+        "core_columns": 80,
+        "core_rows": 1,
+        "transport_columns": 1,
+        "transport_rows": 24,
+        "requested_revision": 5,
+        "transport_revision": 4,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 108,
+        "query_error": 0,
+        "buffer_columns": 1,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 0,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 109,
+        "query_error": 0,
+        "buffer_columns": 1,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 0,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 110,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 1,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 5,
+        "requested_columns": 80,
+        "requested_rows": 1,
+        "widget_width": 736,
+        "widget_height": 68,
+        "core_columns": 80,
+        "core_rows": 1,
+        "transport_columns": 80,
+        "transport_rows": 1,
+        "requested_revision": 5,
+        "transport_revision": 5,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 6,
+        "requested_columns": 1,
+        "requested_rows": 1,
+        "widget_width": 1,
+        "widget_height": 1,
+        "core_columns": 1,
+        "core_rows": 1,
+        "transport_columns": 80,
+        "transport_rows": 1,
+        "requested_revision": 6,
+        "transport_revision": 5,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 111,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 1,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 0
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 112,
+        "query_error": 0,
+        "buffer_columns": 1,
+        "buffer_rows": 1,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 0,
+        "window_bottom": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 6,
+        "requested_columns": 1,
+        "requested_rows": 1,
+        "widget_width": 1,
+        "widget_height": 1,
+        "core_columns": 1,
+        "core_rows": 1,
+        "transport_columns": 1,
+        "transport_rows": 1,
+        "requested_revision": 6,
+        "transport_revision": 6,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 7,
+        "requested_columns": 80,
+        "requested_rows": 24,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 80,
+        "core_rows": 24,
+        "transport_columns": 1,
+        "transport_rows": 1,
+        "requested_revision": 7,
+        "transport_revision": 6,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 113,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 7,
+        "requested_columns": 80,
+        "requested_rows": 24,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 80,
+        "core_rows": 24,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 7,
+        "transport_revision": 7,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 8,
+        "requested_columns": 80,
+        "requested_rows": 24,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 80,
+        "core_rows": 24,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 7,
+        "transport_revision": 7,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 114,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 8,
+        "requested_columns": 80,
+        "requested_rows": 24,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 80,
+        "core_rows": 24,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 7,
+        "transport_revision": 7,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 115,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 0,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 700,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 616,
+        "widget_height": 323,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 2,
+        "transport_revision": 0,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 701,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 702,
+        "query_error": 0,
+        "buffer_columns": 60,
+        "buffer_rows": 12,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 59,
+        "window_bottom": 11
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 0,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-error-v1",
+        "accepting": 0,
+        "pending": 0,
+        "error_recorded": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 0,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 0,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 801,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 802,
+        "query_error": 0,
+        "buffer_columns": 60,
+        "buffer_rows": 12,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 59,
+        "window_bottom": 11
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 800,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 556,
+        "widget_height": 310,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 60,
+        "transport_rows": 12,
+        "requested_revision": 1,
+        "transport_revision": 1,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 899,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 901,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 902,
+        "query_error": 0,
+        "buffer_columns": 60,
+        "buffer_rows": 12,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 59,
+        "window_bottom": 11
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 801,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 556,
+        "widget_height": 310,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 60,
+        "transport_rows": 12,
+        "requested_revision": 1,
+        "transport_revision": 1,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 1001,
+        "query_error": 0,
+        "buffer_columns": 60,
+        "buffer_rows": 12,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 59,
+        "window_bottom": 11
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 1002,
+        "query_error": 0,
+        "buffer_columns": 100,
+        "buffer_rows": 30,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 99,
+        "window_bottom": 29
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 802,
+        "requested_columns": 100,
+        "requested_rows": 30,
+        "widget_width": 916,
+        "widget_height": 706,
+        "core_columns": 100,
+        "core_rows": 30,
+        "transport_columns": 100,
+        "transport_rows": 30,
+        "requested_revision": 2,
+        "transport_revision": 2,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 900,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 1,
+        "transport_revision": 0,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 900,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 1,
+        "transport_revision": 0,
+        "accepting": 0,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 0,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 901,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 1,
+        "transport_revision": 0,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 901,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 1,
+        "transport_revision": 0,
+        "accepting": 0,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 0,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 902,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 1,
+        "transport_revision": 0,
+        "accepting": 1,
+        "pending": 1
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 1201,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 902,
+        "requested_columns": 60,
+        "requested_rows": 12,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 60,
+        "core_rows": 12,
+        "transport_columns": 80,
+        "transport_rows": 24,
+        "requested_revision": 1,
+        "transport_revision": 0,
+        "accepting": 0,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 903,
+        "requested_columns": 80,
+        "requested_rows": 24,
+        "widget_width": 736,
+        "widget_height": 574,
+        "core_columns": 80,
+        "core_rows": 24,
+        "transport_columns": 0,
+        "transport_rows": 0,
+        "requested_revision": 0,
+        "transport_revision": 0,
+        "accepting": 0,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 0,
+        "query_error": 0,
+        "buffer_columns": 80,
+        "buffer_rows": 24,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 79,
+        "window_bottom": 23
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 1301,
+        "query_error": 0,
+        "buffer_columns": 100,
+        "buffer_rows": 30,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 99,
+        "window_bottom": 29
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 1302,
+        "query_error": 0,
+        "buffer_columns": 100,
+        "buffer_rows": 30,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 99,
+        "window_bottom": 29
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 1401,
+        "query_error": 0,
+        "buffer_columns": 100,
+        "buffer_rows": 30,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 99,
+        "window_bottom": 29
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 0,
+        "query_error": 0,
+        "buffer_columns": 500,
+        "buffer_rows": 200,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 499,
+        "window_bottom": 199
+      },
+      {
+        "schema": "termforge-qt-resize-state-v1",
+        "stage": 1600,
+        "requested_columns": 600,
+        "requested_rows": 240,
+        "widget_width": 5416,
+        "widget_height": 5326,
+        "core_columns": 500,
+        "core_rows": 200,
+        "transport_columns": 500,
+        "transport_rows": 200,
+        "requested_revision": 1,
+        "transport_revision": 1,
+        "accepting": 1,
+        "pending": 0
+      },
+      {
+        "schema": "termforge-qt-child-size-v1",
+        "nonce": 1601,
+        "query_error": 0,
+        "buffer_columns": 500,
+        "buffer_rows": 200,
+        "window_left": 0,
+        "window_top": 0,
+        "window_right": 499,
+        "window_bottom": 199
+      }
+    ]
+  },
+  "test_protocol": {
+    "confirmed_seams": [
+      "Session control and diagnostic state",
+      "public Qt application geometry/input",
+      "independent real-child CSBI replies"
+    ],
+    "outer_owned_job_seconds": 25,
+    "ctest_timeout_seconds": 35,
+    "stage_wait_milliseconds": 5000,
+    "size_query_maximum_replies_per_stage": 128,
+    "nonmatching_reply_cadence_milliseconds": 10,
+    "pending_close_maximum_attempts": 64,
+    "all_child_replies_retained": true,
+    "child_receives_expected_dimensions": false,
+    "real_child_identity": "Named pipe server/client PID+session binding, Session PID match and owned Job containment",
+    "tiny_grid_response_channel": "Test-only bounded nonblocking named-pipe messages, independent of screen capacity",
+    "fixed_screen_bounds": {
+      "columns": [
+        1,
+        500
+      ],
+      "rows": [
+        1,
+        200
+      ]
+    },
+    "requested_core_transport_and_child_ack_are_separate": true
+  },
+  "private_raw_records": [
+    {
+      "name": "01-configure.log",
+      "bytes": 1228,
+      "sha256": "359bab2c3604eabd1d83da4539387b03c48f181fffd6cc9ac7715895d72144cf",
+      "published": false
+    },
+    {
+      "name": "02-red-build.log",
+      "bytes": 3162,
+      "sha256": "6a803131e06af78252b36d88e02c490e1444f75ecc5484e48842c89aeb8c7636",
+      "published": false
+    },
+    {
+      "name": "03-grid-red.log",
+      "bytes": 2054,
+      "sha256": "0c58aefcaf89c6e5aa058cd8ed356aa09259a1f0351b212fa96bc1b7a64cc62a",
+      "published": false
+    },
+    {
+      "name": "04-grid-green-build.log",
+      "bytes": 2502,
+      "sha256": "c0436402d052a9179ebbe1aa434f2a5a7076304a4db4139ec9935710e0869ffe",
+      "published": false
+    },
+    {
+      "name": "05-grid-green.log",
+      "bytes": 1829,
+      "sha256": "97854054dc3c10aaf35c0566a181231396a9feeda321ff1aadc31224cb9bd854",
+      "published": false
+    },
+    {
+      "name": "06-child-red-build.log",
+      "bytes": 2502,
+      "sha256": "c0436402d052a9179ebbe1aa434f2a5a7076304a4db4139ec9935710e0869ffe",
+      "published": false
+    },
+    {
+      "name": "07-child-red.log",
+      "bytes": 25014,
+      "sha256": "b54762600952822bc175b4b0c6ed3347c0b0eb066da64209115447ff43efaef6",
+      "published": false
+    },
+    {
+      "name": "08-child-green-build.log",
+      "bytes": 2502,
+      "sha256": "c0436402d052a9179ebbe1aa434f2a5a7076304a4db4139ec9935710e0869ffe",
+      "published": false
+    },
+    {
+      "name": "09-child-green.log",
+      "bytes": 2385,
+      "sha256": "ddd421fcdfb90baceee94cafdbd50a477e2c75493df6c6ea9966334fc196edc7",
+      "published": false
+    },
+    {
+      "name": "10-error-red-build.log",
+      "bytes": 2502,
+      "sha256": "c0436402d052a9179ebbe1aa434f2a5a7076304a4db4139ec9935710e0869ffe",
+      "published": false
+    },
+    {
+      "name": "11-error-red.log",
+      "bytes": 2836,
+      "sha256": "c4360b7e99627cdde824dbd2a18215037410dab09a1b29ed4a155f21e4adbc3d",
+      "published": false
+    },
+    {
+      "name": "12-error-green-build.log",
+      "bytes": 2502,
+      "sha256": "c0436402d052a9179ebbe1aa434f2a5a7076304a4db4139ec9935710e0869ffe",
+      "published": false
+    },
+    {
+      "name": "13-error-green.log",
+      "bytes": 2652,
+      "sha256": "4f1dc15418ed598398eb8283727b0a2def1f261ad7968f06dc4f5adea058c7c5",
+      "published": false
+    },
+    {
+      "name": "14-sequence-build.log",
+      "bytes": 2502,
+      "sha256": "c0436402d052a9179ebbe1aa434f2a5a7076304a4db4139ec9935710e0869ffe",
+      "published": false
+    },
+    {
+      "name": "15-sequence.log",
+      "bytes": 7663,
+      "sha256": "b3a1b9368fc1cefd21504f936d2e648e4015a6477bc095d2ce01d52af51d4092",
+      "published": false
+    },
+    {
+      "name": "16-preparation.json",
+      "bytes": 2584,
+      "sha256": "187428835c2d200a8b5a94ee341b6a0476bae19a13f8442caad3347cf1a12215",
+      "published": false
+    },
+    {
+      "name": "16-preparation.log",
+      "bytes": 2628,
+      "sha256": "6b0085f58fbb5cb7e63b0b616b4c7cd6226d5b9015799fad58c52bc11cb7c1f0",
+      "published": false
+    },
+    {
+      "name": "17-integrated-configure.log",
+      "bytes": 285,
+      "sha256": "8e3472d30f896b3205e1e2fdd3ad95fef285ad0b448361f58f7b6390d129c5ca",
+      "published": false
+    },
+    {
+      "name": "18-font-red-build.log",
+      "bytes": 3569,
+      "sha256": "22cf5bb6e83abd6bd210dabcd1d9c11b86f6fcfad3f7da1e4c05306ce4e3dac6",
+      "published": false
+    },
+    {
+      "name": "19-font-red.log",
+      "bytes": 7848,
+      "sha256": "bb1fbee24fbbb8731fe17abe6d8e48fc841ac3023f7324308d37dafa8fb8c558",
+      "published": false
+    },
+    {
+      "name": "20-font-green-build.log",
+      "bytes": 3262,
+      "sha256": "29b9830d62b585135a8a6c377e448bda820b3cc8118a294218f2b5654b924c58",
+      "published": false
+    },
+    {
+      "name": "21-font-green.log",
+      "bytes": 8305,
+      "sha256": "32d5f5803ec0e2dba172f8c1d8210a4cd8766d39a8aa5017bb3372abb539c80c",
+      "published": false
+    },
+    {
+      "name": "22-tabs-build.log",
+      "bytes": 963,
+      "sha256": "5be9d03c4a5beccdea18a855884f95ce7d84ed9f5b42df01876b94bfcb616c28",
+      "published": false
+    },
+    {
+      "name": "24-tabs-build.log",
+      "bytes": 7645,
+      "sha256": "0d56dff010dd6f65423e49923ba32b2a8ec9030e79a032a267f3d8832806a877",
+      "published": false
+    },
+    {
+      "name": "25-tabs-and-existing.log",
+      "bytes": 12863,
+      "sha256": "8b52211109dd3917a1f2d6cb74c41223c3d8b603335e5876e43494f0c7d99ac4",
+      "published": false
+    },
+    {
+      "name": "26-lifecycle-build.log",
+      "bytes": 3324,
+      "sha256": "c5e53343f0c6ecf8b56395c16db4168ea940e70e9d3dad2ca5fc4446ffaf0e53",
+      "published": false
+    },
+    {
+      "name": "27-lifecycle.log",
+      "bytes": 13507,
+      "sha256": "7fab535f9f1f88de607f7333a3d1a8cfdce599c07b1f393a71f9943c7c1c8c3a",
+      "published": false
+    },
+    {
+      "name": "28-output-build.log",
+      "bytes": 3324,
+      "sha256": "c5e53343f0c6ecf8b56395c16db4168ea940e70e9d3dad2ca5fc4446ffaf0e53",
+      "published": false
+    },
+    {
+      "name": "29-output.log",
+      "bytes": 14323,
+      "sha256": "96418d01c264ca4baa318e0988fffe863578df82ef387b66420d19f257bc7028",
+      "published": false
+    },
+    {
+      "name": "30-bounds-build.log",
+      "bytes": 3324,
+      "sha256": "c5e53343f0c6ecf8b56395c16db4168ea940e70e9d3dad2ca5fc4446ffaf0e53",
+      "published": false
+    },
+    {
+      "name": "31-bounds.log",
+      "bytes": 16820,
+      "sha256": "b115c741f18c571bc0f6cf351b46364108f3bddf06cb0ec64d3f917df5936d04",
+      "published": false
+    },
+    {
+      "name": "32-final-build-all.log",
+      "bytes": 20523,
+      "sha256": "060abd47fe4366374e40e465e50d93a84263415e1e770258a5f9e141eeb6e518",
+      "published": false
+    },
+    {
+      "name": "33-environment.json",
+      "bytes": 125,
+      "sha256": "3c8b1c36eb89f539dcb866f35faf6409d97e166aab8ac67e65b02b51456a7779",
+      "published": false
+    },
+    {
+      "name": "33-freeze-summary.json",
+      "bytes": 587,
+      "sha256": "a791fa478d1a5383d99380ae42ffdcdabc107b282c72d63e79f03cc095ae0ffa",
+      "published": false
+    },
+    {
+      "name": "33a-product-manifest-result.json",
+      "bytes": 253,
+      "sha256": "0b964586d716707cce2961420a7c8928a18ea5b8d50d949d1a101c17049bbb95",
+      "published": false
+    },
+    {
+      "name": "33b-shell-manifest-result.json",
+      "bytes": 253,
+      "sha256": "18816cea651354ee48c89d095b3c0e4049b4185ee96429b4171e948a850c76dd",
+      "published": false
+    },
+    {
+      "name": "33c-resize-manifest-result.json",
+      "bytes": 253,
+      "sha256": "a356f5825b568bf873d753c1a52af92afbe6dfa87691811e7a92902a33cbd316",
+      "published": false
+    },
+    {
+      "name": "34-final-ctest-exit.json",
+      "bytes": 145,
+      "sha256": "1eacdaaa7dea13f2eaa3789301fa61b5b40af6a474a2460c33ac651b55dcc0f3",
+      "published": false
+    },
+    {
+      "name": "34-final-ctest.log",
+      "bytes": 161525,
+      "sha256": "60adf1883e33cc7826a3fca28c8717a8cca8aab972ede8001e2ff916ef885674",
+      "published": false
+    },
+    {
+      "name": "35-post-run.json",
+      "bytes": 184,
+      "sha256": "23b1d07a6d3724c17fac7f837c3152f0374929d29b5bea420eb03f4562ea451d",
+      "published": false
+    },
+    {
+      "name": "36-resize-runtime-package.json",
+      "bytes": 6615,
+      "sha256": "dbef452ec1109ce843b0adf08028798f5fa8d13bb655fffbed564d0076204056",
+      "published": false
+    }
+  ],
+  "native_followup_package": {
+    "source_commit": "678299d54454e26ac04ef6d1c46237ab6b33752b",
+    "runtime_files": 40,
+    "includes_own_manifest": true,
+    "entry": "qt_cpp_resize_smoke.exe",
+    "zip_bytes": 23835207,
+    "zip_sha256": "874b7aaf68f963f771c73e5bf20f9faa7fcf9e4d87c3c613df751f12e2a88abc",
+    "stdin_gate_bytes_hex": "474f0a",
+    "wait_for_job_cli_flag": false,
+    "executed_in_guest_in_this_record": false
+  },
+  "limitations": [
+    "No WindTerm resize/reflow/content-restoration or full history equivalence claim",
+    "No actual cross-DPI, physical keyboard, IME/Find/selection/rename or presentation acceptance; presented_done remains null",
+    "Natural exit racing a pending request may retain the old child/transport size; this is a lifecycle check, not a size-sync pass",
+    "The 25-second outer guard and original Qt arithmetic/exit assertions were not weakened",
+    "Existing 256KiB queue capacity is a diagnostic resource guard, not an approved performance tolerance",
+    "First GUI-only red/green EXE identities were not frozen; no binary identities have been reconstructed",
+    "Incremental pre-CRT-merge samples and final merged pinned-CRT product configuration are distinct",
+    "Existing hosted system-backend failures #80/#144/#145 remain separate and are not fixed by this work",
+    "No product release, complete #29/#31/R2, Qt/third-party redistribution or performance-equivalence acceptance"
+  ]
+}

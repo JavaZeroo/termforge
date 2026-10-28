@@ -22,7 +22,7 @@ An independent, fully open-source terminal project targeting WindTerm 2.7.0 feat
 
 ## 项目地图
 
-新的[自主 C++ / Qt 会话入口](src/qt/README.md)以显式构建开关提供固定 80×24 的 cmd 标签，可新增、切换、独立关闭并在应用退出前核对会话回收；[限定验证](experiments/shell/results/2026-10-28-qt-tabs/README.md)不继承旧配置能力。当前默认入口和上面的操作说明仍属于既有 Win32 原型。分屏、其他 shell、工作区恢复、完整文字交互及动态 resize 尚待迁移，不能据此声明完整开发版。
+新的[自主 C++ / Qt 会话入口](src/qt/README.md)以显式构建开关提供默认 80×24、随可用区域变化的 cmd 标签，可新增、切换、独立关闭并在应用退出前核对会话回收；[基础动态尺寸验证](experiments/shell/results/2026-10-29-qt-resize/README.md)分离窗口、核心、transport 完成和真实 child 尺寸，不继承旧配置能力。当前默认入口和上面的操作说明仍属于既有 Win32 原型。分屏、其他 shell、工作区恢复、完整文字交互及完整 resize/reflow 尚待迁移，不能据此声明完整开发版。
 
 | 要了解什么 | 唯一入口 |
 |---|---|
