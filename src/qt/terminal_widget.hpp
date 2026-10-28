@@ -32,10 +32,13 @@ class TerminalWidget final : public QWidget {
         return palette[index >= 0 && index < 16 ? static_cast<size_t>(index) : foreground ? 7 : 0];
     }
     void closeEvent(QCloseEvent* event) override {
+        keyboard_.reset();
         model_.close();
         QWidget::closeEvent(event);
     }
     bool event(QEvent* event) override {
+        if (event->type() == QEvent::FocusOut || event->type() == QEvent::Hide)
+            keyboard_.reset();
         // QWidget normally consumes Tab for focus traversal before keyPressEvent.
         if (event->type() == QEvent::KeyPress && static_cast<QKeyEvent*>(event)->key() == Qt::Key_Tab) {
             keyPressEvent(static_cast<QKeyEvent*>(event)); return event->isAccepted();
@@ -43,6 +46,15 @@ class TerminalWidget final : public QWidget {
         return QWidget::event(event);
     }
     void keyPressEvent(QKeyEvent* event) override {
+        if (!isVisible() || !hasFocus()) {
+            keyboard_.reset(); event->ignore(); return;
+        }
+        if (!model_.running()) {
+            keyboard_.reset();
+            // Report the unavailable target even for an uncommitted high unit.
+            model_.send(std::string{});
+            event->ignore(); return;
+        }
         std::string bytes;
         auto next = keyboard_;
         bool character_text = false;
@@ -129,9 +141,13 @@ public:
         setFocusPolicy(Qt::StrongFocus);
         setAttribute(Qt::WA_InputMethodEnabled, false);
         setFixedSize(sizeHint());
-        model_.on_changed = [this] { update(); };
+        model_.on_changed = [this] { refresh_session(); };
     }
     ~TerminalWidget() override { model_.on_changed = {}; }
+    void refresh_session() {
+        if (!model_.running()) keyboard_.reset();
+        update();
+    }
     QSize sizeHint() const override {
         return {margin * 2 + SessionModel::fixed_columns * cell_width_,
                 margin * 3 + (SessionModel::fixed_rows + 1) * cell_height_};

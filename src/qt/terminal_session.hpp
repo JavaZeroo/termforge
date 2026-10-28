@@ -184,7 +184,10 @@ public:
         return succeeded;
     }
     bool send(const std::string& bytes) {
-        if (!running() || !input_) return false;
+        if (!running() || !input_) {
+            remember_error(QStringLiteral("Terminal input is unavailable"));
+            notify(); return false;
+        }
         try {
             if (input_->send(bytes)) return true;
             remember_error(QStringLiteral("Terminal input queue is full or unavailable"));

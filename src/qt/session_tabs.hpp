@@ -24,7 +24,7 @@ public:
         layout->setContentsMargins(0, 0, 0, 0);
         layout->addWidget(&terminal_);
         model_.on_changed = [this] {
-            terminal_.update();
+            terminal_.refresh_session();
             if (on_changed) on_changed();
             if (retired_ && model_.finished()) deleteLater();
         };

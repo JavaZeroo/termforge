@@ -59,7 +59,7 @@ static void finish(SessionModel& model) {
             "receiver did not exit naturally with verified Job cleanup");
 }
 static void focus(TerminalWidget& terminal) {
-    terminal.show(); terminal.activateWindow(); terminal.setFocus();
+    terminal.show(); QApplication::setActiveWindow(terminal.window()); terminal.setFocus();
     QApplication::processEvents();
     require(terminal.hasFocus(), "key event target has no focus");
 }
@@ -109,7 +109,7 @@ static QJsonObject focus_and_packet_rejection(const QString& receiver, const QSt
     require(text_event(terminal, QStringLiteral("F")), "ASCII prefix was rejected");
     require(text_event(terminal, QString(QChar(0xd83d))), "pending high was rejected");
     QLineEdit other;
-    other.show(); other.activateWindow(); other.setFocus(); QApplication::processEvents();
+    other.show(); QApplication::setActiveWindow(&other); other.setFocus(); QApplication::processEvents();
     require(other.hasFocus() && !terminal.hasFocus(), "focus did not leave terminal");
     require(!text_event(terminal, QStringLiteral("LEAK")), "unfocused target accepted synthetic text");
     focus(terminal);
