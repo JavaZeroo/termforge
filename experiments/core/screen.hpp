@@ -69,6 +69,8 @@ class Screen {
             lines.swap(other.lines); history.swap(other.history);
         }
     };
+    // Permission belongs to the terminal; each frame retains its own edge state.
+    bool autowrap_enabled_ = true;
     int columns_;
     uint64_t next_id_ = 1;
     uint64_t buffer_epoch_ = 0;
@@ -169,6 +171,9 @@ public:
     int width() const { return columns_; }
     ScreenBuffer active_buffer() const { return active_buffer_; }
     uint64_t buffer_epoch() const { return buffer_epoch_; }
+    // Keep the edge state: enabling after a disabled last-column write must
+    // still let the next printable character start the continuation.
+    void set_autowrap(bool enabled) { autowrap_enabled_ = enabled; }
     // An in-place logical reset must invalidate old readers even if the next
     // writes reproduce identical text using the same physical row storage.
     void invalidate_buffer_readers() {
@@ -282,7 +287,9 @@ public:
             base.text += utf8; ++base.marks; changed(lines[last_row]); return;
         }
         if (cells > width()) throw InputError("wide scalar cannot fit screen");
-        if (wrap_pending || column + cells > width()) {
+        if (!autowrap_enabled_ && column + cells > width())
+            throw InputError("wide scalar cannot fit with autowrap disabled");
+        if ((autowrap_enabled_ && wrap_pending) || column + cells > width()) {
             const auto used = static_cast<size_t>(wrap_pending ? width() : column);
             column = 0; newline(true, used);
         }
