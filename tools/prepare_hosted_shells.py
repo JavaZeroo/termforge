@@ -13,6 +13,7 @@ import os
 from pathlib import Path, PureWindowsPath
 import re
 import shlex
+import stat
 import subprocess
 import sys
 import time
@@ -34,6 +35,9 @@ COMMANDS_BY_STEP = {"preflight": ("cmd", "ps51", "ps7", "list"), "download": (),
                     "check-before": ("list", "startup"), "check-after": ("list", "startup")}
 COMMAND_DEADLINES = {"cmd": 10, "ps51": 10, "ps7": 10, "list": 10,
                      "list-before-import": 10, "import": 80, "startup": 20}
+OUTPUT_LIMIT = 65536
+COMMAND_MARKERS = {"cmd": b"TERMFORGE_HOSTED_CMD_READY", "ps51": b"TERMFORGE_HOSTED_PS51_READY",
+                   "ps7": b"TERMFORGE_HOSTED_PS7_READY", "startup": b"TERMFORGE_HOSTED_WSL_READY"}
 
 
 class PreparationError(Exception):
@@ -235,6 +239,67 @@ def public_command_observation(directory, step):
         return {"status": "not_observed", "events": []}
     except (OSError, ValueError, RecursionError):
         return {"status": "invalid", "events": []}
+
+
+def _output_identity(value):
+    return value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns
+
+
+def _output_stream(path):
+    # Regular, closed worker files only. Raw bytes never enter the public map.
+    try:
+        with path.open("rb") as stream:
+            before = os.fstat(stream.fileno())
+            if not stat.S_ISREG(before.st_mode):
+                return {"status": "unreadable", "bytes": None}, None
+            raw = stream.read(OUTPUT_LIMIT + 1)
+            after = os.fstat(stream.fileno())
+        if _output_identity(before) != _output_identity(after) or _output_identity(after) != _output_identity(path.stat()):
+            return {"status": "unstable", "bytes": None}, None
+        if len(raw) > OUTPUT_LIMIT:
+            return {"status": "oversize", "bytes": None}, None
+        if len(raw) != after.st_size:
+            return {"status": "unstable", "bytes": None}, None
+        return {"status": "observed", "bytes": len(raw)}, raw
+    except FileNotFoundError:
+        return {"status": "not_observed", "bytes": None}, None
+    except (OSError, ValueError):
+        return {"status": "unreadable", "bytes": None}, None
+
+
+def public_command_output(directory, step, cleanup, observation):
+    """Post-cleanup facts, independent of command and preparation acceptance."""
+    if step not in COMMANDS_BY_STEP:
+        return {"status": "invalid", "commands": []}
+    if not COMMANDS_BY_STEP[step]:
+        return {"status": "not_applicable", "commands": []}
+    after = cleanup.get("job_after")
+    if (cleanup.get("root_reaped") is not True or cleanup.get("audit_status") != "observed" or
+            cleanup.get("membership_stable") is not True or type(after) is not dict or
+            type(after.get("active")) is not int or after["active"] != 0 or
+            type(cleanup.get("job_after_pid_count")) is not int or cleanup["job_after_pid_count"] != 0):
+        return {"status": "writers_unverified", "commands": []}
+    if observation.get("status") != "observed":
+        return {"status": "not_observed", "commands": []}
+    events = validate_command_events({"events": observation["events"]}, step)
+    commands = []
+    for event in events:
+        if event["phase"] != "invoking":
+            continue
+        name = event["command"]
+        stdout, raw = _output_stream(directory / (name + ".stdout"))
+        stderr, _ = _output_stream(directory / (name + ".stderr"))
+        marker = COMMAND_MARKERS.get(name)
+        stdout.update(marker_status="not_applicable" if marker is None else "unknown",
+                      marker_complete_line_seen=None)
+        if marker is not None and raw is not None:
+            # A final unterminated fragment is not a completed WriteLine. Other
+            # output may be private and is neither decoded nor published.
+            lines = raw.removeprefix(b"\xef\xbb\xbf").split(b"\n")[:-1]
+            stdout.update(marker_status="observed",
+                          marker_complete_line_seen=any(line.removesuffix(b"\r") == marker for line in lines))
+        commands.append({"command": name, "stdout": stdout, "stderr": stderr})
+    return {"status": "observed" if commands else "not_observed", "commands": commands}
 
 
 def run_command(command, directory, name, *, cwd, timeout=10, data=None):
@@ -462,6 +527,12 @@ def run_step(step, out):
         (private / "worker.stderr").write_bytes(stderr)
     record["command_observation"] = (public_command_observation(private, step) if cleanup["root_reaped"] else
                                      {"status": "worker_not_reaped", "events": []})
+    try:
+        record["command_output_observation"] = public_command_output(private, step, cleanup, record["command_observation"])
+    except Exception:
+        # Diagnostic I/O, malformed metadata or a reporter failure must never
+        # replace the command result, its deadline, or a cleanup failure.
+        record["command_output_observation"] = {"status": "unavailable", "commands": []}
     return record
 
 

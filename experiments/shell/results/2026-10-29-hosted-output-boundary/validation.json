@@ -1,0 +1,116 @@
+{
+  "schema": "termforge-hosted-output-boundary-validation-v1",
+  "issue": 158,
+  "base_commit": "7e896cb75283fd0d984c936500ba8d1de4ceaf46",
+  "red_test_commit": "39921c1",
+  "implementation_commit": "d63be02",
+  "tested_source_commit": "87deb48fd0849dc8a65d627e4e0e47fb9c71289e",
+  "read_limit_bytes_per_stream": 65537,
+  "maximum_reported_bytes": 65536,
+  "related_tests": {
+    "ordinary": {
+      "tests_passed": 32,
+      "seconds": 0.58,
+      "skipped": 0,
+      "log_bytes": 6450,
+      "log_sha256": "8725ee467ffcd72e4d7b8a970c7cb8be53cd990304a8dfbed9ba8d2a849876b6"
+    },
+    "optimized": {
+      "tests_passed": 32,
+      "seconds": 0.583,
+      "skipped": 0,
+      "log_bytes": 6450,
+      "log_sha256": "1c481ebca2a49667c876e052297d3e23b7e83ab011a8b17a413bd9d04683d8d7"
+    }
+  },
+  "new_output_boundary_tests": 10,
+  "real_hosted_setup_runs": 0,
+  "real_target_processes": 0,
+  "real_owned_job_api_test_executed": false,
+  "new_real_deadline_observations": 0,
+  "old_timeout_root_cause": null,
+  "original_marker_presence": null,
+  "stdout_or_stderr_plaintext_published": false,
+  "source_sha256": {
+    "tools/prepare_hosted_shells.py": "f7389da9b7a727fbf8a3d541c0cd08dada03ecc1f451d6554159691784a0b97a",
+    "tools/test_prepare_hosted_shells.py": "7004cfff39d9da411286dd962bb36acece271f835d43c2b8006aefceff3c806e",
+    "tools/owned_job_cleanup.py": "e9ced3f89ef13e236ad91d0c94594c6a4c95ce3df86fd4121da12a327718dd0a",
+    "tools/test_owned_job_cleanup.py": "b962a46d257f4a2907e158951a55de807ef8be595f2bfff9c7598a3600666f07",
+    ".github/workflows/build.yml": "b1bf26d1335ed8a98b4b54e0e8006bcc5eb8260fb66ccf13316171fd47669ae3"
+  },
+  "unchanged_protected_functions_sha256": {
+    "run_command": "494a462071dd37192ce51762f6ef8bef49426b5d5d8e600cdf70478dadd8fcd5",
+    "worker": "7d7ccd6d906b35b986f80252b0d5e5cbc3e845d2a783d1beec30c26847fe57fc",
+    "validate_marker": "96e675a7cb17b5fc89ed7b4e48f4742ba3ed740d519f53d617cde2a001b07bcc",
+    "require_hosted": "d91ca75927000a78265cb3f124df81330b5f6b5f563add3618a4ad96ce97335b",
+    "require_paths": "5c9e56f35088a5a3ae20f772f6997875c303e2677d116364029ec1b3cb9d29b6",
+    "require_runtime": "b1b6d159782f48d041f95f2f5ea20026c08a4c36e3bf59329a1fd49f2fbb4d00",
+    "require_worker_job": "ee259b2c030900361de8975e6431f3abfcf08b4fea7bf61aed2f35b4d5463778",
+    "write_command_event": "f01bb648c7dc7b0ca913619e5d75252616242ed4cf8b8f3ed8949952a3264848",
+    "public_command_observation": "91b88a05b6734354ddacc3cce39117874db93f99879ad2baad37f14ce0c7f091"
+  },
+  "protected_schema_commands_oracles_and_budgets_unchanged": true,
+  "original_ci_artifacts": {
+    "pr150-preparation.zip": {
+      "bytes": 794,
+      "sha256": "31a931f0aa9a5cf3132bdebbcdafa4dd8bc6a61062060487520bcd02a0d3040f"
+    },
+    "pr150-failure.zip": {
+      "bytes": 20847,
+      "sha256": "9fa15920d95b690cf6fe6c8b47832a6c886db18c704dc21fc9ea6e64d1b5c830"
+    },
+    "pr150-job.log": {
+      "bytes": 53914,
+      "sha256": "1d8a788cf33d2d0aeb72333da7406056a14d197292739e7b3b6dd5ceb3124674"
+    },
+    "pr150-preparation-summary.json": {
+      "bytes": 2215,
+      "sha256": "6ad0029fa3e77c9e54fe23ba2de132db98638ddab16a754437c40794d7441216"
+    },
+    "pr153-preparation.zip": {
+      "bytes": 793,
+      "sha256": "09eb0d74b0c6294236e8f1f7862c6ae4e78ca3ccb4fb0eedf8d089200a130a0b"
+    },
+    "pr153-failure.zip": {
+      "bytes": 20847,
+      "sha256": "097c7eabc88c122153bd2d9a02395186b0e4c5068c4d9c0af49a111d65db9a4c"
+    },
+    "pr153-job.log": {
+      "bytes": 53844,
+      "sha256": "5520b7a224a3fe5785fe5d3666c13de16e7def9c7019f468fd59756862a5a18c"
+    },
+    "pr153-preparation-summary.json": {
+      "bytes": 2215,
+      "sha256": "6818a1af4a70f5336a2b4d41ed91366b4660ca5fd5ed461cc2a70f334aec051d"
+    }
+  },
+  "preflight_sha256": "555cbac4d66878fc7a1650f50ee741cfaa3d38a7b5b195220ade94ffa79448da",
+  "postflight_sha256": "8ff8dcabd40389c350cbd802b3653d95bb86e79c9b539507fa9528aed0e0f3be",
+  "red_log": {
+    "bytes": 1074,
+    "sha256": "7945ff347c4c60613d58dd9e3060724152f6a22666ce93e5343758773c486d2d"
+  },
+  "green_log": {
+    "bytes": 324,
+    "sha256": "29c4f6bb245d1f68c81748c7bed6bc2b7da7c4d87d1f91a9b9033995d67c9211"
+  },
+  "synthetic_boundaries_verified": [
+    "run_command writes actual supplied stdout file then TimeoutExpired; parent marker=true while command_deadline remains",
+    "complete LF/CRLF line and leading UTF8 BOM; empty/partial/substring false",
+    "private extra output is never published and strict startup oracle still rejects it",
+    "missing/oversize/read-error/changed-during-read output is unknown, not zero",
+    "65536B observed; 65537B overflow unknown for both stream types",
+    "non-reaped worker or nonempty owned Job cannot claim stable output",
+    "original success/nonzero/command deadline/worker deadline/cleanup failure preserved",
+    "unknown command trace cannot construct a private read path",
+    "commands without marker explicitly not_applicable",
+    "reporter exception cannot replace success or failure"
+  ],
+  "limitations": [
+    "synthetic mocked process/Job boundaries only; no real hosted run or PowerShell execution",
+    "captured complete marker is a post-cleanup fact, not a pre-deadline timestamp",
+    "no marker does not prove process creation or engine startup failed",
+    "old CI artifacts do not contain original private streams; old marker remains unknown",
+    "existing command and worker budgets remain; no new whole-lifecycle hard bound claimed"
+  ]
+}
