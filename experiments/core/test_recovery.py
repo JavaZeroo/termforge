@@ -135,7 +135,11 @@ class RecoveryTests(unittest.TestCase):
                     self.assertFalse(value["screen"]["wrap_pending"])
 
     def test_unknown_csi_consumes_private_and_intermediate(self):
-        self.expect(b"A\x1b[?1049h\x1b[1 q\x1b[6nZ", "AZ", stats={"ignored_sequences": 3})
+        self.expect(b"A\x1b[?9999h\x1b[1 q\x1b[6nZ", "AZ", stats={"ignored_sequences": 3})
+
+    def test_known_alternate_mode_is_not_counted_as_ignored(self):
+        self.expect(b"A\x1b[?1049hALT\x1b[?1049hNEW\x1b[?1049lZ", "AZ",
+                    stats={"ignored_sequences": 0})
 
     def test_invalid_parameter_does_not_apply_prefix(self):
         self.expect(b"A\x1b[2;3;4H\x1b[3J\x1b[3KZ", "AZ", stats={"ignored_sequences": 3})

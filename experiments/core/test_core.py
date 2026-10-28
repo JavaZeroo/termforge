@@ -75,13 +75,17 @@ class CoreTests(unittest.TestCase):
         self.expect(b'"\\', ['"\\   '], 0, 2)
 
     def test_unsupported_and_truncated_fail(self):
-        for data in [b"\x1b", b"\x1b[12;", b"\x1b[38;5;1m", b"\x1b[?1049h", b"\x1b]title\x07",
+        for data in [b"\x1b", b"\x1b[12;", b"\x1b[38;5;1m", b"\x1b[?9999h", b"\x1b]title\x07",
                      b"\0", b"\x1b[999999999A", b"\x1b[1;2;3H",
                      b"\x1b[" + b"0" * 33 + b"A"]:
             for chunk in (1, 65536):
                 result = self.replay(data, chunk=chunk)
                 self.assertEqual(result.returncode, 2, data)
                 self.assertEqual(result.stdout, "")
+
+    def test_alternate_screen_roundtrip_and_repeated_entry(self):
+        self.expect(b"MAIN\x1b[?1049hALT\x1b[?1049hNEW\x1b[?1049l!",
+                    ["MAIN!   ", "        "], 0, 5)
 
     def test_dimensions_guard(self):
         self.assertEqual(self.replay(b"X", rows=0).returncode, 2)
