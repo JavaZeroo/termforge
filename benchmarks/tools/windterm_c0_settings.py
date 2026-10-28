@@ -41,18 +41,28 @@ def validate_cmd_paths(out):
             require(not any(char in base.CMD_PATH_META or ord(char)<32 for char in text),'Unsupported cmd path characters')
 
 
+def patch_global(raw):
+    """Replace three unique scalar tokens, preserving vendor JSON-like syntax byte-for-byte."""
+    spans=[];original={}
+    for key,requested in GLOBAL_REQUESTS.items():
+        pattern=re.compile(rb'(?m)^[ \t]*"'+re.escape(key.encode('ascii'))+rb'"[ \t]*:[ \t]*(?P<value>"(?:[^"\\\r\n]|\\.)*"|true|false|-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?)[ \t]*,?[ \t]*(?://[^\r\n]*)?\r?$')
+        matches=list(pattern.finditer(raw));require(len(matches)==1,'Declared global key must occur once on a scalar line')
+        match=matches[0];value=json.loads(match['value']);require(type(value) is type(requested),'Static global scalar type differs')
+        original[key]=value;spans.append((match.start('value'),match.end('value'),json.dumps(requested).encode('ascii')))
+    patched=raw
+    for begin,end,replacement in sorted(spans,reverse=True):patched=patched[:begin]+replacement+patched[end:]
+    return patched,original
+
+
 def configure_copy(out,expected_manifest=EXPECTED_FILES):
     """Verify the entire baseline, then apply only declared keys in an owned copy."""
     app=out/'app';manifest=json.loads((out/'files.json').read_text())
     require(manifest_digest(manifest)==expected_manifest,'Baseline manifest identity differs')
     measured={name:sha(app/name) for name in manifest}
     require(measured==manifest,'Prepared baseline files changed')
-    path=app/'global/wind.config';before=path.read_bytes();original=json.loads(before)
-    require(all(key in original for key in GLOBAL_REQUESTS),'Declared global key missing')
-    changed={**original,**GLOBAL_REQUESTS}
-    require({key:value for key,value in original.items() if key not in GLOBAL_REQUESTS}=={key:value for key,value in changed.items() if key not in GLOBAL_REQUESTS},'Unrequested global key changed')
+    path=app/'global/wind.config';before=path.read_bytes();changed,original=patch_global(before)
     (out/'global-config-before.bin').write_bytes(before)
-    path.write_text(json.dumps(changed,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+    path.write_bytes(changed)
     configured={name:sha(app/name) for name in manifest}
     require([name for name in manifest if manifest[name]!=configured[name]]==['global/wind.config'],'Unexpected distribution file delta')
     session=out/'profile/.wind/profiles/default.v10/terminal/user.sessions';rows=json.loads(session.read_text())
@@ -60,6 +70,7 @@ def configure_copy(out,expected_manifest=EXPECTED_FILES):
     session.write_text(json.dumps(rows,indent=2)+'\n',encoding='utf-8',newline='\n')
     delta={'baseline_manifest_sha256':expected_manifest,'configured_manifest_sha256':manifest_digest(configured),'changed_distribution_files':['global/wind.config'],
            'global_before_sha256':hashlib.sha256(before).hexdigest(),'global_after_sha256':sha(path),'keys':{key:{'before':original[key],'requested':value} for key,value in GLOBAL_REQUESTS.items()},
+           'all_other_global_bytes_preserved':True,
            'session_requests':SESSION_REQUESTS,'synthetic_session_sha256':sha(session)}
     write_json(out/'configured-files.json',configured);write_json(out/'config-delta.json',delta)
     return delta
@@ -78,8 +89,8 @@ def prepare_plan(source,out,rea,destination,execution_authorized=False,run_id=No
           'source':str(source),'out':str(out),'rea':str(rea),'run_id':run_id,'rea_capture_seconds':30,'cli_wait_timeout_seconds':45,'whole_lifecycle_bound_seconds':None,
           'module_sha256':hashes,'baseline_files_manifest_sha256':EXPECTED_FILES,'requested_session':SESSION_REQUESTS,'requested_global':GLOBAL_REQUESTS,
           'static_resource_sha256':{name:sha(source/name) for name in ('global/wind.config','terminal/configs/session.config','terminal/configs/statusbar.config')},
-          'static_config_hints':{'evidence_kind':'static-only','global':{key:json.loads((source/'global/wind.config').read_text())[key] for key in GLOBAL_REQUESTS},'session':{key:json.loads((source/'terminal/configs/session.config').read_text())[key] for key in SESSION_REQUESTS}},
-          'expected_configured_global_sha256':hashlib.sha256((json.dumps({**json.loads((source/'global/wind.config').read_text()),**GLOBAL_REQUESTS},ensure_ascii=False,indent=2)+'\n').encode()).hexdigest(),
+          'static_config_hints':{'evidence_kind':'static-only','global':patch_global((source/'global/wind.config').read_bytes())[1],'session':{key:json.loads((source/'terminal/configs/session.config').read_bytes())[key] for key in SESSION_REQUESTS}},
+          'expected_configured_global_sha256':hashlib.sha256(patch_global((source/'global/wind.config').read_bytes())[0]).hexdigest(),
           'source_files_sha256':{name:sha(ROOT/name) for name in SOURCE_FILES},'composed_template_sha256':hashlib.sha256(probe_template().encode()).hexdigest(),
           'helper_prefix_sha256':hashlib.sha256(OLD_PROBE.read_text(encoding='utf-8').split('function state(){',1)[0].encode()).hexdigest(),
           'workload':{'lines':lines,'payload_hex':payload.hex(),'payload_bytes':len(payload),'sha256':hashlib.sha256(payload).hexdigest()},
@@ -134,10 +145,11 @@ def summarize(out,plan_path):
     delta=read('config-delta.json');configured=read('configured-files.json');baseline=read('files.json')
     require(plan['requested_session']==SESSION_REQUESTS and plan['requested_global']==GLOBAL_REQUESTS and delta['baseline_manifest_sha256']==EXPECTED_FILES,'Request/baseline metadata differs')
     require(set(configured)==set(baseline) and manifest_digest(baseline)==EXPECTED_FILES and manifest_digest(configured)==delta['configured_manifest_sha256'] and {name:sha(out/'app'/name) for name in configured}==configured,'Configured package identity differs')
-    require([name for name in baseline if baseline[name]!=configured[name]]==delta['changed_distribution_files']==['global/wind.config'] and delta['session_requests']==SESSION_REQUESTS and delta['keys']=={key:{'before':json.loads((out/'global-config-before.bin').read_bytes())[key],'requested':value} for key,value in GLOBAL_REQUESTS.items()},'Controlled config delta differs')
+    expected_global,before=patch_global((out/'global-config-before.bin').read_bytes())
+    require([name for name in baseline if baseline[name]!=configured[name]]==delta['changed_distribution_files']==['global/wind.config'] and delta['session_requests']==SESSION_REQUESTS and delta['all_other_global_bytes_preserved'] is True and delta['keys']=={key:{'before':before[key],'requested':value} for key,value in GLOBAL_REQUESTS.items()},'Controlled config delta differs')
     require(sha(out/'global-config-before.bin')==delta['global_before_sha256']==plan['static_resource_sha256']['global/wind.config'] and sha(out/'app/global/wind.config')==delta['global_after_sha256']==plan['expected_configured_global_sha256'],'Config resource SHA differs')
-    before=json.loads((out/'global-config-before.bin').read_bytes());after=json.loads((out/'app/global/wind.config').read_bytes());require(after=={**before,**GLOBAL_REQUESTS},'Unrequested global config changed')
-    require(plan['static_config_hints']=={'evidence_kind':'static-only','global':{key:before[key] for key in GLOBAL_REQUESTS},'session':{key:json.loads((out/'app/terminal/configs/session.config').read_text())[key] for key in SESSION_REQUESTS}},'Static hints differ from fixed resources')
+    require((out/'app/global/wind.config').read_bytes()==expected_global,'Unrequested global bytes changed')
+    require(plan['static_config_hints']=={'evidence_kind':'static-only','global':before,'session':{key:json.loads((out/'app/terminal/configs/session.config').read_bytes())[key] for key in SESSION_REQUESTS}},'Static hints differ from fixed resources')
     produced=read('producer.json');require(produced['run_id']==plan['run_id'] and produced['status']=='complete' and produced['error'] is None and produced['sha256']==work['sha256'] and produced['payload_bytes']==len(payload) and produced['consumer_done'] is None and produced['presented_done'] is None,'Producer identity differs')
     console={key:produced['console'].get(key) for key in ('vt_enable_succeeded','original_mode','columns','rows','buffer_columns','buffer_rows')};require(console['vt_enable_succeeded'] is True and all(value is None or type(value) is int and 0<=value<=0xffffffff for key,value in console.items() if key!='vt_enable_succeeded'),'Invalid producer console')
     payloads=base.evidence_payloads(identity,read('evidence.json'),sha(out/'probe.js'));finished=[row for row in payloads if row.get('kind')=='settings_complete'];require(len(finished)==1,'One complete settings snapshot required')

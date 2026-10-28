@@ -40,7 +40,7 @@ class SettingsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             out=Path(folder);app=out/'app';(app/'global').mkdir(parents=True)
             original={'text.fontFamily1':'Synthetic Original','text.fontSize':10,'terminal.autoComplete.enabled':True,'unrelated':{'keep':[1,2,3]}}
-            (app/'global/wind.config').write_text(json.dumps(original));(app/'other.bin').write_bytes(b'unchanged')
+            (app/'global/wind.config').write_text(json.dumps(original,indent=2));(app/'other.bin').write_bytes(b'unchanged')
             manifest={name:settings.sha(app/name) for name in ('global/wind.config','other.bin')}
             (out/'files.json').write_text(json.dumps(manifest))
             session=out/'profile/.wind/profiles/default.v10/terminal/user.sessions';session.parent.mkdir(parents=True);session.write_text(json.dumps([{'session.label':'synthetic','keep':True}]))
@@ -49,6 +49,17 @@ class SettingsTests(unittest.TestCase):
             self.assertEqual(json.loads((app/'global/wind.config').read_text()),{**original,**settings.GLOBAL_REQUESTS})
             self.assertEqual((app/'other.bin').read_bytes(),b'unchanged')
             self.assertEqual(json.loads(session.read_text()),[{'session.label':'synthetic','keep':True,**settings.SESSION_REQUESTS}])
+
+    def test_bom_comments_and_unrelated_bytes_survive_exact_key_token_patch(self):
+        with tempfile.TemporaryDirectory() as folder:
+            out=Path(folder);app=out/'app';(app/'global').mkdir(parents=True)
+            original=b'\xef\xbb\xbf{\r\n  "text.fontFamily1": "Synthetic Original",\r\n  "text.fontSize": 10,\r\n  "terminal.autoComplete.enabled": true,\r\n  "unrelated": 1 // synthetic comment\r\n}\r\n'
+            (app/'global/wind.config').write_bytes(original);manifest={'global/wind.config':settings.sha(app/'global/wind.config')};(out/'files.json').write_text(json.dumps(manifest))
+            session=out/'profile/.wind/profiles/default.v10/terminal/user.sessions';session.parent.mkdir(parents=True);session.write_text('[{}]')
+            result=settings.configure_copy(out,manifest_digest(manifest))
+            expected=original.replace(b'"Synthetic Original"',b'"Cascadia Mono"').replace(b'"text.fontSize": 10',b'"text.fontSize": 12').replace(b'"terminal.autoComplete.enabled": true',b'"terminal.autoComplete.enabled": false')
+            self.assertEqual((app/'global/wind.config').read_bytes(),expected)
+            self.assertTrue(result['all_other_global_bytes_preserved'])
 
     def test_manifest_failure_precedes_any_configuration_write(self):
         with tempfile.TemporaryDirectory() as folder:
