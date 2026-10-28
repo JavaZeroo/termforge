@@ -5,6 +5,8 @@
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QFile>
+#include <QFileInfo>
+#include <QDir>
 #include <QImage>
 #include <QInputMethodEvent>
 #include <QJsonArray>
@@ -14,6 +16,7 @@
 #include <QSaveFile>
 #include <QTabBar>
 #include <QTimer>
+#include <iostream>
 
 namespace termforge::qt::ime_native {
 inline void check(bool value, const char* message) {

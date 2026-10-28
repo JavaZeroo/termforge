@@ -364,6 +364,52 @@ static QJsonObject output_and_geometry(const QString& directory) {
             {"after_resize", rectangle(after_resize)}, {"after_font", rectangle(after_font)},
             {"public_cursor_rectangle_changes", changed_rectangles}, {"receiver_exit_code", 0}};
 }
+static QJsonObject attribute_capacity_and_interrupt(const QString& receiver, const QString& directory) {
+    const auto path = directory + QStringLiteral("/ime-guards.bin");
+    SessionModel model; TerminalWidget terminal(model); focus(terminal);
+    require(model.start(receiver.toStdWString(), (QStringLiteral("\"") + path + QLatin1Char('"')).toStdWString(),
+                        directory.toStdWString()), "IME guard receiver could not start");
+    await([&] { return has_text(model.screen(), "TF_KEY_READY"); }, "IME guard receiver was not ready");
+    require(key_text(terminal, QStringLiteral("L")), "guard prefix was rejected");
+    QTextCharFormat format; format.setFontUnderline(true);
+    QList<QInputMethodEvent::Attribute> normal;
+    for (int index = 0; index < 256; ++index) normal.append({QInputMethodEvent::TextFormat, index, 1, format});
+    normal.append({QInputMethodEvent::Cursor, 128, 1, QColor(0, 255, 255)});
+    normal.append({QInputMethodEvent::Selection, 0, 0, QVariant()});
+    const bool normal_accepted = ime_event(terminal, {}, QString(256, QLatin1Char('x')), normal);
+    ime_event(terminal, {});
+    QList<QInputMethodEvent::Attribute> formats, selections;
+    for (int index = 0; index < 4096; ++index) {
+        formats.append({QInputMethodEvent::TextFormat, 0, 0, format});
+        selections.append({QInputMethodEvent::Selection, 0, 0, QVariant()});
+    }
+    const bool formats_accepted = ime_event(terminal, QStringLiteral("BAD"), QStringLiteral("x"), formats);
+    ime_event(terminal, {});
+    const bool selections_accepted = ime_event(terminal, QStringLiteral("SEL_BAD"), QStringLiteral("x"), selections);
+    ime_event(terminal, {});
+    require(ime_event(terminal, {}, QStringLiteral("ctrl")), "interrupt preedit was rejected");
+    QKeyEvent interrupt(QEvent::KeyPress, Qt::Key_C, Qt::ControlModifier, QString(QChar(3)));
+    interrupt.setAccepted(false); QApplication::sendEvent(&terminal, &interrupt);
+    ime_event(terminal, {});
+    require(key_text(terminal, QStringLiteral("R")), "guard suffix was rejected");
+    finish(model);
+    const auto actual = received(path);
+    const QJsonObject observation{{"case", "attribute-capacity-and-composing-interrupt"},
+        {"normal_attribute_count", 258}, {"normal_accepted", normal_accepted},
+        {"noop_attribute_count", 4096}, {"noop_formats_accepted", formats_accepted},
+        {"noop_selections_accepted", selections_accepted}, {"composing_ctrl_c_accepted", interrupt.isAccepted()},
+        {"received_hex", QString::fromLatin1(actual.toHex())}, {"expected_hex", "4c0352"},
+        {"receiver_natural_exit", model.natural_exit()}, {"receiver_cleanup_verified", model.cleanup_verified()}};
+    QFile saved(directory + QStringLiteral("/guards-observation.json"));
+    require(saved.open(QIODevice::WriteOnly) && saved.write(QJsonDocument(observation).toJson()) > 0,
+            "IME guard observation could not be retained");
+    std::cerr << "ime guards=" << QJsonDocument(observation).toJson(QJsonDocument::Compact).constData() << '\n';
+    require(normal_accepted && !formats_accepted && !selections_accepted,
+            "IME no-op attribute list was not rejected without weakening normal formats");
+    require(interrupt.isAccepted() && actual == QByteArray::fromHex("4c0352"),
+            "composing IME swallowed Ctrl-C or leaked rejected transaction bytes");
+    return observation;
+}
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
@@ -398,7 +444,8 @@ int main(int argc, char** argv) {
                                  {"cases", QJsonArray{literal_ime_commit(receiver, workspace.path()),
                                                        limits_and_literal_boundaries(receiver, workspace.path()),
                                                        context_isolation(receiver, workspace.path()),
-                                                       output_and_geometry(workspace.path())}},
+                                                       output_and_geometry(workspace.path()),
+                                                       attribute_capacity_and_interrupt(receiver, workspace.path())}},
                                  {"actual_os_ime", false}, {"presented_done", QJsonValue()}};
         std::cout << QJsonDocument(result).toJson(QJsonDocument::Compact).constData() << '\n';
         return 0;
