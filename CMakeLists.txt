@@ -322,6 +322,7 @@ if(BUILD_TESTING)
   termforge_add_python_test(windterm_alternate_export -m unittest research.ui.test_export_alternate_reference -v)
   termforge_add_python_test(windterm_alternate_style_reference -m unittest research.ui.test_export_alternate_style_reference research.ui.test_alternate_style_peer -v)
   termforge_add_python_test(windterm_raster_style_reference -m unittest research.ui.test_raster_style_reference -v)
+  termforge_add_python_test(windterm_origin_wrap_reference -m unittest research.ui.test_origin_wrap_reference research.ui.test_export_origin_wrap_reference -v)
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)
   termforge_add_python_test(recovery_measure_protocol -m unittest experiments.measure.test_recovery_measure -v)
