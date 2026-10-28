@@ -1,0 +1,237 @@
+{
+  "schema": "termforge-raster-raw-offline-replay-v1",
+  "case_id": "raw-capture-v1",
+  "new_original_runs": 0,
+  "analysis_sha256": "019d2c2616ac3942160da19289c7d4ee0fa7560dcd3c6d27f732cf724da98e50",
+  "analysis_helpers_sha256": "745cda14921a383ca9baf6ec85242982ca587396b8464a3d27047ecf204a8845",
+  "replay_source_sha256": "3a96884728cf4bc822574f26fc70c8dc40f9d794dbfc7d366015410773b81b9f",
+  "source_evidence_id": "ev_432abe8baf4fc86efd4994cd12cc3ab5fe0b5120476d22540c5b26e2e3c693a4",
+  "source_raw_sha256": "3887faaa8d055f42388eafc4b0a9ee2e2b8111d3fa1384e07ec5f0a50585f34d",
+  "source_evidence_sha256": "8004b69182f5fa9caf0b4c51acb9a179bf353cab27885d016cd98c7356536d5e",
+  "source_production_commit": "e302fa3acb6a2ed2982aad5550e027d37c772da6",
+  "original_status": "partial-raster-observation",
+  "original_reason": "dominant-ink-ambiguous",
+  "original_grab_phases": [
+    0,
+    1,
+    2
+  ],
+  "original_phase2_rois_captured": 1,
+  "original_phase2_markers": 2,
+  "missing_rois_fabricated": false,
+  "new_capture_inferred": false,
+  "phase2_observed_first_roi": {
+    "ordinal": 0,
+    "group": "alternate",
+    "sample": 0,
+    "h_rect": [
+      203,
+      54,
+      8,
+      18
+    ],
+    "space_rect": [
+      195,
+      54,
+      8,
+      18
+    ],
+    "h": {
+      "samples": 144,
+      "sha256": "3cf5bdfb208ef523705b9a71cd88347c8f7357a34010775c2d0ae28d0ed0d90d",
+      "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+      "histogram": [
+        {
+          "rgba": [
+            134,
+            165,
+            84,
+            255
+          ],
+          "count": 1
+        },
+        {
+          "rgba": [
+            134,
+            165,
+            137,
+            255
+          ],
+          "count": 1
+        },
+        {
+          "rgba": [
+            135,
+            165,
+            43,
+            255
+          ],
+          "count": 1
+        },
+        {
+          "rgba": [
+            135,
+            165,
+            84,
+            255
+          ],
+          "count": 2
+        },
+        {
+          "rgba": [
+            135,
+            165,
+            137,
+            255
+          ],
+          "count": 8
+        },
+        {
+          "rgba": [
+            135,
+            180,
+            43,
+            255
+          ],
+          "count": 1
+        },
+        {
+          "rgba": [
+            135,
+            180,
+            112,
+            255
+          ],
+          "count": 8
+        },
+        {
+          "rgba": [
+            137,
+            110,
+            201,
+            255
+          ],
+          "count": 16
+        },
+        {
+          "rgba": [
+            137,
+            120,
+            181,
+            255
+          ],
+          "count": 3
+        },
+        {
+          "rgba": [
+            137,
+            120,
+            201,
+            255
+          ],
+          "count": 2
+        },
+        {
+          "rgba": [
+            137,
+            131,
+            137,
+            255
+          ],
+          "count": 1
+        },
+        {
+          "rgba": [
+            138,
+            110,
+            201,
+            255
+          ],
+          "count": 84
+        },
+        {
+          "rgba": [
+            138,
+            120,
+            137,
+            255
+          ],
+          "count": 16
+        }
+      ]
+    },
+    "space": {
+      "samples": 144,
+      "sha256": "a19388d1e35ab74c77c6f32cda0521c92f6868beba1a407a8adec72d93e9ad07",
+      "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+      "histogram": [
+        {
+          "rgba": [
+            138,
+            110,
+            201,
+            255
+          ],
+          "count": 144
+        }
+      ]
+    },
+    "background_rgba": [
+      138,
+      110,
+      201,
+      255
+    ],
+    "dominant_ink_rgba": null,
+    "dominant_ink_candidates": [
+      {
+        "rgba": [
+          137,
+          110,
+          201,
+          255
+        ],
+        "count": 16
+      },
+      {
+        "rgba": [
+          138,
+          120,
+          137,
+          255
+        ],
+        "count": 16
+      }
+    ],
+    "ink_observed": true,
+    "status": "dominant-ink-ambiguous",
+    "raw_signature": {
+      "h": {
+        "shape": [
+          8,
+          18
+        ],
+        "sha256": "3cf5bdfb208ef523705b9a71cd88347c8f7357a34010775c2d0ae28d0ed0d90d",
+        "samples": 144
+      },
+      "space": {
+        "shape": [
+          8,
+          18
+        ],
+        "sha256": "a19388d1e35ab74c77c6f32cda0521c92f6868beba1a407a8adec72d93e9ad07",
+        "samples": 144
+      }
+    }
+  },
+  "phase1_same_frame_raw_signature_comparison": {
+    "matching_controls": [
+      "SGR0"
+    ],
+    "unique_control": "SGR0",
+    "result": "unique-raw-match",
+    "signature": "Exact ordered H and space QRgb SHA-256 plus shapes and sample counts",
+    "unmatched_does_not_imply_reset": true
+  },
+  "limitation": "Offline replay only. It cannot recover the uncaptured second H or unsent phases3/4, and does not reclassify the original batch as complete."
+}
