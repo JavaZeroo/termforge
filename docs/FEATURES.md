@@ -25,6 +25,8 @@
 |---|---|---|---|
 | 自主 C++ / Qt / 固定微软 ConPTY | **实现中，未验收**：[显式 Qt 入口](../src/qt/README.md)提供固定 80×24 的 cmd 标签、基本 ASCII/16 色及各会话独立有界队列；双 cmd 输入、关闭和错误隔离及真实事件循环退出前回收有[限定验证](../experiments/shell/results/2026-10-28-qt-tabs/README.md)。Qt 1 项与其余 49 项既有/独立诊断分列 | 分屏、其他 shell、工作区恢复、动态 resize、历史/选择/Find、Unicode/IME、真实 DPI、应用兼容与性能仍需实现或迁移；应用/标签退出策略沿原型合同，完整 WindTerm 标签行为对照未完成；当前不是可发布开发包 | R2 |
 
+自主 C++ 核心的 [#130 双缓冲存储基础](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)已在独立模块边界实现拥有状态、交换激活、共享行 ID、双帧物理 resize 与文档 epoch 隔离，旧位置、选择、搜索及 viewport 不会在切换返回后复活。该基础尚未接入 private CSI；1049 的样式、重复进入清空及历史文档策略与完整 [#27](https://github.com/JavaZeroo/termforge/issues/27)另行验收，不表示产品已支持备用屏或 Qt 交互已迁移。
+
 官方参考的基础文字行为已按 [R1-01 合同](research/windterm-r1-text-contract.md)完成两组各两轮的自动取证；这为独立实现提供行为依据，产品能力仍按下表分别验收。
 
 | 能力 | 当前状态与边界 | 目标差距 | 路标 |

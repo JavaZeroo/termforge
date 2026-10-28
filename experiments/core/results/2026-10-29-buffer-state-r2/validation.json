@@ -1,0 +1,570 @@
+{
+  "schema": "termforge-cpp-buffer-state-validation-v1",
+  "date": "2026-10-29",
+  "issue": "https://github.com/JavaZeroo/termforge/issues/130",
+  "runtime_source_commit": "63589fa21b68c3029501772b7bb415e66aa99e97",
+  "merged_main_base": "337812bc27b10a8f4dee5e4e35ded21c90f4a151",
+  "scope": "Owned bounded screen frames and document epoch foundation only; no private CSI dispatch or WindTerm mode acceptance",
+  "provenance": "Independently authored synthetic literals and existing synthetic regression suites; no WindTerm artifacts or private profiles published",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "architecture": "x64",
+    "generator": "Visual Studio 17 2022",
+    "compiler_version": "19.42.34433.0",
+    "configuration": "Release",
+    "python_version": "3.12.10",
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "existing_windows_diagnostics_backend": "system ConPTY; not bundled product-route validation"
+  },
+  "environment": {
+    "PATH_prepend": "<Git installation>/usr/bin",
+    "PYTHONUTF8": "1",
+    "TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD": "0"
+  },
+  "commands": [
+    "cmake -S . -B build/core-buffer-state -G 'Visual Studio 17 2022' -A x64 -DTERMFORGE_BUILD_QT_SHELL=OFF -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF -DPython3_EXECUTABLE=<Python 3.12.10 executable>",
+    "cmake --build build/core-buffer-state --config Release",
+    "ctest --test-dir build/core-buffer-state -C Release --output-on-failure --output-junit <worktree>/local/buffer-state-r2/13-main-all-ctest.xml"
+  ],
+  "local_result": {
+    "configure_exit_code": 0,
+    "build_exit_code": 0,
+    "ctest_exit_code": 0,
+    "ctest_registered": 50,
+    "ctest_passed": 50,
+    "ctest_skipped": 0,
+    "internal_skip_source": "Complete LastTest.log; successful JUnit system-out sections are truncated and do not contain all skips",
+    "internal_skip_entries": [
+      {
+        "ctest": "differential",
+        "detail": "setUpClass (test_candidate_compare.CandidateComparisonTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks'"
+      },
+      {
+        "ctest": "differential",
+        "detail": "setUpClass (test_capability_matrix.CapabilityMatrixTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks'"
+      },
+      {
+        "ctest": "differential",
+        "detail": "setUpClass (test_fuzz_matrix.FuzzMatrixTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks'"
+      },
+      {
+        "ctest": "differential",
+        "detail": "setUpClass (test_real_app_matrix.RealApplicationMatrixTests) ... skipped 'optional real application capture dependencies are not built'"
+      },
+      {
+        "ctest": "text_actions",
+        "detail": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice) ... skipped 'actual system Copy/Paste requires a disposable hosted VM'"
+      },
+      {
+        "ctest": "research_guards",
+        "detail": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails) ... skipped 'opt-in pinned reference failure injection'"
+      },
+      {
+        "ctest": "shell",
+        "detail": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard) ... skipped 'system copy UI gate requires a disposable hosted VM'"
+      },
+      {
+        "ctest": "shell",
+        "detail": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close) ... skipped 'product clipboard read gate requires a disposable hosted VM'"
+      },
+      {
+        "ctest": "shell",
+        "detail": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver) ... skipped 'real system clipboard UI gate requires a disposable hosted VM'"
+      },
+      {
+        "ctest": "selection_bytes",
+        "detail": "test_owned_clipboard_contention_preserves_write_and_read_failures (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_owned_clipboard_contention_preserves_write_and_read_failures) ... skipped 'system CF requires a disposable hosted VM'"
+      },
+      {
+        "ctest": "selection_bytes",
+        "detail": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice) ... skipped 'system CF requires a disposable hosted VM'"
+      },
+      {
+        "ctest": "selection_context",
+        "detail": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice) ... skipped 'real CF/EDIT Copy requires a disposable hosted VM'"
+      }
+    ],
+    "ctest_elapsed_seconds": 355.09,
+    "time_is_test_duration_not_terminal_performance": true
+  },
+  "review": {
+    "standards_unresolved_blockers": 0,
+    "spec_unresolved_findings": 0,
+    "swap_helper_followup": "Parent reviewer confirmed shared private field-list swap is equivalent and introduces no new blocker; no separate report attachment"
+  },
+  "runtime_reds": [
+    {
+      "stage": "02-context",
+      "identity": {
+        "screen_sha256": "2015EB6E0B3A4BF70151AF0F566341FDDB0F7CCE51E47E08032A448313A2285E",
+        "test_sha256": "FDA5955B6702AF3A79E4A81DFC75CCE9B5536F945C6A8104F35CD6AA8A03C1D2",
+        "exe_sha256": "4B92EA7BBBA2C52BC548C167BAAA5222E541DD270C7B38B6A82B24A1DB40C889",
+        "exit_code": 1
+      },
+      "identity_record": {
+        "path": "local/buffer-state-r2/02-context-red-identity.json",
+        "bytes": 283,
+        "sha256": "5629acc21d04f3f3280c5c3e0b09810d0f987981f41107781e8d0fccfc4ff99f"
+      },
+      "runtime_log": {
+        "path": "local/buffer-state-r2/02-context-red.log",
+        "bytes": 43,
+        "sha256": "cf79521f5b48970f8a73488c1c49d7acd7f882e5beace91ba15450f61464fb85"
+      }
+    },
+    {
+      "stage": "03-history",
+      "identity": {
+        "screen_sha256": "06489F0F855FC41848EBABB74E9E284221963299902BBD7BE3F10FD30EEBEFDF",
+        "test_sha256": "54E965C24E7E00A5656E6020CA29FF408E29FE46FA6CFE0E3F9195B9FF5167EA",
+        "exe_sha256": "5BF7B736BFE636CE4CA704A190F0819D007F5DEEE1BB1C975DE068C5B10F23AC",
+        "exit_code": 1
+      },
+      "identity_record": {
+        "path": "local/buffer-state-r2/03-history-red-identity.json",
+        "bytes": 283,
+        "sha256": "9028dfa690a67a8cd9bff793ed4e7ba1fb8c59aa9c9b8004c64eac52a1dc6a62"
+      },
+      "runtime_log": {
+        "path": "local/buffer-state-r2/03-history-red.log",
+        "bytes": 70,
+        "sha256": "cea8e2327b71792e137bcc96f1acfdfda97a4bf621370d331f59a45779ba26ba"
+      }
+    },
+    {
+      "stage": "04-resize",
+      "identity": {
+        "screen_sha256": "4DE1F23A2BA0165AE9B2AB5D7AF0585EB5D662E81BF571CAD187551DA8423C88",
+        "test_sha256": "76F408D3EB7D23E76E268E5D3D8818CCC70BC16A77E4694A4A9C71D909EC1B57",
+        "exe_sha256": "FEC89BA8B516F8A7B5F4F6CDC8BC99BE0879CE54227C3B94E4F71968DD8D3925",
+        "exit_code": 1
+      },
+      "identity_record": {
+        "path": "local/buffer-state-r2/04-resize-red-identity.json",
+        "bytes": 283,
+        "sha256": "a050de7f729d17a2d3d2742427e755e21f1490041c23f15da70a1a071d6c41e7"
+      },
+      "runtime_log": {
+        "path": "local/buffer-state-r2/04-resize-red.log",
+        "bytes": 41,
+        "sha256": "20ecb09b2ffc21ce93ce4b83cde5c1cbb7f6df5922f24fd424baab9cd53ef1a1"
+      }
+    },
+    {
+      "stage": "05-position",
+      "identity": {
+        "screen_sha256": "58CCBE99894094BDA250A0C1A65BA4E7A7DBB99CCF03E48C3C820AAB8CFED8CC",
+        "document_sha256": "87EFAE9D6A9FCCB88DD353CDD1BE6A570480B6942FABBDF3C9DAC2C6370E026A",
+        "test_sha256": "324D846C7041C9646728874B4B8AD66AE430601FCC2F72FA9C1078575B90A6E8",
+        "exe_sha256": "4DACDEF02CC1D55E616DD6C82979EF330BAD5EFBF96DEA7EE019D8218176BD5D",
+        "exit_code": 1
+      },
+      "identity_record": {
+        "path": "local/buffer-state-r2/05-position-red-identity.json",
+        "bytes": 373,
+        "sha256": "715c4e07624dbdd5a72db3c63da9766b8685c3d336af8f1245ab9a9073f91e48"
+      },
+      "runtime_log": {
+        "path": "local/buffer-state-r2/05-position-red.log",
+        "bytes": 55,
+        "sha256": "a7756a0c28cbe7770e9525a0a561dc189457bbd0cf5794bf0391de293b2406a4"
+      }
+    },
+    {
+      "stage": "06-selection",
+      "identity": {
+        "selection_sha256": "7D41D58D434AD3C32CE2F67C043E337277ABBBC69E4A7A2B6BDF7E519F9F5462",
+        "test_sha256": "9F84B71EF85E56085851A8C11A8F423868FDBA8AEB72E0B1B70F100CE3E1B082",
+        "exe_sha256": "BDE0CEBEFDAB410741A5A6BC00F3BF246FD25A9E3249D6AA9C8ACE8D8D1BCDBC",
+        "exit_code": 1
+      },
+      "identity_record": {
+        "path": "local/buffer-state-r2/06-selection-red-identity.json",
+        "bytes": 286,
+        "sha256": "2f682c18496f1392d9fcf9e67504a3f8abd147c3b1f8a87dad8a04f20782ec85"
+      },
+      "runtime_log": {
+        "path": "local/buffer-state-r2/06-selection-red.log",
+        "bytes": 67,
+        "sha256": "b40793bab48cb3a322585ac19f27a79ea64c02400e4742c8ee00aac15f64ab6f"
+      }
+    },
+    {
+      "stage": "07-search",
+      "identity": {
+        "search_sha256": "FCC64B96C1F8D39B3A09DC45FFE537E7DC0FD70727B4D46768706AB55467CAAC",
+        "test_sha256": "6AFED61869F5EC83608949DE3B4AD1E6C93ECB2DFC921711A8AC016DA63E9F02",
+        "exe_sha256": "598DB3EFFD3E094C23ED1462635C14C9133EB68CA778DF41860F36F1804FBA4A",
+        "exit_code": 1
+      },
+      "identity_record": {
+        "path": "local/buffer-state-r2/07-search-red-identity.json",
+        "bytes": 283,
+        "sha256": "18ec93a7fe301f4132897fecdbb296d14800869b7741cb82bfe8f42a9af97fb6"
+      },
+      "runtime_log": {
+        "path": "local/buffer-state-r2/07-search-red.log",
+        "bytes": 56,
+        "sha256": "88e72fcaf25e0390ae58e3c90174067428957396df80792df7bcc92c4d89ddc6"
+      }
+    },
+    {
+      "stage": "08-viewport",
+      "identity": {
+        "exit_code": 1,
+        "viewport_sha256": "BC6218D05CC331AD3F39DB545575FAF0D100713DC8CB8AD09DBF3EE635C4696D",
+        "exe_sha256": "384192AB8699123E42003F882A600183F20974A03BA8AD641CC0EFCC9BFB18C7",
+        "test_sha256": "80A744959414BD94467BC0DF6C234C89F80D13F8AD4E21075D67AAB03AD83208"
+      },
+      "identity_record": {
+        "path": "local/buffer-state-r2/08-viewport-red-identity.json",
+        "bytes": 285,
+        "sha256": "487fa9de1055bd52372a15bb7ded27b634b6492c9be6be053aa209c2ed9dcda7"
+      },
+      "runtime_log": {
+        "path": "local/buffer-state-r2/08-viewport-red.log",
+        "bytes": 60,
+        "sha256": "be49afc085679fc3c7050e9be1a778b7f6f86389c2a87237263ea70a1315cc3a"
+      }
+    }
+  ],
+  "preparation_failures": [
+    {
+      "kind": "interface compile failure",
+      "record": {
+        "path": "local/buffer-state-r2/01-interface-red.log",
+        "bytes": 4377,
+        "sha256": "c5553816dee0cd70011cdcfb96644681dc82c4eee53c778dc3520d9e1a6d45ab"
+      },
+      "counts_as_runtime_red": false
+    },
+    {
+      "kind": "selection fixture missing required copy limit",
+      "record": {
+        "path": "local/buffer-state-r2/06-selection-fixture-compile-error.log",
+        "bytes": 1826,
+        "sha256": "fb3da1789af0cb2c05f699d8a9bcc38f52f899d7b26d90c28e4320af12987feb"
+      },
+      "counts_as_runtime_red": false
+    },
+    {
+      "kind": "earlier related CTest core group missing unbuilt receive.exe",
+      "record": {
+        "path": "local/buffer-state-r2/04-existing-ctest.log",
+        "bytes": 5312,
+        "sha256": "640f1d27bf749d73fce97a7d2b56bd09ff61e4df78fba21178066de207f187a8"
+      },
+      "counts_as_runtime_red": false
+    }
+  ],
+  "post_run_source_identity": [
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 23846,
+      "sha256": "2d5a395ee1890c12f4e4f560122bc6ae682386beed5629f5206fc7ac4121d78f"
+    },
+    {
+      "path": "experiments/core/screen.hpp",
+      "bytes": 16884,
+      "sha256": "534068ce7fc2d9b5436c87b84626d9cf5b9e9bf2811a9a789c03c77925786ccc"
+    },
+    {
+      "path": "experiments/core/terminal.hpp",
+      "bytes": 11155,
+      "sha256": "e5ca6b065b38b98ba4bb32f579e4f0e8e126a7872de147ff37c2c68aac414358"
+    },
+    {
+      "path": "experiments/core/text_document.hpp",
+      "bytes": 3850,
+      "sha256": "a51903b9091471b0d52c47f34b966f56b23045042c007fe8cd6f6e1b1302934c"
+    },
+    {
+      "path": "experiments/core/text_selection.hpp",
+      "bytes": 9883,
+      "sha256": "5c3848d06bcb34f036aabec7d3e8a953796caed1ba90a8c8d40b62d3e2242bb0"
+    },
+    {
+      "path": "experiments/core/text_search.hpp",
+      "bytes": 18533,
+      "sha256": "77b2aa3b0989fca32ec953ca5376085bf141011be74d014cac646eb0bde15d2f"
+    },
+    {
+      "path": "experiments/core/history_view.hpp",
+      "bytes": 3121,
+      "sha256": "74370e3d3a45920d495cf7edce1cc57916ec8e6d0c221e1144a5a3bcdd8ecda6"
+    },
+    {
+      "path": "experiments/core/buffer_state_test.cpp",
+      "bytes": 17118,
+      "sha256": "9b7a6705b7c43774bb35c44adcf3c10f9490c4a31993c08c4480024ac4ebe4a4"
+    }
+  ],
+  "post_run_executable_identity": [
+    {
+      "path": "build/core-buffer-state/bin/Release/alpha_normal_smoke.exe",
+      "bytes": 68608,
+      "sha256": "e9d509ed0b708922f9893f73e01fb91792c99a1a7ba29200831c3229ce57deb0"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/buffer_state_test.exe",
+      "bytes": 132096,
+      "sha256": "0926180f356e24ac0c201d1bf65bb5f2728d12283b1f4e85f3c0f46bd7c3e5a5"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/clipboard_policy_test.exe",
+      "bytes": 31232,
+      "sha256": "8fc64bbde65da8e9ba0fa4c0e76c2233f79b20aa294fd1747d34c67d8d9e4230"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/conpty_ctrl_c_probe.exe",
+      "bytes": 60416,
+      "sha256": "83666324bb263d6ad1003f37d85cd0596f149f86e241e6d478aabdfe85eac798"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/conpty_margin_probe.exe",
+      "bytes": 109056,
+      "sha256": "787761091e18016959e2352b3969132edb793d9cc729672d41212265b39c4f43"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/core_measure.exe",
+      "bytes": 83968,
+      "sha256": "ad761e8b5df12b4bec75cce4ac07ec33dc6f50afa2b09de9108c7219cb676929"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/find_bar_test.exe",
+      "bytes": 53760,
+      "sha256": "609ba5bf24e935c4163a3aee8edede2b649d421c781f55bc03400fe36991eece"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/history_test.exe",
+      "bytes": 115200,
+      "sha256": "fa0d6b2139885c573dc3bf72907f7276973c67edd18e1d6e6d380d0d7bfdf119"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/ime_context_test.exe",
+      "bytes": 47104,
+      "sha256": "776a4762ffdb27f7de1584cab0e1c5cd6d3fdf34f2d92cbdee86162b6b8617f4"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/ime_input_expectation_test.exe",
+      "bytes": 24576,
+      "sha256": "647829e99cbe771ba72555ac0703ec13e17f4c976b7f0c1e1aaf688264f2d1e1"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/keyboard_test.exe",
+      "bytes": 33792,
+      "sha256": "c205b6dc869928b1efa5da7dd56c7e98ba5bec9796ff463d8b733a0603ab0cea"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/layout_state_test.exe",
+      "bytes": 99328,
+      "sha256": "26aa719ed7f7aeb107f2f644bdda1c1f50efe34d6c889e3a8334ad20392ce703"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/paste_test.exe",
+      "bytes": 47104,
+      "sha256": "e4077916d42ee9d8b5388af8985364104d5293916e3794b06424f74a2bbefe1d"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/presentation_probe.exe",
+      "bytes": 124928,
+      "sha256": "a4e16aa3a52a438a217702bcf749deeb293115f7fbda796faa1014c590accacb"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/raw_console_receiver_test.exe",
+      "bytes": 94720,
+      "sha256": "053bcd7e2122648d6136dcfcd7fac6ad4c4939782bda0a31ce1f9583a2e0f06b"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/real_app_capture.exe",
+      "bytes": 90624,
+      "sha256": "6e6962d5c28bae9e31a5786f7d1423da8f63d7ab4425468edc2d00d79ad2b633"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/receive.exe",
+      "bytes": 91648,
+      "sha256": "8f27a353e696c5f8e1bd4f744f4e9322b31bf058ba42c26ef4617ed3ca0ef019"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/recovery_probe.exe",
+      "bytes": 84992,
+      "sha256": "d3dad682985d88ba2a85d9961c3aed0e9540138c4132831877fba7e8e5d111e6"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/renderer_metrics_test.exe",
+      "bytes": 129024,
+      "sha256": "e0f7b6b1d6c86a92c5fd1b51a7156855c8ec9875fc4eb87717f8ea273f5d036c"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/replay.exe",
+      "bytes": 75776,
+      "sha256": "6c5ffc3c7e538f3a07df1a15090e70e231d345bea8727897f1879d28c35f40e2"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/resize_test.exe",
+      "bytes": 102912,
+      "sha256": "661ef6340995b6bd289d0fb8c392d76642c15fc1497059f532722df53afb9919"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/runtime_observation_test.exe",
+      "bytes": 361984,
+      "sha256": "5a4922858c0ab736d4e5d330571fe08f9268997733ea462849229e312f6c24cd"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/scenario_tick_gate_test.exe",
+      "bytes": 17408,
+      "sha256": "cf45cba8fa48d16ed94fdf4c36ab09ec7f1a5d74c57219e2b491135048c4bdf6"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/search_test.exe",
+      "bytes": 146944,
+      "sha256": "7147508550102adac00e9eb07399d6ae5e0e2b4986c1d3d6b2b22ae331693366"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/selection_test.exe",
+      "bytes": 119808,
+      "sha256": "81d9ef66f38a600aae0cad8be12c116d9fbaff05e371ce25019019301250b023"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/sent_message_wait_test.exe",
+      "bytes": 34304,
+      "sha256": "ccd3046f50b3663159bf072d80ec41ea05c776df56f0a6f5bf1ea7fc349f9d47"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_clipboard_reader.exe",
+      "bytes": 22528,
+      "sha256": "33747c661ed4c5ef7707c1ce7477774cd695482c982692ed313c89d94b9ca14f"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_ime_client.exe",
+      "bytes": 126976,
+      "sha256": "b66d3ba9c77b4eee3c1093c805f6616a662519b7be2458f8877296923ef9d9e5"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_input_client.exe",
+      "bytes": 41984,
+      "sha256": "bade38e969d86392175ba6a1d143fb195e4e9a06d79549756ea42590c0fee7de"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_launch_test.exe",
+      "bytes": 50176,
+      "sha256": "1824b32a18c4c5c4ed7199344da06cb0720f2c619878f380e0d5ee7059cbd886"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_paste_probe.exe",
+      "bytes": 195072,
+      "sha256": "a7e2d81759cd7b44fdd9481865d85125a00edf1ab314500d20571478f27e4fdf"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_query_client.exe",
+      "bytes": 32768,
+      "sha256": "3b6c8cfbc2be8ef53f82880046c7473439db205292fd47c33e36465f65baf41e"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_queue_probe.exe",
+      "bytes": 121344,
+      "sha256": "a994327ee92c127b350928e84ba89dd00e1329743781a8c8b90a098c42ce0bc9"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_selection_text_client.exe",
+      "bytes": 56832,
+      "sha256": "29e675d87225bd28a2c78cdf7f3035449202017eccdc4ae98e32579b0b1c259f"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_size_client.exe",
+      "bytes": 18432,
+      "sha256": "b2f39f8c47ee9eb354461fadefe535fc8c7559b2a2294139cba194500fd01296"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_test_launcher.exe",
+      "bytes": 47616,
+      "sha256": "5885bf37f40a18e2f310a5a9a233b46e1b6df6fc7b6edcdf334a758baaa7266e"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/shell_text_client.exe",
+      "bytes": 147968,
+      "sha256": "496504291e46831915150a983efec60079f7473d00797892944558e102be06f4"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/termforge_conpty_probe.exe",
+      "bytes": 75776,
+      "sha256": "0d98ab38b6d05859e002db9a60902621a09a6503021f8cbbdb63972f9217f30d"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/termforge_ime_probe.exe",
+      "bytes": 65024,
+      "sha256": "e3a1cf0e37b70a1636f1c0a35adcd1024cccb6a2df1746d4a7c69336564b3892"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/termforge_shell.exe",
+      "bytes": 1234432,
+      "sha256": "49ccfaf3d1261a3665f9d7acff99eca4cdd167abc32a780627163dabe7dd144e"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/terminal_trace.exe",
+      "bytes": 81920,
+      "sha256": "2467e31fe631162702d8512cbb442df62a7102a1d6745bc0c7c0562d4be6cc90"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/text_action_policy_test.exe",
+      "bytes": 19968,
+      "sha256": "c0b19e83213b61b7c94164262d3189bf61443ca21293349071991f6a10ae9f49"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/transport_completion_test.exe",
+      "bytes": 44032,
+      "sha256": "dcde924f99c1d6ed1848aeb08b8c0c942b52c47f374772465442fb1b21dcadc8"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/workflow_fixture_test.exe",
+      "bytes": 134144,
+      "sha256": "3a5e97f189796bb66035a2dc28703057c88cc3ca84470e65c1ed7a82a955e5de"
+    },
+    {
+      "path": "build/core-buffer-state/bin/Release/workspace_state_test.exe",
+      "bytes": 140288,
+      "sha256": "2ee17b20f94a341415f953107a8325926c716b70c71833f09ae42c27fc2c4d26"
+    }
+  ],
+  "raw_local_records": [
+    {
+      "path": "local/buffer-state-r2/13-main-configure.log",
+      "bytes": 232,
+      "sha256": "12fe34e68441bfa729e3d50f163eaedbf5f74112a45d7614c7c80aca684cf5fd"
+    },
+    {
+      "path": "local/buffer-state-r2/13-main-all-build.log",
+      "bytes": 10582,
+      "sha256": "e8b4c49735c565790c8c5261c5e4089423c1d19d2dc136ad1f4f46a73ce89f0c"
+    },
+    {
+      "path": "local/buffer-state-r2/13-main-all-ctest.log",
+      "bytes": 5752,
+      "sha256": "0ad6c321a56f37d6f99605808948b17da372cabf5da453d3030b9f0e5c82f592"
+    },
+    {
+      "path": "local/buffer-state-r2/13-main-all-ctest.xml",
+      "bytes": 40706,
+      "sha256": "aa03971dc335d48d994e0a0542e06cd991ee8b737ba9fd7d84b36f00f372ee55"
+    },
+    {
+      "path": "local/buffer-state-r2/13-main-all-ctest.exit",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+    },
+    {
+      "path": "build/core-buffer-state/Testing/Temporary/LastTest.log",
+      "bytes": 133444,
+      "sha256": "023edcdfdcd45bf2059d3d5fab0454a91b8db73184459e6d84cef4034630ffba"
+    }
+  ],
+  "identity_limit": "Commit and clean source were observed before the supervised build/test. Listed hashes were collected after completion, not a separately frozen pre-run input manifest or reproducible-build proof.",
+  "hosted_checks": "Independent PR checks pending at local evidence publication; results are not folded into local counts",
+  "limits": [
+    "No private CSI/1049 handler wiring",
+    "No choice of original style inheritance, repeat-entry clearing or history document presentation",
+    "Alternate storage history cap zero is an engineering bound, not a WindTerm comparison",
+    "No product Qt/fixed-ConPTY, original mode parity, complete #27, R2, clipboard/IME or performance acceptance claim"
+  ]
+}

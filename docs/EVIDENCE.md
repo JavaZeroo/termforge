@@ -8,6 +8,7 @@
 
 | 配置 | 证据定位 |
 |---|---|
+| 自主 C++ 双缓冲存储与文档 epoch 基础 | [固定结果](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)、[验证身份](../experiments/core/results/2026-10-29-buffer-state-r2/validation.json)：拥有状态、共享 ID、隐藏帧 resize 回滚与跨缓冲句柄失效；Qt/candidate 关闭配置的完整 50 项及 12 条内部 skip 分列。未接 private CSI，不是原版模式、Qt 产品路线或完整 #27 验收 |
 | Qt cmd 标签与退出前回收 | [固定结果](../experiments/shell/results/2026-10-28-qt-tabs/README.md)、[验证身份](../experiments/shell/results/2026-10-28-qt-tabs/validation.json)：双 cmd 隔离、失败页、关闭与四个实际事件循环边界；Qt 1 项和其他 49 项诊断及内部跳过分列，旧中断轮不拼接 |
 | Qt 正式入口的独立 hosted 构建 | [固定结果](../experiments/shell/results/2026-10-28-qt-cpp-ci/README.md)、[验证身份](../experiments/shell/results/2026-10-28-qt-cpp-ci/validation.json)：固定 SDK、VS 2026 hosted 与真实 cmd 的 offscreen / OwnedJob 检查；原依赖换行和 generator 失败保留。没有原生上屏、完整部署哈希或产品包验收 |
 | 自主 C++ + Qt Widgets + 固定微软 ConPTY 正式目标 | [ADR-0007](adr/0007-bundled-microsoft-conpty.md) / [ADR-0008](adr/0008-cpp-core-qt-widgets.md) 记录用户确认；新组合的实现与验证另行留证，不引用旧默认或 Alacritty 通过结果代替 |
@@ -149,6 +150,7 @@ python -m unittest experiments.shell.test_workflow_sessions -v
 | 工作区结构/几何 | [首轮 UI 报告](research/windterm-ui-2026-10-23.md)、[主标签/字体报告](research/windterm-ui-typography-2026-10-23.md)、[探针与准备守卫](../research/ui/README.md) | 发行资源、定向二进制和隔离运行时交叉核对；默认缩放两次及 Qt 1.5 倍一次。旧首启自动导入和错误状态样本已明确排除，不能混作最终纯合成证据 |
 | 可公开的 UI 精简结果 | [默认样本 1](research/ui-typography/normal-01.json)、[默认样本 2](research/ui-typography/normal-02.json)、[Qt 1.5 倍样本](research/ui-typography/scale-150.json) | 白名单矩形、字体、DPI 和身份；不是完整像素、逐字形 fallback、真实跨屏或性能证明 |
 | 基础文字交互参考合同 | [行为合同](research/windterm-r1-text-contract.md)、[hosted 事实摘要](research/r1-text/hosted-39960732305.json)、[Actions 39960732305](https://github.com/JavaZeroo/termforge/actions/runs/39960732305) | `c386494` 的 text/menu-wrap 各两轮及 repeat 门槛通过：历史/选择/查找、键盘及实际 Select All/Find/Copy/Paste 菜单、精确 CF 软折行/CRLF/尾空白与严格粘贴基线均有证据；四轮 Job 清空。满足 #11 限定参考合同，不代表产品功能等价或性能验收 |
+| 五阶段 raw H/space 输出参考（#129） | [固定采集合同](research/windterm-raster-raw-capture-plan.md)、[执行与独立审计](research/windterm-raster-raw-reference-2026-10-29.md)、[脱敏结果](../research/ui/results/2026-10-29-raster-raw-reference/validation.json) | `f6d9a97` 的唯一授权执行取得 5 grab、17 组完整 H/space；phase2 双 H 的 16/16 墨迹并列保留 null，未中断采集。phase1/3 原样 H 唯一匹配同帧 SGR0，phase4 匹配同帧 SGR31;44 的完整有序签名；仅为固定样本输出，不证明内部 pen、完整 grid、presented、local-shell 或性能。旧 #126 0 grab 和旧 #129 3 grab partial 均独立保留，父项未关闭。 |
 
 主对照为官方 Windows x64 2.7.0：ZIP SHA-256 `b05c3c7371340ff1302967247ffcd3a3ba27b237f72010e9157086143c453e50`，EXE SHA-256 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`。最初本机安装的 EXE 身份不同；其历史静态报告不得冒充官方包结果。其他目标平台仍需各自固定包身份。
 

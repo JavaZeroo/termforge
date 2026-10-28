@@ -1,0 +1,22 @@
+{
+  "schema": "termforge-selection-getter-counterexample-v1",
+  "source_evidence_id": "ev_8fbd9aead9aa5d60f49e05112c31eb542febf65084643c025eb8a52ffd590048",
+  "source_file_sha256": "be349abb34cf28f42b634ccf65bd0749e1e9940856059156b794e7968b7ef83c",
+  "source_scope": "Two historical owned local-shell UI snapshots of the same pinned original; no new original execution",
+  "reference_exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "counterexamples": [
+    {
+      "caret": 97,
+      "anchor": 97,
+      "selection_length": 5
+    },
+    {
+      "caret": 400,
+      "anchor": 400,
+      "selection_length": 10
+    }
+  ],
+  "interpretation": "Nonempty selectionText does not establish a noncollapsed selection: both recorded finite endpoints are equal.",
+  "does_not_prove_r126_selection_collapsed": true,
+  "text_or_paths_published": false
+}

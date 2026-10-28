@@ -1,0 +1,84 @@
+{
+  "schema": "termforge-raster-raw-plan-v1",
+  "issue": 129,
+  "case_id": "raw-capture-v1",
+  "maximum_original_runs": 1,
+  "execution_authorized": false,
+  "source_base_commit": "f6d9a97e2b2685b6ce39c83dc7107cb52aec7a6a",
+  "module_sha256": {
+    "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+    "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+    "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358"
+  },
+  "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "source_files_sha256": {
+    "research/ui/raster_raw_reference.py": "942902683fac816aa4271faaab31b01505aaab8ea6624f131f272e03a4548824",
+    "research/ui/raster_raw_reference.js": "bc427feb65650b1f90e6f882af405bbc88f93d1df2e2e249fb7960a90696869e",
+    "research/ui/alternate_style_reference.py": "3136e620a462a36ea3358c917eb4e207f32aa52db7c75ae14ba8856eba1eafcd",
+    "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+    "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f"
+  },
+  "phases": [
+    {
+      "phase": 0,
+      "label": "default-and-main-calibration",
+      "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484430204820481b5b343b33481b5b33313b34346d4d3020482048",
+      "source_bytes": 43,
+      "source_sha256": "0ef069f3327716b0cb410680ca441980b3b455ed102dfb666fd8b72f249ae610",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 1,
+      "label": "alternate-entry-with-controls",
+      "source_hex": "1b5b3f3130343968413020481b5b33313b34346d204130533120481b5b306d20413044302048",
+      "source_bytes": 38,
+      "source_sha256": "6415951f7219de9f93387c4060307fee943fd4c0549513fff788400936d8a895",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 2,
+      "label": "alternate-reference",
+      "source_hex": "1b5b343b35481b5b33323b34356d413120482048",
+      "source_bytes": 20,
+      "source_sha256": "ecd2495dd89fe551626069c64fec582eaac774bee29c4100a42ef159dd7009ff",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 3,
+      "label": "alternate-repeat-with-controls",
+      "source_hex": "1b5b3f3130343968413220481b5b306d204132443020481b5b33313b34346d204132533120481b5b33323b34356d20413253322048",
+      "source_bytes": 53,
+      "source_sha256": "b33165a1da96062941d0f73e09f76c69726b67c14c8098d885b1804472610d7d",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 4,
+      "label": "main-return-with-controls",
+      "source_hex": "1b5b3f313034396c204d3120481b5b33313b34346d204d31533120481b5b33323b34356d204d31533220481b5b306d204d3144302048",
+      "source_bytes": 54,
+      "source_sha256": "11af8a2f9cede6def3a9fbeadc169683ca321dcf5e34539cc06a9b438bde5574",
+      "dsr_suffix_hex": "1b5b366e"
+    }
+  ],
+  "phase_count": 5,
+  "maximum_grabs_per_phase": 1,
+  "maximum_grabs": 5,
+  "scope": "Five-stage raw H/space capture before offline histogram/signature analysis; no internal pen, presented or performance claim",
+  "selection_guard": "Known nonnegative safe-integer selectionCaretP equals selectionAnchorP; selectionText is retained only as type/length",
+  "stop": "Structure, identity, empty image, DPR/coordinates, endpoints or caret failure stops; color ties, nonuniform backgrounds and missing ink stay offline unknown and do not stop the next phase; no shifted ROI, extra grab or retry",
+  "actual_original_runs": 0,
+  "production_source_commit": "f6d9a97e2b2685b6ce39c83dc7107cb52aec7a6a",
+  "private_plan_sha256": "52229884e5279600c091bcd26bff32c5b7f6dd0e2b8a87ffbc195889c4aa94af",
+  "analysis_files_sha256": {
+    "research/ui/raster_raw_analysis.py": "019d2c2616ac3942160da19289c7d4ee0fa7560dcd3c6d27f732cf724da98e50",
+    "research/ui/export_raster_raw_reference.py": "581b034eb18944e91e4cc07b23702e224e62939c4616686a15430eca0959261a",
+    "research/ui/replay_raster_raw_tie.py": "3a96884728cf4bc822574f26fc70c8dc40f9d794dbfc7d366015410773b81b9f",
+    "research/ui/raster_selection_analysis.py": "745cda14921a383ca9baf6ec85242982ca587396b8464a3d27047ecf204a8845"
+  }
+}
