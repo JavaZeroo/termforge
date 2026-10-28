@@ -2,7 +2,7 @@
 
 本页只导航到 GitHub 任务，不维护第二份进度表。能力与构建配置见 [FEATURES](FEATURES.md)，R1–R5 范围见 [PLAN](PLAN.md)，当前接续顺序与完成条件见 [R2 交付路线与验收](milestones/R2-local-terminal.md)。实时状态、原生父子/阻塞关系和验收记录以各 issue 为准。
 
-执行方向按 [ADR-0006](adr/0006-confirmed-project-direction.md)：优先终端基础能力与性能，首个完整版本为 Windows 11 x64，随后完成 Linux/macOS；原版行为优先。#34 负责提交核心/GUI/后端正式选型供用户确认，#4/#54 提供基线和预算提案，性能容差经用户明确后生效。候选实验和既有关闭任务均不自动构成用户确认。
+执行方向按 [ADR-0006](adr/0006-confirmed-project-direction.md)：优先终端基础能力与性能，首个完整版本为 Windows 11 x64，随后完成 Linux/macOS；原版行为优先。[ADR-0007](adr/0007-bundled-microsoft-conpty.md)已确认 Windows PTY 采用随包固定微软 ConPTY，#47 接续整合；#34 负责提交其余核心与 GUI/呈现选型供用户确认，#4/#54 提供基线和预算提案，性能容差经用户明确后生效。候选实验和既有关闭任务均不自动构成用户确认。
 
 ## 产品路标
 
