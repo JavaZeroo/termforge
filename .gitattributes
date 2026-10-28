@@ -8,5 +8,8 @@ research/ui/reference_sources/*.py.txt text eol=lf
 *.ps1 text eol=crlf
 # Preserve the byte identity of the measured standalone display probe.
 tools/probe_windows_display_environment.ps1 text eol=lf
+tools/owned_vm_request.cs text eol=lf
+tools/run_vm_request_queue.ps1 text eol=lf
+tools/fixtures/vm_request_*.ps1 text eol=lf
 third_party/conpty/LICENSE text eol=lf
 experiments/core/fixtures/*.bin binary

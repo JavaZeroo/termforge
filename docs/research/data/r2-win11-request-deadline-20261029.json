@@ -1,0 +1,236 @@
+{
+  "schema": "termforge-vm-request-execution-deadline-v2",
+  "recorded_utc": "2026-10-28T17:39:00.552572+00:00",
+  "scope": "Trusted synthetic VM requests and ordinary inherited Job descendants only; no Qt, CRT installation or #31 product acceptance",
+  "original_display_probe_sha256_unchanged": "307122b2c9d8cb12bbc0a54cebb7e95078430874b2e2ea7b676f5c4df80bda80",
+  "sources": {
+    "tools/owned_vm_request.cs": "e5dd42e51af8cd2a714d5060446424ad72a0cbe8537339179013a691412b8e75",
+    "tools/run_vm_request_queue.ps1": "dd7a1112bfabce3f68706f789e572f11bbfde3c921cca46244eaa924f2e27221",
+    "tools/fixtures/vm_request_sleep.ps1": "ea3a5a45ee8b0828d499ddaa8600fa10a02e4c9effaa81b2834f159dcda3fc29",
+    "tools/fixtures/vm_request_after_timeout.ps1": "e010de8a19d11e5046f8c4c38a571f120b875f9dfc23517abef23a0a8a74622b"
+  },
+  "protocol": {
+    "host_poll_is_execution_deadline": false,
+    "default_execution_timeout_seconds": 30,
+    "allowed_execution_timeout_seconds": [
+      1,
+      300
+    ],
+    "cleanup_total_budget_milliseconds": 5000,
+    "forbid_breakaway": true,
+    "out_of_process_brokers_supported": false,
+    "self_contained_requests_only": true,
+    "unverified_cleanup_quarantines_queue": true
+  },
+  "initial_cleanup_observation": {
+    "request_status": "cleanup_failed",
+    "protocol": "termforge-owned-vm-request-v2",
+    "start_utc": "2026-10-28T17:28:54.1198931Z",
+    "end_utc": "2026-10-28T17:28:57.3086460Z",
+    "session_id": 2,
+    "root_reaped": true,
+    "cleanup_verified": false,
+    "execution": {
+      "Schema": "termforge-owned-vm-request-v2",
+      "Status": "cleanup_failed",
+      "Error": null,
+      "StartedUtc": "2026-10-28T17:28:54.2747128Z",
+      "EndedUtc": "2026-10-28T17:28:57.3026093Z",
+      "ExecutionTimeoutMilliseconds": 3000,
+      "ExecutionElapsedMilliseconds": 3010,
+      "CreatedSuspended": true,
+      "RootHandleIdentityVerified": true,
+      "RootImageVerified": true,
+      "RootAssignedBeforeResume": true,
+      "KillOnCloseVerified": true,
+      "BreakawayDenied": true,
+      "TimedOut": true,
+      "TerminationRequested": true,
+      "RootWait": 0,
+      "RootExitCode": 124,
+      "RootReaped": true,
+      "JobBeforeActive": 4,
+      "JobBeforeTotal": 4,
+      "JobAfterActive": 0,
+      "MembersStable": true,
+      "CleanupVerified": false
+    },
+    "members": [
+      {
+        "is_root": false,
+        "image_basename": "conhost.exe",
+        "exact_job_membership": true,
+        "exited": false,
+        "wait": 258,
+        "exit_code": 124,
+        "query_error": null
+      },
+      {
+        "is_root": true,
+        "image_basename": "powershell.exe",
+        "exact_job_membership": true,
+        "exited": true,
+        "wait": 0,
+        "exit_code": 124,
+        "query_error": null
+      },
+      {
+        "is_root": false,
+        "image_basename": "conhost.exe",
+        "exact_job_membership": true,
+        "exited": true,
+        "wait": 0,
+        "exit_code": 124,
+        "query_error": null
+      },
+      {
+        "is_root": false,
+        "image_basename": "powershell.exe",
+        "exact_job_membership": true,
+        "exited": true,
+        "wait": 0,
+        "exit_code": 124,
+        "query_error": null
+      }
+    ],
+    "source_sha256": "90418fa7a7a2f433b0d9b7117774264f137f32886ee6a22386f282c1e166011e"
+  },
+  "timeout_fixture": {
+    "requested_sleep_seconds": 60,
+    "host_cli_exit": 124,
+    "fixture_child_in_exact_job": true,
+    "fixture_child_handle_signalled": true,
+    "observed": {
+      "request_status": "timed_out",
+      "protocol": "termforge-owned-vm-request-v2",
+      "start_utc": "2026-10-28T17:31:28.6569859Z",
+      "end_utc": "2026-10-28T17:31:31.7561559Z",
+      "session_id": 2,
+      "root_reaped": true,
+      "cleanup_verified": true,
+      "execution": {
+        "Schema": "termforge-owned-vm-request-v2",
+        "Status": "timed_out",
+        "Error": null,
+        "StartedUtc": "2026-10-28T17:31:28.7261616Z",
+        "EndedUtc": "2026-10-28T17:31:31.7521177Z",
+        "ExecutionTimeoutMilliseconds": 3000,
+        "ExecutionElapsedMilliseconds": 3001,
+        "CreatedSuspended": true,
+        "RootHandleIdentityVerified": true,
+        "RootImageVerified": true,
+        "RootAssignedBeforeResume": true,
+        "KillOnCloseVerified": true,
+        "BreakawayDenied": true,
+        "TimedOut": true,
+        "TerminationRequested": true,
+        "RootWait": 0,
+        "RootExitCode": 124,
+        "RootReaped": true,
+        "JobBeforeActive": 4,
+        "JobBeforeTotal": 4,
+        "JobAfterActive": 0,
+        "MembersStable": true,
+        "CleanupVerified": true
+      },
+      "members": [
+        {
+          "is_root": false,
+          "image_basename": "powershell.exe",
+          "exact_job_membership": true,
+          "exited": true,
+          "wait": 0,
+          "exit_code": 124,
+          "query_error": null
+        },
+        {
+          "is_root": false,
+          "image_basename": "conhost.exe",
+          "exact_job_membership": true,
+          "exited": true,
+          "wait": 0,
+          "exit_code": 124,
+          "query_error": null
+        },
+        {
+          "is_root": false,
+          "image_basename": "conhost.exe",
+          "exact_job_membership": true,
+          "exited": true,
+          "wait": 0,
+          "exit_code": 124,
+          "query_error": null
+        },
+        {
+          "is_root": true,
+          "image_basename": "powershell.exe",
+          "exact_job_membership": true,
+          "exited": true,
+          "wait": 0,
+          "exit_code": 124,
+          "query_error": null
+        }
+      ]
+    }
+  },
+  "next_normal_request": {
+    "host_cli_exit": 0,
+    "fixture_output": {
+      "ok": true,
+      "fixture": "request-after-timeout",
+      "session_id": 2
+    },
+    "observed": {
+      "request_status": "passed",
+      "protocol": "termforge-owned-vm-request-v2",
+      "start_utc": "2026-10-28T17:31:35.2207283Z",
+      "end_utc": "2026-10-28T17:31:36.2796552Z",
+      "session_id": 2,
+      "root_reaped": true,
+      "cleanup_verified": true,
+      "execution": {
+        "Schema": "termforge-owned-vm-request-v2",
+        "Status": "passed",
+        "Error": null,
+        "StartedUtc": "2026-10-28T17:31:35.2325677Z",
+        "EndedUtc": "2026-10-28T17:31:36.2796552Z",
+        "ExecutionTimeoutMilliseconds": 3000,
+        "ExecutionElapsedMilliseconds": 1047,
+        "CreatedSuspended": true,
+        "RootHandleIdentityVerified": true,
+        "RootImageVerified": true,
+        "RootAssignedBeforeResume": true,
+        "KillOnCloseVerified": true,
+        "BreakawayDenied": true,
+        "TimedOut": false,
+        "TerminationRequested": false,
+        "RootWait": 0,
+        "RootExitCode": 0,
+        "RootReaped": true,
+        "JobBeforeActive": 0,
+        "JobBeforeTotal": 2,
+        "JobAfterActive": 0,
+        "MembersStable": true,
+        "CleanupVerified": true
+      },
+      "members": []
+    }
+  },
+  "queue_recovery": {
+    "same_live_runner_for_final_pair": true,
+    "runner_creation_utc": "2026-10-28T17:31:10.4590119Z",
+    "session_id": 2,
+    "protocol": "termforge-owned-vm-request-v2",
+    "pending_requests": 0,
+    "in_flight_requests": 0,
+    "quarantined": false
+  },
+  "limitations": [
+    "Raw QGA exec is an administrative control transport; its host polling timeout is not a workload execution guarantee. Test workloads use the guest-owned request queue.",
+    "Only trusted, self-contained requests using ordinary inherited CreateProcess descendants are supported. WMI Win32_Process.Create, external COM/ShellExecute/service/task activation and detached external lifetimes are outside the protocol.",
+    "The initial cleanup_failed result and old source remain private originals. It was not counted as a passed timeout scenario; final code used the already bounded cleanup budget for native handle waits.",
+    "No Qt or CRT command was run in this validation, and original display measurements were neither rerun nor rewritten.",
+    "No runtime, physical-presentation or performance acceptance is implied."
+  ],
+  "source_identity_note": "Fixture hashes identify published input bytes. The controller prepends the fixed UTF-8 PowerShell output-encoding prelude and BOM; guest metadata hashes and validates the exact staged request before resume."
+}
