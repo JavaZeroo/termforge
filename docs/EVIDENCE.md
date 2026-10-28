@@ -62,6 +62,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 
 | 范围 | 结果与复现入口 | 可以支持的结论与限制 |
 |---|---|---|
+| 默认核心缩小与重绘交错（#156） | [固定四-case机制诊断](../experiments/shell/results/2026-10-29-resize-repaint-witness/README.md)、[脱敏验证](../experiments/shell/results/2026-10-29-resize-repaint-witness/validation.json) | A/C保留2499B，B/D在第五段重绘首次失效且行分配路径不同；只见证机制，原CI切点/根因未知，未修生产。witness结束后Job仍active1，发起一次终止后归零；成员身份/逐句柄退出未知，不称全树自然退出。 |
 | 持续 cmd 输出与原始 Ctrl-C 回归（#36 未关闭） | [受监督入口](../experiments/conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)、[三次 fresh 公开记录及本地字节复核](../experiments/conpty/results/2026-10-26-ctrl-c-retest/validation.json) | 原百万次输出、单次 ETX、五秒期限和退出 37 保留；三次 fresh 原始字节/Job0 本地重算。后续成功未解释历史失败，未改产品 Ctrl-C 路径。 |
 | 持续输出中断的原失败记录 | [#36](https://github.com/JavaZeroo/termforge/issues/36)、[ConPTY 输入机制研究](research/conpty-ctrl-c-input.md)、[原 R1 历史证据](../experiments/shell/results/2026-10-23-r1-foundations/validation.json) | 原 Windows 11 回归中的 normal/resize 超时与 ETW/插桩观察；调试扰动及管道读完成缺口保留。不是当前全套结果，后续未复现不能抹去此失败。 |
 | controller B 正常结束后 cmd 退出未验收（#44） | [原失败脱敏记录](../experiments/shell/results/2026-10-26-controller-exit/validation.json)、[新退出诊断及有界重放](../experiments/shell/results/2026-10-26-controller-exit-observation/validation.json)、[关闭合同](https://github.com/JavaZeroo/termforge/issues/44) | 原 child 收完 32B、退出 0/join/Job0；cmd 只留下 close 后 0xC000013A，close 前未知。新观察分列输入、wait、pre-close 与清理；多轮未复现不构成历史修复，继续阻塞 #38。 |
