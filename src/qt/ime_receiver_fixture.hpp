@@ -4,6 +4,7 @@
 #include <QString>
 #include <QUuid>
 #include <cstdio>
+#include <string>
 
 namespace termforge::qt::ime_fixture {
 inline void check(bool value, const char* message) {
@@ -11,6 +12,7 @@ inline void check(bool value, const char* message) {
 }
 class ControlledReceiver {
     std::wstring prefix_;
+    unsigned lifetime_ms_;
     tf_conpty::Handle ready_, output_, stop_;
     static tf_conpty::Handle make(const std::wstring& name) {
         const HANDLE value = CreateEventW(nullptr, TRUE, FALSE, name.c_str());
@@ -18,22 +20,26 @@ class ControlledReceiver {
         return tf_conpty::Handle(value);
     }
 public:
-    explicit ControlledReceiver(const QString& path) :
+    explicit ControlledReceiver(const QString& path, unsigned lifetime_ms = 20000) :
         prefix_(L"Local\\TermForgeQtIme-" + QUuid::createUuid().toString(QUuid::WithoutBraces).toStdWString()),
+        lifetime_ms_(lifetime_ms),
         ready_(make(prefix_ + L"-ready")), output_(make(prefix_ + L"-output")),
-        stop_(make(prefix_ + L"-stop")), path(path) {}
+        stop_(make(prefix_ + L"-stop")), path(path) {
+        check(lifetime_ms_ >= 1000 && lifetime_ms_ <= 60000, "IME receiver lifetime is invalid");
+    }
     QString path;
     std::wstring arguments() const {
-        return L"--ime-output-child \"" + path.toStdWString() + L"\" \"" + prefix_ + L"\"";
+        return L"--ime-output-child \"" + path.toStdWString() + L"\" \"" + prefix_ + L"\" " + std::to_wstring(lifetime_ms_);
     }
     bool ready() const { return WaitForSingleObject(ready_.get(), 0) == WAIT_OBJECT_0; }
     void output() { check(SetEvent(output_.get()) != FALSE, "IME receiver output signal failed"); }
     void stop() { check(SetEvent(stop_.get()) != FALSE, "IME receiver stop signal failed"); }
 };
-inline int child(const QString& path, const QString& event_prefix) {
+inline int child(const QString& path, const QString& event_prefix, unsigned lifetime_ms) {
     try {
         BOOL owned = FALSE;
         check(IsProcessInJob(GetCurrentProcess(), nullptr, &owned) && owned, "IME receiver requires an owned Job");
+        check(lifetime_ms >= 1000 && lifetime_ms <= 60000, "IME receiver lifetime is invalid");
         const auto prefix = event_prefix.toStdWString();
         check(prefix.rfind(L"Local\\TermForgeQtIme-", 0) == 0 && prefix.size() < 180,
               "IME receiver event identity is invalid");
@@ -56,7 +62,7 @@ inline int child(const QString& path, const QString& event_prefix) {
         write(initial, sizeof(initial) - 1);
         check(SetEvent(ready.get()) != FALSE, "IME receiver ready signal failed");
         bool emitted = false;
-        const auto deadline = GetTickCount64() + 20000;
+        const auto deadline = GetTickCount64() + lifetime_ms;
         for (;;) {
             const HANDLE controls[]{stop.get(), output.get()};
             const auto state = WaitForMultipleObjects(emitted ? 1 : 2, controls, FALSE, 50);

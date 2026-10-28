@@ -71,6 +71,7 @@ class Observation final : public QObject {
     void append(QJsonObject event) {
         if (events_.size() >= 128) { evidence_gap_ = true; write(); return; }
         event.insert("sequence", events_.size());
+        event.insert("observation_tick_ms", static_cast<qint64>(GetTickCount64()));
         events_.append(event); write();
     }
 protected:
@@ -163,8 +164,8 @@ inline int run(QApplication& app, const QString& directory) {
     check(QGuiApplication::platformName() == QStringLiteral("windows"),
           "native IME observer requires the windows platform plugin");
     check(!QFileInfo::exists(directory) && QDir().mkpath(directory), "native IME output directory must be new");
-    ime_fixture::ControlledReceiver a(directory + QStringLiteral("/native-a.bin"));
-    ime_fixture::ControlledReceiver b(directory + QStringLiteral("/native-b.bin"));
+    ime_fixture::ControlledReceiver a(directory + QStringLiteral("/native-a.bin"), 50000);
+    ime_fixture::ControlledReceiver b(directory + QStringLiteral("/native-b.bin"), 50000);
     SessionTabs window(QCoreApplication::applicationFilePath().toStdWString(), a.arguments(), directory.toStdWString());
     QPointer<SessionPage> first = window.current_session();
     QPointer<SessionPage> second = window.new_session(QCoreApplication::applicationFilePath().toStdWString(),
@@ -191,6 +192,7 @@ inline int run(QApplication& app, const QString& directory) {
                            {"window_client_rectangle_logical", rect(window.rect())},
                            {"current_tab_index", tabs->currentIndex()}, {"tab_rectangles_window_logical", tab_rectangles},
                            {"synthetic_qt_input_events_sent", 0}, {"external_os_input_required", true},
+                           {"observer_budget_ms", 45000}, {"receiver_budget_ms", 50000},
                            {"native_os_ime_acceptance", QJsonValue()}, {"presented_done", QJsonValue()},
                            {"ready", ready_written}, {"finish_requested", finish_requested},
                            {"failed", failed}, {"failure", failure}, {"elapsed_ms", elapsed.elapsed()},
@@ -218,7 +220,7 @@ inline int run(QApplication& app, const QString& directory) {
             }
             if (!first_events.valid() || !second_events.valid()) {
                 failed = true; failure = QStringLiteral("native observer evidence gap"); window.close();
-            } else if (elapsed.elapsed() > 20000 && !finish_requested) {
+            } else if (elapsed.elapsed() > 45000 && !finish_requested) {
                 failed = true; failure = QStringLiteral("native observer execution deadline"); window.close();
             }
         } catch (const std::exception& error) {

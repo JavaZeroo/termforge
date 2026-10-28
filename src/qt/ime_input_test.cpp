@@ -413,11 +413,14 @@ static QJsonObject attribute_capacity_and_interrupt(const QString& receiver, con
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
-    if (argc == 4 && std::string_view(argv[1]) == "--ime-output-child") {
+    if (argc == 5 && std::string_view(argv[1]) == "--ime-output-child") {
         BOOL child_owned = FALSE;
         if (!IsProcessInJob(GetCurrentProcess(), nullptr, &child_owned) || !child_owned) return 2;
         QCoreApplication child(argc, argv);
-        return termforge::qt::ime_fixture::child(child.arguments().at(2), child.arguments().at(3));
+        bool valid_budget = false;
+        const auto budget = child.arguments().at(4).toUInt(&valid_budget);
+        if (!valid_budget || budget < 1000 || budget > 60000) return 2;
+        return termforge::qt::ime_fixture::child(child.arguments().at(2), child.arguments().at(3), budget);
     }
     char gate[3]{}; DWORD count = 0; BOOL owned = FALSE;
     if (!ReadFile(GetStdHandle(STD_INPUT_HANDLE), gate, sizeof(gate), &count, nullptr) ||
