@@ -1,12 +1,16 @@
 // Public Qt key events, fixed ConPTY, and an independent ReadConsoleW receiver.
 #include "terminal_widget.hpp"
+#include "session_tabs.hpp"
 #include <QApplication>
+#include <QCryptographicHash>
 #include <QElapsedTimer>
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTemporaryDir>
+#include <QLineEdit>
+#include <QTabBar>
 #include <QTest>
 #include <cstdlib>
 #include <filesystem>
@@ -94,6 +98,50 @@ static QJsonObject unicode_text(const QString& receiver, const QString& director
     return {{"case", "unicode-text"}, {"received_hex", QString::fromLatin1(actual.toHex())},
             {"exit_code", static_cast<int>(model.exit_code())}, {"job_active", 0}};
 }
+static QJsonObject focus_and_packet_rejection(const QString& receiver, const QString& directory) {
+    const QString path = directory + QStringLiteral("/focus-packet.bin");
+    SessionModel model;
+    TerminalWidget terminal(model);
+    focus(terminal);
+    require(model.start(receiver.toStdWString(), (QStringLiteral("\"") + path + QLatin1Char('"')).toStdWString(),
+                        directory.toStdWString()), "focus receiver could not start");
+    await([&] { return has_text(model.screen(), "TF_KEY_READY"); }, "focus receiver did not become ready");
+    require(text_event(terminal, QStringLiteral("F")), "ASCII prefix was rejected");
+    require(text_event(terminal, QString(QChar(0xd83d))), "pending high was rejected");
+    QLineEdit other;
+    other.show(); other.activateWindow(); other.setFocus(); QApplication::processEvents();
+    require(other.hasFocus() && !terminal.hasFocus(), "focus did not leave terminal");
+    require(!text_event(terminal, QStringLiteral("LEAK")), "unfocused target accepted synthetic text");
+    focus(terminal);
+    require(text_event(terminal, QString(QChar(0xde00))), "orphan low after focus was rejected");
+    require(text_event(terminal, QString(QChar(0xd83d))), "hide high was rejected");
+    terminal.hide(); QApplication::processEvents();
+    require(!text_event(terminal, QStringLiteral("HIDDEN")), "hidden target accepted text");
+    focus(terminal);
+    require(text_event(terminal, QString(QChar(0xde00))), "orphan low after hide was rejected");
+    // Exactly 1024 encoded bytes are accepted as one packet.
+    require(text_event(terminal, QString(1020, QLatin1Char('x')) + QString::fromUtf16(u"\U0001f600")),
+            "exact packet limit was rejected");
+    require(text_event(terminal, QString(QChar(0xd83d))), "overflow high was rejected");
+    // The attempted completion plus 1021 ASCII bytes is 1025 bytes. On failure
+    // the held high must survive, and none of that attempted packet may arrive.
+    require(!text_event(terminal, QString(QChar(0xde00)) + QString(1021, QLatin1Char('z'))),
+            "oversized packet was accepted");
+    require(!model.error().isEmpty(), "input queue rejection has no visible model error");
+    require(text_event(terminal, QString(QChar(0xde00))), "valid retry after packet rejection failed");
+    require(text_event(terminal, QString(QChar(0))), "embedded NUL was rejected");
+    require(text_event(terminal, QStringLiteral("R")), "ASCII suffix was rejected");
+    finish(model);
+    const auto expected = QByteArray::fromHex("46efbfbdefbfbd") + QByteArray(1020, 'x') +
+        QByteArray::fromHex("f09f9880f09f98800052");
+    const auto actual = received(path);
+    require(actual == expected, "focus/reset or whole-packet rejection changed receiver bytes");
+    require(!text_event(terminal, QString(QChar(0xd83d))), "finished target accepted pending high");
+    return {{"case", "focus-hide-packet-rejection"}, {"received_bytes", actual.size()},
+            {"received_sha256", QString::fromLatin1(QCryptographicHash::hash(actual, QCryptographicHash::Sha256).toHex())},
+            {"exact_packet_bytes", 1024}, {"rejected_packet_bytes", 1025},
+            {"exit_code", static_cast<int>(model.exit_code())}, {"job_active", 0}};
+}
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
@@ -113,7 +161,7 @@ int main(int argc, char** argv) {
         require(workspace.isValid(), "owned receiver workspace could not be created");
         const auto receiver = QCoreApplication::applicationDirPath() + QStringLiteral("/shell_input_client.exe");
         require(QFile::exists(receiver), "independent receiver is missing");
-        QJsonArray cases{unicode_text(receiver, workspace.path())};
+        QJsonArray cases{unicode_text(receiver, workspace.path()), focus_and_packet_rejection(receiver, workspace.path())};
         const QJsonObject result{{"schema", "termforge-qt-unicode-input-v1"}, {"cases", cases},
                                  {"ime", false}, {"presented_done", QJsonValue()}};
         std::cout << QJsonDocument(result).toJson(QJsonDocument::Compact).constData() << '\n';
