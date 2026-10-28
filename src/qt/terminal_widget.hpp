@@ -2,6 +2,7 @@
 #pragma once
 
 #include "terminal_session.hpp"
+#include "../../experiments/shell/keyboard.hpp"
 #include <QEvent>
 #include <QCoreApplication>
 #include <QCloseEvent>
@@ -19,6 +20,7 @@ namespace termforge::qt {
 
 class TerminalWidget final : public QWidget {
     SessionModel& model_;
+    tf_shell::KeyboardEncoder keyboard_;
     static constexpr int margin = 8;
     int cell_width_ = 9;
     int cell_height_ = 19;
@@ -58,10 +60,13 @@ class TerminalWidget final : public QWidget {
         return palette[index >= 0 && index < 16 ? static_cast<size_t>(index) : foreground ? 7 : 0];
     }
     void closeEvent(QCloseEvent* event) override {
+        keyboard_.reset();
         model_.close();
         QWidget::closeEvent(event);
     }
     bool event(QEvent* event) override {
+        if (event->type() == QEvent::FocusOut || event->type() == QEvent::Hide)
+            keyboard_.reset();
         // QWidget normally consumes Tab for focus traversal before keyPressEvent.
         if (event->type() == QEvent::KeyPress && static_cast<QKeyEvent*>(event)->key() == Qt::Key_Tab) {
             keyPressEvent(static_cast<QKeyEvent*>(event)); return event->isAccepted();
@@ -74,31 +79,46 @@ class TerminalWidget final : public QWidget {
         return handled;
     }
     void keyPressEvent(QKeyEvent* event) override {
-        QByteArray bytes;
-        if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C) bytes = QByteArray(1, '\x03');
+        if (!isVisible() || !hasFocus()) {
+            keyboard_.reset(); event->ignore(); return;
+        }
+        if (!model_.running()) {
+            keyboard_.reset();
+            // Report the unavailable target even for an uncommitted high unit.
+            model_.send(std::string{});
+            event->ignore(); return;
+        }
+        std::string bytes;
+        auto next = keyboard_;
+        bool character_text = false;
+        if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C) bytes = std::string(1, '\x03');
         else if (event->modifiers().testFlag(Qt::ControlModifier) || event->modifiers().testFlag(Qt::AltModifier)) {
             QWidget::keyPressEvent(event); return;
         } else {
             switch (event->key()) {
             case Qt::Key_Return: case Qt::Key_Enter: bytes = "\r"; break;
-            case Qt::Key_Backspace: bytes = QByteArray(1, '\x7f'); break;
+            case Qt::Key_Backspace: bytes = std::string(1, '\x7f'); break;
             case Qt::Key_Tab: bytes = "\t"; break;
             case Qt::Key_Up: bytes = "\x1b[A"; break;
             case Qt::Key_Down: bytes = "\x1b[B"; break;
             case Qt::Key_Right: bytes = "\x1b[C"; break;
             case Qt::Key_Left: bytes = "\x1b[D"; break;
             default:
+                if (event->text().isEmpty()) { QWidget::keyPressEvent(event); return; }
+                character_text = true;
                 for (const auto character : event->text()) {
-                    if (character.unicode() < 0x20 || character.unicode() > 0x7e) {
-                        QWidget::keyPressEvent(event); return;
-                    }
+                    bytes += next.character(character.unicode());
+                    // InputQueue rejects this whole packet. Bound temporary
+                    // encoding too, without changing the committed encoder.
+                    if (bytes.size() > 1024) break;
                 }
-                bytes = event->text().toLatin1();
             }
         }
-        if (bytes.isEmpty()) { QWidget::keyPressEvent(event); return; }
-        model_.send(bytes);
-        event->accept();
+        if (!character_text) bytes = next.finish() + bytes;
+        if (bytes.empty() || model_.send(bytes)) {
+            keyboard_ = next;
+            event->accept();
+        } else event->ignore();
     }
     void paintEvent(QPaintEvent*) override {
         QPainter painter(this);
@@ -155,9 +175,13 @@ public:
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         resize(sizeHint());
         grid_ready_ = true;
-        model_.on_changed = [this] { update(); };
+        model_.on_changed = [this] { refresh_session(); };
     }
     ~TerminalWidget() override { model_.on_changed = {}; }
+    void refresh_session() {
+        if (!model_.running()) keyboard_.reset();
+        update();
+    }
     QSize sizeHint() const override {
         return {margin * 2 + SessionModel::initial_columns * cell_width_,
                 margin * 3 + (SessionModel::initial_rows + 1) * cell_height_};

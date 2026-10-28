@@ -1,0 +1,148 @@
+{
+  "schema": "termforge-qt-unicode-focused-v1",
+  "source_commit": "2bdcea3161f415f49d96bc0f30e5e72794c8c72f",
+  "source_tree": "58f1193e86da69971f82c4abc8cbfdb1602dd41b",
+  "sources": {
+    "CMakeLists.txt": {
+      "bytes": 25814,
+      "sha256": "6a49540a1173b26cda3703a745870898a2071cc1c047a42b8eb9484a2cd559f7"
+    },
+    "src/qt/unicode_input_test.cpp": {
+      "bytes": 17771,
+      "sha256": "5ac07aa9661f10c128b56f44bd9059daa126bef06f62d8bf5a7f592d59115b41"
+    },
+    "src/qt/terminal_widget.hpp": {
+      "bytes": 7851,
+      "sha256": "c74daa211f2bf7cdd42d72c2cdd194921754436b13b3d2b35ebd39aca26720a8"
+    },
+    "src/qt/terminal_session.hpp": {
+      "bytes": 9557,
+      "sha256": "bf3816ec703aa91d66505d1dfa77dcfda6e574fa2c2b020ebec657b4927ab98e"
+    },
+    "src/qt/session_tabs.hpp": {
+      "bytes": 7013,
+      "sha256": "bdd7843ee051bd6efecb08311b623c671d54fc5e1d2302b8f9d2a731c49749df"
+    },
+    "src/qt/run_smoke.py": {
+      "bytes": 4287,
+      "sha256": "25f4d6adec4e9bfad77698300c44d9162511ac1ebb722993d5a52cdb8a863983"
+    },
+    "experiments/shell/keyboard.hpp": {
+      "bytes": 3979,
+      "sha256": "0790ddd0a3b755de5fc22a7bff5c3421b91c19b78dcd7bc0af9de22fa471c3b3"
+    },
+    "experiments/shell/queues.hpp": {
+      "bytes": 7224,
+      "sha256": "9087944a7749176789a489bce0522c55764461342b59c138611743b6947845b6"
+    },
+    "experiments/shell/input_client.cpp": {
+      "bytes": 11706,
+      "sha256": "67ebb343978ac6822f8feaafa7510f9ee325737fce91b3d2aed8385deea6a969"
+    },
+    "experiments/conpty/session.hpp": {
+      "bytes": 11072,
+      "sha256": "7b3934715948a05c1996bcccb02ef2eb58ea11baf26bf97c2e728a52d58becda"
+    },
+    "experiments/conpty/backend.hpp": {
+      "bytes": 6815,
+      "sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489"
+    },
+    "experiments/core/terminal.hpp": {
+      "bytes": 12270,
+      "sha256": "ed3c030611a6df38df26057a8c2834f2808cd05306e73aead79927b1f76fe5ca"
+    },
+    "experiments/core/screen.hpp": {
+      "bytes": 17242,
+      "sha256": "04c19f09ebc0c468efbef8dd4c9da8f4bcd44e94000a87c56239756c0df1b474"
+    },
+    "third_party/qt/manifest.json": {
+      "bytes": 5806,
+      "sha256": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd"
+    },
+    "third_party/conpty/manifest.json": {
+      "bytes": 1467,
+      "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+    },
+    "third_party/msvc_runtime/manifest.json": {
+      "bytes": 4123,
+      "sha256": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+    }
+  },
+  "red": {
+    "source_commit": "8adc256ffe53a7cace75d74bf6ac5d173e8b59fc",
+    "expected_hex": "4ce4b8ade6968752",
+    "actual_hex": "4c52",
+    "ctest_exit": 8,
+    "native_exit": 1,
+    "receiver_exit": 0,
+    "job_active": 0,
+    "job_total": 4,
+    "timed_out": false,
+    "runtime_manifest": {
+      "bytes": 5873,
+      "sha256": "21f47a361fdb01889eb11eeeb86a1faf21f49bea7ae0487c490f71c47da8a48c"
+    },
+    "log": {
+      "bytes": 1970,
+      "sha256": "fec2d8a5bba939e23f87a804ee356535378982d5d1edd0852eba73e222a276c9"
+    }
+  },
+  "focused": {
+    "ctest_exit": 0,
+    "native_exit": 0,
+    "job_active": 0,
+    "job_total": 17,
+    "timed_out": false,
+    "runtime_manifest": {
+      "bytes": 6007,
+      "sha256": "ca3fec6250f109e860a2111cbaa49b9c26ccd2bcdd6779ce43c1d48fbdf6488a"
+    },
+    "log": {
+      "bytes": 2894,
+      "sha256": "ed48ca36530620c166a4037ccec7beade380b116ab97d703ba1bc6c733ce7de7"
+    },
+    "receivers": {
+      "unicode.bin": {
+        "bytes": 58,
+        "sha256": "c3138debbb91d7dc8a74324283da18b89ed1c1a9a52efc8b5caf7e77a92df2ce"
+      },
+      "focus-packet.bin": {
+        "bytes": 1037,
+        "sha256": "97f22206016f52617da7b671f20fea22d85b36bee4d66c04cf3a174264b8d862"
+      },
+      "normal-keys.bin": {
+        "bytes": 19,
+        "sha256": "aa5b356f76c764945f6dfea4430b774b68201b2095f14d7613832290b0f461e7"
+      },
+      "tab-a.bin": {
+        "bytes": 9,
+        "sha256": "fa27960a63a077e4b40f1de30e99f489921da201cd72c2284f5bb26579eb008a"
+      },
+      "tab-b.bin": {
+        "bytes": 8,
+        "sha256": "6a324e7924ac17fb25d6444b73b49137d96c23c98ec45069d28a048ca5de1dcf"
+      },
+      "late-start.bin": {
+        "bytes": 4,
+        "sha256": "9719ab72356050600c22e4b79b4200066150c6bac592a0630b4ba8f07f189080"
+      }
+    },
+    "cancelled_receiver": {
+      "output_bytes": 0,
+      "natural_exit": false,
+      "cleanup_verified": true
+    }
+  },
+  "deadlines": {
+    "per_gate_ms": 5000,
+    "supervisor_communicate_seconds": 25,
+    "ctest_seconds": 35
+  },
+  "full_validation": null,
+  "limits": [
+    "synthetic QKeyEvent, not physical keyboard or OS IME",
+    "receiver ReadConsoleW and independent UTF8 export only",
+    "glyph, width, shaping, presented and performance unknown",
+    "Qt queue refusal exercised by single-packet limit; existing InputQueue total-capacity fixture remains separate"
+  ]
+}
