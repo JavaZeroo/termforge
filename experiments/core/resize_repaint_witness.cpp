@@ -218,6 +218,7 @@ int main(int argc, char** argv) {
                   << completed << ",\"observed_bad_states\":" << bad_states
                   << ",\"checkpoints\":" << checkpoints
                   << ",\"semantic_acceptance\":false,\"ci_cause_established\":false,\"cli_zero_means\":\"four declared cases recorded\"}\n";
+        std::cout.flush();
         require(bool(std::cout), "diagnostic output write failed");
         return 0;
     } catch (const std::exception& error) {
