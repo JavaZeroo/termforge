@@ -48,9 +48,12 @@ class Observation final : public QObject {
         if (!page_) return {{"target_alive", false}};
         const auto& model = page_->model();
         const auto& terminal = page_->terminal();
+        const auto origin = terminal.mapTo(terminal.window(), QPoint());
         return {{"target_alive", true}, {"visible", terminal.isVisible()}, {"has_focus", terminal.hasFocus()},
                 {"ime_enabled", terminal.inputMethodQuery(Qt::ImEnabled).toBool()},
                 {"cursor_rectangle_logical", rect(terminal.inputMethodQuery(Qt::ImCursorRectangle).toRectF())},
+                {"terminal_origin_window_logical", QJsonArray{origin.x(), origin.y()}},
+                {"terminal_size_logical", QJsonArray{terminal.width(), terminal.height()}},
                 {"grid_columns", model.screen().width()}, {"grid_rows", model.screen().height()},
                 {"terminal_column", model.screen().column}, {"terminal_row", model.screen().row},
                 {"requested_widget_font_family", terminal.font().family()},
