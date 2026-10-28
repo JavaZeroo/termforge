@@ -20,6 +20,18 @@ static void record_reply(const SizeReply& reply) {
               << ",\"window_top\":" << reply.window_top << ",\"window_right\":" << reply.window_right
               << ",\"window_bottom\":" << reply.window_bottom << "}\n";
 }
+static void record_state(int stage, int columns, int rows, const termforge::qt::TerminalWidget& terminal,
+                         const termforge::qt::SessionModel& model) {
+    const auto state = model.resize_state();
+    std::cerr << "{\"schema\":\"termforge-qt-resize-state-v1\",\"stage\":" << stage
+              << ",\"requested_columns\":" << columns << ",\"requested_rows\":" << rows
+              << ",\"widget_width\":" << terminal.width() << ",\"widget_height\":" << terminal.height()
+              << ",\"core_columns\":" << state.requested_columns << ",\"core_rows\":" << state.requested_rows
+              << ",\"transport_columns\":" << state.transport_columns << ",\"transport_rows\":" << state.transport_rows
+              << ",\"requested_revision\":" << state.requested_revision
+              << ",\"transport_revision\":" << state.transport_revision
+              << ",\"accepting\":" << state.accepting << ",\"pending\":" << state.pending << "}\n";
+}
 static SizeReply wait_reply(SizeFixture& fixture, unsigned long long nonce) {
     QElapsedTimer timer; timer.start();
     while (timer.elapsed() < 5000) {
@@ -116,23 +128,49 @@ int main(int argc, char** argv) {
         const int height = qCeil(metrics.height()) + 2;
         // Existing view contract: two horizontal margins, one status row and
         // three vertical margins. Expected cell counts are independent literals.
-        terminal.resize(16 + 60 * width, 24 + 13 * height);
-        QElapsedTimer timer; timer.start();
-        while ((model.screen().width() != 60 || model.screen().height() != 12) && timer.elapsed() < 5000)
-            QTest::qWait(5);
-        std::cerr << "{\"schema\":\"termforge-qt-resize-grid-v1\",\"requested_columns\":60,\"requested_rows\":12,"
-                  << "\"core_columns\":" << model.screen().width() << ",\"core_rows\":" << model.screen().height()
-                  << ",\"widget_width\":" << terminal.width() << ",\"widget_height\":" << terminal.height() << "}\n";
-        require(model.screen().width() == 60 && model.screen().height() == 12,
-                "resizing the public Qt view did not resize its terminal grid to 60x12");
+        record_state(0, 80, 24, terminal, model);
         unsigned long long nonce = 100;
-        const auto replies = await_child_size(fixture, model, 60, 12, nonce);
-        terminal.close();
-        await([&] { return model.finished(); }, model, "resize shell did not finish after close");
-        require(model.cleanup_verified(), "resize shell cleanup failed");
+        size_t reply_count = 0;
+        unsigned heartbeat_events = 0;
+        const std::vector<QSize> sizes{{60, 12}, {100, 30}, {80, 24}, {1, 1}, {80, 24}, {80, 24}};
+        int stage = 0;
+        for (const auto size : sizes) {
+            ++stage;
+            const auto before = model.resize_state();
+            const auto first_line_id = model.screen().lines.front().id;
+            bool event_responded = false;
+            QTimer::singleShot(0, &terminal, [&] { event_responded = true; ++heartbeat_events; });
+            terminal.resize(size == QSize(1, 1) ? QSize(1, 1) :
+                            QSize(16 + size.width() * width, 24 + (size.height() + 1) * height));
+            await([&] { return model.screen().width() == size.width() && model.screen().height() == size.height(); },
+                  model, "public terminal area and core dimensions differ");
+            record_state(stage, size.width(), size.height(), terminal, model);
+            QTest::qWait(1);
+            const auto replies = await_child_size(fixture, model, size.width(), size.height(), nonce);
+            for (const auto& reply : replies)
+                require(reply.child_pid == model.resize_state().child_pid, "size reply did not come from this Session child");
+            reply_count += replies.size();
+            await([&] { return !model.resize_state().pending; }, model, "native resize completion did not publish");
+            require(event_responded, "Qt did not dispatch the queued event during resize verification");
+            if (stage == 6) {
+                const auto after = model.resize_state();
+                require(after.requested_revision == before.requested_revision &&
+                        after.transport_revision == before.transport_revision &&
+                        model.screen().lines.front().id == first_line_id,
+                        "same-size repeat changed the core frame or native resize revision");
+            }
+            record_state(stage, size.width(), size.height(), terminal, model);
+        }
+        ++nonce;
+        require(model.send("X " + std::to_string(nonce) + "\r"), "natural-exit command rejected");
+        wait_reply(fixture, nonce);
+        await([&] { return model.finished(); }, model, "resize child did not exit naturally");
+        require(model.natural_exit() && model.exit_code() == 37 && model.cleanup_verified(),
+                "resize child natural exit or cleanup failed");
         invalid_size_stops_pending_resize(executable, workspace.path().toStdWString());
-        std::cout << "{\"schema\":\"termforge-qt-resize-smoke-v1\",\"core_columns\":60,\"core_rows\":12,\"child_ack_replies\":"
-                  << replies.size() << ",\"cleanup_verified\":true,\"presented_done\":null}\n";
+        std::cout << "{\"schema\":\"termforge-qt-resize-smoke-v1\",\"grid_sequence_cases\":6,\"child_ack_replies\":"
+                  << reply_count << ",\"qt_heartbeat_events\":" << heartbeat_events
+                  << ",\"child_exit\":37,\"cleanup_verified\":true,\"presented_done\":null}\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
