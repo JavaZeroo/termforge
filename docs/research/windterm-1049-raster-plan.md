@@ -1,6 +1,6 @@
 # 1049 当前样式：一次受控 Qt 栅格调查计划
 
-状态：[#123](https://github.com/JavaZeroo/termforge/issues/123) 修订已复核，[#126](https://github.com/JavaZeroo/termforge/issues/126) 获一次执行授权，生产探针尚未执行。计划基点为 `72f40e10a8db0ef7585f8bec82f2be72f78c3d33`，并已接入 LF 属性守卫。只调查进入、重复进入及退出后的当前前景/背景色，不重复完整模式矩阵，不改核心。
+状态：[#126](https://github.com/JavaZeroo/termforge/issues/126) 的一次执行已结束，在阶段 0 抓图前因 selectionText 守卫停止；颜色仍未知，见[实际结果与边界](windterm-1049-raster-reference-2026-10-28.md)。以下保留执行前计划，不把计划内容视为已观察结果。计划基点为 `72f40e10a8db0ef7585f8bec82f2be72f78c3d33`，并已接入 LF 属性守卫。
 
 ## 固定目标与边界
 
@@ -54,4 +54,4 @@ QPixmap 与 QImage 各分配 32B，**不预先构造**，由正常返回的 sret
 
 ## 执行前出口
 
-执行项为 #126。[生产探针](../../research/ui/raster_style_reference.py)及[GUI 驱动](../../research/ui/raster_style_reference.js)必须先提交固定身份，再生成含每阶段 hex/SHA、完整 Qt DLL 哈希、脚本哈希和唯一输出目录的私有计划，并由单次 marker 防止重复启动。当前没有新原版运行、栅格或颜色结果；计划不解除现有样式未知项。离线边界回归已注册为 `windterm_raster_style_reference`，不使用原版资源。
+执行项为 #126。[生产探针](../../research/ui/raster_style_reference.py)及[GUI 驱动](../../research/ui/raster_style_reference.js)已先提交固定身份，再生成含每阶段 hex/SHA、完整 Qt DLL 哈希、脚本哈希和唯一输出目录的私有计划，并由单次 marker 防止重复启动。本计划不解除现有样式未知项；实际执行结果另列，不重跑。离线边界回归已注册为 `windterm_raster_style_reference`，不使用原版资源。

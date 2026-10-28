@@ -78,6 +78,13 @@ def export(directory,plan_path,destination):
     cleanup,profile=read("cleanup.json"),read("profile-check.json")
     require(cleanup["active"]==0 and profile=={"only_synthetic_session":True,"session_count":1},"Owned resources/profile failed")
     raw_names=("run.json","probe.js","peer.json","raster-result.json","evidence.json","cleanup.json","profile-check.json","stderr.txt")
+    stop_guard=None
+    if captured["reason"]=="selection-overlaps-observation" and captured_phases:
+        selection=captured_phases[-1]["terminal"].get("selection")
+        stop_guard={"guard":"selectionText must return the empty string","observed_value_type":"string" if isinstance(selection,str) else "null" if selection is None else "other",
+                    "observed_character_count":len(selection) if isinstance(selection,str) else None,
+                    "actual_selection_or_overlap_proven":False,
+                    "interpretation":"The executed guard did not establish an explicitly empty selectionText. Nonempty selectionText does not by itself prove a selection or overlap; getter semantics remain unverified."}
     summary={"schema":"termforge-original-raster-style-reference-v1","issue":126,"status":captured["status"],"reason":captured["reason"],
              "scope":"Five-stage owned direct-terminal QWidget raster experiment; only H/space output-color scalars, not internal pen state or presented frames",
              "source_base_commit":plan["source_base_commit"],"source_files_sha256":plan["source_files_sha256"],"exporter_sha256":sha(Path(__file__)),"analysis_sha256":sha(ROOT/"research/ui/raster_style_analysis.py"),
@@ -85,6 +92,7 @@ def export(directory,plan_path,destination):
              "plan_sha256":sha(plan_path),"actual_original_runs":1,"maximum_original_runs":1,"rea_capture_seconds":45,"cli_wait_timeout_seconds":60,"whole_lifecycle_bound_seconds":None,
              "frozen_grid":peer["frozen_grid"],"naws_history":peer["naws_history"],"freeze_event_count":freeze,"naws_history_scope":"Each complete valid NAWS event parsed by the owned peer, including repeats","naws_changed_after_freeze":False,
              "planned_phase_count":5,"observed_phase_count":count,"grab_phases":captured["grab_phases"],"maximum_grabs_per_phase":1,"phases":public_phases,
+             "stop_guard_observation":stop_guard,
              "sample_color_comparisons":comparisons(captured_phases) if complete else None,
              "provider":{"evidence_id":evidence["evidence_id"],"provider":evidence["provider"],"confidence":evidence["confidence"],"subject":evidence["subject"],"environment":evidence["environment"],"messages_truncated":False,"cleanup_error":None,"limitations":evidence["limitations"]},
              "lifecycle":{"outer_job":cleanup,"profile":profile,"deliberate_original_termination":True,"natural_gui_exit_verified":False},

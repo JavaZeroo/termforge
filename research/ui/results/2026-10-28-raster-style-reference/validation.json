@@ -1,0 +1,186 @@
+{
+  "schema": "termforge-original-raster-style-reference-v1",
+  "issue": 126,
+  "status": "partial-raster-observation",
+  "reason": "selection-overlaps-observation",
+  "scope": "Five-stage owned direct-terminal QWidget raster experiment; only H/space output-color scalars, not internal pen state or presented frames",
+  "source_base_commit": "15c736b9274ed6bd2ba93842d27da8bc2eb87008",
+  "source_files_sha256": {
+    "research/ui/raster_style_reference.py": "ec6681b4a3bf681e240399ac0b0c0877ac56c324dd19eb62bd0108345f3fc8c2",
+    "research/ui/raster_style_reference.js": "499670efdb970984e8ac72d326033cca456720c83e9585152739ff6a82dd36db",
+    "research/ui/alternate_style_reference.py": "3136e620a462a36ea3358c917eb4e207f32aa52db7c75ae14ba8856eba1eafcd",
+    "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+    "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f"
+  },
+  "exporter_sha256": "e10147a105b298117bbf36ef6c5288af0d0444b12105a62f036125e634f9a27a",
+  "analysis_sha256": "ebb3de852e6d549e0877c0c71b6629daa5fffad6b296df04a53667bd959b56ca",
+  "module_sha256": {
+    "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+    "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+    "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358"
+  },
+  "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "runtime_module_path_guards": [
+    {
+      "name": "WindTerm.exe",
+      "path_guard_passed": true
+    },
+    {
+      "name": "Qt5Core.dll",
+      "path_guard_passed": true
+    },
+    {
+      "name": "Qt5Gui.dll",
+      "path_guard_passed": true
+    },
+    {
+      "name": "Qt5Widgets.dll",
+      "path_guard_passed": true
+    }
+  ],
+  "plan_sha256": "deb78215e2a12108d73b0fc82fa6f5bf8e979f28ba71013d72f28818ef3e085c",
+  "actual_original_runs": 1,
+  "maximum_original_runs": 1,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "frozen_grid": [
+    91,
+    25
+  ],
+  "naws_history": [
+    [
+      91,
+      24
+    ],
+    [
+      91,
+      25
+    ]
+  ],
+  "freeze_event_count": 2,
+  "naws_history_scope": "Each complete valid NAWS event parsed by the owned peer, including repeats",
+  "naws_changed_after_freeze": false,
+  "planned_phase_count": 5,
+  "observed_phase_count": 1,
+  "grab_phases": [],
+  "maximum_grabs_per_phase": 1,
+  "phases": [
+    {
+      "phase": 0,
+      "label": "M0 H H",
+      "cursor_reply": [
+        2,
+        9
+      ],
+      "grab_attempted": false,
+      "constructed": [],
+      "destroyed": [],
+      "calibration": false,
+      "reason": "selection-overlaps-observation",
+      "image": null,
+      "rois": [],
+      "source_label": "main-calibration",
+      "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33481b5b33313b34346d4d3020482048",
+      "source_sha256": "7354c4f5e8384e30e8e59f1795193643b16f01d1a3c31bd8286d289b4f140487",
+      "dsr_request_hex": "1b5b366e",
+      "cursor_reply_hex": "1b5b323b3952",
+      "is_alt": false,
+      "is_main": true
+    }
+  ],
+  "stop_guard_observation": {
+    "guard": "selectionText must return the empty string",
+    "observed_value_type": "string",
+    "observed_character_count": 10,
+    "actual_selection_or_overlap_proven": false,
+    "interpretation": "The executed guard did not establish an explicitly empty selectionText. Nonempty selectionText does not by itself prove a selection or overlap; getter semantics remain unverified."
+  },
+  "sample_color_comparisons": null,
+  "provider": {
+    "evidence_id": "ev_cedd36bf326d1769fa8d0d7b1cc508314eb22da43ba97faf80debbcf9b085e63",
+    "provider": {
+      "id": "frida",
+      "name": "Frida",
+      "version": null
+    },
+    "confidence": "observed",
+    "subject": null,
+    "environment": null,
+    "messages_truncated": false,
+    "cleanup_error": null,
+    "limitations": [
+      "Artifact identity is unavailable for this observation.",
+      "The target operating system and architecture were not reported by this observation."
+    ]
+  },
+  "lifecycle": {
+    "outer_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "profile": {
+      "only_synthetic_session": true,
+      "session_count": 1
+    },
+    "deliberate_original_termination": true,
+    "natural_gui_exit_verified": false
+  },
+  "raw_files": {
+    "run.json": {
+      "bytes": 618,
+      "sha256": "0e98a8ba8babd6ec4b186ea7a36c6b91c30fbd18067ec720f1eb9224ce3e0a2c"
+    },
+    "probe.js": {
+      "bytes": 26770,
+      "sha256": "dab1b56297adab2bc18591ceeec613f455143325c3b143f40adb44760291e2c7"
+    },
+    "peer.json": {
+      "bytes": 542,
+      "sha256": "c410e572fc63380a11582021b8991f0cee963b697ad794fe02187dda9cfa68d7"
+    },
+    "raster-result.json": {
+      "bytes": 1709,
+      "sha256": "6724c93a7da8f0f08d50f360ba43b01cad4f272a88d82919cc0f75c486be18f0"
+    },
+    "evidence.json": {
+      "bytes": 5600,
+      "sha256": "7a55fa5b5a801f0c5b4e4036433d68a7f3c0ebb879bc79a9b880c319fed59ec0"
+    },
+    "cleanup.json": {
+      "bytes": 42,
+      "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+    },
+    "profile-check.json": {
+      "bytes": 52,
+      "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+    },
+    "stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "controlled_raster_observed": false,
+  "sample_colors_verified": false,
+  "internal_current_style_verified": false,
+  "full_grid_verified": false,
+  "local_shell_transport_verified": false,
+  "presented_done": null,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "limitations": [
+    "QWidget grab is a controlled raster, not physical display/presented proof.",
+    "Dominant ink/background are sampled output colors of one H glyph; they are not the internal QPainter pen or full terminal style state.",
+    "Only the declared five sources and one grab per phase are covered. Empty image, coordinate/DPR/ink/caret/selection failures stay unknown without shifted ROI, additional grab or retry.",
+    "Two references must actually be distinguishable; SGR indices do not establish palette colors.",
+    "Telnet direct-terminal observations do not establish WinPTY/ConPTY local-shell behavior or resolve margins.",
+    "45seconds is capture duration and60seconds is CLI wait timeout; target starts before a separate2-second delay and cleanup follows. No whole-lifecycle bound or performance conclusion.",
+    "Raw image/ROI pixels, paths, PIDs, copied original resources and profile stay local; only audited color/size scalars and hashes are published.",
+    "Provider subject/environment may remain null. Preparation enforces full module/package hashes and the injected script checks actual module paths and exact export RVAs.",
+    "Owned launcher deliberately terminates the original GUI; Job active0 is cleanup, not natural-exit proof."
+  ]
+}
