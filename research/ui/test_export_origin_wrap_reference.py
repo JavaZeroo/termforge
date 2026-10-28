@@ -15,7 +15,7 @@ from research.ui.test_origin_wrap_reference import receive_fixture
 
 
 def fixture(root):
-    directory = root / "capture"
+    directory = (root / "capture").resolve()
     directory.mkdir()
     peer, _ = receive_fixture("normal")
     peer.update(naws_history=[[91, 24], [91, 25]], freeze_event_count=2)
