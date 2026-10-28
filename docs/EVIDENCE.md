@@ -8,6 +8,7 @@
 
 | 配置 | 证据定位 |
 |---|---|
+| 自主 C++ 主屏 ASCII DECAWM | [有限合同与红绿](../experiments/core/results/2026-10-29-cpp-decawm/README.md)、[固定验证身份](../experiments/core/results/2026-10-29-cpp-decawm/validation.json)：抽取原版14–18阶段79B，strict/recovery各235个字面前缀分块用例；初次定向8/9的缺构建依赖失败、补建后的core单项31测试通过分列。跨1049/宽字/resize、origin/margin、GUI/固定ConPTY运输和完整TUI均不由本项验收 |
 | 自主 C++ 限定 1049 协议 | [固定结果](../experiments/core/results/2026-10-29-cpp-1049/README.md)、[验证身份](../experiments/core/results/2026-10-29-cpp-1049/validation.json)：文字/光标/颜色及 pending-wrap、重复进入与读者失效；55项中Qt1项分列，13条内部skip及旧负例判据失败保留。未验收非颜色属性/全网格背景、其他模式、真实TUI/IME/DPI、呈现或性能 |
 | 自主 C++ 双缓冲存储与文档 epoch 基础 | [固定结果](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)、[验证身份](../experiments/core/results/2026-10-29-buffer-state-r2/validation.json)：拥有状态、共享 ID、隐藏帧 resize 回滚与跨缓冲句柄失效；Qt/candidate 关闭配置的完整 50 项及 12 条内部 skip 分列。未接 private CSI，不是原版模式、Qt 产品路线或完整 #27 验收 |
 | Qt 基础 Unicode 文本字节 | [红绿与联合验证](../experiments/shell/results/2026-10-29-qt-unicode-input/README.md)、[固定联合身份](../experiments/shell/results/2026-10-29-qt-unicode-input/validation.json)：公开Qt事件到独立ReadConsoleW接收端，整/分事件代理项、焦点/隐藏/关闭、1024B整包与NUL、两目标隔离。2b6d源码一次61项分列Qt3/其余58，13内部skip、旧红例与27原件保留；不是实际IME、字素/字形、原生Unicode窗口、DPI或性能验收 |
