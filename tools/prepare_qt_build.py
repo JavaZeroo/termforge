@@ -1,8 +1,9 @@
-"""Prepare the manifest-pinned Windows Qt/ConPTY build inputs locally.
+"""Prepare the manifest-pinned Windows Qt/ConPTY/CRT build inputs locally.
 
 Only untouched archives are cached. Each run extracts a fresh SDK, adds a
 relative qt.conf, verifies the required files, and publishes a path-free summary.
-No global installation, PATH modification, or product redistribution occurs.
+The CRT installer is read as an archive, never executed. No global installation,
+PATH modification, or product redistribution occurs.
 """
 from __future__ import annotations
 
@@ -10,6 +11,9 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
+import shutil
+import struct
 import subprocess
 import tempfile
 import urllib.request
@@ -79,9 +83,77 @@ def tree_identity(directory):
     return {"files": count, "tree_sha256": identity.hexdigest()}
 
 
-def prepare(cache, out, offline):
+def prepare_runtime(cache, staging, offline):
+    """Extract the fixed AMD64 CRT without executing its installer."""
+    metadata = json.loads((ROOT / "third_party/msvc_runtime/manifest.json").read_text(encoding="utf-8"))
+    package, license_metadata = metadata["package"], metadata["license"]
+    installer = acquire(cache, package["archive"], package["url"], package["bytes"], package["sha256"], offline)
+    license_path = acquire(cache, license_metadata["archive"], license_metadata["url"],
+                           license_metadata["bytes"], license_metadata["sha256"], offline)
+    notice = ROOT / "third_party/msvc_runtime/NOTICE.txt"
+    if sha256(notice) != metadata["notice_sha256"]:
+        raise PreparationError("crt_notice_identity")
+    data = installer.read_bytes()
+    container = metadata["attached_container"]
+    offset, size = container["offset"], container["bytes"]
+    if (type(offset) is not int or type(size) is not int or offset < 0 or size < 36 or
+            offset + size > len(data) or hashlib.sha256(data).hexdigest() != package["sha256"]):
+        raise PreparationError("crt_container_identity")
+    cabinet = data[offset:offset + size]
+    if (cabinet[:4] != b"MSCF" or struct.unpack_from("<I", cabinet, 8)[0] != size or
+            hashlib.sha256(cabinet).hexdigest() != container["sha256"]):
+        raise PreparationError("crt_container_identity")
+    work = staging.parent / "crt-extraction"
+    work.mkdir()
+    (work / "attached.cab").write_bytes(cabinet)
+    member = metadata["runtime_cabinet"]["member"]
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", member):
+        raise PreparationError("crt_member_name")
+    run_tool(["cmake", "-E", "tar", "xf", "attached.cab", member], cwd=work)
+    runtime_cabinet = work / member
+    if (runtime_cabinet.stat().st_size != metadata["runtime_cabinet"]["bytes"] or
+            sha256(runtime_cabinet) != metadata["runtime_cabinet"]["sha256"]):
+        raise PreparationError("crt_cabinet_identity")
+    members = []
+    for name, identity in metadata["files"].items():
+        if (not re.fullmatch(r"[a-z0-9_]+\.dll", name) or
+                not re.fullmatch(r"[a-z0-9_]+\.dll_amd64", identity["member"])):
+            raise PreparationError("crt_member_name")
+        members.append(identity["member"])
+    run_tool(["cmake", "-E", "tar", "xf", member, *members], cwd=work)
+    runtime = staging / "crt"
+    runtime.mkdir()
+    for name, identity in metadata["files"].items():
+        contents = (work / identity["member"]).read_bytes()
+        if len(contents) != identity["bytes"] or hashlib.sha256(contents).hexdigest() != identity["sha256"]:
+            raise PreparationError("crt_file_identity")
+        if len(contents) < 64 or contents[:2] != b"MZ":
+            raise PreparationError("crt_architecture")
+        pe = struct.unpack_from("<I", contents, 60)[0]
+        if pe + 6 > len(contents) or contents[pe:pe + 4] != b"PE\0\0" or struct.unpack_from("<H", contents, pe + 4)[0] != 0x8664:
+            raise PreparationError("crt_architecture")
+        (runtime / name).write_bytes(contents)
+    shutil.copyfile(license_path, runtime / "LICENSE-MICROSOFT-VC-REDIST.docx")
+    shutil.copyfile(notice, runtime / "NOTICE.txt")
+    return {"version": metadata["version"], "architecture": metadata["architecture"],
+            "package_sha256": package["sha256"], "files": {name: value["sha256"] for name, value in metadata["files"].items()},
+            "license_sha256": license_metadata["sha256"], "notice_sha256": metadata["notice_sha256"]}
+
+
+def prepare(cache, out, offline, crt_only=False):
     if out.exists():
         raise PreparationError("output_exists")
+    if crt_only:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="crt-build-", dir=out.parent) as temporary:
+            staging = Path(temporary) / "dependencies"
+            staging.mkdir()
+            runtime = prepare_runtime(cache, staging, offline)
+            staging.replace(out)
+        return {"schema": SCHEMA, "status": "passed", "msvc_runtime": runtime,
+                "input_manifests": {"msvc_runtime": sha256(ROOT / "third_party/msvc_runtime/manifest.json")},
+                "preparation_script_sha256": sha256(Path(__file__)),
+                "scope": "Fixed CRT build inputs only; no installer execution or product acceptance"}
     qt = json.loads((ROOT / "third_party/qt/manifest.json").read_text(encoding="utf-8"))
     conpty = json.loads((ROOT / "third_party/conpty/manifest.json").read_text(encoding="utf-8"))
     archive = qt["official_binary_archive"]
@@ -124,15 +196,17 @@ def prepare(cache, out, offline):
                     raise PreparationError("conpty_file_identity")
                 (backend / name).write_bytes(contents)
         sdk_identity = tree_identity(sdk)
+        runtime = prepare_runtime(cache, staging, offline)
         staging.replace(out)
     return {"schema": SCHEMA, "status": "passed", "qt_version": qt["version"],
             "qt_architecture": qt["architecture"], "qt_archive_sha256": archive["sha256"],
             "input_manifests": {name: sha256(ROOT / "third_party" / name / "manifest.json")
-                                for name in ("qt", "conpty")},
+                                for name in ("qt", "conpty", "msvc_runtime")},
             "preparation_script_sha256": sha256(Path(__file__)),
             "sdk_transformation": "bin/qt.conf contains [Paths] and Prefix=..; no binary or .prl patch",
             "sdk": sdk_identity, "conpty_version": conpty["version"],
             "conpty_package_sha256": conpty["package_sha256"], "conpty_files": conpty["files"],
+            "msvc_runtime": runtime,
             "scope": "Windows local/CI build inputs only; no product package or platform acceptance"}
 
 
@@ -141,10 +215,11 @@ def main(argv=None):
     parser.add_argument("--cache", type=Path, default=ROOT / "local/qt-downloads")
     parser.add_argument("--out", type=Path, default=ROOT / "local/qt-build-deps")
     parser.add_argument("--summary", type=Path, default=ROOT / "local/qt-build-preparation.json")
-    parser.add_argument("--offline", action="store_true", help="Require both pinned archives in cache")
+    parser.add_argument("--offline", action="store_true", help="Require all selected pinned archives and license documents in cache")
+    parser.add_argument("--crt-only", action="store_true", help="Prepare only the fixed Microsoft CRT and its license")
     arguments = parser.parse_args(argv)
     try:
-        result = prepare(arguments.cache.resolve(), arguments.out.resolve(), arguments.offline)
+        result = prepare(arguments.cache.resolve(), arguments.out.resolve(), arguments.offline, arguments.crt_only)
     except PreparationError as error:
         result = {"schema": SCHEMA, "status": "failed", "error": str(error)}
     except (OSError, ValueError, KeyError, zipfile.BadZipFile):

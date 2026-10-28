@@ -343,8 +343,10 @@ if(TERMFORGE_BUILD_QT_SHELL)
   if(NOT WIN32)
     message(FATAL_ERROR "The first Qt local-shell migration entry requires Windows x64")
   endif()
+  find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
   find_package(Qt6 6.10.3 EXACT REQUIRED COMPONENTS Widgets)
   include(cmake/ConptyBackend.cmake)
+  include(cmake/MsvcRuntime.cmake)
   get_target_property(qt_core_dll Qt6::Core IMPORTED_LOCATION_RELEASE)
   get_filename_component(qt_binary_directory "${qt_core_dll}" DIRECTORY)
   find_program(qt_deploy_tool windeployqt HINTS "${qt_binary_directory}" NO_DEFAULT_PATH REQUIRED)
@@ -355,6 +357,7 @@ if(TERMFORGE_BUILD_QT_SHELL)
       _WIN32_WINNT=0x0A00 QT_NO_KEYWORDS)
     termforge_warnings(${target})
     termforge_use_bundled_conpty(${target})
+    termforge_use_msvc_runtime(${target})
     add_custom_target(${target}_font_bundle
       COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:${target}>/assets/fonts"
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
