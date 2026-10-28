@@ -1,6 +1,6 @@
 # C++ / Qt 本地会话迁移入口
 
-按 [ADR-0008](../../docs/adr/0008-cpp-core-qt-widgets.md)采用自主 C++ 核心和 Qt Widgets，Windows 进程由[固定微软 ConPTY](../../third_party/conpty/README.md)承载。当前入口提供默认 80×24、随窗口可用区域变化的本地 cmd 标签、基本 ASCII 按键、16 色绘制、启动错误与关闭回收；不是完整 R2 或 WindTerm 界面。
+按 [ADR-0008](../../docs/adr/0008-cpp-core-qt-widgets.md)采用自主 C++ 核心和 Qt Widgets，Windows 进程由[固定微软 ConPTY](../../third_party/conpty/README.md)承载。当前入口提供默认 80×24、随窗口可用区域变化的本地 cmd 标签、基础 ASCII 与限定 Unicode 按键文本传输、16 色绘制、启动错误与关闭回收；不是完整 R2 或 WindTerm 界面。
 
 现有 C++ 核心的[能力限制](../../experiments/core/README.md)继续有效。Qt 尚未迁移原 Win32 的完整工作区、分屏、历史浏览、选择/复制、Find、完整键盘/IME 或会话恢复；完整 resize/reflow 仍需按目标调查和实现，也不能继承 Alacritty 分支的通过结果。
 
@@ -21,9 +21,9 @@ cmake -S . -B build/qt-cpp -G "Visual Studio 17 2022" -A x64 `
   -DQt6_DIR="<Qt SDK prefix>/lib/cmake/Qt6" `
   -DTERMFORGE_CONPTY_BACKEND_DIR="<absolute fixed ConPTY pair directory>" `
   -DTERMFORGE_MSVC_RUNTIME_DIR="<absolute prepared CRT directory>"
-cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke
+cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test
 build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe
-ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_(shell|resize)$' --output-on-failure
+ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input)$' --output-on-failure
 ```
 
 固定 ConPTY/CRT 输入缺失或篡改时构建明确失败；实际工具集更新到固定 CRT 之外时须重新审查依赖。产品中的 shell 启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/`、`assets/fonts/`、十个固定 CRT DLL 及其原许可/NOTICE；每次构建重新校验并部署 CRT，不运行安装器、不修改 System32。最终目录用 `tools/msvc_runtime.py manifest` 记录全部文件。当前只是本地构建输出，Qt/第三方的完整分发审计及产品打包尚未完成。
@@ -40,6 +40,8 @@ Parser/Screen 仅在 Qt 线程修改；ConPTY reader 向有界输出队列写入
 
 字面网格测试使用可见父窗口内的终端子区域；独立顶层测试保留一列请求并根据原生事件处理后的实际可用区域核对 core 和 child，记录平台调整差异。大 child 的资源上限验证保留 owner 裁剪范围。旧 678 离屏通过后的原生极窄失败、新夹具离屏验证及[0ff 冻结包的一次隔离原生成功](../../experiments/shell/results/2026-10-29-qt-resize/native-validation.json)分别保留；后者只观察到 DPI 96，不代替不同 DPI 或完整产品验收。
 
-该测试使用 Qt offscreen 平台和本项目独立取得的 OFL Roboto Mono 字体；没有物理键盘、实际不同 DPI、Windows 原生窗口上屏或用户呈现时间验收，`presented_done=null`。两会话隔离不代表八会话、IME 或完整工作区验收，测试耗时不是终端性能指标。
+`qt_unicode_input` 通过公开 Qt 文本/焦点/隐藏/标签动作，将 UTF-16 整事件及跨事件代理项经每目标 `KeyboardEncoder` 交给固定 ConPTY，独立 `ReadConsoleW` 接收端核对中文、NFD、非BMP、固定ZWJ/keycap、NUL与原有正常模式按键的精确UTF-8。整包1024B上限与拒绝反馈、失焦/关闭/不可用目标的状态隔离有[红绿与联合源码验证](../../experiments/shell/results/2026-10-29-qt-unicode-input/README.md)；未配对单元及焦点清理是当前TermForge策略，尚无原版对照。此项不启用 Qt IME，也不证明相应字形、字素宽度或原始物理按键已验收。
+
+以上离屏测试使用 Qt offscreen 平台和本项目独立取得的 OFL Roboto Mono 字体；没有物理键盘、实际不同 DPI、Windows 原生窗口上屏或用户呈现时间验收，`presented_done=null`。两会话隔离不代表八会话、IME 或完整工作区验收，测试耗时不是终端性能指标。
 
 构建开关默认关闭只是从旧原型向新入口迁移的状态；正式路线已确认，旧构建保留为回归对照。Qt 文字与图形资源均独立取得，不使用 WindTerm 的专有字体、图标或主题。

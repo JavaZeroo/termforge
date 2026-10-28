@@ -2,7 +2,7 @@
 
 执行项 [#147](https://github.com/JavaZeroo/termforge/issues/147)，父项 [#30](https://github.com/JavaZeroo/termforge/issues/30)。正式 C++ / Qt Widgets / 固定 Microsoft ConPTY 路线将 `QKeyEvent.text()` 的 UTF-16 单元交给本项目既有 `KeyboardEncoder`；每个 widget 独立保存未完成的高代理项。临时编码器处理整条事件，只有整包进入有界输入队列后才提交状态。包过限或队列拒绝保留此前状态；失焦、隐藏、关闭及目标不可用清除未提交的半个标量。
 
-未配对单元使用 U+FFFD，控制键结束此前未完成标量，焦点变化丢弃未提交单元；这些是**现有 TermForge 编码策略**。本批没有运行 WindTerm，不宣称这些边界已经与原版匹配。
+未配对单元使用 U+FFFD，已支持的控制/导航键结束此前未完成标量，焦点变化丢弃未提交单元；这些是**现有 TermForge 编码策略**。本批没有运行 WindTerm，不宣称这些边界已经与原版匹配。
 
 ## 公共边界与原始接收
 
@@ -28,6 +28,16 @@ Qt 层实际拒绝场景使用现有单包上限。16KiB 总队列容量沿既�
 - 针对性源 `2bdcea3161f415f49d96bc0f30e5e72794c8c72f` 的五组场景通过；外层 Job active=0/total=17/terminated=0，测试根正常 exit=0。6个自然结束接收文件和1个取消目标分别记录。可审查的[源/原日志哈希与离线接收重算](focused-validation.json)、[40文件运行时](focused-runtime.json)与最终联合源码验证分开保留。
 
 原等待边界不变：单阶段5秒，监督器主 `communicate` 25秒，CTest35秒，失败清理仍由原监督器/Session处理；这些是诊断期限，不是性能指标或完整进程生命周期承诺。运行使用 Qt 6.10.3、固定 ConPTY 1.25.260930003、VS2022/MSVC19.42 与 app-local CRT14.51；运行时清单绑定所有实际文件。
+
+## 联合源码与一次完整回归
+
+动态尺寸 PR148 合入 main `05f0065f4eb19ce5a76065d18f2247bcc731e285` 后，本分支以 `5d7cb5c` 合并：保留可扩展布局、resize/字体/DPR 事件与独立编码器的焦点、隐藏、关闭和结束清理。执行源码固定为 `2b6d988914b04a2a05520f0b67c08c30b6e2b43b`，tree `46e358272e6f1c99ef5d65ffcb007a3ce41b1ac9`；后续公开文档和 JSON 不算执行源码。[联合验证身份](validation.json)与上述旧红例、旧针对性绿例分别保留。
+
+在 Windows 11 x64 build26200/UBR9711、MSVC19.42.34433.0、Python3.12.10 下使用固定 Qt6.10.3、ConPTY1.25.260930003 与 app-local CRT14.51.36247.0。先运行 Qt 三项针对性检查 **3/3**，随后唯一一次完整 CTest **61/61、exit0、307.06s**。其中正式 Qt 为 `qt_cpp_shell`、`qt_unicode_input`、`qt_cpp_resize` 三项，其余58项属于既有默认/system或独立诊断；**13条内部 unittest skip** 全部保留，包含私有 window station 的 OpenClipboard5，不能写成 CF 验收。时长仅为测试运行记录，不是性能基线。
+
+两次 Unicode 检查各产生六个自然结束接收文件与一个取消目标的空文件，全部逐字核对字面预期。7397个执行输入及运行文件在完整回归后重算零变化：2817源码、4358 SDK、2 ConPTY、12 CRT、38产品目录、40原smoke、40 resize、41 Unicode、49旧诊断文件；这些目录计数包含各自 `runtime-manifest.json`。另外27份旧原件和已有公开红绿证据未变。四份实际运行时清单分别为[产品](final-product-runtime.json)、[原 smoke](final-shell-runtime.json)、[resize](final-resize-runtime.json)、[Unicode](final-input-runtime.json)；其 `files` 字段不包含清单自身。
+
+专用 Qt CI 新增 Unicode 测试目标、完整运行时身份与三项测试选择。当前公开文件由同一批原件离线派生，普通与 `-O` 解释器导出逐字一致；没有重新运行原版、Qt windows-plugin、guest 或第二次完整矩阵。旧 #80/#81/#144/#145 原因仍未知，这次通过不构成因果修复。原生缩放证据仍只绑定其原0ff源码，不转记为本次 Unicode 原生验收。
 
 ## 复验与限制
 
