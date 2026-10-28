@@ -1,0 +1,439 @@
+{
+  "schema": "termforge-qt-unicode-final-validation-v1",
+  "issue": 147,
+  "execution_source_commit": "2b6d988914b04a2a05520f0b67c08c30b6e2b43b",
+  "execution_source_tree": "46e358272e6f1c99ef5d65ffcb007a3ce41b1ac9",
+  "base_main": "05f0065f4eb19ce5a76065d18f2247bcc731e285",
+  "configuration": {
+    "architecture": "windows-x64",
+    "build": "Release",
+    "qt_shell": true,
+    "candidate_adapter": false,
+    "qt_platform": "offscreen",
+    "formal_qt_ctest_entries": 3,
+    "legacy_or_independent_ctest_entries": 58
+  },
+  "environment": {
+    "windows_version": "10.0.26200",
+    "windows_build": "26200",
+    "windows_ubr": 9711,
+    "python_version_number": "3.12.10",
+    "python_exe_sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+    "compiler": "MSVC",
+    "compiler_version": "19.42.34433.0",
+    "compiler_exe_identity": {
+      "bytes": 862832,
+      "sha256": "42fd88579adc0e2418a0a71ec9adcfcf677d39ff2724c9d6ac9d901264812bf2"
+    },
+    "host_isolated_for_performance": false
+  },
+  "dependencies": {
+    "qt_version": "6.10.3",
+    "qt_sdk_identity": {
+      "files": 4358,
+      "tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266"
+    },
+    "conpty_version": "1.25.260930003",
+    "msvc_runtime_version": "14.51.36247.0"
+  },
+  "sources": {
+    "CMakeLists.txt": {
+      "bytes": 27190,
+      "sha256": "c5d295a4cb74693d43cff471ec24537fdbaf47fdde65bc026a61bdbf15189a35"
+    },
+    ".github/workflows/qt-cpp.yml": {
+      "bytes": 3728,
+      "sha256": "de9cb0fc494050498678ea8202f7eb8f436a2ee4798757410bb405c8fc79493e"
+    },
+    "src/qt/unicode_input_test.cpp": {
+      "bytes": 17771,
+      "sha256": "5ac07aa9661f10c128b56f44bd9059daa126bef06f62d8bf5a7f592d59115b41"
+    },
+    "src/qt/terminal_widget.hpp": {
+      "bytes": 9125,
+      "sha256": "282d6c6fa94f6d268749ee839c30e6faad27376616bdf738790427dcc5d919cc"
+    },
+    "src/qt/terminal_session.hpp": {
+      "bytes": 14100,
+      "sha256": "0000e06e91b042d1841c31864ab9e464008e0d2a024fdbcaa697b0e48d30555e"
+    },
+    "src/qt/session_tabs.hpp": {
+      "bytes": 7007,
+      "sha256": "df3634a37f07a73f92033f29392a7624275a2ce3e4db293dcce01408b9148b07"
+    },
+    "src/qt/run_smoke.py": {
+      "bytes": 4287,
+      "sha256": "25f4d6adec4e9bfad77698300c44d9162511ac1ebb722993d5a52cdb8a863983"
+    },
+    "src/qt/main.cpp": {
+      "bytes": 1137,
+      "sha256": "4af7c6722ba6847d90d3d9938849aa3b69a8de749c043a278c8725dc46011796"
+    },
+    "src/qt/shell_smoke.cpp": {
+      "bytes": 25287,
+      "sha256": "86022250a4c5d50824e112d6748c56bb549cb055c0737288f8a3c88f3733c8d0"
+    },
+    "src/qt/resize_smoke.cpp": {
+      "bytes": 30667,
+      "sha256": "d98b438723a88753b9f084abac941cf2683e90b4f71fd771fa01b6293166983a"
+    },
+    "src/qt/resize_fixture.hpp": {
+      "bytes": 10084,
+      "sha256": "a855779e06b45b2c68daf413108172ee2d51bcb75fd55911263505d7dc6be300"
+    },
+    "experiments/core/terminal.hpp": {
+      "bytes": 12270,
+      "sha256": "ed3c030611a6df38df26057a8c2834f2808cd05306e73aead79927b1f76fe5ca"
+    },
+    "experiments/core/screen.hpp": {
+      "bytes": 17242,
+      "sha256": "04c19f09ebc0c468efbef8dd4c9da8f4bcd44e94000a87c56239756c0df1b474"
+    },
+    "experiments/core/unicode_width.hpp": {
+      "bytes": 32445,
+      "sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+    },
+    "experiments/shell/keyboard.hpp": {
+      "bytes": 3979,
+      "sha256": "0790ddd0a3b755de5fc22a7bff5c3421b91c19b78dcd7bc0af9de22fa471c3b3"
+    },
+    "experiments/shell/queues.hpp": {
+      "bytes": 7224,
+      "sha256": "9087944a7749176789a489bce0522c55764461342b59c138611743b6947845b6"
+    },
+    "experiments/shell/input_client.cpp": {
+      "bytes": 11706,
+      "sha256": "67ebb343978ac6822f8feaafa7510f9ee325737fce91b3d2aed8385deea6a969"
+    },
+    "experiments/conpty/session.hpp": {
+      "bytes": 11072,
+      "sha256": "7b3934715948a05c1996bcccb02ef2eb58ea11baf26bf97c2e728a52d58becda"
+    },
+    "experiments/conpty/backend.hpp": {
+      "bytes": 6815,
+      "sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489"
+    },
+    "third_party/qt/manifest.json": {
+      "bytes": 5806,
+      "sha256": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd"
+    },
+    "third_party/conpty/manifest.json": {
+      "bytes": 1467,
+      "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+    },
+    "third_party/msvc_runtime/manifest.json": {
+      "bytes": 4123,
+      "sha256": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+    }
+  },
+  "frozen_inputs": {
+    "files": 7397,
+    "group_counts": {
+      "source": 2817,
+      "qt_sdk": 4358,
+      "conpty_input": 2,
+      "crt_input": 12,
+      "product": 38,
+      "qt_shell": 40,
+      "qt_resize": 40,
+      "qt_unicode": 41,
+      "legacy_bin": 49
+    },
+    "snapshot": {
+      "bytes": 1407270,
+      "sha256": "3e2a25dd1a91580437f23c31889ad5917ea4b96c0ddd4615605e3c590935ce8b"
+    },
+    "post_audit": {
+      "bytes": 21799,
+      "sha256": "aea7a0fa4758506ee998ed3370fac67546fa837e75a2322380c78cb49e6aef80"
+    },
+    "changed_files": 0,
+    "group_tree_sha256": {
+      "source": "3286f59386f06a35a43a93b0133e16bf3876303fba4cfff750b8e8e85340c9eb",
+      "qt_sdk": "b3d0eba18ace779669332e81038782d4aa8f181bfab3f4b0281a1f153bdc7384",
+      "conpty_input": "1ba1fa3c75dbfcc2dd57a24b37b53313113bc5556ee804f93726c8532208c13c",
+      "crt_input": "164755e4c347ecfe5d25ce8fe82f313e647b4bde8857a845396d78d04a5c2a39",
+      "product": "834a2639b21e8c53de839819fbea8800c4485118c90190844943b27f9f92f728",
+      "qt_shell": "bb58045dcace918440ff7726fa711d9e174444b0e6c59864c5f841093e5f60cf",
+      "qt_resize": "c1b08834497d6568d1c3c619cb973d15225ff9a9331c020e99878e92d3c0d438",
+      "qt_unicode": "e49782a4c38ff897cef1b9d1961d57764ad93fa75461c825650055a6facc6816",
+      "legacy_bin": "d24204dd2a7c58136d67e405c65437206227d219eef351bfa6f1053fd6b380f4"
+    }
+  },
+  "runtime_manifests": [
+    {
+      "group": "product",
+      "executable": "termforge_qt_shell.exe",
+      "manifest": "final-product-runtime.json",
+      "manifest_identity": {
+        "bytes": 5576,
+        "sha256": "afdf04c2e07e901f10b76d7fe3fdde4ec7763b43e606b037e59cfa1e66fe2362"
+      },
+      "files_excluding_manifest": 37
+    },
+    {
+      "group": "qt_shell",
+      "executable": "qt_cpp_shell_smoke.exe",
+      "manifest": "final-shell-runtime.json",
+      "manifest_identity": {
+        "bytes": 5857,
+        "sha256": "5be718f5183612269412498ac00940f74b22009cfdf4201ae7208d4f478ea9eb"
+      },
+      "files_excluding_manifest": 39
+    },
+    {
+      "group": "qt_resize",
+      "executable": "qt_cpp_resize_smoke.exe",
+      "manifest": "final-resize-runtime.json",
+      "manifest_identity": {
+        "bytes": 5859,
+        "sha256": "adcfb69b99d98250675a063ea096394a688a4f1ef3b77e567a07a4bba7f61037"
+      },
+      "files_excluding_manifest": 39
+    },
+    {
+      "group": "qt_unicode",
+      "executable": "qt_unicode_input_test.exe",
+      "manifest": "final-input-runtime.json",
+      "manifest_identity": {
+        "bytes": 6007,
+        "sha256": "efee180b19114bd28c3b36947edff1c7c43e3527832c1da75718ee8a407f5910"
+      },
+      "files_excluding_manifest": 40
+    }
+  ],
+  "focused": {
+    "ctest_passed": 3,
+    "ctest_failed": 0,
+    "real_seconds": 13.53,
+    "log": {
+      "bytes": 26677,
+      "sha256": "5c3dadcf7271b086b772ce4f9dac030396cdb3302815fcc19a70920cb61aac4b"
+    }
+  },
+  "full": {
+    "maximum_attempts": 1,
+    "actual_attempts": 1,
+    "exit_code": 0,
+    "ctest_passed": 61,
+    "ctest_failed": 0,
+    "real_seconds": 307.06,
+    "internal_unittest_skips": [
+      {
+        "test": "setUpClass (test_candidate_compare.CandidateComparisonTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_capability_matrix.CapabilityMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_fuzz_matrix.FuzzMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_real_app_matrix.RealApplicationMatrixTests)",
+        "reason": "optional real application capture dependencies are not built"
+      },
+      {
+        "test": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice)",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM"
+      },
+      {
+        "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails)",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "test": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard)",
+        "reason": "system copy UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close)",
+        "reason": "product clipboard read gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver)",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_owned_clipboard_contention_preserves_write_and_read_failures (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_owned_clipboard_contention_preserves_write_and_read_failures)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice)",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard)",
+        "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified. Private evidence path omitted."
+      }
+    ],
+    "qt_supervisors": [
+      {
+        "test": "qt_cpp_shell",
+        "sample_schema": "termforge-qt-cpp-smoke-v1",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 26,
+          "terminated": 0
+        }
+      },
+      {
+        "test": "qt_unicode_input",
+        "sample_schema": "termforge-qt-unicode-input-v1",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 17,
+          "terminated": 0
+        }
+      },
+      {
+        "test": "qt_cpp_resize",
+        "sample_schema": "termforge-qt-resize-smoke-v1",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 27,
+          "terminated": 0
+        }
+      }
+    ]
+  },
+  "receivers": [
+    {
+      "stage": "focused",
+      "files": {
+        "focus-packet.bin": {
+          "bytes": 1037,
+          "sha256": "97f22206016f52617da7b671f20fea22d85b36bee4d66c04cf3a174264b8d862"
+        },
+        "late-start.bin": {
+          "bytes": 4,
+          "sha256": "9719ab72356050600c22e4b79b4200066150c6bac592a0630b4ba8f07f189080"
+        },
+        "normal-keys.bin": {
+          "bytes": 19,
+          "sha256": "aa5b356f76c764945f6dfea4430b774b68201b2095f14d7613832290b0f461e7"
+        },
+        "tab-a.bin": {
+          "bytes": 9,
+          "sha256": "fa27960a63a077e4b40f1de30e99f489921da201cd72c2284f5bb26579eb008a"
+        },
+        "tab-b.bin": {
+          "bytes": 8,
+          "sha256": "6a324e7924ac17fb25d6444b73b49137d96c23c98ec45069d28a048ca5de1dcf"
+        },
+        "tab-close.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "unicode.bin": {
+          "bytes": 58,
+          "sha256": "c3138debbb91d7dc8a74324283da18b89ed1c1a9a52efc8b5caf7e77a92df2ce"
+        }
+      },
+      "sample": {
+        "bytes": 1409,
+        "sha256": "2d4c2678601ecff45995d7c6bad7a0677debcde837a9d549b6172e704285fca4"
+      }
+    },
+    {
+      "stage": "full",
+      "files": {
+        "focus-packet.bin": {
+          "bytes": 1037,
+          "sha256": "97f22206016f52617da7b671f20fea22d85b36bee4d66c04cf3a174264b8d862"
+        },
+        "late-start.bin": {
+          "bytes": 4,
+          "sha256": "9719ab72356050600c22e4b79b4200066150c6bac592a0630b4ba8f07f189080"
+        },
+        "normal-keys.bin": {
+          "bytes": 19,
+          "sha256": "aa5b356f76c764945f6dfea4430b774b68201b2095f14d7613832290b0f461e7"
+        },
+        "tab-a.bin": {
+          "bytes": 9,
+          "sha256": "fa27960a63a077e4b40f1de30e99f489921da201cd72c2284f5bb26579eb008a"
+        },
+        "tab-b.bin": {
+          "bytes": 8,
+          "sha256": "6a324e7924ac17fb25d6444b73b49137d96c23c98ec45069d28a048ca5de1dcf"
+        },
+        "tab-close.bin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "unicode.bin": {
+          "bytes": 58,
+          "sha256": "c3138debbb91d7dc8a74324283da18b89ed1c1a9a52efc8b5caf7e77a92df2ce"
+        }
+      },
+      "sample": {
+        "bytes": 1409,
+        "sha256": "2d4c2678601ecff45995d7c6bad7a0677debcde837a9d549b6172e704285fca4"
+      }
+    }
+  ],
+  "preserved_prior_files": {
+    "count": 27,
+    "snapshot": {
+      "bytes": 4453,
+      "sha256": "3208a8156d09598c36ea574d794da16badbda903d86411d621010f2a2b6eae12"
+    },
+    "changed_files": 0
+  },
+  "raw_evidence": {
+    "02-configure.log": {
+      "bytes": 1239,
+      "sha256": "027cb72e74f839ebf045d751db04aeb30575ef6f1a82096b2cf0a9051395efa3"
+    },
+    "03-build.log": {
+      "bytes": 27829,
+      "sha256": "b55d2604120657a41ded9d31fb520abbe27be6a2d2f4955ca19ca541c89828b4"
+    },
+    "05-focused-ctest.log": {
+      "bytes": 26677,
+      "sha256": "5c3dadcf7271b086b772ce4f9dac030396cdb3302815fcc19a70920cb61aac4b"
+    },
+    "06-full-ctest.log": {
+      "bytes": 178210,
+      "sha256": "a0f2d00f69ab9e0dea8c96907f8fed73dcac36aab1c91bcae516e62a4eedeb9d"
+    },
+    "LastTest.log": {
+      "bytes": 181833,
+      "sha256": "bdaa671286062d477e86ff982967f73e1438fbf499e8f9d516bc447da5b5a147"
+    },
+    "00-preserved-prior-files.json": {
+      "bytes": 4453,
+      "sha256": "3208a8156d09598c36ea574d794da16badbda903d86411d621010f2a2b6eae12"
+    },
+    "01-inputs-before.json": {
+      "bytes": 1374299,
+      "sha256": "296e897bd9a11cb07d2bddf708b8d9864968627210f84e7ebf64cf7de191bd21"
+    },
+    "04-run-inputs-before.json": {
+      "bytes": 1407270,
+      "sha256": "3e2a25dd1a91580437f23c31889ad5917ea4b96c0ddd4615605e3c590935ce8b"
+    }
+  },
+  "limitations": [
+    "Public synthetic Qt events and an independent ReadConsoleW receiver, not physical keyboard or OS IME.",
+    "No native windows-plugin or VM execution in this final slice; previous resize native evidence retains its own source.",
+    "UTF-8 receive-byte equality does not verify grapheme width, glyph shaping, fallback or all application input modes.",
+    "Six receiver sessions naturally finish; the separate closing target is cancelled. Empty cancelled bytes are not a natural-exit proof.",
+    "Qt total-queue saturation is not forced; actual Qt packet-limit rejection and existing independent InputQueue tests remain separate.",
+    "The 58 legacy/independent entries and 13 internal skips do not establish complete Qt, clipboard or R2 acceptance.",
+    "Old CI unknowns #80/#81/#144/#145 remain open; this single green run does not establish their root causes.",
+    "Timing is diagnostic test duration, not a performance baseline or approved tolerance. presented_done remains null."
+  ]
+}

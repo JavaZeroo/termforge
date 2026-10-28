@@ -26,11 +26,12 @@ Qt 入口要求绝对路径 `-DTERMFORGE_MSVC_RUNTIME_DIR=<prepared>/crt`。配�
 
 [微软的兼容合同](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)要求 runtime 至少与构建工具同新。CMake 使用实际选中的 VC Tools 目录版本（例如本机 `14.42.34433`、已观察的 hosted `14.51.36231`）与固定上限 `14.51.36247` 比较；无法识别或工具集更新时失败。编译器自己的 `19.x` 版本不能转换推测成 `14.x`。Qt 另保持已固定的官方 MSVC 2022 x64 二进制来源，其兼容性由独立构建和运行证据验证。
 
-构建成功后，为两个入口各生成完整运行时清单：
+构建成功后，为产品及两个独立 smoke 入口各生成完整运行时清单：
 
 ```powershell
 python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-bin/Release --executable termforge_qt_shell.exe
 python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-smoke-bin/Release --executable qt_cpp_shell_smoke.exe
+python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-resize-bin/Release --executable qt_cpp_resize_smoke.exe
 ```
 
 `runtime-manifest.json` 记录目录内全部文件的相对路径、大小和 SHA-256，以及固定 CRT manifest 身份；不包含本地绝对路径或凭据。清单排除自身，必须在最终构建/部署完成后生成，后续改动须重新生成；它不替代对 EXE 源码、构建配置或其他第三方许可的记录。单文件部署使用原子替换，整目录不承诺事务性；未成功完成部署的目录不得作为包使用。

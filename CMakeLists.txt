@@ -108,6 +108,18 @@ termforge_warnings(text_action_policy_test)
 add_executable(core_measure experiments/measure/measure.cpp)
 target_link_libraries(core_measure PRIVATE termforge_core)
 termforge_warnings(core_measure)
+foreach(target core_recovery_measure core_recovery_measure_noalloc)
+  add_executable(${target} experiments/measure/measure.cpp)
+  target_link_libraries(${target} PRIVATE termforge_core)
+  target_compile_definitions(${target} PRIVATE TERMFORGE_RECOVERY_MEASURE=1)
+  termforge_warnings(${target})
+  if(WIN32)
+    target_compile_definitions(${target} PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+    target_link_libraries(${target} PRIVATE Psapi)
+  endif()
+endforeach()
+target_compile_definitions(core_recovery_measure PRIVATE TERMFORGE_MEASURE_ALLOCATOR_WRAPPER=1)
+target_compile_definitions(core_recovery_measure_noalloc PRIVATE TERMFORGE_MEASURE_ALLOCATOR_WRAPPER=0)
 if(WIN32)
   target_compile_definitions(core_measure PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
   target_link_libraries(core_measure PRIVATE Psapi)
@@ -310,6 +322,12 @@ if(BUILD_TESTING)
   termforge_add_python_test(windterm_alternate_export -m unittest research.ui.test_export_alternate_reference -v)
   termforge_add_python_test(windterm_alternate_style_reference -m unittest research.ui.test_export_alternate_style_reference research.ui.test_alternate_style_peer -v)
   termforge_add_python_test(windterm_raster_style_reference -m unittest research.ui.test_raster_style_reference -v)
+  # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
+  termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)
+  termforge_add_python_test(recovery_measure_protocol -m unittest experiments.measure.test_recovery_measure -v)
+  if(WIN32)
+    termforge_add_python_test(node_contract_plan -m unittest research.ui.test_node_contract_deadline.PlanTests -v)
+  endif()
   termforge_add_python_test(windterm_raster_selection_proposal -m unittest research.ui.test_raster_selection_reference -v)
   termforge_add_python_test(windterm_raster_raw_proposal -m unittest research.ui.test_raster_raw_reference -v)
   termforge_add_python_test(windterm_sgr1_proposal -m unittest research.ui.test_sgr1_reference -v)
@@ -403,6 +421,38 @@ if(TERMFORGE_BUILD_QT_SHELL)
     add_test(NAME qt_cpp_shell COMMAND "${Python3_EXECUTABLE}"
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_shell_smoke>")
     set_tests_properties(qt_cpp_shell PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+
+    add_executable(qt_unicode_input_test src/qt/unicode_input_test.cpp)
+    set_target_properties(qt_unicode_input_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-unicode-bin/$<CONFIG>")
+    termforge_qt_entry(qt_unicode_input_test)
+    target_link_libraries(qt_unicode_input_test PRIVATE Qt6::Test)
+    add_dependencies(qt_unicode_input_test shell_input_client)
+    add_custom_command(TARGET qt_unicode_input_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_unicode_input_test>/platforms/"
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:shell_input_client>" "$<TARGET_FILE_DIR:qt_unicode_input_test>/"
+      VERBATIM)
+    add_test(NAME qt_unicode_input COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_unicode_input_test>")
+    set_tests_properties(qt_unicode_input PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+    add_executable(qt_cpp_resize_smoke src/qt/resize_smoke.cpp)
+    set_target_properties(qt_cpp_resize_smoke PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-resize-bin/$<CONFIG>")
+    termforge_qt_entry(qt_cpp_resize_smoke)
+    target_link_libraries(qt_cpp_resize_smoke PRIVATE Qt6::Test)
+    add_custom_command(TARGET qt_cpp_resize_smoke POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_cpp_resize_smoke>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_cpp_resize COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_resize_smoke>")
+    set_tests_properties(qt_cpp_resize PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
   endif()
 endif()

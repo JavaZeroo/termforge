@@ -1,0 +1,165 @@
+{
+  "schema": "termforge-windows-runtime-v1",
+  "executable": "qt_unicode_input_test.exe",
+  "architecture": "windows-x64",
+  "msvc_runtime_version": "14.51.36247.0",
+  "msvc_runtime_manifest_sha256": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758",
+  "files": {
+    "D3Dcompiler_47.dll": {
+      "bytes": 4669440,
+      "sha256": "0f89c19165fd83a05e39bea601a06007e6a8814d55e2adf913902926231f843e"
+    },
+    "LICENSE-MICROSOFT-VC-REDIST.docx": {
+      "bytes": 39553,
+      "sha256": "08651651a7602fc7c0e2763de0fde1ff9f868df2780597cd1775ee9d6441c783"
+    },
+    "NOTICE.txt": {
+      "bytes": 563,
+      "sha256": "510781c94971ea19adae55d2c42207d942b0646deee29d5c401f189cc25d415f"
+    },
+    "Qt6Core.dll": {
+      "bytes": 10250040,
+      "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72"
+    },
+    "Qt6Gui.dll": {
+      "bytes": 9514296,
+      "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f"
+    },
+    "Qt6Network.dll": {
+      "bytes": 1773880,
+      "sha256": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1"
+    },
+    "Qt6Widgets.dll": {
+      "bytes": 6577464,
+      "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127"
+    },
+    "assets/fonts/OFL.txt": {
+      "bytes": 4395,
+      "sha256": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215"
+    },
+    "assets/fonts/README.md": {
+      "bytes": 3091,
+      "sha256": "760a714ad011733e0b93f3c25298190ff5fa493a9e40ad38d347922a355d538f"
+    },
+    "assets/fonts/RobotoMono-Regular.ttf": {
+      "bytes": 125748,
+      "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+    },
+    "concrt140.dll": {
+      "bytes": 374200,
+      "sha256": "54716f0738af891f283d213b5c8d11b25896bb8ee3097d301eae718560cf974e"
+    },
+    "conpty-backend/LICENSE": {
+      "bytes": 1095,
+      "sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada"
+    },
+    "conpty-backend/OpenConsole.exe": {
+      "bytes": 1089376,
+      "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "conpty-backend/conpty.dll": {
+      "bytes": 119608,
+      "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a"
+    },
+    "conpty-backend/manifest.json": {
+      "bytes": 1467,
+      "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+    },
+    "dxcompiler.dll": {
+      "bytes": 14019128,
+      "sha256": "2bc16dc5ec85315f89e2f10a482d46dde94a65d6b2d7077f4c49c77e10222acc"
+    },
+    "dxil.dll": {
+      "bytes": 1502760,
+      "sha256": "0e90c12c1c6aa1e09d025322a815f9dd80da7d1e331f1df585c7fcbbf44b40d3"
+    },
+    "generic/qtuiotouchplugin.dll": {
+      "bytes": 102712,
+      "sha256": "69498d05870aa583c31159f9350e3d8a598b895f6525de7b6fa382395ad27b9d"
+    },
+    "icuuc.dll": {
+      "bytes": 36864,
+      "sha256": "59d134ddc15ae0594f0a328979f8201662fc82634ddb7c537b156e7cf871f5eb"
+    },
+    "imageformats/qgif.dll": {
+      "bytes": 47928,
+      "sha256": "ded464ef782f41862f391bc5b21c54d58f6aee670fc9f10a2d909ae5b0ba09a7"
+    },
+    "imageformats/qico.dll": {
+      "bytes": 45880,
+      "sha256": "0c2abdf95d778bfed9863b8be817dc6cffe2dacdd1a85b2117b4b4ccb1a08e66"
+    },
+    "imageformats/qjpeg.dll": {
+      "bytes": 577848,
+      "sha256": "cd965015cce4638361d7bc01193d92a041a227d46d0759ec25d2a1a8608a6b40"
+    },
+    "msvcp140.dll": {
+      "bytes": 643512,
+      "sha256": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca"
+    },
+    "msvcp140_1.dll": {
+      "bytes": 35768,
+      "sha256": "206c931bf90fdad8816de3b5e2ef80b2bcaa9406c89ecc05fe6fddffe251e982"
+    },
+    "msvcp140_2.dll": {
+      "bytes": 274872,
+      "sha256": "d50d7883f20d1dc6191768d3746f52dd9cac89c346ffaed5be1f110c2f34a838"
+    },
+    "msvcp140_atomic_wait.dll": {
+      "bytes": 57792,
+      "sha256": "3d0cbfaa1bf3eecf5a3f4491d2960ee803cb994f30292c6adc4a07c498f60e2b"
+    },
+    "msvcp140_codecvt_ids.dll": {
+      "bytes": 31160,
+      "sha256": "8a65c7596ef2e6938731f5a1058e7e40145b6d97967cc649231a076b9a608d78"
+    },
+    "networkinformation/qnetworklistmanager.dll": {
+      "bytes": 70968,
+      "sha256": "4bc26d5b613c507634fd10f07fe031fcbd4f02157d23b9eb1407de4dd6da8278"
+    },
+    "platforms/qoffscreen.dll": {
+      "bytes": 113976,
+      "sha256": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd"
+    },
+    "platforms/qwindows.dll": {
+      "bytes": 997688,
+      "sha256": "cafd5bfdef3d89d176ee26725c8d4759fd6cb007645b645a4cbf6386364a3f36"
+    },
+    "qt_unicode_input_test.exe": {
+      "bytes": 143872,
+      "sha256": "06d1b14692d08e672517409846fca27821514ca94e3d0163bd3f5b9943ba5dd8"
+    },
+    "shell_input_client.exe": {
+      "bytes": 41984,
+      "sha256": "3aae0923441b7c27ff687824e780c9689d77f2c98796ec8bf12693d00ae1b10e"
+    },
+    "styles/qmodernwindowsstyle.dll": {
+      "bytes": 221496,
+      "sha256": "c279e7a97b21fcd7acdfde88cacb8baa119f563282e09c241acb3edee2bc9bbf"
+    },
+    "tls/qcertonlybackend.dll": {
+      "bytes": 103224,
+      "sha256": "99d00b37bb2835c539366e4018a58e0ddad21e1c648a3f44f56335a0c1d34765"
+    },
+    "tls/qschannelbackend.dll": {
+      "bytes": 262968,
+      "sha256": "b7035c3689b93f55b48112c3e85cf4b8550fefde3f7a044df2784c29330e6940"
+    },
+    "vccorlib140.dll": {
+      "bytes": 350648,
+      "sha256": "09f93d5ff96ae09767f3e1af3cdd43a5a58f2598654fc63089429bb6f9f4737f"
+    },
+    "vcruntime140.dll": {
+      "bytes": 178616,
+      "sha256": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7"
+    },
+    "vcruntime140_1.dll": {
+      "bytes": 50112,
+      "sha256": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e"
+    },
+    "vcruntime140_threads.dll": {
+      "bytes": 38840,
+      "sha256": "40f39e8cee5f5a531b4010e18b807e8fe265b908dc58f959ecb7ebc6ea6cb11a"
+    }
+  }
+}

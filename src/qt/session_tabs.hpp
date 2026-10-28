@@ -24,7 +24,7 @@ public:
         layout->setContentsMargins(0, 0, 0, 0);
         layout->addWidget(&terminal_);
         model_.on_changed = [this] {
-            terminal_.update();
+            terminal_.refresh_session();
             if (on_changed) on_changed();
             if (retired_ && model_.finished()) deleteLater();
         };
@@ -135,7 +135,7 @@ public:
             else complete_if_finished();
         });
         new_session(executable_, arguments_, working_directory_);
-        setFixedSize(sizeHint());
+        resize(sizeHint());
     }
     ~SessionTabs() override { destroying_ = true; }
     SessionPage* new_session(const std::wstring& executable, const std::wstring& arguments,
