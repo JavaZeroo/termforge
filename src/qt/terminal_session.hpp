@@ -79,15 +79,18 @@ private:
                 while (!close_requested_.load(std::memory_order_acquire)) {
                     if (session_->wait_exit(20)) { child_exited = true; break; }
                     std::optional<ResizeRequest> request;
+                    bool native_resize_needed = false;
                     {
                         std::lock_guard<std::mutex> lock(control_mutex_);
-                        if (accepting_resize_ && !close_requested_.load(std::memory_order_acquire))
+                        if (accepting_resize_ && !close_requested_.load(std::memory_order_acquire)) {
                             request = std::exchange(pending_resize_, std::nullopt);
+                            native_resize_needed = request && (request->columns != transport_size_.X || request->rows != transport_size_.Y);
+                        }
                     }
                     if (request) {
                         // A successful call is transport progress, never proof
                         // that the child has observed its new console geometry.
-                        session_->resize(request->columns, request->rows);
+                        if (native_resize_needed) session_->resize(request->columns, request->rows);
                         std::lock_guard<std::mutex> lock(control_mutex_);
                         transport_size_ = {request->columns, request->rows};
                         transport_revision_ = request->revision;
@@ -95,8 +98,10 @@ private:
                 }
             }
         } catch (const std::exception& error) {
+            close_requested_.store(true, std::memory_order_release);
             completion_.error = error.what();
         } catch (...) {
+            close_requested_.store(true, std::memory_order_release);
             completion_.error = "Unknown session supervision failure";
         }
 
@@ -286,6 +291,7 @@ public:
     DWORD active_processes_after() const { return finished_ ? completion_.active_processes : MAXDWORD; }
     unsigned long long received_bytes() const { return finished_ ? completion_.output_bytes : 0; }
     bool output_eof() const { return finished_ && completion_.output_eof; }
+    OutputQueue::Snapshot output_state() const { return output_.snapshot(); }
     const QString& error() const { return error_; }
     QString configuration_identity() const {
         return QStringLiteral("cpp-core / qt-widgets / ") +
