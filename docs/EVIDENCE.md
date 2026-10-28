@@ -21,6 +21,8 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 
 ## 产品能力的限定验收
 
+新路线的[首个 Qt/C++ 会话证据](../experiments/shell/results/2026-10-28-qt-cpp-entry/README.md)绑定 `0fd35e2`：完整 CTest 47/47，其中 Qt 新入口 1 项、旧 system 诊断 46 项，内部 12 条跳过记录分列。固定 cmd 的输入/750 正文墨迹、自然退出、启动错误与人工关闭有实证；这不迁移旧 Win32/Alacritty 能力，也不是完整 R2、原生窗口呈现或性能验收。
+
 | 范围 | 结果与复现入口 | 可以支持的结论与限制 |
 |---|---|---|
 | R1 完整文字工作流（限定总出口） | [同次系统组合及独立审计](../experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)、[同源码既有回归](../experiments/shell/results/2026-10-24-r1-system-workflow/regression.json)、[协议与复现](../experiments/shell/WORKFLOW.md)、[主CI 40045678550](https://github.com/JavaZeroo/termforge/actions/runs/40045678550)、[显式verify 40045686776](https://github.com/JavaZeroo/termforge/actions/runs/40045686776) | 固定源码 ce9b24d 的同次八会话 Copy→Paste→真实拼音、后台负载、滚动状态/提交端点及回收，满足 R1 限定总出口。内部 skip 与无独立 EXE 重哈希缺口保留；presented_done=null。 |
