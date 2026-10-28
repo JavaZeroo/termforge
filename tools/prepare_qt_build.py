@@ -149,9 +149,14 @@ def main(argv=None):
         result = {"schema": SCHEMA, "status": "failed", "error": str(error)}
     except (OSError, ValueError, KeyError, zipfile.BadZipFile):
         result = {"schema": SCHEMA, "status": "failed", "error": "dependency_input_failed"}
-    arguments.summary.parent.mkdir(parents=True, exist_ok=True)
     report = json.dumps(result, indent=2) + "\n"
-    arguments.summary.write_text(report, encoding="utf-8", newline="\n")
+    try:
+        arguments.summary.parent.mkdir(parents=True, exist_ok=True)
+        arguments.summary.write_text(report, encoding="utf-8", newline="\n")
+    except (OSError, ValueError):
+        result = {"schema": SCHEMA, "status": "failed", "error": "summary_write_failed",
+                  "preparation_status": result["status"], "preparation_error": result.get("error")}
+        report = json.dumps(result, indent=2) + "\n"
     print(report, end="")
     return 0 if result["status"] == "passed" else 1
 

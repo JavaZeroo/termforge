@@ -76,6 +76,18 @@ class PreparationCommandTests(unittest.TestCase):
         self.assertEqual(result["error"], "output_exists")
         self.assertEqual(marker.read_text(encoding="utf-8"), "existing files")
 
+    def test_unwritable_summary_still_reports_path_free_failure(self):
+        self.summary.mkdir()
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            code = prepare_qt_build.main([*self.arguments, "--offline"])
+        result = json.loads(stdout.getvalue())
+        self.assertEqual(code, 1)
+        self.assertEqual(result["error"], "summary_write_failed")
+        self.assertEqual(result["preparation_error"], "archive_missing")
+        self.assertNotIn(str(self.root), stdout.getvalue())
+        self.assertEqual(list(self.summary.iterdir()), [])
+
 
 if __name__ == "__main__":
     unittest.main()
