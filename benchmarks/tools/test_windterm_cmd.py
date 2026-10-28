@@ -3,6 +3,8 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import Mock, patch
@@ -42,6 +44,36 @@ class WorkloadTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "cmd path"):
                 cmd.prepare_run(Path("source"), Path("local/%USERNAME%"), RUN_ID)
             prepare.assert_not_called()
+
+    def test_all_cmd_metacharacters_rejected_in_each_interpreted_path(self):
+        for char in '&|<>^()%!"\r\n':
+            for field in ("out", "runner", "executable"):
+                with self.subTest(char=repr(char), field=field):
+                    out = Path("local/out" + char + "echo.TF_CMD_REVIEW_MARKER") if field == "out" else Path("local/safe")
+                    runner = str(Path("runner" + char + "probe.py")) if field == "runner" else cmd.__file__
+                    executable = str(Path("python" + char + "probe.exe")) if field == "executable" else sys.executable
+                    with patch.object(cmd, "__file__", runner), patch.object(cmd.sys, "executable", executable), \
+                            patch.object(cmd, "prepare", side_effect=AssertionError("distribution preparation reached")) as prepare:
+                        with self.assertRaisesRegex(ValueError, "cmd path"):
+                            cmd.prepare_run(Path("source"), out, RUN_ID)
+                        prepare.assert_not_called()
+
+    @unittest.skipUnless(sys.platform == "win32", "Public CLI uses Windows-only run entry")
+    def test_public_cli_rejects_ampersand_before_missing_source_or_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            out = root / "out&echo.TF_CMD_REVIEW_MARKER"
+            # Existing Python stands in only for CLI path validation; no REA CLI,
+            # cmd, WindTerm, desktop or provider may be launched after rejection.
+            result = subprocess.run([sys.executable, "-B", "-X", "utf8", str(Path(cmd.__file__).resolve()),
+                "run", "--source", str(root / "missing-distribution"), "--rea", sys.executable,
+                "--out", str(out), "--seconds", "10"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                timeout=10, check=False)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(b"Unsupported cmd path characters", result.stderr)
+            self.assertNotIn(b"FileNotFoundError", result.stderr)
+            self.assertFalse(out.exists())
+            self.assertEqual(list(root.iterdir()), [])
 
     def test_runtime_bound_rejected_before_preparation(self):
         with patch.object(cmd.sys, "platform", "win32"), patch.object(cmd, "prepare_run") as prepare:

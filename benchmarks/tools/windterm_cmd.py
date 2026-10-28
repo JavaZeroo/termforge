@@ -31,6 +31,8 @@ from benchmarks.tools.play import write_all
 SCHEMA = "termforge.windterm-cmd-diagnostic.v1"
 PROBE = ROOT / "research/ui/qt_cmd_diagnostic.js"
 MAX_LINES = 128
+# subprocess.list2cmdline quotes for a C argv parser, not cmd.exe grammar.
+CMD_PATH_META = frozenset('&|<>^()%!"')
 
 
 def require(condition, message):
@@ -112,8 +114,14 @@ def producer(out, run_id):
 
 def prepare_run(source, out, run_id):
     lines, data = workload(run_id)
-    for path in (Path(out).resolve(), Path(__file__).resolve(), Path(sys.executable).resolve()):
-        require(not any(char in str(path) for char in '%!"\r\n'), "Unsupported cmd path characters")
+    # These three paths enter process.arguments, which WindTerm passes to cmd /c.
+    # Reject both supplied and resolved spellings before reading/copying the
+    # distribution or creating output; C argv quoting cannot neutralise cmd.
+    for original in (out, __file__, sys.executable):
+        path = Path(original)
+        for text in (str(path), str(path.resolve())):
+            require(not any(char in CMD_PATH_META or ord(char) < 32 for char in text),
+                    "Unsupported cmd path characters")
     app = prepare(Path(source), Path(out))
     out = Path(out).resolve()
     manifest = {"run_id": run_id, "lines": lines, "payload_bytes": len(data),
