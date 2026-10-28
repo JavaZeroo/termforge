@@ -296,7 +296,7 @@ class Sgr1ReferenceTests(unittest.TestCase):
                     for index, (_, source) in enumerate(phases(25, 91)):
                         self.assertEqual(read_exact(client, len(source)+4), source+b"\x1b[6n")
                         client.sendall(b"\x1b[1;1R")
-                        wait_until(lambda: peer.state["records"][index].get("cursor_reply") == [1, 1])
+                        wait_until(lambda: len(peer.state["records"]) > index and peer.state["records"][index].get("cursor_reply") == [1, 1])
                         self.assertEqual(peer.state["phase"], index)
                         (directory / f"ack-{index}").write_text("captured")
                     wait_until(lambda: peer.state.get("complete"))
