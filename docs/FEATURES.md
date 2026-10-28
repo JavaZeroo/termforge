@@ -25,7 +25,7 @@
 |---|---|---|---|
 | 自主 C++ / Qt / 固定微软 ConPTY | **实现中，未验收**：[显式 Qt 入口](../src/qt/README.md)提供固定 80×24 的 cmd 标签、基本 ASCII/16 色及各会话独立有界队列；双 cmd 输入、关闭和错误隔离及真实事件循环退出前回收有[限定验证](../experiments/shell/results/2026-10-28-qt-tabs/README.md)。Qt 1 项与其余 49 项既有/独立诊断分列 | 分屏、其他 shell、工作区恢复、动态 resize、历史/选择/Find、Unicode/IME、真实 DPI、应用兼容与性能仍需实现或迁移；应用/标签退出策略沿原型合同，完整 WindTerm 标签行为对照未完成；当前不是可发布开发包 | R2 |
 
-自主 C++ 核心的 [#130 双缓冲存储基础](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)已在独立模块边界实现拥有状态、交换激活、共享行 ID、双帧物理 resize 与文档 epoch 隔离，旧位置、选择、搜索及 viewport 不会在切换返回后复活。该基础尚未接入 private CSI；1049 的样式、重复进入清空及历史文档策略与完整 [#27](https://github.com/JavaZeroo/termforge/issues/27)另行验收，不表示产品已支持备用屏或 Qt 交互已迁移。
+自主 C++ 核心已有 [#130 双缓冲存储基础](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)，并接入 [#135 限定 1049 协议](../experiments/core/results/2026-10-29-cpp-1049/README.md)：strict/recovery 识别 `?1049h/l`，重复进入归首格、清旧备用文本和复位写入颜色，返回恢复主屏文字/光标/颜色及 pending-wrap。共享行 ID、双帧物理 resize 与逻辑 epoch 防止旧位置、选择、搜索及 viewport 复活，包括清屏后重写相同文字。原版完整网格/背景、非颜色属性及其他模式仍未知；本地55项中 Qt1项与其余54项诊断分列，13条内部跳过保留，不表示完整 [#27](https://github.com/JavaZeroo/termforge/issues/27)、真实 TUI/Qt 交互或系统剪贴板已验收。
 
 Qt 构建显式准备并部署[固定微软 CRT 14.51.36247.0](../third_party/msvc_runtime/README.md)，不安装到 System32。隔离 Windows 的[限定加载与 cmd 验证](../experiments/shell/results/2026-10-29-qt-crt-deploy/README.md)保留原包失败、原 52 文件不变且仅追加 CRT/原许可后的成功，以及新源码包的独立验证；它不解除完整产品打包、Qt/第三方分发审计、实际 DPI/IME 或物理呈现的验收缺口。
 

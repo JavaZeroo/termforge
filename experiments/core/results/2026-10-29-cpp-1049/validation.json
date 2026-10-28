@@ -1,0 +1,841 @@
+{
+  "schema": "termforge-cpp-1049-local-validation-v1",
+  "issue": 135,
+  "scope": "Independent C++ 1049 text/cursor/colour subset; finite original observations and engineering reader invalidation",
+  "runtime_implementation_commit": "40bee8e504410ed167bee600a1a5597417204809",
+  "test_contract_commit": "c1be53ebdbc8f4094749924d821699eb5368eba0",
+  "validated_source_commit": "575bd282b7f61fc4c47da0cad7739b0c46d8c1f2",
+  "integrated_main_base": "5f7373fc79eb152d8e4574b1d2b0dfbdd7068f77",
+  "configuration": {
+    "platform": "Windows 11 x64, build 26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "configuration": "Release",
+    "python": "3.12.10",
+    "qt_shell": true,
+    "candidate_adapter": false,
+    "qt_version": "6.10.3",
+    "qt_sdk_tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266",
+    "qt_backend": "fixed Microsoft ConPTY, package 1.25.260930003",
+    "remaining_windows_diagnostics_backend": "system ConPTY, separate from the Qt product entry"
+  },
+  "test_environment": {
+    "PATH_prepend": "<Git installation>/usr/bin",
+    "PYTHONUTF8": "1",
+    "TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD": "0",
+    "qt_test_platform": "offscreen; only that CTest entry"
+  },
+  "commands": [
+    "cmake -S . -B build/qt-1049 -G \"Visual Studio 17 2022\" -A x64 -DTERMFORGE_BUILD_QT_SHELL=ON -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF -DCMAKE_PREFIX_PATH=<pinned Qt SDK> -DTERMFORGE_CONPTY_BACKEND_DIR=<pinned ConPTY> -DPython3_EXECUTABLE=<Python3.12.10>",
+    "cmake --build build/qt-1049 --config Release --parallel 2",
+    "ctest --test-dir build/qt-1049 -C Release --verbose --output-junit <worktree>/local/cpp-1049-r2/14-reviewed-ctest.xml"
+  ],
+  "final_result": {
+    "configure_exit_code": 0,
+    "build_exit_code": 0,
+    "ctest_exit_code": 0,
+    "ctest_registered": 55,
+    "ctest_passed": 55,
+    "ctest_skipped": 0,
+    "test_elapsed_seconds": 289.74,
+    "elapsed_is_performance_measurement": false,
+    "qt_ctest_entries": 1,
+    "other_core_or_existing_diagnostic_entries": 54,
+    "internal_skips": [
+      {
+        "test": "setUpClass (test_candidate_compare.CandidateComparisonTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_capability_matrix.CapabilityMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_fuzz_matrix.FuzzMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_real_app_matrix.RealApplicationMatrixTests)",
+        "reason": "optional real application capture dependencies are not built"
+      },
+      {
+        "test": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice)",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM"
+      },
+      {
+        "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails)",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "test": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard)",
+        "reason": "system copy UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close)",
+        "reason": "product clipboard read gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver)",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_owned_clipboard_contention_preserves_write_and_read_failures (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_owned_clipboard_contention_preserves_write_and_read_failures)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice)",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard)",
+        "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified."
+      }
+    ],
+    "internal_skips_source": "Complete LastTest.log, not truncated JUnit output",
+    "system_clipboard_api_passed": false,
+    "system_clipboard_limitation": "Private window station OpenClipboard denied (5); skipped, not repaired or accepted"
+  },
+  "qt_supervisor": {
+    "schema": "termforge-qt-cpp-supervisor-v1",
+    "status": "passed",
+    "timed_out": false,
+    "exit_code": 0,
+    "job_after": {
+      "active": 0,
+      "total": 26,
+      "terminated": 0
+    },
+    "sample": {
+      "schema": "termforge-qt-cpp-smoke-v1",
+      "qt": "6.10.3",
+      "core": "cpp",
+      "backend": "fixed-microsoft-conpty",
+      "arithmetic": 750,
+      "child_exit": 37,
+      "cleanup_verified": true,
+      "image_changed": true,
+      "startup_error_visible": true,
+      "manual_close_reclaimed": true,
+      "tabs": {
+        "arithmetic": [
+          750,
+          427
+        ],
+        "survivor_after_close": 778,
+        "survivor_after_startup_failure": 147,
+        "natural_exit": 41,
+        "input_isolation": true,
+        "answer_ink_visible": true,
+        "independent_close": true,
+        "startup_error_visible": true,
+        "window_close_reclaimed": true,
+        "all_exited_status": 41,
+        "failed_only_kept_visible": true
+      },
+      "app_exec": {
+        "window_close": true,
+        "last_tab_close": true,
+        "failed_only_close": true,
+        "completed_tab_close": true,
+        "cleanup_before_quit": true,
+        "manual_status": 0
+      },
+      "presented_done": null
+    }
+  },
+  "fixed_inputs": {
+    "source_worktree_clean_before_test": true,
+    "counts": {
+      "source": 2737,
+      "product_runtime": 25,
+      "smoke_runtime": 27,
+      "legacy_diagnostic_runtime": 49,
+      "qt_sdk": 4358
+    },
+    "files_checked_after": 7196,
+    "changed_files_after": [],
+    "manifest": {
+      "bytes": 1570859,
+      "sha256": "cec180a0641469cfa91252b314f263320c886248d695a00689b727805573fe0e"
+    },
+    "verification": {
+      "bytes": 186,
+      "sha256": "7130dd8e49b00af793b73f6b190f53a579bacdac3374c93d1566789a5c19b093"
+    },
+    "selected_files": [
+      {
+        "scope": "source",
+        "path": "CMakeLists.txt",
+        "bytes": 24445,
+        "sha256": "b38962ca303444fa982b9420374d3aae5dd2651cee27bd63ccc1cd78e6650a77"
+      },
+      {
+        "scope": "source",
+        "path": "experiments/core/alternate_mode_test.cpp",
+        "bytes": 11614,
+        "sha256": "1b68d19fb4c64942d96e5d44ccda14e5937a7d2c418e6d9cffc135b94b3498ad"
+      },
+      {
+        "scope": "source",
+        "path": "experiments/core/screen.hpp",
+        "bytes": 17242,
+        "sha256": "04c19f09ebc0c468efbef8dd4c9da8f4bcd44e94000a87c56239756c0df1b474"
+      },
+      {
+        "scope": "source",
+        "path": "experiments/core/terminal.hpp",
+        "bytes": 12270,
+        "sha256": "ed3c030611a6df38df26057a8c2834f2808cd05306e73aead79927b1f76fe5ca"
+      },
+      {
+        "scope": "source",
+        "path": "experiments/core/test_core.py",
+        "bytes": 4834,
+        "sha256": "f912732afadc939db9c52d0c9876a2c1626168fac0317091d7b93ed577a7a549"
+      },
+      {
+        "scope": "source",
+        "path": "experiments/core/test_recovery.py",
+        "bytes": 15717,
+        "sha256": "a6b4f13199fd538c3de1240f29c58ba6f8756ca26a12efccaead936a45c03298"
+      },
+      {
+        "scope": "source",
+        "path": "third_party/conpty/manifest.json",
+        "bytes": 1467,
+        "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+      },
+      {
+        "scope": "source",
+        "path": "third_party/qt/manifest.json",
+        "bytes": 5806,
+        "sha256": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/assets/fonts/OFL.txt",
+        "bytes": 4395,
+        "sha256": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/assets/fonts/README.md",
+        "bytes": 3091,
+        "sha256": "760a714ad011733e0b93f3c25298190ff5fa493a9e40ad38d347922a355d538f"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/assets/fonts/RobotoMono-Regular.ttf",
+        "bytes": 125748,
+        "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/conpty-backend/conpty.dll",
+        "bytes": 119608,
+        "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/conpty-backend/LICENSE",
+        "bytes": 1095,
+        "sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/conpty-backend/manifest.json",
+        "bytes": 1467,
+        "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/conpty-backend/OpenConsole.exe",
+        "bytes": 1089376,
+        "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/D3Dcompiler_47.dll",
+        "bytes": 4669440,
+        "sha256": "0f89c19165fd83a05e39bea601a06007e6a8814d55e2adf913902926231f843e"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/dxcompiler.dll",
+        "bytes": 14019128,
+        "sha256": "2bc16dc5ec85315f89e2f10a482d46dde94a65d6b2d7077f4c49c77e10222acc"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/dxil.dll",
+        "bytes": 1502760,
+        "sha256": "0e90c12c1c6aa1e09d025322a815f9dd80da7d1e331f1df585c7fcbbf44b40d3"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/generic/qtuiotouchplugin.dll",
+        "bytes": 102712,
+        "sha256": "69498d05870aa583c31159f9350e3d8a598b895f6525de7b6fa382395ad27b9d"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/icuuc.dll",
+        "bytes": 36864,
+        "sha256": "59d134ddc15ae0594f0a328979f8201662fc82634ddb7c537b156e7cf871f5eb"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/imageformats/qgif.dll",
+        "bytes": 47928,
+        "sha256": "ded464ef782f41862f391bc5b21c54d58f6aee670fc9f10a2d909ae5b0ba09a7"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/imageformats/qico.dll",
+        "bytes": 45880,
+        "sha256": "0c2abdf95d778bfed9863b8be817dc6cffe2dacdd1a85b2117b4b4ccb1a08e66"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/imageformats/qjpeg.dll",
+        "bytes": 577848,
+        "sha256": "cd965015cce4638361d7bc01193d92a041a227d46d0759ec25d2a1a8608a6b40"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/networkinformation/qnetworklistmanager.dll",
+        "bytes": 70968,
+        "sha256": "4bc26d5b613c507634fd10f07fe031fcbd4f02157d23b9eb1407de4dd6da8278"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/platforms/qwindows.dll",
+        "bytes": 997688,
+        "sha256": "cafd5bfdef3d89d176ee26725c8d4759fd6cb007645b645a4cbf6386364a3f36"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/Qt6Core.dll",
+        "bytes": 10250040,
+        "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/Qt6Gui.dll",
+        "bytes": 9514296,
+        "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/Qt6Network.dll",
+        "bytes": 1773880,
+        "sha256": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/Qt6Widgets.dll",
+        "bytes": 6577464,
+        "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/styles/qmodernwindowsstyle.dll",
+        "bytes": 221496,
+        "sha256": "c279e7a97b21fcd7acdfde88cacb8baa119f563282e09c241acb3edee2bc9bbf"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/termforge_qt_shell.exe",
+        "bytes": 148480,
+        "sha256": "63c9c42186263b32d6bc2d0897ab9bd52fa063816da44ca7fd419afa7022a9ad"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/tls/qcertonlybackend.dll",
+        "bytes": 103224,
+        "sha256": "99d00b37bb2835c539366e4018a58e0ddad21e1c648a3f44f56335a0c1d34765"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-1049/qt-bin/Release/tls/qschannelbackend.dll",
+        "bytes": 262968,
+        "sha256": "b7035c3689b93f55b48112c3e85cf4b8550fefde3f7a044df2784c29330e6940"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/assets/fonts/OFL.txt",
+        "bytes": 4395,
+        "sha256": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/assets/fonts/README.md",
+        "bytes": 3091,
+        "sha256": "760a714ad011733e0b93f3c25298190ff5fa493a9e40ad38d347922a355d538f"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/assets/fonts/RobotoMono-Regular.ttf",
+        "bytes": 125748,
+        "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/conpty-backend/conpty.dll",
+        "bytes": 119608,
+        "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/conpty-backend/LICENSE",
+        "bytes": 1095,
+        "sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/conpty-backend/manifest.json",
+        "bytes": 1467,
+        "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/conpty-backend/OpenConsole.exe",
+        "bytes": 1089376,
+        "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/D3Dcompiler_47.dll",
+        "bytes": 4669440,
+        "sha256": "0f89c19165fd83a05e39bea601a06007e6a8814d55e2adf913902926231f843e"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/dxcompiler.dll",
+        "bytes": 14019128,
+        "sha256": "2bc16dc5ec85315f89e2f10a482d46dde94a65d6b2d7077f4c49c77e10222acc"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/dxil.dll",
+        "bytes": 1502760,
+        "sha256": "0e90c12c1c6aa1e09d025322a815f9dd80da7d1e331f1df585c7fcbbf44b40d3"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/generic/qtuiotouchplugin.dll",
+        "bytes": 102712,
+        "sha256": "69498d05870aa583c31159f9350e3d8a598b895f6525de7b6fa382395ad27b9d"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/icuuc.dll",
+        "bytes": 36864,
+        "sha256": "59d134ddc15ae0594f0a328979f8201662fc82634ddb7c537b156e7cf871f5eb"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/imageformats/qgif.dll",
+        "bytes": 47928,
+        "sha256": "ded464ef782f41862f391bc5b21c54d58f6aee670fc9f10a2d909ae5b0ba09a7"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/imageformats/qico.dll",
+        "bytes": 45880,
+        "sha256": "0c2abdf95d778bfed9863b8be817dc6cffe2dacdd1a85b2117b4b4ccb1a08e66"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/imageformats/qjpeg.dll",
+        "bytes": 577848,
+        "sha256": "cd965015cce4638361d7bc01193d92a041a227d46d0759ec25d2a1a8608a6b40"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/networkinformation/qnetworklistmanager.dll",
+        "bytes": 70968,
+        "sha256": "4bc26d5b613c507634fd10f07fe031fcbd4f02157d23b9eb1407de4dd6da8278"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/platforms/qoffscreen.dll",
+        "bytes": 113976,
+        "sha256": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/platforms/qwindows.dll",
+        "bytes": 997688,
+        "sha256": "cafd5bfdef3d89d176ee26725c8d4759fd6cb007645b645a4cbf6386364a3f36"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/Qt6Core.dll",
+        "bytes": 10250040,
+        "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/Qt6Gui.dll",
+        "bytes": 9514296,
+        "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/Qt6Network.dll",
+        "bytes": 1773880,
+        "sha256": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/Qt6Test.dll",
+        "bytes": 380216,
+        "sha256": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/Qt6Widgets.dll",
+        "bytes": 6577464,
+        "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/qt_cpp_shell_smoke.exe",
+        "bytes": 204800,
+        "sha256": "ee1e60ff8235ae3ce3fd702d083e3d4f6d85ef5fc2582364944a07c3bd3fa2f8"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/styles/qmodernwindowsstyle.dll",
+        "bytes": 221496,
+        "sha256": "c279e7a97b21fcd7acdfde88cacb8baa119f563282e09c241acb3edee2bc9bbf"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/tls/qcertonlybackend.dll",
+        "bytes": 103224,
+        "sha256": "99d00b37bb2835c539366e4018a58e0ddad21e1c648a3f44f56335a0c1d34765"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-1049/qt-smoke-bin/Release/tls/qschannelbackend.dll",
+        "bytes": 262968,
+        "sha256": "b7035c3689b93f55b48112c3e85cf4b8550fefde3f7a044df2784c29330e6940"
+      },
+      {
+        "scope": "legacy_diagnostic_runtime",
+        "path": "build/qt-1049/bin/Release/alternate_mode_test.exe",
+        "bytes": 121344,
+        "sha256": "8712b7e42a0085ebd050aeae25f7eaf50707291272b24758991133619e331530"
+      },
+      {
+        "scope": "legacy_diagnostic_runtime",
+        "path": "build/qt-1049/bin/Release/buffer_state_test.exe",
+        "bytes": 132608,
+        "sha256": "c8c926184328f8cdb48c91e38e4a214660a79453c8338b60eeb1c0f1987fd288"
+      },
+      {
+        "scope": "legacy_diagnostic_runtime",
+        "path": "build/qt-1049/bin/Release/history_test.exe",
+        "bytes": 118272,
+        "sha256": "407b55bece4877de846cb11605598ff3c411dd1839899a283983f1a107b5a320"
+      },
+      {
+        "scope": "legacy_diagnostic_runtime",
+        "path": "build/qt-1049/bin/Release/replay.exe",
+        "bytes": 78848,
+        "sha256": "4e18684aa75b2e25853857e1c29848c3d53626e6be37f33c554a112eb88092aa"
+      },
+      {
+        "scope": "legacy_diagnostic_runtime",
+        "path": "build/qt-1049/bin/Release/resize_test.exe",
+        "bytes": 105472,
+        "sha256": "35bc2bc20e5ec31040a1ac67f520833bb193cd2b66bffffb314b06d70cf632c5"
+      },
+      {
+        "scope": "legacy_diagnostic_runtime",
+        "path": "build/qt-1049/bin/Release/search_test.exe",
+        "bytes": 148992,
+        "sha256": "403f51fb06371fe77f6c2357da4eedf86f59f7c73fdb71eacb718bc35322451d"
+      },
+      {
+        "scope": "legacy_diagnostic_runtime",
+        "path": "build/qt-1049/bin/Release/selection_test.exe",
+        "bytes": 122368,
+        "sha256": "70e47db26964a51f5623904894d785e486051b5142be55af7b1891f3a1a563eb"
+      },
+      {
+        "scope": "legacy_diagnostic_runtime",
+        "path": "build/qt-1049/bin/Release/terminal_trace.exe",
+        "bytes": 84992,
+        "sha256": "3f8bda9d6b1443d02265089ed560941ab8c226cd0bd2900cbadea3812a55d081"
+      }
+    ]
+  },
+  "red_green_cases": [
+    {
+      "case": "Unsupported private CSI",
+      "red_exit_code": 1,
+      "red_log": {
+        "bytes": 25,
+        "sha256": "fc4971332820f79b79e94fe734813499a86478b957c7d8502197a8426c8b3663"
+      },
+      "red_source_base": "4f34146ab81f5b156537b080df2156f484793cc4",
+      "red_worktree_clean": false,
+      "red_selected_files": [
+        {
+          "path": "CMakeLists.txt",
+          "sha256": "b91cbc73b2ed218f6e47d4258ef48e6643aae0639998054673878980eb13e541"
+        },
+        {
+          "path": "experiments/core/alternate_mode_test.cpp",
+          "sha256": "89143144279dc1339e22ac4c252a43eebf5740d1c2507628fd6000fa5b7a0021"
+        },
+        {
+          "path": "experiments/core/terminal.hpp",
+          "sha256": "e5ca6b065b38b98ba4bb32f579e4f0e8e126a7872de147ff37c2c68aac414358"
+        },
+        {
+          "path": "experiments/core/screen.hpp",
+          "sha256": "534068ce7fc2d9b5436c87b84626d9cf5b9e9bf2811a9a789c03c77925786ccc"
+        },
+        {
+          "path": "build/qt-1049/bin/Release/alternate_mode_test.exe",
+          "sha256": "d951179b8b45cd98cde6cb189b5a42bfc4f36fd4ebc4b77c6f9660b7d58e3a1b"
+        }
+      ],
+      "red_identity_record": {
+        "bytes": 950,
+        "sha256": "2526f468e4d4c499aa5e74b2af33c38d1f4dc698a0d5eeed3dd7ecf417fa04ed"
+      },
+      "green_exit_code": 0,
+      "green_log": {
+        "bytes": 30,
+        "sha256": "9f320ce704edec8d720956840787392bd35766b436d07984360986836cffca2a"
+      },
+      "green_identity_record": null,
+      "green_identity_limit": "First green executable was not separately hashed before the next build"
+    },
+    {
+      "case": "Repeated entry did not home",
+      "red_exit_code": 1,
+      "red_log": {
+        "bytes": 63,
+        "sha256": "8bea610b69abf2cc3594396998392bcf52a5b326ad7e262fb55acd978eb068f9"
+      },
+      "red_source_base": "4f34146ab81f5b156537b080df2156f484793cc4",
+      "red_worktree_clean": false,
+      "red_selected_files": [
+        {
+          "bytes": 24334,
+          "sha256": "b91cbc73b2ed218f6e47d4258ef48e6643aae0639998054673878980eb13e541",
+          "path": "CMakeLists.txt"
+        },
+        {
+          "bytes": 3121,
+          "sha256": "01045f38d1f8d10d93b5d05c0eaf4033babfc501d7e39675bf304ff68d4b8177",
+          "path": "experiments/core/alternate_mode_test.cpp"
+        },
+        {
+          "bytes": 11857,
+          "sha256": "5a59ec953e4503aa6a15c8532dca2fc312dda4a848abbbbdf250e9e315335227",
+          "path": "experiments/core/terminal.hpp"
+        },
+        {
+          "bytes": 16884,
+          "sha256": "534068ce7fc2d9b5436c87b84626d9cf5b9e9bf2811a9a789c03c77925786ccc",
+          "path": "experiments/core/screen.hpp"
+        },
+        {
+          "bytes": 62976,
+          "sha256": "3837d5b4e89343df4f3f095de73167bd47043280affd3fc80204344544875224",
+          "path": "build/qt-1049/bin/Release/alternate_mode_test.exe"
+        }
+      ],
+      "red_identity_record": {
+        "bytes": 1100,
+        "sha256": "e2e0216fea934af9a4a1ef2b41c313e3286067bf8db0da21dd33b46e5c51dc0d"
+      },
+      "green_exit_code": 0,
+      "green_log": {
+        "bytes": 30,
+        "sha256": "9f320ce704edec8d720956840787392bd35766b436d07984360986836cffca2a"
+      },
+      "green_identity_record": {
+        "bytes": 1100,
+        "sha256": "7023c4d3ba9470b17b38e9487777c9be5c7e4ec964d613ad581254fa075de862"
+      },
+      "green_identity_limit": null
+    },
+    {
+      "case": "Identical text revived a prior selection",
+      "red_exit_code": 1,
+      "red_log": {
+        "bytes": 78,
+        "sha256": "0a4564f03a1a7c2398c691f705f0d98079f5b3d5bfb4dbb41112b561b4c5773c"
+      },
+      "red_source_base": "4f34146ab81f5b156537b080df2156f484793cc4",
+      "red_worktree_clean": false,
+      "red_selected_files": [
+        {
+          "bytes": 24334,
+          "path": "CMakeLists.txt",
+          "sha256": "b91cbc73b2ed218f6e47d4258ef48e6643aae0639998054673878980eb13e541"
+        },
+        {
+          "bytes": 10807,
+          "path": "experiments/core/alternate_mode_test.cpp",
+          "sha256": "e96b45c59b8c507d084670482a9c764f9d6e22d9058df9ec52a4a1858954c64a"
+        },
+        {
+          "bytes": 12086,
+          "path": "experiments/core/terminal.hpp",
+          "sha256": "37ff1e44e7b0633ff9d39582f7ea7ac47caa6d4330a633ec4f9eae803696e37f"
+        },
+        {
+          "bytes": 16884,
+          "path": "experiments/core/screen.hpp",
+          "sha256": "534068ce7fc2d9b5436c87b84626d9cf5b9e9bf2811a9a789c03c77925786ccc"
+        },
+        {
+          "bytes": 115712,
+          "path": "build/qt-1049/bin/Release/alternate_mode_test.exe",
+          "sha256": "0bce8a542b6420ac3bb245f20e7f5b2f31f43956a82b17187c25f3fd66f9722f"
+        }
+      ],
+      "red_identity_record": {
+        "bytes": 1102,
+        "sha256": "21dc97a10a43076fa10307b76c7f308f1d45577dab97d6318b406d24b0b92eac"
+      },
+      "green_exit_code": 0,
+      "green_log": {
+        "bytes": 30,
+        "sha256": "9f320ce704edec8d720956840787392bd35766b436d07984360986836cffca2a"
+      },
+      "green_identity_record": {
+        "bytes": 1136,
+        "sha256": "304f67f36aa7b916ffc3d930656db32430a0832a0d71b23799e91c69b333aa34"
+      },
+      "green_identity_limit": null
+    }
+  ],
+  "first_full_run": {
+    "source_commit": "40bee8e504410ed167bee600a1a5597417204809",
+    "ctest_registered": 54,
+    "ctest_passed": 52,
+    "failed_entries": [
+      "core",
+      "recovery"
+    ],
+    "ctest_exit_code": 8,
+    "test_elapsed_seconds": 298.93,
+    "cause": "Two old negative fixtures still classified newly supported ?1049h as unknown or unsupported",
+    "followup": "Retained unknown-mode rejection with ?9999h and added separate strict/recovery positive CLI roundtrips",
+    "product_runtime_changed_for_fixture_fix": false,
+    "frozen_files_verified": 7183,
+    "runtime_files_compared_with_final": 101,
+    "runtime_files_changed": [],
+    "raw_records": {
+      "11-final-ctest.log": {
+        "bytes": 169100,
+        "sha256": "adfc8351e64f632bb4a976e47411ceaff62800b652e2b7f3ac147d31010d8648"
+      },
+      "11-final-ctest.xml": {
+        "bytes": 81229,
+        "sha256": "d1c84ff9a18a7247861942788369de9e855558d3e792a315b86303e45d57bbd3"
+      },
+      "11-final-exit.json": {
+        "bytes": 140,
+        "sha256": "537fc8ee38c845b682a03e250f72b54b626499e67e01c70b8c6b2b01d40d9b5f"
+      },
+      "LastTest.log": {
+        "bytes": 171545,
+        "sha256": "d2bdd95f318e95ee757f9f06418be55daba9a31809a7742ef23fe451a7108fd3"
+      },
+      "frozen-inputs.json": {
+        "bytes": 1568159,
+        "sha256": "2e4f471c569fae35972458d4292cebe4de7664a5161eece3c73a993dd57c78a8"
+      },
+      "frozen-after.json": {
+        "bytes": 186,
+        "sha256": "b19078a62eb2a8c38fe7974652906904c41fd7c623541df81c7e62df256e368e"
+      }
+    }
+  },
+  "review": {
+    "fixed_base": "4f34146ab81f5b156537b080df2156f484793cc4",
+    "implementation_head": "40bee8e504410ed167bee600a1a5597417204809",
+    "spec_findings": 0,
+    "standards_hard_findings": 0,
+    "standards_smells": 0,
+    "test_only_followup": "Two unknown-mode fixture substitutions and separate positive CLI tests; production C++ unchanged",
+    "published_report_hash": null
+  },
+  "raw_records": {
+    "configure.log": {
+      "bytes": 1225,
+      "sha256": "b8eec16a172441f15ba632918f0f5976b622df7e378202d85013fb584e42b91d"
+    },
+    "10-full-build.log": {
+      "bytes": 15965,
+      "sha256": "02633f5515285b559b654531d47eeac5f7e6f9d753eeb983827a3d6dc39df9af"
+    },
+    "10-full-build.exit": {
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+    },
+    "13-reviewed-build.log": {
+      "bytes": 14181,
+      "sha256": "a3aff2b826b606cefd0ed2da06cbf1c92e0e990c053db6d6701d3883de151098"
+    },
+    "13-reviewed-build.exit": {
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+    },
+    "14-reviewed-ctest.log": {
+      "bytes": 139430,
+      "sha256": "d116bc59e09db169a16f1457f9c4fca57d4715dd0aa08c9d94b66d9f1e046138"
+    },
+    "14-reviewed-ctest.xml": {
+      "bytes": 46165,
+      "sha256": "40f1eca34c467309fed620ca1243463a38457cb56daecea4daff1e259ac44bb7"
+    },
+    "14-reviewed-exit.json": {
+      "bytes": 140,
+      "sha256": "66014eeb506453a81833982d3d8e1b45d570ac2e4a5abb4aac474f139824f628"
+    },
+    "frozen-inputs.json": {
+      "bytes": 1570859,
+      "sha256": "cec180a0641469cfa91252b314f263320c886248d695a00689b727805573fe0e"
+    },
+    "frozen-after.json": {
+      "bytes": 186,
+      "sha256": "7130dd8e49b00af793b73f6b190f53a579bacdac3374c93d1566789a5c19b093"
+    },
+    "12-core-recovery-contract.log": {
+      "bytes": 414,
+      "sha256": "e61aafc8c53dbef649384f773a49e33e8762cd25745ad0b034d877fb7fac0b0f"
+    }
+  },
+  "last_test_log": {
+    "bytes": 144171,
+    "sha256": "a57f0898edfb3d670aa90864693953d7aa1b786454bbb11e67416ab5d33d3d92"
+  },
+  "limitations": [
+    "Original reference is finite Telnet terminal text/cursor/H-space output, not local-shell parity.",
+    "Only writing foreground/background colours reset on entry; other attributes remain frame-owned and original bold behavior is unknown.",
+    "Full alternate physical-text erasure is an engineering method, not proof of original full-grid background behavior.",
+    "47/1047/1048, margins/origin/wrap families, keyboard replies, full TUI/IME/DPI and GUI text interactions remain incomplete.",
+    "Qt 1 smoke and the other54 diagnostic entries do not combine into full product acceptance.",
+    "The private-station system clipboard test skipped with error5; all13 internal skips remain gaps.",
+    "No presented endpoint, clean-machine CRT deployment, performance tolerance or R2 completion is claimed."
+  ],
+  "windterm_parity": false,
+  "r2_complete": false,
+  "performance_gate": "not_evaluated"
+}

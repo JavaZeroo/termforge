@@ -8,6 +8,7 @@
 
 | 配置 | 证据定位 |
 |---|---|
+| 自主 C++ 限定 1049 协议 | [固定结果](../experiments/core/results/2026-10-29-cpp-1049/README.md)、[验证身份](../experiments/core/results/2026-10-29-cpp-1049/validation.json)：文字/光标/颜色及 pending-wrap、重复进入与读者失效；55项中Qt1项分列，13条内部skip及旧负例判据失败保留。未验收非颜色属性/全网格背景、其他模式、真实TUI/IME/DPI、呈现或性能 |
 | 自主 C++ 双缓冲存储与文档 epoch 基础 | [固定结果](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)、[验证身份](../experiments/core/results/2026-10-29-buffer-state-r2/validation.json)：拥有状态、共享 ID、隐藏帧 resize 回滚与跨缓冲句柄失效；Qt/candidate 关闭配置的完整 50 项及 12 条内部 skip 分列。未接 private CSI，不是原版模式、Qt 产品路线或完整 #27 验收 |
 | Qt cmd 标签与退出前回收 | [固定结果](../experiments/shell/results/2026-10-28-qt-tabs/README.md)、[验证身份](../experiments/shell/results/2026-10-28-qt-tabs/validation.json)：双 cmd 隔离、失败页、关闭与四个实际事件循环边界；Qt 1 项和其他 49 项诊断及内部跳过分列，旧中断轮不拼接 |
 | Qt app-local 固定微软 CRT 与隔离 Windows 加载 | [固定结果](../experiments/shell/results/2026-10-29-qt-crt-deploy/README.md)、[完整运行时与验证身份](../experiments/shell/results/2026-10-29-qt-crt-deploy/validation.json)：原 `cf8` 52 文件首次加载失败与仅追加 CRT/原许可后的成功分列；新源码构建、原生窗口、有限 cmd/关闭、offscreen 及 Job 清理独立记录。不是完整发行、跨 DPI/IME 或物理呈现验收 |

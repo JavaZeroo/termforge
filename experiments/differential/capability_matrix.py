@@ -19,7 +19,7 @@ class RawCase(Case):
 
 
 CAPABILITIES = (
-    dict(name="alternate_screen", supported=False,
+    dict(name="alternate_screen", supported=True,
          case=Case("alternate_screen", "A\r\nB\x1b[?1049hALT\x1b[?1049lZ")),
     dict(name="scroll_region", supported=False,
          case=Case("scroll_region", "A\r\nB\r\nC\r\nD\x1b[2;3r\x1b[3;1H\nX\x1b[r\x1b[1;1H")),

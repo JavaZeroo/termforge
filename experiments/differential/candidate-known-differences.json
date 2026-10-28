@@ -1,1 +1,81 @@
-{}
+{
+  "alternate_screen": {
+    "basis": "Bounded WindTerm2.7.0 #118 first1049 entry homes; the Alacritty reference retains the primary cursor. This is a reference comparison difference, not approval of an original behavior deviation.",
+    "semantic_acceptance": false,
+    "projection_hash_encoding": "SHA256 of UTF-8 JSON of the complete ordered common-projection record array; sort_keys=True, ensure_ascii=False, compact separators",
+    "plans": {
+      "byte": {
+        "input_sha256": "6ae16cedd522763cbbefccf3424d3195350d2d149d06a1e815e52ab73f96fe76",
+        "rows": 3,
+        "columns": 12,
+        "history": 3,
+        "first_difference": {
+          "offset": 12,
+          "path": ".screen.row",
+          "expected": 0,
+          "actual": 1
+        },
+        "final_core_sha256": "624c2bd5d31b73bfba47dbbbb72260a54d9a9af663e65d5ad2a34d6f4559e067",
+        "final_candidate_sha256": "624c2bd5d31b73bfba47dbbbb72260a54d9a9af663e65d5ad2a34d6f4559e067",
+        "canonical_core_trace_sha256": "8229315bee9585fa620254e0e294e51ac0bd81511abd114a225774a5ca19686b",
+        "canonical_candidate_trace_sha256": "f01576eb7ca499c8d3d72789b0cdf2411ba9479134cd6d85666f35e50c8c38b0",
+        "core_checkpoints": 25,
+        "candidate_checkpoints": 25
+      },
+      "seed:42": {
+        "input_sha256": "6ae16cedd522763cbbefccf3424d3195350d2d149d06a1e815e52ab73f96fe76",
+        "rows": 3,
+        "columns": 12,
+        "history": 3,
+        "first_difference": {
+          "offset": 14,
+          "path": ".screen.row",
+          "expected": 0,
+          "actual": 1
+        },
+        "final_core_sha256": "624c2bd5d31b73bfba47dbbbb72260a54d9a9af663e65d5ad2a34d6f4559e067",
+        "final_candidate_sha256": "624c2bd5d31b73bfba47dbbbb72260a54d9a9af663e65d5ad2a34d6f4559e067",
+        "canonical_core_trace_sha256": "3dd867db0c75e2ce79f5200865b7365093efe5bc82c83642331775f003b5aaf2",
+        "canonical_candidate_trace_sha256": "429c29f1b622626efb40eccf768a483e176ced7884e9e9d2dc731aa234f96244",
+        "core_checkpoints": 6,
+        "candidate_checkpoints": 6
+      },
+      "seed:20261022": {
+        "input_sha256": "6ae16cedd522763cbbefccf3424d3195350d2d149d06a1e815e52ab73f96fe76",
+        "rows": 3,
+        "columns": 12,
+        "history": 3,
+        "first_difference": {
+          "offset": 12,
+          "path": ".screen.row",
+          "expected": 0,
+          "actual": 1
+        },
+        "final_core_sha256": "624c2bd5d31b73bfba47dbbbb72260a54d9a9af663e65d5ad2a34d6f4559e067",
+        "final_candidate_sha256": "624c2bd5d31b73bfba47dbbbb72260a54d9a9af663e65d5ad2a34d6f4559e067",
+        "canonical_core_trace_sha256": "7fbc6a28fcfc045551ce577daf233df09b33d9eb15a2e87dc271c964cba765d8",
+        "canonical_candidate_trace_sha256": "c8d2626cae1eec2dd14ebfa89ce68c013125cfb77fe2bcadaf940eace57c6c24",
+        "core_checkpoints": 4,
+        "candidate_checkpoints": 4
+      },
+      "seed:8675309": {
+        "input_sha256": "6ae16cedd522763cbbefccf3424d3195350d2d149d06a1e815e52ab73f96fe76",
+        "rows": 3,
+        "columns": 12,
+        "history": 3,
+        "first_difference": {
+          "offset": 13,
+          "path": ".screen.row",
+          "expected": 0,
+          "actual": 1
+        },
+        "final_core_sha256": "624c2bd5d31b73bfba47dbbbb72260a54d9a9af663e65d5ad2a34d6f4559e067",
+        "final_candidate_sha256": "624c2bd5d31b73bfba47dbbbb72260a54d9a9af663e65d5ad2a34d6f4559e067",
+        "canonical_core_trace_sha256": "63be2fb28cef585a2c6c7e0f0ae3c8de5225dc9cd1e3385a9b26997096f42667",
+        "canonical_candidate_trace_sha256": "95572ad54172efd387646f2c9745cdca7f42920626a5b380129a65abb0c5c187",
+        "core_checkpoints": 4,
+        "candidate_checkpoints": 4
+      }
+    }
+  }
+}
