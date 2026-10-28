@@ -1,0 +1,73 @@
+{
+  "schema": "termforge.windterm-cmd-diagnostic.v1",
+  "run_id": "dc5fe5779e3e4e2985505af394365865",
+  "kind": "correctness-diagnostic",
+  "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "distribution_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "runner_sha256": "bd4a67f5df26c32a13c5d9f0296bf2347719a3b9024d0607afe81f4655e00f61",
+  "probe_sha256": "421cf8e238fa7362f3f557ac772127f79796753918a9b025afb6e0c09da4c296",
+  "payload_sha256": "c3c5ee519e60e2bff5c1498e1aaef599d5cff7dfe54c40a66ba01b4d23b2bb23",
+  "payload_bytes": 536,
+  "producer_status": "complete",
+  "correctness": {
+    "status": "passed",
+    "method": "all-bounded-logical-lines-exact",
+    "payload_lines": 14,
+    "observed_lines": 15,
+    "terminal_text_sha256": "44b8badd8084200fb0895b4d65aa7fce8c3430a690d86f5289c02e40700e203a"
+  },
+  "actual_settings": {
+    "producer_console": {
+      "vt_enable_succeeded": true,
+      "original_mode": 3,
+      "columns": 80,
+      "rows": 24,
+      "buffer_columns": 80,
+      "buffer_rows": 3000
+    },
+    "terminal": {
+      "screen_line_capacity": 23,
+      "widget_geometry": [
+        0,
+        0,
+        905,
+        428
+      ],
+      "widget_font": {
+        "family": "Roboto Mono",
+        "point_size": 9,
+        "pixel_size": -1
+      }
+    }
+  },
+  "consumer_done": null,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "cleanup": {
+    "owned_active": 0,
+    "only_synthetic_session": true
+  },
+  "limitations": [
+    "Instrumented local cmd diagnostic on a non-input desktop; no native input or presentation timing.",
+    "Small ASCII payload only; no T01 baseline, retained-history, Unicode or performance acceptance.",
+    "Widget font and console dimensions are readable settings, not complete C0 verification."
+  ],
+  "raw_records_sha256": {
+    "run.json": "850d7077f6066e93d8ca9b352b892fc7354460d84c6082e96b7abd16fc1eaabb",
+    "workload.json": "7df03dc2324d20b5a2dd3948aab01cd464cd0e0b9b6e59187434eb808473b506",
+    "producer.json": "7fc89ad3561407c066eb7a4c15d1ae269a55844024fb7a0d82d11eb397dac262",
+    "evidence.json": "ab3bfd1bdeb87ca904a172b222e63fd3944283322240f622f8d15469d0fa9a73",
+    "cleanup.json": "c5c5c0699ff0e15119b92a6c0ff931a07a419443daca740da4035ed0961725a6",
+    "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+  },
+  "source_base": "2903290",
+  "issue": 119,
+  "validation": {
+    "public_boundary_tests": 10,
+    "existing_isolation_preparation_tests": 3,
+    "js_syntax_check": "passed",
+    "independent_offline_audit": "passed",
+    "raw_record_hashes_checked": 6,
+    "target_launches_for_final_source": 1
+  }
+}

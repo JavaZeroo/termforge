@@ -1,0 +1,87 @@
+{
+  "schema": "termforge.windterm-cmd-diagnostic.v1",
+  "run_id": "2cb6f43c4e384983a1c1ef8104e6ca64",
+  "kind": "correctness-diagnostic",
+  "target_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "distribution_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "runner_sha256": "e517f8cab36d55e5d4bdda3fc14d4641e5ce6256991af04762dbf43c25961297",
+  "probe_sha256": "648b00e683f9544fc305aef1186084ad5fb57934e78b1dce46b5a819deccab3f",
+  "payload_sha256": "61c6afe24b3642e6491e2382f30c5a5993819d7b23d702dbc59e2b25daa71bf9",
+  "payload_bytes": 536,
+  "producer_status": "complete",
+  "correctness": {
+    "status": "passed",
+    "method": "all-bounded-logical-lines-exact",
+    "payload_lines": 14,
+    "observed_lines": 15,
+    "terminal_text_sha256": "5ff220f3626d945002a7b2cd2d4468e91c3132e1509e700ccdb2f9e2d0cfeb80"
+  },
+  "actual_settings": {
+    "producer_console": {
+      "vt_enable_succeeded": true,
+      "original_mode": 3,
+      "columns": 80,
+      "rows": 24,
+      "buffer_columns": 80,
+      "buffer_rows": 3000
+    },
+    "terminal": {
+      "screen_line_capacity": 23,
+      "widget_geometry": [
+        0,
+        0,
+        905,
+        428
+      ],
+      "widget_font": {
+        "family": "Roboto Mono",
+        "point_size": 9,
+        "pixel_size": -1
+      }
+    }
+  },
+  "consumer_done": null,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "cleanup": {
+    "owned_active": 0,
+    "only_synthetic_session": true
+  },
+  "limitations": [
+    "Instrumented local cmd diagnostic on a non-input desktop; no native input or presentation timing.",
+    "Small ASCII payload only; no T01 baseline, retained-history, Unicode or performance acceptance.",
+    "Widget font and console dimensions are readable settings, not complete C0 verification."
+  ],
+  "raw_records_sha256": {
+    "run.json": "b4c74552b0bf150ab4dcca6e22f5a08060fb8ee51a108547849d32154d3db353",
+    "workload.json": "eb488ec88b339aac6f3ff75ebcbb40220d8cf88888fd0275fa8aa9a23f6308ad",
+    "producer.json": "0ad5292ce921653c9730dcdfbd625098d32626e0964485d19b169c3ae0143645",
+    "evidence.json": "03bb9a6910ba856dd93a6418c5b42941594f2b195468bfe9aa0afda607cad5c2",
+    "cleanup.json": "cc83e085935e3cc581b8e39c693b536718d30840e2fe56b6121d7e57a76d2bf4",
+    "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+  },
+  "source_base": "0582a02bbfd332d03761b1831445754eebd77549",
+  "issue": 119,
+  "validation": {
+    "public_boundary_tests": 12,
+    "existing_isolation_preparation_tests": 3,
+    "js_syntax_check": "passed",
+    "independent_offline_audit": "passed",
+    "raw_record_hashes_checked": 6,
+    "target_launches_for_final_source": 1,
+    "prior_six_record_hashes_unchanged": true,
+    "prior_source_rejected_by_current_summarizer": true
+  },
+  "path_guard_red_green": {
+    "guarded_paths": [
+      "out",
+      "runner",
+      "sys.executable"
+    ],
+    "explicit_metacharacters": "&|<>^()%!\"",
+    "also_rejects_control_characters": true,
+    "before_fix_boundary_failures": 21,
+    "before_fix_public_cli_failures": 1,
+    "injection_target_launches": 0
+  }
+}
