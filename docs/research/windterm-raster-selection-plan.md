@@ -1,6 +1,6 @@
 # #129：端点守卫与同图颜色正控的独立计划
 
-状态：仅离线准备，尚未启动新原版。#126 的执行源 `15c736b`、一次 phase0/0 grab/0 pixel 记录保持不变。本计划是独立新源，等待最终复核及明确执行指令；私有准备计划默认 `execution_authorized=false`，启动入口会拒绝该状态。
+状态：完成最终复核及明确单次授权后，已按固定生产源执行一次，得到[三阶段受控栅格的 partial 结果](windterm-raster-selection-reference-2026-10-29.md)。#126 的执行源 `15c736b`、一次 phase0/0 grab/0 pixel 记录保持不变。下面保留执行前方案；原 `execution_authorized=false` 准备计划未修改，新授权计划另建并绑定准备 HEAD `1aa8054`。
 
 固定生产源为 `e302fa3acb6a2ed2982aad5550e027d37c772da6`。[脱敏准备计划](../../research/ui/results/2026-10-28-raster-selection-proposal/plan.json)列出每阶段 hex/SHA、源哈希与固定 Qt 身份；五阶段长度为 `43/38/20/53/54` 字节，另各追加 DSR。它是不可执行的离线提案，不是已获运行授权的计划；最终明确指令后应另生成新的授权计划及唯一输出，不修改旧批身份。
 
@@ -38,7 +38,7 @@ S1=`SGR31;44`，S2=`SGR32;45`，D0=`SGR0`。比较对象始终为字形 H 及其
 
 [GUI 脚本](../../research/ui/raster_selection_reference.js)沿用已只读核实的固定 Qt5Widgets/Qt5Gui 完整 SHA、模块路径和导出 RVA，GUI 线程执行 QWidget::grab→QPixmap::toImage→QImage::pixel。QPixmap/QImage 各 32B、不预构造；正常返回后按 image→pixmap 普通析构。QRect 为 inclusive 边界，不读取或猜测 format/stride。既有 Qt 栅格计划提供静态 ABI 依据；旧 #126 没有实际调用这些函数，不能转记为原生栅格已验证。
 
-仍为独立 station/desktop、OwnedJob、合成 loopback/profile、一个新唯一目录。新批最多启动原版一次、每阶段至多一次 grab，共最多五次；capture45、CLI wait60，整程上限另列未知。当前只是离线计划，没有授权标记、attempt marker 或新执行结果。
+仍为独立 station/desktop、OwnedJob、合成 loopback/profile、一个新唯一目录。新批最多启动原版一次、每阶段至多一次 grab，共最多五次；capture45、CLI wait60，整程上限另列未知。执行前的不可运行提案与[新授权计划的脱敏投影](../../research/ui/results/2026-10-29-raster-selection-reference/plan.json)分别保留；新批实际只尝试 phase0/1/2 的三次 grab。
 
 空图、无墨迹、DPR/坐标/端点/caret/标签不成立即保存 partial/unknown 并停止，不移动 ROI、追加抓取或重跑。只公开合成输入、颜色/尺寸标量和 ROI 哈希；原始像素、截图、路径、PID 和资源均留 local。受控栅格不代表 presented 或性能结果。
 
@@ -48,4 +48,4 @@ S1=`SGR31;44`，S2=`SGR32;45`，D0=`SGR0`。比较对象始终为字形 H 及其
 - [回放投影器](../../research/ui/selection_guard_replay.py)：核对 #126 原文件 SHA 后确认端点确实未捕获；不由 `caretPosition` 补造 P 端点。
 - [公共回归](../../research/ui/test_raster_selection_reference.py)和[原生调用合成边界](../../research/ui/test_raster_selection_native.js)：覆盖历史/缺端点分开回放、非空文本但 collapsed 可继续、noncollapsed/未知仍拒绝、零宽 caret 重叠、完整 token、同帧默认色/主色匹配及歧义、32B sret/析构和未获执行授权不得启动。
 
-本提案不改旧 #118/#123/#126 树或记录，不把不同运行的成功拼成联合验收，也不解除当前样式未知项。最终源与准备计划交复核后，再根据独立执行指令启动新的一次。
+本方案不改旧 #118/#123/#126 树或记录，不把不同运行的成功拼成联合验收。新批 phase2 因主要墨迹频数并列而停止，未追加抓取或重跑；完整样式、重复进入和退出恢复仍未知，局部输出颜色事实见独立结果。

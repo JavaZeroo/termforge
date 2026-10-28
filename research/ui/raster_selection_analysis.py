@@ -54,6 +54,12 @@ def check_rectangle(rectangle,width,height):
     require(w>0 and h>0 and w*h<=8192 and x>=0 and y>=0 and x+w<=width and y+h<=height,"ROI outside image")
 
 
+def native_bool(value):
+    """Frida bool returns may be JSON booleans or numeric 0/1; retain that identity."""
+    require(type(value) is bool or (type(value) is int and value in (0,1)),"Image null state must be bool or integer 0/1")
+    return bool(value)
+
+
 def audit_capture(capture):
     """Return a scalar-only projection, retaining calibrated/unknown boundaries."""
     public={key:capture[key] for key in ("phase","label","cursor_reply","grab_attempted","constructed","destroyed","calibration","reason")}
@@ -63,17 +69,19 @@ def audit_capture(capture):
     image=capture["image"]
     if image is not None:
         require(all(type(image[key]) is int and 0<=image[key]<=4096 for key in ("width","height","viewport_width","viewport_height")),"Image scalar bound differs")
-        require(type(image["is_null"]) is bool,"Image null state missing")
+        is_null=native_bool(image["is_null"])
         require(image["grab_rect"]==[0,0,image["viewport_width"]-1,image["viewport_height"]-1],"Grab QRect is not inclusive")
         require(all(image[key] is None or (type(image[key]) in (int,float) and math.isfinite(image[key]) and abs(image[key])<=4) for key in ("pixmap_dpr","image_dpr")),"DPR scalar bound differs")
     if capture["calibration"]:
         require(capture["grab_attempted"] is True and capture["constructed"]==["pixmap","image"] and capture["destroyed"]==["image","pixmap"],"Calibrated image lifecycle differs")
-        require(image and image["is_null"] is False,"Empty calibrated image")
+        require(image and is_null is False,"Empty calibrated image")
         pdpr,idpr=image["pixmap_dpr"],image["image_dpr"]
         require(type(pdpr) in (int,float) and math.isfinite(pdpr) and 0<pdpr<=4 and pdpr==idpr,"DPR differs")
         require(image["width"]==image["viewport_width"]*pdpr and image["height"]==image["viewport_height"]*pdpr,"Image/viewport/DPR differs")
         require(image["grab_rect"]==[0,0,image["viewport_width"]-1,image["viewport_height"]-1],"Grab QRect is not inclusive")
     public["image"]=None if image is None else {key:image[key] for key in ("viewport_width","viewport_height","grab_rect","pixmap_dpr","image_dpr","width","height","is_null")}
+    if image is not None:
+        public["image"].update(is_null=is_null,is_null_raw_value=image["is_null"],is_null_raw_type="boolean" if type(image["is_null"]) is bool else "number")
     public["rois"]=[]
     terminal=capture["terminal"]
     require('selection' not in terminal,'Raw selectionText must not be retained in new captures')

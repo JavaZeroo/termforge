@@ -13,7 +13,7 @@ import unittest
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT))
 from research.ui.raster_selection_reference import SOURCE_FILES,phases,run_plan
-from research.ui.raster_selection_analysis import GROUPS,analyze_pixels,comparisons,require_collapsed
+from research.ui.raster_selection_analysis import GROUPS,analyze_pixels,audit_capture,comparisons,require_collapsed
 from research.ui.selection_guard_replay import decision
 from research.ui.test_raster_style_reference import fixture as base_fixture,write_records
 
@@ -102,14 +102,31 @@ class SelectionProposalTests(unittest.TestCase):
             result=comparisons(captures)
             self.assertTrue(all(row['unique_same_frame_control'] is None and row['same_frame_result']=='ambiguous' for row in result['frames']))
 
-    def check_cli(self,change=None):
+    def test_native_bool_values_keep_raw_representation_and_reject_coercions(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            _,_,data=fixture(Path(temporary))
+            original=data['raster-result.json']['captures'][0]
+            for value in (False,0,True,1):
+                with self.subTest(value=value,value_type=type(value).__name__):
+                    capture=copy.deepcopy(original);capture['image']['is_null']=value
+                    if value:
+                        capture.update(calibration=False,reason='empty-image',rois=[])
+                    image=audit_capture(capture)['image']
+                    self.assertIs(image['is_null'],bool(value))
+                    self.assertEqual(image['is_null_raw_value'],value)
+                    self.assertEqual(image['is_null_raw_type'],'boolean' if type(value) is bool else 'number')
+            for value in (2,-1,'0',0.0,None):
+                with self.subTest(invalid_value=value),self.assertRaisesRegex(ValueError,'Image null state'):
+                    capture=copy.deepcopy(original);capture['image']['is_null']=value;audit_capture(capture)
+
+    def check_cli(self,change=None,accepted=False):
         for optimized in (False,True):
             with self.subTest(optimized=optimized),tempfile.TemporaryDirectory() as temporary:
                 root=Path(temporary);directory,plan,data=fixture(root)
                 if change:change(data);write_records(directory,data)
                 destination=root/'public/validation.json'
                 completed=subprocess.run([sys.executable,*(['-O'] if optimized else []),str(ROOT/'research/ui/export_raster_selection_reference.py'),'--directory',str(directory),'--plan',str(plan),'--destination',str(destination)],cwd=ROOT,capture_output=True,text=True,timeout=10)
-                if change:
+                if change and not accepted:
                     self.assertNotEqual(completed.returncode,0,completed.stdout);self.assertFalse(destination.exists());self.assertFalse(destination.parent.exists())
                 else:
                     self.assertEqual(completed.returncode,0,completed.stderr)
@@ -119,6 +136,31 @@ class SelectionProposalTests(unittest.TestCase):
                     self.assertNotIn('h_pixels',destination.read_text());self.assertNotIn('space_pixels',destination.read_text())
 
     def test_synthetic_expanded_source_exports_scalars_only(self):self.check_cli()
+    def test_native_numeric_false_exports_under_normal_and_optimized_python(self):
+        self.check_cli(lambda data:[capture['image'].update(is_null=0) for capture in data['raster-result.json']['captures']],accepted=True)
+    def test_native_non_boolean_number_rejects_without_public_output(self):
+        self.check_cli(lambda data:data['raster-result.json']['captures'][0]['image'].update(is_null=2))
+    def test_ambiguous_third_phase_retains_partial_without_later_sources(self):
+        for optimized in (False,True):
+            with self.subTest(optimized=optimized),tempfile.TemporaryDirectory() as temporary:
+                root=Path(temporary);directory,plan,data=fixture(root)
+                result=data['raster-result.json'];result.update(status='partial-raster-observation',reason='dominant-ink-ambiguous',grab_phases=[0,1,2])
+                result['captures']=result['captures'][:3]
+                stopped=result['captures'][2];stopped.update(calibration=False,reason='dominant-ink-ambiguous')
+                stopped['rois']=stopped['rois'][:1]
+                roi=stopped['rois'][0];bg=roi['space_pixels'][0]
+                roi.update(h_pixels=[0xff102030,0xff405060,bg,bg],colors=None)
+                peer=data['peer.json'];peer.update(complete=False,records=peer['records'][:3],received_hex=(b'\x1b[1;1R'*3).hex())
+                for index in (2,3,4):(directory/f'ack-{index}').unlink()
+                write_records(directory,data);destination=root/'public/validation.json'
+                completed=subprocess.run([sys.executable,*(['-O'] if optimized else []),str(ROOT/'research/ui/export_raster_selection_reference.py'),'--directory',str(directory),'--plan',str(plan),'--destination',str(destination)],cwd=ROOT,capture_output=True,text=True,timeout=10)
+                self.assertEqual(completed.returncode,0,completed.stderr)
+                summary=json.loads(destination.read_text())
+                self.assertEqual(summary['observed_phase_count'],3);self.assertEqual(summary['grab_phases'],[0,1,2])
+                self.assertEqual([row['calibration'] for row in summary['phases']],[True,True,False])
+                self.assertFalse(summary['sample_colors_verified']);self.assertIsNone(summary['sample_color_comparisons'])
+                self.assertIsNone(summary['phases'][2]['rois'][0]['colors'])
+                self.assertEqual(summary['reason'],'dominant-ink-ambiguous')
     def test_uncollapsed_claim_cannot_be_promoted(self):self.check_cli(lambda data:data['raster-result.json']['captures'][0]['terminal'].update(selection_anchor=10))
     def test_raw_selection_text_is_rejected(self):self.check_cli(lambda data:data['raster-result.json']['captures'][0]['terminal'].update(selection='private path/text'))
 
