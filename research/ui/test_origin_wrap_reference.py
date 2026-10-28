@@ -10,7 +10,95 @@ import unittest
 from research.ui import origin_wrap_reference as probe
 
 
+def naws(columns, rows):
+    return bytes([255, 250, 31]) + columns.to_bytes(2, "big") + rows.to_bytes(2, "big") + bytes([255, 240])
+
+
+class SyntheticConnection:
+    """Deterministic recv fragments; this object never opens a socket."""
+    def __init__(self, peer, mode):
+        self.peer, self.mode = peer, mode
+        self.initial, self.fragment, self.sent = True, None, []
+
+    def settimeout(self, _):
+        pass
+
+    def close(self):
+        pass
+
+    def sendall(self, data):
+        self.sent.append(data)
+
+    def recv(self, _):
+        if self.initial:
+            self.initial = False
+            return naws(91, 25)
+        if self.mode == "transient-naws":
+            return naws(92, 25) + naws(91, 25)
+        row = self.peer.state["records"][-1]
+        if row["cursor_reply"] is not None:
+            (self.peer.directory / f'ack-{row["phase"]}').write_text("observed")
+            import socket
+            raise socket.timeout()
+        if self.mode == "duplicate-dsr":
+            return b"\x1b[3;7R\x1b[4;8R"
+        if self.fragment is not None:
+            value, self.fragment = self.fragment, None
+            return value
+        self.fragment = f'{row["phase"]+1};7R'.encode()
+        return b"\x1b["
+
+
+class SyntheticListener:
+    def __init__(self, connection):
+        self.connection = connection
+
+    def accept(self):
+        return self.connection, ("127.0.0.1", 12345)
+
+
+def receive_fixture(mode):
+    with tempfile.TemporaryDirectory() as temporary:
+        peer = probe.Peer.__new__(probe.Peer)
+        peer.directory = Path(temporary)
+        (peer.directory / "fixture-ready").write_text("stable-NAWS-capacity")
+        peer.state = {"connected": False, "columns": None, "rows": None, "phase": None, "records": []}
+        peer.stop = type("NeverStopped", (), {"is_set": lambda _: False})()
+        connection = SyntheticConnection(peer, mode)
+        peer.listener = SyntheticListener(connection)
+        peer._serve()
+        return peer.state, connection.sent
+
+
 class ProtocolTests(unittest.TestCase):
+    def test_receive_loop_retains_split_replies_for_every_actual_source(self):
+        state, sent = receive_fixture("normal")
+        self.assertTrue(state["complete"])
+        self.assertTrue(state["closed"])
+        self.assertNotIn("error", state)
+        self.assertEqual(state["naws_history"], [[91, 25]])
+        self.assertEqual(state["freeze_event_count"], 1)
+        self.assertEqual(state["frozen_grid"], [91, 25])
+        self.assertEqual(len(state["records"]), 25)
+        self.assertEqual([r["cursor_reply"] for r in state["records"]], [[n+1, 7] for n in range(25)])
+        self.assertEqual(sent[0], bytes([255, 251, 1, 255, 251, 3, 255, 253, 31]))
+        self.assertEqual(sent[1], b"\x1b[2J\x1b[HFT\x1b[6n")
+        self.assertEqual(len(sent), 26)
+
+    def test_receive_loop_rejects_transient_naws_before_advancing(self):
+        state, _ = receive_fixture("transient-naws")
+        self.assertEqual(state["error"], "NAWS changed after fixture freeze")
+        self.assertEqual(state["naws_history"], [[91, 25], [92, 25]])
+        self.assertEqual(len(state["records"]), 1)
+        self.assertFalse(state.get("complete", False))
+
+    def test_receive_loop_keeps_duplicate_raw_and_fails_without_ack(self):
+        state, _ = receive_fixture("duplicate-dsr")
+        self.assertEqual(state["error"], "Unexpected DSR response bytes")
+        self.assertEqual(state["records"][0]["response_hex"], b"\x1b[3;7R\x1b[4;8R".hex())
+        self.assertEqual(state["received_hex"], b"\x1b[3;7R\x1b[4;8R".hex())
+        self.assertFalse(state.get("complete", False))
+
     def test_fixed_input_covers_fresh_and_explicit_origin_without_inserting_dsr(self):
         rows = probe.phases(25, 91)
         self.assertEqual(len(rows), 25)

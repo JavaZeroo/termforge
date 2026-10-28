@@ -28,7 +28,7 @@ Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
         else{
             const peer=peerState();if(!peer||!peer.connected)return;
             if(peer.error)throw Error('peer '+peer.error);
-            if(peer.complete){finish('observed-all-origin-wrap-phases',null);return;}
+            if(peer.complete){if(observations.length!==25)throw Error('incomplete observation sequence');finish('observed-all-origin-wrap-phases',null);return;}
             const terminal=currentTerminal();if(!terminal||!terminal.connected||terminal.protocol!=='Telnet')return;
             if(stage===3){
                 const grid=JSON.stringify([peer.columns,peer.rows,terminal.capacity]);

@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT))
 CASE_ID = "origin-wrap-margin-v1"
 SOURCE_FILES = ("research/ui/origin_wrap_reference.py", "research/ui/origin_wrap_reference.js",
                 "research/ui/alternate_reference.py", "research/ui/r1_launch.py", "research/ui/launch.py",
-                "research/ui/qt_r1_text.js", "experiments/conpty/run.py")
+                "research/ui/qt_r1_text.js", "research/ui/r1_vt_fixture.py", "experiments/conpty/run.py")
 EXE_SHA256 = "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0"
 MANIFEST_SHA256 = "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203"
 
@@ -62,10 +62,13 @@ def phases(rows, columns):
 
 def reply_observation(data):
     """Return a complete DSR observation, or wait for a split reply prefix."""
-    matches = list(re.finditer(rb"\x1b\[(\??)([0-9]+);([0-9]+)R", data))
-    if not matches:
-        return None
-    match = matches[-1]
+    match = re.fullmatch(rb"\x1b\[(\??)([0-9]{1,5});([0-9]{1,5})R", data)
+    if match is None:
+        # A receive can split inside the ESC/CSI header or either coordinate.
+        # Other bytes, additional replies and tails must never be discarded.
+        if data in (b"", b"\x1b") or re.fullmatch(rb"\x1b\[\??[0-9]{0,5}(?:;[0-9]{0,5})?", data):
+            return None
+        raise ValueError("Unexpected DSR response bytes")
     return {"cursor_reply": [int(match[2]), int(match[3])],
             "cursor_reply_private": match[1] == b"?", "response_hex": data.hex()}
 
