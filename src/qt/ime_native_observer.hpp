@@ -2,6 +2,7 @@
 #pragma once
 #include "session_tabs.hpp"
 #include "ime_receiver_fixture.hpp"
+#include "ime_gui_profile_observer.hpp"
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QFile>
@@ -56,6 +57,8 @@ class Observation final : public QObject {
                 {"requested_widget_font_points", terminal.font().pointSizeF()},
                 {"running", model.running()}, {"finished", model.finished()},
                 {"natural_exit", model.natural_exit()}, {"cleanup_verified", model.cleanup_verified()},
+                {"exit_code", model.exit_code()}, {"output_eof", model.output_eof()},
+                {"active_processes_after", model.active_processes_after()},
                 {"error", model.error()}};
     }
     void write() {
@@ -166,6 +169,7 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
     check(QGuiApplication::platformName() == (native ? QStringLiteral("windows") : QStringLiteral("offscreen")),
           "IME observer platform does not match its explicit purpose");
     check(!QFileInfo::exists(directory) && QDir().mkpath(directory), "native IME output directory must be new");
+    GuiThreadProfile gui_profile(native);
     ime_fixture::ControlledReceiver a(directory + QStringLiteral("/native-a.bin"), 50000);
     ime_fixture::ControlledReceiver b(directory + QStringLiteral("/native-b.bin"), 50000);
     SessionTabs window(QCoreApplication::applicationFilePath().toStdWString(), a.arguments(), directory.toStdWString());
@@ -192,6 +196,7 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
         return QJsonObject{{"schema", "termforge-qt-ime-native-observer-v1"},
                            {"qt_platform", QGuiApplication::platformName()},
                            {"purpose", native ? "native-os-ime" : "offscreen-lifecycle-only"},
+                           {"gui_thread_profile", gui_profile.snapshot()},
                            {"input_method_locale", QGuiApplication::inputMethod()->locale().name()},
                            {"window_device_pixel_ratio", window.devicePixelRatioF()},
                            {"window_client_rectangle_logical", rect(window.rect())},
@@ -237,6 +242,7 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
                 ready_written = true;
                 save_json(directory + QStringLiteral("/ready.json"), state());
             }
+            if (native) save_json(directory + QStringLiteral("/native-state.json"), state());
             if (!finish_requested && !output_requested && QFileInfo::exists(directory + QStringLiteral("/output.request"))) {
                 output_requested = true; a.output();
             }

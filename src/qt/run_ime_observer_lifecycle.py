@@ -76,6 +76,8 @@ def main():
             if process.returncode != 0 or not complete["observer_complete"] or complete["failed"]:
                 raise RuntimeError("Normal observer completion did not report a successful application exit")
             if not all(complete[label]["natural_exit"] and complete[label]["cleanup_verified"]
+                       and complete[label]["exit_code"] == 0 and complete[label]["output_eof"]
+                       and complete[label]["active_processes_after"] == 0
                        for label in ("a", "b")):
                 raise RuntimeError("Normal completion lacks both actual receiver exits")
         else:

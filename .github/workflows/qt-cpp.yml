@@ -69,7 +69,7 @@ jobs:
             build/qt-cpp/qt-unicode-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-ime-bin/Release/runtime-manifest.json
       - name: Run Qt offscreen smoke in its owned Job
-        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_(unicode|ime)_input)$' --no-tests=error --verbose
+        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_(unicode|ime)_input|qt_ime_observer_lifecycle_(normal|cancel))$' --no-tests=error --verbose
       # Keep this configuration independent from the default/system-backend and
       # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
       # publication artifacts; this job does not produce a release package.

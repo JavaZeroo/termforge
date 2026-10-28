@@ -444,7 +444,9 @@ if(TERMFORGE_BUILD_QT_SHELL)
     set_target_properties(qt_ime_input_test PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-ime-bin/$<CONFIG>")
     termforge_qt_entry(qt_ime_input_test)
-    target_link_libraries(qt_ime_input_test PRIVATE Qt6::Test)
+    # Read-only native diagnostics use Windows SDK COM/TSF/IMM APIs only in
+    # this test executable; the product entry keeps its existing dependencies.
+    target_link_libraries(qt_ime_input_test PRIVATE Qt6::Test imm32 ole32 uuid)
     add_dependencies(qt_ime_input_test shell_input_client)
     add_custom_command(TARGET qt_ime_input_test POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E copy_if_different
