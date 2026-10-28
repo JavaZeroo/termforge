@@ -12,6 +12,8 @@
 
 官方 `2.7.0` tag 指向提交 `a8336c1d1e3dd1a981500dae8ef9eb42066de95f`。目标清单的公开来源是[固定提交 README](https://github.com/kingToolbox/WindTerm/blob/a8336c1d1e3dd1a981500dae8ef9eb42066de95f/README.md)与[2.7.0 发布说明](https://github.com/kingToolbox/WindTerm/releases/tag/2.7.0)。官方声明、发行物静态事实、实际运行观察和本项目实现结果分别记录，前一类不能替代后一类。
 
+Windows 本地 Shell 的正式 PTY 路线已确认采用[随包固定微软 ConPTY](adr/0007-bundled-microsoft-conpty.md)，集中整合已有成果；核心与 GUI/呈现仍待用户确认，后端选型不代表实现或性能已验收。
+
 当前实现与证据以[功能矩阵](FEATURES.md)为准，执行任务以[任务跟踪](TRACKING.md)为准。本文件只维护路标、工作包、依赖和出口条件，不累计每批开发过程。
 
 ## 当前站位与下一次交付

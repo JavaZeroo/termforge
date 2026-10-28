@@ -4,7 +4,7 @@
 
 比较目标固定为 **WindTerm 2.7.0**。功能范围依据[固定提交的官方 README](https://github.com/kingToolbox/WindTerm/blob/a8336c1d1e3dd1a981500dae8ef9eb42066de95f/README.md)、[2.7.0 release](https://github.com/kingToolbox/WindTerm/releases/tag/2.7.0)及仓库内的发行物/运行时研究。官方声明说明目标包含什么，不证明已经在本机验证了其行为，更不证明 TermForge 已实现。各平台、版本限制和具体交互仍需逐项形成可重复场景。
 
-用户确认的目标和权限见 [ADR-0006](adr/0006-confirmed-project-direction.md)：首个完整版本验收 Windows 11 x64，最终覆盖 Windows/Linux/macOS；原版实际行为优先。Alacritty 保留为候选，正式核心和 GUI/后端选型待确认；关键性能指标逐项达标，具体波动范围后续与用户明确。以下历史限定验收描述实现证据，不自动表示用户批准了最终策略或已达到原版一致性。
+用户确认的目标和权限见 [ADR-0006](adr/0006-confirmed-project-direction.md)：首个完整版本验收 Windows 11 x64，最终覆盖 Windows/Linux/macOS；原版实际行为优先。Alacritty 保留为候选，正式核心和 GUI/呈现选型待确认；Windows PTY 已确认采用[随包固定微软 ConPTY](adr/0007-bundled-microsoft-conpty.md)，实现尚待整合验收；关键性能指标逐项达标，具体波动范围后续与用户明确。以下历史限定验收描述实现证据，不自动表示用户批准了最终策略或已达到原版一致性。
 
 状态定义：**限定验收**指表中明确范围已有实现与独立回归；**实现中，未验收**指已有实现，但整项目标场景或整合验收未完成；**未实现**指尚无相应产品能力；**待取证**指目标行为或比较结论未知；**限定测量**仅说明已有指定范围的观测，不代表性能预算通过。每行的“路标”表示主要交付位置，不表示之前的路标已完成。
 
@@ -14,7 +14,7 @@
 |---|---|---|
 | 默认 main：自研核心 + 系统 ConPTY | 默认构建与已发布 Alpha 的基础路线，不需要 Rust | 已有 R1 限定验收；VT/Unicode 能力仍为有限子集，不能引用候选核心的字素或 TUI 结果 |
 | 显式候选 main：`termforge.4` + 系统 ConPTY | `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON`；按 [ADR-0003](adr/0003-core-reference-and-reuse.md)保留为可评估实验，正式核心选型待用户确认 | [固定来源](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)与 [#39 字素合同](research/streaming-graphemes.md)；候选正确性通过不关闭系统 ConPTY 或 R2 父项 |
-| 实验分支：`termforge.5` + 固定官方 ConPTY | [PR #50（Draft）](https://github.com/JavaZeroo/termforge/pull/50)，早期 `termforge.4` 联合源码 `3e5b96d` 的[原基线](research/joint-conpty-baseline.md)保留；后续限定修复已整合，尚未合入 main 或通过产品整体验收 | [#47](https://github.com/JavaZeroo/termforge/issues/47) 跟踪后端整合；终端 margin 与原生状态分列。[resize #51](https://github.com/JavaZeroo/termforge/issues/51) 与[工作区 #63](https://github.com/JavaZeroo/termforge/issues/63) 已在实验父分支限定闭合，完整 resize/历史由 [#29](https://github.com/JavaZeroo/termforge/issues/29) 接续；[GUI Vim #52](https://github.com/JavaZeroo/termforge/issues/52) 仍开放。[#53](https://github.com/JavaZeroo/termforge/issues/53) 的原 3MB/768B/16KiB 未完成粘贴取消/关闭、负例及八会话 data-only 两轮已限定验证并整合到实验父分支；同次真实 CF/IME 与完整官方矩阵未通过。fence 默认关闭，不由实验结果选择产品后端 |
+| 已确认后端路线的整合分支：`termforge.5` + 固定官方 ConPTY | [PR #50（Draft）](https://github.com/JavaZeroo/termforge/pull/50)，早期 `termforge.4` 联合源码 `3e5b96d` 的[原基线](research/joint-conpty-baseline.md)保留；后续限定修复已整合，尚未合入 main 或通过产品整体验收 | [#47](https://github.com/JavaZeroo/termforge/issues/47) 跟踪后端整合；终端 margin 与原生状态分列。[resize #51](https://github.com/JavaZeroo/termforge/issues/51) 与[工作区 #63](https://github.com/JavaZeroo/termforge/issues/63) 已在实验父分支限定闭合，完整 resize/历史由 [#29](https://github.com/JavaZeroo/termforge/issues/29) 接续；[GUI Vim #52](https://github.com/JavaZeroo/termforge/issues/52) 仍开放。[#53](https://github.com/JavaZeroo/termforge/issues/53) 的原 3MB/768B/16KiB 未完成粘贴取消/关闭、负例及八会话 data-only 两轮已限定验证并整合到实验父分支；同次真实 CF/IME 与完整官方矩阵未通过。fence 默认关闭；[ADR-0007](adr/0007-bundled-microsoft-conpty.md)已记录用户正式后端选择，代码合入与完整验收仍未完成 |
 
 以下能力默认指已合并实现；某个配置的通过结果不能转用于另一个配置。R1 的真实系统 CF/拼音验收属于固定自研核心配置，不外推到候选 `.4` 或实验后端联合配置。
 

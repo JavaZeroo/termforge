@@ -6,7 +6,7 @@ An independent, fully open-source terminal project targeting WindTerm 2.7.0 feat
 
 当前是有限 Windows 本地终端原型，**R1 基础文字交互已按限定合同验收，正在推进 R2 可靠本地终端与开发版**。主线已有 Alacritty 候选实验、首批流式字素、有限多会话和配置恢复；候选核心与实验 ConPTY 后端的联合配置、完整 TUI/输入、真实不同 DPI、性能预算和开发包仍需闭合。现状见[能力矩阵](docs/FEATURES.md)，接续顺序见 [R2 交付路线与验收](docs/milestones/R2-local-terminal.md)。SSH/SFTP 属于 R3，完整 UI 与 WindTerm 性能等价均未验收。`TermForge` 是暂名。
 
-方向已经用户确认，依据见 [ADR-0006](docs/adr/0006-confirmed-project-direction.md)：原版行为优先，内部结构不强求一致，但认真研究、借鉴原版；Alacritty 保留为候选，正式选型待证据和用户确认。关键性能指标分别验收，具体允许波动范围后续与用户明确。
+方向已经用户确认，依据见 [ADR-0006](docs/adr/0006-confirmed-project-direction.md)：原版行为优先，内部结构不强求一致，但认真研究、借鉴原版；Alacritty 保留为候选，正式核心与 GUI/呈现选型待用户确认；Windows 本地 Shell 后端已确认采用[随包固定微软 ConPTY](docs/adr/0007-bundled-microsoft-conpty.md)，整合与验收尚未完成。关键性能指标分别验收，具体允许波动范围后续与用户明确。
 
 ## 开始使用
 
