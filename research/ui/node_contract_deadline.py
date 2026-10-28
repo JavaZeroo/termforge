@@ -105,6 +105,7 @@ def diagnose_node(node, case):
               "primary_exception": None, "stdout": "", "stderr": ""}
     job, process, assigned = None, None, False
     stdout, stderr = b"", b""
+    drained = False
     cleanup_errors = []
     cleanup_deadline = None
 
@@ -137,6 +138,7 @@ def diagnose_node(node, case):
         communicate_begin = time.monotonic()
         try:
             stdout, stderr = process.communicate(b"GO\n", timeout=max(0, execution_deadline - time.monotonic()))
+            drained = True
         except subprocess.TimeoutExpired as error:
             stdout, stderr = error.output or b"", error.stderr or b""
             record["status"] = "timed_out"
@@ -156,14 +158,15 @@ def diagnose_node(node, case):
     finally:
         if process is not None:
             try:
-                if process.poll() is None:
+                if not drained:
                     remaining_cleanup()
-                    if assigned:
+                    if assigned and job.accounting()["active"]:
                         job.terminate()
                         record["forced_job_termination"] = True
-                    else:
+                    elif not assigned and process.poll() is None:
                         process.kill()
                     stdout, stderr = process.communicate(timeout=remaining_cleanup())
+                    drained = True
                 record["root_reaped"] = process.poll() is not None
                 record["exit_code"] = process.returncode
             except Exception as error:
@@ -180,7 +183,7 @@ def diagnose_node(node, case):
                     job.close()
                 except Exception as error:
                     cleanup_errors.append("close owned Job: " + str(error))
-        if process is not None:
+        if process is not None and drained:
             for stream in (process.stdin, process.stdout, process.stderr):
                 try:
                     if stream is not None:
@@ -218,14 +221,14 @@ def expected_observation(row):
             "TF_NODE_CONTROLLED_EXCEPTION" in row["stderr"])
 
 
-def prepare_plan(destination, output):
+def prepare_plan(destination, output, execution_authorized=False):
     destination, output = destination.resolve(), output.resolve()
     require(destination.is_relative_to(ROOT / "local") and output.is_relative_to(ROOT / "local"),
             "Plan and output must be owned local paths")
     require(not destination.exists() and not output.exists(), "Plan/output already exists")
     node = Path(shutil.which("node") or "").resolve(strict=True)
     require(node.is_file(), "Node executable is missing")
-    data = {"schema": "termforge-node-contract-plan-v1", "issue": 144, "execution_authorized": False,
+    data = {"schema": "termforge-node-contract-plan-v1", "issue": 144, "execution_authorized": execution_authorized,
             "maximum_attempts": 1, "execution_budget_seconds": EXECUTION_SECONDS,
             "cleanup_budget_seconds": CLEANUP_SECONDS, "cases": list(CASES),
             "source_base_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
@@ -278,12 +281,13 @@ def main():
     prepare = commands.add_parser("prepare-plan")
     prepare.add_argument("--plan", type=Path, required=True)
     prepare.add_argument("--out", type=Path, required=True)
+    prepare.add_argument("--execution-authorized", action="store_true")
     run = commands.add_parser("run-plan")
     run.add_argument("--plan", type=Path, required=True)
     args = parser.parse_args()
     if args.command == "prepare-plan":
-        prepare_plan(args.plan, args.out)
-        print(json.dumps({"prepared": True, "execution_authorized": False}))
+        prepare_plan(args.plan, args.out, args.execution_authorized)
+        print(json.dumps({"prepared": True, "execution_authorized": args.execution_authorized}))
         return 0
     result = run_plan(args.plan)
     print(json.dumps(result))

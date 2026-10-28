@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from research.ui.node_contract_deadline import (
     ROOT, diagnose_node, prepare_plan, read_checkpoints, run_plan,
@@ -45,6 +46,13 @@ class CheckpointTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             read_checkpoints(trace([{"sequence": 0, "stage": "final", "pid": 123,
                                      "monotonic_ns": "1"}]), 123)
+
+    def test_truncated_tail_retains_verified_prefix(self):
+        first = {"sequence": 0, "stage": "node-first-checkpoint", "pid": 123,
+                 "monotonic_ns": "100", "node_version": "v0.synthetic", "arch": "x64", "platform": "win32"}
+        with self.assertRaises(ValueError) as caught:
+            read_checkpoints(trace([first]) + b'TF_NODE_CONTRACT_V1:{"sequence":', 123)
+        self.assertEqual(caught.exception.observations, [first])
 
 
 class PlanTests(unittest.TestCase):
@@ -114,6 +122,15 @@ class OwnedNodeTests(unittest.TestCase):
         self.assertEqual(result["trace"]["last_observed_stage"], "case-start:grab")
         self.assertIn("TF_NODE_CONTROLLED_EXCEPTION", result["stderr"])
         self.assertFalse(result["trace"]["complete"])
+
+    def test_node_startup_error_retains_stderr_without_checkpoint(self):
+        with patch.dict(os.environ, {"NODE_OPTIONS": "--termforge-invalid-preflight-option"}):
+            result = diagnose_node(Path(shutil.which("node")), "normal")
+        print("TF_NODE_PREFLIGHT_STARTUP_ERROR_RESULT:" + json.dumps(result, sort_keys=True))
+        self.assertEqual(result["status"], "failed", result)
+        self.assertTrue(result["root_reaped"], result)
+        self.assertIn("termforge-invalid-preflight-option", result["stderr"])
+        self.assertEqual(result["trace"]["observations"], [])
 
 
 if __name__ == "__main__":
