@@ -287,8 +287,8 @@ public:
             base.text += utf8; ++base.marks; changed(lines[last_row]); return;
         }
         if (cells > width()) throw InputError("wide scalar cannot fit screen");
-        if (!autowrap_enabled_ && column + cells > width())
-            throw InputError("wide scalar cannot fit with autowrap disabled");
+        // Insufficient room for a wide scalar keeps the existing pre-wrap
+        // policy. The permission bit only gates consuming the delayed edge.
         if ((autowrap_enabled_ && wrap_pending) || column + cells > width()) {
             const auto used = static_cast<size_t>(wrap_pending ? width() : column);
             column = 0; newline(true, used);
