@@ -316,5 +316,204 @@ class CommandBoundaryTests(unittest.TestCase):
                 self.assertNotIn("private-worker-error", json.dumps(result))
 
 
+class CommandOutputBoundaryTests(unittest.TestCase):
+    MARKER = b"TERMFORGE_HOSTED_PS51_READY\r\n"
+
+    def parent_result(self, stdout=MARKER, stderr=b"private-error-never-publish", *,
+                      timeout=True, code=0, worker_timeout=False, active=0, reaped=True, mutate=None):
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary)
+            process = mock.Mock(pid=123, returncode=None)
+            process.poll.side_effect = lambda: process.returncode if reaped else None
+            captured, first_call = [], True
+
+            def command_run(command, **kwargs):
+                if command == ["synthetic-cmd"]:
+                    kwargs["stdout"].write(b"TERMFORGE_HOSTED_CMD_READY\r\n")
+                    return prep.subprocess.CompletedProcess(command, 0)
+                kwargs["stdout"].write(stdout)
+                kwargs["stderr"].write(stderr)
+                if timeout:
+                    raise prep.subprocess.TimeoutExpired(command, 10)
+                return prep.subprocess.CompletedProcess(command, code)
+
+            def communicate(*args, **kwargs):
+                nonlocal first_call
+                if not first_call:
+                    process.returncode = 99
+                    return b"", b""
+                first_call = False
+                private = out / "_private/preflight"
+                verdict = {"result": "ubuntu-absent"}
+                try:
+                    prep.run_command(["synthetic-cmd"], private, "cmd", cwd=private)
+                    result_code, result_output = prep.run_command(["synthetic-ps51"], private, "ps51", cwd=private)
+                    prep.validate_marker(result_output, result_code, "TERMFORGE_HOSTED_PS51_READY")
+                except prep.PreparationError as error:
+                    verdict = {"failure_code": str(error)}
+                captured.append((private / "ps51.stdout").read_bytes())
+                if mutate:
+                    mutate(private)
+                if worker_timeout:
+                    raise prep.subprocess.TimeoutExpired(["synthetic-worker"], 45)
+                process.returncode = 1 if "failure_code" in verdict else 0
+                return json.dumps(verdict).encode(), b"private-worker-error"
+
+            process.communicate.side_effect = communicate
+            job = mock.Mock()
+            job.drain.return_value = {"active": active, "total": 6, "terminated": 0}
+            audit = mock.Mock(stable=True, members=[], private=[])
+            audit.process_ids.return_value = []
+            with mock.patch.object(prep, "OwnedJob", return_value=job), \
+                 mock.patch.object(prep, "JobMembers", return_value=audit), \
+                 mock.patch.object(prep.subprocess, "Popen", return_value=process), \
+                 mock.patch.object(prep.subprocess, "run", side_effect=command_run), \
+                 mock.patch.object(prep.subprocess, "CREATE_NO_WINDOW", 0, create=True):
+                result = prep.run_step("preflight", out)
+            return result, captured[0]
+
+    def test_parent_reads_written_marker_after_command_timeout_and_verified_cleanup(self):
+        result, raw = self.parent_result()
+        self.assertEqual(raw, self.MARKER)
+        self.assertEqual((result["status"], result["failure_code"]), ("failed", "command_deadline"))
+        self.assertTrue(result["cleanup"]["root_reaped"])
+        output = result["command_output_observation"]["commands"][1]
+        self.assertEqual(output["command"], "ps51")
+        self.assertEqual(output["stdout"], {"status": "observed", "bytes": 29,
+                                         "marker_status": "observed", "marker_complete_line_seen": True})
+        self.assertEqual(output["stderr"], {"status": "observed", "bytes": 27})
+        self.assertNotIn("private-error", json.dumps(result))
+
+    def test_marker_requires_a_complete_line_but_never_publishes_other_output(self):
+        cases = ((b"", False), (self.MARKER[:-1], False), (b"prefix" + self.MARKER, False),
+                 (b"\xef\xbb\xbf" + self.MARKER, True),
+                 (b"synthetic-private-\xff\n" + self.MARKER + b"other-private-line\n", True))
+        for raw, seen in cases:
+            with self.subTest(raw=raw):
+                result, _ = self.parent_result(stdout=raw)
+                stream = result["command_output_observation"]["commands"][1]["stdout"]
+                self.assertEqual((stream["status"], stream["bytes"], stream["marker_complete_line_seen"]),
+                                 ("observed", len(raw), seen))
+                self.assertEqual(result["failure_code"], "command_deadline")
+                self.assertNotIn("private-line", json.dumps(result))
+
+    def test_missing_and_oversized_files_stay_unknown(self):
+        def missing(directory):
+            (directory / "ps51.stdout").unlink()
+        def oversized(directory):
+            (directory / "ps51.stdout").write_bytes(b"x" * 65537)
+        for change, status in ((missing, "not_observed"), (oversized, "oversize")):
+            with self.subTest(status=status):
+                result, _ = self.parent_result(mutate=change)
+                self.assertEqual(result["command_output_observation"]["commands"][1]["stdout"],
+                                 {"status": status, "bytes": None, "marker_status": "unknown",
+                                  "marker_complete_line_seen": None})
+                self.assertEqual(result["failure_code"], "command_deadline")
+        result, _ = self.parent_result(stdout=b"x" * 65537, timeout=False)
+        self.assertEqual((result["status"], result["failure_code"]), ("failed", "command_report_size"))
+        self.assertEqual(result["command_output_observation"]["commands"][1]["stdout"]["status"], "oversize")
+
+    def test_read_errors_and_changed_file_during_read_stay_unknown(self):
+        original_open = Path.open
+        for fault, status in (("unreadable", "unreadable"), ("changed", "unstable")):
+            with self.subTest(fault=fault):
+                ready = [False]
+                def guarded_open(path, mode="r", *args, **kwargs):
+                    if ready[0] and path.name == "ps51.stdout" and mode == "rb":
+                        if fault == "unreadable":
+                            raise OSError("synthetic-private-read-error")
+                        stream = original_open(path, mode, *args, **kwargs)
+                        class ChangingRead:
+                            def __enter__(self):
+                                return self
+                            def __exit__(self, *arguments):
+                                stream.close()
+                            def fileno(self):
+                                return stream.fileno()
+                            def read(self, size=-1):
+                                raw = stream.read(size)
+                                with original_open(path, "ab") as writer:
+                                    writer.write(b"x")
+                                return raw
+                        return ChangingRead()
+                    return original_open(path, mode, *args, **kwargs)
+                def worker_finished(_):
+                    ready[0] = True
+                with mock.patch.object(Path, "open", new=guarded_open):
+                    result, _ = self.parent_result(mutate=worker_finished)
+                self.assertEqual(result["command_output_observation"]["commands"][1]["stdout"],
+                                 {"status": status, "bytes": None, "marker_status": "unknown",
+                                  "marker_complete_line_seen": None})
+                self.assertEqual(result["failure_code"], "command_deadline")
+                self.assertNotIn("synthetic-private", json.dumps(result))
+
+    def test_exact_limit_is_observed_and_stderr_oversize_is_not_zero(self):
+        raw = b"x" * (65536 - len(self.MARKER) - 1) + b"\n" + self.MARKER
+        result, _ = self.parent_result(stdout=raw, stderr=b"x" * 65537)
+        output = result["command_output_observation"]["commands"][1]
+        self.assertEqual(output["stdout"]["bytes"], 65536)
+        self.assertTrue(output["stdout"]["marker_complete_line_seen"])
+        self.assertEqual(output["stderr"], {"status": "oversize", "bytes": None})
+
+    def test_invalid_command_trace_cannot_select_private_files(self):
+        def invalid(directory):
+            prep.write_json(directory / "command-events.json", {"events": [
+                {"command": "../../synthetic-private-file", "phase": "invoking",
+                 "deadline_ms": 10000, "elapsed_ms": 0, "returncode": None}]})
+        result, _ = self.parent_result(mutate=invalid)
+        self.assertEqual(result["command_observation"], {"status": "invalid", "events": []})
+        self.assertEqual(result["command_output_observation"], {"status": "not_observed", "commands": []})
+        self.assertEqual(result["failure_code"], "command_deadline")
+        self.assertNotIn("synthetic-private", json.dumps(result))
+
+    def test_commands_without_marker_are_explicitly_not_applicable(self):
+        cleanup = {"root_reaped": True, "audit_status": "observed", "membership_stable": True,
+                   "job_after": {"active": 0}, "job_after_pid_count": 0}
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            (directory / "list.stdout").write_bytes(b"synthetic-private-distro\n")
+            events = []
+            for name in ("cmd", "ps51", "ps7", "list"):
+                events.extend([CommandBoundaryTests.event(command=name),
+                               CommandBoundaryTests.event(command=name, phase="returned", elapsed=1, code=0)])
+            value = prep.public_command_output(directory, "preflight", cleanup, {"status": "observed", "events": events})
+            stream = value["commands"][-1]["stdout"]
+            self.assertEqual(stream, {"status": "observed", "bytes": 25, "marker_status": "not_applicable",
+                                      "marker_complete_line_seen": None})
+            self.assertNotIn("synthetic-private", json.dumps(value))
+            self.assertEqual(prep.public_command_output(directory, "download", {}, {}),
+                             {"status": "not_applicable", "commands": []})
+            self.assertEqual(prep.public_command_output(directory, "../../synthetic-private-step", {}, {}),
+                             {"status": "invalid", "commands": []})
+
+    def test_success_nonzero_and_worker_deadline_keep_their_original_verdict(self):
+        for options, status, failure in (({"timeout": False}, "passed", "none"),
+                                        ({"timeout": False, "code": 7}, "failed", "shell_startup"),
+                                        ({"timeout": False, "stdout": b"private-extra\n" + self.MARKER}, "failed", "shell_startup"),
+                                        ({"worker_timeout": True}, "failed", "worker_deadline")):
+            with self.subTest(options=options):
+                result, _ = self.parent_result(**options)
+                self.assertEqual((result["status"], result["failure_code"]), (status, failure))
+                self.assertTrue(result["command_output_observation"]["commands"][1]["stdout"]["marker_complete_line_seen"])
+                self.assertNotIn("private-extra", json.dumps(result))
+
+    def test_unreaped_or_nonempty_job_cannot_claim_stable_output(self):
+        for options in ({"reaped": False}, {"active": 1}):
+            with self.subTest(options=options):
+                result, _ = self.parent_result(**options)
+                self.assertEqual(result["command_output_observation"], {"status": "writers_unverified", "commands": []})
+                self.assertEqual(result["status"], "failed")
+
+    def test_reporter_failure_cannot_replace_success_or_timeout(self):
+        with mock.patch.object(prep, "public_command_output", side_effect=RuntimeError("synthetic-private-diagnostic-error")):
+            for timeout in (False, True):
+                with self.subTest(timeout=timeout):
+                    result, _ = self.parent_result(timeout=timeout)
+                    self.assertEqual((result["status"], result["failure_code"]),
+                                     ("failed", "command_deadline") if timeout else ("passed", "none"))
+                    self.assertEqual(result["command_output_observation"], {"status": "unavailable", "commands": []})
+                    self.assertNotIn("synthetic-private", json.dumps(result))
+
+
 if __name__ == "__main__":
     unittest.main()

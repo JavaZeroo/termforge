@@ -1,0 +1,67 @@
+{
+  "schema": "termforge-origin-wrap-ci-path-fixture-validation-v1",
+  "issue": 151,
+  "previous_publication_head": "01a979da926c05c8e6c34e3f5e5ed7b8d6916de1",
+  "red_committed_reproducer": "9d36d4efa02a70ab6d7585d50f1e42df32ebedc6",
+  "green_committed_fixture_fix": "74d4cadd9fa90fd6b6a1de6c61e96f8369e67951",
+  "red_runtime_base_commit": "01a979da926c05c8e6c34e3f5e5ed7b8d6916de1",
+  "red_runtime_worktree_test_bytes_match_committed_reproducer": true,
+  "green_runtime_base_commit": "9d36d4efa02a70ab6d7585d50f1e42df32ebedc6",
+  "green_runtime_worktree_test_bytes_match_committed_fix": true,
+  "reproducer": "Existing real directory followed by parent component; no assumed 8.3 spelling",
+  "original_ci_actual_temporary_path_spelling": null,
+  "red_tests": 2,
+  "red_errors": 1,
+  "red_failing_subcases": 2,
+  "ordinary_pure_tests_passed": 23,
+  "optimized_pure_tests_passed": 23,
+  "production_exporter_sha256": "0fa64c1115cbf3e9b6d0437ce790578bc1a79473c0f722a7b70cf164dd7008e2",
+  "production_exporter_unchanged": true,
+  "old_publication_sha256": "9774e25bab9f5f751368e19f915e5d1ec8f4332be606070f15b5ffb33ce5b675",
+  "derived_normal_and_optimized_sha256": "6ad6820884d4f94b9a42fd1a669253c72df38512b9f8dadb461250e3425e4557",
+  "normal_and_optimized_byte_equal": true,
+  "changed_public_fields": [
+    "offline_export_source_commit"
+  ],
+  "original_projection_and_other_bytes_unchanged": true,
+  "preserved_original_files": 43,
+  "preserved_original_inventory_sha256": "e5cb4a124a18774faad93bd02238a4bef7c2e031b0f9ab1add9395ac8244d437",
+  "new_original_runs": 0,
+  "new_node_runs": 0,
+  "old_ci_retries": 0,
+  "full_matrix_executed": false,
+  "ci_failures": [
+    {
+      "event": "push",
+      "run": 40774903422,
+      "job": 123121533676,
+      "windows_passed": 59,
+      "windows_total": 60,
+      "artifact": 12853994007,
+      "artifact_sha256": "1861c7fee6a58c9eb96898ec52eac77e4f2becc7073c005788e6f0a8c9ad2960"
+    },
+    {
+      "event": "pull_request",
+      "run": 40774909044,
+      "job": 123121553707,
+      "windows_passed": 58,
+      "windows_total": 60,
+      "artifact": 12854726855,
+      "artifact_sha256": "05392812a79a0b38d48384b47905c85c9f46285cbedcf0b4afa2275550c9efbb"
+    }
+  ],
+  "private_logs": {
+    "ci-path-alias-red.log": {
+      "bytes": 5395,
+      "sha256": "464d3c84c807150169b20cedb02c87cf6d605410ffdab4e60ee3871490c3e4df"
+    },
+    "ci-path-alias-green.log": {
+      "bytes": 4438,
+      "sha256": "2323a92b192acc50169f590165b1e31157572a4a963cf13ea7758a97e3fd8425"
+    },
+    "ci-path-alias-green-O.log": {
+      "bytes": 4438,
+      "sha256": "cf9198c5b1c6a061642ad05904c8421fd36eeac166c2c86cb0db1e37d2897dea"
+    }
+  }
+}

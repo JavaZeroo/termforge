@@ -8,6 +8,7 @@
 
 | 配置 | 证据定位 |
 |---|---|
+| 自主 C++ 主屏 ASCII DECAWM | [有限合同与红绿](../experiments/core/results/2026-10-29-cpp-decawm/README.md)、[固定验证身份](../experiments/core/results/2026-10-29-cpp-decawm/validation.json)：抽取原版14–18阶段79B，strict/recovery各235个字面前缀分块用例；初次定向8/9的缺构建依赖失败、补建后的core单项31测试通过分列。跨1049/宽字/resize、origin/margin、GUI/固定ConPTY运输和完整TUI均不由本项验收 |
 | 自主 C++ 限定 1049 协议 | [固定结果](../experiments/core/results/2026-10-29-cpp-1049/README.md)、[验证身份](../experiments/core/results/2026-10-29-cpp-1049/validation.json)：文字/光标/颜色及 pending-wrap、重复进入与读者失效；55项中Qt1项分列，13条内部skip及旧负例判据失败保留。未验收非颜色属性/全网格背景、其他模式、真实TUI/IME/DPI、呈现或性能 |
 | 自主 C++ 双缓冲存储与文档 epoch 基础 | [固定结果](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)、[验证身份](../experiments/core/results/2026-10-29-buffer-state-r2/validation.json)：拥有状态、共享 ID、隐藏帧 resize 回滚与跨缓冲句柄失效；Qt/candidate 关闭配置的完整 50 项及 12 条内部 skip 分列。未接 private CSI，不是原版模式、Qt 产品路线或完整 #27 验收 |
 | Qt 基础 Unicode 文本字节 | [红绿与联合验证](../experiments/shell/results/2026-10-29-qt-unicode-input/README.md)、[固定联合身份](../experiments/shell/results/2026-10-29-qt-unicode-input/validation.json)：公开Qt事件到独立ReadConsoleW接收端，整/分事件代理项、焦点/隐藏/关闭、1024B整包与NUL、两目标隔离。2b6d源码一次61项分列Qt3/其余58，13内部skip、旧红例与27原件保留；不是实际IME、字素/字形、原生Unicode窗口、DPI或性能验收 |
@@ -23,6 +24,8 @@
 R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分别只代表原记录。源 VT、原生控制台 CHAR_INFO、transport、末端状态、自有 DIB、绘制提交和真实呈现是不同检查点；未知端点保持未知。
 
 原版模式依据见 [1049 直达终端观察](research/windterm-alternate-reference-2026-10-28.md)与[验证身份](../research/ui/results/2026-10-28-alternate-reference/validation.json)：26 阶段精确输入、DSR 和文档投影相互绑定，原版重复进入的光标行为与通用幂等假设不同；样式、完整 active grid 和本地 Shell 运输继续保留未知。
+
+[#151 origin/wrap/margin有限观察](research/windterm-origin-wrap-reference-2026-10-29.md)取得一次固定91×25直达终端的25阶段、25条bareDSR及25文档快照，[数据与发布审计](../research/ui/results/2026-10-29-origin-wrap-reference/README.md)保留完整NAWS、源/回复/文档分层、Node与源码身份、主动终止和旧false输出路径别名。严格出口普通/-O逐字节相同；初次Windows夹具CI红、真实路径别名反例及仅fixture规范化的修正另列，原公开字节保留，不推定CI使用8.3。它只为自主C++下一切片提供有限依据，不是完整active grid、产品模式、固定ConPTY或性能验收。
 
 [#146 SGR1 固定样本调查](../research/ui/results/2026-10-29-sgr1-reference/README.md)取得五阶段/五 grab、28 对 H/space 完整有序像素签名；SGR0/SGR1 控制在采样条件下均不可分，进入/重复进入/返回无唯一分类。内部字重、SGR1 是否受字体/profile 偏好影响及全部非颜色属性仍未知；没有据此更改 C++ 策略或验收 #123/#126/#27。
 
@@ -79,7 +82,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 | 工作区恢复的命令编辑前缀（#61） | [BS 因果反例及复验](../experiments/shell/results/2026-10-26-workspace-restore-bs/validation.json)、[运输完成合同](research/workspace-restore-transport-oracle.md) | 原失败中的 PowerShell 命令重绘 BS 污染当前记录；真实 LF 后仍须完整输出与新提示符，回显/拼接/非法封装拒绝保留。仅修完成 oracle，原 30/40 秒与产品断言不变。 |
 | 工作区保存的空记录重绘（#72） | [原 122 B 因果回归与三配置结果](../experiments/shell/results/2026-10-27-workspace-empty-cr/validation.json)、[运输完成合同](research/workspace-restore-transport-oracle.md) | 两次 CI 失败记录逐字节相同；空且未编辑的记录在输出前允许裸 CR，仍须完整独立标记与新提示符。默认/system、候选/system、候选/官方各两轮保存/恢复/钳制共 18 次通过；最终完整回归、跳过和未闭合项独立记录。 |
 | WSL 原生尺寸程序返回边界（#80） | [机制、反例与复验](research/wsl-size-return.md)、[各阶段固定记录](../experiments/shell/results/2026-10-27-wsl-size-return/validation.json) | 尺寸输出后提前发送 exit 的受控 stage6 红例；实际事件握手修前红、修后与原两轮通过。默认/system 完整 46/46，12 个内部跳过单列；全 shell 提示符方案的 cmd stage5 失败保留。原 hosted 样本同因未知，其他配置、实际呈现及 #81 准备超时未由此验收。 |
-| hosted 准备子命令边界（#81） | [白名单与观测合同](research/hosted-shell-command-boundaries.md)、[原失败及回归身份](../experiments/shell/results/2026-10-27-hosted-command-boundaries/validation.json) | 固定命令的调用/返回/超时和 worker 期限后的部分记录；写记录失败不替代实际命令结果。23 项准备/清理回归通过，主要过程使用模拟，真实 Job 用隔离 Python 子树；原 hosted 具体超时命令与根因仍未知。 |
+| hosted 准备子命令边界（#81） | [白名单与观测合同](research/hosted-shell-command-boundaries.md)、[原边界身份](../experiments/shell/results/2026-10-27-hosted-command-boundaries/validation.json)、[#158输出后验身份](../experiments/shell/results/2026-10-29-hosted-output-boundary/validation.json) | 调用/返回/超时与worker部分记录保留；新增worker/Job回收后有界输出计数和完整marker布尔，未知不当0，原命令/预算/oracle不变。历史23项含真实隔离Job，新切片普通/-O各32项仅纯/mock，身份分列；旧输出未留存及旧超时根因仍未知，不重跑取样。 |
 | 选择复制夹具错误边界（#85） | [观测、控制与保护合同](research/selection-clipboard-boundaries.md)、[原失败及固定回归](../experiments/shell/results/2026-10-27-selection-clipboard-boundaries/validation.json) | 失败后记录固定阶段、读写目的、原错误及打开窗口/数据所有者类别，明确非原子；清理异常不覆盖主错误。默认/system 本地 46/46，13 个内部跳过；真实 CF 控制需 hosted 验证，原 OpenClipboard 5 根因仍未知，不作修复宣称。 |
 | 候选文字观测与回显端点（#38 夹具修正） | [同源码前后对照及反事实](../experiments/shell/results/2026-10-26-native-observation/validation.json)、[标准文本投影](../experiments/core/text_projection.hpp) | 观测改用标准文本投影，回显完成后才全选；原断言和负例保留。修正夹具时序/投影，不宣称产品选择策略已变或 R2 全绿。 |
 | 拒绝负例的读取前停止（#46 夹具修正） | [原记录、反事实及 fresh 验证](../experiments/shell/results/2026-10-26-receiver-stop/validation.json)、[公开空数据夹具](../experiments/shell/fixtures/rejected-order-before-read.json) | 旧 oracle 错误拒绝“首读前已停止”；同一空数据/零读原件红→绿，正常读取约束保留。限定夹具修正，不解释 #44 的退出。 |

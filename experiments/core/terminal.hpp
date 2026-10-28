@@ -26,8 +26,12 @@ class Parser {
     std::string encoded;
     void dispatch(unsigned char final) {
         if (private_csi) {
-            if (params.size() != 1 || params[0] != 1049 || (final != 'h' && final != 'l'))
+            if (params.size() != 1 || (params[0] != 1049 && params[0] != 7) || (final != 'h' && final != 'l'))
                 throw InputError("unsupported private CSI command");
+            if (params[0] == 7) {
+                screen.set_autowrap(final == 'h');
+                return;
+            }
             if (final == 'h') {
                 // Re-entry clears only the active alternate frame; the saved
                 // primary writing state must survive until a real return.
