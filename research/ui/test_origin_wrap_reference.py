@@ -1,11 +1,13 @@
 """Pure protocol/plan counterexamples; never execute a target or native runtime."""
 from __future__ import annotations
 import copy
+from contextlib import contextmanager, ExitStack
 import hashlib
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch, Mock
 
 from research.ui import origin_wrap_reference as probe
 
@@ -68,6 +70,53 @@ def receive_fixture(mode):
         peer.listener = SyntheticListener(connection)
         peer._serve()
         return peer.state, connection.sent
+
+
+@contextmanager
+def synthetic_run_plan():
+    """Exercise the actual run_plan/compiled-launcher seam with inert fake files."""
+    with tempfile.TemporaryDirectory() as temporary, ExitStack() as patches:
+        directory = Path(temporary).resolve()
+        (directory / "local").mkdir()
+        (directory / "source").mkdir()
+        (directory / "source/WindTerm.exe").write_bytes(b"inert synthetic original")
+        (directory / "probe.py").write_bytes(b"fixed synthetic source")
+        nodes = [directory / f"node-{name}.exe" for name in ("a", "b")]
+        for index, node in enumerate(nodes):
+            node.write_bytes(f"inert synthetic Node {index}".encode())
+        rea = directory / "tools/node_modules/.bin/rea.cmd"
+        rea.parent.mkdir(parents=True)
+        rea.write_bytes(b"inert synthetic REA shim")
+        package = rea.parent.parent / "rea-agents"
+        (package / "scripts").mkdir(parents=True)
+        (package / "package.json").write_text(json.dumps({"name": "rea-agents", "version": "6.7.0", "bin": {"rea": "scripts/rea.mjs"}}))
+        (package / "scripts/rea.mjs").write_bytes(b"inert synthetic REA entry")
+        launcher = '''import shutil
+def cli_command(rea):
+    return [shutil.which("node"), str(rea.parent.parent / "rea-agents/scripts/rea.mjs")]
+def run(source, out, rea, seconds, hosted, scenario):
+    from research.ui import origin_wrap_reference as probe
+    probe.capture_test_cli_command(lambda: cli_command(rea), out, seconds, hosted, scenario)
+'''
+        patches.enter_context(patch.object(probe, "ROOT", directory))
+        patches.enter_context(patch.object(probe, "SOURCE_FILES", ("probe.py",)))
+        patches.enter_context(patch.object(probe, "EXE_SHA256", probe.sha(directory / "source/WindTerm.exe")))
+        patches.enter_context(patch.object(probe, "launcher_source", return_value=launcher))
+        patches.enter_context(patch.object(probe, "host_identity", return_value={"python_sha256": "a"*64,
+            "python_version": "synthetic", "windows_version": "synthetic"}))
+        patches.enter_context(patch.object(probe.subprocess, "check_output", return_value="b"*40))
+        # Patch the shared stdlib selection seam used by both the original and fixed launcher.
+        which = patches.enter_context(patch("shutil.which", return_value=str(nodes[0])))
+        observed = []
+        def record(command, out, *settings):
+            observed.append((command(), settings))
+            out.mkdir()
+        capture = patches.enter_context(patch.object(probe, "capture_test_cli_command", create=True,
+                                                    new=Mock(side_effect=record)))
+        patches.enter_context(patch.object(probe, "audit_mechanics", return_value={"synthetic_only": True}))
+        path, out = directory / "local/plan.json", directory / "local/out"
+        plan = probe.prepare_plan(directory / "source", out, rea, path, execution_authorized=True)
+        yield path, out, plan, nodes, which, capture, observed
 
 
 class ProtocolTests(unittest.TestCase):
@@ -161,6 +210,38 @@ class ProtocolTests(unittest.TestCase):
 
 
 class PlanTests(unittest.TestCase):
+    def test_node_selection_path_drift_is_rejected_before_attempt(self):
+        with synthetic_run_plan() as (path, out, _, nodes, which, capture, _):
+            which.return_value = str(nodes[1])
+            with self.assertRaisesRegex(ValueError, "REA entry changed"):
+                probe.run_plan(path)
+            self.assertFalse(path.with_suffix(".attempted").exists())
+            self.assertFalse(out.exists())
+            capture.assert_not_called()
+
+    def test_selected_node_file_drift_is_rejected_before_attempt(self):
+        with synthetic_run_plan() as (path, out, _, nodes, _, capture, _):
+            nodes[0].write_bytes(b"changed inert Node bytes")
+            with self.assertRaisesRegex(ValueError, "REA entry changed"):
+                probe.run_plan(path)
+            self.assertFalse(path.with_suffix(".attempted").exists())
+            self.assertFalse(out.exists())
+            capture.assert_not_called()
+
+    def test_actual_launcher_uses_recorded_executable_after_path_changes_late(self):
+        with synthetic_run_plan() as (path, out, plan, nodes, which, capture, observed):
+            def change_path_then_record(command, destination, *settings):
+                which.return_value = str(nodes[1])
+                observed.append((command(), settings))
+                destination.mkdir()
+            capture.side_effect = change_path_then_record
+            probe.run_plan(path)
+            self.assertEqual(observed, [([str(nodes[0]), str(Path(plan["rea"]).parent.parent / "rea-agents/scripts/rea.mjs")],
+                                         (45, False, "menu-wrap"))])
+            self.assertEqual(which.call_count, 2)  # preparation and pre-marker verification only
+            self.assertTrue(path.with_suffix(".attempted").is_file())
+            self.assertTrue((out / "mechanics-check.json").is_file())
+
     def test_mechanical_audit_refuses_partial_or_changed_observation_despite_cli_exit_zero(self):
         state, _ = receive_fixture("normal")
         observations = [{key: row[key] for key in ("phase", "label", "cursor_reply", "cursor_reply_private", "response_hex")}
