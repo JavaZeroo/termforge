@@ -142,6 +142,16 @@ def export(plan_path, log_path, exit_path, case_directory):
                 not Path(value["out"]).exists(), "False proposal execution state differs")
         false_plans.append({**file_identity(label, path), "source_base_commit": value["source_base_commit"],
                             "execution_authorized": False, "attempt_marker_present": False, "output_present": False})
+    reference_commit = "43883022883d382e3dd57bd627e9c735bafe58ca"
+    references = ("research/ui/raster_style_reference.js", "research/ui/test_raster_style_reference.py", "experiments/conpty/run.py")
+    archive = load(ROOT / "local/node-deadline-preflight/old-source-identity.json")
+    require(archive["original_head"] == reference_commit, "Reference source commit differs")
+    reference_hashes = {}
+    for name in references:
+        entry = next(row for row in archive["git_blob_archive"] if row["path"] == name)
+        require(digest((ROOT / name).read_bytes()) == entry["git_blob_sha256"] ==
+                digest((ROOT / "local/node-deadline-preflight/old-source" / name).read_bytes()), "Reference source changed")
+        reference_hashes[name] = entry["git_blob_sha256"]
     result = {"schema": "termforge-node-contract-public-v1", "issue": 144, "execution_source_commit": EXECUTED_SOURCE,
               "authorized_plan_sha256": PLAN_SHA256, "maximum_attempts": 1, "actual_case_count": 3,
               "cli_exit_code": 0, "batch_status": batch["status"], "original_timeout_root_cause": None,
@@ -149,6 +159,7 @@ def export(plan_path, log_path, exit_path, case_directory):
               "python_version_number": python_version[1], "python_version_text_sha256": digest(plan["python_version"].encode()),
               "python_exe_sha256": plan["python_sha256"], "node_exe_sha256": plan["node_sha256"],
               "source_files_sha256": plan["source_files_sha256"], "observations": public_cases,
+              "reference_sources_unchanged_from_commit": reference_commit, "reference_sources_sha256": reference_hashes,
               "raw_files": raw_files, "preserved_prior_artifacts": preserved, "unexecuted_false_plans": false_plans,
               "exporter_sha256": digest(Path(__file__).read_bytes())}
     text = json.dumps(result, indent=2) + "\n"
