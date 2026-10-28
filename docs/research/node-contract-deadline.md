@@ -49,3 +49,5 @@ python -B -X utf8 -m research.ui.node_contract_deadline prepare-plan --plan loca
 `0949ac6` 预审发现，计划虽记录 Windows/Python 版本字符串，执行前却只复验了 EXE 哈希，没有核对这两个已声明值。公开计划边界的受控反例在 `cebc530` 将 `platform.version()`、`sys.version` 分别替换为不同字符串，两案均实际到达 attempt gate；测试在该文件边界拦截，未创建 marker、输出或 Node 进程。这不是实际操作系统版本改变，也不能解释旧 CI 超时。
 
 修正将两个当前版本的严格比较放在 marker 前，并在新批次和新子观察中记录实际值。相关纯计划测试的源码身份和日志保留在新的 `local/node-deadline-p3/`；此前 false 提案、原始观察和首次 P2 的纯日志保持原字节，不重新运行 Node 或10秒受控场景。
+
+实际修正验证源为 `b8097064df229e5f6363be5c08a4acb31cd26554`：相关3项纯计划测试在普通与 `-O` 均通过、无跳过；两种漂移均在 marker 前拒绝。此次没有执行新的 Node 或正式诊断批次，也不把先前8/10项验证转记为这一源码的进程观察结果。
