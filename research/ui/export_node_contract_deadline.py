@@ -68,7 +68,7 @@ def export(plan_path, log_path, exit_path, case_directory):
     require(all(batch[name] == plan[name] for name in ("windows_version", "python_version")), "Batch host differs")
     require(len(batch["observations"]) == 3, "Observation count differs")
     marker = plan_path.with_suffix(".attempted")
-    require(marker.read_bytes() == b"One diagnostic attempt; retain after success or failure.\n", "Attempt marker differs")
+    require(marker.read_bytes() == b"One diagnostic attempt; retain after success or failure.\r\n", "Attempt marker differs")
     raw_files = [file_identity("authorized-plan", plan_path), file_identity("cli-log", log_path),
                  file_identity("cli-exit", exit_path), file_identity("attempt-marker", marker)]
     public_cases = []
