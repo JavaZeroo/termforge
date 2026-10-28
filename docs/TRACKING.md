@@ -21,7 +21,7 @@
 | 工作 | 责任任务 | 硬前置或联合条件 |
 |---|---|---|
 | 正式路线最小单会话与专用 CI | [单会话 #115](https://github.com/JavaZeroo/termforge/issues/115)、[Qt CI #117](https://github.com/JavaZeroo/termforge/issues/117) | 均已限定合入 main；固定依赖的 Windows Qt 构建与会话结果独立验证，不能由默认/参考 CI 代替 |
-| Qt 多 cmd 标签迁移 | [会话隔离 #124](https://github.com/JavaZeroo/termforge/issues/124) | #115 已解除前置；先验证输入/输出、关闭和错误隔离，完整工作区/恢复与复杂输入仍另验 |
+| Qt 多 cmd 标签迁移 | [会话隔离 #124](https://github.com/JavaZeroo/termforge/issues/124) | 固定 cmd 双会话的输入/输出、关闭和错误隔离及应用退出前回收已有[限定验证](../experiments/shell/results/2026-10-28-qt-tabs/README.md)；完整工作区/恢复、原版标签交互与复杂输入仍另验 |
 | 原版备用屏可观察合同 | [1049 取证 #118](https://github.com/JavaZeroo/termforge/issues/118)、[样式/活动缓冲区 #123](https://github.com/JavaZeroo/termforge/issues/123) | #118 已限定合入 main，提供原版光标/文字投影；#123 补剩余观察。末端、local-shell transport 和未知项分别记录 |
 | 原版本地输出正确性自动化 | [小负载完整文本 #119](https://github.com/JavaZeroo/termforge/issues/119) | 已作为 #3 的独立切片合入 main；生产事件、全文与回收绑定，尚不验收 C0、消费/呈现端点、扰动或正式 #4 基线 |
 | 历史候选/官方后端联合基线 | [联合配置基线 #55](https://github.com/JavaZeroo/termforge/issues/55) | 保留原固定源码与红/绿结果；可复用输入和接入经验，不替代自主 C++/Qt/固定 ConPTY 的新配置验收 |
