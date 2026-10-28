@@ -1,0 +1,364 @@
+{
+  "schema": "termforge-node-contract-public-v1",
+  "issue": 144,
+  "execution_source_commit": "02aac45ca6e8eaffcbca1d3ef1a80d243159ec46",
+  "authorized_plan_sha256": "87a0518c23b65f050d3991557b6b58aca334c8d80dc939fab601d3fae01f0fc8",
+  "maximum_attempts": 1,
+  "actual_case_count": 3,
+  "cli_exit_code": 0,
+  "batch_status": "expected_diagnostic_observations",
+  "original_timeout_root_cause": null,
+  "whole_lifecycle_bound_seconds": null,
+  "windows_version": "10.0.26200",
+  "python_version_number": "3.12.10",
+  "python_version_text_sha256": "f0823692b73f6cc9b2412e30deb4aecc1f01e6368a93b3ca3e19ea3b586b08df",
+  "python_exe_sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+  "node_exe_sha256": "471961cb355311c9a9dd8ba417eca8269ead32a2231653084112554cda52e8b3",
+  "source_files_sha256": {
+    "research/ui/node_contract_deadline.py": "358fc4b886b7954b1c3cba9bacf64130241681afe5860318fb895e0fbcd202e7",
+    "research/ui/node_contract_bootstrap.js": "f2bd0c7f7e574528bb10bf19f614cc6a77c217cfa3796258b6822429b117c8b4",
+    "research/ui/test_raster_native_contract.js": "b3f5e298b2611bee629c687d2c9f99210b2f14fc3386d876fbf232695df5fd63",
+    "research/ui/raster_style_reference.js": "499670efdb970984e8ac72d326033cca456720c83e9585152739ff6a82dd36db",
+    "experiments/conpty/run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329"
+  },
+  "observations": [
+    {
+      "case": "normal",
+      "status": "passed",
+      "exit_code": 0,
+      "execution_budget_seconds": 10,
+      "cleanup_budget_seconds": 5,
+      "process_creation_elapsed_seconds": 0.046000000002095476,
+      "communicate_elapsed_seconds": 0.11000000000058208,
+      "primary_host_exception": null,
+      "forced_job_termination": false,
+      "root_reaped": true,
+      "root_in_owned_job": true,
+      "cleanup_verified": true,
+      "job_before_go": {
+        "active": 1,
+        "total": 1,
+        "terminated": 0
+      },
+      "job_at_timeout": null,
+      "job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "checkpoint_count": 23,
+      "stages": [
+        "node-first-checkpoint",
+        "go-received",
+        "fixture-before-load",
+        "before-file-read",
+        "file-read",
+        "vm-helpers-start",
+        "vm-helpers-ready",
+        "pure-checks-done",
+        "case-start:normal",
+        "case-end:normal",
+        "case-start:grab",
+        "case-end:grab",
+        "case-start:toImage",
+        "case-end:toImage",
+        "case-start:empty",
+        "case-end:empty",
+        "case-start:dpr",
+        "case-end:dpr",
+        "case-start:pixel",
+        "case-end:pixel",
+        "case-start:destroy",
+        "case-end:destroy",
+        "final"
+      ],
+      "complete": true,
+      "node_version": "v22.21.1",
+      "node_arch": "x64",
+      "node_platform": "win32"
+    },
+    {
+      "case": "hang-vm-helpers",
+      "status": "timed_out",
+      "exit_code": 99,
+      "execution_budget_seconds": 10,
+      "cleanup_budget_seconds": 5,
+      "process_creation_elapsed_seconds": 0.04700000000593718,
+      "communicate_elapsed_seconds": 10.015999999988708,
+      "primary_host_exception": {
+        "type": "TimeoutExpired",
+        "timeout_seconds": 10
+      },
+      "forced_job_termination": true,
+      "root_reaped": true,
+      "root_in_owned_job": true,
+      "cleanup_verified": true,
+      "job_before_go": {
+        "active": 1,
+        "total": 1,
+        "terminated": 0
+      },
+      "job_at_timeout": {
+        "active": 2,
+        "total": 2,
+        "terminated": 0
+      },
+      "job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "checkpoint_count": 6,
+      "stages": [
+        "node-first-checkpoint",
+        "go-received",
+        "fixture-before-load",
+        "before-file-read",
+        "file-read",
+        "vm-helpers-start"
+      ],
+      "complete": false,
+      "node_version": "v22.21.1",
+      "node_arch": "x64",
+      "node_platform": "win32"
+    },
+    {
+      "case": "throw-before-grab",
+      "status": "failed",
+      "exit_code": 1,
+      "execution_budget_seconds": 10,
+      "cleanup_budget_seconds": 5,
+      "process_creation_elapsed_seconds": 0.031000000002677552,
+      "communicate_elapsed_seconds": 0.0629999999946449,
+      "primary_host_exception": null,
+      "forced_job_termination": false,
+      "root_reaped": true,
+      "root_in_owned_job": true,
+      "cleanup_verified": true,
+      "job_before_go": {
+        "active": 1,
+        "total": 1,
+        "terminated": 0
+      },
+      "job_at_timeout": null,
+      "job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "checkpoint_count": 11,
+      "stages": [
+        "node-first-checkpoint",
+        "go-received",
+        "fixture-before-load",
+        "before-file-read",
+        "file-read",
+        "vm-helpers-start",
+        "vm-helpers-ready",
+        "pure-checks-done",
+        "case-start:normal",
+        "case-end:normal",
+        "case-start:grab"
+      ],
+      "complete": false,
+      "node_version": "v22.21.1",
+      "node_arch": "x64",
+      "node_platform": "win32"
+    }
+  ],
+  "reference_sources_unchanged_from_commit": "43883022883d382e3dd57bd627e9c735bafe58ca",
+  "reference_sources_sha256": {
+    "research/ui/raster_style_reference.js": "499670efdb970984e8ac72d326033cca456720c83e9585152739ff6a82dd36db",
+    "research/ui/test_raster_style_reference.py": "11c282b292d7b64c627f999920bec618bf41bcf345f076b73ceba71958fda6a5",
+    "experiments/conpty/run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329"
+  },
+  "raw_files": [
+    {
+      "id": "authorized-plan",
+      "bytes": 1578,
+      "sha256": "87a0518c23b65f050d3991557b6b58aca334c8d80dc939fab601d3fae01f0fc8"
+    },
+    {
+      "id": "cli-log",
+      "bytes": 15209,
+      "sha256": "5935018b9cfbefb48accc60feab911fff96c8b68f10d39acc449f979db0eaa4b"
+    },
+    {
+      "id": "cli-exit",
+      "bytes": 75,
+      "sha256": "c8394eb28fdbb10ba454c2db591dbf25e93d2a7c281bcbbe0451641d75790074"
+    },
+    {
+      "id": "attempt-marker",
+      "bytes": 58,
+      "sha256": "21ceb85899a55c3c2532390bf948ceb66e8aa55727564935adf0a739a81afa33"
+    },
+    {
+      "id": "case-normal",
+      "bytes": 7816,
+      "sha256": "f1a141c53acad15dd37d2f24b5895ba97e2b43780d8ddbf7e17f1e3394daf8eb"
+    },
+    {
+      "id": "case-hang-vm-helpers",
+      "bytes": 3682,
+      "sha256": "f6b8e4de34b64466d6e1f3d04e3ee8caba832f4bd86d8fdbbe05d549a2d4c600"
+    },
+    {
+      "id": "case-throw-before-grab",
+      "bytes": 5713,
+      "sha256": "7590fbaa0943292ecfdd772d85255bf80a52713b0a7af2de0ba3c80ea7e4f213"
+    }
+  ],
+  "preserved_prior_artifacts": [
+    {
+      "id": "prior-00",
+      "bytes": 1592,
+      "sha256": "77429f072e16ebaf3d1b7c729aae65dd67f1ae36d682b1b3c2812eb22703ef5d"
+    },
+    {
+      "id": "prior-01",
+      "bytes": 1589,
+      "sha256": "4e2a7280c1a64d6203f2b7c9f8c00bfbb4d1aa4f691f154e75bb249e074631d6"
+    },
+    {
+      "id": "prior-02",
+      "bytes": 2534,
+      "sha256": "e0e80600370188fb3aa455ea25f5837849dcb6131a41b59f8bb2c6c1ec810bb7"
+    },
+    {
+      "id": "prior-03",
+      "bytes": 1479,
+      "sha256": "bdfaae0f86e1fc77360d8f40f83aa23b8f31c00a6953d559f9d2fcc0e5588aba"
+    },
+    {
+      "id": "prior-04",
+      "bytes": 1479,
+      "sha256": "9b09b34d02e8054b576d3a5d8c467feb6fdb3f9ce5ec259b1f26252b1ac53f89"
+    },
+    {
+      "id": "prior-05",
+      "bytes": 2691,
+      "sha256": "84cb44a1af86157d12d2fbe9fb67a72b4e37e6f4d112518635d1e470ff28f4ac"
+    },
+    {
+      "id": "prior-06",
+      "bytes": 41,
+      "sha256": "fb498c4df0819034d599441acd6cc73aff4811609b44cf088039eca83dd6d303"
+    },
+    {
+      "id": "prior-07",
+      "bytes": 41,
+      "sha256": "d437beb05dd5b67ded31f5bf2c6ec0aa29221f8778577d714339badce9393f0e"
+    },
+    {
+      "id": "prior-08",
+      "bytes": 1752,
+      "sha256": "4a939db136469f70668bc9a80029198347c47755713577eecc089c6eecb00414"
+    },
+    {
+      "id": "prior-09",
+      "bytes": 41,
+      "sha256": "aac3d607fe077f1867847438020105f7745f19172013d52ed0c1f19a1e371ad2"
+    },
+    {
+      "id": "prior-10",
+      "bytes": 3383,
+      "sha256": "e22a4e999666008dfe3be0eb6697c42629edcdf781815d3b6791ac0e959b1998"
+    },
+    {
+      "id": "prior-11",
+      "bytes": 1001,
+      "sha256": "f128c2e076c926f60bc1a48ed585b0a68efacc49977c04eb310d65698aee6be9"
+    },
+    {
+      "id": "prior-12",
+      "bytes": 975,
+      "sha256": "2294c40f835030fdb31396a1d64bc66388da653a52981e9a09f4f75de04fb1cd"
+    },
+    {
+      "id": "prior-13",
+      "bytes": 15171,
+      "sha256": "0cfff1982fdfd2f8396c2764332f64105bce1e1972d2fdcd46afe3d02f592915"
+    },
+    {
+      "id": "prior-14",
+      "bytes": 1129,
+      "sha256": "69db83f032acf8e46965d083dd9301c958afd6b83c52a4187f02f369fc972d54"
+    },
+    {
+      "id": "prior-15",
+      "bytes": 1129,
+      "sha256": "d0feea4569e13ffb65ea91cfbf8883d1ca7fb1032166dc9d6185aa0de1bb8a6a"
+    },
+    {
+      "id": "prior-16",
+      "bytes": 1896,
+      "sha256": "a1945f48371ad8b5b6f5713471fe51662841d7fdfbaa72665c02f7d6d6d74c1f"
+    },
+    {
+      "id": "prior-17",
+      "bytes": 1758,
+      "sha256": "d326bb375f0ce7310bf075a9802f5f4392e21dbe0924d966ebd7995a3ced775a"
+    },
+    {
+      "id": "prior-18",
+      "bytes": 17857,
+      "sha256": "2973a0c13212256c3231ed6cacf9b8548d03edba610ed5a24cacf6e5f513333e"
+    },
+    {
+      "id": "prior-19",
+      "bytes": 1129,
+      "sha256": "95beb8464553f93bbb1b3b05b07d831a7c32b4867655f0677a8503aa00040161"
+    },
+    {
+      "id": "prior-20",
+      "bytes": 904,
+      "sha256": "8468e0ed5535d8c67917fb1ef41722f97a74b006f4f813a29c1fb41ef05ec696"
+    },
+    {
+      "id": "prior-21",
+      "bytes": 41,
+      "sha256": "0649922600b96ef7c9d4fc06e00df325d530cf04ff51fe6bf3024732f4b8dd2e"
+    },
+    {
+      "id": "prior-22",
+      "bytes": 1294,
+      "sha256": "4775ef06cb4209f77a0cb1c110672f9baa2ec0bb71313394f15af38fa38dcac5"
+    },
+    {
+      "id": "prior-23",
+      "bytes": 4147,
+      "sha256": "c6f0d58ab64e06f5a75c98aaa9000c379540d2fc987bca717adfbeaa04d107fb"
+    }
+  ],
+  "unexecuted_false_plans": [
+    {
+      "id": "initial",
+      "bytes": 1589,
+      "sha256": "4e2a7280c1a64d6203f2b7c9f8c00bfbb4d1aa4f691f154e75bb249e074631d6",
+      "source_base_commit": "5ddecd4e0bd978d38a38974bb4d27b193b605fa7",
+      "execution_authorized": false,
+      "attempt_marker_present": false,
+      "output_present": false
+    },
+    {
+      "id": "protocol-fix",
+      "bytes": 1592,
+      "sha256": "77429f072e16ebaf3d1b7c729aae65dd67f1ae36d682b1b3c2812eb22703ef5d",
+      "source_base_commit": "0949ac6fc371e24ee20c25c36b6e90f372c99fe8",
+      "execution_authorized": false,
+      "attempt_marker_present": false,
+      "output_present": false
+    },
+    {
+      "id": "version-fix",
+      "bytes": 1592,
+      "sha256": "115c972ce327e9456edf9e96de4f885ec2fdeb16fd819dd34dc24bac871072b4",
+      "source_base_commit": "02aac45ca6e8eaffcbca1d3ef1a80d243159ec46",
+      "execution_authorized": false,
+      "attempt_marker_present": false,
+      "output_present": false
+    }
+  ],
+  "exporter_sha256": "bdbbee3898b4a7f77ef0ae368be00c5452f07dfb78d00365629f1025c4962be8"
+}

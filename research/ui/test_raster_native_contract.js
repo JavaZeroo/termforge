@@ -1,7 +1,11 @@
 'use strict';
 // Run the production helper bodies with synthetic Qt calls, without Frida/Qt.
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
+// The opt-in diagnostic observes this test; ordinary execution has no observer.
+const observe=typeof global.__termforgeNodeContractObserve==='function'?global.__termforgeNodeContractObserve:()=>{};
+observe('before-file-read');
 const source=fs.readFileSync(require('path').join(__dirname,'raster_style_reference.js'),'utf8');
+observe('file-read');
 function helpers(extra={}){
     const context=vm.createContext({Number,Map,JSON,Error,...extra});
     vm.runInContext(source.slice(source.indexOf('function modulePathMatches'),source.indexOf('const moduleGuards')),context);
@@ -10,7 +14,9 @@ function helpers(extra={}){
     return context;
 }
 function equal(a,b){assert.strictEqual(JSON.stringify(a),JSON.stringify(b));}
+observe('vm-helpers-start');
 const pure=helpers();
+observe('vm-helpers-ready');
 assert(pure.modulePathMatches('D:\\OWNED\\app\\Qt5Gui.dll','d:/owned','Qt5Gui.dll'));
 assert(!pure.modulePathMatches('D:/other/app/Qt5Gui.dll','d:/owned','Qt5Gui.dll'));
 equal(pure.rgba(0xff123456),[0x12,0x34,0x56,0xff]);
@@ -19,6 +25,7 @@ assert.throws(()=>pure.physicalRect({x:7,y:0,width:2,height:1},1,8,2),/out-of-bo
 assert.throws(()=>pure.colors([1,1],[1,1]),/no-marker-ink/);
 assert.throws(()=>pure.colors([2,3],[1,1]),/dominant-ink-ambiguous/);
 assert.throws(()=>pure.colors([2,2],[1,3]),/space-background-ambiguous/);
+observe('pure-checks-done');
 function lifecycle(failure){
     const calls=[],allocations=[];
     function pointer(){const result={data:[],equals(other){return result===other;},writeS32(value){result.data[0]=value;},add(offset){return {writeS32(value){result.data[offset/4]=value;}};}};return result;}
@@ -41,5 +48,10 @@ function lifecycle(failure){
     else assert.strictEqual(capture.calibration,false);
     equal(context.grabs,[0]);
 }
-for(const failure of [null,'grab','toImage','empty','dpr','pixel','destroy'])lifecycle(failure);
+for(const failure of [null,'grab','toImage','empty','dpr','pixel','destroy']){
+    observe('case-start:'+(failure===null?'normal':failure));
+    lifecycle(failure);
+    observe('case-end:'+(failure===null?'normal':failure));
+}
 process.stdout.write('module paths, QRgb, ROI/ink gates,32B sret and normal-return destructor order passed\n');
+observe('final');
