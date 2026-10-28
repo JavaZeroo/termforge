@@ -3,6 +3,7 @@
   "issue": 118,
   "scope": "One instrumented original WindTerm terminal run over owned loopback Telnet; no local-shell transport or full-grid/style parity claim.",
   "source_base_commit": "01673e89a7db718a1a6faf63991a50b2531710fa",
+  "export_source_base_commit": "bd1badfb03d5be609e02ad83ba528c4a05f87be8",
   "reference_identity": {
     "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
     "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
@@ -11,7 +12,7 @@
   "probe_files_sha256": {
     "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
     "research/ui/alternate_reference.js": "1fb2eec99336902ddeeab5fffd76ac85381ba203aae9df048f51f11936542eb6",
-    "research/ui/export_alternate_reference.py": "1c1abcc1173590a7a19427703b2a92fdae8c9e4382202f22eeb1cece82824016",
+    "research/ui/export_alternate_reference.py": "9930c1cec3003dc54d0479c1b787379aae0c7bd08903e6c9645e3a85c5faba3e",
     "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
     "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
     "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f"
@@ -19,7 +20,8 @@
   "status": "observed-all-phases",
   "actual_original_runs": 1,
   "maximum_original_runs": 1,
-  "maximum_cli_seconds": 45,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
   "final_observed_naws": [
     91,
     25
@@ -1890,6 +1892,7 @@
     "47 and 1047 are observed after earlier 1049 use; fresh-session or all cross-mode transitions are not covered.",
     "1048l does not restore the cursor in this specific input; this is not a claim that every 1048 sequence is unsupported.",
     "One run is not repeated reliability, bytewise parser coverage, presented-frame verification or a performance measurement.",
+    "45 seconds is the REA capture duration. The CLI wait timeout is 60 seconds; the original process resumes before a separate 2-second delay and cleanup follows the CLI wait. No 45-second whole-lifecycle guarantee is established.",
     "The fixture chose source_generation_rows=24 at first NAWS, while final NAWS and all captured UI capacities are 25 rows. Initial negotiation and transition history were not retained; the run does not prove a fixed grid throughout startup.",
     "The original GUI is deliberately terminated by its owned launcher; Job active=0 is cleanup proof, not natural exit proof.",
     "Provider subject/environment are null. Pinned executable/package identity is independently enforced by the existing preparation guard.",

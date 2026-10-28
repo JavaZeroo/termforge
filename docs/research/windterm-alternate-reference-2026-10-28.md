@@ -6,7 +6,9 @@
 
 固定官方 2.7.0 Windows x64 EXE SHA-256 为 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`；复制的 4,047 个发行文件按既有 `e459adf2…203` 清单守卫核对。完整来源、探针哈希、精确输入、每阶段输出及限制见[白名单摘要](../../research/ui/results/2026-10-28-alternate-reference/validation.json)。REA Frida Evidence ID 为 `ev_3bdab796b335d64f0ffc8dc26bbcfd3c1441a2805993157451f8602311609a6f`。
 
-复用 [r1_launch.py](../../research/ui/r1_launch.py) 的独立 WindowStation/Desktop、挂起创建后分配 OwnedJob、独立 HOME 和单个合成 profile；没有切换用户桌面、访问剪贴板或修改显示设置。合成 Telnet peer 只监听 `127.0.0.1` 的随机端口，直接发送 VT，避开 WinPTY/ConPTY 的本地控制台改写。最终 NAWS 为 **91×25**，所有已存 UI 快照 capacity 均为 25；没有校准或重试。源生成器在首次 NAWS 时冻结压力输入，实际源唯一对应其 rows=24 分支，初始 NAWS 值及转换序列未单独保留，不能声称启动全过程网格固定。原版最多运行一次，REA 捕获上限 45 秒。
+复用 [r1_launch.py](../../research/ui/r1_launch.py) 的独立 WindowStation/Desktop、挂起创建后分配 OwnedJob、独立 HOME 和单个合成 profile；没有切换用户桌面、访问剪贴板或修改显示设置。合成 Telnet peer 只监听 `127.0.0.1` 的随机端口，直接发送 VT，避开 WinPTY/ConPTY 的本地控制台改写。最终 NAWS 为 **91×25**，所有已存 UI 快照 capacity 均为 25；没有校准或重试。源生成器在首次 NAWS 时冻结压力输入，实际源唯一对应其 rows=24 分支，初始 NAWS 值及转换序列未单独保留，不能声称启动全过程网格固定。原版最多运行一次。
+
+`rea_capture_seconds=45` 是传给 REA `--duration-ms 45000` 的捕获时长；复用启动器以 `seconds+15` 设置 CLI 等待超时，因此 `cli_wait_timeout_seconds=60`。原版在 CLI 启动前已恢复运行，期间还有单独的 2 秒等待，CLI 返回后再执行资源回收。**45 秒不是整个原版进程生命周期或整个启动器的墙钟上限**，60 秒也仅约束 CLI 等待。本记录不提供整程生命周期上限保证。
 
 [公开探针](../../research/ui/alternate_reference.py) 在每阶段发送独立输入及 `CSI 6n`，等原版 UI 投影连续稳定后保存快照，再经文件确认允许下一阶段发送。收到 **26 条回复、26 份快照和 26 次阶段确认**；应用回复恰好是 26 条 `CSI row;column R`，没有 `?` 前缀或其他应用字节。完整源十六进制及回复逐项核对，不能把这次 TCP 传输解释成逐字节/任意分块回归。探针没有在首次或重复 `1049h` 后补发 ED/H。
 
@@ -45,5 +47,9 @@
 REA 正常结束，无消息截断、脚本错误、清理错误或 stderr；自有 Job 最终 `active=0,total=3,terminated=0`，profile 仍只有一个合成 Telnet 会话。启动器主动结束原版窗口，计数不是自然 GUI 退出证明。provider 的 subject/environment 为 null，包身份由独立准备守卫保证。
 
 原始插桩、绝对路径、PID、复制的原版资源和合成 profile 保留在 `local/alternate-reference-0`；公开内容仅包含自有探针、合成字节和脱敏结果。现有本地证据可用 [export_alternate_reference.py](../../research/ui/export_alternate_reference.py) 重新审计导出，不需要再启动原版。重新执行调查须另建输出目录并声明次数及边界，不把本次一次观察改写成重复可靠性或性能结论。
+
+导出门槛使用显式 `require` / `ValueError`，在 `python -O` 下仍核对身份、来源、消息一致性、确认文件、回收与合成文本白名单。文本仅允许本夹具的标记及已有覆盖片段，不能因为字符均为大写就放行未知文字；所有门槛通过后才创建导出目录和文件。[公共 CLI 回归](../../research/ui/test_export_alternate_reference.py) 使用自造记录，在普通和优化解释器下分别验证有效记录及私有文本、错误身份、变更脚本/输入、快照不一致、错误阶段确认和未回收 Job 的拒绝路径，不依赖原版资源。
+
+离线修复前，该回归复现了 9 个拒绝用例失败及 2 个新时长字段缺失；修复后，`python -m unittest research.ui.test_export_alternate_reference -v` 和 `python -O -m unittest research.ui.test_export_alternate_reference -v` 各 8 项通过，每次覆盖 20 次公共导出 CLI 调用。有效原始记录也经普通及 `-O` 导出得到相同 JSON；与首次摘要相比，26 阶段输入、文字/光标观测、provider、原始文件哈希和原版身份均不变。修复只更新离线导出校验、时长含义及导出来源标识，没有新增原版运行。
 
 首个 C++ 模式切片可以据此锁定已观察光标转换及主屏文字恢复，并为未知的清空、样式、历史投影与更复杂交叉继续取证。实现仍需独立验证全局行身份、版本、选区失效和有界主/备用历史；原版文档布局不要求内部容器结构相同。完整 #27 以及 R2 均未完成。
