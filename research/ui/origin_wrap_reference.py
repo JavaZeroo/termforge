@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import platform
 import re
+import shutil
 import subprocess
 import sys
 
@@ -120,8 +121,13 @@ def rea_identity(rea):
     metadata = json.loads(package.read_text(encoding="utf-8"))
     require(rea.is_file() and metadata["name"] == "rea-agents" and metadata["version"] == "6.7.0" and
             metadata["bin"]["rea"] == "scripts/rea.mjs", "Locked REA version/entry differs")
+    selected = shutil.which("node")
+    require(selected is not None, "Prepared Node executable is unavailable")
+    node = Path(selected).resolve()
+    require(node.is_file(), "Prepared Node executable is not a file")
     return {"version": "6.7.0", "shim_sha256": sha(rea), "package_json_sha256": sha(package),
-            "entry_sha256": sha(package.parent / "scripts/rea.mjs")}
+            "entry_sha256": sha(package.parent / "scripts/rea.mjs"),
+            "node_executable": str(node), "node_executable_sha256": sha(node)}
 
 
 def phase_records(rows=25, columns=91):
@@ -252,6 +258,10 @@ def run_plan(path):
         marker.write("One original launch attempt; retain after failure and never retry this plan.\n")
     namespace = {"__file__": str(ROOT / "research/ui/r1_launch.py"), "__name__": "termforge_origin_wrap_launcher"}
     exec(compile(launcher_source(), namespace["__file__"], "exec"), namespace)
+    # The inherited run() resolves this name in its own namespace. After the
+    # pre-attempt checks it must use the bound executable, never select PATH again.
+    namespace["cli_command"] = lambda _: [plan["rea_prepared_identity"]["node_executable"],
+                                          str(rea.parent.parent / "rea-agents/scripts/rea.mjs")]
     namespace["run"](source, out, rea, 45, False, "menu-wrap")
     require(plan["source_files_sha256"] == {name: sha(ROOT / name) for name in SOURCE_FILES}, "Probe source changed during execution")
     mechanics = audit_mechanics(out)

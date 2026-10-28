@@ -50,11 +50,11 @@ Qt 的 `caret_api`、文档行号/文字、DSR 行列各自保留；**文档数�
 
 ## 次数、期限与停止
 
-每份计划最多一次原版尝试。false proposal 默认禁止执行，且不能创建 attempt marker 或目标目录。执行前重新核对源码 commit/逐文件 SHA、生成后的 launcher SHA、Python 文件和版本、Windows 版本，以及现有 REA 6.7.0 shim/package/entry SHA。正式尝试先用排他方式创建 `.attempted`，失败后保留，不重试或覆盖目录。该内部防重复记录不要求新的逐次用户确认；实际执行由父代理完成预审后推进。
+每份计划最多一次原版尝试。false proposal 默认禁止执行，且不能创建 attempt marker 或目标目录。执行前重新核对源码 commit/逐文件 SHA、生成后的 launcher SHA、Python 文件和版本、Windows 版本，以及现有 REA 6.7.0 shim/package/entry SHA。准备阶段还只读解析实际 `node` 绝对路径并计算文件SHA；attempt之前复验路径选择和文件字节，随后在本项独立执行 namespace 中固定 `cli_command` 使用已记录绝对Node文件和REA entry，不在真实启动时重新从PATH选择。没有调用Node或 `--version`，此记录只是文件身份，**没有取得Node进程版本**。旧受保护 `r1_launch.py` 不变，namespace接线由本项源码SHA绑定。正式尝试先用排他方式创建 `.attempted`，失败后保留，不重试或覆盖目录。该内部防重复记录不要求新的逐次用户确认；实际执行由父代理完成预审后推进。
 
 原预算保持：peer 接收循环43秒、JS阶段检查41秒/计时器42秒、REA 捕获45秒、CLI 等待60秒。原版在 CLI 前已恢复，另有2秒启动间隔；**45/60秒不是整个进程或启动器的墙钟上限**，`whole_lifecycle_bound_seconds=null`。继承的清理含 peer join3秒、原版句柄等待5秒和 Job drain 自身边界，不能把这些局部预算拼成一个已保证的整程期限。挂起创建/分配失败仍沿原句柄回收分支；任何结构、身份、NAWS、协议、阶段、stderr/REA或清理失败保留原件并停止。
 
-本次准备只运行 [纯 Python 合成测试](../../research/ui/test_origin_wrap_reference.py)：内存假连接覆盖完整实际接收循环、分包DSR、瞬时NAWS变化和重复回复；没有打开套接字、运行 Node/Qt/native/guest 或启动原版。宽松末条匹配的 red 记录有9项测试、5个失败子例；严格边界及执行后机械审计完成后最终普通/`-O`各13项通过。早先缺模块的初始 red 仅为脚手架检查，不能当作协议反例。
+本次准备只运行 [纯 Python 合成测试](../../research/ui/test_origin_wrap_reference.py)：内存假连接覆盖完整实际接收循环、分包DSR、瞬时NAWS变化和重复回复；没有打开套接字、运行 Node/Qt/native/guest 或启动原版。宽松末条匹配的 red 记录有9项测试、5个失败子例；严格边界及执行后机械审计完成时普通/`-O`各13项通过。执行前审查另发现Node依赖未绑定，新增三个真实 `run_plan`＋编译后假launcher的纯反例全部red：路径漂移、原文件字节漂移、守卫后PATH再改变。修正后最终普通/`-O`各16项通过；前两种漂移在attempt/out创建前拒绝，后一种仍使用已绑定Node。假launcher只调用Python记录函数，所有exe/entry均为惰性合成字节，没有启动进程。原false proposal及既有red/green原件保持，只为修订源码创建独立新false proposal。早先缺模块的初始 red 仅为脚手架检查，不能当作协议反例。
 
 REA CLI 返回0之后还必须由 `audit_mechanics()`检查25阶段/源字节/逐条DSR/Qt快照/ack和NAWS、空stderr、单个合成profile及Job active0，再写本地 `mechanics-check.json`；partial或失败不能借CLI0过关。该检查的 `semantic_acceptance=false`，不预先认可原版光标语义，不代替后续REA完整Evidence审计、来源复核和白名单导出。
 
