@@ -7,9 +7,10 @@ namespace termforge {
 struct TextPosition {
     uint64_t line_id = 0, version = 0;
     size_t column = 0;
+    uint64_t epoch = 0;
 };
 inline bool operator==(TextPosition a, TextPosition b) {
-    return a.line_id == b.line_id && a.version == b.version && a.column == b.column;
+    return a.line_id == b.line_id && a.version == b.version && a.column == b.column && a.epoch == b.epoch;
 }
 inline bool operator!=(TextPosition a, TextPosition b) { return !(a == b); }
 struct TextRange { TextPosition begin, end; }; // Half-open physical-cell positions.
@@ -31,6 +32,7 @@ class TextDocument {
     const Screen& screen_;
 public:
     explicit TextDocument(const Screen& screen) : screen_(screen) {}
+    uint64_t epoch() const { return screen_.buffer_epoch(); }
     size_t size() const { return screen_.retained_size(); }
     DocumentLineMetadata meta(size_t index) const {
         const auto& value = screen_.retained_line(index);
@@ -47,6 +49,7 @@ public:
         return index;
     }
     bool valid(TextPosition value) const {
+        if (value.epoch != epoch()) return false;
         const auto index = index_of(value.line_id);
         if (!index) return false;
         const auto current = meta(*index);
@@ -56,7 +59,7 @@ public:
         if (index >= size()) return std::nullopt;
         const auto value = meta(index);
         if (column > value.columns) return std::nullopt;
-        return TextPosition{value.id, value.version, column};
+        return TextPosition{value.id, value.version, column, epoch()};
     }
     // A range is physical-cell based and half-open. Endpoints inside a width-2
     // glyph expand outward, so no consumer can copy or paint half of a glyph.

@@ -8,12 +8,19 @@
 
 | 配置 | 证据定位 |
 |---|---|
+| 自主 C++ 双缓冲存储与文档 epoch 基础 | [固定结果](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)、[验证身份](../experiments/core/results/2026-10-29-buffer-state-r2/validation.json)：拥有状态、共享 ID、隐藏帧 resize 回滚与跨缓冲句柄失效；Qt/candidate 关闭配置的完整 50 项及 12 条内部 skip 分列。未接 private CSI，不是原版模式、Qt 产品路线或完整 #27 验收 |
+| Qt cmd 标签与退出前回收 | [固定结果](../experiments/shell/results/2026-10-28-qt-tabs/README.md)、[验证身份](../experiments/shell/results/2026-10-28-qt-tabs/validation.json)：双 cmd 隔离、失败页、关闭与四个实际事件循环边界；Qt 1 项和其他 49 项诊断及内部跳过分列，旧中断轮不拼接 |
+| Qt 正式入口的独立 hosted 构建 | [固定结果](../experiments/shell/results/2026-10-28-qt-cpp-ci/README.md)、[验证身份](../experiments/shell/results/2026-10-28-qt-cpp-ci/validation.json)：固定 SDK、VS 2026 hosted 与真实 cmd 的 offscreen / OwnedJob 检查；原依赖换行和 generator 失败保留。没有原生上屏、完整部署哈希或产品包验收 |
 | 自主 C++ + Qt Widgets + 固定微软 ConPTY 正式目标 | [ADR-0007](adr/0007-bundled-microsoft-conpty.md) / [ADR-0008](adr/0008-cpp-core-qt-widgets.md) 记录用户确认；新组合的实现与验证另行留证，不引用旧默认或 Alacritty 通过结果代替 |
 | 既有默认/Alpha：自主 C++ + 系统 ConPTY + Win32 | R1 限定总验收和有限 VT/Unicode 子集；与当前 Qt/固定后端目标组合分列 |
 | Alacritty 历史参考：`termforge.4` + 系统 ConPTY | [固定来源/补丁台账](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)、[#39 字素合同](research/streaming-graphemes.md)；结果仅证明其固定配置，不转为自主 C++ 能力 |
 | PR #50 历史联合基线：`termforge.4` + 固定官方 ConPTY | [Draft PR](https://github.com/JavaZeroo/termforge/pull/50) / [#47](https://github.com/JavaZeroo/termforge/issues/47)；[联合基线](research/joint-conpty-baseline.md)已固定，产品回归未全绿；该基线当时的 resize/工作区失败由 #51/#63 后续在原实验分支限定闭合，#52 GUI Vim 及新组合完整验收仍未完成。[#53 的未完成粘贴、负例及原八会话证据](https://github.com/JavaZeroo/termforge/blob/848cb0e621a291f732cc0e046d0b2fab6a77d962/docs/research/resize-replay-cost.md)已按限定合同整合到实验父分支；不包含同次真实 CF/IME 或完整官方矩阵验收 |
 
 R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分别只代表原记录。源 VT、原生控制台 CHAR_INFO、transport、末端状态、自有 DIB、绘制提交和真实呈现是不同检查点；未知端点保持未知。
+
+原版模式依据见 [1049 直达终端观察](research/windterm-alternate-reference-2026-10-28.md)与[验证身份](../research/ui/results/2026-10-28-alternate-reference/validation.json)：26 阶段精确输入、DSR 和文档投影相互绑定，原版重复进入的光标行为与通用幂等假设不同；样式、完整 active grid 和本地 Shell 运输继续保留未知。
+
+原版输出自动化见 [cmd 正确性工具](../benchmarks/tools/WINDTERM-CMD.md)及[固定结果](../benchmarks/tools/results/2026-10-28-windterm-cmd/README.md)：小 ASCII 全文、生产事件和 Job 回收已有无人值守闭环，路径元字符修复及各执行源码分列。它没有取得 C0、完整历史、消费/真实呈现端点或正式性能基线。
 
 显式官方后端的旧 `.3` 实现及独立生命期/双 SHA 拒绝记录见[实验合同](https://github.com/JavaZeroo/termforge/blob/e0b4d67e50bda6fe08cc02b43a475137133310b3/docs/research/experimental-conpty-backend.md)与[冻结验证](https://github.com/JavaZeroo/termforge/blob/e0b4d67e50bda6fe08cc02b43a475137133310b3/experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)。联合源码 `3e5b96d` 的[三配置清单](../experiments/conpty/results/2026-10-26-joint-backend/validation.json)分别记录默认43/45、候选/system 48/48、显式官方46/48（shell套件超时，未完成项仍未知）；原resize/Vim各一红一绿、粘贴两红。新恢复/worker/工作区失败由 #61–#63 承接，旧失败不因其他轮成功变成通过。
 
