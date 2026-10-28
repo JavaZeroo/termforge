@@ -101,7 +101,7 @@ jobs:
       - name: Compare common native traces
         run: python experiments/differential/compare_candidate.py --out build/test-artifacts/candidate-common
       - name: Test common comparison and failure gates
-        run: python -m unittest discover -s experiments/differential -p test_candidate_compare.py -v
+        run: python -m unittest discover -s experiments/differential -p 'test_candidate*.py' -v
       - name: Compare extended capability traces
         run: python experiments/differential/capability_matrix.py --trace "${{ env.TERMFORGE_TRACE }}" --candidate "${{ env.TERMFORGE_ALACRITTY_TRACE }}" --out build/test-artifacts/candidate-capabilities-cli
       - name: Test extended capabilities and unsupported gates

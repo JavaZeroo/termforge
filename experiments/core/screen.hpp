@@ -169,6 +169,13 @@ public:
     int width() const { return columns_; }
     ScreenBuffer active_buffer() const { return active_buffer_; }
     uint64_t buffer_epoch() const { return buffer_epoch_; }
+    // An in-place logical reset must invalidate old readers even if the next
+    // writes reproduce identical text using the same physical row storage.
+    void invalidate_buffer_readers() {
+        if (buffer_epoch_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("buffer epoch exhausted");
+        ++buffer_epoch_;
+    }
     // The configured limit belongs to primary history; the independent
     // alternate storage budget is zero. This does not define a document view.
     size_t active_history_limit() const { return active_buffer_ == ScreenBuffer::primary ? history_limit : 0; }

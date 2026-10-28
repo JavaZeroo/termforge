@@ -35,3 +35,11 @@
 后续按 ADR-0003 的固定补丁路线，在 `0.26.1-dev+termforge.1` 中修正 ED1 前序行清理，并把 ED2 调整为 TermForge 已裁决的“清屏但不新增/清空历史”。补丁同时纳入上游零宽字符内存等修复；[来源与补丁身份](../../experiments/candidates/alacritty/PROVENANCE.md)独立保存。
 
 [当前共同矩阵](results/2026-10-25-candidate-common-v4/summary.json)为 95 次、1011 检查点全部 `match`，真实 cmd/more.com/Vim 也全部一致。旧差异签名已从当前 `candidate-known-differences.json` 移除，防止旧候选差异被继续放行；上述旧批次与裁决保留原样。新差异仍须单独复现和裁决，95 次一致不扩大为完整 VT、WindTerm 或产品 TUI 认证。
+
+## 1049 固定输入的参考差异（#135）
+
+本次只处理既有 `A\r\nB ESC[?1049h ALT ESC[?1049l Z` 的 24B、3×12、history=3 共同投影。自研进入备用屏后为零基 `(0,0)`，Alacritty 参考为 `(1,1)`，whole 最终主屏均为 `A` / `BZ` / 空行。原版 [#118 的固定观察](../../docs/research/windterm-alternate-reference-2026-10-28.md)中首次、重复与重入 `1049h` 均回复一基 `(1,1)`；依据 ADR-0006 的原版优先方向保留自研归首格，不为匹配参考修改生产核心或 Alacritty 实现。
+
+原版证据来自独立合成 Telnet 末端，网格和完整输入与此参考例不同；它支持已经观察的进入光标方向，不证明原版全部 grid、背景、非颜色属性、其他模式或本地 shell 已对齐。本次没有运行 WindTerm，`reference_difference` 也不是审批 WindTerm 行为偏差或声明兼容等价。
+
+Windows/Linux 初始 PR 原件的完整有序投影签名一致，四个有中间观察的计划逐项列入严格台账，whole 仍必须 match。旧首差异+最终哈希不足以约束后续检查点，已以双方全轨迹 SHA/检查点数补强；缺字段的旧条目不会继续授权。独立字面 fixture 固定首差异、最终状态及完整哈希，并使后续单一检查点变异失败。证据、旧 CI 失败与未覆盖项见[独立报告](results/2026-10-29-1049-reference/README.md)。

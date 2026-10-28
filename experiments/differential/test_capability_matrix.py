@@ -1,7 +1,10 @@
 """Extended native-candidate capabilities and explicit unsupported-core gates."""
 import os
+import json
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
 import unittest
 
 import capability_matrix
@@ -28,11 +31,12 @@ class CapabilityMatrixTests(unittest.TestCase):
     def test_extended_matrix_preserves_execution_and_support_boundaries(self):
         self.assertTrue(self.summary["execution_passed"], self.summary["counts"])
         self.assertEqual(self.summary["runs"], 25)
-        self.assertEqual(self.summary["counts"], {"core_unsupported": 15, "match": 5, "resize_difference": 5})
+        self.assertEqual(self.summary["counts"], {"core_unsupported": 10, "match": 6,
+                                                  "reference_difference": 4, "resize_difference": 5})
         self.assertFalse(self.summary["semantic_acceptance"])
         self.assertTrue(self.summary["resize_covered"])
         self.assertFalse(self.summary["real_application_covered"])
-        for name in ("alternate_screen", "scroll_region", "cursor_query"):
+        for name in ("scroll_region", "cursor_query"):
             for record in self.records(name):
                 self.assertEqual(record["status"], "core_unsupported")
                 self.assertFalse(record["expected_core_support"])
@@ -42,6 +46,10 @@ class CapabilityMatrixTests(unittest.TestCase):
 
     def test_alternate_query_and_region_have_real_candidate_results(self):
         for record in self.records("alternate_screen"):
+            self.assertTrue(record["expected_core_support"])
+            self.assertEqual(record["status"], "match" if record["plan"] == "whole" else "reference_difference")
+            self.assertFalse(record.get("core_fragmentation_difference"))
+            self.assertFalse(record.get("candidate_fragmentation_difference"))
             self.assertEqual(record["candidate_final_rows"], ["A", "BZ", ""])
         for record in self.records("cursor_query"):
             self.assertEqual(record["replies"], ["\x1b[1;2R"])
@@ -57,6 +65,19 @@ class CapabilityMatrixTests(unittest.TestCase):
             self.assertFalse(record.get("candidate_fragmentation_difference"))
             folder = self.artifacts / "suite" / "recovery_stream" / record["plan"].replace(":", "-")
             self.assertIn(b"\xff", (folder / "input.bin").read_bytes())
+
+    def test_public_cli_keeps_reviewed_and_unlisted_plan_boundaries(self):
+        for plan,expected_code,expected_counts in ((None,0,{"match":1,"reference_difference":4}),
+                                                   ("seed:99",1,{"difference":1})):
+            output=self.artifacts/("cli-fixed" if plan is None else "cli-unlisted")
+            command=[sys.executable,str(Path(capability_matrix.__file__).resolve()),"--trace",str(self.core),
+                     "--candidate",str(self.candidate),"--out",str(output),"--case","alternate_screen"]
+            if plan is not None:command.extend(["--plan",plan])
+            completed=subprocess.run(command,capture_output=True,text=True,timeout=20)
+            self.assertEqual(completed.returncode,expected_code,completed.stderr)
+            summary=json.loads((output/"summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["counts"],expected_counts)
+            self.assertFalse(summary["semantic_acceptance"])
 
     def test_resize_records_actual_dimensions_and_reflow_difference(self):
         for record in self.records("resize_stream"):
