@@ -120,11 +120,15 @@ protected:
                         {"events_seen_before_frame", events_.size()}, {"coalesced_input_updates", coalesced_input},
                         {"image", name}, {"state", target()}});
             });
-        } else if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease) {
+        } else if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease ||
+                   event->type() == QEvent::ShortcutOverride) {
             const auto* key = static_cast<QKeyEvent*>(event);
-            QJsonObject row{{"kind", event->type() == QEvent::KeyPress ? "key-press" : "key-release"},
+            const auto kind = event->type() == QEvent::ShortcutOverride ? "shortcut-override" :
+                event->type() == QEvent::KeyPress ? "key-press" : "key-release";
+            QJsonObject row{{"kind", kind},
                             {"key", key->key()}, {"native_virtual_key", static_cast<qint64>(key->nativeVirtualKey())},
                             {"native_scan_code", static_cast<qint64>(key->nativeScanCode())},
+                            {"native_modifiers", static_cast<qint64>(key->nativeModifiers())},
                             {"modifiers", key->modifiers().toInt()}, {"auto_repeat", key->isAutoRepeat()},
                             {"spontaneous", event->spontaneous()}};
             if (key->text().size() > 256) evidence_gap_ = true;
@@ -177,8 +181,15 @@ inline int run(QApplication& app, const QString& directory) {
     QObject lifetime;
     QTimer timer;
     const auto state = [&] {
+        QJsonArray tab_rectangles;
+        for (int index = 0; index < tabs->count(); ++index)
+            tab_rectangles.append(rect(QRectF(tabs->tabRect(index).translated(tabs->mapTo(&window, QPoint())))));
         return QJsonObject{{"schema", "termforge-qt-ime-native-observer-v1"},
                            {"qt_platform", QGuiApplication::platformName()},
+                           {"input_method_locale", QGuiApplication::inputMethod()->locale().name()},
+                           {"window_device_pixel_ratio", window.devicePixelRatioF()},
+                           {"window_client_rectangle_logical", rect(window.rect())},
+                           {"current_tab_index", tabs->currentIndex()}, {"tab_rectangles_window_logical", tab_rectangles},
                            {"synthetic_qt_input_events_sent", 0}, {"external_os_input_required", true},
                            {"native_os_ime_acceptance", QJsonValue()}, {"presented_done", QJsonValue()},
                            {"ready", ready_written}, {"finish_requested", finish_requested},
