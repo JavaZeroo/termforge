@@ -1,0 +1,1227 @@
+{
+  "schema": "termforge-recovery-core-prepare-validation-v1",
+  "issue": 152,
+  "implementation_commit": "7721985399a14667d564811029cd8c93308bcb36",
+  "base_commit": "05f0065f4eb19ce5a76065d18f2247bcc731e285",
+  "plan_sha256": "e26f714c6c5a97962c1be72c573e373398edddb48ca54b0ab73a5d9fe9217ddc",
+  "protocol": "termforge-recovery-core-measure-v1",
+  "parse_mode": "recovery",
+  "rows": 24,
+  "columns": 80,
+  "history_limit": 100,
+  "sanity_batch_count": 1,
+  "core_processes": 38,
+  "successful_identity_processes": 2,
+  "correctness_samples": 24,
+  "expected_cli_rejections": 12,
+  "legacy_identity_red": {
+    "attempts": 1,
+    "exit_code": 2,
+    "observation": "legacy strict CLI does not implement new identity protocol"
+  },
+  "pure_tests_passed": 5,
+  "related_tests_passed": 14,
+  "related_tests_seconds": 3.723,
+  "full_matrix_executed": false,
+  "ci_retries": 0,
+  "formal_performance_samples": 0,
+  "performance_gate": "not_evaluated",
+  "whole_batch_bound_seconds": null,
+  "per_process_timeout_seconds": 90,
+  "internal_interval_budget_seconds": 60,
+  "sanity_cpu_floor_seconds": 0.1,
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "ubr": 9711,
+    "shared_host": true
+  },
+  "build": {
+    "generator": "Visual Studio 17 2022",
+    "architecture": "x64",
+    "configuration": "Release",
+    "msvc_runtime": "MultiThreadedDLL",
+    "qt": false,
+    "candidate": false,
+    "targets": [
+      "core_measure",
+      "core_recovery_measure",
+      "core_recovery_measure_noalloc"
+    ]
+  },
+  "compiler_version": "19.42.34433.0",
+  "tools": {
+    "cl.exe": {
+      "sha256": "42fd88579adc0e2418a0a71ec9adcfcf677d39ff2724c9d6ac9d901264812bf2"
+    },
+    "link.exe": {
+      "sha256": "483550657299153a48e557a7db1ba26c52603fb48fc19b1fe1e5870ec96dacb4"
+    },
+    "dumpbin.exe": {
+      "sha256": "9ea5c7faa7c24f9a333bc3ffd1113329c633b0256cfb9efb9ae587b9065bf763"
+    }
+  },
+  "source_sha256": {
+    "CMakeLists.txt": "630db31cbec1a99162edb0a4821fc3ab76583e83c90a6716506c9fd9110538af",
+    "experiments/core/terminal.hpp": "ed3c030611a6df38df26057a8c2834f2808cd05306e73aead79927b1f76fe5ca",
+    "experiments/core/screen.hpp": "04c19f09ebc0c468efbef8dd4c9da8f4bcd44e94000a87c56239756c0df1b474",
+    "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+    "experiments/measure/measure.cpp": "45f582335960983f6ead59e5f01dda38e1e0a3eeb3ca4405b0dfeccb2bcac434",
+    "experiments/measure/recovery.py": "e4bbc2aecc3253d8cd1b7cda7fd73f3125bae5d38ed3f17fdab5525d28973f2b",
+    "experiments/measure/recovery_sanity.py": "c6230fcff13c728c685bdc11185b640a5b30e9b7be152885e1a2afcb4cf1d084"
+  },
+  "historical_files_verified": 18,
+  "source_and_historical_files_verified_after": 25,
+  "build_artifacts_verified_after": 18,
+  "twins_normalized_compile_equal": true,
+  "twins_normalized_link_equal": true,
+  "targets": {
+    "core_measure": {
+      "object": {
+        "bytes": 286883,
+        "sha256": "bf3bc5cc6cdbbdef03e0419a19684dffd7d1678cfb9ce8278786f9dc375bfffa"
+      },
+      "exe": {
+        "bytes": 87040,
+        "sha256": "b2a8070daea27998d486839cb3e79e27c202aa7fc95d087ca56306dec95e6775"
+      },
+      "symbols": {
+        "bytes": 358476,
+        "sha256": "133bb7d2c49de566b7b0f1830f5719d77126cf8e64ef5a7e0c59e69acd89718b"
+      },
+      "new_symbols": {
+        "ordinary": {
+          "definition_in_object": true,
+          "external_reference": false
+        },
+        "array": {
+          "definition_in_object": true,
+          "external_reference": false
+        }
+      },
+      "compile_command_sha256": "d0746079bd7e1c96b5afa5ba1e73b44cff437f0400a150c47314bff1671d19ed",
+      "link_command_sha256": "3149d5936444bff868f75a4c263cae1c9014ee43bf436ffef3f77fbed1dbf3e2"
+    },
+    "core_recovery_measure": {
+      "object": {
+        "bytes": 284362,
+        "sha256": "d208854391c13af730bf6d50ddcb9474d70831186ec944f8d1984fe7b0e17aa2"
+      },
+      "exe": {
+        "bytes": 86528,
+        "sha256": "4c0f907572cda3e57e2ebfab1ec6bf5d92eb10c63ecf517fa22228a5fde5c535"
+      },
+      "symbols": {
+        "bytes": 356729,
+        "sha256": "f0957ad945e45ee2b89238d2df157c61d34477ac0e34da1e8936458432637c1c"
+      },
+      "new_symbols": {
+        "ordinary": {
+          "definition_in_object": true,
+          "external_reference": false
+        },
+        "array": {
+          "definition_in_object": true,
+          "external_reference": false
+        }
+      },
+      "compile_command_sha256": "139244d0a659fa04b6b199dc3af09d940bff1f89844fd7fc2139259c98d06312",
+      "link_command_sha256": "99aa8e271aee95d216cb476fd7778836f7adeca44915143ff687e4c2016595d4"
+    },
+    "core_recovery_measure_noalloc": {
+      "object": {
+        "bytes": 279239,
+        "sha256": "eeab48bc37bc94c70e9b9e1fb8c45c616563f88e4b22852c4a47c62d94c7effe"
+      },
+      "exe": {
+        "bytes": 86528,
+        "sha256": "15ee46b8f9f471ad93af98907cd2424642ec8bd12511c5c1a3f9d0969a79b619"
+      },
+      "symbols": {
+        "bytes": 349052,
+        "sha256": "312b1dd3f90d48dd1f5a514a5eb5b1e11d5bdc1246d947abedfde4a04f8d69c6"
+      },
+      "new_symbols": {
+        "ordinary": {
+          "definition_in_object": false,
+          "external_reference": true
+        },
+        "array": {
+          "definition_in_object": false,
+          "external_reference": false
+        }
+      },
+      "compile_command_sha256": "3ef45824de22959a5d4f5181be13e15b4bf19b693d3b7b077bbf1e0b7b7cf6fe",
+      "link_command_sha256": "ed22da9c0d6ee9c2537267be722d0dde00f85d7145559cd32a7465c279a39565"
+    }
+  },
+  "raw_sanity_manifest_sha256": "4a978f34bae06be0f761e8a8b9bfa9cdf151c6e331cc7b8e573098f3d462ba22",
+  "build_audit_before_sha256": "3b5a0e410707559b1e92fdf44bc518694f0243ed3e190e8f0877c048f6a35edf",
+  "build_audit_after_sha256": "3cadf271e40f865d428ff2633d06917418d0d96f7b3534774e8c15124114f568",
+  "private_log_identities": {
+    "configure": {
+      "bytes": 747,
+      "sha256": "eb56ea578ab494f8046e2dae919c8a29251a71be0e9a2f8af8dc6a937b4eacca"
+    },
+    "build": {
+      "bytes": 5355178,
+      "sha256": "2d1772c76f138747a22bf3714075fe5fe86f8fdfac890abff461ec490220e7af"
+    },
+    "legacy-red-stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "legacy-red-stderr": {
+      "bytes": 131,
+      "sha256": "34bd906f6d6925d6e2f44b14e5765ff709a2a8fd268546b32344f679083e73d7"
+    },
+    "related-tests-stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "related-tests-stderr": {
+      "bytes": 2498,
+      "sha256": "ab9d6190e61da93e45b41597edb3675010cea7457c490bf13619db5fa653f3a0"
+    },
+    "identity-red": {
+      "bytes": 980,
+      "sha256": "17ae3bb5ef65c9fb1c763ca92d55ada155005a4642b68e7e726e9321e60a7071"
+    },
+    "sample-red": {
+      "bytes": 1087,
+      "sha256": "3fbd18f3bed52c2ea8abd9560a7c2cb7a0b0ae321bc0ac39ee94abc52c3dbfd2"
+    },
+    "pure-final": {
+      "bytes": 1122,
+      "sha256": "9958ded0b53314e60c1746656c69e3267ebf9cb849fd534ab8ff6769af759382"
+    }
+  },
+  "records": [
+    {
+      "index": 0,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "--identity"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 363,
+        "sha256": "198dc94bc5fe3340fc4eb323b5e239fb79cc90b1534d4ab95123362ec93be9f7"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "recovery build identity verified"
+    },
+    {
+      "index": 1,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "--identity"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 364,
+        "sha256": "51e3e1be4824ae86163368e7922ecbc854477175e7c73f15668ec3bf636bfbb6"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "recovery build identity verified"
+    },
+    {
+      "index": 2,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "project",
+        "1",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1275,
+        "sha256": "933b485feb8ddb92e3f93a76835f42daf8622643b852ca5854ae9d19401bf905"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 1,
+      "observe": 0,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 3,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "project",
+        "1",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1325,
+        "sha256": "cff2cd2ba9e8d74eae1b8cba965675edd7dfef98e155138dbee9f7a8108745c1"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 1,
+      "observe": 1,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "recorded",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 4,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "project",
+        "4096",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1281,
+        "sha256": "ba678bcad51606a82cfe2123557fa8cf56b7205eed121077471841ea2aec2aff"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 4096,
+      "observe": 0,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 5,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "project",
+        "4096",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1320,
+        "sha256": "8627d9e313d98bcfd4d5d15ecb7c869c216ccfb90656a3e93183f5341c39cb53"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 4096,
+      "observe": 1,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "recorded",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 6,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "project",
+        "65536",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1282,
+        "sha256": "3b239a335da12ee86f00188a76bb861cf602e3174c9f016b50e642a8fc50127e"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 65536,
+      "observe": 0,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 7,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "project",
+        "65536",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1329,
+        "sha256": "de46e317ad804a947d19d626bd0831b07db870f7da0896fd2f5513a03e7f9eba"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 65536,
+      "observe": 1,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "recorded",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 8,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "interactive",
+        "1",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1295,
+        "sha256": "464246e5cda8c194bdcedb22a748dc05cdd187a53b803ad11bc1f4cc077bc091"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 1,
+      "observe": 0,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 9,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "interactive",
+        "1",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1337,
+        "sha256": "c39a5e1d791efae1562c2174131e594654a37f3ed625b400b860e88ac768efe1"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 1,
+      "observe": 1,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "recorded",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 10,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "interactive",
+        "16",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1296,
+        "sha256": "156a775fabebca9d2f767ddf41ffa956a79beb79bdd6534b4bfb812d34d089fd"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 16,
+      "observe": 0,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 11,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "interactive",
+        "16",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1330,
+        "sha256": "3490b8513aeba2bbc62647250d24842a9d0080efb06dd82a54d8a79a76f93e29"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 16,
+      "observe": 1,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "recorded",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 12,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "interactive",
+        "22000",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1303,
+        "sha256": "d368451dbc208da520cbc0dd9e5439231e09b8848a3e7f7d1a381dffeb5f87f5"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 22000,
+      "observe": 0,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 13,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "interactive",
+        "22000",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1341,
+        "sha256": "fe3cc840c727cee270462ed2d2780d321f0142a567987eab8c5e2aa1e8e261ea"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 22000,
+      "observe": 1,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "recorded",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 14,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "calibrate",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 71,
+        "sha256": "375f5c6850053495ecbecb0f75d62c77ee138901411caea56c78d41522806ed8"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 15,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "parse",
+        "4096",
+        "0",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 35,
+        "sha256": "6b136de38a5178aeca7b44dac1e50c0733a0b8c9632f074348b5b33d26a98ad3"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 16,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "state",
+        "4096",
+        "0",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 35,
+        "sha256": "6b136de38a5178aeca7b44dac1e50c0733a0b8c9632f074348b5b33d26a98ad3"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 17,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "project",
+        "0",
+        "0",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 19,
+        "sha256": "0e79f3e5b2e11fac7bceee051f9afeb8feac756fbc965b7cb91ebbe6295bee69"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 18,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "project",
+        "4096",
+        "2",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 22,
+        "sha256": "ce8f3ca360cbfea098787240245685116513a1342afc114dbeadc8d038417902"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 19,
+      "allocator_wrapper_compiled": true,
+      "arguments": [
+        "project",
+        "4096",
+        "0",
+        "nan"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 18,
+        "sha256": "563f8b5b0949a92663873b2724a86ae829edc1540adcfdf9cb76aafc5886e115"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 20,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "project",
+        "1",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1285,
+        "sha256": "5a21c91de1fa4e554f899d951ed17d8baa9a1172e9f1f0e6273cfce03cbc46ed"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 1,
+      "observe": 0,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 21,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "project",
+        "1",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1319,
+        "sha256": "4b1aebbdbea590864ecbeb4913398cfb108cf72001717fcfc3dd75d173db072a"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 1,
+      "observe": 1,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 22,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "project",
+        "4096",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1287,
+        "sha256": "9853c3c785098e3754d9afe0ddd7f8acc8a32fd44e3aac8c59a220e99e65071f"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 4096,
+      "observe": 0,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 23,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "project",
+        "4096",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1326,
+        "sha256": "ca19601a8c26af407391e95e22d828f86fe6d4795cebfd98e80e0e24d07e4562"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 4096,
+      "observe": 1,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 24,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "project",
+        "65536",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1292,
+        "sha256": "dabdbe9e5f10866618ad55340f57b4d29b49c2c554fbbba9f12d610e32746f7b"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 65536,
+      "observe": 0,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 25,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "project",
+        "65536",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1327,
+        "sha256": "5d35d95a7790c5336ccfc1d33ac9ca975b8d45a12c7a264ab259263d2859c77d"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "project",
+      "chunk": 65536,
+      "observe": 1,
+      "payload_fnv1a64": "13372643718718663029",
+      "state_fnv1a64": "5455070173120736870",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 26,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "interactive",
+        "1",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1285,
+        "sha256": "46be57d0ed2a0cdce05ecb38a195c8cee6757ddb327cfe347ee4fe9f2ab70531"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 1,
+      "observe": 0,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 27,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "interactive",
+        "1",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1331,
+        "sha256": "e46223559ae97d0a1263bb6b9d2a88a7b07ab043b8d0f6d6a76495a823106901"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 1,
+      "observe": 1,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 28,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "interactive",
+        "16",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1297,
+        "sha256": "e77c476704ec7aa4fa73a820c8017932786a14f1a15af74b4463874a9dc8bece"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 16,
+      "observe": 0,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 29,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "interactive",
+        "16",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1336,
+        "sha256": "4e96a9946a143865dcfd340e143b0fd9ff336eb7f6c4d48d28a9b1474d43b2b6"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 16,
+      "observe": 1,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 30,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "interactive",
+        "22000",
+        "0",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1291,
+        "sha256": "21bee017f7b469d15d5384e5b9558c6e5ab1c28323043a4677f2e7a5d72740b3"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 22000,
+      "observe": 0,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 31,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "interactive",
+        "22000",
+        "1",
+        "0.1"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 1323,
+        "sha256": "51062e40a882a4d045bd44a53ba609d9caa843f95ab960e63b0bb07cfa0eab5c"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "observation": "fixed replay correctness verified",
+      "route": "interactive",
+      "chunk": 22000,
+      "observe": 1,
+      "payload_fnv1a64": "14158139299817394597",
+      "state_fnv1a64": "8292075482910706113",
+      "allocation_metrics": "unknown",
+      "receive_seconds": null,
+      "presented_done": null
+    },
+    {
+      "index": 32,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "calibrate",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 71,
+        "sha256": "375f5c6850053495ecbecb0f75d62c77ee138901411caea56c78d41522806ed8"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 33,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "parse",
+        "4096",
+        "0",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 35,
+        "sha256": "6b136de38a5178aeca7b44dac1e50c0733a0b8c9632f074348b5b33d26a98ad3"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 34,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "state",
+        "4096",
+        "0",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 35,
+        "sha256": "6b136de38a5178aeca7b44dac1e50c0733a0b8c9632f074348b5b33d26a98ad3"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 35,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "project",
+        "0",
+        "0",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 19,
+        "sha256": "0e79f3e5b2e11fac7bceee051f9afeb8feac756fbc965b7cb91ebbe6295bee69"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 36,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "project",
+        "4096",
+        "2",
+        ".1"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 22,
+        "sha256": "ce8f3ca360cbfea098787240245685116513a1342afc114dbeadc8d038417902"
+      },
+      "observation": "expected CLI rejection"
+    },
+    {
+      "index": 37,
+      "allocator_wrapper_compiled": false,
+      "arguments": [
+        "project",
+        "4096",
+        "0",
+        "nan"
+      ],
+      "status": "passed",
+      "exit_code": 2,
+      "timed_out": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 18,
+        "sha256": "563f8b5b0949a92663873b2724a86ae829edc1540adcfdf9cb76aafc5886e115"
+      },
+      "observation": "expected CLI rejection"
+    }
+  ],
+  "receive_seconds": null,
+  "presented_done": null,
+  "limitations": [
+    "shared host; correctness-only short sanity, no speed comparison",
+    "no Qt event loop, fixed ConPTY, transport, input latency or presentation",
+    "no formal batches, budget or WindTerm performance acceptance",
+    "raw intervals and process/build logs remain local; only identities and correctness projections published"
+  ]
+}
