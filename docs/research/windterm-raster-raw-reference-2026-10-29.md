@@ -48,6 +48,6 @@ phase0 的 D0 两组完整 H/space 签名相同，S1 两组也相同，D0 与 S1
 
 普通和 `python -O` 对同一真实原件的公开出口逐字节相同，SHA 为 `a93b34233806fe3f32bf5fe70a0a5953ad43156d0a574cb79677784e9f3b9cca`，公开 validation 原样保留该出口。独立审计不调用现有分析器：从原消息核对五阶段/最终结果，重建实际注入脚本（含 Windows 写入换行），逐一重算 34 个数组的 histogram、有序 SHA、尺寸和数量，并以完整数组直接比较同帧正控；另核对源/模块/包、plan/attempt、DSR、ack、NAWS、marker/端点/caret/DPR/边界、构造析构和回收，结果一致。
 
-交付分支合入 main `4f34146ab81f5b156537b080df2156f484793cc4` 后，七个生产源、false proposal、旧批公开原记录与实际执行身份保持不变；独立离线审计再次通过，Debug 配置的 CTest `windterm_raster_style_reference`、`windterm_raster_selection_proposal`、`windterm_raster_raw_proposal` 为 3/3。只运行合成/离线测试，没有重新启动原版；这些测试不增加原版样本数。
+将 main `4f34146ab81f5b156537b080df2156f484793cc4` 合入交付分支后，七个生产源、false proposal、旧批公开原记录与实际执行身份保持不变；独立离线审计再次通过，Debug 配置的 CTest `windterm_raster_style_reference`、`windterm_raster_selection_proposal`、`windterm_raster_raw_proposal` 为 3/3。只运行合成/离线测试，没有重新启动原版；这些测试不增加原版样本数。
 
 原始 ROI 像素、日志、路径、PID、复制资源和 profile 留在唯一私有目录 `local/r129-raw-capture-v1-0`；公开仅有合成输入、审计后的颜色/尺寸/频数标量及哈希。[旧 #126 的 0 grab 停止](windterm-1049-raster-reference-2026-10-28.md)、[旧 #129 的 3 grab partial](windterm-raster-selection-reference-2026-10-29.md)、旧 false proposal 和原件均未改写；旧批第二个 H 与 phase3/4 的缺口没有补造或与本批拼接。本批不关闭 #129、#126、#123、#27 或 R2。
