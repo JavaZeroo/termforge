@@ -2,6 +2,8 @@
 
 状态：仅离线准备，尚未启动新原版。#126 的执行源 `15c736b`、一次 phase0/0 grab/0 pixel 记录保持不变。本计划是独立新源，等待最终复核及明确执行指令；私有准备计划默认 `execution_authorized=false`，启动入口会拒绝该状态。
 
+固定生产源为 `e302fa3acb6a2ed2982aad5550e027d37c772da6`。[脱敏准备计划](../../research/ui/results/2026-10-28-raster-selection-proposal/plan.json)列出每阶段 hex/SHA、源哈希与固定 Qt 身份；五阶段长度为 `43/38/20/53/54` 字节，另各追加 DSR。它是不可执行的离线提案，不是已获运行授权的计划；最终明确指令后应另生成新的授权计划及唯一输出，不修改旧批身份。
+
 ## 选区守卫与分开回放
 
 生产读取已验证的 `selectionCaretP`、`selectionAnchorP`，只接受两个已知、非负、有限的安全整数且相等。先把 `selectionText` 投影为 type/length，再读取端点；非空文本不参与判定，字符串本身不进入新捕获记录。端点不同或未知均停止，不能只删除守卫。

@@ -58,6 +58,12 @@ def fixture(root):
 
 
 class SelectionProposalTests(unittest.TestCase):
+    def test_public_proposal_is_not_execution_authorization(self):
+        plan=json.loads((ROOT/'research/ui/results/2026-10-28-raster-selection-proposal/plan.json').read_text())
+        self.assertFalse(plan['execution_authorized']);self.assertEqual(plan['actual_original_runs'],0)
+        self.assertEqual([row['source_hex'] for row in plan['phases']],[source.hex() for _,source in phases(25,91)])
+        self.assertEqual([row['source_bytes'] for row in plan['phases']],[43,38,20,53,54])
+
     def test_actual_records_replay_selection_gate_separately(self):
         replay=json.loads((ROOT/'research/ui/results/2026-10-28-raster-selection-proposal/replay.json').read_text())
         self.assertFalse(replay['endpoints_and_rois_from_different_runs_combined'])
