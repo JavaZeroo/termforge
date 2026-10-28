@@ -1,4 +1,4 @@
-#include "terminal_widget.hpp"
+#include "session_tabs.hpp"
 #include <QApplication>
 #include <QDir>
 #include <QDebug>
@@ -8,23 +8,13 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
     QApplication::setApplicationName(QStringLiteral("TermForge"));
     try {
-        termforge::qt::SessionModel model;
-        termforge::qt::TerminalWidget window(model);
-        bool launched = false;
-        window.setWindowTitle(QStringLiteral("TermForge — local shell"));
-        model.on_changed = [&] {
-            window.update();
-            if (launched && model.finished()) app.exit(model.natural_exit() ? static_cast<int>(model.exit_code()) : 1);
-        };
         wchar_t directory[MAX_PATH]{};
         const UINT length = GetSystemDirectoryW(directory, MAX_PATH);
         if (!length || length >= MAX_PATH) throw std::runtime_error("GetSystemDirectory failed");
+        termforge::qt::SessionTabs window(std::wstring(directory) + L"\\cmd.exe", L"/D", QDir::homePath().toStdWString());
+        window.setWindowTitle(QStringLiteral("TermForge — local shells"));
+        window.on_all_exited = [&](int status) { app.exit(status); };
         window.show();
-        launched = model.start(std::wstring(directory) + L"\\cmd.exe", L"/D", QDir::homePath().toStdWString());
-        if (!launched) {
-            window.setWindowTitle(QStringLiteral("TermForge — shell startup failed"));
-            window.update(); // Keep the error visible until the user closes it.
-        }
         return app.exec();
     } catch (const std::exception& error) {
         qCritical("%s", error.what());
