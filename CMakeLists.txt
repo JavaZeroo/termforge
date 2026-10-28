@@ -457,6 +457,12 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_ime_input_test>")
     set_tests_properties(qt_ime_input PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+    foreach(scenario normal cancel)
+      add_test(NAME qt_ime_observer_lifecycle_${scenario} COMMAND "${Python3_EXECUTABLE}"
+        "${PROJECT_SOURCE_DIR}/src/qt/run_ime_observer_lifecycle.py" "$<TARGET_FILE:qt_ime_input_test>" "${scenario}")
+      set_tests_properties(qt_ime_observer_lifecycle_${scenario} PROPERTIES TIMEOUT 35
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+    endforeach()
 
     add_executable(qt_cpp_resize_smoke src/qt/resize_smoke.cpp)
     set_target_properties(qt_cpp_resize_smoke PROPERTIES

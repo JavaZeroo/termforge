@@ -436,6 +436,9 @@ int main(int argc, char** argv) {
     try {
         if (app.arguments().size() == 3 && app.arguments().at(1) == QStringLiteral("--native-ime-observer"))
             return termforge::qt::ime_native::run(app, app.arguments().at(2));
+        if (app.arguments().size() == 3 && app.arguments().at(1) == QStringLiteral("--offscreen-ime-observer-lifecycle"))
+            return termforge::qt::ime_native::run(app, app.arguments().at(2),
+                                                termforge::qt::ime_native::Purpose::OffscreenLifecycle);
         const auto artifacts = qEnvironmentVariable("TERMFORGE_TEST_ARTIFACTS");
         if (!artifacts.isEmpty()) require(QDir().mkpath(artifacts), "IME artifact directory could not be created");
         QTemporaryDir workspace(artifacts.isEmpty() ? QString() : artifacts + QStringLiteral("/qt-ime-XXXXXX"));

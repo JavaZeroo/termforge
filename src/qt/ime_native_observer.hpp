@@ -160,9 +160,11 @@ inline bool ready_text(const QPointer<SessionPage>& page) {
     }
     return false;
 }
-inline int run(QApplication& app, const QString& directory) {
-    check(QGuiApplication::platformName() == QStringLiteral("windows"),
-          "native IME observer requires the windows platform plugin");
+enum class Purpose { NativeIme, OffscreenLifecycle };
+inline int run(QApplication& app, const QString& directory, Purpose purpose = Purpose::NativeIme) {
+    const bool native = purpose == Purpose::NativeIme;
+    check(QGuiApplication::platformName() == (native ? QStringLiteral("windows") : QStringLiteral("offscreen")),
+          "IME observer platform does not match its explicit purpose");
     check(!QFileInfo::exists(directory) && QDir().mkpath(directory), "native IME output directory must be new");
     ime_fixture::ControlledReceiver a(directory + QStringLiteral("/native-a.bin"), 50000);
     ime_fixture::ControlledReceiver b(directory + QStringLiteral("/native-b.bin"), 50000);
@@ -187,6 +189,7 @@ inline int run(QApplication& app, const QString& directory) {
             tab_rectangles.append(rect(QRectF(tabs->tabRect(index).translated(tabs->mapTo(&window, QPoint())))));
         return QJsonObject{{"schema", "termforge-qt-ime-native-observer-v1"},
                            {"qt_platform", QGuiApplication::platformName()},
+                           {"purpose", native ? "native-os-ime" : "offscreen-lifecycle-only"},
                            {"input_method_locale", QGuiApplication::inputMethod()->locale().name()},
                            {"window_device_pixel_ratio", window.devicePixelRatioF()},
                            {"window_client_rectangle_logical", rect(window.rect())},
@@ -217,6 +220,9 @@ inline int run(QApplication& app, const QString& directory) {
             }
             if (!finish_requested && QFileInfo::exists(directory + QStringLiteral("/finish.request"))) {
                 finish_requested = true; a.stop(); b.stop();
+            }
+            if (QFileInfo::exists(directory + QStringLiteral("/cancel.request"))) {
+                failed = true; failure = QStringLiteral("native observer cancelled by controller"); window.close();
             }
             if (!first_events.valid() || !second_events.valid()) {
                 failed = true; failure = QStringLiteral("native observer evidence gap"); window.close();
