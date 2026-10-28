@@ -135,7 +135,7 @@ public:
             else complete_if_finished();
         });
         new_session(executable_, arguments_, working_directory_);
-        setFixedSize(sizeHint());
+        resize(sizeHint());
     }
     ~SessionTabs() override { destroying_ = true; }
     SessionPage* new_session(const std::wstring& executable, const std::wstring& arguments,
