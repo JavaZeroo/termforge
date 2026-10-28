@@ -225,6 +225,14 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
     });
     QObject::connect(&timer, &QTimer::timeout, &lifetime, [&] {
         try {
+            // Check before any evidence I/O: a repeated write/control error
+            // must not prevent this absolute event-loop deadline from firing.
+            if (elapsed.elapsed() > 45000) {
+                deadline_expired = true;
+                fail_and_close(QStringLiteral("native observer execution deadline"));
+                app.exit(1);
+                return;
+            }
             if (!ready_written && a.ready() && b.ready() && ready_text(first) && ready_text(second)) {
                 ready_written = true;
                 save_json(directory + QStringLiteral("/ready.json"), state());
@@ -244,11 +252,6 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
             }
             if (!first_events.valid() || !second_events.valid()) {
                 fail_and_close(QStringLiteral("native observer evidence gap"));
-            }
-            if (elapsed.elapsed() > 45000) {
-                deadline_expired = true;
-                fail_and_close(QStringLiteral("native observer execution deadline"));
-                app.exit(1);
             }
         } catch (const std::exception& error) {
             fail_and_close(QString::fromUtf8(error.what()));
