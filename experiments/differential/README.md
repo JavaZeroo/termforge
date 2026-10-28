@@ -82,6 +82,10 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 自动断言包括备用屏恢复后的 `A/BZ` 主屏、滚动区结果 `B/D/X`、真实回复 `ESC[1;2R`、Recovery 的 `ABC U+FFFD D` 及双方分块不变性；[原始批次摘要](results/2026-10-25-capabilities-v2/summary.json)保留具体分类。未构建候选时主回归明确跳过可选项，candidate workflow 强制执行。
 
+自主核心接入限定 `1049h/l` 后，[当前参考诊断](results/2026-10-29-1049-reference/README.md)将该固定 `alternate_screen` 输入标为支持；这不表示全部备用屏模式通过。原输入/五种分块未变，whole 为 match，其余四计划保留为 `reference_difference`：原版 #118 观察支持进入归首格，自研保留该方向，Alacritty 参考在本例继承主光标。25 次分类为 10 core_unsupported、4 reference_difference、6 match、5 resize_difference，semantic_acceptance 仍为 false。
+
+这些四项台账除输入/尺寸/首差异/最终状态外，还精确固定双方**完整有序共同投影数组 SHA 和检查点数**。投影仍只作已有 NFC/空白表示统一，不隐藏光标、样式或历史差异。缺失字段、缺少任一初始/feed/显式 resize 检查点、未列计划或后续中间状态漂移均不能沿已知签名放行；即使首差异及双方最终状态保持相同也必须拒绝。原始 CI 失败、两个 OS 的独立签名重算与本地新诊断身份分别保留，不改写旧结果。
+
 两个测试 trace 在同一输入结束点执行 `--resize=2x6` 并追加同偏移检查点。双方实际尺寸均为 2×6，候选重排为 `123456`/`7890`、光标列 4，自研物理裁剪保留列 5，故记为 `resize_difference` 而非一致。`resize_covered=true`，但 `real_application_covered=false`、`semantic_acceptance=false`；重排合同由 #29 决定，本矩阵不提前实现产品功能。
 
 ## 真实应用核心轨迹（#25）
