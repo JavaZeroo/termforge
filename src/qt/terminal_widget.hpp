@@ -35,6 +35,10 @@ class TerminalWidget final : public QWidget {
     } composition_;
     bool resetting_input_method_ = false;
     static constexpr int margin = 8;
+    static constexpr int maximum_ime_units = 256;
+    // At most one nonempty format per unit, one cursor and one selection.
+    // No-op attributes share this budget rather than growing work or storage.
+    static constexpr int maximum_ime_attributes = maximum_ime_units + 2;
     int cell_width_ = 9;
     int cell_height_ = 19;
     bool grid_ready_ = false;
@@ -200,7 +204,7 @@ class TerminalWidget final : public QWidget {
         } else event->ignore();
     }
     static QByteArray literal_ime_text(const QString& text) {
-        if (text.size() > 256) throw ImeInputError("IME text exceeds 256 UTF-16 units");
+        if (text.size() > maximum_ime_units) throw ImeInputError("IME text exceeds 256 UTF-16 units");
         for (qsizetype index = 0; index < text.size(); ++index) {
             const auto unit = text.at(index);
             if (unit.isHighSurrogate()) {
@@ -217,12 +221,14 @@ class TerminalWidget final : public QWidget {
             (position == 0 || position == text.size() || !text.at(position).isLowSurrogate());
     }
     static Composition composition_for(const QInputMethodEvent& event) {
+        if (event.attributes().size() > maximum_ime_attributes)
+            throw ImeInputError("IME attributes exceed the bounded format budget");
         Composition next;
         next.text = event.preeditString();
         (void)literal_ime_text(next.text);
         next.cursor = static_cast<int>(next.text.size());
         bool cursor_seen = false;
-        std::array<bool, 256> formatted{};
+        std::array<bool, maximum_ime_units> formatted{};
         for (const auto& attribute : event.attributes()) {
             if (attribute.type == QInputMethodEvent::TextFormat) {
                 if (attribute.start < 0 || attribute.length < 0 || attribute.start > next.text.size() ||
@@ -233,6 +239,7 @@ class TerminalWidget final : public QWidget {
                     throw ImeInputError("IME text format range is invalid");
                 const auto value = attribute.value.value<QTextFormat>();
                 if (!value.isCharFormat()) throw ImeInputError("IME text format type is invalid");
+                if (!attribute.length) continue;
                 for (int index = attribute.start; index < attribute.start + attribute.length; ++index) {
                     if (formatted[static_cast<size_t>(index)]) throw ImeInputError("IME text formats overlap");
                     formatted[static_cast<size_t>(index)] = true;
