@@ -41,3 +41,5 @@ python -B -X utf8 -m research.ui.node_contract_deadline prepare-plan --plan loca
 `5ddecd4` 预审发现：完整23条前缀后追加非法/多余 checkpoint 时，解析错误保留完整前缀，原子状态判定却只检查前缀的 `complete`，可能误报 `passed`。批次层已有拒绝仍不足以保证子记录正确。该缺陷属于新诊断工具，与旧 CI 的10秒超时没有因果关系。
 
 公开 trace-data/launcher 判定边界的两个负例在 `66a0391` 均实际失败：正常 stdout、exit0、清理成功时，非法 JSON 尾和额外事件仍被旧子判定返回 `passed`。修正同时清除错误轨迹的完整标记、在子判定直接拒绝协议错误，并保留23条有效前缀；测试另保留完整合法对照及带错误的旧 `complete=true` 输入。相关纯测试的普通/`-O` 运行身份与原始记录留新的 `local/node-deadline-p2/`，不重跑此前的 Node/受控10秒挂起观察，也不改写旧计划或原件。
+
+实际修正验证源为 `3b74a947f09880d67d12eececa6907b7278e7640`：普通与 `-O` 各8项纯边界测试通过、无跳过。此前的 Node/受控进程观察仍仅属于 `5ddecd4`，不转记为新源码的执行结果；本次末尾只补说明和准备新 false 提案，正式有限批次仍待审查。
