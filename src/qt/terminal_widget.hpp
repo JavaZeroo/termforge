@@ -2,6 +2,7 @@
 #pragma once
 
 #include "terminal_session.hpp"
+#include "../../experiments/shell/keyboard.hpp"
 #include <QEvent>
 #include <QCoreApplication>
 #include <QCloseEvent>
@@ -17,6 +18,7 @@ namespace termforge::qt {
 
 class TerminalWidget final : public QWidget {
     SessionModel& model_;
+    tf_shell::KeyboardEncoder keyboard_;
     static constexpr int margin = 8;
     int cell_width_ = 9;
     int cell_height_ = 19;
@@ -41,31 +43,29 @@ class TerminalWidget final : public QWidget {
         return QWidget::event(event);
     }
     void keyPressEvent(QKeyEvent* event) override {
-        QByteArray bytes;
-        if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C) bytes = QByteArray(1, '\x03');
+        std::string bytes;
+        auto next = keyboard_;
+        if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C) bytes = std::string(1, '\x03');
         else if (event->modifiers().testFlag(Qt::ControlModifier) || event->modifiers().testFlag(Qt::AltModifier)) {
             QWidget::keyPressEvent(event); return;
         } else {
             switch (event->key()) {
             case Qt::Key_Return: case Qt::Key_Enter: bytes = "\r"; break;
-            case Qt::Key_Backspace: bytes = QByteArray(1, '\x7f'); break;
+            case Qt::Key_Backspace: bytes = std::string(1, '\x7f'); break;
             case Qt::Key_Tab: bytes = "\t"; break;
             case Qt::Key_Up: bytes = "\x1b[A"; break;
             case Qt::Key_Down: bytes = "\x1b[B"; break;
             case Qt::Key_Right: bytes = "\x1b[C"; break;
             case Qt::Key_Left: bytes = "\x1b[D"; break;
             default:
-                for (const auto character : event->text()) {
-                    if (character.unicode() < 0x20 || character.unicode() > 0x7e) {
-                        QWidget::keyPressEvent(event); return;
-                    }
-                }
-                bytes = event->text().toLatin1();
+                if (event->text().isEmpty()) { QWidget::keyPressEvent(event); return; }
+                for (const auto character : event->text()) bytes += next.character(character.unicode());
             }
         }
-        if (bytes.isEmpty()) { QWidget::keyPressEvent(event); return; }
-        model_.send(bytes);
-        event->accept();
+        if (bytes.empty() || model_.send(bytes)) {
+            keyboard_ = next;
+            event->accept();
+        } else event->ignore();
     }
     void paintEvent(QPaintEvent*) override {
         QPainter painter(this);
