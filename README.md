@@ -4,9 +4,9 @@
 
 An independent, fully open-source terminal project targeting WindTerm 2.7.0 feature, behavior, UI and performance parity. Windows 11 x64 first; Windows, Linux and macOS ultimately. Not affiliated with WindTerm or KingToolbox.
 
-当前是有限 Windows 本地终端原型，**R1 基础文字交互已按限定合同验收，正在推进 R2 可靠本地终端与开发版**。主线已有 Alacritty 候选实验、首批流式字素、有限多会话和配置恢复；候选核心与实验 ConPTY 后端的联合配置、完整 TUI/输入、真实不同 DPI、性能预算和开发包仍需闭合。现状见[能力矩阵](docs/FEATURES.md)，接续顺序见 [R2 交付路线与验收](docs/milestones/R2-local-terminal.md)。SSH/SFTP 属于 R3，完整 UI 与 WindTerm 性能等价均未验收。`TermForge` 是暂名。
+当前是有限 Windows 本地终端原型，**R1 基础文字交互已按限定合同验收，正在推进 R2 可靠本地终端与开发版**。已有 Win32 原型、有限多会话与配置恢复，以及独立 Alacritty 参考实验。正式路线已确定为自主 C++ 核心、当前采用 Qt Widgets GUI 与随包固定微软 ConPTY；新配置的最小整合、核心能力缺口、完整 TUI/输入、真实不同 DPI、性能预算和开发包仍需闭合。现状见[能力矩阵](docs/FEATURES.md)，接续顺序见 [R2 交付路线与验收](docs/milestones/R2-local-terminal.md)。SSH/SFTP 属于 R3，完整 UI 与 WindTerm 性能等价均未验收。`TermForge` 是暂名。
 
-方向已经用户确认，依据见 [ADR-0006](docs/adr/0006-confirmed-project-direction.md)：原版行为优先，内部结构不强求一致，但认真研究、借鉴原版；Alacritty 保留为候选，正式核心与 GUI/呈现选型待用户确认；Windows 本地 Shell 后端已确认采用[随包固定微软 ConPTY](docs/adr/0007-bundled-microsoft-conpty.md)，整合与验收尚未完成。关键性能指标分别验收，具体允许波动范围后续与用户明确。
+方向已经用户确认，依据见 [ADR-0006](docs/adr/0006-confirmed-project-direction.md)：原版行为优先，内部结构不强求一致，但认真研究、借鉴原版；用户已确认[自主 C++ 核心与当前 Qt Widgets GUI 路线](docs/adr/0008-cpp-core-qt-widgets.md)，Windows 本地 Shell 后端采用[随包固定微软 ConPTY](docs/adr/0007-bundled-microsoft-conpty.md)。Alacritty 保留为参考，路线确认与实现验收分开。关键性能指标分别验收，具体允许波动范围后续与用户明确。
 
 ## 开始使用
 
@@ -21,6 +21,8 @@ An independent, fully open-source terminal project targeting WindTerm 2.7.0 feat
 完整操作、自动验证与限制见[本地 shell 说明](experiments/shell/README.md)。默认核心 resize 按物理行裁剪，无 reflow；显式候选构建采用独立的 [resize 与历史合同](experiments/core/CANDIDATE.md)。受控 DPI 测试不等于实际跨显示器验证。
 
 ## 项目地图
+
+新的[自主 C++ / Qt 会话入口](src/qt/README.md)以显式构建开关提供固定 80×24 的最小本地会话；当前默认入口和上面的操作说明仍属于既有 Win32 原型。Qt 工作区、完整文字交互及动态 resize 尚待迁移，不能据此声明完整开发版。
 
 | 要了解什么 | 唯一入口 |
 |---|---|

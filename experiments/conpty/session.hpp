@@ -12,6 +12,7 @@
 #include <functional>
 #include <string_view>
 #include <exception>
+#include "backend.hpp"
 
 namespace tf_conpty {
 inline void fail(const char* operation, DWORD error = GetLastError()) {
@@ -38,6 +39,8 @@ public:
 // The local shell supplies an external bounded streaming consumer and input
 // worker; the lifecycle probe uses bounded capture and its --child entry point.
 class Session {
+    // Keep the API module alive until the reader, HPCON and handles stop.
+    Backend backend_;
     Handle input_, output_, process_, job_;
     HPCON console_ = nullptr;
     std::thread reader_;
@@ -53,17 +56,22 @@ public:
     unsigned long long output_bytes = 0;
     bool capture_overflow = false, forced_reader_cancel = false, forced_process_cancel = false;
     bool child_signaled = false, cleanup_complete = false;
-    Session() = default;
+    explicit Session(Backend backend = Backend::configured()) : backend_(std::move(backend)) {}
     Session(const Session&) = delete;
     Session& operator=(const Session&) = delete;
     ~Session() { close(); }
+    const char* backend_identity() const {
+        return backend_.side_by_side() ? "reviewed-side-by-side-1.25.260930003" : "system";
+    }
+    DWORD backend_creation_flags() const { return backend_.creation_flags(); }
 
     void start(const std::wstring& executable, const std::wstring& arguments = L"--child",
-               std::function<void(std::string_view)> consume = {}, const std::wstring& working_directory = {}) {
+               std::function<void(std::string_view)> consume = {}, const std::wstring& working_directory = {},
+               COORD initial_size = {80, 24}) {
         Handle child_input, child_output;
         if (!CreatePipe(child_input.put(), input_.put(), nullptr, 0)) fail("CreatePipe(input)");
         if (!CreatePipe(output_.put(), child_output.put(), nullptr, 0)) fail("CreatePipe(output)");
-        const HRESULT hr = CreatePseudoConsole({80, 24}, child_input.get(), child_output.get(), 0, &console_);
+        const HRESULT hr = backend_.create(initial_size, child_input.get(), child_output.get(), 0, &console_);
         if (FAILED(hr)) fail("CreatePseudoConsole", static_cast<DWORD>(hr));
         child_input.reset(); child_output.reset();
         reader_ = std::thread([this, consume = std::move(consume)] {
@@ -155,7 +163,7 @@ public:
         }
     }
     void resize(short columns, short rows) {
-        const HRESULT hr = ResizePseudoConsole(console_, {columns, rows});
+        const HRESULT hr = backend_.resize(console_, {columns, rows});
         if (FAILED(hr)) fail("ResizePseudoConsole", static_cast<DWORD>(hr));
     }
     bool wait_exit(unsigned timeout_ms, DWORD* observed_wait_result = nullptr, DWORD* observed_wait_error = nullptr) {
@@ -173,7 +181,7 @@ public:
     void close() noexcept {
         if (cleanup_complete) return;
         input_.reset();
-        if (console_) { ClosePseudoConsole(console_); console_ = nullptr; }
+        if (console_) { backend_.close(console_); console_ = nullptr; }
         if (process_.get()) {
             child_signaled = WaitForSingleObject(process_.get(), 5000) == WAIT_OBJECT_0;
             if (!child_signaled && job_.get()) {

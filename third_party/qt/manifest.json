@@ -1,0 +1,107 @@
+{
+  "schema": "termforge-qt-build-dependency-v1",
+  "name": "Qt qtbase",
+  "version": "6.10.3",
+  "host": "windows",
+  "target": "desktop",
+  "architecture": "win64_msvc2022_64",
+  "scope": "Local build dependency for the first C++/Qt migration entry; no released product package or complete redistribution acceptance.",
+  "required_application_modules": [
+    "Core",
+    "Gui",
+    "Widgets"
+  ],
+  "test_only_modules": [
+    "Test"
+  ],
+  "official_supported_configuration_url": "https://doc.qt.io/qt-6.10/windows.html",
+  "official_metadata": {
+    "url": "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_6103/qt6_6103/Updates.xml",
+    "bytes": 312649,
+    "sha256": "91e0a64cc859c28eb547192a9813cc2ffaac524a98250bc39a0b79fe8da6eae1"
+  },
+  "official_binary_archive": {
+    "name": "qt.qt6.6103.win64_msvc2022_64",
+    "version": "6.10.3-0-202603310407",
+    "release_date": "2026-03-31",
+    "archive": "qtbase-Windows-Windows_11_24H2-MSVC2022-Windows-Windows_11_24H2-X86_64.7z",
+    "url": "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_6103/qt6_6103/qt.qt6.6103.win64_msvc2022_64/6.10.3-0-202603310407qtbase-Windows-Windows_11_24H2-MSVC2022-Windows-Windows_11_24H2-X86_64.7z",
+    "bytes": 42748757,
+    "sha1": "08bd6fea980b53485877f5048c725ca334c19130",
+    "sha1_matches_official_sidecar": true,
+    "sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7"
+  },
+  "source": {
+    "module": "qtbase",
+    "version_tag": "v6.10.3",
+    "repository": "https://code.qt.io/qt/qtbase.git",
+    "source_archive_url": "https://download.qt.io/archive/qt/6.10/6.10.3/submodules/qtbase-everywhere-src-6.10.3.tar.xz",
+    "source_archive_downloaded_for_this_record": false,
+    "source_archive_sha256": null,
+    "note": "The matching official source archive is identified, not included or locally hash-verified by this build-dependency record."
+  },
+  "linkage": "dynamic",
+  "license": {
+    "intended_runtime_library_option": "LGPL-3.0-only",
+    "alternatives_observed_in_module_metadata": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+    "module_observations": [
+      {
+        "name": "Core",
+        "versionInfo": "6.10.3",
+        "licenseDeclared": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+        "licenseConcluded": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+        "downloadLocation": "git://code.qt.io/qt/qtbase.git@7ddbc87d8e14ce51d2957ea72d0a6077593d5ff4"
+      },
+      {
+        "name": "Gui",
+        "versionInfo": "6.10.3",
+        "licenseDeclared": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+        "licenseConcluded": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+        "downloadLocation": "git://code.qt.io/qt/qtbase.git@7ddbc87d8e14ce51d2957ea72d0a6077593d5ff4"
+      },
+      {
+        "name": "Widgets",
+        "versionInfo": "6.10.3",
+        "licenseDeclared": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+        "licenseConcluded": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+        "downloadLocation": "git://code.qt.io/qt/qtbase.git@7ddbc87d8e14ce51d2957ea72d0a6077593d5ff4"
+      },
+      {
+        "name": "Test",
+        "versionInfo": "6.10.3",
+        "licenseDeclared": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+        "licenseConcluded": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+        "downloadLocation": "git://code.qt.io/qt/qtbase.git@7ddbc87d8e14ce51d2957ea72d0a6077593d5ff4"
+      }
+    ],
+    "evidence": {
+      "sdk_sbom_relative_path": "sbom/qtbase-6.10.3.spdx.json",
+      "sdk_sbom_sha256": "51bdcf25ae10a6af0ce10030bf816ab10da0b2f70b35e0e9c55bd4b43241e659",
+      "public_source_example": "https://raw.githubusercontent.com/qt/qtbase/v6.10.3/src/widgets/kernel/qwidget.h"
+    },
+    "official_documents": [
+      "https://doc.qt.io/qt-6.10/licensing.html",
+      "https://doc.qt.io/qt-6.10/qtwidgets-index.html#licenses",
+      "https://doc.qt.io/qt-6.10/qttest-index.html#licenses",
+      "https://doc.qt.io/qt-6.10/licenses-used-in-qt.html"
+    ],
+    "third_party_code_scope": "Qt includes third-party components with their own licenses; the module-level expression is not a full deployed-file license inventory.",
+    "redistribution_review_status": "pending_before_product_distribution"
+  },
+  "installer": {
+    "name": "aqtinstall",
+    "version": "3.3.0",
+    "selected_archives": [
+      "qtbase"
+    ],
+    "transformations": "aqtinstall patches qmake.exe and .prl installation prefixes; archive hash and installed selected-file hashes are distinct identities.",
+    "hash_scope": "The archive SHA-256 identifies the untouched official 7z. It is not the hash of an aqt-patched SDK directory, qmake.exe, .prl file or deployed product."
+  },
+  "deployment_status": {
+    "published_product_package": false,
+    "clean_machine_runtime_validation": "pending",
+    "license_notices_and_corresponding_source_review": "pending",
+    "sdk_translations_installed": false,
+    "note": "The current local build uses windeployqt without translations or compiler-runtime deployment; no standalone clean-machine runtime completeness is claimed."
+  }
+}

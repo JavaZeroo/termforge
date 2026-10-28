@@ -4,13 +4,14 @@
 
 每条证据仅支持其固定配置，不能把历史成功、局部模块、未合并分支拼成当前产品验收：
 
-产品方向和确认依据见 [ADR-0006](adr/0006-confirmed-project-direction.md)。Windows PTY 路线已由用户确认采用[随包固定微软 ConPTY](adr/0007-bundled-microsoft-conpty.md)，整合与验收仍未完成。历史候选比较及限定合同保留事实身份，不构成用户批准正式选型或重要差异；关键性能容差仍待可靠基线后与用户明确。
+产品方向和确认依据见 [ADR-0006](adr/0006-confirmed-project-direction.md)。Windows PTY 路线已由用户确认采用[随包固定微软 ConPTY](adr/0007-bundled-microsoft-conpty.md)，正式核心继续自主 C++，当前 GUI 采用 [Qt Widgets](adr/0008-cpp-core-qt-widgets.md)；新组合的整合与验收仍未完成。历史 Alacritty 与 Win32 比较及限定合同保留事实身份，不转记为新产品组合能力或重要差异的批准；关键性能容差仍待可靠基线后与用户明确。
 
 | 配置 | 证据定位 |
 |---|---|
-| main 默认：自研核心 + 系统 ConPTY | R1 限定总验收和有限 VT/Unicode 子集；默认构建不需要 Rust |
-| main 显式候选：`termforge.4` + 系统 ConPTY | [固定来源/补丁台账](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)、[#39 字素合同](research/streaming-graphemes.md)；仅按已有合同验收 |
-| PR #50 实验：`termforge.4` + 固定官方 ConPTY | [Draft PR](https://github.com/JavaZeroo/termforge/pull/50) / [#47](https://github.com/JavaZeroo/termforge/issues/47)；[联合基线](research/joint-conpty-baseline.md)已固定，产品回归未全绿；[resize #51](https://github.com/JavaZeroo/termforge/issues/51)、[GUI Vim #52](https://github.com/JavaZeroo/termforge/issues/52)、[工作区 #63](https://github.com/JavaZeroo/termforge/issues/63)仍开放。[#53 的未完成粘贴、负例及原八会话证据](https://github.com/JavaZeroo/termforge/blob/848cb0e621a291f732cc0e046d0b2fab6a77d962/docs/research/resize-replay-cost.md)已按限定合同整合到实验父分支；不包含同次真实 CF/IME 或完整官方矩阵验收 |
+| 自主 C++ + Qt Widgets + 固定微软 ConPTY 正式目标 | [ADR-0007](adr/0007-bundled-microsoft-conpty.md) / [ADR-0008](adr/0008-cpp-core-qt-widgets.md) 记录用户确认；新组合的实现与验证另行留证，不引用旧默认或 Alacritty 通过结果代替 |
+| 既有默认/Alpha：自主 C++ + 系统 ConPTY + Win32 | R1 限定总验收和有限 VT/Unicode 子集；与当前 Qt/固定后端目标组合分列 |
+| Alacritty 历史参考：`termforge.4` + 系统 ConPTY | [固定来源/补丁台账](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)、[#39 字素合同](research/streaming-graphemes.md)；结果仅证明其固定配置，不转为自主 C++ 能力 |
+| PR #50 历史联合基线：`termforge.4` + 固定官方 ConPTY | [Draft PR](https://github.com/JavaZeroo/termforge/pull/50) / [#47](https://github.com/JavaZeroo/termforge/issues/47)；[联合基线](research/joint-conpty-baseline.md)已固定，产品回归未全绿；该基线当时的 resize/工作区失败由 #51/#63 后续在原实验分支限定闭合，#52 GUI Vim 及新组合完整验收仍未完成。[#53 的未完成粘贴、负例及原八会话证据](https://github.com/JavaZeroo/termforge/blob/848cb0e621a291f732cc0e046d0b2fab6a77d962/docs/research/resize-replay-cost.md)已按限定合同整合到实验父分支；不包含同次真实 CF/IME 或完整官方矩阵验收 |
 
 R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分别只代表原记录。源 VT、原生控制台 CHAR_INFO、transport、末端状态、自有 DIB、绘制提交和真实呈现是不同检查点；未知端点保持未知。
 

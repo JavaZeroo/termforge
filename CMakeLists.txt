@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(termforge_experiments VERSION 0.1.0 LANGUAGES CXX)
 
 option(TERMFORGE_BUILD_CANDIDATE_ADAPTER "Build the Rust candidate C++ adapter checks" OFF)
+option(TERMFORGE_BUILD_QT_SHELL "Build the C++/Qt local-shell migration entry" OFF)
 
 # Single-config generators use bin/, multi-config generators use bin/<config>/.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -325,5 +326,62 @@ if(BUILD_TESTING)
     set_tests_properties(shell selection_bytes selection_context text_actions paste_system PROPERTIES RESOURCE_LOCK system_clipboard)
   else()
     termforge_add_python_test(research_guards -m unittest research.tests.test_ui_probe research.tests.test_ui_typography research.tests.test_ui_r1 research.tests.test_ime_evidence -v)
+  endif()
+endif()
+
+if(TERMFORGE_BUILD_QT_SHELL)
+  if(NOT WIN32)
+    message(FATAL_ERROR "The first Qt local-shell migration entry requires Windows x64")
+  endif()
+  find_package(Qt6 6.10.3 EXACT REQUIRED COMPONENTS Widgets)
+  include(cmake/ConptyBackend.cmake)
+  get_target_property(qt_core_dll Qt6::Core IMPORTED_LOCATION_RELEASE)
+  get_filename_component(qt_binary_directory "${qt_core_dll}" DIRECTORY)
+  find_program(qt_deploy_tool windeployqt HINTS "${qt_binary_directory}" NO_DEFAULT_PATH REQUIRED)
+
+  function(termforge_qt_entry target)
+    target_link_libraries(${target} PRIVATE termforge_core Qt6::Widgets user32)
+    target_compile_definitions(${target} PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN
+      _WIN32_WINNT=0x0A00 QT_NO_KEYWORDS)
+    termforge_warnings(${target})
+    termforge_use_bundled_conpty(${target})
+    add_custom_target(${target}_font_bundle
+      COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:${target}>/assets/fonts"
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "${PROJECT_SOURCE_DIR}/assets/fonts/RobotoMono-Regular.ttf"
+        "${PROJECT_SOURCE_DIR}/assets/fonts/OFL.txt"
+        "${PROJECT_SOURCE_DIR}/assets/fonts/README.md"
+        "$<TARGET_FILE_DIR:${target}>/assets/fonts"
+      VERBATIM)
+    add_dependencies(${target} ${target}_font_bundle)
+    add_custom_command(TARGET ${target} POST_BUILD
+      COMMAND "${qt_deploy_tool}" --release --no-translations --no-compiler-runtime
+        "$<TARGET_FILE:${target}>"
+      VERBATIM)
+  endfunction()
+
+  qt_add_executable(termforge_qt_shell WIN32 src/qt/main.cpp)
+  set_target_properties(termforge_qt_shell PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-bin/$<CONFIG>")
+  termforge_qt_entry(termforge_qt_shell)
+
+  if(BUILD_TESTING)
+    find_package(Qt6 6.10.3 EXACT REQUIRED COMPONENTS Test)
+    add_executable(qt_cpp_shell_smoke src/qt/shell_smoke.cpp)
+    set_target_properties(qt_cpp_shell_smoke PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-smoke-bin/$<CONFIG>")
+    termforge_qt_entry(qt_cpp_shell_smoke)
+    target_link_libraries(qt_cpp_shell_smoke PRIVATE Qt6::Test)
+    # windeployqt deploys the Windows product plugin; this independent
+    # non-input test uses Qt's offscreen platform and needs its own plugin.
+    add_custom_command(TARGET qt_cpp_shell_smoke POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_cpp_shell_smoke>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_cpp_shell COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_shell_smoke>")
+    set_tests_properties(qt_cpp_shell PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
   endif()
 endif()

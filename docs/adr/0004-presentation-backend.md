@@ -3,10 +3,10 @@
 > A1/G1/G2 为历史代号；首个本地窗口已进入当前原型。后端与平台边界的重审归入 [R2 产品架构决策](../PLAN.md)，须在扩大远程和跨平台产品整合前完成，不能以本 ADR 将实验后端永久定案。
 
 - 日期：2026-10-23
-- 状态：历史实验选择保留；仅覆盖 Windows 的 A1/G1 实验，产品 GUI/呈现选型待用户确认。Windows 本地 Shell 的 PTY 后端已另由 [ADR-0007](0007-bundled-microsoft-conpty.md)确认。
+- 状态：历史 Win32/DirectWrite/Direct2D 实验保留；2026-10-28 用户已按 [ADR-0008](0008-cpp-core-qt-widgets.md)确认当前采用 Qt Widgets GUI 路线，具体绘制实现与验收仍待完成。Windows PTY 后端由 [ADR-0007](0007-bundled-microsoft-conpty.md)确认。
 - 前置：[V1 窗口探针](../../experiments/presentation/README.md)、[ADR-0001](0001-evidence-before-stack.md)、[ADR-0002](0002-automation-first-investigation.md)。
 
-当前按 [ADR-0006](0006-confirmed-project-direction.md) 优先实现 Windows 11 x64 的完整复刻，最终覆盖 Windows/Linux/macOS。#34 必须给出原版行为、性能、跨平台可行性和维护取舍的具体方案，经用户确认后定案；保留本实验不等于用户选定 Win32、DirectWrite 或 Direct2D。具体性能容差尚待用户明确。
+当前按 [ADR-0006](0006-confirmed-project-direction.md) 优先实现 Windows 11 x64 的完整复刻，最终覆盖 Windows/Linux/macOS。产品 GUI 当前采用 Qt Widgets，见 [ADR-0008](0008-cpp-core-qt-widgets.md)；本实验结果用于已有实现和绘制对照，不要求产品永久沿用 Win32 控件或当前软件 DC target。#34 接续迁移、平台与维护边界，具体性能容差尚待用户明确。
 
 ## 问题与候选
 
@@ -20,7 +20,7 @@ DirectWrite 可从实际绘制 layout 的 glyph run 直接取得字体身份与�
 
 资源预热后，保留每配置 48 个 draw / submission 原始样本和相邻计时器探针。分布仍波动，计时包含 software DC 绘制和 GDI 提交，没有完整观察器校准、用户呈现或持续交互的测量。这些数据不支持候选性能排名。
 
-## 决策
+## 决策（历史实验）
 
 A1 暂采用 **DirectWrite 文字布局 + 可替换的 Direct2D 绘制适配**，沿用小型 Win32 HWND 宿主。当前软件 DC target 作为正确性和集成起点；硬件加速、交换链或其他 UI 框架不在本次决策中。
 
@@ -36,4 +36,4 @@ A1 暂采用 **DirectWrite 文字布局 + 可替换的 Direct2D 绘制适配**�
 - 软件 DC target、逐格 layout 查找以及全量快照复制可能成为成本来源；当前未将它们认定为实际瓶颈。缓存对固定输入有界，产品路径必须增加预算/淘汰。
 - 当 A1 接入持续输出/输入后，若帧预算、延迟、多会话公平性、内存、字体正确性或跨平台维护无法满足需求，重新比较硬件呈现、数据布局与其他候选。任何后端替换应重跑同一状态/光标/字体/图像检查，并记录真实端点和观察扰动。
 
-在 G2 产品后端定案前重审本 ADR。性能是否接近 WindTerm 仍归正式共同负载与端点对照，不能由本 ADR 推出。
+后续产品实施遵循 ADR-0007/0008；本实验与新配置分别验证。性能是否接近 WindTerm 仍归正式共同负载与端点对照，不能由本 ADR 推出。

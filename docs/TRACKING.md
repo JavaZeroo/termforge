@@ -2,7 +2,7 @@
 
 本页只导航到 GitHub 任务，不维护第二份进度表。能力与构建配置见 [FEATURES](FEATURES.md)，R1–R5 范围见 [PLAN](PLAN.md)，当前接续顺序与完成条件见 [R2 交付路线与验收](milestones/R2-local-terminal.md)。实时状态、原生父子/阻塞关系和验收记录以各 issue 为准。
 
-执行方向按 [ADR-0006](adr/0006-confirmed-project-direction.md)：优先终端基础能力与性能，首个完整版本为 Windows 11 x64，随后完成 Linux/macOS；原版行为优先。[ADR-0007](adr/0007-bundled-microsoft-conpty.md)已确认 Windows PTY 采用随包固定微软 ConPTY，#47 接续整合；#34 负责提交其余核心与 GUI/呈现选型供用户确认，#4/#54 提供基线和预算提案，性能容差经用户明确后生效。候选实验和既有关闭任务均不自动构成用户确认。
+执行方向按 [ADR-0006](adr/0006-confirmed-project-direction.md)：优先终端基础能力与性能，首个完整版本为 Windows 11 x64，随后完成 Linux/macOS；原版行为优先。[ADR-0007](adr/0007-bundled-microsoft-conpty.md)已确认 Windows PTY 采用随包固定微软 ConPTY，#47 接续整合；[ADR-0008](adr/0008-cpp-core-qt-widgets.md)已确认自主 C++ 核心与当前 Qt Widgets GUI，#34 接续接口、迁移和支持配置收敛，#4/#54 提供基线和预算提案，性能容差经用户明确后生效。候选实验和既有关闭任务均不自动构成用户确认。
 
 ## 产品路标
 
@@ -20,7 +20,7 @@
 
 | 工作 | 责任任务 | 硬前置或联合条件 |
 |---|---|---|
-| 主线候选与官方后端的联合基线 | [联合配置基线 #55](https://github.com/JavaZeroo/termforge/issues/55) | 从明确的 main 与 Draft 身份整合；可带已知 red 如实结项，不等待所有后端问题先修好 |
+| 历史候选/官方后端联合基线 | [联合配置基线 #55](https://github.com/JavaZeroo/termforge/issues/55) | 保留原固定源码与红/绿结果；可复用输入和接入经验，不替代自主 C++/Qt/固定 ConPTY 的新配置验收 |
 | 原生 API / VT 末端 margin 的处理路径 | [平台语义与方案 #56](https://github.com/JavaZeroo/termforge/issues/56) | 可用固定探针独立推进；不能以策略说明豁免 #41 原合同 |
 | 实验后端连续 resize | [残尾与 Unicode 重放 #51](https://github.com/JavaZeroo/termforge/issues/51) | 原生 viewport 与原 GUI/Unicode 合同已由 PR #89 在实验父分支限定闭合；完整 resize 由 #29、最终官方配置由 #47 接续 |
 | 实验后端 Vim | [Console-width Vim #52](https://github.com/JavaZeroo/termforge/issues/52) | GUI 兼容方案仍未闭合；native 捕获修正、运行库隔离实验与原固定运行库结果分列，早期 flags0 成功不替代最终配置 |
@@ -45,7 +45,7 @@
 | Windows 工作流可靠性 | [回归汇总 #38](https://github.com/JavaZeroo/termforge/issues/38) | #40/#44/#57/#73/#80/#81/[#85](https://github.com/JavaZeroo/termforge/issues/85)；已闭合切片和旧失败保留在该总项，不再排入当前队列 |
 | 显式官方 ConPTY 整合 | [后端汇总 #47](https://github.com/JavaZeroo/termforge/issues/47) | #52 GUI Vim、完整官方矩阵和同次系统输入仍未闭合；#51/#53/#62/#63 与 #52 native 捕获已有各自限定修正，实验可选不等于产品默认或日常验收 |
 | 每缓冲区 margin 端到端合同 | [margin 汇总 #41](https://github.com/JavaZeroo/termforge/issues/41) | #47/#56；原生 API、transport 和末端分别验证 |
-| 产品核心、GUI/平台与呈现边界 | [选型提案与用户确认 #34](https://github.com/JavaZeroo/termforge/issues/34) | #28–#31/#54，结合 #23/#26/#32/#33 和原版对标证据；重审 ADR-0003/0004，记录用户确认 |
+| 正式路线接口、GUI 迁移与呈现边界 | [架构与整合 #34](https://github.com/JavaZeroo/termforge/issues/34) | ADR-0007/0008 已确认路线；独立切片推进最小整合，#34 汇总接口与支持配置，#28–#31/#54 的实际验收条件继续保留 |
 | 最终 Windows 开发版 | [产物与持续运行 #35](https://github.com/JavaZeroo/termforge/issues/35) | #27–#34/#36/#38；在最终产物上执行完整合同后核对 #7 出口 |
 
 ## 已交付基础与历史入口
@@ -54,7 +54,7 @@
 |---|---|
 | R1 基础文字与同次八会话限定验收 | [R1 总项 #6](https://github.com/JavaZeroo/termforge/issues/6)、[组合验收 #18](https://github.com/JavaZeroo/termforge/issues/18)、[合同](milestones/R1-local-text.md) |
 | Alpha 1 Windows x64 体验包 | [发布切片 #22](https://github.com/JavaZeroo/termforge/issues/22)、[发布说明](releases/v0.1.0-alpha.1.md)、[下载与验证](releases/v0.1.0-alpha.1-validation.json) |
-| R2 平台调查与候选比较证据 | [平台 #23](https://github.com/JavaZeroo/termforge/issues/23)归属 [全量台账 #19](https://github.com/JavaZeroo/termforge/issues/19)；[候选 #24](https://github.com/JavaZeroo/termforge/issues/24)、[差分 #25](https://github.com/JavaZeroo/termforge/issues/25)、[成本/历史路线 #26](https://github.com/JavaZeroo/termforge/issues/26)归属 [历史比较 #20](https://github.com/JavaZeroo/termforge/issues/20)；限定结项保留，正式选型待 #34 用户确认 |
+| R2 平台调查与候选比较证据 | [平台 #23](https://github.com/JavaZeroo/termforge/issues/23)归属 [全量台账 #19](https://github.com/JavaZeroo/termforge/issues/19)；[候选 #24](https://github.com/JavaZeroo/termforge/issues/24)、[差分 #25](https://github.com/JavaZeroo/termforge/issues/25)、[成本/历史路线 #26](https://github.com/JavaZeroo/termforge/issues/26)归属 [历史比较 #20](https://github.com/JavaZeroo/termforge/issues/20)；限定结项保留为参考，当前正式路线见 ADR-0007/0008，#34 接续整合与证据 |
 | 有限本地会话与配置恢复 | [本地会话 #32](https://github.com/JavaZeroo/termforge/issues/32)、[持久化 #33](https://github.com/JavaZeroo/termforge/issues/33)，能力边界见 [FEATURES](FEATURES.md) |
 | 首批流式字素、宽度与 glyph | [字素合同 #39](https://github.com/JavaZeroo/termforge/issues/39)、[来源与合同](research/streaming-graphemes.md)，完整输入由 #30 继续验收 |
 | 已闭合的回归/夹具与参考捕获 | #38 的原生子项及 [EVIDENCE](EVIDENCE.md)保留 #37/#42/#45/#46 等固定原因和证据，不再次当作待做功能 |
