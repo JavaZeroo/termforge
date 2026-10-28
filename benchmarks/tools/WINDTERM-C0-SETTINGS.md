@@ -1,6 +1,6 @@
-# #133：本地 cmd 实际网格与设置读取准备
+# #133：本地 cmd 实际网格与设置读取诊断
 
-状态：仅离线准备，**新原版运行数为 0**。[固定计划](results/2026-10-29-c0-settings-proposal/plan.json)为 `execution_authorized=false`，没有输出目录或 attempt marker。生产源固定为 `28f293a5d2c01954dc8b418a02231603128955a6`；等待 root 复核及独立执行授权，不改 false proposal 或旧 #119 原件。
+状态：生产源 `28f293a5d2c01954dc8b418a02231603128955a6`、准备 HEAD `b22293f` 经复核后，由 root 监督一次独立实际执行，CLI 已结束、Job 已清理。[结果](results/2026-10-29-c0-settings-reference/README.md)为 partial：producer console 和原版 view 的窗口均读到 120×40，其他 C0 设置仍有未知。[原 false proposal](results/2026-10-29-c0-settings-proposal/plan.json)保持不变；另建的[授权计划](results/2026-10-29-c0-settings-reference/plan.json)与新原件分开绑定，不改旧 #119 证据。
 
 [#133](https://github.com/JavaZeroo/termforge/issues/133) 的父项为 #3，真实前置 #119 已关闭。沿用其 14 行/536B ASCII 全文 oracle、原版本地 cmd→producer、OwnedJob 和非输入 desktop 边界；本项只调查请求配置是否有实际读取路径，不取得完整 C0、历史淘汰或性能验收。
 
@@ -51,4 +51,4 @@ Oracle 输入和 run_id 在计划中预先固定。另建授权计划时可用 `
 
 [公共测试](test_windterm_c0_settings.py)覆盖严格 14 行 oracle、请求/实际/未知分离、全 manifest 先验、仅三 token 的 BOM/注释字节保留、配置和发现白名单、普通/`-O` CLI 拒绝 false plan 且不创建输出、cmd 元字符提前拒绝，以及合成 WinAPI 边界的 Job-before-resume 和 CLI 异常回收。[合成 QJSEngine 边界](../../research/ui/test_cmd_settings_probe.js)执行实际新读值逻辑，验证有限枚举、异常值抑制和不调用未知方法。
 
-新工具普通及 `python -O` 各 14 项通过；旧工具 12 项保持通过，Debug 配置 CTest `windterm_cmd_contract` / `windterm_c0_settings_contract` 2/2 通过；组合注入脚本另经 Node 语法检查。所有验证均未启动原版。旧源码与旧证据保持独立；本方案提供可 review 的下一次调查工具及输入，不提供新的实际配置或 C0 通过事实。
+离线新工具普通及 `python -O` 各 14 项通过；旧工具 12 项保持通过，Debug 配置 CTest `windterm_cmd_contract` / `windterm_c0_settings_contract` 2/2 通过；组合注入脚本另经 Node 语法检查。这些工具测试没有启动原版。其后唯一实际执行及独立离线重算见结果；九个生产源、false proposal、正常/优化导出及全部原件保持不变。本项仍不提供完整 C0 或性能通过事实。

@@ -1,0 +1,88 @@
+{
+  "schema": "termforge.windterm-c0-settings.v1",
+  "issue": 133,
+  "execution_authorized": true,
+  "maximum_original_runs": 1,
+  "source_base_commit": "b22293f7fbc78c282fa01b12d28e53e5e2ff00c9",
+  "run_id": "e736ad1ca79c4cfc85d468fdd5e5899e",
+  "rea_capture_seconds": 30,
+  "cli_wait_timeout_seconds": 45,
+  "whole_lifecycle_bound_seconds": null,
+  "module_sha256": {
+    "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+    "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+    "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358",
+    "Qt5Qml.dll": "30035484c81590976627f8face9507caa8581a7dc7630cccf6a8d6de65cab707"
+  },
+  "baseline_files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "requested_session": {
+    "window.autoAdjustRowsAndColumns": false,
+    "window.columns": 120,
+    "window.rows": 40,
+    "window.scrollbackLimit": 10000
+  },
+  "requested_global": {
+    "text.fontFamily1": "Cascadia Mono",
+    "text.fontSize": 12,
+    "terminal.autoComplete.enabled": false
+  },
+  "static_resource_sha256": {
+    "global/wind.config": "0a4f02250b855e9209960f934892f30e3b4b800c0c4c80cea3acd8af527ca177",
+    "terminal/configs/session.config": "e97009e1c57ba17709bc52738c964df18341cfc0c24895f76821b9a6141803cd",
+    "terminal/configs/statusbar.config": "a4f7df8f9f215eeba227714438c0ee15070cc85921ab1ebd88d991ad4efef25d"
+  },
+  "static_config_hints": {
+    "evidence_kind": "static-only",
+    "global": {
+      "text.fontFamily1": "Roboto Mono",
+      "text.fontSize": 10,
+      "terminal.autoComplete.enabled": true
+    },
+    "session": {
+      "window.autoAdjustRowsAndColumns": true,
+      "window.columns": 80,
+      "window.rows": 24,
+      "window.scrollbackLimit": 999999
+    }
+  },
+  "expected_configured_global_sha256": "01a5465e6b4dec6567ac4cf3d21df360f09b737f77c0861ec3f250400806081d",
+  "source_files_sha256": {
+    "benchmarks/tools/windterm_c0_settings.py": "609614b51f20fd76ba8da0a5cc82bd47c45b8f3715c906050a258e557ed50970",
+    "research/ui/qt_cmd_settings.js": "b0c008afd2318ae60cdf3a8f3f3cc87cc042db9bb03013c09246ba1a498f866b",
+    "research/ui/cmd_owned_launcher.py": "20f38736fa14600b5c659d9e14bfb150932639af1326d2bbe04fcfe6cd32c357",
+    "benchmarks/tools/windterm_cmd.py": "e517f8cab36d55e5d4bdda3fc14d4641e5ce6256991af04762dbf43c25961297",
+    "research/ui/qt_cmd_diagnostic.js": "9ed0d6ee6bd6e82bae6d9a6802690b3b0b83f437c7b20f0333008b5f6c214756",
+    "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "benchmarks/tools/play.py": "1c83f400d45f94f4d7100c177c7cf42f98d0add037c5d31f232092f4dd6b9fea",
+    "experiments/conpty/run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329"
+  },
+  "composed_template_sha256": "314e7320146bb3422e4488a41b9af1bc22b52c920b6b73e078d2c0e0761017fc",
+  "helper_prefix_sha256": "ca8057c1979d700957eceb829e12b2d866c64eff7d3ae04daa9c95abea11299e",
+  "workload": {
+    "lines": [
+      "TF-CMD-BEGIN e736ad1ca79c4cfc85d468fdd5e5899e",
+      "TF-CMD-000 35f0debf71dd0844cfac4f9d",
+      "TF-CMD-001 247605d13990f0ed8aec7035",
+      "TF-CMD-002 06b01e9778fea56e4ef334f1",
+      "TF-CMD-003 a05831d81fe13dac18746dbb",
+      "TF-CMD-004 1e2f6b1e2d6156984fd38e68",
+      "TF-CMD-005 8f66fae705ec7fc7c0a8b766",
+      "TF-CMD-006 54bf94fa52a55e12489c166b",
+      "TF-CMD-007 740d7c69a480613408434292",
+      "TF-CMD-008 febc0660156a697069d422b9",
+      "TF-CMD-009 e658d25af22aefd3ada53833",
+      "TF-CMD-010 6e781bafc07a68895a2674b4",
+      "TF-CMD-011 8cb1e7d5def3ce44b479e072",
+      "TF-CMD-END e736ad1ca79c4cfc85d468fdd5e5899e"
+    ],
+    "payload_hex": "54462d434d442d424547494e2065373336616431636137396334636663383564343638666464356535383939650d0a54462d434d442d303030203335663064656266373164643038343463666163346639640d0a54462d434d442d303031203234373630356431333939306630656438616563373033350d0a54462d434d442d303032203036623031653937373866656135366534656633333466310d0a54462d434d442d303033206130353833316438316665313364616331383734366462620d0a54462d434d442d303034203165326636623165326436313536393834666433386536380d0a54462d434d442d303035203866363666616537303565633766633763306138623736360d0a54462d434d442d303036203534626639346661353261353565313234383963313636620d0a54462d434d442d303037203734306437633639613438303631333430383433343239320d0a54462d434d442d303038206665626330363630313536613639373036396434323262390d0a54462d434d442d303039206536353864323561663232616566643361646135333833330d0a54462d434d442d303130203665373831626166633037613638383935613236373462340d0a54462d434d442d303131203863623165376435646566336365343462343739653037320d0a54462d434d442d454e442065373336616431636137396334636663383564343638666464356535383939650d0a",
+    "payload_bytes": 536,
+    "sha256": "2bf0d9bc3e5b296fb7484c8cca86491d6c307f054b43cd37b81845d8b612b7d8"
+  },
+  "scope": "Non-input-desktop small-cmd settings read diagnostic, not C0 visibility, history eviction, terminal timing or performance acceptance",
+  "production_source_commit": "28f293a5d2c01954dc8b418a02231603128955a6",
+  "actual_original_runs": 1,
+  "private_plan_sha256": "d1678750af02c27e60dec373b38ca49cca8cedd254a0c3708ea9e1b841494afc"
+}
