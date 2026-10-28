@@ -108,18 +108,24 @@ protected:
             // never label a coalesced image as this event's exact rendered state.
             QTimer::singleShot(0, this, [this, sequence] {
                 if (!page_) return;
+                bool coalesced_input = false;
+                for (qsizetype index = sequence + 1; index < events_.size(); ++index)
+                    if (events_.at(index).toObject().value("kind").toString() == QStringLiteral("input-method"))
+                        coalesced_input = true;
                 QImage image(page_->terminal().size(), QImage::Format_ARGB32);
                 image.fill(Qt::transparent); page_->terminal().render(&image);
                 const auto name = label_ + QStringLiteral("-frame-%1.png").arg(sequence);
                 if (!image.save(directory_ + QLatin1Char('/') + name)) write_failed_ = true;
                 append({{"kind", "queued-frame"}, {"input_sequence", sequence},
-                        {"events_seen_before_frame", events_.size()}, {"image", name}, {"state", target()}});
+                        {"events_seen_before_frame", events_.size()}, {"coalesced_input_updates", coalesced_input},
+                        {"image", name}, {"state", target()}});
             });
         } else if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease) {
             const auto* key = static_cast<QKeyEvent*>(event);
             QJsonObject row{{"kind", event->type() == QEvent::KeyPress ? "key-press" : "key-release"},
                             {"key", key->key()}, {"native_virtual_key", static_cast<qint64>(key->nativeVirtualKey())},
                             {"native_scan_code", static_cast<qint64>(key->nativeScanCode())},
+                            {"modifiers", key->modifiers().toInt()}, {"auto_repeat", key->isAutoRepeat()},
                             {"spontaneous", event->spontaneous()}};
             if (key->text().size() > 256) evidence_gap_ = true;
             else row.insert("text_utf16le_hex", units(key->text()));
@@ -140,6 +146,15 @@ public:
     bool valid() const { return !evidence_gap_ && !write_failed_; }
     QJsonObject snapshot() { write(); return target(); }
 };
+inline bool ready_text(const QPointer<SessionPage>& page) {
+    if (!page || !page->model().running()) return false;
+    for (const auto& row : page->model().screen().lines) {
+        std::string text;
+        for (const auto& cell : row) if (cell.width) text += cell.text;
+        if (text.find("TF_QT_IME_READY") != std::string::npos) return true;
+    }
+    return false;
+}
 inline int run(QApplication& app, const QString& directory) {
     check(QGuiApplication::platformName() == QStringLiteral("windows"),
           "native IME observer requires the windows platform plugin");
@@ -156,7 +171,7 @@ inline int run(QApplication& app, const QString& directory) {
     tabs->setCurrentIndex(0); first->terminal().setFocus();
     Observation first_events(first, directory, QStringLiteral("a"), &window);
     Observation second_events(second, directory, QStringLiteral("b"), &window);
-    bool ready_written = false, finish_requested = false, failed = false;
+    bool ready_written = false, finish_requested = false, output_requested = false, failed = false;
     QString failure;
     QElapsedTimer elapsed; elapsed.start();
     QObject lifetime;
@@ -171,15 +186,18 @@ inline int run(QApplication& app, const QString& directory) {
                            {"a", first_events.snapshot()}, {"b", second_events.snapshot()}};
     };
     QObject::connect(&app, &QCoreApplication::aboutToQuit, &lifetime, [&] {
-        save_json(directory + QStringLiteral("/about-to-quit.json"), state());
+        try { save_json(directory + QStringLiteral("/about-to-quit.json"), state()); }
+        catch (const std::exception& error) { failed = true; failure = QString::fromUtf8(error.what()); }
     });
     QObject::connect(&timer, &QTimer::timeout, &lifetime, [&] {
         try {
-            if (!ready_written && first && second && a.ready() && b.ready()) {
+            if (!ready_written && a.ready() && b.ready() && ready_text(first) && ready_text(second)) {
                 ready_written = true;
                 save_json(directory + QStringLiteral("/ready.json"), state());
             }
-            if (!finish_requested && QFileInfo::exists(directory + QStringLiteral("/output.request"))) a.output();
+            if (!finish_requested && !output_requested && QFileInfo::exists(directory + QStringLiteral("/output.request"))) {
+                output_requested = true; a.output();
+            }
             if (!finish_requested && QFileInfo::exists(directory + QStringLiteral("/font.request")) && first) {
                 auto font = first->terminal().font();
                 if (font.pointSize() != 18) { font.setPointSize(18); first->terminal().setFont(font); }
@@ -198,10 +216,15 @@ inline int run(QApplication& app, const QString& directory) {
     });
     timer.start(50);
     const auto result = app.exec();
+    auto final = state();
     const bool complete = !failed && ready_written && finish_requested && first && second &&
         first->model().natural_exit() && second->model().natural_exit() &&
-        first->model().cleanup_verified() && second->model().cleanup_verified();
-    auto final = state(); final.insert("application_exit_code", result); final.insert("observer_complete", complete);
+        first->model().exit_code() == 0 && second->model().exit_code() == 0 &&
+        first->model().output_eof() && second->model().output_eof() &&
+        first->model().active_processes_after() == 0 && second->model().active_processes_after() == 0 &&
+        first->model().cleanup_verified() && second->model().cleanup_verified() &&
+        first_events.valid() && second_events.valid();
+    final.insert("application_exit_code", result); final.insert("observer_complete", complete);
     save_json(directory + QStringLiteral("/complete.json"), final);
     std::cout << QJsonDocument(final).toJson(QJsonDocument::Compact).constData() << '\n';
     return complete && result == 0 ? 0 : 1;
