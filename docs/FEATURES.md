@@ -12,12 +12,12 @@
 
 | 配置 | 当前定位 | 可以引用的证据与限制 |
 |---|---|---|
-| 正式目标：自主 C++ + Qt Widgets + 固定微软 ConPTY | [ADR-0007](adr/0007-bundled-microsoft-conpty.md) / [ADR-0008](adr/0008-cpp-core-qt-widgets.md) 已确认路线；先建立最小整合入口 | 新组合尚无完整工作流验收；核心能力与 Qt 交互按实际实现逐项验证，旧默认或 Alacritty 成果不自动继承 |
+| 正式目标：自主 C++ + Qt Widgets + 固定微软 ConPTY | [ADR-0007](adr/0007-bundled-microsoft-conpty.md) / [ADR-0008](adr/0008-cpp-core-qt-widgets.md) 已确认路线；[最小单会话入口 #115](https://github.com/JavaZeroo/termforge/issues/115)已合入 main，另有[固定依赖的专用 hosted 构建](../experiments/shell/results/2026-10-28-qt-cpp-ci/README.md) | 新组合尚无完整工作流验收；核心能力与 Qt 交互按实际实现逐项验证，旧默认或 Alacritty 成果不自动继承 |
 | 既有默认/Alpha：自主 C++ 核心 + 系统 ConPTY + Win32 | 现有原型与已发布体验包的固定路线，不需要 Rust；不等于新的正式组合已完成 | 已有 R1 限定验收；VT/Unicode 仍为有限子集，不能引用 Alacritty 参考的字素或 TUI 结果 |
 | Alacritty 参考构建：`termforge.4` + 系统 ConPTY | `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON`；保留[历史核心比较](adr/0003-core-reference-and-reuse.md)与差分，不继续作为正式产品核心扩展 | [固定来源](../experiments/candidates/alacritty/PROVENANCE.md)、[适配边界](../experiments/core/CANDIDATE.md)与 [#39 字素合同](research/streaming-graphemes.md)均只证明其固定源码/配置 |
 | 历史 Alacritty/固定后端整合分支：`termforge.5` + 固定官方 ConPTY | [PR #50（Draft）](https://github.com/JavaZeroo/termforge/pull/50)，早期 `termforge.4` 联合源码 `3e5b96d` 的[原基线](research/joint-conpty-baseline.md)保留；后续限定修复已整合，尚未合入 main 或通过产品整体验收 | [#47](https://github.com/JavaZeroo/termforge/issues/47) 跟踪后端整合；终端 margin 与原生状态分列。[resize #51](https://github.com/JavaZeroo/termforge/issues/51) 与[工作区 #63](https://github.com/JavaZeroo/termforge/issues/63) 已在实验父分支限定闭合，完整 resize/历史由 [#29](https://github.com/JavaZeroo/termforge/issues/29) 接续；[GUI Vim #52](https://github.com/JavaZeroo/termforge/issues/52) 仍开放。[#53](https://github.com/JavaZeroo/termforge/issues/53) 的原 3MB/768B/16KiB 未完成粘贴取消/关闭、负例及八会话 data-only 两轮已限定验证并整合到实验父分支；同次真实 CF/IME 与完整官方矩阵未通过。fence 默认关闭；[ADR-0007](adr/0007-bundled-microsoft-conpty.md)已记录用户正式后端选择，接入成果须在自主 C++/Qt 路线重新整合并验证 |
 
-正式目标组合为自主 C++ 核心 + Qt Widgets + 随包固定微软 ConPTY；Qt 客户端尚无完整产品能力或联合验收，当前先建立最小整合入口。以下保留既有实现与各固定证据；某个配置的通过结果不能转用于另一个配置。R1 的真实系统 CF/拼音验收属于固定自研核心配置，不外推到候选 `.4` 或实验后端联合配置。
+正式目标组合为自主 C++ 核心 + Qt Widgets + 随包固定微软 ConPTY；Qt 最小单会话入口已有[限定本地验证](../experiments/shell/results/2026-10-28-qt-cpp-entry/README.md)，尚无完整产品能力或联合验收。以下保留既有实现与各固定证据；某个配置的通过结果不能转用于另一个配置。R1 的真实系统 CF/拼音验收属于固定自研核心配置，不外推到候选 `.4` 或实验后端联合配置。
 
 ## 基础文字交互与本地终端
 

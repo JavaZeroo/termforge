@@ -4,4 +4,5 @@
 *.yml text eol=lf
 *.py text eol=lf
 *.ps1 text eol=crlf
+third_party/conpty/LICENSE text eol=lf
 experiments/core/fixtures/*.bin binary
