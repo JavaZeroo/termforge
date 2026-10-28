@@ -18,9 +18,9 @@ manifest 固定了 Qt 官方 Updates.xml 和原始 qtbase 7z 的 URL、大小与
 python -m tools.prepare_qt_build
 ```
 
-命令读取本目录和 ConPTY 的 manifest，下载固定官方归档至忽略的 `local/qt-downloads/`，核对每个归档的大小及 SHA-256，再用 CMake 的归档读取器生成全新的 `local/qt-build-deps/qt/` SDK 与 `local/qt-build-deps/conpty/` 文件对。它核对 Qt 构建／部署工具、四个模块、两个平台插件、SDK SBOM 和实际 qmake 版本；ConPTY 只提取 manifest 命名成员并再次核对双文件。SDK 只用于构建，没有全局注册或环境修改。
+命令读取本目录、ConPTY 和 [Microsoft CRT](../msvc_runtime/README.md) 的 manifest，下载固定官方输入至忽略的 `local/qt-downloads/`，核对每项大小及 SHA-256，再用 CMake 的归档读取器生成全新的 `local/qt-build-deps/qt/` SDK、`local/qt-build-deps/conpty/` 文件对和 `local/qt-build-deps/crt/`。它核对 Qt 构建／部署工具、四个模块、两个平台插件、SDK SBOM 和实际 qmake 版本；ConPTY 只提取命名成员并再次核对双文件；CRT 安装包仅作归档读取，固定十个 AMD64 DLL，并保留原许可和 NOTICE。没有全局注册、运行安装程序或环境修改。
 
-`--cache <directory>` 可复用已经取得的原始归档；`--offline` 要求两个归档均已缓存，不允许下载。缓存身份不符直接失败，不覆盖坏文件；`--out <directory>` 必须尚不存在，避免覆盖或混用已有 SDK。准备失败不发布半成 SDK；原始下载和临时提取目录不会进入源码。命令输出及 `local/qt-build-preparation.json` 仅包含公开版本、内容哈希、文件数和固定错误码，不含本地路径或原始日志。SDK 的树哈希绑定写入相对配置后的所有文件，不等于归档哈希。
+`--cache <directory>` 可复用已取得的原始输入；`--offline` 要求 Qt、ConPTY、CRT 固定归档及 CRT 原许可文档四项均已缓存，不允许下载。缓存身份不符直接失败，不覆盖坏文件；`--out <directory>` 必须尚不存在，避免覆盖或混用已有 SDK。准备失败不发布半成依赖；原始下载和临时提取目录不会进入源码。命令输出及 `local/qt-build-preparation.json` 仅包含公开版本、内容哈希、文件数和固定错误码，不含本地路径或原始日志。SDK 的树哈希绑定写入相对配置后的所有文件，不等于归档哈希。
 
 使用已核对的 Qt SDK 和[固定微软 ConPTY 文件对](../conpty/README.md)，只设置本次构建参数，无须修改全局 PATH：
 
@@ -30,14 +30,17 @@ cmake -S . -B build/qt-cpp -G "Visual Studio 17 2022" -A x64 `
   -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF `
   -DBUILD_TESTING=ON `
   -DQt6_DIR="$PWD/local/qt-build-deps/qt/lib/cmake/Qt6" `
-  -DTERMFORGE_CONPTY_BACKEND_DIR="$PWD/local/qt-build-deps/conpty"
+  -DTERMFORGE_CONPTY_BACKEND_DIR="$PWD/local/qt-build-deps/conpty" `
+  -DTERMFORGE_MSVC_RUNTIME_DIR="$PWD/local/qt-build-deps/crt"
 cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke
+python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-bin/Release --executable termforge_qt_shell.exe
+python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-smoke-bin/Release --executable qt_cpp_shell_smoke.exe
 ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_shell$' --no-tests=error --verbose
 ```
 
-`Qt6_DIR` 应包含该版本的 `Qt6Config.cmake`；正式入口缺少或不匹配固定 ConPTY 时明确失败，不回退系统版本。最小 SDK 未安装翻译，当前构建使用 `windeployqt --no-translations --no-compiler-runtime`，只形成本地构建目录，尚不是可发布的独立产品包。
+`Qt6_DIR` 应包含该版本的 `Qt6Config.cmake`；正式入口缺少或不匹配固定 ConPTY/CRT 时明确失败，不回退系统版本。CRT 按实际 VC Tools 目录版本检查兼容上限。最小 SDK 未安装翻译，当前构建使用 `windeployqt --no-translations --no-compiler-runtime` 部署 Qt，另显式复制固定 app-local CRT；Qt 默认 compiler-runtime 部署会携带待执行的安装包，不能代替这批便携目录的 DLL。完整运行时清单绑定最终目录，不代表所有许可和产品打包已验收。
 
-专用 [Qt C++ CI](../../.github/workflows/qt-cpp.yml) 在 `windows-2025` 中执行同一准备、两个显式 Qt target 构建，以及 `qt_cpp_shell` 的 offscreen / OwnedJob smoke。它不继承默认／系统后端或 Alacritty 作业的通过结果；runner 验证不扩大 Windows 11 x64 或其他平台的产品支持声明。自动产物仅保留路径无关的准备摘要，不上传 SDK、部署目录或原始日志；Qt 原生窗口、真实输入／DPI 和干净机器运行仍须另验。
+专用 [Qt C++ CI](../../.github/workflows/qt-cpp.yml) 在 `windows-2025` 中执行同一准备、两个显式 Qt target 构建，以及 `qt_cpp_shell` 的 offscreen / OwnedJob smoke。它不继承默认／系统后端或 Alacritty 作业的通过结果；runner 验证不扩大 Windows 11 x64 或其他平台的产品支持声明。自动产物仅保留路径无关的准备摘要和两份完整运行时清单，不上传 SDK、部署目录或原始日志；runner 的 offscreen 成功不替代隔离 Windows 的原生加载与交互验证。
 
 CI 的 `windows-2025` 已实际解析到 `windows-2025-vs2026`，该映像没有 VS 2022 实例；因此工作流显式使用 [CMake 的 VS 2026 generator](https://cmake.org/cmake/help/latest/generator/Visual%20Studio%2018%202026.html)，要求 CMake 4.2 或更新。Qt SDK 仍是固定的 MSVC 2022 x64 包，不把 SDK 名称改称 VS 2026。[微软的二进制兼容说明](https://learn.microsoft.com/en-us/cpp/porting/binary-compat-2015-2017?view=msvc-170)允许较新链接器消费较早工具链构建的动态库，但实际兼容性仍由这次独立构建和会话检查证明；本地 VS 2022 验证与 hosted VS 2026 验证分别记录。
 
