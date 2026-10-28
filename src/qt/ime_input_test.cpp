@@ -140,6 +140,7 @@ static QJsonObject literal_ime_commit(const QString& receiver, const QString& di
             composing.save(directory + QStringLiteral("/preedit.png")), "own render evidence could not be retained");
     std::cerr << "ime observation=" << QJsonDocument(observation).toJson(QJsonDocument::Compact).constData() << '\n';
     require(actual == expected, "Qt IME literal commit did not reach the receiver as exact UTF-8");
+    require(changed_pixels > 0, "Qt IME preedit did not produce any rendered ink");
     return observation;
 }
 int main(int argc, char** argv) {
