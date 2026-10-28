@@ -61,7 +61,7 @@ class Screen {
         Style style;
         std::vector<Line> lines;
         std::deque<Line> history;
-        void swap(FrameState& other) noexcept {
+        template<class State> void swap(State& other) noexcept {
             std::swap(row, other.row); std::swap(column, other.column);
             std::swap(last_row, other.last_row); std::swap(last_column, other.last_column);
             std::swap(wrap_pending, other.wrap_pending); std::swap(discarded, other.discarded);
@@ -79,11 +79,7 @@ class Screen {
         return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history};
     }
     void swap_active(FrameState& state) noexcept {
-        std::swap(row, state.row); std::swap(column, state.column);
-        std::swap(last_row, state.last_row); std::swap(last_column, state.last_column);
-        std::swap(wrap_pending, state.wrap_pending); std::swap(discarded, state.discarded);
-        std::swap(style, state.style);
-        lines.swap(state.lines); history.swap(state.history);
+        state.swap(*this);
     }
     static void changed(Line& line) {
         if (line.version == (std::numeric_limits<uint64_t>::max)())
