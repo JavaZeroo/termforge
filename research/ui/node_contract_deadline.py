@@ -47,6 +47,10 @@ def source_identity():
     return {name: sha(ROOT / name) for name in SOURCE_FILES}
 
 
+def runtime_versions():
+    return {"windows_version": platform.version(), "python_version": sys.version}
+
+
 class CheckpointError(ValueError):
     """Keep verified prefix rows when the next row is truncated or invalid."""
     def __init__(self, message, observations):
@@ -119,6 +123,7 @@ def diagnose_node(node, case):
     node = node.resolve(strict=True)
     bootstrap = ROOT / "research/ui/node_contract_bootstrap.js"
     record = {"schema": "termforge-node-contract-observation-v1", "case": case, "status": "failed",
+              **runtime_versions(),
               "execution_budget_seconds": EXECUTION_SECONDS, "cleanup_budget_seconds": CLEANUP_SECONDS,
               "source_files_sha256": source_identity(), "node_sha256": sha(node),
               "process_created": False, "root_reaped": False, "root_in_owned_job": False,
@@ -248,7 +253,7 @@ def prepare_plan(destination, output, execution_authorized=False):
             "source_base_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "source_files_sha256": source_identity(), "node": str(node), "node_sha256": sha(node),
             "python": str(Path(sys.executable).resolve()), "python_sha256": sha(Path(sys.executable)),
-            "python_version": sys.version, "windows_version": platform.version(), "out": str(output),
+            **runtime_versions(), "out": str(output),
             "whole_lifecycle_bound_seconds": None,
             "scope": "One diagnostic batch: normal, controlled hang and controlled exception; no original-root-cause claim"}
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -269,6 +274,9 @@ def run_plan(path):
     node = Path(plan["node"]).resolve(strict=True)
     require(sha(node) == plan["node_sha256"] and Path(sys.executable).resolve() == Path(plan["python"]) and
             sha(Path(sys.executable)) == plan["python_sha256"], "Runtime identity changed")
+    actual_versions = runtime_versions()
+    require(all(type(value) is str and value and plan.get(name) == value for name, value in actual_versions.items()),
+            "Host runtime version identity changed")
     output = Path(plan["out"]).resolve()
     require(path.is_relative_to(ROOT / "local") and output.is_relative_to(ROOT / "local") and not output.exists(),
             "Output must be a new owned local directory")
@@ -284,7 +292,7 @@ def run_plan(path):
         if not row["cleanup_verified"]:
             break
     complete = len(observations) == len(CASES) and all(expected_observation(row) for row in observations)
-    return {"schema": "termforge-node-contract-batch-v1", "observations": observations,
+    return {"schema": "termforge-node-contract-batch-v1", **actual_versions, "observations": observations,
             "status": "expected_diagnostic_observations" if complete else "failed",
             "original_timeout_root_cause": None, "whole_lifecycle_bound_seconds": None}
 

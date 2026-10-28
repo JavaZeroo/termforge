@@ -24,7 +24,7 @@
 python -B -X utf8 -m research.ui.node_contract_deadline prepare-plan --plan local/node-144-proposal.json --out local/node-144-proposed-output
 ```
 
-提案默认 `execution_authorized=false`，`run-plan` 在创建 attempt marker 或子进程前拒绝。计划固定 Git HEAD、五个实际源码文件、Node/Python EXE 哈希、运行时信息、预算和三个顺序 case；旧 CI 的实际 Node 身份和缺失阶段仍未知。只在独立审查后，依据既有授权用新的路径准备 `--execution-authorized` 计划；保留原 false 提案，不编辑它。
+提案默认 `execution_authorized=false`，`run-plan` 在创建 attempt marker 或子进程前拒绝。计划固定 Git HEAD、五个实际源码文件、Node/Python EXE 哈希、实际 `windows_version` / `python_version`、预算和三个顺序 case。`run-plan` 在 attempt marker 前重新读取并严格比较两个版本字符串，漂移时不创建 marker 或输出目录。批次记录使用该次实际读取值，各子观察再记录当时实际读取值，不把计划请求值当实际身份。这仅是两项版本核对，不是完整机器指纹；旧 CI 的实际 Node 身份和缺失阶段仍未知。只在独立审查后，依据既有授权用新的路径准备 `--execution-authorized` 计划；保留原 false 提案，不编辑它。
 
 三个 case 为正常执行、在 VM helpers 开始处受控挂起、在 grab case 开始处受控异常。每份计划最多尝试一次；独占 `.attempted` marker 在成功或失败后均保留，输出目录须不存在。控制异常和挂起仅检验诊断及清理能力，不能证明旧原因相同。
 
@@ -43,3 +43,9 @@ python -B -X utf8 -m research.ui.node_contract_deadline prepare-plan --plan loca
 公开 trace-data/launcher 判定边界的两个负例在 `66a0391` 均实际失败：正常 stdout、exit0、清理成功时，非法 JSON 尾和额外事件仍被旧子判定返回 `passed`。修正同时清除错误轨迹的完整标记、在子判定直接拒绝协议错误，并保留23条有效前缀；测试另保留完整合法对照及带错误的旧 `complete=true` 输入。相关纯测试的普通/`-O` 运行身份与原始记录留新的 `local/node-deadline-p2/`，不重跑此前的 Node/受控10秒挂起观察，也不改写旧计划或原件。
 
 实际修正验证源为 `3b74a947f09880d67d12eececa6907b7278e7640`：普通与 `-O` 各8项纯边界测试通过、无跳过。此前的 Node/受控进程观察仍仅属于 `5ddecd4`，不转记为新源码的执行结果；本次末尾只补说明和准备新 false 提案，正式有限批次仍待审查。
+
+## 版本漂移的预审修正
+
+`0949ac6` 预审发现，计划虽记录 Windows/Python 版本字符串，执行前却只复验了 EXE 哈希，没有核对这两个已声明值。公开计划边界的受控反例在 `cebc530` 将 `platform.version()`、`sys.version` 分别替换为不同字符串，两案均实际到达 attempt gate；测试在该文件边界拦截，未创建 marker、输出或 Node 进程。这不是实际操作系统版本改变，也不能解释旧 CI 超时。
+
+修正将两个当前版本的严格比较放在 marker 前，并在新批次和新子观察中记录实际值。相关纯计划测试的源码身份和日志保留在新的 `local/node-deadline-p3/`；此前 false 提案、原始观察和首次 P2 的纯日志保持原字节，不重新运行 Node 或10秒受控场景。
