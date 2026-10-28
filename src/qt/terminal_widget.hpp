@@ -279,8 +279,10 @@ class TerminalWidget final : public QWidget {
         painter.fillRect(layout.boundingRect().translated(origin), colour(-1, false));
         painter.setPen(colour(-1, true)); layout.draw(&painter, origin);
         if (composition_.cursor_visible) {
-            painter.setPen(composition_.cursor_colour.isValid() ? composition_.cursor_colour : colour(-1, true));
-            layout.drawCursor(&painter, origin, composition_.cursor, 1);
+            // QTextLayout's cursor can invert raster destinations. An explicit
+            // IME colour must instead fill the same rectangle exposed by query.
+            painter.fillRect(ime_cursor(), composition_.cursor_colour.isValid() ?
+                             composition_.cursor_colour : colour(-1, true));
         }
         painter.restore();
     }
