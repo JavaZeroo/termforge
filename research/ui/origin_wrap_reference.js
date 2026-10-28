@@ -1,6 +1,6 @@
 // Direct original DSR and document observations; no clipboard, paint or private settings.
 let stage=0,busy=false,finished=false,due=0,lastPhase=-1,stable=null,stableSince=0;
-let readyGrid=null,readySince=0;
+let readyGrid=null,readySince=0,readyNawsCount=0,readyNawsGrid=null;
 const started=Date.now(),observations=[];
 for(const module of [wind,core,gui,widgets]){
     const expected=(__RUN_DIRECTORY_JSON__+'/app/'+module.name).replace(/\\/g,'/').toLowerCase();
@@ -16,6 +16,19 @@ function finish(status,error){
     const file=new File(__RUN_DIRECTORY_JSON__+'/origin-wrap-result.json','w');file.write(JSON.stringify(result));file.close();
     send({kind:'origin_wrap_result',...result});
 }
+function resetReadiness(){readyGrid=null;readySince=0;}
+function observeReadinessNaws(peer){
+    const history=peer.naws_history;
+    if(!Array.isArray(history)||history.length<readyNawsCount||history.length>64)throw Error('NAWS readiness history bound');
+    for(let i=readyNawsCount;i<history.length;i++){
+        const event=history[i];
+        if(!Array.isArray(event)||event.length!==2||event.some(n=>!Number.isInteger(n)||n<0||n>65535))throw Error('NAWS readiness event bound');
+        const grid=JSON.stringify(event);
+        if(readyNawsGrid!==null&&grid!==readyNawsGrid)resetReadiness();
+        readyNawsGrid=grid;
+    }
+    readyNawsCount=history.length;
+}
 send({kind:'probe_ready',station_isolated:true,scenario:'origin-wrap-margin-v1'});
 Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
     if(busy||finished||Process.getCurrentThreadId()!==uiThread||Date.now()<due)return;busy=true;
@@ -26,13 +39,14 @@ Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
         else if(stage===1){scan();expandAll(tree);focus(tree,7);key(tree,0x1000011);stage=2;}
         else if(stage===2){key(tree,0x1000004);stage=3;}
         else{
-            const peer=peerState();if(!peer||!peer.connected)return;
+            const peer=peerState();if(!peer||!peer.connected){if(stage===3)resetReadiness();return;}
             if(peer.error)throw Error('peer '+peer.error);
             if(peer.complete){if(observations.length!==25)throw Error('incomplete observation sequence');finish('observed-all-origin-wrap-phases',null);return;}
-            const terminal=currentTerminal();if(!terminal||!terminal.connected||terminal.protocol!=='Telnet')return;
+            const terminal=currentTerminal();if(!terminal||!terminal.connected||terminal.protocol!=='Telnet'){if(stage===3)resetReadiness();return;}
             if(stage===3){
+                observeReadinessNaws(peer);
                 const grid=JSON.stringify([peer.columns,peer.rows,terminal.capacity]);
-                if(!peer.columns||peer.rows!==terminal.capacity)return;
+                if(!peer.columns||peer.rows!==terminal.capacity||JSON.stringify([peer.columns,peer.rows])!==readyNawsGrid){resetReadiness();return;}
                 if(grid!==readyGrid){readyGrid=grid;readySince=Date.now();return;}
                 if(Date.now()-readySince<600)return;
                 const flag=new File(__RUN_DIRECTORY_JSON__+'/fixture-ready','w');flag.write('stable-NAWS-capacity');flag.close();
