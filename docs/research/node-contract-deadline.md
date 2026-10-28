@@ -2,6 +2,8 @@
 
 对应 [#144](https://github.com/JavaZeroo/termforge/issues/144)。旧 Windows CI 在 `test_raster_native_contract.js` 的原 10 秒等待中超时，没有 Node 阶段记录。这里提供后续有限调查的工具，**没有解释或修复旧超时**；新源码、新宿主或受控挂起的结果不能补写旧样本。
 
+新工具在冻结源码 `02aac45` 上完成了[一次正式三 case 诊断](../../research/ui/results/2026-10-29-node-contract-deadline/README.md)：正常通过、受控挂起超时和受控异常失败分别保留。CLI0仅表示预定义诊断结果齐全，原超时根因仍未知；原始记录留私有目录，公开只投影白名单标量、阶段和哈希。
+
 ## 执行与证据边界
 
 这是 Windows 专用、纯合成的诊断入口，不启动 WindTerm、Qt、ConPTY 或输入法，也不访问个人桌面。现有 CTest 仍按原入口执行该 JS；本工具没有自动接入或重试失败的 CI。
@@ -34,7 +36,7 @@ python -B -X utf8 -m research.ui.node_contract_deadline prepare-plan --plan loca
 
 公开边界为计划/launcher 和 checkpoint 记录。`research.ui.test_node_contract_deadline` 检查前缀保留、顺序/PID/字段/时钟拒绝、假 final、false/漂移计划拒绝，以及 Windows OwnedJob 中正常、受控挂起和异常三条独立路径。后两条不能因 Job 清空而转为通过。
 
-原件、环境路径、stderr 栈和观察数据留 `local/` 待审查；本说明不发布新样本或为旧超时填写根因。#144、#38 和 R2 继续开放。
+原件、环境路径和 stderr 栈留 `local/`；[正式批次的白名单结果](../../research/ui/results/2026-10-29-node-contract-deadline/validation.json)经离线核对后另行发布，不为旧超时填写根因。#144、#38 和 R2 继续开放。
 
 ## 预审发现与限定修正
 
@@ -42,7 +44,7 @@ python -B -X utf8 -m research.ui.node_contract_deadline prepare-plan --plan loca
 
 公开 trace-data/launcher 判定边界的两个负例在 `66a0391` 均实际失败：正常 stdout、exit0、清理成功时，非法 JSON 尾和额外事件仍被旧子判定返回 `passed`。修正同时清除错误轨迹的完整标记、在子判定直接拒绝协议错误，并保留23条有效前缀；测试另保留完整合法对照及带错误的旧 `complete=true` 输入。相关纯测试的普通/`-O` 运行身份与原始记录留新的 `local/node-deadline-p2/`，不重跑此前的 Node/受控10秒挂起观察，也不改写旧计划或原件。
 
-实际修正验证源为 `3b74a947f09880d67d12eececa6907b7278e7640`：普通与 `-O` 各8项纯边界测试通过、无跳过。此前的 Node/受控进程观察仍仅属于 `5ddecd4`，不转记为新源码的执行结果；本次末尾只补说明和准备新 false 提案，正式有限批次仍待审查。
+实际修正验证源为 `3b74a947f09880d67d12eececa6907b7278e7640`：普通与 `-O` 各8项纯边界测试通过、无跳过。此前的 Node/受控进程观察仍仅属于 `5ddecd4`，不转记为新源码的执行结果；该阶段末尾只补说明和准备新 false 提案，正式有限批次当时尚待审查。
 
 ## 版本漂移的预审修正
 
