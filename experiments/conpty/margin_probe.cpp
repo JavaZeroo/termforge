@@ -6,22 +6,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-static decltype(&CreatePseudoConsole) create_pc = CreatePseudoConsole;
-static decltype(&ResizePseudoConsole) resize_pc = ResizePseudoConsole;
-static decltype(&ClosePseudoConsole) close_pc = ClosePseudoConsole;
 static COORD selected_size{80,24};
-// Keep the selected API family together. HPCON is opaque: a DLL-created
-// pseudoconsole must never be resized or closed by the operating system API.
-static HRESULT WINAPI probe_create(COORD, HANDLE input, HANDLE output, DWORD flags, HPCON* console) {
-    return create_pc(selected_size, input, output, flags, console);
-}
-#define CreatePseudoConsole probe_create
-#define ResizePseudoConsole resize_pc
-#define ClosePseudoConsole close_pc
 #include "session.hpp"
-#undef CreatePseudoConsole
-#undef ResizePseudoConsole
-#undef ClosePseudoConsole
 #include "../shell/workflow_fixture.hpp"
 static void require(bool ok, const char* msg) { if (!ok) throw std::runtime_error(msg); }
 static void save(const std::filesystem::path& p, const std::string& b) {
@@ -78,37 +64,33 @@ int wmain(int argc, wchar_t** argv) {
         require(std::string(go,go_size) == "GO\n" || std::string(go,go_size) == "GO\r\n", "GO required");
         BOOL in_job = FALSE;
         require(IsProcessInJob(GetCurrentProcess(), nullptr, &in_job) && in_job, "owned Job required");
-        HMODULE backend = nullptr;
+        auto backend = tf_conpty::Backend::system();
         if (std::wstring(argv[1]) != L"system") {
             const std::filesystem::path dll(argv[1]);
             require(dll.is_absolute() && dll.filename() == L"conpty.dll", "absolute conpty.dll path required");
-            backend = LoadLibraryExW(argv[1], nullptr, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
-            require(backend != nullptr, "backend load failed");
-            create_pc = reinterpret_cast<decltype(create_pc)>(GetProcAddress(backend, "ConptyCreatePseudoConsole"));
-            resize_pc = reinterpret_cast<decltype(resize_pc)>(GetProcAddress(backend, "ConptyResizePseudoConsole"));
-            close_pc = reinterpret_cast<decltype(close_pc)>(GetProcAddress(backend, "ConptyClosePseudoConsole"));
-            require(create_pc && resize_pc && close_pc, "backend API absent");
+            backend = tf_conpty::Backend::reviewed_side_by_side(dll.parent_path());
         }
         wchar_t self[32768]{};
         const DWORD length = GetModuleFileNameW(nullptr, self, 32768);
         require(length && length < 32768, "self path failed");
         const auto dir = std::filesystem::absolute(argv[3]);
         std::filesystem::create_directories(dir);
-        tf_conpty::Session session;
-        session.start(self, L"--client " + std::wstring(argv[2]) + L" \"" + dir.wstring() + L"\"");
+        tf_conpty::Session session(backend);
+        session.start(self, L"--client " + std::wstring(argv[2]) + L" \"" + dir.wstring() + L"\"", {}, {}, selected_size);
         const bool waited = session.wait_exit(5000);
+        // Preserve available bytes even if closing an affected backend hangs
+        // and the outer owner subsequently has to terminate the process.
+        save(dir / "transport.prefix.bin", session.output());
         session.close();
         save(dir / "transport.bin", session.output());
-        std::cout << std::boolalpha << "{\"waited\":" << waited
+        std::cout << std::boolalpha << "{\"waited\":" << waited << ",\"side_by_side\":" << backend.side_by_side()
+          << ",\"creation_flags\":" << session.backend_creation_flags()
           << ",\"exit_code\":" << session.exit_code << ",\"read_error\":" << session.read_error
           << ",\"capture_overflow\":" << session.capture_overflow
           << ",\"forced_reader_cancel\":" << session.forced_reader_cancel
           << ",\"forced_process_cancel\":" << session.forced_process_cancel
           << ",\"cleanup_complete\":" << session.cleanup_complete
           << ",\"active_children_after\":" << session.active_after << "}\n";
-        // The Session destructor must run before unloading its selected ABI.
-        // The short-lived diagnostic process retains the module until exit.
-        (void)backend;
         return waited && session.exit_code == 37 && session.cleanup_complete ? 0 : 1;
     } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 2; }
 }

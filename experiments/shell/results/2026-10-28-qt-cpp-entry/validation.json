@@ -1,0 +1,916 @@
+{
+  "schema": "termforge-qt-cpp-entry-validation-v1",
+  "status": "limited_migration_entry_verified_full_r2_incomplete",
+  "prepared_at_utc": "2026-10-28T11:41:35.216378+00:00",
+  "scope": "First C++/Qt local-shell migration entry only; not complete R2, full terminal compatibility, WindTerm equivalence or a distributable product package.",
+  "configuration": {
+    "host": "Windows-11-10.0.26200-SP0",
+    "architecture": "x64",
+    "build": "Release",
+    "core": "independent C++",
+    "gui": "Qt Widgets 6.10.3",
+    "qt_sdk": "windows desktop win64_msvc2022_64",
+    "backend": "bundled fixed Microsoft ConPTY 1.25.260930003",
+    "dimensions": {
+      "columns": 80,
+      "rows": 24
+    },
+    "qt_platform": "offscreen",
+    "font": "independently acquired OFL Roboto Mono",
+    "candidate_adapter": false,
+    "presented_done": null
+  },
+  "source_identity": {
+    "initial_integration_commit": "9d9b506c0c268a304046a20d096018a821fd3d78",
+    "final_source_commit": "0fd35e23095c611865c6970ba9a3b8b910ef1efa",
+    "final_frozen_manifest": {
+      "path": "local/qt-cpp-first/final-build.json",
+      "sha256": "41530bb740924ae88a79b58a161a5082beda79c24acd3ac28ddc1d59eff74773",
+      "bytes": 53893
+    },
+    "frozen_file_count": 340,
+    "runtime_file_count": 91,
+    "files_rehashed_matching": 340,
+    "selected_file_identities": [
+      {
+        "path": "assets/fonts/RobotoMono-Regular.ttf",
+        "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+      },
+      {
+        "path": "cmake/ConptyBackend.cmake",
+        "sha256": "dcd670e4cec807c5f18e03b797e2abda623fe818dd9c0698c95186009af49300"
+      },
+      {
+        "path": "cmake/CopyConptyBackend.cmake",
+        "sha256": "8bf50df01e302df91ee23a592b8b23d6a203606a35dadb86b63f4eed723dcb67"
+      },
+      {
+        "path": "CMakeLists.txt",
+        "sha256": "8f1b8734f31b22fd1d4b94046843d93a732137208bd6500556b92e90fdfa7a81"
+      },
+      {
+        "path": "experiments/conpty/backend.hpp",
+        "sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489"
+      },
+      {
+        "path": "experiments/conpty/margin_probe.cpp",
+        "sha256": "9fff80b3eb0ace2cc6944ea8a99603c5e5a2b0150b82933d858ed667b0357002"
+      },
+      {
+        "path": "experiments/conpty/session.hpp",
+        "sha256": "7b3934715948a05c1996bcccb02ef2eb58ea11baf26bf97c2e728a52d58becda"
+      },
+      {
+        "path": "src/qt/main.cpp",
+        "sha256": "ad7d67383dedf3d4e237e89a4db48e1a84ec5140f372d04c33313196a7c36237"
+      },
+      {
+        "path": "src/qt/run_smoke.py",
+        "sha256": "25f4d6adec4e9bfad77698300c44d9162511ac1ebb722993d5a52cdb8a863983"
+      },
+      {
+        "path": "src/qt/shell_smoke.cpp",
+        "sha256": "23238dd99e81c3aec1128278c487da9699bdba79b75ab15175e4a1d5dfdacfcb"
+      },
+      {
+        "path": "src/qt/terminal_session.hpp",
+        "sha256": "3cdb5bfa28019a5de9fdd92c9f976f0bf14899f2de324a8f783574a16492b2af"
+      },
+      {
+        "path": "src/qt/terminal_widget.hpp",
+        "sha256": "e6bd2759601de942560dc367f5c25961c0ef08278a0e327c3321ebe142bf55b7"
+      },
+      {
+        "path": "third_party/conpty/LICENSE",
+        "sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada"
+      },
+      {
+        "path": "third_party/conpty/manifest.json",
+        "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+      },
+      {
+        "path": "third_party/qt/manifest.json",
+        "sha256": "6ed37661f6df751d1c29752a54fc88e4d5ddfa17a0a831bc52ab42d6ce87a1f4"
+      },
+      {
+        "path": "build/qt-cpp/bin/Release/assets/fonts/RobotoMono-Regular.ttf",
+        "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+      },
+      {
+        "path": "build/qt-cpp/qt-bin/Release/assets/fonts/RobotoMono-Regular.ttf",
+        "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+      },
+      {
+        "path": "build/qt-cpp/qt-bin/Release/conpty-backend/conpty.dll",
+        "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a"
+      },
+      {
+        "path": "build/qt-cpp/qt-bin/Release/conpty-backend/OpenConsole.exe",
+        "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+      },
+      {
+        "path": "build/qt-cpp/qt-bin/Release/platforms/qwindows.dll",
+        "sha256": "cafd5bfdef3d89d176ee26725c8d4759fd6cb007645b645a4cbf6386364a3f36"
+      },
+      {
+        "path": "build/qt-cpp/qt-bin/Release/Qt6Core.dll",
+        "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72"
+      },
+      {
+        "path": "build/qt-cpp/qt-bin/Release/Qt6Gui.dll",
+        "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f"
+      },
+      {
+        "path": "build/qt-cpp/qt-bin/Release/Qt6Widgets.dll",
+        "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127"
+      },
+      {
+        "path": "build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe",
+        "sha256": "864494117b85c9cc4b1138fdfc9a989aede75ebbaa66e60739a94a8a0fe6a100"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/assets/fonts/RobotoMono-Regular.ttf",
+        "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/conpty-backend/conpty.dll",
+        "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/conpty-backend/OpenConsole.exe",
+        "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/platforms/qoffscreen.dll",
+        "sha256": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/platforms/qwindows.dll",
+        "sha256": "cafd5bfdef3d89d176ee26725c8d4759fd6cb007645b645a4cbf6386364a3f36"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/Qt6Core.dll",
+        "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/Qt6Gui.dll",
+        "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/Qt6Test.dll",
+        "sha256": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/Qt6Widgets.dll",
+        "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127"
+      },
+      {
+        "path": "build/qt-cpp/qt-smoke-bin/Release/qt_cpp_shell_smoke.exe",
+        "sha256": "6a793876899cb762f69592eda0f22bfe59058d7864ffabde275a7b489b37d727"
+      }
+    ],
+    "selection_note": "This is a selected identity list, not a full copy of the 340-file local manifest. The manifest itself is hashed and all listed files were rechecked. Runtime count excludes CMakeCache.txt.",
+    "intermediate_identity_note": "Earlier red records used HEAD 4441248 plus working-tree changes; recorded historical filesystem source/binary hashes do not identify each intermediate run as the final commit."
+  },
+  "dependencies": {
+    "qt_manifest": {
+      "path": "third_party/qt/manifest.json",
+      "sha256": "6ed37661f6df751d1c29752a54fc88e4d5ddfa17a0a831bc52ab42d6ce87a1f4",
+      "bytes": 5378
+    },
+    "qt_application_modules": [
+      "Core",
+      "Gui",
+      "Widgets"
+    ],
+    "qt_test_only_modules": [
+      "Test"
+    ],
+    "qt_original_archive": {
+      "name": "qt.qt6.6103.win64_msvc2022_64",
+      "version": "6.10.3-0-202603310407",
+      "release_date": "2026-03-31",
+      "archive": "qtbase-Windows-Windows_11_24H2-MSVC2022-Windows-Windows_11_24H2-X86_64.7z",
+      "url": "https://download.qt.io/online/qtsdkrepository/windows_x86/desktop/qt6_6103/qt6_6103/qt.qt6.6103.win64_msvc2022_64/6.10.3-0-202603310407qtbase-Windows-Windows_11_24H2-MSVC2022-Windows-Windows_11_24H2-X86_64.7z",
+      "bytes": 42748757,
+      "sha1": "08bd6fea980b53485877f5048c725ca334c19130",
+      "sha1_matches_official_sidecar": true,
+      "sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7"
+    },
+    "qt_installed_identity_note": "The archive SHA-256 identifies the untouched official 7z. It is not the hash of an aqt-patched SDK directory, qmake.exe, .prl file or deployed product.",
+    "qt_source_and_redistribution": {
+      "matching_source_archive_identified": true,
+      "matching_source_archive_downloaded_and_hash_verified": false,
+      "runtime_redistribution_review": "pending_before_product_distribution",
+      "clean_machine_validation": "pending"
+    },
+    "conpty_manifest": {
+      "path": "third_party/conpty/manifest.json",
+      "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "bytes": 1467
+    },
+    "conpty_version": "1.25.260930003",
+    "conpty_package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "conpty_file_sha256": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "deployment_note": "Original Qt archive, aqtinstall-patched SDK files, deployed runtime files and product distribution completeness are distinct identities. No Qt or ConPTY binary is included here."
+  },
+  "cases": [
+    {
+      "id": "interface-red",
+      "kind": "compile_interface_missing",
+      "status": "failed_as_expected",
+      "exit_code": 1,
+      "message": "terminal_widget.hpp not implemented yet",
+      "record": {
+        "stage": "compile_interface_missing",
+        "exit_code": 1,
+        "message": "terminal_widget.hpp not implemented yet",
+        "source_head": "4441248fb9ad0b809f69aff070e5b6e5a28e0aa7",
+        "files": [
+          {
+            "path": "CMakeLists.txt",
+            "sha256": "4ce50167d817df6da607f48e378b724e92e84eb6fab4bf7851baf49d121d94c6"
+          },
+          {
+            "path": "src/qt/main.cpp",
+            "sha256": "274e0ca9f7db8c448ca2fb5769d3ad8dc7eb3d1aab8cf06c3789ebe9e7f345da"
+          },
+          {
+            "path": "src/qt/shell_smoke.cpp",
+            "sha256": "72c02d81f53f7ca39206fc6e2ea54ef7642c69f40ac9e6d4af0941a0843148fe"
+          },
+          {
+            "path": "experiments/conpty/session.hpp",
+            "sha256": "7b3934715948a05c1996bcccb02ef2eb58ea11baf26bf97c2e728a52d58becda"
+          },
+          {
+            "path": "experiments/conpty/backend.hpp",
+            "sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489"
+          },
+          {
+            "path": "local/qt-cpp-first/interface-red.log",
+            "sha256": "350278bb77147f35f3ea94d521bdafdbf7742b91e5669108d908cecfcdc38ac6"
+          }
+        ]
+      },
+      "proofs": [
+        "interface-red.json",
+        "interface-red.log"
+      ],
+      "meaning": "Compile red for a missing public widget header; not a reproduced runtime product bug."
+    },
+    {
+      "id": "runtime-first",
+      "kind": "runtime_timeout",
+      "status": "failed",
+      "test_elapsed_seconds": 35.03,
+      "ctest_elapsed_seconds": 35.04,
+      "exit_code": null,
+      "child_diagnostic_text_in_ctest_log": false,
+      "proofs": [
+        "runtime-first.log",
+        "first-timeout-last.log"
+      ],
+      "meaning": "Initial bounded run timed out without child diagnostic text in retained CTest output; this alone does not establish the cause."
+    },
+    {
+      "id": "runtime-diagnostic",
+      "kind": "runtime_timeout_with_platform_diagnostic",
+      "status": "failed",
+      "test_elapsed_seconds": 35.02,
+      "ctest_elapsed_seconds": 35.04,
+      "exit_code": null,
+      "message": "Could not find the Qt platform plugin offscreen",
+      "proofs": [
+        "runtime-diagnostic.log",
+        "build-diagnostic.log"
+      ],
+      "meaning": "Adding diagnostic output exposed the missing platform plugin; the original timeout remained."
+    },
+    {
+      "id": "runtime-platform",
+      "kind": "runtime_assertion_failure",
+      "status": "failed",
+      "test_elapsed_seconds": 0.21,
+      "ctest_elapsed_seconds": 0.22,
+      "exit_code": null,
+      "message": "arithmetic answer cell has no new rendered ink",
+      "additional_diagnostic": "Qt font directory unavailable",
+      "proofs": [
+        "runtime-platform.log",
+        "build-platform.log"
+      ],
+      "meaning": "After platform deployment the real cmd path reached the independent ink assertion, which failed without the font deployment."
+    },
+    {
+      "id": "runtime-font",
+      "kind": "targeted_ctest",
+      "status": "passed",
+      "passed": 1,
+      "total": 1,
+      "test_elapsed_seconds": 0.36,
+      "ctest_elapsed_seconds": 0.37,
+      "supervisor": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "sample": {
+          "schema": "termforge-qt-cpp-smoke-v1",
+          "qt": "6.10.3",
+          "core": "cpp",
+          "backend": "fixed-microsoft-conpty",
+          "arithmetic": 750,
+          "child_exit": 37,
+          "cleanup_verified": true,
+          "image_changed": true,
+          "presented_done": null
+        }
+      },
+      "proofs": [
+        "runtime-font.log",
+        "first-pass-last.log",
+        "build-font.log"
+      ],
+      "meaning": "The independently acquired OFL font enabled offscreen output ink; this earlier test did not yet contain later startup-error/manual-close checks."
+    },
+    {
+      "id": "runtime-close-red",
+      "kind": "runtime_window_lifecycle_counterexample",
+      "status": "failed_as_expected",
+      "test_elapsed_seconds": 5.52,
+      "ctest_elapsed_seconds": 5.53,
+      "ctest_exit_code": 8,
+      "message": "closing the Qt window did not reclaim its running shell",
+      "record": {
+        "stage": "runtime_window_close_did_not_reclaim_running_shell",
+        "exit_code": 8,
+        "source_head": "4441248fb9ad0b809f69aff070e5b6e5a28e0aa7",
+        "files": [
+          {
+            "path": "src/qt/terminal_widget.hpp",
+            "sha256": "1eaa1ab1df298ee90741912d84225ce7f47163f8df61cd4eb54afa0d03161831"
+          },
+          {
+            "path": "src/qt/terminal_session.hpp",
+            "sha256": "3cdb5bfa28019a5de9fdd92c9f976f0bf14899f2de324a8f783574a16492b2af"
+          },
+          {
+            "path": "src/qt/shell_smoke.cpp",
+            "sha256": "23238dd99e81c3aec1128278c487da9699bdba79b75ab15175e4a1d5dfdacfcb"
+          },
+          {
+            "path": "src/qt/run_smoke.py",
+            "sha256": "09643b83e82c094524304bffa20427c500a341bc121bd2955253d2ec2a49adf5"
+          },
+          {
+            "path": "local/qt-cpp-first/runtime-close-red.log",
+            "sha256": "4e73115a00ec565540334ee0bd8f153c087f5f8e5b932fb8b5b007198f80e137"
+          },
+          {
+            "path": "build/qt-cpp/qt-smoke-bin/Release/qt_cpp_shell_smoke.exe",
+            "sha256": "370d907e172422d8d887e43d78634b609bd9ce84f60598f22ac0e76809750d29"
+          }
+        ]
+      },
+      "supervisor": {
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 1,
+        "job_after": {
+          "active": 0,
+          "total": 7,
+          "terminated": 0
+        }
+      },
+      "proofs": [
+        "runtime-close-red.log",
+        "close-red.json",
+        "build-close-red.log"
+      ],
+      "meaning": "Public close behavior failed although later outer cleanup reclaimed processes. Job0 does not make the public action pass."
+    },
+    {
+      "id": "runtime-close-green",
+      "kind": "targeted_ctest",
+      "status": "passed",
+      "passed": 1,
+      "total": 1,
+      "test_elapsed_seconds": 0.47,
+      "ctest_elapsed_seconds": 0.48,
+      "supervisor": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 7,
+          "terminated": 0
+        },
+        "sample": {
+          "schema": "termforge-qt-cpp-smoke-v1",
+          "qt": "6.10.3",
+          "core": "cpp",
+          "backend": "fixed-microsoft-conpty",
+          "arithmetic": 750,
+          "child_exit": 37,
+          "cleanup_verified": true,
+          "image_changed": true,
+          "startup_error_visible": true,
+          "manual_close_reclaimed": true,
+          "presented_done": null
+        }
+      },
+      "proofs": [
+        "runtime-close-green.log",
+        "close-green-last.log",
+        "build-close-green.log"
+      ],
+      "meaning": "closeEvent cleanup passed natural exit, visible startup-error ink and manual-close checks. Aggregate Job totals are not used to infer individual process identities."
+    }
+  ],
+  "whole_build_checkpoints": [
+    {
+      "source_commit": "9d9b506c0c268a304046a20d096018a821fd3d78",
+      "status": "failed",
+      "stage": "complete_build",
+      "diagnostic": "Existing margin_probe macro substitution conflicted with explicit Backend API types (C2440/C2439/C2064).",
+      "proof": "build-final.log",
+      "meaning": "The initial frozen integration commit did not pass the complete build."
+    },
+    {
+      "source_commit": "0fd35e23095c611865c6970ba9a3b8b910ef1efa",
+      "status": "passed",
+      "terminal_exit_code": 0,
+      "followup": "Reuse the existing explicit-Backend-injection margin_probe implementation; original 175-byte fixture unchanged.",
+      "proof": "build-final-fixed.log",
+      "terminal_result_source": "Parent message after build returned, corroborated by frozen build log and final source/runtime manifest."
+    }
+  ],
+  "package_negative_checks": {
+    "source_commit": "0fd35e23095c611865c6970ba9a3b8b910ef1efa",
+    "binary_sha256": "6a793876899cb762f69592eda0f22bfe59058d7864ffabde275a7b489b37d727",
+    "cases": [
+      {
+        "case": "missing platforms/qoffscreen.dll",
+        "wrapper_exit": 1,
+        "native_exit": 2,
+        "job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "expected_error_seen": true
+      },
+      {
+        "case": "missing assets/fonts/RobotoMono-Regular.ttf",
+        "wrapper_exit": 1,
+        "native_exit": 1,
+        "job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "expected_error_seen": true
+      }
+    ],
+    "all_files_restored": true
+  },
+  "final_ctest": {
+    "status": "passed",
+    "source_commit": "0fd35e23095c611865c6970ba9a3b8b910ef1efa",
+    "terminal_exit_code": 0,
+    "passed": 47,
+    "failed": 0,
+    "skipped": 0,
+    "total": 47,
+    "elapsed_seconds": 320.79,
+    "command": "ctest --test-dir build/qt-cpp -C Release --output-on-failure",
+    "environment": {
+      "PYTHONUTF8": "1",
+      "vim": "existing Git Vim added to this test process PATH"
+    },
+    "internal_skip_record_count": 12,
+    "internal_skipped": [
+      "setUpClass (test_candidate_compare.CandidateComparisonTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks'",
+      "setUpClass (test_capability_matrix.CapabilityMatrixTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks'",
+      "setUpClass (test_fuzz_matrix.FuzzMatrixTests) ... skipped 'optional Alacritty binary is not built; core-candidate workflow runs these checks'",
+      "setUpClass (test_real_app_matrix.RealApplicationMatrixTests) ... skipped 'optional real application capture dependencies are not built'",
+      "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice) ... skipped 'actual system Copy/Paste requires a disposable hosted VM'",
+      "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails) ... skipped 'opt-in pinned reference failure injection'",
+      "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard) ... skipped 'system copy UI gate requires a disposable hosted VM'",
+      "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close) ... skipped 'product clipboard read gate requires a disposable hosted VM'",
+      "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver) ... skipped 'real system clipboard UI gate requires a disposable hosted VM'",
+      "test_owned_clipboard_contention_preserves_write_and_read_failures (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_owned_clipboard_contention_preserves_write_and_read_failures) ... skipped 'system CF requires a disposable hosted VM'",
+      "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice) ... skipped 'system CF requires a disposable hosted VM'",
+      "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice) ... skipped 'real CF/EDIT Copy requires a disposable hosted VM'"
+    ],
+    "internal_skip_summary": "4 class-level optional/reference dependency skips, 7 actual system clipboard cases, 1 opt-in original-reference failure injection",
+    "log": {
+      "path": "local/qt-cpp-first/ctest-final.log",
+      "sha256": "8823c21b21cd885159f6736e0f3885ce5d2891c2e7c32d326a19a51aef2978f9",
+      "bytes": 5152
+    },
+    "detailed_log": {
+      "path": "local/qt-cpp-first/last-test-final.log",
+      "sha256": "2f9a583edb3d4da498b3eb09680bda96136903906ca3fc5094144d662e3abffb",
+      "bytes": 125992
+    },
+    "configuration_boundary": "47 CTest entries comprise 1 new Qt/C++/fixed-ConPTY check and 46 legacy system diagnostic entries. Their independent successes are not joint product acceptance. Elapsed time is test-suite duration, not terminal performance."
+  },
+  "conpty_adapter_checks": {
+    "configuration": "Windows x64 Release; explicit fixed Microsoft ConPTY; standalone public Backend/Session checks",
+    "source_files": [
+      {
+        "path": "experiments/conpty/backend.hpp",
+        "sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489"
+      },
+      {
+        "path": "experiments/conpty/session.hpp",
+        "sha256": "7b3934715948a05c1996bcccb02ef2eb58ea11baf26bf97c2e728a52d58becda"
+      },
+      {
+        "path": "cmake/ConptyBackend.cmake",
+        "sha256": "dcd670e4cec807c5f18e03b797e2abda623fe818dd9c0698c95186009af49300"
+      },
+      {
+        "path": "cmake/CopyConptyBackend.cmake",
+        "sha256": "8bf50df01e302df91ee23a592b8b23d6a203606a35dadb86b63f4eed723dcb67"
+      },
+      {
+        "path": "third_party/conpty/manifest.json",
+        "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+      },
+      {
+        "path": "third_party/conpty/LICENSE",
+        "sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada"
+      }
+    ],
+    "bundle_checks": [
+      {
+        "case": "tampered-runtime",
+        "exit_code": 2
+      },
+      {
+        "case": "repair-tampered",
+        "exit_code": 0
+      },
+      {
+        "case": "repair-tampered-identity",
+        "exit_code": 0
+      },
+      {
+        "case": "missing-runtime",
+        "exit_code": 2
+      },
+      {
+        "case": "repair-missing",
+        "exit_code": 0
+      },
+      {
+        "case": "repair-missing-identity",
+        "exit_code": 0
+      },
+      {
+        "case": "tampered-build-input",
+        "exit_code": 1
+      }
+    ],
+    "repair_did_not_relink_exe": true,
+    "limitations": [
+      "These checks do not validate Qt, GUI, IME, Unicode, TUI or product performance.",
+      "System/fixed Session results are independent configurations, not joint acceptance."
+    ],
+    "host": "Windows-11-10.0.26200-SP0",
+    "session_checks": [
+      {
+        "configuration": "system",
+        "binary_sha256": "b35a89caf42848b8f57fd4240225f7179e41f0c94c20b54da3b9020bbd37ce57",
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "outer_job_active": 0,
+        "outer_job_total": 6,
+        "outer_job_terminated": 0,
+        "sample": {
+          "valid": true,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "child_signaled": 1,
+          "exit_code": 37,
+          "read_error": 109,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 58,
+          "handles_after": 58,
+          "threads_before": 4,
+          "threads_after": 4
+        }
+      },
+      {
+        "configuration": "fixed",
+        "binary_sha256": "97b9d054c44e70bca3ae7f9fecba0575fea31dc82d3edff1f7ed728f38e6e366",
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "outer_job_active": 0,
+        "outer_job_total": 6,
+        "outer_job_terminated": 0,
+        "sample": {
+          "valid": true,
+          "ready": 1,
+          "echo": 1,
+          "resized": 1,
+          "child_signaled": 1,
+          "exit_code": 37,
+          "read_error": 109,
+          "active_children_after": 0,
+          "forced_reader_cancel": 0,
+          "forced_process_cancel": 0,
+          "handles_before": 70,
+          "handles_after": 70,
+          "threads_before": 4,
+          "threads_after": 4
+        }
+      }
+    ],
+    "proof_files": [
+      {
+        "path": "local/conpty-adapter-checks/session-system.json",
+        "sha256": "4e83ffddc98a5cca2329fdc8890a3a99cd99b9e1602a387da06a5f48768d7d06"
+      },
+      {
+        "path": "local/conpty-adapter-checks/session-fixed.json",
+        "sha256": "d7b90016b8fb8f067cadc914e392e7b78e79e71799cb2aedf52e57b873ee76ef"
+      },
+      {
+        "path": "local/conpty-adapter-checks/session-build.log",
+        "sha256": "d6620bc91e6b6026487eb39c7b79fc90e7d409355f317e712ee9fc52324efee3"
+      },
+      {
+        "path": "local/conpty-adapter-checks/session-configure.log",
+        "sha256": "b10bcc916f31c1761986eba9dde6ec38ad1d43973a1608081e65b1ce3e015521"
+      },
+      {
+        "path": "local/conpty-adapter-checks/identity-green.log",
+        "sha256": "c8dee4a7387f588240dae8019b6923f181c00683171028ca7b9685967857d5e1"
+      },
+      {
+        "path": "local/conpty-adapter-checks/tampered-runtime.stderr.log",
+        "sha256": "1966dbc4d5e765941327bd11a96898ad1fcf0cb44f57a3e30a3f4dceb01b79c5"
+      },
+      {
+        "path": "local/conpty-adapter-checks/missing-runtime.stderr.log",
+        "sha256": "307d9cf050e456216ed8cfba237f06318d8b010b56f34cf902bb31494d7aeba6"
+      },
+      {
+        "path": "local/conpty-adapter-checks/tampered-build-input.stderr.log",
+        "sha256": "61d93fb323af97dc3abb11b30753581689ee36abdfb1981f3165f56f58173d58"
+      }
+    ]
+  },
+  "conpty_adapter_proof_hash_checks": [
+    {
+      "path": "local/conpty-adapter-checks/session-system.json",
+      "matches_recorded_sha256": true
+    },
+    {
+      "path": "local/conpty-adapter-checks/session-fixed.json",
+      "matches_recorded_sha256": true
+    },
+    {
+      "path": "local/conpty-adapter-checks/session-build.log",
+      "matches_recorded_sha256": true
+    },
+    {
+      "path": "local/conpty-adapter-checks/session-configure.log",
+      "matches_recorded_sha256": true
+    },
+    {
+      "path": "local/conpty-adapter-checks/identity-green.log",
+      "matches_recorded_sha256": true
+    },
+    {
+      "path": "local/conpty-adapter-checks/tampered-runtime.stderr.log",
+      "matches_recorded_sha256": true
+    },
+    {
+      "path": "local/conpty-adapter-checks/missing-runtime.stderr.log",
+      "matches_recorded_sha256": true
+    },
+    {
+      "path": "local/conpty-adapter-checks/tampered-build-input.stderr.log",
+      "matches_recorded_sha256": true
+    }
+  ],
+  "review": {
+    "status": "completed_no_open_new_findings",
+    "base_commit": "4441248fb9ad0b809f69aff070e5b6e5a28e0aa7",
+    "head_commit": "0fd35e23095c611865c6970ba9a3b8b910ef1efa",
+    "standards": {
+      "open_hard_findings": 0,
+      "open_substantive_smells": 0,
+      "fixed_findings": [
+        "GUI startup error visibility",
+        "supervisor cleanup must preserve original failure and close Job"
+      ]
+    },
+    "spec": {
+      "open_findings": 0,
+      "fixed_findings": [
+        "GUI startup error visibility",
+        "outer Job must contain Qt root and ConPTY process tree before GO"
+      ]
+    },
+    "additional_delta": "Explicit-Backend margin-probe integration reviewed on both axes with no new findings. Window-close runtime red was fixed and passes in the final full run.",
+    "record_source": "Root summary of completed independent Standards/Spec agent messages; no standalone review-log artifact claimed."
+  },
+  "proofs": [
+    {
+      "path": "local/qt-cpp-first/interface-red.json",
+      "sha256": "2a9cc774a5ef30f28468eb8c56e9f7d885b067dd4dc727f376b8abd10801a2f6",
+      "bytes": 1058
+    },
+    {
+      "path": "local/qt-cpp-first/interface-red.log",
+      "sha256": "350278bb77147f35f3ea94d521bdafdbf7742b91e5669108d908cecfcdc38ac6",
+      "bytes": 458
+    },
+    {
+      "path": "local/qt-cpp-first/configure.log",
+      "sha256": "4b2a79164f0aa3748f1c6c14097d5df51359e23b0d849498092d5e7b0f452634",
+      "bytes": 1222
+    },
+    {
+      "path": "local/qt-cpp-first/build-green.log",
+      "sha256": "947385fb5e31ae377779e1fb891b6766b42810fd40c9b03c0ff3682ced5f413f",
+      "bytes": 5830
+    },
+    {
+      "path": "local/qt-cpp-first/runtime-first.log",
+      "sha256": "9a964712e78378947e90dccbc05a0fd5e02e90b5d7244544ac8af867918eed02",
+      "bytes": 411
+    },
+    {
+      "path": "local/qt-cpp-first/first-timeout-last.log",
+      "sha256": "7d2ad8f500e056daddea7abdff4816da179180a385687e3387290086deb0b135",
+      "bytes": 738
+    },
+    {
+      "path": "local/qt-cpp-first/build-diagnostic.log",
+      "sha256": "ff1b2570258e2e10cf261adc78b63b09a4c643968cc5d7123866b7047d047a80",
+      "bytes": 2521
+    },
+    {
+      "path": "local/qt-cpp-first/runtime-diagnostic.log",
+      "sha256": "152dd1b4163f6553c916743264466cd5608fc745e0a0a9c6f5aefcec4667ec97",
+      "bytes": 492
+    },
+    {
+      "path": "local/qt-cpp-first/build-platform.log",
+      "sha256": "c2da55476e1924d0a03c7ce7513ee6b90e9dc99bc58f7c699872a7792faa5599",
+      "bytes": 3550
+    },
+    {
+      "path": "local/qt-cpp-first/runtime-platform.log",
+      "sha256": "71d2450000160e2a3c4d3f7917aa2c2bf2bc8b8d1549ad8059b0694d54416fb4",
+      "bytes": 736
+    },
+    {
+      "path": "local/qt-cpp-first/build-font.log",
+      "sha256": "fea253252d73cdd8303653f30fc1344a125fdf44649d72bc4e996b7ca08e4c9c",
+      "bytes": 6091
+    },
+    {
+      "path": "local/qt-cpp-first/runtime-font.log",
+      "sha256": "cbb300a4dcf9ee2f7d4dcc2655380fe07eba252a9d2d79878d360570cd751924",
+      "bytes": 321
+    },
+    {
+      "path": "local/qt-cpp-first/first-pass-last.log",
+      "sha256": "9f4533026c8e034bc326bb4a118755a5517cf533d6c90bd3e55139e0ab33fc51",
+      "bytes": 1258
+    },
+    {
+      "path": "local/qt-cpp-first/close-red.json",
+      "sha256": "e4ecbd46ec0fc2d46f1d08da3f56221fafb1eb7f68b86905bd760a0981e2bdc8",
+      "bytes": 1069
+    },
+    {
+      "path": "local/qt-cpp-first/build-close-red.log",
+      "sha256": "66e2f550c9f39231210faec85ed588acd097fde93a43a88905349fd2099f555c",
+      "bytes": 2833
+    },
+    {
+      "path": "local/qt-cpp-first/runtime-close-red.log",
+      "sha256": "4e73115a00ec565540334ee0bd8f153c087f5f8e5b932fb8b5b007198f80e137",
+      "bytes": 722
+    },
+    {
+      "path": "local/qt-cpp-first/build-close-green.log",
+      "sha256": "7e11225ccedc7106015dbfb82d591ecc3994bac6c91317158285518e44c9d2ae",
+      "bytes": 5267
+    },
+    {
+      "path": "local/qt-cpp-first/runtime-close-green.log",
+      "sha256": "2c396d004054be5fa1821360cf7b2a7da329bfdfdf9361f4c3e753c0de4d9ede",
+      "bytes": 321
+    },
+    {
+      "path": "local/qt-cpp-first/close-green-last.log",
+      "sha256": "b6166a283242088cb66142a546c9fa716863a83f39e247b6478b892a3092a6ef",
+      "bytes": 1321
+    },
+    {
+      "path": "local/qt-cpp-first/build-final.log",
+      "sha256": "af2c5d3dabbb4771335de95de755cbebb73d7d6459801b19d3cecf80a054118c",
+      "bytes": 16041
+    },
+    {
+      "path": "local/qt-cpp-first/build-final-fixed.log",
+      "sha256": "39408facbff5fe39f756b61a8433f785ab8cff86e27be1d6cba184b3af6ac958",
+      "bytes": 9706
+    },
+    {
+      "path": "local/qt-cpp-first/package-negatives.json",
+      "sha256": "d0d664e2682b4737de84184d74629020c8d965154c7559ad8e40ba719677e2a8",
+      "bytes": 722
+    },
+    {
+      "path": "local/conpty-adapter-checks/adapter-summary.json",
+      "sha256": "188a3b3dc2f7ac6171204e25236b99e22c042cba000bc1c307b5c57cd579f405",
+      "bytes": 4734
+    },
+    {
+      "path": "local/qt-cpp-first/ctest-final.log",
+      "sha256": "8823c21b21cd885159f6736e0f3885ce5d2891c2e7c32d326a19a51aef2978f9",
+      "bytes": 5152
+    },
+    {
+      "path": "local/qt-cpp-first/last-test-final.log",
+      "sha256": "2f9a583edb3d4da498b3eb09680bda96136903906ca3fc5094144d662e3abffb",
+      "bytes": 125992
+    }
+  ],
+  "historical_proof_hash_checks": [
+    {
+      "record": "compile_interface_missing",
+      "path": "local/qt-cpp-first/interface-red.log",
+      "matches_recorded_sha256": true
+    },
+    {
+      "record": "runtime_window_close_did_not_reclaim_running_shell",
+      "path": "local/qt-cpp-first/runtime-close-red.log",
+      "matches_recorded_sha256": true
+    }
+  ],
+  "limitations": [
+    "Qt offscreen is an image/control-path check, not physical keyboard interaction, native onscreen display, compositor presentation or different-DPI validation.",
+    "This entry is fixed 80x24 local cmd with basic ASCII input and the declared 16-color rendering path; full R2 input, IME, dynamic resize, workspace, history browsing, selection/clipboard and Find are not accepted here.",
+    "Arithmetic 750, answer-cell ink, child exit 37, startup-error ink and manual-close reclamation are bounded synthetic assertions, not general TUI or Unicode acceptance.",
+    "C++ core limits remain; Alacritty history, alternate-screen, grapheme and TUI results are not inherited.",
+    "System/fixed ConPTY Session checks are independent configurations; standalone adapter checks do not validate Qt or the whole product combination.",
+    "Elapsed times are test-suite durations, not terminal performance benchmarks. No numeric tolerance or WindTerm performance equivalence is established.",
+    "Qt source/notice/replacement-condition review, full deployed third-party license inventory, clean-machine completeness and product packaging remain pending.",
+    "Earlier failures/timeouts/greens stay separate; intermediate greens do not replace the final-source complete matrix."
+  ],
+  "privacy": {
+    "included": "Whitelisted synthetic assertions, relative repository/local proof references, hashes, source/configuration identities and aggregate cleanup fields.",
+    "excluded": "Raw logs/screenshots, layouts, private absolute paths, PID values, desktop names, credentials, personal sessions and proprietary WindTerm material."
+  },
+  "final_qt_check": {
+    "schema": "termforge-qt-cpp-supervisor-v1",
+    "status": "passed",
+    "timed_out": false,
+    "exit_code": 0,
+    "job_after": {
+      "active": 0,
+      "total": 7,
+      "terminated": 0
+    },
+    "sample": {
+      "schema": "termforge-qt-cpp-smoke-v1",
+      "qt": "6.10.3",
+      "core": "cpp",
+      "backend": "fixed-microsoft-conpty",
+      "arithmetic": 750,
+      "child_exit": 37,
+      "cleanup_verified": true,
+      "image_changed": true,
+      "startup_error_visible": true,
+      "manual_close_reclaimed": true,
+      "presented_done": null
+    }
+  }
+}

@@ -1,5 +1,7 @@
 # 工作区 UI 字体来源
 
+新的 [Qt 迁移入口](../../src/qt/README.md)也私有加载该独立 OFL 资源，作为首批固定 ASCII 终端绘制的可复建字体；不把它视为完整 CJK/emoji fallback、Nerd Font 或原版终端字体等价。旧 Win32 的字号/度量结果与 Qt 分开验证。
+
 `RobotoMono-Regular.ttf` 从 [Google Fonts 的 RobotoMono 官方仓库](https://github.com/googlefonts/RobotoMono)独立取得，未使用 WindTerm 发行物中的字体。固定上游提交为 [`895ec691990d041dd727c7b5afa3ce56525d98e6`](https://github.com/googlefonts/RobotoMono/tree/895ec691990d041dd727c7b5afa3ce56525d98e6)，取得日期为 2026-10-23。这里只随附未修改的静态 Regular 字体及同一提交的许可文件；完整可编辑字体源、构建脚本在固定上游树中。
 
 | 文件 | 上游固定原始文件 | 字节数 | SHA-256 |
