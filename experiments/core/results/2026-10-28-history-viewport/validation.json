@@ -1,0 +1,1698 @@
+{
+  "schema": "termforge-r29-viewport-validation-v1",
+  "status": "candidate_system_checks_passed_scope_incomplete",
+  "prepared_at_utc": "2026-10-27T20:52:49.334775+00:00",
+  "scope": "Candidate experiment only; projection/mapping/Find and two Spec P2 fixes. Not product architecture approval or complete #29 acceptance.",
+  "source_checkpoints": [
+    {
+      "source_commit": "1fafb999d6e031ac7206e499062f7e1b2f1a53ff",
+      "role": "projection_mapping_find_and_two_one_shot_ui_checks",
+      "configuration": "Windows x64 Release; explicit candidate termforge.10; system ConPTY",
+      "host": "Windows-11-10.0.26200-SP0",
+      "manifest": {
+        "path": "local/r29-viewport-projection/shell-build.json",
+        "sha256": "e717e98f6548240935273d048be6fbe4532fbb4dc34441767f1babf9c16dacfa",
+        "bytes": 33891
+      },
+      "recorded_files": [
+        {
+          "path": "CMakeLists.txt",
+          "sha256": "f41c9010d095050dd059139b09db7961eba69f35090549297366848a2a9c60be"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+          "sha256": "e7c832f1de864906bd59c659847a40fe7f35e1ef64f503f2721b15d132d78efc"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/renderer_metrics_test.exe",
+          "sha256": "4e4e9f54ea27bea56961dd04461c8e84ae0765cb47d0093afe039c3434facee5"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/shell_test_launcher.exe",
+          "sha256": "3923d6cd21b6b5ceffe0d91d4167d67ee4b8c2b946194ffcb079bd9ac041bad3"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/termforge_shell.exe",
+          "sha256": "23107d83c139af6a46fff76f30a9d4196acecbe76f3468bd9438ce8b0c9a0264"
+        },
+        {
+          "path": "experiments/core/candidate_terminal.cpp",
+          "sha256": "ac6945bca9d803f05cbf81193a63f9fa364775f240135d4453c6cb0c66cfb70c"
+        },
+        {
+          "path": "experiments/core/candidate_terminal.hpp",
+          "sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b"
+        },
+        {
+          "path": "experiments/core/candidate_terminal_test.cpp",
+          "sha256": "db2dd9f2241b473ba68a357f74990074e734c79f81b3badd580bbbb4c465402d"
+        },
+        {
+          "path": "experiments/core/history_view.hpp",
+          "sha256": "f4d2132743109fea7b073ae79a615de3325aef5b020815fbb72831d44f6395ba"
+        },
+        {
+          "path": "experiments/core/view_mapping.hpp",
+          "sha256": "fd9b4d8c8773436f5a598aea67a420497e5958ee323944c4e3c5b5817fd3ab95"
+        },
+        {
+          "path": "experiments/presentation/render.hpp",
+          "sha256": "0dc017923629b0172056875944bdac28a76d94f3f84113291c4aaf46920402c4"
+        },
+        {
+          "path": "experiments/presentation/renderer_metrics_test.cpp",
+          "sha256": "cfdf2bcc443b92b9cd0152fa4603695d5654b1a98488f21901baa24a51561514"
+        },
+        {
+          "path": "experiments/shell/search_interactions.hpp",
+          "sha256": "13c5d9058d1dedbf40c2a8b186754c2db13827579d7046c956ebe135463333d1"
+        },
+        {
+          "path": "experiments/shell/text_interactions.hpp",
+          "sha256": "780c560221e7a8505b388353eb5cb5f68ca5a3cb746d4d5cb1fa5f93472fe007"
+        }
+      ],
+      "hash_semantics": "Recorded filesystem SHA-256 from that build manifest; historical source/binary values were not compared with current files or Git blobs."
+    },
+    {
+      "source_commit": "f41f747be27ad7b1de965b2279948eca7473cc0e",
+      "role": "spec_p2_empty_anchor_and_snapshot_shape_guard",
+      "configuration": "Windows x64 Release; explicit candidate termforge.10; system ConPTY",
+      "host": "Windows-11-10.0.26200-SP0",
+      "manifest": {
+        "path": "local/r29-viewport-projection/final-build.json",
+        "sha256": "dc380be718d13796e1e19cdfae4b1b0e1dbf852aed7bf81204e99eca46978d19",
+        "bytes": 33721
+      },
+      "recorded_files": [
+        {
+          "path": "CMakeLists.txt",
+          "sha256": "f41c9010d095050dd059139b09db7961eba69f35090549297366848a2a9c60be"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+          "sha256": "b22b3fedd78b002a320cdeb6b23a7727b87fac7bf105802013b3cfd161ff5c1a"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/renderer_metrics_test.exe",
+          "sha256": "244cb42f8db6d27d31f7612b563229cbbda97535769212e53233a86162f08025"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/shell_test_launcher.exe",
+          "sha256": "3923d6cd21b6b5ceffe0d91d4167d67ee4b8c2b946194ffcb079bd9ac041bad3"
+        },
+        {
+          "path": "build/candidate-adapter/bin/Release/termforge_shell.exe",
+          "sha256": "d6642de28158e38f2a015e1cbf65179c043a3b4bc9ce3363070aa86c166bf78a"
+        },
+        {
+          "path": "experiments/core/candidate_terminal.cpp",
+          "sha256": "ac6945bca9d803f05cbf81193a63f9fa364775f240135d4453c6cb0c66cfb70c"
+        },
+        {
+          "path": "experiments/core/candidate_terminal.hpp",
+          "sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b"
+        },
+        {
+          "path": "experiments/core/candidate_terminal_test.cpp",
+          "sha256": "c87803866a83b2b8b2e4f24859746f9cea9fe359170b766073e3f884a46805e6"
+        },
+        {
+          "path": "experiments/core/history_view.hpp",
+          "sha256": "c4de51b54a1134a155bd5bf8ede88b668de4c89c01cd71787ecad1ce8e454971"
+        },
+        {
+          "path": "experiments/core/view_mapping.hpp",
+          "sha256": "fd9b4d8c8773436f5a598aea67a420497e5958ee323944c4e3c5b5817fd3ab95"
+        },
+        {
+          "path": "experiments/presentation/render.hpp",
+          "sha256": "cebb6588e4b7ec63c761bd8615e8c14582284040d12370755e06a6a582312e66"
+        },
+        {
+          "path": "experiments/presentation/renderer_metrics_test.cpp",
+          "sha256": "d6413f633210d824054f5f38c8e7d34843b6764bdab0ac862e6f9c66977758a4"
+        },
+        {
+          "path": "experiments/shell/search_interactions.hpp",
+          "sha256": "13c5d9058d1dedbf40c2a8b186754c2db13827579d7046c956ebe135463333d1"
+        },
+        {
+          "path": "experiments/shell/text_interactions.hpp",
+          "sha256": "780c560221e7a8505b388353eb5cb5f68ca5a3cb746d4d5cb1fa5f93472fe007"
+        }
+      ],
+      "hash_semantics": "Recorded filesystem SHA-256; all 208 final-manifest files rechecked after the terminal CTest result. This does not retroactively identify intermediate green builds."
+    }
+  ],
+  "cases": [
+    {
+      "id": "rectangle",
+      "red_kind": "runtime",
+      "red_exit_code": 1,
+      "red_message": "history viewport supplied a nonrectangular renderer page",
+      "red_proofs": [
+        "red-validation.json",
+        "red.stderr"
+      ],
+      "green_proofs": [
+        "rectangle-green.json",
+        "rectangle-core.log"
+      ],
+      "green_result": "6/6 core checks passed in this bounded subset; no shell or mapping acceptance at this stage"
+    },
+    {
+      "id": "mapping-selection",
+      "red_kind": "compile_interface_missing",
+      "red_exit_code": null,
+      "red_message": "ViewSnapshot.mapping and ViewAffinity were missing; this is not a runtime behavior counterexample",
+      "red_proofs": [
+        "build-selection-interface-red.log"
+      ],
+      "green_proofs": [
+        "selection-core.log"
+      ],
+      "green_result": "2/2 projection and text checks passed; later extended-core log covers cross-fragment forward/reverse selection and hard breaks"
+    },
+    {
+      "id": "wide-wrap-gap",
+      "red_kind": "corrected_runtime",
+      "red_exit_code": 1,
+      "red_message": "history viewport retained an obsolete wide-wrap gap in its display order",
+      "red_proofs": [
+        "wide-corrected-red.json",
+        "wide-corrected-red.log"
+      ],
+      "green_proofs": [
+        "wide-corrected-green.log"
+      ],
+      "green_result": "3/3 viewport subset passed, including full glyph placement and single-column source span selection",
+      "excluded_inference": "Earlier wide-red.log used an ASCII cell-concatenation helper that counted a wide trailer; that failure is confounded and is not the behavioral proof."
+    },
+    {
+      "id": "find-reveal",
+      "red_kind": "runtime_old_line_id_only_behavior",
+      "red_exit_code": 1,
+      "red_message": "Find reveal lost the source column and displayed the start of the old long row",
+      "red_proofs": [
+        "find-red.json",
+        "find-red.log"
+      ],
+      "green_proofs": [
+        "find-green.log",
+        "extended-core.log"
+      ],
+      "green_result": "4/4 viewport subset passed, including actual CandidateTerminal resize/repaint 4→8→4, source selection preservation and stale-map rejection after ED3",
+      "pure_view_width_probe": "not executed; actual core resize/repaint roundtrip is the tested route"
+    },
+    {
+      "id": "empty-anchor-spec-p2",
+      "red_kind": "runtime",
+      "red_exit_code": 1,
+      "red_message": "scrolling to an empty cached hard line skipped to the active grid",
+      "red_proofs": [
+        "empty-red.json",
+        "empty-red.log"
+      ],
+      "green_proofs": [
+        "empty-green.log"
+      ],
+      "green_result": "4/4 viewport subset passed after the empty-anchor fix"
+    },
+    {
+      "id": "snapshot-shape-spec-p2",
+      "red_kind": "runtime_public_presentation_boundary",
+      "red_exit_code": 1,
+      "red_message": "nonrectangular page reached the fixed-width renderer snapshot",
+      "red_proofs": [
+        "shape-red.json",
+        "shape-red.log"
+      ],
+      "green_proofs": [
+        "shape-green.log"
+      ],
+      "green_result": "renderer metrics reports 32 DPI/zoom/backend scenarios passed; this does not validate real cross-monitor DPI"
+    }
+  ],
+  "ui_one_shot_checks": [
+    {
+      "case": "history",
+      "source_commit": "1fafb999d6e031ac7206e499062f7e1b2f1a53ff",
+      "attempts": 1,
+      "timeout_seconds": 40,
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "job_active_after": 0,
+      "job_active_after_cleanup": 0,
+      "desktop_gone": true,
+      "result": {
+        "valid": true,
+        "mode": "ui-history",
+        "sessions_closed": 3,
+        "history_verified": true,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "sample": {
+        "path": "local/r29-viewport-projection/shell-history-once/sample.json",
+        "sha256": "4107eccb7b9070a1c02d91d492f89f2116ec5a9543f45ef98825135ec166acb6",
+        "bytes": 818
+      },
+      "attempt_record": {
+        "path": "local/r29-viewport-projection/shell-history-attempt.json",
+        "sha256": "706998091ce0fa4f3d123a876b49983750328cdc79807da7c12572d9102b4476",
+        "bytes": 181
+      },
+      "build_manifest_sha256_recorded": "e717e98f6548240935273d048be6fbe4532fbb4dc34441767f1babf9c16dacfa",
+      "build_manifest_sha256_matches": true,
+      "meaning": "A one-shot rerun of the previous UI case passed on this source/configuration; earlier failures remain preserved and are not retroactively erased."
+    },
+    {
+      "case": "selection681",
+      "source_commit": "1fafb999d6e031ac7206e499062f7e1b2f1a53ff",
+      "attempts": 1,
+      "timeout_seconds": 40,
+      "status": "passed",
+      "exit_code": 0,
+      "timed_out": false,
+      "job_active_after": 0,
+      "job_active_after_cleanup": 0,
+      "desktop_gone": true,
+      "result": {
+        "valid": true,
+        "mode": "ui-selection",
+        "sessions_closed": 2,
+        "active_children_after": 0,
+        "presented_done": null
+      },
+      "sample": {
+        "path": "local/r29-viewport-projection/shell-selection681-once/sample.json",
+        "sha256": "50eb73cd4c69800fc0da8c76f2c109683b14d0102f532debdf98959faa2c74aa",
+        "bytes": 2840
+      },
+      "attempt_record": {
+        "path": "local/r29-viewport-projection/shell-selection681-attempt.json",
+        "sha256": "f5e086c792e2cb4a4c1db8186ab84974efb84a282bc8684661b532e9126ffa85",
+        "bytes": 186
+      },
+      "build_manifest_sha256_recorded": "e717e98f6548240935273d048be6fbe4532fbb4dc34441767f1babf9c16dacfa",
+      "build_manifest_sha256_matches": true,
+      "meaning": "A one-shot rerun of the previous UI case passed on this source/configuration; earlier failures remain preserved and are not retroactively erased.",
+      "selection": {
+        "system_clipboard": false,
+        "phases": 12,
+        "sessions_closed": 2,
+        "cleanup_verified": true
+      }
+    }
+  ],
+  "final_ctest": {
+    "source_commit": "f41f747be27ad7b1de965b2279948eca7473cc0e",
+    "configuration": "Windows x64 Release; explicit candidate termforge.10; system ConPTY",
+    "host": "Windows-11-10.0.26200-SP0",
+    "status": "passed",
+    "terminal_exit_code": 0,
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0,
+    "total": 57,
+    "elapsed_seconds": 308.33,
+    "command": "ctest --test-dir build/candidate-adapter -C Release --output-on-failure",
+    "environment": {
+      "PYTHONUTF8": "1",
+      "vim": "existing Git Vim added to this process PATH"
+    },
+    "internal_skipped": [
+      {
+        "test": "test_actual_system_copy_paste_and_shortcuts_twice",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM"
+      },
+      {
+        "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "test": "test_mouse_selection_to_real_system_clipboard",
+        "reason": "system copy UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_product_read_errors_cancel_and_close",
+        "reason": "product clipboard read gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_owned_clipboard_contention_preserves_write_and_read_failures",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_and_edit_context_twice",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_clipboard",
+        "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified."
+      }
+    ],
+    "internal_skip_count": 9,
+    "internal_skip_summary": "8 actual system clipboard cases; 1 opt-in pinned-reference failure injection",
+    "log": {
+      "path": "local/r29-viewport-projection/ctest-final.log",
+      "sha256": "205b4561d52a9bc1a20a0d022e99a012683db048c1bbafec433d1877f4d01800",
+      "bytes": 6770
+    },
+    "detailed_log": {
+      "path": "local/r29-viewport-projection/last-test-final.log",
+      "sha256": "165bad934f23f308c3f31ad4778bbf920ee9108a908af0d7148bc5b6547b9e6c",
+      "bytes": 137003
+    },
+    "note": "One final complete candidate/system run. CTest case success does not turn internal skips into acceptance. Elapsed time is suite wall time, not a terminal performance measurement."
+  },
+  "unmeasured_cost_risks": [
+    {
+      "id": "layout-scan",
+      "risk": "reconcile/scroll/reveal/snapshot rebuild display-row metadata by scanning retained history and mixed-width chains; large-history CPU, allocation and interactive latency costs are unmeasured"
+    },
+    {
+      "id": "page-map-validation",
+      "risk": "materializing page Cells and per-glyph source maps plus hit/project source-version validation scans incur allocation and repeated lookup costs; per-frame, selection and Find overhead is unmeasured"
+    }
+  ],
+  "limitations": [
+    "Pure view-width-only probe was not executed; the tested anchor roundtrip uses actual CandidateTerminal.resize plus repaint.",
+    "The independent partial-visible B-before-A source-order counterexample remains unresolved; projection must not conceal it.",
+    "Soft chains crossing the history/active-grid boundary are not accepted by this slice.",
+    "Original WindTerm Unicode behavior and overwrite policy are not validated by these candidate tests.",
+    "The one-shot selection case has system_clipboard=false; no system CF acceptance is claimed.",
+    "Controlled renderer scenarios do not validate actual multi-monitor DPI.",
+    "No performance equivalence, numeric tolerance, complete baseline, daily-use release or final core selection is established.",
+    "The two earlier UI failures are retained separately; new one-shot successes do not rewrite their evidence."
+  ],
+  "historical_identity_records": [
+    {
+      "record": "red-validation.json",
+      "recorded_head": "8521cd7f497f52ab169d76a5a99a976f6adfc8df",
+      "stage": "runtime rectangle red",
+      "recorded_source_and_binary_sha256": {
+        "experiments/core/history_view.hpp": "bc6218d05cc331ad3f39db545575faf0d100713dc8cb8ad09dbf3ee635c4696d",
+        "experiments/core/candidate_terminal.cpp": "ac6945bca9d803f05cbf81193a63f9fa364775f240135d4453c6cb0c66cfb70c",
+        "experiments/core/candidate_terminal.hpp": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b",
+        "experiments/core/candidate_terminal_test.cpp": "4cdef7fe1267bf159322a51f46cf5f153bf0e11e368ccfa4c4b858b639974d72",
+        "build/candidate-adapter/bin/Release/candidate_core_test.exe": "df443c3d21a61940577c53aa8e21b7dcf4167cafa85c6ad5427a16d189aae931"
+      },
+      "verification": "historical recorded values only; no Git blob equivalence claim"
+    },
+    {
+      "record": "rectangle-green.json",
+      "recorded_head": "8521cd7f497f52ab169d76a5a99a976f6adfc8df",
+      "stage": "6/6 core checks passed; shell and source mapping not yet validated",
+      "recorded_source_and_binary_sha256": {
+        "CMakeLists.txt": "62fdcab4c93be78803b47349f0f05e2456533862f73848b09928790263fb53c6",
+        "experiments/core/history_view.hpp": "a20d88765473059f5ceecd9745f8ea35d5372f0ef24b9b20261fd3150dd10012",
+        "experiments/core/candidate_terminal_test.cpp": "4cdef7fe1267bf159322a51f46cf5f153bf0e11e368ccfa4c4b858b639974d72",
+        "experiments/presentation/render.hpp": "47eff67ee721a820b79641bb306a540c02d3fcad88cf1363c99b03b22fdbbed6",
+        "build/candidate-adapter/bin/Release/candidate_core_test.exe": "5946d756763bf914ab73d24c6a27ed39d5e1fafaf0770cdcedf4f065d1368a63",
+        "build/candidate-adapter/bin/Release/history_test.exe": "092b448c1f5851fd7d7ab8d40f77ac85f3a02ea1e4dd7688905a33b66f39b35c"
+      },
+      "verification": "historical recorded values only; no Git blob equivalence claim"
+    },
+    {
+      "record": "wide-corrected-red.json",
+      "recorded_head": null,
+      "stage": "corrected text oracle runtime red; source fixture guard passed",
+      "recorded_source_and_binary_sha256": {
+        "experiments/core/history_view.hpp": "40c379daa1da92613b94fca6c84521681b1a4d32752d6985929eb51166323c9f",
+        "experiments/core/view_mapping.hpp": "fd9b4d8c8773436f5a598aea67a420497e5958ee323944c4e3c5b5817fd3ab95",
+        "experiments/core/candidate_terminal_test.cpp": "2c2d1979e52976dba2652b2cbd9af60e7930b6aa57da9fd565f0dd63c1c8e746",
+        "build/candidate-adapter/bin/Release/candidate_core_test.exe": "5f3b4bc09b426034fe530a518873754c18f21513743b8071d4b491365180a978"
+      },
+      "verification": "historical recorded values only; no Git blob equivalence claim"
+    },
+    {
+      "record": "find-red.json",
+      "recorded_head": null,
+      "stage": "runtime red with the previous line-id-only reveal behavior",
+      "recorded_source_and_binary_sha256": {
+        "experiments/core/history_view.hpp": "ab13baeb169043adf80e0e15075dc9c0a543f043b657f4cc30e396b20f02e502",
+        "experiments/core/view_mapping.hpp": "fd9b4d8c8773436f5a598aea67a420497e5958ee323944c4e3c5b5817fd3ab95",
+        "experiments/core/candidate_terminal_test.cpp": "7e279f06d15ef18b45d19fe221ee4c7d219e625ad61aba288c746d96ffe2c035",
+        "experiments/shell/search_interactions.hpp": "13c5d9058d1dedbf40c2a8b186754c2db13827579d7046c956ebe135463333d1",
+        "build/candidate-adapter/bin/Release/candidate_core_test.exe": "bd1cb86c1cfe5345a2ed11035f183b1158f10b411950d3b115b7b39ca9afb9c4"
+      },
+      "verification": "historical recorded values only; no Git blob equivalence claim"
+    },
+    {
+      "record": "empty-red.json",
+      "recorded_head": null,
+      "stage": "runtime red reproducing Spec review empty-history-anchor finding",
+      "recorded_source_and_binary_sha256": {
+        "experiments/core/history_view.hpp": "f4d2132743109fea7b073ae79a615de3325aef5b020815fbb72831d44f6395ba",
+        "experiments/core/candidate_terminal_test.cpp": "c87803866a83b2b8b2e4f24859746f9cea9fe359170b766073e3f884a46805e6",
+        "build/candidate-adapter/bin/Release/candidate_core_test.exe": "58758fa1b3e96bf19e38223df1b2e0f82921eb78dcfdea8d04f9a90fd5569062"
+      },
+      "verification": "historical recorded values only; no Git blob equivalence claim"
+    },
+    {
+      "record": "shape-red.json",
+      "recorded_head": null,
+      "stage": "runtime red at public presentation snapshot boundary",
+      "recorded_source_and_binary_sha256": {
+        "experiments/core/history_view.hpp": "91933722d48881cecfc7f95a2e020f731039d803c5fbc3b7fd89e28704d3f44c",
+        "experiments/presentation/render.hpp": "0dc017923629b0172056875944bdac28a76d94f3f84113291c4aaf46920402c4",
+        "experiments/presentation/renderer_metrics_test.cpp": "d6413f633210d824054f5f38c8e7d34843b6764bdab0ac862e6f9c66977758a4",
+        "build/candidate-adapter/bin/Release/renderer_metrics_test.exe": "b4abe2a52ceda1a261b5f15607c40241d53602ca259c0994e2841161ead964d2"
+      },
+      "verification": "historical recorded values only; no Git blob equivalence claim"
+    }
+  ],
+  "proofs": [
+    {
+      "path": "local/r29-viewport-projection/red-validation.json",
+      "sha256": "f0121aec240b6d7b58e121f853064353d748b8c99865e8f98e1a70b4484b7c7a",
+      "bytes": 1410
+    },
+    {
+      "path": "local/r29-viewport-projection/rectangle-green.json",
+      "sha256": "6e60c9546c62ce1739b25b38d765dde16c448f448a63843a37f360208035122c",
+      "bytes": 1199
+    },
+    {
+      "path": "local/r29-viewport-projection/wide-corrected-red.json",
+      "sha256": "155140efdde5b9c2e22bb33f39eebef027c9c9466835e1b82691064a81e243e3",
+      "bytes": 1131
+    },
+    {
+      "path": "local/r29-viewport-projection/find-red.json",
+      "sha256": "beae2320ee618d42cca06a74310e826a8b4c6e9cc43af226c9216124a4acea6a",
+      "bytes": 1021
+    },
+    {
+      "path": "local/r29-viewport-projection/empty-red.json",
+      "sha256": "5f77c4d8a47028699afb2a50a3e80101642220cc0404b275f7c0b3945cea9f86",
+      "bytes": 807
+    },
+    {
+      "path": "local/r29-viewport-projection/shape-red.json",
+      "sha256": "0a4f1d652fff57e94d62fcdd8cdc5723e63f7e7aaa2b98b874805510e8b441d4",
+      "bytes": 887
+    },
+    {
+      "path": "local/r29-viewport-projection/red.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "local/r29-viewport-projection/red.stderr",
+      "sha256": "4a3fe3d156617929a0d2e127fb21a2a9b3f2577ce053fbf2a52137515c860b3e",
+      "bytes": 58
+    },
+    {
+      "path": "local/r29-viewport-projection/rectangle-core.log",
+      "sha256": "9a46d7bf5c8b2564cd8b989e6ba036879c7234fbd9025ba6d6e4860cb47d3a43",
+      "bytes": 972
+    },
+    {
+      "path": "local/r29-viewport-projection/rectangle-green.patch",
+      "sha256": "9d7ebd045f85f92926c7b5cc61f1379fac93d6191dcaafc1747cd73ee491615b",
+      "bytes": 17662
+    },
+    {
+      "path": "local/r29-viewport-projection/snapshot-complete-source-test.patch",
+      "sha256": "f712cba2692f5c0adaf93f40c098c303796e01c5e01f1c3e2cfe36fef12f489e",
+      "bytes": 2845
+    },
+    {
+      "path": "local/r29-viewport-projection/build-selection-interface-red.log",
+      "sha256": "fce5f43292e52a92735727fdd0149a71e8d44e5670b0f70ba1bb7b010184d1d9",
+      "bytes": 9594
+    },
+    {
+      "path": "local/r29-viewport-projection/selection-core.log",
+      "sha256": "3125929b1b27a27f2e492b8e460209eb7be603cec8af075b46f4f09da76506d4",
+      "bytes": 506
+    },
+    {
+      "path": "local/r29-viewport-projection/wide-red.json",
+      "sha256": "67ebc6131250f3f40513f25af1668a633dcef23f63d33cc7f67d65d78e7ecebd",
+      "bytes": 885
+    },
+    {
+      "path": "local/r29-viewport-projection/wide-red.log",
+      "sha256": "7f5fa48246a317f841a9ac8d02f02743bd527c8c81226d65d0be4b1f2783856e",
+      "bytes": 74
+    },
+    {
+      "path": "local/r29-viewport-projection/wide-inspect.log",
+      "sha256": "18fa09dec9e54d02954d666684eebf80454b385c3142735f1d0bd98a03f370d3",
+      "bytes": 477
+    },
+    {
+      "path": "local/r29-viewport-projection/wide-corrected-red.log",
+      "sha256": "7f5fa48246a317f841a9ac8d02f02743bd527c8c81226d65d0be4b1f2783856e",
+      "bytes": 74
+    },
+    {
+      "path": "local/r29-viewport-projection/wide-corrected-green.log",
+      "sha256": "91a09efbec6b079117078af28b0e8ed1e88d2da16d4304a53773ddc22cef62d4",
+      "bytes": 631
+    },
+    {
+      "path": "local/r29-viewport-projection/find-red.log",
+      "sha256": "42e470082dd13dc663a802a3841694a6e4b57094c83b4d0a4269d3ed910a46f2",
+      "bytes": 80
+    },
+    {
+      "path": "local/r29-viewport-projection/find-green.log",
+      "sha256": "0df8259e6ebf65fcf669f061e45a9387243af4a8519ff5309cf90528636925c2",
+      "bytes": 756
+    },
+    {
+      "path": "local/r29-viewport-projection/extended-core.log",
+      "sha256": "b90a53a8aca8eb69674730bb7c4d6d5008002e8e34cf985292979aaae7ff0e95",
+      "bytes": 756
+    },
+    {
+      "path": "local/r29-viewport-projection/empty-red.log",
+      "sha256": "ce5193319d475c822aadaa5e59c684ea8613a62a65fca88ac222636298910ba8",
+      "bytes": 67
+    },
+    {
+      "path": "local/r29-viewport-projection/empty-green.log",
+      "sha256": "3edb655063c22fd3cf00d278acc34fffe4059543c1f3551e31340aed7bcd4080",
+      "bytes": 756
+    },
+    {
+      "path": "local/r29-viewport-projection/shape-red.log",
+      "sha256": "947f24fe50a58f76075e1e9606f6b55f3ae7c3121fa030815929dede84fda08e",
+      "bytes": 63
+    },
+    {
+      "path": "local/r29-viewport-projection/shape-green.log",
+      "sha256": "078feeeea87356256e0eb5b5499815c1fecffe14f3db329f9267313a1729e8a9",
+      "bytes": 56
+    },
+    {
+      "path": "local/r29-viewport-projection/shell-build.json",
+      "sha256": "e717e98f6548240935273d048be6fbe4532fbb4dc34441767f1babf9c16dacfa",
+      "bytes": 33891
+    },
+    {
+      "path": "local/r29-viewport-projection/final-build.json",
+      "sha256": "dc380be718d13796e1e19cdfae4b1b0e1dbf852aed7bf81204e99eca46978d19",
+      "bytes": 33721
+    },
+    {
+      "path": "local/r29-viewport-projection/build-integrated.log",
+      "sha256": "effc8f74c59bcfa06d7e0fdf212e14104a14564dd2319f66a0a1b47bbc5a8fe7",
+      "bytes": 5987
+    },
+    {
+      "path": "local/r29-viewport-projection/build-final.log",
+      "sha256": "b2442ceb08728c5d6aa8fe4f5e5086e83f812099046129422c7e88d0d81e1df6",
+      "bytes": 6018
+    },
+    {
+      "path": "local/r29-viewport-projection/shell-history-attempt.json",
+      "sha256": "706998091ce0fa4f3d123a876b49983750328cdc79807da7c12572d9102b4476",
+      "bytes": 181
+    },
+    {
+      "path": "local/r29-viewport-projection/shell-selection681-attempt.json",
+      "sha256": "f5e086c792e2cb4a4c1db8186ab84974efb84a282bc8684661b532e9126ffa85",
+      "bytes": 186
+    },
+    {
+      "path": "local/r29-viewport-projection/shell-history-once/sample.json",
+      "sha256": "4107eccb7b9070a1c02d91d492f89f2116ec5a9543f45ef98825135ec166acb6",
+      "bytes": 818
+    },
+    {
+      "path": "local/r29-viewport-projection/shell-selection681-once/sample.json",
+      "sha256": "50eb73cd4c69800fc0da8c76f2c109683b14d0102f532debdf98959faa2c74aa",
+      "bytes": 2840
+    },
+    {
+      "path": "local/r29-viewport-projection/build-red.log",
+      "sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "bytes": 240
+    },
+    {
+      "path": "local/r29-viewport-projection/build-rectangle.log",
+      "sha256": "838c75dffaa41863556e135ad7122619e0b9bca2c7417a60d0f865a0f97d8fc7",
+      "bytes": 988
+    },
+    {
+      "path": "local/r29-viewport-projection/build-wide-corrected-red.log",
+      "sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "bytes": 240
+    },
+    {
+      "path": "local/r29-viewport-projection/build-find-red.log",
+      "sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "bytes": 240
+    },
+    {
+      "path": "local/r29-viewport-projection/build-empty-red.log",
+      "sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "bytes": 240
+    },
+    {
+      "path": "local/r29-viewport-projection/build-shape-red.log",
+      "sha256": "abe3a52ca6e7cf6369688d29c9c14cce9b662e76e25d99faaaf27fd12c85897b",
+      "bytes": 242
+    },
+    {
+      "path": "local/r29-viewport-projection/run-shell-once.py",
+      "sha256": "d98e164a4f19c90a7e155e9f2b28cb060339361f8f91065b9ae1c75496d0b013",
+      "bytes": 3122
+    },
+    {
+      "path": "local/r29-viewport-projection/ctest-final.log",
+      "sha256": "205b4561d52a9bc1a20a0d022e99a012683db048c1bbafec433d1877f4d01800",
+      "bytes": 6770
+    },
+    {
+      "path": "local/r29-viewport-projection/last-test-final.log",
+      "sha256": "165bad934f23f308c3f31ad4778bbf920ee9108a908af0d7148bc5b6547b9e6c",
+      "bytes": 137003
+    },
+    {
+      "path": "local/r29-viewport-projection/partial-visible-final.log",
+      "sha256": "8c85c093c56979ccf5ec1076b31a319119bdb9c860bbed2301e6984c821fc16d",
+      "bytes": 223
+    }
+  ],
+  "existing_record_proof_hash_checks": [
+    {
+      "record": "red-validation.json",
+      "path": "local/r29-viewport-projection/snapshot-complete-source-test.patch",
+      "expected_sha256": "f712cba2692f5c0adaf93f40c098c303796e01c5e01f1c3e2cfe36fef12f489e",
+      "actual_sha256": "f712cba2692f5c0adaf93f40c098c303796e01c5e01f1c3e2cfe36fef12f489e",
+      "matches": true
+    },
+    {
+      "record": "red-validation.json",
+      "path": "local/r29-viewport-projection/build-red.log",
+      "expected_sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "actual_sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "matches": true
+    },
+    {
+      "record": "rectangle-green.json",
+      "path": "local/r29-viewport-projection/build-rectangle.log",
+      "expected_sha256": "838c75dffaa41863556e135ad7122619e0b9bca2c7417a60d0f865a0f97d8fc7",
+      "actual_sha256": "838c75dffaa41863556e135ad7122619e0b9bca2c7417a60d0f865a0f97d8fc7",
+      "matches": true
+    },
+    {
+      "record": "rectangle-green.json",
+      "path": "local/r29-viewport-projection/rectangle-core.log",
+      "expected_sha256": "9a46d7bf5c8b2564cd8b989e6ba036879c7234fbd9025ba6d6e4860cb47d3a43",
+      "actual_sha256": "9a46d7bf5c8b2564cd8b989e6ba036879c7234fbd9025ba6d6e4860cb47d3a43",
+      "matches": true
+    },
+    {
+      "record": "rectangle-green.json",
+      "path": "local/r29-viewport-projection/rectangle-green.patch",
+      "expected_sha256": "9d7ebd045f85f92926c7b5cc61f1379fac93d6191dcaafc1747cd73ee491615b",
+      "actual_sha256": "9d7ebd045f85f92926c7b5cc61f1379fac93d6191dcaafc1747cd73ee491615b",
+      "matches": true
+    },
+    {
+      "record": "wide-corrected-red.json",
+      "path": "local/r29-viewport-projection/build-wide-corrected-red.log",
+      "expected_sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "actual_sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "matches": true
+    },
+    {
+      "record": "wide-corrected-red.json",
+      "path": "local/r29-viewport-projection/wide-corrected-red.log",
+      "expected_sha256": "7f5fa48246a317f841a9ac8d02f02743bd527c8c81226d65d0be4b1f2783856e",
+      "actual_sha256": "7f5fa48246a317f841a9ac8d02f02743bd527c8c81226d65d0be4b1f2783856e",
+      "matches": true
+    },
+    {
+      "record": "find-red.json",
+      "path": "local/r29-viewport-projection/build-find-red.log",
+      "expected_sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "actual_sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "matches": true
+    },
+    {
+      "record": "find-red.json",
+      "path": "local/r29-viewport-projection/find-red.log",
+      "expected_sha256": "42e470082dd13dc663a802a3841694a6e4b57094c83b4d0a4269d3ed910a46f2",
+      "actual_sha256": "42e470082dd13dc663a802a3841694a6e4b57094c83b4d0a4269d3ed910a46f2",
+      "matches": true
+    },
+    {
+      "record": "empty-red.json",
+      "path": "local/r29-viewport-projection/build-empty-red.log",
+      "expected_sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "actual_sha256": "3dc6a5da989532287d8bc4d3d45ef5f5ad084b953cfbb949a95223daeec20467",
+      "matches": true
+    },
+    {
+      "record": "empty-red.json",
+      "path": "local/r29-viewport-projection/empty-red.log",
+      "expected_sha256": "ce5193319d475c822aadaa5e59c684ea8613a62a65fca88ac222636298910ba8",
+      "actual_sha256": "ce5193319d475c822aadaa5e59c684ea8613a62a65fca88ac222636298910ba8",
+      "matches": true
+    },
+    {
+      "record": "shape-red.json",
+      "path": "local/r29-viewport-projection/build-shape-red.log",
+      "expected_sha256": "abe3a52ca6e7cf6369688d29c9c14cce9b662e76e25d99faaaf27fd12c85897b",
+      "actual_sha256": "abe3a52ca6e7cf6369688d29c9c14cce9b662e76e25d99faaaf27fd12c85897b",
+      "matches": true
+    },
+    {
+      "record": "shape-red.json",
+      "path": "local/r29-viewport-projection/shape-red.log",
+      "expected_sha256": "947f24fe50a58f76075e1e9606f6b55f3ae7c3121fa030815929dede84fda08e",
+      "actual_sha256": "947f24fe50a58f76075e1e9606f6b55f3ae7c3121fa030815929dede84fda08e",
+      "matches": true
+    },
+    {
+      "record": "shell-build.json",
+      "path": "local/r29-viewport-projection/build-integrated.log",
+      "expected_sha256": "effc8f74c59bcfa06d7e0fdf212e14104a14564dd2319f66a0a1b47bbc5a8fe7",
+      "actual_sha256": "effc8f74c59bcfa06d7e0fdf212e14104a14564dd2319f66a0a1b47bbc5a8fe7",
+      "matches": true
+    },
+    {
+      "record": "shell-build.json",
+      "path": "local/r29-viewport-projection/run-shell-once.py",
+      "expected_sha256": "d98e164a4f19c90a7e155e9f2b28cb060339361f8f91065b9ae1c75496d0b013",
+      "actual_sha256": "d98e164a4f19c90a7e155e9f2b28cb060339361f8f91065b9ae1c75496d0b013",
+      "matches": true
+    },
+    {
+      "record": "final-build.json",
+      "path": "local/r29-viewport-projection/build-final.log",
+      "expected_sha256": "b2442ceb08728c5d6aa8fe4f5e5086e83f812099046129422c7e88d0d81e1df6",
+      "actual_sha256": "b2442ceb08728c5d6aa8fe4f5e5086e83f812099046129422c7e88d0d81e1df6",
+      "matches": true
+    }
+  ],
+  "privacy": {
+    "included": "whitelisted synthetic assertions, relative repository proof references, hashes, source/configuration identity and aggregate exit/cleanup fields",
+    "excluded": "PID values, desktop names, absolute private paths, raw GUI/frame/layout data, full stdout/stderr from UI samples, proprietary/original WindTerm materials"
+  },
+  "final_build_manifest": {
+    "source_commit": "f41f747be27ad7b1de965b2279948eca7473cc0e",
+    "configuration": "Windows x64 Release; explicit candidate termforge.10; system ConPTY",
+    "host": "Windows-11-10.0.26200-SP0",
+    "files": [
+      {
+        "path": "CMakeLists.txt",
+        "sha256": "f41c9010d095050dd059139b09db7961eba69f35090549297366848a2a9c60be"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/alpha_normal_smoke.exe",
+        "sha256": "f14bf500afc054575c72a80cf22167bd64a0100ffdd43997cce8f56cbfd70812"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/assets/fonts/RobotoMono-Regular.ttf",
+        "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/candidate_core_test.exe",
+        "sha256": "b22b3fedd78b002a320cdeb6b23a7727b87fac7bf105802013b3cfd161ff5c1a"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/candidate_resize_map_test.exe",
+        "sha256": "d1744502b116d812bef62d0da345a8467c8fc44e19bc3e0a6af57ea564ee6827"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/candidate_title_test.exe",
+        "sha256": "e584187c5270b1a63c733e68ec8be51d2fca157816723a0848eb6f7d5052e4c1"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/clipboard_policy_test.exe",
+        "sha256": "36b98b15162aa95c3fb5ba634a3cc831022303d5966d8c43d71c2e36c8ac4e2d"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/conpty_ctrl_c_probe.exe",
+        "sha256": "2883537e3a90c27308a00c6a203161b472b231b456733b621fe8973c186c61d8"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/conpty_margin_probe.exe",
+        "sha256": "da640b5f4150fde8f6d1c4c838ba52c1318dfe834b85cc47e564096706156a34"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/core_measure.exe",
+        "sha256": "4fd604217e1874e7f3cb4d62ef77e85fe32ad73577383ed93bc97a58e55f75f7"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/find_bar_test.exe",
+        "sha256": "b1fa4befd1e70c1dd9d12a9cc413a9c0a6fe902f9c19fab78ef1f34e4b254f01"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/history_test.exe",
+        "sha256": "3ab3283aa2415d58fb194dd840c1851a262cca61d14e5cb6bbee90759c801ce5"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/ime_context_test.exe",
+        "sha256": "e7bd99a75a0738e1e8d24e57ce39fac89752411ad11f11bcf1d590e85b23b932"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/ime_input_expectation_test.exe",
+        "sha256": "a3febd8e1f02c8ffa7c050f2542569ce520488b8c226ed6a7c057f483e7c5680"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/keyboard_test.exe",
+        "sha256": "22bfedc16265cf4063082e5aa0cc82e74b9d2b3af87bebafb87261e4a6331feb"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/layout_state_test.exe",
+        "sha256": "5a94a47ee125737fd1835cbb43585aaab4f91ddc95192a9f919178cbd90ce59d"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/paste_test.exe",
+        "sha256": "d698700223cf42208a2aa379c5f7dcb894519788f3f53fb3ca85ecde050128c0"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/presentation_probe.exe",
+        "sha256": "5194adb45f0a573dfcb9f08bd442b60e03a35f0811f4720f1e06c5f2b43eb0b8"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/raw_console_receiver_test.exe",
+        "sha256": "2f3214c9ccb57f9bfaf6f228015ffd5838e61fbababd087b72a3baf14b9642b9"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/real_app_capture.exe",
+        "sha256": "72d26bda61af90b21b83bdb6cee3a048abec2d277494aaf86bfd99ded2a4368a"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/receive.exe",
+        "sha256": "a4d914f1c804c7cb240be00c987801bbfbbe1ed0006423e1a97b1d301d1f78df"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/recovery_probe.exe",
+        "sha256": "ef2e7c61ca875d0dbb02220f8c4df2646332f278863fd64673679c7102af6596"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/renderer_metrics_test.exe",
+        "sha256": "244cb42f8db6d27d31f7612b563229cbbda97535769212e53233a86162f08025"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/replay.exe",
+        "sha256": "37dfecd9adfdf89b2ee44b581863da0114d6fa486ee5d669c7f073ae0581505a"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/resize_test.exe",
+        "sha256": "c5ad023c3076574466b9284102751218436bd40333eedeb70f41e964f22f8dcf"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/runtime_observation_test.exe",
+        "sha256": "c2cfd3ec70cb468eb071cc05336ecc22fa601d38475fb06389116e107e670235"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/scenario_tick_gate_test.exe",
+        "sha256": "87ebac936c81caa8306b981307da218ac97d432c366a2b21cce93b7f4dc6c67b"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/search_test.exe",
+        "sha256": "77a88b31c54547cc64bb188abb201e203a6792a1492bb231449c8c41b605fbd2"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/selection_test.exe",
+        "sha256": "5a32e5219ca4d6ccf96be6616bdad92f24ee5ae49a10ecc6aee27d9eefadd0d1"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/sent_message_wait_test.exe",
+        "sha256": "02633453bb43ee175380b32d9d74c5e810e18373fc7ae0b9d281b480ececd70d"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_clipboard_reader.exe",
+        "sha256": "7fcd3e07232000c276c85e5667b2525cff67926342cb870d0980b88a84273377"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_ime_client.exe",
+        "sha256": "75c0b15ed5e79b9abf4815e6036c657fa2713531318d0ab256c98f420dcba97b"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_input_client.exe",
+        "sha256": "4c70b7cd5fc8b31df2e33f9af8fc714e2ff3fff8b709499768e26943c146b97b"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_launch_test.exe",
+        "sha256": "7fa6d0080ad05bdc93716f9c9ee0f4dc4e9aa181b4dac17dc0bdc1876bb86002"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_paste_probe.exe",
+        "sha256": "59a978d4657e419b14a362ece8a6ca83c01283aa13c11293007b1d3386334040"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_query_client.exe",
+        "sha256": "d9a74b89e702cb21bb3d2b79989bb488d764e33027df6e52f1dd296657754c5d"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_queue_probe.exe",
+        "sha256": "1e05519f1bc802d81407b0836cbc8a25ce8a01f9354c12a03e91f3d5bde0b0d5"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_selection_text_client.exe",
+        "sha256": "a87359d579e4d897c84e542a83b750b2993cf5cab7fb7fe9a525551134d9ead6"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_size_client.exe",
+        "sha256": "67764272d9e53298b4f8eefe351b63f74dc36fe31fb9b8550a93d7c700da33da"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_test_launcher.exe",
+        "sha256": "3923d6cd21b6b5ceffe0d91d4167d67ee4b8c2b946194ffcb079bd9ac041bad3"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/shell_text_client.exe",
+        "sha256": "9ccd38100fc77e2e39e1eee811e68aac9a656c2cfb8c3585121c38dc7a3b3bde"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/termforge_conpty_probe.exe",
+        "sha256": "b48137edad63d1e204e94431fbe950a59d7ca9785c690ba0ee60d7fb236df1f6"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/termforge_ime_probe.exe",
+        "sha256": "5bfded9b7605ddadd87908729ded01fd29af366a938c98ab0167248a70789cea"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/termforge_shell.exe",
+        "sha256": "d6642de28158e38f2a015e1cbf65179c043a3b4bc9ce3363070aa86c166bf78a"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/terminal_trace.exe",
+        "sha256": "446f45870fffbc121d3099ff31e6f6751429d3a1bdb0c4e6eb79e88b394277bf"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/text_action_policy_test.exe",
+        "sha256": "1945dcdd963dcff679334669df943dc8462bbca2096020120a355d0e4c344baa"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/transport_completion_test.exe",
+        "sha256": "82236eb238ccc1f8ef34d62da8d68bdbb0b5966b92375b0920e055ba376ea1bc"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/workflow_fixture_test.exe",
+        "sha256": "7fa7bea14776ca254e23ef14e070eb40656fe35badf017f31063d3d25abbf8ad"
+      },
+      {
+        "path": "build/candidate-adapter/bin/Release/workspace_state_test.exe",
+        "sha256": "e6510653716daa1a7ca9128da937e53aa80652add940b1cfc09bb9e76b74a523"
+      },
+      {
+        "path": "experiments/candidates/alacritty/Cargo.lock",
+        "sha256": "df83cd8bec1fd2ac5c8f84c27aded75b7e726ee385b108bd99b94024f215d5cc"
+      },
+      {
+        "path": "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml",
+        "sha256": "5eb92aa34f551ab98424a99f5f20ec5ecbb773d6a56fb20931387ceb83398ccd"
+      },
+      {
+        "path": "experiments/conpty/ctrl_c_probe.cpp",
+        "sha256": "5ccc2fc3405f666b1bd9225f00eca1f6c527246ff8665097351450428ea6d969"
+      },
+      {
+        "path": "experiments/conpty/ctrl_c_run.py",
+        "sha256": "698e76ac95b7de74b0479b5dbc79596137ad770c28b9185140ca790389752c9b"
+      },
+      {
+        "path": "experiments/conpty/margin_contract.py",
+        "sha256": "f6ff82099b4675d7f64c9bbebcd226b9c3d5da1998a20c8477945956eadd3561"
+      },
+      {
+        "path": "experiments/conpty/margin_probe.cpp",
+        "sha256": "4dc43c132f994280367d810e1066e8dbfcc2bb273897f7e6ceebae1e6780f713"
+      },
+      {
+        "path": "experiments/conpty/margin_run.py",
+        "sha256": "bbfa6b4b114cf0e95cefd1b5d87f28cb1d1abfd03236b3cac556b9a2c63fa1c9"
+      },
+      {
+        "path": "experiments/conpty/probe.cpp",
+        "sha256": "1d199896c9cffbb04b3deca2002644dcdfb9e37851e84b7c21f92ed748a62032"
+      },
+      {
+        "path": "experiments/conpty/real_app_capture.cpp",
+        "sha256": "95b16e22e0c8fc9cf763093900f1982a01ad6808a679f00e52c3761195099fe6"
+      },
+      {
+        "path": "experiments/conpty/run.py",
+        "sha256": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329"
+      },
+      {
+        "path": "experiments/conpty/session.hpp",
+        "sha256": "6c05bafd481c70e167d2a340aa92231e713f9e8904cf6e57ac8d8dcdb3ab3456"
+      },
+      {
+        "path": "experiments/conpty/test_conpty.py",
+        "sha256": "ad7bf27c5909ba7534b5d3c7b3c9b553aa5803dfb5f73ce2ac5e40cd231040d7"
+      },
+      {
+        "path": "experiments/conpty/test_ctrl_c.py",
+        "sha256": "c8e1d00ed3188856f392baca1cb59742daebc58af5fb3076e381fbf87a9e6db5"
+      },
+      {
+        "path": "experiments/conpty/test_margin_contract.py",
+        "sha256": "9fd095900ee58c1dc5ca81d4efc05cf2741502eff388b20d4597100f1ff88d1d"
+      },
+      {
+        "path": "experiments/conpty/test_margin_run.py",
+        "sha256": "53d0ae3183797d98dded54a9db8c68b9ecf6b08e6407b58b4b123dc75c90ec4b"
+      },
+      {
+        "path": "experiments/core/candidate_resize_map_test.cpp",
+        "sha256": "bd2b6f64d986e76aa99f6c302dc51a40a5a83459ab558fc0dc8eb08ed6ef109d"
+      },
+      {
+        "path": "experiments/core/candidate_terminal.cpp",
+        "sha256": "ac6945bca9d803f05cbf81193a63f9fa364775f240135d4453c6cb0c66cfb70c"
+      },
+      {
+        "path": "experiments/core/candidate_terminal.hpp",
+        "sha256": "123fd595d6f993be29bac2c7af35c5b87c975af66275a0f05b94a4766a635a9b"
+      },
+      {
+        "path": "experiments/core/candidate_terminal_test.cpp",
+        "sha256": "c87803866a83b2b8b2e4f24859746f9cea9fe359170b766073e3f884a46805e6"
+      },
+      {
+        "path": "experiments/core/history_test.cpp",
+        "sha256": "bc8d6afffe6b70cee6d0252bd5ef924af17ec49cc638b3265fc7d7a2cfa849f8"
+      },
+      {
+        "path": "experiments/core/history_view.hpp",
+        "sha256": "c4de51b54a1134a155bd5bf8ede88b668de4c89c01cd71787ecad1ce8e454971"
+      },
+      {
+        "path": "experiments/core/recovery_probe.cpp",
+        "sha256": "bab1898226ff775113475867d206e7cba02458026f2f9356dac229b2f5eb15de"
+      },
+      {
+        "path": "experiments/core/replay.cpp",
+        "sha256": "4d34504f11659f859db6f253c04240abf5e1b8f4c1d57367e86c0ffa9cafd778"
+      },
+      {
+        "path": "experiments/core/resize_test.cpp",
+        "sha256": "46c8a6a45c18c5994b9aa58673957f05226eba026287f8f3ea1e1354fc1e092b"
+      },
+      {
+        "path": "experiments/core/screen.hpp",
+        "sha256": "fa80d3e67375b0cfacfe4ad640ecef0a47c36ca493499c0054ab5b3e7abf46c1"
+      },
+      {
+        "path": "experiments/core/search_test.cpp",
+        "sha256": "42dc6381a827f0621007987cc0c3bc8f0bf35d8b5242e4ee6b2a1928e88bffc5"
+      },
+      {
+        "path": "experiments/core/selection_test.cpp",
+        "sha256": "0e74f19801a0e2e7273d2312fb36259487fbfefb180fcc64048ad415cce753a6"
+      },
+      {
+        "path": "experiments/core/terminal.hpp",
+        "sha256": "e5ca6b065b38b98ba4bb32f579e4f0e8e126a7872de147ff37c2c68aac414358"
+      },
+      {
+        "path": "experiments/core/text_document.hpp",
+        "sha256": "87efae9d6a9fccb88dd353cdd1be6a570480b6942fabbdf3c9dac2c6370e026a"
+      },
+      {
+        "path": "experiments/core/text_projection.hpp",
+        "sha256": "3853bcf053964e54ea00bb7acfd0d302abd536ae0ed4eddfe791a6bcffdb6914"
+      },
+      {
+        "path": "experiments/core/text_search.hpp",
+        "sha256": "fcc64b96c1f8d39b3a09dc45ffe537e7dc0fd70727b4d46768706ab55467caac"
+      },
+      {
+        "path": "experiments/core/text_selection.hpp",
+        "sha256": "7d41d58d434ad3c32ce2f67c043e337277abbbc69e4a7a2b6bdf7e519f9f5462"
+      },
+      {
+        "path": "experiments/core/trace.cpp",
+        "sha256": "91e6f4594ae47a9e0c60a435c71687666ec114373899d033fa59e1e46b9945d2"
+      },
+      {
+        "path": "experiments/core/unicode_width.hpp",
+        "sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+      },
+      {
+        "path": "experiments/core/view_mapping.hpp",
+        "sha256": "fd9b4d8c8773436f5a598aea67a420497e5958ee323944c4e3c5b5817fd3ab95"
+      },
+      {
+        "path": "experiments/presentation/desktop.hpp",
+        "sha256": "2efc54b1a23acbbc4877fd1b381d5a87e98395ddeed01b5159cbe78fa92a0ccf"
+      },
+      {
+        "path": "experiments/presentation/presentation.cpp",
+        "sha256": "6d274ac311231f288a4c5bbbffd52153dafa54d2873fe0e318d55c8c2004bd49"
+      },
+      {
+        "path": "experiments/presentation/render.hpp",
+        "sha256": "cebb6588e4b7ec63c761bd8615e8c14582284040d12370755e06a6a582312e66"
+      },
+      {
+        "path": "experiments/presentation/renderer_metrics_test.cpp",
+        "sha256": "d6413f633210d824054f5f38c8e7d34843b6764bdab0ac862e6f9c66977758a4"
+      },
+      {
+        "path": "experiments/shell/action_checks.py",
+        "sha256": "eb1d2b08c3f1384b57a45eb6154f462363bc52d4f900cf887c1518b17bb2a1bb"
+      },
+      {
+        "path": "experiments/shell/alternate_checks.py",
+        "sha256": "8a2a7b789d60c6b64d14cfad21b02f00cc964814a0a17ea06d187ceba4182de0"
+      },
+      {
+        "path": "experiments/shell/candidate_title_test.cpp",
+        "sha256": "60066ba29b6f153c78ac96fb2dbc61b68f025623d2b84c9cb83afb3604cd5362"
+      },
+      {
+        "path": "experiments/shell/clipboard.hpp",
+        "sha256": "d90f103661f8a4a4fe45d678027a7c070232cdc8f4da80c59d218c3f29d93a2a"
+      },
+      {
+        "path": "experiments/shell/clipboard_checks.py",
+        "sha256": "cca669e9a08b32c4285260443165364ac75b1d7a057d8f371e06bc4e9f54c696"
+      },
+      {
+        "path": "experiments/shell/clipboard_failure.hpp",
+        "sha256": "f37a9867e83b95eaa084211c9ab47bb4bf400682c2c02c59b941bbafbfac0bca"
+      },
+      {
+        "path": "experiments/shell/clipboard_owner_policy.hpp",
+        "sha256": "5bfc713790d302b48266a583614db3e9b43be8c59bb74b2e531595c8898e5f0c"
+      },
+      {
+        "path": "experiments/shell/clipboard_policy_test.cpp",
+        "sha256": "780567c70cb5028c9ace2ed50944177808f62fc42365572f9d48ff7fda5f26a3"
+      },
+      {
+        "path": "experiments/shell/clipboard_scenario_state.hpp",
+        "sha256": "0824d44ff250ff9f4d62468aa710f07833ac4b48e5c496b5c750cc39a15aa408"
+      },
+      {
+        "path": "experiments/shell/clipboard_text.hpp",
+        "sha256": "b050e6da2fb92c080b054e3b1357e9a87484818fb8efdd43b388641f6ff256cd"
+      },
+      {
+        "path": "experiments/shell/clipboard_worker.cpp",
+        "sha256": "d1f45e20ea8b63e747c2cbd43d0b0dd3fda2f22502a90af6e1867ac9fc4075c7"
+      },
+      {
+        "path": "experiments/shell/clipboard_worker.hpp",
+        "sha256": "7d883bd28f115f986ce07837b619e0985b0ddc8faa7395a8d3919415c889f4a2"
+      },
+      {
+        "path": "experiments/shell/edit_actions.hpp",
+        "sha256": "83c0129a463fc376a4184cfef1da1be617546c60a86678daf5c6af79be94668a"
+      },
+      {
+        "path": "experiments/shell/find_bar.hpp",
+        "sha256": "809b458c3d534f750e590a8e3bfc2355aeb02413f1ed5cb4f2ed8021fd2711f2"
+      },
+      {
+        "path": "experiments/shell/find_bar_test.cpp",
+        "sha256": "f150adc9d0b83dc17355e3e5759a6a09328805864371e5afba21806056bed6b2"
+      },
+      {
+        "path": "experiments/shell/find_checks.py",
+        "sha256": "cf1463a67c33ce367b72cb79aaadda9197ea66fb75fea7163a527f22fd363301"
+      },
+      {
+        "path": "experiments/shell/history_checks.py",
+        "sha256": "27366c9fe6c40e16c63f9afc2ae377cff4df2682c3b334d3894454b3f7be453c"
+      },
+      {
+        "path": "experiments/shell/hosted_ime_input.hpp",
+        "sha256": "b556a1d9cfd3bf7fcd0de34b5aa11ee5743a92f8d3239af8f1828c0726050aab"
+      },
+      {
+        "path": "experiments/shell/ime.hpp",
+        "sha256": "470d3e40a0962506ec58237af0593cf0510d6aa34cebb62bae383012d4652ee0"
+      },
+      {
+        "path": "experiments/shell/ime_client.cpp",
+        "sha256": "817355892bfa539f66f5913045bd72184670eac53522a1c3f02a3284ef2619f2"
+      },
+      {
+        "path": "experiments/shell/ime_context_test.cpp",
+        "sha256": "5aef11634c3dac10a22e2b28f3e9313aabdb707d8b51ba5e0dda854ebbb26872"
+      },
+      {
+        "path": "experiments/shell/ime_desktop_process.hpp",
+        "sha256": "ed5a6248cb74c190c04165fe864ac0ca41e0a96ba9945f7797b3f9b10c281161"
+      },
+      {
+        "path": "experiments/shell/ime_input_expectation.hpp",
+        "sha256": "084f39af300e7b347850339a1864d16001e35a993f9537e58b314802817cff96"
+      },
+      {
+        "path": "experiments/shell/ime_input_expectation_test.cpp",
+        "sha256": "73a4b4400ccbc63e8c301838d8350b1f8d3a847d25ee8411cede913d5fc4a39d"
+      },
+      {
+        "path": "experiments/shell/ime_probe.cpp",
+        "sha256": "6060b91314fb93fc5d417c2c22c7eb42dc12a3c2829562370488f38a6a53471a"
+      },
+      {
+        "path": "experiments/shell/input_client.cpp",
+        "sha256": "67ebb343978ac6822f8feaafa7510f9ee325737fce91b3d2aed8385deea6a969"
+      },
+      {
+        "path": "experiments/shell/keyboard.hpp",
+        "sha256": "0790ddd0a3b755de5fc22a7bff5c3421b91c19b78dcd7bc0af9de22fa471c3b3"
+      },
+      {
+        "path": "experiments/shell/keyboard_test.cpp",
+        "sha256": "7a0f312d8ba63a7f403b4350acaa92b19041cfd8fb16fb6818bf98eb329154e8"
+      },
+      {
+        "path": "experiments/shell/layout_state.hpp",
+        "sha256": "ac1b56bb2809ff2b28cf81e7806280cda0c547d5b1417228b1b8b264f1d1d5c5"
+      },
+      {
+        "path": "experiments/shell/layout_state_test.cpp",
+        "sha256": "ae3ad7d272e9bdb839fafc2ff38a8859e9443e855816ba6cc6eb32a33123f37f"
+      },
+      {
+        "path": "experiments/shell/local_shell_diagnostics.hpp",
+        "sha256": "3e7bb71f7b7bae0072795316c81cdde87902dd0485b1ae555944b91f3208e396"
+      },
+      {
+        "path": "experiments/shell/margin_checks.py",
+        "sha256": "d571ea1cd1d99c41a0ae1d2939549becfca3c6d95dc431a4dcbd0255e4259f1c"
+      },
+      {
+        "path": "experiments/shell/menu_gesture.hpp",
+        "sha256": "bf9b9c98c3f4b93699d2a06fc4f8cb580b721e3fa438fa20ed26eac1c60b3f53"
+      },
+      {
+        "path": "experiments/shell/native_scroll_gesture.hpp",
+        "sha256": "603c16f370882899b6954596b1a55dacca524a5a3be9d8e5b3be0b4a0374c241"
+      },
+      {
+        "path": "experiments/shell/operation_observation.hpp",
+        "sha256": "b53d054e23fcb2fb9429a38ca8ed2fd5471c1ca21744898e2068d990e4c386f0"
+      },
+      {
+        "path": "experiments/shell/paste.hpp",
+        "sha256": "f905a693d840256ca7c6a8ffed2601bff41f74e549413f38822db7aceb1c7c82"
+      },
+      {
+        "path": "experiments/shell/paste_checks.py",
+        "sha256": "f37db2ada88816e6936563d5155578a31276161cae11c99c27bc4f0253b053d6"
+      },
+      {
+        "path": "experiments/shell/paste_probe.cpp",
+        "sha256": "eb06a1a2ba41013c740d183226f297ddbdc8fd4369a625f3e1d3f5356cdbee7e"
+      },
+      {
+        "path": "experiments/shell/paste_prompt.hpp",
+        "sha256": "9746f97a1f9f252a3cffd12a4cf727273bffcf38a53080fd11ae9c9f11710c55"
+      },
+      {
+        "path": "experiments/shell/paste_scenario_state.hpp",
+        "sha256": "fd433a7273f15f67980a1a87d517e299f351eb3874f2fc2894cf914a00130382"
+      },
+      {
+        "path": "experiments/shell/paste_test.cpp",
+        "sha256": "f4e056681ffd175928060191bc20cbfdc889c8d6ffa76843eda2365243dff8c4"
+      },
+      {
+        "path": "experiments/shell/query_client.cpp",
+        "sha256": "c8b871ba3cb6ca5c40bddf23e5006c52803eba52ccb5bee56d0b7c52cad68869"
+      },
+      {
+        "path": "experiments/shell/queue_probe.cpp",
+        "sha256": "d93802e53eb01eed5330fde547443f7d4dd8e83221a067a91484915dacef3afb"
+      },
+      {
+        "path": "experiments/shell/queues.hpp",
+        "sha256": "9087944a7749176789a489bce0522c55764461342b59c138611743b6947845b6"
+      },
+      {
+        "path": "experiments/shell/raw_console_receiver.hpp",
+        "sha256": "9ea35252c33a938a7dc76d4ea7c6db72d04a3fd010c1ce6b0289c9747e50afcc"
+      },
+      {
+        "path": "experiments/shell/raw_console_receiver_test.cpp",
+        "sha256": "a2492a2a57462af6348c7d0b659b557d4fa1cc5c3838286d5bbae6958b904bc4"
+      },
+      {
+        "path": "experiments/shell/resize.hpp",
+        "sha256": "14e44837d8fc2d0b88356db824e46616ef6c210dcf9b668445478bac06284415"
+      },
+      {
+        "path": "experiments/shell/run.py",
+        "sha256": "d77454ce626be025e088e6adea9d5f12150c039296397161b2bb8e00e08c1d66"
+      },
+      {
+        "path": "experiments/shell/runtime_observation.hpp",
+        "sha256": "887e76c02c581a049fe05001e7cc7d4065dacd3a783ae5803177acfe7e775c8b"
+      },
+      {
+        "path": "experiments/shell/runtime_observation_test.cpp",
+        "sha256": "577b5e9368d945c65a8628f55eb882cf93bb4e0da9d06d234d217ec646beb90d"
+      },
+      {
+        "path": "experiments/shell/scenario_tick_gate.hpp",
+        "sha256": "29a045b5559d7d00c9e0ec48793d889afcd1aea0d30e70d49f95a8394ea0c404"
+      },
+      {
+        "path": "experiments/shell/scenario_tick_gate_test.cpp",
+        "sha256": "c105a6f56c079ecd6efe2154976b7b867a74b8238c20975adaeefe10209acf1a"
+      },
+      {
+        "path": "experiments/shell/scroll_checks.py",
+        "sha256": "88830c09bd201a50ff6028f95766fc8c2c8a229192da6f0ae347fee0f69dee03"
+      },
+      {
+        "path": "experiments/shell/search_interactions.hpp",
+        "sha256": "13c5d9058d1dedbf40c2a8b186754c2db13827579d7046c956ebe135463333d1"
+      },
+      {
+        "path": "experiments/shell/selection_bytes_checks.py",
+        "sha256": "7e008035ee827ac1e16416c98536c9b1e7ee523bbf1c3acaf68e5c62ea9a9874"
+      },
+      {
+        "path": "experiments/shell/selection_checks.py",
+        "sha256": "24eeb34ad94e4d71bed49e42eba3992ec7d7dbfd1f3d4958d8b3110546ffddd3"
+      },
+      {
+        "path": "experiments/shell/selection_context_checks.py",
+        "sha256": "18e51c400b93660bd5c88c220e9049f27af314c2e2de145ed9d218afc5bb9551"
+      },
+      {
+        "path": "experiments/shell/sent_message_wait.hpp",
+        "sha256": "b40558ecb8652695ce8c81b2bda85b7956a5a19a060839e27a406f9ee955293d"
+      },
+      {
+        "path": "experiments/shell/sent_message_wait_test.cpp",
+        "sha256": "10d9b64f7e91c765c4b7e8cf5a3306dc5002f82f0bd7074b1e4149be24a15dde"
+      },
+      {
+        "path": "experiments/shell/shell.cpp",
+        "sha256": "cc3830a52aebfad69871d974fed6c3f295f58e1e75feb451f7cfc11e0e56a3ef"
+      },
+      {
+        "path": "experiments/shell/shell_launch.cpp",
+        "sha256": "03fac4122d8151539adf9e88c273e9fbaf632f2e80ba10ea77c3873f588db052"
+      },
+      {
+        "path": "experiments/shell/shell_launch.hpp",
+        "sha256": "921724b7101c5146637a49b942c834d2860d0d426105c117354ddd8680ef50eb"
+      },
+      {
+        "path": "experiments/shell/shell_launch_test.cpp",
+        "sha256": "8e786e3ef7d3fe127cb3e2d26f3bf5a392d0dc14d2792827527421a9caa0ff05"
+      },
+      {
+        "path": "experiments/shell/shell_selection_text_client.cpp",
+        "sha256": "e4efe9d634839c491fca51219b6d249193d0dc770082d63149ebbe472a642b9a"
+      },
+      {
+        "path": "experiments/shell/size_client.cpp",
+        "sha256": "28d41fd5bbe01f60653de1ea8473707ac36969bb8d6b17c93e87294ff8cf7487"
+      },
+      {
+        "path": "experiments/shell/test_actions.py",
+        "sha256": "29eed3bd65e590ba24d18049f9493215665eb44c93efbcdb740b3c3b3bdfe1d1"
+      },
+      {
+        "path": "experiments/shell/test_candidate_tui.py",
+        "sha256": "ccbab94cf0b9587a9c914c84cd8bec5ae9caabe516767b84457a6be7ff294ed8"
+      },
+      {
+        "path": "experiments/shell/test_copy_error_frame.py",
+        "sha256": "d8bbe74d9ad92f6f79046ebc9dc4c80e49f7fda9445ca85221d37d10637a74d5"
+      },
+      {
+        "path": "experiments/shell/test_launcher.cpp",
+        "sha256": "19cab4a960f47f252c02f92a36316d43eed2481da1f72b5a7e97003c4fa1c2ed"
+      },
+      {
+        "path": "experiments/shell/test_paste.py",
+        "sha256": "c0815385d0825f6d33985e0060da9ecb8b2281ae1d10c446706d3b3b9abc567a"
+      },
+      {
+        "path": "experiments/shell/test_raw_console_receiver.py",
+        "sha256": "b6d424f09e61edf8879b5336f66f8f1bfbbe3dee7f8b77ebb2b4bf30eaa907a5"
+      },
+      {
+        "path": "experiments/shell/test_selection_bytes.py",
+        "sha256": "03705399c8802475b83fc3ef22fce78133a7f87f01754b4d70338e0c135f8d14"
+      },
+      {
+        "path": "experiments/shell/test_selection_context.py",
+        "sha256": "19d141ffd7038bebe44c7f9431cd077149374b37ba82bcd9a7a01ba82eab848a"
+      },
+      {
+        "path": "experiments/shell/test_shell.py",
+        "sha256": "db1baad242e0be1ec6d7eaa156d94f894f5db98398bb13d194c5bbe46ea03ddd"
+      },
+      {
+        "path": "experiments/shell/test_workflow.py",
+        "sha256": "f935800810cb498d73fc5ec601b541da6d45562341b5b83a4d7027aa46b00dbc"
+      },
+      {
+        "path": "experiments/shell/test_workflow_resource_phases.py",
+        "sha256": "b95aba0fdf9287ea7d3e04270c4297b2f6795eba751fe378b805ee9f7c3261e0"
+      },
+      {
+        "path": "experiments/shell/test_workflow_resources.py",
+        "sha256": "da0bf33ae4aaa42d5ea345fc830113fe02ec1ba08df01ee38471b1bf34116600"
+      },
+      {
+        "path": "experiments/shell/test_workflow_sessions.py",
+        "sha256": "1c32f36cba9bdaa1a0594e2865085b311aa1e6d919d8895e7ef4a60f76fc7c6c"
+      },
+      {
+        "path": "experiments/shell/text_action_policy_test.cpp",
+        "sha256": "95ae32d32c5a727ff1903edb68eec3977f45babf159bd1bde302e008fcbeaeea"
+      },
+      {
+        "path": "experiments/shell/text_actions.hpp",
+        "sha256": "95b91c52cf4c6a507e92089795d38a2475c2d35ae6065c8b227b4cf5b0eb2f0b"
+      },
+      {
+        "path": "experiments/shell/text_client.cpp",
+        "sha256": "aea8ed527e6e79fbe61446afadbb25d4fa0b7ddef4966930583ac8fa04cadd15"
+      },
+      {
+        "path": "experiments/shell/text_interactions.hpp",
+        "sha256": "780c560221e7a8505b388353eb5cb5f68ca5a3cb746d4d5cb1fa5f93472fe007"
+      },
+      {
+        "path": "experiments/shell/transport_completion.hpp",
+        "sha256": "535f9c1cf238061781a56ca597dd7222308a0f57aa96e3e5959fbca9a1d34602"
+      },
+      {
+        "path": "experiments/shell/transport_completion_test.cpp",
+        "sha256": "c9bb02bd739f916e78530590ee0f3b29bc952c58e445d31bc047ee69d301dcee"
+      },
+      {
+        "path": "experiments/shell/ui_font.hpp",
+        "sha256": "2f5f7a5a447a765f316955086554b4a79371062d3604eb858fd6c62094beea58"
+      },
+      {
+        "path": "experiments/shell/unicode_checks.py",
+        "sha256": "95fffb54274b695be2b857d942555dd8001801eeec5e3f020a9d448cbe1a82e5"
+      },
+      {
+        "path": "experiments/shell/workflow_checks.py",
+        "sha256": "f186ff0f5335c26fc5c4f0286961981dfd6af8fbaafc789e2bc50058486efa44"
+      },
+      {
+        "path": "experiments/shell/workflow_controller.hpp",
+        "sha256": "61005e442aa1729759dd1c1b8f0919826cb2e71f225fae53f0ea0c9cc28d38eb"
+      },
+      {
+        "path": "experiments/shell/workflow_fixture.hpp",
+        "sha256": "332d73699320a6f503fc212417a4d3820b82cc2d3feb3d1fffe3930660d57453"
+      },
+      {
+        "path": "experiments/shell/workflow_fixture_test.cpp",
+        "sha256": "892155cc5f6b42a6fff500607a9523e69318c53034d0e2d2f2ccaacf97420aeb"
+      },
+      {
+        "path": "experiments/shell/workflow_resource_phases.py",
+        "sha256": "187f95d71a44e363b54269613e962d8ff6de1b758d78b7053da3cbedebd54b00"
+      },
+      {
+        "path": "experiments/shell/workflow_resources.py",
+        "sha256": "70bfc20d8950d1796b091c3f178fe5e3aa5de2906393efa5df4d1ab15a4a4595"
+      },
+      {
+        "path": "experiments/shell/workflow_scenario_state.hpp",
+        "sha256": "0a17b04c391370417be258801d2a8bfcce55fcb4f88174795b42eed89ca62760"
+      },
+      {
+        "path": "experiments/shell/workflow_sessions_checks.py",
+        "sha256": "33f92a6c0a963e32de46f749b1e88d3a57a6efec4f93e9c4412bc4ac61d57278"
+      },
+      {
+        "path": "experiments/shell/workflow_system_state.hpp",
+        "sha256": "5babb8576a963aa405597b614a4b9a5ee7fcf1f97ad4f44067d09e901ef28f78"
+      },
+      {
+        "path": "experiments/shell/workspace.hpp",
+        "sha256": "75063983f4047efb88b254406cf25aaab6de113a44fde30fcdbe2eb7809bfc16"
+      },
+      {
+        "path": "experiments/shell/workspace_actions_scenario.hpp",
+        "sha256": "0da18068dffcf702e1c5a3bd7e524660d24a59ca3416dc3ce7167940a85527a0"
+      },
+      {
+        "path": "experiments/shell/workspace_clipboard_scenario.hpp",
+        "sha256": "a017e206283afdfee4965bfd793049de4bb9d026d9a6afabfafa92a105e307ed"
+      },
+      {
+        "path": "experiments/shell/workspace_dpi_scenario.hpp",
+        "sha256": "ec076e8dd1bf456231b9858acf5e884fae0e9980a94102dddae5eef4a1116b2b"
+      },
+      {
+        "path": "experiments/shell/workspace_find_scenario.hpp",
+        "sha256": "66ac75407793ab01323f1922f1476b482452113d275dd241d6f2fdc279d6f606"
+      },
+      {
+        "path": "experiments/shell/workspace_history_scenario.hpp",
+        "sha256": "368cd1e9f9e0276f5ac83827ebbf02a301d877caa41399c64936e610f6d1f1e8"
+      },
+      {
+        "path": "experiments/shell/workspace_ime_scenario.hpp",
+        "sha256": "2fade75db98dbd4355e41027a60a2a21fa57bacd9a716587be8ca4f04fd0febc"
+      },
+      {
+        "path": "experiments/shell/workspace_interactions.hpp",
+        "sha256": "1d65c22bee7570b0cfe576e2105821f174ed50569a6146d1bd513f57806347a0"
+      },
+      {
+        "path": "experiments/shell/workspace_keyboard_scenario.hpp",
+        "sha256": "03b75bde8c6dcd640d9acbee5e417529081d8e70940ff0aa0b0ab3adeb0b1bcc"
+      },
+      {
+        "path": "experiments/shell/workspace_launch_failure_scenario.hpp",
+        "sha256": "124b4fc337466b260c847f94f2e76e8c65a641b16fdcacfce5a60804c2949797"
+      },
+      {
+        "path": "experiments/shell/workspace_main_scenario.hpp",
+        "sha256": "c3994cc60041cd1e7a8599e5c9037473634412bcb6cfd349850ff8cd2808a47e"
+      },
+      {
+        "path": "experiments/shell/workspace_monitor_scenario.hpp",
+        "sha256": "b2409405e10e49f4a0b9df8c4822e6cf96747f12388915780e2e52fe4771df22"
+      },
+      {
+        "path": "experiments/shell/workspace_paste_scenario.hpp",
+        "sha256": "406cc1162560fa7eb1b607c6895280a5353315ffc01099984685f25bab20656b"
+      },
+      {
+        "path": "experiments/shell/workspace_persistence_scenario.hpp",
+        "sha256": "7f70d755549718d0fddb94b43cce12f3955727fcc51599a8bb124bf3e59ec263"
+      },
+      {
+        "path": "experiments/shell/workspace_scenarios.hpp",
+        "sha256": "c9a40dc370bf538c24b62b6177795975b4fac84ff78b0055117f7203b58a7b7d"
+      },
+      {
+        "path": "experiments/shell/workspace_selection_bytes_scenario.hpp",
+        "sha256": "ed2c2131fc6ef7634dec8d81fc7d4d22287f989cc75b7d5658f3bfa4f8057d35"
+      },
+      {
+        "path": "experiments/shell/workspace_selection_context_scenario.hpp",
+        "sha256": "e134f28afe99b199ab141be3f2eabfc4e84f0c2a26c41f5accfe16dd0d36d9a0"
+      },
+      {
+        "path": "experiments/shell/workspace_selection_scenario.hpp",
+        "sha256": "3d7c2fd82fc9d06cedd517cdb15c9e07f3a38640931be6e3638d692356ef4269"
+      },
+      {
+        "path": "experiments/shell/workspace_shells_scenario.hpp",
+        "sha256": "aaf5624cf5ab8883e3dca5197a9637fc95ee005d3056acbefdce781fd8af2720"
+      },
+      {
+        "path": "experiments/shell/workspace_split_scenario.hpp",
+        "sha256": "fc04870698b99659e52363ba4dd82aabd10132c79350fd4c46abda8071f166f7"
+      },
+      {
+        "path": "experiments/shell/workspace_state.hpp",
+        "sha256": "f81aec1d9ff1816f0cb34cde5621e39f859dabcaff5e02a29eced164f544fc09"
+      },
+      {
+        "path": "experiments/shell/workspace_state_test.cpp",
+        "sha256": "ccf27ac3f538ea30bb5bbcf6fc4edace86c043d482fc816551907d5883ba7c87"
+      },
+      {
+        "path": "experiments/shell/workspace_workflow_scenario.hpp",
+        "sha256": "94746441b9fe4186dba0bd480dc32bae93a87b10b9e8effe02f4aea8e89c4dfd"
+      },
+      {
+        "path": "experiments/shell/workspace_workflow_system.hpp",
+        "sha256": "de7dd67dd7cef36dfaf4187faf1927ceff8ea141dc8a1ab654e84529de7bd78e"
+      },
+      {
+        "path": "local/r29-viewport-projection/build-final.log",
+        "sha256": "b2442ceb08728c5d6aa8fe4f5e5086e83f812099046129422c7e88d0d81e1df6"
+      }
+    ]
+  },
+  "final_build_identity_check": {
+    "files": 208,
+    "matching_sha256": 208,
+    "missing": 0,
+    "method": "All frozen source/runtime/log files rehashed after final CTest; documentation-only wrap-up does not change compiled inputs."
+  },
+  "partial_visible_observation": {
+    "source_commit": "f41f747be27ad7b1de965b2279948eca7473cc0e",
+    "command": "candidate_core_test.exe --source-partial-visible",
+    "status": "unresolved_source_order",
+    "history": [
+      "B       ",
+      "ABCD"
+    ],
+    "visible": [
+      "EFGH",
+      "    ",
+      "C   ",
+      "D   "
+    ],
+    "copy": "B\r\nABCDEFGH\r\n\r\nC\r\nD",
+    "EFGH_matches": 1,
+    "proof": {
+      "path": "local/r29-viewport-projection/partial-visible-final.log",
+      "sha256": "8c85c093c56979ccf5ec1076b31a319119bdb9c860bbed2301e6984c821fc16d",
+      "bytes": 223
+    },
+    "note": "Observation mode returning zero is not a comparison pass; B still precedes A."
+  },
+  "review": {
+    "base": "8521cd7f497f52ab169d76a5a99a976f6adfc8df",
+    "head": "f41f747be27ad7b1de965b2279948eca7473cc0e",
+    "standards": {
+      "new_hard_findings": 0,
+      "new_substantive_smells": 0
+    },
+    "spec": {
+      "open_new_findings": 0,
+      "empty_anchor_P2": "runtime red, fixed and independently reviewed",
+      "snapshot_shape_gap": "runtime red, fixed and independently reviewed"
+    },
+    "record_source": "Root summary of completed independent review-agent messages; no standalone review-log artifact is claimed.",
+    "scope": "This viewport slice only. Earlier native/source-composition reviews remain in their own checkpoint records; full #29 acceptance is incomplete."
+  },
+  "publication_notes": [
+    "Intermediate green logs are preserved and hashed, but do not each have a separately supplied green source/binary manifest; do not relabel them as exact Git-blob validations.",
+    "Mapping red is compile-only and the first wide oracle failure is confounded; retain these labels in any public summary.",
+    "Final CTest and its internal skipped cases are now terminal and recorded separately from the two earlier one-shot UI checks. Raw logs remain local; public references are hashes and sanitized summaries."
+  ]
+}
