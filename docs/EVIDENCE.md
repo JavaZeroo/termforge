@@ -22,6 +22,8 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 
 原版输出自动化见 [cmd 正确性工具](../benchmarks/tools/WINDTERM-CMD.md)及[固定结果](../benchmarks/tools/results/2026-10-28-windterm-cmd/README.md)：小 ASCII 全文、生产事件和 Job 回收已有无人值守闭环，路径元字符修复及各执行源码分列。它没有取得 C0、完整历史、消费/真实呈现端点或正式性能基线。
 
+[#133 设置读取诊断](../benchmarks/tools/results/2026-10-29-c0-settings-reference/README.md)在独立受控配置差异下核对 536B 全文，并分别读到 producer console / 原版 view 窗口 120×40、document capacity 23；QWidget 字体仅为元数据，28 条 dot-key 设置仍不可读。完整 C0、glyph/字体请求有效性、10000 行历史、autocomplete、呈现及性能继续未知。
+
 显式官方后端的旧 `.3` 实现及独立生命期/双 SHA 拒绝记录见[实验合同](https://github.com/JavaZeroo/termforge/blob/e0b4d67e50bda6fe08cc02b43a475137133310b3/docs/research/experimental-conpty-backend.md)与[冻结验证](https://github.com/JavaZeroo/termforge/blob/e0b4d67e50bda6fe08cc02b43a475137133310b3/experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)。联合源码 `3e5b96d` 的[三配置清单](../experiments/conpty/results/2026-10-26-joint-backend/validation.json)分别记录默认43/45、候选/system 48/48、显式官方46/48（shell套件超时，未完成项仍未知）；原resize/Vim各一红一绿、粘贴两红。新恢复/worker/工作区失败由 #61–#63 承接，旧失败不因其他轮成功变成通过。
 
 后续合并推送的两个独立失败见[原件审计](../experiments/shell/results/2026-10-26-postmerge-ci/validation.json)：main `098f9ab` 工作区第二轮保存 stage2 [#72](https://github.com/JavaZeroo/termforge/issues/72)，实验分支源码 `af563ba` 的 681 高度选择场景 [#73](https://github.com/JavaZeroo/termforge/issues/73)。两次 CI 实际均为默认自研核心/system；return2、Job0、desktop 已删除，原生退出/EOF 与逐运行 EXE 绑定仍未知。它们不等同已修 #61/#66，另一批 PR 成功不能覆盖这些失败。

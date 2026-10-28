@@ -1,0 +1,469 @@
+{
+  "schema": "termforge.windterm-c0-settings.v1",
+  "issue": 133,
+  "status": "partial-settings-diagnostic",
+  "correctness": {
+    "status": "passed",
+    "method": "all-bounded-logical-lines-exact",
+    "payload_lines": 14,
+    "observed_lines": 15,
+    "terminal_text_sha256": "ac71f0e23b1af5092a568d8dd58bbb8b4748394056de82b4746c69bfbace2e27"
+  },
+  "requested": {
+    "session": {
+      "window.autoAdjustRowsAndColumns": false,
+      "window.columns": 120,
+      "window.rows": 40,
+      "window.scrollbackLimit": 10000
+    },
+    "global": {
+      "text.fontFamily1": "Cascadia Mono",
+      "text.fontSize": 12,
+      "terminal.autoComplete.enabled": false
+    }
+  },
+  "actual_settings": {
+    "producer_console": {
+      "vt_enable_succeeded": true,
+      "original_mode": 3,
+      "columns": 120,
+      "rows": 40,
+      "buffer_columns": 120,
+      "buffer_rows": 3000
+    },
+    "view_metrics": {
+      "window_rows": {
+        "status": "read",
+        "type": "number",
+        "value": 40
+      },
+      "window_columns": {
+        "status": "read",
+        "type": "number",
+        "value": 120
+      }
+    },
+    "document_screen_line_capacity": 23,
+    "widget_geometry": [
+      0,
+      0,
+      905,
+      428
+    ],
+    "widget_font": {
+      "family": "Roboto Mono",
+      "point_size": 9,
+      "pixel_size": -1
+    },
+    "view_lookup": [
+      {
+        "method": "activeView",
+        "type": "object"
+      }
+    ],
+    "settings_reads": [
+      {
+        "owner": "active_text",
+        "key": "window.autoAdjustRowsAndColumns",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_text",
+        "key": "window.columns",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_text",
+        "key": "window.rows",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_text",
+        "key": "window.scrollbackLimit",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_text",
+        "key": "text.fontFamily1",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_text",
+        "key": "text.fontSize",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_text",
+        "key": "terminal.autoComplete.enabled",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_view",
+        "key": "window.autoAdjustRowsAndColumns",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_view",
+        "key": "window.columns",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_view",
+        "key": "window.rows",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_view",
+        "key": "window.scrollbackLimit",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_view",
+        "key": "text.fontFamily1",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_view",
+        "key": "text.fontSize",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "active_view",
+        "key": "terminal.autoComplete.enabled",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "terminal",
+        "key": "window.autoAdjustRowsAndColumns",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "terminal",
+        "key": "window.columns",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "terminal",
+        "key": "window.rows",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "terminal",
+        "key": "window.scrollbackLimit",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "terminal",
+        "key": "text.fontFamily1",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "terminal",
+        "key": "text.fontSize",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "terminal",
+        "key": "terminal.autoComplete.enabled",
+        "result": {
+          "status": "unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "global_settings",
+        "key": "window.autoAdjustRowsAndColumns",
+        "result": {
+          "status": "owner-unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "global_settings",
+        "key": "window.columns",
+        "result": {
+          "status": "owner-unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "global_settings",
+        "key": "window.rows",
+        "result": {
+          "status": "owner-unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "global_settings",
+        "key": "window.scrollbackLimit",
+        "result": {
+          "status": "owner-unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "global_settings",
+        "key": "text.fontFamily1",
+        "result": {
+          "status": "owner-unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "global_settings",
+        "key": "text.fontSize",
+        "result": {
+          "status": "owner-unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      },
+      {
+        "owner": "global_settings",
+        "key": "terminal.autoComplete.enabled",
+        "result": {
+          "status": "owner-unavailable",
+          "type": "undefined",
+          "value": null
+        }
+      }
+    ],
+    "discovery": [
+      {
+        "owner": "active_text",
+        "result": {
+          "status": "enumerated-names-only",
+          "scanned": 128,
+          "truncated": true,
+          "hits": [
+            "screenLineCapacity",
+            "windowColumns",
+            "windowRows"
+          ]
+        }
+      },
+      {
+        "owner": "active_view",
+        "result": {
+          "status": "enumerated-names-only",
+          "scanned": 128,
+          "truncated": true,
+          "hits": [
+            "screenLineCapacity",
+            "windowColumns",
+            "windowRows"
+          ]
+        }
+      },
+      {
+        "owner": "terminal",
+        "result": {
+          "status": "enumerated-names-only",
+          "scanned": 128,
+          "truncated": true,
+          "hits": []
+        }
+      },
+      {
+        "owner": "global_settings",
+        "result": {
+          "status": "owner-unavailable",
+          "scanned": 0,
+          "truncated": false,
+          "hits": []
+        }
+      }
+    ]
+  },
+  "run_id": "e736ad1ca79c4cfc85d468fdd5e5899e",
+  "source_base_commit": "b22293f7fbc78c282fa01b12d28e53e5e2ff00c9",
+  "source_files_sha256": {
+    "benchmarks/tools/windterm_c0_settings.py": "609614b51f20fd76ba8da0a5cc82bd47c45b8f3715c906050a258e557ed50970",
+    "research/ui/qt_cmd_settings.js": "b0c008afd2318ae60cdf3a8f3f3cc87cc042db9bb03013c09246ba1a498f866b",
+    "research/ui/cmd_owned_launcher.py": "20f38736fa14600b5c659d9e14bfb150932639af1326d2bbe04fcfe6cd32c357",
+    "benchmarks/tools/windterm_cmd.py": "e517f8cab36d55e5d4bdda3fc14d4641e5ce6256991af04762dbf43c25961297",
+    "research/ui/qt_cmd_diagnostic.js": "9ed0d6ee6bd6e82bae6d9a6802690b3b0b83f437c7b20f0333008b5f6c214756",
+    "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "benchmarks/tools/play.py": "1c83f400d45f94f4d7100c177c7cf42f98d0add037c5d31f232092f4dd6b9fea",
+    "experiments/conpty/run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329"
+  },
+  "plan_sha256": "d1678750af02c27e60dec373b38ca49cca8cedd254a0c3708ea9e1b841494afc",
+  "module_sha256": {
+    "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+    "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+    "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358",
+    "Qt5Qml.dll": "30035484c81590976627f8face9507caa8581a7dc7630cccf6a8d6de65cab707"
+  },
+  "composed_template_sha256": "314e7320146bb3422e4488a41b9af1bc22b52c920b6b73e078d2c0e0761017fc",
+  "static_config_hints": {
+    "evidence_kind": "static-only",
+    "global": {
+      "text.fontFamily1": "Roboto Mono",
+      "text.fontSize": 10,
+      "terminal.autoComplete.enabled": true
+    },
+    "session": {
+      "window.autoAdjustRowsAndColumns": true,
+      "window.columns": 80,
+      "window.rows": 24,
+      "window.scrollbackLimit": 999999
+    }
+  },
+  "controlled_configuration_delta": {
+    "baseline_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+    "configured_manifest_sha256": "e1038e447b7c77777f96cc353f408dedb3fafc6a6859fb49c2ae4dedfc176e6f",
+    "changed_distribution_files": [
+      "global/wind.config"
+    ],
+    "global_before_sha256": "0a4f02250b855e9209960f934892f30e3b4b800c0c4c80cea3acd8af527ca177",
+    "global_after_sha256": "01a5465e6b4dec6567ac4cf3d21df360f09b737f77c0861ec3f250400806081d",
+    "keys": {
+      "text.fontFamily1": {
+        "before": "Roboto Mono",
+        "requested": "Cascadia Mono"
+      },
+      "text.fontSize": {
+        "before": 10,
+        "requested": 12
+      },
+      "terminal.autoComplete.enabled": {
+        "before": true,
+        "requested": false
+      }
+    },
+    "all_other_global_bytes_preserved": true,
+    "session_requests": {
+      "window.autoAdjustRowsAndColumns": false,
+      "window.columns": 120,
+      "window.rows": 40,
+      "window.scrollbackLimit": 10000
+    }
+  },
+  "raw_records_sha256": {
+    "run.json": "5fa5d07d10f76fc7f0716853e4054ace7fa005e9780319d8bfc08e51d44fd000",
+    "workload.json": "5d4a44b49a46568a2056b1b6a8d55b9e97f7e1d395fc7a5751f33d70c242fdc4",
+    "payload.bin": "2bf0d9bc3e5b296fb7484c8cca86491d6c307f054b43cd37b81845d8b612b7d8",
+    "producer.json": "f9f8ccb88a173449f47fd681fb0a37d25929c4a078653fed8ac379f51de05cfa",
+    "evidence.json": "0621b2b04f0f6e4b958a3ad3953933014e361fd3a636b56fcc98c6f413ec70e7",
+    "cleanup.json": "6b6ed2141ddb2a9d2fc1fdc197d6e0c03814041dfeed881eebfd240107a74005",
+    "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1",
+    "config-delta.json": "6c1406c21ab83c88156be3fd79db37005fa7468085188c9915c4cfa1fea7029a",
+    "configured-files.json": "eb6c5e9d579e384da960758b690a2a20234ea609d8d95caddf88b6ca60b17027",
+    "files.json": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8",
+    "global-config-before.bin": "0a4f02250b855e9209960f934892f30e3b4b800c0c4c80cea3acd8af527ca177",
+    "probe.js": "fc46ec24d5e99126ca9f78c28efedfbd225fbc7238b9a73a9d48363df9a4df5f",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actual_original_runs": 1,
+  "rea_capture_seconds": 30,
+  "cli_wait_timeout_seconds": 45,
+  "whole_lifecycle_bound_seconds": null,
+  "consumer_done": null,
+  "presented_done": null,
+  "c0_verified": false,
+  "font_file_identity_verified": false,
+  "glyph_fallback_verified": false,
+  "history_eviction_verified": false,
+  "performance_gate": "not_evaluated",
+  "cleanup": {
+    "owned_active": 0,
+    "only_synthetic_session": true
+  },
+  "limitations": [
+    "Non-input desktop cannot establish visible and unobstructed C0.",
+    "Requested configuration and static hints are separate from actual readouts.",
+    "Screen capacity is not PTY rows; console/window, view and widget font remain separate.",
+    "Name enumeration caps retained entries, not internal engine time.",
+    "Producer uses run_id/payload identity; process ancestry was not independently observed.",
+    "No font installation, glyph/fallback identity, history eviction, terminal endpoints, observer calibration or performance acceptance."
+  ]
+}

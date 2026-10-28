@@ -1,0 +1,75 @@
+{
+  "schema": "termforge-c0-settings-independent-audit-v1",
+  "issue": 133,
+  "execution_preparation_commit": "b22293f7fbc78c282fa01b12d28e53e5e2ff00c9",
+  "production_source_commit": "28f293a5d2c01954dc8b418a02231603128955a6",
+  "actual_original_runs": 1,
+  "additional_original_runs": 0,
+  "plan_sha256": "d1678750af02c27e60dec373b38ca49cca8cedd254a0c3708ea9e1b841494afc",
+  "original_normal_export_sha256": "2e1e2dbfffb3f2f3ed914c032b1eb0c0d859734f54f6f216215e6be29c22e3d4",
+  "normal_optimized_byte_identical": true,
+  "evidence_id": "ev_68b4214467f4886a31fd9f0a8292c26b83cbaa4801bc63a4109b4a0d84fce6ac",
+  "checks": {
+    "nine_sources_and_prepared_commit": true,
+    "full_runtime_module_hashes": true,
+    "prefix_and_two_templates": true,
+    "exact_injected_script": true,
+    "independent_full_text_oracle": true,
+    "whole_original_manifest": true,
+    "exact_three_token_global_byte_patch": true,
+    "synthetic_session_requests": true,
+    "actual_readouts_equal_raw": true,
+    "owned_cleanup_and_profile": true,
+    "all_public_raw_hashes": true,
+    "public_scalars_only": true
+  },
+  "distribution": {
+    "baseline_files": 4047,
+    "changed_original_files": [
+      "global/wind.config"
+    ],
+    "unchanged_original_files": 4046,
+    "actual_global_after_sha256": "01a5465e6b4dec6567ac4cf3d21df360f09b737f77c0861ec3f250400806081d"
+  },
+  "text": {
+    "payload_bytes": 536,
+    "payload_lines": 14,
+    "observed_lines": 15,
+    "empty_tail_lines": 1
+  },
+  "actual": {
+    "producer_window": [
+      120,
+      40
+    ],
+    "producer_buffer": [
+      120,
+      3000
+    ],
+    "view_window": [
+      120,
+      40
+    ],
+    "document_capacity": 23,
+    "widget_font_metadata": {
+      "family": "Roboto Mono",
+      "point_size": 9,
+      "pixel_size": -1
+    },
+    "dot_key_statuses": {
+      "unavailable": 21,
+      "owner-unavailable": 7
+    },
+    "truncated_discovery_owners": 3
+  },
+  "limits": {
+    "widget_metadata_is_glyph_identity": false,
+    "c0_verified": false,
+    "history_eviction_verified": false,
+    "auto_complete_effectiveness_verified": false,
+    "actual_glyph_or_font_file_verified": false,
+    "consumer_done": null,
+    "presented_done": null,
+    "performance_gate": "not_evaluated"
+  }
+}
