@@ -1,0 +1,64 @@
+{
+  "schema": "termforge-node-export-guards-validation-v1",
+  "issue": 144,
+  "red_test_source_commit": "5c8bc6368872c609efe0d40070c1b1ae10e3cc6a",
+  "green_source_commit": "504c0fdfdd32f7ddbde340a4831b1dec70dd3b3f",
+  "executed_diagnostic_source_commit": "02aac45ca6e8eaffcbca1d3ef1a80d243159ec46",
+  "previous_publication_head": "30da569e538accd63913843a41d466d051f45aad",
+  "synthetic_red_tests": 3,
+  "synthetic_red_failing_subcases": 5,
+  "ordinary_pure_tests_passed": 15,
+  "optimized_pure_tests_passed": 15,
+  "skipped_tests": 0,
+  "new_node_executions": 0,
+  "new_formal_batches": 0,
+  "new_ci_retries": 0,
+  "ctest_registration_verified": [
+    "node_contract_export",
+    "node_contract_plan"
+  ],
+  "ctest_runtime_executed_in_this_delta": false,
+  "full_matrix_executed": false,
+  "preserved_snapshot_count": 58,
+  "preserved_snapshot_sha256": "dab5544aacf273a01bd32c741b8fbeefb49fb09ad246f2471584ef6fe6751717",
+  "previous_public_export_sha256": "db97e95aa6d56a9bb44553178f788c6f7c33fff9e52441ef343ea63821f98a3d",
+  "guarded_public_export_sha256": "de57db6e0f7c3fa57bfe1e588db2fe9587792bd4181f7836797daa8eb144e27b",
+  "normal_and_optimized_export_byte_equal": true,
+  "changed_projection_fields": [
+    "exporter_sha256"
+  ],
+  "exporter_sha256": "f06bcbb78e30ae1a1d75ec87e3132dd6be9f87c5f0b37e8e8145534b55bd2fc1",
+  "original_timeout_root_cause": null,
+  "private_log_identities": [
+    {
+      "id": "red",
+      "bytes": 5812,
+      "sha256": "a64e2323c481de31b4cc5bafd3fa0fbefec663e2a2fc6b948c23e419f171c9ee"
+    },
+    {
+      "id": "initial-green",
+      "bytes": 702,
+      "sha256": "d294ffd9fb20d9ba91a4283cb2a2858cbf55e1c96702fa71a340a7dd5afe0e86"
+    },
+    {
+      "id": "green",
+      "bytes": 2896,
+      "sha256": "eee4a1dd2c436288b8e531439305a26149a6881f796c51ee6520b9fc8724ae3a"
+    },
+    {
+      "id": "optimized-green",
+      "bytes": 2896,
+      "sha256": "3860ba1f345216407216acefc35a141fae52fab5cc1631ac549b7387fc68ba69"
+    },
+    {
+      "id": "cmake-configure",
+      "bytes": 760,
+      "sha256": "4febaa2bd2bf5cd543df855a08889336361b59fd7047c7c870917ea2a0494c76"
+    },
+    {
+      "id": "ctest-inventory",
+      "bytes": 2750,
+      "sha256": "7b074cfd5493a7aac60ba091e7aa6e4490e3eb70bd6dd1f9cbfc161992acf749"
+    }
+  ]
+}

@@ -32,6 +32,14 @@ Node 首次 checkpoint 位于内建 fs 加载之后；此前的启动区间仍�
 | 版本漂移 P2 | red `cebc530` → green `b809706` | marker前拒绝 Windows/Python 版本漂移；普通/-O各3项纯计划测试 |
 | 本次正式三 case | `02aac45` | 唯一新授权批次，结果如上；没有再次运行 Node 或重试 CI |
 
-另一次独立 stdlib 审计将三个 case 与 CLI 行逐字段比较，并按原写出格式重建字节，全部一致；重算有序阶段、PID绑定、时钟、源码/运行库、计划及 Job 字段，发现0项。24份旧原件和三个未执行 false 提案逐一保持，公开只列不透明原件 ID、长度和 SHA256。普通与 `python -O` 的[白名单导出器](../../export_node_contract_deadline.py)输出逐字节一致，公开 JSON SHA256 为 `db97e95aa6d56a9bb44553178f788c6f7c33fff9e52441ef343ea63821f98a3d`。
+另一次独立 stdlib 审计将三个 case 与 CLI 行逐字段比较，并按原写出格式重建字节，全部一致；重算有序阶段、PID绑定、时钟、源码/运行库、计划及 Job 字段，发现0项。24份旧原件和三个未执行 false 提案逐一保持，公开只列不透明原件 ID、长度和 SHA256。首次发布头 `30da569` 的普通与 `python -O` 导出逐字节一致，[原公开 JSON](validation.json) SHA256 为 `db97e95aa6d56a9bb44553178f788c6f7c33fff9e52441ef343ea63821f98a3d`，该文件保留原字节。
 
-这是[有界诊断工具](../../../../docs/research/node-contract-deadline.md)的实现与验证，不接入原 Python/CTest 入口，不关闭 #144/#38，也不支持产品、真实 Qt/原版行为、性能或长期稳定验收。普通 observer 为 no-op，原合成输入/断言保留；`raster_style_reference.js`、原 `test_raster_style_reference.py` 入口和 `experiments/conpty/run.py` 与 `4388302` 字节一致，三项哈希另列。
+## 离线出口的发布预审修正
+
+`30da569` 的真实公开结果没有泄漏，但两轴预审用纯内存反例发现两处出口缺口：normal/throw 的 `job_at_timeout` 可夹带任意对象，第三份 false 提案的源码身份也未固定。合成反例在 red `5c8bc63` 运行3项测试，得到5个预期失败子例，证明这些非法输入未被拒绝；原件未用于注入。
+
+修正源 `504c0fdfdd32f7ddbde340a4831b1dec70dd3b3f` 要求非超时项该字段缺失或 null，超时项只重建 active/total/terminated 三个整数；三个 false 提案分别固定既有 SHA256 和源码 commit，并严格检查小写40位 hex。其余公开字段按固定枚举、严格标量类型和明确 key/list 重建。普通和 `-O` 各15项相关纯测试通过、无跳过；含六项纯出口测试及既有 trace/launcher 判定与计划守卫。新增 CTest 仅注册这些纯数据类，PlanTests 限定 WIN32；本次通过 configure/show-only 核对注册命令，没有执行 Node、OwnedNodeTests 或完整矩阵。
+
+相同真实 raw 在新[导出器](../../export_node_contract_deadline.py)下重新派生的普通/`-O` 字节一致，见 [guarded-validation.json](guarded-validation.json)，SHA256 `de57db6e0f7c3fa57bfe1e588db2fe9587792bd4181f7836797daa8eb144e27b`。它与旧 JSON 仅 `exporter_sha256` 不同；观测、源码和原件身份完全相同。自指的导出器源码哈希解释了整文件 SHA 变化，不是新运行或原始结果改写。[出口验证记录](export-guards-validation.json)分列 red/green 源码、测试和58项旧文件重算；其中包含旧24项、三份 false、正式 raw、旧发布与执行源码。原 CI ZIP 和 LastTest.log 原哈希另行复验一致。执行源仍为 `02aac45`，旧超时原因仍未知。
+
+这是[有界诊断工具](../../../../docs/research/node-contract-deadline.md)的实现与验证；新 runner 不接入原 Python/CTest 执行入口，新增纯回归单独注册，不关闭 #144/#38，也不支持产品、真实 Qt/原版行为、性能或长期稳定验收。普通 observer 为 no-op，原合成输入/断言保留；`raster_style_reference.js`、原 `test_raster_style_reference.py` 入口和 `experiments/conpty/run.py` 与 `4388302` 字节一致，三项哈希另列。
