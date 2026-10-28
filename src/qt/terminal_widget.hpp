@@ -170,11 +170,12 @@ class TerminalWidget final : public QWidget {
         }
         // The input context owns composing keystrokes; they must not become a
         // second text path into the child while preedit is still active.
-        if (!composition_.text.isEmpty()) { QWidget::keyPressEvent(event); return; }
+        const bool interrupt = event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C;
+        if (!composition_.text.isEmpty() && !interrupt) { QWidget::keyPressEvent(event); return; }
         std::string bytes;
         auto next = keyboard_;
         bool character_text = false;
-        if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C) bytes = std::string(1, '\x03');
+        if (interrupt) bytes = std::string(1, '\x03');
         else if (event->modifiers().testFlag(Qt::ControlModifier) || event->modifiers().testFlag(Qt::AltModifier)) {
             QWidget::keyPressEvent(event); return;
         } else {

@@ -82,7 +82,7 @@ protected:
                             {"replacement_start", input->replacementStart()}, {"replacement_length", input->replacementLength()},
                             {"spontaneous", event->spontaneous()}};
             if (input->preeditString().size() > 256 || input->commitString().size() > 256 ||
-                input->attributes().size() > 64) evidence_gap_ = true;
+                input->attributes().size() > 258) evidence_gap_ = true;
             else {
                 row.insert("preedit_utf16le_hex", units(input->preeditString()));
                 row.insert("commit_utf16le_hex", units(input->commitString()));
