@@ -35,6 +35,20 @@ static void record_state(int stage, int columns, int rows, const termforge::qt::
               << ",\"transport_revision\":" << state.transport_revision
               << ",\"accepting\":" << state.accepting << ",\"pending\":" << state.pending << "}\n";
 }
+static void record_area(const char* kind, int stage, const QSize& requested_pixels, const QSize& expected_grid,
+                        const termforge::qt::TerminalWidget& terminal) {
+    const auto* window = terminal.window();
+    const auto visible = terminal.visibleRegion().boundingRect();
+    std::cerr << "{\"schema\":\"termforge-qt-resize-area-v1\",\"kind\":\"" << kind << "\",\"stage\":" << stage
+              << ",\"requested_pixel_width\":" << requested_pixels.width()
+              << ",\"requested_pixel_height\":" << requested_pixels.height()
+              << ",\"actual_pixel_width\":" << terminal.width() << ",\"actual_pixel_height\":" << terminal.height()
+              << ",\"expected_columns\":" << expected_grid.width() << ",\"expected_rows\":" << expected_grid.height()
+              << ",\"top_level\":" << terminal.isWindow() << ",\"visible_to_window\":" << terminal.isVisibleTo(window)
+              << ",\"window_visible\":" << window->isVisible() << ",\"window_width\":" << window->width()
+              << ",\"window_height\":" << window->height() << ",\"visible_region_width\":" << visible.width()
+              << ",\"visible_region_height\":" << visible.height() << "}\n";
+}
 static SizeReply wait_reply(SizeFixture& fixture, unsigned long long nonce) {
     QElapsedTimer timer; timer.start();
     while (timer.elapsed() < 5000) {
@@ -124,6 +138,44 @@ static void await(Predicate predicate, const termforge::qt::SessionModel& model,
         if (!model.error().isEmpty()) throw std::runtime_error(model.error().toStdString());
     }
     require(predicate(), message);
+}
+static void top_level_follows_effective_area(const std::wstring& executable, const std::wstring& directory) {
+    SizeFixture fixture;
+    termforge::qt::SessionModel model;
+    termforge::qt::TerminalWidget terminal(model);
+    terminal.show();
+    require(model.start(executable, L"--size-child \"" + fixture.pipe_name() + L"\"", directory),
+            "top-level size child did not start");
+    wait_reply(fixture, 0);
+    const QFontMetricsF metrics(terminal.font());
+    const int cell_width = qCeil(metrics.horizontalAdvance(QLatin1Char('M')));
+    const int cell_height = qCeil(metrics.height()) + 2;
+    const QSize requested_pixels(16 + cell_width, 24 + 25 * cell_height);
+    terminal.resize(requested_pixels);
+    record_state(1700, 1, 24, terminal, model);
+    // A decorated top-level may be resized again by the platform. The public
+    // widget area after event dispatch is the input to the grid contract; the
+    // requested one-column size is retained separately, never changed to 11.
+    QTest::qWait(1);
+    const QSize actual_pixels = terminal.size();
+    const QSize effective_grid(std::clamp((actual_pixels.width() - 16) / cell_width, 1, 500),
+                               std::clamp((actual_pixels.height() - 24 - cell_height) / cell_height, 1, 200));
+    record_area("top-level-effective", 1700, requested_pixels, effective_grid, terminal);
+    await([&] { return model.screen().width() == effective_grid.width() &&
+                      model.screen().height() == effective_grid.height(); }, model,
+          "top-level core did not follow the effective public widget area");
+    unsigned long long nonce = 1700;
+    await_child_size(fixture, model, effective_grid.width(), effective_grid.height(), nonce);
+    await([&] { const auto state = model.resize_state();
+                return !state.pending && state.transport_columns == effective_grid.width() &&
+                       state.transport_rows == effective_grid.height(); }, model,
+          "top-level transport did not follow the effective public widget area");
+    require(terminal.size() == actual_pixels, "top-level area changed during its fixed-size verification");
+    record_state(1700, 1, 24, terminal, model);
+    record_area("top-level-effective", 1700, requested_pixels, effective_grid, terminal);
+    terminal.close();
+    await([&] { return model.finished(); }, model, "top-level size child cleanup did not finish");
+    require(model.cleanup_verified(), "top-level size child cleanup failed");
 }
 static void hidden_tab_layout_and_close(const std::wstring& executable, const std::wstring& directory) {
     SizeFixture first_fixture, second_fixture;
@@ -304,13 +356,17 @@ static void repeated_size_retains_cmd_output(const std::wstring& directory) {
 static void oversized_area_uses_existing_bounds(const std::wstring& executable, const std::wstring& directory) {
     SizeFixture fixture;
     termforge::qt::SessionModel model;
-    termforge::qt::TerminalWidget terminal(model);
-    terminal.setAttribute(Qt::WA_DontShowOnScreen);
+    QWidget window;
+    window.resize(1200, 900);
+    termforge::qt::TerminalWidget terminal(model, &window);
     const QFontMetricsF metrics(terminal.font());
     const int width = qCeil(metrics.horizontalAdvance(QLatin1Char('M')));
     const int height = qCeil(metrics.height()) + 2;
     terminal.resize(16 + 600 * width, 24 + 241 * height);
-    terminal.show();
+    window.show();
+    QTest::qWait(1);
+    require(!terminal.isWindow() && terminal.isVisibleTo(&window) && window.isVisible(),
+            "bounded grid was not a visible owned child region");
     require(model.screen().width() == 500 && model.screen().height() == 200,
             "oversized public area exceeded the existing Screen resource bounds");
     require(model.start(executable, L"--size-child \"" + fixture.pipe_name() + L"\"", directory),
@@ -319,7 +375,9 @@ static void oversized_area_uses_existing_bounds(const std::wstring& executable, 
     require(initial.child_pid == model.resize_state().child_pid && initial.buffer_columns == 500 && initial.buffer_rows == 200 &&
             initial.window_columns() == 500 && initial.window_rows() == 200, "initial ConPTY size ignored the bounded GUI grid");
     record_state(1600, 600, 240, terminal, model);
-    terminal.hide();
+    // The large child is clipped by its visible owner. This checks the widget
+    // grid/resource bound, not that every cell is physically presented.
+    record_area("bounded-child-region", 1600, terminal.size(), QSize(500, 200), terminal);
     require(model.send(std::string("X 1601\r")), "bounded-size exit input rejected");
     wait_reply(fixture, 1601);
     await([&] { return model.finished(); }, model, "bounded-size Session did not finish");
@@ -345,8 +403,10 @@ int main(int argc, char** argv) {
         require(length && length < 32768, "resize fixture executable unavailable");
         SizeFixture fixture;
         termforge::qt::SessionModel model;
-        termforge::qt::TerminalWidget terminal(model);
-        terminal.show();
+        QWidget window;
+        window.resize(1200, 900);
+        termforge::qt::TerminalWidget terminal(model, &window);
+        window.show();
         require(model.start(executable, L"--size-child \"" + fixture.pipe_name() + L"\"", workspace.path().toStdWString()),
                 "resize shell did not start");
         const auto initial = wait_reply(fixture, 0);
@@ -369,12 +429,16 @@ int main(int argc, char** argv) {
             const auto first_line_id = model.screen().lines.front().id;
             bool event_responded = false;
             QTimer::singleShot(0, &terminal, [&] { event_responded = true; ++heartbeat_events; });
-            terminal.resize(size == QSize(1, 1) ? QSize(1, 1) :
-                            QSize(16 + size.width() * width, 24 + (size.height() + 1) * height));
+            const QSize requested_pixels = size == QSize(1, 1) ? QSize(1, 1) :
+                QSize(16 + size.width() * width, 24 + (size.height() + 1) * height);
+            terminal.resize(requested_pixels);
             await([&] { return model.screen().width() == size.width() && model.screen().height() == size.height(); },
                   model, "public terminal area and core dimensions differ");
             record_state(stage, size.width(), size.height(), terminal, model);
             QTest::qWait(1);
+            require(!terminal.isWindow() && terminal.isVisibleTo(&window) && window.isVisible() &&
+                    terminal.size() == requested_pixels, "literal grid did not use its visible owned child region");
+            record_area("literal-child-region", stage, requested_pixels, size, terminal);
             const auto replies = await_child_size(fixture, model, size.width(), size.height(), nonce);
             for (const auto& reply : replies)
                 require(reply.child_pid == model.resize_state().child_pid, "size reply did not come from this Session child");
@@ -396,6 +460,7 @@ int main(int argc, char** argv) {
         await([&] { return model.finished(); }, model, "resize child did not exit naturally");
         require(model.natural_exit() && model.exit_code() == 37 && model.cleanup_verified(),
                 "resize child natural exit or cleanup failed");
+        top_level_follows_effective_area(executable, workspace.path().toStdWString());
         current_font_controls_grid(executable, workspace.path().toStdWString());
         invalid_size_stops_pending_resize(executable, workspace.path().toStdWString());
         hidden_tab_layout_and_close(executable, workspace.path().toStdWString());
