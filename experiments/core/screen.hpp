@@ -5,8 +5,10 @@
 #include <cstdint>
 #include <limits>
 #include <ostream>
+#include <optional>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace termforge {
@@ -35,6 +37,7 @@ struct Cell {
     bool leading_spacer = false; // Autowrap padding; paint it but never copy it as text.
 };
 enum class LineEnding { none, hard_break, soft_wrap };
+enum class ScreenBuffer { primary, alternate };
 // A value container: moving/copying a row preserves its identity and metadata.
 // Screen alone creates identities; callers must mutate through Screen.
 struct Line : std::vector<Cell> {
@@ -50,9 +53,38 @@ struct Line : std::vector<Cell> {
 };
 
 class Screen {
+    struct FrameState {
+        int row = 0, column = 0;
+        int last_row = -1, last_column = -1;
+        bool wrap_pending = false;
+        size_t discarded = 0;
+        Style style;
+        std::vector<Line> lines;
+        std::deque<Line> history;
+        void swap(FrameState& other) noexcept {
+            std::swap(row, other.row); std::swap(column, other.column);
+            std::swap(last_row, other.last_row); std::swap(last_column, other.last_column);
+            std::swap(wrap_pending, other.wrap_pending); std::swap(discarded, other.discarded);
+            std::swap(style, other.style);
+            lines.swap(other.lines); history.swap(other.history);
+        }
+    };
     int columns_;
     uint64_t next_id_ = 1;
+    uint64_t buffer_epoch_ = 0;
     int last_row = -1, last_column = -1;
+    ScreenBuffer active_buffer_ = ScreenBuffer::primary;
+    std::optional<FrameState> inactive_;
+    FrameState active_state_copy() const {
+        return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history};
+    }
+    void swap_active(FrameState& state) noexcept {
+        std::swap(row, state.row); std::swap(column, state.column);
+        std::swap(last_row, state.last_row); std::swap(last_column, state.last_column);
+        std::swap(wrap_pending, state.wrap_pending); std::swap(discarded, state.discarded);
+        std::swap(style, state.style);
+        lines.swap(state.lines); history.swap(state.history);
+    }
     static void changed(Line& line) {
         if (line.version == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("line version exhausted");
@@ -63,6 +95,32 @@ class Screen {
             throw std::overflow_error("line identities exhausted");
         Line line(columns, cell); line.id = identity++; line.version = 1;
         return line;
+    }
+    static void resize_frame(FrameState& state, int rows, int columns, size_t limit, uint64_t& identity) {
+        const int shift = (std::max)(0, state.row - rows + 1);
+        for (int index = 0; index < shift; ++index) {
+            if (limit) {
+                state.history.push_back(std::move(state.lines[index]));
+                if (state.history.size() > limit) { state.history.pop_front(); ++state.discarded; }
+            } else ++state.discarded;
+        }
+        state.lines.erase(state.lines.begin(), state.lines.begin() + shift);
+        // Bottom rows outside the new viewport are dropped; their ids stay spent.
+        if (state.lines.size() > static_cast<size_t>(rows)) state.lines.resize(rows);
+        while (state.lines.size() < static_cast<size_t>(rows))
+            state.lines.push_back(make_line(columns, Cell{}, identity));
+        const auto fit = [columns](Line& line) {
+            if (line.size() == static_cast<size_t>(columns)) return;
+            changed(line);
+            if (line.size() > static_cast<size_t>(columns)) line.cropped = true;
+            line.resize(columns);
+            if (line.back().width == 2) line.back() = Cell{};
+        };
+        for (auto& line : state.lines) fit(line);
+        for (auto& line : state.history) fit(line);
+        state.row -= shift; state.column = (std::min)(state.column, columns - 1);
+        state.wrap_pending = false;
+        state.last_row = state.last_column = -1;
     }
     Cell blank() const { return {" ", 1, style, 0}; }
     void break_glyph(Line& line, int col) {
@@ -113,6 +171,30 @@ public:
     }
     int height() const { return static_cast<int>(lines.size()); }
     int width() const { return columns_; }
+    ScreenBuffer active_buffer() const { return active_buffer_; }
+    uint64_t buffer_epoch() const { return buffer_epoch_; }
+    // The configured limit belongs to primary history; the independent
+    // alternate storage budget is zero. This does not define a document view.
+    size_t active_history_limit() const { return active_buffer_ == ScreenBuffer::primary ? history_limit : 0; }
+    // Activation exchanges owned state without applying a terminal mode's
+    // clearing, inheritance or cursor-reset policy.
+    void activate_buffer(ScreenBuffer buffer) {
+        if (buffer == active_buffer_) return;
+        if (buffer_epoch_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("buffer epoch exhausted");
+        auto identity = next_id_;
+        if (!inactive_) {
+            FrameState target;
+            target.lines.reserve(lines.size());
+            for (int index = 0; index < height(); ++index)
+                target.lines.push_back(make_line(width(), Cell{}, identity));
+            inactive_.emplace(std::move(target));
+        }
+        swap_active(*inactive_);
+        active_buffer_ = buffer;
+        next_id_ = identity;
+        ++buffer_epoch_;
+    }
     size_t retained_size() const { return history.size() + lines.size(); }
     const Line& retained_line(size_t index) const {
         if (index >= retained_size()) throw std::out_of_range("retained line index");
@@ -150,39 +232,21 @@ public:
         next_id_ = maximum == (std::numeric_limits<uint64_t>::max)() ? maximum : maximum + 1;
     }
     // Physical-row policy: no reflow, no pulling old history into the viewport.
-    // Prepare copies first so invalid sizes/allocation failure leave state intact.
+    // Both frames share geometry. Prepare both before committing so invalid
+    // dimensions or allocation failure cannot leave one frame half-resized.
     void resize(int rows, int columns) {
         if (rows < 1 || rows > 200 || columns < 1 || columns > 500)
             throw std::invalid_argument("invalid screen dimensions");
         if (rows == height() && columns == width()) return;
-        auto next = lines;
-        auto past = history;
-        auto lost = discarded;
+        auto next = active_state_copy();
+        auto hidden = inactive_;
         auto identity = next_id_;
-        const int shift = (std::max)(0, row - rows + 1);
-        for (int i = 0; i < shift; ++i) {
-            if (history_limit) {
-                past.push_back(std::move(next[i]));
-                if (past.size() > history_limit) { past.pop_front(); ++lost; }
-            } else ++lost;
-        }
-        next.erase(next.begin(), next.begin() + shift);
-        // Bottom rows outside the new viewport are dropped. Never reuse their ids.
-        if (next.size() > static_cast<size_t>(rows)) next.resize(rows);
-        while (next.size() < static_cast<size_t>(rows)) next.push_back(make_line(columns, Cell{}, identity));
-        const auto fit = [columns](Line& line) {
-            if (line.size() == static_cast<size_t>(columns)) return;
-            changed(line);
-            if (line.size() > static_cast<size_t>(columns)) line.cropped = true;
-            line.resize(columns);
-            // A truncated wide glyph must never leave a dangling leading cell.
-            if (line.back().width == 2) line.back() = Cell{};
-        };
-        for (auto& line : next) fit(line);
-        for (auto& line : past) fit(line);
-        lines.swap(next); history.swap(past); discarded = lost; columns_ = columns; next_id_ = identity;
-        row -= shift; column = (std::min)(column, columns - 1);
-        wrap_pending = false; invalidate_attachment();
+        resize_frame(next, rows, columns, active_history_limit(), identity);
+        if (hidden)
+            resize_frame(*hidden, rows, columns, active_buffer_ == ScreenBuffer::primary ? 0 : history_limit, identity);
+        swap_active(next);
+        if (hidden) inactive_->swap(*hidden);
+        columns_ = columns; next_id_ = identity;
     }
     void invalidate_attachment() { last_row = last_column = -1; }
     void move(int r, int c) {
@@ -198,9 +262,10 @@ public:
         previous.next_id = automatic ? (row + 1 < height() ? lines[row + 1].id : next_id_) : 0;
         wrap_pending = false; invalidate_attachment();
         if (row + 1 < height()) { ++row; return; }
-        if (history_limit) {
+        const auto limit = active_history_limit();
+        if (limit) {
             history.push_back(std::move(lines.front()));
-            if (history.size() > history_limit) { history.pop_front(); ++discarded; }
+            if (history.size() > limit) { history.pop_front(); ++discarded; }
         } else ++discarded;
         lines.erase(lines.begin()); lines.push_back(make_line(width(), Cell{}, next_id_));
     }

@@ -35,7 +35,7 @@ struct SearchNavigation { SearchMatch match; size_t index = 0; bool wrapped = fa
 class TextSearch {
     struct ScannedRow { DocumentLineMetadata meta; size_t bytes = 0, prefix_before = 0; uint64_t successor_id = 0; };
     struct Origin { TextPosition begin, end; };
-    uint64_t generation_ = 0, change_serial_ = 0, audit_serial_ = 0;
+    uint64_t generation_ = 0, change_serial_ = 0, audit_serial_ = 0, document_epoch_ = 0;
     SearchStatus status_ = SearchStatus::idle;
     SearchOptions options_;
     std::string query_;
@@ -62,7 +62,7 @@ class TextSearch {
         return a.line_id < b.line_id || (a.line_id == b.line_id && a.column < b.column);
     }
     static bool equal(const TextPosition& a, const TextPosition& b) {
-        return a.line_id == b.line_id && a.version == b.version && a.column == b.column;
+        return a == b;
     }
     static bool valid_utf8(const std::string& value) {
         uint32_t scalar = 0, minimum = 0; unsigned remaining = 0;
@@ -96,6 +96,15 @@ class TextSearch {
         current_ = {}; current_meta_ = {}; byte_ = span_ = 0;
         audit_cursor_ = 0; audit_requested_ = loaded_ = boundary_done_ = at_end_ = cap_reached_ = false;
         next_id_ = emit_from_id_ = 0;
+    }
+    bool sync_epoch(const TextDocument& doc) {
+        if (document_epoch_ == doc.epoch()) return false;
+        document_epoch_ = doc.epoch();
+        if (status_ == SearchStatus::running || status_ == SearchStatus::complete || status_ == SearchStatus::capped) {
+            invalidate();
+            return true;
+        }
+        return false;
     }
     bool row_valid(const TextDocument& doc, const DocumentLineMetadata& expected, uint64_t successor_id) const {
         const auto index = doc.index_of(expected.id);
@@ -195,8 +204,8 @@ class TextSearch {
             if (span_ == spans.size()) throw std::logic_error("projected search byte has no cell span");
             const auto& span = spans[span_];
             consume(static_cast<unsigned char>(text[byte_++]),
-                    {{current_meta_.id, current_meta_.version, span.column_begin},
-                     {current_meta_.id, current_meta_.version, span.column_end}});
+                    {{current_meta_.id, current_meta_.version, span.column_begin, document_epoch_},
+                     {current_meta_.id, current_meta_.version, span.column_end, document_epoch_}});
             ++progress.bytes_scanned; return true;
         }
         const auto index = doc.index_of(current_meta_.id);
@@ -205,7 +214,8 @@ class TextSearch {
         if (!boundary_done_ && has_next && !current_.joins_next) {
             const auto next = doc.meta(*index + 1);
             const auto end = current_.projection.spans.empty() ? 0 : current_.projection.spans.back().column_end;
-            consume('\n', {{current_meta_.id, current_meta_.version, end}, {next.id, next.version, 0}});
+            consume('\n', {{current_meta_.id, current_meta_.version, end, document_epoch_},
+                           {next.id, next.version, 0, document_epoch_}});
             boundary_done_ = true; ++progress.bytes_scanned; return true;
         }
         rows_.push_back({current_meta_, text.size() + (has_next && !current_.joins_next ? 1u : 0u), current_prefix_before_, current_successor_id_});
@@ -214,12 +224,12 @@ class TextSearch {
     }
 public:
     static constexpr size_t query_byte_limit = 4096, result_hard_limit = 4096;
-    uint64_t start(const TextDocument&, std::string query, SearchOptions options = {}) {
+    uint64_t start(const TextDocument& doc, std::string query, SearchOptions options = {}) {
         if (query.size() > query_byte_limit || !valid_utf8(query))
             throw std::invalid_argument("search query must be valid UTF-8 within 4096 bytes");
         if (!options.result_limit || options.result_limit > result_hard_limit)
             throw std::invalid_argument("search result limit must be between 1 and 4096");
-        advance_generation(); reset_scan(); query_ = std::move(query); options_ = options;
+        advance_generation(); reset_scan(); query_ = std::move(query); options_ = options; document_epoch_ = doc.epoch();
         prefix_.assign(query_.size(), 0);
         for (size_t i = 1, length = 0; i < query_.size(); ++i) {
             const auto c = folded(static_cast<unsigned char>(query_[i]));
@@ -230,7 +240,8 @@ public:
         status_ = query_.empty() ? SearchStatus::complete : SearchStatus::running;
         return generation_;
     }
-    uint64_t notify_change(const TextDocument&) {
+    uint64_t notify_change(const TextDocument& doc) {
+        if (sync_epoch(doc)) return generation_;
         advance_generation();
         if (query_.empty() || status_ == SearchStatus::cancelled || status_ == SearchStatus::closed ||
             status_ == SearchStatus::invalidated || status_ == SearchStatus::idle) return generation_;
@@ -241,6 +252,7 @@ public:
         at_end_ = false; status_ = SearchStatus::running; return generation_;
     }
     SearchStep step(const TextDocument& doc, uint64_t generation, size_t budget) {
+        sync_epoch(doc);
         SearchStep progress{status_, 0, 0, 0, generation == generation_};
         if (!progress.accepted || status_ != SearchStatus::running || !budget) return progress;
         if (loaded_ && !row_valid(doc, current_meta_, current_successor_id_)) {
@@ -270,7 +282,7 @@ public:
     const std::vector<SearchMatch>& matches() const { return matches_; }
     size_t retained_rows() const { return rows_.size(); }
     std::optional<SearchMatch> match(const TextDocument& doc, size_t index) const {
-        if (index >= matches_.size()) return {};
+        if (document_epoch_ != doc.epoch() || index >= matches_.size()) return {};
         const auto hit = matches_[index];
         if (!doc.valid(hit.range.begin) || !doc.valid(hit.range.end)) return {};
         const auto first = std::lower_bound(rows_.begin(), rows_.end(), hit.range.begin.line_id,
