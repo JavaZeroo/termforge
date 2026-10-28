@@ -79,9 +79,9 @@ public:
             result.insert("requested_form_is_not_visible_window", true);
             if (candidate_queried)
                 result.insert("requested_candidate_form", QJsonObject{{"style", static_cast<qint64>(requested.dwStyle)},
-                    {"x", requested.ptCurrentPos.x}, {"y", requested.ptCurrentPos.y},
-                    {"left", requested.rcArea.left}, {"top", requested.rcArea.top},
-                    {"right", requested.rcArea.right}, {"bottom", requested.rcArea.bottom}});
+                    {"x", static_cast<int>(requested.ptCurrentPos.x)}, {"y", static_cast<int>(requested.ptCurrentPos.y)},
+                    {"left", static_cast<int>(requested.rcArea.left)}, {"top", static_cast<int>(requested.rcArea.top)},
+                    {"right", static_cast<int>(requested.rcArea.right)}, {"bottom", static_cast<int>(requested.rcArea.bottom)}});
             result.insert("context_released", ImmReleaseContext(focus, context) != FALSE);
         }
         return result;

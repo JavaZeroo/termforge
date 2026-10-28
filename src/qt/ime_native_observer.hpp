@@ -57,8 +57,8 @@ class Observation final : public QObject {
                 {"requested_widget_font_points", terminal.font().pointSizeF()},
                 {"running", model.running()}, {"finished", model.finished()},
                 {"natural_exit", model.natural_exit()}, {"cleanup_verified", model.cleanup_verified()},
-                {"exit_code", model.exit_code()}, {"output_eof", model.output_eof()},
-                {"active_processes_after", model.active_processes_after()},
+                {"exit_code", static_cast<qint64>(model.exit_code())}, {"output_eof", model.output_eof()},
+                {"active_processes_after", static_cast<qint64>(model.active_processes_after())},
                 {"error", model.error()}};
     }
     void write() {
