@@ -172,6 +172,7 @@ python -m unittest experiments.shell.test_workflow_sessions -v
 | 官方 WindTerm 生产端烟测 | [摘要](../benchmarks/results/2026-10-21-windterm-smoke/summary.json)、[基准规范](../benchmarks/PROTOCOL.md) | 7,732 字节写出、人工见到结束标记；没有全内容正确性、消费/呈现时间和正式重复批次，不是 C0 性能基线 |
 | 接收批量与通知合并 | [实验协议](../experiments/receive/README.md)、[120 次实验报告](research/receive-experiment-2026-10-22.md) | 原创固定输入、字节顺序、队列边界与背压；机制实验不等于 WindTerm 路径或端到端收益 |
 | 连续 CPU 区间与校准 | [计量协议和命令](../experiments/measure/README.md)、[批次 A](../experiments/measure/results/2026-10-23-v2-a/manifest.json)、[批次 B](../experiments/measure/results/2026-10-23-v2-b/manifest.json) | 48 个核心样本/4 次校准；尚缺解码/状态/历史独立归因、Unicode/大历史、无插桩对照和更严格环境控制 |
+| 自主 C++ recovery 核心双构建准备 | [固定协议](../experiments/measure/RECOVERY-PREPARE.md)、[实际结果](../experiments/measure/results/2026-10-29-recovery-core-prepare/README.md)、[脱敏身份](../experiments/measure/results/2026-10-29-recovery-core-prepare/validation.json) | 同源 recovery 包装/无本工具包装的实际对象和命令核验；一次38进程含24短正确性/2identity/12拒绝，相关14项回归，25源/历史与18构建产物前后核对。旧strict/v2/calibration分列，不是Qt/ConPTY热路径、正式性能批次或数值预算 |
 | 输入到状态/提交 | [shell 端点定义](../experiments/shell/README.md)、[呈现端点定义](../experiments/presentation/README.md) | 现有脚本中断/后续命令时段与绘制提交有明确名称；不能当单键延迟或真实呈现，带完整画面检查的样本不是低扰动性能样本 |
 
 | 范围 | 结果与复现入口 | 可以支持的结论与限制 |

@@ -1,5 +1,7 @@
 # 核心连续区间计量与校准
 
+当前正式 C++ 路线另有 [recovery 双构建协议与命令](RECOVERY-PREPARE.md)及[一次限定准备结果](results/2026-10-29-recovery-core-prepare/README.md)：同源的包装/无本工具 allocator 包装、实际对象/构建身份与短正确性；不复用下面旧 strict 样本作为 recovery 数据，不扩展历史 Alacritty 成本路线，也不构成 Qt/ConPTY 或 WindTerm 性能验收。
+
 `core_measure` 使用原创固定输入与独立状态检查。v2 修正了 v1 将很多短轮次 CPU 差值相加的计量问题；`compare.py` 另提供自研/候选 project 与 interactive 成本诊断。解码、屏幕更新、历史仍未完整独立归因，不能据此判断 WindTerm 性能差距。R2 流式字素成本的受控定位与预算由 [#54](https://github.com/JavaZeroo/termforge/issues/54)承接，完整产品性能和跨目标基线仍按 [R4 工作包 #9](https://github.com/JavaZeroo/termforge/issues/9)验收。
 
 #54 的[测量前合同 v1](R54-COST.md)与 `r54_contract.py` 固定 `.3`/`.4` 源码、负载、相邻配对顺序、统计和预算决定程序；新增 Rust `--no-default-features` 测量构建可在编译期排除 allocator 包装。该准备仍缺实际两构建身份、受控重复测量和数值预算，不改变下述历史结果或性能边界。
