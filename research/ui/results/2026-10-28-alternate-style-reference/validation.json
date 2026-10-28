@@ -1,0 +1,1142 @@
+{
+  "schema": "termforge-original-alternate-style-reference-v1",
+  "issue": 123,
+  "status": "partial-mode-and-wrap-observation",
+  "source_base_commit": "d91eb589f04be6b54a29d237b87c5b05ad243908",
+  "scope": "One original direct-terminal Telnet observation. Mode getter calls and text/cursor behavior observed; the attempted QPainter style surface did not match.",
+  "reference_identity": {
+    "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+    "files_count": 4047
+  },
+  "actual_original_runs": 1,
+  "maximum_original_runs": 1,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "naws_history": [
+    [
+      91,
+      24
+    ],
+    [
+      91,
+      25
+    ]
+  ],
+  "frozen_grid": [
+    91,
+    25
+  ],
+  "naws_changed_after_freeze": false,
+  "source_freeze": "Owned UI acknowledgment after stable NAWS/capacity; any later NAWS change fails the peer.",
+  "plan_sha256": "ca5f4d79a4c9c607056b2a4553fd6ae408c79f1efac133c2ef4a945ed4f02c9d",
+  "probe_files_sha256": {
+    "research/ui/alternate_style_reference.py": "c129cbebe78a216b3f3593fc5e9ec4a1b1694ce190d047497de55e7953a8728d",
+    "research/ui/alternate_style_reference.js": "7ba1ff46a606c6c2bac4a65c7cab8a43b3a996be00d2dd050cd8bf5c0c6b7292",
+    "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f"
+  },
+  "exporter_sha256": "709b54a31e5ea77541cbebbd050e594e1976126c28efd3efe627d047676f7667",
+  "phase_transport": "Each exact synthetic source is followed by CSI 6n and an independent UI acknowledgment; TCP chunking is not prescribed.",
+  "dsr_request_hex": "1b5b366e",
+  "dsr_reply_count": 11,
+  "unmatched_application_reply_hex": "",
+  "phases": [
+    {
+      "phase": 0,
+      "label": "main-red-blue",
+      "source_hex": "1b5b306d1b5b324a1b5b481b5b3f37681b5b323b33481b5b33313b34346d54464d30",
+      "source_bytes": 34,
+      "source_sha256": "7d7ee54c42f1f30ef86849dd0afb9a4f4e61e2d3098055a1dd80d62662fc98fd",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        2,
+        7
+      ],
+      "cursor_reply_hex": "1b5b323b3752",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0"
+        ],
+        "line_count": 2,
+        "scroll": 0,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": 18,
+              "bottom": 35
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 1,
+      "label": "1049-enter-inherited-style",
+      "source_hex": "1b5b3f313034396854464130",
+      "source_bytes": 12,
+      "source_sha256": "5ba270f55aac7a5add74df84c65db1a81d47b7852958287366eb190c69043917",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        1,
+        5
+      ],
+      "cursor_reply_hex": "1b5b313b3552",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0",
+          "TFA0"
+        ],
+        "line_count": 3,
+        "scroll": 2,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": -18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": -18,
+              "bottom": -1
+            }
+          },
+          {
+            "marker": "TFA0",
+            "document_line": 2,
+            "column": 0,
+            "position": 8,
+            "rect": {
+              "x": 147,
+              "y": 0,
+              "width": 8,
+              "height": 18,
+              "left": 147,
+              "right": 154,
+              "top": 0,
+              "bottom": 17
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 2,
+      "label": "alternate-green-magenta",
+      "source_hex": "1b5b343b35481b5b33323b34356d54464131",
+      "source_bytes": 18,
+      "source_sha256": "4a080d35cf0341271b425c511d3b1cf42639e455eef1484f2fea808e0dc5c810",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        4,
+        9
+      ],
+      "cursor_reply_hex": "1b5b343b3952",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0",
+          "TFA0",
+          "",
+          "",
+          "    TFA1"
+        ],
+        "line_count": 6,
+        "scroll": 2,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": -18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": -18,
+              "bottom": -1
+            }
+          },
+          {
+            "marker": "TFA0",
+            "document_line": 2,
+            "column": 0,
+            "position": 8,
+            "rect": {
+              "x": 147,
+              "y": 0,
+              "width": 8,
+              "height": 18,
+              "left": 147,
+              "right": 154,
+              "top": 0,
+              "bottom": 17
+            }
+          },
+          {
+            "marker": "TFA1",
+            "document_line": 5,
+            "column": 4,
+            "position": 19,
+            "rect": {
+              "x": 179,
+              "y": 54,
+              "width": 8,
+              "height": 18,
+              "left": 179,
+              "right": 186,
+              "top": 54,
+              "bottom": 71
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 3,
+      "label": "1049-exit-main-style",
+      "source_hex": "1b5b3f313034396c54464d31",
+      "source_bytes": 12,
+      "source_sha256": "1cfc9112024cf6d8805056ee55bfac54f93e27a025796575e9379b0c00787084",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        2,
+        11
+      ],
+      "cursor_reply_hex": "1b5b323b313152",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0TFM1"
+        ],
+        "line_count": 2,
+        "scroll": 0,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": 18,
+              "bottom": 35
+            }
+          },
+          {
+            "marker": "TFM1",
+            "document_line": 1,
+            "column": 6,
+            "position": 7,
+            "rect": {
+              "x": 195,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 195,
+              "right": 202,
+              "top": 18,
+              "bottom": 35
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 4,
+      "label": "1049-second-enter-style",
+      "source_hex": "1b5b3f313034396854464132",
+      "source_bytes": 12,
+      "source_sha256": "4ca7c6119d698cf9ccbc5dee1c16c119439e9cddb83290c0243b3557a67feb5d",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        1,
+        5
+      ],
+      "cursor_reply_hex": "1b5b313b3552",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0TFM1",
+          "TFA2"
+        ],
+        "line_count": 3,
+        "scroll": 2,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": -18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": -18,
+              "bottom": -1
+            }
+          },
+          {
+            "marker": "TFM1",
+            "document_line": 1,
+            "column": 6,
+            "position": 7,
+            "rect": {
+              "x": 195,
+              "y": -18,
+              "width": 8,
+              "height": 18,
+              "left": 195,
+              "right": 202,
+              "top": -18,
+              "bottom": -1
+            }
+          },
+          {
+            "marker": "TFA2",
+            "document_line": 2,
+            "column": 0,
+            "position": 12,
+            "rect": {
+              "x": 147,
+              "y": 0,
+              "width": 8,
+              "height": 18,
+              "left": 147,
+              "right": 154,
+              "top": 0,
+              "bottom": 17
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 5,
+      "label": "alternate-four-corners",
+      "source_hex": "1b5b313b31481b5b33333b34366d544643301b5b323b3148544643311b5b32343b3148544643321b5b32353b38384854464333",
+      "source_bytes": 51,
+      "source_sha256": "a1445c8f7de95905b05b235a3835c350188925d44519eed1a075a7ce9d9e70e3",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        25,
+        91
+      ],
+      "cursor_reply_hex": "1b5b32353b393152",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0TFM1",
+          "TFC0",
+          "TFC1",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "TFC2",
+          "                                                                                       TFC3"
+        ],
+        "line_count": 27,
+        "scroll": 2,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": -18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": -18,
+              "bottom": -1
+            }
+          },
+          {
+            "marker": "TFM1",
+            "document_line": 1,
+            "column": 6,
+            "position": 7,
+            "rect": {
+              "x": 195,
+              "y": -18,
+              "width": 8,
+              "height": 18,
+              "left": 195,
+              "right": 202,
+              "top": -18,
+              "bottom": -1
+            }
+          },
+          {
+            "marker": "TFC0",
+            "document_line": 2,
+            "column": 0,
+            "position": 12,
+            "rect": {
+              "x": 147,
+              "y": 0,
+              "width": 8,
+              "height": 18,
+              "left": 147,
+              "right": 154,
+              "top": 0,
+              "bottom": 17
+            }
+          },
+          {
+            "marker": "TFC1",
+            "document_line": 3,
+            "column": 0,
+            "position": 17,
+            "rect": {
+              "x": 147,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 147,
+              "right": 154,
+              "top": 18,
+              "bottom": 35
+            }
+          },
+          {
+            "marker": "TFC2",
+            "document_line": 25,
+            "column": 0,
+            "position": 43,
+            "rect": {
+              "x": 147,
+              "y": 414,
+              "width": 8,
+              "height": 18,
+              "left": 147,
+              "right": 154,
+              "top": 414,
+              "bottom": 431
+            }
+          },
+          {
+            "marker": "TFC3",
+            "document_line": 26,
+            "column": 87,
+            "position": 135,
+            "rect": {
+              "x": 843,
+              "y": 432,
+              "width": 8,
+              "height": 18,
+              "left": 843,
+              "right": 850,
+              "top": 432,
+              "bottom": 449
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 6,
+      "label": "1049-duplicate-enter-style",
+      "source_hex": "1b5b3f313034396854464133",
+      "source_bytes": 12,
+      "source_sha256": "4ecf74b0d6914191efda7bfc321e4373322d2fe77d2d45c1e99e50f72d0efaaa",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        1,
+        5
+      ],
+      "cursor_reply_hex": "1b5b313b3552",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0TFM1",
+          "TFA3"
+        ],
+        "line_count": 3,
+        "scroll": 2,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": -18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": -18,
+              "bottom": -1
+            }
+          },
+          {
+            "marker": "TFM1",
+            "document_line": 1,
+            "column": 6,
+            "position": 7,
+            "rect": {
+              "x": 195,
+              "y": -18,
+              "width": 8,
+              "height": 18,
+              "left": 195,
+              "right": 202,
+              "top": -18,
+              "bottom": -1
+            }
+          },
+          {
+            "marker": "TFA3",
+            "document_line": 2,
+            "column": 0,
+            "position": 12,
+            "rect": {
+              "x": 147,
+              "y": 0,
+              "width": 8,
+              "height": 18,
+              "left": 147,
+              "right": 154,
+              "top": 0,
+              "bottom": 17
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 7,
+      "label": "1049-second-exit-main-style",
+      "source_hex": "1b5b3f313034396c54464d32",
+      "source_bytes": 12,
+      "source_sha256": "ee226cbc78650aa1a71560a2aae106eb0eef89c9957bb622e6cd218c1bbe77d9",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        2,
+        15
+      ],
+      "cursor_reply_hex": "1b5b323b313552",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0TFM1TFM2"
+        ],
+        "line_count": 2,
+        "scroll": 0,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": 18,
+              "bottom": 35
+            }
+          },
+          {
+            "marker": "TFM1",
+            "document_line": 1,
+            "column": 6,
+            "position": 7,
+            "rect": {
+              "x": 195,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 195,
+              "right": 202,
+              "top": 18,
+              "bottom": 35
+            }
+          },
+          {
+            "marker": "TFM2",
+            "document_line": 1,
+            "column": 10,
+            "position": 11,
+            "rect": {
+              "x": 227,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 227,
+              "right": 234,
+              "top": 18,
+              "bottom": 35
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 8,
+      "label": "main-pending-wrap-enter",
+      "source_hex": "1b5b333b3931481b5b33313b34346d571b5b3f313034396854464134",
+      "source_bytes": 28,
+      "source_sha256": "2cb52459163b68916c5cb972e70470de38cddb864bc1aebc588745076c3119eb",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        1,
+        5
+      ],
+      "cursor_reply_hex": "1b5b313b3552",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0TFM1TFM2",
+          "                                                                                          W",
+          "TFA4"
+        ],
+        "line_count": 4,
+        "scroll": 3,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": -36,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": -36,
+              "bottom": -19
+            }
+          },
+          {
+            "marker": "TFM1",
+            "document_line": 1,
+            "column": 6,
+            "position": 7,
+            "rect": {
+              "x": 195,
+              "y": -36,
+              "width": 8,
+              "height": 18,
+              "left": 195,
+              "right": 202,
+              "top": -36,
+              "bottom": -19
+            }
+          },
+          {
+            "marker": "TFM2",
+            "document_line": 1,
+            "column": 10,
+            "position": 11,
+            "rect": {
+              "x": 227,
+              "y": -36,
+              "width": 8,
+              "height": 18,
+              "left": 227,
+              "right": 234,
+              "top": -36,
+              "bottom": -19
+            }
+          },
+          {
+            "marker": "TFA4",
+            "document_line": 3,
+            "column": 0,
+            "position": 108,
+            "rect": {
+              "x": 147,
+              "y": 0,
+              "width": 8,
+              "height": 18,
+              "left": 147,
+              "right": 154,
+              "top": 0,
+              "bottom": 17
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 9,
+      "label": "main-pending-wrap-exit-write",
+      "source_hex": "1b5b3f313034396c58",
+      "source_bytes": 9,
+      "source_sha256": "e673f150b57de599e70be6834703f6b7d19f376a344c950dbe61ab87455160f6",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        4,
+        2
+      ],
+      "cursor_reply_hex": "1b5b343b3252",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0TFM1TFM2",
+          "                                                                                          WX",
+          ""
+        ],
+        "line_count": 4,
+        "scroll": 0,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": 18,
+              "bottom": 35
+            }
+          },
+          {
+            "marker": "TFM1",
+            "document_line": 1,
+            "column": 6,
+            "position": 7,
+            "rect": {
+              "x": 195,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 195,
+              "right": 202,
+              "top": 18,
+              "bottom": 35
+            }
+          },
+          {
+            "marker": "TFM2",
+            "document_line": 1,
+            "column": 10,
+            "position": 11,
+            "rect": {
+              "x": 227,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 227,
+              "right": 234,
+              "top": 18,
+              "bottom": 35
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    },
+    {
+      "phase": 10,
+      "label": "main-direct-wrap-control",
+      "source_hex": "1b5b363b3931481b5b33313b34346d565a",
+      "source_bytes": 17,
+      "source_sha256": "2324248f4473acc793d56dc8eac68c8e125af0756ce1dbebb22a32e3ae6349d0",
+      "dsr_suffix_hex": "1b5b366e",
+      "cursor_reply": [
+        7,
+        2
+      ],
+      "cursor_reply_hex": "1b5b373b3252",
+      "cursor_reply_private_prefix": "",
+      "document_projection": {
+        "lines": [
+          "",
+          "  TFM0TFM1TFM2",
+          "                                                                                          WX",
+          "",
+          "                                                                                          VZ",
+          "",
+          ""
+        ],
+        "line_count": 7,
+        "scroll": 0,
+        "capacity": 25,
+        "markers": [
+          {
+            "marker": "TFM0",
+            "document_line": 1,
+            "column": 2,
+            "position": 3,
+            "rect": {
+              "x": 163,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 163,
+              "right": 170,
+              "top": 18,
+              "bottom": 35
+            }
+          },
+          {
+            "marker": "TFM1",
+            "document_line": 1,
+            "column": 6,
+            "position": 7,
+            "rect": {
+              "x": 195,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 195,
+              "right": 202,
+              "top": 18,
+              "bottom": 35
+            }
+          },
+          {
+            "marker": "TFM2",
+            "document_line": 1,
+            "column": 10,
+            "position": 11,
+            "rect": {
+              "x": 227,
+              "y": 18,
+              "width": 8,
+              "height": 18,
+              "left": 227,
+              "right": 234,
+              "top": 18,
+              "bottom": 35
+            }
+          }
+        ]
+      },
+      "is_alt": {
+        "callable": true,
+        "value": false,
+        "error": null
+      },
+      "is_main": {
+        "callable": true,
+        "value": true,
+        "error": null
+      },
+      "paint_requested": true,
+      "matching_marker_draws": 0
+    }
+  ],
+  "mode_getters_observed": true,
+  "marker_rectangles_observed": true,
+  "paint_observation_attempt": {
+    "surface": "Exact QPainter::drawText(QPointF,QString) and four fillRect exports, filtered to owned viewport/editor QPaintDevice identities",
+    "matching_device_text_calls": 0,
+    "matching_marker_draws": 0,
+    "matching_fills": 0,
+    "result": "unmatched",
+    "entry_style_inheritance": null,
+    "exit_style_restoration": null,
+    "repeated_entry_style": null,
+    "cell_colors": null
+  },
+  "pending_wrap_sample": {
+    "enter_phase": 8,
+    "exit_and_write_phase": 9,
+    "exit_reply": [
+      4,
+      2
+    ],
+    "direct_control_phase": 10,
+    "direct_control_reply": [
+      7,
+      2
+    ],
+    "dsr_between_W_and_enter": false,
+    "dsr_between_exit_and_X": false
+  },
+  "provider": {
+    "evidence_id": "ev_8c052576b1180d02c769570300f871cce11cdd828903f04952a3367627115639",
+    "provider": {
+      "id": "frida",
+      "name": "Frida",
+      "version": null
+    },
+    "confidence": "observed",
+    "subject": null,
+    "environment": null,
+    "messages_truncated": false,
+    "cleanup_error": null,
+    "limitations": [
+      "Artifact identity is unavailable for this observation.",
+      "The target operating system and architecture were not reported by this observation."
+    ]
+  },
+  "lifecycle": {
+    "outer_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "profile": {
+      "only_synthetic_session": true,
+      "session_count": 1
+    },
+    "deliberate_original_termination": true,
+    "natural_gui_exit_verified": false,
+    "stderr_bytes": 0
+  },
+  "raw_files": {
+    "evidence.json": {
+      "bytes": 22604,
+      "sha256": "455a8cab10351a7d3b3934a85b89d1c18cf9abada1e2109705b0e34ee92586d5"
+    },
+    "run.json": {
+      "bytes": 620,
+      "sha256": "bf682afb981a2cf8bd12461e486d7dde40e228886c22f695286e91afd54709be"
+    },
+    "probe.js": {
+      "bytes": 23749,
+      "sha256": "96979b26fb3b9f12a9ee9fcf4ec339c93b7836c01d8c7c5423d459b198cae6d4"
+    },
+    "style-probe-result.json": {
+      "bytes": 9742,
+      "sha256": "bde3669dcd0e5cc519f0eac1a6bcdac77998ab8b442b70bb42ea830005631174"
+    },
+    "peer.json": {
+      "bytes": 3328,
+      "sha256": "21ff66c8899b56c11ffc7ebd6bc49639ccaf6d49360c49b813695829986c22eb"
+    },
+    "fixture-ready": {
+      "bytes": 20,
+      "sha256": "622d3895d17f825845b8a486e94c55b2db0fa84777cb6a4d3c2f72414fd5469f"
+    },
+    "cleanup.json": {
+      "bytes": 42,
+      "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+    },
+    "profile-check.json": {
+      "bytes": 52,
+      "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+    },
+    "stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "terminal_style_contract_verified": false,
+  "raster_image_verified": false,
+  "full_active_grid_verified": false,
+  "local_shell_transport_verified": false,
+  "presented_done": null,
+  "windterm_parity": false,
+  "r2_complete": false,
+  "limitations": [
+    "Unmatched QPainter hooks do not imply that the original has no styles; overload, redirected device, repaint scheduling or another path remain unseparated possibilities.",
+    "This run did not read pixels or obtain an image. Paint-call attempts cannot prove presented frames or pixel equivalence.",
+    "Mode getter booleans and marker rectangles establish the sampled original states; retained document lines are not a complete active grid.",
+    "Four corner markers disappear from the retained projection after duplicate1049h; entire-grid clearing and blank-cell styles remain unknown.",
+    "Pending-wrap evidence is limited to this exact 91x25 direct-terminal input and its control, not all mode/resize crossings.",
+    "The attempted entry/current-style/exit restoration observations remain null. No generic-standard behavior substitutes for them.",
+    "Telnet does not establish local-shell WinPTY/ConPTY semantics or resolve41/56.",
+    "45seconds is REA capture duration,60seconds is CLI wait timeout; target launch precedes a separate2-second delay and cleanup follows CLI wait. No whole-lifecycle bound is asserted.",
+    "Instrumentation is correctness-only. No latency, throughput, presented endpoint, reliability repetition or performance claim.",
+    "Provider subject/environment remain null; executable/package identity is independently enforced by preparation and module-path guards.",
+    "The original GUI is deliberately ended by the owned launcher. Job active0 is cleanup proof, not natural exit proof.",
+    "Copied original resources, raw probes, paths, identifiers and synthetic profile remain local; only fixed synthetic inputs and audited scalar observations are published."
+  ]
+}
