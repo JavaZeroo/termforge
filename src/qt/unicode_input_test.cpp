@@ -69,10 +69,25 @@ static QJsonObject unicode_text(const QString& receiver, const QString& director
     await([&] { return has_text(model.screen(), "TF_KEY_READY"); }, "receiver did not become ready");
     text_event(terminal, QStringLiteral("L"));
     text_event(terminal, QString::fromUtf16(u"\u4e2d\u6587"));
+    text_event(terminal, QString::fromUtf16(u"e\u0301\U0001f600"));
+    text_event(terminal, QString(QChar(0xd83d)));
+    text_event(terminal, QString(QChar(0xde00)));
+    text_event(terminal, QString::fromUtf16(u"\U0001f469\u200d\U0001f4bb1\ufe0f\u20e3"));
+    text_event(terminal, QString(QChar(0xdc00)));
+    text_event(terminal, QString(QChar(0xd800)) + QLatin1Char('x'));
+    text_event(terminal, QString(QChar(0xd800)) + QChar(0xd83d));
+    text_event(terminal, QString(QChar(0xde00)));
+    text_event(terminal, QString(QChar(0xd800)));
+    QTest::keyClick(&terminal, Qt::Key_Return);
+    text_event(terminal, QString(QChar(0xdc00)));
     text_event(terminal, QStringLiteral("R"));
     finish(model);
     const auto actual = received(path);
-    const auto expected = QByteArray::fromHex("4ce4b8ade6968752");
+    // Literal UTF-8: Chinese, NFD, non-BMP whole/split, ZWJ/keycap, malformed,
+    // and a pending half followed by Return and an orphan low surrogate.
+    const auto expected = QByteArray::fromHex(
+        "4ce4b8ade6968765cc81f09f9880f09f9880f09f91a9e2808df09f92bb31efb88fe283a3"
+        "efbfbdefbfbd78efbfbdf09f9880efbfbd0defbfbd52");
     std::cerr << "unicode expected=" << expected.toHex().constData() << " actual="
               << actual.toHex().constData() << '\n';
     require(actual == expected, "Qt text did not reach the receiver as exact UTF-8");
