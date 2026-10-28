@@ -22,6 +22,12 @@ class TerminalWidget final : public QWidget {
     static constexpr int margin = 8;
     int cell_width_ = 9;
     int cell_height_ = 19;
+    bool grid_ready_ = false;
+    void refresh_metrics() {
+        const QFontMetricsF metrics(font());
+        cell_width_ = (std::max)(1, qCeil(metrics.horizontalAdvance(QLatin1Char('M'))));
+        cell_height_ = (std::max)(1, qCeil(metrics.height()) + 2);
+    }
     void synchronize_grid() {
         const int columns = std::clamp((width() - margin * 2) / cell_width_, 1, 500);
         const int rows = std::clamp((height() - margin * 3 - cell_height_) / cell_height_, 1, 200);
@@ -34,6 +40,13 @@ class TerminalWidget final : public QWidget {
     void showEvent(QShowEvent* event) override {
         QWidget::showEvent(event);
         synchronize_grid();
+    }
+    void changeEvent(QEvent* event) override {
+        QWidget::changeEvent(event);
+        if (grid_ready_ && (event->type() == QEvent::FontChange || event->type() == QEvent::ApplicationFontChange)) {
+            refresh_metrics();
+            synchronize_grid();
+        }
     }
     static QColor colour(int index, bool foreground) {
         static const std::array<QColor, 16> palette{
@@ -53,7 +66,12 @@ class TerminalWidget final : public QWidget {
         if (event->type() == QEvent::KeyPress && static_cast<QKeyEvent*>(event)->key() == Qt::Key_Tab) {
             keyPressEvent(static_cast<QKeyEvent*>(event)); return event->isAccepted();
         }
-        return QWidget::event(event);
+        const bool handled = QWidget::event(event);
+        if (grid_ready_ && event->type() == QEvent::DevicePixelRatioChange) {
+            refresh_metrics();
+            synchronize_grid();
+        }
+        return handled;
     }
     void keyPressEvent(QKeyEvent* event) override {
         QByteArray bytes;
@@ -131,13 +149,12 @@ public:
         if (families.isEmpty()) throw std::runtime_error("The bundled font exposes no font family");
         QFont fixed(families.first());
         fixed.setStyleHint(QFont::TypeWriter); fixed.setPointSize(11); setFont(fixed);
-        const QFontMetricsF metrics(fixed);
-        cell_width_ = qCeil(metrics.horizontalAdvance(QLatin1Char('M')));
-        cell_height_ = qCeil(metrics.height()) + 2;
+        refresh_metrics();
         setFocusPolicy(Qt::StrongFocus);
         setAttribute(Qt::WA_InputMethodEnabled, false);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         resize(sizeHint());
+        grid_ready_ = true;
         model_.on_changed = [this] { update(); };
     }
     ~TerminalWidget() override { model_.on_changed = {}; }
