@@ -32,15 +32,16 @@ cmake -S . -B build/qt-cpp -G "Visual Studio 17 2022" -A x64 `
   -DQt6_DIR="$PWD/local/qt-build-deps/qt/lib/cmake/Qt6" `
   -DTERMFORGE_CONPTY_BACKEND_DIR="$PWD/local/qt-build-deps/conpty" `
   -DTERMFORGE_MSVC_RUNTIME_DIR="$PWD/local/qt-build-deps/crt"
-cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke
+cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke
 python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-bin/Release --executable termforge_qt_shell.exe
 python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-smoke-bin/Release --executable qt_cpp_shell_smoke.exe
-ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_shell$' --no-tests=error --verbose
+python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-resize-bin/Release --executable qt_cpp_resize_smoke.exe
+ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_(shell|resize)$' --no-tests=error --verbose
 ```
 
 `Qt6_DIR` 应包含该版本的 `Qt6Config.cmake`；正式入口缺少或不匹配固定 ConPTY/CRT 时明确失败，不回退系统版本。CRT 按实际 VC Tools 目录版本检查兼容上限。最小 SDK 未安装翻译，当前构建使用 `windeployqt --no-translations --no-compiler-runtime` 部署 Qt，另显式复制固定 app-local CRT；Qt 默认 compiler-runtime 部署会携带待执行的安装包，不能代替这批便携目录的 DLL。完整运行时清单绑定最终目录，不代表所有许可和产品打包已验收。
 
-专用 [Qt C++ CI](../../.github/workflows/qt-cpp.yml) 在 `windows-2025` 中执行同一准备、两个显式 Qt target 构建，以及 `qt_cpp_shell` 的 offscreen / OwnedJob smoke。它不继承默认／系统后端或 Alacritty 作业的通过结果；runner 验证不扩大 Windows 11 x64 或其他平台的产品支持声明。自动产物仅保留路径无关的准备摘要和两份完整运行时清单，不上传 SDK、部署目录或原始日志；runner 的 offscreen 成功不替代隔离 Windows 的原生加载与交互验证。
+专用 [Qt C++ CI](../../.github/workflows/qt-cpp.yml) 在 `windows-2025` 中执行同一准备、产品及两个显式 Qt smoke target 构建，以及 `qt_cpp_shell` / `qt_cpp_resize` 的 offscreen / OwnedJob 检查。它不继承默认／系统后端或 Alacritty 作业的通过结果；runner 验证不扩大 Windows 11 x64 或其他平台的产品支持声明。自动产物仅保留路径无关的准备摘要和三份完整运行时清单，不上传 SDK、部署目录或原始日志；runner 的 offscreen 成功不替代隔离 Windows 的原生加载与交互验证。
 
 CI 的 `windows-2025` 已实际解析到 `windows-2025-vs2026`，该映像没有 VS 2022 实例；因此工作流显式使用 [CMake 的 VS 2026 generator](https://cmake.org/cmake/help/latest/generator/Visual%20Studio%2018%202026.html)，要求 CMake 4.2 或更新。Qt SDK 仍是固定的 MSVC 2022 x64 包，不把 SDK 名称改称 VS 2026。[微软的二进制兼容说明](https://learn.microsoft.com/en-us/cpp/porting/binary-compat-2015-2017?view=msvc-170)允许较新链接器消费较早工具链构建的动态库，但实际兼容性仍由这次独立构建和会话检查证明；本地 VS 2022 验证与 hosted VS 2026 验证分别记录。
 

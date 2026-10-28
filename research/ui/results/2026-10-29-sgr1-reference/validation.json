@@ -1,0 +1,6663 @@
+{
+  "schema": "termforge-original-sgr1-reference-v1",
+  "issue": 146,
+  "case_id": "sgr1-capture-v1",
+  "status": "captured-five-sgr1-raster-phases",
+  "reason": null,
+  "raw_capture_complete": true,
+  "source_base_commit": "a115bc82119dcf1456e8bf9a7c0e15bee3d77174",
+  "source_files_sha256": {
+    "research/ui/sgr1_reference.py": "963d1164af53e6bc57c5d2841d48a4f422cd2903b4fe0e762fbd26553dc656d8",
+    "research/ui/raster_raw_reference.py": "942902683fac816aa4271faaab31b01505aaab8ea6624f131f272e03a4548824",
+    "research/ui/raster_raw_reference.js": "bc427feb65650b1f90e6f882af405bbc88f93d1df2e2e249fb7960a90696869e",
+    "research/ui/alternate_style_reference.py": "3136e620a462a36ea3358c917eb4e207f32aa52db7c75ae14ba8856eba1eafcd",
+    "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+    "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f"
+  },
+  "offline_audit_files_sha256": {
+    "research/ui/sgr1_analysis.py": "65af7130f705a21e81918ae86e62ed03e5db7b2ee6699b32b100b23d5f30c087",
+    "research/ui/export_sgr1_reference.py": "44cd3b6415f53415bd8405923bc3d5ed19ec00025ff8a5cb92b308d802115489",
+    "research/ui/raster_raw_analysis.py": "019d2c2616ac3942160da19289c7d4ee0fa7560dcd3c6d27f732cf724da98e50",
+    "research/ui/raster_selection_analysis.py": "745cda14921a383ca9baf6ec85242982ca587396b8464a3d27047ecf204a8845",
+    "research/ui/export_raster_raw_reference.py": "581b034eb18944e91e4cc07b23702e224e62939c4616686a15430eca0959261a"
+  },
+  "generated_capture_sha256": "d245425ba4215b1c0cea3546720b397de36df3c6c6bf8b86d29405a466e61e51",
+  "rea_prepared_identity": {
+    "version": "6.7.0",
+    "shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+    "package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+    "entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738"
+  },
+  "plan_sha256": "d0286fade7bf18f3dbea5e44ed91b8c5e1a5f595b0900978abcc758e9b06af45",
+  "module_sha256": {
+    "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+    "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+    "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358"
+  },
+  "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "maximum_original_runs": 1,
+  "actual_original_runs": 1,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "frozen_grid": [
+    91,
+    25
+  ],
+  "naws_history": [
+    [
+      91,
+      24
+    ],
+    [
+      91,
+      25
+    ]
+  ],
+  "freeze_event_count": 2,
+  "planned_phase_count": 5,
+  "observed_phase_count": 5,
+  "grab_phases": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "phases": [
+    {
+      "phase": 0,
+      "label": "main SGR0/1 controls",
+      "cursor_reply": [
+        2,
+        16
+      ],
+      "grab_attempted": true,
+      "constructed": [
+        "pixmap",
+        "image"
+      ],
+      "destroyed": [
+        "image",
+        "pixmap"
+      ],
+      "capture_valid": true,
+      "reason": null,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 451,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          450
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 451,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "control-normal",
+          "sample": 0,
+          "h_rect": [
+            187,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            179,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "control-normal",
+          "sample": 1,
+          "h_rect": [
+            203,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            195,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-sgr1",
+          "sample": 0,
+          "h_rect": [
+            243,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            235,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-sgr1",
+          "sample": 1,
+          "h_rect": [
+            259,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            251,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "selection": {
+        "caret": 16,
+        "anchor": 16,
+        "text_type": "string",
+        "text_length": 17
+      },
+      "sgr1_signature_comparison": {
+        "unique_control": null,
+        "reason": "controls-indistinguishable",
+        "matching_controls": [],
+        "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+        "internal_bold_verified": false,
+        "font_weight_mechanism": null,
+        "unmatched_does_not_imply_reset": true,
+        "control_color_relation": {
+          "background": "same",
+          "dominant_ink": "same"
+        }
+      },
+      "source_label": "main-controls-end-sgr1",
+      "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484e3020482048201b5b316d423020482048",
+      "source_sha256": "47595c12e92593673e2d27d3c485d6bce1187b20aabeae08f0219cca75ce8bb0",
+      "dsr_request_hex": "1b5b366e",
+      "cursor_reply_hex": "1b5b323b313652",
+      "is_alt": false,
+      "is_main": true
+    },
+    {
+      "phase": 1,
+      "label": "entry SGR1 signature",
+      "cursor_reply": [
+        1,
+        21
+      ],
+      "grab_attempted": true,
+      "constructed": [
+        "pixmap",
+        "image"
+      ],
+      "destroyed": [
+        "image",
+        "pixmap"
+      ],
+      "capture_valid": true,
+      "reason": null,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 451,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          450
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 451,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "sample",
+          "sample": 0,
+          "h_rect": [
+            171,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            163,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "sample",
+          "sample": 1,
+          "h_rect": [
+            187,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            179,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-normal",
+          "sample": 0,
+          "h_rect": [
+            227,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            219,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-normal",
+          "sample": 1,
+          "h_rect": [
+            243,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            235,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 4,
+          "group": "control-sgr1",
+          "sample": 0,
+          "h_rect": [
+            283,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            275,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 5,
+          "group": "control-sgr1",
+          "sample": 1,
+          "h_rect": [
+            299,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            291,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "selection": {
+        "caret": 37,
+        "anchor": 37,
+        "text_type": "string",
+        "text_length": 22
+      },
+      "sgr1_signature_comparison": {
+        "unique_control": null,
+        "reason": "controls-indistinguishable",
+        "matching_controls": [],
+        "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+        "internal_bold_verified": false,
+        "font_weight_mechanism": null,
+        "unmatched_does_not_imply_reset": true,
+        "control_color_relation": {
+          "background": "same",
+          "dominant_ink": "same"
+        }
+      },
+      "source_label": "1049-entry-with-controls",
+      "source_hex": "1b5b3f3130343968453020482048201b5b306d454e20482048201b5b316d454220482048",
+      "source_sha256": "7cbbfc713e560873081b561974e68ea91e04d47d72b238d89eb752bfaa12e9c7",
+      "dsr_request_hex": "1b5b366e",
+      "cursor_reply_hex": "1b5b313b323152",
+      "is_alt": true,
+      "is_main": false
+    },
+    {
+      "phase": 2,
+      "label": "known alternate SGR1 signature",
+      "cursor_reply": [
+        4,
+        23
+      ],
+      "grab_attempted": true,
+      "constructed": [
+        "pixmap",
+        "image"
+      ],
+      "destroyed": [
+        "image",
+        "pixmap"
+      ],
+      "capture_valid": true,
+      "reason": null,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 451,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          450
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 451,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "sample",
+          "sample": 0,
+          "h_rect": [
+            187,
+            54,
+            8,
+            18
+          ],
+          "space_rect": [
+            179,
+            54,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "sample",
+          "sample": 1,
+          "h_rect": [
+            203,
+            54,
+            8,
+            18
+          ],
+          "space_rect": [
+            195,
+            54,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-normal",
+          "sample": 0,
+          "h_rect": [
+            243,
+            54,
+            8,
+            18
+          ],
+          "space_rect": [
+            235,
+            54,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-normal",
+          "sample": 1,
+          "h_rect": [
+            259,
+            54,
+            8,
+            18
+          ],
+          "space_rect": [
+            251,
+            54,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 4,
+          "group": "control-sgr1",
+          "sample": 0,
+          "h_rect": [
+            299,
+            54,
+            8,
+            18
+          ],
+          "space_rect": [
+            291,
+            54,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 5,
+          "group": "control-sgr1",
+          "sample": 1,
+          "h_rect": [
+            315,
+            54,
+            8,
+            18
+          ],
+          "space_rect": [
+            307,
+            54,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "selection": {
+        "caret": 62,
+        "anchor": 62,
+        "text_type": "string",
+        "text_length": 24
+      },
+      "sgr1_signature_comparison": {
+        "unique_control": null,
+        "reason": "controls-indistinguishable",
+        "matching_controls": [],
+        "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+        "internal_bold_verified": false,
+        "font_weight_mechanism": null,
+        "unmatched_does_not_imply_reset": true,
+        "control_color_relation": {
+          "background": "same",
+          "dominant_ink": "same"
+        }
+      },
+      "source_label": "alternate-end-sgr1",
+      "source_hex": "1b5b343b33481b5b306d41302048204820414e20482048201b5b316d414220482048",
+      "source_sha256": "873380655f527f9f130435eedd3af9d04ac944c82311c4e9b1c93ac8eace6e84",
+      "dsr_request_hex": "1b5b366e",
+      "cursor_reply_hex": "1b5b343b323352",
+      "is_alt": true,
+      "is_main": false
+    },
+    {
+      "phase": 3,
+      "label": "repeat SGR1 signature",
+      "cursor_reply": [
+        1,
+        21
+      ],
+      "grab_attempted": true,
+      "constructed": [
+        "pixmap",
+        "image"
+      ],
+      "destroyed": [
+        "image",
+        "pixmap"
+      ],
+      "capture_valid": true,
+      "reason": null,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 451,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          450
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 451,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "sample",
+          "sample": 0,
+          "h_rect": [
+            171,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            163,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "sample",
+          "sample": 1,
+          "h_rect": [
+            187,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            179,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-normal",
+          "sample": 0,
+          "h_rect": [
+            227,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            219,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-normal",
+          "sample": 1,
+          "h_rect": [
+            243,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            235,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 4,
+          "group": "control-sgr1",
+          "sample": 0,
+          "h_rect": [
+            283,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            275,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 5,
+          "group": "control-sgr1",
+          "sample": 1,
+          "h_rect": [
+            299,
+            0,
+            8,
+            18
+          ],
+          "space_rect": [
+            291,
+            0,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "selection": {
+        "caret": 37,
+        "anchor": 37,
+        "text_type": "string",
+        "text_length": 22
+      },
+      "sgr1_signature_comparison": {
+        "unique_control": null,
+        "reason": "controls-indistinguishable",
+        "matching_controls": [],
+        "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+        "internal_bold_verified": false,
+        "font_weight_mechanism": null,
+        "unmatched_does_not_imply_reset": true,
+        "control_color_relation": {
+          "background": "same",
+          "dominant_ink": "same"
+        }
+      },
+      "source_label": "1049-repeat-with-controls-end-sgr0",
+      "source_hex": "1b5b3f3130343968523020482048201b5b306d524e20482048201b5b316d5242204820481b5b306d",
+      "source_sha256": "2d369c29d963b52ac78d7dc8b2501929889984ef00e5d0754ef3996db76561eb",
+      "dsr_request_hex": "1b5b366e",
+      "cursor_reply_hex": "1b5b313b323152",
+      "is_alt": true,
+      "is_main": false
+    },
+    {
+      "phase": 4,
+      "label": "return SGR1 signature",
+      "cursor_reply": [
+        2,
+        37
+      ],
+      "grab_attempted": true,
+      "constructed": [
+        "pixmap",
+        "image"
+      ],
+      "destroyed": [
+        "image",
+        "pixmap"
+      ],
+      "capture_valid": true,
+      "reason": null,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 451,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          450
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 451,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "sample",
+          "sample": 0,
+          "h_rect": [
+            299,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            291,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "sample",
+          "sample": 1,
+          "h_rect": [
+            315,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            307,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-normal",
+          "sample": 0,
+          "h_rect": [
+            355,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            347,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-normal",
+          "sample": 1,
+          "h_rect": [
+            371,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            363,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 4,
+          "group": "control-sgr1",
+          "sample": 0,
+          "h_rect": [
+            411,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            403,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 5,
+          "group": "control-sgr1",
+          "sample": 1,
+          "h_rect": [
+            427,
+            18,
+            8,
+            18
+          ],
+          "space_rect": [
+            419,
+            18,
+            8,
+            18
+          ],
+          "h": {
+            "samples": 144,
+            "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 84
+              },
+              {
+                "rgba": [
+                  40,
+                  75,
+                  140,
+                  255
+                ],
+                "count": 16
+              },
+              {
+                "rgba": [
+                  75,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 9
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  50,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  75,
+                  107,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  107,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 7
+              },
+              {
+                "rgba": [
+                  107,
+                  75,
+                  81,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 2
+              },
+              {
+                "rgba": [
+                  205,
+                  205,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  171,
+                  255
+                ],
+                "count": 8
+              },
+              {
+                "rgba": [
+                  205,
+                  248,
+                  242,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  140,
+                  255
+                ],
+                "count": 1
+              },
+              {
+                "rgba": [
+                  248,
+                  205,
+                  202,
+                  255
+                ],
+                "count": 1
+              }
+            ]
+          },
+          "space": {
+            "samples": 144,
+            "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+            "hash_encoding": "UTF-8 compact JSON array of unsigned QRgb values",
+            "histogram": [
+              {
+                "rgba": [
+                  40,
+                  40,
+                  50,
+                  255
+                ],
+                "count": 144
+              }
+            ]
+          },
+          "background_rgba": [
+            40,
+            40,
+            50,
+            255
+          ],
+          "dominant_ink_rgba": [
+            40,
+            75,
+            140,
+            255
+          ],
+          "dominant_ink_candidates": [
+            {
+              "rgba": [
+                40,
+                75,
+                140,
+                255
+              ],
+              "count": 16
+            }
+          ],
+          "ink_observed": true,
+          "status": "unique-dominant-ink",
+          "raw_signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "selection": {
+        "caret": 37,
+        "anchor": 37,
+        "text_type": "string",
+        "text_length": 38
+      },
+      "sgr1_signature_comparison": {
+        "unique_control": null,
+        "reason": "controls-indistinguishable",
+        "matching_controls": [],
+        "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+        "internal_bold_verified": false,
+        "font_weight_mechanism": null,
+        "unmatched_does_not_imply_reset": true,
+        "control_color_relation": {
+          "background": "same",
+          "dominant_ink": "same"
+        }
+      },
+      "source_label": "1049-return-with-controls",
+      "source_hex": "1b5b3f313034396c204d3120482048201b5b306d4d4e20482048201b5b316d4d4220482048",
+      "source_sha256": "a1046b17ab9fd1e0845354a2e38536b45113d6c9005fde2435a9e634eac15e89",
+      "dsr_request_hex": "1b5b366e",
+      "cursor_reply_hex": "1b5b323b333752",
+      "is_alt": false,
+      "is_main": true
+    }
+  ],
+  "same_frame_signature_comparisons": [
+    {
+      "phase": 0,
+      "unique_control": null,
+      "reason": "controls-indistinguishable",
+      "matching_controls": [],
+      "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+      "internal_bold_verified": false,
+      "font_weight_mechanism": null,
+      "unmatched_does_not_imply_reset": true,
+      "control_color_relation": {
+        "background": "same",
+        "dominant_ink": "same"
+      }
+    },
+    {
+      "phase": 1,
+      "unique_control": null,
+      "reason": "controls-indistinguishable",
+      "matching_controls": [],
+      "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+      "internal_bold_verified": false,
+      "font_weight_mechanism": null,
+      "unmatched_does_not_imply_reset": true,
+      "control_color_relation": {
+        "background": "same",
+        "dominant_ink": "same"
+      }
+    },
+    {
+      "phase": 2,
+      "unique_control": null,
+      "reason": "controls-indistinguishable",
+      "matching_controls": [],
+      "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+      "internal_bold_verified": false,
+      "font_weight_mechanism": null,
+      "unmatched_does_not_imply_reset": true,
+      "control_color_relation": {
+        "background": "same",
+        "dominant_ink": "same"
+      }
+    },
+    {
+      "phase": 3,
+      "unique_control": null,
+      "reason": "controls-indistinguishable",
+      "matching_controls": [],
+      "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+      "internal_bold_verified": false,
+      "font_weight_mechanism": null,
+      "unmatched_does_not_imply_reset": true,
+      "control_color_relation": {
+        "background": "same",
+        "dominant_ink": "same"
+      }
+    },
+    {
+      "phase": 4,
+      "unique_control": null,
+      "reason": "controls-indistinguishable",
+      "matching_controls": [],
+      "signature": "Exact ordered H/space QRgb SHA256 with shape and count; two independent repeats per group",
+      "internal_bold_verified": false,
+      "font_weight_mechanism": null,
+      "unmatched_does_not_imply_reset": true,
+      "control_color_relation": {
+        "background": "same",
+        "dominant_ink": "same"
+      }
+    }
+  ],
+  "runtime_module_path_guards": [
+    {
+      "name": "WindTerm.exe",
+      "path_guard_passed": true
+    },
+    {
+      "name": "Qt5Core.dll",
+      "path_guard_passed": true
+    },
+    {
+      "name": "Qt5Gui.dll",
+      "path_guard_passed": true
+    },
+    {
+      "name": "Qt5Widgets.dll",
+      "path_guard_passed": true
+    }
+  ],
+  "provider": {
+    "evidence_id": "ev_c6e7637ba0e47033ec012529a35c909bb21a805f98b6743e809cdb28958721d4",
+    "provider": {
+      "id": "frida",
+      "name": "Frida",
+      "version": null
+    },
+    "confidence": "observed",
+    "subject": null,
+    "environment": null,
+    "limitations": [
+      "Artifact identity is unavailable for this observation.",
+      "The target operating system and architecture were not reported by this observation."
+    ]
+  },
+  "lifecycle": {
+    "outer_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "profile": {
+      "only_synthetic_session": true,
+      "session_count": 1
+    },
+    "deliberate_original_termination": true,
+    "natural_gui_exit_verified": false
+  },
+  "raw_files": {
+    "run.json": {
+      "bytes": 620,
+      "sha256": "f958eb4d00b43d328c0c639beacb36a6072e8696db8ba4b9fada7d7e41a814cc"
+    },
+    "probe.js": {
+      "bytes": 29259,
+      "sha256": "b67fd1e31a57ed6004d72fa0885f3bf7987bd1a8c319babdf15fa12bdc94c54e"
+    },
+    "peer.json": {
+      "bytes": 1855,
+      "sha256": "a6d5a911dc2269c133c5dd75b214313f6d0b22435353fdefbe58a66419861b39"
+    },
+    "sgr1-raster-result.json": {
+      "bytes": 106769,
+      "sha256": "af42d30b770cc26f680bdc3c1a301f604b5925bc6a02ffdf019f5f75b42ce9eb"
+    },
+    "evidence.json": {
+      "bytes": 216159,
+      "sha256": "565bc0ad8c2232f5e5b03f4635b6e0e607cf1b83a63475d77585aadc46e0e7e8"
+    },
+    "cleanup.json": {
+      "bytes": 42,
+      "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+    },
+    "profile-check.json": {
+      "bytes": 52,
+      "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+    },
+    "stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "internal_bold_verified": false,
+  "full_style_verified": false,
+  "full_grid_verified": false,
+  "local_shell_transport_verified": false,
+  "presented_done": null,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "limitations": [
+    "Only exact same-frame SGR0/SGR1 output signatures are compared; this does not read an internal pen or prove general font weight.",
+    "Each group must repeat exactly with equal ROI shapes/counts. Indistinguishable or inconsistent controls stay unknown. Color differences/ties do not invalidate an exact output signature but never establish a font-weight mechanism.",
+    "Only the five fixed sources and one grab per phase are covered; no ROI movement, extra grab or retry.",
+    "QWidget raster and direct Telnet do not prove physical presentation, local-shell transport or performance.",
+    "Capture45/CLI60 exclude startup and later cleanup; no whole-lifecycle deadline is claimed.",
+    "Raw pixels, paths, PIDs, copied original resources and synthetic profile stay local. Unknowns do not establish a reset or inherited internal style."
+  ]
+}

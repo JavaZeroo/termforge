@@ -10,22 +10,30 @@
 #include <atomic>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <thread>
 #include <utility>
 
 namespace termforge::qt {
 
-// One model owns one fixed-size session. Only its Qt thread reads or modifies
+// One model owns one session. Only its Qt thread reads or modifies
 // Parser/Screen; the reader publishes bounded byte chunks, never screen state.
 class SessionModel final : public QObject {
 public:
-    static constexpr int fixed_rows = 24;
-    static constexpr int fixed_columns = 80;
+    static constexpr int initial_rows = 24;
+    static constexpr int initial_columns = 80;
+    struct ResizeState {
+        int requested_columns, requested_rows;
+        int transport_columns, transport_rows;
+        unsigned long long requested_revision, transport_revision;
+        bool accepting, pending;
+        DWORD child_pid;
+    };
     std::function<void()> on_changed;
 
 private:
-    Parser parser_{fixed_rows, fixed_columns, 100, ParseMode::recovery};
+    Parser parser_{initial_rows, initial_columns, 100, ParseMode::recovery};
     OutputQueue output_;
     std::unique_ptr<tf_conpty::Session> session_;
     std::unique_ptr<InputQueue> input_;
@@ -33,6 +41,12 @@ private:
     std::thread lifecycle_;
     std::atomic<bool> close_requested_{false};
     std::atomic<bool> cleanup_done_{false};
+    struct ResizeRequest { short columns, rows; unsigned long long revision; };
+    mutable std::mutex control_mutex_;
+    std::optional<ResizeRequest> pending_resize_;
+    unsigned long long requested_revision_ = 0, transport_revision_ = 0;
+    COORD transport_size_{};
+    bool accepting_resize_ = false;
     struct Completion {
         DWORD exit_code = STILL_ACTIVE;
         DWORD active_processes = MAXDWORD;
@@ -54,7 +68,8 @@ private:
     void remember_error(const QString& error) {
         if (error_.isEmpty()) error_ = error;
     }
-    // Only this worker calls wait/cancel/close once startup has completed.
+    // Only this worker calls resize/wait/cancel/close after startup. The latest
+    // bounded request is taken without holding a lock over a native API call.
     // During natural close the Qt timer keeps draining the queue, allowing the
     // ConPTY reader to make progress while ClosePseudoConsole waits for EOF.
     void supervise(bool startup_succeeded) noexcept {
@@ -63,12 +78,37 @@ private:
             if (startup_succeeded) {
                 while (!close_requested_.load(std::memory_order_acquire)) {
                     if (session_->wait_exit(20)) { child_exited = true; break; }
+                    std::optional<ResizeRequest> request;
+                    bool native_resize_needed = false;
+                    {
+                        std::lock_guard<std::mutex> lock(control_mutex_);
+                        if (accepting_resize_ && !close_requested_.load(std::memory_order_acquire)) {
+                            request = std::exchange(pending_resize_, std::nullopt);
+                            native_resize_needed = request && (request->columns != transport_size_.X || request->rows != transport_size_.Y);
+                        }
+                    }
+                    if (request) {
+                        // A successful call is transport progress, never proof
+                        // that the child has observed its new console geometry.
+                        if (native_resize_needed) session_->resize(request->columns, request->rows);
+                        std::lock_guard<std::mutex> lock(control_mutex_);
+                        transport_size_ = {request->columns, request->rows};
+                        transport_revision_ = request->revision;
+                    }
                 }
             }
         } catch (const std::exception& error) {
+            close_requested_.store(true, std::memory_order_release);
             completion_.error = error.what();
         } catch (...) {
+            close_requested_.store(true, std::memory_order_release);
             completion_.error = "Unknown session supervision failure";
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(control_mutex_);
+            accepting_resize_ = false;
+            pending_resize_.reset();
         }
 
         const bool cancelled = close_requested_.load(std::memory_order_acquire) || !child_exited;
@@ -170,8 +210,16 @@ public:
                 throw std::runtime_error("The Qt product entry requires the fixed bundled ConPTY backend");
             input_ = std::make_unique<InputQueue>(*session_);
             session_->start(executable, arguments, [this](std::string_view bytes) { output_.push(bytes); },
-                            working_directory, {fixed_columns, fixed_rows});
+                            working_directory, {static_cast<short>(parser_.screen.width()),
+                                                static_cast<short>(parser_.screen.height())});
             input_->start();
+            {
+                std::lock_guard<std::mutex> lock(control_mutex_);
+                transport_size_ = {static_cast<short>(parser_.screen.width()),
+                                   static_cast<short>(parser_.screen.height())};
+                transport_revision_ = requested_revision_;
+                accepting_resize_ = true;
+            }
             succeeded = true;
         } catch (const std::exception& error) {
             remember_error(QString::fromUtf8(error.what()));
@@ -200,8 +248,42 @@ public:
     bool send(const QByteArray& bytes) {
         return send(std::string(bytes.constData(), static_cast<size_t>(bytes.size())));
     }
+    bool resize(int columns, int rows) {
+        if (finished_ || close_requested_.load(std::memory_order_acquire)) return false;
+        if (columns < 1 || columns > 500 || rows < 1 || rows > 200) {
+            remember_error(QStringLiteral("Terminal grid must be within 1..500 columns and 1..200 rows"));
+            close(); notify(); return false;
+        }
+        try {
+            std::lock_guard<std::mutex> lock(control_mutex_);
+            if (started_ && !accepting_resize_) return false;
+            if (columns == parser_.screen.width() && rows == parser_.screen.height()) return true;
+            parser_.screen.resize(rows, columns);
+            ++requested_revision_;
+            if (started_)
+                pending_resize_ = ResizeRequest{static_cast<short>(columns), static_cast<short>(rows), requested_revision_};
+        }
+        catch (const std::exception& error) {
+            remember_error(QString::fromUtf8(error.what()));
+            close(); notify(); return false;
+        }
+        notify(); return true;
+    }
     void close() noexcept {
         close_requested_.store(true, std::memory_order_release);
+        std::lock_guard<std::mutex> lock(control_mutex_);
+        accepting_resize_ = false;
+        pending_resize_.reset();
+    }
+    // This diagnostic separates the GUI request/core from native call completion.
+    // Real child acknowledgement must come from the child, outside this state.
+    ResizeState resize_state() const {
+        std::lock_guard<std::mutex> lock(control_mutex_);
+        const bool accepting = !finished_ && !close_requested_.load(std::memory_order_acquire) &&
+            (!started_ || accepting_resize_);
+        return {parser_.screen.width(), parser_.screen.height(), transport_size_.X, transport_size_.Y,
+                requested_revision_, transport_revision_, accepting,
+                started_ && accepting && requested_revision_ != transport_revision_, session_ ? session_->pid : 0};
     }
     const Screen& screen() const { return parser_.screen; }
     bool running() const { return started_ && !finished_ && !close_requested_.load(std::memory_order_acquire); }
@@ -212,11 +294,12 @@ public:
     DWORD active_processes_after() const { return finished_ ? completion_.active_processes : MAXDWORD; }
     unsigned long long received_bytes() const { return finished_ ? completion_.output_bytes : 0; }
     bool output_eof() const { return finished_ && completion_.output_eof; }
+    OutputQueue::Snapshot output_state() const { return output_.snapshot(); }
     const QString& error() const { return error_; }
     QString configuration_identity() const {
         return QStringLiteral("cpp-core / qt-widgets / ") +
             QString::fromLatin1(session_ ? session_->backend_identity() : "bundled-conpty-not-loaded") +
-            QStringLiteral(" / 80x24");
+            QStringLiteral(" / %1x%2").arg(parser_.screen.width()).arg(parser_.screen.height());
     }
 };
 

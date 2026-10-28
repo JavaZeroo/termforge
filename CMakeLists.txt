@@ -310,8 +310,14 @@ if(BUILD_TESTING)
   termforge_add_python_test(windterm_alternate_export -m unittest research.ui.test_export_alternate_reference -v)
   termforge_add_python_test(windterm_alternate_style_reference -m unittest research.ui.test_export_alternate_style_reference research.ui.test_alternate_style_peer -v)
   termforge_add_python_test(windterm_raster_style_reference -m unittest research.ui.test_raster_style_reference -v)
+  # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
+  termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)
+  if(WIN32)
+    termforge_add_python_test(node_contract_plan -m unittest research.ui.test_node_contract_deadline.PlanTests -v)
+  endif()
   termforge_add_python_test(windterm_raster_selection_proposal -m unittest research.ui.test_raster_selection_reference -v)
   termforge_add_python_test(windterm_raster_raw_proposal -m unittest research.ui.test_raster_raw_reference -v)
+  termforge_add_python_test(windterm_sgr1_proposal -m unittest research.ui.test_sgr1_reference -v)
   termforge_add_python_test(differential -m unittest discover -s experiments/differential -p test_*.py -v)
   termforge_add_python_test(ime_inventory -m unittest research.ime.test_hosted_inventory research.ime.test_prepare_hosted research.ime.test_product_ime -v)
   termforge_add_python_test(text_actions -m unittest experiments.shell.test_actions -v)
@@ -421,5 +427,19 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_unicode_input_test>")
     set_tests_properties(qt_unicode_input PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+    add_executable(qt_cpp_resize_smoke src/qt/resize_smoke.cpp)
+    set_target_properties(qt_cpp_resize_smoke PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-resize-bin/$<CONFIG>")
+    termforge_qt_entry(qt_cpp_resize_smoke)
+    target_link_libraries(qt_cpp_resize_smoke PRIVATE Qt6::Test)
+    add_custom_command(TARGET qt_cpp_resize_smoke POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_cpp_resize_smoke>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_cpp_resize COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_resize_smoke>")
+    set_tests_properties(qt_cpp_resize PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
   endif()
 endif()
