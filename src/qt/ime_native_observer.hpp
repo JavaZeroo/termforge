@@ -179,6 +179,8 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
     Observation first_events(first, directory, QStringLiteral("a"), &window);
     Observation second_events(second, directory, QStringLiteral("b"), &window);
     bool ready_written = false, finish_requested = false, output_requested = false, failed = false;
+    bool close_requested = false, deadline_expired = false, sessions_completed = false;
+    int sessions_exit_code = -1;
     QString failure;
     QElapsedTimer elapsed; elapsed.start();
     QObject lifetime;
@@ -199,7 +201,23 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
                            {"native_os_ime_acceptance", QJsonValue()}, {"presented_done", QJsonValue()},
                            {"ready", ready_written}, {"finish_requested", finish_requested},
                            {"failed", failed}, {"failure", failure}, {"elapsed_ms", elapsed.elapsed()},
+                           {"close_requested", close_requested}, {"deadline_expired", deadline_expired},
+                           {"sessions_completed", sessions_completed}, {"sessions_exit_code", sessions_exit_code},
                            {"a", first_events.snapshot()}, {"b", second_events.snapshot()}};
+    };
+    const auto fail_and_close = [&](const QString& reason) {
+        if (!failed) { failed = true; failure = reason; }
+        if (!close_requested) { close_requested = true; window.close(); }
+    };
+    // SessionTabs owns asynchronous session retirement. A hidden/closed window
+    // does not stop this QApplication: exit only after that actual completion,
+    // with the absolute observer deadline as a final event-loop bound.
+    window.on_all_exited = [&](int code) {
+        sessions_completed = true; sessions_exit_code = code;
+        if (!finish_requested && !failed) {
+            failed = true; failure = QStringLiteral("native observer sessions ended before finish request");
+        }
+        app.exit(failed || code != 0 ? 1 : 0);
     };
     QObject::connect(&app, &QCoreApplication::aboutToQuit, &lifetime, [&] {
         try { save_json(directory + QStringLiteral("/about-to-quit.json"), state()); }
@@ -222,21 +240,25 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
                 finish_requested = true; a.stop(); b.stop();
             }
             if (QFileInfo::exists(directory + QStringLiteral("/cancel.request"))) {
-                failed = true; failure = QStringLiteral("native observer cancelled by controller"); window.close();
+                fail_and_close(QStringLiteral("native observer cancelled by controller"));
             }
             if (!first_events.valid() || !second_events.valid()) {
-                failed = true; failure = QStringLiteral("native observer evidence gap"); window.close();
-            } else if (elapsed.elapsed() > 45000 && !finish_requested) {
-                failed = true; failure = QStringLiteral("native observer execution deadline"); window.close();
+                fail_and_close(QStringLiteral("native observer evidence gap"));
+            }
+            if (elapsed.elapsed() > 45000) {
+                deadline_expired = true;
+                fail_and_close(QStringLiteral("native observer execution deadline"));
+                app.exit(1);
             }
         } catch (const std::exception& error) {
-            failed = true; failure = QString::fromUtf8(error.what()); window.close();
+            fail_and_close(QString::fromUtf8(error.what()));
         }
     });
     timer.start(50);
     const auto result = app.exec();
     auto final = state();
-    const bool complete = !failed && ready_written && finish_requested && first && second &&
+    const bool complete = !failed && !deadline_expired && sessions_completed && sessions_exit_code == 0 &&
+        ready_written && finish_requested && first && second &&
         first->model().natural_exit() && second->model().natural_exit() &&
         first->model().exit_code() == 0 && second->model().exit_code() == 0 &&
         first->model().output_eof() && second->model().output_eof() &&

@@ -70,6 +70,8 @@ def main():
             raise RuntimeError("Lifecycle exited before the declared control action")
         if complete["purpose"] != "offscreen-lifecycle-only" or complete["qt_platform"] != "offscreen":
             raise RuntimeError("Lifecycle evidence was confused with native OS IME")
+        if not complete["sessions_completed"] or complete["deadline_expired"]:
+            raise RuntimeError("Actual session completion callback did not end the event loop")
         if scenario == "normal":
             if process.returncode != 0 or not complete["observer_complete"] or complete["failed"]:
                 raise RuntimeError("Normal observer completion did not report a successful application exit")
