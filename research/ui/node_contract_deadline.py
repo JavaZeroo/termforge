@@ -92,6 +92,25 @@ def read_checkpoints(stderr, root_pid):
     return trace_result(observations)
 
 
+def read_diagnostic_trace(stderr, root_pid):
+    """Return verified prefix data as well as the next protocol failure."""
+    try:
+        return read_checkpoints(stderr, root_pid)
+    except CheckpointError as error:
+        result = trace_result(error.observations)
+        result["protocol_error"] = str(error)
+        return result
+
+
+def observation_status(record):
+    """Judge one child observation independently of batch expectations."""
+    if record["status"] != "timed_out" and record["primary_exception"] is None:
+        if (record.get("exit_code") == 0 and record["cleanup_verified"] and record["trace"]["complete"] and
+                not record["forced_job_termination"] and record["stdout"] == NORMAL_STDOUT):
+            return "passed"
+    return record["status"]
+
+
 def diagnose_node(node, case):
     require(os.name == "nt", "This diagnostic requires Windows owned Jobs")
     require(case in CASES, "Unexpected diagnostic case")
@@ -191,18 +210,11 @@ def diagnose_node(node, case):
                 except Exception as error:
                     cleanup_errors.append("close root stream: " + str(error))
         record.update(stdout=stdout.decode("utf-8", "replace"), stderr=stderr.decode("utf-8", "replace"))
-        try:
-            record["trace"] = read_checkpoints(stderr, record.get("root_pid"))
-        except CheckpointError as error:
-            record["trace"] = trace_result(error.observations)
-            record["trace"]["protocol_error"] = str(error)
+        record["trace"] = read_diagnostic_trace(stderr, record.get("root_pid"))
         if cleanup_errors:
             record["cleanup_errors"] = cleanup_errors
             record["cleanup_verified"] = False
-        if record["status"] != "timed_out" and record["primary_exception"] is None:
-            if (record.get("exit_code") == 0 and record["cleanup_verified"] and record["trace"]["complete"] and
-                    not record["forced_job_termination"] and record["stdout"] == NORMAL_STDOUT):
-                record["status"] = "passed"
+        record["status"] = observation_status(record)
     return record
 
 

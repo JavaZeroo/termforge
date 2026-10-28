@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 from research.ui.node_contract_deadline import (
-    ROOT, diagnose_node, prepare_plan, read_checkpoints, run_plan,
+    ROOT, diagnose_node, observation_status, prepare_plan, read_checkpoints, read_diagnostic_trace, run_plan,
 )
 
 
@@ -53,6 +53,40 @@ class CheckpointTests(unittest.TestCase):
         with self.assertRaises(ValueError) as caught:
             read_checkpoints(trace([first]) + b'TF_NODE_CONTRACT_V1:{"sequence":', 123)
         self.assertEqual(caught.exception.observations, [first])
+
+
+class LauncherVerdictTests(unittest.TestCase):
+    def normal_record(self, suffix=b""):
+        # Literal protocol witness; no Node/Job process is simulated here.
+        stages = ["node-first-checkpoint", "go-received", "fixture-before-load", "before-file-read",
+                  "file-read", "vm-helpers-start", "vm-helpers-ready", "pure-checks-done"]
+        for case in ("normal", "grab", "toImage", "empty", "dpr", "pixel", "destroy"):
+            stages.extend(("case-start:" + case, "case-end:" + case))
+        stages.append("final")
+        rows = [{"sequence": index, "stage": stage, "pid": 123, "monotonic_ns": str(100 + index)}
+                for index, stage in enumerate(stages)]
+        rows[0].update(node_version="v0.synthetic", arch="x64", platform="win32")
+        return {"status": "failed", "primary_exception": None, "exit_code": 0,
+                "cleanup_verified": True, "forced_job_termination": False,
+                "stdout": "module paths, QRgb, ROI/ink gates,32B sret and normal-return destructor order passed\n",
+                "trace": read_diagnostic_trace(trace(rows) + suffix, 123)}
+
+    def test_valid_complete_control_can_pass(self):
+        row = self.normal_record()
+        self.assertEqual(observation_status(row), "passed")
+        self.assertEqual(len(row["trace"]["observations"]), 23)
+
+    def test_invalid_tail_after_full_prefix_fails_child_despite_clean_exit(self):
+        tails = (b'TF_NODE_CONTRACT_V1:{"sequence":23\n',
+                 trace([{"sequence": 23, "stage": "extra", "pid": 123, "monotonic_ns": "123"}]))
+        for suffix in tails:
+            with self.subTest(suffix=suffix):
+                row = self.normal_record(suffix)
+                self.assertEqual(observation_status(row), "failed")
+                self.assertFalse(row["trace"]["complete"])
+                self.assertIn("protocol_error", row["trace"])
+                self.assertEqual(len(row["trace"]["observations"]), 23)
+                self.assertEqual(row["trace"]["last_observed_stage"], "final")
 
 
 class PlanTests(unittest.TestCase):
