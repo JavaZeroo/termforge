@@ -71,6 +71,18 @@ def save(directory, data, synchronize=True):
 
 
 class ExportTests(unittest.TestCase):
+    def test_existing_parent_alias_fixture_is_valid_for_direct_capture(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            alias_component = root / "existing path spelling component"
+            alias_component.mkdir()
+            alias = alias_component / ".."
+            self.assertNotEqual(alias, alias.resolve())
+            directory, _ = fixture(alias)
+            result = exporter.capture_facts(directory)
+            self.assertEqual(len(result["phases"]), 25)
+            self.assertEqual(directory, directory.resolve())
+
     def test_valid_capture_projects_safe_fields_without_paths_or_process_ids(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory, data = fixture(Path(temporary))
@@ -130,12 +142,26 @@ class ExportTests(unittest.TestCase):
     def test_public_cli_refuses_private_text_in_normal_and_optimized_python_without_output(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory, data = fixture(Path(temporary))
-            data["origin-wrap-result.json"]["observations"][0]["terminal"]["lines"] = ["DO_NOT_PUBLISH"]
-            save(directory, data)
-            plan = Path(temporary) / "plan.json"
-            plan.write_text("{}")
-            for optimized in (False, True):
-                destination = Path(temporary) / ("optimized/out.json" if optimized else "normal/out.json")
+            self.check_private_cli_refusals(directory, data, Path(temporary))
+
+    def test_existing_parent_alias_private_text_reaches_public_cli_whitelist(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            alias_component = root / "existing path spelling component"
+            alias_component.mkdir()
+            alias = alias_component / ".."
+            self.assertNotEqual(alias, alias.resolve())
+            directory, data = fixture(alias)
+            self.check_private_cli_refusals(directory, data, root)
+
+    def check_private_cli_refusals(self, directory, data, root):
+        data["origin-wrap-result.json"]["observations"][0]["terminal"]["lines"] = ["DO_NOT_PUBLISH"]
+        save(directory, data)
+        plan = root / "plan.json"
+        plan.write_text("{}")
+        for optimized in (False, True):
+            with self.subTest(optimized=optimized):
+                destination = root / ("optimized/out.json" if optimized else "normal/out.json")
                 command = [sys.executable, "-B", *(["-O"] if optimized else []), "-X", "utf8", "-m",
                            "research.ui.export_origin_wrap_reference", "--directory", str(directory), "--plan", str(plan),
                            "--destination", str(destination)]
