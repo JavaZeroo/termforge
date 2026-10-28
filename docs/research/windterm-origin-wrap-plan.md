@@ -1,6 +1,6 @@
 # WindTerm 2.7.0：origin/wrap 与滚动区域取证计划
 
-状态：**离线准备，原版运行次数为 0，尚无行为结论**。本项由 [#151](https://github.com/JavaZeroo/termforge/issues/151) 承接 [#27](https://github.com/JavaZeroo/termforge/issues/27) 的直接观察缺口；没有改动自主 C++ 核心或产品模式。通用规范、旧候选和本地控制台结果均不作为原版行为。
+状态：**本计划已在执行源72e661d上完成唯一原版尝试**，[有限结果与原始来源审计](windterm-origin-wrap-reference-2026-10-29.md)另列，不倒改以下执行前输入、次数和期限。本项由 [#151](https://github.com/JavaZeroo/termforge/issues/151) 承接 [#27](https://github.com/JavaZeroo/termforge/issues/27) 的直接观察缺口；没有改动自主 C++ 核心或产品模式。通用规范、旧候选和本地控制台结果均不作为原版行为。
 
 目标固定为官方 WindTerm 2.7.0 Windows x64，EXE SHA256 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`；受保护复制器在创建自有副本后校验 4,047 文件分发清单 `e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203`，不改动官方原件。
 
