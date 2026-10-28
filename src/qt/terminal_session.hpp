@@ -244,7 +244,7 @@ public:
         if (finished_ || close_requested_.load(std::memory_order_acquire)) return false;
         if (columns < 1 || columns > 500 || rows < 1 || rows > 200) {
             remember_error(QStringLiteral("Terminal grid must be within 1..500 columns and 1..200 rows"));
-            notify(); return false;
+            close(); notify(); return false;
         }
         try {
             std::lock_guard<std::mutex> lock(control_mutex_);
