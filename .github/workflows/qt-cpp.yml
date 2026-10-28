@@ -34,7 +34,7 @@ jobs:
       - name: Configure explicit Qt product and test entries
         run: |
           $dependencyRoot = Join-Path $env:GITHUB_WORKSPACE 'local/qt-build-deps'
-          cmake -S . -B build/qt-cpp -G 'Visual Studio 17 2022' -A x64 `
+          cmake -S . -B build/qt-cpp -G 'Visual Studio 18 2026' -A x64 `
             -DTERMFORGE_BUILD_QT_SHELL=ON -DBUILD_TESTING=ON `
             -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF `
             "-DPython3_EXECUTABLE=$((Get-Command python).Source)" `
