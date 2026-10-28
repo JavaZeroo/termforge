@@ -316,5 +316,54 @@ class CommandBoundaryTests(unittest.TestCase):
                 self.assertNotIn("private-worker-error", json.dumps(result))
 
 
+class CommandOutputBoundaryTests(unittest.TestCase):
+    def test_parent_reads_written_marker_after_command_timeout_and_verified_cleanup(self):
+        marker = b"TERMFORGE_HOSTED_PS51_READY\r\n"
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary)
+            process = mock.Mock(pid=123, returncode=None)
+            process.poll.side_effect = lambda: process.returncode
+
+            def command_run(command, **kwargs):
+                if command == ["synthetic-cmd"]:
+                    kwargs["stdout"].write(b"TERMFORGE_HOSTED_CMD_READY\r\n")
+                    return prep.subprocess.CompletedProcess(command, 0)
+                kwargs["stdout"].write(marker)
+                kwargs["stderr"].write(b"private-error-never-publish")
+                raise prep.subprocess.TimeoutExpired(command, 10)
+
+            def communicate(*args, **kwargs):
+                private = out / "_private/preflight"
+                try:
+                    prep.run_command(["synthetic-cmd"], private, "cmd", cwd=private)
+                    prep.run_command(["synthetic-ps51"], private, "ps51", cwd=private)
+                except prep.PreparationError as error:
+                    process.returncode = 1
+                    return json.dumps({"failure_code": str(error)}).encode(), b""
+                self.fail("Synthetic command timeout was lost")
+
+            process.communicate.side_effect = communicate
+            job = mock.Mock()
+            job.drain.return_value = {"active": 0, "total": 6, "terminated": 0}
+            audit = mock.Mock(stable=True, members=[], private=[])
+            audit.process_ids.return_value = []
+            with mock.patch.object(prep, "OwnedJob", return_value=job), \
+                 mock.patch.object(prep, "JobMembers", return_value=audit), \
+                 mock.patch.object(prep.subprocess, "Popen", return_value=process), \
+                 mock.patch.object(prep.subprocess, "run", side_effect=command_run), \
+                 mock.patch.object(prep.subprocess, "CREATE_NO_WINDOW", 0, create=True):
+                result = prep.run_step("preflight", out)
+            self.assertEqual((out / "_private/preflight/ps51.stdout").read_bytes(), marker)
+            self.assertEqual(result["failure_code"], "command_deadline")
+            self.assertEqual(result["status"], "failed")
+            self.assertTrue(result["cleanup"]["root_reaped"])
+            output = result["command_output_observation"]["commands"][1]
+            self.assertEqual(output["command"], "ps51")
+            self.assertEqual(output["stdout"], {"status": "observed", "bytes": len(marker),
+                                             "marker_status": "observed", "marker_complete_line_seen": True})
+            self.assertEqual(output["stderr"], {"status": "observed", "bytes": 26})
+            self.assertNotIn("private-error", json.dumps(result))
+
+
 if __name__ == "__main__":
     unittest.main()
