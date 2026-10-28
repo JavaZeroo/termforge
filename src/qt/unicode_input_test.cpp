@@ -3,6 +3,7 @@
 #include "session_tabs.hpp"
 #include <QApplication>
 #include <QCryptographicHash>
+#include <QDir>
 #include <QElapsedTimer>
 #include <QFile>
 #include <QJsonArray>
@@ -142,6 +143,104 @@ static QJsonObject focus_and_packet_rejection(const QString& receiver, const QSt
             {"exact_packet_bytes", 1024}, {"rejected_packet_bytes", 1025},
             {"exit_code", static_cast<int>(model.exit_code())}, {"job_active", 0}};
 }
+static QJsonObject normal_keys(const QString& receiver, const QString& directory) {
+    const QString path = directory + QStringLiteral("/normal-keys.bin");
+    SessionModel model;
+    TerminalWidget terminal(model);
+    focus(terminal);
+    require(model.start(receiver.toStdWString(), (QStringLiteral("\"") + path + QLatin1Char('"')).toStdWString(),
+                        directory.toStdWString()), "normal-key receiver could not start");
+    await([&] { return has_text(model.screen(), "TF_KEY_READY"); }, "normal-key receiver did not become ready");
+    QTest::keyClicks(&terminal, QStringLiteral("Ab9"));
+    for (int key : {Qt::Key_Return, Qt::Key_Tab, Qt::Key_Backspace}) QTest::keyClick(&terminal, static_cast<Qt::Key>(key));
+    QTest::keyClick(&terminal, Qt::Key_C, Qt::ControlModifier);
+    for (int key : {Qt::Key_Up, Qt::Key_Down, Qt::Key_Right, Qt::Key_Left})
+        QTest::keyClick(&terminal, static_cast<Qt::Key>(key));
+    QKeyEvent unsupported(QEvent::KeyPress, Qt::Key_D, Qt::ControlModifier, QString(QChar(4)));
+    unsupported.setAccepted(false); QApplication::sendEvent(&terminal, &unsupported);
+    require(!unsupported.isAccepted(), "Qt Ctrl-D became a supported product action");
+    finish(model);
+    const auto actual = received(path);
+    require(actual == QByteArray::fromHex("4162390d097f031b5b411b5b421b5b431b5b44"),
+            "existing normal-mode key bytes changed");
+    return {{"case", "normal-keys"}, {"received_hex", QString::fromLatin1(actual.toHex())},
+            {"exit_code", 0}, {"job_active", 0}};
+}
+static QJsonObject tab_and_close_isolation(const QString& receiver, const QString& directory) {
+    const auto argument = [&](const QString& name) {
+        return (QStringLiteral("\"") + directory + QLatin1Char('/') + name + QLatin1Char('"')).toStdWString();
+    };
+    termforge::qt::SessionTabs window(receiver.toStdWString(), argument(QStringLiteral("tab-a.bin")), directory.toStdWString());
+    window.show(); QApplication::setActiveWindow(&window); QApplication::processEvents();
+    auto* first = window.current_session();
+    require(first != nullptr, "first receiver tab is missing");
+    await([&] { return has_text(first->model().screen(), "TF_KEY_READY"); }, "first receiver tab did not become ready");
+    require(text_event(first->terminal(), QStringLiteral("A")), "first tab prefix was rejected");
+    require(text_event(first->terminal(), QString(QChar(0xd83d))), "first tab pending high was rejected");
+    auto* second = window.new_session(receiver.toStdWString(), argument(QStringLiteral("tab-b.bin")), directory.toStdWString());
+    require(second && second != first, "second independent receiver tab is missing");
+    await([&] { return has_text(second->model().screen(), "TF_KEY_READY"); }, "second receiver tab did not become ready");
+    require(!text_event(first->terminal(), QStringLiteral("WRONG")), "hidden tab accepted text");
+    require(text_event(second->terminal(), QString(QChar(0xde00)) + QLatin1Char('B')), "second tab low was rejected");
+    require(text_event(second->terminal(), QString(QChar(0xd83d))), "second tab pending high was rejected");
+    auto* bar = window.findChild<QTabBar*>();
+    require(bar && bar->count() == 2, "receiver tab bar is missing");
+    QTest::mouseClick(bar, Qt::LeftButton, Qt::NoModifier, bar->tabRect(0).center());
+    QApplication::processEvents();
+    require(first->terminal().hasFocus(), "tab switch lost receiver focus");
+    require(text_event(first->terminal(), QString(QChar(0xde00)) + QLatin1Char('C')), "first tab low was rejected");
+    QTest::mouseClick(bar, Qt::LeftButton, Qt::NoModifier, bar->tabRect(1).center());
+    QApplication::processEvents();
+    require(text_event(second->terminal(), QString(QChar(0xde00)) + QLatin1Char('D')), "second tab return low was rejected");
+    finish(second->model());
+    require(received(directory + QStringLiteral("/tab-b.bin")) == QByteArray::fromHex("efbfbd42efbfbd44"),
+            "second tab received another target's pending surrogate or text");
+    // Closing a third target with a pending half cannot commit into its peer.
+    auto* closing = window.new_session(receiver.toStdWString(), argument(QStringLiteral("tab-close.bin")), directory.toStdWString());
+    await([&] { return has_text(closing->model().screen(), "TF_KEY_READY"); }, "closing receiver tab did not become ready");
+    require(text_event(closing->terminal(), QString(QChar(0xd83d))), "closing tab high was rejected");
+    closing->terminal().close();
+    require(!text_event(closing->terminal(), QString(QChar(0xde00))), "closed target accepted text");
+    await([&] { return closing->model().finished(); }, "closed receiver did not finish");
+    require(closing->model().cleanup_verified() && closing->model().active_processes_after() == 0 &&
+            !closing->model().natural_exit(), "closed receiver cleanup was not verified cancellation");
+    QTest::mouseClick(bar, Qt::LeftButton, Qt::NoModifier, bar->tabRect(0).center());
+    QApplication::processEvents();
+    require(text_event(first->terminal(), QString(QChar(0xde00)) + QLatin1Char('E')), "surviving receiver stopped accepting text");
+    finish(first->model());
+    const auto first_bytes = received(directory + QStringLiteral("/tab-a.bin"));
+    require(first_bytes == QByteArray::fromHex("41efbfbd43efbfbd45"), "first receiver bytes leaked across tab boundaries");
+    window.close();
+    return {{"case", "tab-close-isolation"}, {"first_hex", QString::fromLatin1(first_bytes.toHex())},
+            {"second_hex", "efbfbd42efbfbd44"}, {"natural_receivers", 2},
+            {"cancelled_receiver", 1}, {"job_active", 0}};
+}
+static QJsonObject unavailable_targets(const QString& receiver, const QString& directory) {
+    const QString path = directory + QStringLiteral("/late-start.bin");
+    SessionModel model;
+    TerminalWidget terminal(model);
+    focus(terminal);
+    require(!text_event(terminal, QString(QChar(0xd83d))) && !model.error().isEmpty(),
+            "unstarted target accepted text or hid its rejection");
+    require(model.start(receiver.toStdWString(), (QStringLiteral("\"") + path + QLatin1Char('"')).toStdWString(),
+                        directory.toStdWString()), "late-start receiver could not start");
+    await([&] { return has_text(model.screen(), "TF_KEY_READY"); }, "late-start receiver did not become ready");
+    require(text_event(terminal, QString(QChar(0xde00)) + QLatin1Char('R')), "valid target failed after unavailable rejection");
+    finish(model);
+    require(received(path) == QByteArray::fromHex("efbfbd52"), "unavailable target polluted later encoder state");
+    require(!text_event(terminal, QStringLiteral("AFTER")), "ended target accepted text");
+    SessionModel failed;
+    TerminalWidget error_terminal(failed);
+    focus(error_terminal);
+    require(!failed.start((directory + QStringLiteral("/missing-receiver.exe")).toStdWString(), L""),
+            "missing receiver unexpectedly started");
+    await([&] { return failed.finished(); }, "failed target cleanup did not finish");
+    require(!text_event(error_terminal, QString(QChar(0xd83d))) && !failed.error().isEmpty() &&
+            failed.cleanup_verified() && failed.active_processes_after() == 0,
+            "failed target accepted text or lost its error/cleanup");
+    return {{"case", "unavailable-targets"}, {"received_hex", "efbfbd52"},
+            {"unstarted_rejected", true}, {"ended_rejected", true}, {"failed_rejected", true}, {"job_active", 0}};
+}
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
@@ -157,13 +256,21 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
     QApplication::setQuitOnLastWindowClosed(false);
     try {
-        QTemporaryDir workspace;
+        const auto artifacts = qEnvironmentVariable("TERMFORGE_TEST_ARTIFACTS");
+        if (!artifacts.isEmpty()) require(QDir().mkpath(artifacts), "artifact directory could not be created");
+        QTemporaryDir workspace(artifacts.isEmpty() ? QString() : artifacts + QStringLiteral("/qt-unicode-XXXXXX"));
         require(workspace.isValid(), "owned receiver workspace could not be created");
+        if (!artifacts.isEmpty()) workspace.setAutoRemove(false);
         const auto receiver = QCoreApplication::applicationDirPath() + QStringLiteral("/shell_input_client.exe");
         require(QFile::exists(receiver), "independent receiver is missing");
-        QJsonArray cases{unicode_text(receiver, workspace.path()), focus_and_packet_rejection(receiver, workspace.path())};
+        QJsonArray cases{unicode_text(receiver, workspace.path()), focus_and_packet_rejection(receiver, workspace.path()),
+                         normal_keys(receiver, workspace.path()), tab_and_close_isolation(receiver, workspace.path()),
+                         unavailable_targets(receiver, workspace.path())};
         const QJsonObject result{{"schema", "termforge-qt-unicode-input-v1"}, {"cases", cases},
                                  {"ime", false}, {"presented_done", QJsonValue()}};
+        QFile saved(workspace.path() + QStringLiteral("/sample.json"));
+        require(saved.open(QIODevice::WriteOnly) && saved.write(QJsonDocument(result).toJson()) > 0,
+                "receiver sample could not be retained");
         std::cout << QJsonDocument(result).toJson(QJsonDocument::Compact).constData() << '\n';
         return 0;
     } catch (const std::exception& error) {

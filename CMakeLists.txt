@@ -420,6 +420,6 @@ if(TERMFORGE_BUILD_QT_SHELL)
     add_test(NAME qt_unicode_input COMMAND "${Python3_EXECUTABLE}"
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_unicode_input_test>")
     set_tests_properties(qt_unicode_input PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
   endif()
 endif()
