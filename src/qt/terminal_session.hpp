@@ -16,16 +16,16 @@
 
 namespace termforge::qt {
 
-// One model owns one fixed-size session. Only its Qt thread reads or modifies
+// One model owns one session. Only its Qt thread reads or modifies
 // Parser/Screen; the reader publishes bounded byte chunks, never screen state.
 class SessionModel final : public QObject {
 public:
-    static constexpr int fixed_rows = 24;
-    static constexpr int fixed_columns = 80;
+    static constexpr int initial_rows = 24;
+    static constexpr int initial_columns = 80;
     std::function<void()> on_changed;
 
 private:
-    Parser parser_{fixed_rows, fixed_columns, 100, ParseMode::recovery};
+    Parser parser_{initial_rows, initial_columns, 100, ParseMode::recovery};
     OutputQueue output_;
     std::unique_ptr<tf_conpty::Session> session_;
     std::unique_ptr<InputQueue> input_;
@@ -170,7 +170,8 @@ public:
                 throw std::runtime_error("The Qt product entry requires the fixed bundled ConPTY backend");
             input_ = std::make_unique<InputQueue>(*session_);
             session_->start(executable, arguments, [this](std::string_view bytes) { output_.push(bytes); },
-                            working_directory, {fixed_columns, fixed_rows});
+                            working_directory, {static_cast<short>(parser_.screen.width()),
+                                                static_cast<short>(parser_.screen.height())});
             input_->start();
             succeeded = true;
         } catch (const std::exception& error) {
@@ -197,6 +198,19 @@ public:
     bool send(const QByteArray& bytes) {
         return send(std::string(bytes.constData(), static_cast<size_t>(bytes.size())));
     }
+    bool resize(int columns, int rows) {
+        if (finished_ || close_requested_.load(std::memory_order_acquire)) return false;
+        if (columns < 1 || columns > 500 || rows < 1 || rows > 200) {
+            remember_error(QStringLiteral("Terminal grid must be within 1..500 columns and 1..200 rows"));
+            notify(); return false;
+        }
+        try { parser_.screen.resize(rows, columns); }
+        catch (const std::exception& error) {
+            remember_error(QString::fromUtf8(error.what()));
+            close(); notify(); return false;
+        }
+        notify(); return true;
+    }
     void close() noexcept {
         close_requested_.store(true, std::memory_order_release);
     }
@@ -213,7 +227,7 @@ public:
     QString configuration_identity() const {
         return QStringLiteral("cpp-core / qt-widgets / ") +
             QString::fromLatin1(session_ ? session_->backend_identity() : "bundled-conpty-not-loaded") +
-            QStringLiteral(" / 80x24");
+            QStringLiteral(" / %1x%2").arg(parser_.screen.width()).arg(parser_.screen.height());
     }
 };
 

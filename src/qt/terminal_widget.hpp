@@ -1,4 +1,4 @@
-// Fixed-grid Qt entry point; terminal semantics stay in the owned C++ model.
+// Qt terminal geometry follows the current font; semantics stay in the model.
 #pragma once
 
 #include "terminal_session.hpp"
@@ -8,6 +8,8 @@
 #include <QFontDatabase>
 #include <QFontMetricsF>
 #include <QKeyEvent>
+#include <QResizeEvent>
+#include <QShowEvent>
 #include <QPainter>
 #include <QtMath>
 #include <QWidget>
@@ -20,6 +22,19 @@ class TerminalWidget final : public QWidget {
     static constexpr int margin = 8;
     int cell_width_ = 9;
     int cell_height_ = 19;
+    void synchronize_grid() {
+        const int columns = std::clamp((width() - margin * 2) / cell_width_, 1, 500);
+        const int rows = std::clamp((height() - margin * 3 - cell_height_) / cell_height_, 1, 200);
+        model_.resize(columns, rows);
+    }
+    void resizeEvent(QResizeEvent* event) override {
+        QWidget::resizeEvent(event);
+        synchronize_grid();
+    }
+    void showEvent(QShowEvent* event) override {
+        QWidget::showEvent(event);
+        synchronize_grid();
+    }
     static QColor colour(int index, bool foreground) {
         static const std::array<QColor, 16> palette{
             QColor(20, 24, 28), QColor(205, 73, 74), QColor(145, 185, 89), QColor(221, 190, 90),
@@ -99,8 +114,9 @@ class TerminalWidget final : public QWidget {
         painter.setFont(base_font);
         painter.setPen(model_.error().isEmpty() ? colour(8, true) : colour(9, true));
         const QString status = !model_.error().isEmpty() ? model_.error() : model_.finished() ?
-            QStringLiteral("Session exited: %1").arg(model_.exit_code()) : QStringLiteral("Fixed 80 x 24 terminal");
-        painter.drawText(QRect(margin, margin + SessionModel::fixed_rows * cell_height_,
+            QStringLiteral("Session exited: %1").arg(model_.exit_code()) :
+            QStringLiteral("Terminal %1 x %2").arg(screen.width()).arg(screen.height());
+        painter.drawText(QRect(margin, height() - margin * 2 - cell_height_,
                                width() - margin * 2, cell_height_ + margin),
                          Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, status);
     }
@@ -120,13 +136,14 @@ public:
         cell_height_ = qCeil(metrics.height()) + 2;
         setFocusPolicy(Qt::StrongFocus);
         setAttribute(Qt::WA_InputMethodEnabled, false);
-        setFixedSize(sizeHint());
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        resize(sizeHint());
         model_.on_changed = [this] { update(); };
     }
     ~TerminalWidget() override { model_.on_changed = {}; }
     QSize sizeHint() const override {
-        return {margin * 2 + SessionModel::fixed_columns * cell_width_,
-                margin * 3 + (SessionModel::fixed_rows + 1) * cell_height_};
+        return {margin * 2 + SessionModel::initial_columns * cell_width_,
+                margin * 3 + (SessionModel::initial_rows + 1) * cell_height_};
     }
 };
 
