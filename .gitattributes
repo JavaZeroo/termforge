@@ -3,5 +3,7 @@
 *.json text eol=lf
 *.yml text eol=lf
 *.py text eol=lf
+research/ui/*.js text eol=lf
+research/ui/reference_sources/*.py.txt text eol=lf
 *.ps1 text eol=crlf
 experiments/core/fixtures/*.bin binary
