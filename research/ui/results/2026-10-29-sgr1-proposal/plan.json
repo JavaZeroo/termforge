@@ -1,0 +1,93 @@
+{
+  "schema": "termforge-sgr1-plan-v1",
+  "issue": 146,
+  "case_id": "sgr1-capture-v1",
+  "maximum_original_runs": 1,
+  "actual_original_runs": 0,
+  "execution_authorized": false,
+  "source_base_commit": "14b28609b59c789d5b78e2f0463c53321e296ada",
+  "rea_prepared_identity": {
+    "version": "6.7.0",
+    "shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+    "package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+    "entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738"
+  },
+  "module_sha256": {
+    "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+    "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+    "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358"
+  },
+  "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "source_files_sha256": {
+    "research/ui/sgr1_reference.py": "963d1164af53e6bc57c5d2841d48a4f422cd2903b4fe0e762fbd26553dc656d8",
+    "research/ui/raster_raw_reference.py": "942902683fac816aa4271faaab31b01505aaab8ea6624f131f272e03a4548824",
+    "research/ui/raster_raw_reference.js": "bc427feb65650b1f90e6f882af405bbc88f93d1df2e2e249fb7960a90696869e",
+    "research/ui/alternate_style_reference.py": "3136e620a462a36ea3358c917eb4e207f32aa52db7c75ae14ba8856eba1eafcd",
+    "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+    "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f"
+  },
+  "offline_audit_files_sha256": {
+    "research/ui/sgr1_analysis.py": "65af7130f705a21e81918ae86e62ed03e5db7b2ee6699b32b100b23d5f30c087",
+    "research/ui/export_sgr1_reference.py": "44cd3b6415f53415bd8405923bc3d5ed19ec00025ff8a5cb92b308d802115489",
+    "research/ui/raster_raw_analysis.py": "019d2c2616ac3942160da19289c7d4ee0fa7560dcd3c6d27f732cf724da98e50",
+    "research/ui/raster_selection_analysis.py": "745cda14921a383ca9baf6ec85242982ca587396b8464a3d27047ecf204a8845",
+    "research/ui/export_raster_raw_reference.py": "581b034eb18944e91e4cc07b23702e224e62939c4616686a15430eca0959261a"
+  },
+  "generated_capture_sha256": "d245425ba4215b1c0cea3546720b397de36df3c6c6bf8b86d29405a466e61e51",
+  "phases": [
+    {
+      "phase": 0,
+      "label": "main-controls-end-sgr1",
+      "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484e3020482048201b5b316d423020482048",
+      "source_bytes": 34,
+      "source_sha256": "47595c12e92593673e2d27d3c485d6bce1187b20aabeae08f0219cca75ce8bb0",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 1,
+      "label": "1049-entry-with-controls",
+      "source_hex": "1b5b3f3130343968453020482048201b5b306d454e20482048201b5b316d454220482048",
+      "source_bytes": 36,
+      "source_sha256": "7cbbfc713e560873081b561974e68ea91e04d47d72b238d89eb752bfaa12e9c7",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 2,
+      "label": "alternate-end-sgr1",
+      "source_hex": "1b5b343b33481b5b306d41302048204820414e20482048201b5b316d414220482048",
+      "source_bytes": 34,
+      "source_sha256": "873380655f527f9f130435eedd3af9d04ac944c82311c4e9b1c93ac8eace6e84",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 3,
+      "label": "1049-repeat-with-controls-end-sgr0",
+      "source_hex": "1b5b3f3130343968523020482048201b5b306d524e20482048201b5b316d5242204820481b5b306d",
+      "source_bytes": 40,
+      "source_sha256": "2d369c29d963b52ac78d7dc8b2501929889984ef00e5d0754ef3996db76561eb",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 4,
+      "label": "1049-return-with-controls",
+      "source_hex": "1b5b3f313034396c204d3120482048201b5b306d4d4e20482048201b5b316d4d4220482048",
+      "source_bytes": 37,
+      "source_sha256": "a1046b17ab9fd1e0845354a2e38536b45113d6c9005fde2435a9e634eac15e89",
+      "dsr_suffix_hex": "1b5b366e"
+    }
+  ],
+  "phase_count": 5,
+  "maximum_grabs_per_phase": 1,
+  "maximum_grabs": 5,
+  "scope": "Exact same-frame SGR0/SGR1 output signatures only; no internal pen, general bold, full-grid, local-shell, presented or performance claim",
+  "stop": "Structural/identity/empty-image/ROI/DPR/selection/caret failures stop. Equal/inconsistent controls or incomparable shapes leave output classification unknown; color differences/ties leave the font-weight mechanism unknown, even when the exact output uniquely matches. No moved ROI, extra grab or retry.",
+  "private_plan_sha256": "6d04124b88fcc9aa1325a99850ed4708ab8a7fc689cecdabee7aea5052104397",
+  "prepared_original_package_guard": "Four full module hashes checked; the existing launcher will check the complete 4047-file manifest at a later authorized launch.",
+  "execution_note": "Offline proposal only. No original or guest execution; no attempt marker or target output directory was created."
+}

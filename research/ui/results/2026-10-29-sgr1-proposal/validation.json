@@ -1,0 +1,142 @@
+{
+  "schema": "termforge-sgr1-offline-preflight-v1",
+  "issue": 146,
+  "case_id": "sgr1-capture-v1",
+  "base_commit": "c6940a9562c2177ae784a506aa611db84e1c74f6",
+  "producer_commit": "8d44041cefbf566b5fb1eb7433bdfa0231235ef1",
+  "fixture_alias_fix_commit": "5d18c34d94093e03871ff240c3d811e8d98757b9",
+  "fixture_wait_fix_commit": "14b28609b59c789d5b78e2f0463c53321e296ada",
+  "prepared_head": "14b28609b59c789d5b78e2f0463c53321e296ada",
+  "private_plan_sha256": "6d04124b88fcc9aa1325a99850ed4708ab8a7fc689cecdabee7aea5052104397",
+  "public_plan_sha256": "132e98fab3e480006a11fa0d75fd71f55f8028a050bd0d525f249383abf7c4f7",
+  "generated_capture_sha256": "d245425ba4215b1c0cea3546720b397de36df3c6c6bf8b86d29405a466e61e51",
+  "source_files_sha256": {
+    "research/ui/sgr1_reference.py": "963d1164af53e6bc57c5d2841d48a4f422cd2903b4fe0e762fbd26553dc656d8",
+    "research/ui/raster_raw_reference.py": "942902683fac816aa4271faaab31b01505aaab8ea6624f131f272e03a4548824",
+    "research/ui/raster_raw_reference.js": "bc427feb65650b1f90e6f882af405bbc88f93d1df2e2e249fb7960a90696869e",
+    "research/ui/alternate_style_reference.py": "3136e620a462a36ea3358c917eb4e207f32aa52db7c75ae14ba8856eba1eafcd",
+    "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+    "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f"
+  },
+  "offline_audit_files_sha256": {
+    "research/ui/sgr1_analysis.py": "65af7130f705a21e81918ae86e62ed03e5db7b2ee6699b32b100b23d5f30c087",
+    "research/ui/export_sgr1_reference.py": "44cd3b6415f53415bd8405923bc3d5ed19ec00025ff8a5cb92b308d802115489",
+    "research/ui/raster_raw_analysis.py": "019d2c2616ac3942160da19289c7d4ee0fa7560dcd3c6d27f732cf724da98e50",
+    "research/ui/raster_selection_analysis.py": "745cda14921a383ca9baf6ec85242982ca587396b8464a3d27047ecf204a8845",
+    "research/ui/export_raster_raw_reference.py": "581b034eb18944e91e4cc07b23702e224e62939c4616686a15430eca0959261a"
+  },
+  "producer_bytes_unchanged_after_test_only_fixes": true,
+  "actual_original_runs": 0,
+  "guest_requests": 0,
+  "attempt_marker_created": false,
+  "original_output_created": false,
+  "environment": {
+    "python": "3.12.10",
+    "system": "Windows",
+    "version": "10.0.26200",
+    "machine": "AMD64",
+    "node": "v22.21.1"
+  },
+  "validation": {
+    "new_public_seams": {
+      "methods": 15,
+      "normal_via_ctest": "passed",
+      "optimized": "15/15",
+      "skips": 0,
+      "synthetic_normal_optimized_export_byte_equal": true
+    },
+    "cmake": {
+      "configuration": "Debug test runner; Qt OFF; candidate OFF; no native product build",
+      "configure_exit": 0,
+      "ctest_selector": "^windterm_sgr1_proposal$",
+      "final_ctest": "1/1",
+      "final_ctest_exit": 0
+    },
+    "related_modules_isolated_before_fixes": {
+      "raw": "11/11",
+      "selection": "13/13",
+      "peer": "2/2"
+    },
+    "existing_fixture_alias": {
+      "red_source": "8d44041cefbf566b5fb1eb7433bdfa0231235ef1",
+      "red_methods": 26,
+      "red_failed_subcases": 6,
+      "red_exit": 1,
+      "direct_same_list": true,
+      "direct_global_changed": true,
+      "fix": "One test-only list copy; production inputs/rejection assertions unchanged",
+      "same_combined_selector_green": "26/26",
+      "green_exit": 0
+    },
+    "new_peer_test_wait": {
+      "first_ctest_source": "5d18c34d94093e03871ff240c3d811e8d98757b9",
+      "first_ctest_exit": 8,
+      "first_ctest": "0/1: test fixture indexed a record before publication",
+      "observed_exception": "IndexError: list index out of range",
+      "fix": "Wait for record existence and same DSR under unchanged two-second condition budget",
+      "final_ctest_exit": 0
+    }
+  },
+  "private_logs": {
+    "combined-red.txt": {
+      "bytes": 11005,
+      "sha256": "8266bd29145ecb0e18718d7d503c429590c0a8e6880db678f85c321291048745"
+    },
+    "combined-red-exit.json": {
+      "bytes": 81,
+      "sha256": "e971b4aed126ee93d3bb78203aa822ff35ea5488043081280668b47d516892fc"
+    },
+    "alias-red.txt": {
+      "bytes": 37,
+      "sha256": "ea423d7137b4338ac7a5678b1f68504f8a74ee1d5959c4a0615378e2b5e6d891"
+    },
+    "combined-green.txt": {
+      "bytes": 130,
+      "sha256": "c6e192fa51ccd7dda7120304ea5a37eacac4ca1c0aa37684c35aa5d340ed369a"
+    },
+    "combined-green-exit.json": {
+      "bytes": 180,
+      "sha256": "55798c68f2b2f5d85e685306cb3b24055dd3a57f7dd08e4f98acfeb65c687f2c"
+    },
+    "configure.txt": {
+      "bytes": 786,
+      "sha256": "1dae89bee64f96960ca160a429d5fbae466f83bc6d4da53e3cc564fcca6cd98d"
+    },
+    "ctest.txt": {
+      "bytes": 4695,
+      "sha256": "6025c0bf35d6b1146f1d94bdf9a93914862619cf4bc4d362a0fdb5e6606bd648"
+    },
+    "optimized.txt": {
+      "bytes": 119,
+      "sha256": "100293c04b30ee0f80176ac8a4a929e8b04de16a4dc2d103fc03f1f4e5c28163"
+    },
+    "final-exits.json": {
+      "bytes": 130,
+      "sha256": "4cad79b4ca20c5a26b22be72adc4b3b70ee01979f34de2dbf16d6e8c8df82efc"
+    },
+    "ctest-after-fixture-wait.txt": {
+      "bytes": 361,
+      "sha256": "bda8910b90cd283f6821cff0b44d76c7eb22cc638db1c7742362656a612036ce"
+    },
+    "optimized-final.txt": {
+      "bytes": 119,
+      "sha256": "ef3ec1cca3a098fec0d231a2a4de32e4c136031427a54281623e04444ec9b6cf"
+    },
+    "reviewed-exits.json": {
+      "bytes": 106,
+      "sha256": "9de4360b0711e74e5300b92c091ac64a1b6b4909804e6512cc2be18669f5aba9"
+    },
+    "ctest-reviewed-LastTest.log": {
+      "bytes": 3900,
+      "sha256": "b5666387e698fee0068bde34a65b353b1ddd514a280d4ddf49f0100783fd5b05"
+    }
+  },
+  "limitations": [
+    "Only synthetic/owned loopback tests and read-only preparation were executed; no WindTerm observation was made.",
+    "Old combined-fixture failures and the first new CTest failure are preserved; later passes do not rewrite those source identities.",
+    "No complete product matrix, native product build, guest run, real pixel sample, performance or R2 acceptance is claimed.",
+    "After independent preflight review, a new true plan at the then-current HEAD is required. This false plan must not be edited into an attempted run."
+  ]
+}

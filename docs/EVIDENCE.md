@@ -22,6 +22,8 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 
 原版模式依据见 [1049 直达终端观察](research/windterm-alternate-reference-2026-10-28.md)与[验证身份](../research/ui/results/2026-10-28-alternate-reference/validation.json)：26 阶段精确输入、DSR 和文档投影相互绑定，原版重复进入的光标行为与通用幂等假设不同；样式、完整 active grid 和本地 Shell 运输继续保留未知。
 
+[#146 SGR1 固定样本调查](../research/ui/results/2026-10-29-sgr1-reference/README.md)取得五阶段/五 grab、28 对 H/space 完整有序像素签名；SGR0/SGR1 控制在采样条件下均不可分，进入/重复进入/返回无唯一分类。内部字重、SGR1 是否受字体/profile 偏好影响及全部非颜色属性仍未知；没有据此更改 C++ 策略或验收 #123/#126/#27。
+
 原版输出自动化见 [cmd 正确性工具](../benchmarks/tools/WINDTERM-CMD.md)及[固定结果](../benchmarks/tools/results/2026-10-28-windterm-cmd/README.md)：小 ASCII 全文、生产事件和 Job 回收已有无人值守闭环，路径元字符修复及各执行源码分列。它没有取得 C0、完整历史、消费/真实呈现端点或正式性能基线。
 
 [#133 设置读取诊断](../benchmarks/tools/results/2026-10-29-c0-settings-reference/README.md)在独立受控配置差异下核对 536B 全文，并分别读到 producer console / 原版 view 窗口 120×40、document capacity 23；QWidget 字体仅为元数据，28 条 dot-key 设置仍不可读。完整 C0、glyph/字体请求有效性、10000 行历史、autocomplete、呈现及性能继续未知。

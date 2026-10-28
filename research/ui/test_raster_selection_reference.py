@@ -33,7 +33,7 @@ def fixture(root):
         capture.update(label=CAPTURE_LABELS[phase],rois=[])
         capture['image'].update(viewport_width=16,width=16,grab_rect=[0,0,15,1])
         terminal=capture['terminal'];terminal.pop('selection',None)
-        lines=LABELS[phase] if phase==0 else [' '.join(LABELS[phase])]
+        lines=list(LABELS[phase]) if phase==0 else [' '.join(LABELS[phase])]
         terminal.update(lines=lines,line_count=len(lines),markers=[],selection_caret=9,selection_anchor=9,selection_text_type='string',selection_text_length=10,caret_rect={'x':16,'y':0,'width':0,'height':2})
         counts={}
         for ordinal,group in enumerate(GROUPS[phase]):
