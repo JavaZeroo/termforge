@@ -9,6 +9,7 @@
 #include <QFontDatabase>
 #include <QFontMetricsF>
 #include <QKeyEvent>
+#include <QInputMethodEvent>
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QPainter>
@@ -120,6 +121,35 @@ class TerminalWidget final : public QWidget {
             event->accept();
         } else event->ignore();
     }
+    static QByteArray literal_ime_text(const QString& text) {
+        if (text.size() > 256) throw std::runtime_error("IME text exceeds 256 UTF-16 units");
+        for (qsizetype index = 0; index < text.size(); ++index) {
+            const auto unit = text.at(index);
+            if (unit.isHighSurrogate()) {
+                if (++index == text.size() || !text.at(index).isLowSurrogate())
+                    throw std::runtime_error("IME text contains invalid UTF-16");
+            } else if (unit.isLowSurrogate()) throw std::runtime_error("IME text contains invalid UTF-16");
+        }
+        // toUtf8 is literal only after complete UTF-16 validation; keyboard
+        // conventions such as Backspace -> DEL must never rewrite a commit.
+        return text.toUtf8();
+    }
+    void inputMethodEvent(QInputMethodEvent* event) override {
+        if (!isVisible() || !hasFocus() || !model_.running()) {
+            model_.reject_input(QStringLiteral("Terminal input method target is unavailable"));
+            event->ignore(); return;
+        }
+        try {
+            if (event->replacementStart() || event->replacementLength())
+                throw std::runtime_error("IME surrounding-text replacement is unsupported");
+            const auto bytes = literal_ime_text(event->commitString());
+            if (bytes.isEmpty() || model_.send(bytes)) event->accept();
+            else event->ignore();
+        } catch (const std::exception& error) {
+            model_.reject_input(QString::fromUtf8(error.what()));
+            event->ignore();
+        }
+    }
     void paintEvent(QPaintEvent*) override {
         QPainter painter(this);
         painter.fillRect(rect(), colour(-1, false));
@@ -171,7 +201,7 @@ public:
         fixed.setStyleHint(QFont::TypeWriter); fixed.setPointSize(11); setFont(fixed);
         refresh_metrics();
         setFocusPolicy(Qt::StrongFocus);
-        setAttribute(Qt::WA_InputMethodEnabled, false);
+        setAttribute(Qt::WA_InputMethodEnabled, true);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         resize(sizeHint());
         grid_ready_ = true;

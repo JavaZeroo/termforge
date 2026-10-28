@@ -231,6 +231,10 @@ public:
         notify();
         return succeeded;
     }
+    bool reject_input(const QString& reason) {
+        remember_error(reason);
+        notify(); return false;
+    }
     bool send(const std::string& bytes) {
         if (!running() || !input_) {
             remember_error(QStringLiteral("Terminal input is unavailable"));
