@@ -65,7 +65,7 @@ def configure_copy(out,expected_manifest=EXPECTED_FILES):
     return delta
 
 
-def prepare_plan(source,out,rea,destination,execution_authorized=False):
+def prepare_plan(source,out,rea,destination,execution_authorized=False,run_id=None):
     source,out,rea,destination=[Path(path).resolve() for path in (source,out,rea,destination)]
     require(not out.exists() and not destination.exists(),'Plan/output must be new')
     require(out.is_relative_to(ROOT/'local') and destination.is_relative_to(ROOT/'local'),'Plan/output must be worktree-local')
@@ -73,12 +73,13 @@ def prepare_plan(source,out,rea,destination,execution_authorized=False):
     require(rea.is_file(),'Existing REA CLI missing')
     package=rea.parent.parent/'rea-agents/package.json';require(json.loads(package.read_text())['version']=='6.7.0','REA version differs')
     hashes={name:sha(source/name) for name in MODULES};require(hashes['WindTerm.exe']==base.EXPECTED,'Pinned executable differs')
-    run_id=uuid.uuid4().hex;lines,payload=base.workload(run_id)
+    run_id=run_id or uuid.uuid4().hex;lines,payload=base.workload(run_id)
     plan={'schema':SCHEMA,'issue':133,'execution_authorized':execution_authorized,'maximum_original_runs':1,'source_base_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True,cwd=ROOT).strip(),
           'source':str(source),'out':str(out),'rea':str(rea),'run_id':run_id,'rea_capture_seconds':30,'cli_wait_timeout_seconds':45,'whole_lifecycle_bound_seconds':None,
           'module_sha256':hashes,'baseline_files_manifest_sha256':EXPECTED_FILES,'requested_session':SESSION_REQUESTS,'requested_global':GLOBAL_REQUESTS,
           'static_resource_sha256':{name:sha(source/name) for name in ('global/wind.config','terminal/configs/session.config','terminal/configs/statusbar.config')},
           'static_config_hints':{'evidence_kind':'static-only','global':{key:json.loads((source/'global/wind.config').read_text())[key] for key in GLOBAL_REQUESTS},'session':{key:json.loads((source/'terminal/configs/session.config').read_text())[key] for key in SESSION_REQUESTS}},
+          'expected_configured_global_sha256':hashlib.sha256((json.dumps({**json.loads((source/'global/wind.config').read_text()),**GLOBAL_REQUESTS},ensure_ascii=False,indent=2)+'\n').encode()).hexdigest(),
           'source_files_sha256':{name:sha(ROOT/name) for name in SOURCE_FILES},'composed_template_sha256':hashlib.sha256(probe_template().encode()).hexdigest(),
           'helper_prefix_sha256':hashlib.sha256(OLD_PROBE.read_text(encoding='utf-8').split('function state(){',1)[0].encode()).hexdigest(),
           'workload':{'lines':lines,'payload_hex':payload.hex(),'payload_bytes':len(payload),'sha256':hashlib.sha256(payload).hexdigest()},
@@ -134,7 +135,7 @@ def summarize(out,plan_path):
     require(plan['requested_session']==SESSION_REQUESTS and plan['requested_global']==GLOBAL_REQUESTS and delta['baseline_manifest_sha256']==EXPECTED_FILES,'Request/baseline metadata differs')
     require(set(configured)==set(baseline) and manifest_digest(baseline)==EXPECTED_FILES and manifest_digest(configured)==delta['configured_manifest_sha256'] and {name:sha(out/'app'/name) for name in configured}==configured,'Configured package identity differs')
     require([name for name in baseline if baseline[name]!=configured[name]]==delta['changed_distribution_files']==['global/wind.config'] and delta['session_requests']==SESSION_REQUESTS and delta['keys']=={key:{'before':json.loads((out/'global-config-before.bin').read_bytes())[key],'requested':value} for key,value in GLOBAL_REQUESTS.items()},'Controlled config delta differs')
-    require(sha(out/'global-config-before.bin')==delta['global_before_sha256']==plan['static_resource_sha256']['global/wind.config'] and sha(out/'app/global/wind.config')==delta['global_after_sha256'],'Config resource SHA differs')
+    require(sha(out/'global-config-before.bin')==delta['global_before_sha256']==plan['static_resource_sha256']['global/wind.config'] and sha(out/'app/global/wind.config')==delta['global_after_sha256']==plan['expected_configured_global_sha256'],'Config resource SHA differs')
     before=json.loads((out/'global-config-before.bin').read_bytes());after=json.loads((out/'app/global/wind.config').read_bytes());require(after=={**before,**GLOBAL_REQUESTS},'Unrequested global config changed')
     require(plan['static_config_hints']=={'evidence_kind':'static-only','global':{key:before[key] for key in GLOBAL_REQUESTS},'session':{key:json.loads((out/'app/terminal/configs/session.config').read_text())[key] for key in SESSION_REQUESTS}},'Static hints differ from fixed resources')
     produced=read('producer.json');require(produced['run_id']==plan['run_id'] and produced['status']=='complete' and produced['error'] is None and produced['sha256']==work['sha256'] and produced['payload_bytes']==len(payload) and produced['consumer_done'] is None and produced['presented_done'] is None,'Producer identity differs')
@@ -172,11 +173,12 @@ if __name__=='__main__':
     prepare=commands.add_parser('prepare')
     for key in ('source','out','rea','plan'):prepare.add_argument('--'+key,type=Path,required=True)
     prepare.add_argument('--authorize-execution',action='store_true',help='Only after separate explicit authorization; create a fresh plan, never edit an old proposal')
+    prepare.add_argument('--run-id',help='Reuse the reviewed synthetic nonce when creating the separate authorized plan')
     run=commands.add_parser('run');run.add_argument('--plan',type=Path,required=True)
     export=commands.add_parser('summarize')
     for key in ('out','plan','destination'):export.add_argument('--'+key,type=Path,required=True)
     args=parser.parse_args()
-    if args.command=='prepare':prepare_plan(args.source,args.out,args.rea,args.plan,args.authorize_execution);print(json.dumps({'prepared':True,'execution_authorized':args.authorize_execution}))
+    if args.command=='prepare':prepare_plan(args.source,args.out,args.rea,args.plan,args.authorize_execution,args.run_id);print(json.dumps({'prepared':True,'execution_authorized':args.authorize_execution}))
     elif args.command=='run':run_plan(args.plan)
     else:
         result=summarize(args.out,args.plan);args.destination.parent.mkdir(parents=True,exist_ok=True);write_json(args.destination,result);print(json.dumps({'exported':True,'status':result['status']}))
