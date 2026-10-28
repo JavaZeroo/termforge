@@ -1,6 +1,6 @@
-# 1049 的 SGR1 输出签名：离线方案
+# 1049 的 SGR1 输出签名：调查合同
 
-对应 [#146](https://github.com/JavaZeroo/termforge/issues/146)，接续 #123/#126 的未知非颜色属性。当前只交付工具、合成验证和 `execution_authorized=false` 的独立计划；**没有运行 WindTerm、没有原版结果**。旧 raw-capture-v1 的七个生产源、计划与证据保持字节不变。
+对应 [#146](https://github.com/JavaZeroo/termforge/issues/146)，接续 #123/#126 的未知非颜色属性。[离线 false 提案](../../research/ui/results/2026-10-29-sgr1-proposal/README.md)保留执行前身份；独立预审后的[唯一实际运行](../../research/ui/results/2026-10-29-sgr1-reference/README.md)取得五阶段完整栅格，但每帧 SGR0/SGR1 控制均不可分，进入/重复进入/返回的字重状态保持 unknown。旧 raw-capture-v1 的七个生产源、计划与证据保持字节不变。
 
 目标是比较固定 WindTerm 2.7.0 在 1049 进入、重复进入与返回后，新写的 H/space 是否匹配同一张图中的 SGR0 或 SGR1 控制输出。匹配表示该固定样本的完整像素输出签名相同，不能直接解释为内部 `Style.bold`、QPainter pen 或实际字体字重相同。原版优先；重要独立差异仍需用户确认。
 
@@ -31,6 +31,6 @@
 - 执行前固定生产提交、唯一新目录与单次 marker，最多一次原版启动、每阶段一次 grab；当前 false 提案不能创建 attempt 或启动目标。
 - 仅官方固定 4047 文件清单、EXE/Qt 完整 SHA、自有副本、合成 loopback Telnet、非输入 station/desktop 和 OwnedJob；不修改个人桌面、剪贴板、DPI 或会话。
 - 沿既有 REA capture 45 秒、CLI wait 60 秒与清理边界；启动在前、清理在后，没有整程 45/60 秒保证，不构成绩效测量。
-- 原版运行需在独立预审后另建 true 计划；本提案的任何离线成功都不批准或模拟执行。
+- 实际运行使用独立预审后另建的单次 true 计划。该计划已经消费，原件与 false 提案保留；离线成功不批准重跑或模拟原版执行。
 
 完整 style、内部笔刷、全网格、47/1047/1048、margin/origin/wrap、本地 Shell、物理呈现、性能及 R2 均未由本项验收。
