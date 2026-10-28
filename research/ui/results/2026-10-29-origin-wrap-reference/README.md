@@ -7,6 +7,8 @@
 - [validation.json](validation.json)：25阶段/25个bare DSR/25份文档快照；334B输入＋100B请求，157B回复；完整NAWS91×24→91×25，第二事件冻结91×25。普通/`-O`出口逐字节相同，41,269B，SHA256 `9774e25bab9f5f751368e19f915e5d1ec8f4332be606070f15b5ffb33ce5b675`。
 - [publication-audit.json](publication-audit.json)：4,047分发文件、8源码、43原件和25投影独立复核；相关纯测试普通/`-O`各21项通过。旧false三份均无自身attempt；初版out已由正式trueplan创建，别名明确保留。
 
+初次Windows CI的新测试失败与后续夹具修正见 [fixture-path-validation.json](fixture-path-validation.json)和完整报告末节。真实子目录/`..`复现路径未规范化问题；只修夹具resolve，生产gate未变。新增反例后普通/`-O`各23项通过，旧CI未重跑。旧公开数据仍为上述`9774e25…`；重导新SHA`6ad68208…`仅因`offline_export_source_commit`更新，其余投影/字节不变，原版没有重测。CI实际TEMP拼写仍未知，不宣称使用8.3；另一次owned-desktop收尾失败独立保留。
+
 Job0/3/0、stderr0及合成单会话复核通过；启动器主动终止原版，不能称自然GUI退出。文档不是active grid，caretColumn不是DSR列。原版完整grid/样式、每屏origin位、返回后margin下界、其他尺寸/分块、固定ConPTY、实际呈现及性能均未验收。
 
 原43/41/42/45/60秒局部期限不构成整程硬上限，`whole_lifecycle_bound_seconds=null`。本记录不实现产品模式，也不关闭#27/#41/#56/R2；实际专有副本、原始Evidence/profile和所有私有标识只留local。

@@ -51,3 +51,13 @@
 实际raw分别用普通和`-O`导出，41,269B逐字节相同，SHA256 `9774e25bab9f5f751368e19f915e5d1ec8f4332be606070f15b5ffb33ce5b675`。公开前再独立核对25份文档/DSR投影、8源和43份原件；绝对路径、PID/TID、station/session/script ID及原始Evidence/profile/资源均未进入公开数据。这一离线阶段没有新增原版、REA、Node、Qt/native或guest运行。
 
 本项是有限原版合同输入，`semantic_acceptance=false`、`presented_done=null`。完整模式、固定ConPTY本地运输、真实TUI、所有字体/复杂字、DPI、持续稳定及性能仍按各责任issue验收。没有因此修复旧CI事件、批准性能容差或宣布R2完成。
+
+## 初次 Windows CI 红与夹具路径修正
+
+发布HEAD01a979d的 [push/default Windows](https://github.com/JavaZeroo/termforge/actions/runs/40774903422/job/123121533676)为59/60、292.34s，仅新增 `windterm_origin_wrap_reference` 失败；[PR/default Windows](https://github.com/JavaZeroo/termforge/actions/runs/40774909044/job/123121553707)为58/60、283.98s，除该测试外还有独立的owned-desktop收尾事件，由#38另行接续。原job和artifact保留；未重跑旧run，本修正不解释或修复独立desktop事件。artifact12853994007 / SHA `1861c7fee6a58c9eb96898ec52eac77e4f2becc7073c005788e6f0a8c9ad2960`、artifact12854726855 / SHA `05392812a79a0b38d48384b47905c85c9f46285cbedcf0b4afa2275550c9efbb`由根代理下载保留，本项未重复下载。
+
+已用实际存在的子目录后接 `..` 构造同一目录的不同拼写，复现直接调用的 `Provider source/lifecycle differs or is incomplete`，以及公共CLI在私密文本门槛前遇到 `Runtime probe bytes differ`。前者是夹具目录未规范化、provider路径却resolve后比较；后者是夹具将未规范化目录嵌入probe，而真实公共入口先resolve，再重建probe。**已证明的是该夹具缺陷；旧CI未确定TEMP的具体拼写，不能据此声称它实际使用8.3或哪一种别名。**
+
+反例内容提交 `9d36d4efa02a70ab6d7585d50f1e42df32ebedc6`；最小修正 `74d4cadd9fa90fd6b6a1de6c61e96f8369e67951` 仅将夹具目录改为 `(root / "capture").resolve()`，在生成probe和source元数据前与真实launcher一致。生产exporter、source/path/lifecycle校验、189行LF→CRLF及私密文字白名单均未改。两个新增回归直接驱动真实capture/publicCLI：red为1个Provider错误和普通/-O两个CLI失配；green相关纯测试普通/-O各23项通过，别名下有效记录通过，私密文本仍在正确白名单门槛拒绝且不创建输出。
+
+[路径修正审计](../../research/ui/results/2026-10-29-origin-wrap-reference/fixture-path-validation.json)单列本次反例、源码、日志和派生出口。原件43项、原版执行源72e、三个false及旧公开 `9774e25…` 原字节保持。修正后的实际raw普通/-O重导仍相同，新SHA `6ad6820884d4f94b9a42fd1a669253c72df38512b9f8dadb461250e3425e4557`；与旧公开文件只差 `offline_export_source_commit` 由fb1a40a变为74d4cad，其余投影和字节完全相同。这是调用HEAD元数据变化，不是新观测、数据修正或新原版运行。新source的自动CI及最终审查另行核对；没有用本地green覆盖旧CI红。
