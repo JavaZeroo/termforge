@@ -117,6 +117,30 @@ class PlanTests(unittest.TestCase):
                 run_plan(plan)
             self.assertFalse(plan.with_suffix(".attempted").exists())
 
+    def test_runtime_version_drift_is_rejected_before_attempt(self):
+        drifts = (("research.ui.node_contract_deadline.platform.version", {"return_value": "changed-windows-version"}),
+                  ("research.ui.node_contract_deadline.sys.version", {"new": "changed-python-version"}))
+        original_open = Path.open
+        for target, change in drifts:
+            with self.subTest(target=target), self.temporary() as temporary:
+                plan = Path(temporary) / "plan.json"
+                output = Path(temporary) / "result"
+                prepare_plan(plan, output, execution_authorized=True)
+                marker = plan.with_suffix(".attempted")
+
+                def stop_attempt(candidate, *args, **kwargs):
+                    if candidate == marker:
+                        self.fail("runtime version drift reached the attempt gate")
+                    return original_open(candidate, *args, **kwargs)
+
+                # Intercept the documented filesystem gate even in the red
+                # version; no marker, output or Node process may be created.
+                with patch(target, **change), patch.object(Path, "open", stop_attempt):
+                    with self.assertRaisesRegex(ValueError, "runtime version identity"):
+                        run_plan(plan)
+                self.assertFalse(marker.exists())
+                self.assertFalse(output.exists())
+
 
 @unittest.skipUnless(os.name == "nt" and shutil.which("node"), "Windows and Node are required")
 class OwnedNodeTests(unittest.TestCase):
