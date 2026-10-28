@@ -395,5 +395,19 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_shell_smoke>")
     set_tests_properties(qt_cpp_shell PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_executable(qt_cpp_resize_smoke src/qt/resize_smoke.cpp)
+    set_target_properties(qt_cpp_resize_smoke PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-resize-bin/$<CONFIG>")
+    termforge_qt_entry(qt_cpp_resize_smoke)
+    target_link_libraries(qt_cpp_resize_smoke PRIVATE Qt6::Test)
+    add_custom_command(TARGET qt_cpp_resize_smoke POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_cpp_resize_smoke>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_cpp_resize COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_resize_smoke>")
+    set_tests_properties(qt_cpp_resize PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
   endif()
 endif()
