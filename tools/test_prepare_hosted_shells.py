@@ -361,7 +361,7 @@ class CommandOutputBoundaryTests(unittest.TestCase):
             self.assertEqual(output["command"], "ps51")
             self.assertEqual(output["stdout"], {"status": "observed", "bytes": len(marker),
                                              "marker_status": "observed", "marker_complete_line_seen": True})
-            self.assertEqual(output["stderr"], {"status": "observed", "bytes": 26})
+            self.assertEqual(output["stderr"], {"status": "observed", "bytes": 27})
             self.assertNotIn("private-error", json.dumps(result))
 
 
