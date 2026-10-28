@@ -1,0 +1,46 @@
+{
+  "schema": "termforge-selection-gate-replay-v1",
+  "issue": 129,
+  "scope": "Offline selection guard only; no original execution, native grab, pixels or combined-run acceptance",
+  "records": [
+    {
+      "id": "historical-collapsed-0",
+      "source_evidence_id": "ev_8fbd9aead9aa5d60f49e05112c31eb542febf65084643c025eb8a52ffd590048",
+      "source_file_sha256": "be349abb34cf28f42b634ccf65bd0749e1e9940856059156b794e7968b7ef83c",
+      "selection_caret": 97,
+      "selection_anchor": 97,
+      "selection_text_type": "string",
+      "selection_text_length": 5,
+      "selection_gate_allowed": true,
+      "reason": null
+    },
+    {
+      "id": "historical-collapsed-1",
+      "source_evidence_id": "ev_8fbd9aead9aa5d60f49e05112c31eb542febf65084643c025eb8a52ffd590048",
+      "source_file_sha256": "be349abb34cf28f42b634ccf65bd0749e1e9940856059156b794e7968b7ef83c",
+      "selection_caret": 400,
+      "selection_anchor": 400,
+      "selection_text_type": "string",
+      "selection_text_length": 10,
+      "selection_gate_allowed": true,
+      "reason": null
+    },
+    {
+      "id": "r126-actual-phase0-missing-endpoints",
+      "source_evidence_id": "ev_cedd36bf326d1769fa8d0d7b1cc508314eb22da43ba97faf80debbcf9b085e63",
+      "source_file_sha256": "6724c93a7da8f0f08d50f360ba43b01cad4f272a88d82919cc0f75c486be18f0",
+      "selection_caret": null,
+      "selection_anchor": null,
+      "selection_text_type": "string",
+      "selection_text_length": 10,
+      "selection_gate_allowed": false,
+      "reason": "selection-endpoints-unavailable"
+    }
+  ],
+  "endpoints_and_rois_from_different_runs_combined": false,
+  "limitations": [
+    "Allowing a historical selection gate does not mean that its raster or ROI pipeline passed.",
+    "R126 did not capture selectionCaretP/selectionAnchorP. caretPosition is not substituted and no equal endpoint is fabricated.",
+    "Noncollapsed or unavailable endpoints still reject; selectionText type/length is not a selection verdict."
+  ]
+}
