@@ -57,25 +57,28 @@ class SessionTabs final : public QWidget {
     int last_exit_status_ = 0;
     std::vector<QPointer<SessionPage>> retired_;
     void complete_if_finished() {
-        if (destroying_ || closing_ || completion_notified_ || tabs_.count() == 0) return;
+        if (destroying_) return;
         // A hidden, closed tab still owns transport until its completion poll.
         // Do not end the application while that cleanup needs the Qt event loop.
         retired_.erase(std::remove_if(retired_.begin(), retired_.end(), [this](const auto& page) {
-            if (!page) return true;
+            if (!page) { retirement_failed_ = true; return true; }
             if (!page->model().finished()) return false;
             retirement_failed_ = retirement_failed_ || !page->model().cleanup_verified();
             return true;
         }), retired_.end());
+        if (completion_notified_ || (!closing_ && tabs_.count() == 0)) return;
         if (!retired_.empty()) return;
         bool abnormal = retirement_failed_;
         for (int index = 0; index < tabs_.count(); ++index) {
             const auto* page = static_cast<SessionPage*>(tabs_.widget(index));
-            // A failed launch remains visible, matching the single-session entry.
-            if (!page->launched() || !page->model().finished()) return;
-            abnormal = abnormal || !page->model().natural_exit();
+            // A failed launch remains visible until the user closes the window.
+            if ((!closing_ && !page->launched()) || !page->model().finished()) return;
+            // A finished cleanup failure is terminal; report failure, do not wait.
+            abnormal = abnormal || !page->model().cleanup_verified() || (!closing_ && !page->model().natural_exit());
         }
         completion_notified_ = true;
-        if (on_all_exited) on_all_exited(abnormal ? 1 : last_exit_status_);
+        const int normal_status = closing_ ? 0 : last_exit_status_;
+        if (on_all_exited) on_all_exited(abnormal ? 1 : normal_status);
     }
     void session_changed(SessionPage* page) {
         if (destroying_) return;
@@ -91,6 +94,7 @@ class SessionTabs final : public QWidget {
         if (auto* page = current_session()) page->terminal().setFocus(Qt::OtherFocusReason);
     }
     void closeEvent(QCloseEvent* event) override {
+        if (!closing_) completion_notified_ = false;
         closing_ = true;
         create_.setEnabled(false);
         // Removed pages already requested cancellation before retirement.
@@ -98,6 +102,7 @@ class SessionTabs final : public QWidget {
         for (int index = 0; index < tabs_.count(); ++index)
             static_cast<SessionPage*>(tabs_.widget(index))->model().close();
         QWidget::closeEvent(event);
+        complete_if_finished();
     }
 public:
     std::function<void(int)> on_all_exited;

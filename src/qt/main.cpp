@@ -6,6 +6,8 @@
 
 int main(int argc, char** argv) {
     QApplication app(argc, argv);
+    // SessionTabs keeps draining its owned sessions before requesting exit.
+    QApplication::setQuitOnLastWindowClosed(false);
     QApplication::setApplicationName(QStringLiteral("TermForge"));
     try {
         wchar_t directory[MAX_PATH]{};
