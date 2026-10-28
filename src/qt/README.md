@@ -38,7 +38,7 @@ Parser/Screen 仅在 Qt 线程修改；ConPTY reader 向有界输出队列写入
 
 独立的 `qt_cpp_resize` 在同一 25 秒 OwnedJob 监督合同内验证 80×24→60×12→100×30→80×24、极窄/极短/1×1、重复、资源上限、字体变化、隐藏页、关闭隔离及尺寸请求与退出交叉。测试 child 用各次 nonce 通过独立命名管道返回真实 `GetConsoleScreenBufferInfo` 的 buffer/window 值，避免极小屏幕容不下回复；保留每条旧值与新值。`resize_state()` 的 requested/core 与 transport 完成不是 child ACK；正常退出可丢弃尚未应用的请求。有限 2 MiB ASCII 输出同时经过有界队列，核对 GUI 事件、实际读取、排空及回收。[固定结果与原失败](../../experiments/shell/results/2026-10-29-qt-resize/README.md)不外推为原版 reflow、真实不同 DPI、物理呈现或性能验收。
 
-字面网格测试使用可见父窗口内的终端子区域；独立顶层测试保留一列请求并根据原生事件处理后的实际可用区域核对 core 和 child，记录平台调整差异。大 child 的资源上限验证保留 owner 裁剪范围。旧 678 离屏通过后的原生极窄失败及新夹具离屏验证分别保留，新源码原生结果须独立接续。
+字面网格测试使用可见父窗口内的终端子区域；独立顶层测试保留一列请求并根据原生事件处理后的实际可用区域核对 core 和 child，记录平台调整差异。大 child 的资源上限验证保留 owner 裁剪范围。旧 678 离屏通过后的原生极窄失败、新夹具离屏验证及[0ff 冻结包的一次隔离原生成功](../../experiments/shell/results/2026-10-29-qt-resize/native-validation.json)分别保留；后者只观察到 DPI 96，不代替不同 DPI 或完整产品验收。
 
 该测试使用 Qt offscreen 平台和本项目独立取得的 OFL Roboto Mono 字体；没有物理键盘、实际不同 DPI、Windows 原生窗口上屏或用户呈现时间验收，`presented_done=null`。两会话隔离不代表八会话、IME 或完整工作区验收，测试耗时不是终端性能指标。
 

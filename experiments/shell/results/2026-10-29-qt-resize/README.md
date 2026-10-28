@@ -10,9 +10,25 @@
 
 0ff 仅修订测试：字面 80×24→60×12→100×30→80×24、1×24、80×1、实际 1px×1px 对应 1×1、回到 80×24 和重复，放入可见 owned parent 的子区域，避免顶层标题栏的最小宽度影响夹具输入。原字面预期、独立 nonce/CSBI、5 秒/128 条/10ms 查询预算及 25 秒外层监督均未改。另保留原独立顶层的一列请求，记录 requested pixels → 事件派发后的 actual widget area → 当前字体独立推导的 effective grid → core/transport/child；不把预期硬改成 11。超界 600×240 区域仍核对实际 core/child 500×200，改为可见 owner 内的大 child；5416×5326 的 child 只在 1200×900 owner 内可见，明确属于裁剪的网格上限验证，不计完整上屏。
 
-修订后 targeted offscreen 1/1 通过；固定 0ff source/tree 后，**新的唯一完整矩阵 57/57、exit 0，13 条内部 skip**，与 678 的完整矩阵分开。7329 个冻结文件 post-run 零变化（source 2786，其他输入/运行时数量与旧记录一致）；原 Qt smoke Job 0/26/0、新 resize Job 0/27/0，均无超时/强制回收。主序列保留全部 12 条旧/新回复及 8 个 Qt 事件；2 MiB 输出实际读取 2,097,195 字节、队列 high-water 262,144、自然退出 37。CTest 302.43s、resize 11.01s 为诊断记录。新 [40 文件运行时清单](resize-child-region-runtime.json)及私有 ZIP 另绑 0ff，**本补充记录不含新源码 guest 运行**，因此不把离屏通过称为原生反例已修复。
+修订后 targeted offscreen 1/1 通过；固定 0ff source/tree 后，**新的唯一完整矩阵 57/57、exit 0，13 条内部 skip**，与 678 的完整矩阵分开。7329 个冻结文件 post-run 零变化（source 2786，其他输入/运行时数量与旧记录一致）；原 Qt smoke Job 0/26/0、新 resize Job 0/27/0，均无超时/强制回收。主序列保留全部 12 条旧/新回复及 8 个 Qt 事件；2 MiB 输出实际读取 2,097,195 字节、队列 high-water 262,144、自然退出 37。CTest 302.43s、resize 11.01s 为诊断记录。新 [40 文件运行时清单](resize-child-region-runtime.json)及私有 ZIP 另绑 0ff。[平台区域补充记录](platform-area-validation.json)本身不含新源码 guest 运行；后续原生结果另列如下，不将离屏通过转记成原生成功。
 
 0ff 完整矩阵结束、审计完成后再合入 main `ae985443` 的独立 SGR1 研究工具与离线测试；该合并没有 Qt/core/runtime 实现变更，未为它重跑产品完整矩阵。完整 57 项和新包身份均继续只属于 0ff；后续合并配置的 CI 和原生复验另列。
+
+## 修订源码 0ff 的隔离原生验证
+
+主代理在上述隔离 Win11 **26300.9711、Session 1**，对冻结的 0ff 40 文件 ZIP 只执行一次 `windows` 插件测试；[原生补充结果](native-validation.json)绑定包 SHA-256 `1b1ac682efbc32f3a48b57eef927f95ab293c2533b9444ea6b69d99273f93bde`，与完整离屏矩阵及发布合并配置分别记录。直接启动前核对保留 root handle 的 PID 和继承 Job，然后写入固定 `GO\n`；native root 预算 25 秒、共享 cleanup 5 秒、外层请求执行预算 40 秒，均未因原失败扩展。native 和外层请求 root 均 **exit 0、未超时、未强制结束**；外层 v2 Job active 0 / total 31 / after active 0，root reaped、cleanup verified。显式生命周期用例仍包含预期的 child 取消，不将其描述为所有子进程自然退出。
+
+全部 **83 条有序结构化观察、40 条完整 child CSBI 回复、15 条可见 HWND 的尺寸/DPI 观察**经去除 PID 和 HWND 标识后公开。sample 的 14 条 ACK 只统计主序列，不是全部用例总数：
+
+- 字面 owned child 区域的普通序列、1×24、80×1、实际 1px×1px、恢复及重复均通过，主序列派发 8 个 Qt 事件。
+- 独立顶层仍保留请求 25×574px、初始 core 1×24；原生事件处理后实际区域 **120×574px**，当前字体独立推导为 **11×24**，随后 core、transport 完成及 nonce 1701 的真实 child window/buffer 同为 11×24。生产策略未改；新记录直接支持“顶层平台最小尺寸改变可用区域”的解释，旧 678 缺少最终 core 观测的事实仍保留。
+- 上限用例实际 child/core 为 500×200；5416×5326px 的大 child 在本次原生 owner 中只可见 **1200×749px**，与离屏 1200×900 的观察分列，不称完整上屏。
+- 隐藏页、survivor、字体变化、启动错误和 pending/关闭/自然退出交叉完成；自然退出竞态保留 core 请求 60×12、transport/child 旧 80×24，仅计生命周期。
+- 2 MiB 用例实际读取 2,097,195 字节、队列 high-water 262,144，排空后自然退出 37；同尺寸 cmd 正文保留。夹具不逐字节核对完整 2 MiB payload，此结果不作完整负载正确性或性能验收。
+
+执行前后 System32 所查五个 CRT DLL 均不存在，使用包内固定 app-local CRT。结束后的只读 guest 审计重新核对旧/新各 40 文件、原失败与新成功、请求 metadata 与实际 staged 脚本哈希，以及 pending 请求为零且无队列 quarantine；本地离线发布另核对 ZIP 全部成员、19 项 source blob 和 39 项原始/既有公开文件未变。原始脚本、请求、窗口标识和宿主路径留在私有目录，只公开合成数值及原件哈希。
+
+本次观察到的窗口 **仅 DPI 96**。这是该冻结源码的有限原生窗口/真实 child 验证，不是完整不同 DPI、IME/Find/rename、物理输入、实际上屏、性能、产品发布或完整 #29/#31/R2 验收；`presented_done=null`。旧原生失败及本机未隔离桌面复现的缺口均未抹去。
 
 ## 实现边界
 
@@ -55,4 +71,4 @@ Qt 两项与其余 55 项既有/独立诊断分列：
 
 Screen 继续采用现有物理行裁剪，不回填历史、恢复被裁掉的内容或宣称目标 reflow 已实现。完整 WindTerm 尺寸/样式对照、真实 TUI、Unicode/IME/选择/Find、实际不同 DPI、物理键盘与呈现、性能、完整 #29/#31/R2 均未由本项验收，`presented_done=null`。本机既有诊断通过也不解释或修复 hosted system 路线的 [#80](https://github.com/JavaZeroo/termforge/issues/80)、[#144](https://github.com/JavaZeroo/termforge/issues/144)、[#145](https://github.com/JavaZeroo/termforge/issues/145) 原失败。
 
-源码 678 的 resize 独立运行时按冻结的 40 个文件逐项核对并打成私有 ZIP，包含自身 manifest；随后 `windows` 插件执行的失败已在上方及补充记录保留，不回填为本次 offscreen 57 项的成功。0ff 新包、后续原生复验、CI 和双轴审查继续使用各自身份。
+源码 678 的 resize 独立运行时按冻结的 40 个文件逐项核对并打成私有 ZIP，包含自身 manifest；随后 `windows` 插件执行的失败已在上方及补充记录保留，不回填为本次 offscreen 57 项的成功。0ff 新包与其一次原生验证、合并配置 CI 和双轴审查继续使用各自身份。
