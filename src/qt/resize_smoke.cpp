@@ -55,6 +55,26 @@ static std::vector<SizeReply> await_child_size(SizeFixture& fixture, termforge::
     }
     throw std::runtime_error("real child did not acknowledge the requested window/buffer dimensions");
 }
+static void invalid_size_stops_pending_resize(const std::wstring& executable, const std::wstring& directory) {
+    SizeFixture fixture;
+    termforge::qt::SessionModel model;
+    termforge::qt::TerminalWidget terminal(model);
+    terminal.show();
+    require(model.start(executable, L"--size-child \"" + fixture.pipe_name() + L"\"", directory),
+            "invalid-size case child did not start");
+    wait_reply(fixture, 0);
+    require(model.resize(60, 12), "valid pending resize was rejected");
+    require(!model.resize(0, 12), "invalid terminal geometry was accepted");
+    const auto state = model.resize_state();
+    std::cerr << "{\"schema\":\"termforge-qt-resize-error-v1\",\"accepting\":" << state.accepting
+              << ",\"pending\":" << state.pending << ",\"error_visible\":" << !model.error().isEmpty() << "}\n";
+    require(!model.error().isEmpty() && !state.accepting && !state.pending,
+            "a terminal resize error left control requests active");
+    QElapsedTimer timer; timer.start();
+    while (!model.finished() && timer.elapsed() < 5000) QTest::qWait(5);
+    require(model.finished() && model.cleanup_verified() && !model.resize(100, 30),
+            "resize error did not finish cleanup or accepted later resize");
+}
 template<class Predicate>
 static void await(Predicate predicate, const termforge::qt::SessionModel& model, const char* message) {
     QElapsedTimer timer; timer.start();
@@ -110,6 +130,7 @@ int main(int argc, char** argv) {
         terminal.close();
         await([&] { return model.finished(); }, model, "resize shell did not finish after close");
         require(model.cleanup_verified(), "resize shell cleanup failed");
+        invalid_size_stops_pending_resize(executable, workspace.path().toStdWString());
         std::cout << "{\"schema\":\"termforge-qt-resize-smoke-v1\",\"core_columns\":60,\"core_rows\":12,\"child_ack_replies\":"
                   << replies.size() << ",\"cleanup_verified\":true,\"presented_done\":null}\n";
         return 0;
