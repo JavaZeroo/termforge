@@ -18,12 +18,10 @@ class ControlledReceiver {
         return tf_conpty::Handle(value);
     }
 public:
-    explicit ControlledReceiver(const QString& path) : path(path) {
-        prefix_ = L"Local\\TermForgeQtIme-" + QUuid::createUuid().toString(QUuid::WithoutBraces).toStdWString();
-        ready_ = make(prefix_ + L"-ready");
-        output_ = make(prefix_ + L"-output");
-        stop_ = make(prefix_ + L"-stop");
-    }
+    explicit ControlledReceiver(const QString& path) :
+        prefix_(L"Local\\TermForgeQtIme-" + QUuid::createUuid().toString(QUuid::WithoutBraces).toStdWString()),
+        ready_(make(prefix_ + L"-ready")), output_(make(prefix_ + L"-output")),
+        stop_(make(prefix_ + L"-stop")), path(path) {}
     QString path;
     std::wstring arguments() const {
         return L"--ime-output-child \"" + path.toStdWString() + L"\" \"" + prefix_ + L"\"";
