@@ -1,0 +1,139 @@
+{
+  "schema": "termforge-qt-cpp-hosted-validation-v1",
+  "status": "limited_build_and_offscreen_session_verified_r2_incomplete",
+  "issue": 117,
+  "source_commit": "ecb559800e8146126117360ca24c519e08698ae6",
+  "base_commit": "29032905af719c2502cd92774b93d78a3ce005d9",
+  "pr_checkout_commit": "5c3bea1ae05e5515d4cf7d6c36b1f098776be233",
+  "source_tree_sha": "58cac4972d64dc3d6b17a738ec9cabc5492f6e46",
+  "pr_checkout_tree_equals_source": true,
+  "configuration": {
+    "candidate_adapter": false,
+    "qt_shell": true,
+    "build_testing": true,
+    "backend": "fixed-microsoft-conpty",
+    "platform_plugin": "offscreen",
+    "build_type": "Release",
+    "architecture": "x64",
+    "generator": "Visual Studio 18 2026"
+  },
+  "environment": {
+    "runner_label": "windows-2025",
+    "runner_image": "windows-2025-vs2026",
+    "runner_image_version": "20261021.278.1",
+    "python": "3.12.10",
+    "compiler_identification": "MSVC 19.51.36260.0",
+    "msvc_tools_directory_version": "14.51.36231",
+    "qt_sdk_architecture": "win64_msvc2022_64"
+  },
+  "preparation": {
+    "schema": "termforge-qt-build-preparation-v1",
+    "status": "passed",
+    "qt_version": "6.10.3",
+    "qt_architecture": "win64_msvc2022_64",
+    "qt_archive_sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7",
+    "input_manifests": {
+      "qt": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+      "conpty": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+    },
+    "preparation_script_sha256": "475ee564cf5aac4c23444d24d5faf38bb5506324df09b668ca6eabd0b85d0089",
+    "sdk_transformation": "bin/qt.conf contains [Paths] and Prefix=..; no binary or .prl patch",
+    "sdk": {
+      "files": 4358,
+      "tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266"
+    },
+    "conpty_version": "1.25.260930003",
+    "conpty_package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "conpty_files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "scope": "Windows local/CI build inputs only; no product package or platform acceptance"
+  },
+  "downloaded_preparation_json_sha256": "58b614cc14417743375810bc22469acfbc644c2d4827c2dfcfaf1f1cfa33e22d",
+  "runs": [
+    {
+      "id": 40700440118,
+      "event": "pull_request",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/JavaZeroo/termforge/actions/runs/40700440118"
+    },
+    {
+      "id": 40700431496,
+      "event": "push",
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/JavaZeroo/termforge/actions/runs/40700431496"
+    }
+  ],
+  "pr_smoke": {
+    "test": "qt_cpp_shell",
+    "passed": 1,
+    "total": 1,
+    "ctest_reported_test_seconds": 0.62,
+    "ctest_total_seconds": 0.68,
+    "supervisor": {
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 7,
+        "terminated": 0
+      }
+    },
+    "sample": {
+      "qt": "6.10.3",
+      "core": "cpp",
+      "backend": "fixed-microsoft-conpty",
+      "arithmetic": 750,
+      "child_exit": 37,
+      "cleanup_verified": true,
+      "image_changed": true,
+      "startup_error_visible": true,
+      "manual_close_reclaimed": true,
+      "presented_done": null
+    }
+  },
+  "preserved_failures": [
+    {
+      "head": "c59899e0a61c1b1ca3f855aa0db407cfdb3673af",
+      "pr_run": 40699187960,
+      "push_run": 40699135492,
+      "step": "dependency preparation",
+      "error": "conpty_license_identity",
+      "cause_evidence": "Git core.autocrlf=true checkout-index reproduced CRLF hash 5d177f23ecfeb0ea8e050b6a5a16355e1ae9a0b286436ca8f83ed08b3795be6b; explicit eol=lf yields manifest hash ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada."
+    },
+    {
+      "head": "d174a7be0260cda1743d0c2c708087c8d874ee69",
+      "pr_run": 40699955889,
+      "push_run": 40699946013,
+      "step": "configure",
+      "error": "VS 2022 generator found no Visual Studio instance",
+      "cause_evidence": "Provider image is windows-2025-vs2026. New source selects VS 18 2026; Qt SDK version and bytes are unchanged."
+    }
+  ],
+  "review": {
+    "standards_remaining": 0,
+    "spec_remaining": 0,
+    "fixed": [
+      "path-bearing summary write exception",
+      "license checkout line endings",
+      "hosted generator mismatch"
+    ]
+  },
+  "runtime_binary_sha256": null,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "limitations": [
+    "Only the PR job's downloaded preparation artifact and detailed smoke sample were independently inspected; the push job success is provider metadata.",
+    "Runtime binaries and complete deployed directory hashes were not exported by these hosted jobs; this is no redistribution or clean-machine package audit.",
+    "Offscreen/programmatic keys do not prove native screen presentation, physical input, IME, different DPI, complete TUI or full R2.",
+    "The SDK archive, relocated SDK, local VS 2022 build, and hosted VS 2026 build are separate identities.",
+    "CTest wall times are diagnostic records, not product throughput or latency measurements.",
+    "Existing default/system and reference configurations have independent tests and evidence; their successes are not combined with this Qt result."
+  ]
+}
