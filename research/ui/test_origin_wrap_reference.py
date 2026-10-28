@@ -161,6 +161,43 @@ class ProtocolTests(unittest.TestCase):
 
 
 class PlanTests(unittest.TestCase):
+    def test_mechanical_audit_refuses_partial_or_changed_observation_despite_cli_exit_zero(self):
+        state, _ = receive_fixture("normal")
+        observations = [{key: row[key] for key in ("phase", "label", "cursor_reply", "cursor_reply_private", "response_hex")}
+                        for row in state["records"]]
+        for observation in observations:
+            observation.update(frozen_grid=[91, 25], terminal={"connected": True, "protocol": "Telnet", "capacity": 25,
+                                                               "line_count": 1, "lines": ["synthetic"]})
+        result = {"status": "observed-all-origin-wrap-phases", "error": None, "observations": observations,
+                  "presented_done": None, "full_active_grid_verified": False, "terminal_style_values_verified": False,
+                  "local_shell_transport_verified": False}
+        data = {"peer.json": state, "origin-wrap-result.json": result, "cleanup.json": {"active": 0, "total": 3, "terminated": 0},
+                "profile-check.json": {"only_synthetic_session": True, "session_count": 1}}
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            for row in state["records"]:
+                (directory / f'ack-{row["phase"]}').write_text("observed")
+            (directory / "stderr.txt").write_bytes(b"")
+            def save(values):
+                for name, value in values.items():
+                    (directory / name).write_text(json.dumps(value), encoding="utf-8")
+            save(data)
+            self.assertFalse(probe.audit_mechanics(directory)["semantic_acceptance"])
+            for key, field, value in (("origin-wrap-result.json", "status", "failed"),
+                                      ("origin-wrap-result.json", "observations", observations[:-1]),
+                                      ("peer.json", "received_hex", state["received_hex"] + "00"),
+                                      ("cleanup.json", "active", 1),
+                                      ("profile-check.json", "only_synthetic_session", False)):
+                changed = copy.deepcopy(data)
+                changed[key][field] = value
+                save(changed)
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    probe.audit_mechanics(directory)
+            save(data)
+            (directory / "stderr.txt").write_bytes(b"controlled error")
+            with self.assertRaises(ValueError):
+                probe.audit_mechanics(directory)
+
     def test_false_proposal_does_not_create_attempt_or_target_directory(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "proposal.json"

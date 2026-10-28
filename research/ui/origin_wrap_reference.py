@@ -161,6 +161,56 @@ def host_identity():
             "windows_version": platform.version()}
 
 
+def audit_mechanics(directory):
+    """Check observation completeness, without inventing any terminal-semantic answer."""
+    read = lambda name: json.loads((directory / name).read_text(encoding="utf-8"))
+    require((directory / "stderr.txt").read_bytes() == b"" and not (directory / "launcher-failure.json").exists(),
+            "REA stderr/launcher failure retained")
+    peer, result, cleanup, profile = [read(name) for name in
+        ("peer.json", "origin-wrap-result.json", "cleanup.json", "profile-check.json")]
+    require(all(peer.get(name) is True for name in ("connected", "closed", "complete")) and not peer.get("error"),
+            "Peer did not complete cleanly")
+    require(result.get("status") == "observed-all-origin-wrap-phases" and result.get("error") is None and
+            result.get("presented_done") is None and all(result.get(name) is False for name in
+            ("full_active_grid_verified", "terminal_style_values_verified", "local_shell_transport_verified")),
+            "UI observation is partial or claims an unknown endpoint")
+    require(type(cleanup.get("active")) is int and cleanup["active"] == 0 and
+            all(type(cleanup.get(name)) is int and cleanup[name] >= 0 for name in ("total", "terminated")) and
+            profile.get("only_synthetic_session") is True and type(profile.get("session_count")) is int and
+            profile["session_count"] == 1, "Owned Job/profile cleanup differs")
+    grid = peer["frozen_grid"]
+    require(type(grid) is list and len(grid) == 2, "Frozen grid differs")
+    expected = phase_records(grid[1], grid[0])
+    history, freeze = peer["naws_history"], peer["freeze_event_count"]
+    require(type(history) is list and 1 <= len(history) <= 64 and type(freeze) is int and
+            1 <= freeze <= len(history) and all(type(event) is list and len(event) == 2 and
+            all(type(n) is int and 0 <= n <= 65535 for n in event) for event in history) and
+            history[freeze-1] == grid and all(event == grid for event in history[freeze:]), "NAWS history changed or is incomplete")
+    records, observations = peer["records"], result["observations"]
+    require(len(records) == len(observations) == 25 and peer["phase_count"] == 25 and peer["phase"] == 24 and
+            peer["phase_label"] == expected[-1]["label"], "Stage sequence is incomplete")
+    replies = bytearray()
+    for source, row, observation in zip(expected, records, observations):
+        require(all(row.get(key) == value for key, value in source.items()), "Actual frozen source differs")
+        raw = bytes.fromhex(row["response_hex"])
+        reply = reply_observation(raw)
+        require(reply is not None and all(row.get(key) == value for key, value in reply.items()), "DSR observation differs")
+        replies.extend(raw)
+        require(all(observation.get(key) == row[key] for key in ("phase", "label", *reply)) and
+                observation["frozen_grid"] == grid, "UI/peer phase observations differ")
+        terminal = observation["terminal"]
+        require(terminal["connected"] is True and terminal["protocol"] == "Telnet" and
+                type(terminal["capacity"]) is int and terminal["capacity"] == grid[1] and
+                type(terminal["line_count"]) is int and 0 <= terminal["line_count"] <= 200 and
+                type(terminal["lines"]) is list and len(terminal["lines"]) == terminal["line_count"] and
+                all(type(line) is str and len(line) <= 1024 for line in terminal["lines"]), "Document observation bounds differ")
+        require((directory / f'ack-{row["phase"]}').read_text(encoding="utf-8") == "observed", "UI acknowledgment differs")
+    require(peer["received_hex"] == replies.hex(), "Unassigned received bytes retained")
+    return {"schema": "termforge-origin-wrap-mechanics-v1", "stage_count": 25, "dsr_count": 25,
+            "frozen_grid": grid, "naws_events": len(history), "job_active": 0,
+            "semantic_acceptance": False, "presented_done": None}
+
+
 def prepare_plan(source, out, rea, destination, execution_authorized=False):
     source, out, rea, destination = [path.resolve() for path in (source, out, rea, destination)]
     require(not out.exists() and not destination.exists(), "Plan/output must be new")
@@ -203,6 +253,9 @@ def run_plan(path):
     namespace = {"__file__": str(ROOT / "research/ui/r1_launch.py"), "__name__": "termforge_origin_wrap_launcher"}
     exec(compile(launcher_source(), namespace["__file__"], "exec"), namespace)
     namespace["run"](source, out, rea, 45, False, "menu-wrap")
+    require(plan["source_files_sha256"] == {name: sha(ROOT / name) for name in SOURCE_FILES}, "Probe source changed during execution")
+    mechanics = audit_mechanics(out)
+    (out / "mechanics-check.json").write_text(json.dumps(mechanics, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 
 if __name__ == "__main__":
