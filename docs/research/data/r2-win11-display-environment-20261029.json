@@ -1,0 +1,301 @@
+{
+  "schema": "termforge-isolated-windows-display-environment-v1",
+  "recorded_utc": "2026-10-28T17:02:17.806412+00:00",
+  "scope": "Independent Windows 11 x64 VM foundation and actual OS distinct-DPI environment; no TermForge runtime acceptance",
+  "environment_ready": true,
+  "guest": {
+    "caption": "Microsoft Windows 11 企业评估版",
+    "os_version": "10.0.26300",
+    "build": "26300",
+    "ubr": 9457,
+    "display_version": "26H2",
+    "edition": "EnterpriseEval",
+    "os_architecture": "64 位",
+    "is_64_bit_os": true,
+    "logical_processors": 2,
+    "physical_memory_bytes": 6421921792,
+    "secure_boot": true,
+    "tpm_spec_version": "2.0, 0, 1.64"
+  },
+  "vm_requested_resources": {
+    "vcpu": 2,
+    "memory_mib": 6144,
+    "thin_disk_gib": 64
+  },
+  "graphics_transport": "unix_socket",
+  "performance_fixture": false,
+  "host_exclusive": false,
+  "media": {
+    "schema": "termforge-windows-test-media-v1",
+    "windows_publisher_sha256_matches": true,
+    "windows_sha256": "b37a06d5121eee017826c0b133250bbd21bec694c2d607c60edd29090e667a84",
+    "virtio_sha256": "303f7ae40dad495d6ae474fdc571df58958a4dbc5c37a522d80f9a203867949d",
+    "virtio_publisher_hash_available": false,
+    "selected_image": {
+      "index": "1",
+      "name": "Windows 11 Enterprise Evaluation",
+      "flags": "EnterpriseEval",
+      "architecture": "9",
+      "edition": "EnterpriseEval",
+      "build": "26300"
+    },
+    "driver_paths": {
+      "vioserial": "vioserial/w11/amd64",
+      "qxldod": "qxldod/w10/amd64"
+    }
+  },
+  "qga": {
+    "command_exitcode": 0,
+    "command_exited": true,
+    "command_session_id": 0,
+    "own_guest_file_roundtrip": true,
+    "binary_roundtrip_bytes": 65792,
+    "binary_roundtrip_sha256": "120c518a83325c66464701a6ee080302f332bc768ea3f60473b209f1bfb091df",
+    "binary_bytes_equal": true
+  },
+  "display_setup_method": "Normal Windows Display Settings UI Automation: one output set to 125 percent, other remains 100 percent; only the owned guest was changed",
+  "display_probe_sha256": "307122b2c9d8cb12bbc0a54cebb7e95078430874b2e2ea7b676f5c4df80bda80",
+  "display_repeats": [
+    {
+      "completion": {
+        "exit_code": 0,
+        "root_reaped": true,
+        "native_wait": 0,
+        "session_id": 2,
+        "start_utc": "2026-10-28T17:00:12.6856385Z",
+        "end_utc": "2026-10-28T17:00:16.0052542Z"
+      },
+      "measurement": {
+        "limitation": "Infrastructure probe only; full issue31 TermForge behaviors require separate product evidence",
+        "schema": "termforge-actual-display-probe-v1",
+        "session_id": 2,
+        "monitors": [
+          {
+            "device": "\\\\.\\DISPLAY7",
+            "left": 0,
+            "top": 0,
+            "right": 1024,
+            "bottom": 768,
+            "primary": true,
+            "dpi_x": 96,
+            "dpi_y": 96,
+            "dpi_hr": 0
+          },
+          {
+            "device": "\\\\.\\DISPLAY5",
+            "left": 1024,
+            "top": 0,
+            "right": 2048,
+            "bottom": 768,
+            "primary": false,
+            "dpi_x": 120,
+            "dpi_y": 120,
+            "dpi_hr": 0
+          }
+        ],
+        "window_samples": [
+          {
+            "device": "\\\\.\\DISPLAY7",
+            "window_dpi": 96,
+            "visible": true,
+            "time_utc": "2026-10-28T17:00:14.4526281Z",
+            "window_rect": [
+              40,
+              40,
+              680,
+              440
+            ],
+            "target_matches": true,
+            "session_id": 2,
+            "actual_device": "\\\\.\\DISPLAY7"
+          },
+          {
+            "device": "\\\\.\\DISPLAY5",
+            "window_dpi": 120,
+            "visible": true,
+            "time_utc": "2026-10-28T17:00:15.1655165Z",
+            "window_rect": [
+              1064,
+              40,
+              1704,
+              440
+            ],
+            "target_matches": true,
+            "session_id": 2,
+            "actual_device": "\\\\.\\DISPLAY5"
+          },
+          {
+            "device": "\\\\.\\DISPLAY7",
+            "window_dpi": 96,
+            "visible": true,
+            "time_utc": "2026-10-28T17:00:15.8841725Z",
+            "window_rect": [
+              40,
+              40,
+              680,
+              440
+            ],
+            "target_matches": true,
+            "session_id": 2,
+            "actual_device": "\\\\.\\DISPLAY7"
+          }
+        ],
+        "distinct_actual_dpi": true,
+        "time_utc": "2026-10-28T17:00:15.9081062Z"
+      }
+    },
+    {
+      "completion": {
+        "exit_code": 0,
+        "root_reaped": true,
+        "native_wait": 0,
+        "session_id": 2,
+        "start_utc": "2026-10-28T17:00:18.0670230Z",
+        "end_utc": "2026-10-28T17:00:21.3753185Z"
+      },
+      "measurement": {
+        "limitation": "Infrastructure probe only; full issue31 TermForge behaviors require separate product evidence",
+        "schema": "termforge-actual-display-probe-v1",
+        "session_id": 2,
+        "monitors": [
+          {
+            "device": "\\\\.\\DISPLAY7",
+            "left": 0,
+            "top": 0,
+            "right": 1024,
+            "bottom": 768,
+            "primary": true,
+            "dpi_x": 96,
+            "dpi_y": 96,
+            "dpi_hr": 0
+          },
+          {
+            "device": "\\\\.\\DISPLAY5",
+            "left": 1024,
+            "top": 0,
+            "right": 2048,
+            "bottom": 768,
+            "primary": false,
+            "dpi_x": 120,
+            "dpi_y": 120,
+            "dpi_hr": 0
+          }
+        ],
+        "window_samples": [
+          {
+            "device": "\\\\.\\DISPLAY7",
+            "window_dpi": 96,
+            "visible": true,
+            "time_utc": "2026-10-28T17:00:19.8183463Z",
+            "window_rect": [
+              40,
+              40,
+              680,
+              440
+            ],
+            "target_matches": true,
+            "session_id": 2,
+            "actual_device": "\\\\.\\DISPLAY7"
+          },
+          {
+            "device": "\\\\.\\DISPLAY5",
+            "window_dpi": 120,
+            "visible": true,
+            "time_utc": "2026-10-28T17:00:20.5497237Z",
+            "window_rect": [
+              1064,
+              40,
+              1704,
+              440
+            ],
+            "target_matches": true,
+            "session_id": 2,
+            "actual_device": "\\\\.\\DISPLAY5"
+          },
+          {
+            "device": "\\\\.\\DISPLAY7",
+            "window_dpi": 96,
+            "visible": true,
+            "time_utc": "2026-10-28T17:00:21.2698544Z",
+            "window_rect": [
+              40,
+              40,
+              680,
+              440
+            ],
+            "target_matches": true,
+            "session_id": 2,
+            "actual_device": "\\\\.\\DISPLAY7"
+          }
+        ],
+        "distinct_actual_dpi": true,
+        "time_utc": "2026-10-28T17:00:21.2897528Z"
+      }
+    }
+  ],
+  "before_qt": {
+    "recorded_utc": "2026-10-28T16:49:32.1895759Z",
+    "qt_executed": false,
+    "crt_files": [
+      {
+        "present": false,
+        "name": "vcruntime140.dll"
+      },
+      {
+        "present": false,
+        "name": "vcruntime140_1.dll"
+      },
+      {
+        "present": false,
+        "name": "msvcp140.dll"
+      },
+      {
+        "present": false,
+        "name": "msvcp140_1.dll"
+      },
+      {
+        "present": false,
+        "name": "msvcp140_2.dll"
+      }
+    ],
+    "vc_products": [],
+    "signed_guest_drivers": [
+      {
+        "DeviceName": "VirtIO Serial Driver",
+        "DeviceClass": "SYSTEM",
+        "DriverVersion": "100.103.104.30200",
+        "DriverProviderName": "Red Hat, Inc.",
+        "IsSigned": true
+      },
+      {
+        "DeviceName": "Red Hat QXL controller",
+        "DeviceClass": "DISPLAY",
+        "DriverVersion": "10.0.0.21000",
+        "DriverProviderName": "Red Hat, Inc.",
+        "IsSigned": true
+      },
+      {
+        "DeviceName": "Red Hat QXL controller",
+        "DeviceClass": "DISPLAY",
+        "DriverVersion": "10.0.0.21000",
+        "DriverProviderName": "Red Hat, Inc.",
+        "IsSigned": true
+      }
+    ],
+    "guest_bundle_exit": 0
+  },
+  "termforge_runtime_tested": false,
+  "r2_issue31_accepted": false,
+  "presented_done": null,
+  "limitations": [
+    "Virtual QXL outputs were observed by actual Windows APIs; no host display settings were changed.",
+    "Windows infrastructure window only. Full formal TermForge sessions, resize, focus, IME, Find, rename and hit-test behavior remain untested here.",
+    "Native WS_VISIBLE and process exit do not establish physical presentation or physical input.",
+    "No performance acceptance or numeric tolerance is implied."
+  ],
+  "harness_corrections": [
+    "Initial post-bundle pnputil vioserial add returned 259. Initial failure preserved; signed installed drivers and running QGA were verified before interactive-task recovery.",
+    "Initial .NET Process.ExitCode was null. Final runner retains the process handle and verifies native wait plus native exit code.",
+    "An initial Win32 visibility sample was false due to the hidden worker startup setting. Final probe explicitly calls ShowWindow and verifies IsWindowVisible, preserving the earlier failed observation."
+  ]
+}
