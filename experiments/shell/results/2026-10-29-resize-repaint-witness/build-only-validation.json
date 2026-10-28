@@ -1,0 +1,193 @@
+{
+  "schema": "termforge-resize-repaint-flush-build-only-validation-v1",
+  "issue": 156,
+  "kind": "compile-only-output-guard-fix",
+  "compile_source_commit": "bf569516ced888f0e6809231326c0dd8fe5e4a83",
+  "previous_publication_commit": "8294802af81212545def9f076d990f81294bc884",
+  "guard_change": "explicit-final-stdout-flush-before-stream-state-check",
+  "diagnostic_source": {
+    "path": "experiments/core/resize_repaint_witness.cpp",
+    "git_blob": "e46edfd5984ee578e5cf4293c464321f736a0dd2",
+    "bytes": 13110,
+    "sha256": "8066db7dd8a3b1243e2eecfdf89dfbc9a3179b143570aa09d224c70d35a3ee33"
+  },
+  "plan": {
+    "bytes": 6664,
+    "sha256": "7edc6b13b53f4f02b64b61f7740f3159a948c693ca495431856ea784bd5bb0e8",
+    "execution_authorized": true,
+    "allowed_stages": [
+      "configure",
+      "build"
+    ],
+    "witness_runs_permitted": 0
+  },
+  "execution_counts": {
+    "configure": 1,
+    "build": 1,
+    "witness": 0,
+    "four_case_batches": 0,
+    "ctest": 0,
+    "output_failure_injections": 0,
+    "cut_scans": 0,
+    "retries": 0
+  },
+  "build": {
+    "result": "compiled",
+    "warnings": 0,
+    "errors": 0,
+    "generator": "Visual Studio 17 2022",
+    "architecture": "x64",
+    "configuration": "Release",
+    "vctools_version": "14.42.34433",
+    "target": "resize_repaint_witness",
+    "exclude_from_all": true,
+    "build_testing": false,
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "compiler": {
+      "name": "cl.exe",
+      "version": "19.42.34433.0",
+      "bytes": 862832,
+      "sha256": "42fd88579adc0e2418a0a71ec9adcfcf677d39ff2724c9d6ac9d901264812bf2"
+    },
+    "cmake": {
+      "name": "cmake.exe",
+      "version": "3.31.0",
+      "bytes": 12054480,
+      "sha256": "c52712b2e10098baa2bd9b2fb22b6bb276c8ec46d840f0e8487eda7f76a1727b"
+    },
+    "observed_compile_switches": [
+      "/O2",
+      "/Ob2",
+      "/MD",
+      "/std:c++17",
+      "/W4",
+      "/utf-8",
+      "/EHsc",
+      "/GS"
+    ],
+    "complete_flags_retained_locally": true,
+    "compiler_command_tlog": {
+      "bytes": 1080,
+      "sha256": "1f3c522aed0fc422476686e563dcc46a25436fc0bd08fa6f0d39810dadff4f45"
+    },
+    "executable": {
+      "name": "resize_repaint_witness.exe",
+      "bytes": 112128,
+      "sha256": "3980f04e32efbf875daeeb5b9fc5c331eb8fd057e69a18e7986258da9acaa014",
+      "executed": false
+    },
+    "private_compile_result": {
+      "bytes": 9589,
+      "sha256": "1fe2e09fdc627b61058ac367d87a856823b335e77ca3e4baeec292bc0f9f87ef"
+    }
+  },
+  "supervision": {
+    "configure_timeout_seconds": 60,
+    "build_timeout_seconds": 120,
+    "cleanup_shared_seconds_per_stage": 5,
+    "stages": [
+      {
+        "stage": "configure",
+        "returncode": 0,
+        "timed_out": false,
+        "output_overflow": false,
+        "root_reaped": true,
+        "root_handle_closed": true,
+        "pre_go_job": {
+          "active": 1,
+          "total": 1,
+          "terminated": 0
+        },
+        "job_after_wrapper_reaped": {
+          "active": 0,
+          "total": 30,
+          "terminated": 0
+        },
+        "job_before_handle_close": {
+          "active": 0,
+          "total": 30,
+          "terminated": 0
+        },
+        "job_termination_requests": 0,
+        "stdout": {
+          "bytes": 603,
+          "sha256": "51b54f655fc012955e8deee257f97c64af15a4eb2b29d71919691dc07bcecd23"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "stage": "build",
+        "returncode": 0,
+        "timed_out": false,
+        "output_overflow": false,
+        "root_reaped": true,
+        "root_handle_closed": true,
+        "pre_go_job": {
+          "active": 1,
+          "total": 1,
+          "terminated": 0
+        },
+        "job_after_wrapper_reaped": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_before_handle_close": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "job_termination_requests": 0,
+        "stdout": {
+          "bytes": 4598,
+          "sha256": "bcb841d6664694ba6900f41608f0689d1528ae5ef39f8328bd7afbb421e256d9"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    ]
+  },
+  "old_four_case_evidence": {
+    "execution_source_commit": "178faba6c245298a1410d6954b6a7e1df1e9bbd7",
+    "jsonl_records": 61,
+    "checkpoints": 51,
+    "stdout": {
+      "bytes": 817861,
+      "sha256": "ee89e36c05db592741a3c2700bd3bc944f7cf0f2600fbe47a680781fec4cb634"
+    },
+    "analysis": {
+      "bytes": 11691,
+      "sha256": "cfe9bfecb6664636d3d8ec3ce03f9e9a1ceef5bea2a28165ef756d5217321f39"
+    },
+    "original_executable": {
+      "bytes": 112128,
+      "sha256": "3fdd9172e955a468fc9db7a540dcc5042156cde2aafa8e0bee1786cb6f0189c4"
+    },
+    "original_public_validation": {
+      "bytes": 21023,
+      "sha256": "bd842024d69b3f4ebb6423f51668ee98aa57992c556289ec23ef5b84e76e2e24"
+    },
+    "preserved_old_artifact_count": 20,
+    "old_plans_input_archive_exe_raw_analysis_unchanged": true,
+    "old_source_git_blob_retained": true,
+    "new_guard_not_attributed_to_old_run": true
+  },
+  "post_audit": {
+    "new_compile_source_files_rechecked": 15,
+    "source_tools_and_retained_old_artifact_changes": 0
+  },
+  "witness_executed": false,
+  "output_failure_path_exercised": false,
+  "semantic_acceptance": false,
+  "ci_cause_established": false,
+  "ci_actual_cut_known": false,
+  "production_fix_implemented": false,
+  "all_raw_retained_locally": true,
+  "private_paths_pids_exception_strings_published": false
+}
