@@ -32,7 +32,7 @@
 
 另有缺投影字段可成为相同比较的反例，以及缺初始/中间/最终/resize 检查点的拒绝；字段、样式与完整计划 offset 先验校验后转绿。缺 manifest 字段、截断、未列 seed:99 都不能复用已知规则；公共 CLI 的未列 seed 返回 exit1，未删除输入或放宽差异。
 
-最终诊断源为 **`1e5cc7ad83007e44fdcdd7f0f847afdfc453dd03`**。公共 trace-data/registry 6 项普通及 `python -O` 通过；固定该提交的合同+能力 **11 项全部通过、0 skip**，包括公共 CLI 正/负例，日志 SHA 与源码见[validation.json](validation.json)。候选 workflow 的原 common-test 步骤选择 `test_candidate*.py`，包含这六项新门槛，原负载和期限未改。[最终能力摘要](capability-summary.json)为 25 runs / 118 checkpoints：10 core_unsupported、4 reference_difference、6 match、5 resize_difference，`semantic_acceptance=false`。支持标志只针对该固定 1049 输入，不意味着 47/1047/1048 或全部备用屏模式已支持。
+最终诊断源为 **`1e5cc7ad83007e44fdcdd7f0f847afdfc453dd03`**。公共 trace-data/registry 6 项普通及 `python -O` 通过；固定该提交的合同+能力 **11 项全部通过、0 skip**，包括公共 CLI 正/负例，日志 SHA 与源码见[validation.json](validation.json)。候选 workflow 的原 common-test 步骤选择 `test_candidate*.py`，包含这六项新门槛，原负载和期限未改。[最终能力摘要](capability-summary.json)为 25 runs / 118 checkpoints：10 core_unsupported、4 reference_difference、6 match、5 resize_difference，`semantic_acceptance=false`。原始 Windows JSON 的 CRLF SHA 与公开 LF 文本 SHA 分列，解析数据未变。支持标志只针对该固定 1049 输入，不意味着 47/1047/1048 或全部备用屏模式已支持。
 
 前置工作区 checkpoint 另外运行了 common 4 项（95 match）、fuzz 4 项（8 runs：6 match/2 known_failure）、Windows cmd/more/Vim 诊断 8 项（3 match、真实退出/文件/Job 边界通过）。其 compare tool SHA `3156f71393675d4efccf8415c8191cfe5f1e823c1b25d1bce00e2fbabe23f8d4` 与最终显式 input-length 校验/格式整理前不同，commit 身份为 null，单独列在 JSON。对应[前置源码档案](source-checkpoint-3156.py)由已记录修改恢复，完整字节 SHA 与三个原摘要完全相同；它不是当前入口。不能冒称最终1e5重跑全部应用矩阵。全部本地 exec 已监督到结束，没有跨代理移交运行会话。
 

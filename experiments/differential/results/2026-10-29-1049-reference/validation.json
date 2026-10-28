@@ -29,7 +29,9 @@
       "resize_difference": 5
     },
     "semantic_acceptance": false,
-    "summary_sha256": "f04c377a945bfedb698ed7b0321292c66f385f1cedc76d11b20a2c606ca12c84"
+    "raw_summary_sha256": "f04c377a945bfedb698ed7b0321292c66f385f1cedc76d11b20a2c606ca12c84",
+    "public_summary_sha256": "70f1db93eb51503c15a5a5bfbb98c0cd4b0a61b3650e46c098a66542f2606221",
+    "public_text_policy": "LF JSON projection; parsed content unchanged from local raw summary"
   },
   "locked_local_reference_build": {
     "source_head_at_build": "c9f2eacff4540c2623552a72eaa5bab4fa6262c9",
