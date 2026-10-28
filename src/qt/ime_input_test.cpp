@@ -1,5 +1,6 @@
 // Public Qt IME events and queries, own rendering, and an independent receiver.
 #include "terminal_widget.hpp"
+#include "session_tabs.hpp"
 #include <QApplication>
 #include <QCryptographicHash>
 #include <QDir>
@@ -12,6 +13,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTemporaryDir>
+#include <QLineEdit>
+#include <QTabBar>
 #include <QTest>
 #include <QTextCharFormat>
 #include <cstdlib>
@@ -234,6 +237,75 @@ static QJsonObject limits_and_literal_boundaries(const QString& receiver, const 
             {"accepted_utf16_units", 256}, {"rejected_utf16_units", 257},
             {"literal_ime_kept_keyboard_state", true}, {"receiver_exit_code", 0}};
 }
+static QJsonObject context_isolation(const QString& receiver, const QString& directory) {
+    const auto argument = [&](const QString& name) {
+        return (QStringLiteral("\"") + directory + QLatin1Char('/') + name + QLatin1Char('"')).toStdWString();
+    };
+    termforge::qt::SessionTabs window(receiver.toStdWString(), argument(QStringLiteral("ime-tab-a.bin")), directory.toStdWString());
+    window.show(); QApplication::setActiveWindow(&window); QApplication::processEvents();
+    auto* first = window.current_session();
+    require(first != nullptr, "first IME target is missing");
+    await([&] { return has_text(first->model().screen(), "TF_KEY_READY"); }, "first IME receiver was not ready");
+    const auto base_query = query(first->terminal()).value("cursor_rect").toArray();
+    require(key_text(first->terminal(), QStringLiteral("A")), "first IME prefix was rejected");
+    require(ime_event(first->terminal(), {}, QStringLiteral("focus")), "first preedit was rejected");
+    require(!key_text(first->terminal(), QStringLiteral("LEAK")), "composing key text bypassed input context");
+    QLineEdit other; other.show(); QApplication::setActiveWindow(&other); other.setFocus(); QApplication::processEvents();
+    require(other.hasFocus() && !first->terminal().hasFocus(), "IME focus did not move to another widget");
+    require(!ime_event(first->terminal(), QStringLiteral("UNFOCUSED")), "unfocused IME target accepted late commit");
+    focus(first->terminal());
+    require(query(first->terminal()).value("cursor_rect").toArray() == base_query,
+            "focus return revived cancelled preedit cursor");
+    require(ime_event(first->terminal(), QString::fromUtf16(u"\u7532")), "first IME commit was rejected");
+    require(ime_event(first->terminal(), {}, QStringLiteral("hidden")), "hide preedit was rejected");
+    first->terminal().hide(); QApplication::processEvents();
+    require(!ime_event(first->terminal(), QStringLiteral("HIDDEN")), "hidden IME target accepted late commit");
+    focus(first->terminal());
+    require(query(first->terminal()).value("cursor_rect").toArray() == base_query,
+            "show revived hidden preedit cursor");
+    require(ime_event(first->terminal(), {}, QStringLiteral("tab")), "tab preedit was rejected");
+    auto* second = window.new_session(receiver.toStdWString(), argument(QStringLiteral("ime-tab-b.bin")), directory.toStdWString());
+    require(second && second != first, "second IME target is missing");
+    await([&] { return has_text(second->model().screen(), "TF_KEY_READY"); }, "second IME receiver was not ready");
+    require(!ime_event(first->terminal(), QStringLiteral("WRONG_TAB")), "old tab accepted IME commit");
+    require(ime_event(second->terminal(), {}, QStringLiteral("second")) &&
+            ime_event(second->terminal(), QString::fromUtf16(u"\u4e59")), "second IME transaction was rejected");
+    auto* bar = window.findChild<QTabBar*>();
+    require(bar && bar->count() == 2, "IME tab bar is missing");
+    QTest::mouseClick(bar, Qt::LeftButton, Qt::NoModifier, bar->tabRect(0).center()); QApplication::processEvents();
+    require(query(first->terminal()).value("cursor_rect").toArray() == base_query,
+            "tab return revived another composition");
+    require(ime_event(first->terminal(), QString::fromUtf16(u"\u4e19")), "first IME target did not resume");
+    finish(second->model());
+    auto* closing = window.new_session(receiver.toStdWString(), argument(QStringLiteral("ime-tab-close.bin")), directory.toStdWString());
+    require(closing != nullptr, "closing IME target is missing");
+    await([&] { return has_text(closing->model().screen(), "TF_KEY_READY"); }, "closing IME receiver was not ready");
+    require(ime_event(closing->terminal(), {}, QStringLiteral("close")), "closing preedit was rejected");
+    closing->terminal().close();
+    require(!ime_event(closing->terminal(), QStringLiteral("CLOSED")), "closed IME target accepted text");
+    await([&] { return closing->model().finished(); }, "closed IME receiver did not finish");
+    require(closing->model().cleanup_verified() && closing->model().active_processes_after() == 0 &&
+            !closing->model().natural_exit(), "closed IME receiver was not verified cancellation");
+    QTest::mouseClick(bar, Qt::LeftButton, Qt::NoModifier, bar->tabRect(0).center()); QApplication::processEvents();
+    require(ime_event(first->terminal(), QString::fromUtf16(u"\u4e01")), "surviving IME target did not accept text");
+    finish(first->model());
+    const auto a = received(directory + QStringLiteral("/ime-tab-a.bin"));
+    const auto b = received(directory + QStringLiteral("/ime-tab-b.bin"));
+    const auto cancelled = received(directory + QStringLiteral("/ime-tab-close.bin"));
+    require(a == QByteArray::fromHex("41e794b2e4b899e4b881") && b == QByteArray::fromHex("e4b999") && cancelled.isEmpty(),
+            "IME preedit/cancelled/hidden text leaked between receiver targets");
+    window.close();
+    SessionModel failed; TerminalWidget failure(failed); focus(failure);
+    require(!failed.start((directory + QStringLiteral("/missing-ime-receiver.exe")).toStdWString(), L""),
+            "missing IME receiver unexpectedly started");
+    await([&] { return failed.finished(); }, "failed IME target cleanup did not finish");
+    require(!ime_event(failure, QStringLiteral("FAIL")) && !failed.error().isEmpty() &&
+            failed.cleanup_verified() && failed.active_processes_after() == 0,
+            "failed IME target accepted input or lost cleanup/error");
+    return {{"case", "focus-hide-tab-close-failure"}, {"first_hex", QString::fromLatin1(a.toHex())},
+            {"second_hex", QString::fromLatin1(b.toHex())}, {"cancelled_bytes", 0},
+            {"natural_receivers", 2}, {"cancelled_receivers", 1}, {"failed_target_verified", true}};
+}
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
@@ -258,7 +330,8 @@ int main(int argc, char** argv) {
         require(QFile::exists(receiver), "independent IME receiver is missing");
         const QJsonObject result{{"schema", "termforge-qt-ime-input-v1"},
                                  {"cases", QJsonArray{literal_ime_commit(receiver, workspace.path()),
-                                                       limits_and_literal_boundaries(receiver, workspace.path())}},
+                                                       limits_and_literal_boundaries(receiver, workspace.path()),
+                                                       context_isolation(receiver, workspace.path())}},
                                  {"actual_os_ime", false}, {"presented_done", QJsonValue()}};
         std::cout << QJsonDocument(result).toJson(QJsonDocument::Compact).constData() << '\n';
         return 0;
