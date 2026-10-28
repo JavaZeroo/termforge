@@ -6,6 +6,8 @@
 
 后续诊断源码补充了最终summary的stdout显式flush后再检查失败状态的守卫；旧唯一四-case执行仍绑定`178faba`及其61条完整记录，新守卫未重跑witness，不能转记为该运行源。
 
+该守卫的独立[仅编译记录](build-only-validation.json)绑定`bf569516ced888f0e6809231326c0dd8fe5e4a83`：全新目录一次configure/build成功、0 warning/error，没有执行新EXE或写出失败注入；旧EXE、原验证与raw未覆盖。
+
 ## 固定输入与一次结果
 
 诊断基于实际失败源 `58fee2805cde34c67683a79473ca56f9df3cbf69`，原八个相关文件与比较源 `6a10e5322a1bddeb038670e50f32ff6deac145cf` 的 blob 相同。没有运行 Win32/Qt UI、ConPTY 或原版。使用现有 recovery Parser、TextDocument、TextSelection 的公开边界，以原合成 fixture 函数生成 `TF_FIND_000..079` 和 READY 行；111×7、history capacity100时实际得到 history75/document82，并按真实 Select All 范围规则复制2499B。行 ID 由新 Parser 自然分配，不补造 CI 启动前的绝对偏移。
