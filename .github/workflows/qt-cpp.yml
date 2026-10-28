@@ -20,8 +20,8 @@ jobs:
         with:
           python-version: '3.12'
       - name: Verify preparation failure contracts
-        run: python -m unittest tools.test_prepare_qt_build -v
-      - name: Prepare manifest-pinned Qt qtbase and Microsoft ConPTY
+        run: python -m unittest tools.test_prepare_qt_build tools.test_prepare_msvc_runtime tools.test_msvc_runtime -v
+      - name: Prepare manifest-pinned Qt qtbase, Microsoft ConPTY and CRT
         run: python -m tools.prepare_qt_build
       - name: Preserve path-free dependency preparation identity
         if: always()
@@ -39,9 +39,26 @@ jobs:
             -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF `
             "-DPython3_EXECUTABLE=$((Get-Command python).Source)" `
             "-DQt6_DIR=$dependencyRoot/qt/lib/cmake/Qt6" `
-            "-DTERMFORGE_CONPTY_BACKEND_DIR=$dependencyRoot/conpty"
+            "-DTERMFORGE_CONPTY_BACKEND_DIR=$dependencyRoot/conpty" `
+            "-DTERMFORGE_MSVC_RUNTIME_DIR=$dependencyRoot/crt"
       - name: Build Qt product and independent smoke
         run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke --parallel 2
+      - name: Record complete path-free runtime manifests
+        run: |
+          python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-bin/Release --executable termforge_qt_shell.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-smoke-bin/Release --executable qt_cpp_shell_smoke.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve runtime file identities without binaries
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qt-cpp-runtime-manifests
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            build/qt-cpp/qt-bin/Release/runtime-manifest.json
+            build/qt-cpp/qt-smoke-bin/Release/runtime-manifest.json
       - name: Run Qt offscreen smoke in its owned Job
         run: ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_shell$' --no-tests=error --verbose
       # Keep this configuration independent from the default/system-backend and

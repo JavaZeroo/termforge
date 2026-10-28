@@ -1,0 +1,1065 @@
+{
+  "schema": "termforge-qt-crt-deployment-validation-v1",
+  "status": "limited_clean_guest_loader_and_cmd_verified_full_R2_incomplete",
+  "issue": 138,
+  "parent_issue": 35,
+  "environment": {
+    "os": "Windows 11 Enterprise Evaluation 26H2 x64",
+    "build": "26300.9457",
+    "vcpus": 2,
+    "memory_gib": 6,
+    "interactive_session": 2,
+    "guest_tools": "QGA/QXL/SPICE already installed; not bare OS",
+    "pre_qt": {
+      "qt_executed": false,
+      "system_crt_files": [
+        {
+          "present": false,
+          "name": "vcruntime140.dll"
+        },
+        {
+          "present": false,
+          "name": "vcruntime140_1.dll"
+        },
+        {
+          "present": false,
+          "name": "msvcp140.dll"
+        },
+        {
+          "present": false,
+          "name": "msvcp140_1.dll"
+        },
+        {
+          "present": false,
+          "name": "msvcp140_2.dll"
+        }
+      ],
+      "vc_products": []
+    },
+    "physical_presentation_accepted": false
+  },
+  "fixed_runtime": {
+    "schema": "termforge-msvc-runtime-input-v1",
+    "name": "Microsoft Visual C++ v14 Runtime",
+    "version": "14.51.36247.0",
+    "architecture": "windows-x64",
+    "pe_machine": "0x8664",
+    "maximum_toolset_version": "14.51.36247",
+    "package": {
+      "archive": "vc_redist-14.51.36247-x64.exe",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/ebdab8e5-1d7b-4d9f-a11b-cbb1720c3b12/843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C/VC_redist.x64.exe",
+      "bytes": 18731856,
+      "sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c"
+    },
+    "attached_container": {
+      "offset": 630000,
+      "bytes": 18091661,
+      "sha256": "8b1595b5d0001e0747371ecfc2dccb604dc836fba0a778566e97a6bdb0816bb8"
+    },
+    "runtime_cabinet": {
+      "member": "a4",
+      "bytes": 1065893,
+      "sha256": "6e8ee73933678c55973e83366e48e948b394c7a36743a36b7224c95de979b13f"
+    },
+    "files": {
+      "concrt140.dll": {
+        "member": "concrt140.dll_amd64",
+        "bytes": 374200,
+        "sha256": "54716f0738af891f283d213b5c8d11b25896bb8ee3097d301eae718560cf974e"
+      },
+      "msvcp140_1.dll": {
+        "member": "msvcp140_1.dll_amd64",
+        "bytes": 35768,
+        "sha256": "206c931bf90fdad8816de3b5e2ef80b2bcaa9406c89ecc05fe6fddffe251e982"
+      },
+      "msvcp140_2.dll": {
+        "member": "msvcp140_2.dll_amd64",
+        "bytes": 274872,
+        "sha256": "d50d7883f20d1dc6191768d3746f52dd9cac89c346ffaed5be1f110c2f34a838"
+      },
+      "msvcp140_atomic_wait.dll": {
+        "member": "msvcp140_atomic_wait.dll_amd64",
+        "bytes": 57792,
+        "sha256": "3d0cbfaa1bf3eecf5a3f4491d2960ee803cb994f30292c6adc4a07c498f60e2b"
+      },
+      "msvcp140_codecvt_ids.dll": {
+        "member": "msvcp140_codecvt_ids.dll_amd64",
+        "bytes": 31160,
+        "sha256": "8a65c7596ef2e6938731f5a1058e7e40145b6d97967cc649231a076b9a608d78"
+      },
+      "msvcp140.dll": {
+        "member": "msvcp140.dll_amd64",
+        "bytes": 643512,
+        "sha256": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca"
+      },
+      "vccorlib140.dll": {
+        "member": "vccorlib140.dll_amd64",
+        "bytes": 350648,
+        "sha256": "09f93d5ff96ae09767f3e1af3cdd43a5a58f2598654fc63089429bb6f9f4737f"
+      },
+      "vcruntime140_1.dll": {
+        "member": "vcruntime140_1.dll_amd64",
+        "bytes": 50112,
+        "sha256": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e"
+      },
+      "vcruntime140_threads.dll": {
+        "member": "vcruntime140_threads.dll_amd64",
+        "bytes": 38840,
+        "sha256": "40f39e8cee5f5a531b4010e18b807e8fe265b908dc58f959ecb7ebc6ea6cb11a"
+      },
+      "vcruntime140.dll": {
+        "member": "vcruntime140.dll_amd64",
+        "bytes": 178616,
+        "sha256": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7"
+      }
+    },
+    "license": {
+      "archive": "Visual-C-V14-License-Redistributable_and_Runtime_ENU.docx",
+      "url": "https://visualstudio.microsoft.com/wp-content/uploads/2025/10/Visual-C-V14-License-Redistributable_and_Runtime_ENU.docx",
+      "bytes": 39553,
+      "sha256": "08651651a7602fc7c0e2763de0fde1ff9f868df2780597cd1775ee9d6441c783",
+      "deployed_name": "LICENSE-MICROSOFT-VC-REDIST.docx",
+      "terms_url": "https://aka.ms/VCRedistLicense",
+      "redistribution_url": "https://learn.microsoft.com/en-us/cpp/windows/redistributing-visual-cpp-files?view=msvc-170",
+      "distributable_list_url": "https://learn.microsoft.com/en-us/visualstudio/releases/2022/redistribution"
+    },
+    "notice_sha256": "510781c94971ea19adae55d2c42207d942b0646deee29d5c401f189cc25d415f",
+    "acquisition_evidence": {
+      "authenticode_status": "Valid",
+      "package_signer_subject": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+      "package_signer_thumbprint": "1D77A9B9E8FE2075D9AD15123257FB90DB0DA4A1",
+      "runtime_file_versions": "14.51.36247.0",
+      "runtime_signer_subject": "CN=Microsoft Windows Software Compatibility Publisher, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    },
+    "scope": "Unmodified app-local desktop CRT files, extracted without running the installer; no OpenMP/MFC/debug/ARM64 runtime, global installation or startup download"
+  },
+  "causal_original": {
+    "observation_script_exit": 0,
+    "request_status": "passed",
+    "session_id": 2,
+    "job_supervision": {
+      "Schema": "termforge-owned-vm-request-v2",
+      "Status": "passed",
+      "Error": null,
+      "RootWait": 0,
+      "RootExitCode": 0,
+      "JobBeforeActive": 0,
+      "JobBeforeTotal": 5,
+      "JobAfterActive": 0,
+      "ExecutionTimeoutMilliseconds": 25000,
+      "CreatedSuspended": true,
+      "RootHandleIdentityVerified": true,
+      "RootAssignedBeforeResume": true,
+      "KillOnCloseVerified": true,
+      "BreakawayDenied": true,
+      "TimedOut": false,
+      "TerminationRequested": false,
+      "RootReaped": true,
+      "MembersStable": true,
+      "CleanupVerified": true
+    },
+    "product_observation": {
+      "schema": "termforge-qt-native-load-v1",
+      "case_id": "crt-original-load-0",
+      "source_commit": "cf8b40b2e44f9e475cfc42b5008d46c670ff1756",
+      "runtime_file_count": 52,
+      "session_id": 2,
+      "system_crt_before": {
+        "msvcp140_2.dll": false,
+        "msvcp140_1.dll": false,
+        "vcruntime140.dll": false,
+        "vcruntime140_1.dll": false,
+        "msvcp140.dll": false
+      },
+      "created": true,
+      "contained_before_resume": true,
+      "initial_wait": 0,
+      "initial_exit_code": 3221225781,
+      "initial_exit_hex": "0xC0000135",
+      "window_classes": [],
+      "visible_window_count": 0,
+      "final_wait": 0,
+      "final_exit_code": 3221225781,
+      "forced_termination": false,
+      "handles_closed": true,
+      "presented_done": null
+    },
+    "request_stderr_empty": true
+  },
+  "causal_corrected": {
+    "observation_script_exit": 0,
+    "request_status": "passed",
+    "session_id": 2,
+    "job_supervision": {
+      "Schema": "termforge-owned-vm-request-v2",
+      "Status": "passed",
+      "Error": null,
+      "RootWait": 0,
+      "RootExitCode": 0,
+      "JobBeforeActive": 0,
+      "JobBeforeTotal": 7,
+      "JobAfterActive": 0,
+      "ExecutionTimeoutMilliseconds": 25000,
+      "CreatedSuspended": true,
+      "RootHandleIdentityVerified": true,
+      "RootAssignedBeforeResume": true,
+      "KillOnCloseVerified": true,
+      "BreakawayDenied": true,
+      "TimedOut": false,
+      "TerminationRequested": false,
+      "RootReaped": true,
+      "MembersStable": true,
+      "CleanupVerified": true
+    },
+    "product_observation": {
+      "schema": "termforge-qt-native-load-v1",
+      "case_id": "crt-corrected-load-0",
+      "source_commit": "cf8b40b2e44f9e475cfc42b5008d46c670ff1756",
+      "runtime_file_count": 52,
+      "session_id": 2,
+      "system_crt_before": {
+        "msvcp140_2.dll": false,
+        "msvcp140_1.dll": false,
+        "vcruntime140.dll": false,
+        "vcruntime140_1.dll": false,
+        "msvcp140.dll": false
+      },
+      "vc_redist_before": [],
+      "vc_redist_after": [],
+      "system_crt_after": {
+        "msvcp140_2.dll": false,
+        "msvcp140_1.dll": false,
+        "vcruntime140.dll": false,
+        "vcruntime140_1.dll": false,
+        "msvcp140.dll": false
+      },
+      "created": true,
+      "contained_before_resume": true,
+      "initial_wait": 258,
+      "initial_exit_code": 259,
+      "initial_exit_hex": "0x00000103",
+      "window_classes": [
+        "_q_titlebar",
+        "Qt6103QWindowIcon",
+        "Qt6103ThemeChangeObserverWindow",
+        "Qt6103ScreenChangeObserverWindow",
+        "MSCTFIME UI",
+        "IME"
+      ],
+      "visible_window_count": 1,
+      "final_wait": 0,
+      "final_exit_code": 0,
+      "forced_termination": false,
+      "handles_closed": true,
+      "presented_done": null
+    },
+    "request_stderr_empty": true
+  },
+  "causal_corrected_cmd": {
+    "observation_script_exit": 0,
+    "request_status": "passed",
+    "session_id": 2,
+    "job_supervision": {
+      "Schema": "termforge-owned-vm-request-v2",
+      "Status": "passed",
+      "Error": null,
+      "RootWait": 0,
+      "RootExitCode": 0,
+      "JobBeforeActive": 0,
+      "JobBeforeTotal": 28,
+      "JobAfterActive": 0,
+      "ExecutionTimeoutMilliseconds": 30000,
+      "CreatedSuspended": true,
+      "RootHandleIdentityVerified": true,
+      "RootAssignedBeforeResume": true,
+      "KillOnCloseVerified": true,
+      "BreakawayDenied": true,
+      "TimedOut": false,
+      "TerminationRequested": false,
+      "RootReaped": true,
+      "MembersStable": true,
+      "CleanupVerified": true
+    },
+    "product_observation": {
+      "schema": "termforge-qt-clean-runtime-smoke-v1",
+      "case_id": "crt-corrected-smoke-0",
+      "source_commit": "cf8b40b2e44f9e475cfc42b5008d46c670ff1756",
+      "session_id": 2,
+      "qt_platform": "windows",
+      "started": true,
+      "exited": true,
+      "product_exit": 0,
+      "forced_root_termination": false,
+      "sample": {
+        "schema": "termforge-qt-cpp-smoke-v1",
+        "qt": "6.10.3",
+        "core": "cpp",
+        "backend": "fixed-microsoft-conpty",
+        "arithmetic": 750,
+        "child_exit": 37,
+        "cleanup_verified": true,
+        "image_changed": true,
+        "startup_error_visible": true,
+        "manual_close_reclaimed": true,
+        "tabs": {
+          "arithmetic": [
+            750,
+            427
+          ],
+          "survivor_after_close": 778,
+          "survivor_after_startup_failure": 147,
+          "natural_exit": 41,
+          "input_isolation": true,
+          "answer_ink_visible": true,
+          "independent_close": true,
+          "startup_error_visible": true,
+          "window_close_reclaimed": true,
+          "all_exited_status": 41,
+          "failed_only_kept_visible": true
+        },
+        "app_exec": {
+          "window_close": true,
+          "last_tab_close": true,
+          "failed_only_close": true,
+          "completed_tab_close": true,
+          "cleanup_before_quit": true,
+          "manual_status": 0
+        },
+        "presented_done": null
+      },
+      "stderr": "Qt application startup\r\ncmd started\r\n",
+      "presented_done": null
+    },
+    "request_stderr_empty": true
+  },
+  "first_missing_dll_name": null,
+  "integration": {
+    "source_commit": "c5a47adc42db592c4c1966062cbd06b12f0f88ed",
+    "source_tree": "018ed28bf1c92410806f83aceb3212139679ef75",
+    "base_commit": "4f34146ab81f5b156537b080df2156f484793cc4",
+    "source_clean_at_packaging": true,
+    "package": {
+      "runtime_files": 78,
+      "zip_bytes": 47421747,
+      "zip_sha256": "e1333a5128607539a0601b0b46e950a233411a4243ab1b8a71dd930a7bf9c5d6",
+      "source_commit": "c5a47adc42db592c4c1966062cbd06b12f0f88ed"
+    },
+    "configuration": {
+      "generator": "Visual Studio 17 2022",
+      "compiler_self_version": "19.42.34433.0",
+      "vc_tools_directory_version": "14.42.34433",
+      "windows_sdk": "10.0.26100.0",
+      "cmake": "3.31.0",
+      "python": "3.12.10",
+      "build": "Release",
+      "architecture": "x64",
+      "qt_sdk_target": "win64_msvc2022_64",
+      "qt_shell": true,
+      "candidate_adapter": false
+    },
+    "preparation": {
+      "schema": "termforge-qt-build-preparation-v1",
+      "status": "passed",
+      "qt_version": "6.10.3",
+      "qt_architecture": "win64_msvc2022_64",
+      "qt_archive_sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7",
+      "input_manifests": {
+        "qt": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+        "conpty": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+        "msvc_runtime": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+      },
+      "preparation_script_sha256": "1e89ff4340cfbab5edd7d45e9637fcd34ab98f0bac19061d053efa0f23ef37b3",
+      "sdk_transformation": "bin/qt.conf contains [Paths] and Prefix=..; no binary or .prl patch",
+      "sdk": {
+        "files": 4358,
+        "tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266"
+      },
+      "conpty_version": "1.25.260930003",
+      "conpty_package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+      "conpty_files": {
+        "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+        "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+      },
+      "msvc_runtime": {
+        "version": "14.51.36247.0",
+        "architecture": "windows-x64",
+        "package_sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+        "files": {
+          "concrt140.dll": "54716f0738af891f283d213b5c8d11b25896bb8ee3097d301eae718560cf974e",
+          "msvcp140_1.dll": "206c931bf90fdad8816de3b5e2ef80b2bcaa9406c89ecc05fe6fddffe251e982",
+          "msvcp140_2.dll": "d50d7883f20d1dc6191768d3746f52dd9cac89c346ffaed5be1f110c2f34a838",
+          "msvcp140_atomic_wait.dll": "3d0cbfaa1bf3eecf5a3f4491d2960ee803cb994f30292c6adc4a07c498f60e2b",
+          "msvcp140_codecvt_ids.dll": "8a65c7596ef2e6938731f5a1058e7e40145b6d97967cc649231a076b9a608d78",
+          "msvcp140.dll": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+          "vccorlib140.dll": "09f93d5ff96ae09767f3e1af3cdd43a5a58f2598654fc63089429bb6f9f4737f",
+          "vcruntime140_1.dll": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+          "vcruntime140_threads.dll": "40f39e8cee5f5a531b4010e18b807e8fe265b908dc58f959ecb7ebc6ea6cb11a",
+          "vcruntime140.dll": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7"
+        },
+        "license_sha256": "08651651a7602fc7c0e2763de0fde1ff9f868df2780597cd1775ee9d6441c783",
+        "notice_sha256": "510781c94971ea19adae55d2c42207d942b0646deee29d5c401f189cc25d415f"
+      },
+      "scope": "Windows local/CI build inputs only; no product package or platform acceptance"
+    },
+    "cmake_required_input": {
+      "schema": "termforge-crt-cmake-required-input-v1",
+      "source_commit": "c5a47adc42db592c4c1966062cbd06b12f0f88ed",
+      "configure_exit": 1,
+      "expected_rejection": true
+    },
+    "no_relink_repair": {
+      "source_commit": "c5a47adc42db592c4c1966062cbd06b12f0f88ed",
+      "exe_sha256_before": "155a05d1a90b9498ee190b08e4b5d02c54772753a81aab30fa6c8cf6faaf5d41",
+      "exe_sha256_after": "155a05d1a90b9498ee190b08e4b5d02c54772753a81aab30fa6c8cf6faaf5d41",
+      "exe_unchanged": true,
+      "restored_crt_sha256": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+      "missing_before_build": true,
+      "build_exit": 0,
+      "restored_expected": true,
+      "schema": "termforge-crt-no-relink-repair-v1"
+    },
+    "tool_tests": {
+      "normal": {
+        "passed": 27,
+        "total": 27
+      },
+      "optimized": {
+        "passed": 27,
+        "total": 27
+      },
+      "windows_junction_negative_tests": 5,
+      "new_crt_public_cli_subprocess_tests": 21,
+      "existing_main_cli_boundary_tests": 6
+    },
+    "local_offscreen_ctest": {
+      "passed": 1,
+      "total": 1,
+      "exit": 0,
+      "job": {
+        "active": 0,
+        "total": 26,
+        "terminated": 0
+      },
+      "presented_done": null
+    },
+    "guest_native_load": {
+      "observation_script_exit": 0,
+      "request_status": "passed",
+      "session_id": 2,
+      "job_supervision": {
+        "Schema": "termforge-owned-vm-request-v2",
+        "Status": "passed",
+        "Error": null,
+        "RootWait": 0,
+        "RootExitCode": 0,
+        "JobBeforeActive": 0,
+        "JobBeforeTotal": 7,
+        "JobAfterActive": 0,
+        "ExecutionTimeoutMilliseconds": 25000,
+        "CreatedSuspended": true,
+        "RootHandleIdentityVerified": true,
+        "RootAssignedBeforeResume": true,
+        "KillOnCloseVerified": true,
+        "BreakawayDenied": true,
+        "TimedOut": false,
+        "TerminationRequested": false,
+        "RootReaped": true,
+        "MembersStable": true,
+        "CleanupVerified": true
+      },
+      "product_observation": {
+        "schema": "termforge-qt-native-load-v1",
+        "case_id": "crt-integrated-load-0",
+        "source_commit": "c5a47adc42db592c4c1966062cbd06b12f0f88ed",
+        "runtime_file_count": 78,
+        "session_id": 2,
+        "system_crt_before": {
+          "msvcp140_2.dll": false,
+          "msvcp140_1.dll": false,
+          "vcruntime140.dll": false,
+          "vcruntime140_1.dll": false,
+          "msvcp140.dll": false
+        },
+        "vc_redist_before": [],
+        "vc_redist_after": [],
+        "system_crt_after": {
+          "msvcp140_2.dll": false,
+          "msvcp140_1.dll": false,
+          "vcruntime140.dll": false,
+          "vcruntime140_1.dll": false,
+          "msvcp140.dll": false
+        },
+        "created": true,
+        "contained_before_resume": true,
+        "initial_wait": 258,
+        "initial_exit_code": 259,
+        "initial_exit_hex": "0x00000103",
+        "window_classes": [
+          "_q_titlebar",
+          "Qt6103QWindowIcon",
+          "Qt6103ThemeChangeObserverWindow",
+          "Qt6103ScreenChangeObserverWindow",
+          "MSCTFIME UI",
+          "IME"
+        ],
+        "visible_window_count": 1,
+        "final_wait": 0,
+        "final_exit_code": 0,
+        "forced_termination": false,
+        "handles_closed": true,
+        "presented_done": null
+      },
+      "request_stderr_empty": true
+    },
+    "guest_windows_cmd": {
+      "observation_script_exit": 0,
+      "request_status": "passed",
+      "session_id": 2,
+      "job_supervision": {
+        "Schema": "termforge-owned-vm-request-v2",
+        "Status": "passed",
+        "Error": null,
+        "RootWait": 0,
+        "RootExitCode": 0,
+        "JobBeforeActive": 0,
+        "JobBeforeTotal": 28,
+        "JobAfterActive": 0,
+        "ExecutionTimeoutMilliseconds": 30000,
+        "CreatedSuspended": true,
+        "RootHandleIdentityVerified": true,
+        "RootAssignedBeforeResume": true,
+        "KillOnCloseVerified": true,
+        "BreakawayDenied": true,
+        "TimedOut": false,
+        "TerminationRequested": false,
+        "RootReaped": true,
+        "MembersStable": true,
+        "CleanupVerified": true
+      },
+      "product_observation": {
+        "schema": "termforge-qt-clean-runtime-smoke-v1",
+        "case_id": "crt-integrated-smoke-0",
+        "source_commit": "c5a47adc42db592c4c1966062cbd06b12f0f88ed",
+        "session_id": 2,
+        "qt_platform": "windows",
+        "started": true,
+        "exited": true,
+        "product_exit": 0,
+        "forced_root_termination": false,
+        "sample": {
+          "schema": "termforge-qt-cpp-smoke-v1",
+          "qt": "6.10.3",
+          "core": "cpp",
+          "backend": "fixed-microsoft-conpty",
+          "arithmetic": 750,
+          "child_exit": 37,
+          "cleanup_verified": true,
+          "image_changed": true,
+          "startup_error_visible": true,
+          "manual_close_reclaimed": true,
+          "tabs": {
+            "arithmetic": [
+              750,
+              427
+            ],
+            "survivor_after_close": 778,
+            "survivor_after_startup_failure": 147,
+            "natural_exit": 41,
+            "input_isolation": true,
+            "answer_ink_visible": true,
+            "independent_close": true,
+            "startup_error_visible": true,
+            "window_close_reclaimed": true,
+            "all_exited_status": 41,
+            "failed_only_kept_visible": true
+          },
+          "app_exec": {
+            "window_close": true,
+            "last_tab_close": true,
+            "failed_only_close": true,
+            "completed_tab_close": true,
+            "cleanup_before_quit": true,
+            "manual_status": 0
+          },
+          "presented_done": null
+        },
+        "stderr": "Qt application startup\r\ncmd started\r\n",
+        "presented_done": null
+      },
+      "request_stderr_empty": true
+    },
+    "post_run": {
+      "vc_redist_products_after": [],
+      "status": "passed",
+      "system_crt_after": {
+        "msvcp140_2.dll": false,
+        "msvcp140_1.dll": false,
+        "vcruntime140.dll": false,
+        "vcruntime140_1.dll": false,
+        "msvcp140.dll": false
+      },
+      "completed_requests": [
+        {
+          "id": "crt-original-load-0",
+          "script_sha256": "99880de239d4e33da59273f32409a80276d9e351bd1d29a32e2177524149d7a7",
+          "job_after_active": 0,
+          "root_reaped": true,
+          "cleanup_verified": true,
+          "protocol": "termforge-owned-vm-request-v2"
+        },
+        {
+          "id": "crt-corrected-load-0",
+          "script_sha256": "b618fb0bc9e03fdf8b328a437b3fe1287cdf3461ac68e3f513d08d4adb8f1a33",
+          "job_after_active": 0,
+          "root_reaped": true,
+          "cleanup_verified": true,
+          "protocol": "termforge-owned-vm-request-v2"
+        },
+        {
+          "id": "crt-corrected-smoke-0",
+          "script_sha256": "ef94c5ed8d930d4821e759f0d7b34c2965dac4af334ede84a149a06b4f9b7436",
+          "job_after_active": 0,
+          "root_reaped": true,
+          "cleanup_verified": true,
+          "protocol": "termforge-owned-vm-request-v2"
+        },
+        {
+          "id": "crt-integrated-load-0",
+          "script_sha256": "f23e7b3220739ad1f3fda9374ada3f2a54999a860733ad18561918ebef0a4dde",
+          "job_after_active": 0,
+          "root_reaped": true,
+          "cleanup_verified": true,
+          "protocol": "termforge-owned-vm-request-v2"
+        },
+        {
+          "id": "crt-integrated-smoke-0",
+          "script_sha256": "44b1cea2c3c83481616f34637f436277137f6dc050075a7217ba47e3149f4f6b",
+          "job_after_active": 0,
+          "root_reaped": true,
+          "cleanup_verified": true,
+          "protocol": "termforge-owned-vm-request-v2"
+        }
+      ],
+      "schema": "termforge-crt-guest-final-audit-v1",
+      "own_incomplete_requests": 0,
+      "frozen_packages": [
+        {
+          "source_commit": "cf8b40b2e44f9e475cfc42b5008d46c670ff1756",
+          "case": "original",
+          "manifest_files_verified": 52,
+          "additional_crt_license_notice_verified": 0
+        },
+        {
+          "source_commit": "cf8b40b2e44f9e475cfc42b5008d46c670ff1756",
+          "case": "corrected",
+          "manifest_files_verified": 52,
+          "additional_crt_license_notice_verified": 24
+        },
+        {
+          "source_commit": "c5a47adc42db592c4c1966062cbd06b12f0f88ed",
+          "case": "integration",
+          "manifest_files_verified": 78,
+          "additional_crt_license_notice_verified": 0
+        }
+      ],
+      "pending_script_count": 0
+    }
+  },
+  "observed_failure_boundaries": [
+    {
+      "case": "original frozen product",
+      "product_exit_hex": "0xC0000135",
+      "visible_windows": 0
+    },
+    {
+      "case": "first corrected-package preparation helper",
+      "script_exit": 1,
+      "reason": "PowerShell 5.1 PSObject.Properties.Count does not yield the required array count; fixed using @(...).Count before copying or launching"
+    },
+    {
+      "case": "initial deployment test setup",
+      "test_errors": 1,
+      "reason": "New tool file did not exist; not counted as a product or behavior red"
+    },
+    {
+      "case": "deployment CLI behavior red",
+      "failed": 1,
+      "reason": "Stub explicitly returned unimplemented instead of deployment success"
+    },
+    {
+      "case": "junction inventory red",
+      "failed": 1,
+      "reason": "Old CLI wrongly inventoried sibling directory through NTFS junction"
+    },
+    {
+      "case": "junction source red",
+      "failed": 2,
+      "reason": "Old verify/deploy resolved source junction before identity checks"
+    },
+    {
+      "case": "CMake missing explicit CRT directory",
+      "configure_exit": 1,
+      "reason": "Required input rejected"
+    }
+  ],
+  "request_script_identities": {
+    "native-load-original.ps1": {
+      "source_sha256": "48f9d7a0784c2cbddace53ac2c1fbf14fa57a9532e3ddb13c47b08ac9b31205d",
+      "staged_request_script_sha256": "99880de239d4e33da59273f32409a80276d9e351bd1d29a32e2177524149d7a7"
+    },
+    "native-load-corrected.ps1": {
+      "source_sha256": "0964aff7520fa12d0103ce0367f77eb170358440d03ea31c97b305b96da096b4",
+      "staged_request_script_sha256": "b618fb0bc9e03fdf8b328a437b3fe1287cdf3461ac68e3f513d08d4adb8f1a33"
+    },
+    "native-smoke-corrected.ps1": {
+      "source_sha256": "61a356b1d13ea48f3d1262d46fa44c739308a5de4bb093042ba1fb7de3fc189f",
+      "staged_request_script_sha256": "ef94c5ed8d930d4821e759f0d7b34c2965dac4af334ede84a149a06b4f9b7436"
+    },
+    "native-load-integrated.ps1": {
+      "source_sha256": "1de970780aea397cb9ebafafbc709bd007e7a89e22838cef9ac7f52f300814b5",
+      "staged_request_script_sha256": "f23e7b3220739ad1f3fda9374ada3f2a54999a860733ad18561918ebef0a4dde"
+    },
+    "native-smoke-integrated.ps1": {
+      "source_sha256": "592b370c807ca94b8ae187ed748818fe904301aca4b070ac439743e33a428aae",
+      "staged_request_script_sha256": "44b1cea2c3c83481616f34637f436277137f6dc050075a7217ba47e3149f4f6b"
+    }
+  },
+  "private_raw_records": [
+    {
+      "name": "01-cli-red.log",
+      "bytes": 1168,
+      "sha256": "658355c75996559ee166a013cb02c490acd86284309aeea66381323f093cf079",
+      "published": false
+    },
+    {
+      "name": "02-cli-green.log",
+      "bytes": 316,
+      "sha256": "5eb737e89bdea1eb350fb331a4bc604f802e0bf9c58e969da3ef600dd85a38aa",
+      "published": false
+    },
+    {
+      "name": "03-cli-optimized-tests.log",
+      "bytes": 2368,
+      "sha256": "ffe071b3ccccc49f128cc7d75dc136c7e1bcc9bcabe5d5f80894989e943529ae",
+      "published": false
+    },
+    {
+      "name": "03-cli-tests.log",
+      "bytes": 2368,
+      "sha256": "09cbd6171036704f56b98a251729eb11da55e50647685529fc7eb6033f9bb8a5",
+      "published": false
+    },
+    {
+      "name": "04-real-preparation.json",
+      "bytes": 1711,
+      "sha256": "887f480a116efa1f08ecc84ba12c5722d0afeb69fb12e9914f91d1bdc40b0161",
+      "published": false
+    },
+    {
+      "name": "04-real-preparation.log",
+      "bytes": 1739,
+      "sha256": "d419ce15793947ace1d3a8e935b2514773661f5c5324a285ea503a5b050aa635",
+      "published": false
+    },
+    {
+      "name": "05-deploy-red.log",
+      "bytes": 1129,
+      "sha256": "7fb752e78e62d6d997bdaebf9b72797e9ae3a9e5e8e01feab9bb09aa82e44ae9",
+      "published": false
+    },
+    {
+      "name": "06-deploy-behavior-red.log",
+      "bytes": 979,
+      "sha256": "20d7b7577ed8c21da208c64b7c72e46afcb76fa789c4ebe17e778b4708d98a8d",
+      "published": false
+    },
+    {
+      "name": "07-deploy-green.log",
+      "bytes": 1594,
+      "sha256": "fabbcc1ced959d858ac84ab6a2a38331525eb21e2d4f5680afa8602c579e8b65",
+      "published": false
+    },
+    {
+      "name": "08-original-guest-request.json",
+      "bytes": 2466,
+      "sha256": "936ec96edb7e7fc83fe390313071a4e5bc3d14e410bbe27e1d0bec877f3c2a88",
+      "published": false
+    },
+    {
+      "name": "09-integrated-build.log",
+      "bytes": 8237,
+      "sha256": "31aba2115a2e4a4a4a18837747709769b67b16494481180e4b91112ae10b3d63",
+      "published": false
+    },
+    {
+      "name": "10-corrected-package-guest.json",
+      "bytes": 801,
+      "sha256": "9ed471447e12ad0663a3c93e169787919c80f44f623c103d9f6e7aec325c20b8",
+      "published": false
+    },
+    {
+      "name": "11-corrected-package-guest.json",
+      "bytes": 267,
+      "sha256": "71e134f27bb80cd221b45f00b95b937f7e336a59dbc330638113bcc81163f3a0",
+      "published": false
+    },
+    {
+      "name": "12-corrected-guest-request.json",
+      "bytes": 3268,
+      "sha256": "fac7515b476ca244dbc26422a54c71217e8c0cf5bd5f18b674c4d53c99cfa657",
+      "published": false
+    },
+    {
+      "name": "13-integrated-ctest.log",
+      "bytes": 2413,
+      "sha256": "159b31310a50d2986ea96f4074371679667729fa9f2bb32b97b49ca7b31c0281",
+      "published": false
+    },
+    {
+      "name": "14-corrected-smoke-guest.json",
+      "bytes": 3952,
+      "sha256": "a2d8ef93eb09c48e1cf52fcac5044d711214ceff1b40a1bf64711651e16ae278",
+      "published": false
+    },
+    {
+      "name": "15-cli-tests.log",
+      "bytes": 3859,
+      "sha256": "2f17bb4fe7d456deb1506d79346605a1b26bca649ddc1c6f515671864314ca35",
+      "published": false
+    },
+    {
+      "name": "16-cmake-missing-red.log",
+      "bytes": 1399,
+      "sha256": "1587d2be423421e0d4ffc70b2d2c23b1bacb05e814c797559cc5fa6eb72e69c3",
+      "published": false
+    },
+    {
+      "name": "17-full-preparation.json",
+      "bytes": 2584,
+      "sha256": "187428835c2d200a8b5a94ee341b6a0476bae19a13f8442caad3347cf1a12215",
+      "published": false
+    },
+    {
+      "name": "17-full-preparation.log",
+      "bytes": 2628,
+      "sha256": "6b0085f58fbb5cb7e63b0b616b4c7cd6226d5b9015799fad58c52bc11cb7c1f0",
+      "published": false
+    },
+    {
+      "name": "18-original-pe-imports.json",
+      "bytes": 32794,
+      "sha256": "68c00d3f371181df4e632a886b103ae656cff67b4c12f94eb17c775b3675a1bc",
+      "published": false
+    },
+    {
+      "name": "19-final-configure.log",
+      "bytes": 1225,
+      "sha256": "a6d573b479de86796d8441d80e6bee61d42badf7d8bbfbdcacf87b25c3d5486c",
+      "published": false
+    },
+    {
+      "name": "20-final-build.log",
+      "bytes": 8101,
+      "sha256": "e61d5d0e0c3fb148306bf0c4b5df1cb5d537fa98c8a0d60f4e10973f8a68f511",
+      "published": false
+    },
+    {
+      "name": "21-final-ctest.log",
+      "bytes": 2325,
+      "sha256": "735ba4fff0192f5050a48bdced1f5121d685bfb7e557a9d445de47bd5f4628b6",
+      "published": false
+    },
+    {
+      "name": "22-integration-package-identity.json",
+      "bytes": 204,
+      "sha256": "50b656dfbfbe371d25bf34413681ec871c987074c999b1e006a1cf6daab85d29",
+      "published": false
+    },
+    {
+      "name": "23-integrated-product-pe-imports.json",
+      "bytes": 20192,
+      "sha256": "9a33d1140ec6cab6083023c192c4d2f95caddb0edac8e8136b53aa0a1fcaa6e6",
+      "published": false
+    },
+    {
+      "name": "24-integrated-smoke-pe-imports.json",
+      "bytes": 21159,
+      "sha256": "93acb1283a0fb15cf93d2800ec40c796a2bf62667bc7c53ad0118f0f34482dac",
+      "published": false
+    },
+    {
+      "name": "25-before-qt-environment.json",
+      "bytes": 3868,
+      "sha256": "95531110635f3c2291b4a7a88068516a7e594ef1b89e6c4eea64eb8ddb98c264",
+      "published": false
+    },
+    {
+      "name": "26-integrated-load-guest.json",
+      "bytes": 3270,
+      "sha256": "9add442426452a37e77ab4b65831c6b5f5fa5d24ef6fd93221b177f78a15d39d",
+      "published": false
+    },
+    {
+      "name": "26a-integrated-transfer-unpack.json",
+      "bytes": 408,
+      "sha256": "6f34895b90ef88e9ddaa9cda85eec9c9f8c48f62ec0147c36635294223f56328",
+      "published": false
+    },
+    {
+      "name": "27-integrated-smoke-guest.json",
+      "bytes": 3954,
+      "sha256": "c005b9ad14a9cc9e6841f90c03f2801581db639754de745feb534edadedc9528",
+      "published": false
+    },
+    {
+      "name": "28-guest-final-audit-envelope.json",
+      "bytes": 4750,
+      "sha256": "7ed6f9ec6249d6f03b9deaa5f6a172c4ff7f5fb66bfe9cd7094a50167439be79",
+      "published": false
+    },
+    {
+      "name": "28-guest-final-audit.json",
+      "bytes": 4356,
+      "sha256": "28741c93c8c951ef95d2a0d36f6a8b8721f0a17bb005b0f6000634d6fd97f59a",
+      "published": false
+    },
+    {
+      "name": "29-cmake-missing-final.json",
+      "bytes": 178,
+      "sha256": "cd777219c1d202e1d23adf292cf26e5f875314e1d7bedc25ea84702f6d3dd40b",
+      "published": false
+    },
+    {
+      "name": "29-cmake-missing-final.log",
+      "bytes": 457,
+      "sha256": "965371b9238e8f6a0146e248b0a4baf55179906a37ed1808d8a840e7c20807bf",
+      "published": false
+    },
+    {
+      "name": "30-no-relink-repair.json",
+      "bytes": 505,
+      "sha256": "3f5478d5d39667d654628b252ca3a2bb3a1b8ef99a4f7fdf5d6d6748f7073d63",
+      "published": false
+    },
+    {
+      "name": "30-no-relink-repair.log",
+      "bytes": 267,
+      "sha256": "ad4c017785056706285ac06e6d8bc9d90940d32f2c2383414aed7fdcf895752d",
+      "published": false
+    },
+    {
+      "name": "31-public-evidence-check.json",
+      "bytes": 244,
+      "sha256": "96f71def838e027fd94d6d22485b509589a8fc96937bb302f8509553e880022e",
+      "published": false
+    },
+    {
+      "name": "final-audit.ps1",
+      "bytes": 3413,
+      "sha256": "a3c46ff0148d1e08abbaa0b4444b7c027e2875aad19491dc2086cb7a8542688e",
+      "published": false
+    },
+    {
+      "name": "junction-green.log",
+      "bytes": 293,
+      "sha256": "467fbbfbf4d4b67794f25289fdcebeebc4a83bf9dc78e2b61cb9dba5790a18ad",
+      "published": false
+    },
+    {
+      "name": "junction-red.log",
+      "bytes": 1194,
+      "sha256": "50cfabe6278cf1406f3ae29d334b9590dafc96b536fbfa30f09fe1049137f267",
+      "published": false
+    },
+    {
+      "name": "junction-root-green.log",
+      "bytes": 293,
+      "sha256": "cf76763934107814b4e2ca01267a56783c68bdc0a2a8a6bf9d2ab824ba325d30",
+      "published": false
+    },
+    {
+      "name": "junction-root-red.log",
+      "bytes": 2412,
+      "sha256": "db642dab0365ca8be704aff989089a5e5e2ababa2c74d1470111b21dd56b0a75",
+      "published": false
+    },
+    {
+      "name": "junction-suite-green.log",
+      "bytes": 4822,
+      "sha256": "5875a898439cdd78630abf1681bfeae6352c78f8c8d50528179ebd2e85b81cae",
+      "published": false
+    },
+    {
+      "name": "junction-suite-optimized-green.log",
+      "bytes": 4822,
+      "sha256": "2d2856790b46bb39287623146dacc83375d5372a6c41023ff0646cb879c0fa0a",
+      "published": false
+    },
+    {
+      "name": "native-load-corrected.ps1",
+      "bytes": 7267,
+      "sha256": "0964aff7520fa12d0103ce0367f77eb170358440d03ea31c97b305b96da096b4",
+      "published": false
+    },
+    {
+      "name": "native-load-integrated.ps1",
+      "bytes": 7275,
+      "sha256": "1de970780aea397cb9ebafafbc709bd007e7a89e22838cef9ac7f52f300814b5",
+      "published": false
+    },
+    {
+      "name": "native-load-original.ps1",
+      "bytes": 6578,
+      "sha256": "48f9d7a0784c2cbddace53ac2c1fbf14fa57a9532e3ddb13c47b08ac9b31205d",
+      "published": false
+    },
+    {
+      "name": "native-smoke-corrected.ps1",
+      "bytes": 2247,
+      "sha256": "61a356b1d13ea48f3d1262d46fa44c739308a5de4bb093042ba1fb7de3fc189f",
+      "published": false
+    },
+    {
+      "name": "native-smoke-integrated.ps1",
+      "bytes": 2255,
+      "sha256": "592b370c807ca94b8ae187ed748818fe904301aca4b070ac439743e33a428aae",
+      "published": false
+    },
+    {
+      "name": "prepare-corrected.ps1",
+      "bytes": 1629,
+      "sha256": "f75aecacabafb61ce5ab556154928b0cdfff9e33dcc9522933f7a56150f7f62f",
+      "published": false
+    },
+    {
+      "name": "unpack-integrated.ps1",
+      "bytes": 1375,
+      "sha256": "091804fbceaf6e452c5d0e759c3a41de0af1a30d458ac69a10f7ca101782acf9",
+      "published": false
+    },
+    {
+      "name": "unpack-original.ps1",
+      "bytes": 1375,
+      "sha256": "5aa964bfe6be201ec7abd36422ec67aefb4722a9c59b4b19f36832b8db5cf54e",
+      "published": false
+    }
+  ],
+  "public_evidence_check": {
+    "schema": "termforge-crt-public-evidence-check-v1",
+    "status": "passed",
+    "public_files": 8,
+    "staged_script_hashes_checked": 5,
+    "runtime_files_checked": 76,
+    "pe_files_checked": 104,
+    "original_runtime_files_checked": 52
+  },
+  "limitations": [
+    "No complete R2 release or Qt/third-party redistribution audit",
+    "No physical keyboard, IME, Find, rename, real cross-DPI product workflow or presented_done acceptance",
+    "No numeric performance tolerance or performance-equivalence claim",
+    "Static imports are an inventory, not proof of dynamic behavior",
+    "Original loader status does not identify which CRT DLL the loader encountered first",
+    "New-source integration success is separate from the unchanged-cf8 CRT-only causal comparison",
+    "CI and two-axis review tracked in the PR, not retroactively claimed by this local record"
+  ]
+}

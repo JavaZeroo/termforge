@@ -10,20 +10,21 @@
 
 ## 构建与运行
 
-按 [Qt 依赖说明](../../third_party/qt/README.md)准备 Qt 6.10.3 / MSVC 2022 x64 qtbase 和固定 ConPTY 文件对：
+按 [Qt 依赖说明](../../third_party/qt/README.md)准备 Qt 6.10.3 / MSVC 2022 x64 qtbase、固定 ConPTY 文件对和 [app-local 微软 CRT](../../third_party/msvc_runtime/README.md)：
 
 ```powershell
 cmake -S . -B build/qt-cpp -G "Visual Studio 17 2022" -A x64 `
   -DTERMFORGE_BUILD_QT_SHELL=ON `
   -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF `
   -DQt6_DIR="<Qt SDK prefix>/lib/cmake/Qt6" `
-  -DTERMFORGE_CONPTY_BACKEND_DIR="<absolute fixed ConPTY pair directory>"
+  -DTERMFORGE_CONPTY_BACKEND_DIR="<absolute fixed ConPTY pair directory>" `
+  -DTERMFORGE_MSVC_RUNTIME_DIR="<absolute prepared CRT directory>"
 cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke
 build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe
 ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_shell$' --output-on-failure
 ```
 
-产品入口缺少固定包时明确报错；启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/` 与 `assets/fonts/`。当前只是本地构建输出，Qt/第三方与运行库的完整分发审计、干净机器验证及产品打包尚未完成。
+固定 ConPTY/CRT 输入缺失或篡改时构建明确失败；实际工具集更新到固定 CRT 之外时须重新审查依赖。产品中的 shell 启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/`、`assets/fonts/`、十个固定 CRT DLL 及其原许可/NOTICE；每次构建重新校验并部署 CRT，不运行安装器、不修改 System32。最终目录用 `tools/msvc_runtime.py manifest` 记录全部文件。当前只是本地构建输出，Qt/第三方的完整分发审计及产品打包尚未完成。
 
 ## 独立验证面
 

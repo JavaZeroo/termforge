@@ -25,7 +25,9 @@
 |---|---|---|---|
 | 自主 C++ / Qt / 固定微软 ConPTY | **实现中，未验收**：[显式 Qt 入口](../src/qt/README.md)提供固定 80×24 的 cmd 标签、基本 ASCII/16 色及各会话独立有界队列；双 cmd 输入、关闭和错误隔离及真实事件循环退出前回收有[限定验证](../experiments/shell/results/2026-10-28-qt-tabs/README.md)。Qt 1 项与其余 49 项既有/独立诊断分列 | 分屏、其他 shell、工作区恢复、动态 resize、历史/选择/Find、Unicode/IME、真实 DPI、应用兼容与性能仍需实现或迁移；应用/标签退出策略沿原型合同，完整 WindTerm 标签行为对照未完成；当前不是可发布开发包 | R2 |
 
-自主 C++ 核心的 [#130 双缓冲存储基础](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)已在独立模块边界实现拥有状态、交换激活、共享行 ID、双帧物理 resize 与文档 epoch 隔离，旧位置、选择、搜索及 viewport 不会在切换返回后复活。该基础尚未接入 private CSI；1049 的样式、重复进入清空及历史文档策略与完整 [#27](https://github.com/JavaZeroo/termforge/issues/27)另行验收，不表示产品已支持备用屏或 Qt 交互已迁移。
+自主 C++ 核心已有 [#130 双缓冲存储基础](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)，并接入 [#135 限定 1049 协议](../experiments/core/results/2026-10-29-cpp-1049/README.md)：strict/recovery 识别 `?1049h/l`，重复进入归首格、清旧备用文本和复位写入颜色，返回恢复主屏文字/光标/颜色及 pending-wrap。共享行 ID、双帧物理 resize 与逻辑 epoch 防止旧位置、选择、搜索及 viewport 复活，包括清屏后重写相同文字。原版完整网格/背景、非颜色属性及其他模式仍未知；本地55项中 Qt1项与其余54项诊断分列，13条内部跳过保留，不表示完整 [#27](https://github.com/JavaZeroo/termforge/issues/27)、真实 TUI/Qt 交互或系统剪贴板已验收。
+
+Qt 构建显式准备并部署[固定微软 CRT 14.51.36247.0](../third_party/msvc_runtime/README.md)，不安装到 System32。隔离 Windows 的[限定加载与 cmd 验证](../experiments/shell/results/2026-10-29-qt-crt-deploy/README.md)保留原包失败、原 52 文件不变且仅追加 CRT/原许可后的成功，以及新源码包的独立验证；它不解除完整产品打包、Qt/第三方分发审计、实际 DPI/IME 或物理呈现的验收缺口。
 
 官方参考的基础文字行为已按 [R1-01 合同](research/windterm-r1-text-contract.md)完成两组各两轮的自动取证；这为独立实现提供行为依据，产品能力仍按下表分别验收。
 
@@ -51,7 +53,7 @@
 | 主区/底部多标签与分屏 | **限定验收**：两个区域独立选中标签，共计最多 8 个真实本地会话；主区可有一个真实左右 split，Alt+- 创建、Alt+Z 隐藏/恢复、Alt+Left/Right 切换、Alt+X 关闭，[两轮独立输出/后台/焦点/回收证据](../experiments/shell/results/2026-10-24-r2-main-split/validation.json) | 仅主区一个 split；任意嵌套、标签排序/拖放、复制会话、标签搜索/颜色未完成；分屏持久化范围见配置行 | R2 / R3 / R4 |
 | 基础窗口操作 | **限定验收**：新建/切换/关闭/重命名、五条分隔线、面板显隐、底部焦点模式 | 完整会话动作/快捷键、命令面板、目标 Focus/SyncInput 行为 | R1 / R4 |
 | 工作区外观 | **实现中，未验收**：当前 Qt Widgets 路线待迁移，以下为既有 Win32 原型证据；两种逻辑尺寸下部分外框/层级依据直接取证；UI 字体来自独立 OFL 来源，私有加载、实际 GDI face/em/行高与缺失资产失败有自动检查 | 不是像素等价；图标、主题/透明度、多语言及所有状态仍缺。Explorer/Filer/Outline 当前为空区域 | R2 / R3 / R4 |
-| DPI 与文字缩放 | **限定验收**：每会话 50%–200%，受控 96→144→192→96；[字体/显示合同](milestones/R2-font-display.md)明确 12×26 基准网格。两台真实 96-DPI 显示器间往返两次保持窗口、rename 焦点、隐藏标签和网格，[证据](../experiments/shell/results/2026-10-24-r2-monitor-font/validation.json)明确 `distinct_dpi=false`；v2 会话恢复另覆盖 100%/150%/75% zoom | 不同 DPI 的真实跨屏、实际呈现和真实 IME 跨屏仍未验收；恢复证据为同一 96-DPI 私有 desktop，目标字形/逐字形 fallback 未等价 | R2 |
+| DPI 与文字缩放 | **限定验收**：每会话 50%–200%，受控 96→144→192→96；[字体/显示合同](milestones/R2-font-display.md)明确 12×26 基准网格。两台真实 96-DPI 显示器间往返两次保持窗口、rename 焦点、隐藏标签和网格，[证据](../experiments/shell/results/2026-10-24-r2-monitor-font/validation.json)明确 `distinct_dpi=false`；v2 会话恢复另覆盖 100%/150%/75% zoom。[隔离 Windows 11 环境](research/r2-win11-display-environment.md)另有两个实际 96/120-DPI 输出和独立 Win32 窗口两轮往返，仅属环境基础 | 正式 Qt 产品不同 DPI 的完整交互、实际呈现和真实 IME 跨屏仍未验收；旧恢复证据为同一 96-DPI 私有 desktop，目标字形/逐字形 fallback 未等价 | R2 |
 | 配置与会话持久化 | **限定验收**：有界 v2、原子替换、v1 迁移、空会话与损坏/未知版本保护；[多会话恢复](../experiments/shell/results/2026-10-25-workspace-restore-multi/validation.json)覆盖 shell 类型/目录/标题/zoom/split/窗口，[迁移回退](../experiments/shell/results/2026-10-25-workspace-recovery-guards/validation.json)及[写失败与关闭策略](../experiments/shell/results/2026-10-25-workspace-write-failure/validation.json)均有真实验证。[#61 的合法编辑 BS 前缀](../experiments/shell/results/2026-10-26-workspace-restore-bs/validation.json)与 [#72 的空记录 CR 重绘](../experiments/shell/results/2026-10-27-workspace-empty-cr/validation.json)已限定修正；后者同源码三配置共 18 次保存/恢复/钳制通过；目录/版本完成按[独立输出与新提示符合同](research/workspace-restore-transport-oracle.md)核对；只重建白名单 shell，不恢复原进程/历史；保存失败保留窗口，显式放弃保存才跳过 | 仅当前单工作区、正常窗口和白名单本地会话；偏好、分组/搜索、最大化/多窗口与文字标记恢复归后续。真实 DPI、呈现和 #38 等独立回归不因此视为通过，R2 出口未宣告完成 | R2 / R3 / R4 |
 | 文本增强与辅助面板 | **未实现** | 高亮/时间戳/折叠/outline、补全与 Fish 增强、命令历史、Sender/QuickBar、Free Type Mode（输入模式，行为待取证）、vim 本地/远程键位、锁屏、Sysmon | R4 |
 
