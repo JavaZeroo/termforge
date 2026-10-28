@@ -119,15 +119,39 @@ class ExportTests(unittest.TestCase):
                 del self.batch["observations"][index]["job_at_timeout"]
 
     def test_false_plan_source_or_other_byte_drift_is_rejected(self):
-        path = self.root / "local/node-144-offline-proposal-p3.json"
-        original = self.files[path]
-        for change in ({"source_base_commit": "/private/TF_SYNTHETIC_FALSE_PLAN_ID"},
-                       {"source_base_commit": "f" * 40}, {"extra": "synthetic-byte-drift"}):
+        for suffix, _, _, _ in self.false_contracts:
+            path = self.root / f"local/node-144-offline-proposal{suffix}.json"
+            original = self.files[path]
+            for change in ({"source_base_commit": "/private/TF_SYNTHETIC_FALSE_PLAN_ID"},
+                           {"source_base_commit": "f" * 40}, {"extra": "synthetic-byte-drift"}):
+                with self.subTest(proposal=suffix, change=change):
+                    self.put(path, {**json.loads(original), **change})
+                    with self.assertRaisesRegex(ValueError, "False proposal identity"):
+                        self.export()
+            self.files[path] = original
+
+    def test_timeout_account_rejects_unknown_fields_and_non_integer_counts(self):
+        row = self.batch["observations"][1]
+        for change in ({"private_path": "/private/TF_SYNTHETIC_JOB_SECRET"}, {"active": True}):
             with self.subTest(change=change):
-                self.put(path, {**json.loads(original), **change})
-                with self.assertRaisesRegex(ValueError, "False proposal identity"):
+                row["job_at_timeout"] = {"active": 2, "total": 2, "terminated": 0, **change}
+                with self.assertRaisesRegex(ValueError, "Job fields differ|Invalid Job count"):
                     self.export()
-        self.files[path] = original
+
+    def test_non_timeout_null_is_allowed_and_timeout_projection_has_only_counts(self):
+        for index in (0, 2):
+            self.batch["observations"][index]["job_at_timeout"] = None
+        result = self.export()
+        self.assertEqual(result["observations"][1]["job_at_timeout"], {"active": 2, "total": 2, "terminated": 0})
+        self.assertEqual(result["unexecuted_false_plans"][2]["source_base_commit"], exporter.EXECUTED_SOURCE)
+
+    def test_source_commit_requires_exact_lowercase_hex_even_with_matching_content_digest(self):
+        path = self.root / "local/node-144-offline-proposal-p3.json"
+        self.put(path, {**json.loads(self.files[path]), "source_base_commit": "A" * 40})
+        suffix, label, _, source = self.false_contracts[2]
+        self.false_contracts[2] = (suffix, label, exporter.digest(self.files[path]), source)
+        with self.assertRaisesRegex(ValueError, "Invalid hexadecimal identity"):
+            self.export()
 
 
 if __name__ == "__main__":
