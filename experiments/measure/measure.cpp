@@ -10,13 +10,26 @@
 #include <new>
 #include <optional>
 #include <sstream>
+#include <string_view>
 #ifdef _WIN32
 #include <windows.h>
 #include <psapi.h>
 #endif
 
+#ifndef TERMFORGE_MEASURE_ALLOCATOR_WRAPPER
+#define TERMFORGE_MEASURE_ALLOCATOR_WRAPPER 1
+#endif
+static_assert(TERMFORGE_MEASURE_ALLOCATOR_WRAPPER == 0 || TERMFORGE_MEASURE_ALLOCATOR_WRAPPER == 1,
+              "allocator wrapper flag must be 0 or 1");
+static constexpr bool allocator_wrapper_compiled = TERMFORGE_MEASURE_ALLOCATOR_WRAPPER != 0;
+#ifdef TERMFORGE_RECOVERY_MEASURE
+static constexpr auto parser_mode = termforge::ParseMode::recovery;
+#else
+static constexpr auto parser_mode = termforge::ParseMode::strict;
+#endif
 static bool count_allocations = false;
 static size_t allocations = 0, allocated_bytes = 0;
+#if TERMFORGE_MEASURE_ALLOCATOR_WRAPPER
 void* operator new(size_t size) {
     if (void* p = std::malloc(size ? size : 1)) {
         if (count_allocations) { ++allocations; allocated_bytes += size; }
@@ -29,6 +42,7 @@ void operator delete(void* p, size_t) noexcept { std::free(p); }
 void* operator new[](size_t size) { return ::operator new(size); }
 void operator delete[](void* p) noexcept { ::operator delete(p); }
 void operator delete[](void* p, size_t) noexcept { ::operator delete(p); }
+#endif
 using Clock = std::chrono::steady_clock;
 static constexpr double cpu_poll_seconds = .25;
 static double cpu_seconds() {
@@ -109,6 +123,28 @@ static uint64_t hash_state(const termforge::Screen& screen) {
     return hash;
 }
 
+#ifdef TERMFORGE_RECOVERY_MEASURE
+static uint64_t hash_payload(std::string_view bytes) {
+    uint64_t hash = 14695981039346656037ull;
+    for (unsigned char c : bytes) { hash ^= c; hash *= 1099511628211ull; }
+    return hash;
+}
+// Exercise the selected parser, outside every measured interval. A build that
+// merely reports recovery while constructing a strict parser must fail here.
+static void check_recovery_mode() {
+    termforge::Parser probe(1, 3, 0, parser_mode);
+    probe.feed(std::string_view("\xff" "A", 2)); probe.finish();
+    if (probe.screen.lines[0][0].text != "\xef\xbf\xbd" || probe.screen.lines[0][1].text != "A" ||
+        probe.screen.column != 2 || probe.diagnostics().malformed_utf8 != 1)
+        throw std::runtime_error("recovery parser identity probe failed");
+}
+static void recovery_fields(const char* kind) {
+    std::cout << "\"protocol\":\"termforge-recovery-core-measure-v1\",\"kind\":\"" << kind
+        << "\",\"parse_mode\":\"recovery\",\"rows\":24,\"columns\":80,\"history_limit\":100"
+        << ",\"allocator_wrapper_compiled\":" << (allocator_wrapper_compiled ? "true" : "false")
+        << ",\"scope\":\"core replay only\",\"recovery_probe_passed\":true";
+}
+#else
 static void calibrate(double duration, bool on_first) {
     // Repeated clock-read loop: includes two wall reads, CPU read, bookkeeping
     // and periodic gates. Its average is NOT an isolated GetProcessTimes cost.
@@ -163,21 +199,40 @@ static void calibrate(double duration, bool on_first) {
     }
     std::cout << "],\"counter_off_is_uninstrumented\":false,\"calibration_is_subtracted\":false}\n";
 }
+#endif
 
 int main(int argc, char** argv) {
     try {
         std::cout << std::setprecision(17);
+#ifdef TERMFORGE_RECOVERY_MEASURE
+        if (argc == 2 && std::string(argv[1]) == "--identity") {
+            check_recovery_mode();
+            std::cout << '{'; recovery_fields("identity");
+            std::cout << ",\"routes\":[\"project\",\"interactive\"],"
+                "\"observe_0\":\"feed without per-round projection\","
+                "\"observe_1\":\"feed with per-round projection and hash\"}\n";
+            return 0;
+        }
+        if (argc >= 2 && std::string(argv[1]) == "calibrate")
+            throw std::runtime_error("legacy allocation calibration is unavailable in the recovery protocol");
+        if (argc != 5) throw std::runtime_error("recovery measure: --identity OR project|interactive chunk observe(0|1) min_cpu_seconds");
+#else
         if ((argc == 3 || argc == 4) && std::string(argv[1]) == "calibrate") {
             calibrate(duration_arg(argv[2]), argc == 4 && integer_arg(argv[3], 1) != 0);
             return 0;
         }
         if (argc != 5) throw std::runtime_error("core_measure parse|project|interactive|state chunk observe(0|1) min_cpu_seconds OR calibrate min_cpu_seconds [observe_first(0|1)]");
+#endif
         const std::string route = argv[1];
         const size_t chunk = integer_arg(argv[2], 1048576);
         const bool observe = integer_arg(argv[3], 1) != 0;
         const double duration = duration_arg(argv[4]);
         if ((route != "parse" && route != "project" && route != "interactive" && route != "state") || chunk == 0)
             throw std::runtime_error("invalid arguments");
+#ifdef TERMFORGE_RECOVERY_MEASURE
+        if (route != "project" && route != "interactive") throw std::runtime_error("unsupported recovery replay route");
+        check_recovery_mode();
+#endif
         const std::string line(76, 'x');
         const std::string action = "abcdefgh\x1b[D\x1b[D\x1b[DZ\bQ\r\n";
         std::string payload;
@@ -220,7 +275,7 @@ int main(int argc, char** argv) {
         const auto oracle_start = Clock::now();
         uint64_t expected_hash = 0;
         {
-            termforge::Parser warmup; run(warmup);
+            termforge::Parser warmup(24, 80, 100, parser_mode); run(warmup);
             if (!correct(warmup.screen)) throw std::runtime_error("warmup oracle failed");
             expected_hash = hash_state(warmup.screen);
         }
@@ -229,9 +284,9 @@ int main(int argc, char** argv) {
         // final state stays alive for the oracle OUTSIDE the measured interval.
         std::optional<termforge::Parser> parser;
         allocations = allocated_bytes = 0;
-        count_allocations = observe;
+        count_allocations = observe && allocator_wrapper_compiled;
         const auto interval = measure(duration, 8, [&] {
-            parser.emplace(); run(*parser);
+            parser.emplace(24, 80, 100, parser_mode); run(*parser);
             if ((route == "project" || route == "interactive") && observe && hash_state(parser->screen) != expected_hash)
                 throw std::runtime_error("measured projection oracle failed");
         });
@@ -245,7 +300,15 @@ int main(int argc, char** argv) {
         if (!GetProcessMemoryInfo(GetCurrentProcess(), &memory, sizeof(memory))) throw std::runtime_error("memory query failed");
         peak = memory.PeakWorkingSetSize;
 #endif
+#ifdef TERMFORGE_RECOVERY_MEASURE
+        std::cout << '{'; recovery_fields("core_cost");
+        std::cout << ",\"valid\":true,\"workload_id\":\"" << (route == "project" ? "ascii-project-78000-v1" : "ascii-interactive-22000-v1")
+            << "\",\"payload_fnv1a64\":\"" << hash_payload(payload)
+            << "\",\"observer_semantics\":\"" << (observe ? "feed with per-round projection and hash" : "feed without per-round projection")
+            << "\",\"route\":\"" << route << "\",\"chunk\":" << chunk
+#else
         std::cout << "{\"schema_version\":2,\"kind\":\"core_cost\",\"valid\":true,\"route\":\"" << route << "\",\"chunk\":" << chunk
+#endif
             << ",\"observe\":" << observe << ",\"rounds\":" << interval.iterations << ",\"bytes_per_round\":" << payload.size()
             << ",\"cpu_floor_seconds\":" << duration << ',';
         interval_json(interval, 8); std::cout << ','; clock_identity();
@@ -253,13 +316,16 @@ int main(int argc, char** argv) {
             << ",\"oracle_scope\":\"" << ((route == "project" || route == "interactive") && observe
                 ? "warmup and final; every measured projection also hashed" : "warmup and final iteration") << "\""
             << ",\"state_fnv1a64\":\"" << expected_hash << "\",\"ordinary_allocations\":";
-        if (observe) std::cout << allocations; else std::cout << "null";
+        if (observe && allocator_wrapper_compiled) std::cout << allocations; else std::cout << "null";
         std::cout << ",\"ordinary_allocated_bytes\":";
-        if (observe) std::cout << allocated_bytes; else std::cout << "null";
+        if (observe && allocator_wrapper_compiled) std::cout << allocated_bytes; else std::cout << "null";
         std::cout << ",\"peak_working_set_bytes\":";
         if (peak) std::cout << peak; else std::cout << "null";
         std::cout << ",\"cpu_interval_differences\":1,\"counted_parser_destructions\":" << interval.iterations - 1
-            << ",\"counter_off_is_uninstrumented\":false,\"receive_seconds\":null,\"presented_done\":null}\n";
+#ifndef TERMFORGE_RECOVERY_MEASURE
+            << ",\"counter_off_is_uninstrumented\":false"
+#endif
+            << ",\"receive_seconds\":null,\"presented_done\":null}\n";
         return 0;
     } catch (const std::exception& e) { count_allocations = false; std::cerr << e.what() << '\n'; return 2; }
 }

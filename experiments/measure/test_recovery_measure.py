@@ -1,7 +1,14 @@
 """Pure public-protocol tests; importing this module never launches a probe."""
+import json
+from pathlib import Path
+import subprocess
+import tempfile
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
-from experiments.measure.recovery import validate_identity, validate_sample
+from experiments.measure.recovery import decode_response, validate_identity, validate_sample
+from experiments.measure.recovery_sanity import run_sanity
 
 
 def identity(wrapper=True):
@@ -84,6 +91,49 @@ class SampleContract(unittest.TestCase):
             broken[field] = value
             with self.subTest(field=field), self.assertRaises(ValueError):
                 validate_sample(broken, True, "project", 4096, 1, .1)
+
+    def test_missing_unknown_endpoint_and_invalid_requests_are_rejected(self):
+        for name in ("receive_seconds", "presented_done", "ordinary_allocations"):
+            broken = sample(False)
+            del broken[name]
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                validate_sample(broken, False, "project", 4096, 0, .1)
+        for route, chunk, observe, floor in (([], 4096, 0, .1), ("project", True, 0, .1),
+                                            ("project", 4096, False, .1), ("project", 4096, 0, float("nan"))):
+            with self.subTest(request=(route, chunk, observe, floor)), self.assertRaises(ValueError):
+                validate_sample(sample(), True, route, chunk, observe, floor)
+
+
+class RawResponseContract(unittest.TestCase):
+    def test_response_decoder_never_repairs_invalid_bytes_or_ambiguous_json(self):
+        self.assertEqual(decode_response(b'{"parse_mode":"recovery"}'), {"parse_mode": "recovery"})
+        for raw in (b'{"parse_mode":"strict","parse_mode":"recovery"}',
+                    b'{"value":NaN}', b'{"value":Infinity}', b'{"value":"\xff"}', b'partial'):
+            with self.subTest(raw=raw), self.assertRaises(ValueError):
+                decode_response(raw)
+
+    def test_failed_first_process_keeps_exact_raw_streams_and_stops_the_batch(self):
+        failures = (SimpleNamespace(returncode=0, stdout=b'\xffnot-json', stderr=b''),
+                    subprocess.TimeoutExpired(["probe"], 90, output=b'partial\xff', stderr=b'waiting'))
+        for failure in failures:
+            with self.subTest(failure=type(failure).__name__), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                wrapped, noalloc = root / "wrapped.exe", root / "noalloc.exe"
+                wrapped.write_bytes(b"synthetic wrapped binary")
+                noalloc.write_bytes(b"synthetic noalloc binary")
+                options = {"side_effect": failure} if isinstance(failure, Exception) else {"return_value": failure}
+                with patch("experiments.measure.recovery_sanity.subprocess.run", **options):
+                    with self.assertRaises(ValueError):
+                        run_sanity(wrapped, noalloc, root / "out")
+                report = json.loads((root / "out/manifest.json").read_text(encoding="utf-8"))
+                self.assertEqual(report["status"], "failed")
+                self.assertEqual(report["attempted_core_processes"], 1)
+                self.assertEqual(len(report["records"]), 1)
+                self.assertEqual((root / "out/00.stdout.bin").read_bytes(),
+                                 failure.output if isinstance(failure, Exception) else failure.stdout)
+                self.assertEqual((root / "out/00.stderr.bin").read_bytes(), failure.stderr)
+                with self.assertRaises(FileExistsError):
+                    run_sanity(wrapped, noalloc, root / "out")
 
 
 if __name__ == "__main__":

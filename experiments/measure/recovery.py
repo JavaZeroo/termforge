@@ -1,5 +1,6 @@
 """Strict public contract for the separate recovery-core replay diagnostic."""
 from __future__ import annotations
+import json
 import math
 
 PROTOCOL = "termforge-recovery-core-measure-v1"
@@ -49,7 +50,7 @@ def _finite(value, minimum=0):
 
 def validate_sample(value, wrapper, route, chunk, observe, floor):
     """Validate one fixed replay; this does not judge speed or the Qt product."""
-    require(route in WORKLOADS and _integer(chunk, 1) and chunk <= 1048576 and
+    require(type(route) is str and route in WORKLOADS and _integer(chunk, 1) and chunk <= 1048576 and
             type(observe) is int and observe in (0, 1) and _finite(floor, .1) and floor <= 10,
             "Invalid requested recovery sample")
     _common(value, wrapper, "core_cost")
@@ -92,3 +93,18 @@ def validate_sample(value, wrapper, route, chunk, observe, floor):
             "Invalid process peak memory")
     require(all(name in value and value[name] is None for name in ("receive_seconds", "presented_done")),
             "Unmeasured endpoint must be explicit unknown")
+
+
+def decode_response(data):
+    """Parse the exact stdout bytes without replacing UTF-8 or duplicate keys."""
+    def object_pairs(pairs):
+        value = {}
+        for name, item in pairs:
+            require(name not in value, "Duplicate response key")
+            value[name] = item
+        return value
+
+    def constant(_):
+        raise ValueError("Non-finite JSON number")
+
+    return json.loads(data.decode("utf-8"), object_pairs_hook=object_pairs, parse_constant=constant)
