@@ -1,0 +1,328 @@
+{
+  "schema": "termforge-cpp-decawm-local-validation-v1",
+  "issue": 161,
+  "base_commit": "6a10e5322a1bddeb038670e50f32ff6deac145cf",
+  "runtime_implementation_commit": "a64376ae16f609db97af2cd05367b42a659c4bb4",
+  "validated_source_commit": "2ed20754696ed8ed530c1fbddb5da262f1e5b2cb",
+  "final_binary_hash_observation": "After directed tests and the corrected receive dependency build; direct RED/initial GREEN records separately hash the test executable before invocation. No continuous file monitoring is claimed.",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "compiler_sha256": "42fd88579adc0e2418a0a71ec9adcfcf677d39ff2724c9d6ac9d901264812bf2",
+    "configuration": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "conpty_runtime_exercised": false
+  },
+  "observed_contract": {
+    "reference_issue": 151,
+    "reference_sha256": "9774e25bab9f5f751368e19f915e5d1ec8f4332be606070f15b5ffb33ce5b675",
+    "phases": [
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "extracted_source_bytes": 79,
+    "extracted_source_sha256": "e83abe6fb1f3f8aff313fa8ab031deaa212f0ad00aac3341d062e09bb1017f11",
+    "whole_original_trace_replayed": false,
+    "dsr_reply_interface_added": false,
+    "original_runs_this_implementation": 0,
+    "per_mode_literal_prefix_chunk_cases": 235,
+    "parser_modes": [
+      "strict",
+      "recovery"
+    ],
+    "cpp_test_groups": 9,
+    "sources": [
+      {
+        "phase": 14,
+        "source_hex": "1b5b3f37681b5b383b3931484142",
+        "expected_model_cursor_1based": [
+          9,
+          2
+        ]
+      },
+      {
+        "phase": 15,
+        "source_hex": "1b5b3f376c1b5b31303b3931484344",
+        "expected_model_cursor_1based": [
+          10,
+          91
+        ]
+      },
+      {
+        "phase": 16,
+        "source_hex": "1b5b3f37681b5b31323b3931484546",
+        "expected_model_cursor_1based": [
+          13,
+          2
+        ]
+      },
+      {
+        "phase": 17,
+        "source_hex": "1b5b31343b393148471b5b3f376c48",
+        "expected_model_cursor_1based": [
+          14,
+          91
+        ]
+      },
+      {
+        "phase": 18,
+        "source_hex": "1b5b3f376c1b5b31363b393148491b5b3f37684a",
+        "expected_model_cursor_1based": [
+          17,
+          2
+        ]
+      }
+    ]
+  },
+  "final_runtime_sha256": {
+    "experiments/core/terminal.hpp": "b57f13d06a219a9992d2b9b99bb98721be2bc13495b7fe1a99350f0da85304f2",
+    "experiments/core/screen.hpp": "aa3b79f232b183a9ba425b086a6a58b00894e468c73052217fd6d8beefde2040",
+    "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+    "experiments/core/text_projection.hpp": "3853bcf053964e54ea00bb7acfd0d302abd536ae0ed4eddfe791a6bcffdb6914",
+    "experiments/core/decawm_mode_test.cpp": "2862ca6d44c035231119287c9a5d67297b9641b41606d8c70802b2e6e4824437",
+    "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b"
+  },
+  "final_binary_sha256": {
+    "decawm_mode_test.exe": "036092ea2fba109ed94ce15312959fcc89380e9d122743318c2ae2e5b138baf4",
+    "alternate_mode_test.exe": "275423077b2d5bd4432dcd960f32e25d4961904e9693d7a8e2e6b29f87b0236e",
+    "buffer_state_test.exe": "d94411b70166034bb2371ac22d3bb43172571de51caeb1c15f0df2ffeb846846",
+    "history_test.exe": "7d432a98ba856959ed1bceeb9b96f4a609c77e38f1fe6939baf54a61a6e5d10e",
+    "resize_test.exe": "f3b901068c598f14bf1148eaeeb792d9535e437e5dbf24dd7c6eb1b1d1fa3c92",
+    "selection_test.exe": "34a6dbb31a5aa59a8e49e70d893140cae81883ac47f5b7778c54ba4dbcb8df8f",
+    "search_test.exe": "cc935e7f0b710a8f99535d39f2086fe81b573fea531876e204f6dc8776d24b4c",
+    "replay.exe": "ac7636a6f7c2fd0ee7823cd2a13a3044c6218292549ede3fdb702c3e0611075a",
+    "terminal_trace.exe": "f2ad493cbb264259c424111f18af8a752fa100c9ae581cab3a6457d623ce7c3b",
+    "recovery_probe.exe": "a3f948d50b7e92c5211f138754cc71d4f33832833502a78ea85a2798bdc1210c",
+    "receive.exe": "b5c9b857b30e97d50e7d439ba4540009c8c9a4e79a6f60c311e24e74109b01bb"
+  },
+  "executions": [
+    {
+      "label": "configure",
+      "source_commit": "85c867f1b5307651ba4b444840d0901d2fe4a04d",
+      "exit_code": 0,
+      "elapsed_seconds": 7.2189999999973224,
+      "process_timeout_seconds": 60,
+      "timed_out": false,
+      "stdout_sha256": "8473db434246551197a16617d86d9df3fd94196cad22d08c322bf1505cecccef",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable_sha256": "c52712b2e10098baa2bd9b2fb22b6bb276c8ec46d840f0e8487eda7f76a1727b",
+      "source_sha256": {
+        "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b",
+        "experiments/core/terminal.hpp": "ed3c030611a6df38df26057a8c2834f2808cd05306e73aead79927b1f76fe5ca",
+        "experiments/core/screen.hpp": "04c19f09ebc0c468efbef8dd4c9da8f4bcd44e94000a87c56239756c0df1b474",
+        "experiments/core/decawm_mode_test.cpp": "b9f3fb6dea72d37c2292c00353dd5f1c08439fdcd377f383e2579d2e423961fb"
+      }
+    },
+    {
+      "label": "red-build",
+      "source_commit": "85c867f1b5307651ba4b444840d0901d2fe4a04d",
+      "exit_code": 0,
+      "elapsed_seconds": 3.437000000005355,
+      "process_timeout_seconds": 60,
+      "timed_out": false,
+      "stdout_sha256": "f878d02d92a60350f8375bccccd45e07f2e039b10b3659e6b2d477e416b437ec",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable_sha256": "c52712b2e10098baa2bd9b2fb22b6bb276c8ec46d840f0e8487eda7f76a1727b",
+      "source_sha256": {
+        "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b",
+        "experiments/core/terminal.hpp": "ed3c030611a6df38df26057a8c2834f2808cd05306e73aead79927b1f76fe5ca",
+        "experiments/core/screen.hpp": "04c19f09ebc0c468efbef8dd4c9da8f4bcd44e94000a87c56239756c0df1b474",
+        "experiments/core/decawm_mode_test.cpp": "b9f3fb6dea72d37c2292c00353dd5f1c08439fdcd377f383e2579d2e423961fb"
+      }
+    },
+    {
+      "label": "red-test",
+      "source_commit": "85c867f1b5307651ba4b444840d0901d2fe4a04d",
+      "exit_code": 1,
+      "elapsed_seconds": 0.014999999999417923,
+      "process_timeout_seconds": 10,
+      "timed_out": false,
+      "stdout_sha256": "563e4c96208bf1575cedcc7ac9762a9b6242874442206c93015469433e21e57c",
+      "stderr_sha256": "ef1f8a51fae7552ee52be5d6b7424417fab392c5c1dc7c733c7ac7ee42b85277",
+      "executable_sha256": "75c5e980d168ed10893c8f84781fe7d56500e9ae103a0b3bf7ebfa8f02c501c9",
+      "source_sha256": {
+        "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b",
+        "experiments/core/terminal.hpp": "ed3c030611a6df38df26057a8c2834f2808cd05306e73aead79927b1f76fe5ca",
+        "experiments/core/screen.hpp": "04c19f09ebc0c468efbef8dd4c9da8f4bcd44e94000a87c56239756c0df1b474",
+        "experiments/core/decawm_mode_test.cpp": "b9f3fb6dea72d37c2292c00353dd5f1c08439fdcd377f383e2579d2e423961fb"
+      }
+    },
+    {
+      "label": "green-build",
+      "source_commit": "f638f7ea66d8852a49f9721c4f2293dafa22b08e",
+      "exit_code": 0,
+      "elapsed_seconds": 2.9059999999881256,
+      "process_timeout_seconds": 60,
+      "timed_out": false,
+      "stdout_sha256": "243bfd53915ff8f542606f5be9f752418215c31afcc7a26428b0620fb58e34d6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable_sha256": "c52712b2e10098baa2bd9b2fb22b6bb276c8ec46d840f0e8487eda7f76a1727b",
+      "source_sha256": {
+        "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b",
+        "experiments/core/terminal.hpp": "b57f13d06a219a9992d2b9b99bb98721be2bc13495b7fe1a99350f0da85304f2",
+        "experiments/core/screen.hpp": "fe4a159d757f770959526ffa41dc2d588ed6dccb9d8e265b4fc62b06441b8284",
+        "experiments/core/decawm_mode_test.cpp": "b9f3fb6dea72d37c2292c00353dd5f1c08439fdcd377f383e2579d2e423961fb"
+      }
+    },
+    {
+      "label": "green-test",
+      "source_commit": "f638f7ea66d8852a49f9721c4f2293dafa22b08e",
+      "exit_code": 0,
+      "elapsed_seconds": 0.01600000000325963,
+      "process_timeout_seconds": 10,
+      "timed_out": false,
+      "stdout_sha256": "e96a47232c058f706398134819c594e83d842290ad409d40f5d169ae590ccae9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable_sha256": "5123e3a88bce7690d4fad6d0ff2adc892c778f9fc22aefb920b46f60123bae85",
+      "source_sha256": {
+        "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b",
+        "experiments/core/terminal.hpp": "b57f13d06a219a9992d2b9b99bb98721be2bc13495b7fe1a99350f0da85304f2",
+        "experiments/core/screen.hpp": "fe4a159d757f770959526ffa41dc2d588ed6dccb9d8e265b4fc62b06441b8284",
+        "experiments/core/decawm_mode_test.cpp": "b9f3fb6dea72d37c2292c00353dd5f1c08439fdcd377f383e2579d2e423961fb"
+      }
+    },
+    {
+      "label": "directed-build",
+      "source_commit": "2ed20754696ed8ed530c1fbddb5da262f1e5b2cb",
+      "exit_code": 0,
+      "elapsed_seconds": 36.0,
+      "process_timeout_seconds": 60,
+      "timed_out": false,
+      "stdout_sha256": "00af4acda79fed6d0410b33489a99adc3ae21be79d74eab0f50f42d6ff09d407",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable_sha256": "c52712b2e10098baa2bd9b2fb22b6bb276c8ec46d840f0e8487eda7f76a1727b",
+      "source_sha256": {
+        "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b",
+        "experiments/core/terminal.hpp": "b57f13d06a219a9992d2b9b99bb98721be2bc13495b7fe1a99350f0da85304f2",
+        "experiments/core/screen.hpp": "aa3b79f232b183a9ba425b086a6a58b00894e468c73052217fd6d8beefde2040",
+        "experiments/core/decawm_mode_test.cpp": "2862ca6d44c035231119287c9a5d67297b9641b41606d8c70802b2e6e4824437"
+      }
+    },
+    {
+      "label": "directed-core-tests",
+      "source_commit": "2ed20754696ed8ed530c1fbddb5da262f1e5b2cb",
+      "exit_code": 8,
+      "elapsed_seconds": 15.23399999999674,
+      "process_timeout_seconds": 180,
+      "timed_out": false,
+      "stdout_sha256": "fcaafa2069e66db06077a11c486c5956330dc12b23ebf85eaaf225a605da21a9",
+      "stderr_sha256": "2658a2a2843e2e5798a6d65e55f35a5a0cb51fd08c5fec32961b306b36759c5c",
+      "executable_sha256": "0b764791178c52227d1e16a013a9c5abd09e0e07bfecb7189af432127fdfbbd5",
+      "source_sha256": {
+        "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b",
+        "experiments/core/terminal.hpp": "b57f13d06a219a9992d2b9b99bb98721be2bc13495b7fe1a99350f0da85304f2",
+        "experiments/core/screen.hpp": "aa3b79f232b183a9ba425b086a6a58b00894e468c73052217fd6d8beefde2040",
+        "experiments/core/decawm_mode_test.cpp": "2862ca6d44c035231119287c9a5d67297b9641b41606d8c70802b2e6e4824437"
+      }
+    },
+    {
+      "label": "receive-build",
+      "source_commit": "2ed20754696ed8ed530c1fbddb5da262f1e5b2cb",
+      "exit_code": 0,
+      "elapsed_seconds": 3.7189999999973224,
+      "process_timeout_seconds": 60,
+      "timed_out": false,
+      "stdout_sha256": "28531346e90eb7193b1da0932c79820ef3e8bdb7a25b86c36f3cb86142530acc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable_sha256": "c52712b2e10098baa2bd9b2fb22b6bb276c8ec46d840f0e8487eda7f76a1727b",
+      "source_sha256": {
+        "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b",
+        "experiments/core/terminal.hpp": "b57f13d06a219a9992d2b9b99bb98721be2bc13495b7fe1a99350f0da85304f2",
+        "experiments/core/screen.hpp": "aa3b79f232b183a9ba425b086a6a58b00894e468c73052217fd6d8beefde2040",
+        "experiments/core/decawm_mode_test.cpp": "2862ca6d44c035231119287c9a5d67297b9641b41606d8c70802b2e6e4824437"
+      }
+    },
+    {
+      "label": "core-dependency-corrected",
+      "source_commit": "2ed20754696ed8ed530c1fbddb5da262f1e5b2cb",
+      "exit_code": 0,
+      "elapsed_seconds": 4.937999999994645,
+      "process_timeout_seconds": 60,
+      "timed_out": false,
+      "stdout_sha256": "3300177a5b8a69f172235b59fc47a09f9f3a8f84a5e06ec2d06264f7cfb4a3c1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "executable_sha256": "0b764791178c52227d1e16a013a9c5abd09e0e07bfecb7189af432127fdfbbd5",
+      "source_sha256": {
+        "CMakeLists.txt": "0b6b1af99605f551ef50c998d3a46b166bed3cc678741e43b775dd179d55ed6b",
+        "experiments/core/terminal.hpp": "b57f13d06a219a9992d2b9b99bb98721be2bc13495b7fe1a99350f0da85304f2",
+        "experiments/core/screen.hpp": "aa3b79f232b183a9ba425b086a6a58b00894e468c73052217fd6d8beefde2040",
+        "experiments/core/decawm_mode_test.cpp": "2862ca6d44c035231119287c9a5d67297b9641b41606d8c70802b2e6e4824437"
+      }
+    }
+  ],
+  "results": {
+    "red": {
+      "source_commit": "85c867f1b5307651ba4b444840d0901d2fe4a04d",
+      "passed": 0,
+      "total": 2,
+      "exit_code": 1,
+      "failures": [
+        "strict: unsupported private CSI command",
+        "recovery: disabled edge CD must end at (10,91)"
+      ]
+    },
+    "initial_green": {
+      "source_commit": "f638f7ea66d8852a49f9721c4f2293dafa22b08e",
+      "passed": 2,
+      "total": 2,
+      "superseded_wide_guard": "An untested off x wide InputError guard in this intermediate source was removed before the final contract; no original comparison claimed."
+    },
+    "directed_initial": {
+      "passed": 8,
+      "total": 9,
+      "exit_code": 8,
+      "failed": [
+        "core"
+      ],
+      "cause": "The selected core test requires receive.exe, omitted from the first targeted build.",
+      "core_python_tests": 31,
+      "core_python_errors": 1,
+      "recovery_python_tests": 34,
+      "recovery_python_errors": 0,
+      "skipped_entries": 0,
+      "skipped_python_tests": 0,
+      "junit_sha256": "a196e0fd79a31a673feee683a92f8c65fb3a5e769c603bb3faa34759e4980c0e"
+    },
+    "corrected_dependency": {
+      "built": "receive.exe",
+      "runtime_source_changed": false,
+      "passed_ctest_entries": 1,
+      "total_ctest_entries": 1,
+      "python_tests": 31,
+      "python_errors": 0,
+      "skipped_python_tests": 0,
+      "junit_sha256": "2c08d64de579312f07acef6e82774e3b2c4ef25bd081bf89f298040b1b3b530c"
+    },
+    "one_complete_nine_entry_green_run": false
+  },
+  "implementation_choices": [
+    "Terminal-wide wrap permission is outside FrameState; only the main ASCII observed contract is accepted here.",
+    "Disabling does not erase delayed edge state; enabling can consume it on the next one-column write.",
+    "Insufficient room for a width-2 scalar retains the existing pre-wrap path; no new content replacement policy."
+  ],
+  "unknown": [
+    "wrap x 1049 ownership/save/restore",
+    "per-buffer origin state",
+    "restored margin lower bound",
+    "off x wide/combining text original behavior",
+    "wrap x resize original behavior",
+    "full grid and styles",
+    "fixed ConPTY transport parity",
+    "product TUI acceptance",
+    "presentation",
+    "performance"
+  ],
+  "full_mode_parity": false,
+  "presented_done": null,
+  "performance_evaluated": false,
+  "gui_runs": 0,
+  "qt_runs": 0,
+  "original_runs": 0,
+  "new_dependencies": false
+}
