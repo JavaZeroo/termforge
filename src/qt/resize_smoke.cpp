@@ -87,6 +87,31 @@ static void invalid_size_stops_pending_resize(const std::wstring& executable, co
     require(model.finished() && model.cleanup_verified() && !model.resize(100, 30),
             "resize error did not finish cleanup or accepted later resize");
 }
+static void current_font_controls_grid(const std::wstring& executable, const std::wstring& directory) {
+    SizeFixture fixture;
+    termforge::qt::SessionModel model;
+    termforge::qt::TerminalWidget terminal(model);
+    terminal.show();
+    require(model.start(executable, L"--size-child \"" + fixture.pipe_name() + L"\"", directory),
+            "font-grid child did not start");
+    wait_reply(fixture, 0);
+    auto font = terminal.font(); font.setPointSize(12); terminal.setFont(font);
+    const QFontMetricsF metrics(terminal.font());
+    const int width = qCeil(metrics.horizontalAdvance(QLatin1Char('M')));
+    const int height = qCeil(metrics.height()) + 2;
+    terminal.resize(16 + 60 * width, 24 + 13 * height);
+    QElapsedTimer timer; timer.start();
+    while ((model.screen().width() != 60 || model.screen().height() != 12) && timer.elapsed() < 5000) QTest::qWait(5);
+    record_state(700, 60, 12, terminal, model);
+    require(model.screen().width() == 60 && model.screen().height() == 12,
+            "grid still uses stale font metrics after the public Qt font changes");
+    unsigned long long nonce = 700;
+    await_child_size(fixture, model, 60, 12, nonce);
+    terminal.close();
+    QElapsedTimer closing; closing.start();
+    while (!model.finished() && closing.elapsed() < 5000) QTest::qWait(5);
+    require(model.finished() && model.cleanup_verified(), "font-grid child cleanup failed");
+}
 template<class Predicate>
 static void await(Predicate predicate, const termforge::qt::SessionModel& model, const char* message) {
     QElapsedTimer timer; timer.start();
@@ -167,6 +192,7 @@ int main(int argc, char** argv) {
         await([&] { return model.finished(); }, model, "resize child did not exit naturally");
         require(model.natural_exit() && model.exit_code() == 37 && model.cleanup_verified(),
                 "resize child natural exit or cleanup failed");
+        current_font_controls_grid(executable, workspace.path().toStdWString());
         invalid_size_stops_pending_resize(executable, workspace.path().toStdWString());
         std::cout << "{\"schema\":\"termforge-qt-resize-smoke-v1\",\"grid_sequence_cases\":6,\"child_ack_replies\":"
                   << reply_count << ",\"qt_heartbeat_events\":" << heartbeat_events
