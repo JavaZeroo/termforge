@@ -10,6 +10,7 @@
 #include <atomic>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <thread>
 #include <utility>
@@ -22,6 +23,13 @@ class SessionModel final : public QObject {
 public:
     static constexpr int initial_rows = 24;
     static constexpr int initial_columns = 80;
+    struct ResizeState {
+        int requested_columns, requested_rows;
+        int transport_columns, transport_rows;
+        unsigned long long requested_revision, transport_revision;
+        bool accepting, pending;
+        DWORD child_pid;
+    };
     std::function<void()> on_changed;
 
 private:
@@ -33,6 +41,12 @@ private:
     std::thread lifecycle_;
     std::atomic<bool> close_requested_{false};
     std::atomic<bool> cleanup_done_{false};
+    struct ResizeRequest { short columns, rows; unsigned long long revision; };
+    mutable std::mutex control_mutex_;
+    std::optional<ResizeRequest> pending_resize_;
+    unsigned long long requested_revision_ = 0, transport_revision_ = 0;
+    COORD transport_size_{};
+    bool accepting_resize_ = false;
     struct Completion {
         DWORD exit_code = STILL_ACTIVE;
         DWORD active_processes = MAXDWORD;
@@ -54,7 +68,8 @@ private:
     void remember_error(const QString& error) {
         if (error_.isEmpty()) error_ = error;
     }
-    // Only this worker calls wait/cancel/close once startup has completed.
+    // Only this worker calls resize/wait/cancel/close after startup. The latest
+    // bounded request is taken without holding a lock over a native API call.
     // During natural close the Qt timer keeps draining the queue, allowing the
     // ConPTY reader to make progress while ClosePseudoConsole waits for EOF.
     void supervise(bool startup_succeeded) noexcept {
@@ -63,12 +78,32 @@ private:
             if (startup_succeeded) {
                 while (!close_requested_.load(std::memory_order_acquire)) {
                     if (session_->wait_exit(20)) { child_exited = true; break; }
+                    std::optional<ResizeRequest> request;
+                    {
+                        std::lock_guard<std::mutex> lock(control_mutex_);
+                        if (accepting_resize_ && !close_requested_.load(std::memory_order_acquire))
+                            request = std::exchange(pending_resize_, std::nullopt);
+                    }
+                    if (request) {
+                        // A successful call is transport progress, never proof
+                        // that the child has observed its new console geometry.
+                        session_->resize(request->columns, request->rows);
+                        std::lock_guard<std::mutex> lock(control_mutex_);
+                        transport_size_ = {request->columns, request->rows};
+                        transport_revision_ = request->revision;
+                    }
                 }
             }
         } catch (const std::exception& error) {
             completion_.error = error.what();
         } catch (...) {
             completion_.error = "Unknown session supervision failure";
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(control_mutex_);
+            accepting_resize_ = false;
+            pending_resize_.reset();
         }
 
         const bool cancelled = close_requested_.load(std::memory_order_acquire) || !child_exited;
@@ -173,6 +208,13 @@ public:
                             working_directory, {static_cast<short>(parser_.screen.width()),
                                                 static_cast<short>(parser_.screen.height())});
             input_->start();
+            {
+                std::lock_guard<std::mutex> lock(control_mutex_);
+                transport_size_ = {static_cast<short>(parser_.screen.width()),
+                                   static_cast<short>(parser_.screen.height())};
+                transport_revision_ = requested_revision_;
+                accepting_resize_ = true;
+            }
             succeeded = true;
         } catch (const std::exception& error) {
             remember_error(QString::fromUtf8(error.what()));
@@ -204,7 +246,15 @@ public:
             remember_error(QStringLiteral("Terminal grid must be within 1..500 columns and 1..200 rows"));
             notify(); return false;
         }
-        try { parser_.screen.resize(rows, columns); }
+        try {
+            std::lock_guard<std::mutex> lock(control_mutex_);
+            if (started_ && !accepting_resize_) return false;
+            if (columns == parser_.screen.width() && rows == parser_.screen.height()) return true;
+            parser_.screen.resize(rows, columns);
+            ++requested_revision_;
+            if (started_)
+                pending_resize_ = ResizeRequest{static_cast<short>(columns), static_cast<short>(rows), requested_revision_};
+        }
         catch (const std::exception& error) {
             remember_error(QString::fromUtf8(error.what()));
             close(); notify(); return false;
@@ -213,6 +263,19 @@ public:
     }
     void close() noexcept {
         close_requested_.store(true, std::memory_order_release);
+        std::lock_guard<std::mutex> lock(control_mutex_);
+        accepting_resize_ = false;
+        pending_resize_.reset();
+    }
+    // This diagnostic separates the GUI request/core from native call completion.
+    // Real child acknowledgement must come from the child, outside this state.
+    ResizeState resize_state() const {
+        std::lock_guard<std::mutex> lock(control_mutex_);
+        const bool accepting = !finished_ && !close_requested_.load(std::memory_order_acquire) &&
+            (!started_ || accepting_resize_);
+        return {parser_.screen.width(), parser_.screen.height(), transport_size_.X, transport_size_.Y,
+                requested_revision_, transport_revision_, accepting,
+                started_ && accepting && requested_revision_ != transport_revision_, session_ ? session_->pid : 0};
     }
     const Screen& screen() const { return parser_.screen; }
     bool running() const { return started_ && !finished_ && !close_requested_.load(std::memory_order_acquire); }
