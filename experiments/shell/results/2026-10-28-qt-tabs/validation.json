@@ -1,0 +1,1493 @@
+{
+  "schema": "termforge-qt-tabs-validation-v1",
+  "status": "limited_fixed_size_cmd_tabs_verified_full_R2_incomplete",
+  "scope": "Issue #124: independent fixed 80x24 local cmd tabs in the C++/Qt/fixed-ConPTY migration entry; no complete WindTerm tab interaction parity or release acceptance.",
+  "configuration": {
+    "host": "Windows 11 Pro",
+    "os_version": "10.0.26200",
+    "architecture": "x64",
+    "build": "Release",
+    "core": "independently developed C++",
+    "gui": "Qt Widgets 6.10.3",
+    "qt_sdk_target": "win64_msvc2022_64",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "windows_sdk": "10.0.26100.0",
+    "python": "3.12.10",
+    "backend": "bundled fixed Microsoft ConPTY 1.25.260930003",
+    "columns": 80,
+    "rows": 24,
+    "qt_platform": "offscreen",
+    "font": "independently acquired OFL Roboto Mono",
+    "candidate_adapter": false,
+    "presented_done": null
+  },
+  "source_identity": {
+    "final_source_commit": "cf8b40b2e44f9e475cfc42b5008d46c670ff1756",
+    "worktree_at_freeze": "clean",
+    "frozen_manifest": {
+      "artifact_name": "frozen-inputs.json",
+      "bytes": 1561346,
+      "sha256": "f1ddbca6f95fceb5c2dde9655c2c009f9412be842ddcaef20714a185e57f2972",
+      "published": false
+    },
+    "post_run_check": {
+      "artifact_name": "frozen-after.json",
+      "bytes": 185,
+      "sha256": "77f8736c6174d8bff6652a76e7fbe553c72ce85d57bcc4f405e3eeeb77c10105",
+      "published": false
+    },
+    "counts": {
+      "source": 2694,
+      "product_runtime": 25,
+      "smoke_runtime": 27,
+      "legacy_diagnostic_runtime": 47,
+      "qt_sdk": 4358
+    },
+    "files_checked": 7151,
+    "post_run_changed": [],
+    "post_run_status": "passed",
+    "selected_file_identities": [
+      {
+        "scope": "source",
+        "path": "CMakeLists.txt",
+        "bytes": 23609,
+        "sha256": "8e000dd91cab10480fcac6a399cfff0413129739dbb4ed0bcc11ac62e5ea991d"
+      },
+      {
+        "scope": "source",
+        "path": "src/qt/main.cpp",
+        "bytes": 1137,
+        "sha256": "4af7c6722ba6847d90d3d9938849aa3b69a8de749c043a278c8725dc46011796"
+      },
+      {
+        "scope": "source",
+        "path": "src/qt/session_tabs.hpp",
+        "bytes": 7004,
+        "sha256": "7cd21641d748c2ad864731d94a35b1140377bb242f07781d5e1bbbe797020f0e"
+      },
+      {
+        "scope": "source",
+        "path": "src/qt/shell_smoke.cpp",
+        "bytes": 25287,
+        "sha256": "86022250a4c5d50824e112d6748c56bb549cb055c0737288f8a3c88f3733c8d0"
+      },
+      {
+        "scope": "source",
+        "path": "src/qt/terminal_session.hpp",
+        "bytes": 9446,
+        "sha256": "3cdb5bfa28019a5de9fdd92c9f976f0bf14899f2de324a8f783574a16492b2af"
+      },
+      {
+        "scope": "source",
+        "path": "src/qt/terminal_widget.hpp",
+        "bytes": 6844,
+        "sha256": "e6bd2759601de942560dc367f5c25961c0ef08278a0e327c3321ebe142bf55b7"
+      },
+      {
+        "scope": "source",
+        "path": "src/qt/run_smoke.py",
+        "bytes": 4287,
+        "sha256": "25f4d6adec4e9bfad77698300c44d9162511ac1ebb722993d5a52cdb8a863983"
+      },
+      {
+        "scope": "source",
+        "path": "third_party/qt/manifest.json",
+        "bytes": 5806,
+        "sha256": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd"
+      },
+      {
+        "scope": "source",
+        "path": "third_party/conpty/manifest.json",
+        "bytes": 1467,
+        "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-tabs/qt-bin/Release/termforge_qt_shell.exe",
+        "bytes": 145920,
+        "sha256": "0bfe1f63a6e12bba8bc4a092b897ef0c341825d0be408ac818a09c7d6033f7bc"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-tabs/qt-smoke-bin/Release/qt_cpp_shell_smoke.exe",
+        "bytes": 202240,
+        "sha256": "80201411b9bb8b0dc073c133d8039b7468f87098fc36df3051d7ea5044a781eb"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-tabs/qt-bin/Release/conpty-backend/conpty.dll",
+        "bytes": 119608,
+        "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-tabs/qt-bin/Release/conpty-backend/OpenConsole.exe",
+        "bytes": 1089376,
+        "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-tabs/qt-bin/Release/Qt6Core.dll",
+        "bytes": 10250040,
+        "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-tabs/qt-bin/Release/Qt6Gui.dll",
+        "bytes": 9514296,
+        "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-tabs/qt-bin/Release/Qt6Widgets.dll",
+        "bytes": 6577464,
+        "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-tabs/qt-bin/Release/platforms/qwindows.dll",
+        "bytes": 997688,
+        "sha256": "cafd5bfdef3d89d176ee26725c8d4759fd6cb007645b645a4cbf6386364a3f36"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-tabs/qt-smoke-bin/Release/platforms/qoffscreen.dll",
+        "bytes": 113976,
+        "sha256": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd"
+      },
+      {
+        "scope": "smoke_runtime",
+        "path": "build/qt-tabs/qt-smoke-bin/Release/Qt6Test.dll",
+        "bytes": 380216,
+        "sha256": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187"
+      },
+      {
+        "scope": "product_runtime",
+        "path": "build/qt-tabs/qt-bin/Release/assets/fonts/RobotoMono-Regular.ttf",
+        "bytes": 125748,
+        "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+      }
+    ],
+    "selection_note": "20 selected public source/deployment identities only; not a copy of the full local manifest or all deployed files. The complete 7151-file manifest is retained locally and hashed. No test/build was rerun to prepare this summary."
+  },
+  "dependencies": {
+    "qt_manifest": {
+      "artifact_name": "manifest.json",
+      "bytes": 5806,
+      "sha256": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+      "published": false
+    },
+    "qt_version": "6.10.3",
+    "qt_original_archive_sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7",
+    "qt_sdk_files": 4358,
+    "qt_sdk_tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266",
+    "qt_sdk_preparation": "official archive extraction plus relative bin/qt.conf; SDK tree identity is distinct from the original archive and aqt-patched SDK",
+    "application_modules": [
+      "Core",
+      "Gui",
+      "Widgets"
+    ],
+    "test_only_modules": [
+      "Test"
+    ],
+    "backend_manifest": {
+      "artifact_name": "manifest.json",
+      "bytes": 1467,
+      "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "published": false
+    },
+    "backend_version": "1.25.260930003",
+    "backend_package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "backend_pair_sha256": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "deployment_limit": "Local windeployqt output only. No translations or compiler-runtime deployment; clean-machine validation, complete notices/corresponding-source review and distributable package acceptance remain pending."
+  },
+  "commands": {
+    "configure_public_template": "cmake -S . -B build/qt-tabs -G \"Visual Studio 17 2022\" -A x64 -DTERMFORGE_BUILD_QT_SHELL=ON -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF -DBUILD_TESTING=ON -DQt6_DIR=\"<Qt SDK prefix>/lib/cmake/Qt6\" -DTERMFORGE_CONPTY_BACKEND_DIR=\"<fixed ConPTY directory>\" -DPython3_EXECUTABLE=\"<Python 3.12 executable>\"",
+    "final_build": "cmake --build build/qt-tabs --config Release --parallel 2",
+    "final_ctest": "ctest --test-dir build/qt-tabs -C Release --verbose",
+    "qt_targeted": "ctest --test-dir build/qt-tabs -C Release -R '^qt_cpp_shell$' --no-tests=error --verbose",
+    "configuration_paths": "Public templates use placeholders; no private absolute paths are published.",
+    "final_ctest_process_environment": {
+      "PATH": "prepend Git usr/bin to the inherited PATH in this PowerShell process only; full PATH not published",
+      "PYTHONUTF8": "1",
+      "TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD": "0"
+    },
+    "qt_test_environment": {
+      "QT_QPA_PLATFORM": "offscreen"
+    },
+    "qt_test_environment_scope": "CTest qt_cpp_shell ENVIRONMENT property; not a process-wide or global Qt setting"
+  },
+  "final_build": {
+    "exit_code": 0,
+    "observation": "Parent directly observed exit 0 with an explicit LASTEXITCODE failure guard before freezing clean cf8b40b source. No independent build-exit JSON exists.",
+    "log": {
+      "artifact_name": "final-reviewed-build.log",
+      "bytes": 10286,
+      "sha256": "8b67d01fbc1adb129e55c03325a8e9950ab232dbec432d3e13d75131962250f9",
+      "published": false
+    },
+    "exit_artifact": null,
+    "warnings": [
+      "windeployqt: translations catalog unavailable; deployment did not include translations"
+    ]
+  },
+  "final_ctest": {
+    "source_commit": "cf8b40b2e44f9e475cfc42b5008d46c670ff1756",
+    "status": "completed",
+    "exit_code": 0,
+    "expected_entries": 50,
+    "passed_entries": 50,
+    "failed_entries": 0,
+    "real_seconds": 325.94,
+    "configuration_split": {
+      "C++/Qt/fixed-ConPTY": 1,
+      "independent_existing_core_system_offline_diagnostics": 49
+    },
+    "tests": [
+      {
+        "number": 1,
+        "name": "shell_launch",
+        "status": "Passed",
+        "seconds": 0.01,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 2,
+        "name": "runtime_observation",
+        "status": "Passed",
+        "seconds": 2.84,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 3,
+        "name": "ime_input_expectation",
+        "status": "Passed",
+        "seconds": 0.04,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 4,
+        "name": "sent_message_wait",
+        "status": "Passed",
+        "seconds": 0.38,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 5,
+        "name": "find_bar",
+        "status": "Passed",
+        "seconds": 0.85,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 6,
+        "name": "renderer_metrics",
+        "status": "Passed",
+        "seconds": 0.95,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 7,
+        "name": "ime_context",
+        "status": "Passed",
+        "seconds": 1.02,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 8,
+        "name": "layout_state",
+        "status": "Passed",
+        "seconds": 0.16,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 9,
+        "name": "workspace_state",
+        "status": "Passed",
+        "seconds": 0.32,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 10,
+        "name": "transport_completion",
+        "status": "Passed",
+        "seconds": 0.01,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 11,
+        "name": "scenario_tick_gate",
+        "status": "Passed",
+        "seconds": 0.01,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 12,
+        "name": "resize_core",
+        "status": "Passed",
+        "seconds": 0.01,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 13,
+        "name": "history_core",
+        "status": "Passed",
+        "seconds": 0.02,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 14,
+        "name": "selection_core",
+        "status": "Passed",
+        "seconds": 0.08,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 15,
+        "name": "search_core",
+        "status": "Passed",
+        "seconds": 0.12,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 16,
+        "name": "paste",
+        "status": "Passed",
+        "seconds": 0.01,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 17,
+        "name": "clipboard_policy",
+        "status": "Passed",
+        "seconds": 0.01,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 18,
+        "name": "keyboard",
+        "status": "Passed",
+        "seconds": 0.01,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 19,
+        "name": "text_action_policy",
+        "status": "Passed",
+        "seconds": 0.01,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 20,
+        "name": "core",
+        "status": "Passed",
+        "seconds": 5.4,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 21,
+        "name": "recovery",
+        "status": "Passed",
+        "seconds": 9.16,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 22,
+        "name": "measure",
+        "status": "Passed",
+        "seconds": 4.07,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 23,
+        "name": "binary_paths",
+        "status": "Passed",
+        "seconds": 0.17,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 24,
+        "name": "conpty_margin_contract",
+        "status": "Passed",
+        "seconds": 0.35,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 25,
+        "name": "benchmark_tools",
+        "status": "Passed",
+        "seconds": 5.41,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 26,
+        "name": "windterm_alternate_export",
+        "status": "Passed",
+        "seconds": 2.91,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 27,
+        "name": "windterm_alternate_style_reference",
+        "status": "Passed",
+        "seconds": 1.25,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 28,
+        "name": "differential",
+        "status": "Passed",
+        "seconds": 2.63,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 29,
+        "name": "ime_inventory",
+        "status": "Passed",
+        "seconds": 51.23,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 30,
+        "name": "text_actions",
+        "status": "Passed",
+        "seconds": 6.15,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 31,
+        "name": "workflow_fixture",
+        "status": "Passed",
+        "seconds": 22.68,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 32,
+        "name": "workflow_sessions",
+        "status": "Passed",
+        "seconds": 41.83,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 33,
+        "name": "workflow_resources",
+        "status": "Passed",
+        "seconds": 0.49,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 34,
+        "name": "workflow_resource_phases",
+        "status": "Passed",
+        "seconds": 4.31,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 35,
+        "name": "workflow_system_content",
+        "status": "Passed",
+        "seconds": 0.19,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 36,
+        "name": "workflow_system_runner",
+        "status": "Passed",
+        "seconds": 0.63,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 37,
+        "name": "copy_error_frame",
+        "status": "Passed",
+        "seconds": 0.15,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 38,
+        "name": "research_guards",
+        "status": "Passed",
+        "seconds": 4.99,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 39,
+        "name": "windterm_cmd_contract",
+        "status": "Passed",
+        "seconds": 0.48,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 40,
+        "name": "receive",
+        "status": "Passed",
+        "seconds": 0.19,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 41,
+        "name": "conpty",
+        "status": "Passed",
+        "seconds": 16.6,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 42,
+        "name": "conpty_ctrl_c",
+        "status": "Passed",
+        "seconds": 4.38,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 43,
+        "name": "conpty_margin",
+        "status": "Passed",
+        "seconds": 0.35,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 44,
+        "name": "presentation",
+        "status": "Passed",
+        "seconds": 4.24,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 45,
+        "name": "shell",
+        "status": "Passed",
+        "seconds": 102.21,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 46,
+        "name": "selection_bytes",
+        "status": "Passed",
+        "seconds": 4.52,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 47,
+        "name": "selection_context",
+        "status": "Passed",
+        "seconds": 4.73,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 48,
+        "name": "raw_console_receiver",
+        "status": "Passed",
+        "seconds": 0.43,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 49,
+        "name": "paste_system",
+        "status": "Passed",
+        "seconds": 15.33,
+        "configuration": "independent existing/core/system/offline diagnostic"
+      },
+      {
+        "number": 50,
+        "name": "qt_cpp_shell",
+        "status": "Passed",
+        "seconds": 1.53,
+        "configuration": "C++/Qt/fixed-ConPTY product entry"
+      }
+    ],
+    "internal_skip_count": 12,
+    "internal_skip_counts": {
+      "optional_reference_class": 4,
+      "actual_system_clipboard": 7,
+      "opt_in_original_failure_injection": 1
+    },
+    "internal_skips": [
+      {
+        "ctest_number": 28,
+        "ctest_name": "differential",
+        "case": "setUpClass (test_candidate_compare.CandidateComparisonTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks",
+        "category": "optional_reference_class"
+      },
+      {
+        "ctest_number": 28,
+        "ctest_name": "differential",
+        "case": "setUpClass (test_capability_matrix.CapabilityMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks",
+        "category": "optional_reference_class"
+      },
+      {
+        "ctest_number": 28,
+        "ctest_name": "differential",
+        "case": "setUpClass (test_fuzz_matrix.FuzzMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks",
+        "category": "optional_reference_class"
+      },
+      {
+        "ctest_number": 28,
+        "ctest_name": "differential",
+        "case": "setUpClass (test_real_app_matrix.RealApplicationMatrixTests)",
+        "reason": "optional real application capture dependencies are not built",
+        "category": "optional_reference_class"
+      },
+      {
+        "ctest_number": 30,
+        "ctest_name": "text_actions",
+        "case": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice)",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM",
+        "category": "actual_system_clipboard"
+      },
+      {
+        "ctest_number": 38,
+        "ctest_name": "research_guards",
+        "case": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails)",
+        "reason": "opt-in pinned reference failure injection",
+        "category": "opt_in_original_failure_injection"
+      },
+      {
+        "ctest_number": 45,
+        "ctest_name": "shell",
+        "case": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard)",
+        "reason": "system copy UI gate requires a disposable hosted VM",
+        "category": "actual_system_clipboard"
+      },
+      {
+        "ctest_number": 45,
+        "ctest_name": "shell",
+        "case": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close)",
+        "reason": "product clipboard read gate requires a disposable hosted VM",
+        "category": "actual_system_clipboard"
+      },
+      {
+        "ctest_number": 45,
+        "ctest_name": "shell",
+        "case": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver)",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM",
+        "category": "actual_system_clipboard"
+      },
+      {
+        "ctest_number": 46,
+        "ctest_name": "selection_bytes",
+        "case": "test_owned_clipboard_contention_preserves_write_and_read_failures (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_owned_clipboard_contention_preserves_write_and_read_failures)",
+        "reason": "system CF requires a disposable hosted VM",
+        "category": "actual_system_clipboard"
+      },
+      {
+        "ctest_number": 46,
+        "ctest_name": "selection_bytes",
+        "case": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice)",
+        "reason": "system CF requires a disposable hosted VM",
+        "category": "actual_system_clipboard"
+      },
+      {
+        "ctest_number": 47,
+        "ctest_name": "selection_context",
+        "case": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice)",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM",
+        "category": "actual_system_clipboard"
+      }
+    ],
+    "skip_note": "CTest entry success includes these explicitly skipped internal unittest cases/classes. Skips are not passing coverage, and an entire skipped class is not one executed test.",
+    "proofs": {
+      "verbose_log": {
+        "artifact_name": "final-reviewed-ctest.log",
+        "bytes": 129339,
+        "sha256": "6a4cf2c5acccdd1beb15bac973c964ada386ed04c8c32b6bff2f96a3f4f655b8",
+        "published": false
+      },
+      "last_test_log": {
+        "artifact_name": "LastTest.log",
+        "bytes": 133408,
+        "sha256": "57b933ccc8bb4c321352857b1a1355e3a26449a4f8324626e002760f26a40511",
+        "published": false
+      },
+      "observed_exit_record": {
+        "artifact_name": "final-reviewed-exit.json",
+        "bytes": 140,
+        "sha256": "50317704e1b971872e47acc40f7c59a6f28162bf211e155a7592a7498cfc4a09",
+        "published": false
+      }
+    }
+  },
+  "qt_independent_result": {
+    "ctest_name": "qt_cpp_shell",
+    "test_seconds": 1.53,
+    "outer_supervisor_deadline_seconds": 25,
+    "ctest_timeout_seconds": 35,
+    "supervisor_and_sample": {
+      "schema": "termforge-qt-cpp-supervisor-v1",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 26,
+        "terminated": 0
+      },
+      "sample": {
+        "schema": "termforge-qt-cpp-smoke-v1",
+        "qt": "6.10.3",
+        "core": "cpp",
+        "backend": "fixed-microsoft-conpty",
+        "arithmetic": 750,
+        "child_exit": 37,
+        "cleanup_verified": true,
+        "image_changed": true,
+        "startup_error_visible": true,
+        "manual_close_reclaimed": true,
+        "tabs": {
+          "arithmetic": [
+            750,
+            427
+          ],
+          "survivor_after_close": 778,
+          "survivor_after_startup_failure": 147,
+          "natural_exit": 41,
+          "input_isolation": true,
+          "answer_ink_visible": true,
+          "independent_close": true,
+          "startup_error_visible": true,
+          "window_close_reclaimed": true,
+          "all_exited_status": 41,
+          "failed_only_kept_visible": true
+        },
+        "app_exec": {
+          "window_close": true,
+          "last_tab_close": true,
+          "failed_only_close": true,
+          "completed_tab_close": true,
+          "cleanup_before_quit": true,
+          "manual_status": 0
+        },
+        "presented_done": null
+      }
+    },
+    "evidence_scope": "Programmatic public Qt actions and key events with two real cmd sessions under offscreen; parent-window cell-ink checks. Does not measure native on-screen presentation or physical keyboard behavior.",
+    "job_note": "Job totals are aggregate accounting, not per-process identities. Outer active=0 alone does not establish pre-exit cleanup."
+  },
+  "application_lifecycle": {
+    "policy_origin": "Current limited prototype entry contract; full WindTerm 2.7.0 tab/application exit interaction comparison is incomplete.",
+    "product_exit_policy": "quitOnLastWindowClosed(false); SessionTabs completes all visible/retired models before on_all_exited calls app.exit.",
+    "tested_app_exec_cases": [
+      "parent close with two live cmd sessions",
+      "close the last live tab",
+      "close a failed-only startup page",
+      "close a previously naturally finished tab"
+    ],
+    "checkpoints": [
+      "unified completion callback",
+      "QApplication aboutToQuit",
+      "QApplication exec return"
+    ],
+    "required_before_exit": {
+      "models_finished": true,
+      "cleanup_verified": true,
+      "each_session_job_active": 0
+    },
+    "retired_page_evidence": "If DeferredDelete already released a retired page, use the verified live-model record captured before destruction. No destructor-after-exec proof substitutes for these checkpoints.",
+    "manual_close_status": 0,
+    "terminal_cleanup_failure_status": 1,
+    "terminal_cleanup_failure_verification": "Source policy and final review; no dedicated injected cleanup-failure app.exec run is claimed. A finished model with cleanup_verified=false yields failure instead of waiting forever.",
+    "failed_only_behavior": "Keep startup error visible until user closes the page/window.",
+    "natural_completion_behavior": "Preserve the prototype final-session completion path and exit status.",
+    "test_seam_limit": "Actual QApplication::exec inside the smoke executable with the same SessionTabs/exit policy as main; not a separately automated black-box interaction run of the product executable."
+  },
+  "runtime_red_green_history": [
+    {
+      "slice": "new-tab",
+      "purpose": "new/select two real cmd tabs and route keys independently",
+      "red": {
+        "log": {
+          "artifact_name": "new-tab-red.log",
+          "bytes": 1875,
+          "sha256": "1055f1e1eeb9eed2667fc2b7db5349e56e42d4e2511ddd0b4520a63bfedbaa85",
+          "published": false
+        },
+        "ctest_entries": 1,
+        "test_seconds": 5.64,
+        "supervisor_status": "failed",
+        "native_exit_code": 1,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "classification": "runtime_red",
+        "observed_error": "new cmd action did not create an independent tab",
+        "identity": {
+          "source_commit": null,
+          "source_commit_status": "unknown: intermediate working tree; not assigned a later commit",
+          "source_files": [
+            {
+              "path": "src/qt/session_tabs.hpp",
+              "sha256": "04c3116a3bd2cd18670179c63c11447f24298b298d3edea2796cb43253319213",
+              "retained_snapshot": {
+                "artifact_name": "new-tab-red-session_tabs.hpp",
+                "bytes": 1863,
+                "sha256": "04c3116a3bd2cd18670179c63c11447f24298b298d3edea2796cb43253319213",
+                "published": false
+              }
+            },
+            {
+              "path": "src/qt/shell_smoke.cpp",
+              "sha256": "bf3e256699c8418e7321c9dd0aed00ef28daaeb503b7e1beaa889be27a359678",
+              "retained_snapshot": {
+                "artifact_name": "new-tab-red-shell_smoke.cpp",
+                "bytes": 11858,
+                "sha256": "bf3e256699c8418e7321c9dd0aed00ef28daaeb503b7e1beaa889be27a359678",
+                "published": false
+              }
+            }
+          ],
+          "smoke_executable_sha256": null,
+          "product_executable_sha256": null,
+          "identity_scope": "Retained filename-associated source snapshots hashed offline; no saved at-run identity record or executable hash, so snapshot-to-executable binding is unknown."
+        }
+      },
+      "green": {
+        "log": {
+          "artifact_name": "new-tab-green.log",
+          "bytes": 1827,
+          "sha256": "20eb9f1a00118bda6f7cc5ca65c77cd5a3582d53911dba71fb93a4d75295250b",
+          "published": false
+        },
+        "ctest_entries": 1,
+        "test_seconds": 0.78,
+        "supervisor_status": "passed",
+        "native_exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "classification": "targeted_runtime_green",
+        "identity": {
+          "source_commit": null,
+          "source_files": null,
+          "smoke_executable_sha256": null,
+          "product_executable_sha256": null,
+          "status": "unknown: no independent saved identity record; not inferred from later files or commits"
+        },
+        "build_log": {
+          "artifact_name": "new-tab-green-build.log",
+          "bytes": 2845,
+          "sha256": "7fc13c55b0235e3e2e4724767ca9555481f623117c7ccd2cda6f95a2822ff478",
+          "published": false
+        }
+      }
+    },
+    {
+      "slice": "tab-close",
+      "purpose": "close one tab while the survivor still accepts input",
+      "red": {
+        "log": {
+          "artifact_name": "tab-close-red.log",
+          "bytes": 1859,
+          "sha256": "3e8d57f35fc14bb4da6a5398639ed8faf4c300895c1fd53ca51e2b2f545e8160",
+          "published": false
+        },
+        "ctest_entries": 1,
+        "test_seconds": 0.73,
+        "supervisor_status": "failed",
+        "native_exit_code": 1,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "classification": "runtime_red",
+        "observed_error": "cmd tab close action is missing",
+        "identity": {
+          "source_commit": null,
+          "source_commit_status": "unknown: intermediate working tree; not assigned a later commit",
+          "source_files": [
+            {
+              "path": "src/qt/session_tabs.hpp",
+              "sha256": "d72dbaf7d934ca7b2157ca675bc6e8e2bd3c0e8331d37825fba8ba494d52f468",
+              "retained_snapshot": {
+                "artifact_name": "tab-close-red-session_tabs.hpp",
+                "bytes": 2762,
+                "sha256": "d72dbaf7d934ca7b2157ca675bc6e8e2bd3c0e8331d37825fba8ba494d52f468",
+                "published": false
+              }
+            },
+            {
+              "path": "src/qt/shell_smoke.cpp",
+              "sha256": "616c73b9e24f48161119e36ef6cb870f81aa7834b6a0a5bfd8ff7509dab9f39c",
+              "retained_snapshot": {
+                "artifact_name": "tab-close-red-shell_smoke.cpp",
+                "bytes": 13428,
+                "sha256": "616c73b9e24f48161119e36ef6cb870f81aa7834b6a0a5bfd8ff7509dab9f39c",
+                "published": false
+              }
+            }
+          ],
+          "smoke_executable_sha256": "3d4c4cfe4ab3207d0561343714b9d4d9736a50f0a0bf89a848cb4bbe7c64b3c0",
+          "product_executable_sha256": null,
+          "identity_record": {
+            "artifact_name": "tab-close-red-identities.json",
+            "bytes": 619,
+            "sha256": "9f04b3be5167453b1a8db231068562bfed435652ec9851f4ea8c92f27f68adb0",
+            "published": false
+          },
+          "identity_scope": "Recorded file hashes; source list is partial. Historical executable bytes are not published. Missing files/committed source remain unknown."
+        },
+        "build_log": {
+          "artifact_name": "tab-close-red-build.log",
+          "bytes": 2845,
+          "sha256": "030c8f62f5e61f50b4b608128bdd93955b2eec611cfa18230b436cf1558dddc2",
+          "published": false
+        }
+      },
+      "green": {
+        "log": {
+          "artifact_name": "tab-close-green.log",
+          "bytes": 1827,
+          "sha256": "2bed325db49cdc0e2a0f116ae03c6f577d37a64d0da8c6889c05e6ea51e79024",
+          "published": false
+        },
+        "ctest_entries": 1,
+        "test_seconds": 0.83,
+        "supervisor_status": "passed",
+        "native_exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "classification": "targeted_runtime_green",
+        "identity": {
+          "source_commit": null,
+          "source_files": null,
+          "smoke_executable_sha256": null,
+          "product_executable_sha256": null,
+          "status": "unknown: no independent saved identity record; not inferred from later files or commits"
+        },
+        "build_log": {
+          "artifact_name": "tab-close-green-build.log",
+          "bytes": 2845,
+          "sha256": "030c8f62f5e61f50b4b608128bdd93955b2eec611cfa18230b436cf1558dddc2",
+          "published": false
+        }
+      }
+    },
+    {
+      "slice": "window-close",
+      "purpose": "close the parent and reclaim every session while pumping events",
+      "red": {
+        "log": {
+          "artifact_name": "window-close-red.log",
+          "bytes": 1888,
+          "sha256": "da6b4d4e603c28f4deeb9a3c178372406f025fd752defa15048d46f3844e5105",
+          "published": false
+        },
+        "ctest_entries": 1,
+        "test_seconds": 6.1,
+        "supervisor_status": "failed",
+        "native_exit_code": 1,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 16,
+          "terminated": 0
+        },
+        "classification": "runtime_red",
+        "observed_error": "closing the tab window did not reclaim every running session",
+        "identity": {
+          "source_commit": null,
+          "source_commit_status": "unknown: intermediate working tree; not assigned a later commit",
+          "source_files": [
+            {
+              "path": "src/qt/session_tabs.hpp",
+              "sha256": "4febbb80e8ae23254612cb69d4c4a6e9a2110fa65dc16b20b0a46bd6b5c5d506",
+              "retained_snapshot": {
+                "artifact_name": "window-close-red-session_tabs.hpp",
+                "bytes": 3560,
+                "sha256": "4febbb80e8ae23254612cb69d4c4a6e9a2110fa65dc16b20b0a46bd6b5c5d506",
+                "published": false
+              }
+            },
+            {
+              "path": "src/qt/shell_smoke.cpp",
+              "sha256": "e362bb52489090564af5a9e4526f77b720e9633d03bbc227366eea6842e986c7",
+              "retained_snapshot": {
+                "artifact_name": "window-close-red-shell_smoke.cpp",
+                "bytes": 16082,
+                "sha256": "e362bb52489090564af5a9e4526f77b720e9633d03bbc227366eea6842e986c7",
+                "published": false
+              }
+            }
+          ],
+          "smoke_executable_sha256": "051fd46cf62b21480c7e2fe26ca73c8a57cb2a69c874c7943ff52565b3ba4f87",
+          "product_executable_sha256": null,
+          "identity_record": {
+            "artifact_name": "window-close-red-identities.json",
+            "bytes": 619,
+            "sha256": "2dadefe73a8d9c7694637799fd7f24e6bee606a590c5fee8005c8e2d32eb010d",
+            "published": false
+          },
+          "identity_scope": "Recorded file hashes; source list is partial. Historical executable bytes are not published. Missing files/committed source remain unknown."
+        },
+        "build_log": {
+          "artifact_name": "window-close-red-build.log",
+          "bytes": 2845,
+          "sha256": "be31e9fc91495714764192157f710b2225f8b349c530ab6741dad66227e55c45",
+          "published": false
+        }
+      },
+      "green": {
+        "log": {
+          "artifact_name": "window-close-green.log",
+          "bytes": 1827,
+          "sha256": "1135fa3c87abdc95354ef08fc67966e7739442888e5d8290d11d9293711afcf5",
+          "published": false
+        },
+        "ctest_entries": 1,
+        "test_seconds": 1.0,
+        "supervisor_status": "passed",
+        "native_exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 16,
+          "terminated": 0
+        },
+        "classification": "targeted_runtime_green",
+        "identity": {
+          "source_commit": null,
+          "source_files": null,
+          "smoke_executable_sha256": null,
+          "product_executable_sha256": null,
+          "status": "unknown: no independent saved identity record; not inferred from later files or commits"
+        },
+        "build_log": {
+          "artifact_name": "window-close-green-build.log",
+          "bytes": 2845,
+          "sha256": "be31e9fc91495714764192157f710b2225f8b349c530ab6741dad66227e55c45",
+          "published": false
+        }
+      }
+    },
+    {
+      "slice": "all-exited",
+      "purpose": "complete the container after the final launched cmd exits",
+      "red": {
+        "log": {
+          "artifact_name": "all-exited-red.log",
+          "bytes": 1873,
+          "sha256": "eecc311bc5e421b0b14d10777e81f28c33f5c66573090c1dd39fd8eddb0d6477",
+          "published": false
+        },
+        "ctest_entries": 1,
+        "test_seconds": 5.78,
+        "supervisor_status": "failed",
+        "native_exit_code": 1,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 11,
+          "terminated": 0
+        },
+        "classification": "runtime_red",
+        "observed_error": "last cmd exit did not complete the tab window",
+        "identity": {
+          "source_commit": null,
+          "source_commit_status": "unknown: intermediate working tree; not assigned a later commit",
+          "source_files": [
+            {
+              "path": "src/qt/session_tabs.hpp",
+              "sha256": "86625aee1f2abe9b9a92a75e66f9f24faafbfffa69ed319defe3b8733ea8d924",
+              "retained_snapshot": {
+                "artifact_name": "all-exited-red-session_tabs.hpp",
+                "bytes": 4127,
+                "sha256": "86625aee1f2abe9b9a92a75e66f9f24faafbfffa69ed319defe3b8733ea8d924",
+                "published": false
+              }
+            },
+            {
+              "path": "src/qt/shell_smoke.cpp",
+              "sha256": "50b6e6cac2ef05da12edc77e07279f077cbb1f6eeeb0ce30ebc69fab8074ac19",
+              "retained_snapshot": {
+                "artifact_name": "all-exited-red-shell_smoke.cpp",
+                "bytes": 16887,
+                "sha256": "50b6e6cac2ef05da12edc77e07279f077cbb1f6eeeb0ce30ebc69fab8074ac19",
+                "published": false
+              }
+            }
+          ],
+          "smoke_executable_sha256": "fae6ac143317397b5fd5ed53225b30b124a0a242dfa923c6a39016c151f16943",
+          "product_executable_sha256": null,
+          "identity_record": {
+            "artifact_name": "all-exited-red-identities.json",
+            "bytes": 619,
+            "sha256": "060d71d172413090d8c736fceabf50c0296fb85d2d9fefb12680e3910f054a76",
+            "published": false
+          },
+          "identity_scope": "Recorded file hashes; source list is partial. Historical executable bytes are not published. Missing files/committed source remain unknown."
+        },
+        "build_log": {
+          "artifact_name": "all-exited-red-build.log",
+          "bytes": 2845,
+          "sha256": "f02a473d8b2920fac4b5b9a0c549f92866bb9e93d3d636095cefb58909c524c0",
+          "published": false
+        }
+      },
+      "green": {
+        "log": {
+          "artifact_name": "all-exited-green.log",
+          "bytes": 1827,
+          "sha256": "01de58fd9ccdaa1291e47eedfcb999e348c7154766b8dd2f23691c3f3e24c07d",
+          "published": false
+        },
+        "ctest_entries": 1,
+        "test_seconds": 1.08,
+        "supervisor_status": "passed",
+        "native_exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 16,
+          "terminated": 0
+        },
+        "classification": "targeted_runtime_green",
+        "identity": {
+          "source_commit": null,
+          "source_files": null,
+          "smoke_executable_sha256": null,
+          "product_executable_sha256": null,
+          "status": "unknown: no independent saved identity record; not inferred from later files or commits"
+        },
+        "build_log": {
+          "artifact_name": "all-exited-green-build2.log",
+          "bytes": 5655,
+          "sha256": "906b6eed01245f9ca071c194d2be5a940b5b7d1c05851f28f18e83e0019a2a67",
+          "published": false
+        }
+      }
+    }
+  ],
+  "compilation_failures": [
+    {
+      "stage": "interface-red",
+      "classification": "compile_failure_only",
+      "log": {
+        "artifact_name": "interface-red.log",
+        "bytes": 528,
+        "sha256": "bb153a16252436bfe65f50ff2775796ce579f67cd3026e3fc90e1c94b4689071",
+        "published": false
+      },
+      "observed_error": "C1083: session_tabs.hpp not found",
+      "source_commit": null,
+      "source_identity": "unknown",
+      "new_executable_identity": "not produced by failed compile",
+      "runtime_red": false
+    },
+    {
+      "stage": "all-exited-green-build",
+      "classification": "compile_failure_only",
+      "log": {
+        "artifact_name": "all-exited-green-build.log",
+        "bytes": 1739,
+        "sha256": "e4b4252ea9ae3f4c64d34e1a833568d7bd5f1743a6943959049f1af1fed7c1e2",
+        "published": false
+      },
+      "observed_error": "C2662: const SessionPage cannot call non-const model getter",
+      "repair": "add const model() overload; subsequent build and targeted runtime pass retained separately",
+      "source_commit": null,
+      "source_identity": "unknown",
+      "new_executable_identity": "not produced by failed compile",
+      "runtime_red": false
+    }
+  ],
+  "app_exec_spec_P2": {
+    "gap": "Earlier smoke pumped events after window.close while main used automatic last-window quit; that did not prove event-loop drainage before app.exec returned.",
+    "red": {
+      "log": {
+        "artifact_name": "app-exec-red.log",
+        "bytes": 1900,
+        "sha256": "cc44e3a12a8c094d6179a4be428c4d9c2e156a2c385339da73267500a0a989fa",
+        "published": false
+      },
+      "ctest_entries": 1,
+      "test_seconds": 1.33,
+      "supervisor_status": "failed",
+      "native_exit_code": 1,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 21,
+        "terminated": 0
+      },
+      "identity": {
+        "source_commit": null,
+        "source_commit_status": "unknown: intermediate working tree; not assigned a later commit",
+        "source_files": [
+          {
+            "path": "src/qt/session_tabs.hpp",
+            "sha256": "6b8c89fd5e1afb47ef6b4013f3c67814994fa6bdd66706292531372572852a3f",
+            "retained_snapshot": {
+              "artifact_name": "app-exec-red-session_tabs.hpp",
+              "bytes": 6654,
+              "sha256": "6b8c89fd5e1afb47ef6b4013f3c67814994fa6bdd66706292531372572852a3f",
+              "published": false
+            }
+          },
+          {
+            "path": "src/qt/main.cpp",
+            "sha256": "a6ca7b914ddb26b14d4b30bf0cfa1d8aebe19c2ceb04ae83dbfc911e77be8187",
+            "retained_snapshot": null
+          },
+          {
+            "path": "src/qt/shell_smoke.cpp",
+            "sha256": "099e1d3e7efee53c133f4c82e235e51c70c7bd192f6cd31163bd988ceca5cc26",
+            "retained_snapshot": {
+              "artifact_name": "app-exec-red-shell_smoke.cpp",
+              "bytes": 21973,
+              "sha256": "099e1d3e7efee53c133f4c82e235e51c70c7bd192f6cd31163bd988ceca5cc26",
+              "published": false
+            }
+          }
+        ],
+        "smoke_executable_sha256": "b9177f4c8372e8e94e43707c763f523567cd375820f0abdc688050ec2267bbc4",
+        "product_executable_sha256": null,
+        "identity_record": {
+          "artifact_name": "app-exec-red-identities.json",
+          "bytes": 804,
+          "sha256": "cbdba4b91318c34192e4f9762b3612ce3d63cef2a2b725f990bea3a5cbdc474f",
+          "published": false
+        },
+        "identity_scope": "Recorded file hashes; source list is partial. Historical executable bytes are not published. Missing files/committed source remain unknown."
+      },
+      "build_log": {
+        "artifact_name": "app-exec-red-build.log",
+        "bytes": 2845,
+        "sha256": "19e76f72859daea1f01559fcb67c6ec4091affe0b064983f3f937875e30f021b",
+        "published": false
+      },
+      "observed_error": "application event loop quit before every owned session completed cleanup"
+    },
+    "first_green": {
+      "log": {
+        "artifact_name": "app-exec-green.log",
+        "bytes": 2153,
+        "sha256": "04be5c1c362bcaab511f8ff57e90d0a4c2a7b1a610af53e4062ce4e635528428",
+        "published": false
+      },
+      "ctest_entries": 1,
+      "test_seconds": 1.34,
+      "supervisor_status": "passed",
+      "native_exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 21,
+        "terminated": 0
+      },
+      "identity": {
+        "source_commit": null,
+        "source_commit_status": "unknown: intermediate working tree; not assigned a later commit",
+        "source_files": [
+          {
+            "path": "src/qt/main.cpp",
+            "sha256": "4af7c6722ba6847d90d3d9938849aa3b69a8de749c043a278c8725dc46011796",
+            "retained_snapshot": null
+          },
+          {
+            "path": "src/qt/session_tabs.hpp",
+            "sha256": "ddaf5d1919d6e2a0a8f80c3771ae3e2ae64529ee27918e9c7047a18edf384e37",
+            "retained_snapshot": {
+              "artifact_name": "app-exec-green-session_tabs.hpp",
+              "bytes": 6871,
+              "sha256": "ddaf5d1919d6e2a0a8f80c3771ae3e2ae64529ee27918e9c7047a18edf384e37",
+              "published": false
+            }
+          },
+          {
+            "path": "src/qt/shell_smoke.cpp",
+            "sha256": "7c481c114d4003d6eff111e719763452d807f09c9085129ff1df356a3291f5ea",
+            "retained_snapshot": {
+              "artifact_name": "app-exec-green-shell_smoke.cpp",
+              "bytes": 21974,
+              "sha256": "7c481c114d4003d6eff111e719763452d807f09c9085129ff1df356a3291f5ea",
+              "published": false
+            }
+          }
+        ],
+        "smoke_executable_sha256": "066a1854ee8aab2206ee6af81b9df0bc009a223cd524b63b322a490f2808edd4",
+        "product_executable_sha256": null,
+        "identity_record": {
+          "artifact_name": "app-exec-green-identities.json",
+          "bytes": 804,
+          "sha256": "78cf29d82d85a21953cb743df5dc88c8992dee789692285774ef4b1368b70b7a",
+          "published": false
+        },
+        "identity_scope": "Recorded file hashes; source list is partial. Historical executable bytes are not published. Missing files/committed source remain unknown."
+      },
+      "build_log": {
+        "artifact_name": "app-exec-green-build.log",
+        "bytes": 5287,
+        "sha256": "570369b3d77c4fb8f1a9cec99add73dc10322ac50f79a600a4a4ccb3cac514d6",
+        "published": false
+      }
+    },
+    "four_case_green": {
+      "log": {
+        "artifact_name": "app-exec-boundaries.log",
+        "bytes": 2318,
+        "sha256": "70d77ef70229019690a9eadd1647ea56da2a3a4857629496d732ffdb853d62f0",
+        "published": false
+      },
+      "ctest_entries": 1,
+      "test_seconds": 1.45,
+      "supervisor_status": "passed",
+      "native_exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 26,
+        "terminated": 0
+      },
+      "build_log": {
+        "artifact_name": "app-exec-boundaries-build.log",
+        "bytes": 5275,
+        "sha256": "ccdce4ca414734509df6223e325929f1534094a75ee19a36b62608c428b7546f",
+        "published": false
+      },
+      "identity": {
+        "source_commit": null,
+        "source_files": null,
+        "smoke_executable_sha256": null,
+        "product_executable_sha256": null,
+        "status": "unknown: no independent saved identity record; not inferred from later files or commits"
+      }
+    },
+    "committed_targeted_green": {
+      "log": {
+        "artifact_name": "app-exec-final.log",
+        "bytes": 2318,
+        "sha256": "397c5602d273ced7358198c2d3da1dc3e6de37ca8cd837286a57f8153a11902c",
+        "published": false
+      },
+      "ctest_entries": 1,
+      "test_seconds": 1.51,
+      "supervisor_status": "passed",
+      "native_exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 26,
+        "terminated": 0
+      },
+      "identity": {
+        "source_commit": "76070a6227f4dd79fe4cdc16e21f03919f1549de",
+        "source_commit_status": "Recorded committed targeted run; all three recorded source-file hashes also match git object bytes at this commit",
+        "source_files": [
+          {
+            "path": "src/qt/main.cpp",
+            "sha256": "4af7c6722ba6847d90d3d9938849aa3b69a8de749c043a278c8725dc46011796",
+            "retained_snapshot": null
+          },
+          {
+            "path": "src/qt/session_tabs.hpp",
+            "sha256": "7cd21641d748c2ad864731d94a35b1140377bb242f07781d5e1bbbe797020f0e",
+            "retained_snapshot": null
+          },
+          {
+            "path": "src/qt/shell_smoke.cpp",
+            "sha256": "86022250a4c5d50824e112d6748c56bb549cb055c0737288f8a3c88f3733c8d0",
+            "retained_snapshot": null
+          }
+        ],
+        "smoke_executable_sha256": "80201411b9bb8b0dc073c133d8039b7468f87098fc36df3051d7ea5044a781eb",
+        "product_executable_sha256": "0bfe1f63a6e12bba8bc4a092b897ef0c341825d0be408ac818a09c7d6033f7bc",
+        "identity_record": {
+          "artifact_name": "app-exec-final-identities.json",
+          "bytes": 1027,
+          "sha256": "550f0a0dbdbb184a5302e1837c333914aaf76e80d5fb5fe0f88149d5b3c28eb4",
+          "published": false
+        },
+        "identity_scope": "Recorded file hashes; source list is partial. Historical executable bytes are not published. Missing files/committed source remain unknown."
+      },
+      "build_log": {
+        "artifact_name": "app-exec-final-build.log",
+        "bytes": 5287,
+        "sha256": "042c457fd27e779f684f688901f3cc4e79539976dbfdc49ea6eb220859802ed4",
+        "published": false
+      },
+      "recorded_source_commit": "76070a6227f4dd79fe4cdc16e21f03919f1549de"
+    },
+    "interpretation": "Runtime red proves early event-loop exit relative to the pre-exit cleanup contract, not an established leak/deadlock. Red outer Job active=0 cannot turn the failed application cleanup checkpoint into a pass. Final cf8b40b full run separately includes all four app.exec cases."
+  },
+  "interrupted_earlier_full_run": {
+    "source_commit": "aa068c99b2198a76f230e101ea25c95f5d3fc6a5",
+    "status": "incomplete",
+    "expected_entries": 49,
+    "completed_passed_entries": 29,
+    "stopped_at_start": {
+      "number": 30,
+      "name": "workflow_fixture"
+    },
+    "exit_code": null,
+    "frozen_files_checked": 7143,
+    "post_run_changed": [],
+    "post_run_freeze_status": "passed",
+    "proofs": {
+      "final-ctest.log": {
+        "artifact_name": "final-ctest.log",
+        "bytes": 74252,
+        "sha256": "f0e8e36d6f1b649f4f5f3c57e0272842aa3417ee50a6081716552ef223913d7b",
+        "published": false
+      },
+      "LastTest.log.tmp": {
+        "artifact_name": "LastTest.log.tmp",
+        "bytes": 77797,
+        "sha256": "b1089a76b177d13b4b81b0abf054f61ea3bf705d91fbc5b0b75a0a1b5b6c10bc",
+        "published": false
+      },
+      "frozen-inputs.json": {
+        "artifact_name": "frozen-inputs.json",
+        "bytes": 1559640,
+        "sha256": "289f60644c280ae67cc3c5e785e30c67ab8b18ce0c81c39f85b908198b7a2105",
+        "published": false
+      },
+      "frozen-after.json": {
+        "artifact_name": "frozen-after.json",
+        "bytes": 185,
+        "sha256": "cdb84daa598b3d981ea9da921f833d898ba236247d8d8b38bced1cbed4cd1f6c",
+        "published": false
+      },
+      "supervision.json": {
+        "artifact_name": "supervision.json",
+        "bytes": 315,
+        "sha256": "d6d502dc8dcdee44deef2334e27db80aad44b8bac41307b6ed80196104f2150b",
+        "published": false
+      }
+    },
+    "interpretation": "Unrecoverable supervisor session; no completion footer/final exit observed. The 29 passes and unchanged files do not constitute a complete run, and are not combined with the later 50-entry run."
+  },
+  "review_summary": {
+    "source_commit": "cf8b40b2e44f9e475cfc42b5008d46c670ff1756",
+    "standards_unresolved": 0,
+    "spec_unresolved": 0,
+    "provenance": "Parent reports final independent two-axis runtime review complete with no unresolved findings.",
+    "independent_report_artifact": null,
+    "artifact_sha256": null,
+    "note": "No separate review-report artifact exists; no hash is fabricated."
+  },
+  "limitations": [
+    "Full R2 and complete WindTerm 2.7.0 parity are incomplete.",
+    "Two-session fixed-size cmd slice does not establish eight-session, split, persistence, workspace restoration or dynamic resize acceptance.",
+    "No inherited IME, complete keyboard, Find, selection/copy, DPI, native on-screen rendering, physical-input or Alacritty-reference capability acceptance.",
+    "No throughput, interactive-latency, memory or WindTerm performance-equivalence claim; reported seconds are test durations.",
+    "No Linux/macOS client, daily-use release, clean-machine runtime or distributable-package acceptance.",
+    "Only synthetic assertions, selected hashes and sanitized summaries are public; raw logs/images, private paths/process IDs and complete deployment/SDK manifests remain local."
+  ]
+}

@@ -8,6 +8,7 @@
 
 | 配置 | 证据定位 |
 |---|---|
+| Qt cmd 标签与退出前回收 | [固定结果](../experiments/shell/results/2026-10-28-qt-tabs/README.md)、[验证身份](../experiments/shell/results/2026-10-28-qt-tabs/validation.json)：双 cmd 隔离、失败页、关闭与四个实际事件循环边界；Qt 1 项和其他 49 项诊断及内部跳过分列，旧中断轮不拼接 |
 | Qt 正式入口的独立 hosted 构建 | [固定结果](../experiments/shell/results/2026-10-28-qt-cpp-ci/README.md)、[验证身份](../experiments/shell/results/2026-10-28-qt-cpp-ci/validation.json)：固定 SDK、VS 2026 hosted 与真实 cmd 的 offscreen / OwnedJob 检查；原依赖换行和 generator 失败保留。没有原生上屏、完整部署哈希或产品包验收 |
 | 自主 C++ + Qt Widgets + 固定微软 ConPTY 正式目标 | [ADR-0007](adr/0007-bundled-microsoft-conpty.md) / [ADR-0008](adr/0008-cpp-core-qt-widgets.md) 记录用户确认；新组合的实现与验证另行留证，不引用旧默认或 Alacritty 通过结果代替 |
 | 既有默认/Alpha：自主 C++ + 系统 ConPTY + Win32 | R1 限定总验收和有限 VT/Unicode 子集；与当前 Qt/固定后端目标组合分列 |
