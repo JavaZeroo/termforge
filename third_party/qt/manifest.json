@@ -5,7 +5,7 @@
   "host": "windows",
   "target": "desktop",
   "architecture": "win64_msvc2022_64",
-  "scope": "Local build dependency for the first C++/Qt migration entry; no released product package or complete redistribution acceptance.",
+  "scope": "Local and CI build dependency for the C++/Qt migration entry; no released product package or complete redistribution acceptance.",
   "required_application_modules": [
     "Core",
     "Gui",
@@ -96,6 +96,12 @@
     ],
     "transformations": "aqtinstall patches qmake.exe and .prl installation prefixes; archive hash and installed selected-file hashes are distinct identities.",
     "hash_scope": "The archive SHA-256 identifies the untouched official 7z. It is not the hash of an aqt-patched SDK directory, qmake.exe, .prl file or deployed product."
+  },
+  "reproducible_preparation": {
+    "entry": "python -m tools.prepare_qt_build",
+    "extractor": "cmake -E tar xf",
+    "transformations": "Write bin/qt.conf as [Paths]\\nPrefix=..\\n; preserve official qmake.exe and .prl bytes.",
+    "output_identity": "The preparation summary records all post-relocation SDK files in a sorted relative-path/SHA-256 tree digest. No absolute paths, SDK files or raw logs are published."
   },
   "deployment_status": {
     "published_product_package": false,

@@ -1,0 +1,49 @@
+name: Qt C++ fixed ConPTY build and smoke
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qt-cpp-windows:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Verify preparation failure contracts
+        run: python -m unittest tools.test_prepare_qt_build -v
+      - name: Prepare manifest-pinned Qt qtbase and Microsoft ConPTY
+        run: python -m tools.prepare_qt_build
+      - name: Preserve path-free dependency preparation identity
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qt-cpp-dependency-preparation
+          retention-days: 14
+          if-no-files-found: warn
+          path: local/qt-build-preparation.json
+      - name: Configure explicit Qt product and test entries
+        run: |
+          $dependencyRoot = Join-Path $env:GITHUB_WORKSPACE 'local/qt-build-deps'
+          cmake -S . -B build/qt-cpp -G 'Visual Studio 17 2022' -A x64 `
+            -DTERMFORGE_BUILD_QT_SHELL=ON -DBUILD_TESTING=ON `
+            -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF `
+            "-DPython3_EXECUTABLE=$((Get-Command python).Source)" `
+            "-DQt6_DIR=$dependencyRoot/qt/lib/cmake/Qt6" `
+            "-DTERMFORGE_CONPTY_BACKEND_DIR=$dependencyRoot/conpty"
+      - name: Build Qt product and independent smoke
+        run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke --parallel 2
+      - name: Run Qt offscreen smoke in its owned Job
+        run: ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_shell$' --no-tests=error --verbose
+      # Keep this configuration independent from the default/system-backend and
+      # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
+      # publication artifacts; this job does not produce a release package.
