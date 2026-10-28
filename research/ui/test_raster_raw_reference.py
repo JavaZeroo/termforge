@@ -46,6 +46,16 @@ def write_records(directory,data):
 
 
 class RawRasterTests(unittest.TestCase):
+    def test_fixed_proposal_is_non_executable_and_preserves_exact_five_sources(self):
+        plan=json.loads((ROOT/'research/ui/results/2026-10-29-raster-raw-proposal/plan.json').read_text())
+        self.assertFalse(plan['execution_authorized']);self.assertEqual(plan['actual_original_runs'],0)
+        self.assertEqual(plan['case_id'],'raw-capture-v1')
+        self.assertEqual([row['source_bytes'] for row in plan['phases']],[43,38,20,53,54])
+        self.assertEqual(plan['maximum_grabs_per_phase'],1);self.assertEqual(plan['maximum_grabs'],5)
+        from research.ui.raster_raw_reference import SOURCE_FILES,phases
+        self.assertEqual([row['source_hex'] for row in plan['phases']],[source.hex() for _,source in phases(25,91)])
+        self.assertEqual(plan['source_files_sha256'],{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in SOURCE_FILES})
+
     @unittest.skipUnless(shutil.which('node'),'Node required for the external Qt boundary')
     def test_all_rois_survive_a_tied_color_histogram(self):
         result=subprocess.run(['node',str(ROOT/'research/ui/test_raster_raw_native.js')],capture_output=True,text=True,timeout=10)
