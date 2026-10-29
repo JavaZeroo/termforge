@@ -117,5 +117,44 @@
       }
     ],
     "attribution_limit": "pipeline-level observation; layer attribution unknown"
+  },
+  "cursor_save_restore": {
+    "protocol": "10-row reference grid, cursor moved to row 9 column 10, red block after 1049h and green block after 1049l, located by exact palette colours",
+    "frames": {
+      "before_entry": {
+        "crop_sha16": "e6f323395707b2bb"
+      },
+      "after_entry": {
+        "crop_sha16": "242d869ae57799fc",
+        "red_block_bbox": [
+          474,
+          340,
+          513,
+          357
+        ]
+      },
+      "after_exit": {
+        "crop_sha16": "70f9f3683d0323c4",
+        "green_block_bbox": [
+          474,
+          340,
+          513,
+          357
+        ]
+      }
+    },
+    "interpretation": "1049 entry keeps the cursor position and 1049l restores the entry-time position; the column is not asserted because the reference grid may wrap.",
+    "limitation": "column position unresolved"
+  },
+  "core_comparison": {
+    "core_file": "experiments/core/alternate_mode_test.cpp",
+    "matching": [
+      "exit restores primary text/cursor/colours"
+    ],
+    "differing": [
+      "core homes the cursor on 1049 entry (lines 25-27); observed original keeps it",
+      "core resets writing colours to default on 1049 entry (lines 25-27); observed original keeps them"
+    ],
+    "policy": "ADR-0006: important deviations need user confirmation; no code change made"
   }
 }
