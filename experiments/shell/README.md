@@ -59,6 +59,10 @@ R1 的 [#12–#17 限定合同](../../docs/milestones/R1-local-text.md)和 [#18 
 
 自动测试仅读写各自结果目录下的 `workspace.layout`，不会读取或修改上述用户配置。恢复场景为 data-only，不生成位图；若等待超时，`persistence-failure.json` 保留有界 PTY 输出和文本屏幕以区分输入与显示问题，内容仅限合成会话。
 
+## 选区丢弃诊断
+
+几何/DPI/缩放变化后若选区被 `TextSelection::reconcile` 丢弃，可用环境变量 `TERMFORGE_SELECTION_DIAG=<jsonl 路径>` 打开一次性诊断：每次丢弃写入一行 `{"schema":"termforge-selection-discard-v1","reason":"..."}`，`reason` 取 `epoch-mismatch`、`anchor-missing-or-shrunk`、`row-identity-replaced`、`row-text-changed`、`endpoint-unavailable` 之一。未设置该变量时不写任何文件、行为不变；`experiments/shell/run.py` 的 `execute()` 会自动把该变量指向本次场景产物目录下的 `selection-discard.jsonl`，因此失败时该文件随 `build/test-artifacts/` 一起保留。`selection_core` 里新增的分组只验证观察器能收到分支名。
+
 ## 所有权与调度
 
 - ConPTY 输出线程将最多 64 KiB 的读取块放入 256 KiB 队列；满时等待窗口消费，正常运行不丢弃字节。
