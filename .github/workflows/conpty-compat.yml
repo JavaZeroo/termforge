@@ -297,3 +297,64 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
           path: startup-latency.json
+
+  windows-2025-startup-under-load:
+    # Bounded follow-up for #81 / #144 / #40: does local CPU contention on the
+    # runner inflate PowerShell start-up enough to reach the fixture deadlines.
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Measure start-up latency under CPU load
+        shell: pwsh
+        run: |
+          @'
+          import json, multiprocessing, platform, subprocess, time
+          def burn(deadline):
+              while time.monotonic() < deadline:
+                  sum(i * i for i in range(20000))
+          def samples(command, count, timeout):
+              rows = []
+              for _ in range(count):
+                  started = time.monotonic()
+                  try:
+                      result = subprocess.run(command, capture_output=True, timeout=timeout)
+                      rows.append({"elapsed": round(time.monotonic() - started, 4), "returncode": result.returncode, "timeout": False})
+                  except subprocess.TimeoutExpired:
+                      rows.append({"elapsed": round(time.monotonic() - started, 4), "returncode": None, "timeout": True})
+              return rows
+          def summary(rows):
+              times = sorted(row["elapsed"] for row in rows)
+              def at(fraction):
+                  return times[min(len(times) - 1, int(len(times) * fraction))]
+              return {"count": len(rows), "min": times[0], "p50": at(0.5), "p90": at(0.9), "max": times[-1],
+                      "over_1s": sum(1 for t in times if t >= 1.0),
+                      "over_5s": sum(1 for t in times if t >= 5.0),
+                      "timeouts": sum(1 for row in rows if row["timeout"])}
+          command = ["powershell.exe", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "exit 0"]
+          deadline = time.monotonic() + 120
+          workers = [multiprocessing.Process(target=burn, args=(deadline,)) for _ in range(8)]
+          for worker in workers:
+              worker.start()
+          time.sleep(2)
+          loaded = samples(command, 20, 15)
+          for worker in workers:
+              worker.terminate()
+          report = {"schema": "termforge-startup-under-load-v1", "platform": platform.platform(),
+                    "workers": 8, "loaded": summary(loaded), "samples": loaded}
+          print(json.dumps({k: v for k, v in report.items() if k != "samples"}))
+          with open("startup-under-load.json", "w", encoding="utf-8") as stream:
+              json.dump(report, stream, indent=2)
+          '@ | Out-File -Encoding utf8 startup-under-load.py
+          python startup-under-load.py
+      - name: Preserve latency evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: startup-under-load-r2
+          retention-days: 14
+          if-no-files-found: warn
+          path: startup-under-load.json
