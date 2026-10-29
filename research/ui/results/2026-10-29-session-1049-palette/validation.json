@@ -1,0 +1,52 @@
+{
+  "schema": "termforge-ui-1049-palette-capture-v1",
+  "issues": [
+    126,
+    123
+  ],
+  "method": "synthetic session + native SGR blocks + QEMU-agent screenshots + UIA terminal rect + per-row dominant color",
+  "environment": {
+    "platform": "Windows 11 VM (isolated)",
+    "display": "1024x768",
+    "dpi": "fixed 96 (guest setting)"
+  },
+  "terminal_rect": [
+    255,
+    196,
+    497,
+    236
+  ],
+  "colors": {
+    "default_background": "1C1C1C",
+    "default_foreground_via_reverse": "E3E3DD",
+    "palette_red_sgr41": "C4265E",
+    "palette_blue_sgr44": "3465A4",
+    "palette_green_sgr42": "86B42B"
+  },
+  "phases": {
+    "main": {
+      "crop_sha16": "e7dd9042d1ecbb16",
+      "colors_identical": true
+    },
+    "alternate": {
+      "crop_sha16": "f38a0bcbfe1a2f5e",
+      "colors_identical": true
+    },
+    "alternate_reentry": {
+      "crop_sha16": "f38a0bcbfe1a2f5e",
+      "colors_identical": true
+    },
+    "restored_main": {
+      "crop_sha16": "d518513bb5fc5040",
+      "colors_identical": true
+    }
+  },
+  "limitations": [
+    "OS screen capture, not the application QImage grab required by #126",
+    "ClearType text rendering not studied; only space-filled SGR blocks",
+    "single VM, single fixed DPI, one package identity",
+    "no SGR-changed alternate state, no non-colour attributes, no font study",
+    "does not close #126/#123/#27"
+  ],
+  "performance_claim": false
+}
