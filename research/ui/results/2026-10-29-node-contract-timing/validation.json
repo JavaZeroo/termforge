@@ -1,0 +1,34 @@
+{
+  "schema": "termforge-node-contract-timing-v1",
+  "issue": 144,
+  "run": 40864960451,
+  "job": "windows-2025-node-contract-timing",
+  "command": [
+    "node",
+    "research/ui/test_raster_native_contract.js"
+  ],
+  "node_version": "v22.23.4",
+  "platform": "windows-2025 hosted",
+  "samples": {
+    "sequential": 60,
+    "concurrent_batches": 20,
+    "concurrent_per_batch": 4,
+    "total": 140
+  },
+  "results": {
+    "sequential_p50_s": 0.063,
+    "sequential_p90_s": 0.078,
+    "sequential_max_s": 1.469,
+    "first_sample_s": 1.469,
+    "concurrent_max_s": 0.125,
+    "timeouts": 0,
+    "budget_s": 10
+  },
+  "interpretation": "夹具 warm 约 60–80ms、冷启动约 1.5s；两次 10s 失败的耗时远离本分布，不能用夹具成本解释，宿主级停顿假设未复现。",
+  "limitations": [
+    "空闲镜像，未在完整 CTest 同时段或安全软件扫描状态下测量",
+    "未改夹具/期限，未重跑原失败",
+    "不是性能预算"
+  ],
+  "performance_claim": false
+}
