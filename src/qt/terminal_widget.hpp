@@ -8,6 +8,7 @@
 #include <QCloseEvent>
 #include <QFontDatabase>
 #include <QFontMetricsF>
+#include <QInputMethodEvent>
 #include <QKeyEvent>
 #include <QResizeEvent>
 #include <QShowEvent>
@@ -25,6 +26,9 @@ class TerminalWidget final : public QWidget {
     int cell_width_ = 9;
     int cell_height_ = 19;
     bool grid_ready_ = false;
+    // Uncommitted input-method composition. Commits go to the session as UTF-8;
+    // cancelling is simply an empty preedit, so no partial text is ever written.
+    QString preedit_;
     void refresh_metrics() {
         const QFontMetricsF metrics(font());
         cell_width_ = (std::max)(1, qCeil(metrics.horizontalAdvance(QLatin1Char('M'))));
@@ -120,6 +124,28 @@ class TerminalWidget final : public QWidget {
             event->accept();
         } else event->ignore();
     }
+    // The candidate window needs the caret cell, not the widget origin.
+    QVariant inputMethodQuery(Qt::InputMethodQuery query) const override {
+        if (query == Qt::ImCursorRectangle && grid_ready_) {
+            const auto& screen = model_.screen();
+            return QRect(margin + screen.column * cell_width_, margin + screen.row * cell_height_, cell_width_, cell_height_);
+        }
+        if (query == Qt::ImSurroundingText) return QString();
+        if (query == Qt::ImCurrentSelection) return QString();
+        if (query == Qt::ImCursorPosition) return 0;
+        return QWidget::inputMethodQuery(query);
+    }
+    void inputMethodEvent(QInputMethodEvent* event) override {
+        const QString preedit = event->preeditString();
+        if (preedit != preedit_) { preedit_ = preedit; update(); }
+        const QString commit = event->commitString();
+        if (!commit.isEmpty()) {
+            model_.send(commit.toUtf8());
+            preedit_.clear();
+            update();
+        }
+        event->accept();
+    }
     void paintEvent(QPaintEvent*) override {
         QPainter painter(this);
         painter.fillRect(rect(), colour(-1, false));
@@ -149,6 +175,17 @@ class TerminalWidget final : public QWidget {
             painter.fillRect(QRect(margin + screen.column * cell_width_, margin + (screen.row + 1) * cell_height_ - 2,
                                    cell_width_, 2), colour(-1, true));
         }
+        if (!preedit_.isEmpty()) {
+            // Compose in place at the caret; the committed text is what reaches
+            // the session, this preview is presentation only.
+            const QRectF area(margin + screen.column * cell_width_, margin + screen.row * cell_height_,
+                              static_cast<qreal>(cell_width_) * static_cast<qreal>(preedit_.size()),
+                              static_cast<qreal>(cell_height_));
+            auto compose_font = base_font; compose_font.setUnderline(true);
+            painter.setFont(compose_font);
+            painter.setPen(colour(7, true));
+            painter.drawText(area, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, preedit_);
+        }
         painter.setFont(base_font);
         painter.setPen(model_.error().isEmpty() ? colour(8, true) : colour(9, true));
         const QString status = !model_.error().isEmpty() ? model_.error() : model_.finished() ?
@@ -171,7 +208,9 @@ public:
         fixed.setStyleHint(QFont::TypeWriter); fixed.setPointSize(11); setFont(fixed);
         refresh_metrics();
         setFocusPolicy(Qt::StrongFocus);
-        setAttribute(Qt::WA_InputMethodEnabled, false);
+        // #155: composition, commit and cancel arrive through Qt's input method
+        // events; the widget only forwards committed text and never guesses.
+        setAttribute(Qt::WA_InputMethodEnabled, true);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         resize(sizeHint());
         grid_ready_ = true;
