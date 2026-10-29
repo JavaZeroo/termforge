@@ -19,8 +19,41 @@
 #include "operation_observation.hpp"
 #include "shell_launch.hpp"
 #include <atomic>
+#include <cstdlib>
+#include <fstream>
+#include <mutex>
+#include <string>
 #include <optional>
 #include <sstream>
+
+namespace {
+// Opt-in diagnostic for the selection-discard path, used when a hosted geometry
+// change drops a live selection. Gated by TERMFORGE_SELECTION_DIAG=<jsonl path>;
+// without it nothing is written and no behaviour changes.
+std::string selection_diag_path() {
+#ifdef _MSC_VER
+    char* buffer = nullptr; size_t size = 0;
+    if (_dupenv_s(&buffer, &size, "TERMFORGE_SELECTION_DIAG") != 0 || !buffer) return {};
+    std::string value(buffer); std::free(buffer); return value;
+#else
+    const char* value = std::getenv("TERMFORGE_SELECTION_DIAG");
+    return value ? std::string(value) : std::string{};
+#endif
+}
+void selection_discard_diagnostic(const char* reason) {
+    static const std::string path = selection_diag_path();
+    if (path.empty()) return;
+    std::ofstream stream(path, std::ios::app);
+    if (!stream) return;
+    stream << "{\"schema\":\"termforge-selection-discard-v1\",\"reason\":\"" << reason << "\"}\n";
+}
+void install_selection_diagnostic_once() {
+    static std::once_flag once;
+    std::call_once(once, [] {
+        if (!selection_diag_path().empty()) termforge::TextSelection::set_discard_observer(&selection_discard_diagnostic);
+    });
+}
+} // namespace
 
 struct Result {
     int resize_verified = 0, rows = 24, columns = 80;
@@ -352,6 +385,7 @@ class ShellWindow {
         });
     }
     void publish(std::optional<size_t> scroll_operation=std::nullopt,bool scroll_changed=false) {
+        install_selection_diagnostic_once();
         selection_.reconcile(termforge::TextDocument(parser_.screen));
         auto view = viewport_.snapshot(parser_.screen);
         if(runtime_enabled_) runtime_published_viewport_=view.viewport;

@@ -4,6 +4,8 @@
 #include "text_selection.hpp"
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <vector>
 using namespace termforge;
 static void check(bool value, const char* why) { if (!value) throw std::runtime_error(why); }
 
@@ -184,6 +186,26 @@ static void empty_stale_and_capacity_boundaries() {
     check(!selection.set(bounded, {at(bounded, 0, 0), at(bounded, bounded.size() - 1, 0)}) && selection.empty(),
           "selection snapshot budget rejects excessive retained rows without stale range");
 }
+
+static std::vector<std::string> observed_discards;
+static void observe_discard(const char* reason) { observed_discards.push_back(reason ? reason : ""); }
+static void discard_reasons_are_reported() {
+    Parser p(2, 6, 2);
+    p.feed("ONETWO\r\nTHREE");
+    TextDocument document(p.screen);
+    TextSelection selection;
+    check(selection.set(document, {at(document, 0, 0), at(document, 1, 3)}), "diagnostic selection fixture");
+    TextSelection::set_discard_observer(&observe_discard);
+    Parser bumped(2, 6, 2);
+    bumped.feed("ONETWO\r\nTHREE");
+    bumped.screen.invalidate_buffer_readers();
+    observed_discards.clear();
+    check(!selection.reconcile(TextDocument(bumped.screen)), "epoch bump invalidates the selection");
+    check(observed_discards.size() == 1 && observed_discards.front() == "epoch-mismatch",
+          "discard observer reports the epoch branch by name");
+    TextSelection::set_discard_observer(nullptr);
+}
+
 int main() {
     try {
         std::ostringstream json;
@@ -197,6 +219,7 @@ int main() {
         half_open_endpoint_boundary();
         word_line_policy();
         empty_stale_and_capacity_boundaries();
-        std::cout << "selection contracts passed (7 independent groups)\n";
+        discard_reasons_are_reported();
+        std::cout << "selection contracts passed (8 independent groups)\n";
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }
