@@ -125,6 +125,7 @@ class ShellWindow {
     std::ofstream capture_output_;
     std::ofstream trace_output_;
     uint64_t trace_offset_ = 0;
+    uint64_t heartbeat_ms_ = 0;
     std::unique_ptr<tf_shell::ClipboardReadJob> clipboard_read_;
     std::optional<tf_shell::PreparedPaste> pending_paste_;
     std::unique_ptr<tf_shell::PastePrompt> paste_prompt_;
@@ -859,6 +860,20 @@ class ShellWindow {
             route_terminal_events();
 #endif
         } while (batch < 65536 && ms(began) < 4);
+        // Opt-in heartbeat: with TERMFORGE_OUTPUT_TRACE set, record every half
+        // second whether this terminal is still running and how much output it
+        // has seen. A silent stretch then shows whether the child stayed alive.
+        if (trace_output_) {
+            const uint64_t now = GetTickCount64();
+            if (now - heartbeat_ms_ >= 500) {
+                heartbeat_ms_ = now;
+                trace_output_ << "{\"schema\":\"termforge-output-heartbeat-v1\",\"terminal\":" << identity_
+                              << ",\"t_ms\":" << now << ",\"consumed\":" << result_.consumed
+                              << ",\"ticks\":" << result_.ticks << ",\"closing\":" << (closing_ ? "true" : "false")
+                              << ",\"complete\":" << (result_.complete ? "true" : "false") << "}\n";
+                trace_output_.flush();
+            }
+        }
         result_.max_consumed_per_tick = (std::max)(result_.max_consumed_per_tick, batch);
         if (batch) { result_.consumed += batch; search_changed(); publish(); }
         poll_find();
