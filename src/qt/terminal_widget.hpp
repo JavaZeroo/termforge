@@ -1,4 +1,4 @@
-﻿// Qt terminal geometry follows the current font; semantics stay in the model.
+// Qt terminal geometry follows the current font; semantics stay in the model.
 #pragma once
 
 #include "terminal_session.hpp"
@@ -122,9 +122,22 @@ class TerminalWidget final : public QWidget {
         }
         if (!character_text) bytes = next.finish() + bytes;
         if (bytes.empty() || model_.send(bytes)) {
+            if (!bytes.empty()) input_log(bytes);
             keyboard_ = next;
             event->accept();
         } else event->ignore();
+    }
+    // Opt-in observation for the input path: records the exact bytes that
+    // reached the session so an IME experiment can be checked without guessing.
+    static void input_log(const std::string& bytes) {
+        static const char* path = std::getenv("TERMFORGE_QT_INPUT_LOG");
+        if (path == nullptr) return;
+        FILE* stream = std::fopen(path, "ab");
+        if (stream == nullptr) return;
+        std::fprintf(stream, "{\"bytes\":%d,\"hex\":\"", static_cast<int>(bytes.size()));
+        for (const char ch : bytes) std::fprintf(stream, "%02x", static_cast<unsigned char>(ch));
+        std::fprintf(stream, "\"}\n");
+        std::fclose(stream);
     }
     // The candidate window needs the caret cell, not the widget origin.
     QVariant inputMethodQuery(Qt::InputMethodQuery query) const override {
