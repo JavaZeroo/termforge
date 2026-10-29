@@ -14,6 +14,32 @@
 | R2 · 可靠本地终端与开发版 | [milestone 3](https://github.com/JavaZeroo/termforge/milestone/3) | [当前路标](https://github.com/JavaZeroo/termforge/issues/7) |
 | R1 · 基础文字交互 | [milestone 2](https://github.com/JavaZeroo/termforge/milestone/2) | [限定验收](https://github.com/JavaZeroo/termforge/issues/6) |
 
+## GitHub Project 总览
+
+[TermForge 交付总览](https://github.com/users/JavaZeroo/projects/2) 把全部 issue 和 R1–R5 里程碑放进同一个看板，用于一次浏览路标、开工队列和阻塞项。它不维护第二份进度：issue 的开闭、标签、原生阻塞/父子关系和 milestone 仍是权威，看板的 `Status`、`主类型`、`执行状态` 由它们派生，两边冲突时以 issue 为准。
+
+| 视图 | 内容 |
+|---|---|
+| 总览 | 全部条目，含已关闭项 |
+| R2 当前路标 | milestone 为 `R2 · 可靠本地终端与开发版` 的看板 |
+| 可开工队列 | `ready-for-agent` 且未标记 `blocked` |
+| 阻塞与待拆分 | `blocked` 或 `needs-breakdown` |
+| 研究调查 | `research` |
+| 待归类 | 三个执行标签都未标记，需人工归类 |
+| 路标 Epic | `epic` 总项的路线图 |
+| 已完成 | 已关闭的历史条目 |
+
+派生规则：`主类型` 按主题标签 epic > bug > performance > research > enhancement > compatibility > documentation 取第一个命中项，未命中留空；`执行状态` 按 blocked > needs-breakdown > ready-for-agent > 未标记；`Status` 只在 issue 关闭（Done）、重开或首次加入且为空（Todo）时写入，不覆盖人工设置的 In Progress。
+
+看板由仓库工具幂等重建，标签、milestone 或 issue 状态变化后重新同步即可：
+
+```powershell
+python tools/sync_github_project.py --check   # 只报告漂移，不写入
+python tools/sync_github_project.py           # 同步字段、视图、条目与派生值
+```
+
+需要 `gh` 已登录且 token 含 `project` scope（`gh auth refresh -s project,read:project`）。视图的分组、排序、列宽与日期轴，以及 Web UI 的内置工作流（Auto-add to project、Item closed → Done、Item reopened → Todo），API 不支持，需在网页端一次性设置；同步工具只改布局、过滤和可见字段，不会覆盖这些设置。
+
 ## R2 实施与联合验收入口
 
 `ready-for-agent` 表示任务的独立工作可以开始，不表示优先级相同或最终联合配置已经通过。聚合项有未完成硬前置时保持 `blocked`；旧配置的独立诊断与最终联合验收条件分别写明。
