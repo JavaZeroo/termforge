@@ -1,6 +1,6 @@
 # #160 owned desktop 有界诊断准备
 
-状态：root已对旧源`6e67be5`执行过唯一一批，positive control完成、original-watchdog被退出后observer查询错误污染，诊断未完成；首次desktop已gone，未复现原CI首次仍存在。下述observer修订只做纯AST/mock，未再次运行原生诊断，不修正产品或原监督器，不注册CTest、CI或默认项。旧false模板仍false/null，旧授权计划与原件不改。#160/#38/R2仍开放；后续须root另发租约并冻结新源码/计划/输出。
+状态：独立有界诊断已执行，见[固定结果与身份](../../experiments/shell/results/2026-10-29-watchdog-desktop/README.md)。下文保留初始准备、false计划及执行前修正的历史合同，历史0次/null不代表当前次数。原CI未复现、原因未明，#160/#38/R2仍开放；生产监督器和首次判据未改，也不注册CTest、CI或默认项。未来执行须独立冻结新源码/构建/环境/二进制与输出，旧false计划不授权重跑。
 
 ## 固定失败与问题
 
