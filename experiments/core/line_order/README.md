@@ -1,8 +1,10 @@
 # #164：行身份与文档顺序的比较准备
 
-状态：**仅源码/静态准备，C++未编译、未执行，无成本结果、无产品选型。** 基线为 `35a323a3165dae6998237bfd768c7c54c9c8ae99`。这不是区域/origin协议实现，也不恢复任何实验产品后端。
+状态：**已有旧源码的单次编译记录；当前精确header绑定修订仅静态核对、尚未编译。目标从未执行，无实测RED/correctness/cost结果、无产品选型。** 基线为 `35a323a3165dae6998237bfd768c7c54c9c8ae99`。这不是区域/origin协议实现，也不恢复任何实验产品后端。
 
-本目录是独立CMake工程，目标 `r164_probe` 带 `EXCLUDE_FROM_ALL`；根CMake和生产Parser/Screen/TextDocument/TextSelection/TextSearch/HistoryViewport均不修改。没有新增依赖。只执行过Python AST解析、固定源比对和生成文本seam校验；这些不是C++编译、正确性运行或性能验证。
+本目录是独立CMake工程，目标 `r164_probe` 带 `EXCLUDE_FROM_ALL`；根CMake和生产Parser/Screen/TextDocument/TextSelection/TextSearch/HistoryViewport均不修改。没有新增依赖。当前修订只执行Python AST解析、固定源比对、生成文本seam及header绑定静态检查；没有对本修订执行CMake/编译器或目标。
+
+旧源码 `28c98d58b05e5590a2ef483f16eda8807cc7cde5` 已由root做一次configure/build，两个root均exit0；实际 `r164_probe.exe` 为144896B、SHA256 `2cde284594264bc6bb348a00aec8d0e4edd24751620a0cfd45c010926adad4a2`。两次即时Job accounting仍有残留成员，各请求一次终止后最终Job0，不能称全树自然构建。原计划/命令/stdout/stderr/清理和EXE身份留在私有 `local/compile-r164-0/`，该EXE未执行。此编译不归属于当前header绑定修订，不提供原caller RED、两Adapter正确性或成本结果；preflight-v1/v2原件保持不变。
 
 ## Module、Interface与真实seam
 
@@ -43,7 +45,7 @@ Source的通知由隔离fixture负责。**生产公开行存储、导入、隐�
 - 实际Screen切屏后旧Source/位置不可跨帧；刷新Source后缓存不能泄露主帧ID。
 - 原有sorted追加/淘汰定位及HistoryViewport回退；不改变既有排序路径政策。
 
-这些检查尚未编译或运行。无序视口UI、增量搜索持续进展、导入/resize事务与生产通知闭合仍不在已验证范围。
+这些检查尚未运行；旧源码仅有上述编译记录，当前修订未编译。无序视口UI、增量搜索持续进展、导入/resize事务与生产通知闭合仍不在已验证范围。
 
 ## 执行计划与停止条件
 
@@ -51,22 +53,22 @@ Source的通知由隔离fixture负责。**生产公开行存储、导入、隐�
 
 ```powershell
 <Python> -B -X utf8 experiments/core/line_order/prepare.py
-<Python> -B -X utf8 experiments/core/line_order/prepare.py --materialize local/line-order-r164/preflight-v1
+<Python> -B -X utf8 experiments/core/line_order/prepare.py --materialize local/line-order-r164/preflight-v3
 ```
 
 本地`false-plan.json`绑定source HEAD、8份实际产品依赖、实验源码、生成字节和Python/CMake/编译器文件SHA。工具身份仅是只读文件身份，没有运行`--version`。实际EXE的path/SHA/observed为null/null/false，只有拟构建路径；`execution_authorized=false`、authorized_cases空、out/marker/整批实际上限均null。不得覆盖旧false计划来授权。
 
-后续命令仅是提案，**本次没有执行**：
+针对新修订的后续命令仅是提案，**本次没有执行**：
 
 ```powershell
-cmake -S experiments/core/line_order -B build/line-order-r164 -G 'Visual Studio 17 2022' -A x64 -DR164_GENERATED_DIR=<所审计划相邻generated目录>
-cmake --build build/line-order-r164 --config Release --target r164_probe --parallel 2
+cmake -S experiments/core/line_order -B build/line-order-r164-v3 -G 'Visual Studio 17 2022' -A x64 -DR164_GENERATED_DIR=<所审v3计划相邻generated绝对目录>
+cmake --build build/line-order-r164-v3 --config Release --target r164_probe --parallel 2
 <Python> -B -X utf8 experiments/core/line_order/run_plan.py --plan <独立已审true计划>
 ```
 
 首租约提案只含一次原caller RED和一次两Adapter correctness，各进程10秒，进程批次监督上限25秒；仍需root审查与实际构建身份。cost全部保持未授权。Runner在创建marker/out前拒绝false、缺实际EXE身份、源码/生成字节/工具身份漂移、改动过的case配方或预算；超时/异常退出保留raw并停止，不重试。它不构建、不运行原版、GUI或子基准套件。
 
-构建必须显式选择所审计划绑定的生成目录，CMake没有自动选择旧副本的默认路径；实际构建身份仍须在执行前单独记录。
+构建必须显式选择所审计划绑定的generated绝对目录，且selection/search两份文件均存在。CMake将它们的规范绝对路径作为带引号的编译定义；probe仅通过这两个宏include，无 `generated/*.hpp` 搜索路径回退。两个实际header也直接列入target源，真实include使编译器追踪对应header依赖；普通`.`/`..`路径下同名generated旧副本不参与这两次include。此处仅静态核对，尚无本修订的生成工程、编译命令或真实依赖产物，实际构建身份仍须在执行前单独记录。
 
 ## 固定成本提案（尚无结果）
 

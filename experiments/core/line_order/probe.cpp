@@ -4,8 +4,11 @@
 #include "text_selection.hpp"
 #include "text_search.hpp"
 #include "history_view.hpp"
-#include "generated/selection.hpp"
-#include "generated/search.hpp"
+#if !defined(R164_SELECTION_HEADER) || !defined(R164_SEARCH_HEADER)
+#error "CMake must bind both exact reviewed generated caller headers"
+#endif
+#include R164_SELECTION_HEADER
+#include R164_SEARCH_HEADER
 #include <array>
 #include <chrono>
 #include <cstdlib>
