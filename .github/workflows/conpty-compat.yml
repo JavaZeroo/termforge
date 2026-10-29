@@ -215,9 +215,9 @@ jobs:
           path: node-contract-timing.json
 
   windows-2025-actions-repeat:
-    # Bounded reproduction for #156 / #99 / #73: repeats the clipboard and
-    # geometry scenarios on the hosted image so the selection-discard
-    # diagnostics can be ordered against the scenario phase timeline.
+    # Bounded reproduction for #99 / #73 / #97 and the clipboard/geometry
+    # scenarios: repeats the actions, selection and full shell suites on the
+    # hosted image so failure shapes can be ordered against the diagnostics.
     runs-on: windows-2025
     timeout-minutes: 60
     steps:
@@ -234,7 +234,7 @@ jobs:
       - name: Repeat the actions scenarios
         env:
           TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD: '1'
-        run: ctest --test-dir build -C Release -R "text_actions|selection_context" --repeat until-fail:20 --output-on-failure
+        run: ctest --test-dir build -C Release -R "text_actions|selection_context|shell" --repeat until-fail:3 --output-on-failure
       - name: Preserve repeat evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
