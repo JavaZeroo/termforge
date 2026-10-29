@@ -48,6 +48,9 @@ public:
     std::optional<size_t> index_of(uint64_t identity) const { return screen_.locate(identity); }
     // Owner structure revision, for callers that cache rank-derived state.
     uint64_t order_revision() const { return screen_.order_revision(); }
+    // True while identities happen to be increasing in document order. Callers
+    // must not read this as "ids order the document"; it only permits bisects.
+    bool ordered() const { return screen_.order_known(); }
     // Document-order comparison of two validated positions. Ids order nothing;
     // the retained sequence does, so this stays correct for reordered rows.
     std::optional<int> compare(TextPosition a, TextPosition b) const {

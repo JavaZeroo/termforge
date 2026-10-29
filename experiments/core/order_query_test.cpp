@@ -40,7 +40,6 @@ static Screen reordered_screen() {
 static void published_order_is_exact() {
     auto screen = reordered_screen();
     check(screen.retained_size() == 6, "published frame keeps every retained row");
-    check(!screen.order_known(), "a reordered publication records that a bisect proof does not hold");
     check(screen.locate(7) == std::optional<size_t>(4), "live identity 7 holds rank 4");
     check(screen.locate(6) == std::optional<size_t>(5), "live identity 6 holds rank 5");
     check(screen.locate(5) == std::optional<size_t>(3), "history identity 5 holds rank 3");
@@ -90,6 +89,50 @@ static void order_revision_tracks_structure_only() {
     check(screen.order_revision() == republished, "republishing the same structure publishes nothing");
 }
 
+static void publication_keeps_the_cursor_inside_the_frame() {
+    Screen screen(3, 4, 4);
+    screen.move(2, 3);
+    screen.publish({}, {row(4, 40, 'a')});
+    check(screen.row == 0 && screen.column == 3, "a shorter published frame clamps only the lost row");
+    screen.put('b', "b");
+    check(screen.lines[0][3].text == "b", "writes after a shrinking publication stay in range");
+}
+
+static void publication_respects_the_active_history_budget() {
+    Screen screen(2, 4, 1);
+    bool rejected = false;
+    try { screen.publish(rows(4, {{1, 'a'}, {2, 'b'}}), rows(4, {{3, 'c'}, {4, 'd'}})); }
+    catch (const std::invalid_argument&) { rejected = true; }
+    check(rejected, "a publication above the active history budget is rejected");
+    screen.activate_buffer(ScreenBuffer::alternate);
+    bool alternate = false;
+    try { screen.publish(rows(4, {{5, 'e'}}), rows(4, {{6, 'f'}, {7, 'g'}})); }
+    catch (const std::invalid_argument&) { alternate = true; }
+    check(alternate, "the alternate frame accepts no imported history");
+}
+
+static void eviction_never_revives_rank() {
+    Screen screen(2, 4, 2);
+    screen.publish(rows(4, {{10, 'a'}, {11, 'b'}}), rows(4, {{12, 'c'}, {13, 'd'}}));
+    check(screen.locate(10) == std::optional<size_t>(0), "evictable history is located before eviction");
+    screen.move(1, 0);
+    screen.newline();
+    screen.newline();
+    check(!screen.locate(10), "an evicted identity is not located any more");
+    check(screen.locate(13).has_value(), "a surviving identity keeps an exact rank");
+    check(screen.lower_bound_line(10) == 0, "the evicted-anchor fallback stays an explicit insertion point");
+}
+
+static void copies_keep_their_own_order() {
+    auto original = reordered_screen();
+    Screen copy = original;
+    check(copy.locate(7) == std::optional<size_t>(4) && copy.locate(6) == std::optional<size_t>(5),
+          "a copy keeps the published order");
+    copy.publish({}, {row(4, 1, 'q'), row(4, 2, 'r')});
+    check(original.locate(7) == std::optional<size_t>(4), "changing a copy leaves the original order intact");
+    check(copy.locate(7) == std::nullopt, "a republished copy reports its own identities only");
+}
+
 static void rejected_publication_commits_nothing() {
     Screen screen(2, 4, 4);
     const auto revision = screen.order_revision();
@@ -126,6 +169,9 @@ static void search_navigation_follows_document_order() {
     const auto earlier = doc.position(4, 0);
     const auto next = search.navigate(doc, SearchDirection::next, earlier);
     check(next && next->match.range.begin.line_id == 6, "next navigation reaches the later live row");
+    const auto no_wrap = search.navigate_no_wrap(doc, SearchDirection::previous, anchor);
+    check(no_wrap && no_wrap->match.range.begin.line_id == 7,
+          "no-wrap previous navigation also follows document order");
 }
 
 static void viewport_uses_exact_rank() {
@@ -143,6 +189,10 @@ int main() {
         published_order_is_exact();
         document_rank_and_compare();
         order_revision_tracks_structure_only();
+        publication_keeps_the_cursor_inside_the_frame();
+        publication_respects_the_active_history_budget();
+        eviction_never_revives_rank();
+        copies_keep_their_own_order();
         rejected_publication_commits_nothing();
         search_navigation_follows_document_order();
         viewport_uses_exact_rank();

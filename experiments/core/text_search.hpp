@@ -59,7 +59,8 @@ class TextSearch {
                a.joins_next == b.joins_next && a.ending == b.ending;
     }
     // Document order, never identity order: a retained row may hold a larger id
-    // but still sit earlier in the document.
+    // but still sit earlier in the document. Callers pass positions they already
+    // validated, so a missing row means "cannot place it", not "not before".
     static bool before(const TextDocument& doc, const TextPosition& a, const TextPosition& b) {
         const auto first = doc.index_of(a.line_id), second = doc.index_of(b.line_id);
         if (!first || !second) return false;
@@ -290,10 +291,18 @@ public:
         if (document_epoch_ != doc.epoch() || index >= matches_.size()) return {};
         const auto hit = matches_[index];
         if (!doc.valid(hit.range.begin) || !doc.valid(hit.range.end)) return {};
-        const auto first = std::lower_bound(rows_.begin(), rows_.end(), hit.range.begin.line_id,
-            [](const ScannedRow& row, uint64_t id) { return row.meta.id < id; });
-        for (auto row = first; row != rows_.end() && row->meta.id <= hit.range.end.line_id; ++row)
-            if (!row_valid(doc, row->meta, row->successor_id)) return {};
+        if (doc.ordered()) {
+            const auto first = std::lower_bound(rows_.begin(), rows_.end(), hit.range.begin.line_id,
+                [](const ScannedRow& row, uint64_t id) { return row.meta.id < id; });
+            for (auto row = first; row != rows_.end() && row->meta.id <= hit.range.end.line_id; ++row)
+                if (!row_valid(doc, row->meta, row->successor_id)) return {};
+        } else {
+            // Scanned rows follow document order while identities need not; a
+            // bisect on id would silently skip rows instead of failing. Validate
+            // the whole bounded scan record, which is at most the retained rows.
+            for (const auto& row : rows_)
+                if (!row_valid(doc, row.meta, row.successor_id)) return {};
+        }
         if (loaded_ && current_meta_.id >= hit.range.begin.line_id && current_meta_.id <= hit.range.end.line_id &&
             !row_valid(doc, current_meta_, current_successor_id_)) return {};
         return hit;
