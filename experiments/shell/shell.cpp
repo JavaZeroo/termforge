@@ -842,11 +842,15 @@ class ShellWindow {
             // resize-triggered repaint apart from ordinary output in a failure
             // artifact; nothing is written unless the variable is set.
             if (trace_output_) {
+                // A resize repaint starts by hiding the cursor and homing it;
+                // flagging it lets the trace show whether the batch was built
+                // for the previous grid but consumed with the new one.
+                const bool repaint = bytes.find("\x1b[?25l\x1b[H") != std::string::npos;
                 trace_output_ << "{\"schema\":\"termforge-output-trace-v1\",\"terminal\":" << identity_
                               << ",\"t_ms\":" << GetTickCount64()
                               << ",\"offset\":" << trace_offset_ << ",\"bytes\":" << bytes.size()
                               << ",\"columns\":" << parser_.screen.width() << ",\"rows\":" << parser_.screen.height()
-                              << "}\n";
+                              << ",\"repaint\":" << (repaint ? "true" : "false") << "}\n";
                 trace_output_.flush();
                 trace_offset_ += bytes.size();
             }
