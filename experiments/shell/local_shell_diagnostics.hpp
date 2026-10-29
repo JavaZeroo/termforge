@@ -31,4 +31,16 @@ inline void local_shell_progress(const std::filesystem::path& directory, std::st
         raw.close(); require(bool(raw), "local shell private output write failed");
     }
 }
+inline void local_shell_size_readiness(const std::filesystem::path& directory, std::string_view role,
+                                       unsigned long columns, unsigned long rows, bool settled,
+                                       bool marker_present, unsigned long observed_bytes) {
+    require(role=="cmd" || role=="powershell" || role=="pwsh" || role=="wsl", "invalid local shell diagnostic role");
+    std::ofstream progress(directory/"shells-size-readiness.jsonl",std::ios::binary|std::ios::app);
+    progress<<"{\"schema\":\"termforge-local-shell-size-readiness-v1\",\"role\":\""<<role
+            <<"\",\"columns\":"<<columns<<",\"rows\":"<<rows
+            <<",\"settled\":"<<(settled?"true":"false")
+            <<",\"marker_present\":"<<(marker_present?"true":"false")
+            <<",\"observed_output_tail_bytes\":"<<observed_bytes<<"}\n";
+    progress.close(); require(bool(progress), "local shell size readiness write failed");
+}
 } // namespace tf_shell_test
