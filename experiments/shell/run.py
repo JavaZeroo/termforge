@@ -402,12 +402,28 @@ class OwnedTestDesktop:
         if not self.handle:
             raise ctypes.WinError(ctypes.get_last_error())
 
-    def close(self):
+    def close(self, record=None):
         if self.handle:
             if not self.api.CloseDesktop(self.handle):
                 raise ctypes.WinError(ctypes.get_last_error())
             self.handle = None
-        return desktop_gone(self.name)
+        gone = desktop_gone(self.name)
+        if gone or record is None:
+            return gone
+        # A desktop handle outlives its owner only while some child still holds
+        # one; settle briefly and keep the attempts so a failure shows whether the
+        # desktop was still held or never closed. Nothing is added on success.
+        attempts = [{"elapsed_ms": 0, "gone": False}]
+        began = time.monotonic()
+        for _ in range(10):
+            time.sleep(0.05)
+            gone = desktop_gone(self.name)
+            attempts.append({"elapsed_ms": int((time.monotonic() - began) * 1000), "gone": gone})
+            if gone:
+                break
+        if not gone:
+            record["desktop_close_settle"] = attempts
+        return gone
 
 
 def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False):
@@ -460,7 +476,7 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
                       stderr=stderr.decode("utf-8", "replace"), job_after=job.drain())
         if record["job_after"]["active"]:
             raise ValueError("owned processes remained")
-        record["desktop_gone"] = desktop.close()
+        record["desktop_gone"] = desktop.close(record)
         if not record["desktop_gone"]:
             raise ValueError("owned desktop remained")
         if mode != "watchdog" and (record["timed_out"] or record["exit_code"]):
@@ -566,7 +582,7 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
                 job.close()
         if desktop is not None and desktop.handle:
             try:
-                record["desktop_gone"] = desktop.close()
+                record["desktop_gone"] = desktop.close(record)
                 if not record["desktop_gone"]:
                     cleanup_errors.append("owned desktop remained after cleanup")
             except OSError as error:
