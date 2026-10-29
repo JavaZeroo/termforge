@@ -59,12 +59,14 @@ Source的通知由隔离fixture负责。**生产公开行存储、导入、隐�
 后续命令仅是提案，**本次没有执行**：
 
 ```powershell
-cmake -S experiments/core/line_order -B build/line-order-r164 -G 'Visual Studio 17 2022' -A x64
+cmake -S experiments/core/line_order -B build/line-order-r164 -G 'Visual Studio 17 2022' -A x64 -DR164_GENERATED_DIR=<所审计划相邻generated目录>
 cmake --build build/line-order-r164 --config Release --target r164_probe --parallel 2
 <Python> -B -X utf8 experiments/core/line_order/run_plan.py --plan <独立已审true计划>
 ```
 
 首租约提案只含一次原caller RED和一次两Adapter correctness，各进程10秒，进程批次监督上限25秒；仍需root审查与实际构建身份。cost全部保持未授权。Runner在创建marker/out前拒绝false、缺实际EXE身份、源码/生成字节/工具身份漂移、改动过的case配方或预算；超时/异常退出保留raw并停止，不重试。它不构建、不运行原版、GUI或子基准套件。
+
+构建必须显式选择所审计划绑定的生成目录，CMake没有自动选择旧副本的默认路径；实际构建身份仍须在执行前单独记录。
 
 ## 固定成本提案（尚无结果）
 

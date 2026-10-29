@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(termforge_line_order_r164 LANGUAGES CXX)
 # Isolated preparation: neither the product build nor CTest includes this target.
-get_filename_component(R164_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../.." ABSOLUTE)
-set(R164_GENERATED_DIR "${R164_ROOT}/local/line-order-r164/generated" CACHE PATH "Pinned experimental caller copies")
-if(NOT EXISTS "${R164_GENERATED_DIR}/search.hpp")
-  message(FATAL_ERROR "First materialize the pinned experimental caller copies with prepare.py")
+set(R164_GENERATED_DIR "" CACHE PATH "Explicit generated directory bound by the reviewed plan")
+if(R164_GENERATED_DIR STREQUAL "" OR NOT EXISTS "${R164_GENERATED_DIR}/search.hpp")
+  message(FATAL_ERROR "Materialize with prepare.py and explicitly select that plan's R164_GENERATED_DIR")
 endif()
 add_executable(r164_probe EXCLUDE_FROM_ALL probe.cpp)
 target_include_directories(r164_probe PRIVATE . .. "${R164_GENERATED_DIR}/..")
