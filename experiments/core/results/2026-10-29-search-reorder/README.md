@@ -8,14 +8,14 @@
 |---|---|
 | `TextSearch` 状态 | 记录 `document_order_revision_` 与 `order_changed_`；`start()` 绑定当时的 order revision |
 | `notify_change` | 除原有 change serial 外，order revision 变化时置位 `order_changed_` |
-| `step` | 在原有 `row_valid` 检查前先 `repair_order()`（计一个 work 单位），保证扫描前缀仍然"第 i 个已扫行就在文档 rank i" |
-| `repair_order` | 找到第一个不再位于自身 rank 的已扫行；只从该位置重扫，之前的命中保留。仅当已加载行移动到别处（或消失）时，单独重载该行 |
-| `rewind` | 继续以"变化起点 rank"作失效阈值：`end` 当前 rank ≥ 变化 rank 的命中丢弃；`emit_from_rank_` 决定重扫期间可接受的新命中。**不再比较行 ID** |
-| `consume` | 新命中是否接纳改为比较当前行 rank 与重扫起点 |
+| `step` | 只在**无序文档**上执行 `repair_order()`（计一个 work 单位）；有序文档仅记录新的 order revision 并清标记 |
+| `repair_order` | 以已扫首行当前 rank 为基址，找到第一个不再处于"基址 + 序号"的行；只从该位置重扫，之前的命中保留。仅当已加载行移动到别处（或消失）时，单独重载该行 |
+| `rewind` | **有序文档保留原 ID 阈值**（ID 与文档序一致，比较精确且便宜，避免把淘汰导致的绝对 rank 位移误当重排）；**无序文档**才用 `rows_` 首行的当前 rank 作基址、按"基址 + 变化起点"失效 |
+| `consume` | 有序文档沿用原 ID 阈值；无序文档比较当前行 rank 与重扫起点 |
 | `prune_one` | 淘汰行后按"命中两端是否仍存活"（`TextDocument::valid`）裁剪，而不是 `begin.id <= removed` |
 | `match()` | loaded 行是否落在命中区间内改为比较三者当前 rank |
 
-有序文档的路径与结果顺序保持不变（原有 `search_core` 全绿）。
+有序文档的失效阈值仍按 ID、新命中接纳仍按 ID（与原实现一致，也是 CI 上 shell Find 连续输出路径的实际行为）；rank 逻辑只在新出现的无序文档上生效。这一点是本地 shell Find 连续输出测试暴露后修正的：最初对所有文档都做 rank 重扫，导致连续输出时每行都触发前缀重扫，Find 在 stage 4 超时。
 
 ## 新增测试 `search_reorder_core`
 

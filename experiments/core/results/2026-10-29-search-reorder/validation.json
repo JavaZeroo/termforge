@@ -6,7 +6,7 @@
     164
   ],
   "base_commit": "57cf8bb0ac93ac7b86979ca7918abbbd3f472560",
-  "scope": "TextSearch 以文档 rank 处理结构重排：order revision 检测、局部 repair、rank 化 rewind/match/prune",
+  "scope": "TextSearch 在无序文档（结构重排）下以文档 rank 维护扫描前缀；有序文档保持原 ID 语义。",
   "configuration": {
     "platform": "Windows-11-10.0.26200",
     "generator": "Visual Studio 17 2022",
@@ -31,7 +31,9 @@
     "CMakeLists.txt": "e81bbc4152dd9fc5213d911f4d196bcd5a7075d8e918a42ca9108ec10800891d"
   },
   "preserved_environment_failures": [
-    "首个 core Python 回归失败仅因隔离构建缺少 replay/receive 辅助二进制；补齐后 10/10。"
+    "首个 core Python 回归失败仅因隔离构建缺少 replay/receive 辅助二进制；补齐后 10/10。",
+    "本地 shell 测试首次失败仅因未构建 shell_queue_probe 辅助二进制；该失败与 search 改动无关。",
+    "最初对所有文档做 rank 重扫的版本会在 CI 的 shell Find 连续输出路径 stage 4 超时；改为只对无序文档生效后，本机 shell 套件通过（除缺失辅助二进制项）。"
   ],
   "limitations": [
     "无 UI/Find overlay、Qt 会话或真实 TUI 集成验证",

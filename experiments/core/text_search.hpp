@@ -49,8 +49,9 @@ class TextSearch {
     bool audit_turn_ = true;
     bool at_end_ = false, cap_reached_ = false;
     uint64_t next_id_ = 0, document_order_revision_ = 0;
+    uint64_t emit_from_id_ = 0;
     size_t emit_from_rank_ = 0, current_rank_ = 0;
-    bool order_changed_ = false;
+    bool ordered_doc_ = true, order_changed_ = false;
     DocumentLine current_;
     DocumentLineMetadata current_meta_;
     uint64_t current_successor_id_ = 0;
@@ -103,8 +104,8 @@ class TextSearch {
         rows_.clear(); matches_.clear(); origins_.clear(); matched_ = origin_head_ = 0;
         current_ = {}; current_meta_ = {}; byte_ = span_ = 0;
         audit_cursor_ = 0; audit_requested_ = loaded_ = boundary_done_ = at_end_ = cap_reached_ = false;
-        next_id_ = 0; emit_from_rank_ = current_rank_ = 0;
-        document_order_revision_ = 0; order_changed_ = false;
+        next_id_ = 0; emit_from_id_ = 0; emit_from_rank_ = current_rank_ = 0;
+        ordered_doc_ = true; document_order_revision_ = 0; order_changed_ = false;
     }
     bool sync_epoch(const TextDocument& doc) {
         if (document_epoch_ == doc.epoch()) return false;
@@ -135,11 +136,23 @@ class TextSearch {
         // The change starts at rank 'changed'; the scan may resume earlier so a
         // query straddling the boundary can be rescanned, but hits that end
         // before the change keep their original position in the result list.
-        emit_from_rank_ = changed;
-        matches_.erase(std::remove_if(matches_.begin(), matches_.end(), [&doc, changed](const SearchMatch& hit) {
-            const auto rank = doc.index_of(hit.range.end.line_id);
-            return !rank || *rank >= changed;
-        }), matches_.end());
+        emit_from_id_ = changed_id;
+        if (ordered_doc_) {
+            // Ordered documents keep the original identity threshold: identities
+            // increase with document position, so the id comparison stays exact.
+            matches_.erase(std::remove_if(matches_.begin(), matches_.end(), [changed_id](const SearchMatch& hit) {
+                return hit.range.end.line_id >= changed_id;
+            }), matches_.end());
+        } else {
+            // Unordered documents compare current ranks. rows_ is contiguous in
+            // document order, so the first scanned row's rank is the base.
+            const auto base = rows_.empty() ? size_t{0} : doc.index_of(rows_.front().meta.id).value_or(0);
+            emit_from_rank_ = base + changed;
+            matches_.erase(std::remove_if(matches_.begin(), matches_.end(), [&doc, base, changed](const SearchMatch& hit) {
+                const auto rank = doc.index_of(hit.range.end.line_id);
+                return !rank || *rank >= base + changed;
+            }), matches_.end());
+        }
         rows_.resize(first); audit_cursor_ = (std::min)(audit_cursor_, first);
         current_ = {}; loaded_ = boundary_done_ = at_end_ = cap_reached_ = false;
         byte_ = span_ = origin_head_ = 0; matched_ = prefix_before; origins_.clear();
@@ -149,9 +162,12 @@ class TextSearch {
     // from there is rescanned by the ordinary bounded path.
     void repair_order(const TextDocument& doc) {
         size_t first = rows_.size();
-        for (size_t index = 0; index < rows_.size(); ++index) {
-            const auto rank = doc.index_of(rows_[index].meta.id);
-            if (!rank || *rank != index) { first = index; break; }
+        if (!rows_.empty()) {
+            const auto base = doc.index_of(rows_.front().meta.id);
+            for (size_t index = 0; index < rows_.size(); ++index) {
+                const auto rank = doc.index_of(rows_[index].meta.id);
+                if (!base || !rank || *rank != *base + index) { first = index; break; }
+            }
         }
         bool loaded_moved = false;
         if (loaded_) {
@@ -161,6 +177,7 @@ class TextSearch {
         if (first < rows_.size()) rewind(doc, first, rows_[first].meta.id);
         else if (loaded_moved) rewind(doc, rows_.size(), current_meta_.id);
         document_order_revision_ = doc.order_revision();
+        ordered_doc_ = doc.ordered();
         order_changed_ = false;
     }
     void consume(unsigned char c, Origin origin) {
@@ -171,7 +188,8 @@ class TextSearch {
         if (c == folded(static_cast<unsigned char>(query_[matched_]))) ++matched_;
         if (matched_ != query_.size()) return;
         const TextRange range{origins_[origin_head_].begin, origin.end};
-        if (origins_.size() == query_.size() && current_rank_ >= emit_from_rank_) {
+        if (origins_.size() == query_.size() &&
+            (ordered_doc_ ? range.end.line_id >= emit_from_id_ : current_rank_ >= emit_from_rank_)) {
             // Several matching combining components can map to one cell.
             if (matches_.empty() || !equal(matches_.back().range.begin, range.begin) ||
                                     !equal(matches_.back().range.end, range.end))
@@ -266,6 +284,7 @@ public:
             throw std::invalid_argument("search result limit must be between 1 and 4096");
         advance_generation(); reset_scan(); query_ = std::move(query); options_ = options; document_epoch_ = doc.epoch();
         document_order_revision_ = doc.order_revision();
+        ordered_doc_ = doc.ordered();
         prefix_.assign(query_.size(), 0);
         for (size_t i = 1, length = 0; i < query_.size(); ++i) {
             const auto c = folded(static_cast<unsigned char>(query_[i]));
@@ -284,6 +303,7 @@ public:
         if (change_serial_ == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("search change serial exhausted");
         ++change_serial_;
+        ordered_doc_ = doc.ordered();
         if (doc.order_revision() != document_order_revision_) order_changed_ = true;
         if (!audit_requested_) { audit_requested_ = true; audit_cursor_ = 0; audit_serial_ = change_serial_; }
         at_end_ = false; status_ = SearchStatus::running; return generation_;
@@ -292,7 +312,10 @@ public:
         sync_epoch(doc);
         SearchStep progress{status_, 0, 0, 0, generation == generation_};
         if (!progress.accepted || status_ != SearchStatus::running || !budget) return progress;
-        if (order_changed_) { repair_order(doc); ++progress.work_used; }
+        if (order_changed_) {
+            if (!doc.ordered()) { repair_order(doc); ++progress.work_used; }
+            else { document_order_revision_ = doc.order_revision(); ordered_doc_ = doc.ordered(); order_changed_ = false; }
+        }
         if (loaded_ && !row_valid(doc, current_meta_, current_successor_id_)) {
             rewind(doc, rows_.size(), current_meta_.id); ++progress.work_used;
         }
@@ -336,12 +359,14 @@ public:
                 if (!row_valid(doc, row.meta, row.successor_id)) return {};
         }
         if (loaded_) {
-            // The loaded row is inside the hit's document span, not its id span.
+            // Validate the loaded row only when it lies inside the hit's document
+            // span: a frontier beyond the hit has nothing to do with that hit.
             const auto begin = doc.index_of(hit.range.begin.line_id);
             const auto end = doc.index_of(hit.range.end.line_id);
             const auto current = doc.index_of(current_meta_.id);
-            if (!begin || !end || !current || *begin > *current || *current > *end) return {};
-            if (!row_valid(doc, current_meta_, current_successor_id_)) return {};
+            if (!begin || !end || !current) return {};
+            if (*begin <= *current && *current <= *end &&
+                !row_valid(doc, current_meta_, current_successor_id_)) return {};
         }
         return hit;
     }
