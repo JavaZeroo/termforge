@@ -33,7 +33,7 @@ static void await(Predicate predicate, const char* message) {
     require(predicate(), message);
 }
 static bool has_text(const termforge::Screen& screen, std::string_view text) {
-    for (const auto& row : screen.lines) {
+    for (const auto& row : screen.visible_lines()) {
         std::string line;
         for (const auto& cell : row) if (cell.width) line += cell.text;
         if (line.find(text) != std::string::npos) return true;

@@ -1,0 +1,44 @@
+{
+  "schema": "termforge-core-sealed-row-storage-v1",
+  "issue": 169,
+  "base_commit": "85eb5a0bccfa085e6b85a07b1831df326a886163",
+  "scope": "Screen 行存储私有化、只读访问口、调用方迁移与 Find overlay 文档 rank 化；无新 VT/重排行为",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42",
+    "build_type": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false
+  },
+  "commands": [
+    "cmake -S . -B build -G \"Visual Studio 17 2022\" -A x64",
+    "cmake --build build --config Release --parallel 4",
+    "ctest --test-dir build -C Release -R \"^(order_query|resize|history|selection|search|buffer_state|alternate_mode|decawm_mode)_core$\" --output-on-failure",
+    "ctest --test-dir build -C Release -R \"^(order_query|resize|history|selection|search|buffer_state|alternate_mode|decawm_mode)_core$|^core$|^recovery$|^binary_paths$|^text_actions$|^keyboard$|^paste$|^clipboard_policy$|^text_action_policy$|^presentation$|^measure$|^scenario_tick_gate$|^transport_completion$\" --output-on-failure",
+    "cl /nologo /std:c++17 /W4 /EHsc /DNOMINMAX /DWIN32_LEAN_AND_MEAN /I experiments/core /c experiments/core/candidate_terminal.cpp"
+  ],
+  "results": {
+    "default_release_build": "exit 0, no /W4 diagnostics",
+    "core_ctest_8": "8/8 passed",
+    "extended_fast_ctest_20": "20/20 passed",
+    "candidate_terminal_compile_only": "exit 0 (/W4)",
+    "qt_build": "not run locally; covered by PR qt-cpp-windows"
+  },
+  "source_sha256": {
+    "experiments/core/screen.hpp": "382cb73ba66a01166b56d58bd84bc587017dd38c8a0011d1bbd3bb785bfede8c",
+    "experiments/core/history_view.hpp": "0ffcb7a2af554cbb7767f0cb8d1b95962470f67b5d6cbf8057c75703f96ad29e",
+    "experiments/core/candidate_terminal.cpp": "452808b39c2eaac1dcca0b4164c58cff44f13ef8e27eae7d8e23a22895ec13ff",
+    "experiments/shell/search_interactions.hpp": "1a4523174c7999c720eff22bf9043df9f165c1ee487d7ecc9944c82432350ddc",
+    "experiments/measure/measure.cpp": "bb4cbfd8bb6620deb48ab510e5948190443d2a6bbfa6d4d8f16eebf404dbc517",
+    "experiments/presentation/render.hpp": "0966402f84784b2da95ae2d722fdc724621a121dd9a31710088a1f554d44ffa4"
+  },
+  "limitations": [
+    "无用户可达重排；运行中跨重排的增量 Search 另行验收",
+    "有序增量 Find 的 emit_from_id_/prune/rewind 区段假设未改",
+    "r164 冻结研究树 experiments/core/line_order 未迁移，保持与冻结源码一致",
+    "Qt 目标与候选适配器未在本机构建运行；由 PR 的宿主作业复核",
+    "不构成 GUI/TUI、固定 ConPTY、原版等价或性能结论"
+  ],
+  "performance_claim": false
+}

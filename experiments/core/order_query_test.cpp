@@ -95,7 +95,7 @@ static void publication_keeps_the_cursor_inside_the_frame() {
     screen.publish({}, {row(4, 40, 'a')});
     check(screen.row == 0 && screen.column == 3, "a shorter published frame clamps only the lost row");
     screen.put('b', "b");
-    check(screen.lines[0][3].text == "b", "writes after a shrinking publication stay in range");
+    check(screen.visible_lines()[0][3].text == "b", "writes after a shrinking publication stay in range");
 }
 
 static void publication_respects_the_active_history_budget() {

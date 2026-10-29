@@ -135,7 +135,7 @@ CaseResult run_case(Case item, std::string_view transport) {
         out << ",\"transport_consumed_bytes\":" << offset << ",\"grid_columns\":" << parser.screen.width()
             << ",\"grid_rows\":" << parser.screen.height() << ",\"cursor_row\":" << parser.screen.row
             << ",\"cursor_column\":" << parser.screen.column << ",\"wrap_pending\":" << (parser.screen.wrap_pending ? "true" : "false")
-            << ",\"history_rows\":" << parser.screen.history.size() << ",\"document_rows\":" << document.size()
+            << ",\"history_rows\":" << parser.screen.history_lines().size() << ",\"document_rows\":" << document.size()
             << ",\"discarded_rows\":" << parser.screen.discarded << ",\"buffer_epoch\":" << document.epoch()
             << ",\"range_before_reconcile\":"; range(out, before);
         out << ",\"reconciled\":" << (reconciled ? "true" : "false") << ",\"range_after_reconcile\":";
@@ -160,7 +160,7 @@ CaseResult run_case(Case item, std::string_view transport) {
     };
     parser.feed("\x1b[2J\x1b[H" + expected);
     checkpoint("seed-feed", "original-fixture-body");
-    require(expected.size() == 2499 && parser.screen.history.size() == 75 &&
+    require(expected.size() == 2499 && parser.screen.history_lines().size() == 75 &&
             parser.screen.retained_size() == 82 && parser.screen.row == 6 && parser.screen.column == 0,
             "initial fixture shape differs; stop without altering seed or identities");
     require(select_all(selection, TextDocument(parser.screen)), "initial Select All range was rejected");

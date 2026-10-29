@@ -83,7 +83,7 @@ static COLORREF gdi_color(unsigned rgb) { return RGB((rgb>>16)&255, (rgb>>8)&255
 struct Snapshot {
     const std::vector<termforge::Line> lines;
     const int cursor_row, cursor_column, revision;
-    explicit Snapshot(const termforge::Screen& s, int rev) : lines(s.lines), cursor_row(s.row), cursor_column(s.column), revision(rev) {}
+    explicit Snapshot(const termforge::Screen& s, int rev) : lines(s.visible_lines()), cursor_row(s.row), cursor_column(s.column), revision(rev) {}
     explicit Snapshot(termforge::ViewSnapshot view, int rev)
         : lines(std::move(view.lines)), cursor_row(view.cursor_row), cursor_column(view.cursor_column), revision(rev) {}
     int rows() const { return static_cast<int>(lines.size()); }

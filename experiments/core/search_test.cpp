@@ -19,10 +19,10 @@ static void basic_matches() {
     const auto generation = search.start(doc, "needle"); finish(search, doc, generation);
     const auto& matches = search.matches();
     check(search.status() == SearchStatus::complete && matches.size() == 2, "two literal matches");
-    check(matches[0].range.begin.line_id == parser.screen.lines[0].id &&
+    check(matches[0].range.begin.line_id == parser.screen.visible_lines()[0].id &&
           matches[0].range.begin.column == 4 && matches[0].range.end.column == 10,
           "first literal match maps to known cells");
-    check(matches[1].range.begin.line_id == parser.screen.lines[1].id &&
+    check(matches[1].range.begin.line_id == parser.screen.visible_lines()[1].id &&
           matches[1].range.begin.column == 0 && matches[1].range.end.column == 6,
           "second literal match maps to known cells");
 }
@@ -31,7 +31,7 @@ static void wraps_newlines_and_unicode() {
     const TextDocument soft_doc(soft.screen); TextSearch search;
     finish(search, soft_doc, search.start(soft_doc, "LEFTRIGHT"), 1);
     check(search.matches().size() == 1 && search.matches()[0].range.begin.column == 0 &&
-          search.matches()[0].range.end.line_id == soft.screen.lines[2].id &&
+          search.matches()[0].range.end.line_id == soft.screen.visible_lines()[2].id &&
           search.matches()[0].range.end.column == 1, "literal search crosses actual soft wraps");
     Parser hard(3, 4, 2); hard.feed("LEFT\r\nRIGHT");
     const TextDocument hard_doc(hard.screen);
@@ -158,7 +158,7 @@ static void changing_text_and_eviction() {
 
     Parser moved(3, 8, 2); moved.feed("needle\r\nlast\r\nthird"); const TextDocument moved_doc(moved.screen);
     finish(search, moved_doc, search.start(moved_doc, "needle"), 1);
-    const auto retained_id = moved.screen.lines[0].id, removed_id = moved.screen.lines[1].id;
+    const auto retained_id = moved.screen.visible_lines()[0].id, removed_id = moved.screen.visible_lines()[1].id;
     moved.feed("\x1b[1;1H"); moved.screen.resize(1, 8);
     moved.screen.resize(2, 8); moved.feed("\x1b[2;1H"); moved.screen.resize(1, 8);
     search.notify_change(moved_doc);
@@ -206,13 +206,13 @@ static void incremental_non_overlap_phase() {
     parser.feed("\x1b[3;1Haab"); finish(search, doc, search.notify_change(doc), 1);
     check(search.matches().size() == 4, "incremental rewind preserves original non-overlap phase");
     const auto& matches = search.matches();
-    check(matches[2].range.begin.line_id == parser.screen.lines[1].id && matches[2].range.begin.column == 1 &&
-          matches[3].range.begin.line_id == parser.screen.lines[2].id && matches[3].range.begin.column == 0,
+    check(matches[2].range.begin.line_id == parser.screen.visible_lines()[1].id && matches[2].range.begin.column == 1 &&
+          matches[3].range.begin.line_id == parser.screen.visible_lines()[2].id && matches[3].range.begin.column == 0,
           "tail mutation does not shift valid earlier or later matches by a byte");
     Parser rolling(2, 3, 1); rolling.feed("aaaaaaaaaa"); const TextDocument rolling_doc(rolling.screen);
     finish(search, rolling_doc, search.start(rolling_doc, "aa"), 1);
     rolling.feed("aaa"); finish(search, rolling_doc, search.notify_change(rolling_doc), 1);
-    check(search.matches().size() == 3 && search.matches()[0].range.begin.line_id == rolling.screen.history[0].id &&
+    check(search.matches().size() == 3 && search.matches()[0].range.begin.line_id == rolling.screen.history_lines()[0].id &&
           search.matches()[0].range.begin.column == 0,
           "eviction restarts a partial matching prefix at the new retained document boundary");
 }
@@ -228,7 +228,7 @@ static void long_query_and_partial_row_replacement() {
         bytes += progress.bytes_scanned;
     }
     check(bytes == 4097 && search.matches().size() == 1 &&
-          search.matches()[0].range.end.line_id == parser.screen.lines[8].id &&
+          search.matches()[0].range.end.line_id == parser.screen.visible_lines()[8].id &&
           search.matches()[0].range.end.column == 96, "maximum query matches 4096 known bytes across nine rows");
     // Cancel after loading just one row; no residual UTF-8 or KMP origin from
     // that partial query may become a result of the replacement generation.

@@ -23,6 +23,15 @@ static TextPosition at(const TextDocument& document, size_t row, size_t column) 
     const auto value = document.position(row, column);
     check(value.has_value(), "fixture position must exist"); return *value;
 }
+// Identity replacement goes through the owner publication path; the screen
+// validates the replacement rows before committing them.
+static void replace_identity(Screen& screen, size_t index) {
+    std::vector<Line> live(screen.visible_lines().begin(), screen.visible_lines().end());
+    live[index].id = 0;
+    screen.normalize_identities(live);
+    std::vector<Line> history(screen.history_lines().begin(), screen.history_lines().end());
+    screen.publish(std::move(history), std::move(live));
+}
 static void forward_reverse_copy_and_glyph_boundaries() {
     Parser p(3, 18, 4);
     p.feed("ALPHA  tail  \r\nBETA \xe4\xb8\xad\xe6\x96\x87 e\xcc\x81");
@@ -122,23 +131,20 @@ static void half_open_endpoint_boundary() {
     Parser replaced(4,20,4); replaced.feed("ONE\r\nTWO\r\n"); TextDocument replaced_document(replaced.screen);
     check(selection.set(replaced_document,{at(replaced_document,0,0),at(replaced_document,2,0)}),
           "select through an empty endpoint before identity replacement");
-    const auto old_endpoint = replaced.screen.lines[2].id;
-    auto imported = replaced.screen.lines; imported[2].id = 0;
-    replaced.screen.normalize_identities(imported); replaced.screen.lines = std::move(imported);
-    const auto new_endpoint = replaced.screen.lines[2].id;
+    const auto old_endpoint = replaced.screen.visible_lines()[2].id;
+    replace_identity(replaced.screen, 2);
+    const auto new_endpoint = replaced.screen.visible_lines()[2].id;
     check(new_endpoint != old_endpoint && selection.reconcile(replaced_document) &&
           selection.range()->end.line_id == new_endpoint && selection.copy(replaced_document,100).text == "ONE\r\nTWO\r\n",
           "a still-empty excluded endpoint can be replaced without changing selected bytes");
     check(selection.set(replaced_document,{at(replaced_document,0,0),at(replaced_document,2,0)}),
           "reselect before nonempty endpoint replacement");
-    replaced.feed("\x1b[3;1HX"); imported = replaced.screen.lines; imported[2].id = 0;
-    replaced.screen.normalize_identities(imported); replaced.screen.lines = std::move(imported);
+    replaced.feed("\x1b[3;1HX"); replace_identity(replaced.screen, 2);
     check(!selection.reconcile(replaced_document) && selection.empty(),
           "replacement of an excluded empty endpoint must remain empty");
     check(selection.set(replaced_document,{at(replaced_document,1,0),at(replaced_document,1,3)}),
           "select a nonempty endpoint before identity replacement");
-    imported = replaced.screen.lines; imported[1].id = 0;
-    replaced.screen.normalize_identities(imported); replaced.screen.lines = std::move(imported);
+    replace_identity(replaced.screen, 1);
     check(!selection.reconcile(replaced_document) && selection.empty(),
           "a nonempty endpoint cannot borrow a replacement row identity");
 }

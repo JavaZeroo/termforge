@@ -135,15 +135,22 @@ inline void ShellWindow::poll_find() {
 inline void ShellWindow::search_overlay(termforge::ViewSnapshot& view) {
     if(view.lines.empty()) return;
     termforge::TextDocument document(parser_.screen);
+    // Overlay decisions use the document rank, never the numeric identity: a
+    // retained row may hold a larger id while sitting earlier in the document.
+    const size_t top=view.viewport.top;
+    const size_t visible_end=top+view.lines.size();
     for(size_t index=0;index<search_.matches().size();++index) {
-        const auto& candidate=search_.matches()[index].range;
-        if(candidate.end.line_id<view.lines.front().id || candidate.begin.line_id>view.lines.back().id) continue;
         const auto match=search_.match(document,index); if(!match) continue;
         const auto& range=match->range;
-        for(auto& row:view.lines) {
-            if(row.id<range.begin.line_id || row.id>range.end.line_id) continue;
-            const size_t first=row.id==range.begin.line_id?range.begin.column:0;
-            const size_t last=row.id==range.end.line_id?range.end.column:row.size();
+        const auto begin_rank=document.index_of(range.begin.line_id);
+        const auto end_rank=document.index_of(range.end.line_id);
+        if(!begin_rank || !end_rank || *end_rank<top || *begin_rank>=visible_end) continue;
+        for(size_t row_index=0;row_index<view.lines.size();++row_index) {
+            auto& row=view.lines[row_index];
+            const size_t rank=top+row_index;
+            if(rank<*begin_rank || rank>*end_rank) continue;
+            const size_t first=rank==*begin_rank?range.begin.column:0;
+            const size_t last=rank==*end_rank?range.end.column:row.size();
             for(size_t column=first;column<last && column<row.size();++column) {
                 row[column].style.bg=find_current_ && find_current_->index==index?11:3;
                 row[column].style.fg=0;

@@ -126,7 +126,7 @@ class TerminalWidget final : public QWidget {
         const auto& screen = model_.screen();
         const auto base_font = font();
         for (int row = 0; row < screen.height(); ++row) {
-            const auto& line = screen.lines[static_cast<size_t>(row)];
+            const auto& line = screen.visible_lines()[static_cast<size_t>(row)];
             for (int column = 0; column < screen.width(); ++column) {
                 const auto& cell = line[static_cast<size_t>(column)];
                 const QRectF area(margin + column * cell_width_, margin + row * cell_height_, cell_width_, cell_height_);

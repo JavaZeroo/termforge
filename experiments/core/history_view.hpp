@@ -27,20 +27,20 @@ public:
     // A live anchor uses its exact rank; an evicted anchor keeps the existing
     // ordered-history fallback (first retained row at or after the id).
     size_t anchor_top(const Screen& screen) const {
-        if (const auto index = screen.locate(anchor_)) return (std::min)(*index, screen.history.size());
-        return (std::min)(screen.lower_bound_line(anchor_), screen.history.size());
+        if (const auto index = screen.locate(anchor_)) return (std::min)(*index, screen.history_lines().size());
+        return (std::min)(screen.lower_bound_line(anchor_), screen.history_lines().size());
     }
     ViewportState reconcile(const Screen& screen) {
         sync_epoch(screen);
-        const size_t maximum = screen.history.size();
+        const size_t maximum = screen.history_lines().size();
         const size_t top = following_ ? maximum : anchor_top(screen);
         anchor_ = screen.retained_line(top).id;
         return {top, screen.retained_size(), static_cast<size_t>(screen.height()), maximum, anchor_, following_};
     }
     ViewportState scroll_to(const Screen& screen, size_t top) {
         sync_epoch(screen);
-        top = (std::min)(top, screen.history.size());
-        following_ = top == screen.history.size();
+        top = (std::min)(top, screen.history_lines().size());
+        following_ = top == screen.history_lines().size();
         anchor_ = screen.retained_line(top).id;
         return reconcile(screen);
     }
@@ -57,7 +57,7 @@ public:
         }
         return scroll_to(screen, top);
     }
-    ViewportState bottom(const Screen& screen) { return scroll_to(screen, screen.history.size()); }
+    ViewportState bottom(const Screen& screen) { return scroll_to(screen, screen.history_lines().size()); }
     ViewportState reveal(const Screen& screen, uint64_t identity) {
         if (const auto index = screen.locate(identity)) return scroll_to(screen, *index);
         return scroll_to(screen, screen.lower_bound_line(identity));

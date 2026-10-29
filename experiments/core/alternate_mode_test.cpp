@@ -25,10 +25,10 @@ static void enter_and_restore(ParseMode mode) {
     check(parser.screen.row == 0 && parser.screen.column == 0 &&
           parser.screen.style.fg == -1 && parser.screen.style.bg == -1,
           "1049 entry did not home the cursor with default writing colours");
-    check(text(parser.screen.lines[0]) == "            ", "alternate entry retained primary text");
+    check(text(parser.screen.visible_lines()[0]) == "            ", "alternate entry retained primary text");
     parser.feed("ALT\x1b[?1049l");
     check(parser.screen.active_buffer() == ScreenBuffer::primary &&
-          text(parser.screen.lines[0]) == "MAIN        " &&
+          text(parser.screen.visible_lines()[0]) == "MAIN        " &&
           parser.screen.row == 0 && parser.screen.column == 4,
           "1049 exit did not restore primary text and cursor");
     check(parser.screen.style.fg == 1 && parser.screen.style.bg == 4,
@@ -41,18 +41,18 @@ static void repeated_entry_and_exit(ParseMode mode) {
     check(parser.screen.row == 0 && parser.screen.column == 0 &&
           parser.screen.style.fg == -1 && parser.screen.style.bg == -1,
           "repeated 1049 entry did not home with default writing colours");
-    check(text(parser.screen.lines[0]) == "          " && text(parser.screen.lines[2]) == "          ",
+    check(text(parser.screen.visible_lines()[0]) == "          " && text(parser.screen.visible_lines()[2]) == "          ",
           "repeated 1049 entry retained old alternate text");
     parser.feed("NEW\x1b[?1049l!\x1b[?1049l?");
-    check(text(parser.screen.lines[0]) == "MAIN!?    " && parser.screen.column == 6,
+    check(text(parser.screen.visible_lines()[0]) == "MAIN!?    " && parser.screen.column == 6,
           "repeated entry overwrote primary state or repeated exit rewound it");
     check(parser.screen.style.fg == 1 && parser.screen.style.bg == 4,
           "alternate colour writes changed saved primary colours");
     parser.feed("\x1b[?1049h");
-    check(text(parser.screen.lines[0]) == "          " && parser.screen.column == 0,
+    check(text(parser.screen.visible_lines()[0]) == "          " && parser.screen.column == 0,
           "1049 re-entry retained text from the earlier alternate visit");
     parser.feed("\x1b[?1049l");
-    check(text(parser.screen.lines[0]) == "MAIN!?    " && parser.screen.column == 6,
+    check(text(parser.screen.visible_lines()[0]) == "MAIN!?    " && parser.screen.column == 6,
           "later primary writes were not preserved across re-entry");
     parser.finish();
 }
@@ -60,11 +60,11 @@ static void pending_wrap_roundtrip(ParseMode mode) {
     Parser parser(25, 91, 2, mode);
     parser.feed("\x1b[3;91HW\x1b[?1049hALT\x1b[?1049lX");
     check(parser.screen.row == 3 && parser.screen.column == 1 &&
-          text(parser.screen.lines[2]) == std::string(90, ' ') + "W" &&
-          text(parser.screen.lines[3]) == "X" + std::string(90, ' '),
+          text(parser.screen.visible_lines()[2]) == std::string(90, ' ') + "W" &&
+          text(parser.screen.visible_lines()[3]) == "X" + std::string(90, ' '),
           "return lost the primary pending wrap before the next printable byte");
-    check(parser.screen.lines[2].ending == LineEnding::soft_wrap &&
-          parser.screen.lines[2].next_id == parser.screen.lines[3].id,
+    check(parser.screen.visible_lines()[2].ending == LineEnding::soft_wrap &&
+          parser.screen.visible_lines()[2].next_id == parser.screen.visible_lines()[3].id,
           "restored pending wrap did not preserve the real continuation");
     parser.finish();
 }
@@ -85,24 +85,24 @@ static void observed_colour_trace(ParseMode mode, size_t split, bool bytewise) {
     const auto& screen = parser.screen;
     check(screen.active_buffer() == ScreenBuffer::primary && screen.row == 3 && screen.column == 34,
           "five-stage trace ended in the wrong primary cursor state");
-    check(text(screen.lines[1]) == "  D0 H H" + std::string(83, ' ') &&
-          text(screen.lines[3]) == "  M0 H H M1 H M1S1 H M1S2 H M1D0 H" + std::string(57, ' '),
+    check(text(screen.visible_lines()[1]) == "  D0 H H" + std::string(83, ' ') &&
+          text(screen.visible_lines()[3]) == "  M0 H H M1 H M1S1 H M1S2 H M1D0 H" + std::string(57, ' '),
           "five-stage trace did not preserve the literal primary text");
-    check(screen.lines[3][12].text == "H" && screen.lines[3][12].style.fg == 1 &&
-          screen.lines[3][12].style.bg == 4 && screen.lines[3][33].style.fg == -1 &&
-          screen.lines[3][33].style.bg == -1,
+    check(screen.visible_lines()[3][12].text == "H" && screen.visible_lines()[3][12].style.fg == 1 &&
+          screen.visible_lines()[3][12].style.bg == 4 && screen.visible_lines()[3][33].style.fg == -1 &&
+          screen.visible_lines()[3][33].style.bg == -1,
           "return output did not use restored main colours and the explicit default control");
 }
 static void history_and_resize(ParseMode mode) {
     Parser parser(2, 8, 3, mode);
     parser.feed("A\r\nB\r\nC\r\nD\x1b[?1049hX\r\nY\r\nZ\r\nT");
-    check(parser.screen.history.empty(), "alternate output entered retained history");
+    check(parser.screen.history_lines().empty(), "alternate output entered retained history");
     parser.screen.resize(3, 6);
     parser.feed("\x1b[?1049l");
     const auto& screen = parser.screen;
-    check(screen.height() == 3 && screen.width() == 6 && screen.history.size() == 2 &&
-          text(screen.history[0]) == "A     " && text(screen.history[1]) == "B     " &&
-          text(screen.lines[0]) == "C     " && text(screen.lines[1]) == "D     " &&
+    check(screen.height() == 3 && screen.width() == 6 && screen.history_lines().size() == 2 &&
+          text(screen.history_lines()[0]) == "A     " && text(screen.history_lines()[1]) == "B     " &&
+          text(screen.visible_lines()[0]) == "C     " && text(screen.visible_lines()[1]) == "D     " &&
           screen.row == 1 && screen.column == 1,
           "1049 output or resize changed the saved primary history and writing position");
     parser.finish();
@@ -151,7 +151,7 @@ static void recovery_keeps_private_sequences_separate() {
         parser.feed(sequence + "\x1b[31mR");
         parser.finish();
         check(parser.screen.active_buffer() == ScreenBuffer::primary &&
-              text(parser.screen.lines[0]) == "R       " && parser.screen.lines[0][0].style.fg == 1 &&
+              text(parser.screen.visible_lines()[0]) == "R       " && parser.screen.visible_lines()[0][0].style.fg == 1 &&
               parser.diagnostics().ignored_sequences == 1 && parser.diagnostics().max_sequence_bytes <= 33,
               "an unsupported private sequence mutated a buffer or contaminated the next CSI");
     }
@@ -160,12 +160,12 @@ static void recovery_keeps_private_sequences_separate() {
         parser.feed(std::string("\x1b[?1049") + cancellation + "\x1b[31mR");
         parser.finish();
         check(parser.screen.active_buffer() == ScreenBuffer::primary &&
-              text(parser.screen.lines[0]) == "R       " && parser.screen.lines[0][0].style.fg == 1,
+              text(parser.screen.visible_lines()[0]) == "R       " && parser.screen.visible_lines()[0][0].style.fg == 1,
               "cancellation or ESC resynchronization retained the private prefix");
     }
     Parser truncated(2, 8, 1, ParseMode::recovery);
     truncated.feed("\x1b[?1049"); truncated.finish(); truncated.feed("\x1b[31mR"); truncated.finish();
-    check(truncated.screen.active_buffer() == ScreenBuffer::primary && truncated.screen.lines[0][0].style.fg == 1,
+    check(truncated.screen.active_buffer() == ScreenBuffer::primary && truncated.screen.visible_lines()[0][0].style.fg == 1,
           "truncated private input contaminated the next normal CSI");
 }
 static void identical_repeated_text_is_a_new_document(ParseMode mode) {
@@ -188,7 +188,7 @@ static void strict_rejects_unsupported_private_modes_atomically() {
         try { parser.feed(input); }
         catch (const InputError&) { rejected = true; }
         check(rejected && parser.screen.active_buffer() == ScreenBuffer::primary &&
-              text(parser.screen.lines[0]) == "MAIN    " &&
+              text(parser.screen.visible_lines()[0]) == "MAIN    " &&
               parser.screen.style.fg == 1 && parser.screen.style.bg == 4,
               "strict private dispatch accepted an unsupported command or partially applied its modes");
     }

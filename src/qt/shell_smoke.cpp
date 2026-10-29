@@ -33,7 +33,7 @@ static void await(Predicate predicate, const termforge::qt::SessionModel& model,
     require(predicate(), message);
 }
 static bool has_line(const termforge::Screen& screen, std::string_view expected) {
-    for (const auto& row : screen.lines) {
+    for (const auto& row : screen.visible_lines()) {
         std::string text;
         for (const auto& cell : row) if (cell.width != 0) text += cell.text;
         while (!text.empty() && text.back() == ' ') text.pop_back();
@@ -42,7 +42,7 @@ static bool has_line(const termforge::Screen& screen, std::string_view expected)
     return false;
 }
 static bool has_text(const termforge::Screen& screen, std::string_view expected) {
-    for (const auto& row : screen.lines) {
+    for (const auto& row : screen.visible_lines()) {
         std::string text;
         for (const auto& cell : row) if (cell.width != 0) text += cell.text;
         if (text.find(expected) != std::string::npos) return true;
@@ -64,7 +64,7 @@ static void require_answer_ink(QWidget& window, termforge::qt::TerminalWidget& t
     int answer_row = -1;
     for (int row = 0; row < screen.height(); ++row) {
         std::string text;
-        for (const auto& cell : screen.lines[static_cast<size_t>(row)]) if (cell.width) text += cell.text;
+        for (const auto& cell : screen.visible_lines()[static_cast<size_t>(row)]) if (cell.width) text += cell.text;
         while (!text.empty() && text.back() == ' ') text.pop_back();
         if (text == expected) answer_row = row;
     }
@@ -346,7 +346,7 @@ int main(int argc, char** argv) {
         // and status line; a blank terminal renderer must fail this check.
         int answer_row = -1;
         for (int row = 0; row < model.screen().height(); ++row) {
-            const auto& line = model.screen().lines[static_cast<size_t>(row)];
+            const auto& line = model.screen().visible_lines()[static_cast<size_t>(row)];
             if (line[0].text == "7" && line[1].text == "5" && line[2].text == "0") answer_row = row;
         }
         require(answer_row >= 0, "arithmetic answer has no display row");

@@ -147,14 +147,14 @@ std::unordered_set<uint64_t> CandidateTerminal::reconcile_replay(std::vector<Lin
         if (!full) return mapped;
     }
     const auto& source = replay_origin_ ? *replay_origin_ : screen;
-    const auto expected = replay_keys(source.history, source.lines);
+    const auto expected = replay_keys(source.history_lines(), source.visible_lines());
     const auto actual = replay_keys(std::vector<Line>{}, retained);
     std::unordered_map<std::string, size_t> old_counts, new_counts;
     for (const auto& key : expected) ++old_counts[key];
     for (const auto& key : actual) ++new_counts[key];
     std::vector<Line> origin;
-    origin.insert(origin.end(), source.history.begin(), source.history.end());
-    origin.insert(origin.end(), source.lines.begin(), source.lines.end());
+    origin.insert(origin.end(), source.history_lines().begin(), source.history_lines().end());
+    origin.insert(origin.end(), source.visible_lines().begin(), source.visible_lines().end());
     std::unordered_set<uint64_t> mapped;
     size_t origin_index = 0;
     for (auto& line : retained) {
@@ -173,7 +173,7 @@ std::unordered_set<uint64_t> CandidateTerminal::reconcile_replay(std::vector<Lin
 void CandidateTerminal::merge_history(std::vector<Line>& retained, std::vector<uint64_t>& original_ids, size_t& history, uint64_t& discarded) {
     if (!preserve_history_) return;
     const auto& source = replay_origin_ ? *replay_origin_ : screen;
-    std::deque<Line> previous = source.history;
+    std::deque<Line> previous = source.history_lines();
     if (discarded > source.discarded) {
         const auto removed = discarded - source.discarded;
         if (removed >= previous.size()) previous.clear();
@@ -288,8 +288,8 @@ void CandidateTerminal::synchronize() {
     mode_bits_ = meta.mode_bits;
     grapheme_overflows_ = meta.grapheme_overflows;
     std::unordered_map<uint64_t, const Line*> previous;
-    for (const auto& line : screen.history) previous.emplace(line.id, &line);
-    for (const auto& line : screen.lines) previous.emplace(line.id, &line);
+    for (const auto& line : screen.history_lines()) previous.emplace(line.id, &line);
+    for (const auto& line : screen.visible_lines()) previous.emplace(line.id, &line);
 
     std::vector<Line> retained(meta.history + meta.rows);
     std::vector<uint64_t> raw_ids;

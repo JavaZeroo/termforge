@@ -35,17 +35,17 @@ void fragmentation() {
     for (char value : data) byte.feed(std::string_view(&value, 1));
     whole.finish(); byte.finish();
     require(state(whole) == state(byte), "fragmented candidate state differs");
-    require(whole.screen.history[0][0].width == 1, "unexpected narrow cell");
-    require(whole.screen.history[0][1].width == 2, "unexpected wide cell");
-    require(whole.screen.history[0][2].width == 0 && whole.screen.history[0][2].written,
+    require(whole.screen.history_lines()[0][0].width == 1, "unexpected narrow cell");
+    require(whole.screen.history_lines()[0][1].width == 2, "unexpected wide cell");
+    require(whole.screen.history_lines()[0][2].width == 0 && whole.screen.history_lines()[0][2].written,
             "wide character spacer was not preserved as written");
-    require(whole.screen.history[0][3].marks == 1, "combining mark missing");
-    require(termforge::project_line(whole.screen.history[0]).text == "A中e\xCC\x81😀",
+    require(whole.screen.history_lines()[0][3].marks == 1, "combining mark missing");
+    require(termforge::project_line(whole.screen.history_lines()[0]).text == "A中e\xCC\x81😀",
             "canonical text projection must omit wide spacer payloads and preserve literal scalars");
-    for (const auto& cell : whole.screen.history[0])
+    for (const auto& cell : whole.screen.history_lines()[0])
         require(cell.width != 0 || cell.written, "unused cell was incorrectly treated as a wide spacer");
-    require(whole.screen.history[0][7].width == 1 && whole.screen.history[0][7].text == " " &&
-            !whole.screen.history[0][7].written, "unused cell must retain its paintable width");
+    require(whole.screen.history_lines()[0][7].width == 1 && whole.screen.history_lines()[0][7].text == " " &&
+            !whole.screen.history_lines()[0][7].written, "unused cell must retain its paintable width");
 }
 
 void streaming_graphemes_selection_and_history() {
@@ -57,7 +57,7 @@ void streaming_graphemes_selection_and_history() {
             else terminal.feed(input);
         };
         feed("A" + zwj + keycap + "Z\r\n");
-        const auto& row = terminal.screen.lines[0];
+        const auto& row = terminal.screen.visible_lines()[0];
         require(row[1].text == zwj && row[1].width == 2 && row[2].width == 0 &&
                 row[3].text == keycap && row[3].width == 2 && row[4].width == 0 &&
                 row[5].text == "Z", "streaming whole-cluster cell layout differs");
@@ -74,28 +74,28 @@ void streaming_graphemes_selection_and_history() {
         require(selection.reconcile(document) && selection.copy(document, 1024).text == zwj + keycap,
                 "width-only resize lost whole grapheme selection");
         feed("B\r\nC\r\nD");
-        require(terminal.screen.history.size() == 1 &&
-                termforge::project_line(terminal.screen.history[0]).text == "A" + zwj + keycap + "Z" &&
+        require(terminal.screen.history_lines().size() == 1 &&
+                termforge::project_line(terminal.screen.history_lines()[0]).text == "A" + zwj + keycap + "Z" &&
                 selection.reconcile(document) && selection.copy(document, 1024).text == zwj + keycap,
                 "complex grapheme history or retained selection differs");
     }
     termforge::CandidateTerminal clipped(3, 4, 8);
     clipped.feed("\x1b[?7lABC" + zwj);
-    require(clipped.screen.lines[0][3].text == zwj && clipped.screen.lines[0][3].width == 1 &&
-            clipped.screen.lines[0][3].clipped, "clipped grapheme metadata or scalar retention differs");
+    require(clipped.screen.visible_lines()[0][3].text == zwj && clipped.screen.visible_lines()[0][3].width == 1 &&
+            clipped.screen.visible_lines()[0][3].clipped, "clipped grapheme metadata or scalar retention differs");
     termforge::CandidateTerminal resized_one(3, 4, 8);
     resized_one.feed(zwj);
     resized_one.resize(3, 1);
-    require(resized_one.screen.lines[0][0].text == zwj && resized_one.screen.lines[0][0].width == 1 &&
-            resized_one.screen.lines[0][0].clipped && resized_one.screen.row == 0 &&
+    require(resized_one.screen.visible_lines()[0][0].text == zwj && resized_one.screen.visible_lines()[0][0].width == 1 &&
+            resized_one.screen.visible_lines()[0][0].clipped && resized_one.screen.row == 0 &&
             resized_one.screen.column == 0 && resized_one.screen.wrap_pending,
             "resize to one column lost text, clipping metadata or cursor");
     termforge::CandidateTerminal bounded(3, 16, 8);
     std::string long_marks = "e";
     for (int index = 0; index < 200; ++index) long_marks += "\xcc\x81";
     bounded.feed(long_marks);
-    require(termforge::project_line(bounded.screen.lines[0]).text == long_marks &&
-            bounded.grapheme_overflows() == 3 && bounded.screen.lines[0][1].grapheme_fragment,
+    require(termforge::project_line(bounded.screen.visible_lines()[0]).text == long_marks &&
+            bounded.grapheme_overflows() == 3 && bounded.screen.visible_lines()[0][1].grapheme_fragment,
             "bounded grapheme spill discarded text or diagnostics");
     termforge::TextDocument document(bounded.screen);
     termforge::TextSelection selection;
@@ -111,7 +111,7 @@ void streaming_margin_padding_is_not_copied_as_an_inserted_space() {
             const std::string literal = prefix + keycap;
             if (fragmented) for (const char byte : literal) terminal.feed(std::string_view(&byte, 1));
             else terminal.feed(literal);
-            require(terminal.screen.lines[0][3].leading_spacer == (prefix == "ABC"),
+            require(terminal.screen.visible_lines()[0][3].leading_spacer == (prefix == "ABC"),
                     "actual written space and leading-wide padding were conflated");
             termforge::TextDocument document(terminal.screen);
             termforge::TextSelection selection;
@@ -119,12 +119,12 @@ void streaming_margin_padding_is_not_copied_as_an_inserted_space() {
                     selection.copy(document, 1024).text == literal,
                     "margin growth copy inserted padding or removed a literal space");
             terminal.resize(3, 8);
-            require(termforge::project_line(terminal.screen.lines[0]).text == literal &&
+            require(termforge::project_line(terminal.screen.visible_lines()[0]).text == literal &&
                     selection.select_line(document, 0) && selection.copy(document, 1024).text == literal,
                     "resize copied padding or lost a true space");
             terminal.feed("\r\nD\r\nE\r\nF");
-            require(terminal.screen.history.size() == 1 &&
-                    termforge::project_line(terminal.screen.history[0]).text == literal &&
+            require(terminal.screen.history_lines().size() == 1 &&
+                    termforge::project_line(terminal.screen.history_lines()[0]).text == literal &&
                     selection.select_line(document, 0) && selection.copy(document, 1024).text == literal,
                     "history copied padding or lost original margin text");
         }
@@ -140,7 +140,7 @@ void prepend_and_inserted_wide_trailer_copy() {
         else prefix.feed(literal);
         termforge::TextDocument prefix_document(prefix.screen);
         termforge::TextSelection prefix_selection;
-        require(prefix.screen.lines[0][0].text == literal && prefix_selection.select_line(prefix_document,0) &&
+        require(prefix.screen.visible_lines()[0][0].text == literal && prefix_selection.select_line(prefix_document,0) &&
                 prefix_selection.copy(prefix_document,1024).text == literal,
                 "zero-width Prepend scalar disappeared from terminal or copied text");
         for (const auto& pair : std::vector<std::pair<std::string, std::string>>{
@@ -149,7 +149,7 @@ void prepend_and_inserted_wide_trailer_copy() {
             termforge::CandidateTerminal terminal(3,8,8);
             terminal.feed("中ABCDEF\x1b[1;2H\x1b[4h");
             const auto check_pairs = [&] {
-                const auto& line = terminal.screen.lines[0];
+                const auto& line = terminal.screen.visible_lines()[0];
                 for (size_t column=0;column<line.size();++column) {
                     require(line[column].width != 2 || (column+1<line.size() && line[column+1].width==0),
                             "inserted prefix left an unpaired wide lead");
@@ -170,9 +170,9 @@ void prepend_and_inserted_wide_trailer_copy() {
 void alternate_and_replies() {
     termforge::CandidateTerminal terminal(3, 8, 2);
     terminal.feed("A\r\nB\r\nC\r\nD\x1b[?1049hALT\x1b[6n\x1b[?1049lZ");
-    require(text(terminal.screen.lines[0]) == "B" && text(terminal.screen.lines[1]) == "C" &&
-            text(terminal.screen.lines[2]) == "DZ", "alternate screen did not restore main content");
-    require(terminal.screen.history.size() == 1 && text(terminal.screen.history[0]) == "A",
+    require(text(terminal.screen.visible_lines()[0]) == "B" && text(terminal.screen.visible_lines()[1]) == "C" &&
+            text(terminal.screen.visible_lines()[2]) == "DZ", "alternate screen did not restore main content");
+    require(terminal.screen.history_lines().size() == 1 && text(terminal.screen.history_lines()[0]) == "A",
             "alternate screen polluted history");
     require((terminal.mode_bits() & (1 << 12)) == 0, "alternate mode remained enabled");
     const auto events = terminal.take_events();
@@ -194,17 +194,17 @@ void per_buffer_margins() {
         };
         feed(before);
         feed(alt);
-        require(text(terminal.screen.lines[0]) == "ALT_OUTSIDE" && text(terminal.screen.lines[3]) == "ALT_C" &&
-                text(terminal.screen.lines[4]) == "     ALT_D", "alternate scroll region differs");
+        require(text(terminal.screen.visible_lines()[0]) == "ALT_OUTSIDE" && text(terminal.screen.visible_lines()[3]) == "ALT_C" &&
+                text(terminal.screen.visible_lines()[4]) == "     ALT_D", "alternate scroll region differs");
         feed(after);
         const std::vector<std::string> expected = {
             "TOP_FIXED", "REGION_C", "        REGION_D", "BOTTOM_FIXED", "", "TF_MARGIN_DONE",
         };
         for (size_t row = 0; row < expected.size(); ++row)
-            require(text(terminal.screen.lines[row]) == expected[row], "main scroll region was not restored");
-        for (size_t row = expected.size(); row < terminal.screen.lines.size(); ++row)
-            require(text(terminal.screen.lines[row]).empty(), "unexpected content after margin fixture");
-        require(terminal.screen.history.empty(), "per-buffer margins polluted main history");
+            require(text(terminal.screen.visible_lines()[row]) == expected[row], "main scroll region was not restored");
+        for (size_t row = expected.size(); row < terminal.screen.visible_lines().size(); ++row)
+            require(text(terminal.screen.visible_lines()[row]).empty(), "unexpected content after margin fixture");
+        require(terminal.screen.history_lines().empty(), "per-buffer margins polluted main history");
         require(terminal.screen.row == 6 && terminal.screen.column == 0 && !(terminal.mode_bits() & (1 << 12)),
                 "margin fixture cursor or alternate mode differs");
     }
@@ -215,18 +215,18 @@ void margin_resize_and_reset() {
     resized.feed("\x1b[2;3r\x1b[?1049h\x1b[4;5r");
     resized.resize(8, 8);
     resized.feed("\x1b[?1049l\x1b[1;1H1\r\n2\r\n3\r\n4\r\n5\r\n6\r\n7\r\n8\r\n9");
-    require(resized.screen.history.size() == 1 && text(resized.screen.history[0]) == "1",
+    require(resized.screen.history_lines().size() == 1 && text(resized.screen.history_lines()[0]) == "1",
             "resize retained an inactive margin or incorrect history");
-    for (size_t row = 0; row < resized.screen.lines.size(); ++row)
-        require(text(resized.screen.lines[row]) == std::to_string(row + 2),
+    for (size_t row = 0; row < resized.screen.visible_lines().size(); ++row)
+        require(text(resized.screen.visible_lines()[row]) == std::to_string(row + 2),
                 "resize did not reset both scrolling regions");
 
     termforge::CandidateTerminal reset(4, 8, 4);
     reset.feed("\x1b[2;3r\x1b[?1049h\x1b[3;4r\x1b" "c");
     reset.feed("\x1b[?1049h1\r\n2\r\n3\r\n4\r\n5");
-    require(reset.screen.history.empty() && text(reset.screen.lines[0]) == "2" &&
-            text(reset.screen.lines[1]) == "3" && text(reset.screen.lines[2]) == "4" &&
-            text(reset.screen.lines[3]) == "5", "RIS did not reset both scrolling regions");
+    require(reset.screen.history_lines().empty() && text(reset.screen.visible_lines()[0]) == "2" &&
+            text(reset.screen.visible_lines()[1]) == "3" && text(reset.screen.visible_lines()[2]) == "4" &&
+            text(reset.screen.visible_lines()[3]) == "5", "RIS did not reset both scrolling regions");
 }
 
 void empty_payload_events() {
@@ -243,19 +243,19 @@ void empty_payload_events() {
 
 void identity_versions_and_eviction() {
     termforge::CandidateTerminal terminal(2, 4, 1);
-    const auto first = terminal.screen.lines[0].id;
-    const auto second = terminal.screen.lines[1].id;
+    const auto first = terminal.screen.visible_lines()[0].id;
+    const auto second = terminal.screen.visible_lines()[1].id;
     terminal.feed("A");
-    require(terminal.screen.lines[0].id == first && terminal.screen.lines[0].version == 2,
+    require(terminal.screen.visible_lines()[0].id == first && terminal.screen.visible_lines()[0].version == 2,
             "cell update did not preserve identity and increment version");
     terminal.feed("");
-    require(terminal.screen.lines[0].version == 2, "empty feed incremented version");
+    require(terminal.screen.visible_lines()[0].version == 2, "empty feed incremented version");
     terminal.feed("\r\nB\r\nC\r\n");
-    require(terminal.screen.history.size() == 1 && text(terminal.screen.history[0]) == "B",
+    require(terminal.screen.history_lines().size() == 1 && text(terminal.screen.history_lines()[0]) == "B",
             "bounded history retained wrong row");
     require(terminal.screen.discarded == 1, "history eviction count is wrong");
-    require(terminal.screen.history[0].id == second, "scrolled row lost its identity");
-    require(terminal.screen.lines[1].id != first && terminal.screen.lines[1].version == 1,
+    require(terminal.screen.history_lines()[0].id == second, "scrolled row lost its identity");
+    require(terminal.screen.visible_lines()[1].id != first && terminal.screen.visible_lines()[1].version == 1,
             "reused row did not receive a fresh identity");
     termforge::TextDocument document(terminal.screen);
     require(document.index_of(second) == std::optional<size_t>(0), "text document cannot resolve scrolled identity");
@@ -297,7 +297,7 @@ void replay_case(const std::filesystem::path& path, bool fragmented) {
     all_expected += "TF_FIND_READY 080\r\n";
     const std::string expected = "TF_FIND_077 needle \xE4\xB8\xAD\xE6\x96\x87 e\xCC\x81";
     const auto target = [&] {
-        for (const auto& line : terminal.screen.lines)
+        for (const auto& line : terminal.screen.visible_lines())
             if (text(line).rfind("TF_FIND_077", 0) == 0) return line.id;
         return uint64_t{};
     };
@@ -364,7 +364,7 @@ void replay_case(const std::filesystem::path& path, bool fragmented) {
             "restored history did not survive a subsequent synchronization");
     terminal.feed(expected + "\r\n");
     uint64_t duplicate = 0;
-    for (const auto& line : terminal.screen.lines)
+    for (const auto& line : terminal.screen.visible_lines())
         if (text(line).rfind("TF_FIND_077", 0) == 0) duplicate = line.id;
     require(duplicate != 0 && duplicate != original, "duplicate text reused the original row identity");
 }
@@ -395,7 +395,7 @@ void incomplete_replay_is_bounded() {
     ending.feed("C");
     ending.finish();
     termforge::TextDocument after_finish(ending.screen);
-    require(text(ending.screen.lines[0]) == "ABC" &&
+    require(text(ending.screen.visible_lines()[0]) == "ABC" &&
             finish_selection.copy(after_finish, 1024).status == termforge::SelectionCopyStatus::invalidated,
             "finish did not release the actual state after an incomplete replay");
 }
@@ -403,12 +403,12 @@ void incomplete_replay_is_bounded() {
 void history_clear_does_not_resurrect() {
     termforge::CandidateTerminal terminal(2, 8, 4);
     terminal.feed("A\r\nB\r\nC\r\nD");
-    require(terminal.screen.history.size() == 2, "clear-history fixture is missing retained rows");
+    require(terminal.screen.history_lines().size() == 2, "clear-history fixture is missing retained rows");
     terminal.resize(2, 9);
     terminal.feed("\x1b[?25l\x1b[?25h");
-    require(terminal.screen.history.size() == 2, "completed resize did not establish retained history");
+    require(terminal.screen.history_lines().size() == 2, "completed resize did not establish retained history");
     terminal.feed("\x1b[3J");
-    require(terminal.screen.history.empty(), "explicit history clear resurrected retained rows");
+    require(terminal.screen.history_lines().empty(), "explicit history clear resurrected retained rows");
     terminal.feed("E\r\nF");
     termforge::TextDocument document(terminal.screen);
     for (size_t index = 0; index < document.size(); ++index) {
@@ -429,8 +429,8 @@ void selection_search_and_viewport() {
     terminal.feed("alpha\r\nbeta\r\ngamma");
     termforge::TextDocument document(terminal.screen);
     require(document.line(0).projection.text == "alpha", "candidate text projection differs");
-    require(terminal.screen.history[0].id < terminal.screen.lines[0].id &&
-            terminal.screen.lines[0].id < terminal.screen.lines[1].id, "candidate retained IDs are not ordered");
+    require(terminal.screen.history_lines()[0].id < terminal.screen.visible_lines()[0].id &&
+            terminal.screen.visible_lines()[0].id < terminal.screen.visible_lines()[1].id, "candidate retained IDs are not ordered");
     termforge::TextSelection selection;
     const auto begin = document.position(0, 0), end = document.position(0, 5);
     require(begin && end, "candidate text positions were not generated");
@@ -446,49 +446,49 @@ void selection_search_and_viewport() {
         search.step(document, generation, 1);
     require(search.status() == termforge::SearchStatus::complete && search.matches().size() == 1 &&
             search.match(document, 0), "candidate search did not resolve gamma");
-    const auto alpha = terminal.screen.history[0].id, gamma = terminal.screen.lines[1].id;
+    const auto alpha = terminal.screen.history_lines()[0].id, gamma = terminal.screen.visible_lines()[1].id;
     terminal.resize(2, 16);
     const auto widened = search.match(document, 0);
-    require(terminal.screen.history[0].id == alpha && terminal.screen.lines[1].id == gamma &&
+    require(terminal.screen.history_lines()[0].id == alpha && terminal.screen.visible_lines()[1].id == gamma &&
             widened && widened->range.begin.line_id == gamma &&
             selection.copy(document, 1024).text == "alpha",
             "width-only candidate resize invalidated unchanged hard-row text or identity");
 
     termforge::HistoryViewport viewport;
     const auto top = viewport.scroll_to(terminal.screen, 0);
-    require(top.anchor == terminal.screen.history[0].id && !top.following,
+    require(top.anchor == terminal.screen.history_lines()[0].id && !top.following,
             "candidate history top anchor differs");
     const auto bottom = viewport.bottom(terminal.screen);
-    require(bottom.following && bottom.anchor == terminal.screen.lines[0].id,
+    require(bottom.following && bottom.anchor == terminal.screen.visible_lines()[0].id,
             "candidate history bottom anchor differs");
 }
 
 void linebreaks() {
     termforge::CandidateTerminal terminal(2, 3, 2);
     terminal.feed("abcd");
-    const auto& row = terminal.screen.lines[0];
+    const auto& row = terminal.screen.visible_lines()[0];
     require(row.ending == termforge::LineEnding::soft_wrap && row.wrap_columns == 3,
             "soft wrap metadata missing");
-    require(row.next_id == terminal.screen.lines[1].id &&
-            termforge::continues_into(row, terminal.screen.lines[1]), "soft wrap continuation is broken");
+    require(row.next_id == terminal.screen.visible_lines()[1].id &&
+            termforge::continues_into(row, terminal.screen.visible_lines()[1]), "soft wrap continuation is broken");
     terminal.feed("\r\n");
-    require(terminal.screen.lines[0].ending == termforge::LineEnding::hard_break,
+    require(terminal.screen.visible_lines()[0].ending == termforge::LineEnding::hard_break,
             "hard break metadata missing");
 }
 
 void scrolling_and_erase() {
     termforge::CandidateTerminal terminal(3, 8, 2);
     terminal.feed("A\r\nB\r\nC\r\nD\x1b[2;3r\x1b[3;1H\nX\x1b[r\x1b[1;1H");
-    require(text(terminal.screen.lines[0]) == "B" && text(terminal.screen.lines[1]) == "D" &&
-            text(terminal.screen.lines[2]) == "X", "scroll region result differs");
+    require(text(terminal.screen.visible_lines()[0]) == "B" && text(terminal.screen.visible_lines()[1]) == "D" &&
+            text(terminal.screen.visible_lines()[2]) == "X", "scroll region result differs");
 
     termforge::CandidateTerminal erase(3, 12, 3);
     erase.feed("one\r\ntwo\x1b[2;1H\x1b[1J");
-    require(text(erase.screen.lines[0]).empty() && text(erase.screen.lines[1]) == " wo",
+    require(text(erase.screen.visible_lines()[0]).empty() && text(erase.screen.visible_lines()[1]) == " wo",
             "ED1 did not clear page start through cursor");
     termforge::CandidateTerminal clear(3, 12, 3);
     clear.feed("A\r\nB\r\nC\r\nD\x1b[2J");
-    require(clear.screen.history.size() == 1 && text(clear.screen.history[0]) == "A",
+    require(clear.screen.history_lines().size() == 1 && text(clear.screen.history_lines()[0]) == "A",
             "ED2 unexpectedly migrated or cleared history");
 }
 
@@ -497,7 +497,7 @@ void resize_and_errors() {
     terminal.feed("abc中\r\n1234567890");
     terminal.resize(2, 6);
     require(terminal.screen.height() == 2 && terminal.screen.width() == 6, "candidate resize dimensions differ");
-    require(text(terminal.screen.lines[0]) == "123456" && text(terminal.screen.lines[1]) == "7890",
+    require(text(terminal.screen.visible_lines()[0]) == "123456" && text(terminal.screen.visible_lines()[1]) == "7890",
             "candidate reflow projection differs");
 
     bool rejected = false;

@@ -48,14 +48,14 @@ int main(int argc, char** argv) {
         size_t traced_cells = 0;
         const auto snapshot = [&]() {
             const auto& screen = parser.screen;
-            const size_t count = (screen.lines.size() + screen.history.size()) * screen.width();
+            const size_t count = (screen.visible_lines().size() + screen.history_lines().size()) * screen.width();
             if (count > 1000000 - traced_cells) throw std::runtime_error("trace cell budget exceeded");
             traced_cells += count;
             std::cout << "{\"offset\":" << offset << ",\"screen\":{\"row\":" << screen.row
                 << ",\"column\":" << screen.column << ",\"wrap_pending\":"
                 << (screen.wrap_pending ? "true" : "false") << ",\"cells\":";
-            cells(std::cout, screen.lines);
-            std::cout << ",\"history\":"; cells(std::cout, screen.history);
+            cells(std::cout, screen.visible_lines());
+            std::cout << ",\"history\":"; cells(std::cout, screen.history_lines());
             std::cout << ",\"current_style\":"; screen.style.json(std::cout);
             std::cout << "}}\n";
         };
