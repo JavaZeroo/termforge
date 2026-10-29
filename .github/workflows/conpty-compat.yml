@@ -213,3 +213,33 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
           path: node-contract-timing.json
+
+  windows-2025-actions-repeat:
+    # Bounded reproduction for #156 / #99 / #73: repeats the clipboard and
+    # geometry scenarios on the hosted image so the selection-discard
+    # diagnostics can be ordered against the scenario phase timeline.
+    runs-on: windows-2025
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release --parallel 2
+      - name: Prepare hosted Windows shell prerequisites
+        run: python -m tools.prepare_hosted_shells --out local/hosted-shells
+      - name: Repeat the actions scenarios
+        env:
+          TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD: '1'
+        run: ctest --test-dir build -C Release -R "text_actions|selection_context" --repeat until-fail:20 --output-on-failure
+      - name: Preserve repeat evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: actions-repeat-evidence
+          retention-days: 14
+          if-no-files-found: warn
+          path: build/test-artifacts/

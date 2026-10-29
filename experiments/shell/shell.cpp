@@ -40,13 +40,15 @@ std::string selection_diag_path() {
     return value ? std::string(value) : std::string{};
 #endif
 }
-void selection_discard_diagnostic(const char* reason, size_t row) {
+void selection_discard_diagnostic(const termforge::TextSelection::DiscardReport& report) {
     static const std::string path = selection_diag_path();
     if (path.empty()) return;
     std::ofstream stream(path, std::ios::app);
     if (!stream) return;
-    stream << "{\"schema\":\"termforge-selection-discard-v1\",\"reason\":\"" << reason
-           << "\",\"row\":" << row << ",\"t_ms\":" << GetTickCount64() << "}\n";
+    stream << "{\"schema\":\"termforge-selection-discard-v1\",\"reason\":\"" << report.reason
+           << "\",\"row\":" << report.row << ",\"saved_bytes\":" << report.saved_bytes
+           << ",\"current_bytes\":" << report.current_bytes << ",\"saved_columns\":" << report.saved_columns
+           << ",\"current_columns\":" << report.current_columns << ",\"t_ms\":" << GetTickCount64() << "}\n";
 }
 void install_selection_diagnostic_once() {
     static std::once_flag once;
