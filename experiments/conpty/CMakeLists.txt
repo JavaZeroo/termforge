@@ -13,3 +13,15 @@ if(MSVC)
 else()
   target_compile_options(termforge_conpty_probe PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+# Diagnostic only (issue #145): repeats resize+client size query without
+# changing the lifecycle probe's contract. Built explicitly, not registered.
+add_executable(conpty_resize_reply_probe EXCLUDE_FROM_ALL resize_reply_probe.cpp)
+target_compile_features(conpty_resize_reply_probe PRIVATE cxx_std_17)
+target_compile_definitions(conpty_resize_reply_probe PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX _WIN32_WINNT=0x0A00)
+if(MSVC)
+  target_compile_options(conpty_resize_reply_probe PRIVATE /W4 /EHsc)
+else()
+  target_compile_options(conpty_resize_reply_probe PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
