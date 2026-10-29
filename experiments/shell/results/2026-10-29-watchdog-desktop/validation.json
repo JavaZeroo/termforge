@@ -1,0 +1,307 @@
+{
+  "schema": "termforge-watchdog-desktop-sanitized-result-v1",
+  "collector_source_commit": "e8455b82d1cdd682a7dfde9f2303c7f1b43f63be",
+  "executable_build_source_commit": "6e67be541b134084ca8b0a64a94308e8e3d23242",
+  "configuration": "default-cpp-core-system-conpty-win32",
+  "executable": {
+    "bytes": 1236480,
+    "sha256": "85094afb626c162140608f8f5303cd30558c82cd98f534725b1dbeaf072aa2ff"
+  },
+  "launcher": {
+    "bytes": 47616,
+    "sha256": "5165f20be105f529ae2c14b885aab7b537735852091e319ce0fb7dc261273cf4"
+  },
+  "runtime_member_count": 12,
+  "windows_version": "10.0.26200",
+  "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "source_sha256": {
+    "experiments/shell/diagnose_watchdog_desktop.py": "61cab85d80db79511c07ed4c6c7b34cc9e6e6a6bfdc50196c60d202b3c33fc2e",
+    "experiments/shell/run.py": "d77454ce626be025e088e6adea9d5f12150c039296397161b2bb8e00e08c1d66",
+    "experiments/conpty/run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329",
+    "experiments/shell/test_launcher.cpp": "19cab4a960f47f252c02f92a36316d43eed2481da1f72b5a7e97003c4fa1c2ed",
+    "experiments/shell/shell.cpp": "cc3830a52aebfad69871d974fed6c3f295f58e1e75feb451f7cfc11e0e56a3ef",
+    "experiments/shell/shell_launch.cpp": "03fac4122d8151539adf9e88c273e9fbaf632f2e80ba10ea77c3873f588db052"
+  },
+  "execution_plan": {
+    "bytes": 2524,
+    "sha256": "585aa8283fac299746ecf57a80a19cf0e3b8ce9e6019f365ad175136c53aab38"
+  },
+  "outer_lease": {
+    "bytes": 1751,
+    "sha256": "a612160a60dd6da928f187b746ac85de0caee096e4b6940e4d99250c2151e58e"
+  },
+  "cases": [
+    {
+      "case": "retained-second-handle",
+      "status": "observations_complete",
+      "first_desktop_gone": false,
+      "original_verdict": null,
+      "probes": [
+        {
+          "label": "original-first-probe",
+          "requested_offset_ms": null,
+          "actual_offset_ms": null,
+          "open_returned_handle": true,
+          "open_error": 0,
+          "desktop_gone_at_this_probe": false
+        },
+        {
+          "label": "independent-followup",
+          "requested_offset_ms": 0,
+          "actual_offset_ms": 0.0,
+          "open_returned_handle": false,
+          "open_error": 2,
+          "desktop_gone_at_this_probe": true
+        },
+        {
+          "label": "independent-followup",
+          "requested_offset_ms": 50,
+          "actual_offset_ms": 47.0,
+          "open_returned_handle": false,
+          "open_error": 2,
+          "desktop_gone_at_this_probe": true
+        },
+        {
+          "label": "independent-followup",
+          "requested_offset_ms": 250,
+          "actual_offset_ms": 250.0,
+          "open_returned_handle": false,
+          "open_error": 2,
+          "desktop_gone_at_this_probe": true
+        },
+        {
+          "label": "independent-followup",
+          "requested_offset_ms": 1000,
+          "actual_offset_ms": 1000.0,
+          "open_returned_handle": false,
+          "open_error": 2,
+          "desktop_gone_at_this_probe": true
+        }
+      ],
+      "owned_handle_closures": [
+        {
+          "kind": "creator desktop",
+          "ownership": "owned",
+          "close_attempted": true,
+          "closed": true,
+          "close_return": true,
+          "close_error": 0
+        },
+        {
+          "kind": "positive-control retained second desktop handle",
+          "ownership": "owned",
+          "close_attempted": true,
+          "closed": true,
+          "close_return": true,
+          "close_error": 0
+        },
+        {
+          "kind": "desktop existence probe",
+          "ownership": "owned",
+          "close_attempted": true,
+          "closed": true,
+          "close_return": true,
+          "close_error": 0
+        }
+      ],
+      "retained_root_observations": [],
+      "raw_identity": {
+        "bytes": 4919,
+        "sha256": "9534a3e5a89c06c238638ae23a4782a801bb1725cf2f1fcf26831340d4bc25af"
+      },
+      "deferred_observer_errors": 0
+    },
+    {
+      "case": "original-watchdog",
+      "status": "observations_complete",
+      "first_desktop_gone": true,
+      "original_verdict": "passed",
+      "probes": [
+        {
+          "label": "original-first-probe",
+          "requested_offset_ms": null,
+          "actual_offset_ms": null,
+          "open_returned_handle": false,
+          "open_error": 2,
+          "desktop_gone_at_this_probe": true
+        },
+        {
+          "label": "independent-followup",
+          "requested_offset_ms": 0,
+          "actual_offset_ms": 0.0,
+          "open_returned_handle": false,
+          "open_error": 2,
+          "desktop_gone_at_this_probe": true
+        },
+        {
+          "label": "independent-followup",
+          "requested_offset_ms": 50,
+          "actual_offset_ms": 47.0,
+          "open_returned_handle": false,
+          "open_error": 2,
+          "desktop_gone_at_this_probe": true
+        },
+        {
+          "label": "independent-followup",
+          "requested_offset_ms": 250,
+          "actual_offset_ms": 250.0,
+          "open_returned_handle": false,
+          "open_error": 2,
+          "desktop_gone_at_this_probe": true
+        },
+        {
+          "label": "independent-followup",
+          "requested_offset_ms": 1000,
+          "actual_offset_ms": 1000.0,
+          "open_returned_handle": false,
+          "open_error": 2,
+          "desktop_gone_at_this_probe": true
+        }
+      ],
+      "owned_handle_closures": [
+        {
+          "kind": "exact supervisor Job",
+          "ownership": "owned",
+          "close_attempted": true,
+          "closed": true,
+          "close_return": true,
+          "close_error": 0
+        },
+        {
+          "kind": "creator desktop",
+          "ownership": "owned",
+          "close_attempted": true,
+          "closed": true,
+          "close_return": true,
+          "close_error": 0
+        },
+        {
+          "kind": "retained duplicate of original Popen process handle",
+          "ownership": "owned",
+          "close_attempted": true,
+          "closed": true,
+          "close_return": true,
+          "close_error": 0
+        }
+      ],
+      "retained_root_observations": [
+        {
+          "label": "created-before-assignment-and-GO",
+          "strict_before_GO": true,
+          "wait": 258,
+          "exit_code": 259,
+          "identity_reference_present": true,
+          "current_image_known": true,
+          "image_query_returned": true,
+          "image_query_error": 0,
+          "observation_gaps": []
+        },
+        {
+          "label": "assigned-before-original-GO",
+          "strict_before_GO": true,
+          "wait": 258,
+          "exit_code": 259,
+          "identity_reference_present": true,
+          "current_image_known": true,
+          "image_query_returned": true,
+          "image_query_error": 0,
+          "observation_gaps": []
+        },
+        {
+          "label": "after-original-drain",
+          "strict_before_GO": false,
+          "wait": 0,
+          "exit_code": 99,
+          "identity_reference_present": true,
+          "current_image_known": false,
+          "image_query_returned": false,
+          "image_query_error": 31,
+          "observation_gaps": [
+            "Exited retained handle image query failed31; current image unknown; identity reference was verified before GO"
+          ]
+        },
+        {
+          "label": "after-original-drain",
+          "strict_before_GO": false,
+          "wait": 0,
+          "exit_code": 99,
+          "identity_reference_present": true,
+          "current_image_known": false,
+          "image_query_returned": false,
+          "image_query_error": 31,
+          "observation_gaps": [
+            "Exited retained handle image query failed31; current image unknown; identity reference was verified before GO"
+          ]
+        }
+      ],
+      "raw_identity": {
+        "bytes": 13530,
+        "sha256": "e28a9c04c64ae9421a3e88a70b7274152b9948e7b47ad109da391a9290e7dc8c"
+      },
+      "deferred_observer_errors": 0,
+      "original_sample": {
+        "mode": "watchdog",
+        "status": "passed",
+        "timed_out": true,
+        "exit_code": 99,
+        "job_at_timeout": {
+          "active": 5,
+          "total": 6,
+          "terminated": 0
+        },
+        "job_after": {
+          "active": 0,
+          "total": 6,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 6,
+          "terminated": 0
+        },
+        "watchdog_ready": true,
+        "stderr_empty": true,
+        "cleanup_errors": []
+      },
+      "original_sample_identity": {
+        "bytes": 510,
+        "sha256": "a5cf1398199580a6aa9bc0e1bb58d248e806da93b2aa140c5d9a953891aba145"
+      }
+    }
+  ],
+  "outer": {
+    "timed_out": false,
+    "output_overflow": false,
+    "job_termination_requests": 0,
+    "root_reaped": true,
+    "returncode": 0,
+    "job_after": {
+      "active": 0,
+      "total": 18,
+      "terminated": 0
+    },
+    "job_before_close": {
+      "active": 0,
+      "total": 18,
+      "terminated": 0
+    },
+    "elapsed_supervisor_seconds": 5.60899999999674
+  },
+  "original_ci_archive_sha256": "05392812a79a0b38d48384b47905c85c9f46285cbedcf0b4afa2275550c9efbb",
+  "first_failed_collector_source_commit": "6e67be541b134084ca8b0a64a94308e8e3d23242",
+  "first_failed_batch_identity": {
+    "bytes": 620,
+    "sha256": "28cdcb854fa3f6699a22d16b61a02b25653187b18deaf4ce7b5992722d7ced2c"
+  },
+  "diagnostic_complete": true,
+  "original_ci_cause_established": false,
+  "product_acceptance": null,
+  "followup_timing": "requested offsets are not exact scheduling guarantees; raw actual offsets retained",
+  "clock_metadata_post_execution": {
+    "implementation": "GetTickCount64()",
+    "resolution_seconds": 0.015625
+  },
+  "native_case_runs_in_this_batch": 2,
+  "native_reruns_during_publication": 0
+}
