@@ -37,3 +37,39 @@ jobs:
             build/Testing/Temporary/
             build/conpty-results.xml
             build/test-artifacts/conpty/
+
+  windows-2025-resize-reply:
+    # Bounded diagnostic for #145: the stale resize reply was observed on
+    # windows-2025 in build.yml. This job repeats resize + client size query on
+    # that host and keeps the raw per-round evidence. It asserts only structural
+    # integrity; a stale count is reported in the artifact, not used as a gate.
+    runs-on: windows-2025
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: '1'
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Configure
+        run: cmake -S . -B build
+      - name: Build resize-reply diagnostic
+        run: cmake --build build --config Release --target conpty_resize_reply_probe --parallel 2
+      - name: Sample resize replies across fresh sessions
+        shell: pwsh
+        run: |
+          $binary = "build/bin/Release/conpty_resize_reply_probe.exe"
+          foreach ($iteration in 1..5) {
+            python -m experiments.conpty.resize_reply_run --binary $binary --rounds 200 --mode raw --out "build/r145-session-$iteration"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: Preserve resize-reply evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: conpty-resize-reply-r145
+          retention-days: 14
+          if-no-files-found: warn
+          path: build/r145-session-*
