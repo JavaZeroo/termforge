@@ -69,7 +69,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 |---|---|---|
 | 行存储封存与结构单一发布（#169 第二片） | [固定结果](../experiments/core/results/2026-10-29-sealed-row-storage/README.md)、[验证身份](../experiments/core/results/2026-10-29-sealed-row-storage/validation.json) | `Screen::lines/history` 私有，只读口 + 23 文件/363 处迁移；Find overlay 改文档 rank；默认 Release 构建 exit 0、核心 8/8、扩展快测 20/20、candidate 源 /W4 编译 0。无新 VT/重排行为；运行中跨重排 Search、Qt 与候选运行由宿主作业复核。 |
 | Node 纯夹具在 CI 的耗时分布（#144 未闭） | [固定结果](research/ui/results/2026-10-29-node-contract-timing/README.md)、[验证身份](research/ui/results/2026-10-29-node-contract-timing/validation.json) | hosted windows-2025、Node v22.23.4：顺序 60 次 + 20×4 并发共 140 次、0 超时；warm ~63–78ms、冷启动 1.469s、并发最大 0.125s。10s 预算余量充足，两次 10s 失败不能用夹具成本解释；宿主停顿假设未复现，#144/#38 不关闭。 |
-| 原版 1049 阶段颜色（屏幕捕获，#126/#123 补充） | [固定结果](research/ui/results/2026-10-29-session-1049-palette/README.md)、[验证身份](research/ui/results/2026-10-29-session-1049-palette/validation.json) | 合成会话 + 原生 SGR 色块 + 屏幕捕获：默认背景 #1C1C1C、反显前景 #E3E3DD、红 #C4265E、蓝 #3465A4、绿 #86B42B；主屏/alt/重进 alt/回主屏四阶段颜色完全一致（裁切 SHA 分列，阶段确有推进）。是屏幕捕获而非 #126 要求的应用内 QImage 采集；不关闭 #126/#123。 |
+| 原版 1049 阶段颜色（屏幕捕获，#126/#123 补充） | [固定结果](research/ui/results/2026-10-29-session-1049-palette/README.md)、[验证身份](research/ui/results/2026-10-29-session-1049-palette/validation.json) | 合成会话 + 原生 SGR 色块 + 屏幕捕获：默认背景 #1C1C1C、反显前景 #E3E3DD、红 #C4265E、蓝 #3465A4、绿 #86B42B；主屏/alt/重进 alt/回主屏四阶段颜色完全一致（裁切 SHA 分列，阶段确有推进）；另有 SGR 31;44 跨 1049h/l 保持（M/A/R 三阶段同为 #3465A4/#C4265E）。是屏幕捕获而非 #126 要求的应用内 QImage 采集；不关闭 #126/#123。 |
 | 原版合成会话的 UIA 可见性（#155 辅助） | [固定记录](research/windterm-synthetic-session-uia.md) | 隔离 VM 上确认：profile 被读取、组名进入主窗口与新建会话对话框，但**会话叶不在 UIA 树**（raw_children=0、无展开/选择模式）；参数与累积状态均已排除；未发现命令行开会话入口。菜单与新建会话对话框可枚举/可写，但没有命令行字段。结论：UIA 不能作为驱动原版合成会话的前提。 |
 | 每屏 margin 的原生 gap：路径结论（#56） | [决策记录](research/conpty-margin-path-decision.md)、[合同与四阶段 oracle](research/conpty-native-margin-path.md)、[fork 构建/运行](https://github.com/JavaZeroo/termforge/pull/98) | 固定上游源码根因（共享 _scrollMargins）、hash 与 20 次同源运行（baseline red→patched 四阶段绿、412/412 adapter、17/17 回归）已固定；结论是“推荐 MIT fork，采纳需用户在 #34 确认”。不改变 ADR-0007 现状、#41 开放状态与产品后端。 |
 | 保留历史的内存与单次 Search 成本（#164 剩余项） | [固定结果](../experiments/core/results/2026-10-29-history-memory/README.md)、[验证身份](../experiments/core/results/2026-10-29-history-memory/validation.json) | 生产 `Screen`/`TextSearch` 在 H=100/1000/10000、各 3 个新进程样本：每行私有增量收敛 ~5.8–6.9 KB，H=10000 私有提交 ~59 MB；整文档 Search ~54 ms/199 步。不是 r164 fork 对照，也不是性能预算；不关闭 #164。 |
@@ -170,29 +170,3 @@ python -m unittest experiments.shell.test_workflow_sessions -v
 | 固定功能和发行目标 | [固定 README](https://github.com/kingToolbox/WindTerm/blob/a8336c1d1e3dd1a981500dae8ef9eb42066de95f/README.md)、[2.7.0 release](https://github.com/kingToolbox/WindTerm/releases/tag/2.7.0)、[平台范围台账](../research/windterm-2.7.0-platform-scope.md)、[发行包校验流程](../benchmarks/tools/WINDTERM-LAB.md) | 官方功能声明与包身份；#23 已用固定源码、release API 和资产元数据固定四类发行平台/架构及声明下限，保留安装说明差异和未知系统。声明仍需运行时验收，不跟随未来 master 自动扩大范围 |
 | 已公开/未公开边界 | [源码与发行物调查](research/windterm-audit.md) | 固定公开源码主要是组件/修改，无法据此构建完整 WindTerm；静态依赖与符号不证明运行时实现或授权 |
 | 接收路径静态线索 | [接收路径报告](research/windterm-headless-2026-10-22.md)、[headless 工具入口](../research/README.md) | 指定路径 64 KiB ReadFile 请求上限、空→非空通知条件；不能推出完整线程/背压策略或性能收益 |
-| 工作区结构/几何 | [首轮 UI 报告](research/windterm-ui-2026-10-23.md)、[主标签/字体报告](research/windterm-ui-typography-2026-10-23.md)、[探针与准备守卫](../research/ui/README.md) | 发行资源、定向二进制和隔离运行时交叉核对；默认缩放两次及 Qt 1.5 倍一次。旧首启自动导入和错误状态样本已明确排除，不能混作最终纯合成证据 |
-| 可公开的 UI 精简结果 | [默认样本 1](research/ui-typography/normal-01.json)、[默认样本 2](research/ui-typography/normal-02.json)、[Qt 1.5 倍样本](research/ui-typography/scale-150.json) | 白名单矩形、字体、DPI 和身份；不是完整像素、逐字形 fallback、真实跨屏或性能证明 |
-| 基础文字交互参考合同 | [行为合同](research/windterm-r1-text-contract.md)、[hosted 事实摘要](research/r1-text/hosted-39960732305.json)、[Actions 39960732305](https://github.com/JavaZeroo/termforge/actions/runs/39960732305) | `c386494` 的 text/menu-wrap 各两轮及 repeat 门槛通过：历史/选择/查找、键盘及实际 Select All/Find/Copy/Paste 菜单、精确 CF 软折行/CRLF/尾空白与严格粘贴基线均有证据；四轮 Job 清空。满足 #11 限定参考合同，不代表产品功能等价或性能验收 |
-| 五阶段 raw H/space 输出参考（#129） | [固定采集合同](research/windterm-raster-raw-capture-plan.md)、[执行与独立审计](research/windterm-raster-raw-reference-2026-10-29.md)、[脱敏结果](../research/ui/results/2026-10-29-raster-raw-reference/validation.json) | `f6d9a97` 的唯一授权执行取得 5 grab、17 组完整 H/space；phase2 双 H 的 16/16 墨迹并列保留 null，未中断采集。phase1/3 原样 H 唯一匹配同帧 SGR0，phase4 匹配同帧 SGR31;44 的完整有序签名；仅为固定样本输出，不证明内部 pen、完整 grid、presented、local-shell 或性能。旧 #126 0 grab 和旧 #129 3 grab partial 均独立保留，父项未关闭。 |
-
-主对照为官方 Windows x64 2.7.0：ZIP SHA-256 `b05c3c7371340ff1302967247ffcd3a3ba27b237f72010e9157086143c453e50`，EXE SHA-256 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`。最初本机安装的 EXE 身份不同；其历史静态报告不得冒充官方包结果。其他目标平台仍需各自固定包身份。
-
-公开仓库只保留原创探针、事实描述和审核过的摘要。原始反编译、复制发行物、个人配置、原始插桩结果保留在 ignored `local/`；证据 ID 是本地索引，不是可访问的公共附件。规则见[来源与隐私](PROVENANCE.md)。
-
-## 性能证据与尚未完成的预算
-
-| 工作 | 结果/复现入口 | 当前结论边界 |
-|---|---|---|
-| 官方 WindTerm 生产端烟测 | [摘要](../benchmarks/results/2026-10-21-windterm-smoke/summary.json)、[基准规范](../benchmarks/PROTOCOL.md) | 7,732 字节写出、人工见到结束标记；没有全内容正确性、消费/呈现时间和正式重复批次，不是 C0 性能基线 |
-| 接收批量与通知合并 | [实验协议](../experiments/receive/README.md)、[120 次实验报告](research/receive-experiment-2026-10-22.md) | 原创固定输入、字节顺序、队列边界与背压；机制实验不等于 WindTerm 路径或端到端收益 |
-| 连续 CPU 区间与校准 | [计量协议和命令](../experiments/measure/README.md)、[批次 A](../experiments/measure/results/2026-10-23-v2-a/manifest.json)、[批次 B](../experiments/measure/results/2026-10-23-v2-b/manifest.json) | 48 个核心样本/4 次校准；尚缺解码/状态/历史独立归因、Unicode/大历史、无插桩对照和更严格环境控制 |
-| 自主 C++ recovery 核心双构建准备 | [固定协议](../experiments/measure/RECOVERY-PREPARE.md)、[实际结果](../experiments/measure/results/2026-10-29-recovery-core-prepare/README.md)、[脱敏身份](../experiments/measure/results/2026-10-29-recovery-core-prepare/validation.json) | 同源 recovery 包装/无本工具包装的实际对象和命令核验；一次38进程含24短正确性/2identity/12拒绝，相关14项回归，25源/历史与18构建产物前后核对。旧strict/v2/calibration分列，不是Qt/ConPTY热路径、正式性能批次或数值预算 |
-| 输入到状态/提交 | [shell 端点定义](../experiments/shell/README.md)、[呈现端点定义](../experiments/presentation/README.md) | 现有脚本中断/后续命令时段与绘制提交有明确名称；不能当单键延迟或真实呈现，带完整画面检查的样本不是低扰动性能样本 |
-
-| 范围 | 结果与复现入口 | 可以支持的结论与限制 |
-|---|---|---|
-| 初始候选 project feed/投影成本 | [计量说明](../experiments/measure/README.md)、[2026-10-25 project 原始批次](../experiments/measure/results/2026-10-25-core-compare/) | 旧候选的 1 秒交错 project 样本，分离 feed/观察成本；分配范围与无插桩缺口保留，不作当前 .4 或 WindTerm 性能结论。 |
-| 初始候选 interactive feed/投影成本 | [2026-10-25 interactive 原始批次](../experiments/measure/results/2026-10-25-core-interactive/) | 旧候选的固定 ASCII 编辑回放与交错样本；不是键盘到呈现延迟，也不能用于验收新字素实现的预算。 |
-
-| 当前成本调查 | 结果与合同 | 结论边界 |
-|---|---|---|

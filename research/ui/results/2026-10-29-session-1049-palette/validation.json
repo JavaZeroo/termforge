@@ -46,7 +46,30 @@
     "ClearType text rendering not studied; only space-filled SGR blocks",
     "single VM, single fixed DPI, one package identity",
     "no SGR-changed alternate state, no non-colour attributes, no font study",
-    "does not close #126/#123/#27"
+    "does not close #126/#123/#27",
+    "SGR-carry observation is pipeline-level (conhost + ConPTY + WindTerm), layer attribution unknown"
   ],
-  "performance_claim": false
+  "performance_claim": false,
+  "sgr_carry": {
+    "protocol": "SGR 31;44 set before switch and kept; per-phase background-only and reverse-only space bands",
+    "phases": {
+      "main": {
+        "background": "3465A4",
+        "foreground": "C4265E",
+        "crop_sha16": "675e5d7b24dbdcf9"
+      },
+      "alternate": {
+        "background": "3465A4",
+        "foreground": "C4265E",
+        "crop_sha16": "734a58fe0224fcfb"
+      },
+      "restored_main": {
+        "background": "3465A4",
+        "foreground": "C4265E",
+        "crop_sha16": "31a070a2c1706709"
+      }
+    },
+    "interpretation": "1049h and 1049l neither reset nor restore the current SGR attributes in the conhost+ConPTY+WindTerm pipeline observed here.",
+    "attribution_limit": "pipeline-level observation; layer attribution unknown"
+  }
 }
