@@ -42,7 +42,7 @@ jobs:
             "-DTERMFORGE_CONPTY_BACKEND_DIR=$dependencyRoot/conpty" `
             "-DTERMFORGE_MSVC_RUNTIME_DIR=$dependencyRoot/crt"
       - name: Build Qt product and independent smoke
-        run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_ime_input_test --parallel 2
+        run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_ime_input_test qt_ime_evidence_write_test --parallel 2
       - name: Record complete path-free runtime manifests
         run: |
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-bin/Release --executable termforge_qt_shell.exe
@@ -69,7 +69,7 @@ jobs:
             build/qt-cpp/qt-unicode-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-ime-bin/Release/runtime-manifest.json
       - name: Run Qt offscreen smoke in its owned Job
-        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_(unicode|ime)_input|qt_ime_observer_lifecycle_(normal|cancel))$' --no-tests=error --verbose
+        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_(unicode|ime)_input|qt_ime_observer_lifecycle_(normal|cancel)|qt_ime_evidence_write)$' --no-tests=error --verbose
       # Keep this configuration independent from the default/system-backend and
       # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
       # publication artifacts; this job does not produce a release package.
