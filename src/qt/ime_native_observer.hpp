@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QImage>
+#include <QImageWriter>
 #include <QInputMethodEvent>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -23,10 +24,65 @@ namespace termforge::qt::ime_native {
 inline void check(bool value, const char* message) {
     if (!value) throw std::runtime_error(message);
 }
-inline void save_json(const QString& path, const QJsonObject& value) {
+class EvidenceWriteFailure final {
+    QJsonObject first_;
+public:
+    void remember(const QJsonObject& context) { if (first_.isEmpty()) first_ = context; }
+    QJsonValue snapshot() const { return first_.isEmpty() ? QJsonValue() : QJsonValue(first_); }
+};
+inline QString evidence_error(const QString& path, QString error) {
+    const auto directory = QFileInfo(path).absolutePath();
+    for (const auto& private_part : {QFileInfo(path).absoluteFilePath(), path,
+                                    QDir::toNativeSeparators(directory), directory})
+        if (private_part.size() > 1) error.replace(private_part, QStringLiteral("<private>"), Qt::CaseInsensitive);
+    return error;
+}
+namespace detail {
+// The same single-write transaction accepts a short-writing test device; it
+// never fills a partial write or retries an unsuccessful atomic replacement.
+template<class File>
+void save_json_file(File& file, const QString& path, const QByteArray& bytes,
+                    EvidenceWriteFailure& failure, const QString& target) {
+    qint64 written = 0;
+    const auto stop = [&](const QString& operation) {
+        failure.remember({{"target", target}, {"operation", operation},
+                          {"basename", QFileInfo(path).fileName()},
+                          {"qt_file_error", static_cast<int>(file.error())},
+                          {"qt_error_string", evidence_error(path, file.errorString())},
+                          {"expected_bytes", static_cast<qint64>(bytes.size())}, {"actual_bytes", written}});
+        throw std::runtime_error("native IME evidence write failed");
+    };
+    if (!file.open(QIODevice::WriteOnly)) stop(QStringLiteral("json-open"));
+    written = file.write(bytes);
+    if (written != bytes.size()) stop(QStringLiteral("json-write"));
+    if (!file.commit()) stop(QStringLiteral("json-commit"));
+}
+} // namespace detail
+inline void save_json(const QString& path, const QJsonObject& value,
+                      EvidenceWriteFailure& failure, const QString& target = QStringLiteral("observer")) {
     QSaveFile file(path);
-    check(file.open(QIODevice::WriteOnly) && file.write(QJsonDocument(value).toJson()) > 0 && file.commit(),
-          "native IME evidence write failed");
+    detail::save_json_file(file, path, QJsonDocument(value).toJson(), failure, target);
+}
+inline bool save_png(const QString& path, const QImage& image,
+                     EvidenceWriteFailure& failure, const QString& target) {
+    QImageWriter writer(path, "png");
+    if (writer.write(image)) return true;
+    failure.remember({{"target", target}, {"operation", "png-save"},
+                      {"basename", QFileInfo(path).fileName()},
+                      {"png_writer_error", static_cast<int>(writer.error())},
+                      {"qt_error_string", evidence_error(path, writer.errorString())}});
+    return false;
+}
+inline bool save_complete_json(const QString& path, QJsonObject& final, EvidenceWriteFailure& failure) {
+    try { save_json(path, final, failure); return true; }
+    catch (const std::exception& error) {
+        // A failed final file cannot contain its own failure. The caller emits
+        // this same structured result to stdout and must return failure.
+        final.insert("failed", true); final.insert("observer_complete", false);
+        if (final.value("failure").toString().isEmpty()) final.insert("failure", QString::fromUtf8(error.what()));
+        final.insert("evidence_write_failure", failure.snapshot());
+        return false;
+    }
 }
 inline QJsonArray rect(const QRectF& value) {
     return {value.x(), value.y(), value.width(), value.height()};
@@ -44,6 +100,7 @@ class Observation final : public QObject {
     QString directory_, label_;
     QJsonArray events_;
     bool evidence_gap_ = false, write_failed_ = false;
+    EvidenceWriteFailure& write_failure_;
     QJsonObject target() const {
         if (!page_) return {{"target_alive", false}};
         const auto& model = page_->model();
@@ -71,8 +128,17 @@ class Observation final : public QObject {
                        {"synthetic_qt_input_events_sent", 0},
                        {"event_filter_phase", "before widget handler"},
                        {"spontaneous_flag_is_not_origin_proof", true},
-                       {"evidence_gap", evidence_gap_}, {"events", events_}, {"current", target()}});
-        } catch (...) { write_failed_ = true; }
+                        {"evidence_gap", evidence_gap_}, {"write_failed", write_failed_},
+                        {"evidence_write_failure", write_failure_.snapshot()},
+                        {"events", events_}, {"current", target()}}, write_failure_, label_);
+        } catch (...) {
+            write_failed_ = true;
+            // A non-file exception must also leave a bounded, path-free record.
+            write_failure_.remember({{"target", label_}, {"operation", "json-prepare"},
+                                     {"basename", label_ + QStringLiteral("-events.json")},
+                                     {"qt_file_error", QJsonValue()}, {"qt_error_string", QJsonValue()},
+                                     {"exception", "Exception outside a QSaveFile result"}});
+        }
     }
     void append(QJsonObject event) {
         if (events_.size() >= 128) { evidence_gap_ = true; write(); return; }
@@ -122,7 +188,7 @@ protected:
                 QImage image(page_->terminal().size(), QImage::Format_ARGB32);
                 image.fill(Qt::transparent); page_->terminal().render(&image);
                 const auto name = label_ + QStringLiteral("-frame-%1.png").arg(sequence);
-                if (!image.save(directory_ + QLatin1Char('/') + name)) write_failed_ = true;
+                if (!save_png(directory_ + QLatin1Char('/') + name, image, write_failure_, label_)) write_failed_ = true;
                 append({{"kind", "queued-frame"}, {"input_sequence", sequence},
                         {"events_seen_before_frame", events_.size()}, {"coalesced_input_updates", coalesced_input},
                         {"image", name}, {"state", target()}});
@@ -149,8 +215,9 @@ protected:
         return false;
     }
 public:
-    Observation(SessionPage* page, const QString& directory, const QString& label, QObject* parent) :
-        QObject(parent), page_(page), directory_(directory), label_(label) {
+    Observation(SessionPage* page, const QString& directory, const QString& label, QObject* parent,
+                EvidenceWriteFailure& write_failure) :
+        QObject(parent), page_(page), directory_(directory), label_(label), write_failure_(write_failure) {
         check(page != nullptr, "native IME page is missing");
         page->terminal().installEventFilter(this); write();
     }
@@ -183,8 +250,9 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
     window.resize(960, 640); window.show();
     auto* tabs = window.findChild<QTabBar*>(); check(tabs != nullptr, "native IME tab bar is missing");
     tabs->setCurrentIndex(0); first->terminal().setFocus();
-    Observation first_events(first, directory, QStringLiteral("a"), &window);
-    Observation second_events(second, directory, QStringLiteral("b"), &window);
+    EvidenceWriteFailure write_failure;
+    Observation first_events(first, directory, QStringLiteral("a"), &window, write_failure);
+    Observation second_events(second, directory, QStringLiteral("b"), &window, write_failure);
     bool ready_written = false, finish_requested = false, output_requested = false, failed = false;
     bool close_requested = false, deadline_expired = false, sessions_completed = false;
     int sessions_exit_code = -1;
@@ -193,6 +261,9 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
     QObject lifetime;
     QTimer timer;
     const auto state = [&] {
+        // snapshot() writes evidence itself. Collect its possible first failure
+        // before reading the shared sticky context for this state/final report.
+        const auto a_state = first_events.snapshot(), b_state = second_events.snapshot();
         QJsonArray tab_rectangles;
         for (int index = 0; index < tabs->count(); ++index)
             tab_rectangles.append(rect(QRectF(tabs->tabRect(index).translated(tabs->mapTo(&window, QPoint())))));
@@ -211,7 +282,8 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
                            {"failed", failed}, {"failure", failure}, {"elapsed_ms", elapsed.elapsed()},
                            {"close_requested", close_requested}, {"deadline_expired", deadline_expired},
                            {"sessions_completed", sessions_completed}, {"sessions_exit_code", sessions_exit_code},
-                           {"a", first_events.snapshot()}, {"b", second_events.snapshot()}};
+                           {"a", a_state}, {"b", b_state},
+                           {"evidence_write_failure", write_failure.snapshot()}};
     };
     const auto fail_and_close = [&](const QString& reason) {
         if (!failed) { failed = true; failure = reason; }
@@ -228,7 +300,7 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
         app.exit(failed || code != 0 ? 1 : 0);
     };
     QObject::connect(&app, &QCoreApplication::aboutToQuit, &lifetime, [&] {
-        try { save_json(directory + QStringLiteral("/about-to-quit.json"), state()); }
+        try { save_json(directory + QStringLiteral("/about-to-quit.json"), state(), write_failure); }
         catch (const std::exception& error) { failed = true; failure = QString::fromUtf8(error.what()); }
     });
     QObject::connect(&timer, &QTimer::timeout, &lifetime, [&] {
@@ -243,9 +315,9 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
             }
             if (!ready_written && a.ready() && b.ready() && ready_text(first) && ready_text(second)) {
                 ready_written = true;
-                save_json(directory + QStringLiteral("/ready.json"), state());
+                save_json(directory + QStringLiteral("/ready.json"), state(), write_failure);
             }
-            if (native) save_json(directory + QStringLiteral("/native-state.json"), state());
+            if (native) save_json(directory + QStringLiteral("/native-state.json"), state(), write_failure);
             if (!finish_requested && !output_requested && QFileInfo::exists(directory + QStringLiteral("/output.request"))) {
                 output_requested = true; a.output();
             }
@@ -269,7 +341,7 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
     timer.start(50);
     const auto result = app.exec();
     auto final = state();
-    const bool complete = !failed && !deadline_expired && sessions_completed && sessions_exit_code == 0 &&
+    bool complete = !failed && !deadline_expired && sessions_completed && sessions_exit_code == 0 &&
         ready_written && finish_requested && first && second &&
         first->model().natural_exit() && second->model().natural_exit() &&
         first->model().exit_code() == 0 && second->model().exit_code() == 0 &&
@@ -278,7 +350,7 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
         first->model().cleanup_verified() && second->model().cleanup_verified() &&
         first_events.valid() && second_events.valid();
     final.insert("application_exit_code", result); final.insert("observer_complete", complete);
-    save_json(directory + QStringLiteral("/complete.json"), final);
+    if (!save_complete_json(directory + QStringLiteral("/complete.json"), final, write_failure)) complete = false;
     std::cout << QJsonDocument(final).toJson(QJsonDocument::Compact).constData() << '\n';
     return complete && result == 0 ? 0 : 1;
 }

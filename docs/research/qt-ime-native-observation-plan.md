@@ -42,6 +42,10 @@ a-events.json / b-events.json 是widget处理前的公开事件观察，不把�
 
 原始IME文本最多256单位、属性最多258、每目标事件最多128；超过会显式标evidence_gap并失败收尾，不截断后称完整。自有QImage只表示产品控件渲染，presented_done保持null。observer_complete/CLI0仅表示观察器与两接收端正常完成；native_os_ime_acceptance保持null，真正IME功能结论由root对来源、candidate/焦点、事件、原始接收及回收独立审核。
 
+留证失败仍立即停止，不重试或忽略。首个失败的 `evidence_write_failure` 保留 target、JSON open/write/commit 或 PNG save 操作、仅本地 basename、Qt FileError/errorString、JSON 预期/实际 bytes 或 PNG writer error；后续成功或失败不覆盖首错。JSON 必须一次写入完整序列化长度。最终 state 在两个目标 snapshot 后读取该上下文，成功写出的 about-to-quit/complete 带首错；complete 文件自身写失败时，结构化 stdout 保留同一上下文并返回失败，不能声称该文件存在。错误字符串删除私有目录，不公开原生截图或路径。
+
+`qt_ime_evidence_write` 为独立 console seam：实际 QSaveFile 正常/open/无 DELETE sharing 的目标句柄造成的 commit 失败，受控短写/-1 不重试不 commit，PNG writer 失败，以及 sticky/final JSON 传播。它不创建 GUI、receiver、IME 输入或 VM。共享锁用例只证明该失败能被诊断；PS reader 的共享模式与原生观察失败之间的因果仍是待验证 hypothesis，不据本地合成反例认定。
+
 当前258属性guard由256单位最多256个非空格式范围+Cursor+Selection推导；零length格式不占格式存储，过量no-op提前拒绝。它与256单位/非法UTF16拒绝都是TermForge工程边界，非WindTerm已对照。Ctrl-C显式分支不被composition普通文本guard吞掉，provider实际取消政策仍待这次原生观察。
 
 只读API语义依据：[GetActiveProfile](https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfinputprocessorprofilemgr-getactiveprofile)、[TF_INPUTPROCESSORPROFILE](https://learn.microsoft.com/en-us/windows/win32/api/msctf/ns-msctf-tf_inputprocessorprofile)、[CoInitializeEx](https://learn.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-coinitializeex)、[CoUninitialize](https://learn.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-couninitialize)。API查询不等于真实候选可见或物理键盘来源，仍须外部链证据。

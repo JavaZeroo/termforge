@@ -471,6 +471,13 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_ime_input_test>")
     set_tests_properties(qt_ime_input PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+    add_executable(qt_ime_evidence_write_test src/qt/ime_evidence_write_test.cpp)
+    set_target_properties(qt_ime_evidence_write_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-ime-evidence-bin/$<CONFIG>")
+    termforge_qt_entry(qt_ime_evidence_write_test)
+    target_link_libraries(qt_ime_evidence_write_test PRIVATE imm32 ole32 uuid)
+    add_test(NAME qt_ime_evidence_write COMMAND qt_ime_evidence_write_test)
+    set_tests_properties(qt_ime_evidence_write PROPERTIES TIMEOUT 10)
     foreach(scenario normal cancel)
       add_test(NAME qt_ime_observer_lifecycle_${scenario} COMMAND "${Python3_EXECUTABLE}"
         "${PROJECT_SOURCE_DIR}/src/qt/run_ime_observer_lifecycle.py" "$<TARGET_FILE:qt_ime_input_test>" "${scenario}")
