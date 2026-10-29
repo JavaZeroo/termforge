@@ -11,6 +11,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import time
 import uuid
 
 ROOT = Path(__file__).resolve().parents[2]
