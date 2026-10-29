@@ -63,11 +63,15 @@ public:
         size_t queued_bytes = 0, in_flight_bytes = 0, high_water_bytes = 0, rejected = 0;
         bool stopping = false, started = false, joined = false, failed = false;
     };
+    // Opt-in trace of input acceptance and of the bytes that reached the
+    // session, used to tell a stalled input path from a stalled output path.
+    using TraceHook = void (*)(const void* owner, bool written, size_t bytes, bool accepted);
     static constexpr size_t capacity = 16 * 1024;
     // The legacy high water is max(queued keystroke bytes, individual paste
     // chunk bytes); it is not queued + in-flight or a total retained budget.
     // Legacy counters are safe to read only after the writer has joined.
     size_t high_water = 0, rejected = 0;
+    TraceHook trace_hook_ = nullptr;
     explicit InputQueue(tf_conpty::Session& session) : session_(session) {}
     ~InputQueue() { stop(); }
     Snapshot snapshot() const {
@@ -101,6 +105,7 @@ public:
                         session_.send(bytes, [&](size_t written) { writing_paste->acknowledge_written(written); });
                         writing_paste->finish_chunk();
                     } else session_.send(bytes);
+                    if (trace_hook_) trace_hook_(this, true, bytes.size(), true);
                     bytes.clear(); // Payload is released; string allocation is not measured here.
                     lock.lock(); in_flight_bytes_ = 0;
                 }
@@ -120,13 +125,21 @@ public:
         });
         started_ = true;
     }
+    void set_trace_hook(TraceHook hook) { trace_hook_ = hook; }
     bool send(const std::string& bytes) {
-        std::lock_guard<std::mutex> lock(mutex_);
-        if (error_) std::rethrow_exception(error_);
-        if (stopping_ || bytes.empty() || bytes.size() > 1024 || bytes_ + bytes.size() > capacity ||
-            (paste_ && !tf_shell::paste_terminal(paste_->progress().state))) { ++rejected; return false; }
-        chunks_.push_back(bytes); bytes_ += bytes.size(); high_water = (std::max)(high_water, bytes_);
-        ready_.notify_one(); return true;
+        bool accepted = false;
+        {
+            std::lock_guard<std::mutex> lock(mutex_);
+            if (error_) std::rethrow_exception(error_);
+            if (stopping_ || bytes.empty() || bytes.size() > 1024 || bytes_ + bytes.size() > capacity ||
+                (paste_ && !tf_shell::paste_terminal(paste_->progress().state))) ++rejected;
+            else {
+                chunks_.push_back(bytes); bytes_ += bytes.size(); high_water = (std::max)(high_water, bytes_);
+                ready_.notify_one(); accepted = true;
+            }
+        }
+        if (trace_hook_) trace_hook_(this, false, bytes.size(), accepted);
+        return accepted;
     }
     // The queue is already bound to one Session. The UI retains the transfer
     // handle and target identity; later tab switches never retarget this queue.
