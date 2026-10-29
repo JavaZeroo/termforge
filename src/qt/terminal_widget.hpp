@@ -1,4 +1,4 @@
-// Qt terminal geometry follows the current font; semantics stay in the model.
+﻿// Qt terminal geometry follows the current font; semantics stay in the model.
 #pragma once
 
 #include "terminal_session.hpp"
@@ -16,6 +16,8 @@
 #include <QtMath>
 #include <QWidget>
 #include <array>
+#include <cstdio>
+#include <cstdlib>
 
 namespace termforge::qt {
 
@@ -135,11 +137,36 @@ class TerminalWidget final : public QWidget {
         if (query == Qt::ImCursorPosition) return 0;
         return QWidget::inputMethodQuery(query);
     }
+    // Opt-in observation for the fixed-IME runs: records exactly which kind of
+    // input-method event arrived and the UTF-8 bytes it carried. Unset by
+    // default so ordinary runs touch no file.
+    void ime_log(const char* kind, const QString& text) {
+        static const char* path = std::getenv("TERMFORGE_QT_IME_LOG");
+        if (path == nullptr) return;
+        FILE* stream = std::fopen(path, "ab");
+        if (stream == nullptr) return;
+        const QByteArray bytes = text.toUtf8();
+        const auto& screen = model_.screen();
+        const QPoint origin = mapToGlobal(QPoint(0, 0));
+        std::fprintf(stream, "{\"kind\":\"%s\",\"bytes\":%d,\"utf8\":\"", kind, static_cast<int>(bytes.size()));
+        for (const char ch : bytes) std::fprintf(stream, "%02x", static_cast<unsigned char>(ch));
+        std::fprintf(stream, "\",\"row\":%d,\"column\":%d,\"caret_x\":%d,\"caret_y\":%d,\"caret_w\":%d,\"caret_h\":%d,\"origin_x\":%d,\"origin_y\":%d}\n",
+                     screen.row, screen.column,
+                     margin + screen.column * cell_width_, margin + screen.row * cell_height_,
+                     cell_width_, cell_height_, origin.x(), origin.y());
+        std::fclose(stream);
+    }
     void inputMethodEvent(QInputMethodEvent* event) override {
         const QString preedit = event->preeditString();
-        if (preedit != preedit_) { preedit_ = preedit; update(); }
+        if (preedit != preedit_) {
+            if (!preedit.isEmpty()) ime_log("preedit", preedit);
+            else if (!preedit_.isEmpty()) ime_log("cancel", QString());
+            preedit_ = preedit;
+            update();
+        }
         const QString commit = event->commitString();
         if (!commit.isEmpty()) {
+            ime_log("commit", commit);
             model_.send(commit.toUtf8());
             preedit_.clear();
             update();
