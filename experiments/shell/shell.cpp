@@ -46,7 +46,7 @@ void selection_discard_diagnostic(const char* reason, size_t row) {
     std::ofstream stream(path, std::ios::app);
     if (!stream) return;
     stream << "{\"schema\":\"termforge-selection-discard-v1\",\"reason\":\"" << reason
-           << "\",\"row\":" << row << "}\n";
+           << "\",\"row\":" << row << ",\"t_ms\":" << GetTickCount64() << "}\n";
 }
 void install_selection_diagnostic_once() {
     static std::once_flag once;

@@ -169,7 +169,7 @@ inline void Workspace::scenario_actions() {
                 <<",\"status\":"; termforge::Screen::quoted(out,utf8(target->status_text().c_str()));
             out<<",\"frame_matches_full\":"<<(target->frame_matches_full()?"true":"false")<<'}';
         }
-        out<<"]}"; geometry_samples_.push_back(out.str());
+        out<<"]"; out<<",\"t_ms\":"<<GetTickCount64()<<'}'; geometry_samples_.push_back(out.str());
         std::ofstream journal(directory/"actions-progress.jsonl",std::ios::binary|std::ios::app); journal<<out.str()<<'\n'; journal.close(); require(journal.good(),"actions progress write failed");
         if(std::string_view(phase).rfind("geometry-",0)==0) {
             Bitmap frame(parent.right,parent.bottom); paint(frame.dc);
