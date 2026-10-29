@@ -1,0 +1,60 @@
+{
+  "schema": "termforge-hosted-startup-latency-v1",
+  "issues": [
+    81,
+    144,
+    40
+  ],
+  "run": 40935653206,
+  "job": "windows-2025-startup-latency",
+  "platform": "windows-2025 hosted",
+  "commands": {
+    "powershell": [
+      "powershell.exe",
+      "-NoLogo",
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      "exit 0"
+    ],
+    "node": [
+      "node",
+      "--version"
+    ]
+  },
+  "counts": {
+    "powershell": 100,
+    "node": 50
+  },
+  "results": {
+    "powershell": {
+      "min": 0.109,
+      "p50": 0.11,
+      "p90": 0.125,
+      "p99": 1.828,
+      "max": 1.828,
+      "over_1s": 1,
+      "over_5s": 0,
+      "over_10s": 0,
+      "timeouts": 0
+    },
+    "node": {
+      "min": 0,
+      "p50": 0.016,
+      "p90": 0.016,
+      "p99": 0.735,
+      "max": 0.735,
+      "over_1s": 0,
+      "over_5s": 0,
+      "over_10s": 0,
+      "timeouts": 0
+    }
+  },
+  "interpretation": "Pure start-up cost is 1-2 orders of magnitude below the fixed fixture deadlines, so the observed 10-12 s timeouts cannot be explained by start-up cost.",
+  "limitations": [
+    "idle image only; not under full CTest concurrency or AV scanning",
+    "no deadline or fixture change",
+    "does not identify the stall source, only excludes start-up cost"
+  ],
+  "performance_claim": false
+}

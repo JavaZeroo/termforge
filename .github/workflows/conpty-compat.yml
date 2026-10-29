@@ -243,3 +243,57 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
           path: build/test-artifacts/
+
+  windows-2025-startup-latency:
+    # Bounded measurement for #81 / #144 / #40: how long does a plain
+    # PowerShell 5.1 or Node start-up take on this hosted image, and how often
+    # does it cross the fixed fixture deadlines. No deadlines are changed.
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Measure subprocess start-up latency
+        shell: pwsh
+        run: |
+          @'
+          import json, platform, subprocess, sys, time
+          def samples(command, count, timeout):
+              rows = []
+              for _ in range(count):
+                  started = time.monotonic()
+                  try:
+                      result = subprocess.run(command, capture_output=True, timeout=timeout)
+                      rows.append({"elapsed": round(time.monotonic() - started, 4), "returncode": result.returncode, "timeout": False})
+                  except subprocess.TimeoutExpired:
+                      rows.append({"elapsed": round(time.monotonic() - started, 4), "returncode": None, "timeout": True})
+              return rows
+          def summary(rows):
+              times = sorted(row["elapsed"] for row in rows)
+              def at(fraction):
+                  return times[min(len(times) - 1, int(len(times) * fraction))]
+              return {"count": len(rows), "min": times[0], "p50": at(0.5), "p90": at(0.9), "p99": at(0.99),
+                      "max": times[-1], "over_1s": sum(1 for t in times if t >= 1.0),
+                      "over_5s": sum(1 for t in times if t >= 5.0),
+                      "over_10s": sum(1 for t in times if t >= 10.0),
+                      "timeouts": sum(1 for row in rows if row["timeout"])}
+          ps = samples(["powershell.exe", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "exit 0"], 100, 15)
+          node = samples(["node", "--version"], 50, 15)
+          report = {"schema": "termforge-startup-latency-v1", "platform": platform.platform(),
+                    "powershell": summary(ps), "node": summary(node),
+                    "powershell_samples": ps, "node_samples": node}
+          print(json.dumps({k: v for k, v in report.items() if not k.endswith("_samples")}))
+          with open("startup-latency.json", "w", encoding="utf-8") as stream:
+              json.dump(report, stream, indent=2)
+          '@ | Out-File -Encoding utf8 startup-latency.py
+          python startup-latency.py
+      - name: Preserve latency evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: startup-latency-r2
+          retention-days: 14
+          if-no-files-found: warn
+          path: startup-latency.json
