@@ -14,5 +14,5 @@
 - #10 分别跟踪 Windows 11 x64 完整出口和后续 Linux/macOS 全平台出口；后者未完成时总项保持开放。其他系统版本/架构范围待用户明确，不从官方资产清单自动推导。
 - #3/#4 的原版基线和 #54 的候选成本研究可以自主执行；数值预算及允许波动范围作为提案，与用户明确后才用于性能验收。提案/待确认不写作性能通过。
 - 规划整理不自动算功能交付；功能开始实施时另行记录源码基点与验收。旧任务和新路标的映射见 [归档说明](../archive/README.md)。
-- [GitHub Project 总览](../TRACKING.md)（用户项目 2）的 `Status`、`主类型`、`执行状态` 由 issue 状态和标签派生，用 `python tools/sync_github_project.py` 幂等同步；要改看板状态先改 issue 或标签，不要只在看板里改。视图的分组、排序、日期轴和 Web UI 内置工作流不由 API 维护，需在网页端设置。
+- [GitHub Project 总览](https://github.com/users/JavaZeroo/projects/2)（用户项目 2）的 `Status`、`主类型`、`执行状态` 由 issue 状态和标签派生，用 `python tools/sync_github_project.py` 幂等同步；要改看板状态先改 issue 或标签，不要只在看板里改。视图的分组、排序、日期轴和 Web UI 内置工作流不由 API 维护，需在网页端设置。
 - 新增标签、移动 milestone 或批量关闭 issue 后重新同步看板，`--check` 只报告漂移而不写入。

@@ -235,6 +235,24 @@ class DerivationTests(unittest.TestCase):
         self.assertEqual(project.milestone_rank(ARCHIVE), project.MILESTONE_RANK_ARCHIVE)
         self.assertEqual(project.milestone_rank(None), project.MILESTONE_RANK_NONE)
 
+    def test_option_names_and_colors_match_the_spec(self):
+        self.assertEqual(
+            [(option.name, option.color) for option in project.TYPE_OPTIONS],
+            [
+                ('路标总项', 'PURPLE'),
+                ('缺陷回归', 'RED'),
+                ('性能证据', 'ORANGE'),
+                ('研究调查', 'YELLOW'),
+                ('功能实现', 'GREEN'),
+                ('兼容性', 'BLUE'),
+                ('文档', 'GRAY'),
+            ],
+        )
+        self.assertEqual(
+            [(option.name, option.color) for option in project.STATE_OPTIONS],
+            [('可开工', 'GREEN'), ('阻塞', 'RED'), ('待拆分', 'YELLOW'), ('未标记', 'GRAY')],
+        )
+
 
 
 class SyncTests(unittest.TestCase):
@@ -392,6 +410,103 @@ class SyncTests(unittest.TestCase):
         self.assertIn('issue 的开闭状态、标签', metadata[0][1])
         self.assertTrue(metadata[0][3])
 
+    def test_check_mode_writes_nothing_when_item_values_drift(self):
+        backend = FakeBackend([issue(1, labels=('bug',))])
+        run_sync(backend)
+        backend.issues = [issue(1, labels=('bug', 'ready-for-agent'))]
+        backend.mutations.clear()
+
+        summary = run_sync(backend, apply=False)
+
+        self.assertEqual(backend.mutations, [])
+        self.assertTrue(summary['drift'])
+        self.assertIn('set-field %s=可开工 #1' % project.STATE_FIELD, summary['plan'])
+
+    def test_check_mode_writes_nothing_when_type_must_be_cleared(self):
+        backend = FakeBackend([issue(1, labels=('research',))])
+        run_sync(backend)
+        backend.issues = [issue(1, labels=('good first issue',))]
+        backend.mutations.clear()
+
+        summary = run_sync(backend, apply=False)
+
+        self.assertEqual(backend.mutations, [])
+        self.assertTrue(summary['drift'])
+        self.assertIn('clear-field %s #1' % project.TYPE_FIELD, summary['plan'])
+
+    def test_check_mode_writes_nothing_when_metadata_drifted(self):
+        backend = FakeBackend([issue(1)])
+        run_sync(backend)
+        backend.project = project.Project(
+            backend.project.id,
+            backend.project.number,
+            backend.project.url,
+            'stale readme',
+            backend.project.short_description,
+            False,
+        )
+        backend.mutations.clear()
+
+        summary = run_sync(backend, apply=False)
+
+        self.assertEqual(backend.mutations, [])
+        self.assertTrue(summary['drift'])
+        self.assertIn('update-project-metadata', summary['plan'])
+
+    def test_view_drift_is_repaired(self):
+        backend = FakeBackend([issue(1)])
+        run_sync(backend)
+        backend.view_list = [
+            project.View(view.id, view.name, view.layout, 'is:open', view.fields)
+            if view.name == '已完成'
+            else view
+            for view in backend.view_list
+        ]
+        backend.mutations.clear()
+
+        summary = run_sync(backend)
+
+        self.assertEqual(backend.mutations, [('update_view', '已完成')])
+        self.assertEqual({view.name: view for view in backend.view_list}['已完成'].filter, 'is:closed')
+        self.assertEqual(summary['stats']['views_updated'], 1)
+
+    def test_field_option_drift_is_repaired(self):
+        backend = FakeBackend([issue(1)])
+        run_sync(backend)
+        field = backend.field_map[project.TYPE_FIELD]
+        backend.field_map[project.TYPE_FIELD] = project.Field(
+            field.id,
+            field.name,
+            tuple(
+                project.FieldOption(option.id, option.name, 'PINK', option.description)
+                for option in field.options
+            ),
+        )
+        backend.mutations.clear()
+
+        summary = run_sync(backend)
+
+        self.assertEqual(backend.mutations, [('update_field_options', project.TYPE_FIELD)])
+        self.assertEqual(summary['stats']['fields_updated'], 1)
+        colors = {option.name: option.color for option in backend.field_map[project.TYPE_FIELD].options}
+        self.assertEqual(colors['缺陷回归'], 'RED')
+
+    def test_check_mode_reports_view_and_field_drift(self):
+        backend = FakeBackend([issue(1)])
+        run_sync(backend)
+        backend.view_list = [
+            project.View(view.id, view.name, 'TABLE_LAYOUT', view.filter, view.fields)
+            if view.name == '路标 Epic'
+            else view
+            for view in backend.view_list
+        ]
+        backend.mutations.clear()
+
+        summary = run_sync(backend, apply=False)
+
+        self.assertEqual(backend.mutations, [])
+        self.assertIn('update-view 路标 Epic', summary['plan'])
+
 
 class CliTests(unittest.TestCase):
     def test_apply_returns_zero_and_prints_summary(self):
@@ -457,6 +572,56 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(code, 1)
         self.assertIn('同步失败', error.getvalue())
+
+    def test_invalid_repository_returns_one_without_traceback(self):
+        error = io.StringIO()
+        with contextlib.redirect_stderr(error):
+            code = project.main(['--repo', 'bad'], backend_factory=lambda: FakeBackend())
+
+        self.assertEqual(code, 1)
+        self.assertIn('仓库必须写成 owner/name', error.getvalue())
+
+    def test_not_logged_in_is_a_precondition(self):
+        for message in ('gh auth login required', 'HTTP 401: Bad credentials', 'Authentication required'):
+            with self.assertRaises(project.PreconditionError) as caught:
+                project.GhBackend._raise_precondition(message)
+            self.assertNotIsInstance(caught.exception, project.ScopeError)
+
+    def test_missing_scope_is_a_scope_error(self):
+        with self.assertRaises(project.ScopeError):
+            project.GhBackend._raise_precondition('missing required scopes [project]')
+
+    def test_transient_errors_are_retried_for_queries(self):
+        backend = project.GhBackend()
+        attempts = []
+
+        def flaky(query, variables):
+            attempts.append(query)
+            if len(attempts) < 3:
+                raise project.TransientError('TLS handshake timeout')
+            return {'ok': True}
+
+        backend._graphql_once = flaky
+        original = project.RETRY_BACKOFF_SECONDS
+        project.RETRY_BACKOFF_SECONDS = 0.0
+        try:
+            self.assertEqual(backend._graphql('query { viewer { login } }'), {'ok': True})
+        finally:
+            project.RETRY_BACKOFF_SECONDS = original
+        self.assertEqual(len(attempts), 3)
+
+    def test_create_requests_are_not_retried(self):
+        backend = project.GhBackend()
+        attempts = []
+
+        def failing(query, variables):
+            attempts.append(query)
+            raise project.TransientError('unexpected EOF')
+
+        backend._graphql_once = failing
+        with self.assertRaises(project.SyncError):
+            backend._graphql('mutation { createProjectV2View(input: {}) { projectV2View { id } } }', retry=False)
+        self.assertEqual(len(attempts), 1)
 
 
 if __name__ == '__main__':

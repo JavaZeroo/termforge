@@ -445,14 +445,26 @@ class GhBackend:
         except FileNotFoundError as exc:
             raise PreconditionError('找不到 gh CLI，请安装 GitHub CLI 并运行 gh auth login') from exc
 
-    def _graphql(self, query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
-        """One request, retried on network hiccups; auth failures are not retried."""
-        for attempt in range(1, RETRY_ATTEMPTS + 1):
+    def _graphql(
+        self,
+        query: str,
+        variables: dict[str, Any] | None = None,
+        *,
+        retry: bool = True,
+    ) -> dict[str, Any]:
+        """One request, retried on network hiccups; auth failures are not retried.
+
+        Create-style mutations pass retry=False: a retry after a lost response
+        would leave a duplicate project, field or view behind. Their callers only
+        issue them when the resource is missing, so the next run converges.
+        """
+        attempts = RETRY_ATTEMPTS if retry else 1
+        for attempt in range(1, attempts + 1):
             try:
                 return self._graphql_once(query, variables)
             except TransientError as exc:
-                if attempt == RETRY_ATTEMPTS:
-                    raise SyncError(f'网络错误，重试 {RETRY_ATTEMPTS} 次后仍失败：{exc}') from exc
+                if attempt == attempts:
+                    raise SyncError(f'网络错误，重试 {attempts} 次后仍失败：{exc}') from exc
                 time.sleep(RETRY_BACKOFF_SECONDS * attempt)
 
     def _graphql_once(self, query: str, variables: dict[str, Any] | None) -> dict[str, Any]:
@@ -485,6 +497,14 @@ class GhBackend:
             or 'resource not accessible by personal access token' in lowered
         ):
             raise ScopeError(message.strip())
+        if (
+            'gh auth login' in lowered
+            or 'authentication required' in lowered
+            or 'requires authentication' in lowered
+            or 'bad credentials' in lowered
+            or 'http 401' in lowered
+        ):
+            raise PreconditionError(message.strip())
 
     def user_id(self, login: str) -> str:
         data = self._graphql('query($login:String!){ user(login:$login){ id } }', {'login': login})
@@ -544,7 +564,7 @@ class GhBackend:
             '{ id name options{ id name color description } } } } }'
             % (_id_literal(project_id), _literal(name), ', '.join(_option_literal(o) for o in options))
         )
-        data = self._graphql(mutation)
+        data = self._graphql(mutation, retry=False)
         return _field(data['createProjectV2Field']['projectV2Field'])
 
     def update_single_select_options(self, field_id: str, options: Sequence[Option]) -> None:
@@ -570,7 +590,7 @@ class GhBackend:
             '{ projectV2View{ id name layout filter } } }'
             % (_id_literal(project_id), _literal(spec.name), _layout(spec.layout), configuration)
         )
-        data = self._graphql(mutation)
+        data = self._graphql(mutation, retry=False)
         view = data['createProjectV2View']['projectV2View']
         visible = tuple(spec.fields) if _supports_visible_fields(spec.layout) else ()
         if spec.filter:
@@ -696,7 +716,6 @@ class Sync:
             raise SyncError(f'仓库必须写成 owner/name：{repo}')
         self.backend = backend
         self.owner = owner
-        self.repo = repo
         self.repo_name = repo.split('/', 1)[1]
         self.title = title
         self.include_closed = include_closed
@@ -756,7 +775,7 @@ class Sync:
             and project.public
         ):
             return
-        self._write('update-project-metadata', lambda: None)
+        self._record('update-project-metadata')
         if self.apply:
             self.backend.update_project(
                 project.id,
@@ -770,7 +789,7 @@ class Sync:
         current = self.fields.get(name)
         desired = tuple((option.name, option.color, option.description) for option in options)
         if current is None:
-            self._write(f'create-field {name}', lambda: None)
+            self._record(f'create-field {name}')
             if self.apply:
                 self.fields[name] = self.backend.create_single_select_field(project.id, name, options)
             else:
@@ -784,7 +803,7 @@ class Sync:
         actual = tuple((option.name, option.color, option.description) for option in current.options)
         if actual == desired:
             return
-        self._write(f'update-field {name}', lambda: None)
+        self._record(f'update-field {name}')
         if self.apply:
             self.backend.update_single_select_options(current.id, options)
             self.fields[name] = self.backend.fields(project.id)[name]
@@ -808,20 +827,19 @@ class Sync:
             view = existing.get(spec.name)
             if view is None and spec.name == OVERVIEW_VIEW_NAME and DEFAULT_VIEW_NAME in existing:
                 view = existing.pop(DEFAULT_VIEW_NAME)
-                self._write(f'rename-view {DEFAULT_VIEW_NAME} -> {spec.name}', lambda: None)
+                self._record(f'rename-view {DEFAULT_VIEW_NAME} -> {spec.name}')
                 if self.apply:
                     self.backend.update_view(view.id, spec, field_ids)
                 self.stats['views_updated'] += 1
                 continue
             if view is None:
-                self._write(f'create-view {spec.name}', lambda: None)
+                self._record(f'create-view {spec.name}')
                 if self.apply:
                     self.backend.create_view(project.id, spec, field_ids)
                 self.stats['views_created'] += 1
                 continue
             if (
-                view.name == spec.name
-                and view.layout == spec.layout
+                view.layout == spec.layout
                 and view.filter == spec.filter
                 # GitHub returns built-in fields in its own order and always
                 # exposes default fields on roadmap views, so compare the set
@@ -829,7 +847,7 @@ class Sync:
                 and (not visible or set(view.fields) == set(visible))
             ):
                 continue
-            self._write(f'update-view {spec.name}', lambda: None)
+            self._record(f'update-view {spec.name}')
             if self.apply:
                 self.backend.update_view(view.id, spec, field_ids)
             self.stats['views_updated'] += 1
@@ -839,7 +857,7 @@ class Sync:
         for issue in issues:
             item = existing.get(issue.number)
             if item is None:
-                self._write(f'add-item #{issue.number}', lambda: None)
+                self._record(f'add-item #{issue.number}')
                 if not self.apply:
                     continue
                 item = self.backend.add_item(project.id, issue.content_id)
@@ -865,7 +883,7 @@ class Sync:
             if option_name is None:
                 if current is None:
                     continue
-                self._write(f'clear-field {field_name} #{issue.number}', lambda: None)
+                self._record(f'clear-field {field_name} #{issue.number}')
                 if self.apply:
                     self.backend.clear_value(project.id, item.id, field.id)
                 self.stats['values_cleared'] += 1
@@ -876,18 +894,16 @@ class Sync:
             option_id = field.option_id(option_name)
             if option_id is None:
                 raise SyncError(f'字段 {field_name} 缺少选项 {option_name}')
-            self._write(f'set-field {field_name}={option_name} #{issue.number}', lambda: None)
+            self._record(f'set-field {field_name}={option_name} #{issue.number}')
             if self.apply:
                 self.backend.set_single_select(project.id, item.id, field.id, option_id)
             self.stats['values_set'] += 1
             changed = True
         return changed
 
-    def _write(self, description: str, action: Any) -> None:
-        """Record the step; only apply mode executes it."""
+    def _record(self, description: str) -> None:
+        """Record the step; callers gate the mutation on apply mode themselves."""
         self.plan.append(description)
-        if self.apply:
-            action()
 
     def summary(self, project: Project | None) -> dict[str, Any]:
         return {
@@ -939,16 +955,16 @@ def main(argv: Sequence[str] | None = None, backend_factory: Any = None) -> int:
         mode = 'dry-run'
     elif args.check:
         mode = 'check'
-    sync = Sync(
-        factory(),
-        owner=args.owner,
-        repo=args.repo,
-        title=args.title,
-        include_closed=not args.no_closed_issues,
-        apply=mode == 'apply',
-        skip_views=args.skip_views,
-    )
     try:
+        sync = Sync(
+            factory(),
+            owner=args.owner,
+            repo=args.repo,
+            title=args.title,
+            include_closed=not args.no_closed_issues,
+            apply=mode == 'apply',
+            skip_views=args.skip_views,
+        )
         summary = sync.run()
     except ScopeError as exc:
         print(f'缺少 project scope：{exc}', file=sys.stderr)
