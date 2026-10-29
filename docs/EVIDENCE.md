@@ -8,6 +8,7 @@
 
 | 配置 | 证据定位 |
 |---|---|
+| 自主 C++ 主屏 ASCII DECAWM | [有限合同与红绿](../experiments/core/results/2026-10-29-cpp-decawm/README.md)、[固定验证身份](../experiments/core/results/2026-10-29-cpp-decawm/validation.json)：抽取原版14–18阶段79B，strict/recovery各235个字面前缀分块用例；初次定向8/9的缺构建依赖失败、补建后的core单项31测试通过分列。跨1049/宽字/resize、origin/margin、GUI/固定ConPTY运输和完整TUI均不由本项验收 |
 | 自主 C++ 限定 1049 协议 | [固定结果](../experiments/core/results/2026-10-29-cpp-1049/README.md)、[验证身份](../experiments/core/results/2026-10-29-cpp-1049/validation.json)：文字/光标/颜色及 pending-wrap、重复进入与读者失效；55项中Qt1项分列，13条内部skip及旧负例判据失败保留。未验收非颜色属性/全网格背景、其他模式、真实TUI/IME/DPI、呈现或性能 |
 | 自主 C++ 双缓冲存储与文档 epoch 基础 | [固定结果](../experiments/core/results/2026-10-29-buffer-state-r2/README.md)、[验证身份](../experiments/core/results/2026-10-29-buffer-state-r2/validation.json)：拥有状态、共享 ID、隐藏帧 resize 回滚与跨缓冲句柄失效；Qt/candidate 关闭配置的完整 50 项及 12 条内部 skip 分列。未接 private CSI，不是原版模式、Qt 产品路线或完整 #27 验收 |
 | Qt 基础 Unicode 文本字节 | [红绿与联合验证](../experiments/shell/results/2026-10-29-qt-unicode-input/README.md)、[固定联合身份](../experiments/shell/results/2026-10-29-qt-unicode-input/validation.json)：公开Qt事件到独立ReadConsoleW接收端，整/分事件代理项、焦点/隐藏/关闭、1024B整包与NUL、两目标隔离。2b6d源码一次61项分列Qt3/其余58，13内部skip、旧红例与27原件保留；不是实际IME、字素/字形、原生Unicode窗口、DPI或性能验收 |
@@ -65,6 +66,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 
 | 范围 | 结果与复现入口 | 可以支持的结论与限制 |
 |---|---|---|
+| 默认核心缩小与重绘交错（#156） | [固定四-case机制诊断](../experiments/shell/results/2026-10-29-resize-repaint-witness/README.md)、[脱敏验证](../experiments/shell/results/2026-10-29-resize-repaint-witness/validation.json) | A/C保留2499B，B/D在第五段重绘首次失效且行分配路径不同；只见证机制，原CI切点/根因未知，未修生产。witness结束后Job仍active1，发起一次终止后归零；成员身份/逐句柄退出未知，不称全树自然退出。 |
 | 持续 cmd 输出与原始 Ctrl-C 回归（#36 未关闭） | [受监督入口](../experiments/conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)、[三次 fresh 公开记录及本地字节复核](../experiments/conpty/results/2026-10-26-ctrl-c-retest/validation.json) | 原百万次输出、单次 ETX、五秒期限和退出 37 保留；三次 fresh 原始字节/Job0 本地重算。后续成功未解释历史失败，未改产品 Ctrl-C 路径。 |
 | 持续输出中断的原失败记录 | [#36](https://github.com/JavaZeroo/termforge/issues/36)、[ConPTY 输入机制研究](research/conpty-ctrl-c-input.md)、[原 R1 历史证据](../experiments/shell/results/2026-10-23-r1-foundations/validation.json) | 原 Windows 11 回归中的 normal/resize 超时与 ETW/插桩观察；调试扰动及管道读完成缺口保留。不是当前全套结果，后续未复现不能抹去此失败。 |
 | controller B 正常结束后 cmd 退出未验收（#44） | [原失败脱敏记录](../experiments/shell/results/2026-10-26-controller-exit/validation.json)、[新退出诊断及有界重放](../experiments/shell/results/2026-10-26-controller-exit-observation/validation.json)、[关闭合同](https://github.com/JavaZeroo/termforge/issues/44) | 原 child 收完 32B、退出 0/join/Job0；cmd 只留下 close 后 0xC000013A，close 前未知。新观察分列输入、wait、pre-close 与清理；多轮未复现不构成历史修复，继续阻塞 #38。 |
