@@ -1,0 +1,102 @@
+{
+  "schema": "termforge-core-order-query-local-validation-v1",
+  "issue": 169,
+  "base_commit": "05f04d0222c06bed958f6894a27d2a1b0708d270",
+  "validated_source_commit": "33b58fa4452c4d4f23dcfc463f65c5c521e59065",
+  "branch": "feat/core-order-query-r169",
+  "scope": "Screen 发布行结构、精确 ID→rank 查询、结构 revision；TextDocument/HistoryViewport/TextSearch 文档序；CandidateTerminal 经发布口导入。未封住公开 lines/history。",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "build_type": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "candidate_source_standalone_compile": true,
+    "candidate_runtime_exercised": false
+  },
+  "observed_contract": {
+    "fixture": {
+      "columns": 4,
+      "history_limit": 4,
+      "history_ids": [
+        1,
+        3,
+        4,
+        5
+      ],
+      "live_ids": [
+        7,
+        6
+      ]
+    },
+    "expected": {
+      "locate_rank": {
+        "0": null,
+        "2": null,
+        "5": 3,
+        "6": 5,
+        "7": 4
+      },
+      "ordered_bisect_proof": false,
+      "lower_bound_id_2": 1,
+      "document_order_compare_7_before_6": true,
+      "previous_navigation_from_id_6": 7,
+      "next_navigation_from_id_7": 6
+    },
+    "order_revision_advances_on": [
+      "bottom-row scroll",
+      "physical resize",
+      "buffer activation",
+      "structural publication"
+    ],
+    "order_revision_unchanged_on": [
+      "cell write",
+      "cursor-only newline",
+      "identical resize",
+      "identical republication",
+      "rejected publication"
+    ]
+  },
+  "commands": [
+    "cmake --build build --config Release --parallel 2",
+    "ctest --test-dir build -C Release -R '^(order_query_core|resize_core|history_core|selection_core|search_core|buffer_state_core|alternate_mode_core|decawm_mode_core)$' --output-on-failure",
+    "cl /nologo /std:c++17 /EHsc /W4 /c /I experiments/core /I experiments/candidates/alacritty/include experiments/core/candidate_terminal.cpp"
+  ],
+  "results": {
+    "full_release_build": "exit 0",
+    "core_ctest": "8/8 passed",
+    "order_query_core": "passed",
+    "candidate_terminal_standalone_compile": "exit 0 with /W4, no diagnostics"
+  },
+  "preserved_failures": [
+    "order_query_core 首次运行 1/8，因测试夹具把第二可见行写成 y 却期望两个 x 命中；仅修正夹具后通过，不作为产品红绿。",
+    "同次首轮另一失败是把「已发布为乱序」期望成 order_known()==true；语义应为 false（bisect 证明不成立），仅修正测试期望。",
+    "候选适配器本机未启用，candidate_core_test 未构建或运行；只有 /W4 独立编译通过，不构成候选行为验证。"
+  ],
+  "source_sha256": {
+    "experiments/core/screen.hpp": "af146b42feae97cdc4a4856ba5364ac51d801709decc597923f83eb507d6b2d2",
+    "experiments/core/text_document.hpp": "659d1226c408cae46c72a21c7e74f85c004e654043451bee42a42953915e977a",
+    "experiments/core/text_search.hpp": "4cec4c85a17e671a4a2e5fbdf39fc653b7ca2969f52fa936e58fb099f4aef0b4",
+    "experiments/core/history_view.hpp": "50dcb2f7e801082f7f21bc23f43e6944af711fde0af6e4c100152ca46ed9bd13",
+    "experiments/core/candidate_terminal.cpp": "6c398d52628d9f8ee336814a4084ed8eff435cc73bd92449d5976b50a7cd0409",
+    "experiments/core/order_query_test.cpp": "bccd24f4d88b089b236bb3499c830e92c1d29f9af2d9b681e313c5f1732e381e",
+    "CMakeLists.txt": "cd5546218b758cff70471870d9b6b8b59479e330cfb432274253a4de8266a092"
+  },
+  "binary_sha256": {
+    "order_query_test.exe": "9e1d0e5f057ea402132ca77e7e61a10577fc26e6dadbcf67dd8755aa2cfae551",
+    "history_test.exe": "3bcd89ea1d43e39317ad9953fbeb2a426eadba40451a86c7e6a395d9e3757927",
+    "selection_test.exe": "da448b9ec840fe29bb72de70b9ee38bca3e31846efc4eb0826b11fd31612421e",
+    "search_test.exe": "c480b3cca2906b5adfe688c2887f9e649dafde514a068b2d38c37abfb409c2f7",
+    "resize_test.exe": "d94cc45f32d3c3080be498e6967d7808f3812be3bcd41ad6a7b8cd5ef81b4a44",
+    "buffer_state_test.exe": "11ffe2b26e24998212620a879ec8f2c8c8f1ef29b72ea66594e41e2142337097",
+    "alternate_mode_test.exe": "adf1a8ba17e00a8a79dd38ade47d549e2e0ef696f2367b0cd5a4d9107c1533de",
+    "decawm_mode_test.exe": "dc66fc49c25ad0b1f55156eaaf40b2be3fdc511faa6c5d7fd328582552baded2"
+  },
+  "limitations": [
+    "Screen::lines/history 仍为公开成员：本片只提供 owner 发布口，未封住直接写入。",
+    "有序增量 Find 内部的 emit_from_id_/prune/rewind 与 match() 的 id 区间筛选仍假设有序；运行中任意重排未验收。",
+    "无 region LF、无新 VT 模式、无用户可达重排命令，也未改默认物理裁剪策略。",
+    "无窗口、无固定 ConPTY、无 Qt，未运行 GUI/原生/性能负载。"
+  ]
+}
