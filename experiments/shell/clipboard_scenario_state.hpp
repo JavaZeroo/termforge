@@ -217,10 +217,14 @@ public:
                 if(!error_) record_failure(step_.load(),GetLastError());
                 if(opened) {
                     step("CloseClipboard-cleanup");
+                    SetLastError(0);
                     if(!CloseClipboard()) record_failure("CloseClipboard-cleanup",GetLastError());
                 }
                 if(window_ && IsWindow(window_)) {
                     step("DestroyWindow-cleanup");
+                    // DestroyWindow does not reliably set the last error; clear it
+                    // so a failure here cannot inherit the previous call's code.
+                    SetLastError(0);
                     if(!DestroyWindow(window_)) record_failure("DestroyWindow-cleanup",GetLastError());
                 }
                 SetEvent(ready_.get()); SetEvent(released_.get());
