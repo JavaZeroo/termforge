@@ -377,6 +377,12 @@ int main(int argc, char** argv) {
             QApplication::processEvents();
             require(!has_text(model.screen(), "tfime_cancel"), "cancelled preedit reached the session");
             require(has_text(model.screen(), "TFIME_COMMIT"), "cancel removed already committed text");
+            // The commit wrote into cmd's line editor without running it; erase
+            // it so the following exit command is not prefixed by that text.
+            for (int i = 0; i < static_cast<int>(QStringLiteral("TFIME_COMMIT").size()); ++i)
+                QTest::keyClick(&window, Qt::Key_Backspace);
+            await([&] { return !has_text(model.screen(), "TFIME_COMMIT"); }, model,
+                  "committed text was not erased from the shell line");
         }
         QTest::keyClicks(&window, QStringLiteral("exit 37"));
         QTest::keyClick(&window, Qt::Key_Return);
