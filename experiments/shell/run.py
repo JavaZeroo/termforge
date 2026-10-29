@@ -428,10 +428,14 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
         job = OwnedJob()
         desktop = OwnedTestDesktop()
         record["desktop_name"] = desktop.name
+        # Opt-in selection-discard diagnostic: the shell only writes this file when
+        # the variable is set, and the path stays inside the preserved artifacts.
+        environment = dict(os.environ)
+        environment.setdefault("TERMFORGE_SELECTION_DIAG", str((out / "selection-discard.jsonl").resolve()))
         process = subprocess.Popen([str(exe.with_name("shell_test_launcher.exe").resolve()), desktop.full_name,
                                     mode, str((out / "frame.bmp").resolve())],
                                    cwd=out, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   creationflags=subprocess.CREATE_NO_WINDOW)
+                                   env=environment, creationflags=subprocess.CREATE_NO_WINDOW)
         job.assign(process.pid)
         assigned = True
         if resources:
