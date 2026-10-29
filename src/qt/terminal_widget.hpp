@@ -16,6 +16,8 @@
 #include <QtMath>
 #include <QWidget>
 #include <array>
+#include <cstdio>
+#include <cstdlib>
 
 namespace termforge::qt {
 
@@ -135,11 +137,31 @@ class TerminalWidget final : public QWidget {
         if (query == Qt::ImCursorPosition) return 0;
         return QWidget::inputMethodQuery(query);
     }
+    // Opt-in observation for the fixed-IME runs: records exactly which kind of
+    // input-method event arrived and the UTF-8 bytes it carried. Unset by
+    // default so ordinary runs touch no file.
+    static void ime_log(const char* kind, const QString& text) {
+        static const char* path = std::getenv("TERMFORGE_QT_IME_LOG");
+        if (path == nullptr) return;
+        FILE* stream = std::fopen(path, "ab");
+        if (stream == nullptr) return;
+        const QByteArray bytes = text.toUtf8();
+        std::fprintf(stream, "{\"kind\":\"%s\",\"bytes\":%d,\"utf8\":\"", kind, static_cast<int>(bytes.size()));
+        for (const char ch : bytes) std::fprintf(stream, "%02x", static_cast<unsigned char>(ch));
+        std::fprintf(stream, "\"}\n");
+        std::fclose(stream);
+    }
     void inputMethodEvent(QInputMethodEvent* event) override {
         const QString preedit = event->preeditString();
-        if (preedit != preedit_) { preedit_ = preedit; update(); }
+        if (preedit != preedit_) {
+            if (!preedit.isEmpty()) ime_log("preedit", preedit);
+            else if (!preedit_.isEmpty()) ime_log("cancel", QString());
+            preedit_ = preedit;
+            update();
+        }
         const QString commit = event->commitString();
         if (!commit.isEmpty()) {
+            ime_log("commit", commit);
             model_.send(commit.toUtf8());
             preedit_.clear();
             update();
