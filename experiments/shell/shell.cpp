@@ -51,19 +51,22 @@ void selection_discard_diagnostic(const termforge::TextSelection::DiscardReport&
            << ",\"current_bytes\":" << report.current_bytes << ",\"saved_columns\":" << report.saved_columns
            << ",\"current_columns\":" << report.current_columns << ",\"t_ms\":" << GetTickCount64() << "}\n";
 }
-std::ofstream* g_output_trace = nullptr;
+// Each window owns its trace stream; the hook resolves it by queue pointer so a
+// window that is being destroyed can never leave a dangling global stream.
+struct TraceTarget { std::ofstream* stream = nullptr; uint64_t terminal = 0; };
 std::mutex g_trace_mutex;
-std::map<const void*, uint64_t> g_trace_ids;
+std::map<const void*, TraceTarget> g_trace_targets;
 void trace_input(const void* owner, bool written, size_t bytes, bool accepted) {
     std::lock_guard<std::mutex> lock(g_trace_mutex);
-    if (!g_output_trace || !g_output_trace->good()) return;
-    const auto found = g_trace_ids.find(owner);
-    const uint64_t terminal = found == g_trace_ids.end() ? 0 : found->second;
-    *g_output_trace << "{\"schema\":\"termforge-input-trace-v1\",\"terminal\":" << terminal
+    const auto found = g_trace_targets.find(owner);
+    if (found == g_trace_targets.end() || !found->second.stream || !found->second.stream->good()) return;
+    std::ofstream& stream = *found->second.stream;
+    const uint64_t terminal = found->second.terminal;
+    stream << "{\"schema\":\"termforge-input-trace-v1\",\"terminal\":" << terminal
                     << ",\"phase\":\"" << (written ? "write" : "enqueue")
                     << "\",\"t_ms\":" << GetTickCount64() << ",\"bytes\":" << bytes
                     << ",\"accepted\":" << (accepted ? "true" : "false") << "}\n";
-    g_output_trace->flush();
+    stream.flush();
 }
 void install_selection_diagnostic_once() {
     static std::once_flag once;
@@ -1037,8 +1040,7 @@ public:
         if (!trace.empty()) {
             trace_output_.open(trace, std::ios::app);
             if (trace_output_) {
-                g_output_trace = &trace_output_;
-                { std::lock_guard<std::mutex> lock(g_trace_mutex); g_trace_ids[&input_] = identity_; }
+                { std::lock_guard<std::mutex> lock(g_trace_mutex); g_trace_targets[&input_] = TraceTarget{&trace_output_, identity_}; }
                 input_.set_trace_hook(&trace_input);
             }
         }
@@ -1052,6 +1054,10 @@ public:
         output_.stop();
         if (closer_.joinable()) closer_.join();
         input_.stop();
+        // Unregister before this window's trace stream is destroyed so no later
+        // hook call can reach a closed stream.
+        { std::lock_guard<std::mutex> lock(g_trace_mutex); g_trace_targets.erase(&input_); }
+        input_.set_trace_hook(nullptr);
         if (hwnd_) DestroyWindow(hwnd_);
         if (registered_ && --class_users_ == 0) UnregisterClassW(L"TermForgeShell", GetModuleHandleW(nullptr));
     }
