@@ -14,7 +14,15 @@ public:
     // Diagnostics only: never changes behaviour. A consumer may install a hook to
     // learn why a reconciled selection was discarded; the hook runs synchronously
     // on the caller's thread and must not reenter selection or the document.
-    using DiscardObserver = void (*)(const char* reason, size_t row);
+    // Diagnostics only: the report names the branch and, where it helps, the
+    // row plus the saved/current projection shape that differed.
+    struct DiscardReport {
+        const char* reason = "";
+        size_t row = 0;
+        size_t saved_bytes = 0, current_bytes = 0;
+        size_t saved_columns = 0, current_columns = 0;
+    };
+    using DiscardObserver = void (*)(const DiscardReport&);
     static void set_discard_observer(DiscardObserver observer) { discard_observer_ = observer; }
 private:
     static inline DiscardObserver discard_observer_ = nullptr;
@@ -40,9 +48,12 @@ private:
         return c >= 0x80 || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
                (c >= '0' && c <= '9') || c == '_' || c == '-' ? 0 : 2;
     }
-    bool invalidate(const char* reason, size_t row = 0) {
-        if (discard_observer_) discard_observer_(reason, row);
+    bool invalidate(const DiscardReport& report) {
+        if (discard_observer_) discard_observer_(report);
         clear(); invalidated_ = true; return false;
+    }
+    bool invalidate(const char* reason, size_t row = 0) {
+        DiscardReport report; report.reason = reason; report.row = row; return invalidate(report);
     }
 public:
     static constexpr size_t maximum_snapshot_bytes = 8 * 1024 * 1024;
@@ -92,7 +103,12 @@ public:
                 // The last row at column zero is an excluded half-open
                 // endpoint. Its own following break is outside the copy.
                 const bool compare_boundary = i + 1 != saved_.size() || range_->end.column != 0;
-                if (!same_text(saved, current, compare_boundary)) return invalidate("row-text-changed", i);
+                if (!same_text(saved, current, compare_boundary)) {
+                    DiscardReport report; report.reason = "row-text-changed"; report.row = i;
+                    report.saved_bytes = saved.projection.text.size(); report.current_bytes = current.projection.text.size();
+                    report.saved_columns = saved.columns; report.current_columns = current.columns;
+                    return invalidate(report);
+                }
                 saved = std::move(current);
             }
         }
