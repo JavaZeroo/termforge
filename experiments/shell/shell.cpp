@@ -106,6 +106,8 @@ class ShellWindow {
     inline static uint64_t next_identity_ = 0;
     const uint64_t identity_ = ++next_identity_;
     std::ofstream capture_output_;
+    std::ofstream trace_output_;
+    uint64_t trace_offset_ = 0;
     std::unique_ptr<tf_shell::ClipboardReadJob> clipboard_read_;
     std::optional<tf_shell::PreparedPaste> pending_paste_;
     std::unique_ptr<tf_shell::PastePrompt> paste_prompt_;
@@ -818,6 +820,19 @@ class ShellWindow {
                 capture_output_.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
                 capture_output_.flush();
             }
+            // Opt-in trace of what the grid looked like when each chunk was
+            // consumed: TERMFORGE_OUTPUT_TRACE=<path>. This is what tells a
+            // resize-triggered repaint apart from ordinary output in a failure
+            // artifact; nothing is written unless the variable is set.
+            if (trace_output_) {
+                trace_output_ << "{\"schema\":\"termforge-output-trace-v1\",\"terminal\":" << identity_
+                              << ",\"t_ms\":" << GetTickCount64()
+                              << ",\"offset\":" << trace_offset_ << ",\"bytes\":" << bytes.size()
+                              << ",\"columns\":" << parser_.screen.width() << ",\"rows\":" << parser_.screen.height()
+                              << "}\n";
+                trace_output_.flush();
+                trace_offset_ += bytes.size();
+            }
             parser_.feed(bytes); batch += bytes.size();
 #ifdef TERMFORGE_CANDIDATE_CORE
             route_terminal_events();
@@ -1004,6 +1019,8 @@ public:
         // Opt-in full output capture for replayable failure evidence.
         const std::string capture = env_path("TERMFORGE_CAPTURE_OUTPUT");
         if (!capture.empty()) capture_output_.open(capture, std::ios::binary | std::ios::app);
+        const std::string trace = env_path("TERMFORGE_OUTPUT_TRACE");
+        if (!trace.empty()) trace_output_.open(trace, std::ios::app);
         snapshot_ = std::make_shared<const Snapshot>(viewport_.snapshot(parser_.screen), 0);
     }
     ~ShellWindow() {
