@@ -48,7 +48,7 @@ a-events.json / b-events.json 是widget处理前的公开事件观察，不把�
 
 native 每次 50ms poll 成功采样并保存原 legacy state 后，另发布 `observer/snapshots/state-00000001.json` 起的不可变 packet，不维护 mutable latest。固定六字段为 schema=`termforge-qt-ime-snapshot-v1`、generation（文件名整数）、process_id（实际进程）、state、a_events_json、b_events_json；后两项是当次实际 Observation 事件对象的 UTF-8 JSON 文本，不声称等于异步 legacy 文件。所有原 JSON/PNG、ready/complete、输入与 45s 期限保留，正式核心和 IME 控件不改。
 
-每代目标必须新：QSaveFile 先提交到独占临时目录，再以同目录非覆盖 move 发布最终名，失败即停止且首错 sticky，不重试、不覆盖既有代。工程上限为单 packet 1MiB、1024 代、累计 16MiB（按最终编码 bytes）；越界显式失败，不截断或改判通过。这些是诊断资源上限，不是产品性能/验收门槛。console focused 覆盖持上一代 R/W/Delete reader 时发布新代、原字节不变、六字段及文本精确绑定、既有目标与三个边界拒绝和首错保留；原四项 focused CTest 继续执行。
+每代目标必须新：QSaveFile 先提交到独占临时目录，再以同卷非覆盖 move 发布最终名，失败即停止且首错 sticky，不重试、不覆盖既有代。工程上限为单 packet 1MiB、1024 代、累计 16MiB（按最终编码 bytes）；越界显式失败，不截断或改判通过。这些是诊断资源上限，不是产品性能/验收门槛。console focused 覆盖持上一代 R/W/Delete reader 时发布新代、原字节不变、六字段及文本精确绑定、既有目标与三个边界拒绝和首错保留；原四项 focused CTest 继续执行。
 
 app.exec 返回后的原终态采样另发布一次 final packet，同样计入上述预算；complete 的 `immutable_snapshot_generation` 精确绑定该代，reader 在退出后用该代复核原事件 oracle。若已有 queued-frame 回调未结束或原事件证据无效，不补捕获/输入或延长期限，final packet 拒绝发布；发布失败令 generation 为 null、整体 CLI 失败并保留首错，不能用旧 last-timer 代冒充完整终态。原 complete/raw 条件继续保留。
 
