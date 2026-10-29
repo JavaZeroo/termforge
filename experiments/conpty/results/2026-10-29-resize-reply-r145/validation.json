@@ -1,0 +1,79 @@
+{
+  "schema": "termforge-conpty-resize-reply-r145-v1",
+  "issue": 145,
+  "commit": "d66f9f3",
+  "source_sha256": {
+    "resize_reply_probe.cpp": "03efd353c46a3f8ced23b32450c3af9b8c893ef77b820a479243956c1cefa356",
+    "resize_reply_run.py": "e3ff4b07ee7d844d4b9a81132575fbe1c40878c810c007125f0153acdf481fe7",
+    "session.hpp": "c85872fdf3ee58d4e61ad3bfd015caf2cba740682e077c93671e460079e6ff3c",
+    "backend.hpp": "c64309b7abe229186dece465b795883c2303389ffe93a9fcc648021d057b9d6a"
+  },
+  "binary_sha256": {
+    "Windows-11-10.0.26200-SP0": "9581295695efc909c33219413f5ec12c1f8cce9989b213ec9c6b5349a4a6c9a0",
+    "Windows-2025Server-10.0.26100-SP0": "03287079fe1ae557a19e15bece3b04644057d3340d3130b451e584397da8499b"
+  },
+  "hosted_runs": [
+    {
+      "run": 40841303342,
+      "job": "windows-2025-resize-reply",
+      "mode": "raw",
+      "sessions": 5,
+      "rounds_per_session": 200,
+      "samples": 1000
+    },
+    {
+      "run": 40841934880,
+      "job": "windows-2025-resize-reply",
+      "mode": "raw",
+      "sessions": 5,
+      "rounds_per_session": 200,
+      "samples": 1000
+    },
+    {
+      "run": 40841934880,
+      "job": "windows-2025-resize-reply",
+      "mode": "startup",
+      "sessions": 5,
+      "sessions_per_job": 5,
+      "samples": 500
+    },
+    {
+      "run": "local",
+      "job": "win11",
+      "mode": "raw",
+      "samples": 200
+    },
+    {
+      "run": "local",
+      "job": "win11",
+      "mode": "startup",
+      "samples": 100
+    }
+  ],
+  "totals": {
+    "hosted_alternating_resize_samples": 2000,
+    "hosted_fresh_session_samples": 500,
+    "local_alternating_resize_samples": 200,
+    "local_fresh_session_samples": 100,
+    "stale_buffer_replies": 0,
+    "stale_window_replies": 0,
+    "buffer_window_disagreement": 0,
+    "replies_with_resize_vt_before_reply": "2800/2800"
+  },
+  "observed": {
+    "resize_to_reply_us_median_range": [
+      8686.5,
+      16072
+    ],
+    "resize_to_reply_us_max": 64735,
+    "original_probe_wait_ms": 5000
+  },
+  "conclusion": "resize 成功后立即排入 size 查询这一孤立模式在 win11 与 hosted windows-2025 上均未复现旧尺寸回复；buffer 与 window 从未分歧，成对时序假设不成立。已记录的两条 CI 失败仍为真实失败，根因未知。",
+  "limitations": [
+    "未覆盖原始探针在 ctest 下的完整套件上下文、运行器镜像差异或首次会话例外",
+    "本切片不修改原始探针、其 5 秒等待或新尺寸 oracle，也不改变 #145/#38 状态",
+    "成对样本不是性能测量；机器身份分别为 Windows 11 10.0.26200 与 hosted Windows Server 2025 10.0.26100",
+    "探针二进制在本地与 hosted 构建间哈希不同（构建路径/PDB 身份差异），源哈希一致"
+  ],
+  "performance_claim": false
+}
