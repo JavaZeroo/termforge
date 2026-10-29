@@ -28,11 +28,15 @@
 - 对菜单项调用 InvokePattern（如新建会话）会进入模态事件循环，脚本需改用快捷键或异步方式，否则阻塞到超时；
 - 截图可用（VM 侧 screenshot 产出 1024×768 PNG），但本会话的记录者无法直接读图；用 Windows.Media.Ocr 可读到大字标题（如 TermForge Lab），不足以判定叶节点是否存在。
 
-## 对 harness 的含义
+## 后续修正：会话其实是折叠的，而且能打开
 
-1. **不能把“UIA 暴露会话叶”当作驱动原版的前提**：组能进模型，叶不保证出现。
-2. 仍可继续不注入的路线：用对话框新建并保存会话，让原版自己写出规范 user.sessions，再与合成条目逐字段比对；或用“打开会话...”配合预制文件。
-3. 若要直接读 widget 树/触发动作，已验收的 [research/ui/launch.py](../../research/ui/launch.py) 走的是 Frida + Qt 探针，而不是 UIA；切换过去需要显式记录注入身份与回收证据（当前 bootstrap 计划把 frida_deploys 固定为 0）。
+初版记录“叶不出现”，后续对照实验推翻了这一判断的一半：
+
+- 组节点**默认折叠**，UIA 不暴露折叠子项、也没有 ExpandCollapse 模式；对该组 UIA 矩形的中心做**一次鼠标双击**后，`TF_UI_CMD` 叶立即出现在树里；
+- 该叶支持 Invoke/Value/GridItem/TableItem（没有 SelectionItem）；**单击叶 + Enter** 可以把会话打开——用长驻命令 `/d /q /k` 验证：打开后 `cmd` 进程存活（1 个），原版标题变为 `TF_UI_CMD - WindTerm`，工作目录为合成 host-home；
+- 之前“打开后没有子进程”的真实原因是**会话命令立刻失败**：原合成 profile 里的命令是 `qt_ime_input_test.exe --ime-output-child ...`，该测试二进制在会话里直接退出（exit 2，stderr 为 `Qt IME test requires its owned Job supervisor`），它只能由自有 Job + stdin GO 门的 supervisor 启动。
+
+因此 harness 的可用路径是：**双击组展开 → 单击叶 + Enter 打开 → 会话里必须是一个可在 WindTerm 内长驻的进程**（真实 cmd/PowerShell，或一个由会话启动的 controller）。这也意味着不需要 Frida 注入即可驱动原版会话。
 
 ## 边界
 
