@@ -155,3 +155,61 @@ jobs:
           path: |
             build/r145-after-conpty
             build/test-artifacts
+
+  windows-2025-node-contract-timing:
+    # Bounded diagnostic for #144: the raster style reference test times out at a
+    # fixed 10s on the pure Node fixture. This job only measures the exact
+    # command, sequentially and under a small concurrent load.
+    runs-on: windows-2025
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Time the node contract fixture
+        shell: pwsh
+        run: |
+          @'
+          import json, platform, subprocess, sys, time
+          from concurrent.futures import ThreadPoolExecutor
+          script = "research/ui/test_raster_native_contract.js"
+          node = subprocess.run(["node", "--version"], capture_output=True, text=True)
+          def one():
+              start = time.monotonic()
+              try:
+                  result = subprocess.run(["node", script], capture_output=True, text=True, timeout=10)
+                  elapsed = time.monotonic() - start
+                  return {"elapsed": round(elapsed, 3), "returncode": result.returncode, "timeout": False}
+              except subprocess.TimeoutExpired:
+                  return {"elapsed": round(time.monotonic() - start, 3), "returncode": None, "timeout": True}
+          sequential = [one() for _ in range(60)]
+          with ThreadPoolExecutor(max_workers=4) as pool:
+              concurrent = [list(pool.map(lambda _: one(), range(4))) for _ in range(20)]
+          report = {
+              "schema": "termforge-node-contract-timing-v1",
+              "issue": 144,
+              "platform": platform.platform(),
+              "node_version": node.stdout.strip() or node.stderr.strip(),
+              "sequential": sequential,
+              "sequential_timeouts": sum(1 for row in sequential if row["timeout"]),
+              "concurrent": concurrent,
+              "concurrent_timeouts": sum(1 for batch in concurrent for row in batch if row["timeout"]),
+              "max_sequential": max(row["elapsed"] for row in sequential),
+              "max_concurrent": max(row["elapsed"] for batch in concurrent for row in batch),
+          }
+          print(json.dumps(report))
+          with open("node-contract-timing.json", "w", encoding="utf-8") as stream:
+              json.dump(report, stream, indent=2)
+          sys.exit(1 if report["sequential_timeouts"] or report["concurrent_timeouts"] else 0)
+          '@ | Out-File -Encoding utf8 node-contract-timing.py
+          python node-contract-timing.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve timing evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: node-contract-timing-r144
+          retention-days: 14
+          if-no-files-found: warn
+          path: node-contract-timing.json
