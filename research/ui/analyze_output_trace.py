@@ -21,9 +21,15 @@ def read_jsonl(path: Path):
     if not path.exists():
         return []
     rows = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if line.strip():
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line.strip():
+            continue
+        try:
             rows.append(json.loads(line))
+        except json.JSONDecodeError:
+            # Two shells can append to the same trace; a torn line is skipped
+            # rather than aborting the whole analysis.
+            continue
     return rows
 
 
@@ -40,12 +46,21 @@ def load_stage(directory: Path):
     phases = [(row.get("t_ms"), row.get("phase")) for row in read_jsonl(progress) if row.get("t_ms")] if progress else []
     trace = read_jsonl(directory / "output-trace.jsonl")
     discards = read_jsonl(directory / "selection-discard.jsonl")
-    return phases, trace, discards
+    sample = None
+    sample_path = directory / "sample.json"
+    if sample_path.exists():
+        try:
+            sample = json.loads(sample_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            sample = None
+    return phases, trace, discards, sample
 
 
 def describe(directory: Path) -> list[str]:
-    phases, trace, discards = load_stage(directory)
+    phases, trace, discards, sample = load_stage(directory)
     lines = [f"== {directory.parent.name}/{directory.name}"]
+    if isinstance(sample, dict) and sample.get("desktop_close_settle"):
+        lines.append("   desktop close settle: %s" % json.dumps(sample["desktop_close_settle"]))
     if not phases and not trace:
         lines.append("   no diagnostic artifacts")
         return lines
