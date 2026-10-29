@@ -27,7 +27,7 @@
 
 OpenDesktop 只有原协议的 error2/3判为该时点 absent；其他错误、任意 Close 失败、枚举/已知线程查询错误、超上限、源/环境/文件 identity 漂移或已有输出目录均停止。失败 Close 不重试；原清理仍限原 gated root/精确 Job，自有剩余 handle 每个只关闭一次。第一 case 机制失败则不执行第二 case。不全局 kill、不重发 GO、不加长原3秒、不自动重跑。
 
-计划 template `experiments/shell/watchdog-desktop-plan.json` 明确 false/null。root 后续复制到私有新计划，填实际 HEAD、完整 sys.version/platform.version、六份源 SHA、实际 shell EXE、完整运行目录 inventory（相对路径→bytes/SHA）、构建证据文件与旧 archive identity；所有输入验证成功后才建 attempt/output。runtime inventory 应置于运行目录之外。执行命令（**本次未运行**）：
+最初 template `experiments/shell/watchdog-desktop-plan.json` 的 false/null 原件与 `a95166e` 身份保持不变；当前入口要求 v2 合同，后续使用新 `experiments/shell/watchdog-desktop-plan-r1.json`。root 另复制到私有新计划，填实际 HEAD、完整 sys.version/platform.version、六份源 SHA、实际 shell EXE、完整运行目录 inventory（相对路径→bytes/SHA）、构建证据文件与旧 archive identity；所有输入验证成功后才建 attempt/output。runtime inventory 应置于运行目录之外。执行命令（**本次未运行**）：
 
 ```powershell
 python -B -X utf8 experiments/shell/diagnose_watchdog_desktop.py --plan <absolute-private-authorized-plan.json>
@@ -40,3 +40,11 @@ python -B -X utf8 experiments/shell/diagnose_watchdog_desktop.py --plan <absolut
 显式 second handle 对照能验证自持引用确实影响“可重新打开”；ledger可排查本诊断自己的 creator/probe/control 未关闭。已退出 root、精确 Job0与后续 gone 只能描述生命周期顺序；不能独自区分异步内核释放与未观察的外部/无窗口持有者。EnumDesktopWindows 无窗口也不证明无引用，不把 Job0当 desktop 删除；保留 borrowed thread association 的观测限制。任何 root cause 或生产修复均须后续同类 red 和独立证据。
 
 API依据：[CloseDesktop](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-closedesktop)只关闭给定 open handle且不接受GetThreadDesktop结果；[GetThreadDesktop](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getthreaddesktop)返回线程关联的借用handle；[EnumDesktopWindows](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enumdesktopwindows)只枚举指定desktop的顶层窗口。
+
+## 执行前 P2 修正与纯 seam 证据
+
+`a95166e` 原准备源有两项审查缺口：诊断 `Job.close` 的 observer OSError 可能越过原 execute finally 的 sample写出；新输出可放入冻结 runtime，且批次完成前没有再次复核冻结输入。当前仅修诊断，不改原五份生产/监督源或任何原件。Job close先保留完整失败ledger并延迟observer错误，原 `sample.json` 写出且复制原 stdout/stderr/status/error 后，再失败停止；未成功 Close 不重试，也不将其记为 closed。原首probe、3秒watchdog、四个followup及两case各一次不变。
+
+输出目录按 resolve后的路径比较，拒绝等于runtime及其任何子目录/别名；允许合法新 sibling目录。计划原字节、六源、EXE、完整runtime文件集合、inventory、build证据、原archive和HEAD在创建attempt前及batch完成前均复核；后验漂移或多出runtime文件会令 `diagnostic_complete=false`，错误私有保留。
+
+新增 `test_watchdog_desktop_seams.py` 只AST提取实际校验函数、Native.close、嵌套Job.close和原run.py的execute；不import诊断模块、不执行诊断main，不调用Win32/desktop/target。合成CloseHandle失败在原finally真实路径重现旧样本未写；旧a951的5项seam为2过/3失败（另两红为runtime子目录和`existing/..`别名误放）。修后普通与`-O`各10项通过，其中后验覆盖script/config/source/EXE/inventory/build/archive七种文件漂移、额外runtime成员和HEAD漂移；测试名中的main wiring只静态核对AST调用顺序，未执行main。日志/exit/hash留 `local/watchdog-desktop-p2/`，纯mock不是原生诊断结果。实际编译/desktop/目标执行仍0，实际EXE仍null，root两轴复审及执行租约仍待后续。

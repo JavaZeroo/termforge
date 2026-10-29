@@ -1,0 +1,25 @@
+{
+  "schema": "termforge-watchdog-desktop-plan-v2",
+  "execution_authorized": false,
+  "source_base_commit": "6a10e5322a1bddeb038670e50f32ff6deac145cf",
+  "execution_source_commit": null,
+  "windows_version": null,
+  "python_version": null,
+  "source_sha256": null,
+  "actual_compiled_executable": null,
+  "runtime_inventory": null,
+  "build_evidence": null,
+  "baseline_archive": null,
+  "baseline_archive_sha256": "05392812a79a0b38d48384b47905c85c9f46285cbedcf0b4afa2275550c9efbb",
+  "output_directory": null,
+  "cases": ["retained-second-handle", "original-watchdog"],
+  "maximum_attempts_per_case": 1,
+  "watchdog_timeout_seconds": 3,
+  "followup_offsets_ms": [0, 50, 250, 1000],
+  "followup_anchor": {
+    "retained-second-handle": "second-handle-close-completed",
+    "original-watchdog": "original-first-probe-completed"
+  },
+  "maximum_windows_per_probe": 32,
+  "whole_lifecycle_bound_seconds": null
+}

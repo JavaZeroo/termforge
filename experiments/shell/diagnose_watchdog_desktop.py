@@ -29,7 +29,7 @@ SOURCE_FILES = (
 )
 OFFSETS = (0, 50, 250, 1000)
 FIXED = {
-    "schema": "termforge-watchdog-desktop-plan-v1",
+    "schema": "termforge-watchdog-desktop-plan-v2",
     "source_base_commit": BASE,
     "cases": ["retained-second-handle", "original-watchdog"],
     "maximum_attempts_per_case": 1,
@@ -66,8 +66,63 @@ def bound_file(value):
     return path
 
 
+def output_directory(value, runtime):
+    if not isinstance(value, str) or not Path(value).is_absolute():
+        raise ValueError("A new absolute output directory is required")
+    output, runtime = Path(value).resolve(), runtime.resolve(strict=True)
+    if output == runtime or runtime in output.parents:
+        raise ValueError("Diagnostic output must stay outside the frozen runtime")
+    if output.exists():
+        raise ValueError("Diagnostic output must be new")
+    return output
+
+
+def runtime_files(runtime):
+    result = {}
+    for member in runtime.rglob("*"):
+        if member.is_symlink():
+            raise ValueError("Runtime symlinks are unsupported")
+        if member.is_file():
+            result[member.relative_to(runtime).as_posix()] = identity(member)
+    return result
+
+
+def git_head():
+    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+
+
+def verify_inputs(frozen):
+    if git_head() != frozen["source_commit"]:
+        raise ValueError("Execution source commit changed")
+    for name, expected in frozen["files"].items():
+        if identity(Path(name)) != expected:
+            raise ValueError("A frozen input changed: " + name)
+    if runtime_files(Path(frozen["runtime_directory"])) != frozen["runtime_files"]:
+        raise ValueError("Complete frozen runtime inventory changed")
+
+
+def finalize_batch(batch, frozen):
+    # Success is assigned only after the postcheck, including file additions.
+    batch["diagnostic_complete"] = False
+    try:
+        verify_inputs(frozen)
+        batch["postcheck_inputs_unchanged"] = True
+    except Exception as error:
+        batch["postcheck_inputs_unchanged"] = False
+        batch["postcheck_error"] = str(error)
+        return
+    batch["diagnostic_complete"] = len(batch["cases"]) == 2 and all(
+        case["status"] == "observations_complete" for case in batch["cases"])
+
+
+def require_observer_cleanup(record):
+    if record.get("deferred_observer_errors"):
+        raise OSError("Observer cleanup failed after the original sample was saved")
+
+
 def load_plan(path):
-    plan = json.loads(path.read_text(encoding="utf-8-sig"))
+    plan_bytes = path.read_bytes()
+    plan = json.loads(plan_bytes.decode("utf-8-sig"))
     if not isinstance(plan, dict) or set(plan) != set(FIXED) | VARIABLE:
         raise ValueError("Unexpected plan fields")
     for key, expected in FIXED.items():
@@ -79,16 +134,18 @@ def load_plan(path):
         raise ValueError("Windows x64 is required")
     if plan["windows_version"] != platform.version() or plan["python_version"] != sys.version:
         raise ValueError("Actual Windows/Python identity differs")
-    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    head = git_head()
     if plan["execution_source_commit"] != head:
         raise ValueError("Execution source commit differs")
     hashes = plan["source_sha256"]
     if not isinstance(hashes, dict) or set(hashes) != set(SOURCE_FILES):
         raise ValueError("Complete source bindings are required")
-    if any(identity(ROOT / name)["sha256"] != hashes[name] for name in SOURCE_FILES):
+    sources = {str(ROOT / name): identity(ROOT / name) for name in SOURCE_FILES}
+    if any(sources[str(ROOT / name)]["sha256"] != hashes[name] for name in SOURCE_FILES):
         raise ValueError("Source bytes differ from the frozen plan")
     archive = absolute(plan["baseline_archive"])
-    if identity(archive)["sha256"] != FIXED["baseline_archive_sha256"]:
+    archive_identity = identity(archive)
+    if archive_identity["sha256"] != FIXED["baseline_archive_sha256"]:
         raise ValueError("Original archive identity differs")
     exe = bound_file(plan["actual_compiled_executable"])
     if exe.name != "termforge_shell.exe":
@@ -97,19 +154,20 @@ def load_plan(path):
     inventory = json.loads(inventory_path.read_text(encoding="utf-8-sig"))
     if not isinstance(inventory, dict) or not inventory:
         raise ValueError("Frozen runtime inventory is required")
-    actual = {}
-    for member in exe.parent.rglob("*"):
-        if member.is_symlink():
-            raise ValueError("Runtime symlinks are unsupported")
-        if member.is_file():
-            actual[member.relative_to(exe.parent).as_posix()] = identity(member)
+    actual = runtime_files(exe.parent)
     if inventory != actual or not {"termforge_shell.exe", "shell_test_launcher.exe"} <= set(actual):
         raise ValueError("Complete runtime bytes differ")
-    bound_file(plan["build_evidence"])
-    output = plan["output_directory"]
-    if not isinstance(output, str) or not Path(output).is_absolute() or Path(output).exists():
-        raise ValueError("A new absolute output directory is required")
-    return plan, exe, Path(output)
+    build_evidence = bound_file(plan["build_evidence"])
+    output = output_directory(plan["output_directory"], exe.parent)
+    files = {str(path): {"bytes": len(plan_bytes), "sha256": hashlib.sha256(plan_bytes).hexdigest()},
+             str(archive): archive_identity, **sources}
+    for key, bound in (("actual_compiled_executable", exe), ("runtime_inventory", inventory_path),
+                       ("build_evidence", build_evidence)):
+        files[str(bound)] = {field: plan[key][field] for field in ("bytes", "sha256")}
+    frozen = {"files": files, "source_commit": head, "runtime_directory": str(exe.parent),
+              "runtime_files": inventory}
+    verify_inputs(frozen)
+    return plan, exe, output, frozen
 
 
 class Native:
@@ -352,7 +410,17 @@ def observed_shell(native):
             if self.handle:
                 # __init__ failure can enter the inherited cleanup before ledger exists.
                 ledger = getattr(self, "ledger", None) or native.own(self.handle, "exact supervisor Job")
-                native.close(ledger)
+                self.ledger = ledger
+                if ledger["close_attempted"]:
+                    return
+                try:
+                    native.close(ledger)
+                except OSError as error:
+                    # Original execute must reach its finally sample write.
+                    # Defer observer failure only; never change its verdict.
+                    native.record.setdefault("deferred_observer_errors", []).append(
+                        {"stage": "exact Job close", "error": str(error), "handle_ledger": dict(ledger)})
+                    return
                 self.handle = None
 
     class Processes:
@@ -424,6 +492,7 @@ def run_case(name, exe, output):
                 record["original_sample"] = sample
                 record["original_sample_identity"] = identity(original_output / "sample.json")
                 record["original_product_verdict"] = sample["status"]
+                require_observer_cleanup(record)
                 if (sample.get("timed_out") is not True or sample.get("exit_code") != 99 or
                     json.loads(sample.get("stdout", "")) != {"watchdog_ready": True} or sample.get("stderr") != "" or
                     sample.get("job_at_timeout", {}).get("active", 0) < 2 or
@@ -456,9 +525,9 @@ def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--plan", type=Path, required=True)
     args = cli.parse_args()
-    plan, exe, output = load_plan(args.plan.resolve(strict=True))
+    plan, exe, output, frozen = load_plan(args.plan.resolve(strict=True))
     output.mkdir(parents=False, exist_ok=False)
-    save(output / "attempt.json", {"plan": identity(args.plan), "source_commit": plan["execution_source_commit"],
+    save(output / "attempt.json", {"plan": frozen["files"][str(args.plan.resolve(strict=True))], "source_commit": plan["execution_source_commit"],
                                    "maximum_attempts_per_case": 1, "automatic_retry": False})
     batch = {"schema": "termforge-watchdog-desktop-diagnostic-v1", "source_commit": plan["execution_source_commit"],
              "cases": [], "diagnostic_complete": False, "product_acceptance": None, "root_cause": None}
@@ -472,9 +541,8 @@ def main():
                 "original_product_verdict": result["original_product_verdict"]})
             if result["status"] != "observations_complete":
                 break
-        batch["diagnostic_complete"] = len(batch["cases"]) == 2 and all(
-            case["status"] == "observations_complete" for case in batch["cases"])
     finally:
+        finalize_batch(batch, frozen)
         save(output / "batch.json", batch)
     print(json.dumps({"diagnostic_complete": batch["diagnostic_complete"], "cases_observed": len(batch["cases"]),
                       "product_acceptance": None, "root_cause": None}))
