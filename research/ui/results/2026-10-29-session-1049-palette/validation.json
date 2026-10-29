@@ -96,5 +96,26 @@
     },
     "interpretation": "1049h saves the attribute state at entry, alternate-screen changes do not leak back, and 1049l restores the entry-time attributes.",
     "attribution_limit": "pipeline-level observation; layer attribution unknown"
+  },
+  "attribute_save_restore": {
+    "model": "1049h saves the attribute state at entry; 1049l restores it; alternate-screen changes never leak to the main screen",
+    "cases": [
+      {
+        "entry": "default (reset by script)",
+        "alternate": "set 32;45",
+        "exit": "default 1C1C1C/E3E3DD"
+      },
+      {
+        "entry": "31;44",
+        "alternate": "unchanged",
+        "exit": "31;44 (#3465A4/#C4265E)"
+      },
+      {
+        "entry": "32;45",
+        "alternate": "reset to default",
+        "exit": "32;45 (#8C6BC8/#86B42B)"
+      }
+    ],
+    "attribution_limit": "pipeline-level observation; layer attribution unknown"
   }
 }
