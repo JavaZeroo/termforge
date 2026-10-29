@@ -46,6 +46,12 @@ a-events.json / b-events.json 是widget处理前的公开事件观察，不把�
 
 `qt_ime_evidence_write` 为独立 console seam：实际 QSaveFile 正常/open/无 DELETE sharing 的目标句柄造成的 commit 失败，受控短写/-1 不重试不 commit，PNG writer 失败，以及 sticky/final JSON 传播。它不创建 GUI、receiver、IME 输入或 VM。共享锁用例只证明该失败能被诊断；PS reader 的共享模式与原生观察失败之间的因果仍是待验证 hypothesis，不据本地合成反例认定。
 
+native 每次 50ms poll 成功采样并保存原 legacy state 后，另发布 `observer/snapshots/state-00000001.json` 起的不可变 packet，不维护 mutable latest。固定六字段为 schema=`termforge-qt-ime-snapshot-v1`、generation（文件名整数）、process_id（实际进程）、state、a_events_json、b_events_json；后两项是当次实际 Observation 事件对象的 UTF-8 JSON 文本，不声称等于异步 legacy 文件。所有原 JSON/PNG、ready/complete、输入与 45s 期限保留，正式核心和 IME 控件不改。
+
+每代目标必须新：QSaveFile 先提交到独占临时目录，再以同目录非覆盖 move 发布最终名，失败即停止且首错 sticky，不重试、不覆盖既有代。工程上限为单 packet 1MiB、1024 代、累计 16MiB（按最终编码 bytes）；越界显式失败，不截断或改判通过。这些是诊断资源上限，不是产品性能/验收门槛。console focused 覆盖持上一代 R/W/Delete reader 时发布新代、原字节不变、六字段及文本精确绑定、既有目标与三个边界拒绝和首错保留；原四项 focused CTest 继续执行。
+
+app.exec 返回后的原终态采样另发布一次 final packet，同样计入上述预算；complete 的 `immutable_snapshot_generation` 精确绑定该代，reader 在退出后用该代复核原事件 oracle。若已有 queued-frame 回调未结束或原事件证据无效，不补捕获/输入或延长期限，final packet 拒绝发布；发布失败令 generation 为 null、整体 CLI 失败并保留首错，不能用旧 last-timer 代冒充完整终态。原 complete/raw 条件继续保留。
+
 当前258属性guard由256单位最多256个非空格式范围+Cursor+Selection推导；零length格式不占格式存储，过量no-op提前拒绝。它与256单位/非法UTF16拒绝都是TermForge工程边界，非WindTerm已对照。Ctrl-C显式分支不被composition普通文本guard吞掉，provider实际取消政策仍待这次原生观察。
 
 只读API语义依据：[GetActiveProfile](https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfinputprocessorprofilemgr-getactiveprofile)、[TF_INPUTPROCESSORPROFILE](https://learn.microsoft.com/en-us/windows/win32/api/msctf/ns-msctf-tf_inputprocessorprofile)、[CoInitializeEx](https://learn.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-coinitializeex)、[CoUninitialize](https://learn.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-couninitialize)。API查询不等于真实候选可见或物理键盘来源，仍须外部链证据。

@@ -16,8 +16,10 @@
 #include <QJsonObject>
 #include <QPointer>
 #include <QSaveFile>
+#include <QScopeGuard>
 #include <QTabBar>
 #include <QTimer>
+#include <QTemporaryDir>
 #include <iostream>
 
 namespace termforge::qt::ime_native {
@@ -84,6 +86,92 @@ inline bool save_complete_json(const QString& path, QJsonObject& final, Evidence
         return false;
     }
 }
+class ImmutableSnapshots final {
+    QString directory_;
+    EvidenceWriteFailure& failure_;
+    qint64 generation_ = 0, saved_bytes_ = 0;
+    bool stopped_ = false;
+    [[noreturn]] void stop(const QString& operation, const QString& basename, qint64 bytes,
+                           const QString& error, QJsonValue native_error = {}) {
+        stopped_ = true;
+        failure_.remember({{"target", "snapshot"}, {"operation", operation}, {"basename", basename},
+                           {"generation", generation_ + 1}, {"packet_bytes", bytes},
+                           {"saved_packet_bytes", saved_bytes_}, {"published_count", generation_},
+                           {"qt_file_error", QJsonValue()}, {"qt_error_string", error},
+                           {"native_error", native_error}});
+        throw std::runtime_error("native IME immutable snapshot publication failed");
+    }
+public:
+    static constexpr qint64 maximum_packet_bytes = 1024 * 1024;
+    static constexpr qint64 maximum_count = 1024;
+    static constexpr qint64 maximum_saved_bytes = 16 * 1024 * 1024;
+    ImmutableSnapshots(const QString& observer_directory, EvidenceWriteFailure& failure) :
+        directory_(observer_directory + QStringLiteral("/snapshots")), failure_(failure) {}
+    QString next_basename() const {
+        return QStringLiteral("state-%1.json").arg(generation_ + 1, 8, 10, QLatin1Char('0'));
+    }
+    qint64 published_count() const { return generation_; }
+    qint64 saved_bytes() const { return saved_bytes_; }
+    void publish(const QJsonObject& state, const QJsonObject& a_events, const QJsonObject& b_events) {
+        const auto basename = next_basename();
+        if (stopped_) stop(QStringLiteral("snapshot-stopped"), basename, 0, QStringLiteral("Publisher already stopped"));
+        if (generation_ >= maximum_count)
+            stop(QStringLiteral("snapshot-count-bound"), basename, 0, QStringLiteral("Snapshot count bound exceeded"));
+        const QJsonObject packet{{"schema", "termforge-qt-ime-snapshot-v1"}, {"generation", generation_ + 1},
+                                 {"process_id", QCoreApplication::applicationPid()}, {"state", state},
+                                 {"a_events_json", QString::fromUtf8(QJsonDocument(a_events).toJson())},
+                                 {"b_events_json", QString::fromUtf8(QJsonDocument(b_events).toJson())}};
+        const auto bytes = QJsonDocument(packet).toJson();
+        if (bytes.size() > maximum_packet_bytes)
+            stop(QStringLiteral("snapshot-packet-bound"), basename, bytes.size(), QStringLiteral("Snapshot packet byte bound exceeded"));
+        if (bytes.size() > maximum_saved_bytes - saved_bytes_)
+            stop(QStringLiteral("snapshot-total-bound"), basename, bytes.size(), QStringLiteral("Snapshot aggregate byte bound exceeded"));
+        const auto final_path = directory_ + QLatin1Char('/') + basename;
+        if (QFileInfo::exists(final_path))
+            stop(QStringLiteral("snapshot-existing-target"), basename, bytes.size(), QStringLiteral("Snapshot target must be new"));
+        if (!QDir().mkpath(directory_))
+            stop(QStringLiteral("snapshot-directory"), basename, bytes.size(), QStringLiteral("Snapshot directory creation failed"));
+        // Commit a complete private file first. The final non-replacing move
+        // atomically refuses collisions, including a target created meanwhile.
+        QTemporaryDir staging(directory_ + QStringLiteral("/.pending-XXXXXX"));
+        if (!staging.isValid())
+            stop(QStringLiteral("snapshot-staging"), basename, bytes.size(), evidence_error(final_path, staging.errorString()));
+        const auto pending = staging.path() + QStringLiteral("/packet.json");
+        try {
+            QSaveFile file(pending);
+            detail::save_json_file(file, pending, bytes, failure_, QStringLiteral("snapshot"));
+        } catch (...) { stopped_ = true; throw; }
+        const auto native_pending = QDir::toNativeSeparators(pending), native_final = QDir::toNativeSeparators(final_path);
+        if (!MoveFileW(reinterpret_cast<const wchar_t*>(native_pending.utf16()),
+                       reinterpret_cast<const wchar_t*>(native_final.utf16()))) {
+            const auto error = GetLastError();
+            stop(QStringLiteral("snapshot-publish"), basename, bytes.size(),
+                 QStringLiteral("Non-replacing snapshot move failed"), static_cast<qint64>(error));
+        }
+        ++generation_; saved_bytes_ += bytes.size();
+    }
+};
+inline bool publish_final_snapshot(ImmutableSnapshots& snapshots, QJsonObject& final,
+                                   const QJsonObject& a_events, const QJsonObject& b_events,
+                                   qsizetype a_pending, qsizetype b_pending, EvidenceWriteFailure& failure) {
+    try {
+        if (a_pending || b_pending || a_events.value("evidence_gap").toBool() || b_events.value("evidence_gap").toBool() ||
+            a_events.value("write_failed").toBool() || b_events.value("write_failed").toBool()) {
+            failure.remember({{"target", "snapshot"}, {"operation", "snapshot-final-incomplete-events"},
+                              {"basename", snapshots.next_basename()}, {"a_pending_frames", a_pending},
+                              {"b_pending_frames", b_pending}});
+            throw std::runtime_error("native IME final snapshot has incomplete event evidence");
+        }
+        snapshots.publish(final, a_events, b_events);
+        final.insert("immutable_snapshot_generation", snapshots.published_count());
+        return true;
+    } catch (const std::exception& error) {
+        final.insert("failed", true); final.insert("immutable_snapshot_generation", QJsonValue());
+        if (final.value("failure").toString().isEmpty()) final.insert("failure", QString::fromUtf8(error.what()));
+        final.insert("evidence_write_failure", failure.snapshot());
+        return false;
+    }
+}
 inline QJsonArray rect(const QRectF& value) {
     return {value.x(), value.y(), value.width(), value.height()};
 }
@@ -100,6 +188,7 @@ class Observation final : public QObject {
     QString directory_, label_;
     QJsonArray events_;
     bool evidence_gap_ = false, write_failed_ = false;
+    qsizetype pending_frames_ = 0;
     EvidenceWriteFailure& write_failure_;
     QJsonObject target() const {
         if (!page_) return {{"target_alive", false}};
@@ -124,13 +213,7 @@ class Observation final : public QObject {
     void write() {
         try {
             save_json(directory_ + QLatin1Char('/') + label_ + QStringLiteral("-events.json"),
-                      {{"schema", "termforge-qt-ime-native-events-v1"}, {"target", label_},
-                       {"synthetic_qt_input_events_sent", 0},
-                       {"event_filter_phase", "before widget handler"},
-                       {"spontaneous_flag_is_not_origin_proof", true},
-                        {"evidence_gap", evidence_gap_}, {"write_failed", write_failed_},
-                        {"evidence_write_failure", write_failure_.snapshot()},
-                        {"events", events_}, {"current", target()}}, write_failure_, label_);
+                      event_document(), write_failure_, label_);
         } catch (...) {
             write_failed_ = true;
             // A non-file exception must also leave a bounded, path-free record.
@@ -179,7 +262,9 @@ protected:
             append(row);
             // A queued frame can include newer events. Record that explicitly;
             // never label a coalesced image as this event's exact rendered state.
+            ++pending_frames_;
             QTimer::singleShot(0, this, [this, sequence] {
+                const auto finished = qScopeGuard([this] { --pending_frames_; });
                 if (!page_) return;
                 bool coalesced_input = false;
                 for (qsizetype index = sequence + 1; index < events_.size(); ++index)
@@ -222,6 +307,14 @@ public:
         page->terminal().installEventFilter(this); write();
     }
     bool valid() const { return !evidence_gap_ && !write_failed_; }
+    qsizetype pending_frames() const { return pending_frames_; }
+    QJsonObject event_document() const {
+        return {{"schema", "termforge-qt-ime-native-events-v1"}, {"target", label_},
+                {"synthetic_qt_input_events_sent", 0}, {"event_filter_phase", "before widget handler"},
+                {"spontaneous_flag_is_not_origin_proof", true}, {"evidence_gap", evidence_gap_},
+                {"write_failed", write_failed_}, {"evidence_write_failure", write_failure_.snapshot()},
+                {"events", events_}, {"current", target()}};
+    }
     QJsonObject snapshot() { write(); return target(); }
 };
 inline bool ready_text(const QPointer<SessionPage>& page) {
@@ -253,6 +346,7 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
     EvidenceWriteFailure write_failure;
     Observation first_events(first, directory, QStringLiteral("a"), &window, write_failure);
     Observation second_events(second, directory, QStringLiteral("b"), &window, write_failure);
+    ImmutableSnapshots snapshots(directory, write_failure);
     bool ready_written = false, finish_requested = false, output_requested = false, failed = false;
     bool close_requested = false, deadline_expired = false, sessions_completed = false;
     int sessions_exit_code = -1;
@@ -317,7 +411,12 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
                 ready_written = true;
                 save_json(directory + QStringLiteral("/ready.json"), state(), write_failure);
             }
-            if (native) save_json(directory + QStringLiteral("/native-state.json"), state(), write_failure);
+            if (native) {
+                const auto sampled = state();
+                save_json(directory + QStringLiteral("/native-state.json"), sampled, write_failure);
+                if (!failed && first_events.valid() && second_events.valid())
+                    snapshots.publish(sampled, first_events.event_document(), second_events.event_document());
+            }
             if (!finish_requested && !output_requested && QFileInfo::exists(directory + QStringLiteral("/output.request"))) {
                 output_requested = true; a.output();
             }
@@ -341,7 +440,10 @@ inline int run(QApplication& app, const QString& directory, Purpose purpose = Pu
     timer.start(50);
     const auto result = app.exec();
     auto final = state();
-    bool complete = !failed && !deadline_expired && sessions_completed && sessions_exit_code == 0 &&
+    const bool final_packet_complete = !native || publish_final_snapshot(snapshots, final,
+        first_events.event_document(), second_events.event_document(), first_events.pending_frames(),
+        second_events.pending_frames(), write_failure);
+    bool complete = final_packet_complete && !failed && !deadline_expired && sessions_completed && sessions_exit_code == 0 &&
         ready_written && finish_requested && first && second &&
         first->model().natural_exit() && second->model().natural_exit() &&
         first->model().exit_code() == 0 && second->model().exit_code() == 0 &&
