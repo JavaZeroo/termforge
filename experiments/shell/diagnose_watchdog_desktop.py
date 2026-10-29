@@ -117,7 +117,7 @@ def finalize_batch(batch, frozen):
 
 def require_observer_cleanup(record):
     if record.get("deferred_observer_errors"):
-        raise OSError("Observer cleanup failed after the original sample was saved")
+        raise OSError("Observer failed after the original sample was saved")
 
 
 def load_plan(path):
@@ -211,6 +211,7 @@ class Native:
         self.kernel.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
         self.kernel.GetExitCodeProcess.restype = wintypes.BOOL
         self.root = None
+        self.root_identity = None
         self.desktop = None
         self.first = None
         self.last_job = None
@@ -223,6 +224,10 @@ class Native:
                "utc": datetime.now(timezone.utc).isoformat(), **fields}
         self.record["events"].append(row)
         return row
+
+    def defer_observer_error(self, stage, error, **fields):
+        self.record.setdefault("deferred_observer_errors", []).append(
+            {"stage": stage, "error": str(error), "type": type(error).__name__, **fields})
 
     def own(self, value, kind):
         row = {"value": int(value), "kind": kind, "ownership": "owned", "close_attempted": False,
@@ -306,31 +311,78 @@ class Native:
                 row["probe_handle_close"] = dict(ledger)
         return row
 
-    def root_state(self, label):
+    def root_state(self, label, *, strict=True):
         if self.root is None:
             return None
+        row = self.event("retained_root", label=label, strict_before_GO=strict,
+                         retained_handle=self.root["value"], pid=None, image=None, wait=None,
+                         exit_code=None, creation_filetime_100ns=None, exit_filetime_100ns=None,
+                         identity_reference=None, observation_gaps=[], api_results={name: {
+                             "attempted": False, "returned": None, "error": None} for name in (
+                             "WaitForSingleObject", "GetProcessTimes", "GetExitCodeProcess",
+                             "GetProcessId", "QueryFullProcessImageNameW")})
+        def observed(name, returned, ok):
+            error = 0 if ok else ctypes.get_last_error()
+            row["api_results"][name].update(attempted=True, returned=returned, error=error)
+            if not ok:
+                raise ctypes.WinError(error)
+        ctypes.set_last_error(0)
         wait = self.kernel.WaitForSingleObject(self.root["value"], 0)
-        if wait not in (0, 258):
-            raise ctypes.WinError(ctypes.get_last_error())
+        row["wait"] = wait
+        observed("WaitForSingleObject", wait, wait in (0, 258))
+        if strict and wait != 258:
+            raise OSError("Original retained root is not live before GO")
         created, exited, kernel, user = [wintypes.FILETIME() for _ in range(4)]
-        if not self.kernel.GetProcessTimes(self.root["value"], ctypes.byref(created), ctypes.byref(exited),
-                                           ctypes.byref(kernel), ctypes.byref(user)):
-            raise ctypes.WinError(ctypes.get_last_error())
+        ctypes.set_last_error(0)
+        ok = self.kernel.GetProcessTimes(self.root["value"], ctypes.byref(created), ctypes.byref(exited),
+                                         ctypes.byref(kernel), ctypes.byref(user))
+        observed("GetProcessTimes", bool(ok), bool(ok))
         value = lambda item: (item.dwHighDateTime << 32) | item.dwLowDateTime
+        row["creation_filetime_100ns"] = value(created)
+        row["exit_filetime_100ns"] = value(exited) if wait == 0 else None
         code = wintypes.DWORD()
-        if not self.kernel.GetExitCodeProcess(self.root["value"], ctypes.byref(code)):
-            raise ctypes.WinError(ctypes.get_last_error())
+        ctypes.set_last_error(0)
+        ok = self.kernel.GetExitCodeProcess(self.root["value"], ctypes.byref(code))
+        observed("GetExitCodeProcess", bool(ok), bool(ok))
+        row["exit_code"] = code.value
+        ctypes.set_last_error(0)
         pid = self.kernel.GetProcessId(self.root["value"])
+        row["pid"] = pid
+        observed("GetProcessId", pid, bool(pid))
         if not pid or pid != self.process.pid:
             raise OSError("Retained root PID differs from original Popen")
+        if not row["creation_filetime_100ns"]:
+            raise OSError("Retained root creation time is unknown")
+        identity = self.root_identity
+        if identity is not None:
+            row["identity_reference"] = dict(identity)
+            if (self.root["value"], pid, row["creation_filetime_100ns"]) != (
+                    identity["retained_handle"], identity["pid"], identity["creation_filetime_100ns"]):
+                raise OSError("Retained root handle/PID/creation differs from its pre-GO identity")
         image, size = ctypes.create_unicode_buffer(32768), wintypes.DWORD(32768)
-        if not self.kernel.QueryFullProcessImageNameW(self.root["value"], 0, image, ctypes.byref(size)):
-            raise ctypes.WinError(ctypes.get_last_error())
+        ctypes.set_last_error(0)
+        ok = self.kernel.QueryFullProcessImageNameW(self.root["value"], 0, image, ctypes.byref(size))
+        error = 0 if ok else ctypes.get_last_error()
+        row["api_results"]["QueryFullProcessImageNameW"].update(attempted=True, returned=bool(ok), error=error)
+        if not ok:
+            if strict or wait != 0 or error != 31 or identity is None:
+                raise ctypes.WinError(error)
+            row["observation_gaps"].append("Exited retained handle image query failed31; current image unknown; identity reference was verified before GO")
+            return row
+        row["image"] = image.value
         if Path(image.value).resolve() != self.expected_root_image:
             raise OSError("Retained root image differs from original launcher")
-        return self.event("retained_root", label=label, pid=pid, image=image.value,
-                          wait=wait, exit_code=code.value, creation_filetime_100ns=value(created),
-                          exit_filetime_100ns=value(exited) if wait == 0 else None)
+        current = {"retained_handle": self.root["value"], "pid": pid, "image": str(Path(image.value).resolve()),
+                   "creation_filetime_100ns": row["creation_filetime_100ns"]}
+        if identity is None:
+            if not strict:
+                raise OSError("Missing strictly verified pre-GO retained root identity")
+            self.root_identity = current
+            self.record["pre_GO_root_identity"] = dict(current)
+        elif current != identity:
+            raise OSError("Retained root identity differs from its pre-GO proof")
+        row["identity_reference"] = dict(self.root_identity)
+        return row
 
     def later_probes(self):
         anchor = self.followup_anchor
@@ -391,19 +443,36 @@ def observed_shell(native):
         def accounting(self):
             result = super().accounting()
             if result != native.last_job:
-                native.event("job_accounting", value=result)
                 native.last_job = result
+                try:
+                    native.event("job_accounting", value=result)
+                except Exception as error:
+                    native.defer_observer_error("Job accounting observation", error, value=result)
             return result
 
         def terminate(self):
-            native.event("original_job_terminate", accounting=self.accounting())
+            before = None
+            try:
+                before = self.accounting()
+                native.event("original_job_terminate", accounting=before)
+            except Exception as error:
+                native.defer_observer_error("Job terminate observation", error, accounting=before)
             super().terminate()
 
         def drain(self, timeout=5):
-            native.event("original_job_drain_begin", timeout_seconds=timeout)
+            try:
+                native.event("original_job_drain_begin", timeout_seconds=timeout)
+            except Exception as error:
+                native.defer_observer_error("Job drain begin observation", error)
             result = super().drain(timeout)
-            native.root_state("after-original-drain")
-            native.event("original_job_drain_end", value=result)
+            try:
+                native.root_state("after-original-drain", strict=False)
+            except Exception as error:
+                native.defer_observer_error("Retained root after drain observation", error)
+            try:
+                native.event("original_job_drain_end", value=result)
+            except Exception as error:
+                native.defer_observer_error("Job drain end observation", error, value=result)
             return result
 
         def close(self):
@@ -415,11 +484,10 @@ def observed_shell(native):
                     return
                 try:
                     native.close(ledger)
-                except OSError as error:
+                except Exception as error:
                     # Original execute must reach its finally sample write.
                     # Defer observer failure only; never change its verdict.
-                    native.record.setdefault("deferred_observer_errors", []).append(
-                        {"stage": "exact Job close", "error": str(error), "handle_ledger": dict(ledger)})
+                    native.defer_observer_error("exact Job close", error, handle_ledger=dict(ledger))
                     return
                 self.handle = None
 
