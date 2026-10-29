@@ -84,6 +84,30 @@ def describe(directory: Path) -> list[str]:
     return lines
 
 
+
+def heartbeat_summary(trace: list[dict]) -> list[str]:
+    """Describe heartbeat gaps and child state, which show whether a silent
+    stretch came from a blocked reader or from a dead child."""
+    heartbeats = [row for row in trace if row.get("schema") == "termforge-output-heartbeat-v1"]
+    lines: list[str] = []
+    for terminal in sorted({row.get("terminal") for row in heartbeats}):
+        mine = [row for row in heartbeats if row.get("terminal") == terminal]
+        if not mine:
+            continue
+        gaps = []
+        previous = None
+        for row in mine:
+            if previous is not None and row.get("t_ms", 0) - previous >= 1500:
+                gaps.append((previous, row.get("t_ms")))
+            previous = row.get("t_ms", 0)
+        states = sorted({(row.get("child_signaled"), row.get("exit_code"), row.get("read_error")) for row in mine})
+        consumed = [row.get("consumed") for row in mine]
+        lines.append(
+            "   terminal %s heartbeats=%d consumed=%s..%s gaps=%s child_states=%s"
+            % (terminal, len(mine), consumed[0] if consumed else None, consumed[-1] if consumed else None,
+               gaps[:3], states[:3]))
+    return lines
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
@@ -95,6 +119,8 @@ def main():
             stages.extend(sorted(p for p in run.iterdir() if p.is_dir()))
     for stage in stages:
         for line in describe(stage):
+            print(line)
+        for line in heartbeat_summary(read_jsonl(stage / "output-trace.jsonl")):
             print(line)
 
 
