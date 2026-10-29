@@ -1,5 +1,7 @@
 # 保留原生与末端 margin 合同的实现路径
 
+> 后续（2026-10-29）：本页的“候选仅可应用”状态已被真实构建与 20 次同源运行取代，路径结论与维护方案见 [conpty-margin-path-decision.md](conpty-margin-path-decision.md)。
+
 [#56](https://github.com/JavaZeroo/termforge/issues/56) 的当前交付是可执行的逐字段原生 oracle、固定上游的补丁候选及下一次构建入口。
 **原生缺口仍存在，尚无经过真实运行证明的完整修复路径。** 补丁仅检查可应用，没有编译或替换任何后端。
 这保留 [#41](https://github.com/JavaZeroo/termforge/issues/41) 的原合同与开放状态，不改变 #34 产品决定。
