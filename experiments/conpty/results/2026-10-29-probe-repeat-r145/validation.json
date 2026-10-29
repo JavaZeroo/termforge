@@ -1,0 +1,57 @@
+{
+  "schema": "termforge-conpty-probe-repeat-r145-v1",
+  "issue": 145,
+  "commit": "f1c48d9",
+  "runs": {
+    "isolated": {
+      "run": 40847785625,
+      "job": "windows-2025-original-probe-repeat",
+      "iterations": 40,
+      "sessions": 160,
+      "failures": 0,
+      "elapsed_s": {
+        "min": 1.312,
+        "median": 1.344,
+        "max": 1.39
+      }
+    },
+    "after_console_tests": {
+      "run": 40849464556,
+      "job": "windows-2025-probe-after-conpty-tests",
+      "predecessors": [
+        "conpty_ctrl_c (5.31s, passed)",
+        "conpty_margin (0.31s, passed)"
+      ],
+      "iterations": 20,
+      "sessions": 80,
+      "failures": 1
+    },
+    "clone_control": {
+      "runs": [
+        40841303342,
+        40841934880
+      ],
+      "samples": 2800,
+      "stale": 0
+    }
+  },
+  "revealed_red": {
+    "iteration": 10,
+    "sample": "normal repeat 1",
+    "valid": false,
+    "reason": "steady_resources=false",
+    "threads_before": 4,
+    "threads_after": 6,
+    "resource_settle_ms": 1011.02,
+    "resized": 1,
+    "output_bytes": 608,
+    "exit_code": 37,
+    "read_error": 109,
+    "note": "resize reply was correct (TFSIZE:120x40); the red is the post-session thread baseline, not a stale dimension"
+  },
+  "preserved_failures": [
+    "run 40848143873: whole-suite predecessor variant failed on fixtures the dispatch job does not prepare (benchmark_tools, differential, workflow_sessions, workflow_resources, workflow_resource_phases, shell); sampling stage never ran. Environment not equivalent to build.yml."
+  ],
+  "conclusion": "#145 的旧尺寸回复在隔离重复、控制台测试后采样和克隆探针放大三种条件下均未复现；复现的是另一类线程稳态红色。",
+  "performance_claim": false
+}
