@@ -1,0 +1,43 @@
+{
+  "schema": "termforge-core-search-reorder-v1",
+  "issues": [
+    169,
+    27,
+    164
+  ],
+  "base_commit": "57cf8bb0ac93ac7b86979ca7918abbbd3f472560",
+  "scope": "TextSearch 以文档 rank 处理结构重排：order revision 检测、局部 repair、rank 化 rewind/match/prune",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42",
+    "build_type": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false
+  },
+  "commands": [
+    "cmake -S . -B build -G \"Visual Studio 17 2022\" -A x64",
+    "cmake --build build --config Release --target search_test search_reorder_test order_query_test resize_test history_test selection_test buffer_state_test alternate_mode_test decawm_mode_test replay receive --parallel 4",
+    "ctest --test-dir build -C Release -R \"^(search_core|search_reorder_core|order_query_core|resize_core|history_core|selection_core|buffer_state_core|alternate_mode_core|decawm_mode_core|core)$\" --output-on-failure"
+  ],
+  "results": {
+    "build": "exit 0",
+    "core_and_search_tests": "10/10 passed",
+    "new_test": "search_reorder_core: 4 scenarios passed"
+  },
+  "source_sha256": {
+    "experiments/core/text_search.hpp": "c4f4845a838756f4e4c60eb91595ac8386080eedbfbc38e88961404c049c91d6",
+    "experiments/core/search_reorder_test.cpp": "1ab5121e1497a4a6fc90003dc4332771240f4697229cc99f9a45256fb48e4406",
+    "CMakeLists.txt": "e81bbc4152dd9fc5213d911f4d196bcd5a7075d8e918a42ca9108ec10800891d"
+  },
+  "preserved_environment_failures": [
+    "首个 core Python 回归失败仅因隔离构建缺少 replay/receive 辅助二进制；补齐后 10/10。"
+  ],
+  "limitations": [
+    "无 UI/Find overlay、Qt 会话或真实 TUI 集成验证",
+    "运行中重排的重扫/重建成本未测量",
+    "任意交错的重排/淘汰/内容变化序列未被穷尽；仅固定用例",
+    "不据此关闭 #27/#164 或声明 R2 通过"
+  ],
+  "performance_claim": false
+}

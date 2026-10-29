@@ -48,7 +48,9 @@ class TextSearch {
     bool audit_requested_ = false, loaded_ = false, boundary_done_ = false;
     bool audit_turn_ = true;
     bool at_end_ = false, cap_reached_ = false;
-    uint64_t next_id_ = 0, emit_from_id_ = 0;
+    uint64_t next_id_ = 0, document_order_revision_ = 0;
+    size_t emit_from_rank_ = 0, current_rank_ = 0;
+    bool order_changed_ = false;
     DocumentLine current_;
     DocumentLineMetadata current_meta_;
     uint64_t current_successor_id_ = 0;
@@ -101,7 +103,8 @@ class TextSearch {
         rows_.clear(); matches_.clear(); origins_.clear(); matched_ = origin_head_ = 0;
         current_ = {}; current_meta_ = {}; byte_ = span_ = 0;
         audit_cursor_ = 0; audit_requested_ = loaded_ = boundary_done_ = at_end_ = cap_reached_ = false;
-        next_id_ = emit_from_id_ = 0;
+        next_id_ = 0; emit_from_rank_ = current_rank_ = 0;
+        document_order_revision_ = 0; order_changed_ = false;
     }
     bool sync_epoch(const TextDocument& doc) {
         if (document_epoch_ == doc.epoch()) return false;
@@ -124,18 +127,41 @@ class TextSearch {
     }
     // Re-read enough preceding text to reconstruct matches crossing the changed
     // row. Keep metadata, not a full text copy or query-sized per-row snapshots.
-    void rewind(size_t changed, uint64_t changed_id) {
+    void rewind(const TextDocument& doc, size_t changed, uint64_t changed_id) {
         size_t first = changed, bytes = 0;
         while (first && bytes < query_.size() - 1) bytes += rows_[--first].bytes;
         next_id_ = first < rows_.size() ? rows_[first].meta.id : changed_id;
         const auto prefix_before = first < rows_.size() ? rows_[first].prefix_before : current_prefix_before_;
-        emit_from_id_ = changed_id;
-        matches_.erase(std::remove_if(matches_.begin(), matches_.end(), [changed_id](const SearchMatch& hit) {
-            return hit.range.end.line_id >= changed_id;
+        // The change starts at rank 'changed'; the scan may resume earlier so a
+        // query straddling the boundary can be rescanned, but hits that end
+        // before the change keep their original position in the result list.
+        emit_from_rank_ = changed;
+        matches_.erase(std::remove_if(matches_.begin(), matches_.end(), [&doc, changed](const SearchMatch& hit) {
+            const auto rank = doc.index_of(hit.range.end.line_id);
+            return !rank || *rank >= changed;
         }), matches_.end());
         rows_.resize(first); audit_cursor_ = (std::min)(audit_cursor_, first);
         current_ = {}; loaded_ = boundary_done_ = at_end_ = cap_reached_ = false;
         byte_ = span_ = origin_head_ = 0; matched_ = prefix_before; origins_.clear();
+    }
+    // Restore "scanned row i sits at document rank i" after a structure-order
+    // change. Rows before the first displaced one keep their hits; everything
+    // from there is rescanned by the ordinary bounded path.
+    void repair_order(const TextDocument& doc) {
+        size_t first = rows_.size();
+        for (size_t index = 0; index < rows_.size(); ++index) {
+            const auto rank = doc.index_of(rows_[index].meta.id);
+            if (!rank || *rank != index) { first = index; break; }
+        }
+        bool loaded_moved = false;
+        if (loaded_) {
+            const auto rank = doc.index_of(current_meta_.id);
+            loaded_moved = !rank || *rank != rows_.size();
+        }
+        if (first < rows_.size()) rewind(doc, first, rows_[first].meta.id);
+        else if (loaded_moved) rewind(doc, rows_.size(), current_meta_.id);
+        document_order_revision_ = doc.order_revision();
+        order_changed_ = false;
     }
     void consume(unsigned char c, Origin origin) {
         if (origins_.size() < query_.size()) origins_.push_back(origin);
@@ -145,7 +171,7 @@ class TextSearch {
         if (c == folded(static_cast<unsigned char>(query_[matched_]))) ++matched_;
         if (matched_ != query_.size()) return;
         const TextRange range{origins_[origin_head_].begin, origin.end};
-        if (origins_.size() == query_.size() && range.end.line_id >= emit_from_id_) {
+        if (origins_.size() == query_.size() && current_rank_ >= emit_from_rank_) {
             // Several matching combining components can map to one cell.
             if (matches_.empty() || !equal(matches_.back().range.begin, range.begin) ||
                                     !equal(matches_.back().range.end, range.end))
@@ -158,9 +184,9 @@ class TextSearch {
     void audit_one(const TextDocument& doc) {
         if (audit_cursor_ < rows_.size()) {
             const auto expected = rows_[audit_cursor_];
-            if (!row_valid(doc, expected.meta, expected.successor_id)) rewind(audit_cursor_, expected.meta.id);
+            if (!row_valid(doc, expected.meta, expected.successor_id)) rewind(doc, audit_cursor_, expected.meta.id);
             else ++audit_cursor_;
-        } else if (loaded_ && !row_valid(doc, current_meta_, current_successor_id_)) rewind(rows_.size(), current_meta_.id);
+        } else if (loaded_ && !row_valid(doc, current_meta_, current_successor_id_)) rewind(doc, rows_.size(), current_meta_.id);
         else if (audit_serial_ == change_serial_) audit_requested_ = false;
         else { audit_cursor_ = 0; audit_serial_ = change_serial_; }
     }
@@ -169,8 +195,10 @@ class TextSearch {
         if (rows_.empty() || doc.index_of(rows_.front().meta.id)) return false;
         const auto removed = rows_.front().meta.id; rows_.pop_front();
         if (audit_cursor_) --audit_cursor_;
-        matches_.erase(std::remove_if(matches_.begin(), matches_.end(), [removed](const SearchMatch& hit) {
-            return hit.range.begin.line_id <= removed;
+        // A hit survives only while both endpoints still resolve. Identity order
+        // no longer implies position, so liveness replaces the id comparison.
+        matches_.erase(std::remove_if(matches_.begin(), matches_.end(), [&doc](const SearchMatch& hit) {
+            return !doc.valid(hit.range.begin) || !doc.valid(hit.range.end);
         }), matches_.end());
         if (matches_.size() < options_.result_limit) cap_reached_ = false;
         // A partial query carried in from evicted text can change the phase of
@@ -196,6 +224,7 @@ class TextSearch {
                 at_end_ = true; return false;
             }
             current_ = doc.line(*index); current_meta_ = doc.meta(*index);
+            current_rank_ = *index;
             current_successor_id_ = *index + 1 < doc.size() ? doc.meta(*index + 1).id : 0;
             current_prefix_before_ = matched_;
             next_id_ = 0; loaded_ = true; byte_ = span_ = 0; boundary_done_ = false;
@@ -215,7 +244,7 @@ class TextSearch {
             ++progress.bytes_scanned; return true;
         }
         const auto index = doc.index_of(current_meta_.id);
-        if (!index) { rewind(rows_.size(), current_meta_.id); return true; }
+        if (!index) { rewind(doc, rows_.size(), current_meta_.id); return true; }
         const bool has_next = *index + 1 < doc.size();
         if (!boundary_done_ && has_next && !current_.joins_next) {
             const auto next = doc.meta(*index + 1);
@@ -236,6 +265,7 @@ public:
         if (!options.result_limit || options.result_limit > result_hard_limit)
             throw std::invalid_argument("search result limit must be between 1 and 4096");
         advance_generation(); reset_scan(); query_ = std::move(query); options_ = options; document_epoch_ = doc.epoch();
+        document_order_revision_ = doc.order_revision();
         prefix_.assign(query_.size(), 0);
         for (size_t i = 1, length = 0; i < query_.size(); ++i) {
             const auto c = folded(static_cast<unsigned char>(query_[i]));
@@ -254,6 +284,7 @@ public:
         if (change_serial_ == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("search change serial exhausted");
         ++change_serial_;
+        if (doc.order_revision() != document_order_revision_) order_changed_ = true;
         if (!audit_requested_) { audit_requested_ = true; audit_cursor_ = 0; audit_serial_ = change_serial_; }
         at_end_ = false; status_ = SearchStatus::running; return generation_;
     }
@@ -261,8 +292,9 @@ public:
         sync_epoch(doc);
         SearchStep progress{status_, 0, 0, 0, generation == generation_};
         if (!progress.accepted || status_ != SearchStatus::running || !budget) return progress;
+        if (order_changed_) { repair_order(doc); ++progress.work_used; }
         if (loaded_ && !row_valid(doc, current_meta_, current_successor_id_)) {
-            rewind(rows_.size(), current_meta_.id); ++progress.work_used;
+            rewind(doc, rows_.size(), current_meta_.id); ++progress.work_used;
         }
         while (progress.work_used < budget && prune_one(doc)) ++progress.work_used;
         // Alternating units also guarantee scan progress for a budget of one;
@@ -303,8 +335,14 @@ public:
             for (const auto& row : rows_)
                 if (!row_valid(doc, row.meta, row.successor_id)) return {};
         }
-        if (loaded_ && current_meta_.id >= hit.range.begin.line_id && current_meta_.id <= hit.range.end.line_id &&
-            !row_valid(doc, current_meta_, current_successor_id_)) return {};
+        if (loaded_) {
+            // The loaded row is inside the hit's document span, not its id span.
+            const auto begin = doc.index_of(hit.range.begin.line_id);
+            const auto end = doc.index_of(hit.range.end.line_id);
+            const auto current = doc.index_of(current_meta_.id);
+            if (!begin || !end || !current || *begin > *current || *current > *end) return {};
+            if (!row_valid(doc, current_meta_, current_successor_id_)) return {};
+        }
         return hit;
     }
     std::optional<SearchNavigation> navigate(const TextDocument& doc, SearchDirection direction,
