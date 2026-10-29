@@ -67,6 +67,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 
 | 范围 | 结果与复现入口 | 可以支持的结论与限制 |
 |---|---|---|
+| 行存储封存与结构单一发布（#169 第二片） | [固定结果](../experiments/core/results/2026-10-29-sealed-row-storage/README.md)、[验证身份](../experiments/core/results/2026-10-29-sealed-row-storage/validation.json) | `Screen::lines/history` 私有，只读口 + 23 文件/363 处迁移；Find overlay 改文档 rank；默认 Release 构建 exit 0、核心 8/8、扩展快测 20/20、candidate 源 /W4 编译 0。无新 VT/重排行为；运行中跨重排 Search、Qt 与候选运行由宿主作业复核。 |
 | 默认核心缩小与重绘交错（#156） | [固定四-case机制诊断](../experiments/shell/results/2026-10-29-resize-repaint-witness/README.md)、[脱敏验证](../experiments/shell/results/2026-10-29-resize-repaint-witness/validation.json) | A/C保留2499B，B/D在第五段重绘首次失效且行分配路径不同；只见证机制，原CI切点/根因未知，未修生产。witness结束后Job仍active1，发起一次终止后归零；成员身份/逐句柄退出未知，不称全树自然退出。 |
 | 持续 cmd 输出与原始 Ctrl-C 回归（#36 未关闭） | [受监督入口](../experiments/conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)、[三次 fresh 公开记录及本地字节复核](../experiments/conpty/results/2026-10-26-ctrl-c-retest/validation.json) | 原百万次输出、单次 ETX、五秒期限和退出 37 保留；三次 fresh 原始字节/Job0 本地重算。后续成功未解释历史失败，未改产品 Ctrl-C 路径。 |
 | 持续输出中断的原失败记录 | [#36](https://github.com/JavaZeroo/termforge/issues/36)、[ConPTY 输入机制研究](research/conpty-ctrl-c-input.md)、[原 R1 历史证据](../experiments/shell/results/2026-10-23-r1-foundations/validation.json) | 原 Windows 11 回归中的 normal/resize 超时与 ETW/插桩观察；调试扰动及管道读完成缺口保留。不是当前全套结果，后续未复现不能抹去此失败。 |

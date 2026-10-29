@@ -75,6 +75,10 @@ class Screen {
     };
     // Permission belongs to the terminal; each frame retains its own edge state.
     bool autowrap_enabled_ = true;
+    // Retained storage. Only the owner changes its membership or order:
+    // resize, newline, activate_buffer, publish() and restore_frame().
+    std::vector<Line> lines;
+    std::deque<Line> history;
     int columns_;
     uint64_t next_id_ = 1;
     uint64_t buffer_epoch_ = 0;
@@ -173,8 +177,6 @@ public:
     bool wrap_pending = false;
     size_t discarded = 0;
     Style style;
-    std::vector<Line> lines;
-    std::deque<Line> history;
     const size_t history_limit;
     Screen(int rows, int columns, size_t limit) : columns_(columns), history_limit(limit) {
         if (rows < 1 || rows > 200 || columns < 1 || columns > 500 || limit > 10000)
@@ -219,6 +221,11 @@ public:
         ++buffer_epoch_;
         advance_order(ordered_);
     }
+    // Short-lived, read-only views. Callers must not retain them across a
+    // structure change; copy rows they need as values.
+    const std::vector<Line>& visible_lines() const { return lines; }
+    const std::deque<Line>& history_lines() const { return history; }
+    size_t history_size() const { return history.size(); }
     size_t retained_size() const { return history.size() + lines.size(); }
     const Line& retained_line(size_t index) const {
         if (index >= retained_size()) throw std::out_of_range("retained line index");
@@ -257,9 +264,6 @@ public:
             if (retained_line(index).id == identity) return index;
         return std::nullopt;
     }
-    // A direct structural write that bypasses publish() must call this so later
-    // lookups scan instead of trusting a bisect that no longer holds.
-    void mark_order_unknown() { ordered_ = false; }
     // Restore a complete frame image captured from this same screen family
     // (replay). The restored order is not provably the active sequence any more,
     // so lookups fall back to scanning and readers lose their rank-derived state.

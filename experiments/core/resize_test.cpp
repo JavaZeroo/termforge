@@ -21,8 +21,8 @@ static void invariant(const termforge::Screen& s) {
             }
         }
     };
-    lines(s.lines); lines(s.history);
-    check(s.history.size() <= s.history_limit, "history bound");
+    lines(s.visible_lines()); lines(s.history_lines());
+    check(s.history_lines().size() <= s.history_limit, "history bound");
 }
 static std::string first_two_rows(termforge::Parser& parser, size_t end_column) {
     termforge::TextDocument document(parser.screen);
@@ -58,36 +58,36 @@ int main() {
         complete_erasure_removes_only_obsolete_crop_provenance();
         Parser p(3, 4, 2); p.feed("abcdEF\r\nGH");
         p.screen.resize(3, 3);
-        check(text(p.screen.lines[0]) == "abc" && text(p.screen.lines[1]) == "EF " &&
-              text(p.screen.lines[2]) == "GH ", "soft and hard rows do not reflow");
+        check(text(p.screen.visible_lines()[0]) == "abc" && text(p.screen.visible_lines()[1]) == "EF " &&
+              text(p.screen.visible_lines()[2]) == "GH ", "soft and hard rows do not reflow");
         p.screen.resize(4, 6);
-        check(text(p.screen.lines[0]) == "abc   " && text(p.screen.lines[3]) == "      ", "growth blanks, no restore");
+        check(text(p.screen.visible_lines()[0]) == "abc   " && text(p.screen.visible_lines()[3]) == "      ", "growth blanks, no restore");
         p.screen.resize(1, 6);
-        check(text(p.screen.lines[0]) == "GH    " && p.screen.row == 0 && p.screen.history.size() == 2, "retain cursor via top history");
+        check(text(p.screen.visible_lines()[0]) == "GH    " && p.screen.row == 0 && p.screen.history_lines().size() == 2, "retain cursor via top history");
         p.feed("\r\nnext"); p.screen.resize(2, 2);
-        check(p.screen.discarded == 1 && text(p.screen.history[0]) == "EF" && text(p.screen.history[1]) == "GH", "history eviction and width");
-        check(text(p.screen.lines[1]) == "  ", "growth never pulls history");
+        check(p.screen.discarded == 1 && text(p.screen.history_lines()[0]) == "EF" && text(p.screen.history_lines()[1]) == "GH", "history eviction and width");
+        check(text(p.screen.visible_lines()[1]) == "  ", "growth never pulls history");
         Parser top(3, 4, 0); top.feed("AB\r\nCD\r\nEF\x1b[1;2H"); top.screen.resize(1, 4);
-        check(text(top.screen.lines[0]) == "AB  " && top.screen.column == 1 && top.screen.discarded == 0, "drop bottom without scroll history");
+        check(text(top.screen.visible_lines()[0]) == "AB  " && top.screen.column == 1 && top.screen.discarded == 0, "drop bottom without scroll history");
         Parser zero(3, 2, 0); zero.feed("A\r\nB\r\nC"); zero.screen.resize(1, 2);
-        check(zero.screen.discarded == 2 && text(zero.screen.lines[0]) == "C ", "zero history");
+        check(zero.screen.discarded == 2 && text(zero.screen.visible_lines()[0]) == "C ", "zero history");
         Parser wide(2, 4, 2); wide.feed("A\xe4\xb8\xad\xcc\x81"); wide.screen.resize(2, 2);
-        check(text(wide.screen.lines[0]) == "A " && wide.screen.lines[0][1].marks == 0, "clip wide including mark");
+        check(text(wide.screen.visible_lines()[0]) == "A " && wide.screen.visible_lines()[0][1].marks == 0, "clip wide including mark");
         wide.screen.resize(2, 1); invariant(wide.screen);
         Parser historical(1, 4, 2); historical.feed("A\xe4\xb8\xad\r\nZ"); historical.screen.resize(1, 2);
-        check(text(historical.screen.history[0]) == "A ", "wide history truncation"); invariant(historical.screen);
+        check(text(historical.screen.history_lines()[0]) == "A ", "wide history truncation"); invariant(historical.screen);
         Parser narrow(2, 3, 0, termforge::ParseMode::recovery); narrow.screen.resize(2, 1);
         narrow.feed("\xe4\xb8\xad"); narrow.finish(); invariant(narrow.screen);
         check(narrow.diagnostics().replaced_scalars == 1, "one-column wide recovery");
         Parser keep(2, 4, 2); keep.feed("\x1b[31m\xe4\xb8\xad\xcc\x81"); keep.screen.resize(3, 5);
-        check(keep.screen.lines[0][0].width == 2 && keep.screen.lines[0][0].marks == 1 &&
-              keep.screen.lines[0][0].style.fg == 1 && keep.screen.lines[2][0].style.plain(), "preserve style and marks, default blanks");
+        check(keep.screen.visible_lines()[0][0].width == 2 && keep.screen.visible_lines()[0][0].marks == 1 &&
+              keep.screen.visible_lines()[0][0].style.fg == 1 && keep.screen.visible_lines()[2][0].style.plain(), "preserve style and marks, default blanks");
         Parser wrap(2, 2); wrap.feed("ab"); wrap.screen.resize(2, 2);
         check(wrap.screen.wrap_pending, "same size is no-op"); wrap.screen.resize(2, 3); wrap.feed("X");
-        check(text(wrap.screen.lines[0]) == "aX " && !wrap.screen.wrap_pending, "clear delayed wrap on actual resize");
+        check(text(wrap.screen.visible_lines()[0]) == "aX " && !wrap.screen.wrap_pending, "clear delayed wrap on actual resize");
         Parser split(2, 4); split.feed("\xe4"); split.screen.resize(3, 5); split.feed("\xb8\xad\x1b[2;");
         split.screen.resize(4, 6); split.feed("3HZ"); split.finish();
-        check(text(split.screen.lines[1]) == "  Z   ", "preserve partial UTF8 and CSI parser state");
+        check(text(split.screen.visible_lines()[1]) == "  Z   ", "preserve partial UTF8 and CSI parser state");
         Parser attach(2, 4); attach.feed("a"); attach.screen.resize(2, 5);
         bool rejected = false; try { attach.feed("\xcc\x81"); } catch (const termforge::InputError&) { rejected = true; }
         check(rejected, "resize clears combining attachment");

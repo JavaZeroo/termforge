@@ -19,8 +19,8 @@ static void disabled_edge_overwrites(ParseMode mode) {
     const auto& screen = parser.screen;
     check(screen.row == 9 && screen.column == 90,
           "disabled edge CD must end at (10,91)");
-    check(project_line(screen.lines[9]).text == std::string(90, ' ') + "D" &&
-          project_line(screen.lines[10]).text.empty() && screen.history.empty(),
+    check(project_line(screen.visible_lines()[9]).text == std::string(90, ' ') + "D" &&
+          project_line(screen.visible_lines()[10]).text.empty() && screen.history_lines().empty(),
           "disabled edge CD must retain only D without a wrapped successor");
 }
 
@@ -57,13 +57,13 @@ static void observed_prefix(ParseMode mode, size_t count, size_t split, bool byt
     const auto& last = phases[count - 1];
     check(screen.row + 1 == last.cursor_row && screen.column + 1 == last.cursor_column,
           "observed prefix cursor differs from its literal DSR coordinates");
-    check(screen.active_buffer() == ScreenBuffer::primary && screen.history.empty() &&
+    check(screen.active_buffer() == ScreenBuffer::primary && screen.history_lines().empty() &&
           screen.discarded == 0 && parser.diagnostics().ignored_sequences == 0,
           "a supported main-screen source changed buffers/history or was ignored");
     for (size_t index = 0; index < count; ++index) {
         const auto& phase = phases[index];
-        const auto& first = screen.lines[phase.first_row];
-        const auto& second = screen.lines[phase.first_row + 1];
+        const auto& first = screen.visible_lines()[phase.first_row];
+        const auto& second = screen.visible_lines()[phase.first_row + 1];
         const auto first_projection = project_line(first).text;
         const auto second_projection = project_line(second).text;
         check(first_projection == std::string(90, ' ') + phase.first_text &&
@@ -104,15 +104,15 @@ static void private_commands_are_atomic(ParseMode mode) {
         if (mode == ParseMode::strict) {
             check(rejected && parser.screen.active_buffer() == ScreenBuffer::primary &&
                   parser.screen.row == 9 && parser.screen.column == 90 &&
-                  project_line(parser.screen.lines[9]).text.empty(),
+                  project_line(parser.screen.visible_lines()[9]).text.empty(),
                   "strict private input was accepted or partially changed visible state");
         } else {
             check(!rejected, "recovery failed instead of consuming unsupported private input");
             parser.feed("CD"); parser.finish();
             check(parser.screen.active_buffer() == ScreenBuffer::primary &&
                   parser.screen.row == 10 && parser.screen.column == 1 &&
-                  project_line(parser.screen.lines[9]).text == std::string(90, ' ') + "C" &&
-                  project_line(parser.screen.lines[10]).text == "D" &&
+                  project_line(parser.screen.visible_lines()[9]).text == std::string(90, ' ') + "C" &&
+                  project_line(parser.screen.visible_lines()[10]).text == "D" &&
                   parser.diagnostics().ignored_sequences == 1,
                   "recovery partially applied private modes or contaminated the next printable bytes");
         }
@@ -125,7 +125,7 @@ static void recovery_drops_incomplete_mode_commands() {
         parser.feed(std::string("\x1b[?7") + cancellation + "\x1b[10;91HCD");
         parser.finish();
         check(parser.screen.row == 10 && parser.screen.column == 1 &&
-              project_line(parser.screen.lines[10]).text == "D",
+              project_line(parser.screen.visible_lines()[10]).text == "D",
               "cancellation or ESC resynchronization applied an incomplete private mode");
     }
     Parser parser(25, 91, 2, ParseMode::recovery);
@@ -133,7 +133,7 @@ static void recovery_drops_incomplete_mode_commands() {
     parser.feed("\x1b[10;91HCD"); parser.finish();
     check(parser.screen.row == 10 && parser.screen.column == 1 &&
           parser.diagnostics().truncated_sequences == 1 &&
-          project_line(parser.screen.lines[10]).text == "D",
+          project_line(parser.screen.visible_lines()[10]).text == "D",
           "EOF truncation applied a private mode or contaminated the next CSI");
 }
 
@@ -144,11 +144,11 @@ static void wide_fit_policy_is_preserved(ParseMode mode) {
     parser.feed("\x1b[?7l\x1b[1;3H\xe4\xb8\xad");
     parser.finish();
     check(parser.screen.row == 1 && parser.screen.column == 2 &&
-          parser.screen.lines[1].size() == 3 &&
-          parser.screen.lines[1][0].text == "\xe4\xb8\xad" &&
-          parser.screen.lines[1][0].width == 2 && parser.screen.lines[1][1].width == 0 &&
-          parser.screen.lines[1][2].text == " " &&
-          project_line(parser.screen.lines[1]).text == "\xe4\xb8\xad" &&
+          parser.screen.visible_lines()[1].size() == 3 &&
+          parser.screen.visible_lines()[1][0].text == "\xe4\xb8\xad" &&
+          parser.screen.visible_lines()[1][0].width == 2 && parser.screen.visible_lines()[1][1].width == 0 &&
+          parser.screen.visible_lines()[1][2].text == " " &&
+          project_line(parser.screen.visible_lines()[1]).text == "\xe4\xb8\xad" &&
           parser.diagnostics().replaced_scalars == 0,
           "wide scalar fit fallback replaced text, overflowed a row, or lost its trailing cell");
 }

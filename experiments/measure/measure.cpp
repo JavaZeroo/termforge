@@ -134,7 +134,7 @@ static uint64_t hash_payload(std::string_view bytes) {
 static void check_recovery_mode() {
     termforge::Parser probe(1, 3, 0, parser_mode);
     probe.feed(std::string_view("\xff" "A", 2)); probe.finish();
-    if (probe.screen.lines[0][0].text != "\xef\xbf\xbd" || probe.screen.lines[0][1].text != "A" ||
+    if (probe.screen.visible_lines()[0][0].text != "\xef\xbf\xbd" || probe.screen.visible_lines()[0][1].text != "A" ||
         probe.screen.column != 2 || probe.diagnostics().malformed_utf8 != 1)
         throw std::runtime_error("recovery parser identity probe failed");
 }
@@ -250,7 +250,7 @@ int main(int argc, char** argv) {
             }
         };
         auto correct = [&line, &route](const termforge::Screen& s) {
-            if (s.row != 23 || s.column != 0 || s.wrap_pending || s.discarded != 877 || s.history.size() != 100) return false;
+            if (s.row != 23 || s.column != 0 || s.wrap_pending || s.discarded != 877 || s.history_lines().size() != 100) return false;
             if (route == "interactive") {
                 const auto matches = [](const termforge::Line& row) {
                     const std::string expected = "abcdeQgh";
@@ -258,17 +258,17 @@ int main(int argc, char** argv) {
                         row[c].width != 1 || !row[c].style.plain()) return false;
                     return true;
                 };
-                for (int r = 0; r < 23; ++r) if (!matches(s.lines[r])) return false;
-                for (const auto& row : s.history) if (!matches(row)) return false;
-                for (int c = 0; c < 80; ++c) if (s.lines.back()[c].text != " " ||
-                    s.lines.back()[c].width != 1 || !s.lines.back()[c].style.plain()) return false;
+                for (int r = 0; r < 23; ++r) if (!matches(s.visible_lines()[r])) return false;
+                for (const auto& row : s.history_lines()) if (!matches(row)) return false;
+                for (int c = 0; c < 80; ++c) if (s.visible_lines().back()[c].text != " " ||
+                    s.visible_lines().back()[c].width != 1 || !s.visible_lines().back()[c].style.plain()) return false;
                 return true;
             }
             for (int r = 0; r < 24; ++r) for (int c = 0; c < 80; ++c) {
-                const auto& cell = s.lines[r][c];
+                const auto& cell = s.visible_lines()[r][c];
                 if (cell.text != (r < 23 && c < static_cast<int>(line.size()) ? "x" : " ") || cell.width != 1 || !cell.style.plain()) return false;
             }
-            for (const auto& row : s.history) for (int c = 0; c < 80; ++c)
+            for (const auto& row : s.history_lines()) for (int c = 0; c < 80; ++c)
                 if (row[c].text != (c < 76 ? "x" : " ") || row[c].width != 1 || !row[c].style.plain()) return false;
             return true;
         };

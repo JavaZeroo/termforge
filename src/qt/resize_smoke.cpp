@@ -323,7 +323,7 @@ static std::pair<unsigned long long, size_t> output_continues_during_resize(cons
     return {model.received_bytes(), output.high_water_bytes};
 }
 static bool has_line(const termforge::Screen& screen, std::string_view expected) {
-    for (const auto& row : screen.lines) {
+    for (const auto& row : screen.visible_lines()) {
         std::string text;
         for (const auto& cell : row) if (cell.width) text += cell.text;
         while (!text.empty() && text.back() == ' ') text.pop_back();
@@ -426,7 +426,7 @@ int main(int argc, char** argv) {
         for (const auto size : sizes) {
             ++stage;
             const auto before = model.resize_state();
-            const auto first_line_id = model.screen().lines.front().id;
+            const auto first_line_id = model.screen().visible_lines().front().id;
             bool event_responded = false;
             QTimer::singleShot(0, &terminal, [&] { event_responded = true; ++heartbeat_events; });
             const QSize requested_pixels = size == QSize(1, 1) ? QSize(1, 1) :
@@ -449,7 +449,7 @@ int main(int argc, char** argv) {
                 const auto after = model.resize_state();
                 require(after.requested_revision == before.requested_revision &&
                         after.transport_revision == before.transport_revision &&
-                        model.screen().lines.front().id == first_line_id,
+                        model.screen().visible_lines().front().id == first_line_id,
                         "same-size repeat changed the core frame or native resize revision");
             }
             record_state(stage, size.width(), size.height(), terminal, model);

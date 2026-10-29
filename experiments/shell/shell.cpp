@@ -1050,7 +1050,7 @@ public:
         // Each worker takes and releases its own mutex. This is an interval
         // observation, not an atomic snapshot across queues or paste progress.
         value.output=output_.snapshot(); value.input=input_.snapshot(); value.resize=resize_.snapshot();
-        value.history_rows=parser_.screen.history.size(); value.history_limit=parser_.screen.history_limit;
+        value.history_rows=parser_.screen.history_lines().size(); value.history_limit=parser_.screen.history_limit;
         value.retained_rows=parser_.screen.retained_size(); value.discarded_history_rows=parser_.screen.discarded;
         value.viewport=runtime_published_viewport_;
         value.consumed_bytes=result_.consumed; value.max_consumed_per_tick=result_.max_consumed_per_tick;
@@ -1205,7 +1205,7 @@ public:
     }
     bool contains_line(const std::string& text) const { return line_is(text); }
     bool live_contains_line(const std::string& expected) const {
-        for(const auto& line:parser_.screen.lines) {
+        for(const auto& line:parser_.screen.visible_lines()) {
             std::string text = termforge::project_line(line, false).text;
             while(!text.empty() && text.back()==' ') text.pop_back();
             if(text==expected) return true;
