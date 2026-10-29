@@ -47,11 +47,22 @@ inline void Workspace::scenario_clipboard() {
     } else if(stage_==3 && evidence.receiver->checkpoint()) {
         require(captured()==evidence.baseline(),"clipboard receiver baseline differs");
         evidence.receiver->release();
+        // Setup writes are not the product behaviour under test; Explorer or a
+        // previous case can hold the desktop clipboard for a moment, so give the
+        // fixture a small bounded retry instead of failing the whole scenario.
+        auto prepare_clipboard = [&](auto&& write) {
+            std::string last;
+            for (int attempt = 0; attempt < 4; ++attempt) {
+                try { write(); return; } catch (const std::exception& error) { last = error.what(); }
+                if (attempt + 1 != 4) Sleep(50 * (attempt + 1));
+            }
+            throw std::runtime_error(last);
+        };
         try {
             if(evidence.index==0) {
-                tf_shell::write_unicode_clipboard(window_,u"OCCUPIED_MUST_NOT_SEND");
+                prepare_clipboard([&] { tf_shell::write_unicode_clipboard(window_,u"OCCUPIED_MUST_NOT_SEND"); });
                 evidence.owner=std::make_unique<tf_shell_test::ClipboardScenarioOwner>(false);
-            } else if(evidence.index==1) tf_shell_test::write_oversized_clipboard(window_);
+            } else if(evidence.index==1) prepare_clipboard([&] { tf_shell_test::write_oversized_clipboard(window_); });
             else evidence.owner=std::make_unique<tf_shell_test::ClipboardScenarioOwner>(true);
         } catch(const std::exception& error) {
             throw std::runtime_error(std::string("clipboard case=")+evidence.name()+
