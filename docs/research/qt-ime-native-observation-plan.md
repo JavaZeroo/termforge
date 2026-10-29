@@ -1,6 +1,6 @@
-# Qt IME 原生观察 N1（#155，待执行）
+# Qt IME 原生观察协议（#155）
 
-状态：**提案/待root快审，实际native运行次数0，完整CTest次数0**。它只接续 #155，不改变 [R2](../milestones/R2-local-terminal.md)、原版优先规则或性能容差。公开事件 focused 原件位于本切片私有工作目录；只在源码、运行包和本计划经审查后由 root 独占隔离 Windows 11 VM 执行。
+本页维护观察协议、资源上限与执行前置；各次尝试的源码/运行包、失败和验收状态由 [#155](https://github.com/JavaZeroo/termforge/issues/155)维护，N1等名称仅标识历史尝试。本文不构成执行授权或原生通过结论，也不改变 [R2](../milestones/R2-local-terminal.md)、原版优先规则或性能容差。公开事件与原生观察各自留证；每次由 root 在源码、运行包和协议经审查后冻结独立租约，独占隔离 Windows 11 VM 执行。
 
 ## 固定入口与来源
 
