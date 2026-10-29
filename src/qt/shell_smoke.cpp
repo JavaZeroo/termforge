@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QImage>
+#include <QInputMethodEvent>
 #include <QFontMetricsF>
 #include <QTemporaryDir>
 #include <QTest>
@@ -356,6 +357,29 @@ int main(int argc, char** argv) {
         for (int column = 0; column < 3; ++column) {
             const QRect cell(8 + column * cell_width, 8 + answer_row * cell_height, cell_width, cell_height);
             require(result.copy(cell) != prompt.copy(cell), "arithmetic answer cell has no new rendered ink");
+        }
+        // #155: composition must stay a preview, a commit must reach the
+        // session, and cancelling (empty preedit) must write nothing.
+        {
+            QInputMethodEvent composing;
+            composing.setPreeditString(QStringLiteral("tfime_preedit"), 0);
+            QApplication::sendEvent(&window, &composing);
+            QApplication::processEvents();
+            require(!has_text(model.screen(), "tfime_preedit"), "preedit text reached the session");
+            QInputMethodEvent committed;
+            committed.setCommitString(QStringLiteral("TFIME_COMMIT"));
+            QApplication::sendEvent(&window, &committed);
+            await([&] { return has_text(model.screen(), "TFIME_COMMIT"); }, model,
+                  "committed input-method text did not reach the session");
+            QInputMethodEvent cancelling;
+            cancelling.setPreeditString(QStringLiteral("tfime_cancel"), 0);
+            QApplication::sendEvent(&window, &cancelling);
+            QInputMethodEvent cleared;
+            cleared.setPreeditString(QString(), 0);
+            QApplication::sendEvent(&window, &cleared);
+            QApplication::processEvents();
+            require(!has_text(model.screen(), "tfime_cancel"), "cancelled preedit reached the session");
+            require(has_text(model.screen(), "TFIME_COMMIT"), "cancel removed already committed text");
         }
         QTest::keyClicks(&window, QStringLiteral("exit 37"));
         QTest::keyClick(&window, Qt::Key_Return);
