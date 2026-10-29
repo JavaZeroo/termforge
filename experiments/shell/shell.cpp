@@ -51,6 +51,20 @@ void selection_discard_diagnostic(const termforge::TextSelection::DiscardReport&
            << ",\"current_bytes\":" << report.current_bytes << ",\"saved_columns\":" << report.saved_columns
            << ",\"current_columns\":" << report.current_columns << ",\"t_ms\":" << GetTickCount64() << "}\n";
 }
+std::ofstream* g_output_trace = nullptr;
+std::mutex g_trace_mutex;
+std::map<const void*, uint64_t> g_trace_ids;
+void trace_input(const void* owner, bool written, size_t bytes, bool accepted) {
+    std::lock_guard<std::mutex> lock(g_trace_mutex);
+    if (!g_output_trace || !g_output_trace->good()) return;
+    const auto found = g_trace_ids.find(owner);
+    const uint64_t terminal = found == g_trace_ids.end() ? 0 : found->second;
+    *g_output_trace << "{\"schema\":\"termforge-input-trace-v1\",\"terminal\":" << terminal
+                    << ",\"phase\":\"" << (written ? "write" : "enqueue")
+                    << "\",\"t_ms\":" << GetTickCount64() << ",\"bytes\":" << bytes
+                    << ",\"accepted\":" << (accepted ? "true" : "false") << "}\n";
+    g_output_trace->flush();
+}
 void install_selection_diagnostic_once() {
     static std::once_flag once;
     std::call_once(once, [] {
@@ -1020,7 +1034,14 @@ public:
         const std::string capture = env_path("TERMFORGE_CAPTURE_OUTPUT");
         if (!capture.empty()) capture_output_.open(capture, std::ios::binary | std::ios::app);
         const std::string trace = env_path("TERMFORGE_OUTPUT_TRACE");
-        if (!trace.empty()) trace_output_.open(trace, std::ios::app);
+        if (!trace.empty()) {
+            trace_output_.open(trace, std::ios::app);
+            if (trace_output_) {
+                g_output_trace = &trace_output_;
+                { std::lock_guard<std::mutex> lock(g_trace_mutex); g_trace_ids[&input_] = identity_; }
+                input_.set_trace_hook(&trace_input);
+            }
+        }
         snapshot_ = std::make_shared<const Snapshot>(viewport_.snapshot(parser_.screen), 0);
     }
     ~ShellWindow() {
