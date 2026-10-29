@@ -1,0 +1,143 @@
+{
+  "schema": "termforge-core-history-memory-v1",
+  "issue": 164,
+  "base_commit": "02c42e90114b535a9b5b88c566b504767fff8a61",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200",
+    "generator": "Visual Studio 17 2022",
+    "build_type": "Release",
+    "binary": "history_memory_probe (EXCLUDE_FROM_ALL)"
+  },
+  "method": {
+    "parser": "Parser(24, 80, N)",
+    "line_bytes": 80,
+    "hit_pattern": "one needle every 1000 rows",
+    "samples_per_size": 3,
+    "process": "fresh process per sample",
+    "memory_api": "K32GetProcessMemoryInfo"
+  },
+  "samples": [
+    {
+      "history": 100,
+      "retained": 124,
+      "matches": 0,
+      "steps": 3,
+      "work": 9965,
+      "fill_us": [
+        590,
+        581,
+        752
+      ],
+      "search_us": [
+        987,
+        867,
+        1200
+      ],
+      "private_before": [
+        741376,
+        684032,
+        688128
+      ],
+      "private_after": [
+        2539520,
+        2568192,
+        2572288
+      ],
+      "working_before": [
+        4837376,
+        4349952,
+        4354048
+      ],
+      "working_after": [
+        5652480,
+        5169152,
+        5173248
+      ]
+    },
+    {
+      "history": 1000,
+      "retained": 1024,
+      "matches": 1,
+      "steps": 21,
+      "work": 82865,
+      "fill_us": [
+        5719,
+        5120,
+        7839
+      ],
+      "search_us": [
+        6023,
+        6006,
+        5916
+      ],
+      "private_before": [
+        671744,
+        684032,
+        684032
+      ],
+      "private_after": [
+        7688192,
+        7692288,
+        7692288
+      ],
+      "working_before": [
+        4337664,
+        4345856,
+        4349952
+      ],
+      "working_after": [
+        10330112,
+        10338304,
+        10395648
+      ]
+    },
+    {
+      "history": 10000,
+      "retained": 10024,
+      "matches": 10,
+      "steps": 199,
+      "work": 811865,
+      "fill_us": [
+        65463,
+        53969,
+        55176
+      ],
+      "search_us": [
+        58331,
+        53796,
+        53389
+      ],
+      "private_before": [
+        675840,
+        679936,
+        679936
+      ],
+      "private_after": [
+        58966016,
+        58830848,
+        58970112
+      ],
+      "working_before": [
+        4341760,
+        4345856,
+        4345856
+      ],
+      "working_after": [
+        61145088,
+        61120512,
+        61198336
+      ]
+    }
+  ],
+  "source_sha256": {
+    "experiments/core/history_memory_probe.cpp": "787b4eaa7f8b13b27cc2429cf9f79412d60315fcb1ed3993388866b40e0ffba5",
+    "CMakeLists.txt": "ada254edee850f8570973ffa499ea64532507bf2a510e109e079a7231f45dc6b"
+  },
+  "limitations": [
+    "生产 Screen/TextSearch，不是 r164 fork 的 Scan/LazyTable 对照",
+    "未覆盖淘汰/重排混合、真实 ConPTY、UI 与长期增长",
+    "单查询单命中分布；不是性能预算或容差",
+    "进程基线含运行时与二进制映像"
+  ],
+  "performance_claim": false
+}
