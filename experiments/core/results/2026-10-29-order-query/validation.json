@@ -1,0 +1,123 @@
+{
+  "schema": "termforge-core-order-query-local-validation-v1",
+  "issue": 169,
+  "base_commit": "05f04d0222c06bed958f6894a27d2a1b0708d270",
+  "validated_source_commit": "d5116e2cefc4755efc79a4bd8de26eb2629ca71a",
+  "first_pushed_source_commit": "33b58fa4452c4d4f23dcfc463f65c5c521e59065",
+  "docs_and_evidence_commit": "the commit that adds this file's current revision",
+  "branch": "feat/core-order-query-r169",
+  "scope": "Screen 发布行结构、精确 ID→rank 查询、结构 revision、回放恢复入口；TextDocument 定位/比较、HistoryViewport 活 anchor、TextSearch 导航比较改用文档序；CandidateTerminal 经发布口导入。未封住公开 lines/history。",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "build_type": "Release",
+    "default_build": {
+      "qt_shell": false,
+      "candidate_adapter": false
+    },
+    "candidate_build": {
+      "path": "build/cand",
+      "candidate_adapter": true,
+      "rust": "cargo 1.92.0"
+    }
+  },
+  "observed_contract": {
+    "fixture": {
+      "columns": 4,
+      "history_limit": 4,
+      "history_ids": [
+        1,
+        3,
+        4,
+        5
+      ],
+      "live_ids": [
+        7,
+        6
+      ]
+    },
+    "expected": {
+      "locate_rank": {
+        "0": null,
+        "2": null,
+        "5": 3,
+        "6": 5,
+        "7": 4
+      },
+      "lower_bound_id_2": 1,
+      "document_order_compare_7_before_6": true,
+      "previous_navigation_from_id_6": 7,
+      "next_navigation_from_id_7": 6,
+      "no_wrap_previous_from_id_6": 7
+    },
+    "order_revision_advances_on": [
+      "bottom-row scroll",
+      "physical resize",
+      "buffer activation",
+      "structural publication",
+      "replay frame restore"
+    ],
+    "order_revision_unchanged_on": [
+      "cell write",
+      "cursor-only newline",
+      "identical resize",
+      "identical republication",
+      "rejected publication"
+    ],
+    "publication_rejections_covered": [
+      "zero identity",
+      "duplicate identity",
+      "row width mismatch",
+      "no live row",
+      "history above active budget"
+    ],
+    "publication_cursor_policy": "clamp into the published frame, then invalidate the old attachment",
+    "candidate_history_fit": "preserved history rows from an older frame are fitted to the current width (shrink sets cropped, wide tail cell cleared) before publication"
+  },
+  "commands": [
+    "cmake --build build --config Release --parallel 2",
+    "ctest --test-dir build -C Release -R \"^(order_query_core|resize_core|history_core|selection_core|search_core|buffer_state_core|alternate_mode_core|decawm_mode_core)$\" --output-on-failure",
+    "cmake -S . -B build/cand -G \"Visual Studio 17 2022\" -A x64 -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=ON",
+    "cmake --build build/cand --config Release --target candidate_core_test --parallel 2",
+    "ctest --test-dir build/cand -C Release -R \"^candidate_core$\" --output-on-failure"
+  ],
+  "results": {
+    "full_default_release_build": "exit 0",
+    "core_ctest_filtered_8": "8/8 passed",
+    "candidate_core_local": "1/1 passed",
+    "first_pushed_ci": "alacritty-headless (ubuntu-24.04) failed: candidate_core -> published row width differs from the screen"
+  },
+  "preserved_failures": [
+    "首个推送版本 33b58fa 的 CI：两个 Ubuntu alacritty-headless 作业在 candidate_core 失败，报 published row width differs from the screen。已定位为回放保留历史仍是上一帧宽度（111 列）被发布进 149 列新帧；旧代码的直接 assign 掩盖了混合宽度。修复按物理行策略适配保留行后，本地同配置复跑 1/1。该红→绿只属于候选适配器配置。",
+    "新测试首轮失败两次均来自测试自身：夹具第二可见行写成 y 却期望两个 x 命中；把已发布乱序期望成 order_known()==true；后续光标断言误期望列也归零。仅改测试，不作为产品红→绿。",
+    "Screen::lines/history 仍公开，封口与 caller 迁移未完成；有序增量 Find 的 emit_from_id_/prune/rewind 仍按 ID 假设，运行中重排未验收。",
+    "Qt、固定 ConPTY、真实 GUI/TUI 与任何性能负载均未由本项运行。"
+  ],
+  "source_sha256": {
+    "experiments/core/screen.hpp": "18d62af8d190c798218f7bce6d390ff8af5478aa6a1a0f1f1256059790866843",
+    "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+    "experiments/core/text_search.hpp": "ddd3b2fad0f39795f74003951a885f57bc7f2a5eb0678ab15111ebd523dad010",
+    "experiments/core/history_view.hpp": "50dcb2f7e801082f7f21bc23f43e6944af711fde0af6e4c100152ca46ed9bd13",
+    "experiments/core/candidate_terminal.cpp": "88457784ad947b55a3aa956bedde35a810fa2b77fc68de0d54515fed1dbe7812",
+    "experiments/core/order_query_test.cpp": "c546abd517b5a56ad39280d02c020a0bbfb172ccebfdbd5dacc30bddb531e409",
+    "CMakeLists.txt": "cd5546218b758cff70471870d9b6b8b59479e330cfb432274253a4de8266a092"
+  },
+  "binary_sha256": {
+    "order_query_test.exe": "632dcc9f4a3b8a06dde355e269f52db48a3ba4b63c41aa1a3be39b1b6c69e885",
+    "history_test.exe": "cfb5fd1f9a9c0729186ec0a404ee7f30d87472d08629122b45419b1a9954bd12",
+    "selection_test.exe": "dc06e54ab192270d0bfdd6897e3de7f934cbe60c8bd1d67edbf855b0b895ba6c",
+    "search_test.exe": "e28165dd170cbb5e8bf724c4d545c10c1efd724bf454b4c4aa49670614b15daf",
+    "resize_test.exe": "de693ad51c7212c84ddad34b1faf6bd615cca71137b26ef57e328be1e22e5f3c",
+    "buffer_state_test.exe": "fa23349623be72f42ff207be2fb2d640ea5e76060197b78c3f9a99b211700221",
+    "alternate_mode_test.exe": "b5aad988e1fcc63e9731f0140124fd2f7af9c8699219f84607712f124768cf6b",
+    "decawm_mode_test.exe": "3795a7fa5f4507b96076ee16d6c629e89f92f5062b4e59e56dad275bb54fb635",
+    "candidate_core_test.exe": "f34a08f9f13ecc5e7a9d3e64ed19bf06d5e2a010fdf6c874c007133c317ba881"
+  },
+  "limitations": [
+    "Screen::lines/history 仍为公开成员：本片只提供 owner 发布口与显式回放恢复，未封住直接写入。",
+    "有序增量 Find 内部的 emit_from_id_/prune/rewind 仍假设有序；运行中任意重排未验收。",
+    "无 region LF、无新 VT 模式、无用户可达重排命令，也未改默认物理裁剪策略。",
+    "候选适配器只在本机以 Rust 依赖构建并运行 candidate_core；不覆盖真实 ConPTY 运输、GUI 或性能。"
+  ]
+}

@@ -279,8 +279,7 @@ void CandidateTerminal::synchronize() {
             screen.wrap_pending = replay_origin_->wrap_pending;
             screen.discarded = replay_origin_->discarded;
             screen.style = replay_origin_->style;
-            screen.history = replay_origin_->history;
-            screen.lines = replay_origin_->lines;
+            screen.restore_frame(*replay_origin_);
         }
         return;
     }
@@ -343,13 +342,24 @@ void CandidateTerminal::synchronize() {
         versions.emplace(line.id, version);
     }
 
+    // Preserved history arrives from an older frame, so it can still hold the
+    // previous width. Fit it with the same physical-row policy Screen::resize
+    // applies instead of publishing rows whose width contradicts the frame.
+    for (auto& line : retained) {
+        if (line.size() == static_cast<size_t>(meta.columns)) continue;
+        if (line.size() > static_cast<size_t>(meta.columns)) line.cropped = true;
+        line.resize(meta.columns);
+        if (!line.empty() && line.back().width == 2) line.back() = Cell{};
+    }
+    screen.publish(std::vector<Line>(retained.begin(), retained.begin() + meta.history),
+                   std::vector<Line>(retained.begin() + meta.history, retained.end()));
+    // Cursor and style follow the accepted publication: a rejected frame must
+    // not leave the screen half-updated.
     screen.row = meta.row;
     screen.column = static_cast<int>(meta.column);
     screen.wrap_pending = meta.wrap_pending;
     screen.discarded = meta.discarded;
     screen.style = {meta.fg, meta.bg, meta.bold};
-    screen.history.assign(retained.begin(), retained.begin() + meta.history);
-    screen.lines.assign(retained.begin() + meta.history, retained.end());
     versions_ = std::move(versions);
     identity_aliases_.clear();
     for (size_t index = 0; index < retained.size(); ++index)
