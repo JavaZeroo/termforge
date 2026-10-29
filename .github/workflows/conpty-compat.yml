@@ -113,12 +113,12 @@ jobs:
             build/r145-repeat
             build/test-artifacts/conpty
 
-  windows-2025-probe-after-suite:
-    # #145: the recorded failure happened inside build.yml's full ctest job, not
-    # in an isolated probe job. This job runs the same suite first and only then
-    # samples the original probe, to test job-level contamination as the trigger.
+  windows-2025-probe-after-conpty-tests:
+    # #145: the recorded failure happened inside build.yml's long ctest job, not
+    # in an isolated probe job. This job runs the console-heavy ConPTY tests
+    # first (their exit is recorded, not gated), then samples the original probe.
     runs-on: windows-2025
-    timeout-minutes: 40
+    timeout-minutes: 25
     env:
       PYTHONUTF8: '1'
       PYTHONPATH: ${{ github.workspace }}
@@ -128,30 +128,30 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
-      - name: Configure and build the default tree
+      - name: Build the console-heavy fixtures
         run: |
           cmake -S . -B build
-          cmake --build build --config Release --parallel 2
-      - name: Run the regression suite without the conpty test
+          cmake --build build --config Release --target termforge_conpty_probe conpty_ctrl_c_probe conpty_margin_probe --parallel 2
+      - name: Run the console-heavy tests first
         shell: pwsh
         run: |
-          ctest --test-dir build -C Release -E "^conpty$" --output-on-failure
-          # Suite failures are recorded, not used to gate the sampling stage.
-          Write-Output "suite_exit=$LASTEXITCODE"
-      - name: Sample the original probe after the suite
+          ctest --test-dir build -C Release -R "^(conpty_ctrl_c|conpty_margin)$" --output-on-failure
+          Write-Output "predecessor_exit=$LASTEXITCODE"
+          exit 0
+      - name: Sample the original probe after the predecessors
         shell: pwsh
         run: |
           $binary = Get-ChildItem build -Recurse -Filter termforge_conpty_probe.exe | Select-Object -First 1
           if (-not $binary) { throw "lifecycle probe binary missing" }
-          python -m experiments.conpty.repeat_run --binary $binary.FullName --iterations 20 --repeats 3 --mode normal --out build/r145-after-suite
+          python -m experiments.conpty.repeat_run --binary $binary.FullName --iterations 20 --repeats 3 --mode normal --out build/r145-after-conpty
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Preserve post-suite evidence
+      - name: Preserve post-predecessor evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: conpty-probe-after-suite-r145
+          name: conpty-probe-after-tests-r145
           retention-days: 14
           if-no-files-found: warn
           path: |
-            build/r145-after-suite
+            build/r145-after-conpty
             build/test-artifacts
