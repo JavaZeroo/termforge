@@ -40,12 +40,13 @@ std::string selection_diag_path() {
     return value ? std::string(value) : std::string{};
 #endif
 }
-void selection_discard_diagnostic(const char* reason) {
+void selection_discard_diagnostic(const char* reason, size_t row) {
     static const std::string path = selection_diag_path();
     if (path.empty()) return;
     std::ofstream stream(path, std::ios::app);
     if (!stream) return;
-    stream << "{\"schema\":\"termforge-selection-discard-v1\",\"reason\":\"" << reason << "\"}\n";
+    stream << "{\"schema\":\"termforge-selection-discard-v1\",\"reason\":\"" << reason
+           << "\",\"row\":" << row << "}\n";
 }
 void install_selection_diagnostic_once() {
     static std::once_flag once;

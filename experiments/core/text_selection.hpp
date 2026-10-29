@@ -14,7 +14,7 @@ public:
     // Diagnostics only: never changes behaviour. A consumer may install a hook to
     // learn why a reconciled selection was discarded; the hook runs synchronously
     // on the caller's thread and must not reenter selection or the document.
-    using DiscardObserver = void (*)(const char* reason);
+    using DiscardObserver = void (*)(const char* reason, size_t row);
     static void set_discard_observer(DiscardObserver observer) { discard_observer_ = observer; }
 private:
     static inline DiscardObserver discard_observer_ = nullptr;
@@ -40,8 +40,8 @@ private:
         return c >= 0x80 || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
                (c >= '0' && c <= '9') || c == '_' || c == '-' ? 0 : 2;
     }
-    bool invalidate(const char* reason) {
-        if (discard_observer_) discard_observer_(reason);
+    bool invalidate(const char* reason, size_t row = 0) {
+        if (discard_observer_) discard_observer_(reason, row);
         clear(); invalidated_ = true; return false;
     }
 public:
@@ -77,28 +77,28 @@ public:
     bool reconcile(const TextDocument& document) {
         if (!range_) return !invalidated_;
         if (range_->begin.epoch != document.epoch() || range_->end.epoch != document.epoch())
-            return invalidate("epoch-mismatch");
+            return invalidate("epoch-mismatch", 0);
         const auto begin = document.index_of(range_->begin.line_id);
-        if (!begin || saved_.size() > document.size() - *begin) return invalidate("anchor-missing-or-shrunk");
+        if (!begin || saved_.size() > document.size() - *begin) return invalidate("anchor-missing-or-shrunk", 0);
         for (size_t i = 0; i < saved_.size(); ++i) {
             const auto meta = document.meta(*begin + i);
             auto& saved = saved_[i];
             if (meta.id != saved.projection.id &&
                 (i + 1 != saved_.size() || range_->end.column != 0 ||
-                 !saved.projection.text.empty() || !saved.projection.spans.empty())) return invalidate("row-identity-replaced");
+                 !saved.projection.text.empty() || !saved.projection.spans.empty())) return invalidate("row-identity-replaced", i);
             if (meta.id != saved.projection.id || meta.version != saved.projection.version ||
                 meta.joins_next != saved.joins_next) {
                 auto current = document.line(*begin + i);
                 // The last row at column zero is an excluded half-open
                 // endpoint. Its own following break is outside the copy.
                 const bool compare_boundary = i + 1 != saved_.size() || range_->end.column != 0;
-                if (!same_text(saved, current, compare_boundary)) return invalidate("row-text-changed");
+                if (!same_text(saved, current, compare_boundary)) return invalidate("row-text-changed", i);
                 saved = std::move(current);
             }
         }
         const auto first = document.position(*begin, range_->begin.column);
         const auto last = document.position(*begin + saved_.size() - 1, range_->end.column);
-        if (!first || !last) return invalidate("endpoint-unavailable");
+        if (!first || !last) return invalidate("endpoint-unavailable", 0);
         range_ = TextRange{*first, *last}; return true;
     }
     bool select_word(const TextDocument& document, size_t index, size_t column) {

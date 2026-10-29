@@ -188,7 +188,7 @@ static void empty_stale_and_capacity_boundaries() {
 }
 
 static std::vector<std::string> observed_discards;
-static void observe_discard(const char* reason) { observed_discards.push_back(reason ? reason : ""); }
+static void observe_discard(const char* reason, size_t) { observed_discards.push_back(reason ? reason : ""); }
 static void discard_reasons_are_reported() {
     Parser p(2, 6, 2);
     p.feed("ONETWO\r\nTHREE");
