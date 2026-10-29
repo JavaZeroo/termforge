@@ -43,10 +43,19 @@ public:
         const auto value = meta(index);
         return {project_line(screen_.retained_line(index)), value.columns, value.joins_next, value.ending};
     }
-    std::optional<size_t> index_of(uint64_t identity) const {
-        const auto index = screen_.lower_bound_line(identity);
-        if (index == size() || screen_.retained_line(index).id != identity) return std::nullopt;
-        return index;
+    // Exact current rank: identity is not document order, so a missing row is
+    // reported as missing instead of snapping to a neighbour.
+    std::optional<size_t> index_of(uint64_t identity) const { return screen_.locate(identity); }
+    // Owner structure revision, for callers that cache rank-derived state.
+    uint64_t order_revision() const { return screen_.order_revision(); }
+    // Document-order comparison of two validated positions. Ids order nothing;
+    // the retained sequence does, so this stays correct for reordered rows.
+    std::optional<int> compare(TextPosition a, TextPosition b) const {
+        if (!valid(a) || !valid(b)) return std::nullopt;
+        const auto first = *index_of(a.line_id), second = *index_of(b.line_id);
+        if (first != second) return first < second ? -1 : 1;
+        if (a.column != b.column) return a.column < b.column ? -1 : 1;
+        return 0;
     }
     bool valid(TextPosition value) const {
         if (value.epoch != epoch()) return false;

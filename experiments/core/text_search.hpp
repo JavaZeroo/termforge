@@ -58,8 +58,13 @@ class TextSearch {
         return a.id == b.id && a.version == b.version && a.columns == b.columns &&
                a.joins_next == b.joins_next && a.ending == b.ending;
     }
-    static bool before(const TextPosition& a, const TextPosition& b) {
-        return a.line_id < b.line_id || (a.line_id == b.line_id && a.column < b.column);
+    // Document order, never identity order: a retained row may hold a larger id
+    // but still sit earlier in the document.
+    static bool before(const TextDocument& doc, const TextPosition& a, const TextPosition& b) {
+        const auto first = doc.index_of(a.line_id), second = doc.index_of(b.line_id);
+        if (!first || !second) return false;
+        if (*first != *second) return *first < *second;
+        return a.column < b.column;
     }
     static bool equal(const TextPosition& a, const TextPosition& b) {
         return a == b;
@@ -300,7 +305,7 @@ public:
         for (int pass = 0; pass < (allow_wrap ? 2 : 1); ++pass) for (size_t offset = 0; offset < matches_.size(); ++offset) {
             const auto index = next ? offset : matches_.size() - 1 - offset;
             const auto hit = match(doc, index); if (!hit) continue;
-            const bool beyond = !anchor || (next ? before(*anchor, hit->range.begin) : before(hit->range.begin, *anchor));
+            const bool beyond = !anchor || (next ? before(doc, *anchor, hit->range.begin) : before(doc, hit->range.begin, *anchor));
             if ((pass == 0 && beyond) || (pass == 1 && !beyond)) return SearchNavigation{*hit, index, pass == 1};
         }
         return {};

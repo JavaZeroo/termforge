@@ -24,10 +24,16 @@ class HistoryViewport {
     }
 public:
     // A viewport is owned by exactly one session. Never share it across Screens.
+    // A live anchor uses its exact rank; an evicted anchor keeps the existing
+    // ordered-history fallback (first retained row at or after the id).
+    size_t anchor_top(const Screen& screen) const {
+        if (const auto index = screen.locate(anchor_)) return (std::min)(*index, screen.history.size());
+        return (std::min)(screen.lower_bound_line(anchor_), screen.history.size());
+    }
     ViewportState reconcile(const Screen& screen) {
         sync_epoch(screen);
         const size_t maximum = screen.history.size();
-        const size_t top = following_ ? maximum : (std::min)(screen.lower_bound_line(anchor_), maximum);
+        const size_t top = following_ ? maximum : anchor_top(screen);
         anchor_ = screen.retained_line(top).id;
         return {top, screen.retained_size(), static_cast<size_t>(screen.height()), maximum, anchor_, following_};
     }
@@ -53,8 +59,8 @@ public:
     }
     ViewportState bottom(const Screen& screen) { return scroll_to(screen, screen.history.size()); }
     ViewportState reveal(const Screen& screen, uint64_t identity) {
-        const auto index = screen.lower_bound_line(identity);
-        return scroll_to(screen, index);
+        if (const auto index = screen.locate(identity)) return scroll_to(screen, *index);
+        return scroll_to(screen, screen.lower_bound_line(identity));
     }
     bool following() const { return following_; }
     uint64_t anchor() const { return anchor_; }

@@ -61,11 +61,15 @@ class Screen {
         Style style;
         std::vector<Line> lines;
         std::deque<Line> history;
+        // True only while the retained sequence is known to be ordered by id.
+        // False is the safe fallback: lookups scan instead of bisecting.
+        bool ordered_ = true;
         template<class State> void swap(State& other) noexcept {
             std::swap(row, other.row); std::swap(column, other.column);
             std::swap(last_row, other.last_row); std::swap(last_column, other.last_column);
             std::swap(wrap_pending, other.wrap_pending); std::swap(discarded, other.discarded);
             std::swap(style, other.style);
+            std::swap(ordered_, other.ordered_);
             lines.swap(other.lines); history.swap(other.history);
         }
     };
@@ -74,11 +78,13 @@ class Screen {
     int columns_;
     uint64_t next_id_ = 1;
     uint64_t buffer_epoch_ = 0;
+    uint64_t order_revision_ = 0;
+    bool ordered_ = true;
     int last_row = -1, last_column = -1;
     ScreenBuffer active_buffer_ = ScreenBuffer::primary;
     std::optional<FrameState> inactive_;
     FrameState active_state_copy() const {
-        return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history};
+        return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history, ordered_};
     }
     void swap_active(FrameState& state) noexcept {
         state.swap(*this);
@@ -87,6 +93,14 @@ class Screen {
         if (line.version == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("line version exhausted");
         ++line.version;
+    }
+    // Publishing a structure change is the single place that advances the
+    // document-order revision. Overflow fails before the caller mutates.
+    void advance_order(bool ordered) {
+        if (order_revision_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("screen order revision exhausted");
+        ++order_revision_;
+        ordered_ = ordered;
     }
     static Line make_line(int columns, const Cell& cell, uint64_t& identity) {
         if (identity == (std::numeric_limits<uint64_t>::max)())
@@ -202,6 +216,7 @@ public:
         active_buffer_ = buffer;
         next_id_ = identity;
         ++buffer_epoch_;
+        advance_order(ordered_);
     }
     size_t retained_size() const { return history.size() + lines.size(); }
     const Line& retained_line(size_t index) const {
@@ -222,6 +237,81 @@ public:
     const Line* find_line(uint64_t identity) const {
         const auto index = lower_bound_line(identity);
         return index < retained_size() && retained_line(index).id == identity ? &retained_line(index) : nullptr;
+    }
+    // Owner-published structure revision: advances whenever retained membership,
+    // document order or the history/live split changes. It never stands in for a
+    // row content version or for the buffer epoch.
+    uint64_t order_revision() const { return order_revision_; }
+    // Exact retained rank for a live identity. A missing id is never replaced by
+    // a neighbour: callers that need the old evicted-anchor fallback must ask for
+    // it explicitly (lower_bound_line).
+    std::optional<size_t> locate(uint64_t identity) const {
+        if (!identity) return std::nullopt;
+        if (ordered_) {
+            const auto index = lower_bound_line(identity);
+            if (index < retained_size() && retained_line(index).id == identity) return index;
+            return std::nullopt;
+        }
+        for (size_t index = 0; index < retained_size(); ++index)
+            if (retained_line(index).id == identity) return index;
+        return std::nullopt;
+    }
+    // A direct structural write that bypasses publish() must call this so later
+    // lookups scan instead of trusting a bisect that no longer holds.
+    void mark_order_unknown() { ordered_ = false; }
+    bool order_known() const { return ordered_; }
+    // Explicit publication of an owned row image (import/replay). Identities are
+    // validated, never renumbered: a duplicate or zero identity is rejected
+    // before anything is committed. Order is recorded so lookups stay exact.
+    // Cursor, style, discarded counters and the inactive frame are untouched.
+    void publish(std::vector<Line> history_rows, std::vector<Line> live_rows) {
+        const auto width = static_cast<size_t>(columns_);
+        const auto validate = [width](const std::vector<Line>& rows, const char* what) {
+            for (const auto& line : rows) {
+                if (line.size() != width) throw std::invalid_argument(what);
+                if (!line.id) throw std::invalid_argument("published row identity is zero");
+            }
+        };
+        validate(history_rows, "published row width differs from the screen");
+        validate(live_rows, "published row width differs from the screen");
+        if (live_rows.empty() || live_rows.size() > 200)
+            throw std::invalid_argument("published live rows must be between 1 and 200");
+        if (history_rows.size() > history_limit)
+            throw std::invalid_argument("published history exceeds the retained limit");
+        std::vector<uint64_t> identities;
+        identities.reserve(history_rows.size() + live_rows.size());
+        for (const auto& line : history_rows) identities.push_back(line.id);
+        for (const auto& line : live_rows) identities.push_back(line.id);
+        std::sort(identities.begin(), identities.end());
+        if (std::adjacent_find(identities.begin(), identities.end()) != identities.end())
+            throw std::invalid_argument("published row identity is duplicated");
+        if (order_revision_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("screen order revision exhausted");
+        bool ordered = true;
+        uint64_t maximum = next_id_ ? next_id_ - 1 : 0, previous = 0;
+        bool first = true;
+        const auto track = [&](const std::vector<Line>& rows) {
+            for (const auto& line : rows) {
+                if (!first && line.id < previous) ordered = false;
+                if (line.id > maximum) maximum = line.id;
+                previous = line.id; first = false;
+            }
+        };
+        track(history_rows); track(live_rows);
+        if (maximum == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("screen line identities exhausted");
+        const auto differs = [](const auto& current, const std::vector<Line>& next) {
+            if (current.size() != next.size()) return true;
+            for (size_t index = 0; index < next.size(); ++index)
+                if (current[index].id != next[index].id) return true;
+            return false;
+        };
+        const bool changed = differs(history, history_rows) || differs(lines, live_rows);
+        history.assign(history_rows.begin(), history_rows.end());
+        lines.assign(live_rows.begin(), live_rows.end());
+        if (changed) ++order_revision_;
+        ordered_ = ordered;
+        next_id_ = maximum + 1;
     }
     // Imported rows retain ordered unique identities; conflicts get a fresh identity and version.
     void normalize_identities(std::vector<Line>& retained) {
@@ -255,6 +345,7 @@ public:
         swap_active(next);
         if (hidden) inactive_->swap(*hidden);
         columns_ = columns; next_id_ = identity;
+        advance_order(ordered_);
     }
     void invalidate_attachment() { last_row = last_column = -1; }
     void move(int r, int c) {
@@ -276,6 +367,7 @@ public:
             if (history.size() > limit) { history.pop_front(); ++discarded; }
         } else ++discarded;
         lines.erase(lines.begin()); lines.push_back(make_line(width(), Cell{}, next_id_));
+        advance_order(ordered_);
     }
     void put(uint32_t cp, const std::string& utf8) {
         const int cells = scalar_width(cp);

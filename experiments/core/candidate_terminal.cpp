@@ -281,6 +281,9 @@ void CandidateTerminal::synchronize() {
             screen.style = replay_origin_->style;
             screen.history = replay_origin_->history;
             screen.lines = replay_origin_->lines;
+            // This direct restore keeps the frozen frame image; the restored
+            // order is no longer provably the active screen's own sequence.
+            screen.mark_order_unknown();
         }
         return;
     }
@@ -348,8 +351,8 @@ void CandidateTerminal::synchronize() {
     screen.wrap_pending = meta.wrap_pending;
     screen.discarded = meta.discarded;
     screen.style = {meta.fg, meta.bg, meta.bold};
-    screen.history.assign(retained.begin(), retained.begin() + meta.history);
-    screen.lines.assign(retained.begin() + meta.history, retained.end());
+    screen.publish(std::vector<Line>(retained.begin(), retained.begin() + meta.history),
+                   std::vector<Line>(retained.begin() + meta.history, retained.end()));
     versions_ = std::move(versions);
     identity_aliases_.clear();
     for (size_t index = 0; index < retained.size(); ++index)
