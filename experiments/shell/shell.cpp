@@ -30,16 +30,17 @@ namespace {
 // Opt-in diagnostic for the selection-discard path, used when a hosted geometry
 // change drops a live selection. Gated by TERMFORGE_SELECTION_DIAG=<jsonl path>;
 // without it nothing is written and no behaviour changes.
-std::string selection_diag_path() {
+std::string env_path(const char* name) {
 #ifdef _MSC_VER
     char* buffer = nullptr; size_t size = 0;
-    if (_dupenv_s(&buffer, &size, "TERMFORGE_SELECTION_DIAG") != 0 || !buffer) return {};
+    if (_dupenv_s(&buffer, &size, name) != 0 || !buffer) return {};
     std::string value(buffer); std::free(buffer); return value;
 #else
-    const char* value = std::getenv("TERMFORGE_SELECTION_DIAG");
+    const char* value = std::getenv(name);
     return value ? std::string(value) : std::string{};
 #endif
 }
+std::string selection_diag_path() { return env_path("TERMFORGE_SELECTION_DIAG"); }
 void selection_discard_diagnostic(const termforge::TextSelection::DiscardReport& report) {
     static const std::string path = selection_diag_path();
     if (path.empty()) return;
@@ -104,6 +105,7 @@ class ShellWindow {
     tf_shell_test::HostedImeObservation ime_observation_;
     inline static uint64_t next_identity_ = 0;
     const uint64_t identity_ = ++next_identity_;
+    std::ofstream capture_output_;
     std::unique_ptr<tf_shell::ClipboardReadJob> clipboard_read_;
     std::optional<tf_shell::PreparedPaste> pending_paste_;
     std::unique_ptr<tf_shell::PastePrompt> paste_prompt_;
@@ -809,6 +811,13 @@ class ShellWindow {
                 observed_output_.append(bytes);
                 if(observed_output_.size()>8192) observed_output_.erase(0,observed_output_.size()-8192);
             }
+            // Opt-in full capture: TERMFORGE_CAPTURE_OUTPUT=<path> appends every
+            // consumed chunk so a hosted failure can be replayed byte for byte.
+            // Nothing is written unless the variable is set.
+            if (capture_output_) {
+                capture_output_.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+                capture_output_.flush();
+            }
             parser_.feed(bytes); batch += bytes.size();
 #ifdef TERMFORGE_CANDIDATE_CORE
             route_terminal_events();
@@ -992,6 +1001,9 @@ public:
         DispatchMessageW(&message);
     }
     ShellWindow(std::string mode, std::string image) : mode_(std::move(mode)), image_path_(std::move(image)) {
+        // Opt-in full output capture for replayable failure evidence.
+        const std::string capture = env_path("TERMFORGE_CAPTURE_OUTPUT");
+        if (!capture.empty()) capture_output_.open(capture, std::ios::binary | std::ios::app);
         snapshot_ = std::make_shared<const Snapshot>(viewport_.snapshot(parser_.screen), 0);
     }
     ~ShellWindow() {
