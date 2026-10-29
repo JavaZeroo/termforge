@@ -29,6 +29,13 @@ std::string utf8(const std::wstring& text) {
                             result.data(), size, nullptr, nullptr) != size) fail("WideCharToMultiByte");
     return result;
 }
+std::string hex_bytes(const std::string& bytes) {
+    static constexpr char digits[] = "0123456789abcdef";
+    std::string result;
+    result.reserve(bytes.size() * 2);
+    for (unsigned char byte : bytes) { result += digits[byte >> 4]; result += digits[byte & 15]; }
+    return result;
+}
 void write_child(const std::string& bytes) {
     size_t offset = 0;
     while (offset < bytes.size()) {
@@ -107,6 +114,9 @@ int child() {
                                      info.srWindow.Right - info.srWindow.Left + 1,
                                      info.srWindow.Bottom - info.srWindow.Top + 1};
                 write_child("TFSIZE:" + command.substr(5) + ":" + describe(size) + ":END\r\n");
+            } else if (command.rfind("ECHO:", 0) == 0) {
+                write_child("TFINPUTHEX:" + hex_bytes(command) + ":END\r\n");
+                write_child("TF" + command + ":END\r\n");
             } else if (command == "EXIT") {
                 write_child("TFEXIT:37\r\n");
                 return 37;
@@ -141,6 +151,71 @@ bool reply_size(const std::string& raw, const std::string& tag, ChildSize& value
     const std::string body = raw.substr(prefix.size());
     if (body.size() < 4 || body.compare(body.size() - 4, 4, ":END") != 0) return false;
     return parse_size(body.substr(0, body.size() - 4), value);
+}
+
+// Mirrors the recorded failing sample: a brand-new session, one initial size
+// query, one UTF-8 echo, then resize + size query.
+int host_startup(unsigned sessions) {
+    int exit_status = 0;
+    std::cout << "{\"ready\":true,\"mode\":\"startup\"}" << std::endl;
+    for (unsigned index = 1; index <= sessions; ++index) {
+        Session session;
+        std::string raw;
+        ChildSize initial{}, reply{};
+        bool ready = false, echo = false, replied = false, parsed = false;
+        long long resize_to_send_us = 0, resize_to_reply_us = 0;
+        bool vt_before_reply = false;
+        std::exception_ptr failure;
+        try {
+            session.start(executable_path());
+            ready = session.wait_text("TFREADY");
+            require(ready, "ready marker timeout");
+            session.send("SIZE:init\r");
+            require(wait_reply(session, "init", raw, 5000), "initial size reply timeout");
+            require(reply_size(raw, "init", initial), "initial size reply malformed");
+            const std::string payload = "alpha-\xe6\xb1\x89\xe5\xad\x97-123";
+            session.send("ECHO:" + payload + "\r");
+            echo = session.wait_text("TFECHO:" + payload + ":END");
+            require(echo, "UTF-8 echo mismatch");
+            const auto resize_begin = std::chrono::steady_clock::now();
+            session.resize(120, 40);
+            const std::string tag = "s" + std::to_string(index);
+            session.send("SIZE:" + tag + "\r");
+            const auto send_done = std::chrono::steady_clock::now();
+            replied = wait_reply(session, tag, raw, 5000);
+            const auto reply_done = std::chrono::steady_clock::now();
+            parsed = replied && reply_size(raw, tag, reply);
+            resize_to_send_us = micros(resize_begin, send_done);
+            resize_to_reply_us = micros(resize_begin, reply_done);
+            vt_before_reply = session.output().find("\x1b[8;40;120t") != std::string::npos;
+            session.send("EXIT\r");
+            const bool exited = session.wait_exit(5000);
+            require(exited && session.exit_code == 37, "normal exit code mismatch");
+        } catch (const std::exception& error) {
+            std::cerr << "session " << index << ": " << error.what() << '\n';
+            exit_status = 1;
+        }
+        session.close();
+        std::cout << "{\"session\":" << index
+                  << ",\"ready\":" << (ready ? "true" : "false")
+                  << ",\"echo\":" << (echo ? "true" : "false")
+                  << ",\"request\":\"120x40\""
+                  << ",\"initial\":" << quoted(describe(initial))
+                  << ",\"replied\":" << (replied ? "true" : "false")
+                  << ",\"reply\":" << quoted(parsed ? describe(reply) : std::string{})
+                  << ",\"buffer_matches_request\":" << (parsed && reply.buffer_columns == 120 && reply.buffer_rows == 40 ? "true" : "false")
+                  << ",\"window_matches_request\":" << (parsed && reply.window_columns == 120 && reply.window_rows == 40 ? "true" : "false")
+                  << ",\"resize_vt_before_reply\":" << (vt_before_reply ? "true" : "false")
+                  << ",\"resize_to_send_us\":" << resize_to_send_us
+                  << ",\"resize_to_reply_us\":" << resize_to_reply_us
+                  << ",\"children_after\":" << session.active_after
+                  << ",\"exit_code\":" << session.exit_code
+                  << ",\"cleanup_complete\":" << (session.cleanup_complete ? "true" : "false")
+                  << "}" << std::endl;
+        if (exit_status) break;
+    }
+    std::cout << "{\"complete\":" << (exit_status == 0 ? "true" : "false") << "}" << std::endl;
+    return exit_status;
 }
 
 int host(unsigned rounds, bool barrier) {
@@ -212,10 +287,11 @@ int main(int argc, char** argv) {
         if (argc != 4 || std::string(argv[1]) != "--host") return 2;
         const unsigned rounds = static_cast<unsigned>(std::stoul(argv[2]));
         const std::string mode = argv[3];
-        if (!rounds || rounds > 1000 || (mode != "raw" && mode != "barrier")) return 2;
+        if (!rounds || rounds > 1000 || (mode != "raw" && mode != "barrier" && mode != "startup")) return 2;
         // The supervisor assigns this host to its job before sending this gate.
         std::string gate;
         if (!std::getline(std::cin, gate) || gate != "GO") return 2;
+        if (mode == "startup") return host_startup(rounds);
         return host(rounds, mode == "barrier");
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';

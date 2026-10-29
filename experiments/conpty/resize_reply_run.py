@@ -51,7 +51,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", type=Path, required=True)
     parser.add_argument("--rounds", type=int, default=100)
-    parser.add_argument("--mode", choices=("raw", "barrier"), default="raw")
+    parser.add_argument("--mode", choices=("raw", "barrier", "startup"), default="raw")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     if not 1 <= args.rounds <= 1000:

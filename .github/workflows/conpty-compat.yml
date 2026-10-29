@@ -64,6 +64,8 @@ jobs:
           foreach ($iteration in 1..5) {
             python -m experiments.conpty.resize_reply_run --binary $binary --rounds 200 --mode raw --out "build/r145-session-$iteration"
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            python -m experiments.conpty.resize_reply_run --binary $binary --rounds 100 --mode startup --out "build/r145-startup-$iteration"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
       - name: Preserve resize-reply evidence
         if: always()
@@ -72,4 +74,4 @@ jobs:
           name: conpty-resize-reply-r145
           retention-days: 14
           if-no-files-found: warn
-          path: build/r145-session-*
+          path: build/r145-*
