@@ -21,7 +21,9 @@
     "default_foreground_via_reverse": "E3E3DD",
     "palette_red_sgr41": "C4265E",
     "palette_blue_sgr44": "3465A4",
-    "palette_green_sgr42": "86B42B"
+    "palette_green_sgr42": "86B42B",
+    "palette_magenta_sgr45": "8C6BC8",
+    "palette_green_fg_sgr32": "86B42B"
   },
   "phases": {
     "main": {
@@ -46,7 +48,53 @@
     "ClearType text rendering not studied; only space-filled SGR blocks",
     "single VM, single fixed DPI, one package identity",
     "no SGR-changed alternate state, no non-colour attributes, no font study",
-    "does not close #126/#123/#27"
+    "does not close #126/#123/#27",
+    "SGR-carry observation is pipeline-level (conhost + ConPTY + WindTerm), layer attribution unknown",
+    "attribute save/restore attribution unknown between conhost, ConPTY and WindTerm"
   ],
-  "performance_claim": false
+  "performance_claim": false,
+  "sgr_carry": {
+    "protocol": "SGR 31;44 set before switch and kept; per-phase background-only and reverse-only space bands",
+    "phases": {
+      "main": {
+        "background": "3465A4",
+        "foreground": "C4265E",
+        "crop_sha16": "675e5d7b24dbdcf9"
+      },
+      "alternate": {
+        "background": "3465A4",
+        "foreground": "C4265E",
+        "crop_sha16": "734a58fe0224fcfb"
+      },
+      "restored_main": {
+        "background": "3465A4",
+        "foreground": "C4265E",
+        "crop_sha16": "31a070a2c1706709"
+      }
+    },
+    "interpretation": "1049h and 1049l neither reset nor restore the current SGR attributes in the conhost+ConPTY+WindTerm pipeline observed here.",
+    "attribution_limit": "pipeline-level observation; layer attribution unknown"
+  },
+  "alt_style_restore": {
+    "protocol": "SGR 31;44 on main, 32;45 inside alternate, then 1049l and draw without resetting",
+    "phases": {
+      "main_before": {
+        "background": "3465A4",
+        "foreground": "C4265E",
+        "crop_sha16": "c36c54c3ddce39e5"
+      },
+      "alternate": {
+        "background": "8C6BC8",
+        "foreground": "86B42B",
+        "crop_sha16": "96deb13c0866d41c"
+      },
+      "main_after_exit": {
+        "background": "1C1C1C",
+        "foreground": "E3E3DD",
+        "crop_sha16": "3c9cd48f2bbc1bf0"
+      }
+    },
+    "interpretation": "1049h saves the attribute state at entry, alternate-screen changes do not leak back, and 1049l restores the entry-time attributes.",
+    "attribution_limit": "pipeline-level observation; layer attribution unknown"
+  }
 }
