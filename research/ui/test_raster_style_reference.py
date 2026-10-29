@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -81,7 +82,18 @@ class RasterBoundaryTests(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which("node"),"Node is required to exercise production JS native-boundary helpers")
     def test_production_js_native_contract(self):
-        result=subprocess.run(["node",str(ROOT/"research/ui/test_raster_native_contract.js")],capture_output=True,text=True,timeout=10)
+        # Bounded diagnostic for the observed ten second stall (#144): a preload
+        # checkpoint records whether Node ever started, without changing the limit.
+        with tempfile.TemporaryDirectory() as diagnostic:
+            checkpoint=Path(diagnostic)/"node-checkpoint.json"
+            preload=Path(diagnostic)/"checkpoint.js"
+            preload.write_text("const fs=require(\"fs\");fs.writeFileSync(process.env.TERMFORGE_NODE_CHECKPOINT,JSON.stringify({started:Date.now(),version:process.version}));",encoding="utf-8")
+            environment=dict(os.environ,TERMFORGE_NODE_CHECKPOINT=str(checkpoint))
+            try:
+                result=subprocess.run(["node","--require",str(preload),str(ROOT/"research/ui/test_raster_native_contract.js")],capture_output=True,text=True,timeout=10,env=environment)
+            except subprocess.TimeoutExpired:
+                state=checkpoint.read_text(encoding="utf-8") if checkpoint.exists() else "preload checkpoint never written"
+                self.fail(f"node fixture exceeded its ten second limit; {state}")
         self.assertEqual(result.returncode,0,result.stderr)
 
     def test_pixel_analysis_rejects_empty_ambiguous_or_nonuint_samples(self):
