@@ -361,8 +361,7 @@ int main(int argc, char** argv) {
         // #155: composition must stay a preview, a commit must reach the
         // session, and cancelling (empty preedit) must write nothing.
         {
-            QInputMethodEvent composing;
-            composing.setPreeditString(QStringLiteral("tfime_preedit"), 0);
+            QInputMethodEvent composing(QStringLiteral("tfime_preedit"), {});
             QApplication::sendEvent(&window, &composing);
             QApplication::processEvents();
             require(!has_text(model.screen(), "tfime_preedit"), "preedit text reached the session");
@@ -371,11 +370,9 @@ int main(int argc, char** argv) {
             QApplication::sendEvent(&window, &committed);
             await([&] { return has_text(model.screen(), "TFIME_COMMIT"); }, model,
                   "committed input-method text did not reach the session");
-            QInputMethodEvent cancelling;
-            cancelling.setPreeditString(QStringLiteral("tfime_cancel"), 0);
+            QInputMethodEvent cancelling(QStringLiteral("tfime_cancel"), {});
             QApplication::sendEvent(&window, &cancelling);
-            QInputMethodEvent cleared;
-            cleared.setPreeditString(QString(), 0);
+            QInputMethodEvent cleared(QString(), {});
             QApplication::sendEvent(&window, &cleared);
             QApplication::processEvents();
             require(!has_text(model.screen(), "tfime_cancel"), "cancelled preedit reached the session");
