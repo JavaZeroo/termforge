@@ -26,3 +26,18 @@ if(MSVC)
 else()
   target_compile_options(r164_probe PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+# A separate immutable-search recipe; the original eighteen lookup cases stay
+# in r164_probe. Both exact generated callers remain compiler dependencies.
+add_executable(r164_static_search_cost EXCLUDE_FROM_ALL search_cost.cpp
+  "${R164_SELECTION_HEADER}" "${R164_SEARCH_HEADER}")
+target_include_directories(r164_static_search_cost PRIVATE . ..)
+target_compile_definitions(r164_static_search_cost PRIVATE
+  "R164_SELECTION_HEADER=\"${R164_SELECTION_HEADER}\""
+  "R164_SEARCH_HEADER=\"${R164_SEARCH_HEADER}\"")
+target_compile_features(r164_static_search_cost PRIVATE cxx_std_17)
+if(MSVC)
+  target_compile_options(r164_static_search_cost PRIVATE /W4 /utf-8)
+else()
+  target_compile_options(r164_static_search_cost PRIVATE -Wall -Wextra -Wpedantic)
+endif()
