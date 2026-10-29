@@ -433,6 +433,7 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
         environment = dict(os.environ)
         environment.setdefault("TERMFORGE_SELECTION_DIAG", str((out / "selection-discard.jsonl").resolve()))
         environment.setdefault("TERMFORGE_CAPTURE_OUTPUT", str((out / "output.bin").resolve()))
+        environment.setdefault("TERMFORGE_OUTPUT_TRACE", str((out / "output-trace.jsonl").resolve()))
         process = subprocess.Popen([str(exe.with_name("shell_test_launcher.exe").resolve()), desktop.full_name,
                                     mode, str((out / "frame.bmp").resolve())],
                                    cwd=out, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,

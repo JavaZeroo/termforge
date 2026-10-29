@@ -61,7 +61,7 @@ R1 的 [#12–#17 限定合同](../../docs/milestones/R1-local-text.md)和 [#18 
 
 ## 选区丢弃诊断
 
-几何/DPI/缩放变化后若选区被 `TextSelection::reconcile` 丢弃，可用环境变量 `TERMFORGE_SELECTION_DIAG=<jsonl 路径>` 打开一次性诊断：每次丢弃写入一行 `{"schema":"termforge-selection-discard-v1","reason":"...","row":N}`（`row` 是发生不一致的选区行序号，`0` 表示与具体行无关的分支），`reason` 取 `epoch-mismatch`、`anchor-missing-or-shrunk`、`row-identity-replaced`、`row-text-changed`、`endpoint-unavailable` 之一。未设置该变量时不写任何文件、行为不变；另有 `TERMFORGE_CAPTURE_OUTPUT=<路径>` 会把该窗口消费的**全部输出字节**追加写入文件（同样 opt-in、默认不写），供失败时逐字节回放；`experiments/shell/run.py` 的 `execute()` 会自动把该变量指向本次场景产物目录下的 `selection-discard.jsonl`，因此失败时该文件随 `build/test-artifacts/` 一起保留。`selection_core` 里新增的分组只验证观察器能收到分支名。
+几何/DPI/缩放变化后若选区被 `TextSelection::reconcile` 丢弃，可用环境变量 `TERMFORGE_SELECTION_DIAG=<jsonl 路径>` 打开一次性诊断：每次丢弃写入一行 `{"schema":"termforge-selection-discard-v1","reason":"...","row":N}`（`row` 是发生不一致的选区行序号，`0` 表示与具体行无关的分支），`reason` 取 `epoch-mismatch`、`anchor-missing-or-shrunk`、`row-identity-replaced`、`row-text-changed`、`endpoint-unavailable` 之一。未设置该变量时不写任何文件、行为不变；另有 `TERMFORGE_CAPTURE_OUTPUT=<路径>` 会把该窗口消费的**全部输出字节**追加写入文件（同样 opt-in、默认不写），供失败时逐字节回放；`TERMFORGE_OUTPUT_TRACE=<路径>` 则按块记录 `terminal/t_ms/offset/bytes/columns/rows`，用于判断"某批重绘字节被消费时网格已经是新尺寸还是旧尺寸"。`experiments/shell/run.py` 的 `execute()` 会自动把该变量指向本次场景产物目录下的 `selection-discard.jsonl`，因此失败时该文件随 `build/test-artifacts/` 一起保留。`selection_core` 里新增的分组只验证观察器能收到分支名。
 
 ## 所有权与调度
 
