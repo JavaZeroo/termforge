@@ -8,6 +8,8 @@
 
 | 配置 | 证据定位 |
 |---|---|
+| Qt 终端固定拼音 IME 组合/提交/取消 | [固定结果](../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/README.md)、[验证身份](../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/validation.json)：隔离 VM、固定微软拼音，我们自己的 Qt 应用收到 preedit `ni'hao` → cancel → commit `e4bda0e5a5bd`（「你好」）；光标全局矩形 (295,157) 与同轮屏幕变化框起点 (295,163) 相互印证。未覆盖候选窗身份/矩形、其他 DPI、完整字形与呈现 |
+| hosted Windows 子进程启动耗时 | [固定结果](../research/ui/results/2026-10-30-hosted-startup-latency/README.md)、[验证身份](../research/ui/results/2026-10-30-hosted-startup-latency/validation.json)：windows-2025 上 100 次 PowerShell 5.1 启动 p50 110 ms、max 1.83 s，50 次 node p50 16 ms；8 路 CPU 负载下 p50 172 ms。用于排除 #81/#144/#40 的 10–12 秒超时由启动成本解释，不等于性能预算 |
 | 自主 C++ 主屏 ASCII DECAWM | [有限合同与红绿](../experiments/core/results/2026-10-29-cpp-decawm/README.md)、[固定验证身份](../experiments/core/results/2026-10-29-cpp-decawm/validation.json)：抽取原版14–18阶段79B，strict/recovery各235个字面前缀分块用例；初次定向8/9的缺构建依赖失败、补建后的core单项31测试通过分列。跨1049/宽字/resize、origin/margin、GUI/固定ConPTY运输和完整TUI均不由本项验收 |
 | 自主 C++ 行结构发布与精确身份查询 | [首片合同与固定夹具](../experiments/core/results/2026-10-29-order-query/README.md)、[验证身份](../experiments/core/results/2026-10-29-order-query/validation.json)：`[1,3,4,5,7,6]` 的精确 rank（7→4、6→5、2 缺失）、文档序比较与强制 Find 导航、结构 revision 边界、发布拒绝与光标夹取；筛选的 8 项核心 CTest 与本地候选 `candidate_core` 通过，首个推送版本的 CI 红（回放保留历史仍为上一帧宽度）与按物理行策略适配后的绿分列，完整默认 Release 构建 exit0。未封住公开 lines/history，运行中跨重排的增量 Find、区域 LF、Qt/固定 ConPTY 与性能均未验收 |
 | 自主 C++ 限定 1049 协议 | [固定结果](../experiments/core/results/2026-10-29-cpp-1049/README.md)、[验证身份](../experiments/core/results/2026-10-29-cpp-1049/validation.json)：文字/光标/颜色及 pending-wrap、重复进入与读者失效；55项中Qt1项分列，13条内部skip及旧负例判据失败保留。未验收非颜色属性/全网格背景、其他模式、真实TUI/IME/DPI、呈现或性能 |

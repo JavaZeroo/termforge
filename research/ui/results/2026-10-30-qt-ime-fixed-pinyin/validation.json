@@ -1,0 +1,81 @@
+{
+  "schema": "termforge-qt-ime-fixed-pinyin-v1",
+  "issue": 155,
+  "application": {
+    "name": "termforge_qt_shell.exe",
+    "build": "local windeployqt deployment, 37 files",
+    "deployed": true
+  },
+  "environment": {
+    "kind": "isolated Windows 11 VM",
+    "input": "keybd_event n i h a o + space",
+    "ime": "fixed Microsoft Pinyin"
+  },
+  "observer": {
+    "env": "TERMFORGE_QT_IME_LOG",
+    "default_off": true
+  },
+  "events": [
+    {
+      "kind": "preedit",
+      "utf8": "6e"
+    },
+    {
+      "kind": "preedit",
+      "utf8": "6e69"
+    },
+    {
+      "kind": "preedit",
+      "utf8": "6e692768"
+    },
+    {
+      "kind": "preedit",
+      "utf8": "6e69276861"
+    },
+    {
+      "kind": "preedit",
+      "utf8": "6e692768616f"
+    },
+    {
+      "kind": "cancel",
+      "utf8": ""
+    },
+    {
+      "kind": "commit",
+      "utf8": "e4bda0e5a5bd"
+    }
+  ],
+  "caret": {
+    "row": 3,
+    "column": 16,
+    "caret_rect": [
+      152,
+      74,
+      9,
+      22
+    ],
+    "origin": [
+      143,
+      83
+    ],
+    "global_rect": [
+      295,
+      157,
+      9,
+      22
+    ]
+  },
+  "corroboration": {
+    "screen_diff_box_origin": [
+      295,
+      163
+    ]
+  },
+  "not_covered": [
+    "candidate window identity/rect",
+    "other DPI",
+    "full glyph coverage",
+    "presentation and performance"
+  ],
+  "product_acceptance": null
+}
