@@ -870,7 +870,11 @@ class ShellWindow {
                 trace_output_ << "{\"schema\":\"termforge-output-heartbeat-v1\",\"terminal\":" << identity_
                               << ",\"t_ms\":" << now << ",\"consumed\":" << result_.consumed
                               << ",\"ticks\":" << result_.ticks << ",\"closing\":" << (closing_ ? "true" : "false")
-                              << ",\"complete\":" << (result_.complete ? "true" : "false") << "}\n";
+                              << ",\"complete\":" << (result_.complete ? "true" : "false")
+                              << ",\"pid\":" << session_.pid
+                              << ",\"child_signaled\":" << (session_.child_signaled ? "true" : "false")
+                              << ",\"exit_code\":" << session_.exit_code
+                              << ",\"read_error\":" << session_.read_error << "}\n";
                 trace_output_.flush();
             }
         }
