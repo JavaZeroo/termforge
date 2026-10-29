@@ -13,8 +13,20 @@ public:
 };
 class ClipboardAccess {
 public:
-    explicit ClipboardAccess(HWND owner) {
-        if (!OpenClipboard(owner)) throw ClipboardError("OpenClipboard", GetLastError());
+    // A hosted desktop can hold the clipboard for a few milliseconds at a time
+    // (Explorer or a neighbouring test). Reads retry briefly so contention is
+    // not reported as a hard refusal; writes keep the immediate failure because
+    // the copy-failure contract asserts the first OpenClipboard result.
+    explicit ClipboardAccess(HWND owner, bool retry = false) {
+        constexpr int attempts = 5;
+        for (int attempt = 0; attempt < attempts; ++attempt) {
+            if (OpenClipboard(owner)) return;
+            const DWORD error = GetLastError();
+            if (!retry || error != ERROR_ACCESS_DENIED || attempt + 1 == attempts)
+                throw ClipboardError("OpenClipboard", error);
+            Sleep(static_cast<DWORD>(20 * (attempt + 1)));
+        }
+        throw ClipboardError("OpenClipboard", GetLastError());
     }
     ~ClipboardAccess() { CloseClipboard(); }
     ClipboardAccess(const ClipboardAccess&) = delete;
@@ -22,7 +34,7 @@ public:
 inline std::u16string read_unicode_clipboard(HWND owner, size_t max_units = PastePolicy::hard_utf16_units) {
     static_assert(sizeof(wchar_t) == sizeof(char16_t), "Windows UTF-16 expected");
     if (max_units > PastePolicy::hard_utf16_units) throw std::length_error("clipboard limit exceeds hard bound");
-    ClipboardAccess clipboard(owner);
+    ClipboardAccess clipboard(owner, true);
     if (!IsClipboardFormatAvailable(CF_UNICODETEXT)) throw ClipboardError("Unicode text unavailable", ERROR_NOT_FOUND);
     HANDLE memory = GetClipboardData(CF_UNICODETEXT);
     if (!memory) throw ClipboardError("GetClipboardData", GetLastError());
