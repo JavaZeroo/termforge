@@ -38,6 +38,21 @@
 
 因此 harness 的可用路径是：**双击组展开 → 单击叶 + Enter 打开 → 会话里必须是一个可在 WindTerm 内长驻的进程**（真实 cmd/PowerShell，或一个由会话启动的 controller）。这也意味着不需要 Frida 注入即可驱动原版会话。
 
+## 会话驱动协议（2026-10-29 后续实测）
+
+在不注入 Frida/Qt 探针的前提下，驱动原版合成会话的可行协议：
+
+1. **展开**：组节点默认折叠，UIA 无 ExpandCollapse；对组的 UIA 矩形中心做一次鼠标双击即可展开，`TF_UI_CMD` 叶随即出现在树里；
+2. **打开**：单击叶，再按 Enter（叶只有 Invoke/Value/GridItem/TableItem，没有 SelectionItem；Invoke 只选中不打开），会话即启动；
+3. **会话命令**：必须是在 WindTerm 内可长驻的进程。原先 profile 里配的 `qt_ime_input_test.exe` 会以 exit 2 退出（`Qt IME test requires its owned Job supervisor`），所以此前“会话打不开”实为该命令失败，而不是 schema/UIA 问题；
+4. **注入 VT 序列**：由会话里的原生命令写序列时，必须先对 stdout 调用 `SetConsoleMode(..., ENABLE_VIRTUAL_TERMINAL_PROCESSING)`，否则 `ESC[?1049h` 会被当字面文本显示；
+5. **阶段同步**：不要用固定延时猜阶段；用“写标记 → 等外部触发文件 → 下一阶段”的协议，宿主在每阶段稳定时刻截图；
+6. **像素读取**：用 Windows OCR 的 word 矩形可定位文字（实测 `ALTMARK` 在 (402,200)，终端正文在 y≈200 一带，而不是 UIA `TerminalView` 矩形所在位置）；但普通截图的文字像素被 ClearType 亚像素抗锯齿染色，**不能直接读出前景色**，应改为输出纯色块（SGR 背景色或反显空格）再采样。
+
+已实测：`1049h` 后截图只显示 `ALTMARK`、主屏内容隐藏；`1049l` 后主屏恢复并显示 `RETURNMARK`。
+
+**局限**：会话打开耗时在 10–20 秒间浮动，首帧可能早于绘制；多阶段纯色块协议在本次尝试中未取得可用帧（截到的是同一 UI 状态），需要下一轮确认面板布局与采样时机。
+
 ## 边界
 
 - 单 VM、单发行包、单一合成 profile 配置；未覆盖 WinPTY/ConPTY 本地 shell、真实输入法、多显示器或性能。
