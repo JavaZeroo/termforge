@@ -1,6 +1,6 @@
 # #164：独立静态Search成本准备
 
-状态：仅源码/false计划准备，**本target尚未编译或执行，无Search实测成本**。基点`a8b338b4f5f96e72eba00a5e495fb8dcb85cd0d3`。既有18项定位cost的Search次数仍为0；本协议不回填旧结果。根CMake、生产8头文件、原probe/prepare/run_plan和18项配方不变。
+状态：初版为源码/false计划准备；执行源`cc07c1296cbaf2ebbc0e832df6af500af494f9f5`的唯一实际批次仅启动Scan100，target exit0，但runner错误要求epoch>0而拒绝真实epoch0，CLI1、后三项未启动。该批次失败原件保留；本次只修decoder并离线读取原stdout回归，不重跑或追认四case完成。基点`a8b338b4f5f96e72eba00a5e495fb8dcb85cd0d3`。既有18项定位cost的Search次数仍为0；本协议不回填旧结果。根CMake、生产8头文件、原probe/prepare/run_plan和18项配方不变。
 
 ## 固定配方与独立oracle
 
@@ -8,7 +8,7 @@
 
 4个目标进程：Scan/LazyTable × H=100/1000，顺序固定Scan100、Scan1000、Table100、Table1000。各10s、runner批次50s，最多各一次；不构建、不重试、不扩到H10000。期限是诊断预算，非性能容差。同步文件/Git检查及异常收尾没有整程强制中断保证；实际执行还需root另定外层精确Job监督，runner自身只监督目标root，不能由timeout声称树回收。
 
-屏幕6×8，N=H+6。用实际Screen.put/newline建满history；每行7个ASCII，除最后一行外均hard break。命中rank `floor(j*(N−1)/15),j=0..15`写`needle.`，其余写`..x....`；交换可见行2/3（均非命中）造成真实ID非单调，`sorted_proven=false/revision=1`。fixture检查全文/ASCII span/行界、真实非零唯一ID及版本；原始输出保存全部实际行ID/version、epoch和16个字面期望区间`[0,6)`，不使用Adapter/Search计算期望。
+屏幕6×8，N=H+6。用实际Screen.put/newline建满history；每行7个ASCII，除最后一行外均hard break。命中rank `floor(j*(N−1)/15),j=0..15`写`needle.`，其余写`..x....`；交换可见行2/3（均非命中）造成真实ID非单调，`sorted_proven=false/revision=1`。fixture不reset或切换buffer，故epoch必须是Screen初始值的精确整数0；负值、非零及bool/float均拒绝。fixture检查全文/ASCII span/行界、真实非零唯一ID及版本；原始输出保存全部实际行ID/version、epoch和16个字面期望区间`[0,6)`，不使用Adapter/Search计算期望。
 
 每进程1 warmup样本(-1)＋3保留样本(0/1/2)，每样本新Adapter、同一immutable Source：
 
@@ -35,4 +35,4 @@ decoder另按固定64步边界核精确scan计数：令E为U%64非零时1，否�
 
 `run_search_cost.py --plan <新独立true计划>`在marker前核类型/全部recipe、source/generated/tool/Python/EXE/build身份及新目录；marker独占新建，output与marker分离且不重叠generated/runtime。每case前后验和batch末再验输入；按原样保存command/stdout/stderr/exit/timeout及机械decoder结果，错误停止，无fallback。CLI0仅表示固定诊断完成，product_acceptance=null；未经审查的本地raw不直接公开。
 
-未知：C++语法/实际依赖/预算是否足够、真实计数与时钟样本、完整增量Search、生产revision通知、UI回退、实际查询分布、RSS/峰值、Qt/ConPTY端点和WindTerm等价。准备不修改这些codepaths，也不关闭#27/#29/R2。
+离线回归可通过环境变量`TERMFORGE_R164_STATIC_SEARCH_OBSERVED_STDOUT`提供保留的Scan100 stdout；测试核固定SHA后按实际协议解码，并同步改变fixture和所有range的epoch验证负值/非零拒绝。不提供该私有fixture时只跳过这项实录回归，不把合成协议当实录。未知：其余三配方的真实计数与时钟样本、完整四case预算、完整增量Search、生产revision通知、UI回退、实际查询分布、RSS/峰值、Qt/ConPTY端点和WindTerm等价；构建依赖身份由独立构建证据核对。本修正不修改这些codepaths，也不关闭#27/#29/R2。

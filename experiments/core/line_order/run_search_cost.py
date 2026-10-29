@@ -85,9 +85,10 @@ def validate_output(stdout, stderr, case):
     h, adapter = case["history"], case["adapter"]
     b = bounds(h); n = b["retained_rows"]
     require(set(fixture) == {"schema", "adapter", "history", "retained_rows", "epoch", "order_revision", "sorted_proven", "rows", "hit_ranks", "oracle_ranges", "rss_bytes"}, "Fixture fields differ")
+    # This fixture never resets or switches buffers after Screen's initial epoch zero.
     require(fixture["schema"] == "termforge-r164-static-search-fixture-v1" and fixture["adapter"] == adapter and
             type(fixture["history"]) is int and fixture["history"] == h and type(fixture["retained_rows"]) is int and
-            fixture["retained_rows"] == n and type(fixture["epoch"]) is int and fixture["epoch"] > 0 and
+            fixture["retained_rows"] == n and type(fixture["epoch"]) is int and fixture["epoch"] == 0 and
             type(fixture["order_revision"]) is int and fixture["order_revision"] == 1 and fixture["sorted_proven"] is False and
             fixture["rss_bytes"] is None, "Fixture identity/frame contract differs")
     identities = fixture["rows"]

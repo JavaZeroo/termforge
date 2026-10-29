@@ -1,6 +1,8 @@
 """Pure plan/protocol seams only; never run the C++ probe, CMake or compiler."""
 import copy
+import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -16,9 +18,9 @@ def protocol(case):
     identities = [[i+1, 8] for i in range(n)]
     identities[h+2], identities[h+3] = identities[h+3], identities[h+2]
     ranks = [j*(n-1)//15 for j in range(16)]
-    expected = [[*identities[r], 0, 1, *identities[r], 6, 1] for r in ranks]
+    expected = [[*identities[r], 0, 0, *identities[r], 6, 0] for r in ranks]
     rows = [dict(schema="termforge-r164-static-search-fixture-v1", adapter=adapter, history=h,
-                 retained_rows=n, epoch=1, order_revision=1, sorted_proven=False, rows=identities,
+                 retained_rows=n, epoch=0, order_revision=1, sorted_proven=False, rows=identities,
                  hit_ranks=ranks, oracle_ranges=expected, rss_bytes=None)]
     for sample in (-1, 0, 1, 2):
         for stage_index, stage in enumerate(prepared.STAGES):
@@ -40,6 +42,15 @@ def protocol(case):
 
 def encode(rows):
     return ("\r\n".join(json.dumps(row, separators=(",", ":")) for row in rows)+"\r\n").encode("ascii")
+
+
+def with_epoch(rows, epoch):
+    rows = copy.deepcopy(rows)
+    rows[0]["epoch"] = epoch
+    ranges = rows[0]["oracle_ranges"] + [r for row in rows[1:] for r in row["result_ranges"]]
+    for value in ranges:
+        value[3] = value[7] = epoch
+    return rows
 
 
 class PlanTests(unittest.TestCase):
@@ -86,6 +97,29 @@ class PlanTests(unittest.TestCase):
     def test_synthetic_protocol_all_four_recipes(self):
         for case in prepared.cases():
             with self.subTest(case=case["id"]): runner.validate_output(encode(protocol(case)), b"", case)
+
+    def test_fixture_epoch_is_exact_initial_zero_including_all_ranges(self):
+        case = prepared.cases()[0]
+        for epoch in (-1, 1, 2, True, 0.0, "0"):
+            with self.subTest(epoch=epoch):
+                with self.assertRaisesRegex(ValueError, "Fixture identity/frame contract"):
+                    runner.validate_output(encode(with_epoch(protocol(case), epoch)), b"", case)
+
+    def test_retained_actual_scan100_stdout_and_epoch_mutations(self):
+        path = os.environ.get("TERMFORGE_R164_STATIC_SEARCH_OBSERVED_STDOUT")
+        if not path:
+            self.skipTest("Supply the retained Scan100 stdout path for the offline capture regression")
+        raw = Path(path).read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         "5419a5053275d985457834d94e4ed7970ac4bc022bc311af7129621b281251ea")
+        case = prepared.cases()[0]
+        runner.validate_output(raw, b"", case)
+        rows = [json.loads(line) for line in raw.decode("ascii").splitlines()]
+        self.assertEqual(rows[0]["epoch"], 0)
+        for epoch in (-1, 1, 2, True, 0.0, "0"):
+            with self.subTest(epoch=epoch):
+                with self.assertRaisesRegex(ValueError, "Fixture identity/frame contract"):
+                    runner.validate_output(encode(with_epoch(rows, epoch)), b"", case)
 
     def test_decoder_rejects_truncation_bad_ranges_types_counters_and_stages(self):
         case = prepared.cases()[0]; original = protocol(case)
