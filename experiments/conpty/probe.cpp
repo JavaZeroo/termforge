@@ -232,11 +232,13 @@ int main(int argc, char** argv) {
         // The supervisor assigns this host to its job before sending this gate.
         std::string gate;
         if (!std::getline(std::cin, gate) || gate != "GO") return 2;
-        if (!probe("normal", 0, true)) return 1;
+        bool failed = !probe("normal", 0, true);
         for (unsigned repeat = 0; repeat < repeats; ++repeat) {
-            if (!probe(mode, repeat)) return 1;
+            // Keep sampling after a failure: the acceptance evidence needs every
+            // round's counts, and stopping at the first red hid later growth.
+            if (!probe(mode, repeat)) failed = true;
         }
-        return 0;
+        return failed ? 1 : 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n'; return 1;
     }
