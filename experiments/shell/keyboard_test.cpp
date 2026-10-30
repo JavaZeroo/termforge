@@ -1,6 +1,9 @@
 #include "keyboard.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 using namespace tf_shell;
 static void check(bool value, const char* why) { if (!value) throw std::runtime_error(why); }
 int main() {
@@ -30,6 +33,18 @@ int main() {
             const auto encoded = KeyboardEncoder::key_down(pair.first);
             check(encoded.handled && encoded.bytes == pair.second && !encoded.skip_translate, "base navigation encoding");
         }
+        // DECCKM only rewrites the unmodified cursor keys to their SS3 form.
+        const std::vector<std::pair<uint32_t,std::string>> application{
+            {0x25,"\x1bOD"}, {0x26,"\x1bOA"}, {0x27,"\x1bOC"}, {0x28,"\x1bOB"},
+            {0x24,"\x1bOH"}, {0x23,"\x1bOF"}};
+        for (const auto& entry : application) {
+            const auto encoded = KeyboardEncoder::key_down(entry.first, {}, true);
+            check(encoded.handled && encoded.bytes == entry.second, "application cursor encoding");
+        }
+        check(KeyboardEncoder::key_down(0x24, {false,true,false,false}, true).bytes == "\x1b[1;5H",
+              "application mode must not rewrite modified cursor keys");
+        check(KeyboardEncoder::key_down(0x2e, {}, true).bytes == "\x1b[3~",
+              "application mode must not rewrite editing keys");
         check(KeyboardEncoder::key_down(0x24, {false,true,false,false}).bytes == "\x1b[1;5H", "Ctrl Home");
         check(KeyboardEncoder::key_down(0x2e, {true,false,true,false}).bytes == "\x1b[3;4~", "Shift Alt Delete");
         check(!KeyboardEncoder::key_down(0x09).handled, "plain Tab belongs only to WM_CHAR");

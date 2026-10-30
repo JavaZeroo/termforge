@@ -144,7 +144,7 @@ static void readers_follow_protocol_transitions(ParseMode mode) {
 static void recovery_keeps_private_sequences_separate() {
     const std::vector<std::string> ignored{
         "\x1b[?31m", "\x1b[?1049;25h", "\x1b[?1049;h", "\x1b[0?1049h",
-        "\x1b[??1049h", "\x1b[?1049 h", "\x1b[?1049:1h", "\x1b[?25l",
+        "\x1b[??1049h", "\x1b[?1049 h", "\x1b[?1049:1h", "\x1b[?12l",
         std::string("\x1b[?") + std::string(33, '0') + "1049h"};
     for (const auto& sequence : ignored) {
         Parser parser(2, 8, 1, ParseMode::recovery);
@@ -181,7 +181,7 @@ static void identical_repeated_text_is_a_new_document(ParseMode mode) {
     parser.finish();
 }
 static void strict_rejects_unsupported_private_modes_atomically() {
-    for (const auto* input : {"\x1b[?31m", "\x1b[?1049;25h", "\x1b[?1049;1049h", "\x1b[?25l"}) {
+    for (const auto* input : {"\x1b[?31m", "\x1b[?1049;25h", "\x1b[?1049;1049h", "\x1b[?12l"}) {
         Parser parser(2, 8, 1);
         parser.feed("\x1b[31;44mMAIN");
         bool rejected = false;
