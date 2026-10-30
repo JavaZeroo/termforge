@@ -135,7 +135,12 @@ class RecoveryTests(unittest.TestCase):
                     self.assertFalse(value["screen"]["wrap_pending"])
 
     def test_unknown_csi_consumes_private_and_intermediate(self):
-        self.expect(b"A\x1b[?9999h\x1b[1 q\x1b[6nZ", "AZ", stats={"ignored_sequences": 3})
+        # CSI 6n is a handled cursor report now, so only the private and the
+        # intermediate forms count as ignored here.
+        self.expect(b"A\x1b[?9999h\x1b[1 q\x1b[6nZ", "AZ", stats={"ignored_sequences": 2})
+
+    def test_cursor_report_is_handled_not_ignored(self):
+        self.expect(b"A\x1b[6nZ", "AZ", stats={"ignored_sequences": 0})
 
     def test_known_alternate_mode_is_not_counted_as_ignored(self):
         self.expect(b"A\x1b[?1049hALT\x1b[?1049hNEW\x1b[?1049lZ", "AZ",
