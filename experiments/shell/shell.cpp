@@ -828,7 +828,11 @@ class ShellWindow {
         }
     }
 #endif
-#ifndef TERMFORGE_CANDIDATE_CORE
+#ifdef TERMFORGE_CANDIDATE_CORE
+    // The candidate terminal does not expose DECCKM yet; keep the previous CSI
+    // encoding instead of guessing at its mode state.
+    bool application_cursor_keys() const { return false; }
+#else
     bool application_cursor_keys() const { return parser_.application_cursor_keys(); }
 #endif
     void tick() {
