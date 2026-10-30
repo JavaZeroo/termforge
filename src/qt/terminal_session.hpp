@@ -291,6 +291,8 @@ public:
                 started_ && accepting && requested_revision_ != transport_revision_, session_ ? session_->pid : 0};
     }
     const Screen& screen() const { return parser_.screen; }
+    bool cursor_visible() const { return parser_.cursor_visible(); }
+    bool application_cursor_keys() const { return parser_.application_cursor_keys(); }
     bool running() const { return started_ && !finished_ && !close_requested_.load(std::memory_order_acquire); }
     bool finished() const { return finished_; }
     bool natural_exit() const { return finished_ && natural_exit_; }
