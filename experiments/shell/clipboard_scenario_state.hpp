@@ -65,7 +65,8 @@ class ClipboardScenarioOwner {
     }
     std::string ready_failure(DWORD wait_status) const {
         return std::string("clipboard owner failed its bounded ready handshake: mode=")+
-            (delayed_?"delayed":"occupied")+" step="+step_.load()+
+            (delayed_?"delayed":"occupied")+" failure_step="+failure_step_.load()+
+            " state_step="+step_.load()+
             " win32_error="+std::to_string(native_error_.load())+
             " worker_error="+std::to_string(error_.load())+
             " registration_last_error="+std::to_string(registration_error_.load())+
