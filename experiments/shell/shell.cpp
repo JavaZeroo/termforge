@@ -867,6 +867,12 @@ class ShellWindow {
                 trace_offset_ += bytes.size();
             }
             parser_.feed(bytes); batch += bytes.size();
+#ifndef TERMFORGE_CANDIDATE_CORE
+            // Query replies (for example a cursor position report) go back to the
+            // same bounded input queue as keyboard bytes, so ordering and
+            // backpressure stay identical for the child.
+            for (const auto& reply : parser_.take_replies()) input_.send(reply);
+#endif
 #ifdef TERMFORGE_CANDIDATE_CORE
             route_terminal_events();
 #endif

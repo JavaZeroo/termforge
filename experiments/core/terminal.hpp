@@ -2,7 +2,10 @@
 #pragma once
 #include "screen.hpp"
 #include <limits>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 namespace termforge {
 enum class ParseMode { strict, recovery };
@@ -24,6 +27,8 @@ class Parser {
     uint32_t scalar = 0, minimum = 0;
     int remaining = 0;
     std::string encoded;
+    // Bounded replies for implemented queries; drained by the host after each feed.
+    std::vector<std::string> pending_replies;
     void dispatch(unsigned char final) {
         if (private_csi) {
             if (params.size() != 1 || (params[0] != 1049 && params[0] != 7) || (final != 'h' && final != 'l'))
@@ -59,6 +64,15 @@ class Parser {
         case 'J': screen.erase_display(params[0]); break;
         case 'K': screen.erase_line(params[0]); break;
         case 'X': screen.erase_characters(n); break;
+        case 'n':
+            // Device status report 6 reports the 1-based cursor position. Other
+            // reports are not implemented and stay unsupported rather than faked.
+            if (params.size() == 1 && params[0] == 6) {
+                pending_replies.push_back("\x1b[" + std::to_string(screen.row + 1) + ";" +
+                                          std::to_string(screen.column + 1) + "R");
+                return;
+            }
+            throw InputError("unsupported CSI command");
         default: throw InputError("unsupported CSI command");
         }
     }
@@ -225,6 +239,7 @@ public:
     Parser(int rows = 24, int columns = 80, size_t history = 100, ParseMode selected = ParseMode::strict)
         : mode(selected), screen(rows, columns, history) {}
     const RecoveryDiagnostics& diagnostics() const { return stats; }
+    std::vector<std::string> take_replies() { return std::exchange(pending_replies, {}); }
     size_t buffered_input_bytes() const { return params.size() * sizeof(int) + encoded.size(); }
     void feed(std::string_view bytes) {
         if (mode == ParseMode::strict) feed_strict(bytes);
