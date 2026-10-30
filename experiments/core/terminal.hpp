@@ -72,6 +72,8 @@ class Parser {
         case 'H': case 'f': screen.move(n - 1, params.size() < 2 || params[1] == 0 ? 0 : params[1] - 1); break;
         case 'J': screen.erase_display(params[0]); break;
         case 'K': screen.erase_line(params[0]); break;
+        case 'L': screen.insert_lines(n); break;
+        case 'M': screen.delete_lines(n); break;
         case 'X': screen.erase_characters(n); break;
         case '@': screen.insert_characters(n); break;
         case 'P': screen.delete_characters(n); break;

@@ -42,6 +42,28 @@ int main() {
     parser.feed("\x1b[1;1H");
     parser.feed("\x1b[99@");
     require(row_text(parser.screen, 0).empty(), "over-wide ICH should clear the row");
+
+    // IL opens blank rows at the cursor and lets the bottom rows fall off.
+    Parser lines(4, 10, 10, termforge::ParseMode::recovery);
+    lines.feed("a\r\nb\r\nc\r\nd");
+    lines.feed("\x1b[1;1H");
+    lines.feed("\x1b[2L");
+    require(row_text(lines.screen, 0).empty() && row_text(lines.screen, 1).empty() &&
+            row_text(lines.screen, 2) == "a" && row_text(lines.screen, 3) == "b",
+            "IL did not open blank rows");
+    require(lines.screen.row == 0 && lines.screen.column == 0, "IL moved the cursor");
+
+    // DL closes rows from the cursor and appends blanks at the bottom.
+    lines.feed("\x1b[M");
+    require(row_text(lines.screen, 0).empty() && row_text(lines.screen, 1) == "a" &&
+            row_text(lines.screen, 2) == "b" && row_text(lines.screen, 3).empty(),
+            "DL did not close a row");
+
+    // A count past the bottom only removes what remains.
+    lines.feed("\x1b[99L");
+    require(row_text(lines.screen, 0).empty() && row_text(lines.screen, 1).empty() &&
+            row_text(lines.screen, 2).empty() && row_text(lines.screen, 3).empty(),
+            "over-large IL should clear the screen");
     std::puts("edit csi contracts passed");
     return 0;
 }
