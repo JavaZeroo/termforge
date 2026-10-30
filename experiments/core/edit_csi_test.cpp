@@ -1,5 +1,6 @@
 #include "terminal.hpp"
 #include <cstdio>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -180,6 +181,22 @@ int main() {
                     "margin source produced the ConPTY-observed screen");
         require(margin.screen.row == 6 && margin.screen.column == 0,
                 "margin source cursor mismatch");
+    }
+    // SGR 4/24 and 7/27 toggle underline and reverse independently.
+    {
+        Parser attrs(2, 10, 10, termforge::ParseMode::recovery);
+        attrs.feed("\x1b[4;7mA");
+        const auto& first = attrs.screen.visible_lines()[0][0].style;
+        require(first.underline && first.reverse, "SGR 4;7 was not applied");
+        attrs.feed("\x1b[24mB");
+        const auto& second = attrs.screen.visible_lines()[0][1].style;
+        require(!second.underline && second.reverse, "SGR 24 did not clear underline alone");
+        attrs.feed("\x1b[27mC");
+        require(attrs.screen.visible_lines()[0][2].style.plain(), "SGR 27 did not clear reverse");
+        // The JSON keeps the old shape while nothing extra is set.
+        std::ostringstream plain_json; attrs.screen.visible_lines()[0][2].style.json(plain_json);
+        require(plain_json.str() == "{\"fg\":-1,\"bg\":-1,\"bold\":false}",
+                "default style JSON shape changed");
     }
     std::puts("edit csi contracts passed");
     return 0;

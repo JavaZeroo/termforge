@@ -21,9 +21,16 @@ public:
 struct Style {
     int fg = -1, bg = -1; // -1 default, 0..15 palette index
     bool bold = false;
-    bool plain() const { return fg == -1 && bg == -1 && !bold; }
+    bool underline = false;
+    bool reverse = false;
+    bool plain() const { return fg == -1 && bg == -1 && !bold && !underline && !reverse; }
     void json(std::ostream& out) const {
-        out << "{\"fg\":" << fg << ",\"bg\":" << bg << ",\"bold\":" << (bold ? "true" : "false") << '}';
+        out << "{\"fg\":" << fg << ",\"bg\":" << bg << ",\"bold\":" << (bold ? "true" : "false");
+        // New attributes appear only when set, so existing records keep their
+        // shape while the added ones stay observable.
+        if (underline) out << ",\"underline\":true";
+        if (reverse) out << ",\"reverse\":true";
+        out << '}';
     }
 };
 struct Cell {
@@ -558,6 +565,10 @@ public:
             if (p == 0) next = {};
             else if (p == 1) next.bold = true;
             else if (p == 22) next.bold = false;
+            else if (p == 4) next.underline = true;
+            else if (p == 24) next.underline = false;
+            else if (p == 7) next.reverse = true;
+            else if (p == 27) next.reverse = false;
             else if (p >= 30 && p <= 37) next.fg = p - 30;
             else if (p >= 40 && p <= 47) next.bg = p - 40;
             else if (p >= 90 && p <= 97) next.fg = p - 90 + 8;
