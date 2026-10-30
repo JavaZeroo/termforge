@@ -95,7 +95,10 @@ static std::pair<std::string, int> probe(int argc, char** argv) {
         bool passed = false;
         { // Destroy all renderer/layout/window resources before detaching the desktop.
         termforge::Parser parser(3,32,0);
-        parser.feed("ASCII e\xcc\x81 \xe4\xb8\xad\xe6\x96\x87\r\n\x1b[1;31;44mColor\x1b[0m\r\nCursor"); parser.finish();
+        // Row 1 also carries one reverse cell and one underlined cell so both new
+        // attributes are checked against real pixels, not only against the model.
+        parser.feed("ASCII e\xcc\x81 \xe4\xb8\xad\xe6\x96\x87\r\n\x1b[1;31;44mColor\x1b[0m"
+                    "\x1b[7;32mREV\x1b[0m\x1b[4;31mUND\x1b[0m\r\nCursor"); parser.finish();
         auto initial = std::make_shared<const Snapshot>(parser.screen,1);
         Renderer renderer(backend,dpi); renderer.warm(*initial);
         const Layout missing_probe = renderer.layout("\xf4\x8f\xbf\xbf",false); // U+10FFFF: never passed to the terminal core.
@@ -113,6 +116,9 @@ static std::pair<std::string, int> probe(int argc, char** argv) {
         const UINT actual_dpi = GetDpiForWindow(window.hwnd); require(actual_dpi != 0,"window DPI query failed");
         Bitmap first(window.surface.width,window.surface.height); window.print(first); first.save(std::string(argv[3])+".initial.bmp");
         const bool color_ok = first.rgb(renderer.x(0)+1,renderer.y(2)-1) == color(4,true);
+        // "REV" occupies columns 5..7 and "UND" columns 8..10 on row 1.
+        const bool reverse_ok = first.rgb(renderer.x(5)+1,renderer.y(1)+1) == color(2,true);
+        const bool underline_ok = first.rgb(renderer.x(8)+1,renderer.y(2)-1) == color(1,false);
         size_t text_cells_with_ink = 0, red_pixels = 0;
         for (int r = 0; r < initial->rows(); ++r) for (int c = 0; c < initial->columns(); ++c) {
             const auto& cell = initial->lines[r][c]; if (!cell.width || cell.text == " ") continue;
@@ -126,7 +132,8 @@ static std::pair<std::string, int> probe(int argc, char** argv) {
         }
         // Same base letter without the mark must produce a different glyph image.
         termforge::Parser unaccented(3,32,0);
-        unaccented.feed("ASCII e \xe4\xb8\xad\xe6\x96\x87\r\n\x1b[1;31;44mColor\x1b[0m\r\nCursor"); unaccented.finish();
+        unaccented.feed("ASCII e \xe4\xb8\xad\xe6\x96\x87\r\n\x1b[1;31;44mColor\x1b[0m"
+                        "\x1b[7;32mREV\x1b[0m\x1b[4;31mUND\x1b[0m\r\nCursor"); unaccented.finish();
         Bitmap accent_control(first.width,first.height); renderer.draw(accent_control,Snapshot(unaccented.screen,0),0,3);
         bool mark_changed_pixels = false;
         for (int y = 0; y < renderer.y(1); ++y) for (int x = renderer.x(6); x < renderer.x(7); ++x)
@@ -164,7 +171,8 @@ static std::pair<std::string, int> probe(int argc, char** argv) {
         for (int i = 0; i < 128; ++i) { const auto start = Clock::now(); timer_samples.push_back(ms(start)); }
         window.close();
         const bool valid = equal && untouched && initial_cursor_ok && final_cursor_ok && color_ok && resize_ok && resize_equal &&
-                           missing == 0 && overflowing == 0 && text_cells_with_ink == 19 && red_pixels > 0 && mark_changed_pixels;
+                           missing == 0 && overflowing == 0 && text_cells_with_ink == 25 && red_pixels > 0 && mark_changed_pixels &&
+               reverse_ok && underline_ok;
         report << "{\"backend\":\"" << backend << "\",\"logical_dpi\":" << dpi << ",\"window_dpi\":" << actual_dpi
                   << ",\"window_verified\":true,\"desktop\":\"private-non-input\",\"capture_layer\":\"WM_PRINTCLIENT from WM_PAINT retained DIB\""
                   << ",\"owned_window_destroyed\":true,\"private_desktop_closed\":true,\"paint_trigger\":\"InvalidateRect + UpdateWindow and message pump\""
@@ -172,7 +180,9 @@ static std::pair<std::string, int> probe(int argc, char** argv) {
                   << ",\"snapshot_revision\":" << window.painted_revision << ",\"snapshot_isolation_verified\":true,\"dirty_rows\":[1,2]"
                   << ",\"dirty_equals_full\":" << (equal?"true":"false") << ",\"unchanged_row_preserved\":" << (untouched?"true":"false")
                   << ",\"cursor_verified\":" << (initial_cursor_ok&&final_cursor_ok?"true":"false") << ",\"background_color_verified\":" << (color_ok?"true":"false")
-                  << ",\"foreground_color_verified\":" << (red_pixels>0?"true":"false") << ",\"text_cells_with_ink\":" << text_cells_with_ink
+                  << ",\"foreground_color_verified\":" << (red_pixels>0?"true":"false")
+            << ",\"reverse_video_verified\":" << (reverse_ok?"true":"false")
+            << ",\"underline_verified\":" << (underline_ok?"true":"false") << ",\"text_cells_with_ink\":" << text_cells_with_ink
                   << ",\"combining_mark_changes_pixels\":" << (mark_changed_pixels?"true":"false")
                   << ",\"resize_verified\":" << (resize_ok&&resize_equal?"true":"false")
                   << ",\"client_dc_capture_succeeded\":" << (client_captured?"true":"false") << ",\"client_dc_equals_printclient\":" << (client_equal?"true":"false")
