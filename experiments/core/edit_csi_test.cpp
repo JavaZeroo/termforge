@@ -182,6 +182,16 @@ int main() {
         require(margin.screen.row == 6 && margin.screen.column == 0,
                 "margin source cursor mismatch");
     }
+    // SGR 9/29 toggle strikethrough without touching the other attributes.
+    {
+        Parser strike(2, 10, 10, termforge::ParseMode::recovery);
+        strike.feed("\x1b[9mA\x1b[29mB");
+        require(strike.screen.visible_lines()[0][0].style.strikethrough, "SGR 9 was not applied");
+        require(!strike.screen.visible_lines()[0][1].style.strikethrough, "SGR 29 did not clear strikethrough");
+        std::ostringstream json; strike.screen.visible_lines()[0][1].style.json(json);
+        require(json.str() == "{\"fg\":-1,\"bg\":-1,\"bold\":false}",
+                "cleared strikethrough leaked into the style JSON");
+    }
     // SGR 4/24 and 7/27 toggle underline and reverse independently.
     {
         Parser attrs(2, 10, 10, termforge::ParseMode::recovery);

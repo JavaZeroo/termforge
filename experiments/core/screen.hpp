@@ -23,13 +23,15 @@ struct Style {
     bool bold = false;
     bool underline = false;
     bool reverse = false;
-    bool plain() const { return fg == -1 && bg == -1 && !bold && !underline && !reverse; }
+    bool strikethrough = false;
+    bool plain() const { return fg == -1 && bg == -1 && !bold && !underline && !reverse && !strikethrough; }
     void json(std::ostream& out) const {
         out << "{\"fg\":" << fg << ",\"bg\":" << bg << ",\"bold\":" << (bold ? "true" : "false");
         // New attributes appear only when set, so existing records keep their
         // shape while the added ones stay observable.
         if (underline) out << ",\"underline\":true";
         if (reverse) out << ",\"reverse\":true";
+        if (strikethrough) out << ",\"strikethrough\":true";
         out << '}';
     }
 };
@@ -569,6 +571,8 @@ public:
             else if (p == 24) next.underline = false;
             else if (p == 7) next.reverse = true;
             else if (p == 27) next.reverse = false;
+            else if (p == 9) next.strikethrough = true;
+            else if (p == 29) next.strikethrough = false;
             else if (p >= 30 && p <= 37) next.fg = p - 30;
             else if (p >= 40 && p <= 47) next.bg = p - 40;
             else if (p >= 90 && p <= 97) next.fg = p - 90 + 8;
