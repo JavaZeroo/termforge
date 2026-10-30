@@ -147,7 +147,8 @@ class RecoveryTests(unittest.TestCase):
                     stats={"ignored_sequences": 0})
 
     def test_invalid_parameter_does_not_apply_prefix(self):
-        self.expect(b"A\x1b[2;3;4H\x1b[3J\x1b[3KZ", "AZ", stats={"ignored_sequences": 3})
+        # ED3 (CSI 3J) is implemented now, so only the bad CUP and CSI 3K count.
+        self.expect(b"A\x1b[2;3;4H\x1b[3J\x1b[3KZ", "AZ", stats={"ignored_sequences": 2})
 
     def test_invalid_sgr_is_atomic(self):
         for data in (b"\x1b[1;999mX", b"\x1b[31m\x1b[0;999mX"):

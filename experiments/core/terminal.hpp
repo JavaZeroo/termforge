@@ -106,6 +106,14 @@ class Parser {
                 continue;
             }
             if (state == State::escape) {
+                // RIS resets the parser-owned modes too, so it is handled here
+                // rather than inside Screen.
+                if (c == 'c') {
+                    screen.reset();
+                    mode_bits_ = 1u << 1;
+                    state = State::ground;
+                    continue;
+                }
                 if (c != '[') throw std::runtime_error("unsupported escape");
                 state = State::csi; params.assign(1, 0); sequence_bytes = 0; private_csi = false; continue;
             }
@@ -203,6 +211,13 @@ class Parser {
                 if (state == State::escape && c == '[') {
                     state = State::csi; sequence_bytes = 0; params.assign(1, 0);
                     stats.max_parameters = (std::max)(stats.max_parameters, params.size()); return;
+                }
+                if (state == State::escape && c == 'c') {
+                    // RIS also works on the recovery path the product uses.
+                    screen.reset();
+                    mode_bits_ = 1u << 1;
+                    reset_sequence();
+                    return;
                 }
                 if (state == State::escape &&
                     (c == ']' || c == 'P' || c == 'X' || c == '^' || c == '_')) {

@@ -16,6 +16,7 @@ std::string row_text(const termforge::Screen& screen, int row) {
 }  // namespace
 
 int main() {
+    try {
     using termforge::Parser;
     Parser parser(3, 10, 10, termforge::ParseMode::recovery);
     parser.feed("abcdef");
@@ -75,6 +76,33 @@ int main() {
             row_text(region.screen, 2).empty() && row_text(region.screen, 3) == "d",
             "region scroll changed rows outside the margins");
     require(region.screen.row == 2, "region scroll moved the cursor past the margin");
+    // ED3 empties the scrollback without touching the visible rows.
+    {
+        Parser scrollback(2, 6, 10, termforge::ParseMode::recovery);
+        scrollback.feed("a\r\nb\r\nc");
+        require(scrollback.screen.scrollback_lines() > 0, "no scrollback was produced");
+        scrollback.feed("\x1b[3J");
+        require(scrollback.screen.scrollback_lines() == 0, "ED3 left scrollback behind");
+        require(row_text(scrollback.screen, 0) == "b" && row_text(scrollback.screen, 1) == "c",
+                "ED3 changed the visible screen");
+    }
+    // RIS returns attributes, cursor and modes to their start state.
+    {
+        Parser reset(2, 6, 10, termforge::ParseMode::recovery);
+        reset.feed("\x1b[31;1mX\x1b[?25l\x1b[?1h");
+        require(!reset.screen.visible_lines()[0][0].style.plain(), "test setup lost the style");
+        reset.feed("\x1b" "c");
+        require(reset.screen.row == 0 && reset.screen.column == 0, "RIS did not home the cursor");
+        require(reset.cursor_visible() && !reset.application_cursor_keys(), "RIS did not reset the modes");
+        require(row_text(reset.screen, 0).empty(), "RIS did not clear the screen");
+        reset.feed("Y");
+        require(reset.screen.visible_lines()[0][0].style.plain() &&
+                reset.screen.visible_lines()[0][0].style.fg == -1, "RIS did not reset attributes");
+    }
     std::puts("edit csi contracts passed");
     return 0;
+    } catch (const std::exception& error) {
+        std::fprintf(stderr, "edit csi contract failed: %s\n", error.what());
+        return 1;
+    }
 }

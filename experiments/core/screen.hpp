@@ -515,7 +515,25 @@ public:
         erase_range(line, width() - shift, width());
         wrap_pending = false; invalidate_attachment();
     }
+    void reset() {
+        // RIS: every mode, attribute, region and buffer returns to its start
+        // state; the identities already spent stay spent.
+        for (int r = 0; r < height(); ++r) erase_range(lines[r], 0, width());
+        history.clear();
+        style = Style{};
+        row = column = 0;
+        wrap_pending = false;
+        autowrap_enabled_ = true;
+        activate_buffer(ScreenBuffer::primary);
+        invalidate_attachment();
+    }
+    size_t scrollback_lines() const { return history.size(); }
+    void erase_scrollback() {
+        // ED3 drops scrollback only; the visible screen is untouched.
+        if (!history.empty() || discarded) { history.clear(); discarded = 0; }
+    }
     void erase_display(int mode) {
+        if (mode == 3) { erase_scrollback(); return; }
         if (mode > 2) throw InputError("unsupported erase mode");
         for (int r = 0; r < height(); ++r)
             if (mode == 2 || (mode == 0 && r > row) || (mode == 1 && r < row)) erase_range(lines[r], 0, width());
