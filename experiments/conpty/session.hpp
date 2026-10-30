@@ -56,6 +56,9 @@ public:
     unsigned long long output_bytes = 0;
     bool capture_overflow = false, forced_reader_cancel = false, forced_process_cancel = false;
     bool child_signaled = false, cleanup_complete = false;
+    // Read-only view for diagnostics: the owned job handle whose lifetime the
+    // close path manages.
+    HANDLE job_handle() const { return job_.get(); }
     explicit Session(Backend backend = Backend::configured()) : backend_(std::move(backend)) {}
     Session(const Session&) = delete;
     Session& operator=(const Session&) = delete;
