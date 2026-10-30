@@ -212,6 +212,13 @@ class Parser {
                     state = State::csi; sequence_bytes = 0; params.assign(1, 0);
                     stats.max_parameters = (std::max)(stats.max_parameters, params.size()); return;
                 }
+                if (state == State::escape && c == 'c') {
+                    // RIS also works on the recovery path the product uses.
+                    screen.reset();
+                    mode_bits_ = 1u << 1;
+                    reset_sequence();
+                    return;
+                }
                 if (state == State::escape &&
                     (c == ']' || c == 'P' || c == 'X' || c == '^' || c == '_')) {
                     count(stats.ignored_sequences); osc = c == ']';

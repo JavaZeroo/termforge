@@ -16,6 +16,7 @@ std::string row_text(const termforge::Screen& screen, int row) {
 }  // namespace
 
 int main() {
+    try {
     using termforge::Parser;
     Parser parser(3, 10, 10, termforge::ParseMode::recovery);
     parser.feed("abcdef");
@@ -100,4 +101,8 @@ int main() {
     }
     std::puts("edit csi contracts passed");
     return 0;
+    } catch (const std::exception& error) {
+        std::fprintf(stderr, "edit csi contract failed: %s\n", error.what());
+        return 1;
+    }
 }
