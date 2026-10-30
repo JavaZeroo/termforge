@@ -98,7 +98,8 @@ static std::vector<int> changed_rows(const Snapshot& a, const Snapshot& b) {
     }
     for (int r = 0; r < b.rows(); ++r) for (int c = 0; c < b.columns(); ++c) {
         const auto& x = a.lines[r][c]; const auto& y = b.lines[r][c];
-        if (x.text != y.text || x.width != y.width || x.style.fg != y.style.fg || x.style.bg != y.style.bg || x.style.bold != y.style.bold) changed.insert(r);
+        if (x.text != y.text || x.width != y.width || x.style.fg != y.style.fg || x.style.bg != y.style.bg ||
+                x.style.underline != y.style.underline || x.style.reverse != y.style.reverse || x.style.bold != y.style.bold) changed.insert(r);
     }
     if (a.cursor_row != b.cursor_row || a.cursor_column != b.cursor_column) {
         if (a.cursor_row >= 0 && a.cursor_row < b.rows()) changed.insert(a.cursor_row);
@@ -242,22 +243,36 @@ public:
             SetBkMode(bitmap.dc,TRANSPARENT);
             for (int r = first; r < last; ++r) for (int c = 0; c < snapshot.columns(); ++c) {
                 const auto& cell = snapshot.lines[r][c]; if (cell.width == 0) continue;
-                RECT rect{x(c),y(r),x(c+cell.width),y(r+1)}; require(FillRect(bitmap.dc,&rect,brush(color(cell.style.bg,true))) != 0,"fill failed");
+                // Reverse video swaps the cell colours for both the fill and text.
+                const int bg_index = cell.style.reverse ? cell.style.fg : cell.style.bg;
+                const int fg_index = cell.style.reverse ? cell.style.bg : cell.style.fg;
+                RECT rect{x(c),y(r),x(c+cell.width),y(r+1)}; require(FillRect(bitmap.dc,&rect,brush(color(bg_index,true))) != 0,"fill failed");
                 const auto old = SelectObject(bitmap.dc,cell.style.bold ? bold_ : normal_);
-                SetTextColor(bitmap.dc,gdi_color(color(cell.style.fg,false))); const auto text = utf16(cell.text);
+                SetTextColor(bitmap.dc,gdi_color(color(fg_index,false))); const auto text = utf16(cell.text);
                 DrawTextW(bitmap.dc,text.data(),static_cast<int>(text.size()),&rect,DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
                 SelectObject(bitmap.dc,old);
+                if (cell.style.underline) {
+                    RECT line{rect.left,rect.bottom-std::max(1,scaled_pixels(1)),rect.right,rect.bottom};
+                    require(FillRect(bitmap.dc,&line,brush(color(fg_index,false))) != 0,"underline fill failed");
+                }
             }
         } else {
             RECT area{0,0,bitmap.width,bitmap.height}; check(target_->BindDC(bitmap.dc,&area)); target_->BeginDraw();
             for (int r = first; r < last; ++r) for (int c = 0; c < snapshot.columns(); ++c) {
                 const auto& cell = snapshot.lines[r][c]; if (cell.width == 0) continue;
                 const auto rect = D2D1::RectF(logical_x(c),logical_y(r),logical_x(c+cell.width),logical_y(r+1));
-                brush_->SetColor(D2D1::ColorF(color(cell.style.bg,true))); target_->FillRectangle(rect,brush_.Get());
-                const auto& text = layout(cell.text,cell.style.bold,cell.width); brush_->SetColor(D2D1::ColorF(color(cell.style.fg,false)));
+                const int bg_index = cell.style.reverse ? cell.style.fg : cell.style.bg;
+                const int fg_index = cell.style.reverse ? cell.style.bg : cell.style.fg;
+                brush_->SetColor(D2D1::ColorF(color(bg_index,true))); target_->FillRectangle(rect,brush_.Get());
+                const auto& text = layout(cell.text,cell.style.bold,cell.width); brush_->SetColor(D2D1::ColorF(color(fg_index,false)));
                 target_->PushAxisAlignedClip(rect,D2D1_ANTIALIAS_MODE_ALIASED);
                 target_->DrawTextLayout(D2D1::Point2F(logical_x(c),logical_y(r)),text.text.Get(),brush_.Get(),D2D1_DRAW_TEXT_OPTIONS_CLIP);
                 target_->PopAxisAlignedClip();
+                if (cell.style.underline) {
+                    const float thickness = std::max(1.0f, static_cast<float>(scaled_pixels(1)));
+                    const D2D1_RECT_F line{rect.left, rect.bottom - thickness, rect.right, rect.bottom};
+                    target_->FillRectangle(line, brush_.Get());
+                }
             }
             check(target_->EndDraw());
         }
