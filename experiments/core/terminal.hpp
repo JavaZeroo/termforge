@@ -29,8 +29,17 @@ class Parser {
     std::string encoded;
     // Bounded replies for implemented queries; drained by the host after each feed.
     std::vector<std::string> pending_replies;
+    // Bit 0: DECCKM application cursor keys; bit 1: DECTCEM cursor visible.
+    uint32_t mode_bits_ = 1u << 1;
     void dispatch(unsigned char final) {
         if (private_csi) {
+            // DECCKM (?1) and DECTCEM (?25) only change terminal state the host
+            // reads later; everything else private is still unsupported.
+            if (params.size() == 1 && (params[0] == 1 || params[0] == 25) && (final == 'h' || final == 'l')) {
+                const uint32_t bit = params[0] == 1 ? 1u << 0 : 1u << 1;
+                if (final == 'h') mode_bits_ |= bit; else mode_bits_ &= ~bit;
+                return;
+            }
             if (params.size() != 1 || (params[0] != 1049 && params[0] != 7) || (final != 'h' && final != 'l'))
                 throw InputError("unsupported private CSI command");
             if (params[0] == 7) {
@@ -240,6 +249,9 @@ public:
         : mode(selected), screen(rows, columns, history) {}
     const RecoveryDiagnostics& diagnostics() const { return stats; }
     std::vector<std::string> take_replies() { return std::exchange(pending_replies, {}); }
+    uint32_t mode_bits() const { return mode_bits_; }
+    bool application_cursor_keys() const { return (mode_bits_ & (1u << 0)) != 0; }
+    bool cursor_visible() const { return (mode_bits_ & (1u << 1)) != 0; }
     size_t buffered_input_bytes() const { return params.size() * sizeof(int) + encoded.size(); }
     void feed(std::string_view bytes) {
         if (mode == ParseMode::strict) feed_strict(bytes);

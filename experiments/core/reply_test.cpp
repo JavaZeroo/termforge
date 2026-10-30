@@ -26,6 +26,18 @@ int main() {
     // An unimplemented report must stay unimplemented instead of being faked.
     parser.feed("\x1b[5n");
     require(parser.take_replies().empty(), "unsupported report produced a reply");
+    // DECCKM and DECTCEM are state-only modes; strict parsing must accept them.
+    {
+        Parser strict_parser(3, 10, 10, ParseMode::strict);
+        require(strict_parser.cursor_visible() && !strict_parser.application_cursor_keys(),
+                "default mode bits mismatch");
+        strict_parser.feed("\x1b[?1h\x1b[?25l");
+        require(strict_parser.application_cursor_keys() && !strict_parser.cursor_visible(),
+                "mode bits were not applied");
+        strict_parser.feed("\x1b[?1l\x1b[?25h");
+        require(!strict_parser.application_cursor_keys() && strict_parser.cursor_visible(),
+                "mode bits were not cleared");
+    }
     std::puts("cursor reply contracts passed");
     return 0;
 }
