@@ -31,18 +31,22 @@ class CapabilityMatrixTests(unittest.TestCase):
     def test_extended_matrix_preserves_execution_and_support_boundaries(self):
         self.assertTrue(self.summary["execution_passed"], self.summary["counts"])
         self.assertEqual(self.summary["runs"], 25)
-        self.assertEqual(self.summary["counts"], {"core_unsupported": 10, "match": 6,
+        self.assertEqual(self.summary["counts"], {"core_unsupported": 5, "match": 11,
                                                   "reference_difference": 4, "resize_difference": 5})
         self.assertFalse(self.summary["semantic_acceptance"])
         self.assertTrue(self.summary["resize_covered"])
         self.assertFalse(self.summary["real_application_covered"])
-        for name in ("scroll_region", "cursor_query"):
+        for name in ("scroll_region",):
             for record in self.records(name):
                 self.assertEqual(record["status"], "core_unsupported")
                 self.assertFalse(record["expected_core_support"])
                 self.assertIn("trace failed after checkpoint",
                               (self.artifacts / "suite" / name / record["plan"].replace(":", "-") /
                                "core.stderr.txt").read_text())
+        for record in self.records("cursor_query"):
+            # The core answers the cursor report now, so this is a compared case.
+            self.assertTrue(record["expected_core_support"])
+            self.assertEqual(record["status"], "match")
 
     def test_alternate_query_and_region_have_real_candidate_results(self):
         for record in self.records("alternate_screen"):

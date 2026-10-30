@@ -23,7 +23,9 @@ CAPABILITIES = (
          case=Case("alternate_screen", "A\r\nB\x1b[?1049hALT\x1b[?1049lZ")),
     dict(name="scroll_region", supported=False,
          case=Case("scroll_region", "A\r\nB\r\nC\r\nD\x1b[2;3r\x1b[3;1H\nX\x1b[r\x1b[1;1H")),
-    dict(name="cursor_query", supported=False,
+    # The product core answers CSI 6n now, so this is a supported capability and
+    # its records are compared instead of being written off as unsupported.
+    dict(name="cursor_query", supported=True,
          case=Case("cursor_query", "A\x1b[6n")),
     dict(name="recovery_stream", supported=True, arguments=("--recovery",),
          case=RawCase("recovery_stream", "A\x1b[?9999zB\x1b]0;title\x07C\xffD")),
