@@ -91,14 +91,30 @@ int main() {
             row_text(margin.screen, 2).empty() && row_text(margin.screen, 3) == "d",
             "DL ignored the scroll margins");
 
+    // Margins belong to the buffer: a 1049 switch keeps each buffer's region.
+    {
+        Parser buffers(4, 10, 10, termforge::ParseMode::recovery);
+        buffers.feed("\x1b[2;3r");
+        require(buffers.screen.region_top() == 1 && buffers.screen.region_bottom() == 2,
+                "primary region was not set");
+        buffers.feed("\x1b[?1049h");
+        require(buffers.screen.region_top() == 0 && buffers.screen.region_bottom() == 3,
+                "alternate buffer inherited the primary region");
+        buffers.feed("\x1b[1;2r");
+        require(buffers.screen.region_top() == 0 && buffers.screen.region_bottom() == 1,
+                "alternate region was not set");
+        buffers.feed("\x1b[?1049l");
+        require(buffers.screen.region_top() == 1 && buffers.screen.region_bottom() == 2,
+                "primary region was lost across the switch");
+    }
     // A resize drops the margins: scrolling afterwards reaches history again.
     {
         Parser resized(4, 10, 10, termforge::ParseMode::recovery);
         resized.feed("a\r\nb\r\nc\r\nd");
         resized.feed("\x1b[2;3r");
-        require(resized.screen.scroll_bottom() == 2, "test setup lost the region");
+        require(resized.screen.region_bottom() == 2, "test setup lost the region");
         resized.screen.resize(4, 12);
-        require(resized.screen.scroll_bottom() == 3, "resize kept the stale region bottom");
+        require(resized.screen.region_bottom() == 3, "resize kept the stale region bottom");
         resized.feed("\x1b[4;1H");
         resized.feed("\n");
         require(resized.screen.scrollback_lines() > 0,
@@ -147,6 +163,23 @@ int main() {
         insert.feed("Q");
         require(row_text(insert.screen, 0) == "abcdQ" && row_text(insert.screen, 1).empty(),
                 "text after a cancelled ICH wrap did not stay on the row");
+    }
+    // The 175-byte margin source from experiments/shell/margin_checks.py, with
+    // its lone line feeds translated to CRLF the way a console does on output.
+    // The core must land on the "required" screen, not the ConPTY "observed" one.
+    {
+        Parser margin(24, 80, 100, termforge::ParseMode::recovery);
+        margin.feed("\x1b[2J\x1b[HTOP_FIXED\r\nREGION_A\r\nREGION_B\r\nBOTTOM_FIXED\r\n\x1b[2;3r");
+        margin.feed("\x1b[?1049hALT_OUTSIDE\r\n\x1b[4;1HALT_A\r\nALT_B\x1b[4;5r\x1b[5;1H\r\nALT_C\r\nALT_D");
+        margin.feed("\x1b[?1049l");
+        margin.feed("\x1b[3;1H\r\nREGION_C\r\nREGION_D\x1b[6;1HTF_MARGIN_DONE\r\n");
+        const std::string expected[] = {"TOP_FIXED", "REGION_C", "REGION_D", "BOTTOM_FIXED", "",
+                                         "TF_MARGIN_DONE"};
+        for (int index = 0; index < 6; ++index)
+            require(row_text(margin.screen, index) == expected[index],
+                    "margin source produced the ConPTY-observed screen");
+        require(margin.screen.row == 6 && margin.screen.column == 0,
+                "margin source cursor mismatch");
     }
     std::puts("edit csi contracts passed");
     return 0;
