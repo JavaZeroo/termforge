@@ -113,6 +113,18 @@ class TerminalWidget final : public QWidget {
             case Qt::Key_Down: bytes = model_.application_cursor_keys() ? "\x1bOB" : "\x1b[B"; break;
             case Qt::Key_Right: bytes = model_.application_cursor_keys() ? "\x1bOC" : "\x1b[C"; break;
             case Qt::Key_Left: bytes = model_.application_cursor_keys() ? "\x1bOD" : "\x1b[D"; break;
+            case Qt::Key_F1: case Qt::Key_F2: case Qt::Key_F3: case Qt::Key_F4:
+            case Qt::Key_F5: case Qt::Key_F6: case Qt::Key_F7: case Qt::Key_F8:
+            case Qt::Key_F9: case Qt::Key_F10: case Qt::Key_F11: case Qt::Key_F12: {
+                // Same table the Win32 encoder uses: SS3 letters for F1-F4 and
+                // the xterm tilde numbers for F5-F12.
+                static const char* const function_keys[] = {
+                    "\x1bOP", "\x1bOQ", "\x1bOR", "\x1bOS",
+                    "\x1b[15~", "\x1b[17~", "\x1b[18~", "\x1b[19~",
+                    "\x1b[20~", "\x1b[21~", "\x1b[23~", "\x1b[24~"};
+                bytes = function_keys[event->key() - Qt::Key_F1];
+                break;
+            }
             default:
                 if (event->text().isEmpty()) { QWidget::keyPressEvent(event); return; }
                 character_text = true;
