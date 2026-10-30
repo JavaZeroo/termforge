@@ -59,7 +59,7 @@ class Parser {
             return;
         }
         if (final == 'm') { screen.sgr(params); return; }
-        if (params.size() > ((final == 'H' || final == 'f') ? 2u : 1u))
+        if (params.size() > ((final == 'H' || final == 'f' || final == 'r') ? 2u : 1u))
             throw InputError("too many CSI parameters");
         const int n = params[0] == 0 ? 1 : params[0];
         switch (final) {
@@ -73,6 +73,10 @@ class Parser {
         case 'J': screen.erase_display(params[0]); break;
         case 'K': screen.erase_line(params[0]); break;
         case 'L': screen.insert_lines(n); break;
+        case 'r':
+            screen.set_scroll_region(params[0] == 0 ? 0 : params[0] - 1,
+                                     params.size() < 2 || params[1] == 0 ? -1 : params[1] - 1);
+            break;
         case 'M': screen.delete_lines(n); break;
         case 'X': screen.erase_characters(n); break;
         case '@': screen.insert_characters(n); break;

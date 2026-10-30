@@ -21,7 +21,9 @@ class RawCase(Case):
 CAPABILITIES = (
     dict(name="alternate_screen", supported=True,
          case=Case("alternate_screen", "A\r\nB\x1b[?1049hALT\x1b[?1049lZ")),
-    dict(name="scroll_region", supported=False,
+    # DECSTBM is implemented now, so the scroll-region case is compared instead
+    # of being written off as an unsupported capability.
+    dict(name="scroll_region", supported=True,
          case=Case("scroll_region", "A\r\nB\r\nC\r\nD\x1b[2;3r\x1b[3;1H\nX\x1b[r\x1b[1;1H")),
     # The product core answers CSI 6n now, so this is a supported capability and
     # its records are compared instead of being written off as unsupported.
