@@ -191,6 +191,15 @@ int main() {
         const auto& normal = intensity.screen.visible_lines()[0][1].style;
         require(!normal.bold && !normal.dim, "SGR 22 did not clear bold and faint together");
     }
+    // SGR 8/28 hide and reveal without discarding the cell text.
+    {
+        Parser hidden(2, 10, 10, termforge::ParseMode::recovery);
+        hidden.feed("\x1b[8mAB\x1b[28mC");
+        const auto& line = hidden.screen.visible_lines()[0];
+        require(line[0].style.hidden && line[1].style.hidden, "SGR 8 was not applied");
+        require(!line[2].style.hidden, "SGR 28 did not clear hidden");
+        require(line[0].text == "A", "hidden text was discarded from the model");
+    }
     // SGR 9/29 toggle strikethrough without touching the other attributes.
     {
         Parser strike(2, 10, 10, termforge::ParseMode::recovery);

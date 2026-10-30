@@ -25,7 +25,10 @@ struct Style {
     bool underline = false;
     bool reverse = false;
     bool strikethrough = false;
-    bool plain() const { return fg == -1 && bg == -1 && !bold && !dim && !underline && !reverse && !strikethrough; }
+    bool hidden = false; // SGR 8/28: the cell keeps its background only.
+    bool plain() const {
+        return fg == -1 && bg == -1 && !bold && !dim && !underline && !reverse && !strikethrough && !hidden;
+    }
     void json(std::ostream& out) const {
         out << "{\"fg\":" << fg << ",\"bg\":" << bg << ",\"bold\":" << (bold ? "true" : "false");
         // New attributes appear only when set, so existing records keep their
@@ -34,6 +37,7 @@ struct Style {
         if (underline) out << ",\"underline\":true";
         if (reverse) out << ",\"reverse\":true";
         if (strikethrough) out << ",\"strikethrough\":true";
+        if (hidden) out << ",\"hidden\":true";
         out << '}';
     }
 };
@@ -577,6 +581,8 @@ public:
             else if (p == 27) next.reverse = false;
             else if (p == 9) next.strikethrough = true;
             else if (p == 29) next.strikethrough = false;
+            else if (p == 8) next.hidden = true;
+            else if (p == 28) next.hidden = false;
             else if (p >= 30 && p <= 37) next.fg = p - 30;
             else if (p >= 40 && p <= 47) next.bg = p - 40;
             else if (p >= 90 && p <= 97) next.fg = p - 90 + 8;
