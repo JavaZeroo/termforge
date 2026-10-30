@@ -17,10 +17,17 @@ inline void Workspace::scenario_shells() {
             if (!tab.launch) continue;
             const auto [columns, rows] = tab.shell->grid_dimensions();
             const std::string role(tab.launch->kind.begin(), tab.launch->kind.end());
+            // WSL also has to show a fresh prompt after its marker; record that
+            // condition explicitly instead of leaving it to inference.
+            const bool transport_completed = tab.launch->kind != L"wsl" ||
+                tf_shell_test::transport_output_completed(
+                    tab.shell->observed_output(),
+                    "TF_SIZE_" + std::to_string(columns) + "x" + std::to_string(rows));
             tf_shell_test::local_shell_size_readiness(
                 diagnostic_directory, role, static_cast<unsigned long>(columns), static_cast<unsigned long>(rows),
                 tab.shell->settled(),
                 tab.shell->contains_line("TF_SIZE_" + std::to_string(columns) + "x" + std::to_string(rows)),
+                transport_completed,
                 static_cast<unsigned long>(tab.shell->observed_output().size()));
         }
         require(false, ("workspace shells scenario timeout at stage " + std::to_string(stage_)).c_str());
