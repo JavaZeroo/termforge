@@ -101,8 +101,19 @@ class TerminalWidget final : public QWidget {
         std::string bytes;
         auto next = keyboard_;
         bool character_text = false;
-        if (event->modifiers() == Qt::ControlModifier && event->key() == Qt::Key_C) bytes = std::string(1, '\x03');
-        else if (event->modifiers().testFlag(Qt::ControlModifier) || event->modifiers().testFlag(Qt::AltModifier)) {
+        if (event->modifiers() == Qt::ControlModifier &&
+            event->key() >= Qt::Key_A && event->key() <= Qt::Key_Z) {
+            // Control letters travel as their C0 code (Ctrl+A is 0x01); the Win32
+            // entry receives the same bytes from WM_CHAR, so both entries agree.
+            bytes = std::string(1, static_cast<char>(event->key() - Qt::Key_A + 1));
+        } else if (event->modifiers() == Qt::ControlModifier &&
+                   (event->key() == Qt::Key_BracketLeft || event->key() == Qt::Key_Backslash ||
+                    event->key() == Qt::Key_BracketRight)) {
+            // The three escape-adjacent control codes keep their VT meanings.
+            const int code = event->key() == Qt::Key_BracketLeft ? 27 :
+                             event->key() == Qt::Key_Backslash ? 28 : 29;
+            bytes = std::string(1, static_cast<char>(code));
+        } else if (event->modifiers().testFlag(Qt::ControlModifier) || event->modifiers().testFlag(Qt::AltModifier)) {
             QWidget::keyPressEvent(event); return;
         } else {
             switch (event->key()) {
