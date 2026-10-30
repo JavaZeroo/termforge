@@ -252,7 +252,8 @@ class RecoveryTests(unittest.TestCase):
         self.expect(b"A\x1b]hidden\r\nZ", "A", stats={"truncated_sequences": 1})
 
     def test_strict_still_rejects_invalid_input(self):
-        for data in (b"\x1b7", b"\x1b]title\x07", b"\xff", b"\xe1\x80", b"\x1b[?25h", b"\x1b[31"):
+        # ?25 is a supported mode now, so the unsupported-private sample uses ?12.
+        for data in (b"\x1b7", b"\x1b]title\x07", b"\xff", b"\xe1\x80", b"\x1b[?12h", b"\x1b[31"):
             result = self.run_input(data, [1], mode="strict")
             self.assertEqual(result.returncode, 2)
             self.assertEqual(result.stdout, "")
