@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <map>
+#include <vector>
 
 using tf_conpty::Handle;
 using tf_conpty::Session;
@@ -106,6 +108,149 @@ static int child() {
     }
     return 0;
 }
+// Count this process's handles grouped by object-type index. The system call
+// only reads the handle table, so no handle is opened or queried; mapping an
+// index to a name is left to a later step that can create reference objects.
+static std::string handles_by_type() {
+    using query_t = LONG (NTAPI*)(ULONG, PVOID, ULONG, PULONG);
+    static query_t query = reinterpret_cast<query_t>(
+        GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtQuerySystemInformation"));
+    if (!query) return "{}";
+    ULONG size = 1u << 20;
+    std::vector<unsigned char> buffer;
+    LONG status = 0;
+    for (int attempt = 0; attempt < 8; ++attempt) {
+        buffer.assign(size, 0);
+        status = query(64 /* SystemExtendedHandleInformation */, buffer.data(), size, &size);
+        if (status != static_cast<LONG>(0xC0000004)) break;  // STATUS_INFO_LENGTH_MISMATCH
+    }
+    if (status != 0) return "{}";
+    const auto pid = static_cast<ULONG_PTR>(GetCurrentProcessId());
+    const auto* header = reinterpret_cast<const ULONG_PTR*>(buffer.data());
+    const size_t count = static_cast<size_t>(header[0]);
+    // SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX: the type index is a USHORT that follows
+    // GrantedAccess and the creator back-trace index, not the access mask.
+    struct Entry {
+        ULONG_PTR object, process, handle;
+        ULONG granted_access;
+        unsigned short creator_backtrace, type_index;
+        ULONG attributes, reserved;
+    };
+    const auto* entries = reinterpret_cast<const Entry*>(buffer.data() + sizeof(ULONG_PTR) * 2);
+    std::map<ULONG, unsigned> counts;
+    for (size_t index = 0; index < count; ++index)
+        if (entries[index].process == pid) ++counts[entries[index].type_index];
+    std::ostringstream out; out << '{';
+    bool first = true;
+    for (const auto& [type, total] : counts) {
+        if (!first) out << ','; first = false;
+        out << '"' << type << "\":" << total;
+    }
+    out << '}';
+    return out.str();
+}
+// Map the object-type indexes seen in the handle table to names by creating one
+// reference object per interesting type and reading both its table entry and its
+// ObjectTypeInformation. Only self-created handles are queried.
+static std::string object_type_names() {
+    struct Reference { const char* label; HANDLE handle; };
+    std::vector<Reference> references;
+    const auto add = [&](const char* label, HANDLE handle) {
+        if (handle && handle != INVALID_HANDLE_VALUE) references.push_back({label, handle});
+    };
+    add("Job", CreateJobObjectW(nullptr, nullptr));
+    add("Event", CreateEventW(nullptr, FALSE, FALSE, nullptr));
+    add("Mutex", CreateMutexW(nullptr, FALSE, nullptr));
+    add("Semaphore", CreateSemaphoreW(nullptr, 1, 1, nullptr));
+    add("Section", CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, 4096, nullptr));
+    add("IoCompletion", CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 1));
+    add("File", CreateFileW(L"NUL", GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr));
+    struct Entry {
+        ULONG_PTR object, process, handle;
+        ULONG granted_access;
+        unsigned short creator_backtrace, type_index;
+        ULONG attributes, reserved;
+    };
+    using query_t = LONG (NTAPI*)(ULONG, PVOID, ULONG, PULONG);
+    using object_t = LONG (NTAPI*)(HANDLE, ULONG, PVOID, ULONG, PULONG);
+    static query_t query = reinterpret_cast<query_t>(
+        GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtQuerySystemInformation"));
+    static object_t object_query = reinterpret_cast<object_t>(
+        GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtQueryObject"));
+    std::string result = "{}";
+    if (query && object_query) {
+        ULONG size = 1u << 20;
+        std::vector<unsigned char> buffer;
+        LONG status = 1;
+        for (int attempt = 0; attempt < 8; ++attempt) {
+            buffer.assign(size, 0);
+            status = query(64, buffer.data(), size, &size);
+            if (status != static_cast<LONG>(0xC0000004)) break;
+        }
+        std::ostringstream out; out << '{';
+        bool first = true;
+        if (status == 0) {
+            const auto pid = static_cast<ULONG_PTR>(GetCurrentProcessId());
+            const size_t count = static_cast<size_t>(reinterpret_cast<const ULONG_PTR*>(buffer.data())[0]);
+            const auto* entries = reinterpret_cast<const Entry*>(buffer.data() + sizeof(ULONG_PTR) * 2);
+            for (const auto& reference : references) {
+                for (size_t index = 0; index < count; ++index) {
+                    if (entries[index].process != pid ||
+                        entries[index].handle != reinterpret_cast<ULONG_PTR>(reference.handle)) continue;
+                    std::vector<unsigned char> info(512, 0);
+                    ULONG returned = 0;
+                    if (object_query(reference.handle, 2 /* ObjectTypeInformation */, info.data(),
+                                     static_cast<ULONG>(info.size()), &returned) != 0) break;
+                    // OBJECT_TYPE_INFORMATION starts with a UNICODE_STRING.
+                    struct UnicodeString { unsigned short length, maximum; wchar_t* buffer; };
+                    const auto* name = reinterpret_cast<const UnicodeString*>(info.data());
+                    std::wstring text(name->buffer, static_cast<size_t>(name->length) / sizeof(wchar_t));
+                    if (!first) out << ','; first = false;
+                    out << '"' << entries[index].type_index << "\":\"" << utf8(text) << '"';
+                    break;
+                }
+            }
+        }
+        out << '}';
+        result = out.str();
+    }
+    for (const auto& reference : references) CloseHandle(reference.handle);
+    return result;
+}
+// List this process's handles of one object type, so a leak can be compared
+// with the handle the session itself owns.
+static std::string handles_of_type(unsigned type) {
+    using query_t = LONG (NTAPI*)(ULONG, PVOID, ULONG, PULONG);
+    static query_t query = reinterpret_cast<query_t>(
+        GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtQuerySystemInformation"));
+    if (!query) return "[]";
+    ULONG size = 1u << 20;
+    std::vector<unsigned char> buffer;
+    LONG status = 1;
+    for (int attempt = 0; attempt < 8; ++attempt) {
+        buffer.assign(size, 0);
+        status = query(64, buffer.data(), size, &size);
+        if (status != static_cast<LONG>(0xC0000004)) break;
+    }
+    if (status != 0) return "[]";
+    struct Entry {
+        ULONG_PTR object, process, handle;
+        ULONG granted_access;
+        unsigned short creator_backtrace, type_index;
+        ULONG attributes, reserved;
+    };
+    const auto pid = static_cast<ULONG_PTR>(GetCurrentProcessId());
+    const size_t count = static_cast<size_t>(reinterpret_cast<const ULONG_PTR*>(buffer.data())[0]);
+    const auto* entries = reinterpret_cast<const Entry*>(buffer.data() + sizeof(ULONG_PTR) * 2);
+    std::ostringstream out; out << '['; bool first = true;
+    for (size_t index = 0; index < count; ++index) {
+        if (entries[index].process != pid || entries[index].type_index != type) continue;
+        if (!first) out << ','; first = false;
+        out << '"' << std::hex << "0x" << entries[index].handle << std::dec << '"';
+    }
+    out << ']';
+    return out.str();
+}
 static DWORD handles() {
     DWORD count = 0;
     if (!GetProcessHandleCount(GetCurrentProcess(), &count)) fail("GetProcessHandleCount");
@@ -137,6 +282,11 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
     // Split the lifecycle so a per-session leak can be attributed to start or
     // close instead of only to the round as a whole.
     DWORD after_start_handles = before_handles, after_close_handles = before_handles;
+    HANDLE session_job = nullptr;
+    std::string job_after_start;
+    const std::string handle_types_before = handles_by_type();
+    const std::string job_before = handles_of_type(7);
+    const std::string type_names = object_type_names();
     Session session;
     bool ready = false, echo = false, resized = false, exited = false, tree = false;
     unsigned validated_records = 0; std::string error;
@@ -144,6 +294,8 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
     try {
         session.start(executable_path());
         after_start_handles = handles();
+        session_job = session.job_handle();
+        job_after_start = handles_of_type(7);
         ready = session.wait_text("TFREADY"); require(ready, "ready marker timeout");
         session.send("SIZE\r"); require(session.wait_text("TFSIZE:80x24:END"), "initial dimensions mismatch");
         // UTF-8 travels into the real console input and back through ConPTY.
@@ -190,6 +342,8 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
     }
     const double settle_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - settle_begin).count();
     const bool steady_resources = before_handles == after_handles && before_threads == after_threads;
+    const std::string handle_types_after = handles_by_type();
+    const std::string job_after = handles_of_type(7);
     // Retain first-use initialization growth separately; subsequent sessions
     // must return to the established process baseline exactly.
     const bool clean = session.cleanup_complete && (startup || steady_resources);
@@ -208,6 +362,14 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
               << ",\"steady_resources\":" << steady_resources
               << ",\"handles_after_start\":" << after_start_handles
               << ",\"handles_after_close\":" << after_close_handles
+              << ",\"handle_types_before\":" << handle_types_before
+              << ",\"handle_types_after\":" << handle_types_after
+              << ",\"handle_type_names\":" << type_names
+              << ",\"job_handles_before\":" << job_before
+              << ",\"job_handles_after_start\":" << (job_after_start.empty() ? """" : job_after_start)
+              << ",\"job_handles_after\":" << job_after
+              << ",\"session_job\":\"0x" << std::hex << reinterpret_cast<unsigned long long>(session_job)
+              << std::dec << '"'
               << ",\"valid\":" << (valid ? "true" : "false") << ",\"error\":" << quoted(error)
               << ",\"ready\":" << ready << ",\"echo\":" << echo << ",\"resized\":" << resized
               << ",\"descendant_created\":" << tree << ",\"child_pid\":" << session.pid
