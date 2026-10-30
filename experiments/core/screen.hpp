@@ -395,11 +395,13 @@ public:
     void set_scroll_region(int top, int bottom) {
         if (top < 0) top = 0;
         if (bottom < 0 || bottom >= height()) bottom = height() - 1;
-        if (bottom - top < 1) throw InputError("invalid scroll region");
+        // An invalid region is ignored rather than rejected: the reference
+        // terminal logs and returns, leaving the previous margins in place.
+        if (bottom - top < 1) return;
         scroll_top_ = top; scroll_bottom_ = bottom;
-        // DECSTBM homes the cursor. xterm places it at the region's top-left;
-        // the original application's choice is not observed yet.
-        move(top, 0);
+        // DECSTBM homes the cursor to the screen origin, matching the reference
+        // terminal (vendor/alacritty_terminal/src/term/mod.rs: goto(0, 0)).
+        move(0, 0);
     }
     void newline(bool automatic = false, size_t used_columns = 0) {
         auto& previous = lines[row];

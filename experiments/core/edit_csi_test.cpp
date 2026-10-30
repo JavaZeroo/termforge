@@ -68,8 +68,9 @@ int main() {
     Parser region(4, 10, 10, termforge::ParseMode::recovery);
     region.feed("a\r\nb\r\nc\r\nd");
     region.feed("\x1b[2;3r");
-    require(region.screen.row == 1 && region.screen.column == 0, "DECSTBM did not home the cursor");
-    region.feed("\n\n");
+    require(region.screen.row == 0 && region.screen.column == 0, "DECSTBM did not home the cursor");
+    // Two feeds only walk to the bottom margin; the third scrolls the region.
+    region.feed("\n\n\n");
     require(row_text(region.screen, 0) == "a" && row_text(region.screen, 1) == "c" &&
             row_text(region.screen, 2).empty() && row_text(region.screen, 3) == "d",
             "region scroll changed rows outside the margins");
