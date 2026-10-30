@@ -109,10 +109,10 @@ class TerminalWidget final : public QWidget {
             case Qt::Key_Return: case Qt::Key_Enter: bytes = "\r"; break;
             case Qt::Key_Backspace: bytes = std::string(1, '\x7f'); break;
             case Qt::Key_Tab: bytes = "\t"; break;
-            case Qt::Key_Up: bytes = "\x1b[A"; break;
-            case Qt::Key_Down: bytes = "\x1b[B"; break;
-            case Qt::Key_Right: bytes = "\x1b[C"; break;
-            case Qt::Key_Left: bytes = "\x1b[D"; break;
+            case Qt::Key_Up: bytes = model_.application_cursor_keys() ? "\x1bOA" : "\x1b[A"; break;
+            case Qt::Key_Down: bytes = model_.application_cursor_keys() ? "\x1bOB" : "\x1b[B"; break;
+            case Qt::Key_Right: bytes = model_.application_cursor_keys() ? "\x1bOC" : "\x1b[C"; break;
+            case Qt::Key_Left: bytes = model_.application_cursor_keys() ? "\x1bOD" : "\x1b[D"; break;
             default:
                 if (event->text().isEmpty()) { QWidget::keyPressEvent(event); return; }
                 character_text = true;
@@ -216,7 +216,7 @@ class TerminalWidget final : public QWidget {
                 painter.restore();
             }
         }
-        if (model_.running()) {
+        if (model_.running() && model_.cursor_visible()) {
             painter.fillRect(QRect(margin + screen.column * cell_width_, margin + (screen.row + 1) * cell_height_ - 2,
                                    cell_width_, 2), colour(-1, true));
         }
