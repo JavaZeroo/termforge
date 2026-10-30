@@ -152,8 +152,13 @@ private:
         if (!bytes.empty()) {
             changed = true;
             if (!parser_failed_) {
-                try { parser_.feed(bytes); }
-                catch (const std::exception& error) {
+                try {
+                    parser_.feed(bytes);
+                    // Query replies (a cursor position report today) go back to the
+                    // child through the same bounded input path as keystrokes.
+                    for (const auto& reply : parser_.take_replies())
+                        send(QByteArray(reply.data(), static_cast<qsizetype>(reply.size())));
+                } catch (const std::exception& error) {
                     parser_failed_ = true;
                     remember_error(QString::fromUtf8(error.what()));
                     close();
