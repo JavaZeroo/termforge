@@ -19,10 +19,12 @@ inline void Workspace::scenario_shells() {
             const std::string role(tab.launch->kind.begin(), tab.launch->kind.end());
             // WSL also has to show a fresh prompt after its marker; record that
             // condition explicitly instead of leaving it to inference.
+            const std::string size_marker = "TF_SIZE_" + std::to_string(columns) + "x" + std::to_string(rows);
             const bool transport_completed = tab.launch->kind != L"wsl" ||
-                tf_shell_test::transport_output_completed(
-                    tab.shell->observed_output(),
-                    "TF_SIZE_" + std::to_string(columns) + "x" + std::to_string(rows));
+                tf_shell_test::transport_output_completed(tab.shell->observed_output(), size_marker);
+            if (tab.launch->kind == L"wsl")
+                tf_shell_test::local_shell_transport_probe(diagnostic_directory, role,
+                                                           tab.shell->observed_output(), size_marker);
             tf_shell_test::local_shell_size_readiness(
                 diagnostic_directory, role, static_cast<unsigned long>(columns), static_cast<unsigned long>(rows),
                 tab.shell->settled(),
