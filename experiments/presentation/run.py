@@ -42,10 +42,10 @@ def validate(row, backend, dpi):
     if ("presented_done" not in row or row["presented_done"] is not None or
             row.get("capture_layer") != "WM_PRINTCLIENT from WM_PAINT retained DIB"):
         raise ValueError("Incorrect presentation/capture endpoint")
-    # The fixture now carries one reverse and one underlined cell, so the ink and
-    # glyph counts moved from 19 to 25 together with presentation.cpp.
-    if (row.get("dwrite_glyph_count") != 25 or row.get("dwrite_missing_glyphs") != 0 or
-            row.get("dwrite_overflowing_cells") != 0 or row.get("text_cells_with_ink") != 25 or not row.get("dwrite_resolved_faces")):
+    # The fixture now carries reverse, underlined and struck-through cells, so the
+    # ink and glyph counts moved from 19 to 28 together with presentation.cpp.
+    if (row.get("dwrite_glyph_count") != 28 or row.get("dwrite_missing_glyphs") != 0 or
+            row.get("dwrite_overflowing_cells") != 0 or row.get("text_cells_with_ink") != 28 or not row.get("dwrite_resolved_faces")):
         raise ValueError("DirectWrite glyph/fit gate failed")
     audit = row.get("dwrite_text_audit", [])
     if [item.get("text") for item in audit] != ["e\u0301", "中", "文"]:
