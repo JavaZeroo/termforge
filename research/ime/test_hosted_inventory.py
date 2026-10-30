@@ -391,6 +391,12 @@ if ($errors.Count) { throw 'Worker syntax errors' }
                 ("status", "states", "state_timeline", "ast_parse_milliseconds")}
         except subprocess.TimeoutExpired as error:
             record["timed_out"] = True
+            # What the child looked like exactly when the deadline hit: a live
+            # child with complete checkpoints means the timeout happened after
+            # the last recorded stage rather than during start-up.
+            record["exit_at_timeout"] = process.poll() if process is not None else None
+            partial = getattr(error, "output", None) or b""
+            record["partial_stdout_bytes"] = len(partial) if isinstance(partial, (bytes, bytearray)) else 0
             record["error"] = inventory.error_identity(error)
             raise
         except BaseException as error:
