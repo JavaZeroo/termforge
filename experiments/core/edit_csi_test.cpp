@@ -191,6 +191,15 @@ int main() {
         const auto& normal = intensity.screen.visible_lines()[0][1].style;
         require(!normal.bold && !normal.dim, "SGR 22 did not clear bold and faint together");
     }
+    // SGR 53/55 toggle an overline without touching the other decorations.
+    {
+        Parser over(2, 10, 10, termforge::ParseMode::recovery);
+        over.feed("\x1b[53;4mA\x1b[55mB");
+        require(over.screen.visible_lines()[0][0].style.overline &&
+                over.screen.visible_lines()[0][0].style.underline, "SGR 53;4 was not applied");
+        const auto& cleared = over.screen.visible_lines()[0][1].style;
+        require(!cleared.overline && cleared.underline, "SGR 55 did not clear only the overline");
+    }
     // SGR 8/28 hide and reveal without discarding the cell text.
     {
         Parser hidden(2, 10, 10, termforge::ParseMode::recovery);
