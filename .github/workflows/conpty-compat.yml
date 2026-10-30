@@ -14,6 +14,9 @@ jobs:
     timeout-minutes: 10
     env:
       PYTHONUTF8: '1'
+      # #21: this platform duplicates one Job handle per session inside the host
+      # process, so the batch records the counts instead of gating on zero growth.
+      TERMFORGE_CONPTY_RECORD_HANDLES: '1'
       TERMFORGE_TEST_ARTIFACTS: ${{ github.workspace }}/build/test-artifacts
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
