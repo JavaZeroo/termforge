@@ -226,6 +226,9 @@ class TerminalWidget final : public QWidget {
                 painter.save(); painter.setClipRect(area);
                 painter.drawText(area, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine,
                                  QString::fromUtf8(cell.text.data(), static_cast<qsizetype>(cell.text.size())));
+                if (cell.style.strikethrough)
+                    painter.fillRect(QRectF(area.left(), area.center().y() - 0.5, area.width(), 1.0),
+                                     colour(cell.style.reverse ? cell.style.bg : cell.style.fg, true));
                 painter.restore();
             }
         }

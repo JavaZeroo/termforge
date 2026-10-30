@@ -255,6 +255,11 @@ public:
                     RECT line{rect.left,rect.bottom-std::max(1,scaled_pixels(1)),rect.right,rect.bottom};
                     require(FillRect(bitmap.dc,&line,brush(color(fg_index,false))) != 0,"underline fill failed");
                 }
+                if (cell.style.strikethrough) {
+                    const int middle = (rect.top + rect.bottom) / 2;
+                    RECT line{rect.left,middle,rect.right,middle+std::max(1,scaled_pixels(1))};
+                    require(FillRect(bitmap.dc,&line,brush(color(fg_index,false))) != 0,"strikethrough fill failed");
+                }
             }
         } else {
             RECT area{0,0,bitmap.width,bitmap.height}; check(target_->BindDC(bitmap.dc,&area)); target_->BeginDraw();
@@ -271,6 +276,12 @@ public:
                 if (cell.style.underline) {
                     const float thickness = std::max(1.0f, static_cast<float>(scaled_pixels(1)));
                     const D2D1_RECT_F line{rect.left, rect.bottom - thickness, rect.right, rect.bottom};
+                    target_->FillRectangle(line, brush_.Get());
+                }
+                if (cell.style.strikethrough) {
+                    const float thickness = std::max(1.0f, static_cast<float>(scaled_pixels(1)));
+                    const float middle = (rect.top + rect.bottom) * 0.5f;
+                    const D2D1_RECT_F line{rect.left, middle, rect.right, middle + thickness};
                     target_->FillRectangle(line, brush_.Get());
                 }
             }
