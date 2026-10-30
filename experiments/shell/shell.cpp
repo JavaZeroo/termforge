@@ -216,11 +216,22 @@ class ShellWindow {
             find_resize_pending_=find_resize_anchor_.set(termforge::TextDocument(parser_.screen),*current);
             find_resize_wrapped_=find_current_->wrapped;
         }
+        const int previous_columns = parser_.screen.width();
+        const int previous_rows = parser_.screen.height();
 #ifdef TERMFORGE_CANDIDATE_CORE
         parser_.resize(rows, columns);
 #else
         parser_.screen.resize(rows, columns);
 #endif
+        // Opt-in record of the geometry switch itself, so a repaint batch can be
+        // placed on either side of it instead of being inferred from output alone.
+        if (trace_output_) {
+            trace_output_ << "{\"schema\":\"termforge-resize-trace-v1\",\"terminal\":" << identity_
+                          << ",\"t_ms\":" << GetTickCount64()
+                          << ",\"old_columns\":" << previous_columns << ",\"old_rows\":" << previous_rows
+                          << ",\"columns\":" << columns << ",\"rows\":" << rows << "}\n";
+            trace_output_.flush();
+        }
         search_changed();
         dirty_first_ = 0; dirty_last_ = rows;
         surface_ = std::move(surface); metrics_dirty_ = false; publish();
