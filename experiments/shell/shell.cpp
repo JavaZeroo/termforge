@@ -1436,7 +1436,14 @@ public:
             trace.close(); require(bool(trace), "candidate output evidence write failed");
         }
         if (!failure_.empty() && !mode_.empty()) {
-            std::cerr << "stage=" << stage_ << " bytes=" << result_.consumed << " screen=";
+            // The dump answers "did our side do its part" before the screen:
+            // input high-water/rejected tell whether the keystroke reached the
+            // bounded queue, and the session counters tell whether reads stalled.
+            std::cerr << "stage=" << stage_ << " bytes=" << result_.consumed
+                      << " input_high_water=" << input_.high_water
+                      << " input_rejected=" << input_.rejected
+                      << " output_bytes=" << session_.output_bytes
+                      << " read_error=" << session_.read_error << " screen=";
             parser_.screen.json(std::cerr); std::cerr << '\n';
         }
         require(failure_.empty(), failure_.c_str()); require(close_failure_.empty(), close_failure_.c_str());
