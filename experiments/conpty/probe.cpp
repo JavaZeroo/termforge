@@ -134,12 +134,16 @@ static void require(bool condition, const char* detail) {
 }
 static bool probe(const std::string& mode, unsigned repeat, bool startup = false) {
     const DWORD before_handles = handles(), before_threads = threads();
+    // Split the lifecycle so a per-session leak can be attributed to start or
+    // close instead of only to the round as a whole.
+    DWORD after_start_handles = before_handles, after_close_handles = before_handles;
     Session session;
     bool ready = false, echo = false, resized = false, exited = false, tree = false;
     unsigned validated_records = 0; std::string error;
     const auto begin = std::chrono::steady_clock::now();
     try {
         session.start(executable_path());
+        after_start_handles = handles();
         ready = session.wait_text("TFREADY"); require(ready, "ready marker timeout");
         session.send("SIZE\r"); require(session.wait_text("TFSIZE:80x24:END"), "initial dimensions mismatch");
         // UTF-8 travels into the real console input and back through ConPTY.
@@ -177,6 +181,7 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
     } catch (const std::exception& exception) { error = exception.what(); }
     session.close();
     const DWORD immediate_handles = handles(), immediate_threads = threads();
+    after_close_handles = immediate_handles;
     DWORD after_handles = immediate_handles, after_threads = immediate_threads;
     const auto settle_begin = std::chrono::steady_clock::now();
     while ((after_handles != before_handles || after_threads != before_threads) &&
@@ -201,6 +206,8 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
     std::cout << "{\"mode\":" << quoted(mode) << ",\"repeat\":" << repeat
               << ",\"startup\":" << (startup ? "true" : "false")
               << ",\"steady_resources\":" << steady_resources
+              << ",\"handles_after_start\":" << after_start_handles
+              << ",\"handles_after_close\":" << after_close_handles
               << ",\"valid\":" << (valid ? "true" : "false") << ",\"error\":" << quoted(error)
               << ",\"ready\":" << ready << ",\"echo\":" << echo << ",\"resized\":" << resized
               << ",\"descendant_created\":" << tree << ",\"child_pid\":" << session.pid
