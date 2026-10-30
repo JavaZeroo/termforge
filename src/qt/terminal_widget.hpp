@@ -218,7 +218,7 @@ class TerminalWidget final : public QWidget {
             }
             for (int column = 0; column < screen.width(); ++column) {
                 const auto& cell = line[static_cast<size_t>(column)];
-                if (!cell.width || cell.text.empty()) continue;
+                if (!cell.width || cell.text.empty() || cell.style.hidden) continue;
                 auto cell_font = base_font; cell_font.setBold(cell.style.bold); painter.setFont(cell_font);
                 painter.setPen(colour(cell.style.reverse ? cell.style.bg : cell.style.fg, true));
                 const QRectF area(margin + column * cell_width_, margin + row * cell_height_,

@@ -247,6 +247,7 @@ public:
                 const int bg_index = cell.style.reverse ? cell.style.fg : cell.style.bg;
                 const int fg_index = cell.style.reverse ? cell.style.bg : cell.style.fg;
                 RECT rect{x(c),y(r),x(c+cell.width),y(r+1)}; require(FillRect(bitmap.dc,&rect,brush(color(bg_index,true))) != 0,"fill failed");
+                if (cell.style.hidden) continue; // background only, no text
                 const auto old = SelectObject(bitmap.dc,cell.style.bold ? bold_ : normal_);
                 SetTextColor(bitmap.dc,gdi_color(color(fg_index,false))); const auto text = utf16(cell.text);
                 DrawTextW(bitmap.dc,text.data(),static_cast<int>(text.size()),&rect,DT_LEFT|DT_TOP|DT_SINGLELINE|DT_NOPREFIX);
@@ -269,6 +270,7 @@ public:
                 const int bg_index = cell.style.reverse ? cell.style.fg : cell.style.bg;
                 const int fg_index = cell.style.reverse ? cell.style.bg : cell.style.fg;
                 brush_->SetColor(D2D1::ColorF(color(bg_index,true))); target_->FillRectangle(rect,brush_.Get());
+                if (cell.style.hidden) continue; // background only, no text
                 const auto& text = layout(cell.text,cell.style.bold,cell.width); brush_->SetColor(D2D1::ColorF(color(fg_index,false)));
                 target_->PushAxisAlignedClip(rect,D2D1_ANTIALIAS_MODE_ALIASED);
                 target_->DrawTextLayout(D2D1::Point2F(logical_x(c),logical_y(r)),text.text.Get(),brush_.Get(),D2D1_DRAW_TEXT_OPTIONS_CLIP);
