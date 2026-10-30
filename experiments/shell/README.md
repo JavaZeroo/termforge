@@ -63,6 +63,20 @@ R1 的 [#12–#17 限定合同](../../docs/milestones/R1-local-text.md)和 [#18 
 
 几何/DPI/缩放变化后若选区被 `TextSelection::reconcile` 丢弃，可用环境变量 `TERMFORGE_SELECTION_DIAG=<jsonl 路径>` 打开一次性诊断：每次丢弃写入一行 `{"schema":"termforge-selection-discard-v1","reason":"...","row":N}`（`row` 是发生不一致的选区行序号，`0` 表示与具体行无关的分支），`reason` 取 `epoch-mismatch`、`anchor-missing-or-shrunk`、`row-identity-replaced`、`row-text-changed`、`endpoint-unavailable` 之一。未设置该变量时不写任何文件、行为不变；另有 `TERMFORGE_CAPTURE_OUTPUT=<路径>` 会把该窗口消费的**全部输出字节**追加写入文件（同样 opt-in、默认不写），供失败时逐字节回放；`TERMFORGE_OUTPUT_TRACE=<路径>` 则按块记录 `terminal/t_ms/offset/bytes/columns/rows`，用于判断"某批重绘字节被消费时网格已经是新尺寸还是旧尺寸"。`experiments/shell/run.py` 的 `execute()` 会自动把该变量指向本次场景产物目录下的 `selection-discard.jsonl`，因此失败时该文件随 `build/test-artifacts/` 一起保留。`selection_core` 里新增的分组只验证观察器能收到分支名。
 
+## 输出、几何与就绪诊断
+
+`TERMFORGE_OUTPUT_TRACE` 的同一条 JSONL 里现在有三类记录，全部 opt-in、默认不写：
+
+| schema | 含义 |
+|---|---|
+| `termforge-output-trace-v1` | 每个被消费的输出块：`terminal/t_ms/offset/bytes/columns/rows/repaint`（`columns/rows` 是**消费时刻**的网格，`repaint` 标记含 `ESC[?25l ESC[H` 前缀的重绘块） |
+| `termforge-output-heartbeat-v1` | 每 500 ms 一行：`consumed/ticks/closing/complete/pid/child_signaled/exit_code/read_error`，用于区分"静默但会话仍活着"与"子进程已退出" |
+| `termforge-resize-trace-v1` | 每次应用新网格：`old_columns/old_rows/columns/rows` 与时刻，用于判断某批重绘是在几何切换之前还是之后被消费 |
+
+`ui-shells` 场景超时时另写两份逐会话文件：`shells-size-readiness.jsonl`（`settled/marker_present/transport_completed/observed_output_tail_bytes`）与 `shells-transport-probe.jsonl`（WSL 的 `output_seen/prompt_seen/malformed/last_line`，复刻传输 oracle 的行规则）。它们只在失败路径产生，用来把"stage 5 超时"细分到具体会话与缺失条件。
+
+分析上述产物可用 `research/ui/analyze_output_trace.py <run 目录>`：它按场景汇总选区丢弃原因、心跳静默窗口与子进程状态、以及几何切换与后续重绘批次的配对。
+
 ## 所有权与调度
 
 - ConPTY 输出线程将最多 64 KiB 的读取块放入 256 KiB 队列；满时等待窗口消费，正常运行不丢弃字节。
