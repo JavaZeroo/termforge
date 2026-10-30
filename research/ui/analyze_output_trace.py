@@ -108,6 +108,26 @@ def heartbeat_summary(trace: list[dict]) -> list[str]:
                gaps[:3], states[:3]))
     return lines
 
+def resize_summary(trace: list[dict]) -> list[str]:
+    """Pair geometry switches with repaint batches, which is what decides whether
+    a repaint was generated for the previous grid but consumed with the new one."""
+    resizes = [row for row in trace if row.get("schema") == "termforge-resize-trace-v1"]
+    repaints = [row for row in trace if row.get("schema") == "termforge-output-trace-v1" and row.get("repaint")]
+    if not resizes:
+        return []
+    lines: list[str] = []
+    for row in resizes:
+        terminal = row.get("terminal")
+        at = row.get("t_ms") or 0
+        after = [r for r in repaints if r.get("terminal") == terminal and (r.get("t_ms") or 0) >= at][:2]
+        detail = ", ".join(
+            "repaint +%dms %sx%s" % ((r.get("t_ms") or 0) - at, r.get("columns"), r.get("rows"))
+            for r in after)
+        lines.append("   resize term%s %sx%s -> %sx%s at %s%s" % (
+            terminal, row.get("old_columns"), row.get("old_rows"), row.get("columns"), row.get("rows"), at,
+            (" | " + detail) if detail else ""))
+    return lines
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
@@ -120,7 +140,10 @@ def main():
     for stage in stages:
         for line in describe(stage):
             print(line)
-        for line in heartbeat_summary(read_jsonl(stage / "output-trace.jsonl")):
+        trace_rows = read_jsonl(stage / "output-trace.jsonl")
+        for line in heartbeat_summary(trace_rows):
+            print(line)
+        for line in resize_summary(trace_rows):
             print(line)
 
 
