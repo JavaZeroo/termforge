@@ -76,6 +76,20 @@ int main() {
             row_text(region.screen, 2).empty() && row_text(region.screen, 3) == "d",
             "region scroll changed rows outside the margins");
     require(region.screen.row == 2, "region scroll moved the cursor past the margin");
+
+    // IL/DL respect the margins: rows outside the region never move.
+    Parser margin(4, 10, 10, termforge::ParseMode::recovery);
+    margin.feed("a\r\nb\r\nc\r\nd");
+    margin.feed("\x1b[2;3r");
+    margin.feed("\x1b[2;1H");
+    margin.feed("\x1b[L");
+    require(row_text(margin.screen, 0) == "a" && row_text(margin.screen, 1).empty() &&
+            row_text(margin.screen, 2) == "b" && row_text(margin.screen, 3) == "d",
+            "IL ignored the scroll margins");
+    margin.feed("\x1b[M");
+    require(row_text(margin.screen, 0) == "a" && row_text(margin.screen, 1) == "b" &&
+            row_text(margin.screen, 2).empty() && row_text(margin.screen, 3) == "d",
+            "DL ignored the scroll margins");
     // ED3 empties the scrollback without touching the visible rows.
     {
         Parser scrollback(2, 6, 10, termforge::ParseMode::recovery);
