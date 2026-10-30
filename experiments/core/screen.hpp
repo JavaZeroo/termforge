@@ -438,6 +438,26 @@ public:
         // Microsoft Terminal ECH contract explicitly cancels delayed wrapping.
         wrap_pending = false; invalidate_attachment();
     }
+    void insert_lines(int count) {
+        if (count < 1) throw InputError("invalid insert line count");
+        const int insert = (std::min)(count, height() - row);
+        if (insert <= 0) { wrap_pending = false; return; }
+        // Rows pushed past the bottom leave the screen; their identities stay
+        // spent. Inserted rows are new lines and get fresh identities.
+        for (int r = height() - 1; r >= row + insert; --r) lines[r] = std::move(lines[r - insert]);
+        for (int r = row; r < row + insert; ++r) lines[r] = make_line(width(), Cell{}, next_id_);
+        wrap_pending = false;
+        invalidate_attachment();
+    }
+    void delete_lines(int count) {
+        if (count < 1) throw InputError("invalid delete line count");
+        const int remove = (std::min)(count, height() - row);
+        if (remove <= 0) { wrap_pending = false; return; }
+        for (int r = row; r < height() - remove; ++r) lines[r] = std::move(lines[r + remove]);
+        for (int r = height() - remove; r < height(); ++r) lines[r] = make_line(width(), Cell{}, next_id_);
+        wrap_pending = false;
+        invalidate_attachment();
+    }
     void insert_characters(int count) {
         if (count < 1) throw InputError("invalid insert character count");
         const int shift = (std::min)(count, width() - column);
