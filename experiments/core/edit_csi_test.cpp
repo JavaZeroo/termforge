@@ -113,6 +113,27 @@ int main() {
         require(reset.screen.visible_lines()[0][0].style.plain() &&
                 reset.screen.visible_lines()[0][0].style.fg == -1, "RIS did not reset attributes");
     }
+    // Editing cells cancels a pending delayed wrap, so the next glyph stays on
+    // the current row instead of starting a new one.
+    {
+        Parser wrap(2, 5, 10, termforge::ParseMode::recovery);
+        wrap.feed("abcde");
+        require(wrap.screen.wrap_pending, "test setup did not arm the delayed wrap");
+        wrap.feed("\x1b[P");
+        require(!wrap.screen.wrap_pending, "DCH left the delayed wrap armed");
+        wrap.feed("Z");
+        require(row_text(wrap.screen, 0) == "abcdZ" && row_text(wrap.screen, 1).empty(),
+                "text after a cancelled wrap did not stay on the row");
+
+        Parser insert(2, 5, 10, termforge::ParseMode::recovery);
+        insert.feed("abcde");
+        require(insert.screen.wrap_pending, "test setup did not arm the delayed wrap");
+        insert.feed("\x1b[@");
+        require(!insert.screen.wrap_pending, "ICH left the delayed wrap armed");
+        insert.feed("Q");
+        require(row_text(insert.screen, 0) == "abcdQ" && row_text(insert.screen, 1).empty(),
+                "text after a cancelled ICH wrap did not stay on the row");
+    }
     std::puts("edit csi contracts passed");
     return 0;
     } catch (const std::exception& error) {
