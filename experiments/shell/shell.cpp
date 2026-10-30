@@ -829,11 +829,13 @@ class ShellWindow {
     }
 #endif
 #ifdef TERMFORGE_CANDIDATE_CORE
-    // The candidate terminal does not expose DECCKM yet; keep the previous CSI
-    // encoding instead of guessing at its mode state.
+    // The candidate terminal does not expose these modes yet; keep the previous
+    // CSI encoding and always draw the cursor instead of guessing its state.
     bool application_cursor_keys() const { return false; }
+    bool cursor_visible() const { return true; }
 #else
     bool application_cursor_keys() const { return parser_.application_cursor_keys(); }
+    bool cursor_visible() const { return parser_.cursor_visible(); }
 #endif
     void tick() {
         const auto began = Clock::now(); ++result_.ticks;
@@ -1032,7 +1034,7 @@ class ShellWindow {
                     const int last = (std::min)(self->snapshot_->rows(),
                         (std::max)(self->dirty_last_, (int(paint.rcPaint.bottom)+cell_height-1)/cell_height));
                     FillRect(dc, &paint.rcPaint, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
-                    self->renderer_->draw(*self->surface_, *self->snapshot_, first, last);
+                    self->renderer_->draw(*self->surface_, *self->snapshot_, first, last, self->cursor_visible());
                     if (self->mode_ == "resize" || self->mode_ == "resize-close") {
                         Bitmap expected(self->surface_->width, self->surface_->height);
                         self->renderer_->draw(expected, *self->snapshot_, 0, self->snapshot_->rows());
@@ -1390,14 +1392,14 @@ public:
         // including hidden tabs whose WM_PAINT may not be dispatched.
         if (surface_->width != renderer_->x(snapshot_->columns()) ||
             surface_->height != renderer_->y(snapshot_->rows())) return false;
-        renderer_->draw(*surface_, *snapshot_, dirty_first_, dirty_last_);
+        renderer_->draw(*surface_, *snapshot_, dirty_first_, dirty_last_, cursor_visible());
         dirty_first_=snapshot_->rows(); dirty_last_=0;
         Bitmap expected(surface_->width,surface_->height);
-        renderer_->draw(expected,*snapshot_,0,snapshot_->rows());
+        renderer_->draw(expected,*snapshot_,0,snapshot_->rows(),cursor_visible());
         return surface_->equals(expected);
     }
     void render_to(HDC dc, int x, int y) {
-        renderer_->draw(*surface_, *snapshot_, 0, snapshot_->rows());
+        renderer_->draw(*surface_, *snapshot_, 0, snapshot_->rows(), cursor_visible());
         require(BitBlt(dc,x,y,surface_->width,surface_->height,surface_->dc,0,0,SRCCOPY) != FALSE, "workspace terminal capture failed");
     }
     Result run() {
