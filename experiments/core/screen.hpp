@@ -438,6 +438,32 @@ public:
         // Microsoft Terminal ECH contract explicitly cancels delayed wrapping.
         wrap_pending = false; invalidate_attachment();
     }
+    void insert_characters(int count) {
+        if (count < 1) throw InputError("invalid insert character count");
+        const int shift = (std::min)(count, width() - column);
+        if (shift <= 0) { wrap_pending = false; return; }
+        Line& line = lines[row];
+        changed(line);
+        // A wide glyph cannot be split: blank the pair that straddles either
+        // boundary instead of leaving half a character behind.
+        if (column > 0 && line[column].width == 0) break_glyph(line, column - 1);
+        if (line[width() - shift].width == 2) break_glyph(line, width() - shift);
+        for (int c = width() - 1; c >= column + shift; --c) line[c] = line[c - shift];
+        erase_range(line, column, column + shift);
+        wrap_pending = false; invalidate_attachment();
+    }
+    void delete_characters(int count) {
+        if (count < 1) throw InputError("invalid delete character count");
+        const int shift = (std::min)(count, width() - column);
+        if (shift <= 0) { wrap_pending = false; return; }
+        Line& line = lines[row];
+        changed(line);
+        if (column > 0 && line[column].width == 0) break_glyph(line, column);
+        if (line[width() - shift].width == 2) break_glyph(line, width() - shift);
+        for (int c = column; c < width() - shift; ++c) line[c] = line[c + shift];
+        erase_range(line, width() - shift, width());
+        wrap_pending = false; invalidate_attachment();
+    }
     void erase_display(int mode) {
         if (mode > 2) throw InputError("unsupported erase mode");
         for (int r = 0; r < height(); ++r)

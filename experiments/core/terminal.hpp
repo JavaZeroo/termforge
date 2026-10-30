@@ -64,6 +64,8 @@ class Parser {
         case 'J': screen.erase_display(params[0]); break;
         case 'K': screen.erase_line(params[0]); break;
         case 'X': screen.erase_characters(n); break;
+        case '@': screen.insert_characters(n); break;
+        case 'P': screen.delete_characters(n); break;
         case 'n':
             // Device status report 6 reports the 1-based cursor position. Other
             // reports are not implemented and stay unsupported rather than faked.
