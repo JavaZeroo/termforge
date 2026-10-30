@@ -71,8 +71,12 @@ class TerminalWidget final : public QWidget {
         QWidget::closeEvent(event);
     }
     bool event(QEvent* event) override {
-        if (event->type() == QEvent::FocusOut || event->type() == QEvent::Hide)
+        if (event->type() == QEvent::FocusOut || event->type() == QEvent::Hide) {
             keyboard_.reset();
+            // Losing focus ends any composition: the input context drops it, and
+            // keeping a stale preview would draw text the session never receives.
+            if (!preedit_.isEmpty()) { preedit_.clear(); update(); }
+        }
         // QWidget normally consumes Tab for focus traversal before keyPressEvent.
         if (event->type() == QEvent::KeyPress && static_cast<QKeyEvent*>(event)->key() == Qt::Key_Tab) {
             keyPressEvent(static_cast<QKeyEvent*>(event)); return event->isAccepted();
@@ -180,8 +184,9 @@ class TerminalWidget final : public QWidget {
         const QString commit = event->commitString();
         if (!commit.isEmpty()) {
             ime_log("commit", commit);
-            model_.send(commit.toUtf8());
-            preedit_.clear();
+            // Keep the preview when the bounded input queue rejected the commit:
+            // the text stays visible instead of silently disappearing.
+            if (model_.send(commit.toUtf8())) preedit_.clear();
             update();
         }
         event->accept();
@@ -218,8 +223,11 @@ class TerminalWidget final : public QWidget {
         if (!preedit_.isEmpty()) {
             // Compose in place at the caret; the committed text is what reaches
             // the session, this preview is presentation only.
+            // Measure the preview instead of counting characters: a wide or
+            // combining preedit is not "one cell per QChar".
+            const QFontMetricsF compose_metrics(base_font);
             const QRectF area(margin + screen.column * cell_width_, margin + screen.row * cell_height_,
-                              static_cast<qreal>(cell_width_) * static_cast<qreal>(preedit_.size()),
+                              compose_metrics.horizontalAdvance(preedit_),
                               static_cast<qreal>(cell_height_));
             auto compose_font = base_font; compose_font.setUnderline(true);
             painter.setFont(compose_font);
