@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <map>
+#include <vector>
 
 using tf_conpty::Handle;
 using tf_conpty::Session;
@@ -106,6 +108,40 @@ static int child() {
     }
     return 0;
 }
+// Count this process's handles grouped by object-type index. The system call
+// only reads the handle table, so no handle is opened or queried; mapping an
+// index to a name is left to a later step that can create reference objects.
+static std::string handles_by_type() {
+    using query_t = LONG (NTAPI*)(ULONG, PVOID, ULONG, PULONG);
+    static query_t query = reinterpret_cast<query_t>(
+        GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtQuerySystemInformation"));
+    if (!query) return "{}";
+    ULONG size = 1u << 20;
+    std::vector<unsigned char> buffer;
+    LONG status = 0;
+    for (int attempt = 0; attempt < 8; ++attempt) {
+        buffer.assign(size, 0);
+        status = query(64 /* SystemExtendedHandleInformation */, buffer.data(), size, &size);
+        if (status != static_cast<LONG>(0xC0000004)) break;  // STATUS_INFO_LENGTH_MISMATCH
+    }
+    if (status != 0) return "{}";
+    const auto pid = static_cast<ULONG_PTR>(GetCurrentProcessId());
+    const auto* header = reinterpret_cast<const ULONG_PTR*>(buffer.data());
+    const size_t count = static_cast<size_t>(header[0]);
+    struct Entry { ULONG_PTR object, process, handle; ULONG type, attributes, access; };
+    const auto* entries = reinterpret_cast<const Entry*>(buffer.data() + sizeof(ULONG_PTR) * 2);
+    std::map<ULONG, unsigned> counts;
+    for (size_t index = 0; index < count; ++index)
+        if (entries[index].process == pid) ++counts[entries[index].type];
+    std::ostringstream out; out << '{';
+    bool first = true;
+    for (const auto& [type, total] : counts) {
+        if (!first) out << ','; first = false;
+        out << '"' << type << "\":" << total;
+    }
+    out << '}';
+    return out.str();
+}
 static DWORD handles() {
     DWORD count = 0;
     if (!GetProcessHandleCount(GetCurrentProcess(), &count)) fail("GetProcessHandleCount");
@@ -137,6 +173,7 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
     // Split the lifecycle so a per-session leak can be attributed to start or
     // close instead of only to the round as a whole.
     DWORD after_start_handles = before_handles, after_close_handles = before_handles;
+    const std::string handle_types_before = handles_by_type();
     Session session;
     bool ready = false, echo = false, resized = false, exited = false, tree = false;
     unsigned validated_records = 0; std::string error;
@@ -190,6 +227,7 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
     }
     const double settle_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - settle_begin).count();
     const bool steady_resources = before_handles == after_handles && before_threads == after_threads;
+    const std::string handle_types_after = handles_by_type();
     // Retain first-use initialization growth separately; subsequent sessions
     // must return to the established process baseline exactly.
     const bool clean = session.cleanup_complete && (startup || steady_resources);
@@ -208,6 +246,8 @@ static bool probe(const std::string& mode, unsigned repeat, bool startup = false
               << ",\"steady_resources\":" << steady_resources
               << ",\"handles_after_start\":" << after_start_handles
               << ",\"handles_after_close\":" << after_close_handles
+              << ",\"handle_types_before\":" << handle_types_before
+              << ",\"handle_types_after\":" << handle_types_after
               << ",\"valid\":" << (valid ? "true" : "false") << ",\"error\":" << quoted(error)
               << ",\"ready\":" << ready << ",\"echo\":" << echo << ",\"resized\":" << resized
               << ",\"descendant_created\":" << tree << ",\"child_pid\":" << session.pid
