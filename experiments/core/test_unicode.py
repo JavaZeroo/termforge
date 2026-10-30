@@ -92,7 +92,7 @@ class UnicodeTests(unittest.TestCase):
                  b"\xf5\x80\x80\x80", b"\xe4A", b"\xe4\xb8", b"\xe4\x1b[0m",
                  "\u0301".encode(), "A\r\u0301".encode(), ("A" + "\u0301" * 17).encode(),
                  "👩\u200d💻".encode(), "❤️".encode(), "🇨🇳".encode(), "👍🏻".encode(),
-                 b"\x1b[38;2;1;2;3m", b"\x1b[53m"]  # overline is still unimplemented
+                 b"\x1b[38;2;1;2;3m", b"\x1b[58;5;1m"]  # underline colour is still unimplemented
         for data in cases:
             for chunk in (1, 2, 3, 65536):
                 p = self.run_input(data, chunk)

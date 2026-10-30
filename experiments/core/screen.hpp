@@ -26,8 +26,10 @@ struct Style {
     bool reverse = false;
     bool strikethrough = false;
     bool hidden = false; // SGR 8/28: the cell keeps its background only.
+    bool overline = false; // SGR 53/55: a line above the cell.
     bool plain() const {
-        return fg == -1 && bg == -1 && !bold && !dim && !underline && !reverse && !strikethrough && !hidden;
+        return fg == -1 && bg == -1 && !bold && !dim && !underline && !reverse && !strikethrough && !hidden &&
+               !overline;
     }
     void json(std::ostream& out) const {
         out << "{\"fg\":" << fg << ",\"bg\":" << bg << ",\"bold\":" << (bold ? "true" : "false");
@@ -38,6 +40,7 @@ struct Style {
         if (reverse) out << ",\"reverse\":true";
         if (strikethrough) out << ",\"strikethrough\":true";
         if (hidden) out << ",\"hidden\":true";
+        if (overline) out << ",\"overline\":true";
         out << '}';
     }
 };
@@ -583,6 +586,8 @@ public:
             else if (p == 29) next.strikethrough = false;
             else if (p == 8) next.hidden = true;
             else if (p == 28) next.hidden = false;
+            else if (p == 53) next.overline = true;
+            else if (p == 55) next.overline = false;
             else if (p >= 30 && p <= 37) next.fg = p - 30;
             else if (p >= 40 && p <= 47) next.bg = p - 40;
             else if (p >= 90 && p <= 97) next.fg = p - 90 + 8;
