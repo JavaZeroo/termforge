@@ -53,3 +53,20 @@
 - 复现作业：`.github/workflows/conpty-compat.yml` 的 `windows-2025-actions-repeat`（覆盖 `text_actions|selection_context|shell`）；
 - 诊断变量：`TERMFORGE_CAPTURE_OUTPUT`、`TERMFORGE_OUTPUT_TRACE`、`TERMFORGE_SELECTION_DIAG`；
 - 相关讨论：[#194](../..#194)、[#156](../..#156)（已关闭，机制记录）、[#38](../..#38)（托管稳定性汇总）。
+
+## 已证实（2026-10-30）
+
+不再只是推断：同一轮的四个样本里，尾部重绘的**消费网格**可以直接读出。
+
+失败样本 `text-actions/.../system-1`（terminal 1）的 16 个输出块中：
+
+```
+t=789406  bytes=210  cols=111 rows=7  repaint=true
+t=789468  bytes=441  cols=111 rows=7  repaint=true   <- 含 231B 十行形状 + 210B 七行形状
+```
+
+同一轮的三个通过样本（local-0、local-1、system-0）里，对应的 231B 十行重绘被消费在 **149×10**；只有失败样本把它消费在 **111×7**。
+
+因此"重绘按旧几何（10 行）生成、按新几何（7 行）消费"这一点现在由**字节形状 + 记录的消费网格**共同确定，见 [#194 复核评论](https://github.com/JavaZeroo/termforge/issues/194#issuecomment-6514631287)。
+
+仍然未知：精确的 resize 时刻与顺序（该样本早于 `termforge-resize-trace-v1`，轨迹里 0 条 resize 记录），因此"+3 行"（top 75→78）的来源需要下一次带 resize 记录的命中才能补齐。
