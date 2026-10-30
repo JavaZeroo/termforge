@@ -128,11 +128,18 @@ static std::string handles_by_type() {
     const auto pid = static_cast<ULONG_PTR>(GetCurrentProcessId());
     const auto* header = reinterpret_cast<const ULONG_PTR*>(buffer.data());
     const size_t count = static_cast<size_t>(header[0]);
-    struct Entry { ULONG_PTR object, process, handle; ULONG type, attributes, access; };
+    // SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX: the type index is a USHORT that follows
+    // GrantedAccess and the creator back-trace index, not the access mask.
+    struct Entry {
+        ULONG_PTR object, process, handle;
+        ULONG granted_access;
+        unsigned short creator_backtrace, type_index;
+        ULONG attributes, reserved;
+    };
     const auto* entries = reinterpret_cast<const Entry*>(buffer.data() + sizeof(ULONG_PTR) * 2);
     std::map<ULONG, unsigned> counts;
     for (size_t index = 0; index < count; ++index)
-        if (entries[index].process == pid) ++counts[entries[index].type];
+        if (entries[index].process == pid) ++counts[entries[index].type_index];
     std::ostringstream out; out << '{';
     bool first = true;
     for (const auto& [type, total] : counts) {
