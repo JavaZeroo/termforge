@@ -90,6 +90,20 @@ int main() {
     require(row_text(margin.screen, 0) == "a" && row_text(margin.screen, 1) == "b" &&
             row_text(margin.screen, 2).empty() && row_text(margin.screen, 3) == "d",
             "DL ignored the scroll margins");
+
+    // A resize drops the margins: scrolling afterwards reaches history again.
+    {
+        Parser resized(4, 10, 10, termforge::ParseMode::recovery);
+        resized.feed("a\r\nb\r\nc\r\nd");
+        resized.feed("\x1b[2;3r");
+        require(resized.screen.scroll_bottom() == 2, "test setup lost the region");
+        resized.screen.resize(4, 12);
+        require(resized.screen.scroll_bottom() == 3, "resize kept the stale region bottom");
+        resized.feed("\x1b[4;1H");
+        resized.feed("\n");
+        require(resized.screen.scrollback_lines() > 0,
+                "full-screen scrolling after resize did not reach history");
+    }
     // ED3 empties the scrollback without touching the visible rows.
     {
         Parser scrollback(2, 6, 10, termforge::ParseMode::recovery);

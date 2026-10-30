@@ -381,6 +381,9 @@ public:
         swap_active(next);
         if (hidden) inactive_->swap(*hidden);
         columns_ = columns; next_id_ = identity;
+        // The reference terminal drops the scrolling margins on resize, so a
+        // stale bottom could point past the new height.
+        scroll_top_ = 0; scroll_bottom_ = -1;
         advance_order(ordered_);
     }
     void invalidate_attachment() { last_row = last_column = -1; }
