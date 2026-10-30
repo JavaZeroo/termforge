@@ -45,6 +45,18 @@ int main() {
               "application mode must not rewrite modified cursor keys");
         check(KeyboardEncoder::key_down(0x2e, {}, true).bytes == "\x1b[3~",
               "application mode must not rewrite editing keys");
+        // F1..F4 are SS3 letters; F5..F12 use the xterm tilde numbers.
+        const std::vector<std::pair<uint32_t,std::string>> functions{
+            {0x70,"\x1bOP"}, {0x71,"\x1bOQ"}, {0x72,"\x1bOR"}, {0x73,"\x1bOS"},
+            {0x74,"\x1b[15~"}, {0x75,"\x1b[17~"}, {0x76,"\x1b[18~"}, {0x77,"\x1b[19~"},
+            {0x78,"\x1b[20~"}, {0x79,"\x1b[21~"}, {0x7a,"\x1b[23~"}, {0x7b,"\x1b[24~"}};
+        for (const auto& entry : functions) {
+            const auto encoded = KeyboardEncoder::key_down(entry.first);
+            check(encoded.handled && encoded.bytes == entry.second && !encoded.skip_translate,
+                  "function key encoding");
+        }
+        check(KeyboardEncoder::key_down(0x70, {false,true,false,false}).bytes == "\x1b[1;5P",
+              "modified F1 must use the CSI modifier form");
         check(KeyboardEncoder::key_down(0x24, {false,true,false,false}).bytes == "\x1b[1;5H", "Ctrl Home");
         check(KeyboardEncoder::key_down(0x2e, {true,false,true,false}).bytes == "\x1b[3;4~", "Shift Alt Delete");
         check(!KeyboardEncoder::key_down(0x09).handled, "plain Tab belongs only to WM_CHAR");

@@ -76,12 +76,30 @@ public:
             return {true, modifier == 1 ? std::string("\x1b[") + final :
                 std::string("\x1b[1;") + std::to_string(modifier) + final, false};
         }
+        // F1..F4 use the SS3 letters; F5 and later use the xterm tilde numbers.
+        // The tilde numbers follow the VT/xterm table rather than the physical
+        // order so that applications see the same codes as other terminals.
+        static constexpr char ss3_function[] = {'P', 'Q', 'R', 'S'};
+        if (key >= 0x70 && key <= 0x73)
+        if (key >= 0x70 && key <= 0x73) {
+            const char letter = ss3_function[key - 0x70];
+            if (modifier == 1) return {true, std::string("\x1bO") + letter, false};
+            return {true, std::string("\x1b[1;") + std::to_string(modifier) + letter, false};
+        }
         int number = 0;
         switch (key) {
         case 0x2d: number = 2; break; // Insert
         case 0x2e: number = 3; break; // Delete
         case 0x21: number = 5; break; // PageUp
         case 0x22: number = 6; break; // PageDown
+        case 0x74: number = 15; break; // F5
+        case 0x75: number = 17; break; // F6
+        case 0x76: number = 18; break; // F7
+        case 0x77: number = 19; break; // F8
+        case 0x78: number = 20; break; // F9
+        case 0x79: number = 21; break; // F10
+        case 0x7a: number = 23; break; // F11
+        case 0x7b: number = 24; break; // F12
         default: return {};
         }
         return {true, "\x1b[" + std::to_string(number) +
