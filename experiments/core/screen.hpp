@@ -64,8 +64,13 @@ class Screen {
         // True only while the retained sequence is known to be ordered by id.
         // False is the safe fallback: lookups scan instead of bisecting.
         bool ordered_ = true;
+        // DECSTBM margins belong to the frame: the primary and alternate buffers
+        // keep their own scrolling region across a 1049 switch.
+        int scroll_top = 0;
+        int scroll_bottom = -1;
         template<class State> void swap(State& other) noexcept {
             std::swap(row, other.row); std::swap(column, other.column);
+            std::swap(scroll_top, other.scroll_top); std::swap(scroll_bottom, other.scroll_bottom);
             std::swap(last_row, other.last_row); std::swap(last_column, other.last_column);
             std::swap(wrap_pending, other.wrap_pending); std::swap(discarded, other.discarded);
             std::swap(style, other.style);
@@ -81,10 +86,10 @@ class Screen {
     std::deque<Line> history;
     int columns_;
     uint64_t next_id_ = 1;
-    int scroll_top_ = 0;
-    // Negative means "the bottom row", which keeps full-screen scrolling on the
-    // history path after a resize changes the height.
-    int scroll_bottom_ = -1;
+    // DECSTBM margins travel with the buffer through active_state_copy/swap.
+    // Negative bottom means "the last row", which survives a height change.
+    int scroll_top = 0;
+    int scroll_bottom = -1;
     uint64_t buffer_epoch_ = 0;
     uint64_t order_revision_ = 0;
     bool ordered_ = true;
@@ -92,7 +97,8 @@ class Screen {
     ScreenBuffer active_buffer_ = ScreenBuffer::primary;
     std::optional<FrameState> inactive_;
     FrameState active_state_copy() const {
-        return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history, ordered_};
+        return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history, ordered_,
+                scroll_top, scroll_bottom};
     }
     void swap_active(FrameState& state) noexcept {
         state.swap(*this);
@@ -382,8 +388,9 @@ public:
         if (hidden) inactive_->swap(*hidden);
         columns_ = columns; next_id_ = identity;
         // The reference terminal drops the scrolling margins on resize, so a
-        // stale bottom could point past the new height.
-        scroll_top_ = 0; scroll_bottom_ = -1;
+        // stale bottom could point past the new height. Both frames reset.
+        scroll_top = 0; scroll_bottom = -1;
+        if (inactive_) { inactive_->scroll_top = 0; inactive_->scroll_bottom = -1; }
         advance_order(ordered_);
     }
     void invalidate_attachment() { last_row = last_column = -1; }
@@ -391,7 +398,8 @@ public:
         row = std::clamp(r, 0, height() - 1); column = std::clamp(c, 0, width() - 1);
         wrap_pending = false; invalidate_attachment();
     }
-    int scroll_bottom() const { return scroll_bottom_ < 0 ? height() - 1 : scroll_bottom_; }
+    int region_bottom() const { return scroll_bottom < 0 ? height() - 1 : scroll_bottom; }
+    int region_top() const { return scroll_top; }
     // DECSTBM: rows inside [top, bottom] scroll together. The list itself keeps
     // whole rows only, so a partial region scroll shifts entries in place; rows
     // that leave a full-screen region still reach history.
@@ -401,7 +409,7 @@ public:
         // An invalid region is ignored rather than rejected: the reference
         // terminal logs and returns, leaving the previous margins in place.
         if (bottom - top < 1) return;
-        scroll_top_ = top; scroll_bottom_ = bottom;
+        scroll_top = top; scroll_bottom = bottom;
         // DECSTBM homes the cursor to the screen origin, matching the reference
         // terminal (vendor/alacritty_terminal/src/term/mod.rs: goto(0, 0)).
         move(0, 0);
@@ -414,13 +422,13 @@ public:
         // A newly allocated bottom row is known before moving its predecessor.
         previous.next_id = automatic ? (row + 1 < height() ? lines[row + 1].id : next_id_) : 0;
         wrap_pending = false; invalidate_attachment();
-        if (row + 1 < height() && row < scroll_bottom()) { ++row; return; }
-        if (row < scroll_bottom() || scroll_top_ > 0 || scroll_bottom() < height() - 1) {
+        if (row + 1 < height() && row < region_bottom()) { ++row; return; }
+        if (row < region_bottom() || region_top() > 0 || region_bottom() < height() - 1) {
             // Scrolling inside a region (or inside a movement that stops early)
             // moves rows up within the margins and blanks the last region row.
-            for (int r = scroll_top_; r < scroll_bottom(); ++r) lines[r] = std::move(lines[r + 1]);
-            lines[scroll_bottom()] = make_line(width(), Cell{}, next_id_);
-            row = scroll_bottom();
+            for (int r = region_top(); r < region_bottom(); ++r) lines[r] = std::move(lines[r + 1]);
+            lines[region_bottom()] = make_line(width(), Cell{}, next_id_);
+            row = region_bottom();
             advance_order(ordered_);
             return;
         }
@@ -472,7 +480,7 @@ public:
     }
     void insert_lines(int count) {
         if (count < 1) throw InputError("invalid insert line count");
-        const int bottom = scroll_bottom();
+        const int bottom = region_bottom();
         const int insert = (std::min)(count, bottom + 1 - row);
         if (insert <= 0) { wrap_pending = false; return; }
         // Rows pushed past the bottom margin leave the screen; their identities
@@ -484,7 +492,7 @@ public:
     }
     void delete_lines(int count) {
         if (count < 1) throw InputError("invalid delete line count");
-        const int bottom = scroll_bottom();
+        const int bottom = region_bottom();
         const int remove = (std::min)(count, bottom + 1 - row);
         if (remove <= 0) { wrap_pending = false; return; }
         for (int r = row; r <= bottom - remove; ++r) lines[r] = std::move(lines[r + remove]);
