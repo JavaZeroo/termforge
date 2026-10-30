@@ -31,8 +31,10 @@ class CapabilityMatrixTests(unittest.TestCase):
     def test_extended_matrix_preserves_execution_and_support_boundaries(self):
         self.assertTrue(self.summary["execution_passed"], self.summary["counts"])
         self.assertEqual(self.summary["runs"], 25)
-        self.assertEqual(self.summary["counts"], {"core_unsupported": 0, "match": 16,
-                                                  "reference_difference": 4, "resize_difference": 5})
+        # Every plan yields a real comparison now, so the summary omits the
+        # core_unsupported bucket entirely.
+        self.assertEqual(self.summary["counts"], {"match": 16, "reference_difference": 4,
+                                                  "resize_difference": 5})
         self.assertFalse(self.summary["semantic_acceptance"])
         self.assertTrue(self.summary["resize_covered"])
         self.assertFalse(self.summary["real_application_covered"])
