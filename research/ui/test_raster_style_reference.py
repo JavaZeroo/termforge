@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -89,11 +90,24 @@ class RasterBoundaryTests(unittest.TestCase):
             preload=Path(diagnostic)/"checkpoint.js"
             preload.write_text("const fs=require(\"fs\");fs.writeFileSync(process.env.TERMFORGE_NODE_CHECKPOINT,JSON.stringify({started:Date.now(),version:process.version}));",encoding="utf-8")
             environment=dict(os.environ,TERMFORGE_NODE_CHECKPOINT=str(checkpoint))
+            started=time.monotonic()
             try:
-                result=subprocess.run(["node","--require",str(preload),str(ROOT/"research/ui/test_raster_native_contract.js")],capture_output=True,text=True,timeout=10,env=environment)
-            except subprocess.TimeoutExpired:
+                process=subprocess.Popen(["node","--require",str(preload),str(ROOT/"research/ui/test_raster_native_contract.js")],
+                                         stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,env=environment)
+            except OSError as error:
+                self.fail(f"node fixture could not be created: {error}")
+            spawn_seconds=round(time.monotonic()-started,3)
+            try:
+                stdout,stderr=process.communicate(timeout=10)
+            except subprocess.TimeoutExpired as expired:
+                # The child state at the deadline separates a process that never
+                # started from one that started and then stalled (#144).
                 state=checkpoint.read_text(encoding="utf-8") if checkpoint.exists() else "preload checkpoint never written"
-                self.fail(f"node fixture exceeded its ten second limit; {state}")
+                self.fail(f"node fixture exceeded its ten second limit; {state}; "
+                          f"pid={process.pid} spawn_seconds={spawn_seconds} "
+                          f"exit_at_timeout={process.poll()} "
+                          f"partial_stdout_bytes={len(expired.output or '')}")
+            result=subprocess.CompletedProcess(process.args,process.returncode,stdout,stderr)
         self.assertEqual(result.returncode,0,result.stderr)
 
     def test_pixel_analysis_rejects_empty_ambiguous_or_nonuint_samples(self):
