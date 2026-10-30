@@ -422,17 +422,19 @@ public:
         // A newly allocated bottom row is known before moving its predecessor.
         previous.next_id = automatic ? (row + 1 < height() ? lines[row + 1].id : next_id_) : 0;
         wrap_pending = false; invalidate_attachment();
-        if (row + 1 < height() && row < region_bottom()) { ++row; return; }
-        if (row < region_bottom() || region_top() > 0 || region_bottom() < height() - 1) {
-            // Scrolling inside a region (or inside a movement that stops early)
-            // moves rows up within the margins and blanks the last region row.
-            for (int r = region_top(); r < region_bottom(); ++r) lines[r] = std::move(lines[r + 1]);
-            lines[region_bottom()] = make_line(width(), Cell{}, next_id_);
-            row = region_bottom();
+        const int bottom = region_bottom();
+        // Only the bottom margin scrolls; rows above it move down normally and
+        // rows below it must not disturb the region at all.
+        if (row < bottom) { ++row; return; }
+        if (row > bottom) { if (row + 1 < height()) ++row; return; }
+        if (region_top() > 0 || bottom < height() - 1) {
+            // Scrolling inside the margins moves rows up and blanks the last one.
+            for (int r = region_top(); r < bottom; ++r) lines[r] = std::move(lines[r + 1]);
+            lines[bottom] = make_line(width(), Cell{}, next_id_);
+            row = bottom;
             advance_order(ordered_);
             return;
         }
-        if (row < height() - 1) { ++row; return; }
         const auto limit = active_history_limit();
         if (limit) {
             history.push_back(std::move(lines.front()));
