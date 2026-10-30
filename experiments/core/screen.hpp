@@ -21,14 +21,16 @@ public:
 struct Style {
     int fg = -1, bg = -1; // -1 default, 0..15 palette index
     bool bold = false;
+    bool dim = false; // SGR 2 faint; SGR 22 clears bold and faint together.
     bool underline = false;
     bool reverse = false;
     bool strikethrough = false;
-    bool plain() const { return fg == -1 && bg == -1 && !bold && !underline && !reverse && !strikethrough; }
+    bool plain() const { return fg == -1 && bg == -1 && !bold && !dim && !underline && !reverse && !strikethrough; }
     void json(std::ostream& out) const {
         out << "{\"fg\":" << fg << ",\"bg\":" << bg << ",\"bold\":" << (bold ? "true" : "false");
         // New attributes appear only when set, so existing records keep their
         // shape while the added ones stay observable.
+        if (dim) out << ",\"dim\":true";
         if (underline) out << ",\"underline\":true";
         if (reverse) out << ",\"reverse\":true";
         if (strikethrough) out << ",\"strikethrough\":true";
@@ -566,7 +568,9 @@ public:
         for (int p : params) {
             if (p == 0) next = {};
             else if (p == 1) next.bold = true;
-            else if (p == 22) next.bold = false;
+            else if (p == 2) next.dim = true;
+            // SGR 22 means "normal intensity": it clears bold and faint together.
+            else if (p == 22) { next.bold = false; next.dim = false; }
             else if (p == 4) next.underline = true;
             else if (p == 24) next.underline = false;
             else if (p == 7) next.reverse = true;

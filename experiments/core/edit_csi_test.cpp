@@ -182,6 +182,15 @@ int main() {
         require(margin.screen.row == 6 && margin.screen.column == 0,
                 "margin source cursor mismatch");
     }
+    // SGR 2 sets faint and SGR 22 clears bold and faint together.
+    {
+        Parser intensity(2, 10, 10, termforge::ParseMode::recovery);
+        intensity.feed("\x1b[1;2mA\x1b[22mB");
+        require(intensity.screen.visible_lines()[0][0].style.bold &&
+                intensity.screen.visible_lines()[0][0].style.dim, "SGR 1;2 was not applied");
+        const auto& normal = intensity.screen.visible_lines()[0][1].style;
+        require(!normal.bold && !normal.dim, "SGR 22 did not clear bold and faint together");
+    }
     // SGR 9/29 toggle strikethrough without touching the other attributes.
     {
         Parser strike(2, 10, 10, termforge::ParseMode::recovery);
