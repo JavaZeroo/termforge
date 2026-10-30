@@ -828,6 +828,9 @@ class ShellWindow {
         }
     }
 #endif
+#ifndef TERMFORGE_CANDIDATE_CORE
+    bool application_cursor_keys() const { return parser_.application_cursor_keys(); }
+#endif
     void tick() {
         const auto began = Clock::now(); ++result_.ticks;
         poll_paste();
@@ -1006,7 +1009,8 @@ class ShellWindow {
                 if(!mods.control && !mods.alt && wp==VK_F3) {
                     self->navigate_find(mods.shift?termforge::SearchDirection::previous:termforge::SearchDirection::next); return 0;
                 }
-                const auto key=tf_shell::KeyboardEncoder::key_down(static_cast<uint32_t>(wp),mods);
+                const auto key=tf_shell::KeyboardEncoder::key_down(static_cast<uint32_t>(wp),mods,
+                                                                 self->application_cursor_keys());
                 if(key.handled) { self->send_input(key.bytes); return 0; }
             }
             if (message == WM_TIMER && (self->started_ || self->closing_)) { self->tick(); return 0; }

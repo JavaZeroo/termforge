@@ -52,8 +52,8 @@ public:
         return out + encoded(unit, alt);
     }
     // Win32 virtual-key values. Printable/control text stays in WM_CHAR;
-    // application cursor/keypad modes remain a separate future contract.
-    static KeyEncoding key_down(uint32_t key, KeyModifiers mods = {}) {
+    // DECCKM switches the unmodified cursor keys between CSI and SS3 forms.
+    static KeyEncoding key_down(uint32_t key, KeyModifiers mods = {}, bool application_cursor = false) {
         if (mods.alt_graph || (mods.control && mods.alt)) return {};
         const int modifier = 1 + (mods.shift ? 1 : 0) + (mods.alt ? 2 : 0) + (mods.control ? 4 : 0);
         if (key == 0x09) { // Plain Tab is translated once, by WM_CHAR.
@@ -71,8 +71,11 @@ public:
         case 0x23: final = 'F'; break;
         default: break;
         }
-        if (final) return {true, modifier == 1 ? std::string("\x1b[") + final :
-            std::string("\x1b[1;") + std::to_string(modifier) + final, false};
+        if (final) {
+            if (modifier == 1 && application_cursor) return {true, std::string("\x1bO") + final, false};
+            return {true, modifier == 1 ? std::string("\x1b[") + final :
+                std::string("\x1b[1;") + std::to_string(modifier) + final, false};
+        }
         int number = 0;
         switch (key) {
         case 0x2d: number = 2; break; // Insert
