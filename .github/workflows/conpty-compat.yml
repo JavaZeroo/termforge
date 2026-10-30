@@ -171,18 +171,31 @@ jobs:
         shell: pwsh
         run: |
           @'
-          import json, platform, subprocess, sys, time
+          import json, os, platform, subprocess, sys, tempfile, time
+          from pathlib import Path
           from concurrent.futures import ThreadPoolExecutor
           script = "research/ui/test_raster_native_contract.js"
           node = subprocess.run(["node", "--version"], capture_output=True, text=True)
+          preload = "node-timing-preload.js"
+          Path(preload).write_text(
+              "const fs=require('fs');fs.writeFileSync(process.env.TERMFORGE_NODE_CHECKPOINT,"
+              "JSON.stringify({started:Date.now(),version:process.version}));",
+              encoding="utf-8")
           def one():
               start = time.monotonic()
+              # Same checkpoint as the fixture test, so a timeout here says whether
+              # Node ever started instead of only that the ten seconds elapsed.
+              checkpoint = Path(tempfile.mkdtemp()) / "checkpoint.json"
+              environment = dict(os.environ, TERMFORGE_NODE_CHECKPOINT=str(checkpoint))
               try:
-                  result = subprocess.run(["node", script], capture_output=True, text=True, timeout=10)
+                  result = subprocess.run(["node", "--require", preload, script], capture_output=True,
+                                          text=True, timeout=10, env=environment)
                   elapsed = time.monotonic() - start
                   return {"elapsed": round(elapsed, 3), "returncode": result.returncode, "timeout": False}
               except subprocess.TimeoutExpired:
-                  return {"elapsed": round(time.monotonic() - start, 3), "returncode": None, "timeout": True}
+                  state = checkpoint.read_text(encoding="utf-8") if checkpoint.exists() else "preload never ran"
+                  return {"elapsed": round(time.monotonic() - start, 3), "returncode": None, "timeout": True,
+                          "checkpoint": state}
           sequential = [one() for _ in range(60)]
           with ThreadPoolExecutor(max_workers=4) as pool:
               concurrent = [list(pool.map(lambda _: one(), range(4))) for _ in range(20)]
