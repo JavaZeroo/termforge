@@ -1,0 +1,899 @@
+{
+  "schema": "termforge-reviewed-conpty-integration-v1",
+  "implementation_commit": "5030058115739411bcc3cadc3a9f321580e0bc31",
+  "cleanup_and_diagnostic_source_commit": "0954fea5c20d5083839a77613d08e949113af242",
+  "source_hash_basis": "git blobs at cleanup_and_diagnostic_source_commit; working copy checked equal allowing CRLF normalization only",
+  "source_sha256": {
+    "CMakeLists.txt": "8672f74ee151aa0ff96c3814b0100915405ac51e5f82512376f6f6fdbe3f7a64",
+    "cmake/ConptyBackend.cmake": "6a9f9fb69f90a1db7ad5eb970e61d0913ce4ff75a121f267a369468344fffcde",
+    "experiments/conpty/backend.hpp": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489",
+    "experiments/conpty/backend_probe.cpp": "c51d53ef508aa19f81dfb89ed030993ae95f06f5a85123560e9cae2de369b042",
+    "experiments/conpty/margin_probe.cpp": "9fff80b3eb0ace2cc6944ea8a99603c5e5a2b0150b82933d858ed667b0357002",
+    "experiments/conpty/margin_run.py": "9390bc716579728d6c6d9ee7d69ce2deae11e56fd7de5cec6b3231209ed72704",
+    "experiments/conpty/session.hpp": "88197d8dd9bda247bb6d7a7b9a3344ad2670b9b0ce49b196ceb24e7005340a8e",
+    "experiments/conpty/test_backend.py": "dde8745f7512f00e20435d5985c3eb95919483034a64bce96d45e51647c3f209",
+    "experiments/conpty/test_margin_run.py": "9fcae221bb076c30b83179b619760f1ea597cc2971373033aae9653c24e82f84",
+    "experiments/shell/margin_checks.py": "cb89329d43d235a05ae0a84204716ff2bc82d963aa7924149fa4e05d9f9f76b6",
+    "experiments/shell/paste_scenario_state.hpp": "934414929448b30e429f95d84a3e5b7927ea31292d547b1e0ece92efa3b8c0dc",
+    "experiments/shell/query_client.cpp": "10d982efc87fa6a832fb674a43b515e2d993dcf8b40bcfa845aae5a2e7ae0545",
+    "experiments/shell/run.py": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d",
+    "experiments/shell/shell.cpp": "9360e8c7019bd8671ba361562c524103caf5f2214ae3b961df5fa90f65ffa776",
+    "experiments/shell/test_candidate_tui.py": "9434bb01c99246142d08ea5f4eaeb381ed6e18aaefcea53d685effc6e992bacf"
+  },
+  "binary_sha256": {
+    "termforge_shell": "b1e7657cb6f83306a0f16d8427dbe69fbf98aa1f304d11e0f3f4c4a5d24e53fb",
+    "conpty_backend_probe": "6d0ac4fdafa08b968fea15552ba23ec2daa1d6028aa4edf3d5495a37c3be057a",
+    "conpty_margin_probe": "19fcac40cf43a0ce51e4bc06ae1f8b7235e7480bbc826e4a39498fcd703d22f8",
+    "real_app_capture": "02e539e5e9c25101a887b2b50916e4aabb69281d3dbd9d85f5331123ff1adfe2"
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "system_conhost": {
+      "sha256": "e449bce01f275cd08f3d4e64bb73b3b43ae845a0dbdb3e6131426e66537705e5",
+      "fixed_file_version": "10.0.26100.9444",
+      "fixed_product_version": "10.0.26100.9444",
+      "file_version_string": "10.0.26100.8875 (WinBuild.160101.0800)",
+      "product_version_string": "10.0.26100.8875"
+    }
+  },
+  "package_manifest": "../../../../third_party/conpty/manifest.json",
+  "package": {
+    "schema": "termforge-conpty-package-v1",
+    "name": "Microsoft.Windows.Console.ConPTY",
+    "version": "1.25.260930003",
+    "architecture": "win-x64",
+    "license": "MIT",
+    "source_commit": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+    "source_tag": "v1.25.2733.0",
+    "license_source_url": "https://raw.githubusercontent.com/microsoft/terminal/dc8ae365847d41f62d1ebca93815bb00959bc12f/LICENSE",
+    "license_source_sha256": "5d177f23ecfeb0ea8e050b6a5a16355e1ae9a0b286436ca8f83ed08b3795be6b",
+    "bundled_license_sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+    "license_normalization": "CRLF to LF only; complete text verified equal",
+    "package_url": "https://github.com/microsoft/terminal/releases/download/v1.25.2733.0/Microsoft.Windows.Console.ConPTY.1.25.260930003.nupkg",
+    "package_bytes": 1750533,
+    "package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "package_members": {
+      "conpty.dll": "runtimes/win-x64/native/conpty.dll",
+      "OpenConsole.exe": "build/native/runtimes/x64/OpenConsole.exe"
+    },
+    "experimental": true,
+    "configured_creation_flags": 24,
+    "configured_glyph_width": "PSEUDOCONSOLE_GLYPH_WIDTH_CONSOLE",
+    "default_backend": false,
+    "supported_client_platforms_verified": false
+  },
+  "binary_policy": {
+    "configured_backend": "reviewed-side-by-side-1.25.260930003",
+    "configured_creation_flags": 24,
+    "generic_reviewed_creation_flags": 0,
+    "system_creation_flags": 0,
+    "meaning": "fixed official Console glyph width policy, not passthrough"
+  },
+  "scope": {
+    "cpp_binary_sources": "5030058; cleanup commit changes only Python margin diagnostic and its tests",
+    "raw_outputs": "private local artifacts only; screen text, paths, PIDs and traces excluded",
+    "unrun_built_target": "runtime_observation_test was built, not run"
+  },
+  "focused_tests": [
+    {
+      "command": "python -m unittest experiments.conpty.test_backend -v",
+      "methods_passed": 6,
+      "methods_total": 6,
+      "actual_invocations": 7,
+      "skipped": 0,
+      "source_stage": "5030058"
+    },
+    {
+      "command": "python -m unittest experiments.conpty.test_margin_run -v",
+      "methods_passed": 9,
+      "methods_total": 9,
+      "source_stage": "0954fea"
+    },
+    {
+      "command": "python -m unittest experiments.shell.test_candidate_tui -v",
+      "methods_passed": 5,
+      "methods_total": 6,
+      "source_stage": "5030058",
+      "failure": "Vim stage59; one failed run, its second repeat was not reached"
+    },
+    {
+      "description": "normal cmd editing/Unicode/Ctrl-C/exit, four local shells/CWD/exit, continuous-output close",
+      "methods_passed": 3,
+      "methods_total": 3,
+      "fresh_runs": 8,
+      "source_stage": "5030058"
+    }
+  ],
+  "backend_native_lifecycle_and_rejection_invocations": [
+    {
+      "returncode": 0,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_cleanup": false,
+      "native": {
+        "valid": true,
+        "side_by_side": false,
+        "creation_flags": 0,
+        "loaded_during_session": false,
+        "loaded_after_close": false,
+        "module_unloaded_after_session": true,
+        "exit_code": 37,
+        "active_children_after": 0,
+        "read_error": 109,
+        "cleanup_complete": true,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false
+      },
+      "error": null
+    },
+    {
+      "returncode": 2,
+      "outer_job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "forced_cleanup": false,
+      "native": null,
+      "error": "identity_rejected"
+    },
+    {
+      "returncode": 2,
+      "outer_job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "forced_cleanup": false,
+      "native": null,
+      "error": "identity_rejected"
+    },
+    {
+      "returncode": 2,
+      "outer_job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "forced_cleanup": false,
+      "native": null,
+      "error": "identity_rejected"
+    },
+    {
+      "returncode": 2,
+      "outer_job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "forced_cleanup": false,
+      "native": null,
+      "error": "identity_rejected"
+    },
+    {
+      "returncode": 2,
+      "outer_job_after": {
+        "active": 0,
+        "total": 2,
+        "terminated": 0
+      },
+      "forced_cleanup": false,
+      "native": null,
+      "error": "identity_rejected"
+    },
+    {
+      "returncode": 0,
+      "outer_job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "forced_cleanup": false,
+      "native": {
+        "valid": true,
+        "side_by_side": true,
+        "creation_flags": 24,
+        "loaded_during_session": true,
+        "loaded_after_close": true,
+        "module_unloaded_after_session": true,
+        "exit_code": 37,
+        "active_children_after": 0,
+        "read_error": 109,
+        "cleanup_complete": true,
+        "forced_reader_cancel": false,
+        "forced_process_cancel": false
+      },
+      "error": null
+    }
+  ],
+  "post_cleanup_margin_ab": [
+    {
+      "backend": "system",
+      "creation_flags": 0,
+      "summary_sha256": "ca578f4b04325efab7844c2463f068c23031adb95279868e8ae4be0efd56cea1",
+      "require_margins_exit_code": 1,
+      "terminal_main_margins_restored_in_both_sizes": false,
+      "cases": [
+        {
+          "mode": "vt-on",
+          "columns": 80,
+          "rows": 24,
+          "status": "completed",
+          "failure_code": null,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 641,
+          "transport_sha256": "5c48dc0008ea2a71c457b7b8f6b67093896d1590c924c704bd3f07123816637f",
+          "original_decstbm_forwarded": false,
+          "source_equal_transport": false,
+          "native_main_margins_restored": false,
+          "terminal_main_margins_restored": false,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "native": {
+            "waited": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "mode": "vt-off",
+          "columns": 80,
+          "rows": 24,
+          "status": "completed",
+          "failure_code": null,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 330,
+          "transport_sha256": "ab8892697fef17f6f2cf69c55859a0523b41dde46e535649ed52a8bfad1a09e6",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_main_margins_restored": false,
+          "terminal_main_margins_restored": true,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "native": {
+            "waited": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "mode": "vt-on",
+          "columns": 12,
+          "rows": 7,
+          "status": "completed",
+          "failure_code": null,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 441,
+          "transport_sha256": "7527d0312dd73db0f006ccaa2391777481a947b0cdb9070003118fa2d69f8746",
+          "original_decstbm_forwarded": false,
+          "source_equal_transport": false,
+          "native_main_margins_restored": false,
+          "terminal_main_margins_restored": false,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "native": {
+            "waited": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "mode": "vt-off",
+          "columns": 12,
+          "rows": 7,
+          "status": "completed",
+          "failure_code": null,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 505,
+          "transport_sha256": "cd4c2e7c123739cc05df721fd6b9cf86186ba0f0ed211a9877ab5fce5d481a06",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_main_margins_restored": false,
+          "terminal_main_margins_restored": false,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "native": {
+            "waited": true,
+            "side_by_side": false,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        }
+      ]
+    },
+    {
+      "backend": "official",
+      "creation_flags": 0,
+      "summary_sha256": "fec50841dc07a979fababf91d62e9ad1f33d9db25995b21995039aeb14d31f3c",
+      "require_margins_exit_code": 0,
+      "terminal_main_margins_restored_in_both_sizes": true,
+      "cases": [
+        {
+          "mode": "vt-on",
+          "columns": 80,
+          "rows": 24,
+          "status": "completed",
+          "failure_code": null,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_main_margins_restored": false,
+          "terminal_main_margins_restored": true,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "native": {
+            "waited": true,
+            "side_by_side": true,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "mode": "vt-off",
+          "columns": 80,
+          "rows": 24,
+          "status": "completed",
+          "failure_code": null,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_main_margins_restored": false,
+          "terminal_main_margins_restored": true,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "native": {
+            "waited": true,
+            "side_by_side": true,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "mode": "vt-on",
+          "columns": 12,
+          "rows": 7,
+          "status": "completed",
+          "failure_code": null,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 218,
+          "transport_sha256": "d793c84c56624d6c647e562ef7ba35e21d8998baa43371cb36f95b2add684246",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_main_margins_restored": false,
+          "terminal_main_margins_restored": true,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "native": {
+            "waited": true,
+            "side_by_side": true,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        },
+        {
+          "mode": "vt-off",
+          "columns": 12,
+          "rows": 7,
+          "status": "completed",
+          "failure_code": null,
+          "source_bytes": 175,
+          "source_sha256": "01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59",
+          "transport_bytes": 222,
+          "transport_sha256": "01064e034cc1cd3c34eae65a2f656ae940936cf381e60371b8e17428ec00617d",
+          "original_decstbm_forwarded": true,
+          "source_equal_transport": false,
+          "native_main_margins_restored": false,
+          "terminal_main_margins_restored": true,
+          "outer_job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "forced_outer_cleanup": false,
+          "process_reaped": true,
+          "streams_drained": true,
+          "cleanup_errors": [],
+          "native": {
+            "waited": true,
+            "side_by_side": true,
+            "creation_flags": 0,
+            "exit_code": 37,
+            "read_error": 109,
+            "capture_overflow": false,
+            "forced_reader_cancel": false,
+            "forced_process_cancel": false,
+            "cleanup_complete": true,
+            "active_children_after": 0
+          }
+        }
+      ]
+    }
+  ],
+  "configured_console_width_gui_runs": [
+    {
+      "mode": "candidate-alt",
+      "fresh_runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "native_exit_codes": [
+        0,
+        0
+      ],
+      "timed_out": [
+        false,
+        false
+      ],
+      "outer_job_active_after": [
+        0,
+        0
+      ],
+      "outer_job_active_after_cleanup": [
+        0,
+        0
+      ],
+      "desktop_gone": [
+        true,
+        true
+      ],
+      "failure_stage": null,
+      "failure_code": null
+    },
+    {
+      "mode": "candidate-input-escape",
+      "fresh_runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "native_exit_codes": [
+        0,
+        0
+      ],
+      "timed_out": [
+        false,
+        false
+      ],
+      "outer_job_active_after": [
+        0,
+        0
+      ],
+      "outer_job_active_after_cleanup": [
+        0,
+        0
+      ],
+      "desktop_gone": [
+        true,
+        true
+      ],
+      "failure_stage": null,
+      "failure_code": null
+    },
+    {
+      "mode": "candidate-margins",
+      "fresh_runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "native_exit_codes": [
+        0,
+        0
+      ],
+      "timed_out": [
+        false,
+        false
+      ],
+      "outer_job_active_after": [
+        0,
+        0
+      ],
+      "outer_job_active_after_cleanup": [
+        0,
+        0
+      ],
+      "desktop_gone": [
+        true,
+        true
+      ],
+      "failure_stage": null,
+      "failure_code": null
+    },
+    {
+      "mode": "candidate-scroll",
+      "fresh_runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "native_exit_codes": [
+        0,
+        0
+      ],
+      "timed_out": [
+        false,
+        false
+      ],
+      "outer_job_active_after": [
+        0,
+        0
+      ],
+      "outer_job_active_after_cleanup": [
+        0,
+        0
+      ],
+      "desktop_gone": [
+        true,
+        true
+      ],
+      "failure_stage": null,
+      "failure_code": null
+    },
+    {
+      "mode": "candidate-tui",
+      "fresh_runs": 1,
+      "passed": 0,
+      "failed": 1,
+      "native_exit_codes": [
+        2
+      ],
+      "timed_out": [
+        false
+      ],
+      "outer_job_active_after": [
+        0
+      ],
+      "outer_job_active_after_cleanup": [
+        0
+      ],
+      "desktop_gone": [
+        true
+      ],
+      "failure_stage": 59,
+      "failure_code": "vim_resize_command_remains_in_insert_mode"
+    },
+    {
+      "mode": "candidate-unicode",
+      "fresh_runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "native_exit_codes": [
+        0,
+        0
+      ],
+      "timed_out": [
+        false,
+        false
+      ],
+      "outer_job_active_after": [
+        0,
+        0
+      ],
+      "outer_job_active_after_cleanup": [
+        0,
+        0
+      ],
+      "desktop_gone": [
+        true,
+        true
+      ],
+      "failure_stage": null,
+      "failure_code": null
+    },
+    {
+      "mode": "close",
+      "fresh_runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "native_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "timed_out": [
+        false,
+        false,
+        false
+      ],
+      "outer_job_active_after": [
+        0,
+        0,
+        0
+      ],
+      "outer_job_active_after_cleanup": [
+        0,
+        0,
+        0
+      ],
+      "desktop_gone": [
+        true,
+        true,
+        true
+      ],
+      "failure_stage": null,
+      "failure_code": null
+    },
+    {
+      "mode": "normal",
+      "fresh_runs": 3,
+      "passed": 3,
+      "failed": 0,
+      "native_exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "timed_out": [
+        false,
+        false,
+        false
+      ],
+      "outer_job_active_after": [
+        0,
+        0,
+        0
+      ],
+      "outer_job_active_after_cleanup": [
+        0,
+        0,
+        0
+      ],
+      "desktop_gone": [
+        true,
+        true,
+        true
+      ],
+      "failure_stage": null,
+      "failure_code": null
+    },
+    {
+      "mode": "ui-shells",
+      "fresh_runs": 2,
+      "passed": 2,
+      "failed": 0,
+      "native_exit_codes": [
+        0,
+        0
+      ],
+      "timed_out": [
+        false,
+        false
+      ],
+      "outer_job_active_after": [
+        0,
+        0
+      ],
+      "outer_job_active_after_cleanup": [
+        0,
+        0
+      ],
+      "desktop_gone": [
+        true,
+        true
+      ],
+      "failure_stage": null,
+      "failure_code": null
+    }
+  ],
+  "configured_console_width_known_reds": [
+    {
+      "mode": "resize",
+      "verdict": "known_failure_reproduced",
+      "native_exit_code": 2,
+      "timed_out": false,
+      "stage": 43,
+      "error_code": "resize_state_or_stream_difference",
+      "paste_counts": null,
+      "outer_job_after": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "probe_sha256": "b1e7657cb6f83306a0f16d8427dbe69fbf98aa1f304d11e0f3f4c4a5d24e53fb"
+    },
+    {
+      "mode": "ui-paste",
+      "verdict": "known_failure_reproduced",
+      "native_exit_code": 2,
+      "timed_out": false,
+      "stage": null,
+      "error_code": "transfer_completed_before_checkpoint_action",
+      "paste_counts": {
+        "checkpoint": "768",
+        "flood": "1",
+        "sent": "3000000",
+        "accepted": "3000000",
+        "total": "3000000",
+        "state": "3"
+      },
+      "outer_job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "probe_sha256": "b1e7657cb6f83306a0f16d8427dbe69fbf98aa1f304d11e0f3f4c4a5d24e53fb"
+    }
+  ],
+  "configured_console_width_real_app_capture": {
+    "whole_capture_passed": false,
+    "supervision": {
+      "schema": "termforge-real-app-capture-supervision-v1",
+      "timed_out": false,
+      "returncode": 1,
+      "job_after": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "cleanup_errors": []
+    },
+    "failure_code": "vim_editor_new_buffer_not_displayed",
+    "editor": {
+      "stage": "new-buffer",
+      "editor_exit": 91,
+      "child_signaled": true,
+      "editor_bytes": 1999,
+      "active_children": 0,
+      "cleanup_complete": true,
+      "capture_overflow": false
+    },
+    "more_substage_passed": true,
+    "more": {
+      "schema": "termforge-more-capture-v1",
+      "valid": true,
+      "stage": "output-eof",
+      "prompt_end_offset": 411,
+      "q_bytes": 1,
+      "exit_code": 0,
+      "output_bytes": 508,
+      "read_error": 109,
+      "output_eof": true,
+      "cleanup_complete": true,
+      "active_children_after": 0,
+      "forced_reader_cancel": false,
+      "forced_process_cancel": false
+    },
+    "pager_sha256": "f51912329ea7e8f696057afc48703ceced3d2e8d582f891239ebfcc2b08b1dc0"
+  },
+  "earlier_flags_zero_results": {
+    "final_console_width_proof": false,
+    "gui_vim_dsr_resize_write_fresh_passes": 2,
+    "full_native_shell_more_editor_capture_passed": true,
+    "unicode_readback_existing_contract_passed": false,
+    "preserved_raw_evidence": "private backend-r1 and official-real-app-capture folders; not replaced by final results"
+  },
+  "remaining_gaps": [
+    "Continuous resize stage43 retains unexpected trailing text/position and Unicode replay differences",
+    "Console-width Vim GUI stage59 and native editor new-buffer capture fail; prior flags0 pass is a separate observation",
+    "3MB paste completes before the original 768-byte receiver checkpoint action; cancel-during-transfer contract unverified",
+    "Native CHAR_INFO main/alternate margins remain incorrect even when terminal VT is correct",
+    "Full R1 workflow, IME/monitor coverage, long-run resources, performance and WindTerm comparisons remain unverified"
+  ],
+  "product_default_changed": false,
+  "native_api_margin_gap_closed": false,
+  "full_r2_contract_verified": false,
+  "performance_claim": false,
+  "presented_done": null,
+  "issues_to_keep_open": [
+    41,
+    47
+  ]
+}

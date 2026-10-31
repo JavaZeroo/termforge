@@ -1,0 +1,1667 @@
+{
+  "schema": 1,
+  "issue": 51,
+  "source_commit": "92eac12d5cd2868b469e8b9a10e68f5e20ee2cb0",
+  "base_commit": "e0b4d67e50bda6fe08cc02b43a475137133310b3",
+  "candidate_version": "0.26.1-dev+termforge.5",
+  "backend": {
+    "name": "Microsoft.Windows.Console.ConPTY",
+    "version": "1.25.260930003",
+    "url": "https://github.com/microsoft/terminal/releases/download/v1.25.2733.0/Microsoft.Windows.Console.ConPTY.1.25.260930003.nupkg",
+    "bytes": 1750533,
+    "sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    }
+  },
+  "creation_flags": 24,
+  "windows": "10.0.26200",
+  "resize_policy": "native_viewport only for explicit reviewed-backend candidate ShellWindow",
+  "sources_sha256": {
+    "CMakeLists.txt": "3db27130f32f57eb798872410506eea4a638e0841dfd5474fdbeb216fb774b5b",
+    "experiments/candidates/alacritty/Cargo.lock": "f7b8906cc63b6a5d66943f15c50a78c51f773face60229fcddf24b2d02911736",
+    "experiments/candidates/alacritty/include/termforge_candidate.h": "e3accd6b57cce18784f9bd14bbb5042bec985464fe440bf54f652a0ebecfee92",
+    "experiments/candidates/alacritty/run.py": "2d83240506bf03b4da92f7b2dc85adf40446aff25cd0f0dbe08132b611c2627e",
+    "experiments/candidates/alacritty/src/ffi.rs": "09ea991999db3d1948cb5c4a46cd8d12e8e8f70d7648f07d09b1dd82eeab9c04",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "2b5fc3bab139b7f141fbe39ae32364617cf526c4d6a5ec2ce12efc97379e42b7",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "eedd587edfd00917b3f8397cd5683263a33e63675ba332eba50e3648d008e157",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/row.rs": "05e489c6ac0c0bf6ea50182316985c4fa59e9a7c977e808edd0de4267d87c077",
+    "experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "0479445db15d75f006398ba7fbbebba763cbedb1c993d69b3e5fdc94746a62e2",
+    "experiments/conpty/backend.hpp": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489",
+    "experiments/conpty/resize_native_probe.cpp": "ea0f26b3cfc322929193a89ea72d3e987a2ec9f3fda87241989f508cd431336a",
+    "experiments/conpty/resize_native_run.py": "a7fdc198a9fde7cff00ce1f74031b680e83d130e5034a612e576340e037fa1f2",
+    "experiments/conpty/session.hpp": "6945e6ffba1d61e66266f867d3cd124eb63c39da37e27662a5eaf544f60ed96b",
+    "experiments/core/candidate_resize_replay.cpp": "c3e6bcd7dc41622c8e407507c4cd9da39398197d76aa7d3ea042ae0bd4164a7b",
+    "experiments/core/candidate_terminal.cpp": "16eb43f2488e9621fc965d50be99a25ebf49b6d51ad69d2446fcc13bedda7bf5",
+    "experiments/core/candidate_terminal.hpp": "f4e51039bc5a10fd120ef8a5fc2b12fcb9ddb1c32a4ae36fc74f226ae22898a1",
+    "experiments/core/candidate_terminal_test.cpp": "097faf9c92cad3751ba3d0292739a041943c4f1cd7f4e4bc5fac72bc578aa3fa",
+    "experiments/core/test_candidate_resize_replay.py": "14a78930060f8c66c78a6e601312cb6997efe77330d3c226e9560d8c48ce0944",
+    "experiments/shell/resize_trace.py": "fd75a4a1a6d3d0ad8ea213da04a875f4bda210c6501e41b4b4004161b0037501",
+    "experiments/shell/run.py": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d",
+    "experiments/shell/shell.cpp": "ab5f39acd6174e3a5a256dea6f59037758e3b521af91c183a67f7d021700a089",
+    "experiments/shell/size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4",
+    "experiments/shell/test_launcher.cpp": "19cab4a960f47f252c02f92a36316d43eed2481da1f72b5a7e97003c4fa1c2ed",
+    "experiments/shell/text_client.cpp": "aea8ed527e6e79fbe61446afadbb25d4fa0b7ddef4966930583ac8fa04cadd15",
+    "experiments/shell/workflow_checks.py": "f186ff0f5335c26fc5c4f0286961981dfd6af8fbaafc789e2bc50058486efa44",
+    "experiments/shell/workflow_sessions_checks.py": "b976d3504837eef57ff13319daed254870727741f36f265412a6b14b4cb3faae",
+    "experiments/shell/workspace_workflow_scenario.hpp": "467571556440f4e89305bc1261d389bb8f24ba84f607b8cd36b8078a58314369"
+  },
+  "binaries_sha256": {
+    "termforge_shell.exe": "15a149a3d7d47efaf866226559d4b60bbf83e0ff6004a85df41edcb5415ad206",
+    "candidate_core_test.exe": "4c73b58d7da111ab52b6edbbb59898cf660860fdedaa64c4f49b46fae856a02d",
+    "candidate_resize_replay.exe": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+    "conpty_resize_native_probe.exe": "a570b55f7ef0f65be01b827112905a223fb32f37a0f645ce121ead1ed6555f59",
+    "shell_test_launcher.exe": "7bd78cffd78ac66d651933c9614d6be937c99baa105ce04c1a533df5785c11e2",
+    "shell_size_client.exe": "eeb0801f69cc8add0a8178a185dcedb78a9b33234abfe5c600fd9b20b0f5aab4",
+    "shell_text_client.exe": "9350e53de74c9a6b78495a3b59788e3a31e0067a9c5ec1b8685a729ff18244d3",
+    "shell_query_client.exe": "691b440e9c500c76c1c09c448aafbe2316793bf341ffe69bbc2bf70e41be64cc"
+  },
+  "source_hash_policy": "Raw worktree bytes used for builds; Git checkout line endings can differ.",
+  "baseline_gui": {
+    "source": "e0b4d67e50bda6fe08cc02b43a475137133310b3",
+    "diagnostic_only": true,
+    "source_patch_applied": false,
+    "patched_resize_sha256": "4907427c9488435f1e1ee624629bc8445c4dde5399f0349955d1bbc2042080c4",
+    "binary_sha256": "e4be16054f1c43528cdaca0f54b664f856843669a43000778b751b722026dff4",
+    "cases": [
+      {
+        "case": "resize-0",
+        "outcome": "failure",
+        "exit_code": 2,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "dbf63d052fae858dca4ec36d8884f2b919515defad23bec749a994eab1b9e393",
+        "stage": 43
+      }
+    ],
+    "started_utc": "2026-10-26T19:54:02.639884+00:00"
+  },
+  "formal_core_red": {
+    "exit_code": 1,
+    "error": "native viewport text differs",
+    "identity": {
+      "experiments/core/candidate_terminal.hpp": "f4e51039bc5a10fd120ef8a5fc2b12fcb9ddb1c32a4ae36fc74f226ae22898a1",
+      "experiments/core/candidate_terminal.cpp": "16eb43f2488e9621fc965d50be99a25ebf49b6d51ad69d2446fcc13bedda7bf5",
+      "experiments/core/candidate_terminal_test.cpp": "310ef633d13b909d5ad0d659cffc4cbe81b2f3d84bbd87400b13e54051bfc772",
+      "experiments/candidates/alacritty/src/ffi.rs": "0824acd1e13f74254ee38976485c21d79e6ae4feb38c4634ce3aef163315e6d4",
+      "experiments/candidates/alacritty/include/termforge_candidate.h": "e3accd6b57cce18784f9bd14bbb5042bec985464fe440bf54f652a0ebecfee92",
+      "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "4907427c9488435f1e1ee624629bc8445c4dde5399f0349955d1bbc2042080c4",
+      "test_exe_sha256": "0f5bd0454c288eb300368ab0090f2b917b618f74f32bde7522658b0db03f0ee8"
+    },
+    "log_sha256": "2fb33922305c15a0912d40fe556589f7092375ffa05a903aa16b99a1f0a40dc2"
+  },
+  "original_native_capture": {
+    "source": "188228ebe1a4e6cd3779fc7c6b150624514886fb",
+    "shell_sha256": "e81d92a8c7d380d4c33639861180b04935e021bc7c1a5179197c8a9e3c83454a",
+    "note": "Temporary size helper snapshots perturb timing; native row10 exact, candidate row10 had OW.",
+    "files_sha256": {
+      "case-0/resize-trace.json": "b3d57213f4da6a94e2a672ddd5d2e5690ad4604636c16a0835d506ea6c3d76f8",
+      "case-0/resize-trace.transport.bin": "2b4deb1d932af810cef0892064a13b481c582ad44a4faa02cd08fe502d410feb",
+      "case-0/r51-native-size-100x28-after.json": "67d2217d0c03212a87b4ccaac822cf9cbd93380a337f30ac91bdb988e0644ba0",
+      "case-0/sample.json": "87624dc16ace15e803bea774aa7af253099f9588975ddabfab0c4ccc7d04cb81",
+      "replay-0/plan.txt": "bab0875e0f31908a1c5f1a8194ee43b47113a78af1da28f618a17677bf29f57b"
+    },
+    "native_row10": "TF_SIZE_100x28",
+    "candidate_row10": "TF_SIZE_100x28OW"
+  },
+  "final_original_replay": {
+    "replay_exe_sha256": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+    "options": [
+      "--native-viewport"
+    ],
+    "same_native_rows_0_through_10": true,
+    "exact_marker": true,
+    "history_rows": 9,
+    "cursor": [
+      12,
+      3
+    ],
+    "diagnostic_only": true
+  },
+  "final_gui": {
+    "source": "92eac12d5cd2868b469e8b9a10e68f5e20ee2cb0",
+    "diagnostic_only": true,
+    "source_patch_applied": false,
+    "patched_resize_sha256": "eedd587edfd00917b3f8397cd5683263a33e63675ba332eba50e3648d008e157",
+    "binary_sha256": "15a149a3d7d47efaf866226559d4b60bbf83e0ff6004a85df41edcb5415ad206",
+    "cases": [
+      {
+        "case": "resize-0",
+        "outcome": "green",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "b113686ea1536b96932401ec5caa6e678db2146d46ad8f43250729d5b0c037e0",
+        "result": {
+          "valid": true,
+          "exit_code": 37,
+          "active_children_after": 0,
+          "cleanup_complete": true,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": true,
+          "resize_verified": 3,
+          "rows": 18,
+          "columns": 72,
+          "input_rejected": 0,
+          "presented_done": null
+        }
+      },
+      {
+        "case": "resize-1",
+        "outcome": "green",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "95eedda4e52bb2c78bf445fc068d8a7cf2acbd6952b63c8bf41ad68136862f1c",
+        "result": {
+          "valid": true,
+          "exit_code": 37,
+          "active_children_after": 0,
+          "cleanup_complete": true,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": true,
+          "resize_verified": 3,
+          "rows": 18,
+          "columns": 72,
+          "input_rejected": 0,
+          "presented_done": null
+        }
+      },
+      {
+        "case": "resize-close-2",
+        "outcome": "green",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "4bfea5d8f916c27192b1d539d545e1df5ddc0fd04e338aae239fda902027a394",
+        "result": {
+          "valid": true,
+          "exit_code": 91,
+          "active_children_after": 0,
+          "cleanup_complete": true,
+          "command_verified": true,
+          "unicode_verified": true,
+          "backspace_verified": true,
+          "arrows_verified": true,
+          "ctrl_c_verified": false,
+          "resize_verified": 2,
+          "rows": 18,
+          "columns": 72,
+          "input_rejected": 0,
+          "presented_done": null
+        }
+      },
+      {
+        "case": "candidate-unicode-3",
+        "outcome": "green",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "a3c614c702d92ac849cf287923da9593deeeb0a0506545c27876945904c119c9",
+        "result": {
+          "valid": true,
+          "exit_code": 37,
+          "active_children_after": 0,
+          "cleanup_complete": true,
+          "command_verified": true,
+          "unicode_verified": false,
+          "backspace_verified": false,
+          "arrows_verified": false,
+          "ctrl_c_verified": false,
+          "resize_verified": 0,
+          "rows": 30,
+          "columns": 100,
+          "input_rejected": 0,
+          "presented_done": null
+        },
+        "unicode_output": {
+          "scope": "fixed-four-streaming-graphemes-width-selection-glyph",
+          "source_sha256": "a3b951ab67ca5d079f7e91ee8f1cd25dfde82ae4b08ed40c406c911e0ccdf8c2",
+          "transport_sha256": "c115bf2fd28e7a602993c30985853b895409884c0fba65fd697fbd1f89173c0e",
+          "transport_bytes": 3353,
+          "scoped_validation_passed": true,
+          "complex_grapheme_rendering_verified": true,
+          "whole_cluster_width_policy_verified": true,
+          "resized_native_console_verified": false,
+          "windterm_runtime_equivalence_verified": false,
+          "complete_unicode_ime_verified": false,
+          "presented_done": null,
+          "resize": {
+            "scope": "fixed-four-streaming-graphemes-width-selection-glyph",
+            "source_sha256": "a3b951ab67ca5d079f7e91ee8f1cd25dfde82ae4b08ed40c406c911e0ccdf8c2",
+            "transport_sha256": "d3b472c45f7ed73f9d1c4b0fb190e974cc1f39c0522d495d30402639957859c5",
+            "transport_bytes": 3819,
+            "scoped_validation_passed": true,
+            "complex_grapheme_rendering_verified": true,
+            "whole_cluster_width_policy_verified": true,
+            "resized_native_console_verified": true,
+            "windterm_runtime_equivalence_verified": false,
+            "complete_unicode_ime_verified": false,
+            "presented_done": null
+          }
+        },
+        "result_field_note": "Generic result.unicode_verified belongs to the basic shell scenario; candidate-unicode acceptance is unicode_output.scoped_validation_passed and its resize record."
+      },
+      {
+        "case": "candidate-unicode-4",
+        "outcome": "green",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 8,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "4fabd30042d7a6053663a2b3f084ea179926f211cb1acb634291877637349dd8",
+        "result": {
+          "valid": true,
+          "exit_code": 37,
+          "active_children_after": 0,
+          "cleanup_complete": true,
+          "command_verified": true,
+          "unicode_verified": false,
+          "backspace_verified": false,
+          "arrows_verified": false,
+          "ctrl_c_verified": false,
+          "resize_verified": 0,
+          "rows": 30,
+          "columns": 100,
+          "input_rejected": 0,
+          "presented_done": null
+        },
+        "unicode_output": {
+          "scope": "fixed-four-streaming-graphemes-width-selection-glyph",
+          "source_sha256": "a3b951ab67ca5d079f7e91ee8f1cd25dfde82ae4b08ed40c406c911e0ccdf8c2",
+          "transport_sha256": "bff603002c1b35097b27bba74fd6fafa89eb44c3948b409c0c5feb9ffa40c32d",
+          "transport_bytes": 3353,
+          "scoped_validation_passed": true,
+          "complex_grapheme_rendering_verified": true,
+          "whole_cluster_width_policy_verified": true,
+          "resized_native_console_verified": false,
+          "windterm_runtime_equivalence_verified": false,
+          "complete_unicode_ime_verified": false,
+          "presented_done": null,
+          "resize": {
+            "scope": "fixed-four-streaming-graphemes-width-selection-glyph",
+            "source_sha256": "a3b951ab67ca5d079f7e91ee8f1cd25dfde82ae4b08ed40c406c911e0ccdf8c2",
+            "transport_sha256": "f50293197cfaeb077453e378f58c38c5c878e89d55f7833d2e0600e8ad2889cd",
+            "transport_bytes": 4001,
+            "scoped_validation_passed": true,
+            "complex_grapheme_rendering_verified": true,
+            "whole_cluster_width_policy_verified": true,
+            "resized_native_console_verified": true,
+            "windterm_runtime_equivalence_verified": false,
+            "complete_unicode_ime_verified": false,
+            "presented_done": null
+          }
+        },
+        "result_field_note": "Generic result.unicode_verified belongs to the basic shell scenario; candidate-unicode acceptance is unicode_output.scoped_validation_passed and its resize record."
+      }
+    ],
+    "started_utc": "2026-10-26T20:46:03.844348+00:00"
+  },
+  "native_cases_file": "native-cases.json",
+  "written_spaces_regression": {
+    "red": {
+      "source": "f40d347 plus written-space regression",
+      "files": {
+        "experiments/core/candidate_terminal_test.cpp": "097faf9c92cad3751ba3d0292739a041943c4f1cd7f4e4bc5fac72bc578aa3fa",
+        "experiments/candidates/alacritty/src/ffi.rs": "04f2b0a3cb66c3b588d083b861781eae6af83a2b03104d779f156a892bbd7517",
+        "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/row.rs": "2f963299e52525828d9d0bf1de758d793661c908eb7c126aa8556a1c9945a83d",
+        "experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "a1f0d8bcd133208f12b2eb0c96edf04be6dd7bae9cb3a95db6a2086cf8833bc3",
+        "build/candidate/bin/Release/candidate_core_test.exe": "f574f415c509ac3c78a8b048dfab3ae789d4a6d63591f0256c4492dcb9195233"
+      },
+      "exit_code": 1,
+      "error": "resize changed written spaces"
+    },
+    "red_log_sha256": "6c6ef8d9801b3020b3da305423cfd81ae0fad3197f980cdb5d21330dcdc5a39d",
+    "green_log_sha256": "2d790a6cc2d35b2379ea0385b384c326a361db1e5cb550d0fb209a80901b0c26",
+    "input": "ABC   D",
+    "widths": [
+      4,
+      5,
+      8,
+      4,
+      5
+    ],
+    "policies": [
+      "reflow_history",
+      "native_viewport"
+    ],
+    "passed": true
+  },
+  "auxiliary_review_checks": {
+    "source": "92eac12d5cd2868b469e8b9a10e68f5e20ee2cb0",
+    "native_copy_assertions": 630,
+    "files_sha256": {
+      "native-compile.log": "dad173ee0c7a5afd1408be074bfdfa13e828e1c1c71865b477a9a9ef90e058d9",
+      "native-probe.exe": "0a6d3f643dde129526b506d356970b311ff46a40a449ac1515da3783a25b52f9",
+      "native-run.log": "564666081a6201b624a62f3bd3daebf776bb83b024e29a8e93408e1bd1beb020",
+      "probe.cpp": "b8926e08ec1b369ebcc35bc74435863fb5cf999c902dc4832ba02a290b7f505f"
+    },
+    "scope": "Additional reviewer diagnostic; not a native-oracle or performance comparison."
+  },
+  "native_probe_negatives": {
+    "source": "92eac12d5cd2868b469e8b9a10e68f5e20ee2cb0",
+    "runner_sha256": "a7fdc198a9fde7cff00ce1f74031b680e83d130e5034a612e576340e037fa1f2",
+    "cases": [
+      {
+        "name": "no-go",
+        "case": 0,
+        "exit_code": 2,
+        "timed_out": false,
+        "forced_outer_cleanup": false,
+        "job_after": {
+          "active": 0,
+          "total": 2,
+          "terminated": 0
+        },
+        "job_after_forced_cleanup": null,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": []
+      },
+      {
+        "name": "watchdog",
+        "case": 0,
+        "exit_code": 99,
+        "timed_out": true,
+        "forced_outer_cleanup": true,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "job_after_forced_cleanup": null,
+        "process_reaped": true,
+        "streams_drained": true,
+        "cleanup_errors": []
+      },
+      {
+        "name": "missing-executable-and-unwritable-evidence",
+        "original_FileNotFoundError_preserved": true,
+        "winerror": 2,
+        "existing_file_unchanged": true
+      }
+    ]
+  },
+  "rust_tests": {
+    "passed_per_target": [
+      157,
+      2,
+      2,
+      2,
+      1
+    ],
+    "log_sha256": "798884c07803a574adecf796b5da6b8279639922a908b52d969abe44de62a42b"
+  },
+  "initial_full_ctest": {
+    "log_sha256": "a04c06b541b15e23716ce4b542138d5a6844acb548944ff5c1a3d359c1317d9f",
+    "tests": [
+      {
+        "name": "shell_launch",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "candidate_title",
+        "result": "passed",
+        "seconds": 0.72
+      },
+      {
+        "name": "candidate_reply_close",
+        "result": "passed",
+        "seconds": 0.36
+      },
+      {
+        "name": "runtime_observation",
+        "result": "passed",
+        "seconds": 1.61
+      },
+      {
+        "name": "ime_input_expectation",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "sent_message_wait",
+        "result": "passed",
+        "seconds": 0.3
+      },
+      {
+        "name": "find_bar",
+        "result": "passed",
+        "seconds": 0.39
+      },
+      {
+        "name": "renderer_metrics",
+        "result": "passed",
+        "seconds": 0.96
+      },
+      {
+        "name": "ime_context",
+        "result": "passed",
+        "seconds": 0.41
+      },
+      {
+        "name": "layout_state",
+        "result": "passed",
+        "seconds": 0.15
+      },
+      {
+        "name": "workspace_state",
+        "result": "passed",
+        "seconds": 0.38
+      },
+      {
+        "name": "transport_completion",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "scenario_tick_gate",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "candidate_core",
+        "result": "passed",
+        "seconds": 1.33
+      },
+      {
+        "name": "resize_core",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "history_core",
+        "result": "passed",
+        "seconds": 0.03
+      },
+      {
+        "name": "selection_core",
+        "result": "passed",
+        "seconds": 0.11
+      },
+      {
+        "name": "search_core",
+        "result": "passed",
+        "seconds": 0.15
+      },
+      {
+        "name": "paste",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "sender_fence",
+        "result": "passed",
+        "seconds": 1.03
+      },
+      {
+        "name": "sender_fence_pipe",
+        "result": "passed",
+        "seconds": 0.39
+      },
+      {
+        "name": "clipboard_policy",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "keyboard",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "text_action_policy",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "candidate_resize_replay",
+        "result": "passed",
+        "seconds": 0.7
+      },
+      {
+        "name": "candidate_shell_tui",
+        "result": "failed",
+        "seconds": 31.03
+      },
+      {
+        "name": "core",
+        "result": "passed",
+        "seconds": 6.59
+      },
+      {
+        "name": "recovery",
+        "result": "passed",
+        "seconds": 13.14
+      },
+      {
+        "name": "measure",
+        "result": "passed",
+        "seconds": 5.17
+      },
+      {
+        "name": "binary_paths",
+        "result": "passed",
+        "seconds": 0.21
+      },
+      {
+        "name": "conpty_margin_contract",
+        "result": "passed",
+        "seconds": 0.34
+      },
+      {
+        "name": "benchmark_tools",
+        "result": "passed",
+        "seconds": 5.67
+      },
+      {
+        "name": "differential",
+        "result": "passed",
+        "seconds": 3.55
+      },
+      {
+        "name": "ime_inventory",
+        "result": "passed",
+        "seconds": 54.43
+      },
+      {
+        "name": "text_actions",
+        "result": "passed",
+        "seconds": 5.58
+      },
+      {
+        "name": "workflow_fixture",
+        "result": "passed",
+        "seconds": 22.86
+      },
+      {
+        "name": "workflow_sessions",
+        "result": "failed",
+        "seconds": 39.01
+      },
+      {
+        "name": "workflow_resources",
+        "result": "passed",
+        "seconds": 0.5
+      },
+      {
+        "name": "workflow_resource_phases",
+        "result": "passed",
+        "seconds": 4.37
+      },
+      {
+        "name": "workflow_system_content",
+        "result": "passed",
+        "seconds": 0.18
+      },
+      {
+        "name": "workflow_system_runner",
+        "result": "passed",
+        "seconds": 0.66
+      },
+      {
+        "name": "copy_error_frame",
+        "result": "passed",
+        "seconds": 0.15
+      },
+      {
+        "name": "paste_fence_evidence",
+        "result": "passed",
+        "seconds": 0.11
+      },
+      {
+        "name": "resize_trace",
+        "result": "passed",
+        "seconds": 0.13
+      },
+      {
+        "name": "research_guards",
+        "result": "passed",
+        "seconds": 5.07
+      },
+      {
+        "name": "receive",
+        "result": "passed",
+        "seconds": 0.21
+      },
+      {
+        "name": "conpty",
+        "result": "passed",
+        "seconds": 23.1
+      },
+      {
+        "name": "conpty_ctrl_c",
+        "result": "passed",
+        "seconds": 4.34
+      },
+      {
+        "name": "conpty_margin",
+        "result": "passed",
+        "seconds": 0.38
+      },
+      {
+        "name": "conpty_backend",
+        "result": "passed",
+        "seconds": 1.19
+      },
+      {
+        "name": "presentation",
+        "result": "passed",
+        "seconds": 4.19
+      },
+      {
+        "name": "shell",
+        "result": "passed",
+        "seconds": 96.68
+      },
+      {
+        "name": "selection_bytes",
+        "result": "passed",
+        "seconds": 3.7
+      },
+      {
+        "name": "selection_context",
+        "result": "passed",
+        "seconds": 3.78
+      },
+      {
+        "name": "raw_console_receiver",
+        "result": "passed",
+        "seconds": 0.41
+      },
+      {
+        "name": "paste_system",
+        "result": "passed",
+        "seconds": 8.59
+      }
+    ],
+    "total": 56,
+    "passed": 54,
+    "failed": [
+      "candidate_shell_tui",
+      "workflow_sessions"
+    ],
+    "seconds": 354.65,
+    "failure_stages": [
+      50
+    ],
+    "full_acceptance": false,
+    "product_source_commit": "57f24f5a2204a38bcc6429cc448247a7893ef349",
+    "shell_sha256": "4e23e277ea7984d85856b713b3af5b0545d68042c2bbd42a8422f8a6b422c28d"
+  },
+  "fixed_path_intermediate_ctest": {
+    "log_sha256": "068ef8ad11e19c697e95df4e9d8bd8a2210c8e075e02550bf0ed706913949000",
+    "tests": [
+      {
+        "name": "shell_launch",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_title",
+        "result": "passed",
+        "seconds": 0.88
+      },
+      {
+        "name": "candidate_reply_close",
+        "result": "passed",
+        "seconds": 0.33
+      },
+      {
+        "name": "runtime_observation",
+        "result": "passed",
+        "seconds": 1.43
+      },
+      {
+        "name": "ime_input_expectation",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "sent_message_wait",
+        "result": "passed",
+        "seconds": 0.29
+      },
+      {
+        "name": "find_bar",
+        "result": "passed",
+        "seconds": 0.35
+      },
+      {
+        "name": "renderer_metrics",
+        "result": "passed",
+        "seconds": 0.94
+      },
+      {
+        "name": "ime_context",
+        "result": "passed",
+        "seconds": 0.39
+      },
+      {
+        "name": "layout_state",
+        "result": "passed",
+        "seconds": 0.14
+      },
+      {
+        "name": "workspace_state",
+        "result": "passed",
+        "seconds": 0.35
+      },
+      {
+        "name": "transport_completion",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "scenario_tick_gate",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_core",
+        "result": "passed",
+        "seconds": 1.22
+      },
+      {
+        "name": "resize_core",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "history_core",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "selection_core",
+        "result": "passed",
+        "seconds": 0.1
+      },
+      {
+        "name": "search_core",
+        "result": "passed",
+        "seconds": 0.12
+      },
+      {
+        "name": "paste",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "sender_fence",
+        "result": "passed",
+        "seconds": 1.02
+      },
+      {
+        "name": "sender_fence_pipe",
+        "result": "passed",
+        "seconds": 0.37
+      },
+      {
+        "name": "clipboard_policy",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "keyboard",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "text_action_policy",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "candidate_resize_replay",
+        "result": "passed",
+        "seconds": 0.61
+      },
+      {
+        "name": "candidate_shell_tui",
+        "result": "failed",
+        "seconds": 30.57
+      },
+      {
+        "name": "core",
+        "result": "passed",
+        "seconds": 6.28
+      },
+      {
+        "name": "recovery",
+        "result": "passed",
+        "seconds": 10.45
+      },
+      {
+        "name": "measure",
+        "result": "passed",
+        "seconds": 4.02
+      },
+      {
+        "name": "binary_paths",
+        "result": "passed",
+        "seconds": 0.18
+      },
+      {
+        "name": "conpty_margin_contract",
+        "result": "passed",
+        "seconds": 0.36
+      },
+      {
+        "name": "benchmark_tools",
+        "result": "passed",
+        "seconds": 5.54
+      },
+      {
+        "name": "differential",
+        "result": "passed",
+        "seconds": 3.38
+      },
+      {
+        "name": "ime_inventory",
+        "result": "passed",
+        "seconds": 50.46
+      },
+      {
+        "name": "text_actions",
+        "result": "passed",
+        "seconds": 5.62
+      },
+      {
+        "name": "workflow_fixture",
+        "result": "passed",
+        "seconds": 22.72
+      },
+      {
+        "name": "workflow_sessions",
+        "result": "failed",
+        "seconds": 80.03
+      },
+      {
+        "name": "workflow_resources",
+        "result": "passed",
+        "seconds": 0.54
+      },
+      {
+        "name": "workflow_resource_phases",
+        "result": "passed",
+        "seconds": 4.43
+      },
+      {
+        "name": "workflow_system_content",
+        "result": "passed",
+        "seconds": 0.18
+      },
+      {
+        "name": "workflow_system_runner",
+        "result": "passed",
+        "seconds": 0.66
+      },
+      {
+        "name": "copy_error_frame",
+        "result": "passed",
+        "seconds": 0.14
+      },
+      {
+        "name": "paste_fence_evidence",
+        "result": "passed",
+        "seconds": 0.11
+      },
+      {
+        "name": "resize_trace",
+        "result": "passed",
+        "seconds": 0.13
+      },
+      {
+        "name": "research_guards",
+        "result": "passed",
+        "seconds": 5.0
+      },
+      {
+        "name": "receive",
+        "result": "passed",
+        "seconds": 0.21
+      },
+      {
+        "name": "conpty",
+        "result": "passed",
+        "seconds": 23.06
+      },
+      {
+        "name": "conpty_ctrl_c",
+        "result": "passed",
+        "seconds": 4.32
+      },
+      {
+        "name": "conpty_margin",
+        "result": "passed",
+        "seconds": 0.42
+      },
+      {
+        "name": "conpty_backend",
+        "result": "passed",
+        "seconds": 1.19
+      },
+      {
+        "name": "presentation",
+        "result": "passed",
+        "seconds": 4.15
+      },
+      {
+        "name": "shell",
+        "result": "passed",
+        "seconds": 97.02
+      },
+      {
+        "name": "selection_bytes",
+        "result": "passed",
+        "seconds": 3.56
+      },
+      {
+        "name": "selection_context",
+        "result": "passed",
+        "seconds": 3.8
+      },
+      {
+        "name": "raw_console_receiver",
+        "result": "passed",
+        "seconds": 0.39
+      },
+      {
+        "name": "paste_system",
+        "result": "passed",
+        "seconds": 8.43
+      }
+    ],
+    "total": 56,
+    "passed": 54,
+    "failed": [
+      "candidate_shell_tui",
+      "workflow_sessions"
+    ],
+    "seconds": 386.09,
+    "failure_stages": [
+      59
+    ],
+    "full_acceptance": false,
+    "product_source_commit": "57f24f5a2204a38bcc6429cc448247a7893ef349",
+    "shell_sha256": "4e23e277ea7984d85856b713b3af5b0545d68042c2bbd42a8422f8a6b422c28d"
+  },
+  "final_full_ctest": {
+    "log_sha256": "e9a8ea36af3b9b72665ee29c6e87a7cac15fe5531fe7c23e72bb27a60f95c17f",
+    "tests": [
+      {
+        "name": "shell_launch",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "candidate_title",
+        "result": "passed",
+        "seconds": 0.9
+      },
+      {
+        "name": "candidate_reply_close",
+        "result": "passed",
+        "seconds": 0.36
+      },
+      {
+        "name": "runtime_observation",
+        "result": "passed",
+        "seconds": 1.56
+      },
+      {
+        "name": "ime_input_expectation",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "sent_message_wait",
+        "result": "passed",
+        "seconds": 0.3
+      },
+      {
+        "name": "find_bar",
+        "result": "passed",
+        "seconds": 0.36
+      },
+      {
+        "name": "renderer_metrics",
+        "result": "passed",
+        "seconds": 0.89
+      },
+      {
+        "name": "ime_context",
+        "result": "passed",
+        "seconds": 0.33
+      },
+      {
+        "name": "layout_state",
+        "result": "passed",
+        "seconds": 0.14
+      },
+      {
+        "name": "workspace_state",
+        "result": "passed",
+        "seconds": 0.37
+      },
+      {
+        "name": "transport_completion",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "scenario_tick_gate",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_core",
+        "result": "passed",
+        "seconds": 1.34
+      },
+      {
+        "name": "resize_core",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "history_core",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "selection_core",
+        "result": "passed",
+        "seconds": 0.09
+      },
+      {
+        "name": "search_core",
+        "result": "passed",
+        "seconds": 0.15
+      },
+      {
+        "name": "paste",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "sender_fence",
+        "result": "passed",
+        "seconds": 1.03
+      },
+      {
+        "name": "sender_fence_pipe",
+        "result": "passed",
+        "seconds": 0.38
+      },
+      {
+        "name": "clipboard_policy",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "keyboard",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "text_action_policy",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_resize_replay",
+        "result": "passed",
+        "seconds": 0.72
+      },
+      {
+        "name": "candidate_shell_tui",
+        "result": "failed",
+        "seconds": 30.51
+      },
+      {
+        "name": "core",
+        "result": "passed",
+        "seconds": 6.93
+      },
+      {
+        "name": "recovery",
+        "result": "passed",
+        "seconds": 10.97
+      },
+      {
+        "name": "measure",
+        "result": "passed",
+        "seconds": 4.03
+      },
+      {
+        "name": "binary_paths",
+        "result": "passed",
+        "seconds": 0.18
+      },
+      {
+        "name": "conpty_margin_contract",
+        "result": "passed",
+        "seconds": 0.29
+      },
+      {
+        "name": "benchmark_tools",
+        "result": "passed",
+        "seconds": 5.4
+      },
+      {
+        "name": "differential",
+        "result": "passed",
+        "seconds": 3.32
+      },
+      {
+        "name": "ime_inventory",
+        "result": "passed",
+        "seconds": 50.32
+      },
+      {
+        "name": "text_actions",
+        "result": "passed",
+        "seconds": 5.59
+      },
+      {
+        "name": "workflow_fixture",
+        "result": "passed",
+        "seconds": 22.88
+      },
+      {
+        "name": "workflow_sessions",
+        "result": "passed",
+        "seconds": 81.41
+      },
+      {
+        "name": "workflow_resources",
+        "result": "passed",
+        "seconds": 0.48
+      },
+      {
+        "name": "workflow_resource_phases",
+        "result": "passed",
+        "seconds": 4.31
+      },
+      {
+        "name": "workflow_system_content",
+        "result": "passed",
+        "seconds": 0.16
+      },
+      {
+        "name": "workflow_system_runner",
+        "result": "passed",
+        "seconds": 0.67
+      },
+      {
+        "name": "copy_error_frame",
+        "result": "passed",
+        "seconds": 0.14
+      },
+      {
+        "name": "paste_fence_evidence",
+        "result": "passed",
+        "seconds": 0.11
+      },
+      {
+        "name": "resize_trace",
+        "result": "passed",
+        "seconds": 0.12
+      },
+      {
+        "name": "research_guards",
+        "result": "passed",
+        "seconds": 5.0
+      },
+      {
+        "name": "receive",
+        "result": "passed",
+        "seconds": 0.23
+      },
+      {
+        "name": "conpty",
+        "result": "passed",
+        "seconds": 22.44
+      },
+      {
+        "name": "conpty_ctrl_c",
+        "result": "passed",
+        "seconds": 4.47
+      },
+      {
+        "name": "conpty_margin",
+        "result": "passed",
+        "seconds": 0.57
+      },
+      {
+        "name": "conpty_backend",
+        "result": "passed",
+        "seconds": 1.34
+      },
+      {
+        "name": "presentation",
+        "result": "passed",
+        "seconds": 4.25
+      },
+      {
+        "name": "shell",
+        "result": "failed",
+        "seconds": 121.65
+      },
+      {
+        "name": "selection_bytes",
+        "result": "passed",
+        "seconds": 3.76
+      },
+      {
+        "name": "selection_context",
+        "result": "passed",
+        "seconds": 3.81
+      },
+      {
+        "name": "raw_console_receiver",
+        "result": "passed",
+        "seconds": 0.39
+      },
+      {
+        "name": "paste_system",
+        "result": "passed",
+        "seconds": 6.72
+      }
+    ],
+    "total": 56,
+    "passed": 54,
+    "failed": [
+      "candidate_shell_tui",
+      "shell"
+    ],
+    "seconds": 411.59,
+    "failure_stages": [
+      59
+    ],
+    "full_acceptance": false,
+    "last_test_log_sha256": "cc3f6814ba85db77091830cf20f54afcd66c5da826e6ccda539533dce7bbfc28",
+    "internal_skips": [
+      {
+        "test": "setUpClass (test_candidate_compare.CandidateComparisonTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_capability_matrix.CapabilityMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_fuzz_matrix.FuzzMatrixTests)",
+        "reason": "optional Alacritty binary is not built; core-candidate workflow runs these checks"
+      },
+      {
+        "test": "setUpClass (test_real_app_matrix.RealApplicationMatrixTests)",
+        "reason": "optional real application capture dependencies are not built"
+      },
+      {
+        "test": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice)",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM"
+      },
+      {
+        "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails)",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "test": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard)",
+        "reason": "system copy UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close)",
+        "reason": "product clipboard read gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver)",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice)",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard)",
+        "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified."
+      }
+    ],
+    "log_encoding_note": "CTest localized date header is not UTF-8; only ASCII skip fields are extracted. Raw log hash is preserved.",
+    "shell_unittest": {
+      "run": 40,
+      "passed": 36,
+      "errors": 1,
+      "skipped": 3,
+      "seconds": 121.382
+    },
+    "product_source_commit": "92eac12d5cd2868b469e8b9a10e68f5e20ee2cb0",
+    "shell_sha256": "15a149a3d7d47efaf866226559d4b60bbf83e0ff6004a85df41edcb5415ad206"
+  },
+  "vim_environment": {
+    "vim_sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+    "msys_sha256": "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f",
+    "initial_run": "Vim absent from process PATH; stage50 is not the original stage59.",
+    "isolated_intermediate": "Original two-round candidate_shell_tui passed once after process-only PATH fix, 6.95s.",
+    "full_intermediate": "Original stage59 reproduced in corrected full run; #52 remains open."
+  },
+  "workflow_issue": 87,
+  "workflow_comparison": [
+    {
+      "label": "baseline",
+      "shell_sha256": "e81d92a8c7d380d4c33639861180b04935e021bc7c1a5179197c8a9e3c83454a",
+      "exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "error": null,
+      "sample_sha256": "213eccd11e89c1e4bbd0e2261ad43cf42772ac7c880ffe13d2ad4c17b52f8dd6"
+    },
+    {
+      "label": "native_viewport",
+      "shell_sha256": "4e23e277ea7984d85856b713b3af5b0545d68042c2bbd42a8422f8a6b422c28d",
+      "exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "error": null,
+      "sample_sha256": "9aa0079ca1b0ee43e186bd91d633490b80ee16ffc57bcf68f96b5c602994fc56"
+    }
+  ],
+  "workflow_mismatches": [
+    {
+      "run": "run-89580b0cae404944b12e03e031dab1bd",
+      "bad": [
+        {
+          "cycle": 1,
+          "name": "F5",
+          "source_bytes": 16384,
+          "actual": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301............",
+          "expected": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301...................................",
+          "exact_prefix": true,
+          "output": {
+            "queued_bytes": 8217,
+            "high_water_bytes": 8217,
+            "stopped": false
+          }
+        },
+        {
+          "cycle": 1,
+          "name": "F5",
+          "source_bytes": 16384,
+          "actual": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301............",
+          "expected": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301...................................",
+          "exact_prefix": true,
+          "output": {
+            "queued_bytes": 8217,
+            "high_water_bytes": 8217,
+            "stopped": false
+          }
+        }
+      ]
+    },
+    {
+      "run": "run-8abb195e8f824858adbc0149ce1bbca6",
+      "bad": [
+        {
+          "cycle": 2,
+          "name": "F5",
+          "source_bytes": 16384,
+          "actual": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301............",
+          "expected": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301...................................",
+          "exact_prefix": true,
+          "output": {
+            "queued_bytes": 8217,
+            "high_water_bytes": 8217,
+            "stopped": false
+          }
+        },
+        {
+          "cycle": 2,
+          "name": "F5",
+          "source_bytes": 16384,
+          "actual": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301............",
+          "expected": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301...................................",
+          "exact_prefix": true,
+          "output": {
+            "queued_bytes": 8217,
+            "high_water_bytes": 8217,
+            "stopped": false
+          }
+        }
+      ]
+    },
+    {
+      "run": "run-9266bc270e244e05a0073d86f00ae8ae",
+      "bad": []
+    }
+  ],
+  "workflow_runs": [
+    {
+      "run": "run-3b821fd77c1c4e60870eeee8839d485d",
+      "validation_sha256": "b5bf6fe8e8dc71d8d9285378095ad9a542a74de68bf82ad4cbeafc1fb3ffae84",
+      "status": "passed",
+      "round": 1,
+      "sample_sha256": "915bfe48f290e082e1c461a167b1d5723217a0285de87d6597b0e2c830b99cf3",
+      "sessions_sha256": "0acec32f3af02cab9f89949382858ba19c121c1d1b6f8e0b1d06babc640bb39c",
+      "exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "shell_sha256": "15a149a3d7d47efaf866226559d4b60bbf83e0ff6004a85df41edcb5415ad206"
+    },
+    {
+      "run": "run-6515c0088c384c7c94542620ff12380b",
+      "validation_sha256": "450bd976cc67633db7b4a90aa28a3f818c9b188bc6281eb7fca0d3741cc553a1",
+      "status": "passed",
+      "round": 0,
+      "sample_sha256": "57c7f8bab95f8f98fa8b7dbae6110d18e68d4f73d1d689265c2b1fdc7e863e96",
+      "sessions_sha256": "e5d39eaf107c4dd112f52d1562ec6820033c356904975c4c72024100dac36b06",
+      "exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "shell_sha256": "15a149a3d7d47efaf866226559d4b60bbf83e0ff6004a85df41edcb5415ad206"
+    },
+    {
+      "run": "run-89580b0cae404944b12e03e031dab1bd",
+      "validation_sha256": "2de8f68846c3b76170acffe8bc3e717886d6f0f86b04af9405f9d58cf5df73f8",
+      "status": "failed",
+      "round": 0,
+      "sample_sha256": "3a5150e5e75ac3168080585af7865e1df631ec19d2b2a237f13be4a2e93e5e4f",
+      "sessions_sha256": "3d65a9c388ea43114b20bf3c6dc7da49825b54529e1eec25bdfc6107acfb2c97",
+      "exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "shell_sha256": "4e23e277ea7984d85856b713b3af5b0545d68042c2bbd42a8422f8a6b422c28d"
+    },
+    {
+      "run": "run-8abb195e8f824858adbc0149ce1bbca6",
+      "validation_sha256": "372adca843f92115d93a307240f58b30708e79c2700e29def8cceb179d508283",
+      "status": "failed",
+      "round": 1,
+      "sample_sha256": "74ceb06312732d0a38499149102f3f683f4a6f62a45961aeef8413ad6e0a20e9",
+      "sessions_sha256": "d4acc6bbc8f648732bf7e240d9f3613df82e1d4dbff4aa9a221363a122d6fcf2",
+      "exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "shell_sha256": "4e23e277ea7984d85856b713b3af5b0545d68042c2bbd42a8422f8a6b422c28d"
+    },
+    {
+      "run": "run-9266bc270e244e05a0073d86f00ae8ae",
+      "validation_sha256": "758bdc8ef0d865ad457bb898e14187751693d3c65b8240e15d2f3aa32a129083",
+      "status": "passed",
+      "round": 0,
+      "sample_sha256": "d669917b3065530eb1b65900b1ad86ef0b6a1f6bd186dc10cffa0bdddf8b1e0d",
+      "sessions_sha256": "8081ee0237b2d50a1450ff4c12c4a7824a955ccfde651d56eac659bd2935a2bc",
+      "exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "shell_sha256": "4e23e277ea7984d85856b713b3af5b0545d68042c2bbd42a8422f8a6b422c28d"
+    }
+  ],
+  "restore_stage1": {
+    "issue": 88,
+    "mode": "ui-workspace-restore",
+    "stage": 1,
+    "repeat": 1,
+    "files_sha256": {
+      "persistence-failure.json": "7ccb0a90b526462a929cbebce42debccfd97b54676e54e0935fbf292826b5e5b",
+      "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+      "sample.json": "5e546fb36ec65e2d2eb20e9d1047216be33dc8b17eaaa611d995686a1be7d620",
+      "workspace.layout": "660f3a4064006db91261100c6fb1e1d2fb82f73210575910a29880489dd0cdda"
+    },
+    "result": {
+      "exit_code": 2,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      }
+    },
+    "tabs": [
+      {
+        "group": "bottom",
+        "kind": "cmd",
+        "ready": 1,
+        "observation_enabled": 1,
+        "observed_bytes": 230,
+        "observed_sha256": "68fadc3fc45b9fbaab78b7e1a55987f5fdc11e9a2abdbe39fc65135556703017"
+      },
+      {
+        "group": "main",
+        "kind": "cmd",
+        "ready": 1,
+        "observation_enabled": 1,
+        "observed_bytes": 262,
+        "observed_sha256": "8db2595d8d8546bbb7bb7a6facf79ab72e8f88ee4ce6ec9cf255dbac8528013e"
+      },
+      {
+        "group": "main",
+        "kind": "powershell",
+        "ready": 1,
+        "observation_enabled": 1,
+        "observed_bytes": 4373,
+        "observed_sha256": "06d376c5709d01185a5696726e5ed2a412184b5e1df886ac948c1ac64b349f4c"
+      }
+    ],
+    "cause_confirmed": false,
+    "note": "Original transports contain output and prompts; bare CR in cmd echo is an unproved oracle hypothesis."
+  },
+  "excluded": [
+    {
+      "affected": [
+        "gui-restored-baseline",
+        "restored-replay"
+      ],
+      "validation_status": "invalid_source_binary_pair",
+      "reason": "Copy-Item retained the old source timestamp; incremental build reused the diagnostic static library and executables. Binary hashes matched the probe, not the restored source. Excluded from baseline comparisons.",
+      "recorded_utc": "2026-10-26T19:53:23.674551+00:00"
+    },
+    {
+      "calls": 174,
+      "elapsed_seconds": 2.6090000001713634,
+      "reduction_complete": true,
+      "bytes": 30,
+      "events": 2,
+      "transport_sha256": "060ed625d586f873039fb5c6f517b99a6b1ddcab9f854e568a0edcbec91b7da0",
+      "diagnostic_only": true,
+      "expected_symptom": "exact TF_SIZE_100x28OW",
+      "usable_causal_reduction": false,
+      "reason": "The reduction removed resize and constructed a legitimate overwrite. Symptom equality alone is insufficient; not a regression fixture."
+    }
+  ],
+  "limits": [
+    "Original GUI transport and private sample files remain local; only reviewed synthetic native cases are published.",
+    "Native microprobe does not reply to CPR; snapshots and bounded host query wait perturb timing.",
+    "Default/system, candidate/system and candidate/official evidence remain separate.",
+    "Final full run failed #52 Vim stage59 and #88 restore stage1; #87 earlier workflow failures remain unresolved.",
+    "This is a limited experimental resize fix; #29, #34 and full R2 acceptance remain open."
+  ],
+  "presented_done": null,
+  "windterm_runtime_equivalence": false,
+  "performance_acceptance": false,
+  "product_backend_selected": false,
+  "full_r2_verified": false
+}

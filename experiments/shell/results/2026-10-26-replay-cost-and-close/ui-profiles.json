@@ -1,0 +1,699 @@
+[
+  {
+    "run": "ui-run-2b18652f1a8841f5a097e28148ff0d34",
+    "sample": {
+      "mode": "ui-workflow-sessions",
+      "status": "failed",
+      "timed_out": false,
+      "exit_code": 2,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "error_kind": "ProbeFailure"
+    },
+    "data_only": true,
+    "system_clipboard": false,
+    "ime": false,
+    "checkpoints": [
+      {
+        "phase": "eight-ready",
+        "elapsed_ms": 579,
+        "cycle": 0
+      },
+      {
+        "phase": "reject-ninth",
+        "elapsed_ms": 583,
+        "cycle": 0
+      },
+      {
+        "phase": "load-started",
+        "elapsed_ms": 857,
+        "cycle": 0
+      },
+      {
+        "phase": "reading-before-append",
+        "elapsed_ms": 881,
+        "cycle": 0
+      },
+      {
+        "phase": "reading-after-append",
+        "elapsed_ms": 1130,
+        "cycle": 0
+      },
+      {
+        "phase": "search-running",
+        "elapsed_ms": 1392,
+        "cycle": 0
+      },
+      {
+        "phase": "find-complete",
+        "elapsed_ms": 11461,
+        "cycle": 0
+      },
+      {
+        "phase": "foreground-input",
+        "elapsed_ms": 11678,
+        "cycle": 0
+      },
+      {
+        "phase": "zoom-75",
+        "elapsed_ms": 11894,
+        "cycle": 0
+      },
+      {
+        "phase": "switch-zoom",
+        "elapsed_ms": 12152,
+        "cycle": 0
+      },
+      {
+        "phase": "history-evicted",
+        "elapsed_ms": 12611,
+        "cycle": 0
+      },
+      {
+        "phase": "paste-cancel-pending",
+        "elapsed_ms": 13775,
+        "cycle": 0
+      },
+      {
+        "phase": "paste-cancelled",
+        "elapsed_ms": 14486,
+        "cycle": 0
+      },
+      {
+        "phase": "background-complete",
+        "elapsed_ms": 50071,
+        "cycle": 0
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 50552,
+        "cycle": 1
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 51912,
+        "cycle": 1
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 52683,
+        "cycle": 2
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 54041,
+        "cycle": 2
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 54799,
+        "cycle": 3
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 56168,
+        "cycle": 3
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 56961,
+        "cycle": 4
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 58253,
+        "cycle": 4
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 58889,
+        "cycle": 5
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 60200,
+        "cycle": 5
+      },
+      {
+        "phase": "paste-close-pending",
+        "elapsed_ms": 60724,
+        "cycle": 5
+      }
+    ],
+    "paste_cases": [
+      {
+        "name": "cancel",
+        "target": 1,
+        "total": 3000000,
+        "before_sent": 17391,
+        "before_accepted": 18414,
+        "accepted": 18414,
+        "sent": 18414,
+        "in_flight": 0,
+        "retained_capacity": 15,
+        "state": "cancelled",
+        "checkpoint_bytes": 768,
+        "received": 18414,
+        "flood_observed": true,
+        "fence": {
+          "generation": 1,
+          "held": true,
+          "owned_bytes": 1023,
+          "wait_finished": true,
+          "other_responsive": true,
+          "exit": "cancelled",
+          "final_state": "cancelled",
+          "wrong_generation_rejected": true
+        }
+      },
+      {
+        "name": "close",
+        "target": 1,
+        "total": 3000000,
+        "before_sent": 17391,
+        "before_accepted": 18414,
+        "accepted": 18414,
+        "sent": 18414,
+        "in_flight": 0,
+        "retained_capacity": 15,
+        "state": "cancelled",
+        "checkpoint_bytes": 768,
+        "received": 768,
+        "flood_observed": true,
+        "fence": {
+          "generation": 2,
+          "held": true,
+          "owned_bytes": 1023,
+          "wait_finished": true,
+          "other_responsive": true,
+          "exit": "cancelled",
+          "final_state": "stopped",
+          "wrong_generation_rejected": true
+        }
+      }
+    ],
+    "raw_sha256": {
+      "cancel.bin": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6",
+      "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+      "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+      "close.bin.before.json": "42d48c9b60c19059b0fd753b871521787ece886f5976aef804fe05baa7db1584",
+      "identity.json": "bd2605c691401cbaba684f8b3dbf8d5ec4d87004dc5cc2a99043dd7137e0bd05",
+      "resource-phases.jsonl": "eb0a3de3035663d0086328cc52f98dac18a5e553f64197057a516169a4be56f3",
+      "sample.json": "7159224e988be562a77cbad22953c4bb2ef47b7ccc19ac9593c037630bde513e",
+      "sessions.json": "6ef9405ea3055273463e9d72fa467f7df9e9c4459dffb7a203a061c7dbaa3e94",
+      "ui-phases.json": "6644c6534aa391b9bd4bf2a6c344c4e8d9d1548c4c2fc3656e589b8a61809997",
+      "workspace.layout": "9a96d62943f54727e7c50ce5785a571efbfa6cbece6248f6a6d144257c1e1d58"
+    },
+    "observed_failure": "workflow sessions scenario timeout at stage 45",
+    "instrumentation": {
+      "phases": [
+        "whole_tick",
+        "parser_feed",
+        "search_changed",
+        "publish",
+        "poll_find",
+        "shell_scenario",
+        "shell_paint",
+        "workflow_scenario",
+        "workflow_checkpoint",
+        "workspace_paint"
+      ],
+      "source": {
+        "experiments/shell/shell.cpp": {
+          "original": "b369968152bbff107c699181d4e23f271e62a5732f0c41793159b3efc3609321",
+          "instrumented": "0e0cfbd952c37d05a0333bd79662ead2777dd19db220f08993a762437cb9bb77"
+        },
+        "experiments/shell/search_interactions.hpp": {
+          "original": "75f1ac520dc3070efba2d01812bf56c29e8683540196956423b0984c42d7b181",
+          "instrumented": "b337e56639d273b45faca154ed20830157991b6e158834e3c377a1a74c6f4b55"
+        },
+        "experiments/shell/workspace_workflow_scenario.hpp": {
+          "original": "467571556440f4e89305bc1261d389bb8f24ba84f607b8cd36b8078a58314369",
+          "instrumented": "2a95c33f6b6212f61c8217fd55298b16ca90209f8b9cd972e7dc135e94fc4c57"
+        },
+        "experiments/shell/workspace.hpp": {
+          "original": "5669a13701b2fe60e8bd567a122edb970bdc4aadcb98ceb3927905f0c000275e",
+          "instrumented": "9cbe9e5db3529e578eec705307d9cab23035623b3f46ac9d14d6838f7ab7c61e"
+        }
+      },
+      "original_exe": "0a1fee632cb640dff4599fdcca277c959038d31ec88bfed8cff893b3271d26a6",
+      "instrumented_exe": "babd7b24d89ae970f614c6d4b6090054db9df3a40dfbcbdcadaf53b5b2e79f24",
+      "resources": false
+    },
+    "phase_wall_times": {
+      "phases": [
+        {
+          "id": 0,
+          "ns": 64631951400,
+          "max_ns": 55502600,
+          "count": 4896
+        },
+        {
+          "id": 1,
+          "ns": 64079457000,
+          "max_ns": 55183600,
+          "count": 1771
+        },
+        {
+          "id": 2,
+          "ns": 335900,
+          "max_ns": 24500,
+          "count": 1806
+        },
+        {
+          "id": 3,
+          "ns": 500625100,
+          "max_ns": 8645600,
+          "count": 1958
+        },
+        {
+          "id": 4,
+          "ns": 73427600,
+          "max_ns": 9092300,
+          "count": 4896
+        },
+        {
+          "id": 5,
+          "ns": 745500,
+          "max_ns": 20500,
+          "count": 4754
+        },
+        {
+          "id": 6,
+          "ns": 1053698100,
+          "max_ns": 10532400,
+          "count": 233
+        },
+        {
+          "id": 7,
+          "ns": 1137670500,
+          "max_ns": 268286300,
+          "count": 611
+        },
+        {
+          "id": 8,
+          "ns": 157240300,
+          "max_ns": 17637500,
+          "count": 25
+        },
+        {
+          "id": 9,
+          "ns": 160054100,
+          "max_ns": 40076700,
+          "count": 48
+        }
+      ]
+    },
+    "limitations": [
+      "nested inclusive wall timers; do not add phases",
+      "instrumentation overhead",
+      "resource sampler disabled for diagnosis",
+      "shared host; not formal R54 samples",
+      "no actual presented endpoint; no user-approved performance tolerance"
+    ]
+  },
+  {
+    "run": "ui-run-82b1582d98de4cc1bd659c481ee99cfa",
+    "sample": {
+      "mode": "ui-workflow-sessions",
+      "status": "failed",
+      "timed_out": false,
+      "exit_code": 2,
+      "job_after": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 77,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "error_kind": "ProbeFailure"
+    },
+    "data_only": true,
+    "system_clipboard": false,
+    "ime": false,
+    "checkpoints": [
+      {
+        "phase": "eight-ready",
+        "elapsed_ms": 603,
+        "cycle": 0
+      },
+      {
+        "phase": "reject-ninth",
+        "elapsed_ms": 606,
+        "cycle": 0
+      },
+      {
+        "phase": "load-started",
+        "elapsed_ms": 839,
+        "cycle": 0
+      },
+      {
+        "phase": "reading-before-append",
+        "elapsed_ms": 870,
+        "cycle": 0
+      },
+      {
+        "phase": "reading-after-append",
+        "elapsed_ms": 1104,
+        "cycle": 0
+      },
+      {
+        "phase": "search-running",
+        "elapsed_ms": 1350,
+        "cycle": 0
+      },
+      {
+        "phase": "find-complete",
+        "elapsed_ms": 11017,
+        "cycle": 0
+      },
+      {
+        "phase": "foreground-input",
+        "elapsed_ms": 11226,
+        "cycle": 0
+      },
+      {
+        "phase": "zoom-75",
+        "elapsed_ms": 11434,
+        "cycle": 0
+      },
+      {
+        "phase": "switch-zoom",
+        "elapsed_ms": 11664,
+        "cycle": 0
+      },
+      {
+        "phase": "history-evicted",
+        "elapsed_ms": 12079,
+        "cycle": 0
+      },
+      {
+        "phase": "paste-cancel-pending",
+        "elapsed_ms": 13120,
+        "cycle": 0
+      },
+      {
+        "phase": "paste-cancelled",
+        "elapsed_ms": 14002,
+        "cycle": 0
+      },
+      {
+        "phase": "background-complete",
+        "elapsed_ms": 47021,
+        "cycle": 0
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 47482,
+        "cycle": 1
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 48797,
+        "cycle": 1
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 49478,
+        "cycle": 2
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 50760,
+        "cycle": 2
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 51410,
+        "cycle": 3
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 52749,
+        "cycle": 3
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 53355,
+        "cycle": 4
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 54707,
+        "cycle": 4
+      },
+      {
+        "phase": "cycle-six",
+        "elapsed_ms": 55349,
+        "cycle": 5
+      },
+      {
+        "phase": "cycle-eight",
+        "elapsed_ms": 56623,
+        "cycle": 5
+      },
+      {
+        "phase": "paste-close-pending",
+        "elapsed_ms": 57079,
+        "cycle": 5
+      }
+    ],
+    "paste_cases": [
+      {
+        "name": "cancel",
+        "target": 1,
+        "total": 3000000,
+        "before_sent": 17391,
+        "before_accepted": 18414,
+        "accepted": 18414,
+        "sent": 18414,
+        "in_flight": 0,
+        "retained_capacity": 15,
+        "state": "cancelled",
+        "checkpoint_bytes": 768,
+        "received": 18414,
+        "flood_observed": true,
+        "fence": {
+          "generation": 1,
+          "held": true,
+          "owned_bytes": 1023,
+          "wait_finished": true,
+          "other_responsive": true,
+          "exit": "cancelled",
+          "final_state": "cancelled",
+          "wrong_generation_rejected": true
+        }
+      },
+      {
+        "name": "close",
+        "target": 1,
+        "total": 3000000,
+        "before_sent": 17391,
+        "before_accepted": 18414,
+        "accepted": 18414,
+        "sent": 18414,
+        "in_flight": 0,
+        "retained_capacity": 15,
+        "state": "cancelled",
+        "checkpoint_bytes": 768,
+        "received": 768,
+        "flood_observed": true,
+        "fence": {
+          "generation": 2,
+          "held": true,
+          "owned_bytes": 1023,
+          "wait_finished": true,
+          "other_responsive": true,
+          "exit": "cancelled",
+          "final_state": "stopped",
+          "wrong_generation_rejected": true
+        }
+      }
+    ],
+    "raw_sha256": {
+      "cancel.bin": "bcc3593351da0137a27071da66416a7cbe02ca5605f49b14e5a6c85ebac894a6",
+      "cancel.bin.before.json": "a90746e62c8e815c76305806dfff25d55dd34d67f54308b0c865152693425663",
+      "close.bin": "61da7e55d911305206ae68ac162a0a73d2fc1433efae5f0cfda2b9d0c9b5363c",
+      "close.bin.before.json": "42d48c9b60c19059b0fd753b871521787ece886f5976aef804fe05baa7db1584",
+      "identity.json": "7dc04a9a23392081f4b638214f91063c0a4b1704727470d1d14394d37aa97cde",
+      "resource-phases.jsonl": "0ed18c34974f8bf7e8d3e20949384e52b911672723293df5a3acf8c036cfb646",
+      "sample.json": "4d3fdb3f0561f468199900f2dfaaf4ed980cc1bdcdb9a1fa2db249676c170bbc",
+      "sessions.json": "1197f7ec3928c0dd08d8497610fe95b5171aa96559e9058e4ce1669f2fdc86cf",
+      "ui-phases.json": "cf363bd31befa7c37a6495591d630b1f0b9b164c07b1a9baa7871f6b1032aae4",
+      "workspace.layout": "9a96d62943f54727e7c50ce5785a571efbfa6cbece6248f6a6d144257c1e1d58"
+    },
+    "observed_failure": "workflow sessions scenario timeout at stage 45",
+    "instrumentation": {
+      "phases": [
+        "whole_tick",
+        "parser_feed",
+        "search_changed",
+        "publish",
+        "poll_find",
+        "shell_scenario",
+        "shell_paint",
+        "workflow_scenario",
+        "workflow_checkpoint",
+        "workspace_paint",
+        "core_feed",
+        "scan_replay",
+        "synchronize",
+        "cell_export",
+        "reconcile_replay",
+        "merge_history",
+        "versions_copy"
+      ],
+      "source": {
+        "experiments/shell/shell.cpp": {
+          "original": "b369968152bbff107c699181d4e23f271e62a5732f0c41793159b3efc3609321",
+          "instrumented": "0e0cfbd952c37d05a0333bd79662ead2777dd19db220f08993a762437cb9bb77"
+        },
+        "experiments/shell/search_interactions.hpp": {
+          "original": "75f1ac520dc3070efba2d01812bf56c29e8683540196956423b0984c42d7b181",
+          "instrumented": "b337e56639d273b45faca154ed20830157991b6e158834e3c377a1a74c6f4b55"
+        },
+        "experiments/shell/workspace_workflow_scenario.hpp": {
+          "original": "467571556440f4e89305bc1261d389bb8f24ba84f607b8cd36b8078a58314369",
+          "instrumented": "2a95c33f6b6212f61c8217fd55298b16ca90209f8b9cd972e7dc135e94fc4c57"
+        },
+        "experiments/shell/workspace.hpp": {
+          "original": "5669a13701b2fe60e8bd567a122edb970bdc4aadcb98ceb3927905f0c000275e",
+          "instrumented": "9cbe9e5db3529e578eec705307d9cab23035623b3f46ac9d14d6838f7ab7c61e"
+        },
+        "experiments/core/candidate_terminal.cpp": {
+          "original": "0d0eaabe5ef896aa7b263c8151622f579f37c421bf9473fc3d69ada010a64e61",
+          "instrumented": "5138c797086f84f584a254894004286257a1434bf2903ffcafd3751acb60ebba"
+        }
+      },
+      "original_exe": "0a1fee632cb640dff4599fdcca277c959038d31ec88bfed8cff893b3271d26a6",
+      "instrumented_exe": "23b92b9087d836947bf848da3de7e04f624bada0c6ca6284690ea63719b6668f",
+      "resources": false
+    },
+    "phase_wall_times": {
+      "phases": [
+        {
+          "id": 0,
+          "ns": 64458192200,
+          "max_ns": 56417700,
+          "count": 5278
+        },
+        {
+          "id": 1,
+          "ns": 63986560900,
+          "max_ns": 56035900,
+          "count": 1892
+        },
+        {
+          "id": 2,
+          "ns": 449600,
+          "max_ns": 17600,
+          "count": 1922
+        },
+        {
+          "id": 3,
+          "ns": 432217300,
+          "max_ns": 3678600,
+          "count": 2074
+        },
+        {
+          "id": 4,
+          "ns": 52400300,
+          "max_ns": 4067000,
+          "count": 5278
+        },
+        {
+          "id": 5,
+          "ns": 787000,
+          "max_ns": 88700,
+          "count": 5137
+        },
+        {
+          "id": 6,
+          "ns": 958451800,
+          "max_ns": 11927600,
+          "count": 233
+        },
+        {
+          "id": 7,
+          "ns": 1086472600,
+          "max_ns": 239174200,
+          "count": 671
+        },
+        {
+          "id": 8,
+          "ns": 149742300,
+          "max_ns": 18294300,
+          "count": 25
+        },
+        {
+          "id": 9,
+          "ns": 141821100,
+          "max_ns": 21889600,
+          "count": 48
+        },
+        {
+          "id": 10,
+          "ns": 559755900,
+          "max_ns": 3343000,
+          "count": 1892
+        },
+        {
+          "id": 11,
+          "ns": 4690100,
+          "max_ns": 51400,
+          "count": 1892
+        },
+        {
+          "id": 12,
+          "ns": 63419742700,
+          "max_ns": 55759500,
+          "count": 1892
+        },
+        {
+          "id": 13,
+          "ns": 2031090200,
+          "max_ns": 7882100,
+          "count": 1930
+        },
+        {
+          "id": 14,
+          "ns": 60905226900,
+          "max_ns": 54182500,
+          "count": 1930
+        },
+        {
+          "id": 15,
+          "ns": 317300,
+          "max_ns": 3000,
+          "count": 1930
+        },
+        {
+          "id": 16,
+          "ns": 363684200,
+          "max_ns": 3660300,
+          "count": 1930
+        }
+      ]
+    },
+    "limitations": [
+      "nested inclusive wall timers; do not add phases",
+      "instrumentation overhead",
+      "resource sampler disabled for diagnosis",
+      "shared host; not formal R54 samples",
+      "no actual presented endpoint; no user-approved performance tolerance"
+    ]
+  }
+]

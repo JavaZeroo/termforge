@@ -1,0 +1,1032 @@
+{
+  "schema": 1,
+  "issue": 87,
+  "source_commit": "c662011616a0498e0fbd6af8019f5f3cc03fdcaa",
+  "base_commit": "6b365b3cae9fbbfbb25f19a716d4fe85bcb0c04b",
+  "configuration": "candidate termforge.5 / explicit official ConPTY 1.25.260930003 / flags24",
+  "windows": "10.0.26200",
+  "identity": {
+    "source_commit": "c662011616a0498e0fbd6af8019f5f3cc03fdcaa",
+    "after_successful_build_utc": "2026-10-26T22:29:38.710131+00:00",
+    "diagnostic_instrumentation": false,
+    "files_sha256": {
+      "CMakeLists.txt": "8a0e3f86981e91fd6482b590669ccc4adb571a359bd265b3dc98aee59a7b92f2",
+      "experiments/shell/shell.cpp": "b4f6fe98812d1d23fa5f5bbcc7376437404af6cdb67cd6cdcdf448b57cb31fe9",
+      "experiments/shell/output_record_checkpoint.hpp": "b4925aadf2e29d8bf44c1d0101143ead51dadf58fd1bb681ad4af8f3c008fa69",
+      "experiments/shell/workflow_checkpoint.hpp": "34ddd734ff6ab81ae39194d9231a162dbe2069eb2c7bad81a9f15d028be92369",
+      "experiments/shell/workflow_checkpoint_test.cpp": "f4d670707a251285be37546c7be1c8e6668bf5087414ae7e415cbb5b510bc8af",
+      "experiments/shell/runtime_observation_test.cpp": "3a262672b6e28d326d1765ba7488940aadd8edaffaee47314ec27368ba56f98b",
+      "experiments/shell/workspace_workflow_scenario.hpp": "d70ec033c24fc8763996181bb30da7acc7a069cba4f527440fb9356c21fb2d7b",
+      "experiments/shell/workflow_scenario_state.hpp": "2627160b91fb468616dd3ec1cee289bf021771b63c8708e1989b6a2964995e3f",
+      "experiments/shell/workflow_fixture.hpp": "332d73699320a6f503fc212417a4d3820b82cc2d3feb3d1fffe3930660d57453",
+      "experiments/shell/workflow_sessions_checks.py": "b976d3504837eef57ff13319daed254870727741f36f265412a6b14b4cb3faae",
+      "experiments/shell/test_workflow_sessions.py": "6c968a443c46b30e75a929f880228e6a23bf2b92d9221bbbf18816933babd6e7",
+      "experiments/shell/run.py": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d",
+      "build/candidate/bin/Release/termforge_shell.exe": "941ef34db129282a26625d8bad4fd663c4284fe3307802907366299ab04f31c4",
+      "build/candidate/bin/Release/workflow_checkpoint_test.exe": "056047580e8ddd77224908667297a0b704f97ef57d1eadeb382b52c7c7875b86",
+      "build/candidate/bin/Release/runtime_observation_test.exe": "0049a0d863724bf8bd181c85868bd68a409eb5e12c755a5538add5f85bf8b0bf",
+      "build/candidate/bin/Release/shell_text_client.exe": "9350e53de74c9a6b78495a3b59788e3a31e0067a9c5ec1b8685a729ff18244d3",
+      "build/candidate/bin/Release/shell_test_launcher.exe": "7bd78cffd78ac66d651933c9614d6be937c99baa105ce04c1a533df5785c11e2",
+      "vim.exe": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a"
+    }
+  },
+  "source_hash_policy": "SHA256 of on-disk compilation inputs; Windows checkout line endings retained.",
+  "candidate_dependency_sha256": {
+    "experiments/candidates/alacritty/Cargo.lock": "f7b8906cc63b6a5d66943f15c50a78c51f773face60229fcddf24b2d02911736",
+    "experiments/candidates/alacritty/target/release/termforge_alacritty_core.lib": "f2461f024d8b3002ca6bb872b409e1dadb34eff6fc92892108cfd18b3aece807"
+  },
+  "backend": {
+    "version": "1.25.260930003",
+    "source_commit": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+    "package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "configured_creation_flags": 24
+  },
+  "workload": {
+    "fixture": "r108-console-v1",
+    "records": 32000,
+    "source_bytes": 2048000,
+    "block_bytes": 4096,
+    "block_delay_ms": 20,
+    "replacement_cycles": 5,
+    "scenario_deadline_ms": 70000,
+    "runner_timeout_seconds": 90,
+    "ctest_timeout_seconds": 300,
+    "python_oracle_changed": false
+  },
+  "original_failures": {
+    "prior_artifact": "experiments/conpty/results/2026-10-27-native-viewport-resize/validation.json",
+    "product_source": "57f24f5",
+    "shell_sha256": "4e23e277ea7984d85856b713b3af5b0545d68042c2bbd42a8422f8a6b422c28d",
+    "mismatches": [
+      {
+        "run": "run-89580b0cae404944b12e03e031dab1bd",
+        "bad": [
+          {
+            "cycle": 1,
+            "name": "F5",
+            "source_bytes": 16384,
+            "actual": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301............",
+            "expected": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301...................................",
+            "exact_prefix": true,
+            "output": {
+              "queued_bytes": 8217,
+              "high_water_bytes": 8217,
+              "stopped": false
+            }
+          },
+          {
+            "cycle": 1,
+            "name": "F5",
+            "source_bytes": 16384,
+            "actual": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301............",
+            "expected": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301...................................",
+            "exact_prefix": true,
+            "output": {
+              "queued_bytes": 8217,
+              "high_water_bytes": 8217,
+              "stopped": false
+            }
+          }
+        ]
+      },
+      {
+        "run": "run-8abb195e8f824858adbc0149ce1bbca6",
+        "bad": [
+          {
+            "cycle": 2,
+            "name": "F5",
+            "source_bytes": 16384,
+            "actual": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301............",
+            "expected": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301...................................",
+            "exact_prefix": true,
+            "output": {
+              "queued_bytes": 8217,
+              "high_water_bytes": 8217,
+              "stopped": false
+            }
+          },
+          {
+            "cycle": 2,
+            "name": "F5",
+            "source_bytes": 16384,
+            "actual": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301............",
+            "expected": "TF_R108_F5_00127 \u4e2d\u6587 e\u0301...................................",
+            "exact_prefix": true,
+            "output": {
+              "queued_bytes": 8217,
+              "high_water_bytes": 8217,
+              "stopped": false
+            }
+          }
+        ]
+      },
+      {
+        "run": "run-9266bc270e244e05a0073d86f00ae8ae",
+        "bad": []
+      }
+    ],
+    "offline_validator": [
+      {
+        "run": "run-89580b0cae404944b12e03e031dab1bd",
+        "error": "replacement core payload/role mismatch",
+        "seconds": 0.6168144999537617
+      },
+      {
+        "run": "run-8abb195e8f824858adbc0149ce1bbca6",
+        "error": "replacement core payload/role mismatch",
+        "seconds": 0.5770988999865949
+      }
+    ],
+    "original_native_continuation_available": false
+  },
+  "initial_live_observation": {
+    "identity": {
+      "base_commit": "f2ea8d2f5851724bedeb13344ee4681c7b092691",
+      "diagnostic_only": true,
+      "build_completed_before_test_utc": "2026-10-26T21:36:40.942995+00:00",
+      "sha256": {
+        "experiments/shell/shell.cpp": "1154c7eeaa2ae32c36958ef3f04446778bb59ec3802c3fcfb9508ac9731fe0b4",
+        "experiments/shell/workspace_workflow_scenario.hpp": "7ec62dda236dbb189a6922d2c7d4ec1ba9eca379b2e76b816ac3d58731c252b5",
+        "build/candidate/bin/Release/termforge_shell.exe": "74efba3d16080fc74ae2a8793083d3612e445ebb91eab4006ee28d28b07cec0a"
+      }
+    },
+    "runs": [
+      {
+        "sample_sha256": "37dc6911b059f25c708e2c7beba6d37d9eb2a508e2dbd53e8fa69295f9c56884",
+        "sessions_sha256": "3846b6d9a1570dafd7cc13f302d6ce6a684765aa62a0685439c32b761b20da12",
+        "lifecycle": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 77,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 77,
+            "terminated": 0
+          }
+        }
+      },
+      {
+        "sample_sha256": "f0af6eef429ef1f4f00d606916ce3995cc1dd42004c57fcc79fe4c22b3edaaff",
+        "sessions_sha256": "6b631bad7a48dd82fa5e50004d5b066db1f6d5af0bb3a193ec286e27093cf245",
+        "lifecycle": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 77,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 77,
+            "terminated": 0
+          }
+        }
+      },
+      {
+        "sample_sha256": "a6d5d75585a618cfcd4e53cf034c744533f701689530f2f413844afa146a4640",
+        "sessions_sha256": "babe9f73ce179f11564225e9b06d9f564d14115f625e474628afc197ce8b7b9b",
+        "lifecycle": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 77,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 77,
+            "terminated": 0
+          }
+        }
+      },
+      {
+        "sample_sha256": "ff1b5ecd829ca68959c881806681af160513a17cb6ffeb2d7b09e518d82be1d0",
+        "sessions_sha256": "1c41e39aa93e60a8c75f7aa88cc5579daea96f8d6f479ca7cbafffa2e0ca8156",
+        "lifecycle": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 77,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 77,
+            "terminated": 0
+          }
+        }
+      }
+    ],
+    "half_row_captured": false
+  },
+  "repartition": {
+    "transport_sha256": "f7c5134e5779bd946460d01c0db43b4ee53819261da701b031bb9a17a901b725",
+    "same_real_bytes": true,
+    "partition_changed": true,
+    "gui_timing_reproduced": false,
+    "remaining_25_bytes_hex": "2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e0d0a",
+    "partial_dots": 12,
+    "final_dots": 35,
+    "prefix_state_offset": 11032,
+    "final_state_offset": 11057,
+    "raw_cell_lines": [
+      "TF_R108_F5_00127 \u4e2d \u6587  e\u0301............",
+      "TF_R108_F5_00127 \u4e2d \u6587  e\u0301..................................."
+    ],
+    "note": "Screen JSON includes explicit width-0 spacer cells; these are not user text. GUI raw snapshots used canonical project_line."
+  },
+  "core_regression": {
+    "red_test_source_sha256": "50b4c17d494695b50d65f3f52f0c2dfb458feb1509989579627f52225c2e0aeb",
+    "red_helper_sha256": "c5efe3d91748921292090f212e32f62a252053bb2ca7d5abe76be4c530e0e8f3",
+    "red_executable_sha256": "76a92dda8f6bfa025f3d50e1e43d65889c569c83688fc8be0d6b5124e47c546f",
+    "red_log_sha256": "df03de6cb3deec3b3df505c58e1f89347bddfcb9dda3b960e2fbf50af18438c3",
+    "red_error": "numbered prefix must not admit an unfinished consumer row",
+    "both_cores_failed_before": true,
+    "final_test_passed": true,
+    "note": "Original 8192/8217 trigger retained. Final test additionally covers active hold/release, readiness negatives and bounds; entire red/final test sources differ."
+  },
+  "rejected_passive_wait": {
+    "identity": {
+      "source_commit": "51ad19dc5b4f829046b41f360b1428aa4ee0d37e",
+      "diagnostic_only": true,
+      "build_completed_before_test_utc": "2026-10-26T21:57:55.185445+00:00",
+      "files_sha256": {
+        "experiments/shell/shell.cpp": "b0c769769614fb56d91528a5cfdf96938f2557d4c1c591e43d971a151666e836",
+        "experiments/shell/workspace_workflow_scenario.hpp": "ecfa477b8b47e68f3c14782a885cb9f3ec217cae91bf33b0cca6a1d405674503",
+        "build/candidate/bin/Release/termforge_shell.exe": "6792f6eacb3100f2da98f8a6c29e9e2125becf29d0760a9e32a815ea02f89a8e"
+      }
+    },
+    "results": [
+      {
+        "policy": "old",
+        "error": "replacement core payload/role mismatch",
+        "checked": null,
+        "exit_code": 0,
+        "timed_out": false,
+        "desktop_gone": true,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        }
+      },
+      {
+        "policy": "fixed",
+        "error": "replacement output not active",
+        "checked": null,
+        "exit_code": 0,
+        "timed_out": false,
+        "desktop_gone": true,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        }
+      }
+    ],
+    "log_sha256": "5a0f3c61bcdf00977bd26332e17758955282a96b34d6f4dd31145e14ba1d0102",
+    "error": "replacement output not active",
+    "usable_for_acceptance": false
+  },
+  "controlled_gui": {
+    "identity": {
+      "source_commit": "51ad19dc5b4f829046b41f360b1428aa4ee0d37e",
+      "diagnostic_only": true,
+      "uncommitted_record_checkpoint": true,
+      "build_completed_before_test_utc": "2026-10-26T22:14:07.691106+00:00",
+      "files_sha256": {
+        "experiments/shell/shell.cpp": "eb8cd8a7f7548756fd529b8f6443b69151f605837760ca23e3d99198fe467438",
+        "experiments/shell/workspace_workflow_scenario.hpp": "757693dae0eff8eb093a16360136893bdfdce3b533d672eedc1de8f770ca2e7d",
+        "experiments/shell/output_record_checkpoint.hpp": "b4925aadf2e29d8bf44c1d0101143ead51dadf58fd1bb681ad4af8f3c008fa69",
+        "experiments/shell/workflow_checkpoint.hpp": "34ddd734ff6ab81ae39194d9231a162dbe2069eb2c7bad81a9f15d028be92369",
+        "experiments/shell/workflow_checkpoint_test.cpp": "f4d670707a251285be37546c7be1c8e6668bf5087414ae7e415cbb5b510bc8af",
+        "build/candidate/bin/Release/termforge_shell.exe": "8ca1957989d43941a67e38593f240a7bf651b145b78ca0918813d23de6c825bd"
+      }
+    },
+    "same_diagnostic_executable": true,
+    "diagnostic_patch_sha256": "809c19056e30bc26dd810af81a65fe5220e5fc95ad8af96ddc156b20ec96d0de",
+    "cases": [
+      {
+        "mode": "old",
+        "record": 117,
+        "partial": "TF_R108_F5_00117 \u4e2d\u6587 e",
+        "generation": 10,
+        "source_bytes_at_checkpoint": 32768,
+        "output_done": false,
+        "fixture_running": true,
+        "raw_core_cell_rows": [
+          "TF_R108_F5_00117 \u4e2d \u6587  e",
+          "TF_R108_F5_00117 \u4e2d \u6587  e\u0301..................................."
+        ],
+        "same_session_continuation": true,
+        "native_prefix_preserved": true,
+        "actual_suffix_bytes": 39,
+        "held_cursor": [
+          6,
+          23
+        ],
+        "checkpoint_cursor": [
+          6,
+          23
+        ],
+        "held_transport_sha256": "49f4051e5f5f0c47fc955f2d0d94ac19a2224a2f5005dac34bed217a90374f7e",
+        "continued_transport_sha256": "d13c8002fabf72bccc837a892f546af898e924e7560f95c3d32ccc7e6f06425b",
+        "trace_overflow": {
+          "held": {
+            "events_overflow": false,
+            "transport_overflow": false
+          },
+          "checkpoint": {
+            "events_overflow": false,
+            "transport_overflow": false
+          },
+          "collected": {
+            "events_overflow": false,
+            "transport_overflow": false
+          }
+        },
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_error": "replacement core payload/role mismatch",
+        "source_sha256": "693dacfd941aefbb0b2379d44ec1d5492536611af9fd5b83c49642c65bcc56bb",
+        "sample_sha256": "faa3bea07e0092773dc66d925d85e644f36aefc1fc50eb1e9175885c3cb1568a",
+        "sessions_sha256": "b32e1e3d3ee3cb8164c124c9f42bbc635a25c8071ffd0b3fbb31068156a6e690",
+        "consumer_snapshots_sha256": {
+          "held": "7ddb00077095a97ae3950834fd4f432cd0fcd33d706b2b353a96a19e512dc04e",
+          "checkpoint": "1e979b605d3ef65ec7816409da7eb9fb2b80c2abda87047bcd77c45871d3a608",
+          "collected": "051f2a6058c23a03fe057a76f5078a87bd91ba74da2f918476f9621cfc321b31"
+        },
+        "replay_sha256": "1b96eb77b7e7ec0c220349c7b4dc2496bd3bf2485d4610fa0cda04bccd929906"
+      },
+      {
+        "mode": "new",
+        "record": 117,
+        "partial": "TF_R108_F5_00117 \u4e2d\u6587",
+        "generation": 10,
+        "source_bytes_at_checkpoint": 241664,
+        "output_done": false,
+        "fixture_running": true,
+        "raw_core_cell_rows": [
+          "TF_R108_F5_00117 \u4e2d \u6587",
+          "TF_R108_F5_00117 \u4e2d \u6587  e\u0301..................................."
+        ],
+        "same_session_continuation": true,
+        "native_prefix_preserved": true,
+        "actual_suffix_bytes": 41,
+        "held_cursor": [
+          6,
+          21
+        ],
+        "checkpoint_cursor": [
+          6,
+          0
+        ],
+        "held_transport_sha256": "fe9c9fbb43fda939d2ea77e0c189dcc8ef6924aa0bf24b9ab8d733ccfb7bed99",
+        "continued_transport_sha256": "f31909f03efe242ab80365c59630cdcaf48612493a1e19ff0c64e600a43582ff",
+        "trace_overflow": {
+          "held": {
+            "events_overflow": false,
+            "transport_overflow": false
+          },
+          "checkpoint": {
+            "events_overflow": false,
+            "transport_overflow": false
+          },
+          "collected": {
+            "events_overflow": false,
+            "transport_overflow": true
+          }
+        },
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_error": null,
+        "source_sha256": "0c9ad5475733cff134f0372a4e9ef9348dec984b07d9e639741165750149cb90",
+        "sample_sha256": "7e0b9a8f32f40b64ac7d23d65f77757e759be53c053b65b29b6b860692adc9a7",
+        "sessions_sha256": "953c44c025631475b6cf8856fd632ec2d60f9409c4c9baf56bdc37e5c0b5ef9d",
+        "consumer_snapshots_sha256": {
+          "held": "f5806a2dd48560e4886b3dd7c8918259532781dd3ce19316c9a2d687aa273243",
+          "checkpoint": "e11551cb7501f13591f38a989f661e76b8feb69db9a8a9363797ba7b1d794d90",
+          "collected": "bf229d4ab212b4de45cc1082862705b3ce05fadb08889ea0a99b3f03540dbf63"
+        },
+        "replay_sha256": "f97529bca6dbd1cbfd393ec92fa668e6bc06b7fdd88a4e73954c94a131cbbb72"
+      }
+    ],
+    "default_product_scheduling": false,
+    "schedule": "Pause F5 consumer before replacement output, wait source >=16384, consume one actual 8192B block, retain snapshot and resume. Producer input/rate/bytes and original oracle unchanged.",
+    "trace_limit_bytes": 131072,
+    "trace_limit_events": 1024,
+    "trace_limit_note": "New collected trace overflowed; needed suffix is present in its preserved prefix. No claim of complete subsequent transport."
+  },
+  "close_guard": {
+    "red_log_sha256": "60504f0ee912974ade65cf8e573d774bcfe8370343f4da7ac96668f229fea49c",
+    "red_test_source_sha256": "3a262672b6e28d326d1765ba7488940aadd8edaffaee47314ec27368ba56f98b",
+    "red_product_source": "f89b0ac3a95f28e2b4ffa5bdfd368164848e8bde",
+    "red_executable_sha256": null,
+    "red_build_log_sha256": "e89d6ac2ad05e5807ee29cdcdf8b3a3d437b773407e560e70340f09426652d68",
+    "error": "closing window must reject a new output record checkpoint",
+    "green_log_sha256": "bbdc9e41c57357182dde0a239b4beaf2638e4bed38a656974ce7316b4fb442e4"
+  },
+  "final_workflow_rounds": [
+    {
+      "sample_sha256": "0e004559ca3b8bed704a3bf9cd4e6d54f92fc31db6576d2f2fc5cfc8090bfae2",
+      "sessions_sha256": "f437c524c63fa144d7389e7d38982d8f3b9568ff894dee08dd5e4609928fbe94",
+      "checked": {
+        "schema": "termforge-workflow-sessions-identity-validation-v1",
+        "live_sessions": 8,
+        "checkpoints": 26,
+        "rejected_ninth": true,
+        "load_foreground_verified": true,
+        "data_workflow_verified": true,
+        "complete_workflow_verified": false,
+        "system_clipboard_verified": false,
+        "ime_verified": false
+      },
+      "lifecycle": {
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        }
+      },
+      "replacement_cycles": [
+        {
+          "cycle": 1,
+          "source_bytes": [
+            20480,
+            20480
+          ],
+          "generations": [
+            9,
+            10
+          ],
+          "all_output_active": true
+        },
+        {
+          "cycle": 2,
+          "source_bytes": [
+            16384,
+            16384
+          ],
+          "generations": [
+            11,
+            12
+          ],
+          "all_output_active": true
+        },
+        {
+          "cycle": 3,
+          "source_bytes": [
+            12288,
+            12288
+          ],
+          "generations": [
+            13,
+            14
+          ],
+          "all_output_active": true
+        },
+        {
+          "cycle": 4,
+          "source_bytes": [
+            12288,
+            12288
+          ],
+          "generations": [
+            15,
+            16
+          ],
+          "all_output_active": true
+        },
+        {
+          "cycle": 5,
+          "source_bytes": [
+            16384,
+            16384
+          ],
+          "generations": [
+            17,
+            18
+          ],
+          "all_output_active": true
+        }
+      ]
+    },
+    {
+      "sample_sha256": "18ab9afea089669bb30b6e69a401e5a8e7d8082aa9d49e5c0d28d2b1544cf12a",
+      "sessions_sha256": "ae6443ec74669dabed594afffdb99c94af6a022bb64582468e6bb80abe35c7da",
+      "checked": {
+        "schema": "termforge-workflow-sessions-identity-validation-v1",
+        "live_sessions": 8,
+        "checkpoints": 26,
+        "rejected_ninth": true,
+        "load_foreground_verified": true,
+        "data_workflow_verified": true,
+        "complete_workflow_verified": false,
+        "system_clipboard_verified": false,
+        "ime_verified": false
+      },
+      "lifecycle": {
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 77,
+          "terminated": 0
+        }
+      },
+      "replacement_cycles": [
+        {
+          "cycle": 1,
+          "source_bytes": [
+            16384,
+            16384
+          ],
+          "generations": [
+            9,
+            10
+          ],
+          "all_output_active": true
+        },
+        {
+          "cycle": 2,
+          "source_bytes": [
+            12288,
+            12288
+          ],
+          "generations": [
+            11,
+            12
+          ],
+          "all_output_active": true
+        },
+        {
+          "cycle": 3,
+          "source_bytes": [
+            12288,
+            12288
+          ],
+          "generations": [
+            13,
+            14
+          ],
+          "all_output_active": true
+        },
+        {
+          "cycle": 4,
+          "source_bytes": [
+            8192,
+            12288
+          ],
+          "generations": [
+            15,
+            16
+          ],
+          "all_output_active": true
+        },
+        {
+          "cycle": 5,
+          "source_bytes": [
+            12288,
+            12288
+          ],
+          "generations": [
+            17,
+            18
+          ],
+          "all_output_active": true
+        }
+      ]
+    }
+  ],
+  "final_full_ctest": {
+    "log_sha256": "ea5283e3c04791877299e5e410d98fdbf695fd0c97ecc888e1e604dedc87f387",
+    "tests": [
+      {
+        "name": "shell_launch",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_title",
+        "result": "passed",
+        "seconds": 0.75
+      },
+      {
+        "name": "candidate_reply_close",
+        "result": "passed",
+        "seconds": 0.37
+      },
+      {
+        "name": "runtime_observation",
+        "result": "passed",
+        "seconds": 1.45
+      },
+      {
+        "name": "ime_input_expectation",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "sent_message_wait",
+        "result": "passed",
+        "seconds": 0.28
+      },
+      {
+        "name": "find_bar",
+        "result": "passed",
+        "seconds": 0.36
+      },
+      {
+        "name": "renderer_metrics",
+        "result": "passed",
+        "seconds": 0.87
+      },
+      {
+        "name": "ime_context",
+        "result": "passed",
+        "seconds": 0.38
+      },
+      {
+        "name": "layout_state",
+        "result": "passed",
+        "seconds": 0.15
+      },
+      {
+        "name": "workspace_state",
+        "result": "passed",
+        "seconds": 0.37
+      },
+      {
+        "name": "transport_completion",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "workflow_checkpoint",
+        "result": "passed",
+        "seconds": 0.07
+      },
+      {
+        "name": "scenario_tick_gate",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_core",
+        "result": "passed",
+        "seconds": 1.23
+      },
+      {
+        "name": "resize_core",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "history_core",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "selection_core",
+        "result": "passed",
+        "seconds": 0.08
+      },
+      {
+        "name": "search_core",
+        "result": "passed",
+        "seconds": 0.12
+      },
+      {
+        "name": "paste",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "sender_fence",
+        "result": "passed",
+        "seconds": 1.02
+      },
+      {
+        "name": "sender_fence_pipe",
+        "result": "passed",
+        "seconds": 0.37
+      },
+      {
+        "name": "clipboard_policy",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "keyboard",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "text_action_policy",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_resize_replay",
+        "result": "passed",
+        "seconds": 0.66
+      },
+      {
+        "name": "candidate_shell_tui",
+        "result": "failed",
+        "seconds": 31.29
+      },
+      {
+        "name": "core",
+        "result": "passed",
+        "seconds": 6.43
+      },
+      {
+        "name": "recovery",
+        "result": "passed",
+        "seconds": 10.07
+      },
+      {
+        "name": "measure",
+        "result": "passed",
+        "seconds": 4.24
+      },
+      {
+        "name": "binary_paths",
+        "result": "passed",
+        "seconds": 0.18
+      },
+      {
+        "name": "conpty_margin_contract",
+        "result": "passed",
+        "seconds": 0.28
+      },
+      {
+        "name": "benchmark_tools",
+        "result": "passed",
+        "seconds": 5.37
+      },
+      {
+        "name": "differential",
+        "result": "passed",
+        "seconds": 20.33
+      },
+      {
+        "name": "ime_inventory",
+        "result": "passed",
+        "seconds": 49.88
+      },
+      {
+        "name": "text_actions",
+        "result": "passed",
+        "seconds": 5.43
+      },
+      {
+        "name": "workflow_fixture",
+        "result": "passed",
+        "seconds": 22.84
+      },
+      {
+        "name": "workflow_sessions",
+        "result": "passed",
+        "seconds": 81.61
+      },
+      {
+        "name": "workflow_resources",
+        "result": "passed",
+        "seconds": 0.47
+      },
+      {
+        "name": "workflow_resource_phases",
+        "result": "passed",
+        "seconds": 4.37
+      },
+      {
+        "name": "workflow_system_content",
+        "result": "passed",
+        "seconds": 0.18
+      },
+      {
+        "name": "workflow_system_runner",
+        "result": "passed",
+        "seconds": 0.68
+      },
+      {
+        "name": "copy_error_frame",
+        "result": "passed",
+        "seconds": 0.14
+      },
+      {
+        "name": "paste_fence_evidence",
+        "result": "passed",
+        "seconds": 0.11
+      },
+      {
+        "name": "resize_trace",
+        "result": "passed",
+        "seconds": 0.13
+      },
+      {
+        "name": "research_guards",
+        "result": "passed",
+        "seconds": 4.93
+      },
+      {
+        "name": "receive",
+        "result": "passed",
+        "seconds": 0.2
+      },
+      {
+        "name": "conpty",
+        "result": "passed",
+        "seconds": 22.94
+      },
+      {
+        "name": "conpty_ctrl_c",
+        "result": "passed",
+        "seconds": 4.33
+      },
+      {
+        "name": "conpty_margin",
+        "result": "passed",
+        "seconds": 0.39
+      },
+      {
+        "name": "conpty_backend",
+        "result": "passed",
+        "seconds": 1.16
+      },
+      {
+        "name": "presentation",
+        "result": "passed",
+        "seconds": 4.11
+      },
+      {
+        "name": "shell",
+        "result": "passed",
+        "seconds": 94.93
+      },
+      {
+        "name": "selection_bytes",
+        "result": "passed",
+        "seconds": 3.64
+      },
+      {
+        "name": "selection_context",
+        "result": "passed",
+        "seconds": 3.94
+      },
+      {
+        "name": "raw_console_receiver",
+        "result": "passed",
+        "seconds": 0.39
+      },
+      {
+        "name": "paste_system",
+        "result": "passed",
+        "seconds": 8.93
+      }
+    ],
+    "total": 57,
+    "passed": 56,
+    "failed": [
+      "candidate_shell_tui"
+    ],
+    "seconds": 402.66,
+    "failure_stages": [
+      59
+    ],
+    "internal_skips": [
+      {
+        "test": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice)",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM"
+      },
+      {
+        "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails)",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "test": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard)",
+        "reason": "system copy UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close)",
+        "reason": "product clipboard read gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver)",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice)",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard)",
+        "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified."
+      }
+    ],
+    "full_acceptance": false,
+    "last_test_log_sha256": "c7728e3c25e030fe12e7e39652b7e01409661a34f3f5aa1c23f16e78b332afa1"
+  },
+  "other_failures": [
+    {
+      "mode": "candidate-tui",
+      "stage": 59,
+      "lifecycle": {
+        "exit_code": 2,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 7,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "job_after_cleanup": {
+          "active": 0,
+          "total": 7,
+          "terminated": 0
+        }
+      },
+      "files_sha256": {
+        "candidate-input.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "candidate-insert-log.txt": "e6de4daeba1841783e7e22f81dbf87154f341c309dc5b54405e5fc2c2f3550a6",
+        "candidate-output.bin": "fc43e5c356005f9c32847476d4bdba5fabaf51439083d8ac4e530d3e8bb5c883",
+        "candidate-resize-log.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "candidate-startup-log.txt": "3dfa3fb239f56c778a1e9b33eb31328349edd155a95806dac4378904e88527e5",
+        "candidate-vim.vim": "386d475e5297169cf7fcc425dcc0f6b0174c237ff86be03564b2d505c5d79797",
+        "sample.json": "115d07631f728fb3ed2cd0a0e0a6a183c39627c627b7c849a029bbeb6eb4b695"
+      }
+    }
+  ],
+  "earlier_pre_close_guard_ctest": {
+    "log_sha256": "c47eca6a71598128c07a98c65d9b975163177fe197d80a01a2720b120ca0f3ed",
+    "total": 57,
+    "passed": 57,
+    "failed": [],
+    "seconds": 382.56,
+    "failure_stages": [],
+    "full_acceptance": false,
+    "source_commit": "f89b0ac3a95f28e2b4ffa5bdfd368164848e8bde",
+    "usable_for_acceptance": false,
+    "internal_skip_count": 8
+  },
+  "limits": [
+    "Original two historical failures had no native continuation capture; later controlled causal reproduction does not fabricate it.",
+    "Only synthetic sampling coordination changes; no demonstrated product text-loss fix, oracle weakening, performance or WindTerm-equivalence claim.",
+    "Four passive live probes missed the half-row; a passive readiness implementation later starved in a controlled run and is rejected.",
+    "An excluded generic cmd echo test assumed a literal LF that the transport need not emit; final live close test only claims close while armed.",
+    "Raw native bytes, personal paths and desktop identities remain local. Controlled diagnostic scheduling and final original uninstrumented runs are separate.",
+    "Real CF/IME, actual presentation, full official-backend acceptance, #52/#63 and R2 remain unverified."
+  ],
+  "presented_done": null,
+  "performance_acceptance": false,
+  "windterm_runtime_equivalence": false,
+  "full_r2_verified": false,
+  "excluded_cmd_lf_test_sha256": "7d2cafa5d70d57e69527f626f533995e8d8c71a77a6b4f55f7aae646af91be09"
+}

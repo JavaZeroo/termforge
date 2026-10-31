@@ -1,0 +1,276 @@
+{
+  "schema": 1,
+  "date": "2026-10-26",
+  "scope": "R51 bounded resize-order diagnosis; no behavior fix or R2 acceptance",
+  "source_commit": "386ebe725aab691b13a7cf962a09b56f858b0804",
+  "parent_commit": "3e5b96d0e0854b691b6dd41821ab10b6124b83eb",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "source_git_blob_sha1": {
+    "CMakeLists.txt": "2ce3ac63485b81a7140cdb87c3f32c7f24270c82",
+    "experiments/core/candidate_resize_replay.cpp": "7c8c58240e27f23cda1e1a24d10037f2e25a8cc6",
+    "experiments/core/candidate_terminal.cpp": "cc12246ee7e94382bf95835cd45e6ef6b8949a19",
+    "experiments/core/candidate_terminal.hpp": "55de3176ec220b2e404cc7e108f6d0063af3c004",
+    "experiments/shell/resize.hpp": "20843d154fffdd982e1a9221984245eb0d4cc654",
+    "experiments/shell/resize_trace.hpp": "9feeef78fa42eee3cbbc60d1ab94ccdef7fc539b",
+    "experiments/shell/resize_trace.py": "1f182627f341494b2ca07fe02f457596900abd06",
+    "experiments/shell/test_resize_trace.py": "29faf4557592932d9c4f2cbc543fa043d103fb4b",
+    "experiments/shell/shell.cpp": "e440a83a98f9e86093cb82bd30f5ffc28e9f8299",
+    "experiments/shell/size_client.cpp": "251220197098b1b654b7554b0a727e4a2e85d7a9",
+    "experiments/conpty/backend.hpp": "3195dceaefa166b1251839108d29c5fd034aa2fb",
+    "experiments/conpty/session.hpp": "d44f36661594a5b76b62d1ecb95cf166db22e90a",
+    "experiments/candidates/alacritty/Cargo.lock": "6501189a98bfe0610ebcb5e3c31d3abc2ae3f132"
+  },
+  "source_raw_sha256": {
+    "CMakeLists.txt": "613d9a5a3285af26bc3cdce151ce87968f0795a5f13ab409e87a9f81f55efa06",
+    "experiments/core/candidate_resize_replay.cpp": "dd3f38062312592e39d6e63f63bebc5839c16efcf5b53b75127f2497b34714d8",
+    "experiments/core/candidate_terminal.cpp": "0d0eaabe5ef896aa7b263c8151622f579f37c421bf9473fc3d69ada010a64e61",
+    "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+    "experiments/shell/resize.hpp": "37d22ba31fc3fee8004a3dd555f53fa55cb398057b6576f5a2d9b5403e2f5cd0",
+    "experiments/shell/resize_trace.hpp": "a33f06302c9573b71d2432a4e962dc79d3e5916b69bfba210599f071a3cd6853",
+    "experiments/shell/resize_trace.py": "ffc6b0924ce5777ce3695e869179f479afa4d02e483c0547158e1f2dea2b34a0",
+    "experiments/shell/test_resize_trace.py": "31956a0aca0fdee2a8ea6bd26911bb1f3a4ded4233a485a4d04806aae31cfac7",
+    "experiments/shell/shell.cpp": "872f4d0c5f4ca4f38f074761d1ac5f3ac728fcc732ef5058c98ccfa8a4384b84",
+    "experiments/shell/size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4",
+    "experiments/conpty/backend.hpp": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489",
+    "experiments/conpty/session.hpp": "6945e6ffba1d61e66266f867d3cd124eb63c39da37e27662a5eaf544f60ed96b",
+    "experiments/candidates/alacritty/Cargo.lock": "896c6e60909d55d61fb26d277b1a98daf9245e8aee811caff37fc3e9d06ca627"
+  },
+  "binaries_sha256": {
+    "termforge_shell.exe": "7c06cbf1b605e17aa2d70914565370088111dc6e48257a8e120e883f77c860a0",
+    "shell_test_launcher.exe": "05a18755d869de52608c32518291281161446ca70c794dde65f9a50f06ecaa97",
+    "shell_size_client.exe": "df1c8cbdc0ea13d583f4b616bba0e6b8df10c492afdcfba1308231912084905d",
+    "candidate_resize_replay.exe": "d17f350c4a673fa73cf806c2df734fe282ae005e0b671b03700d45f48a0c9a54"
+  },
+  "rust_library_sha256": "e1897a65b7a06a174ac0dbc89c3c54a01672d1373037c27c8becdc329a6f27eb",
+  "candidate": "0.26.1-dev+termforge.4",
+  "backend": "reviewed-side-by-side-1.25.260930003",
+  "creation_flags": 24,
+  "native_deadline_seconds": 25,
+  "outer_deadline_seconds": 40,
+  "replay_deadline_seconds": 10,
+  "instrumentation": {
+    "opt_in": true,
+    "event_limit": 1024,
+    "transport_limit_bytes": 131072,
+    "observer_order_only": true
+  },
+  "runs": [
+    {
+      "index": 0,
+      "scenario": "resize",
+      "stage": 43,
+      "verdict": "known_red_reproduced",
+      "process_exit": 2,
+      "outer_timed_out": false,
+      "event_overflow": false,
+      "transport_overflow": false,
+      "captured_bytes": 8412,
+      "replay_steps": 29,
+      "replay_exit": 0,
+      "replay_full_screen_equals_live_failure": true,
+      "failing_line": {
+        "row_zero_based": 10,
+        "expected": "TF_SIZE_100x28",
+        "actual": "TF_SIZE_100x28OW"
+      },
+      "actual_host_resize_calls": [
+        {
+          "rows": 12,
+          "columns": 60,
+          "generation": 1
+        },
+        {
+          "rows": 30,
+          "columns": 90,
+          "generation": 2
+        },
+        {
+          "rows": 10,
+          "columns": 50,
+          "generation": 3
+        },
+        {
+          "rows": 28,
+          "columns": 100,
+          "generation": 4
+        }
+      ],
+      "outer_job_after": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "private_artifact_sha256": {
+        "sample.json": "f8a340201bd2628ae48fcf3b4fece393ea9f5d210cc2bbef19c63a4343683d32",
+        "resize-trace.json": "204bdb643cdc1863b28a734ffa2b9ce5702d659021e262ed70ac030cfd4057c1",
+        "resize-trace.transport.bin": "38d09be70c1f18d512be5beb3966cea922423bf45d2aaee7c7bc56a61678aaf8"
+      },
+      "private_replay_sha256": {
+        "plan.txt": "6f9d840e1d93847be1babf7cd36b65897f8feb246dbd731d26631fd300f86d1b",
+        "states.jsonl": "8bf1f05bf4304934f806e722c2e8516714669f11dd59c798519a8ceeccc8baac",
+        "summary.json": "76ad3cdaa39387f64a63d2dc77fbbde6bdcfefa85ff72b940c453b45666991c4"
+      }
+    },
+    {
+      "index": 1,
+      "scenario": "resize",
+      "stage": 43,
+      "verdict": "known_red_reproduced",
+      "process_exit": 2,
+      "outer_timed_out": false,
+      "event_overflow": false,
+      "transport_overflow": false,
+      "captured_bytes": 8871,
+      "replay_steps": 22,
+      "replay_exit": 0,
+      "replay_full_screen_equals_live_failure": true,
+      "failing_line": {
+        "row_zero_based": 10,
+        "expected": "TF_SIZE_100x28",
+        "actual": "TF_SIZE_100x28OW"
+      },
+      "actual_host_resize_calls": [
+        {
+          "rows": 12,
+          "columns": 60,
+          "generation": 1
+        },
+        {
+          "rows": 30,
+          "columns": 90,
+          "generation": 2
+        },
+        {
+          "rows": 10,
+          "columns": 50,
+          "generation": 3
+        },
+        {
+          "rows": 28,
+          "columns": 100,
+          "generation": 4
+        }
+      ],
+      "outer_job_after": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "private_artifact_sha256": {
+        "sample.json": "be125db57708bd7988aac013c90e6510f9fb2078ce195bd68bc696767f1d9f98",
+        "resize-trace.json": "02d915b8c3f560039ab367393f77223a8ad41baa5a54613eef9db5e4bc5144a0",
+        "resize-trace.transport.bin": "7808e2e2acfd47a79f8e1f5fe4c2f90aaf4687be164ad537f081f30ee0ca8dc5"
+      },
+      "private_replay_sha256": {
+        "plan.txt": "f257a0af38e6a728e277d5f35d1857a26924e3fb2d224377a3098cae80287409",
+        "states.jsonl": "031084cab09d80bd9bee69bac7d2ee96583fa2fe4fc34f72ccb27fe94e7df9ea",
+        "summary.json": "71db0675197bc34fc7aef126237a196f259a968970739120173e1b1bea69a8a2"
+      }
+    },
+    {
+      "index": 2,
+      "scenario": "resize",
+      "stage": 43,
+      "verdict": "known_red_reproduced",
+      "process_exit": 2,
+      "outer_timed_out": false,
+      "event_overflow": false,
+      "transport_overflow": false,
+      "captured_bytes": 7237,
+      "replay_steps": 29,
+      "replay_exit": 0,
+      "replay_full_screen_equals_live_failure": true,
+      "failing_line": {
+        "row_zero_based": 10,
+        "expected": "TF_SIZE_100x28",
+        "actual": "TF_SIZE_100x28OW"
+      },
+      "actual_host_resize_calls": [
+        {
+          "rows": 12,
+          "columns": 60,
+          "generation": 1
+        },
+        {
+          "rows": 30,
+          "columns": 90,
+          "generation": 2
+        },
+        {
+          "rows": 10,
+          "columns": 50,
+          "generation": 3
+        },
+        {
+          "rows": 28,
+          "columns": 100,
+          "generation": 4
+        }
+      ],
+      "outer_job_after": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "outer_job_after_cleanup": {
+        "active": 0,
+        "total": 8,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "private_artifact_sha256": {
+        "sample.json": "9418216aed5386bdace578e1031b533031bdb22b2f458af57e95f1d2516c500e",
+        "resize-trace.json": "776240939667bec7bd071d1a1f7d447a3b2474891a6e7fc725f48561bab9581d",
+        "resize-trace.transport.bin": "2a07279ca1df863f4ef9506d1e1ddf4cdd307d6a079a5800e26e1581146785b1"
+      },
+      "private_replay_sha256": {
+        "plan.txt": "41bd8ed8c07abe1062f2b8a3f7628ed54819351b3657178b9c3d33551bf62a3b",
+        "states.jsonl": "78d7d10747d7019f9c50fee747de5990207863ffdcb7b3cfd09900c631438ec2",
+        "summary.json": "7ea79948a04acf18c4b05f8a671a8c91e1e090175bb7b079808d30824d47ae8b"
+      }
+    }
+  ],
+  "additional_validation": {
+    "pure_trace_tests_passed": 2,
+    "negative_capture_cases": 10,
+    "normal_mode_with_trace_environment": "passed_without_trace_files",
+    "normal_mode_job_after_cleanup": {
+      "active": 0,
+      "total": 6,
+      "terminated": 0
+    }
+  },
+  "observations": [
+    "All three original resize runs retain the stage43 failure, and all four host API calls occurred; coalescing alone cannot explain these samples.",
+    "Replaying exactly the observed UI parser resizes and feed partitions reproduces the full live failed screen, not only the failing marker.",
+    "The candidate grows the visible buffer by pulling history into it. In these samples the later host stream does not repaint the whole resized buffer, and its cursor-addressed echo and size output overwrite different existing rows.",
+    "The native size helper output contains the independent TF_SIZE_100x28 result; no CHAR_INFO snapshot at this failure boundary was captured.",
+    "Pinned host source already documents divergent host/terminal reflow and lazy DSR CPR synchronization at console-info queries. This is relevant source evidence, not proof of an exhaustive root cause or a completed fix."
+  ],
+  "primary_sources": [
+    "https://github.com/microsoft/terminal/blob/dc8ae365847d41f62d1ebca93815bb00959bc12f/src/host/screenInfo.cpp#L1412",
+    "https://github.com/microsoft/terminal/issues/18725",
+    "https://github.com/microsoft/terminal/pull/19535"
+  ],
+  "limitations": [
+    "Opt-in observers alter scheduling. The uninstrumented joint baseline separately has both a red and a green; neither is overwritten by these results.",
+    "The scenario code and native deadline are unchanged, but the absolute synthetic helper launch path follows this isolated build directory; its transport is not byte-identical to the root joint-baseline capture.",
+    "This is a fixed diagnostic batch of three, not a pass/failure-rate estimate or performance measurement.",
+    "No native/transport/terminal synchronization fix has been applied. R51 remains open.",
+    "Raw transport, full screen states, frame and desktop identity remain local; this record publishes hashes and synthetic marker metadata only.",
+    "No input, oracle, load, native deadline or history/reflow feature was weakened. API return is not a host completion fence.",
+    "Default-core, system-backend, full R1/R2, native buffer contents, actual presentation and WindTerm parity are not validated by this batch."
+  ]
+}

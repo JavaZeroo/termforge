@@ -1,0 +1,1339 @@
+{
+  "schema": "termforge-windterm-styled-native-reference-v1",
+  "scope": "One original local-shell observation; no product behavior approval or terminal-style equivalence.",
+  "source_commit": "dc5c631ffdf83dfbdfcb8b359137e0d87212ac6d",
+  "declared_maximum_runs": 1,
+  "actual_runs": 1,
+  "native_executions": 1,
+  "reference_identity": {
+    "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+    "files_count": 4047
+  },
+  "environment": {
+    "os_observed_in_cmd_banner": "10.0.26200.9711",
+    "platform": "Windows x64",
+    "viewport": [
+      80,
+      24
+    ],
+    "native_main_buffer": [
+      80,
+      3000
+    ]
+  },
+  "native_probe_sha256": "ca19645b65aea8ac74b56d1e59837cb7514c3acf5932d24112411725b92206d7",
+  "python_exe_sha256": "0b471133e110cfb53a061cad528ce8e517d7b9ac41a0a396c39ad795a487fc14",
+  "rea_cli_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738",
+  "source_files_sha256": {
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+    "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+    "experiments/conpty/margin_controls_probe.cpp": "5095dd3a113b799d417e522cbbe30aa0217a539dd46e1c096a8b707ab709b4c7"
+  },
+  "probe_files_sha256": {
+    "prepare.py": "a37ec9364b34504959d4b73288bc7830cfb70f0352291a0b6e59fe0ef36cd76d",
+    "launch.py": "6bb19424171dade4a20faa4ea3067209c77d39fcde79dca93c631ff6bcf3b832",
+    "launcher.patch": "40f4d4c2c921f46e2a64cf68feb546ba362645150032e439db8863f13156b2e9",
+    "styled_probe.py": "2fabe0ce19967d3885cb04920fddd57a5c644dcbf41797eda0bb3d22772d6326",
+    "driver.js": "6f2fb7987186570a1761bddff3738539f622ccf1794991f3560c91a3e3ad73b9",
+    "stages.js": "a2439d58be27794b1b4f82cadf4044422ae74c9e44f44f8d4572198dd8ac90d1",
+    "qt_r1_text.js": "c182d9758f2c0dacf04cd755d24ffbb2076b53ae9fe3f617d7ad5d886e9d0288"
+  },
+  "script_sha256": "20d41d7663711bf76f4dc2412e1a6ea41bf3add815d3c61793998d5436aae76d",
+  "template_sha256": "c182d9758f2c0dacf04cd755d24ffbb2076b53ae9fe3f617d7ad5d886e9d0288",
+  "fixture_sha256": "2fabe0ce19967d3885cb04920fddd57a5c644dcbf41797eda0bb3d22772d6326",
+  "source": {
+    "bytes": 211,
+    "sha256": "51d0f55717ff8fbe5e82040967edf2f9399a9b893fd8e8cb282f94c143919b62",
+    "hex": "1b5b306d1b5b324a1b5b48544f505f46495845440d0a524547494f4e5f410d0a524547494f4e5f420d0a424f54544f4d5f46495845440d0a1b5b323b33721b5b33313b34346d1b5b333b36481b5b3f31303439681b5b306d1b5b324a1b5b48414c545f4f5554534944450d0a1b5b343b3148414c545f410d0a414c545f421b5b343b35721b5b33323b34356d1b5b353b31480a414c545f430a414c545f441b5b353b38481b5b3f313034396c4d1b5b333b31480a524547494f4e5f430a524547494f4e5f441b5b363b31485347525f444f4e45"
+  },
+  "status": "observed-styled-reference",
+  "scenario_error": null,
+  "backend_calls": [
+    {
+      "function": "winpty_open",
+      "success": true,
+      "size": null
+    },
+    {
+      "function": "winpty_spawn",
+      "success": true,
+      "size": null
+    },
+    {
+      "function": "winpty_set_size",
+      "success": true,
+      "size": [
+        91,
+        23
+      ]
+    },
+    {
+      "function": "winpty_set_size",
+      "success": true,
+      "size": [
+        80,
+        24
+      ]
+    }
+  ],
+  "native_wrapper": {
+    "before": {
+      "buffer": [
+        80,
+        3000
+      ],
+      "window": [
+        0,
+        0,
+        79,
+        23
+      ],
+      "viewport": [
+        80,
+        24
+      ],
+      "cursor": [
+        4,
+        0
+      ],
+      "attributes": 7
+    },
+    "output_mode_before": 3,
+    "output_codepage_before": 936,
+    "native_executions": 1,
+    "timed_out": false,
+    "exit_code": 37,
+    "after": {
+      "buffer": [
+        80,
+        3000
+      ],
+      "window": [
+        0,
+        4,
+        79,
+        27
+      ],
+      "viewport": [
+        80,
+        24
+      ],
+      "cursor": [
+        9,
+        8
+      ],
+      "attributes": 20
+    },
+    "output_mode_after": 7,
+    "mode_restore_ok": true,
+    "codepage_restore_ok": true
+  },
+  "native_raw_contract": {
+    "stages": {
+      "before": {
+        "text": true,
+        "cell_text": true,
+        "cells_and_attributes": true,
+        "cursor": false,
+        "viewport": false,
+        "passed": false
+      },
+      "alt": {
+        "text": true,
+        "cell_text": true,
+        "cells_and_attributes": true,
+        "cursor": true,
+        "viewport": true,
+        "passed": true
+      },
+      "restored": {
+        "text": true,
+        "cell_text": true,
+        "cells_and_attributes": true,
+        "cursor": false,
+        "viewport": false,
+        "passed": false
+      },
+      "after-write": {
+        "text": true,
+        "cell_text": true,
+        "cells_and_attributes": true,
+        "cursor": false,
+        "viewport": false,
+        "passed": false
+      },
+      "final": {
+        "text": false,
+        "cell_text": false,
+        "cells_and_attributes": false,
+        "cursor": false,
+        "viewport": false,
+        "passed": false
+      }
+    },
+    "passed": false,
+    "initial_native_attribute": 7,
+    "full_r2_contract_verified": false
+  },
+  "raw_baseline_prediction_matches": false,
+  "viewport_relative_diagnostic": {
+    "only_changes": [
+      "cursor_row minus viewport top",
+      "viewport top projected to zero"
+    ],
+    "matches_fixed_source_baseline_prediction": true,
+    "product_contract_changed": false,
+    "raw_contract_passed": false
+  },
+  "native_stages": {
+    "before": {
+      "top": 4,
+      "cursor": [
+        6,
+        5
+      ],
+      "relative_cursor": [
+        2,
+        5
+      ],
+      "lines": [
+        "TOP_FIXED",
+        "REGION_A",
+        "REGION_B",
+        "BOTTOM_FIXED",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "attribute_runs": [
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ]
+      ]
+    },
+    "alt": {
+      "top": 0,
+      "cursor": [
+        4,
+        7
+      ],
+      "relative_cursor": [
+        4,
+        7
+      ],
+      "lines": [
+        "ALT_OUTSIDE",
+        "",
+        "",
+        "ALT_C",
+        "ALT_D",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "attribute_runs": [
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            82,
+            80
+          ]
+        ],
+        [
+          [
+            82,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ]
+      ]
+    },
+    "restored": {
+      "top": 4,
+      "cursor": [
+        6,
+        5
+      ],
+      "relative_cursor": [
+        2,
+        5
+      ],
+      "lines": [
+        "TOP_FIXED",
+        "REGION_A",
+        "REGION_B",
+        "BOTTOM_FIXED",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "attribute_runs": [
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ]
+      ]
+    },
+    "after-write": {
+      "top": 4,
+      "cursor": [
+        6,
+        6
+      ],
+      "relative_cursor": [
+        2,
+        6
+      ],
+      "lines": [
+        "TOP_FIXED",
+        "REGION_A",
+        "REGIOM_B",
+        "BOTTOM_FIXED",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "attribute_runs": [
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            5
+          ],
+          [
+            20,
+            1
+          ],
+          [
+            7,
+            74
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ]
+      ]
+    },
+    "final": {
+      "top": 4,
+      "cursor": [
+        9,
+        8
+      ],
+      "relative_cursor": [
+        5,
+        8
+      ],
+      "lines": [
+        "TOP_FIXED",
+        "REGION_A",
+        "REGIOM_B",
+        "REGION_CIXED",
+        "REGION_D",
+        "SGR_DONE",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "attribute_runs": [
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            5
+          ],
+          [
+            20,
+            1
+          ],
+          [
+            7,
+            74
+          ]
+        ],
+        [
+          [
+            20,
+            8
+          ],
+          [
+            7,
+            72
+          ]
+        ],
+        [
+          [
+            20,
+            8
+          ],
+          [
+            7,
+            72
+          ]
+        ],
+        [
+          [
+            20,
+            8
+          ],
+          [
+            7,
+            72
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ],
+        [
+          [
+            7,
+            80
+          ]
+        ]
+      ]
+    }
+  },
+  "terminal_observation": {
+    "synthetic_final_tail": [
+      "TOP_FIXED",
+      "REGION_A",
+      "REGIOM_B",
+      "REGION_CIXED",
+      "REGION_D",
+      "SGR_DONE"
+    ],
+    "observed_via": "activeText.lineText after SGR_DONE, before releasing the wrapper hold",
+    "screen_capacity": 24,
+    "cell_styles": null,
+    "terminal_cursor": null,
+    "current_style": null,
+    "history_isolation": null,
+    "api_names_observed": [
+      "cursor",
+      "styleSheet",
+      "caretColumn",
+      "caretLine",
+      "caretLineOffset",
+      "caretPosition",
+      "setStyleSheet",
+      "caretPositionChanged",
+      "marginStyleChanged",
+      "schemeAnsiStyleChanged",
+      "exchangeCaretAnchor",
+      "gotoPosition",
+      "lineFromPosition",
+      "movePosition",
+      "movePositionOutsideChar",
+      "positionFromLine",
+      "positionFromPoint",
+      "selectionCaretP",
+      "setUseTabPosition",
+      "useTabPosition",
+      "visibleLineFromPosition",
+      "visibleRectFromPosition",
+      "caretVirtualSpace",
+      "promptPosition",
+      "setTimestampFormat",
+      "setTimestampLongFormat"
+    ],
+    "api_names_are_not_style_values": true
+  },
+  "lifecycle": {
+    "native_exit_code": 37,
+    "shell_exit_code": 37,
+    "native_timeout": false,
+    "outer_job": {
+      "active": 0,
+      "total": 11,
+      "terminated": 0
+    },
+    "deliberate_outer_termination_requested": true,
+    "outer_counter_is_not_natural_exit_proof": true
+  },
+  "budgets": {
+    "rea_seconds": 30,
+    "scenario_timeout_ms": 25000,
+    "client_wait_seconds": 5,
+    "client_cleanup_seconds": 5,
+    "final_screen_hold_seconds": 8
+  },
+  "provider": {
+    "evidence_id": "ev_8fbd9aead9aa5d60f49e05112c31eb542febf65084643c025eb8a52ffd590048",
+    "name": "Frida",
+    "version": null,
+    "confidence": "observed",
+    "subject": null,
+    "environment": null,
+    "captured_state": "running",
+    "messages_truncated": false,
+    "cleanup_error": null,
+    "limitations": [
+      "Artifact identity is unavailable for this observation.",
+      "The target operating system and architecture were not reported by this observation."
+    ]
+  },
+  "profile_check": {
+    "only_synthetic_session": true,
+    "session_count": 1
+  },
+  "raw_files": {
+    "run.json": {
+      "bytes": 614,
+      "sha256": "e5d885cbb7080c9464f4a00e4174dae3cd1660f892af4852a39b24cb1ac7eb5f"
+    },
+    "probe.js": {
+      "bytes": 21561,
+      "sha256": "20d41d7663711bf76f4dc2412e1a6ea41bf3add815d3c61793998d5436aae76d"
+    },
+    "probe-result.json": {
+      "bytes": 1619,
+      "sha256": "5d04c971e73dad049e011facfaa0c5d47a7b35f40ebeaf1c414f43cf9142e3d0"
+    },
+    "profile-check.json": {
+      "bytes": 52,
+      "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+    },
+    "cleanup.json": {
+      "bytes": 43,
+      "sha256": "7e28113f11ad26f81fa0a314d86f1204a46e2a32ee92399b0c854315b9178b03"
+    },
+    "evidence.json": {
+      "bytes": 53100,
+      "sha256": "be349abb34cf28f42b634ccf65bd0749e1e9940856059156b794e7968b7ef83c"
+    },
+    "stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "files.json": {
+      "bytes": 637666,
+      "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+    }
+  },
+  "native_capture_files": {
+    "after-write.cells.bin": {
+      "bytes": 7680,
+      "sha256": "84708a877d836570697978465b4c2b788652b2de0a20a09d8a117111d3c82dc0"
+    },
+    "after-write.console.bin": {
+      "bytes": 3840,
+      "sha256": "0463eaeda9c44a38ad9003ca14df549dcfc74ceb364308432aceadb7491fa007"
+    },
+    "after-write.console.json": {
+      "bytes": 442,
+      "sha256": "1d69f86911a76f30c9201dd07ca4cbdaa8376a9113d5622a8d55d0b2b4798fb7"
+    },
+    "alt.cells.bin": {
+      "bytes": 7680,
+      "sha256": "d2e9a140a7b7a3c537b4cb25ea306c0b26fdf9694fc8c9d44218be173a99108e"
+    },
+    "alt.console.bin": {
+      "bytes": 3840,
+      "sha256": "f6492387ed4760be9851cccd504ac8f6f21624d55dce9671b3be4560ada0b5ac"
+    },
+    "alt.console.json": {
+      "bytes": 434,
+      "sha256": "81304f5e1cd83bbf0039f4880b7fd44913ef877911075a69268f761f6589a29b"
+    },
+    "before.cells.bin": {
+      "bytes": 7680,
+      "sha256": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651"
+    },
+    "before.console.bin": {
+      "bytes": 3840,
+      "sha256": "4279b6605b0fb08728ce75e50e7b24eaf2d75e39e3d44b12b0f41d2e6ba8343b"
+    },
+    "before.console.json": {
+      "bytes": 437,
+      "sha256": "3ea492ce7337f590ab35d6a5731e558d1013de1c0ea6f259b9f8c11596e257ca"
+    },
+    "final.cells.bin": {
+      "bytes": 7680,
+      "sha256": "68ea1c55640dde6862f56fc015df6821072a72d589d315aff42776d5b5f46938"
+    },
+    "final.console.bin": {
+      "bytes": 3840,
+      "sha256": "acea12c6e10ea9ad409f7c9df8015dd47ac1c4f22fbb3dfbae99fe064424807d"
+    },
+    "final.console.json": {
+      "bytes": 436,
+      "sha256": "84ebe18c07afd3e0d4c16a0cfdc9bf558e7380c55dc51697c860dac053f2d6ee"
+    },
+    "restored.cells.bin": {
+      "bytes": 7680,
+      "sha256": "fe9016196e03b264cce22f628f67b778fe1e6a3aeb160ed53effc153b1ff6651"
+    },
+    "restored.console.bin": {
+      "bytes": 3840,
+      "sha256": "4279b6605b0fb08728ce75e50e7b24eaf2d75e39e3d44b12b0f41d2e6ba8343b"
+    },
+    "restored.console.json": {
+      "bytes": 439,
+      "sha256": "bd670464add79b692c325cd9d3029ee77dc83101a54decf558b4be0e038a6097"
+    },
+    "source.bin": {
+      "bytes": 211,
+      "sha256": "51d0f55717ff8fbe5e82040967edf2f9399a9b893fd8e8cb282f94c143919b62"
+    }
+  },
+  "wrapper_result": {
+    "bytes": 429,
+    "sha256": "2b96cddfb31969f8dc33078668d7db944feeb1c3ef9e912a640ee095eac61519"
+  },
+  "full_margin_contract_verified": false,
+  "product_backend_selected": false,
+  "presented_done": null,
+  "limitations": [
+    "Native buffer height may differ from viewport; record both without changing buffer size.",
+    "Only native fields and final UI text are initially observable; terminal cell colors/cursor may remain unknown.",
+    "API names are availability observations, not returned style values.",
+    "No actual transport tap or intermediate terminal-state capture in this slice.",
+    "No physical display, latency, clipboard, user configuration or performance measurement.",
+    "Do not merge this sample with ConPTY batch as one complete backend/product acceptance.",
+    "Raw absolute native cursor/top are different because the original uses a taller buffer; relative-coordinate projection is diagnostic only and does not change the original gate.",
+    "REGION_CIXED is observed in native cells and the UI text projection. Cause attribution to a specific original component is unproven.",
+    "The patched source behavior differs from this observed original behavior; important original-bug fixes require user confirmation before product adoption.",
+    "Color/codepage restore fields report API success, without a second GetConsoleMode/GetConsoleOutputCP verification.",
+    "Provider subject/environment are null; pinned package identity is supplied separately by the local preparation guard.",
+    "The private driver and raw instrumentation are not published; this summary is not a public one-command reproduction package."
+  ]
+}

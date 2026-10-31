@@ -1,0 +1,209 @@
+{
+  "schema": "termforge-resize-replay-guard-validation-v1",
+  "source_base_commit": "3cdfda92c40666e214006df86f36de8c40cf1cda",
+  "source_identity": "source_sha256 identifies reviewed checkout bytes before this commit; Git blobs can differ by checkout newline normalization",
+  "source_sha256": {
+    "CMakeLists.txt": "aeb3802d438c96b160ef8185969b39416231b91c044fda4695a7f56f650d9f9e",
+    "experiments/core/candidate_resize_replay.cpp": "e5c2e29b29a63edc0b5d3671f0fd3e9cdc1df9567088c4242855206053439081",
+    "experiments/core/test_candidate_resize_replay.py": "eab1fefd6cbbc7eb9eda6271792af12704f8d03b46d99690312d83a46b88574e",
+    "experiments/shell/resize_trace.py": "e4b23211ae1b1f1a1435de744558ad04de053872db136f67a22dac476a8ec5cd",
+    "experiments/shell/test_resize_trace.py": "5438f9aeef805f90b789a1a881fa974b525e000f14365cab54b4507479dd6d6d",
+    "experiments/shell/README.md": "a218d43988f8f9e8cbcc4ce9d314e3a14d006e4eab91ac10c46b9ce3728c41b1"
+  },
+  "binaries_sha256": {
+    "before": "d17f350c4a673fa73cf806c2df734fe282ae005e0b671b03700d45f48a0c9a54",
+    "after": "e859d743a54ae13177bdf0fba7834a12a1029b5de760cb194fb7929fe0809e05"
+  },
+  "scope": "Diagnostic parser/schema validation only; no terminal, transport, worker or oracle behavior change",
+  "actual_exe_red_green": [
+    {
+      "trailing_record": "R 12",
+      "before_exit": 0,
+      "after_exit": 1
+    },
+    {
+      "trailing_record": "F 3",
+      "before_exit": 0,
+      "after_exit": 1
+    },
+    {
+      "trailing_record": "X",
+      "before_exit": 0,
+      "after_exit": 1
+    },
+    {
+      "trailing_record": "R 12 999999999999999999999999999999999",
+      "before_exit": 0,
+      "after_exit": 1
+    },
+    {
+      "trailing_record": "F 3 999999999999999999999999999999999",
+      "before_exit": 0,
+      "after_exit": 1
+    }
+  ],
+  "original_trace_mutation_red_green": [
+    {
+      "capture": 0,
+      "case": "host-negative-generation",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 0,
+      "case": "host-end-wrong-generation",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 0,
+      "case": "host-zero-columns",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 0,
+      "case": "feed-wrong-current-grid",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 0,
+      "case": "qpc-regresses",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 1,
+      "case": "host-negative-generation",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 1,
+      "case": "host-end-wrong-generation",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 1,
+      "case": "host-zero-columns",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 1,
+      "case": "feed-wrong-current-grid",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 1,
+      "case": "qpc-regresses",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 2,
+      "case": "host-negative-generation",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 2,
+      "case": "host-end-wrong-generation",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 2,
+      "case": "host-zero-columns",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 2,
+      "case": "feed-wrong-current-grid",
+      "before_accepted": true,
+      "after_rejected": true
+    },
+    {
+      "capture": 2,
+      "case": "qpc-regresses",
+      "before_accepted": true,
+      "after_rejected": true
+    }
+  ],
+  "original_offline_replays": [
+    {
+      "index": 0,
+      "trace_sha256": "204bdb643cdc1863b28a734ffa2b9ce5702d659021e262ed70ac030cfd4057c1",
+      "transport_sha256": "38d09be70c1f18d512be5beb3966cea922423bf45d2aaee7c7bc56a61678aaf8",
+      "plan_sha256": "6f9d840e1d93847be1babf7cd36b65897f8feb246dbd731d26631fd300f86d1b",
+      "states_sha256": "8bf1f05bf4304934f806e722c2e8516714669f11dd59c798519a8ceeccc8baac",
+      "previous_states_sha256": "8bf1f05bf4304934f806e722c2e8516714669f11dd59c798519a8ceeccc8baac",
+      "replay_exit": 0,
+      "steps": 29,
+      "original_plan_unchanged": true,
+      "full_states_byte_identical": true,
+      "captured_bytes": 8412
+    },
+    {
+      "index": 1,
+      "trace_sha256": "02d915b8c3f560039ab367393f77223a8ad41baa5a54613eef9db5e4bc5144a0",
+      "transport_sha256": "7808e2e2acfd47a79f8e1f5fe4c2f90aaf4687be164ad537f081f30ee0ca8dc5",
+      "plan_sha256": "f257a0af38e6a728e277d5f35d1857a26924e3fb2d224377a3098cae80287409",
+      "states_sha256": "031084cab09d80bd9bee69bac7d2ee96583fa2fe4fc34f72ccb27fe94e7df9ea",
+      "previous_states_sha256": "031084cab09d80bd9bee69bac7d2ee96583fa2fe4fc34f72ccb27fe94e7df9ea",
+      "replay_exit": 0,
+      "steps": 22,
+      "original_plan_unchanged": true,
+      "full_states_byte_identical": true,
+      "captured_bytes": 8871
+    },
+    {
+      "index": 2,
+      "trace_sha256": "776240939667bec7bd071d1a1f7d447a3b2474891a6e7fc725f48561bab9581d",
+      "transport_sha256": "2a07279ca1df863f4ef9506d1e1ddf4cdd307d6a079a5800e26e1581146785b1",
+      "plan_sha256": "41bd8ed8c07abe1062f2b8a3f7628ed54819351b3657178b9c3d33551bf62a3b",
+      "states_sha256": "78d7d10747d7019f9c50fee747de5990207863ffdcb7b3cfd09900c631438ec2",
+      "previous_states_sha256": "78d7d10747d7019f9c50fee747de5990207863ffdcb7b3cfd09900c631438ec2",
+      "replay_exit": 0,
+      "steps": 29,
+      "original_plan_unchanged": true,
+      "full_states_byte_identical": true,
+      "captured_bytes": 7237
+    }
+  ],
+  "focused_ctest": {
+    "tests": 2,
+    "passed": 2,
+    "failures": 0,
+    "internal_unit_tests": 8,
+    "log_sha256": "a90b9931d34986bcb980ae7da386b29c77d27d275883020cabddd5a155e90349"
+  },
+  "before_test_logs": {
+    "exe_sha256": "d33fd8c72a470e740730424bf8526890c82715a7049320b788a228500098d7ce",
+    "trace_sha256": "7fa1e64b5d2a1ed4460219c44374884ec26fcb2a29b4847f00e686d16ae8d41a"
+  },
+  "original_proof_sha256": "74769899db987da8842f2b37db5a78e5088eb413691426900c06fb5c0eae0c47",
+  "supported_observation_orders": [
+    "host begin/end before the matching request observation",
+    "coalesced requests without host calls",
+    "in-flight older worker calls interleaved with later UI parser resizes",
+    "equal QPC values in mutex observation order"
+  ],
+  "deadlines": {
+    "exe_seconds": 10,
+    "original_live_native_seconds": 25,
+    "original_live_outer_seconds": 40
+  },
+  "limitations": [
+    "No new live GUI or native run; original native failure and proof unchanged",
+    "Offline replay does not establish host completion, actual presentation or timing",
+    "Host request mapping validates observed metadata; no synchronization fence is inferred",
+    "Raw original trace, transport and complete states remain private"
+  ],
+  "r51_behavior_fixed": false,
+  "r2_accepted": false
+}

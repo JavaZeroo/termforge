@@ -1,0 +1,282 @@
+{
+  "schema": "termforge-clipboard-stage-observation-v1",
+  "source": "b9789543a792b0a0b96139377ea43f4dfab46626",
+  "run_id": 40459936505,
+  "job_id": 122041868650,
+  "artifact_id": 12714865514,
+  "artifact": {
+    "bytes": 4269771,
+    "sha256": "4b597e169d36624c87a6a9859e0fc3b2a37846569bca3eaca4c51322ec7d2791"
+  },
+  "build_receipt_file": {
+    "bytes": 732,
+    "sha256": "af9e2ede8f1f0d77a9e670a68252ecf776b2b98b81c626d94e833c6d430f0844"
+  },
+  "build_receipt": {
+    "schema": "termforge-clipboard-stage-build-r99-v1",
+    "files": {
+      "shell_input_client.exe": {
+        "bytes": 52224,
+        "sha256": "944c8b6a5dfdb4725b5a9d2c39d40b5ca7c2a429f1aebef23299eece286f8099"
+      },
+      "termforge_shell.exe": {
+        "bytes": 1283072,
+        "sha256": "b38f109255baf4c9b8e40b91107873c5e6f57852152cb5781b2798f1aadf3561"
+      },
+      "shell_clipboard_reader.exe": {
+        "bytes": 32256,
+        "sha256": "5f3cac4487bc3bf343bf972ef3481d97cbaab399dc9256ea4c1a52c390cb729a"
+      },
+      "shell_test_launcher.exe": {
+        "bytes": 56320,
+        "sha256": "7fa383d355f29630812496216a6a8b5037d6c6397ad85fd5204d5ad33339fc48"
+      }
+    },
+    "source": "b9789543a792b0a0b96139377ea43f4dfab46626"
+  },
+  "samples": [
+    {
+      "repeat": 0,
+      "trace": {
+        "bytes": 21810,
+        "sha256": "13bb8dc1fa4167b5baafaba6e999cd5fccdb25ac79a53b9b0a8012bdabfd27c4",
+        "file": "trace-0.jsonl"
+      },
+      "sample": {
+        "bytes": 2027,
+        "sha256": "77af1bec6e478701e1ea977b4d5022b7750242517603e71e1f3d64efea064652"
+      },
+      "workflow_file": {
+        "bytes": 2686,
+        "sha256": "d8f3caf1707451b8ee8d79a26869c92660bbccf7b3cddd9b41277a9ea6781976"
+      },
+      "trace_rows": 72,
+      "turns": 45,
+      "first_elapsed_ms": 61,
+      "complete_before_close_ms": 1614,
+      "truncated": false,
+      "exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 27,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "cases": {
+        "occupied": {
+          "received": 270,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": {
+            "reason": "ordinary",
+            "publication_succeeded": false,
+            "expected_requester_gone": false,
+            "native_error": 0,
+            "release_event": true,
+            "thread_exited": true
+          }
+        },
+        "oversize": {
+          "received": 270,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": null
+        },
+        "cancel": {
+          "received": 268,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": {
+            "reason": "requester-cancelled",
+            "publication_succeeded": false,
+            "expected_requester_gone": true,
+            "native_error": 1418,
+            "release_event": true,
+            "thread_exited": true
+          }
+        },
+        "close": {
+          "received": 256,
+          "helper_exited": true,
+          "retry": false,
+          "owner_release": {
+            "reason": "target-closed",
+            "publication_succeeded": false,
+            "expected_requester_gone": true,
+            "native_error": 1418,
+            "release_event": true,
+            "thread_exited": true
+          }
+        }
+      }
+    },
+    {
+      "repeat": 1,
+      "trace": {
+        "bytes": 21806,
+        "sha256": "a4838fac461364dce95f0f68e7a3c927ed4f264c88f6629fc2b2bafc607205b4",
+        "file": "trace-1.jsonl"
+      },
+      "sample": {
+        "bytes": 2027,
+        "sha256": "5ff403b8493652dcaa4ec4c985bc9760e698371a3dae0fe289a17aadacc8376d"
+      },
+      "workflow_file": {
+        "bytes": 2686,
+        "sha256": "9312881e90286002d2fa5eed62142eb0dc794fa0a6322ad5ced9495a65acd97b"
+      },
+      "trace_rows": 72,
+      "turns": 45,
+      "first_elapsed_ms": 63,
+      "complete_before_close_ms": 1527,
+      "truncated": false,
+      "exit_code": 0,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 27,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "cases": {
+        "occupied": {
+          "received": 270,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": {
+            "reason": "ordinary",
+            "publication_succeeded": false,
+            "expected_requester_gone": false,
+            "native_error": 0,
+            "release_event": true,
+            "thread_exited": true
+          }
+        },
+        "oversize": {
+          "received": 270,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": null
+        },
+        "cancel": {
+          "received": 268,
+          "helper_exited": true,
+          "retry": true,
+          "owner_release": {
+            "reason": "requester-cancelled",
+            "publication_succeeded": false,
+            "expected_requester_gone": true,
+            "native_error": 1418,
+            "release_event": true,
+            "thread_exited": true
+          }
+        },
+        "close": {
+          "received": 256,
+          "helper_exited": true,
+          "retry": false,
+          "owner_release": {
+            "reason": "target-closed",
+            "publication_succeeded": false,
+            "expected_requester_gone": true,
+            "native_error": 1418,
+            "release_event": true,
+            "thread_exited": true
+          }
+        }
+      }
+    }
+  ],
+  "scope": "Original timeout not reproduced in this fixed batch. No causal fix, product acceptance, performance or WindTerm equivalence claim.",
+  "configuration": {
+    "core": "default",
+    "conpty": "system",
+    "host": "GitHub-hosted windows-2025",
+    "trace_enabled": true,
+    "method": "ShellTests.test_system_clipboard_product_read_errors_cancel_and_close",
+    "repeats": 2,
+    "launcher_deadline_seconds": 45,
+    "outer_deadline_seconds": 60
+  },
+  "ci": [
+    {
+      "run_id": 40459936505,
+      "event": "push",
+      "workflow": "default",
+      "source": "b9789543a792b0a0b96139377ea43f4dfab46626",
+      "windows": {
+        "job_id": 122041868650,
+        "passed": 50,
+        "total": 52,
+        "seconds": 280.05,
+        "failures": [
+          "workflow artifact-path count assertion",
+          "ui-copy-system repeat 1 OpenClipboard: 5"
+        ]
+      },
+      "linux": {
+        "job_id": 122041868427,
+        "passed": 32,
+        "total": 33,
+        "seconds": 12.67,
+        "failures": [
+          "workflow artifact-path count assertion"
+        ]
+      }
+    },
+    {
+      "run_id": 40459942201,
+      "event": "pull_request",
+      "workflow": "default",
+      "source": "b58c029fc0f861c2e7d251d125b18ec70e80dda9",
+      "trace_enabled": false,
+      "windows": {
+        "job_id": 122041885778,
+        "passed": 51,
+        "total": 52,
+        "seconds": 276.72,
+        "failures": [
+          "workflow artifact-path count assertion"
+        ]
+      },
+      "linux": {
+        "job_id": 122041885396,
+        "passed": 32,
+        "total": 33,
+        "seconds": 12.95,
+        "failures": [
+          "workflow artifact-path count assertion"
+        ]
+      }
+    },
+    {
+      "run_id": 40459936582,
+      "event": "push",
+      "workflow": "external-candidate",
+      "trace_enabled": false,
+      "conclusion": "success"
+    },
+    {
+      "run_id": 40459942259,
+      "event": "pull_request",
+      "workflow": "external-candidate",
+      "trace_enabled": false,
+      "conclusion": "success"
+    }
+  ],
+  "observation_sources": {
+    ".github/workflows/build.yml": "1508ad7b088ab24e66f7eb45164892843ed1d56ba7b99f9e1345b362d4c43d5a",
+    "experiments/shell/clipboard_scenario_state.hpp": "1e99dcfd4eed0b036c89bf08f7dbdb7b6e95f3a166ebff9fe337cb4aafbd9f73",
+    "experiments/shell/workspace_clipboard_scenario.hpp": "b19e32352b5c0b3417ee04ad41b1badc423f6e1ab3749d59a79cd716af20bbd4"
+  },
+  "limitations": [
+    "Trace file I/O can alter scheduling; successful observation cannot explain the original timeout.",
+    "Begin/end events observe call boundaries; owner atomic fields are not one coherent snapshot.",
+    "complete_before_close_ms ends before close_all and is not natural-exit or presentation latency.",
+    "The CI receipt hashes clean-build files; unarchived EXE bytes were not independently rehashed locally.",
+    "Original private workflow files include process identity and remain local; only whitelisted summaries and content-free traces are published.",
+    "Default and candidate, push and PR, and observation and cleanup runs retain separate identities.",
+    "Temporary instrumentation and CI opt-in are removed after this batch; their exact source remains in the observation commit."
+  ]
+}

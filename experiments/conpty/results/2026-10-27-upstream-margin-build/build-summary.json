@@ -1,0 +1,266 @@
+{
+  "schema": "termforge-upstream-conpty-build-v1",
+  "purpose": "isolated source-build and adapter experiment; not an official ConPTY package",
+  "status": "adapter-verified-runtime-unverified",
+  "termforge_source": "eb88c25fea343cff92bd7d5c03e74c55df6bafff",
+  "upstream_source": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+  "vcpkg_source": "927f62e4b8838bd7e441e9c45103a16ffd75007e",
+  "image_os": "win25-vs2026",
+  "image_version": "20261021.278.1",
+  "workflow_run": "40447628163",
+  "workflow_attempt": "1",
+  "configuration": "Release/x64/v145/WindowsSDK10.0.26100.0",
+  "stages": [
+    {
+      "name": "vcpkg-tool-download",
+      "exit_code": 0,
+      "elapsed_seconds": 0.5864599,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "vcpkg-version",
+      "exit_code": 0,
+      "elapsed_seconds": 0.029197,
+      "log_sha256": "fea4ead8f40a8aeca48fc22406d6102a7f1e07373fc0d6a5decb129457a43161"
+    },
+    {
+      "name": "nuget-restore",
+      "exit_code": 0,
+      "elapsed_seconds": 10.1804599,
+      "log_sha256": "c868754fca3b184523987c5c0ea4064a4c6e260955437bcb35a588298fc8d14e"
+    },
+    {
+      "name": "baseline-patch-check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0519633,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "baseline-test-patch",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0446913,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "baseline-proxy-build",
+      "exit_code": 0,
+      "elapsed_seconds": 88.2472551,
+      "log_sha256": "30c4807f5bb76565f5f2f7de380afcde17cd814f4165771b7057b41e0d69bf60"
+    },
+    {
+      "name": "baseline-types-build",
+      "exit_code": 0,
+      "elapsed_seconds": 10.7958636,
+      "log_sha256": "2517edeadee0c2ece0eb57d76fc9b638eb4c24dcb36bff67d7aff6bce2c01fd4"
+    },
+    {
+      "name": "baseline-buffer-build",
+      "exit_code": 0,
+      "elapsed_seconds": 16.3077754,
+      "log_sha256": "5e0cd5be3d1fa74b0db5bd0ca246b75cad536912d1264cb2a04ce5243fe483cc"
+    },
+    {
+      "name": "baseline-render-base-build",
+      "exit_code": 0,
+      "elapsed_seconds": 8.5950454,
+      "log_sha256": "6a80b6b730498b86e451d25f08194d592438d4f02dca945aa6dd7ad4c67919c4"
+    },
+    {
+      "name": "baseline-render-gdi-build",
+      "exit_code": 0,
+      "elapsed_seconds": 7.4118507,
+      "log_sha256": "5ffba2be38849e5bedbc3f852b4a416fbc44eb25b859c0ad59115626ece82867"
+    },
+    {
+      "name": "baseline-adapter-build",
+      "exit_code": 0,
+      "elapsed_seconds": 114.0402119,
+      "log_sha256": "27de5599e32a701c602340f27ae0c9ca1cdf9c42ec2b9c9ab5f169a2c204f631"
+    },
+    {
+      "name": "baseline-regression",
+      "exit_code": 1,
+      "elapsed_seconds": 0.304792,
+      "log_sha256": "d1907fb1f5e1dd008eef1b1e5611d6533d37538df0a2a6cba0871784cb8d4988"
+    },
+    {
+      "name": "baseline-regression-contract",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0679866,
+      "log_sha256": "b7aa5de14c43240cceac182a506bd51937189c7b22b4a3998c8ec37bba6f1896"
+    },
+    {
+      "name": "production-patch-check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.04526,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "production-patch",
+      "exit_code": 0,
+      "elapsed_seconds": 0.044372,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "patched-adapter-build",
+      "exit_code": 0,
+      "elapsed_seconds": 10.4338222,
+      "log_sha256": "29d597ee653b103114c0d7fdaad3fe694350d54f3914a0b6cc42ea251b84b928"
+    },
+    {
+      "name": "patched-regression",
+      "exit_code": 0,
+      "elapsed_seconds": 0.2892821,
+      "log_sha256": "b0413a44a181bbd07e81dcf612d18a00423baa01da4a28d0759004dc2603873c"
+    },
+    {
+      "name": "patched-regression-contract",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0721329,
+      "log_sha256": "da281146aa232fafccb57afd0100781005fc28c4625a5a782e0513e12912573d"
+    },
+    {
+      "name": "patched-adapter",
+      "exit_code": 0,
+      "elapsed_seconds": 3.0609593,
+      "log_sha256": "343a699ea0b2bf861cf9af70d8a93e5660f1086a73d59c3b9ab48971acd66704"
+    },
+    {
+      "name": "patched-adapter-contract",
+      "exit_code": 0,
+      "elapsed_seconds": 0.0728841,
+      "log_sha256": "332b578d7b8603574df41dea702bfb7ef14c7e201ff24b194c57a0bf61c2ff4f"
+    },
+    {
+      "name": "patched-propsheet-build",
+      "exit_code": 0,
+      "elapsed_seconds": 14.8334641,
+      "log_sha256": "b0ca024bae4050c4acbc7bea2ba6435710a8d7ea4b8f70fe351d79dba20f8eaf"
+    },
+    {
+      "name": "patched-host-build",
+      "exit_code": 0,
+      "elapsed_seconds": 28.4543468,
+      "log_sha256": "3186d0fc9afea5dd466b68042787b259cf722a84d8a429850309d5a1d4e50bb8"
+    },
+    {
+      "name": "patched-dll-build",
+      "exit_code": 0,
+      "elapsed_seconds": 12.3535776,
+      "log_sha256": "1dbb9fc9a551831d8d69ad67a7142e3247c28f92982a04bf42784be75ea8c650"
+    }
+  ],
+  "test_binaries": [
+    {
+      "stage": "baseline-regression",
+      "test_dll_sha256": "3e161442de1785596a54f489d3c0b468a22b16ae8966a6dcb3402bbd70052856",
+      "taef_sha256": "b729c665a51a1e36dc24152ecde4e4a7efb618b75dc7387d8c6edb103ef952c1"
+    },
+    {
+      "stage": "patched-regression",
+      "test_dll_sha256": "6a5c51aaeee2ef99eff4c0257c20e4bbaf9b4c2efb509a4d2b6a424cccb8a16b",
+      "taef_sha256": "b729c665a51a1e36dc24152ecde4e4a7efb618b75dc7387d8c6edb103ef952c1"
+    },
+    {
+      "stage": "patched-adapter",
+      "test_dll_sha256": "6a5c51aaeee2ef99eff4c0257c20e4bbaf9b4c2efb509a4d2b6a424cccb8a16b",
+      "taef_sha256": "b729c665a51a1e36dc24152ecde4e4a7efb618b75dc7387d8c6edb103ef952c1"
+    }
+  ],
+  "adapter_tests_verified": true,
+  "native_runtime_verified": false,
+  "full_r2_contract_verified": false,
+  "product_backend_selected": false,
+  "vcpkg_shallow": "false",
+  "patch_sha256": "dc27377e399bd0217a0b76e16cc89f087c1b781929e4c958ad30c3a475322b81",
+  "source_hashes_verified": true,
+  "tools": {
+    "visual_studio": "18.0",
+    "msvc": "14.51.36231",
+    "sdk": "10.0.26100.0\\",
+    "compiler_sha256": "b0a1818ebae6da7f18230a84e76ce839212584ac4c2ab55b97a0d5268085da57",
+    "msbuild_sha256": "fc55d2743dbbb20708b2ca6084fc5b036a2ce72291ff989eae94ad8220ae2f74"
+  },
+  "vcpkg_exe_sha256": "f1edbf3a39de350e2bb065214fdc057111aa87a2e2ed9a7dcb8ddc86e17751b9",
+  "files": {
+    "OpenConsole.exe": {
+      "sha256": "6516b5c9b890d810ba9f178d082d69f664bce775acb2820e9d40f297ae037bdb",
+      "bytes": 1147392
+    },
+    "conpty.dll": {
+      "sha256": "22710cf4e1ddd94bd76888717e394be556644d137b08355884649a63ee5b7590",
+      "bytes": 108544
+    }
+  },
+  "nuget_packages": [
+    {
+      "name": "Appium.WebDriver.3.0.0.2.nupkg",
+      "sha256": "c67adece6bd5730036812af29614a7e5699f048b8e0d261841f47d2007358702"
+    },
+    {
+      "name": "Castle.Core.4.1.1.nupkg",
+      "sha256": "c3f130d751103ec89a4ec24ec4f3c8bfa02c4d7ca70a865b68c79eddae5dea45"
+    },
+    {
+      "name": "Microsoft.Internal.PGO-Helpers.Cpp.0.2.34.nupkg",
+      "sha256": "92aca6465e2cbe04b312d8255d15d7af2e5cfceee59fc91194c1228283bfc453"
+    },
+    {
+      "name": "Microsoft.Internal.Windows.Terminal.ThemeHelpers.0.8.250811004.nupkg",
+      "sha256": "c70c34c5ed0b937a23285402396c3f23523496dca59ede2aaddc2914f6ea339d"
+    },
+    {
+      "name": "Microsoft.MSBuildCache.AzurePipelines.0.1.283-preview.nupkg",
+      "sha256": "9a5a7815a175000b8c608d94727758f0c22a8e6d5f318515169cf9d003b36f82"
+    },
+    {
+      "name": "Microsoft.MSBuildCache.Local.0.1.283-preview.nupkg",
+      "sha256": "732767cf82dc8d4e83790d9421c4c7bdbb7b5bbc6e9ca3bb2d3e79cb92dbed79"
+    },
+    {
+      "name": "Microsoft.MSBuildCache.SharedCompilation.0.1.283-preview.nupkg",
+      "sha256": "40d947d33e2b31341870831b320de4db2926026e2e0dbdcb71099fae1a876f34"
+    },
+    {
+      "name": "Microsoft.Taef.10.100.251104001.nupkg",
+      "sha256": "46b1290acaebc7cbcd3c4ac2522d9526cd7c4dad3a618759754619a052396a4b"
+    },
+    {
+      "name": "Microsoft.UI.Xaml.2.8.4.nupkg",
+      "sha256": "486dbe1f271b31057ec01ecb7ce4df3eedad11efdc26569170fb128ee4a4e964"
+    },
+    {
+      "name": "Microsoft.VisualStudio.Setup.Configuration.Native.2.3.2262.nupkg",
+      "sha256": "43c2d1c5694a846d04d5f1cb3c3a8269ebad3b0432954da2948e53b33c5ed5fb"
+    },
+    {
+      "name": "Microsoft.Web.WebView2.1.0.1661.34.nupkg",
+      "sha256": "bad4c011c20ab68526c4c1448da05a6297586806123019ac89387fc62f46c3ce"
+    },
+    {
+      "name": "Microsoft.Windows.CppWinRT.2.0.250303.1.nupkg",
+      "sha256": "955e3051b35db1c00177ed14ab6b7b995c3b32a53fdb6c184ea53b1dba66e439"
+    },
+    {
+      "name": "Microsoft.Windows.ImplementationLibrary.1.0.250325.1.nupkg",
+      "sha256": "b3e3ac9077c4f5f96bd8f90785bcae47bac6ba9688d896cd04422c8972ec5b2b"
+    },
+    {
+      "name": "Microsoft.WindowsPackageManager.ComInterop.1.8.1911.nupkg",
+      "sha256": "9b8a8a5186a554e56fcb7997b6ea48f3432813c0945a2d9ba60930d1241cfe2b"
+    },
+    {
+      "name": "Newtonsoft.Json.13.0.1.nupkg",
+      "sha256": "2b6b52556e27e1b7913f33eedeb95568110c746bd64afff74357f1683878323a"
+    },
+    {
+      "name": "Selenium.Support.3.5.0.nupkg",
+      "sha256": "0716656ae84c72cc31595ee2f06bf1f59311b96f813f9ada3d31d7f7f72ffb82"
+    },
+    {
+      "name": "Selenium.WebDriver.3.5.0.nupkg",
+      "sha256": "79c41eb770a8728a15ddf27c7ac41ca433597983ac37e4db7746a52e16cec876"
+    }
+  ],
+  "vcpkg_status_sha256": "9957c37c4d2da3b71509a3180374a6b5ddb4126f9e1a6cffe46a9ea0c307337c"
+}

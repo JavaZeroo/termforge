@@ -1,0 +1,1100 @@
+{
+  "schema": 1,
+  "issue": 63,
+  "source_commit": "dd533878538490c2464673218ea0000c6467a495",
+  "product_source_equivalent_to": "c662011616a0498e0fbd6af8019f5f3cc03fdcaa",
+  "configuration": "candidate termforge.5 / explicit official ConPTY 1.25.260930003 / flags24",
+  "windows_version": "10.0.26200",
+  "presented_done": null,
+  "performance_claim": false,
+  "finding": "Existing #51 native_viewport policy also resolves captured ui stage52 and ui-main stage7 stale-tail failures; no new product change.",
+  "hypotheses_ranked_before_instrumentation": [
+    "candidate/native viewport layout divergence",
+    "child size query before real resize applied",
+    "incomplete command or output delivery"
+  ],
+  "original_reproduction": [
+    {
+      "mode": "ui",
+      "source_commit": "188228ebe1a4e6cd3779fc7c6b150624514886fb",
+      "candidate_version": "termforge.4",
+      "shell_sha256": "e81d92a8c7d380d4c33639861180b04935e021bc7c1a5179197c8a9e3c83454a",
+      "unchanged_binary_verified_after": true,
+      "cases": [
+        {
+          "status": "passed",
+          "exit_code": 0,
+          "timed_out": false,
+          "stderr": "",
+          "job_after": {
+            "active": 0,
+            "total": 15,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "sample_sha256": "5749ce08975d166621625e1fc756108ce2ff05b17d348fe3795c56ced1f189ec"
+        },
+        {
+          "status": "passed",
+          "exit_code": 0,
+          "timed_out": false,
+          "stderr": "",
+          "job_after": {
+            "active": 0,
+            "total": 15,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "sample_sha256": "5f47ee907b86e2bc1c6df13d4bd9bfe83b9e79a22081f084acd1947acf037ca8"
+        },
+        {
+          "status": "failed",
+          "exit_code": 2,
+          "timed_out": false,
+          "stderr": "workspace scenario timeout: stage=52 client=2048x1120",
+          "job_after": {
+            "active": 0,
+            "total": 12,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "sample_sha256": "7ff419167b1039def1ff3eddabd9d1d9694d91cb9eebe9c5b24ccd90ecbbc229"
+        }
+      ],
+      "test_log_sha256": "d6ac3fa071ba5f551a4ad7951ddd0a620044ed05c13f78e6584dc90036b2e888",
+      "original_repetitions": 3,
+      "inner_seconds": 20,
+      "outer_seconds": 40
+    },
+    {
+      "mode": "main",
+      "source_commit": "188228ebe1a4e6cd3779fc7c6b150624514886fb",
+      "candidate_version": "termforge.4",
+      "shell_sha256": "e81d92a8c7d380d4c33639861180b04935e021bc7c1a5179197c8a9e3c83454a",
+      "unchanged_binary_verified_after": true,
+      "cases": [
+        {
+          "status": "passed",
+          "exit_code": 0,
+          "timed_out": false,
+          "stderr": "",
+          "job_after": {
+            "active": 0,
+            "total": 22,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "sample_sha256": "b7c48f3af87b79247157f445d6ba05173dbbb241e0c5e9c901107177d04a1081"
+        },
+        {
+          "status": "passed",
+          "exit_code": 0,
+          "timed_out": false,
+          "stderr": "",
+          "job_after": {
+            "active": 0,
+            "total": 22,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "sample_sha256": "a79b445bb25b00cd9e42b38b1c3202ae20c8e71df3c9d382b530fb3e5fd2973d"
+        },
+        {
+          "status": "failed",
+          "exit_code": 2,
+          "timed_out": false,
+          "stderr": "workspace main scenario timeout: stage=7",
+          "job_after": {
+            "active": 0,
+            "total": 16,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "sample_sha256": "e86c1d45ad8d26597883877bfac564278eff3ecfb0e4d5a9fb5fa46da13c3f0d"
+        }
+      ],
+      "test_log_sha256": "b458b5b63498b19b70ae8edc85413a9bfe25a3a9005b61dfde6922f5fd5cd9c3",
+      "original_repetitions": 3,
+      "inner_seconds": 30,
+      "outer_seconds": 40
+    }
+  ],
+  "diagnostics": [
+    {
+      "mode": "ui",
+      "protocol": {
+        "source": "d6b3f798c82fd07cd0c88d989bfce3876c9692fa",
+        "baseline": {
+          "experiments/shell/shell.cpp": "b4f6fe98812d1d23fa5f5bbcc7376437404af6cdb67cd6cdcdf448b57cb31fe9",
+          "experiments/shell/workspace_scenarios.hpp": "c9a40dc370bf538c24b62b6177795975b4fac84ff78b0055117f7203b58a7b7d",
+          "experiments/shell/size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4"
+        },
+        "instrumented": {
+          "experiments/shell/shell.cpp": "d89c38f28c5f1a1a44aa72b73d825e01a4040ab0d194154b7a575f05408c8a3c",
+          "experiments/shell/workspace_scenarios.hpp": "a8fb5b8386c745520b7c1debc10ef3a00cb16751058966ba211aa7ddb4ab5145",
+          "experiments/shell/size_client.cpp": "2b15ce2e75f6e02e48d5d87efca1f50df67e9f39c1229fa0af8978fe3bf8f79e"
+        },
+        "policy": "same binary; only TERMFORGE_R63_LEGACY_REFLOW switches native_viewport/reflow_history",
+        "max_runs": 2,
+        "order": [
+          "legacy-reflow",
+          "native-viewport"
+        ],
+        "stop": "no retries; do not continue if first result differs from original stage52; stop after both cases",
+        "limits": {
+          "resize_events_per_snapshot": 1024,
+          "transport_bytes_per_snapshot": 131072,
+          "native_cells_per_helper": 100000
+        },
+        "original_deadlines": {
+          "inner_seconds": 20,
+          "outer_seconds": 40
+        }
+      },
+      "cases": [
+        {
+          "policy": "reflow",
+          "shell_sha256": "f207f8a0fe1c8093e478e406d4ab84890dd7e6f1fff16b5be92399808d5b5da9",
+          "size_helper_sha256": "27285fc361b911a2e7892681846933d729d77e1b4e46d30310a64ed9c1624ce9",
+          "backend_files": {
+            "conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+            "conpty-backend/LICENSE": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+            "conpty-backend/manifest.json": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+            "conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+          },
+          "outcome": {
+            "status": "failed",
+            "exit_code": 2,
+            "timed_out": false,
+            "stderr": "workspace scenario timeout: stage=52 client=2048x1120",
+            "job_after": {
+              "active": 0,
+              "total": 12,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "sample_sha256": "5795c43f744207c9deaa8e30917fd70fff0848be8ca7e50a457cc9cbec65b691"
+          },
+          "bottom": {
+            "grid": [
+              169,
+              11
+            ],
+            "marker": "TF_SIZE_169x11",
+            "marker_row": 6,
+            "core_exact_marker": false,
+            "visible_matches_core": true,
+            "unexpected_suffix_bytes": 69,
+            "core_marker_line_sha256": "e5dc9dab268f0d43dde76e1b40639dbf5cf3a05e79b2ecb2d6f48e3a76f3f7c8",
+            "native": {
+              "query_size": [
+                169,
+                11
+              ],
+              "after_size": [
+                169,
+                11
+              ],
+              "exact_marker": "TF_SIZE_169x11",
+              "marker_row": 6,
+              "written_bytes": 18,
+              "write_ok": true,
+              "read_ok": true,
+              "metadata_sha256": "9c34c4b6bdb02956a3a4f6d8d189bf74493a7fd0cc8351071cd1fd72d9b70bd6",
+              "native_cells_sha256": "40d85ffb0dd8b154c96792e1c0aab7ef0ba8dd24247daf70d1d239f9a25632ea"
+            },
+            "resize": {
+              "requested": 6,
+              "completed": 6,
+              "working": 0
+            },
+            "input_rejected": 0,
+            "transport_bytes": 2814,
+            "event_count": 50,
+            "truncated": false,
+            "native_viewport": false,
+            "parser_resize_grids": [
+              [
+                82,
+                5
+              ],
+              [
+                82,
+                15
+              ],
+              [
+                82,
+                5
+              ],
+              [
+                82,
+                20
+              ],
+              [
+                82,
+                5
+              ],
+              [
+                169,
+                11
+              ]
+            ],
+            "state_sha256": "a715b12b40b79d420ce18ce7b8efb9a55277c6d8f343e3399e32041b3f62578c",
+            "trace_sha256": "9189923f9d741911aa0c3f466ec17db370abaa91afd2278061232c75a9df81d1",
+            "transport_sha256": "fd5df6523d1cc87c996e8d83e7b4d7c16a42da31487b60846750e39df30bd07a"
+          },
+          "input_layout_sha256": "ba784527a981f5b90525d971197f57d9f25485e9856feb377ad45ea34eb370e4",
+          "runner_sha256": "4deb18d076a2aaca4571dc2f1ac2e6a3d67c28c95de6fd8f559e120265c60c04",
+          "case_identity_sha256": "696dd1c1e371c753b187a55e98c4080a2e9404fa40e94386bad737be1489d407"
+        },
+        {
+          "policy": "native",
+          "shell_sha256": "f207f8a0fe1c8093e478e406d4ab84890dd7e6f1fff16b5be92399808d5b5da9",
+          "size_helper_sha256": "27285fc361b911a2e7892681846933d729d77e1b4e46d30310a64ed9c1624ce9",
+          "backend_files": {
+            "conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+            "conpty-backend/LICENSE": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+            "conpty-backend/manifest.json": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+            "conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+          },
+          "outcome": {
+            "status": "passed",
+            "exit_code": 0,
+            "timed_out": false,
+            "stderr": "",
+            "job_after": {
+              "active": 0,
+              "total": 15,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "sample_sha256": "1ed1047ba01a534a612d0b38d8e4389268494ec04230f6b59949600c1aedd0cb"
+          },
+          "bottom": {
+            "grid": [
+              169,
+              11
+            ],
+            "marker": "TF_SIZE_169x11",
+            "marker_row": 6,
+            "core_exact_marker": true,
+            "visible_matches_core": true,
+            "unexpected_suffix_bytes": 0,
+            "core_marker_line_sha256": "f68f745acd26a08bd159d31b4517873821bb08a81589ea33419412f3ed8553b4",
+            "native": {
+              "query_size": [
+                169,
+                11
+              ],
+              "after_size": [
+                169,
+                11
+              ],
+              "exact_marker": "TF_SIZE_169x11",
+              "marker_row": 6,
+              "written_bytes": 18,
+              "write_ok": true,
+              "read_ok": true,
+              "metadata_sha256": "9c34c4b6bdb02956a3a4f6d8d189bf74493a7fd0cc8351071cd1fd72d9b70bd6",
+              "native_cells_sha256": "40d85ffb0dd8b154c96792e1c0aab7ef0ba8dd24247daf70d1d239f9a25632ea"
+            },
+            "resize": {
+              "requested": 6,
+              "completed": 6,
+              "working": 0
+            },
+            "input_rejected": 0,
+            "transport_bytes": 2744,
+            "event_count": 48,
+            "truncated": false,
+            "native_viewport": true,
+            "parser_resize_grids": [
+              [
+                82,
+                5
+              ],
+              [
+                82,
+                15
+              ],
+              [
+                82,
+                5
+              ],
+              [
+                82,
+                20
+              ],
+              [
+                82,
+                5
+              ],
+              [
+                169,
+                11
+              ]
+            ],
+            "state_sha256": "7bb36d8515d70e97c644470c49226a572ff9fa8bd9ec8de93f9e0d53c7b1e757",
+            "trace_sha256": "0012049e554648b8dd4f94074563a4d0e6c9d9700fcd48ce51bf9d679f5a0585",
+            "transport_sha256": "f449a77d40db369d69a8fb03bfcf632a53325fa10fa12b1e05ed43d077b7c763"
+          },
+          "input_layout_sha256": "ba784527a981f5b90525d971197f57d9f25485e9856feb377ad45ea34eb370e4",
+          "runner_sha256": "4deb18d076a2aaca4571dc2f1ac2e6a3d67c28c95de6fd8f559e120265c60c04",
+          "case_identity_sha256": "99c9c1f3244081bca5fb8f8de8d62056dcd745700ab1e4861c91209cb87b99b2"
+        }
+      ],
+      "captured_replay": {
+        "replay_sha256": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+        "cases": [
+          {
+            "policy": "reflow",
+            "returncode": 0,
+            "exact_marker": false,
+            "matches_live_core": true,
+            "marker_line_sha256": [
+              "e5dc9dab268f0d43dde76e1b40639dbf5cf3a05e79b2ecb2d6f48e3a76f3f7c8"
+            ]
+          },
+          {
+            "policy": "native",
+            "returncode": 0,
+            "exact_marker": true,
+            "matches_live_core": false,
+            "marker_line_sha256": [
+              "f68f745acd26a08bd159d31b4517873821bb08a81589ea33419412f3ed8553b4"
+            ]
+          }
+        ]
+      },
+      "replay_report_sha256": "2577bc1c45aeaa99774881a311676f8ee102c1344f69d47bed4a84f6a30ea823",
+      "instrumentation_patch_sha256": "c836d8b8c0c8350990e63e42960287e5a186c5679da24e0e94b394de73f4daa7"
+    },
+    {
+      "mode": "ui-main",
+      "protocol": {
+        "source": "d6b3f798c82fd07cd0c88d989bfce3876c9692fa",
+        "instrumented_sha256": {
+          "experiments/shell/shell.cpp": "d89c38f28c5f1a1a44aa72b73d825e01a4040ab0d194154b7a575f05408c8a3c",
+          "experiments/shell/workspace_scenarios.hpp": "a8fb5b8386c745520b7c1debc10ef3a00cb16751058966ba211aa7ddb4ab5145",
+          "experiments/shell/workspace_main_scenario.hpp": "3a747624e063f094d7c3a60f87029637a704bc2a41081e9f1dbb84bad6390802",
+          "experiments/shell/size_client.cpp": "2b15ce2e75f6e02e48d5d87efca1f50df67e9f39c1229fa0af8978fe3bf8f79e"
+        },
+        "policy": "same binary, only TERMFORGE_R63_LEGACY_REFLOW switch",
+        "max_runs": 2,
+        "order": [
+          "legacy-reflow",
+          "native-viewport"
+        ],
+        "stop": "no retries; stop if first differs from original stage7; stop after both cases",
+        "inner_seconds": 30,
+        "outer_seconds": 40,
+        "scope": "original ui-main with third-run narrow settings"
+      },
+      "cases": [
+        {
+          "policy": "reflow",
+          "shell_sha256": "97c9f0234101a9414b8355e2f167695802458f7c43b33d06cf667571014fdc73",
+          "size_helper_sha256": "27285fc361b911a2e7892681846933d729d77e1b4e46d30310a64ed9c1624ce9",
+          "backend_files": {
+            "conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+            "conpty-backend/LICENSE": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+            "conpty-backend/manifest.json": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+            "conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+          },
+          "outcome": {
+            "status": "failed",
+            "exit_code": 2,
+            "timed_out": false,
+            "stderr": "workspace main scenario timeout: stage=7",
+            "job_after": {
+              "active": 0,
+              "total": 16,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "sample_sha256": "c38a8e52005f17ed0324e40eb25d6d818366ffac73d11458c3d5a007eb320a1d"
+          },
+          "bottom": {
+            "grid": [
+              169,
+              11
+            ],
+            "marker": "TF_SIZE_169x11",
+            "marker_row": 6,
+            "core_exact_marker": false,
+            "visible_matches_core": true,
+            "unexpected_suffix_bytes": 69,
+            "core_marker_line_sha256": "e5dc9dab268f0d43dde76e1b40639dbf5cf3a05e79b2ecb2d6f48e3a76f3f7c8",
+            "native": {
+              "query_size": [
+                169,
+                11
+              ],
+              "after_size": [
+                169,
+                11
+              ],
+              "exact_marker": "TF_SIZE_169x11",
+              "marker_row": 6,
+              "written_bytes": 18,
+              "write_ok": true,
+              "read_ok": true,
+              "metadata_sha256": "9c34c4b6bdb02956a3a4f6d8d189bf74493a7fd0cc8351071cd1fd72d9b70bd6",
+              "native_cells_sha256": "40d85ffb0dd8b154c96792e1c0aab7ef0ba8dd24247daf70d1d239f9a25632ea"
+            },
+            "resize": {
+              "requested": 4,
+              "completed": 4,
+              "working": 0
+            },
+            "input_rejected": 0,
+            "transport_bytes": 3091,
+            "event_count": 36,
+            "truncated": false,
+            "native_viewport": false,
+            "parser_resize_grids": [
+              [
+                82,
+                5
+              ],
+              [
+                82,
+                20
+              ],
+              [
+                82,
+                5
+              ],
+              [
+                169,
+                11
+              ]
+            ],
+            "state_sha256": "4eeac0ebae0fc836fc1c0a717189d8c0b500552ba6351d2f905141b157b6d994",
+            "trace_sha256": "2737573c91fa603900513e1dc4de8c4d9ec1daf9fc68494213d1f4ffd4180cdb",
+            "transport_sha256": "594ed5e2996878a07a29a74d33ebe1191e389934dfb0dcaa717630974c1531b6"
+          },
+          "input_layout_sha256": "ba784527a981f5b90525d971197f57d9f25485e9856feb377ad45ea34eb370e4",
+          "runner_sha256": "ff9079dc9957d2d12a141d96637e98ac19a639fed94a848012db478043efce78",
+          "case_identity_sha256": "bceaf6fba5f700ba8def685296e543e41e3ea71396aadd9e890f4cf8ad04416c",
+          "main": {
+            "grid": [
+              112,
+              24
+            ],
+            "marker": "TF_SIZE_112x24",
+            "marker_row": 10,
+            "core_exact_marker": true,
+            "visible_matches_core": true,
+            "unexpected_suffix_bytes": 0,
+            "core_marker_line_sha256": "808e8570040f670407f7cc3842ca9dfc6bd0acd2e46ac8885f79bea32a559d4c",
+            "native": {
+              "query_size": [
+                112,
+                24
+              ],
+              "after_size": [
+                112,
+                24
+              ],
+              "exact_marker": "TF_SIZE_112x24",
+              "marker_row": 10,
+              "written_bytes": 18,
+              "write_ok": true,
+              "read_ok": true,
+              "metadata_sha256": "cf821e7760d9e30d50d3c1486e05910cbc218711275dc9ea28ca4ae3bc84003f",
+              "native_cells_sha256": "baed700dba2d4d4fdf239e01d0de08aa15ce95739c0037445f9a08603c416ee0"
+            },
+            "resize": {
+              "requested": 2,
+              "completed": 2,
+              "working": 0
+            },
+            "input_rejected": 0,
+            "transport_bytes": 2857,
+            "event_count": 23,
+            "truncated": false,
+            "native_viewport": false,
+            "parser_resize_grids": [
+              [
+                54,
+                12
+              ],
+              [
+                112,
+                24
+              ]
+            ],
+            "state_sha256": "1b0c3589f967d5277982588d3eefb6e1e9c32d946da66f5c5203f2b964a584d2",
+            "trace_sha256": "436c2eebe465ddbb65c13e67f6b5ecf21e38372b85efa0a6b074e8ef8996a459",
+            "transport_sha256": "d3290f1e27b493fe8d4cfafb989de7e21d6b0be24caffc1173a247015788bd83"
+          }
+        },
+        {
+          "policy": "native",
+          "shell_sha256": "97c9f0234101a9414b8355e2f167695802458f7c43b33d06cf667571014fdc73",
+          "size_helper_sha256": "27285fc361b911a2e7892681846933d729d77e1b4e46d30310a64ed9c1624ce9",
+          "backend_files": {
+            "conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+            "conpty-backend/LICENSE": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+            "conpty-backend/manifest.json": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+            "conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+          },
+          "outcome": {
+            "status": "passed",
+            "exit_code": 0,
+            "timed_out": false,
+            "stderr": "",
+            "job_after": {
+              "active": 0,
+              "total": 22,
+              "terminated": 0
+            },
+            "desktop_gone": true,
+            "sample_sha256": "b05be1041e2cdadc96ddfeabf3dba8b2594688f4147ea2e8994f51f586112f72"
+          },
+          "bottom": {
+            "grid": [
+              169,
+              11
+            ],
+            "marker": "TF_SIZE_169x11",
+            "marker_row": 6,
+            "core_exact_marker": true,
+            "visible_matches_core": true,
+            "unexpected_suffix_bytes": 0,
+            "core_marker_line_sha256": "f68f745acd26a08bd159d31b4517873821bb08a81589ea33419412f3ed8553b4",
+            "native": {
+              "query_size": [
+                169,
+                11
+              ],
+              "after_size": [
+                169,
+                11
+              ],
+              "exact_marker": "TF_SIZE_169x11",
+              "marker_row": 6,
+              "written_bytes": 18,
+              "write_ok": true,
+              "read_ok": true,
+              "metadata_sha256": "9c34c4b6bdb02956a3a4f6d8d189bf74493a7fd0cc8351071cd1fd72d9b70bd6",
+              "native_cells_sha256": "40d85ffb0dd8b154c96792e1c0aab7ef0ba8dd24247daf70d1d239f9a25632ea"
+            },
+            "resize": {
+              "requested": 4,
+              "completed": 4,
+              "working": 0
+            },
+            "input_rejected": 0,
+            "transport_bytes": 2971,
+            "event_count": 35,
+            "truncated": false,
+            "native_viewport": true,
+            "parser_resize_grids": [
+              [
+                82,
+                5
+              ],
+              [
+                82,
+                20
+              ],
+              [
+                82,
+                5
+              ],
+              [
+                169,
+                11
+              ]
+            ],
+            "state_sha256": "62579ab4a1f75bcd7e469f39b27a87e3ab0b76571479a4b1be9f19f357449006",
+            "trace_sha256": "5c4faccbff43baf50474c8a2a74533ea75157cec1b437a37400e511c0efd88c4",
+            "transport_sha256": "7a6c36a62d5506eb13523b203016f196f7b0745e1247f73b95aa256402e861c6"
+          },
+          "input_layout_sha256": "ba784527a981f5b90525d971197f57d9f25485e9856feb377ad45ea34eb370e4",
+          "runner_sha256": "ff9079dc9957d2d12a141d96637e98ac19a639fed94a848012db478043efce78",
+          "case_identity_sha256": "1f7a258244363c026d991e4fba6d40cf51a016bd5dc1c8bdcd2478c99953b253",
+          "main": {
+            "grid": [
+              112,
+              24
+            ],
+            "marker": "TF_SIZE_112x24",
+            "marker_row": 10,
+            "core_exact_marker": true,
+            "visible_matches_core": true,
+            "unexpected_suffix_bytes": 0,
+            "core_marker_line_sha256": "808e8570040f670407f7cc3842ca9dfc6bd0acd2e46ac8885f79bea32a559d4c",
+            "native": {
+              "query_size": [
+                112,
+                24
+              ],
+              "after_size": [
+                112,
+                24
+              ],
+              "exact_marker": "TF_SIZE_112x24",
+              "marker_row": 10,
+              "written_bytes": 18,
+              "write_ok": true,
+              "read_ok": true,
+              "metadata_sha256": "cf821e7760d9e30d50d3c1486e05910cbc218711275dc9ea28ca4ae3bc84003f",
+              "native_cells_sha256": "baed700dba2d4d4fdf239e01d0de08aa15ce95739c0037445f9a08603c416ee0"
+            },
+            "resize": {
+              "requested": 2,
+              "completed": 2,
+              "working": 0
+            },
+            "input_rejected": 0,
+            "transport_bytes": 3027,
+            "event_count": 21,
+            "truncated": false,
+            "native_viewport": true,
+            "parser_resize_grids": [
+              [
+                54,
+                12
+              ],
+              [
+                112,
+                24
+              ]
+            ],
+            "state_sha256": "70b84496873334a34c9cc220478f24795162ad6a39c05ad549cc8104c82f89a0",
+            "trace_sha256": "89a8bb0999e90db6b499da940908aa3f30470f27fe3a00411cbb6d3d0bd4ca2a",
+            "transport_sha256": "524967350ac9ca7898c4ca434895b814b43970a9567dd12f35d2d97ccca1a3ba"
+          }
+        }
+      ],
+      "captured_replay": {
+        "replay_sha256": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+        "cases": [
+          {
+            "session": 1,
+            "policy": "reflow",
+            "returncode": 0,
+            "exact_marker": false,
+            "matches_live_core": true,
+            "marker_line_sha256": [
+              "e5dc9dab268f0d43dde76e1b40639dbf5cf3a05e79b2ecb2d6f48e3a76f3f7c8"
+            ]
+          },
+          {
+            "session": 1,
+            "policy": "native",
+            "returncode": 0,
+            "exact_marker": true,
+            "matches_live_core": false,
+            "marker_line_sha256": [
+              "f68f745acd26a08bd159d31b4517873821bb08a81589ea33419412f3ed8553b4"
+            ]
+          },
+          {
+            "session": 3,
+            "policy": "reflow",
+            "returncode": 0,
+            "exact_marker": true,
+            "matches_live_core": true,
+            "marker_line_sha256": [
+              "808e8570040f670407f7cc3842ca9dfc6bd0acd2e46ac8885f79bea32a559d4c"
+            ]
+          },
+          {
+            "session": 3,
+            "policy": "native",
+            "returncode": 0,
+            "exact_marker": true,
+            "matches_live_core": true,
+            "marker_line_sha256": [
+              "808e8570040f670407f7cc3842ca9dfc6bd0acd2e46ac8885f79bea32a559d4c"
+            ]
+          }
+        ]
+      },
+      "replay_report_sha256": "6bf3f6d315eebe1fe575ca5b4e1c1fcc4564816effac9cc9b6952a8b604d95f7",
+      "instrumentation_patch_sha256": "4f73cb8d27da05741cbc880fda306938eaadd77b709169637e12cf47abdbda49"
+    }
+  ],
+  "minimal_ui_original": {
+    "status": "failed",
+    "exit_code": 2,
+    "timed_out": false,
+    "stderr": "workspace scenario timeout: stage=52 client=2048x1120",
+    "job_after": {
+      "active": 0,
+      "total": 12,
+      "terminated": 0
+    },
+    "desktop_gone": true,
+    "sample_sha256": "e8580998bb507198486a37766027f6d45495b5712d6d038ec69f498c2750c679"
+  },
+  "restored_source_sha256": {
+    "shell.cpp": "b4f6fe98812d1d23fa5f5bbcc7376437404af6cdb67cd6cdcdf448b57cb31fe9",
+    "size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4",
+    "workspace_scenarios.hpp": "c9a40dc370bf538c24b62b6177795975b4fac84ff78b0055117f7203b58a7b7d",
+    "workspace_main_scenario.hpp": "c3994cc60041cd1e7a8599e5c9037473634412bcb6cfd349850ff8cd2808a47e"
+  },
+  "acceptance": {
+    "identity": {
+      "source_commit": "dd533878538490c2464673218ea0000c6467a495",
+      "started_utc": "2026-10-26T23:30:34.047090+00:00",
+      "source_clean": true,
+      "diagnostic_instrumentation": false,
+      "configuration": "candidate termforge.5 / official ConPTY 1.25.260930003 / flags24",
+      "files_sha256": {
+        "alpha_normal_smoke.exe": "55f76e0ef0a68a2d3ee2d047852551b86e63074b84604e59fe6d0893361ba3a6",
+        "candidate_core_test.exe": "4c73b58d7da111ab52b6edbbb59898cf660860fdedaa64c4f49b46fae856a02d",
+        "candidate_reply_close_test.exe": "7431b2d5a414703d85fb9425b07b7df125eb7b5668851cb5383cf575cb620a69",
+        "candidate_resize_replay.exe": "c4cf0d9f68bb5bd688e601b87025f3237c8659f4d80e96bd4f67fa463463a13f",
+        "candidate_title_test.exe": "359141b75c6eeb9a0cc9ef59f9f21ad0d07bcaefb51beb19f64e3288a059bec2",
+        "clipboard_policy_test.exe": "ef7c7d860bad3b458b7ac8e659c46acd0f768f70281e7d6797e489520d1d559e",
+        "conpty_backend_probe.exe": "39b52ad4acc4e432718d3cdd6dc6ee2ab80b1584de16c0edc3d775ccc7b03c0d",
+        "conpty_ctrl_c_probe.exe": "30ad460b54cfcc752e20ccd5f656c6769e292528408a4a68e7182ab3206d39b6",
+        "conpty_margin_probe.exe": "7aaef1da461b3b6d833aea79332f28d8f924e26de2f9332feeb1f1303a51e30f",
+        "conpty_resize_native_probe.exe": "a570b55f7ef0f65be01b827112905a223fb32f37a0f645ce121ead1ed6555f59",
+        "core_measure.exe": "dfe74cf8e6ec0fdb976911569c14e52709be5e880d9b36d2a108187bca9c165b",
+        "find_bar_test.exe": "632e5ff486b7ad5d29292b4af1206c196d09ca1c1c8a38a830a004ee9c21f1a1",
+        "history_test.exe": "3b3f6199ad4d345ef5cc759ddcf80667fdde4c7778658e99764342cc17949e2e",
+        "ime_context_test.exe": "8941d52ed7642b15c46da5a50927ba09ceab7078c5f31c649e4e3baa859e8ae1",
+        "ime_input_expectation_test.exe": "a960fbd62a7c0d6eec564a5a2bb1cc271582e7bb55ec07ddb63bc46044b9c438",
+        "keyboard_test.exe": "fe027bbcb21a09fac9411dd5766a37e8edd711d3ef547f37a080ded097a4de3e",
+        "layout_state_test.exe": "7b174db85ff75e8a8f5613c949c264a4dedbb8cfeb8a18581f016191bd036ddb",
+        "paste_test.exe": "1e6acc382a75fe18b50212cf6950d3d714f89939b1cf63000795348e4db22d54",
+        "presentation_probe.exe": "91aa34c2ac7b4f6610da419a04091d4391cb78e224e6b5f567437a5565d4e33a",
+        "raw_console_receiver_test.exe": "0731af92b2536b189d80894b5ca4243d814e07ab2c513fff7b4d3fd3654578f2",
+        "real_app_capture.exe": "fddd86a02d7c8ba13b7cd458373c8acd19d999199baefce77e8f237efce47189",
+        "receive.exe": "b5ea1d10bba964ec80f183d761b1c0ea4334f6963597ccd1bb16b9c769fc76d5",
+        "recovery_probe.exe": "72213828da26b5657915667faccd1d0aca83dbe6d9537f38dbd9d5464750313b",
+        "renderer_metrics_test.exe": "f08e88f6ff8bb6be87f724ff6a3c398df359a639f83d75b5970e69659f8a4a5c",
+        "replay.exe": "54298c3fa5020d3ebcaa55c76564b9dcbfec5b25d772343c428e2e36e1858ca1",
+        "resize_test.exe": "fd97c87127d4763320832d1d538af5755eece8a1ec1485435cab6b41e9e549cd",
+        "runtime_observation_test.exe": "0049a0d863724bf8bd181c85868bd68a409eb5e12c755a5538add5f85bf8b0bf",
+        "scenario_tick_gate_test.exe": "f7368d2d4c13a9eee4a210e857fd5d13479641328fa71a984582c69b57735ecf",
+        "search_test.exe": "6bf2a5fa47e1f0665462e6601e01253674c6662e5db730161bd7eb09c81d621d",
+        "selection_test.exe": "19eaf7ef3e6f1a35f67e1b17a60858bfb0f268a20c9f2686d141c847a68fbb3a",
+        "sender_fence_pipe_test.exe": "19bba0df9e37159cc70728f68ae8a28364127fac21ab72cb21cdb036f9380686",
+        "sender_fence_test.exe": "b3c396a7d8a306d0987ef149fd9d5e014ab90ac6d54d0915a48b6d261a6e21c1",
+        "sent_message_wait_test.exe": "b9bb4960dc470d5aac08fecb2c0775c16e2a7e75fdabe283b6c028d284679abb",
+        "shell_clipboard_reader.exe": "771da921ef4d30a7e710989ea0d4446254fc4e85c59199730704edf2256bb641",
+        "shell_ime_client.exe": "f02ec529d90db13bf4c904bbee8bc77930fdcf51ba868b4a43a43ed783f61830",
+        "shell_input_client.exe": "0075a332e524071809a1fdbd5161d1f360fa8e89faaf2b45b24c19f1d94829cc",
+        "shell_launch_test.exe": "6e96e163b4adc40b8d53c022a23a206176bf558c73eb76d9790b61f2abb13baf",
+        "shell_paste_probe.exe": "dd49d693dc30372d6f44cce2b7a1dcfc64adea1e6638399da4d400784a14bf6f",
+        "shell_query_client.exe": "691b440e9c500c76c1c09c448aafbe2316793bf341ffe69bbc2bf70e41be64cc",
+        "shell_queue_probe.exe": "e030070a6f287421bc3b74350fd45c8cd762837dc1512a76f688d20d39aa8715",
+        "shell_selection_text_client.exe": "18b60279aed48a9d39b6f5c57371c60b3a2b59bb21d6e30f92bac7adf50a3ed2",
+        "shell_size_client.exe": "a7a45db0976dd1e157871b6a9b50b1362ceb8cb8ea604470e58791920805d408",
+        "shell_test_launcher.exe": "7bd78cffd78ac66d651933c9614d6be937c99baa105ce04c1a533df5785c11e2",
+        "shell_text_client.exe": "9350e53de74c9a6b78495a3b59788e3a31e0067a9c5ec1b8685a729ff18244d3",
+        "termforge_conpty_probe.exe": "1dcf69f65e9dd2abca1a58c10df2be3a296a4e22cdd895ba457222fe9e27f021",
+        "termforge_ime_probe.exe": "ba59ec28909430669c187a644651588b2f1984b1308b97056f222f332e7de9c9",
+        "termforge_shell.exe": "7f26395942f107297565f50402568650e1e17c5eb23924bee1bfb02c50c60d16",
+        "terminal_trace.exe": "d09f34702cbd2d8be6ecfe98ab56a2326be1fde6b1fde4d10ef85d0f62955d2f",
+        "text_action_policy_test.exe": "9988026742d9ff45f300a6fa336ceca052a502b568f32114be7fd5057e57f5a4",
+        "transport_completion_test.exe": "6952438843e8a7605bb6cf0eb7add56dd8574f4e5edfbc3a534f795030a3fcc8",
+        "workflow_checkpoint_test.exe": "056047580e8ddd77224908667297a0b704f97ef57d1eadeb382b52c7c7875b86",
+        "workflow_fixture_test.exe": "ce3f09d8b3bb97d92dd6c61531e2cb9ba36070d2222b7b4ad7b86de82021f208",
+        "workspace_state_test.exe": "18080df77a0b7a370aa1e2dc79f2986dd3a4eb01661663dd95c43a11b802ee11",
+        "conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+        "conpty-backend/LICENSE": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+        "conpty-backend/manifest.json": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+        "conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+        "assets/fonts/OFL.txt": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215",
+        "assets/fonts/README.md": "a278deeec4b6240acc5398fe4271ebe8cc0ef26502ac3a1cfb950d06ddaf43e6",
+        "assets/fonts/RobotoMono-Regular.ttf": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+      },
+      "source_sha256": {
+        "CMakeLists.txt": "8a0e3f86981e91fd6482b590669ccc4adb571a359bd265b3dc98aee59a7b92f2",
+        "experiments/shell/shell.cpp": "b4f6fe98812d1d23fa5f5bbcc7376437404af6cdb67cd6cdcdf448b57cb31fe9",
+        "experiments/shell/size_client.cpp": "cb11661bec9551053eec0dbb474bce2ac899a06ee2e50830a370af4816df39f4",
+        "experiments/shell/workspace_scenarios.hpp": "c9a40dc370bf538c24b62b6177795975b4fac84ff78b0055117f7203b58a7b7d",
+        "experiments/shell/workspace_main_scenario.hpp": "c3994cc60041cd1e7a8599e5c9037473634412bcb6cfd349850ff8cd2808a47e",
+        "experiments/shell/test_shell.py": "a6b63c1754b0e0dc1cc01863891f4c7c9d989f818d351838a8cfe295edaf811c",
+        "experiments/shell/run.py": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d"
+      },
+      "max_focused_batches": 2,
+      "original_repetitions_per_method": 3,
+      "full_shell_batches": 1,
+      "full_shell_ctest_timeout": 180
+    },
+    "runs": [
+      {
+        "kind": "focused-0",
+        "returncode": 0,
+        "supervisor_seconds_rounded": 8.375,
+        "log_sha256": "9eff816b554e80f0214b9fd5f798c0c600e22b488889bfaef5948ef7d34c36d8"
+      },
+      {
+        "kind": "focused-1",
+        "returncode": 0,
+        "supervisor_seconds_rounded": 7.797,
+        "log_sha256": "f7421a6c60cb5edfc6736469357a83113332949c007eb013f8c5cdf5d382ceec"
+      },
+      {
+        "kind": "full-shell",
+        "returncode": 0,
+        "supervisor_seconds_rounded": 93.734,
+        "log_sha256": "0d7cfae3fb2e9d2eaa426cade9f0301e388e880d9f749a97b1361f62b9f33f92",
+        "ctest_timeout_seconds": 180,
+        "summary_lines": [
+          "53: test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard) ... skipped 'system copy UI gate requires a disposable hosted VM'",
+          "53: test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close) ... skipped 'product clipboard read gate requires a disposable hosted VM'",
+          "53: test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver) ... skipped 'real system clipboard UI gate requires a disposable hosted VM'",
+          "53: Ran 40 tests in 93.403s",
+          "53: OK (skipped=3)",
+          "Total Test time (real) =  93.62 sec"
+        ]
+      }
+    ],
+    "samples": [
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "ac8d45f5390e69786383cebd14f6c89f5e7ee464d14287ee18d140fcfd33d85d",
+        "case": "focused-0/main-0"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "8ba795e82717e0ecff5bad5f255048b9e028e6277490c2c31f3ff2a2c6aa6b8d",
+        "case": "focused-0/main-1"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "04f90e5763d5e3f9d066785efa5c6c85adfc2e94a6a38d9b1f8b47fb579c1ce2",
+        "case": "focused-0/main-2"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "7feccb4f0160565751c36e7f2c9d65f8d3f593ee3bfa9d414585442130061835",
+        "case": "focused-0/ui-0"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "1a15dfc7d7f848c466838e25b6bdb50d69cd0389bfb5d59ec70e69414b57695e",
+        "case": "focused-0/ui-1"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "33dcb261b49a07847dcf17f0accfdd1d51ff08cd2bb8f93e8c8602eb2745fb0c",
+        "case": "focused-0/ui-2"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "14450dc6b7587d56213d6ebac638dcfc489248babb1d35e759f4eee8402187cb",
+        "case": "focused-1/main-0"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "f0faea737dc6cc7518723446cf0f901b0aedcbc16e942490e31c87e25e41d8a7",
+        "case": "focused-1/main-1"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "0b706f2012bd51398f62c642870ea1fb2caae6584352ce7f0a053f43f5bc4448",
+        "case": "focused-1/main-2"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "df654941e0290caf0ce97ccd58fe05e721acee4337757d777466348fa31a0cf4",
+        "case": "focused-1/ui-0"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "f7eb090e4c2a6131557dc68f4f795176f12bc765e54cb9ca52c6bda2fd2cb26a",
+        "case": "focused-1/ui-1"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "34d40e087c3e8d0baa071e740d75d5c043dfdb6cdd14d228758cfd340052a1f6",
+        "case": "focused-1/ui-2"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "e07d8d1561af320604d4f6f415dce42f07203905011d80f2470708674084229e",
+        "case": "full-shell/main-0"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "73990fe243ef403da72cb66265a007fa150dfc8ef38da982e82fafeefdc0da81",
+        "case": "full-shell/main-1"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 22,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "bab0fdbbbc12ab7dd73c8b0cee2c6292dea941349b11010b9514d00b03fe4135",
+        "case": "full-shell/main-2"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "fb6832554596c8ba0d6cecb33a41df390f811d98b8320fa229638219efb86d4b",
+        "case": "full-shell/ui-0"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "e096621b2e713b45a6ead7774b39fc0ad22977e444442a31fc94cefddcf13157",
+        "case": "full-shell/ui-1"
+      },
+      {
+        "status": "passed",
+        "exit_code": 0,
+        "timed_out": false,
+        "job_after": {
+          "active": 0,
+          "total": 15,
+          "terminated": 0
+        },
+        "desktop_gone": true,
+        "sample_sha256": "236dd3b4c21679097ac5e930073961f466a1c152660ec9667bf1f1f96fa03d61",
+        "case": "full-shell/ui-2"
+      }
+    ]
+  },
+  "limitations": [
+    "Temporary state/native capture and policy switch perturb scheduling; no timing/performance claim.",
+    "Native snapshots occur immediately after the size helper writes; they are separate from later terminal rendering and actual presentation.",
+    "Offline replay uses captured feed/resize ordering; exact old live core match checked, not a live host or timing equivalence claim.",
+    "The historical 3e5b96d failure without matching transport is not retroactively assigned a cause; 188228e reproduces the original symptoms; detailed native/transport attribution comes from controlled current-source failures.",
+    "Full shell suite retains original hosted clipboard skips; no personal clipboard or display settings changed.",
+    "Per-run public acceptance samples cover the ui/main scenarios; other full-suite negative fixtures retain their original assertions in the complete test log.",
+    "Vim #52 and complete official configuration/R2 remain open; system configurations and WindTerm are not inferred.",
+    "Original raw traces, native cells and helper paths stay local; public rows retain marker, shape, state and identity hashes only."
+  ]
+}

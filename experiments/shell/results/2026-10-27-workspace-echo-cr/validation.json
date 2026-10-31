@@ -1,0 +1,1009 @@
+{
+  "schema": 1,
+  "issue": 88,
+  "source_commit": "c93db58ede50ad1288ceeeb937403fa8db43b459",
+  "implementation_commit": "341b4c22e36ffb5a47c7c1d0ccd70b46402e93b6",
+  "base_commit": "259e03667f361fd00c6e678f3e86f6ee2dfdca1b",
+  "configuration": "candidate termforge.5 / explicit official ConPTY 1.25.260930003 / flags24",
+  "identity": {
+    "source_commit": "c93db58ede50ad1288ceeeb937403fa8db43b459",
+    "after_successful_build_utc": "2026-10-26T21:18:00.803994+00:00",
+    "files_sha256": {
+      "experiments/shell/transport_completion.hpp": "39dfeb0845e572ec842b7da09dc2b822ba221caa1414a6a386f066214eb4da15",
+      "experiments/shell/transport_completion_test.cpp": "3761c858c97e5975d51a5c552104ba8457a5183070b12c0f635a7da42647e80d",
+      "experiments/shell/workspace_persistence_scenario.hpp": "7f70d755549718d0fddb94b43cce12f3955727fcc51599a8bb124bf3e59ec263",
+      "experiments/shell/test_shell.py": "a6b63c1754b0e0dc1cc01863891f4c7c9d989f818d351838a8cfe295edaf811c",
+      "experiments/shell/run.py": "45976b828eecb316881d698dedaef09ad304f72d991dfa360f1c552bbcbe9f1d",
+      "experiments/candidates/alacritty/test_candidate.py": "80b19e6fcd9416d4a34c43a5e50525857e6504f1a485827045f209d4dae4f106",
+      "build/candidate/bin/Release/termforge_shell.exe": "6adcb6091cbe937f398eace55499042eebcd5c900bd0f36c6eef480a6eac0eb4",
+      "build/candidate/bin/Release/transport_completion_test.exe": "6952438843e8a7605bb6cf0eb7add56dd8574f4e5edfbc3a534f795030a3fcc8",
+      "experiments/candidates/alacritty/target/release/termforge-alacritty-trace.exe": "5941d4569d0ae146eb005f12ecfb15014bc06c18ee48d1c9460824ab65df93d3"
+    }
+  },
+  "baseline": {
+    "source_commit": "ab360c7aebeb8e9afb5e61d386081abd8e3e8278",
+    "product_commit": "92eac12d5cd2868b469e8b9a10e68f5e20ee2cb0",
+    "files_sha256": {
+      "termforge_shell.exe": "15a149a3d7d47efaf866226559d4b60bbf83e0ff6004a85df41edcb5415ad206",
+      "transport_completion.hpp": "535ff47bfbdd1038dca22820b467d1ee0d1839a29be38cd750e4de49439b602f",
+      "transport_completion_test.cpp": "c9bb02bd739f916e78530590ee0f3b29bc952c58e445d31bc047ee69d301dcee",
+      "transport_completion_test.exe": "ecb414aa56e45cb6026154d2c5bf4c3e2c173c038d4f2641debfa452749b0233"
+    }
+  },
+  "original_failure": {
+    "source_commit": "92eac12d5cd2868b469e8b9a10e68f5e20ee2cb0",
+    "mode": "ui-workspace-restore",
+    "stage": 1,
+    "repeat": 1,
+    "files_sha256": {
+      "persistence-failure.json": "7ccb0a90b526462a929cbebce42debccfd97b54676e54e0935fbf292826b5e5b",
+      "restore-geometry.json": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+      "sample.json": "5e546fb36ec65e2d2eb20e9d1047216be33dc8b17eaaa611d995686a1be7d620",
+      "workspace.layout": "660f3a4064006db91261100c6fb1e1d2fb82f73210575910a29880489dd0cdda"
+    },
+    "result": {
+      "exit_code": 2,
+      "timed_out": false,
+      "job_after": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      },
+      "desktop_gone": true,
+      "job_after_cleanup": {
+        "active": 0,
+        "total": 11,
+        "terminated": 0
+      }
+    },
+    "native_exit_code": null,
+    "reader_eof": null,
+    "native_forced_cleanup": null
+  },
+  "original_replay": {
+    "product_source": "92eac12d5cd2868b469e8b9a10e68f5e20ee2cb0",
+    "failure_sha256": "7ccb0a90b526462a929cbebce42debccfd97b54676e54e0935fbf292826b5e5b",
+    "helper_sha256": "535ff47bfbdd1038dca22820b467d1ee0d1839a29be38cd750e4de49439b602f",
+    "probe_sha256": "eca81870a7f8228bab14f5d35900d27fc7a207a07c2a1e5b2e49c9faf0189698",
+    "cases": [
+      {
+        "tab": 0,
+        "kind": "cmd",
+        "variant": "original",
+        "bytes": 230,
+        "sha256": "68fadc3fc45b9fbaab78b7e1a55987f5fdc11e9a2abdbe39fc65135556703017",
+        "exit_code": 0,
+        "stdout": "complete",
+        "stderr": ""
+      },
+      {
+        "tab": 1,
+        "kind": "cmd",
+        "variant": "original",
+        "bytes": 262,
+        "sha256": "8db2595d8d8546bbb7bb7a6facf79ab72e8f88ee4ce6ec9cf255dbac8528013e",
+        "exit_code": 1,
+        "stdout": "incomplete",
+        "stderr": ""
+      },
+      {
+        "tab": 1,
+        "kind": "cmd",
+        "variant": "remove-one-bare-cr",
+        "bytes": 261,
+        "sha256": "e2e797ab3c6434bb462b109f08f16e4966cf71df74558cc5ecf6c3906e4cf8ff",
+        "exit_code": 0,
+        "stdout": "complete",
+        "stderr": ""
+      },
+      {
+        "tab": 1,
+        "kind": "cmd",
+        "variant": "independent-output-removed",
+        "bytes": 230,
+        "sha256": "e7e16d6f14705c58c00f64d0f4183cfd6efa3a0c1a0e104c4242a4de75ce0b6a",
+        "exit_code": 1,
+        "stdout": "incomplete",
+        "stderr": ""
+      },
+      {
+        "tab": 2,
+        "kind": "powershell",
+        "variant": "original",
+        "bytes": 4373,
+        "sha256": "06d376c5709d01185a5696726e5ed2a412184b5e1df886ac948c1ac64b349f4c",
+        "exit_code": 0,
+        "stdout": "complete",
+        "stderr": ""
+      },
+      {
+        "tab": 3,
+        "kind": "powershell",
+        "variant": "original",
+        "bytes": 4373,
+        "sha256": "06d376c5709d01185a5696726e5ed2a412184b5e1df886ac948c1ac64b349f4c",
+        "exit_code": 0,
+        "stdout": "complete",
+        "stderr": ""
+      }
+    ]
+  },
+  "fixed_replay": {
+    "product_source": "92eac12d5cd2868b469e8b9a10e68f5e20ee2cb0",
+    "failure_sha256": "7ccb0a90b526462a929cbebce42debccfd97b54676e54e0935fbf292826b5e5b",
+    "helper_sha256": "39dfeb0845e572ec842b7da09dc2b822ba221caa1414a6a386f066214eb4da15",
+    "probe_sha256": "e8f1f3d93d9af701244792e4dfda6ac2813ac9a65299a3a56cb230d6fed503e3",
+    "cases": [
+      {
+        "tab": 0,
+        "kind": "cmd",
+        "variant": "original",
+        "bytes": 230,
+        "sha256": "68fadc3fc45b9fbaab78b7e1a55987f5fdc11e9a2abdbe39fc65135556703017",
+        "exit_code": 0,
+        "stdout": "complete",
+        "stderr": ""
+      },
+      {
+        "tab": 1,
+        "kind": "cmd",
+        "variant": "original",
+        "bytes": 262,
+        "sha256": "8db2595d8d8546bbb7bb7a6facf79ab72e8f88ee4ce6ec9cf255dbac8528013e",
+        "exit_code": 0,
+        "stdout": "complete",
+        "stderr": ""
+      },
+      {
+        "tab": 1,
+        "kind": "cmd",
+        "variant": "remove-one-bare-cr",
+        "bytes": 261,
+        "sha256": "e2e797ab3c6434bb462b109f08f16e4966cf71df74558cc5ecf6c3906e4cf8ff",
+        "exit_code": 0,
+        "stdout": "complete",
+        "stderr": ""
+      },
+      {
+        "tab": 1,
+        "kind": "cmd",
+        "variant": "independent-output-removed",
+        "bytes": 230,
+        "sha256": "e7e16d6f14705c58c00f64d0f4183cfd6efa3a0c1a0e104c4242a4de75ce0b6a",
+        "exit_code": 1,
+        "stdout": "incomplete",
+        "stderr": ""
+      },
+      {
+        "tab": 2,
+        "kind": "powershell",
+        "variant": "original",
+        "bytes": 4373,
+        "sha256": "06d376c5709d01185a5696726e5ed2a412184b5e1df886ac948c1ac64b349f4c",
+        "exit_code": 0,
+        "stdout": "complete",
+        "stderr": ""
+      },
+      {
+        "tab": 3,
+        "kind": "powershell",
+        "variant": "original",
+        "bytes": 4373,
+        "sha256": "06d376c5709d01185a5696726e5ed2a412184b5e1df886ac948c1ac64b349f4c",
+        "exit_code": 0,
+        "stdout": "complete",
+        "stderr": ""
+      }
+    ]
+  },
+  "regression": {
+    "red": {
+      "base_commit": "ab360c7aebeb8e9afb5e61d386081abd8e3e8278",
+      "helper_changed": false,
+      "tests_changed": true,
+      "files_sha256": {
+        "experiments/shell/transport_completion.hpp": "535ff47bfbdd1038dca22820b467d1ee0d1839a29be38cd750e4de49439b602f",
+        "experiments/shell/transport_completion_test.cpp": "1df5bbaddc0bdf1d063bd94708939688d7c2f32a9ca23cb7979b5709002dde3c",
+        "build/candidate/bin/Release/transport_completion_test.exe": "4ebcad595f55474a3602f33a0720550aba4de10aed512875a437324ce2ae9352",
+        "local/r88-restore-oracle/red-test.log": "724e968e4f09d21069d2fa3b5ec9bfc79eed48ed561ff947f9f9d67e9bcb2482"
+      }
+    },
+    "red_exit_code": 1,
+    "red_error": "wrapped command echo must not hide later independent output and prompt",
+    "final_test_source_sha256": "3761c858c97e5975d51a5c552104ba8457a5183070b12c0f635a7da42647e80d",
+    "green_log_sha256": "2cbd854c42e58401a37020b1dd40d4a3f06cd63668c3d942a61da4498c38fce9",
+    "green_passed": true,
+    "note": "Red and green retain the exact wrapped_cmd trigger and single-CR control. Final tests additionally include one fresh-LF positive and three negative cases; complete test sources are not identical."
+  },
+  "targeted": {
+    "method": "ShellTests.test_workspace_v2_multiple_shells_split_and_geometry_restore",
+    "passed": true,
+    "seconds": 10.901,
+    "log_sha256": "c9a30d2427e825ca926fd9cf2f3ac30732f375c89c707f96acf30a776a07ce27",
+    "cases": [
+      {
+        "repeat": 0,
+        "mode": "save",
+        "sample_sha256": "704a24d77efe914364b1942fd416e839a4f5cdd6788585d272ca1ec72584e293",
+        "geometry_sha256": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+        "layout_sha256": "7dca24d3d78fbbdf53784c68f808add4ca4c976db31cf3d5b85f4b95a1564440",
+        "result": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          }
+        }
+      },
+      {
+        "repeat": 0,
+        "mode": "restore",
+        "sample_sha256": "c7edac02b5de9f0945766ae59cc20688b07f500556e697e11a4fbcbc163f7c55",
+        "geometry_sha256": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+        "layout_sha256": "7dca24d3d78fbbdf53784c68f808add4ca4c976db31cf3d5b85f4b95a1564440",
+        "result": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          }
+        }
+      },
+      {
+        "repeat": 0,
+        "mode": "clamped",
+        "sample_sha256": "19744ab851d4905387d37d639fa6406d50d2d4929f805a5e63a8df896d889ff5",
+        "geometry_sha256": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0",
+        "layout_sha256": "e3ac37c9350b6b0158f9b95c199fb2e1683663d5c89e1b2c70e9a11e70e6efd3",
+        "result": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          }
+        }
+      },
+      {
+        "repeat": 1,
+        "mode": "save",
+        "sample_sha256": "231e67a9e06720c61da7f82a56794192d6a5124cc80d645d59b27e2bd80c007e",
+        "geometry_sha256": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+        "layout_sha256": "5364bdd865f1b515f64b040d88d1e576a54116929472718fa0a43a6c31db5021",
+        "result": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          }
+        }
+      },
+      {
+        "repeat": 1,
+        "mode": "restore",
+        "sample_sha256": "c834a7430334cce1714c6df8a916e745bba8031762cd7711de3b9e99e08be04d",
+        "geometry_sha256": "5cc777f65d580599f8bda2d3e7e3d246b63aba19dba55a27e65d358709402638",
+        "layout_sha256": "5364bdd865f1b515f64b040d88d1e576a54116929472718fa0a43a6c31db5021",
+        "result": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          }
+        }
+      },
+      {
+        "repeat": 1,
+        "mode": "clamped",
+        "sample_sha256": "a3c5d95d9167cf40185cd6214b6f16a6e5a5d384a69d42d36d706d61df85b230",
+        "geometry_sha256": "e1b9fdfa4c0be1cf1901dfc4678c2952f5be23b95ca1d2a434c92b17f5069ce0",
+        "layout_sha256": "815480efcb4523f66552fc0afcc8724f075ff1f3db1214d2cb9a2e2d380593ae",
+        "result": {
+          "exit_code": 0,
+          "timed_out": false,
+          "job_after": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          },
+          "desktop_gone": true,
+          "job_after_cleanup": {
+            "active": 0,
+            "total": 14,
+            "terminated": 0
+          }
+        }
+      }
+    ],
+    "contract": "Original two rounds of save, ordinary restore, clamped restore; exact directories/version/membership/title/zoom/split/geometry/child dimensions and Job/desktop checks; original 30/40 second deadlines."
+  },
+  "final_full_ctest": {
+    "log_sha256": "8fe637e73b7dbbc0aa5025ad8620933626ac80c42b09e715cd840bdff6a691fc",
+    "tests": [
+      {
+        "name": "shell_launch",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_title",
+        "result": "passed",
+        "seconds": 0.7
+      },
+      {
+        "name": "candidate_reply_close",
+        "result": "passed",
+        "seconds": 0.35
+      },
+      {
+        "name": "runtime_observation",
+        "result": "passed",
+        "seconds": 1.52
+      },
+      {
+        "name": "ime_input_expectation",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "sent_message_wait",
+        "result": "passed",
+        "seconds": 0.27
+      },
+      {
+        "name": "find_bar",
+        "result": "passed",
+        "seconds": 0.36
+      },
+      {
+        "name": "renderer_metrics",
+        "result": "passed",
+        "seconds": 0.86
+      },
+      {
+        "name": "ime_context",
+        "result": "passed",
+        "seconds": 0.37
+      },
+      {
+        "name": "layout_state",
+        "result": "passed",
+        "seconds": 0.16
+      },
+      {
+        "name": "workspace_state",
+        "result": "passed",
+        "seconds": 0.36
+      },
+      {
+        "name": "transport_completion",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "scenario_tick_gate",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_core",
+        "result": "passed",
+        "seconds": 1.22
+      },
+      {
+        "name": "resize_core",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "history_core",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "selection_core",
+        "result": "passed",
+        "seconds": 0.09
+      },
+      {
+        "name": "search_core",
+        "result": "passed",
+        "seconds": 0.13
+      },
+      {
+        "name": "paste",
+        "result": "passed",
+        "seconds": 0.02
+      },
+      {
+        "name": "sender_fence",
+        "result": "passed",
+        "seconds": 1.03
+      },
+      {
+        "name": "sender_fence_pipe",
+        "result": "passed",
+        "seconds": 0.38
+      },
+      {
+        "name": "clipboard_policy",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "keyboard",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "text_action_policy",
+        "result": "passed",
+        "seconds": 0.01
+      },
+      {
+        "name": "candidate_resize_replay",
+        "result": "passed",
+        "seconds": 0.67
+      },
+      {
+        "name": "candidate_shell_tui",
+        "result": "failed",
+        "seconds": 31.3
+      },
+      {
+        "name": "core",
+        "result": "passed",
+        "seconds": 6.1
+      },
+      {
+        "name": "recovery",
+        "result": "passed",
+        "seconds": 9.92
+      },
+      {
+        "name": "measure",
+        "result": "passed",
+        "seconds": 3.93
+      },
+      {
+        "name": "binary_paths",
+        "result": "passed",
+        "seconds": 0.18
+      },
+      {
+        "name": "conpty_margin_contract",
+        "result": "passed",
+        "seconds": 0.28
+      },
+      {
+        "name": "benchmark_tools",
+        "result": "passed",
+        "seconds": 5.35
+      },
+      {
+        "name": "differential",
+        "result": "passed",
+        "seconds": 19.61
+      },
+      {
+        "name": "ime_inventory",
+        "result": "passed",
+        "seconds": 49.71
+      },
+      {
+        "name": "text_actions",
+        "result": "passed",
+        "seconds": 5.51
+      },
+      {
+        "name": "workflow_fixture",
+        "result": "passed",
+        "seconds": 22.78
+      },
+      {
+        "name": "workflow_sessions",
+        "result": "passed",
+        "seconds": 80.64
+      },
+      {
+        "name": "workflow_resources",
+        "result": "passed",
+        "seconds": 0.58
+      },
+      {
+        "name": "workflow_resource_phases",
+        "result": "passed",
+        "seconds": 4.34
+      },
+      {
+        "name": "workflow_system_content",
+        "result": "passed",
+        "seconds": 0.16
+      },
+      {
+        "name": "workflow_system_runner",
+        "result": "passed",
+        "seconds": 0.64
+      },
+      {
+        "name": "copy_error_frame",
+        "result": "passed",
+        "seconds": 0.14
+      },
+      {
+        "name": "paste_fence_evidence",
+        "result": "passed",
+        "seconds": 0.1
+      },
+      {
+        "name": "resize_trace",
+        "result": "passed",
+        "seconds": 0.11
+      },
+      {
+        "name": "research_guards",
+        "result": "passed",
+        "seconds": 5.01
+      },
+      {
+        "name": "receive",
+        "result": "passed",
+        "seconds": 0.22
+      },
+      {
+        "name": "conpty",
+        "result": "passed",
+        "seconds": 22.88
+      },
+      {
+        "name": "conpty_ctrl_c",
+        "result": "passed",
+        "seconds": 4.33
+      },
+      {
+        "name": "conpty_margin",
+        "result": "passed",
+        "seconds": 0.4
+      },
+      {
+        "name": "conpty_backend",
+        "result": "passed",
+        "seconds": 1.29
+      },
+      {
+        "name": "presentation",
+        "result": "passed",
+        "seconds": 4.11
+      },
+      {
+        "name": "shell",
+        "result": "passed",
+        "seconds": 93.71
+      },
+      {
+        "name": "selection_bytes",
+        "result": "passed",
+        "seconds": 3.66
+      },
+      {
+        "name": "selection_context",
+        "result": "passed",
+        "seconds": 3.76
+      },
+      {
+        "name": "raw_console_receiver",
+        "result": "passed",
+        "seconds": 0.38
+      },
+      {
+        "name": "paste_system",
+        "result": "passed",
+        "seconds": 8.31
+      }
+    ],
+    "total": 56,
+    "passed": 55,
+    "failed": [
+      "candidate_shell_tui"
+    ],
+    "seconds": 398.08,
+    "failure_stages": [
+      59
+    ],
+    "full_acceptance": false,
+    "last_test_log_sha256": "35d684a3b3ec9d593cccc3243ea8a8d2e39a76fc0746c137e942f2d65ff2d75b",
+    "internal_skips": [
+      {
+        "test": "test_actual_system_copy_paste_and_shortcuts_twice (experiments.shell.test_actions.ActionWindowTest.test_actual_system_copy_paste_and_shortcuts_twice)",
+        "reason": "actual system Copy/Paste requires a disposable hosted VM"
+      },
+      {
+        "test": "test_suspended_target_is_reclaimed_if_job_assignment_fails (test_ui_r1.EvidenceBoundaryTests.test_suspended_target_is_reclaimed_if_job_assignment_fails)",
+        "reason": "opt-in pinned reference failure injection"
+      },
+      {
+        "test": "test_mouse_selection_to_real_system_clipboard (experiments.shell.test_shell.ShellTests.test_mouse_selection_to_real_system_clipboard)",
+        "reason": "system copy UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_product_read_errors_cancel_and_close (experiments.shell.test_shell.ShellTests.test_system_clipboard_product_read_errors_cancel_and_close)",
+        "reason": "product clipboard read gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_system_clipboard_shortcut_to_window_confirmation_and_receiver (experiments.shell.test_shell.ShellTests.test_system_clipboard_shortcut_to_window_confirmation_and_receiver)",
+        "reason": "real system clipboard UI gate requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_shortcuts_for_styled_fixture_twice (experiments.shell.test_selection_bytes.SelectionBytesWindowTest.test_real_system_copy_shortcuts_for_styled_fixture_twice)",
+        "reason": "system CF requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_copy_and_edit_context_twice (experiments.shell.test_selection_context.SelectionContextWindowTest.test_real_system_copy_and_edit_context_twice)",
+        "reason": "real CF/EDIT Copy requires a disposable hosted VM"
+      },
+      {
+        "test": "test_real_system_clipboard (experiments.shell.test_paste.PasteTests.test_real_system_clipboard)",
+        "reason": "Private window station OpenClipboard denied (5); system API gate remains unverified."
+      }
+    ],
+    "log_encoding_note": "Localized CTest date header is not UTF-8; only ASCII skip fields are extracted.",
+    "shell_unittest": {
+      "run": 40,
+      "passed": 37,
+      "errors": 0,
+      "skipped": 3,
+      "seconds": 93.494
+    },
+    "optional_trace_note": "The .5 trace executable is now built; four previously skipped differential classes executed. Eight remaining internal skips are listed separately."
+  },
+  "excluded_overlapping_build": {
+    "reason": "Targeted method started before the changed shell finished linking. Full CTest also started before overall build completion; retain both only as diagnostics and repeat after completed build.",
+    "targeted_log_sha256": "410952fb9bc506d798b53102a9c96c97e50f79fe10a8baaebf4bf524537bb8fb",
+    "diagnostic_full_ctest": {
+      "log_sha256": "7f5b1cd6692cd76112c71f7bb906684d25a495d24b3252c1481c07b9eba454c4",
+      "tests": [
+        {
+          "name": "shell_launch",
+          "result": "passed",
+          "seconds": 0.06
+        },
+        {
+          "name": "candidate_title",
+          "result": "passed",
+          "seconds": 1.03
+        },
+        {
+          "name": "candidate_reply_close",
+          "result": "passed",
+          "seconds": 0.37
+        },
+        {
+          "name": "runtime_observation",
+          "result": "passed",
+          "seconds": 1.54
+        },
+        {
+          "name": "ime_input_expectation",
+          "result": "passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "sent_message_wait",
+          "result": "passed",
+          "seconds": 0.29
+        },
+        {
+          "name": "find_bar",
+          "result": "passed",
+          "seconds": 0.41
+        },
+        {
+          "name": "renderer_metrics",
+          "result": "passed",
+          "seconds": 1.24
+        },
+        {
+          "name": "ime_context",
+          "result": "passed",
+          "seconds": 0.33
+        },
+        {
+          "name": "layout_state",
+          "result": "passed",
+          "seconds": 0.15
+        },
+        {
+          "name": "workspace_state",
+          "result": "passed",
+          "seconds": 0.43
+        },
+        {
+          "name": "transport_completion",
+          "result": "passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "scenario_tick_gate",
+          "result": "passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "candidate_core",
+          "result": "passed",
+          "seconds": 1.21
+        },
+        {
+          "name": "resize_core",
+          "result": "passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "history_core",
+          "result": "passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "selection_core",
+          "result": "passed",
+          "seconds": 0.09
+        },
+        {
+          "name": "search_core",
+          "result": "passed",
+          "seconds": 0.13
+        },
+        {
+          "name": "paste",
+          "result": "passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "sender_fence",
+          "result": "passed",
+          "seconds": 1.03
+        },
+        {
+          "name": "sender_fence_pipe",
+          "result": "passed",
+          "seconds": 0.36
+        },
+        {
+          "name": "clipboard_policy",
+          "result": "passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "keyboard",
+          "result": "passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "text_action_policy",
+          "result": "passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "candidate_resize_replay",
+          "result": "passed",
+          "seconds": 0.79
+        },
+        {
+          "name": "candidate_shell_tui",
+          "result": "failed",
+          "seconds": 30.49
+        },
+        {
+          "name": "core",
+          "result": "passed",
+          "seconds": 6.25
+        },
+        {
+          "name": "recovery",
+          "result": "passed",
+          "seconds": 9.96
+        },
+        {
+          "name": "measure",
+          "result": "passed",
+          "seconds": 4.3
+        },
+        {
+          "name": "binary_paths",
+          "result": "passed",
+          "seconds": 0.2
+        },
+        {
+          "name": "conpty_margin_contract",
+          "result": "passed",
+          "seconds": 0.28
+        },
+        {
+          "name": "benchmark_tools",
+          "result": "passed",
+          "seconds": 5.33
+        },
+        {
+          "name": "differential",
+          "result": "passed",
+          "seconds": 3.35
+        },
+        {
+          "name": "ime_inventory",
+          "result": "passed",
+          "seconds": 51.23
+        },
+        {
+          "name": "text_actions",
+          "result": "passed",
+          "seconds": 5.57
+        },
+        {
+          "name": "workflow_fixture",
+          "result": "passed",
+          "seconds": 22.66
+        },
+        {
+          "name": "workflow_sessions",
+          "result": "passed",
+          "seconds": 82.77
+        },
+        {
+          "name": "workflow_resources",
+          "result": "passed",
+          "seconds": 0.53
+        },
+        {
+          "name": "workflow_resource_phases",
+          "result": "passed",
+          "seconds": 4.31
+        },
+        {
+          "name": "workflow_system_content",
+          "result": "passed",
+          "seconds": 0.16
+        },
+        {
+          "name": "workflow_system_runner",
+          "result": "passed",
+          "seconds": 0.64
+        },
+        {
+          "name": "copy_error_frame",
+          "result": "passed",
+          "seconds": 0.14
+        },
+        {
+          "name": "paste_fence_evidence",
+          "result": "passed",
+          "seconds": 0.11
+        },
+        {
+          "name": "resize_trace",
+          "result": "passed",
+          "seconds": 0.12
+        },
+        {
+          "name": "research_guards",
+          "result": "passed",
+          "seconds": 4.97
+        },
+        {
+          "name": "receive",
+          "result": "passed",
+          "seconds": 0.21
+        },
+        {
+          "name": "conpty",
+          "result": "passed",
+          "seconds": 23.52
+        },
+        {
+          "name": "conpty_ctrl_c",
+          "result": "passed",
+          "seconds": 4.36
+        },
+        {
+          "name": "conpty_margin",
+          "result": "passed",
+          "seconds": 0.4
+        },
+        {
+          "name": "conpty_backend",
+          "result": "passed",
+          "seconds": 1.23
+        },
+        {
+          "name": "presentation",
+          "result": "passed",
+          "seconds": 4.08
+        },
+        {
+          "name": "shell",
+          "result": "passed",
+          "seconds": 94.42
+        },
+        {
+          "name": "selection_bytes",
+          "result": "passed",
+          "seconds": 3.59
+        },
+        {
+          "name": "selection_context",
+          "result": "passed",
+          "seconds": 3.86
+        },
+        {
+          "name": "raw_console_receiver",
+          "result": "passed",
+          "seconds": 0.42
+        },
+        {
+          "name": "paste_system",
+          "result": "passed",
+          "seconds": 10.02
+        }
+      ],
+      "total": 56,
+      "passed": 55,
+      "failed": [
+        "candidate_shell_tui"
+      ],
+      "seconds": 389.17,
+      "failure_stages": [
+        59
+      ],
+      "full_acceptance": false,
+      "usable_for_acceptance": false
+    },
+    "usable_for_acceptance": false
+  },
+  "limits": [
+    "Raw original transports and workspace files remain local; public regression source contains only fixed synthetic commands and no machine path.",
+    "This corrects a test completion oracle, not a demonstrated product output-loss defect.",
+    "Separate configuration results and unresolved #52/#63/#87 remain independent; later green runs do not explain earlier failures.",
+    "Real CF/IME, actual presentation, performance, WindTerm equivalence and full R2 acceptance are not supplied by this fix."
+  ],
+  "presented_done": null,
+  "performance_acceptance": false,
+  "windterm_runtime_equivalence": false,
+  "full_r2_verified": false
+}

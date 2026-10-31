@@ -1,0 +1,65 @@
+{
+  "red_test_note": "Red used the same ordering fixture before strengthening the green marker/consumed-byte assertions; source hashes differ explicitly.",
+  "native_backend": "candidate .4 plus explicit official ConPTY 1.25.260930003 flags24",
+  "runs": [
+    {
+      "phase": "red",
+      "identity": {
+        "commit": "06bf6b5cf4c5f7457cbb02355aa4971276c2b581",
+        "files": {
+          "experiments/shell/candidate_reply_close_test.cpp": "79386c5fe342a959d8f14e0dd1a9d321aa9f6bac93d460532595a31a6b4898af",
+          "experiments/shell/shell.cpp": "b369968152bbff107c699181d4e23f271e62a5732f0c41793159b3efc3609321",
+          "experiments/core/candidate_terminal.cpp": "3092ee2ea44ca0f897a7d3b6244c079ba8073dc109993204e435f065388a2ed1",
+          "CMakeLists.txt": "f5bb85e12b7a815c4feb7417da9ebc5298de58664bcd2792b277cb282729da73",
+          "build/candidate/bin/Release/candidate_reply_close_test.exe": "7df5ef5ddc896b8fef626ed15cb9c3dbfd4955c93009bf83700e1b9c115e9664"
+        },
+        "result": "query observed after close; stopping=true; rejected=1; terminal reply rejected by input queue"
+      },
+      "log_sha256": "9c2fcbd3c53d9e831cae2d23396d8fe0c46578cf433f6ac3e14bf5f6f8f92baf",
+      "observations": [
+        {
+          "query_consumed_after_close": true,
+          "consumed_bytes": 0,
+          "input_stopping": true,
+          "input_rejected": 1
+        }
+      ],
+      "passed": false
+    },
+    {
+      "phase": "green",
+      "identity": {
+        "files": {
+          "experiments/shell/candidate_reply_close_test.cpp": "453ab888fb57d4f918bcfa583da7167a21463ce185be2a3d67caec74505fc424",
+          "experiments/shell/shell.cpp": "ac4dd44861aa2928213fffe91d30cdaf3aedf19f08468aefeed22828352296cc",
+          "experiments/core/candidate_terminal.cpp": "3092ee2ea44ca0f897a7d3b6244c079ba8073dc109993204e435f065388a2ed1",
+          "CMakeLists.txt": "f5bb85e12b7a815c4feb7417da9ebc5298de58664bcd2792b277cb282729da73",
+          "build/candidate/bin/Release/candidate_reply_close_test.exe": "662a331701e49885ce56328ae19ddc2166347c5f802d7faa2787eef46e25b000",
+          "build/candidate/bin/Release/termforge_shell.exe": "9c01fa0577d8fc922d239d8a711ac13d1e4989104aad68795230bfcd998b4eb6"
+        },
+        "result": "two actual owned processes; query observed after input stop; received65B; rejected0; Job0 and desktop deletion"
+      },
+      "log_sha256": "d3e40250906444017e55fc7dc62fa00c7280131f83a521c300547349140a97af",
+      "observations": [
+        {
+          "query_consumed_after_close": true,
+          "consumed_bytes": 65,
+          "input_stopping": true,
+          "input_rejected": 0
+        },
+        {
+          "query_consumed_after_close": true,
+          "consumed_bytes": 65,
+          "input_stopping": true,
+          "input_rejected": 0
+        },
+        {
+          "closing_reply": "passed",
+          "owned_job_zero": true,
+          "desktop_deleted": true
+        }
+      ],
+      "passed": true
+    }
+  ]
+}
