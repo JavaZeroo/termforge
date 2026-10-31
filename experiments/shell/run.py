@@ -484,6 +484,10 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
             record["timed_out"] = False
         except subprocess.TimeoutExpired:
             record["timed_out"] = True
+            # #97: frame.bmp is only written once closing/closed/drained all hold,
+            # so its presence at the deadline separates a destroyed window from a
+            # teardown that never finished.
+            record["frame_at_timeout"] = (out / "frame.bmp").is_file()
             record["job_at_timeout"] = job.accounting()
             job.terminate()
             stdout, stderr = process.communicate(timeout=10)
