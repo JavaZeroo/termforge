@@ -1176,6 +1176,8 @@ public:
             << " read_error=" << session_.read_error
             << " consumed=" << result_.consumed
             << " stage=" << stage_
+            << " closed=" << (closed_.load() ? "true" : "false")
+            << " closer_joined=" << (closer_joined_ ? "true" : "false")
             << " closing=" << (closing_ ? "true" : "false")
             << " child_signaled=" << (session_.child_signaled ? "true" : "false")
             << " exit_code=" << session_.exit_code;
