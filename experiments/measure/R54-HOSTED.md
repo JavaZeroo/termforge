@@ -1,0 +1,40 @@
+# R54：独立 Windows 虚拟机上的固定批次
+
+本流程接续 [#54](https://github.com/JavaZeroo/termforge/issues/54) 和 [v1 合同](R54-COST.md)，不改变源码、负载、两批各112个位置、计时端点、统计或预算。主工作站已有一次活动预检拒绝；不在同一宿主循环等绿，改在一个新的 GitHub-hosted `windows-2025` 虚拟机上建立完整来源和环境记录。它是本次 headless 核心成本研究的环境，不代替 Windows 11 x64 产品或 WindTerm 性能验收。
+
+## 运行与停止
+
+[工作流](../../.github/workflows/r54-cost.yml)只在实验分支 `perf/grapheme-hosted-r54` 的创建 push 事件执行成本作业，不在 PR 事件或后续源码/证据修正时自动补跑，也不改变 main 的默认构建。每次工作流用独立 run ID、attempt、源码和输出目录；拒绝对旧 workflow run 的 attempt 2 及后续重跑。首次运行后，新的调查需先明确假设、范围和新身份，再审查执行入口，不能由导出器修正偷偷触发替代样本。
+
+同一虚拟机依次完成固定 Python/Rust、纯合同测试、两份来源构建、四次短正确性检查，再运行原两个种子。构建和测试结束后才开始成本预检与计时。没有自动恢复、补样、重试或放宽5%环境诊断护栏的入口；第一批失败即保留当前位置，第二批不启动。两批成功也只写 `complete_diagnostic`，`performance_gate=not_evaluated`。
+
+同一任务的新 `CARGO_HOME` 用于获取锁定依赖；两个编译目标目录独立。脚本拒绝未知编译环境覆盖与 Cargo 配置文件，只覆盖原 `.3/.4` 的 Cargo.toml/src/measure.rs。每份仍使用 Rust1.92.0、MSVC x64、Release、locked/offline、no-default-features和jobs=1。完整源码前后哈希、真实命令/日志、实际linker及EXE、编译模式和四次原状态摘要由 [builder](r54_build.py) 留证；由原 [输入校验器](r54_inputs.py)重新读取验证之后才进入测量。
+
+构建/准备调用各有期限，构建为600秒、短正确性调用为10秒；这些不是产品性能门槛。构建超时终止直接子进程并阻止全部测量，不据此声称已回收其派生进程；虚拟机生命周期由CI提供者管理。实际成本仍使用原内部60秒/子进程90秒期限，整个job30分钟。正常构建返回后才允许成本入口，不能将超时残留视作空闲。
+
+## 宿主限制
+
+保留 GitHub事件、run ID/attempt、实际提交、runner类型、系统映像、OS build/UBR、CPU与电源策略。固定两个种子的同口径结果分别报告，不混入主工作站原构建或历史12样本。`hosted_identity` 只检查该流程需要的元数据；分析时还须从GitHub作业记录核对实际runner与源码身份，环境变量本身不是物理隔离证明。
+
+GitHub runner服务、操作系统后台任务、虚拟机邻居、物理CPU频率和调度仍可能影响结果。原5%筛选只描述guest可观察CPU活动；它不是用户确认的数值性能容差，也不证明物理宿主独占。出现噪声、失败或两批不一致时保留全部观察，再提出下一项可检验的调查。
+
+## 发布边界
+
+[发布器](r54_publish.py)只接受本流程的真实GitHub-hosted首次作业，并使用固定文件白名单。它不递归上传工作目录、checkout、编译缓存或个人文件。仅保存本次公开源码/合成输入产生的结果；完整进程名称/PID记录与未知环境字段不导出，工作区、runner profile和临时路径前缀改为别名。没有读取完整进程命令行或任意环境变量的步骤。
+
+Windows 长路径及实际8.3别名均纳入替换，兼容大小写、正斜杠和编译器转义形式；通过[GetShortPathNameW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getshortpathnamew)查询，失败则不发布，不能猜测短名。首次作业导出曾漏掉两份构建日志中的短profile前缀；原包保留，审阅后的公开副本另列哈希及转换，不回填为旧运行使用了修正版导出器。
+
+两个核心的成本及短正确性 stdout/stderr 按原字节保留，包括失败或无效编码；其生产者只接收公开固定合成负载。完整构建日志保留内容并替换宿主路径前缀。JSON/JSONL记录只做上述元数据筛选和路径处理，不改变时间、工作量、状态摘要、顺序或失败状态。中断留下的JSONL半行不修补、不删除，保留全部行和解析失败位置，独立样本原始流仍导出。`publication.json`列出每份原文件和发布文件的SHA、大小及处理方式。导出前核对原始 `hosted.json` 的run ID/attempt/SHA；空目录或另一次作业不生成成功包。发布目录在所有文件完成后才生效，上传仅指向该目录；未通过检查的半成品目录不会上传。
+
+原始完整进程身份只在临时虚拟机内保留，公开结果保留全机CPU原计数、全部成本原始流及其来源。不能用未导出的逐进程字段做外部归因声明；后续若需要这种归因，另行预声明可公开的受控观测。所有CI结果须下载复核其清单、原始样本和统计后才能写入 #54 的成本结论。
+
+## 手动入口（只供同一受控作业）
+
+```powershell
+python -m experiments.measure.r54_hosted --out local/r54-raw
+python -m experiments.measure.r54_publish --raw local/r54-raw --out local/r54-public
+```
+
+本机不得伪造GitHub环境变量运行该流程。普通本地准备可使用 `r54_build --out <新目录>`，要求实际Windows、已提交的干净源码及显式任务缓存；本轮不重复已有主工作站成本预检。测试只验证既有构建输入/产物边界，正式成本样本来自上述实际作业。
+
+首次真实作业的来源、全部原始产物、环境护栏停止位置和独立复核见[固定记录](results/2026-10-27-r54-hosted/README.md)。这是不完整批次，没有配对成本摘要或性能通过结论。

@@ -1,0 +1,2538 @@
+{
+  "schema": "termforge-r54-cpu-hosted-validation-v1",
+  "source": "4772f4f937c4f0f220be1630592f84bed3a591c8",
+  "hosted_identity": {
+    "GITHUB_ACTIONS": "true",
+    "RUNNER_ENVIRONMENT": "github-hosted",
+    "RUNNER_OS": "Windows",
+    "GITHUB_REPOSITORY": "JavaZeroo/termforge",
+    "GITHUB_SHA": "4772f4f937c4f0f220be1630592f84bed3a591c8",
+    "GITHUB_REF": "refs/heads/perf/grapheme-cpu-hosted-r54-entry3",
+    "GITHUB_RUN_ID": "40512310499",
+    "GITHUB_RUN_NUMBER": "3",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_EVENT_NAME": "push",
+    "ImageOS": "win25-vs2026",
+    "ImageVersion": "20261021.278.1"
+  },
+  "host": {
+    "host": {
+      "platform": "Windows-2025Server-10.0.26100-SP0",
+      "python": "3.12.10",
+      "psutil": "7.2.2",
+      "cpu_logical": 4,
+      "cpu_physical": 2,
+      "cpu": {
+        "ProcessorNameString": "AMD EPYC 7763 64-Core Processor                ",
+        "Identifier": "AMD64 Family 25 Model 1 Stepping 1"
+      },
+      "windows": {
+        "CurrentBuildNumber": "26100",
+        "UBR": 33650,
+        "DisplayVersion": "24H2"
+      }
+    },
+    "declaration": {
+      "host_kind": "hosted_vm",
+      "no_known_concurrent_build_or_test": true,
+      "known_concurrent_work": [
+        "This job completed setup, tests and both audited builds before diagnosis.",
+        "GitHub runner service and operating-system background services remain.",
+        "Physical host scheduling and neighboring virtual machines are unobserved."
+      ],
+      "purpose": "One six-observation CPU-boundary diagnostic; no idle qualification or cost acceptance."
+    },
+    "scope": "accounting diagnosis on declared host; no idle qualification or cost acceptance"
+  },
+  "builds": {
+    "baseline": {
+      "source": "65988f5f20f62294ff52fcac5b5b81e563f93f3b",
+      "version": "0.26.1-dev+termforge.3",
+      "candidate_tree": "38f901ce2407d73ab7d4ae70987c294849bafa92",
+      "tracked_candidate_files": 80,
+      "changed_paths": [
+        "experiments/candidates/alacritty/Cargo.toml",
+        "experiments/candidates/alacritty/src/measure.rs"
+      ],
+      "binary": {
+        "bytes": 523264,
+        "sha256": "5f31a54e5543eca286e98a10b31aae060b0a52f2ccbcfb4bfc1d7983d6428c03"
+      },
+      "identity": {
+        "allocator_wrapper_compiled": false,
+        "projection_selectable": true,
+        "schema": "termforge-core-cost-build-v1",
+        "timing_gates_compiled": true
+      },
+      "linker": {
+        "path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.51.36231\\bin\\HostX64\\x64\\link.exe",
+        "sha256": "a8c42e25c91ca2453e1110540ac08f0fc12d7539454a11b9af8baeecb469837d"
+      },
+      "receipt_sha256": "886d9a3f024d46a221dc4833a485e0c9c2c4b6e6193dd42190fe10fc6bc70a8a"
+    },
+    "candidate": {
+      "source": "3d6d44d3b3e9a9a3e41da98e8711e9f19a211fd8",
+      "version": "0.26.1-dev+termforge.4",
+      "candidate_tree": "2cce55fcf2d379440110bbbf8612117cce3edf64",
+      "tracked_candidate_files": 84,
+      "changed_paths": [
+        "experiments/candidates/alacritty/Cargo.toml",
+        "experiments/candidates/alacritty/src/measure.rs"
+      ],
+      "binary": {
+        "bytes": 580096,
+        "sha256": "45a15862e2bd8c8ce93073923b68f23bc6f3f848aa147ed1ce6340135e214207"
+      },
+      "identity": {
+        "allocator_wrapper_compiled": false,
+        "projection_selectable": true,
+        "schema": "termforge-core-cost-build-v1",
+        "timing_gates_compiled": true
+      },
+      "linker": {
+        "path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.51.36231\\bin\\HostX64\\x64\\link.exe",
+        "sha256": "a8c42e25c91ca2453e1110540ac08f0fc12d7539454a11b9af8baeecb469837d"
+      },
+      "receipt_sha256": "5d8e407aa31a9d2fc3921a15fcc15e295e9fa8a748acf2f40e81744d1cdaa914"
+    }
+  },
+  "observations": [
+    {
+      "item": {
+        "sequence": 0,
+        "variant": "baseline",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "inner_cpu_seconds": 2.234375,
+      "child_cpu": {
+        "creation_filetime": 134375815087328400,
+        "exit_filetime": 134375815111035208,
+        "kernel_seconds": 0.609375,
+        "user_seconds": 1.71875,
+        "total_seconds": 2.328125
+      },
+      "runner_cpu_seconds": 0.0,
+      "environment": {
+        "total_seconds": 9.5,
+        "busy_seconds": 2.828125,
+        "busy_percent": 29.769736842105264,
+        "before": {
+          "user": 224.96875,
+          "kernel_including_idle": 1054.8125,
+          "idle": 938.25,
+          "system": 116.5625,
+          "perf_counter_seconds": 320.6986669,
+          "utc": "2026-10-27T13:31:48.731677+00:00"
+        },
+        "after": {
+          "user": 226.921875,
+          "kernel_including_idle": 1062.359375,
+          "idle": 944.921875,
+          "system": 117.4375,
+          "perf_counter_seconds": 323.0708238,
+          "utc": "2026-10-27T13:31:51.102693+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 0.59375,
+        "inner_only_balance_percent": 6.25,
+        "child_outside_inner_seconds": 0.09375,
+        "runner_cpu_seconds": 0.0,
+        "unassigned_balance_seconds": 0.5,
+        "unassigned_balance_percent": 5.2631578947368425
+      },
+      "state_fnv1a64": "8035857386658397897"
+    },
+    {
+      "item": {
+        "sequence": 1,
+        "variant": "candidate",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "inner_cpu_seconds": 2.015625,
+      "child_cpu": {
+        "creation_filetime": 134375815111116270,
+        "exit_filetime": 134375815132177544,
+        "kernel_seconds": 0.578125,
+        "user_seconds": 1.5,
+        "total_seconds": 2.078125
+      },
+      "runner_cpu_seconds": 0.015625,
+      "environment": {
+        "total_seconds": 8.4375,
+        "busy_seconds": 2.375,
+        "busy_percent": 28.14814814814815,
+        "before": {
+          "user": 226.921875,
+          "kernel_including_idle": 1062.359375,
+          "idle": 944.921875,
+          "system": 117.4375,
+          "perf_counter_seconds": 323.0773715,
+          "utc": "2026-10-27T13:31:51.111019+00:00"
+        },
+        "after": {
+          "user": 228.546875,
+          "kernel_including_idle": 1069.171875,
+          "idle": 950.984375,
+          "system": 118.1875,
+          "perf_counter_seconds": 325.1850088,
+          "utc": "2026-10-27T13:31:53.217016+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 0.359375,
+        "inner_only_balance_percent": 4.2592592592592595,
+        "child_outside_inner_seconds": 0.0625,
+        "runner_cpu_seconds": 0.015625,
+        "unassigned_balance_seconds": 0.28125,
+        "unassigned_balance_percent": 3.3333333333333335
+      },
+      "state_fnv1a64": "6154007251599136798"
+    },
+    {
+      "item": {
+        "sequence": 2,
+        "variant": "candidate",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "inner_cpu_seconds": 2.03125,
+      "child_cpu": {
+        "creation_filetime": 134375815132252696,
+        "exit_filetime": 134375815153338773,
+        "kernel_seconds": 0.5625,
+        "user_seconds": 1.546875,
+        "total_seconds": 2.109375
+      },
+      "runner_cpu_seconds": 0.0,
+      "environment": {
+        "total_seconds": 8.4375,
+        "busy_seconds": 2.4375,
+        "busy_percent": 28.88888888888889,
+        "before": {
+          "user": 228.546875,
+          "kernel_including_idle": 1069.234375,
+          "idle": 951.046875,
+          "system": 118.1875,
+          "perf_counter_seconds": 325.1909982,
+          "utc": "2026-10-27T13:31:53.223062+00:00"
+        },
+        "after": {
+          "user": 230.296875,
+          "kernel_including_idle": 1075.921875,
+          "idle": 957.046875,
+          "system": 118.875,
+          "perf_counter_seconds": 327.3011683,
+          "utc": "2026-10-27T13:31:55.334541+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 0.40625,
+        "inner_only_balance_percent": 4.814814814814815,
+        "child_outside_inner_seconds": 0.078125,
+        "runner_cpu_seconds": 0.0,
+        "unassigned_balance_seconds": 0.328125,
+        "unassigned_balance_percent": 3.888888888888889
+      },
+      "state_fnv1a64": "6154007251599136798"
+    },
+    {
+      "item": {
+        "sequence": 3,
+        "variant": "baseline",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "inner_cpu_seconds": 2.03125,
+      "child_cpu": {
+        "creation_filetime": 134375815153414663,
+        "exit_filetime": 134375815174567926,
+        "kernel_seconds": 0.484375,
+        "user_seconds": 1.625,
+        "total_seconds": 2.109375
+      },
+      "runner_cpu_seconds": 0.0,
+      "environment": {
+        "total_seconds": 8.5,
+        "busy_seconds": 2.4375,
+        "busy_percent": 28.676470588235293,
+        "before": {
+          "user": 230.296875,
+          "kernel_including_idle": 1075.921875,
+          "idle": 957.046875,
+          "system": 118.875,
+          "perf_counter_seconds": 327.3071463,
+          "utc": "2026-10-27T13:31:55.340090+00:00"
+        },
+        "after": {
+          "user": 232.109375,
+          "kernel_including_idle": 1082.609375,
+          "idle": 963.109375,
+          "system": 119.5,
+          "perf_counter_seconds": 329.4241257,
+          "utc": "2026-10-27T13:31:57.457105+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 0.40625,
+        "inner_only_balance_percent": 4.779411764705882,
+        "child_outside_inner_seconds": 0.078125,
+        "runner_cpu_seconds": 0.0,
+        "unassigned_balance_seconds": 0.328125,
+        "unassigned_balance_percent": 3.860294117647059
+      },
+      "state_fnv1a64": "8035857386658397897"
+    },
+    {
+      "item": {
+        "sequence": 4,
+        "variant": "baseline",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "inner_cpu_seconds": 2.046875,
+      "child_cpu": {
+        "creation_filetime": 134375815174640115,
+        "exit_filetime": 134375815195919780,
+        "kernel_seconds": 0.5625,
+        "user_seconds": 1.546875,
+        "total_seconds": 2.109375
+      },
+      "runner_cpu_seconds": 0.0,
+      "environment": {
+        "total_seconds": 8.5,
+        "busy_seconds": 2.40625,
+        "busy_percent": 28.308823529411764,
+        "before": {
+          "user": 232.109375,
+          "kernel_including_idle": 1082.609375,
+          "idle": 963.109375,
+          "system": 119.5,
+          "perf_counter_seconds": 329.4296819,
+          "utc": "2026-10-27T13:31:57.463164+00:00"
+        },
+        "after": {
+          "user": 233.84375,
+          "kernel_including_idle": 1089.375,
+          "idle": 969.203125,
+          "system": 120.171875,
+          "perf_counter_seconds": 331.5593194,
+          "utc": "2026-10-27T13:31:59.593006+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 0.359375,
+        "inner_only_balance_percent": 4.227941176470588,
+        "child_outside_inner_seconds": 0.0625,
+        "runner_cpu_seconds": 0.0,
+        "unassigned_balance_seconds": 0.296875,
+        "unassigned_balance_percent": 3.4926470588235294
+      },
+      "state_fnv1a64": "8035857386658397897"
+    },
+    {
+      "item": {
+        "sequence": 5,
+        "variant": "candidate",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "inner_cpu_seconds": 2.03125,
+      "child_cpu": {
+        "creation_filetime": 134375815195995616,
+        "exit_filetime": 134375815217130487,
+        "kernel_seconds": 0.453125,
+        "user_seconds": 1.65625,
+        "total_seconds": 2.109375
+      },
+      "runner_cpu_seconds": 0.0,
+      "environment": {
+        "total_seconds": 8.4375,
+        "busy_seconds": 2.421875,
+        "busy_percent": 28.703703703703702,
+        "before": {
+          "user": 233.84375,
+          "kernel_including_idle": 1089.4375,
+          "idle": 969.25,
+          "system": 120.1875,
+          "perf_counter_seconds": 331.5651614,
+          "utc": "2026-10-27T13:31:59.597040+00:00"
+        },
+        "after": {
+          "user": 235.671875,
+          "kernel_including_idle": 1096.046875,
+          "idle": 975.265625,
+          "system": 120.78125,
+          "perf_counter_seconds": 333.6804548,
+          "utc": "2026-10-27T13:32:01.713906+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 0.390625,
+        "inner_only_balance_percent": 4.62962962962963,
+        "child_outside_inner_seconds": 0.078125,
+        "runner_cpu_seconds": 0.0,
+        "unassigned_balance_seconds": 0.3125,
+        "unassigned_balance_percent": 3.7037037037037037
+      },
+      "state_fnv1a64": "6154007251599136798"
+    }
+  ],
+  "archive": {
+    "bytes": 123388,
+    "sha256": "263a3bf8e229b89f1e443b12e522daf69d30de403affa0dc49fe674c0dd8f241",
+    "files": 75,
+    "inventory_files": 74,
+    "byte_exact_streams": 24
+  },
+  "source_checkout_forms": {
+    "experiments/candidates/alacritty/Cargo.toml": "git_blob_lf_to_crlf",
+    "experiments/candidates/alacritty/src/measure.rs": "git_blob_lf_to_crlf",
+    "experiments/measure/run.py": "git_blob_bytes",
+    "experiments/measure/r54_contract.py": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/Cargo.lock": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/Cargo.toml": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/PROVENANCE.md": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/README.md": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/include/termforge_candidate.h": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-24-windows/summary.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-24-windows/validation.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/candidate.jsonl": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/candidate.stderr.txt": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/chunks.txt": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/input.bin": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/report.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/candidate.jsonl": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/candidate.stderr.txt": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/chunks.txt": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/input.bin": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/report.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/candidate.jsonl": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/candidate.stderr.txt": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/chunks.txt": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/input.bin": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/report.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/candidate.jsonl": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/candidate.stderr.txt": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/chunks.txt": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/input.bin": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/report.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-1/summary.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/candidate.jsonl": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/candidate.stderr.txt": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/chunks.txt": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/input.bin": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/report.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/candidate.jsonl": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/candidate.stderr.txt": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/chunks.txt": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/input.bin": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/report.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/candidate.jsonl": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/candidate.stderr.txt": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/chunks.txt": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/input.bin": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/report.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/candidate.jsonl": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/candidate.stderr.txt": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/chunks.txt": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/input.bin": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/report.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/results/2026-10-25-termforge-2/summary.json": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/run.py": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/src/ffi.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/src/main.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/src/measure.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/test_candidate.py": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/CHANGELOG.md": "git_blob_bytes",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/LICENSE-APACHE": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/event.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/event_loop.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/mod.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/row.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/storage.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/tests.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/index.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/lib.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/selection.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/sync.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/cell.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/color.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/search.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/thread.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/mod.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/unix.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/blocking.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/child.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/conpty.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/mod.rs": "git_blob_lf_to_crlf",
+    "baseline/experiments/candidates/alacritty/vendor/alacritty_terminal/src/vi_mode.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/Cargo.lock": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/Cargo.toml": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/PROVENANCE.md": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/README.md": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/grapheme_checks.py": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/include/termforge_candidate.h": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-24-windows/summary.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-24-windows/validation.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/candidate.jsonl": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/candidate.stderr.txt": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/chunks.txt": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/input.bin": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/alternate-query/report.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/candidate.jsonl": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/candidate.stderr.txt": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/chunks.txt": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/input.bin": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/bounded-history/report.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/candidate.jsonl": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/candidate.stderr.txt": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/chunks.txt": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/input.bin": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-byte/report.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/candidate.jsonl": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/candidate.stderr.txt": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/chunks.txt": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/input.bin": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/fragmentation-whole/report.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-1/summary.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/candidate.jsonl": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/candidate.stderr.txt": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/chunks.txt": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/input.bin": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/alternate-query/report.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/candidate.jsonl": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/candidate.stderr.txt": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/chunks.txt": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/input.bin": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/bounded-history/report.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/candidate.jsonl": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/candidate.stderr.txt": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/chunks.txt": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/input.bin": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-byte/report.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/candidate.jsonl": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/candidate.stderr.txt": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/chunks.txt": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/input.bin": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/fragmentation-whole/report.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/results/2026-10-25-termforge-2/summary.json": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/run.py": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/src/ffi.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/src/main.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/src/measure.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/test_candidate.py": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/CHANGELOG.md": "git_blob_bytes",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/Cargo.toml": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/LICENSE-APACHE": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/event.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/event_loop.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/mod.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/resize.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/row.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/storage.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/grid/tests.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/index.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/lib.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/selection.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/sync.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/cell.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/color.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/grapheme.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/mod.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/term/search.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/thread.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/mod.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/unix.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/blocking.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/child.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/conpty.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/tty/windows/mod.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/src/vi_mode.rs": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/tests/data/GraphemeBreakTest-17.0.0.txt": "git_blob_lf_to_crlf",
+    "candidate/experiments/candidates/alacritty/vendor/alacritty_terminal/tests/data/UNICODE-LICENSE.txt": "git_blob_lf_to_crlf"
+  },
+  "sanity_oracles": 4,
+  "observation_oracles": 6,
+  "formal_cost_samples": 0,
+  "performance_gate": "not_evaluated",
+  "old_hosted_event_cause": "unknown",
+  "source_tree": "86e2342d16acd101fe182793d20aef3f1f017633",
+  "provider": {
+    "run": 40512310499,
+    "attempt": 1,
+    "job": 122217071656,
+    "event": "push",
+    "branch": "perf/grapheme-cpu-hosted-r54-entry3",
+    "source": "4772f4f937c4f0f220be1630592f84bed3a591c8",
+    "status": "completed",
+    "conclusion": "success",
+    "labels": [
+      "windows-2025"
+    ],
+    "started_at": "2026-10-27T13:28:22Z",
+    "completed_at": "2026-10-27T13:32:07Z",
+    "steps": [
+      {
+        "number": 1,
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:28:23Z",
+        "completed_at": "2026-10-27T13:28:24Z"
+      },
+      {
+        "number": 2,
+        "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:28:24Z",
+        "completed_at": "2026-10-27T13:28:33Z"
+      },
+      {
+        "number": 3,
+        "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:28:33Z",
+        "completed_at": "2026-10-27T13:28:33Z"
+      },
+      {
+        "number": 4,
+        "name": "Install fixed CPU observer",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:28:33Z",
+        "completed_at": "2026-10-27T13:28:40Z"
+      },
+      {
+        "number": 5,
+        "name": "Select fixed compiler",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:28:40Z",
+        "completed_at": "2026-10-27T13:28:49Z"
+      },
+      {
+        "number": 6,
+        "name": "Verify build, accounting and publication boundaries",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:28:49Z",
+        "completed_at": "2026-10-27T13:29:04Z"
+      },
+      {
+        "number": 7,
+        "name": "Build audited pair and execute one six-observation diagnosis",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:29:04Z",
+        "completed_at": "2026-10-27T13:32:02Z"
+      },
+      {
+        "number": 8,
+        "name": "Prepare the synthetic artifact whitelist",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:32:02Z",
+        "completed_at": "2026-10-27T13:32:03Z"
+      },
+      {
+        "number": 9,
+        "name": "Preserve complete or failed synthetic evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:32:03Z",
+        "completed_at": "2026-10-27T13:32:04Z"
+      },
+      {
+        "number": 17,
+        "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:32:04Z",
+        "completed_at": "2026-10-27T13:32:04Z"
+      },
+      {
+        "number": 18,
+        "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:32:04Z",
+        "completed_at": "2026-10-27T13:32:06Z"
+      },
+      {
+        "number": 19,
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-27T13:32:06Z",
+        "completed_at": "2026-10-27T13:32:06Z"
+      }
+    ],
+    "artifact_id": 12738430576,
+    "artifact_digest": "sha256:263a3bf8e229b89f1e443b12e522daf69d30de403affa0dc49fe674c0dd8f241",
+    "image": "windows-2025-vs2026",
+    "image_version": "20261021.278.1"
+  },
+  "previous_entries": [
+    {
+      "source": "eed0ab7bae5fcc5d05a25cea5161dabc4f935878",
+      "run": 40509157581,
+      "job": 122206160085,
+      "attempt": 1,
+      "result": "preparation_test_path_boundary_failure",
+      "preparation_tests": 31,
+      "errors": 1,
+      "builds": 0,
+      "observations": 0,
+      "actual_temp_path_form": "not_recorded"
+    },
+    {
+      "source": "c14adb9a7fa446476ad5c95c1f8c1b139ceb5ac4",
+      "branch": "perf/grapheme-cpu-hosted-r54-setup2",
+      "default_run": 40511533857,
+      "result": "no_cpu_workflow_run_listed",
+      "observations": 0,
+      "actual_push_file_list": "not_recorded"
+    }
+  ],
+  "local_tests": {
+    "measurement": {
+      "tests": 40,
+      "seconds": 19.436
+    },
+    "entry3_boundary": {
+      "tests": 4,
+      "seconds": 0.297
+    },
+    "hosted_preparation": {
+      "tests": 31,
+      "seconds": 14.042
+    }
+  },
+  "initial_ci": {
+    "40509376603": {
+      "jobs": [
+        {
+          "id": 122206943124,
+          "name": "alacritty-headless (windows-2025, experiments/candidates/alacritty/target/release/termforge-alacr...",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-27T13:08:09Z",
+              "completed_at": "2026-10-27T13:08:10Z"
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-27T13:08:10Z",
+              "completed_at": "2026-10-27T13:08:16Z"
+            },
+            {
+              "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-27T13:08:16Z",
+              "completed_at": "2026-10-27T13:08:16Z"
+            },
+            {
+              "name": "Install fixed semantic references",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-27T13:08:16Z",
+              "completed_at": "2026-10-27T13:08:22Z"
+            },
+            {
+              "name": "Install fixed CPU observer",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-27T13:08:22Z",
+              "completed_at": "2026-10-27T13:08:25Z"
+            },
+            {
+              "name": "Select fixed Rust toolchain",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-27T13:08:25Z",
+              "completed_at": "2026-10-27T13:08:34Z"
+            },
+            {
+              "name": "Build locked candidate",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-10-27T13:08:34Z",
+              "completed_at": "2026-10-27T13:09:17Z"
+            },
+            {
+              "name": "Test Rust projection",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-10-27T13:09:17Z",
+              "completed_at": "2026-10-27T13:09:33Z"
+            },
+            {
+              "name": "Test fixed upstream and compatibility patches",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-10-27T13:09:33Z",
+              "completed_at": "2026-10-27T13:09:50Z"
+            },
+            {
+              "name": "Build candidate measurement",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-10-27T13:09:50Z",
+              "completed_at": "2026-10-27T13:09:51Z"
+            },
+            {
+              "name": "Build candidate measurement without allocator wrapper",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-10-27T13:09:51Z",
+              "completed_at": "2026-10-27T13:10:22Z"
+            },
+            {
+              "name": "Configure native trace on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12,
+              "started_at": "2026-10-27T13:10:22Z",
+              "completed_at": "2026-10-27T13:10:33Z"
+            },
+            {
+              "name": "Configure native trace on Unix",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 13,
+              "started_at": "2026-10-27T13:10:33Z",
+              "completed_at": "2026-10-27T13:10:33Z"
+            },
+            {
+              "name": "Build native trace",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14,
+              "started_at": "2026-10-27T13:10:33Z",
+              "completed_at": "2026-10-27T13:10:37Z"
+            },
+            {
+              "name": "Build native measurement",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15,
+              "started_at": "2026-10-27T13:10:37Z",
+              "completed_at": "2026-10-27T13:10:41Z"
+            },
+            {
+              "name": "Build and test candidate C++ adapter",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16,
+              "started_at": "2026-10-27T13:10:41Z",
+              "completed_at": "2026-10-27T13:10:49Z"
+            },
+            {
+              "name": "Build and test candidate shell on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17,
+              "started_at": "2026-10-27T13:10:49Z",
+              "completed_at": "2026-10-27T13:11:35Z"
+            },
+            {
+              "name": "Verify empty-title GUI and UTF-8 conversion on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18,
+              "started_at": "2026-10-27T13:11:35Z",
+              "completed_at": "2026-10-27T13:12:03Z"
+            },
+            {
+              "name": "Build real application capture on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 19,
+              "started_at": "2026-10-27T13:12:03Z",
+              "completed_at": "2026-10-27T13:12:07Z"
+            },
+            {
+              "name": "Run headless integration checks",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 20,
+              "started_at": "2026-10-27T13:12:07Z",
+              "completed_at": "2026-10-27T13:12:08Z"
+            },
+            {
+              "name": "Test runner and failure gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21,
+              "started_at": "2026-10-27T13:12:08Z",
+              "completed_at": "2026-10-27T13:12:08Z"
+            },
+            {
+              "name": "Compare common native traces",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22,
+              "started_at": "2026-10-27T13:12:08Z",
+              "completed_at": "2026-10-27T13:12:11Z"
+            },
+            {
+              "name": "Test common comparison and failure gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23,
+              "started_at": "2026-10-27T13:12:11Z",
+              "completed_at": "2026-10-27T13:12:14Z"
+            },
+            {
+              "name": "Compare extended capability traces",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 24,
+              "started_at": "2026-10-27T13:12:14Z",
+              "completed_at": "2026-10-27T13:12:15Z"
+            },
+            {
+              "name": "Test extended capabilities and unsupported gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 25,
+              "started_at": "2026-10-27T13:12:15Z",
+              "completed_at": "2026-10-27T13:12:16Z"
+            },
+            {
+              "name": "Compare real application traces on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 26,
+              "started_at": "2026-10-27T13:12:16Z",
+              "completed_at": "2026-10-27T13:12:17Z"
+            },
+            {
+              "name": "Test real application traces on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 27,
+              "started_at": "2026-10-27T13:12:17Z",
+              "completed_at": "2026-10-27T13:12:29Z"
+            },
+            {
+              "name": "Run bounded recovery fuzz",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 28,
+              "started_at": "2026-10-27T13:12:29Z",
+              "completed_at": "2026-10-27T13:12:29Z"
+            },
+            {
+              "name": "Test fuzz minimization and fixed regressions",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29,
+              "started_at": "2026-10-27T13:12:29Z",
+              "completed_at": "2026-10-27T13:12:31Z"
+            },
+            {
+              "name": "Compare interleaved project costs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 30,
+              "started_at": "2026-10-27T13:12:31Z",
+              "completed_at": "2026-10-27T13:13:02Z"
+            },
+            {
+              "name": "Compare interleaved interactive costs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 31,
+              "started_at": "2026-10-27T13:13:02Z",
+              "completed_at": "2026-10-27T13:13:42Z"
+            },
+            {
+              "name": "Test measurement contracts",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 32,
+              "started_at": "2026-10-27T13:13:42Z",
+              "completed_at": "2026-10-27T13:14:15Z"
+            },
+            {
+              "name": "Preserve synthetic candidate evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 33,
+              "started_at": "2026-10-27T13:14:15Z",
+              "completed_at": "2026-10-27T13:14:19Z"
+            },
+            {
+              "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 65,
+              "started_at": "2026-10-27T13:14:19Z",
+              "completed_at": "2026-10-27T13:14:19Z"
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 66,
+              "started_at": "2026-10-27T13:14:19Z",
+              "completed_at": "2026-10-27T13:14:22Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 67,
+              "started_at": "2026-10-27T13:14:22Z",
+              "completed_at": "2026-10-27T13:14:22Z"
+            }
+          ],
+          "log_evidence": [
+            "2026-10-27T13:12:08.8322257Z Ran 6 tests in 0.149s",
+            "2026-10-27T13:12:14.1163493Z Ran 4 tests in 2.122s",
+            "2026-10-27T13:12:16.1916158Z Ran 4 tests in 0.522s",
+            "2026-10-27T13:12:28.9034935Z Ran 8 tests in 10.796s",
+            "2026-10-27T13:12:30.9126353Z Ran 4 tests in 0.716s",
+            "2026-10-27T13:14:15.3632402Z ERROR: test_publication_keeps_failed_streams_and_separates_the_six_observation_scope (test_r54_cpu_hosted.CpuHostedBoundaryTests.test_publication_keeps_failed_streams_and_separates_the_six_observation_scope)",
+            "2026-10-27T13:14:15.3646222Z ValueError: publication paths must stay in workspace local",
+            "2026-10-27T13:14:15.3646942Z Ran 49 tests in 31.869s",
+            "2026-10-27T13:14:15.3647151Z FAILED (errors=1)"
+          ]
+        },
+        {
+          "id": 122206943421,
+          "name": "alacritty-headless (ubuntu-24.04, experiments/candidates/alacritty/target/release/termforge-alacr...",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-27T13:08:10Z",
+              "completed_at": "2026-10-27T13:08:11Z"
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-27T13:08:11Z",
+              "completed_at": "2026-10-27T13:08:13Z"
+            },
+            {
+              "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-27T13:08:13Z",
+              "completed_at": "2026-10-27T13:08:13Z"
+            },
+            {
+              "name": "Install fixed semantic references",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-27T13:08:13Z",
+              "completed_at": "2026-10-27T13:08:14Z"
+            },
+            {
+              "name": "Install fixed CPU observer",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-27T13:08:14Z",
+              "completed_at": "2026-10-27T13:08:15Z"
+            },
+            {
+              "name": "Select fixed Rust toolchain",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-27T13:08:15Z",
+              "completed_at": "2026-10-27T13:08:22Z"
+            },
+            {
+              "name": "Build locked candidate",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-10-27T13:08:22Z",
+              "completed_at": "2026-10-27T13:08:43Z"
+            },
+            {
+              "name": "Test Rust projection",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-10-27T13:08:43Z",
+              "completed_at": "2026-10-27T13:08:52Z"
+            },
+            {
+              "name": "Test fixed upstream and compatibility patches",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-10-27T13:08:52Z",
+              "completed_at": "2026-10-27T13:09:03Z"
+            },
+            {
+              "name": "Build candidate measurement",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-10-27T13:09:03Z",
+              "completed_at": "2026-10-27T13:09:03Z"
+            },
+            {
+              "name": "Build candidate measurement without allocator wrapper",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-10-27T13:09:03Z",
+              "completed_at": "2026-10-27T13:09:21Z"
+            },
+            {
+              "name": "Configure native trace on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 12,
+              "started_at": "2026-10-27T13:09:21Z",
+              "completed_at": "2026-10-27T13:09:21Z"
+            },
+            {
+              "name": "Configure native trace on Unix",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13,
+              "started_at": "2026-10-27T13:09:21Z",
+              "completed_at": "2026-10-27T13:09:23Z"
+            },
+            {
+              "name": "Build native trace",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14,
+              "started_at": "2026-10-27T13:09:23Z",
+              "completed_at": "2026-10-27T13:09:24Z"
+            },
+            {
+              "name": "Build native measurement",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15,
+              "started_at": "2026-10-27T13:09:24Z",
+              "completed_at": "2026-10-27T13:09:27Z"
+            },
+            {
+              "name": "Build and test candidate C++ adapter",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16,
+              "started_at": "2026-10-27T13:09:27Z",
+              "completed_at": "2026-10-27T13:09:34Z"
+            },
+            {
+              "name": "Build and test candidate shell on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 17,
+              "started_at": "2026-10-27T13:09:34Z",
+              "completed_at": "2026-10-27T13:09:34Z"
+            },
+            {
+              "name": "Verify empty-title GUI and UTF-8 conversion on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 18,
+              "started_at": "2026-10-27T13:09:34Z",
+              "completed_at": "2026-10-27T13:09:34Z"
+            },
+            {
+              "name": "Build real application capture on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 19,
+              "started_at": "2026-10-27T13:09:34Z",
+              "completed_at": "2026-10-27T13:09:34Z"
+            },
+            {
+              "name": "Run headless integration checks",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 20,
+              "started_at": "2026-10-27T13:09:34Z",
+              "completed_at": "2026-10-27T13:09:34Z"
+            },
+            {
+              "name": "Test runner and failure gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21,
+              "started_at": "2026-10-27T13:09:34Z",
+              "completed_at": "2026-10-27T13:09:34Z"
+            },
+            {
+              "name": "Compare common native traces",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22,
+              "started_at": "2026-10-27T13:09:34Z",
+              "completed_at": "2026-10-27T13:09:35Z"
+            },
+            {
+              "name": "Test common comparison and failure gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23,
+              "started_at": "2026-10-27T13:09:35Z",
+              "completed_at": "2026-10-27T13:09:36Z"
+            },
+            {
+              "name": "Compare extended capability traces",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 24,
+              "started_at": "2026-10-27T13:09:36Z",
+              "completed_at": "2026-10-27T13:09:36Z"
+            },
+            {
+              "name": "Test extended capabilities and unsupported gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 25,
+              "started_at": "2026-10-27T13:09:36Z",
+              "completed_at": "2026-10-27T13:09:37Z"
+            },
+            {
+              "name": "Compare real application traces on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 26,
+              "started_at": "2026-10-27T13:09:37Z",
+              "completed_at": "2026-10-27T13:09:37Z"
+            },
+            {
+              "name": "Test real application traces on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 27,
+              "started_at": "2026-10-27T13:09:37Z",
+              "completed_at": "2026-10-27T13:09:37Z"
+            },
+            {
+              "name": "Run bounded recovery fuzz",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 28,
+              "started_at": "2026-10-27T13:09:37Z",
+              "completed_at": "2026-10-27T13:09:37Z"
+            },
+            {
+              "name": "Test fuzz minimization and fixed regressions",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29,
+              "started_at": "2026-10-27T13:09:37Z",
+              "completed_at": "2026-10-27T13:09:37Z"
+            },
+            {
+              "name": "Compare interleaved project costs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 30,
+              "started_at": "2026-10-27T13:09:37Z",
+              "completed_at": "2026-10-27T13:10:06Z"
+            },
+            {
+              "name": "Compare interleaved interactive costs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 31,
+              "started_at": "2026-10-27T13:10:06Z",
+              "completed_at": "2026-10-27T13:10:45Z"
+            },
+            {
+              "name": "Test measurement contracts",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 32,
+              "started_at": "2026-10-27T13:10:45Z",
+              "completed_at": "2026-10-27T13:11:11Z"
+            },
+            {
+              "name": "Preserve synthetic candidate evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 33,
+              "started_at": "2026-10-27T13:11:11Z",
+              "completed_at": "2026-10-27T13:11:14Z"
+            },
+            {
+              "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 65,
+              "started_at": "2026-10-27T13:11:14Z",
+              "completed_at": "2026-10-27T13:11:14Z"
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 66,
+              "started_at": "2026-10-27T13:11:14Z",
+              "completed_at": "2026-10-27T13:11:15Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 67,
+              "started_at": "2026-10-27T13:11:15Z",
+              "completed_at": "2026-10-27T13:11:15Z"
+            }
+          ],
+          "log_evidence": []
+        }
+      ]
+    },
+    "40509377108": {
+      "jobs": [
+        {
+          "id": 122206924548,
+          "name": "regression (windows-2025, build/bin/Release)",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-27T13:08:07Z",
+              "completed_at": "2026-10-27T13:08:08Z"
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-27T13:08:08Z",
+              "completed_at": "2026-10-27T13:08:13Z"
+            },
+            {
+              "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-27T13:08:13Z",
+              "completed_at": "2026-10-27T13:08:13Z"
+            },
+            {
+              "name": "Install test dependencies",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-27T13:08:13Z",
+              "completed_at": "2026-10-27T13:08:20Z"
+            },
+            {
+              "name": "Configure",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-27T13:08:20Z",
+              "completed_at": "2026-10-27T13:08:35Z"
+            },
+            {
+              "name": "Build",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-27T13:08:35Z",
+              "completed_at": "2026-10-27T13:09:33Z"
+            },
+            {
+              "name": "Verify shell preparation guards and oracles",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-10-27T13:09:33Z",
+              "completed_at": "2026-10-27T13:09:34Z"
+            },
+            {
+              "name": "Prepare hosted Windows shell prerequisites",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-10-27T13:09:34Z",
+              "completed_at": "2026-10-27T13:10:14Z"
+            },
+            {
+              "name": "Preserve sanitized shell preparation result",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-10-27T13:10:14Z",
+              "completed_at": "2026-10-27T13:10:16Z"
+            },
+            {
+              "name": "Test",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 10,
+              "started_at": "2026-10-27T13:10:16Z",
+              "completed_at": "2026-10-27T13:14:29Z"
+            },
+            {
+              "name": "Preserve clipboard and window integration evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-10-27T13:14:29Z",
+              "completed_at": "2026-10-27T13:14:34Z"
+            },
+            {
+              "name": "Full ASCII state replay",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 12,
+              "started_at": "2026-10-27T13:14:34Z",
+              "completed_at": "2026-10-27T13:14:34Z"
+            },
+            {
+              "name": "Full Unicode state replay",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 13,
+              "started_at": "2026-10-27T13:14:34Z",
+              "completed_at": "2026-10-27T13:14:34Z"
+            },
+            {
+              "name": "Preserve synthetic failure evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14,
+              "started_at": "2026-10-27T13:14:34Z",
+              "completed_at": "2026-10-27T13:14:39Z"
+            },
+            {
+              "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 27,
+              "started_at": "2026-10-27T13:14:39Z",
+              "completed_at": "2026-10-27T13:14:39Z"
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 28,
+              "started_at": "2026-10-27T13:14:39Z",
+              "completed_at": "2026-10-27T13:14:41Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29,
+              "started_at": "2026-10-27T13:14:41Z",
+              "completed_at": "2026-10-27T13:14:41Z"
+            }
+          ],
+          "log_evidence": [
+            "2026-10-27T13:09:34.6075054Z Ran 23 tests in 0.141s",
+            "2026-10-27T13:10:42.1081064Z ERROR: test_publication_keeps_failed_streams_and_separates_the_six_observation_scope (experiments.measure.test_r54_cpu_hosted.CpuHostedBoundaryTests.test_publication_keeps_failed_streams_and_separates_the_six_observation_scope)",
+            "2026-10-27T13:10:42.1091660Z ValueError: publication paths must stay in workspace local",
+            "2026-10-27T13:10:42.1092267Z Ran 40 tests in 14.741s",
+            "2026-10-27T13:10:42.1092447Z FAILED (errors=1)",
+            "2026-10-27T13:14:29.5651977Z 98% tests passed, 1 tests failed out of 46"
+          ]
+        },
+        {
+          "id": 122206924940,
+          "name": "regression (ubuntu-24.04, build/bin)",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-27T13:08:07Z",
+              "completed_at": "2026-10-27T13:08:09Z"
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-27T13:08:09Z",
+              "completed_at": "2026-10-27T13:08:11Z"
+            },
+            {
+              "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-27T13:08:11Z",
+              "completed_at": "2026-10-27T13:08:11Z"
+            },
+            {
+              "name": "Install test dependencies",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-27T13:08:11Z",
+              "completed_at": "2026-10-27T13:08:13Z"
+            },
+            {
+              "name": "Configure",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-27T13:08:13Z",
+              "completed_at": "2026-10-27T13:08:14Z"
+            },
+            {
+              "name": "Build",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-27T13:08:14Z",
+              "completed_at": "2026-10-27T13:08:27Z"
+            },
+            {
+              "name": "Verify shell preparation guards and oracles",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-10-27T13:08:27Z",
+              "completed_at": "2026-10-27T13:08:28Z"
+            },
+            {
+              "name": "Prepare hosted Windows shell prerequisites",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 8,
+              "started_at": "2026-10-27T13:08:28Z",
+              "completed_at": "2026-10-27T13:08:28Z"
+            },
+            {
+              "name": "Preserve sanitized shell preparation result",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 9,
+              "started_at": "2026-10-27T13:08:28Z",
+              "completed_at": "2026-10-27T13:08:28Z"
+            },
+            {
+              "name": "Test",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-10-27T13:08:28Z",
+              "completed_at": "2026-10-27T13:08:50Z"
+            },
+            {
+              "name": "Preserve clipboard and window integration evidence",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 11,
+              "started_at": "2026-10-27T13:08:50Z",
+              "completed_at": "2026-10-27T13:08:50Z"
+            },
+            {
+              "name": "Full ASCII state replay",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12,
+              "started_at": "2026-10-27T13:08:50Z",
+              "completed_at": "2026-10-27T13:08:50Z"
+            },
+            {
+              "name": "Full Unicode state replay",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13,
+              "started_at": "2026-10-27T13:08:50Z",
+              "completed_at": "2026-10-27T13:08:50Z"
+            },
+            {
+              "name": "Preserve synthetic failure evidence",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 14,
+              "started_at": "2026-10-27T13:08:50Z",
+              "completed_at": "2026-10-27T13:08:50Z"
+            },
+            {
+              "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 27,
+              "started_at": "2026-10-27T13:08:50Z",
+              "completed_at": "2026-10-27T13:08:51Z"
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 28,
+              "started_at": "2026-10-27T13:08:51Z",
+              "completed_at": "2026-10-27T13:08:51Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29,
+              "started_at": "2026-10-27T13:08:51Z",
+              "completed_at": "2026-10-27T13:08:51Z"
+            }
+          ],
+          "log_evidence": []
+        }
+      ]
+    },
+    "40509157544": {
+      "jobs": [
+        {
+          "id": 122206159254,
+          "name": "alacritty-headless (windows-2025, experiments/candidates/alacritty/target/release/termforge-alacr...",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-27T13:06:32Z",
+              "completed_at": "2026-10-27T13:06:33Z"
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-27T13:06:33Z",
+              "completed_at": "2026-10-27T13:06:39Z"
+            },
+            {
+              "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-27T13:06:39Z",
+              "completed_at": "2026-10-27T13:06:39Z"
+            },
+            {
+              "name": "Install fixed semantic references",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-27T13:06:39Z",
+              "completed_at": "2026-10-27T13:06:45Z"
+            },
+            {
+              "name": "Install fixed CPU observer",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-27T13:06:45Z",
+              "completed_at": "2026-10-27T13:06:47Z"
+            },
+            {
+              "name": "Select fixed Rust toolchain",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-27T13:06:47Z",
+              "completed_at": "2026-10-27T13:06:57Z"
+            },
+            {
+              "name": "Build locked candidate",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-10-27T13:06:57Z",
+              "completed_at": "2026-10-27T13:07:28Z"
+            },
+            {
+              "name": "Test Rust projection",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-10-27T13:07:28Z",
+              "completed_at": "2026-10-27T13:07:41Z"
+            },
+            {
+              "name": "Test fixed upstream and compatibility patches",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-10-27T13:07:41Z",
+              "completed_at": "2026-10-27T13:07:53Z"
+            },
+            {
+              "name": "Build candidate measurement",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-10-27T13:07:53Z",
+              "completed_at": "2026-10-27T13:07:54Z"
+            },
+            {
+              "name": "Build candidate measurement without allocator wrapper",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-10-27T13:07:54Z",
+              "completed_at": "2026-10-27T13:08:15Z"
+            },
+            {
+              "name": "Configure native trace on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12,
+              "started_at": "2026-10-27T13:08:15Z",
+              "completed_at": "2026-10-27T13:08:25Z"
+            },
+            {
+              "name": "Configure native trace on Unix",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 13,
+              "started_at": "2026-10-27T13:08:25Z",
+              "completed_at": "2026-10-27T13:08:25Z"
+            },
+            {
+              "name": "Build native trace",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14,
+              "started_at": "2026-10-27T13:08:25Z",
+              "completed_at": "2026-10-27T13:08:29Z"
+            },
+            {
+              "name": "Build native measurement",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15,
+              "started_at": "2026-10-27T13:08:29Z",
+              "completed_at": "2026-10-27T13:08:32Z"
+            },
+            {
+              "name": "Build and test candidate C++ adapter",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16,
+              "started_at": "2026-10-27T13:08:32Z",
+              "completed_at": "2026-10-27T13:08:39Z"
+            },
+            {
+              "name": "Build and test candidate shell on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17,
+              "started_at": "2026-10-27T13:08:39Z",
+              "completed_at": "2026-10-27T13:09:22Z"
+            },
+            {
+              "name": "Verify empty-title GUI and UTF-8 conversion on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18,
+              "started_at": "2026-10-27T13:09:22Z",
+              "completed_at": "2026-10-27T13:09:43Z"
+            },
+            {
+              "name": "Build real application capture on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 19,
+              "started_at": "2026-10-27T13:09:43Z",
+              "completed_at": "2026-10-27T13:09:46Z"
+            },
+            {
+              "name": "Run headless integration checks",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 20,
+              "started_at": "2026-10-27T13:09:46Z",
+              "completed_at": "2026-10-27T13:09:46Z"
+            },
+            {
+              "name": "Test runner and failure gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21,
+              "started_at": "2026-10-27T13:09:46Z",
+              "completed_at": "2026-10-27T13:09:47Z"
+            },
+            {
+              "name": "Compare common native traces",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22,
+              "started_at": "2026-10-27T13:09:47Z",
+              "completed_at": "2026-10-27T13:09:49Z"
+            },
+            {
+              "name": "Test common comparison and failure gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23,
+              "started_at": "2026-10-27T13:09:49Z",
+              "completed_at": "2026-10-27T13:09:51Z"
+            },
+            {
+              "name": "Compare extended capability traces",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 24,
+              "started_at": "2026-10-27T13:09:51Z",
+              "completed_at": "2026-10-27T13:09:52Z"
+            },
+            {
+              "name": "Test extended capabilities and unsupported gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 25,
+              "started_at": "2026-10-27T13:09:52Z",
+              "completed_at": "2026-10-27T13:09:52Z"
+            },
+            {
+              "name": "Compare real application traces on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 26,
+              "started_at": "2026-10-27T13:09:52Z",
+              "completed_at": "2026-10-27T13:09:53Z"
+            },
+            {
+              "name": "Test real application traces on Windows",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 27,
+              "started_at": "2026-10-27T13:09:53Z",
+              "completed_at": "2026-10-27T13:10:05Z"
+            },
+            {
+              "name": "Run bounded recovery fuzz",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 28,
+              "started_at": "2026-10-27T13:10:05Z",
+              "completed_at": "2026-10-27T13:10:05Z"
+            },
+            {
+              "name": "Test fuzz minimization and fixed regressions",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29,
+              "started_at": "2026-10-27T13:10:05Z",
+              "completed_at": "2026-10-27T13:10:06Z"
+            },
+            {
+              "name": "Compare interleaved project costs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 30,
+              "started_at": "2026-10-27T13:10:06Z",
+              "completed_at": "2026-10-27T13:10:36Z"
+            },
+            {
+              "name": "Compare interleaved interactive costs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 31,
+              "started_at": "2026-10-27T13:10:36Z",
+              "completed_at": "2026-10-27T13:11:16Z"
+            },
+            {
+              "name": "Test measurement contracts",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 32,
+              "started_at": "2026-10-27T13:11:16Z",
+              "completed_at": "2026-10-27T13:11:44Z"
+            },
+            {
+              "name": "Preserve synthetic candidate evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 33,
+              "started_at": "2026-10-27T13:11:44Z",
+              "completed_at": "2026-10-27T13:11:49Z"
+            },
+            {
+              "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 65,
+              "started_at": "2026-10-27T13:11:49Z",
+              "completed_at": "2026-10-27T13:11:49Z"
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 66,
+              "started_at": "2026-10-27T13:11:49Z",
+              "completed_at": "2026-10-27T13:11:50Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 67,
+              "started_at": "2026-10-27T13:11:50Z",
+              "completed_at": "2026-10-27T13:11:50Z"
+            }
+          ],
+          "log_evidence": [
+            "2026-10-27T13:09:47.1510883Z Ran 6 tests in 0.112s",
+            "2026-10-27T13:09:51.1475615Z Ran 4 tests in 1.624s",
+            "2026-10-27T13:09:52.7038066Z Ran 4 tests in 0.401s",
+            "2026-10-27T13:10:04.9281496Z Ran 8 tests in 10.681s",
+            "2026-10-27T13:10:06.4638361Z Ran 4 tests in 0.571s",
+            "2026-10-27T13:11:44.7874775Z ERROR: test_publication_keeps_failed_streams_and_separates_the_six_observation_scope (test_r54_cpu_hosted.CpuHostedBoundaryTests.test_publication_keeps_failed_streams_and_separates_the_six_observation_scope)",
+            "2026-10-27T13:11:44.7884371Z ValueError: publication paths must stay in workspace local",
+            "2026-10-27T13:11:44.7884990Z Ran 49 tests in 28.223s",
+            "2026-10-27T13:11:44.7885202Z FAILED (errors=1)"
+          ]
+        },
+        {
+          "id": 122206159638,
+          "name": "alacritty-headless (ubuntu-24.04, experiments/candidates/alacritty/target/release/termforge-alacr...",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-27T13:06:33Z",
+              "completed_at": "2026-10-27T13:06:34Z"
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-27T13:06:34Z",
+              "completed_at": "2026-10-27T13:06:36Z"
+            },
+            {
+              "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-27T13:06:36Z",
+              "completed_at": "2026-10-27T13:06:36Z"
+            },
+            {
+              "name": "Install fixed semantic references",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-27T13:06:36Z",
+              "completed_at": "2026-10-27T13:06:37Z"
+            },
+            {
+              "name": "Install fixed CPU observer",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-27T13:06:37Z",
+              "completed_at": "2026-10-27T13:06:38Z"
+            },
+            {
+              "name": "Select fixed Rust toolchain",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-27T13:06:38Z",
+              "completed_at": "2026-10-27T13:06:46Z"
+            },
+            {
+              "name": "Build locked candidate",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-10-27T13:06:46Z",
+              "completed_at": "2026-10-27T13:07:08Z"
+            },
+            {
+              "name": "Test Rust projection",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-10-27T13:07:08Z",
+              "completed_at": "2026-10-27T13:07:18Z"
+            },
+            {
+              "name": "Test fixed upstream and compatibility patches",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-10-27T13:07:18Z",
+              "completed_at": "2026-10-27T13:07:30Z"
+            },
+            {
+              "name": "Build candidate measurement",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-10-27T13:07:30Z",
+              "completed_at": "2026-10-27T13:07:30Z"
+            },
+            {
+              "name": "Build candidate measurement without allocator wrapper",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-10-27T13:07:30Z",
+              "completed_at": "2026-10-27T13:07:48Z"
+            },
+            {
+              "name": "Configure native trace on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 12,
+              "started_at": "2026-10-27T13:07:48Z",
+              "completed_at": "2026-10-27T13:07:48Z"
+            },
+            {
+              "name": "Configure native trace on Unix",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13,
+              "started_at": "2026-10-27T13:07:48Z",
+              "completed_at": "2026-10-27T13:07:51Z"
+            },
+            {
+              "name": "Build native trace",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14,
+              "started_at": "2026-10-27T13:07:51Z",
+              "completed_at": "2026-10-27T13:07:54Z"
+            },
+            {
+              "name": "Build native measurement",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15,
+              "started_at": "2026-10-27T13:07:54Z",
+              "completed_at": "2026-10-27T13:07:56Z"
+            },
+            {
+              "name": "Build and test candidate C++ adapter",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16,
+              "started_at": "2026-10-27T13:07:56Z",
+              "completed_at": "2026-10-27T13:08:03Z"
+            },
+            {
+              "name": "Build and test candidate shell on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 17,
+              "started_at": "2026-10-27T13:08:03Z",
+              "completed_at": "2026-10-27T13:08:03Z"
+            },
+            {
+              "name": "Verify empty-title GUI and UTF-8 conversion on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 18,
+              "started_at": "2026-10-27T13:08:03Z",
+              "completed_at": "2026-10-27T13:08:03Z"
+            },
+            {
+              "name": "Build real application capture on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 19,
+              "started_at": "2026-10-27T13:08:03Z",
+              "completed_at": "2026-10-27T13:08:03Z"
+            },
+            {
+              "name": "Run headless integration checks",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 20,
+              "started_at": "2026-10-27T13:08:03Z",
+              "completed_at": "2026-10-27T13:08:03Z"
+            },
+            {
+              "name": "Test runner and failure gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21,
+              "started_at": "2026-10-27T13:08:03Z",
+              "completed_at": "2026-10-27T13:08:04Z"
+            },
+            {
+              "name": "Compare common native traces",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22,
+              "started_at": "2026-10-27T13:08:04Z",
+              "completed_at": "2026-10-27T13:08:04Z"
+            },
+            {
+              "name": "Test common comparison and failure gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23,
+              "started_at": "2026-10-27T13:08:04Z",
+              "completed_at": "2026-10-27T13:08:05Z"
+            },
+            {
+              "name": "Compare extended capability traces",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 24,
+              "started_at": "2026-10-27T13:08:05Z",
+              "completed_at": "2026-10-27T13:08:06Z"
+            },
+            {
+              "name": "Test extended capabilities and unsupported gates",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 25,
+              "started_at": "2026-10-27T13:08:06Z",
+              "completed_at": "2026-10-27T13:08:06Z"
+            },
+            {
+              "name": "Compare real application traces on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 26,
+              "started_at": "2026-10-27T13:08:06Z",
+              "completed_at": "2026-10-27T13:08:06Z"
+            },
+            {
+              "name": "Test real application traces on Windows",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 27,
+              "started_at": "2026-10-27T13:08:06Z",
+              "completed_at": "2026-10-27T13:08:06Z"
+            },
+            {
+              "name": "Run bounded recovery fuzz",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 28,
+              "started_at": "2026-10-27T13:08:06Z",
+              "completed_at": "2026-10-27T13:08:06Z"
+            },
+            {
+              "name": "Test fuzz minimization and fixed regressions",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29,
+              "started_at": "2026-10-27T13:08:06Z",
+              "completed_at": "2026-10-27T13:08:06Z"
+            },
+            {
+              "name": "Compare interleaved project costs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 30,
+              "started_at": "2026-10-27T13:08:06Z",
+              "completed_at": "2026-10-27T13:08:36Z"
+            },
+            {
+              "name": "Compare interleaved interactive costs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 31,
+              "started_at": "2026-10-27T13:08:36Z",
+              "completed_at": "2026-10-27T13:09:16Z"
+            },
+            {
+              "name": "Test measurement contracts",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 32,
+              "started_at": "2026-10-27T13:09:16Z",
+              "completed_at": "2026-10-27T13:09:42Z"
+            },
+            {
+              "name": "Preserve synthetic candidate evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 33,
+              "started_at": "2026-10-27T13:09:42Z",
+              "completed_at": "2026-10-27T13:09:45Z"
+            },
+            {
+              "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 65,
+              "started_at": "2026-10-27T13:09:45Z",
+              "completed_at": "2026-10-27T13:09:45Z"
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 66,
+              "started_at": "2026-10-27T13:09:45Z",
+              "completed_at": "2026-10-27T13:09:45Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 67,
+              "started_at": "2026-10-27T13:09:45Z",
+              "completed_at": "2026-10-27T13:09:45Z"
+            }
+          ],
+          "log_evidence": []
+        }
+      ]
+    },
+    "40509157365": {
+      "jobs": [
+        {
+          "id": 122206159312,
+          "name": "regression (ubuntu-24.04, build/bin)",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-27T13:06:32Z",
+              "completed_at": "2026-10-27T13:06:33Z"
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-27T13:06:33Z",
+              "completed_at": "2026-10-27T13:06:34Z"
+            },
+            {
+              "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-27T13:06:34Z",
+              "completed_at": "2026-10-27T13:06:35Z"
+            },
+            {
+              "name": "Install test dependencies",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-27T13:06:35Z",
+              "completed_at": "2026-10-27T13:06:37Z"
+            },
+            {
+              "name": "Configure",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-27T13:06:37Z",
+              "completed_at": "2026-10-27T13:06:44Z"
+            },
+            {
+              "name": "Build",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-27T13:06:44Z",
+              "completed_at": "2026-10-27T13:06:53Z"
+            },
+            {
+              "name": "Verify shell preparation guards and oracles",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-10-27T13:06:53Z",
+              "completed_at": "2026-10-27T13:06:54Z"
+            },
+            {
+              "name": "Prepare hosted Windows shell prerequisites",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 8,
+              "started_at": "2026-10-27T13:06:54Z",
+              "completed_at": "2026-10-27T13:06:54Z"
+            },
+            {
+              "name": "Preserve sanitized shell preparation result",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 9,
+              "started_at": "2026-10-27T13:06:54Z",
+              "completed_at": "2026-10-27T13:06:54Z"
+            },
+            {
+              "name": "Test",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-10-27T13:06:54Z",
+              "completed_at": "2026-10-27T13:07:10Z"
+            },
+            {
+              "name": "Preserve clipboard and window integration evidence",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 11,
+              "started_at": "2026-10-27T13:07:10Z",
+              "completed_at": "2026-10-27T13:07:10Z"
+            },
+            {
+              "name": "Full ASCII state replay",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12,
+              "started_at": "2026-10-27T13:07:10Z",
+              "completed_at": "2026-10-27T13:07:10Z"
+            },
+            {
+              "name": "Full Unicode state replay",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13,
+              "started_at": "2026-10-27T13:07:10Z",
+              "completed_at": "2026-10-27T13:07:10Z"
+            },
+            {
+              "name": "Preserve synthetic failure evidence",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 14,
+              "started_at": "2026-10-27T13:07:10Z",
+              "completed_at": "2026-10-27T13:07:10Z"
+            },
+            {
+              "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 27,
+              "started_at": "2026-10-27T13:07:10Z",
+              "completed_at": "2026-10-27T13:07:11Z"
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 28,
+              "started_at": "2026-10-27T13:07:11Z",
+              "completed_at": "2026-10-27T13:07:11Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29,
+              "started_at": "2026-10-27T13:07:11Z",
+              "completed_at": "2026-10-27T13:07:11Z"
+            }
+          ],
+          "log_evidence": []
+        },
+        {
+          "id": 122206159781,
+          "name": "regression (windows-2025, build/bin/Release)",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-27T13:06:33Z",
+              "completed_at": "2026-10-27T13:06:35Z"
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-27T13:06:35Z",
+              "completed_at": "2026-10-27T13:06:42Z"
+            },
+            {
+              "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-27T13:06:42Z",
+              "completed_at": "2026-10-27T13:06:42Z"
+            },
+            {
+              "name": "Install test dependencies",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-27T13:06:42Z",
+              "completed_at": "2026-10-27T13:06:53Z"
+            },
+            {
+              "name": "Configure",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-27T13:06:53Z",
+              "completed_at": "2026-10-27T13:07:10Z"
+            },
+            {
+              "name": "Build",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-27T13:07:10Z",
+              "completed_at": "2026-10-27T13:08:45Z"
+            },
+            {
+              "name": "Verify shell preparation guards and oracles",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-10-27T13:08:45Z",
+              "completed_at": "2026-10-27T13:08:47Z"
+            },
+            {
+              "name": "Prepare hosted Windows shell prerequisites",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-10-27T13:08:47Z",
+              "completed_at": "2026-10-27T13:09:33Z"
+            },
+            {
+              "name": "Preserve sanitized shell preparation result",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-10-27T13:09:33Z",
+              "completed_at": "2026-10-27T13:09:34Z"
+            },
+            {
+              "name": "Test",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 10,
+              "started_at": "2026-10-27T13:09:34Z",
+              "completed_at": "2026-10-27T13:14:21Z"
+            },
+            {
+              "name": "Preserve clipboard and window integration evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-10-27T13:14:21Z",
+              "completed_at": "2026-10-27T13:14:30Z"
+            },
+            {
+              "name": "Full ASCII state replay",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 12,
+              "started_at": "2026-10-27T13:14:30Z",
+              "completed_at": "2026-10-27T13:14:30Z"
+            },
+            {
+              "name": "Full Unicode state replay",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 13,
+              "started_at": "2026-10-27T13:14:30Z",
+              "completed_at": "2026-10-27T13:14:30Z"
+            },
+            {
+              "name": "Preserve synthetic failure evidence",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14,
+              "started_at": "2026-10-27T13:14:30Z",
+              "completed_at": "2026-10-27T13:14:38Z"
+            },
+            {
+              "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 27,
+              "started_at": "2026-10-27T13:14:38Z",
+              "completed_at": "2026-10-27T13:14:38Z"
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 28,
+              "started_at": "2026-10-27T13:14:38Z",
+              "completed_at": "2026-10-27T13:14:41Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29,
+              "started_at": "2026-10-27T13:14:41Z",
+              "completed_at": "2026-10-27T13:14:41Z"
+            }
+          ],
+          "log_evidence": [
+            "2026-10-27T13:08:46.9370598Z Ran 23 tests in 0.204s",
+            "2026-10-27T13:10:07.8942946Z ERROR: test_publication_keeps_failed_streams_and_separates_the_six_observation_scope (experiments.measure.test_r54_cpu_hosted.CpuHostedBoundaryTests.test_publication_keeps_failed_streams_and_separates_the_six_observation_scope)",
+            "2026-10-27T13:10:07.8959865Z ValueError: publication paths must stay in workspace local",
+            "2026-10-27T13:10:07.8961082Z Ran 40 tests in 16.284s",
+            "2026-10-27T13:10:07.8961443Z FAILED (errors=1)",
+            "2026-10-27T13:14:21.2079969Z 98% tests passed, 1 tests failed out of 46"
+          ]
+        }
+      ]
+    }
+  },
+  "limits": [
+    "No idle qualification, A/B cost ratio or performance acceptance.",
+    "Signed CPU residual includes possible guest activity, counter quantization and non-atomic endpoints; no process attribution.",
+    "Own outside-inner CPU does not explain all residual activity in this new run; old hosted cause remains unknown.",
+    "New binaries and host identity are independent of earlier local and hosted builds.",
+    "Full controlled batches, wrapper/projection/component attribution and user-confirmed budgets remain incomplete."
+  ]
+}

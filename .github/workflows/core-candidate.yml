@@ -56,6 +56,8 @@ jobs:
           python-version: '3.12'
       - name: Install fixed semantic references
         run: python -m pip install --require-hashes -r experiments/differential/requirements.txt
+      - name: Install fixed CPU observer
+        run: python -m pip install -r benchmarks/requirements.txt
       - name: Select fixed Rust toolchain
         run: rustup default 1.92.0
       - name: Build locked candidate

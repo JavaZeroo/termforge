@@ -1,0 +1,55 @@
+name: Frozen R54 hosted cost batches
+
+on:
+  push:
+    branches: ['perf/grapheme-hosted-r54']
+    paths:
+      - '.github/workflows/r54-cost.yml'
+      - 'experiments/measure/*.py'
+      - 'experiments/candidates/alacritty/Cargo.toml'
+      - 'experiments/candidates/alacritty/src/measure.rs'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r54-cost-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fixed-cost:
+    # A code/evidence correction must not silently launch replacement samples.
+    if: github.event.created == true
+    runs-on: windows-2025
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: '1'
+      CARGO_HOME: ${{ github.workspace }}/local/r54-cargo-home
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Install fixed host observer
+        run: python -m pip install -r benchmarks/requirements.txt
+      - name: Select fixed compiler
+        run: rustup default 1.92.0
+      - name: Verify runner and publication contracts before measurement
+        run: python -m unittest experiments.measure.test_r54_contract.CostPlanTests experiments.measure.test_r54_batch experiments.measure.test_r54_hosted -v
+      - name: Build audited pair and execute the two frozen batches
+        id: measure
+        run: python -m experiments.measure.r54_hosted --out local/r54-raw
+      - name: Prepare the reviewed synthetic artifact whitelist
+        if: always() && steps.measure.outcome != 'skipped'
+        run: python -m experiments.measure.r54_publish --raw local/r54-raw --out local/r54-public
+      - name: Preserve complete or failed synthetic evidence
+        if: always() && steps.measure.outcome != 'skipped'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: r54-cost-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: error
+          path: local/r54-public/

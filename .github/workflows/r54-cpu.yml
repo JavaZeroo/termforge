@@ -1,0 +1,50 @@
+name: Bounded R54 hosted CPU diagnosis
+
+on:
+  push:
+    branches: ['perf/grapheme-cpu-hosted-r54', 'perf/grapheme-cpu-hosted-r54-setup2', 'perf/grapheme-cpu-hosted-r54-entry3']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r54-cpu-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cpu-boundary:
+    # Evidence or exporter fixes must not silently create replacement observations.
+    if: github.event.created == true
+    runs-on: windows-2025
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: '1'
+      CARGO_HOME: ${{ github.workspace }}/local/r54-cargo-home
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Install fixed CPU observer
+        run: python -m pip install -r benchmarks/requirements.txt
+      - name: Select fixed compiler
+        run: rustup default 1.92.0
+      - name: Verify build, accounting and publication boundaries
+        run: python -m unittest experiments.measure.test_r54_contract.CostPlanTests experiments.measure.test_r54_batch experiments.measure.test_r54_hosted experiments.measure.test_r54_cpu_diagnostic experiments.measure.test_r54_cpu_hosted -v
+      - name: Build audited pair and execute one six-observation diagnosis
+        id: diagnose
+        run: python -m experiments.measure.r54_cpu_hosted --out local/r54-cpu-raw
+      - name: Prepare the synthetic artifact whitelist
+        if: always() && steps.diagnose.outcome != 'skipped'
+        run: python -m experiments.measure.r54_publish --experiment cpu-boundary --raw local/r54-cpu-raw --out local/r54-cpu-public
+      - name: Preserve complete or failed synthetic evidence
+        if: always() && steps.diagnose.outcome != 'skipped'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: r54-cpu-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: error
+          path: local/r54-cpu-public/

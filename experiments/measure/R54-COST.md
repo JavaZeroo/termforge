@@ -59,4 +59,39 @@ $env:TERMFORGE_R54_UNWRAPPED = '<no-default-feature alacritty-measure.exe>'
 python -m unittest experiments.measure.test_r54_contract.OptionalAllocatorBuildSmoke -v
 ```
 
-该批只交付准备合同与可完全移除包装的构建机制。两个实际 build manifest/EXE、真实空闲环境证据、冻结计划执行器和重复样本、成本归因、数值预算与优化验收仍由 #54 接续；生成计划或短 sanity 都不关闭该 issue。
+## 冻结批次执行器（Windows）
+
+[r54_batch.py](r54_batch.py) 执行原 v1 的完整种子顺序，没有重试、补样或缩短时长开关。它只读取已有构建；不会在计时阶段编译。`samples_complete` 只表示样本及顺序通过验证，外层 `complete_diagnostic` 还要求构建绑定与本节环境检查通过；二者均保留 `performance_gate=not_evaluated`，不等于性能验收。
+
+执行前需要保留以下私有构建目录。其 v1 格式由 [r54_inputs.py](r54_inputs.py) 检查，不接受只填源码 SHA 和 EXE SHA 的简化声明：
+
+- `build-plan.json`：`termforge-r54-local-build-plan-v1`，包含原计划文件哈希、共同 harness 提交、编译器/工具版本、环境变量、完整构建命令、两份原提交/树及每个候选目录跟踪文件覆盖前后的 SHA。
+- `source-baseline/`、`source-candidate/`：固定 `.3/.4` checkout，只覆盖根 Cargo.toml 和 src/measure.rs；原锁文件和 vendor 不变。
+- `baseline-build.json`、`candidate-build.json`、各自 `*-build.stdout/stderr`、`*-harness.patch` 和 `*-identity.stdout/stderr`：实际构建、原始日志、覆盖 diff 与编译模式。
+- `build-audit.json`：原构建审计，包括 receipt 哈希、实际 linker 路径和 SHA、核心来源、版本与二进制身份。执行器重新核对当前源文件、全部日志和 EXE，再实际运行 `--identity`。这是一组可审计记录，不是二进制来源的密码学证明。
+
+当前绑定明确支持已有 Rust 1.92.0 / x86_64-pc-windows-msvc / Release / locked/offline / no-default-features / jobs=1 / 独立 target 配置；其他构建需要另行形成记录和审查，不能静默混入。该准备格式及构建产物保持在 `local/`，不包含在公开 CI 的默认产物中。
+
+环境声明 JSON 必须显式填写 `host_kind`（`shared_workstation`、`hosted_vm` 或 `dedicated_host`）、`known_concurrent_work` 字符串列表和 `no_known_concurrent_build_or_test=true`。声明不能取代实际观测。源工作树必须已提交且干净，输出目录必须不存在。
+
+实际 Windows 采样依赖 [benchmarks/requirements.txt](../../benchmarks/requirements.txt) 固定的 psutil；纯统计和计划检查仅依赖 Python 标准库，不因导入环境统计函数而要求安装宿主采样依赖。
+
+```powershell
+python -m experiments.measure.r54_batch --plan local/r54-batch/plan-v1.json --build-bundle local/r54-batch --environment local/r54-environment.json --seed 20261026 --out local/r54-run-20261026
+# 第二批另行启动，使用原第二种子和新目录；第一批失败时先保留并调查原因。
+python -m experiments.measure.r54_batch --plan local/r54-batch/plan-v1.json --build-bundle local/r54-batch --environment local/r54-environment.json --seed 20261027 --out local/r54-run-20261027
+```
+
+环境护栏 `termforge-r54-environment-guard-v1` 在任何正式成本样本之前冻结：一次观测十个连续约一秒区间，**每个**区间全机 busy CPU 必须不超过 5%；任一区间失败即保留完整预检，不启动成本负载，也不循环等到一次通过。该 5% 是保守的环境诊断筛选值，**不是用户批准的性能回归容差或 WindTerm 等价标准**。两批之间仍需重新观察；宿主背景工作发生变化是新环境证据，不能替换原失败。
+
+Windows 1–64 逻辑 CPU 上使用 [GetSystemTimes](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getsystemtimes) 原始 user/kernel/idle 计数，busy 为 user+kernel−idle，保留原始计数；kernel 已含 idle，不重复累加。每个子进程前后继续记录全机计数，将全机 busy 减去**内层**测量 CPU 后的余额作为背景活动的保守上界估计（包含测量区间外的准备、oracle、序列化及 runner 工作）。余额为负或其占全机总 CPU 时间超过 5% 时，保留该样本并停止批次。不从主样本成本扣除该余额，不把它当成精确的进程归因。该护栏不能证明虚拟机物理宿主独占、频率稳定或完全无干扰。
+
+原始目录保留 OS build/UBR、CPU、逻辑/物理核数、电源策略前后、进程 CPU 身份、并行工作声明、所有环境区间及执行器源码身份。进程记录不读取命令行或秘密环境变量，但仍属私有证据；公开前须脱敏审核。
+
+每个计划位置先落盘命令和编号，再把 stdout/stderr **直接写入二进制文件**；超时、无效 UTF-8、坏 JSON、非零退出和 oracle 错误都保留原字节与 manifest。子进程超时按原 90 秒处理；监督对象是不会再派生子进程的测量 EXE，不据此声称 Windows Job 回收。中断保留当前位置；不存在续跑或覆盖旧目录的入口。每个有效样本重查 EXE 哈希，结束后再核对源/构建证据及电源策略。
+
+全部 112 个位置完整有效后才生成统计；缺失、重复、乱序或失败不能得到成功摘要。摘要逐批、逐 route/chunk 列出七个配对 CPU ns/B 比值，以及各源 CPU/墙钟 ns/B 全部值、中位数、范围和 MAD。合成进程测试覆盖整个顺序、原始字节和停止规则，其虚构时长只验证统计与进程协议，绝不作为性能样本。
+
+实际受控重复样本、allocator/projection 扰动归因、预算提案和优化验收仍由 #54 接续；构建、短 sanity、执行器测试或环境预检均不关闭该 issue。
+
+独立 Windows 虚拟机上的来源构建、顺序执行、白名单产物和宿主限制见 [R54 hosted 流程](R54-HOSTED.md)。该入口复用本合同，不把CI可运行或环境预检通过解释为产品性能验收。

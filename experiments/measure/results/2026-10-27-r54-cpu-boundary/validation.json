@@ -1,0 +1,453 @@
+{
+  "schema": "termforge-r54-cpu-boundary-validation-v1",
+  "performance_gate": "not_evaluated",
+  "measured_source": {
+    "commit": "ff0d7caca138b91683f16ce8d748eea6fbb289b7",
+    "worktree_status": "",
+    "sources": {
+      "experiments/measure/r54_cpu_diagnostic.py": "3071ae52fbddc0e080b586a78837498bdc2105072471ac12c6a48d15f5eb032e",
+      "experiments/measure/r54_environment.py": "60375a50e83637d27210d5ac0ff958cb0191cb65782fe91e69a741655c1d51f2",
+      "experiments/measure/r54_batch.py": "b7e19a85797b6d31c22d32eb9878e1975bfe733fdb09aa289da70fe0680e5b68",
+      "experiments/measure/r54_contract.py": "08c744f3d78e23439fecd8cc01348fdc1673c5397e16738266774fb49fbc76fa",
+      "experiments/measure/r54_inputs.py": "6e5430681254df364c8abc6b662969ca00991027878708ecdd3ba6f4e96f4eed",
+      "experiments/measure/run.py": "5643194c95c710790bee3a10e825cd338626222e88a9e2af194ad905b0718852"
+    }
+  },
+  "measured_tree": "796005cdcd0e330ae86d676ec5386125459d733d",
+  "baseline": "ed0c12597d3b80a8806b2c6c24032cffaacf0945",
+  "manifest": {
+    "schema": "termforge-r54-cpu-diagnostic-v1",
+    "status": "accounting_complete",
+    "started_utc": "2026-10-27T12:17:43.046171+00:00",
+    "performance_gate": "not_evaluated",
+    "observations": {
+      "schema": "termforge-r54-cpu-observations-v1",
+      "status": "accounting_complete",
+      "started_utc": "2026-10-27T12:17:44.816067+00:00",
+      "attempted": 6,
+      "accounted_observations": 6,
+      "context_sha256": "ad54a604709f4a2f28d2af4349de08ebccf1f30d0f2d2238e5381c3005fd2707",
+      "protocol_sha256": "c92098b46db730cfd7939163831682e5650ca7c4995da40d13980cf7b355410e",
+      "performance_gate": "not_evaluated",
+      "active_sequence": null,
+      "finished_utc": "2026-10-27T12:17:59.527911+00:00"
+    },
+    "finished_utc": "2026-10-27T12:18:00.346147+00:00"
+  },
+  "environment": {
+    "host": {
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.12.10",
+      "psutil": "7.2.2",
+      "cpu_logical": 8,
+      "cpu_physical": 8,
+      "cpu": {
+        "ProcessorNameString": "Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz",
+        "Identifier": "Intel64 Family 6 Model 158 Stepping 13"
+      },
+      "windows": {
+        "CurrentBuildNumber": "26200",
+        "UBR": 9711,
+        "DisplayVersion": "25H2"
+      }
+    },
+    "declaration": {
+      "host_kind": "shared_workstation",
+      "known_concurrent_work": [
+        "This agent completed the measurement contract tests before this diagnostic and starts no concurrent owned build or test.",
+        "The user workstation, operating-system services and other applications are not isolated or changed.",
+        "Guest-visible system CPU is recorded; physical-host contention and clock stability remain unobserved."
+      ],
+      "purpose": "One predeclared six-observation CPU-boundary diagnostic, not an idle-qualified cost batch."
+    },
+    "scope": "accounting diagnosis on declared host; no idle qualification or cost acceptance"
+  },
+  "builds": {
+    "baseline": {
+      "source": {
+        "commit": "65988f5f20f62294ff52fcac5b5b81e563f93f3b",
+        "version": "0.26.1-dev+termforge.3",
+        "states": {
+          "project": "11966868740884721388",
+          "interactive": "8035857386658397897"
+        }
+      },
+      "binary": {
+        "bytes": 523264,
+        "sha256": "33cb90beebffc57f07aa993b8ea635eaf461b49d86c143939a41f6242c087b6d"
+      },
+      "candidate_tree": "38f901ce2407d73ab7d4ae70987c294849bafa92",
+      "tracked_files": 80
+    },
+    "candidate": {
+      "source": {
+        "commit": "3d6d44d3b3e9a9a3e41da98e8711e9f19a211fd8",
+        "version": "0.26.1-dev+termforge.4",
+        "states": {
+          "project": "16178973312633948535",
+          "interactive": "6154007251599136798"
+        }
+      },
+      "binary": {
+        "bytes": 579584,
+        "sha256": "d4d068be44a0a9ec733ad17f0323765ee38ffbf775e6efacb4632c1dce6b3f01"
+      },
+      "candidate_tree": "2cce55fcf2d379440110bbbf8612117cce3edf64",
+      "tracked_files": 84
+    }
+  },
+  "observations": [
+    {
+      "item": {
+        "sequence": 0,
+        "variant": "baseline",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "inner_cpu_seconds": 2.125,
+      "child_cpu": {
+        "creation_filetime": 134375770648262487,
+        "exit_filetime": 134375770672853118,
+        "kernel_seconds": 0.921875,
+        "user_seconds": 1.28125,
+        "total_seconds": 2.203125
+      },
+      "runner_cpu_seconds": 0.0,
+      "environment": {
+        "total_seconds": 19.625,
+        "busy_seconds": 12.0,
+        "busy_percent": 61.146496815286625,
+        "before": {
+          "user": 4467.78125,
+          "kernel_including_idle": 24590.65625,
+          "idle": 19905.25,
+          "system": 4685.40625,
+          "perf_counter_seconds": 3632.723437,
+          "utc": "2026-10-27T12:17:44.825276+00:00"
+        },
+        "after": {
+          "user": 4474.515625,
+          "kernel_including_idle": 24603.546875,
+          "idle": 19912.875,
+          "system": 4690.671875,
+          "perf_counter_seconds": 3635.1845603,
+          "utc": "2026-10-27T12:17:47.286686+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 9.875,
+        "inner_only_balance_percent": 50.318471337579616,
+        "child_outside_inner_seconds": 0.078125,
+        "runner_cpu_seconds": 0.0,
+        "unassigned_balance_seconds": 9.796875,
+        "unassigned_balance_percent": 49.9203821656051
+      },
+      "state_fnv1a64": "8035857386658397897"
+    },
+    {
+      "item": {
+        "sequence": 1,
+        "variant": "candidate",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "inner_cpu_seconds": 2.140625,
+      "child_cpu": {
+        "creation_filetime": 134375770673032344,
+        "exit_filetime": 134375770697758213,
+        "kernel_seconds": 0.625,
+        "user_seconds": 1.609375,
+        "total_seconds": 2.234375
+      },
+      "runner_cpu_seconds": 0.015625,
+      "environment": {
+        "total_seconds": 19.875,
+        "busy_seconds": 11.109375,
+        "busy_percent": 55.89622641509434,
+        "before": {
+          "user": 4474.515625,
+          "kernel_including_idle": 24603.671875,
+          "idle": 19912.96875,
+          "system": 4690.703125,
+          "perf_counter_seconds": 3635.2004591,
+          "utc": "2026-10-27T12:17:47.302400+00:00"
+        },
+        "after": {
+          "user": 4480.765625,
+          "kernel_including_idle": 24617.296875,
+          "idle": 19921.734375,
+          "system": 4695.5625,
+          "perf_counter_seconds": 3637.6748693,
+          "utc": "2026-10-27T12:17:49.776942+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 8.96875,
+        "inner_only_balance_percent": 45.125786163522015,
+        "child_outside_inner_seconds": 0.09375,
+        "runner_cpu_seconds": 0.015625,
+        "unassigned_balance_seconds": 8.859375,
+        "unassigned_balance_percent": 44.575471698113205
+      },
+      "state_fnv1a64": "6154007251599136798"
+    },
+    {
+      "item": {
+        "sequence": 2,
+        "variant": "candidate",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "inner_cpu_seconds": 2.203125,
+      "child_cpu": {
+        "creation_filetime": 134375770697951230,
+        "exit_filetime": 134375770722075739,
+        "kernel_seconds": 0.828125,
+        "user_seconds": 1.46875,
+        "total_seconds": 2.296875
+      },
+      "runner_cpu_seconds": 0.0,
+      "environment": {
+        "total_seconds": 19.25,
+        "busy_seconds": 8.953125,
+        "busy_percent": 46.50974025974026,
+        "before": {
+          "user": 4480.796875,
+          "kernel_including_idle": 24617.390625,
+          "idle": 19921.8125,
+          "system": 4695.578125,
+          "perf_counter_seconds": 3637.6917606,
+          "utc": "2026-10-27T12:17:49.793919+00:00"
+        },
+        "after": {
+          "user": 4485.46875,
+          "kernel_including_idle": 24631.96875,
+          "idle": 19932.109375,
+          "system": 4699.859375,
+          "perf_counter_seconds": 3640.1066225,
+          "utc": "2026-10-27T12:17:52.208557+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 6.75,
+        "inner_only_balance_percent": 35.064935064935064,
+        "child_outside_inner_seconds": 0.09375,
+        "runner_cpu_seconds": 0.0,
+        "unassigned_balance_seconds": 6.65625,
+        "unassigned_balance_percent": 34.577922077922075
+      },
+      "state_fnv1a64": "6154007251599136798"
+    },
+    {
+      "item": {
+        "sequence": 3,
+        "variant": "baseline",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "inner_cpu_seconds": 2.15625,
+      "child_cpu": {
+        "creation_filetime": 134375770722276046,
+        "exit_filetime": 134375770746664698,
+        "kernel_seconds": 0.75,
+        "user_seconds": 1.515625,
+        "total_seconds": 2.265625
+      },
+      "runner_cpu_seconds": 0.015625,
+      "environment": {
+        "total_seconds": 19.625,
+        "busy_seconds": 11.625,
+        "busy_percent": 59.23566878980892,
+        "before": {
+          "user": 4485.5,
+          "kernel_including_idle": 24632.0625,
+          "idle": 19932.171875,
+          "system": 4699.890625,
+          "perf_counter_seconds": 3640.1245048,
+          "utc": "2026-10-27T12:17:52.226226+00:00"
+        },
+        "after": {
+          "user": 4491.75,
+          "kernel_including_idle": 24645.4375,
+          "idle": 19940.171875,
+          "system": 4705.265625,
+          "perf_counter_seconds": 3642.5663847,
+          "utc": "2026-10-27T12:17:54.668146+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 9.46875,
+        "inner_only_balance_percent": 48.2484076433121,
+        "child_outside_inner_seconds": 0.109375,
+        "runner_cpu_seconds": 0.015625,
+        "unassigned_balance_seconds": 9.34375,
+        "unassigned_balance_percent": 47.611464968152866
+      },
+      "state_fnv1a64": "8035857386658397897"
+    },
+    {
+      "item": {
+        "sequence": 4,
+        "variant": "baseline",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "inner_cpu_seconds": 2.125,
+      "child_cpu": {
+        "creation_filetime": 134375770746872014,
+        "exit_filetime": 134375770770988460,
+        "kernel_seconds": 0.578125,
+        "user_seconds": 1.625,
+        "total_seconds": 2.203125
+      },
+      "runner_cpu_seconds": 0.0,
+      "environment": {
+        "total_seconds": 19.25,
+        "busy_seconds": 9.5625,
+        "busy_percent": 49.675324675324674,
+        "before": {
+          "user": 4491.78125,
+          "kernel_including_idle": 24645.53125,
+          "idle": 19940.25,
+          "system": 4705.28125,
+          "perf_counter_seconds": 3642.5841586,
+          "utc": "2026-10-27T12:17:54.685918+00:00"
+        },
+        "after": {
+          "user": 4497.65625,
+          "kernel_including_idle": 24658.90625,
+          "idle": 19949.9375,
+          "system": 4708.96875,
+          "perf_counter_seconds": 3644.9979968,
+          "utc": "2026-10-27T12:17:57.098922+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 7.4375,
+        "inner_only_balance_percent": 38.63636363636363,
+        "child_outside_inner_seconds": 0.078125,
+        "runner_cpu_seconds": 0.0,
+        "unassigned_balance_seconds": 7.359375,
+        "unassigned_balance_percent": 38.23051948051948
+      },
+      "state_fnv1a64": "8035857386658397897"
+    },
+    {
+      "item": {
+        "sequence": 5,
+        "variant": "candidate",
+        "route": "interactive",
+        "chunk": 1
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "inner_cpu_seconds": 2.03125,
+      "child_cpu": {
+        "creation_filetime": 134375770771152026,
+        "exit_filetime": 134375770795208267,
+        "kernel_seconds": 0.953125,
+        "user_seconds": 1.15625,
+        "total_seconds": 2.109375
+      },
+      "runner_cpu_seconds": 0.015625,
+      "environment": {
+        "total_seconds": 19.25,
+        "busy_seconds": 11.9375,
+        "busy_percent": 62.01298701298701,
+        "before": {
+          "user": 4497.65625,
+          "kernel_including_idle": 24659.03125,
+          "idle": 19950.03125,
+          "system": 4709.0,
+          "perf_counter_seconds": 3645.0124583,
+          "utc": "2026-10-27T12:17:57.114619+00:00"
+        },
+        "after": {
+          "user": 4503.953125,
+          "kernel_including_idle": 24671.984375,
+          "idle": 19957.34375,
+          "system": 4714.640625,
+          "perf_counter_seconds": 3647.4196989,
+          "utc": "2026-10-27T12:17:59.521405+00:00"
+        }
+      },
+      "accounting": {
+        "inner_only_balance_seconds": 9.90625,
+        "inner_only_balance_percent": 51.46103896103896,
+        "child_outside_inner_seconds": 0.078125,
+        "runner_cpu_seconds": 0.015625,
+        "unassigned_balance_seconds": 9.8125,
+        "unassigned_balance_percent": 50.97402597402598
+      },
+      "state_fnv1a64": "6154007251599136798"
+    }
+  ],
+  "formal_cost_samples": 0,
+  "old_hosted_event_cause": "unknown",
+  "archive": {
+    "bytes": 100053,
+    "sha256": "9bec0731e08d7f2ef99d140a9e56acbc01468814cc68fb01fbdcfe30eaa8e10c",
+    "inventory_files": 46,
+    "byte_exact_streams": 16,
+    "path_prefixes_aliased": true,
+    "child_pid_omitted": true
+  },
+  "local_tests": {
+    "before_measurement": {
+      "count": 36,
+      "seconds": 18.66
+    },
+    "after_test_runtime_boundary_fix": {
+      "count": 36,
+      "seconds": 17.069,
+      "log_sha256": "e3ab51e002dd2446be8ee34943895825e433197f5d7bff6338b4cf5c3763edf7"
+    }
+  },
+  "limits": [
+    "Shared host, no idle qualification and no performance ratios.",
+    "Residual includes possible other guest activity, counter quantization and non-atomic endpoints.",
+    "New instrumentation does not recreate missing whole-child counters for the old hosted failure.",
+    "Full controlled batches, wrapper/projection and component attribution, budget proposal and user confirmation remain incomplete."
+  ],
+  "initial_ci": {
+    "source": "c76bab0281843fca298af8b0d9ba521247ac745a",
+    "all_attempts": 1,
+    "default_pr": {
+      "run": 40504397868,
+      "status": "success",
+      "windows": 46,
+      "linux": 29
+    },
+    "default_push": {
+      "run": 40504336483,
+      "status": "success",
+      "windows": 46,
+      "linux": 29
+    },
+    "candidate_pr": {
+      "run": 40504397941,
+      "status": "failure",
+      "windows_failure": "ModuleNotFoundError: No module named psutil",
+      "linux_passed": 41,
+      "linux_skipped": 4
+    },
+    "candidate_push": {
+      "run": 40504336888,
+      "status": "failure",
+      "windows_failure": "ModuleNotFoundError: No module named psutil",
+      "linux_passed": 41,
+      "linux_skipped": 4
+    },
+    "fix": "Install the existing pinned benchmarks/requirements.txt in candidate CI; no measurement source or observation change."
+  }
+}
