@@ -6,8 +6,8 @@
 
 产品方向和确认依据见 [ADR-0006](adr/0006-confirmed-project-direction.md)。Windows PTY 路线已由用户确认采用[随包固定微软 ConPTY](adr/0007-bundled-microsoft-conpty.md)，正式核心继续自主 C++，当前 GUI 采用 [Qt Widgets](adr/0008-cpp-core-qt-widgets.md)；新组合的整合与验收仍未完成。历史 Alacritty 与 Win32 比较及限定合同保留事实身份，不转记为新产品组合能力或重要差异的批准；关键性能容差仍待可靠基线后与用户明确。
 
-| 配置 | 证据定位 |
-|---|---|
+| 配置 | 证据定位 | 覆盖边界 |
+|---|---|---|
 | Qt 终端固定拼音 IME 组合/提交/取消 | [固定结果](../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/README.md)、[验证身份](../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/validation.json)：隔离 VM、固定微软拼音，我们自己的 Qt 应用收到 preedit `ni'hao` → cancel → commit `e4bda0e5a5bd`（「你好」）；光标全局矩形 (295,157) 与同轮屏幕变化框起点 (295,163) 相互印证。未覆盖候选窗身份/矩形、其他 DPI、完整字形与呈现 |
 | hosted Windows 子进程启动耗时 | [固定结果](../research/ui/results/2026-10-30-hosted-startup-latency/README.md)、[验证身份](../research/ui/results/2026-10-30-hosted-startup-latency/validation.json)：windows-2025 上 100 次 PowerShell 5.1 启动 p50 110 ms、max 1.83 s，50 次 node p50 16 ms；8 路 CPU 负载下 p50 172 ms。用于排除 #81/#144/#40 的 10–12 秒超时由启动成本解释，不等于性能预算 |
 | 自主 C++ 主屏 ASCII DECAWM | [有限合同与红绿](../experiments/core/results/2026-10-29-cpp-decawm/README.md)、[固定验证身份](../experiments/core/results/2026-10-29-cpp-decawm/validation.json)：抽取原版14–18阶段79B，strict/recovery各235个字面前缀分块用例；初次定向8/9的缺构建依赖失败、补建后的core单项31测试通过分列。跨1049/宽字/resize、origin/margin、GUI/固定ConPTY运输和完整TUI均不由本项验收 |
