@@ -93,3 +93,5 @@ Windows 1–64 逻辑 CPU 上使用 [GetSystemTimes](https://learn.microsoft.com
 全部 112 个位置完整有效后才生成统计；缺失、重复、乱序或失败不能得到成功摘要。摘要逐批、逐 route/chunk 列出七个配对 CPU ns/B 比值，以及各源 CPU/墙钟 ns/B 全部值、中位数、范围和 MAD。合成进程测试覆盖整个顺序、原始字节和停止规则，其虚构时长只验证统计与进程协议，绝不作为性能样本。
 
 实际受控重复样本、allocator/projection 扰动归因、预算提案和优化验收仍由 #54 接续；构建、短 sanity、执行器测试或环境预检均不关闭该 issue。
+
+独立 Windows 虚拟机上的来源构建、顺序执行、白名单产物和宿主限制见 [R54 hosted 流程](R54-HOSTED.md)。该入口复用本合同，不把CI可运行或环境预检通过解释为产品性能验收。
