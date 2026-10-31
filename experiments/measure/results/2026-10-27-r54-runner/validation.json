@@ -159,5 +159,39 @@
     "receive_seconds": null,
     "input_latency_seconds": null,
     "presented_done": null
+  },
+  "ci_dependency_repair": {
+    "source": "a86e7fc186b87720a46c689d7de29032d50c809c",
+    "initial_published_source": "fa47edadbc259057a841db32181d1d73095f4a10",
+    "initial_linux_candidate_jobs": [
+      122118298338,
+      122118279790
+    ],
+    "failure": "ModuleNotFoundError: No module named psutil while importing pure environment statistics",
+    "reproduced_with_python_no_site_packages": true,
+    "repair": "Import psutil only inside real host-sampling functions; pure statistics retain standard-library-only imports",
+    "python_tests": 26,
+    "python_elapsed_seconds": 12.949,
+    "ctest_exit_code": 0,
+    "formal_cost_samples": 0,
+    "logs": {
+      "ci-122118298338.log": {
+        "bytes": 102800,
+        "sha256": "9babc825cff5781142f42e741137654cbcb247518bad8bc0a6a14f03b4c93e89"
+      },
+      "ci-122118279790.log": {
+        "bytes": 102205,
+        "sha256": "43e81e8186a9a0930a8bab823dadded525441be37fdd0b12cca3241240ed7c42"
+      },
+      "ctest-dependency-fix.stdout": {
+        "bytes": 6327,
+        "sha256": "3b939917d3011e5618aff624fbe0bca8298099471a6b98d39bc761988944da11"
+      },
+      "ctest-dependency-fix.stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "initial_preflight_repeated": false
   }
 }

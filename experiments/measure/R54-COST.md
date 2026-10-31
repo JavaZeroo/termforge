@@ -74,6 +74,8 @@ python -m unittest experiments.measure.test_r54_contract.OptionalAllocatorBuildS
 
 环境声明 JSON 必须显式填写 `host_kind`（`shared_workstation`、`hosted_vm` 或 `dedicated_host`）、`known_concurrent_work` 字符串列表和 `no_known_concurrent_build_or_test=true`。声明不能取代实际观测。源工作树必须已提交且干净，输出目录必须不存在。
 
+实际 Windows 采样依赖 [benchmarks/requirements.txt](../../benchmarks/requirements.txt) 固定的 psutil；纯统计和计划检查仅依赖 Python 标准库，不因导入环境统计函数而要求安装宿主采样依赖。
+
 ```powershell
 python -m experiments.measure.r54_batch --plan local/r54-batch/plan-v1.json --build-bundle local/r54-batch --environment local/r54-environment.json --seed 20261026 --out local/r54-run-20261026
 # 第二批另行启动，使用原第二种子和新目录；第一批失败时先保留并调查原因。

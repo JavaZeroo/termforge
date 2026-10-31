@@ -6,8 +6,6 @@ import os
 import platform
 import time
 
-import psutil
-
 from experiments.measure.r54_batch import capture, utc, write_json
 
 POLICY = dict(schema='termforge-r54-environment-guard-v1', idle_intervals=10,
@@ -18,6 +16,7 @@ POLICY = dict(schema='termforge-r54-environment-guard-v1', idle_intervals=10,
 
 
 def cpu_snapshot():
+    import psutil
     if os.name != 'nt' or not 0 < (psutil.cpu_count() or 0) <= 64:
         raise ValueError('this host guard supports Windows with 1..64 logical CPUs only')
     idle, kernel, user = wintypes.FILETIME(), wintypes.FILETIME(), wintypes.FILETIME()
@@ -47,6 +46,7 @@ def qualify_idle(intervals):
 
 def process_snapshot():
     """Private evidence contains names/CPU identities, never command lines or env."""
+    import psutil
     records = []
     for process in psutil.process_iter(['pid', 'name', 'create_time', 'cpu_times'], ad_value=None):
         row = dict(process.info)
@@ -57,6 +57,7 @@ def process_snapshot():
 
 
 def host_identity():
+    import psutil
     import winreg
     def registry(key, names):
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key) as handle:
