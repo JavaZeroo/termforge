@@ -85,19 +85,6 @@ jobs:
         run: cmake --build build --config Release --target core_measure
       - name: Build and test candidate C++ adapter
         run: cmake --build build --config Release --target candidate_core_test && ctest --test-dir build -C Release -R candidate_core --output-on-failure
-      - name: Provide fixed Vim from Git for Windows
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          exec_path="$(git --exec-path)"
-          for candidate in "$exec_path/../../../usr/bin" "$exec_path/../../usr/bin"; do
-            if [ -f "$candidate/vim.exe" ]; then
-              echo "$(cd "$candidate" && pwd)" >> "$GITHUB_PATH"
-              exit 0
-            fi
-          done
-          echo "fixed Vim is required on PATH for candidate-tui; see docs/research/joint-conpty-baseline.md" >&2
-          exit 1
       - name: Build and test candidate shell on Windows
         if: runner.os == 'Windows'
         run: cmake --build build --config Release --target shell_test_launcher && ctest --test-dir build -C Release -R candidate_shell_tui --output-on-failure
