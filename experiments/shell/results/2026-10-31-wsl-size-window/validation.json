@@ -1,0 +1,36 @@
+{
+  "schema": "termforge-wsl-size-window-validation-v1",
+  "issue": 80,
+  "evidence": {
+    "failing_job": 124536048854,
+    "failing_run": 41200805448,
+    "artifact": "failure-windows-2025",
+    "probe_row": {
+      "role": "wsl",
+      "marker": "TF_SIZE_54x12",
+      "window_bytes": 185,
+      "transport_completed_expected_false": true
+    },
+    "readiness_rows": {
+      "cmd": true,
+      "pwsh": true,
+      "powershell": true,
+      "wsl": false
+    }
+  },
+  "mechanism": "command echo and size marker share one record separated only by CUP; the transport oracle refuses CUP as a line boundary",
+  "fix": {
+    "commit_ref": "#290",
+    "file": "experiments/shell/workspace_shells_scenario.hpp",
+    "rule": "reopen the observation window when the helper echo is present and the marker is not"
+  },
+  "contrast": {
+    "before": "workspace-failure mode=ui-shells stage=5",
+    "after": "regression (windows-2025) success"
+  },
+  "limitations": [
+    "single configuration: four sessions, fixed grid",
+    "post-fix readiness file not retained by passing runs, so wsl transport_completed=true unobserved",
+    "not causal evidence for the original hosted stage-6 event"
+  ]
+}
