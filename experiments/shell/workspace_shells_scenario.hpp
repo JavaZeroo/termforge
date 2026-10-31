@@ -68,10 +68,21 @@ inline void Workspace::scenario_shells() {
         for(const auto group : {Group::bottom, Group::main}) for(auto& tab : group_tabs(group)) {
             if(!tab.launch || tab.launch->kind!=L"wsl") continue;
             const auto [columns,rows]=tab.shell->grid_dimensions();
+            const auto marker="TF_SIZE_"+std::to_string(columns)+"x"+std::to_string(rows);
+            // WSL echoes the helper's command line into the same window, and conhost
+            // renders the helper's CRLF as ESC[row;1H, which the transport oracle
+            // must not treat as a record boundary (#80). Drop the echo by reopening
+            // the observation window once the echo is present but the marker is not,
+            // so the oracle judges marker plus prompt only.
+            const auto observed=tab.shell->observed_output();
+            if(observed.find("shell_size_client")!=std::string::npos &&
+               observed.find(marker)==std::string::npos) {
+                tab.shell->begin_output_observation();
+                return false;
+            }
             // WSL's native helper can still own console input after its marker.
             // Wait for its shell's fresh prompt before starting sequential exits.
-            if(!tf_shell_test::transport_output_completed(tab.shell->observed_output(),
-                    "TF_SIZE_"+std::to_string(columns)+"x"+std::to_string(rows))) return false;
+            if(!tf_shell_test::transport_output_completed(tab.shell->observed_output(),marker)) return false;
         }
         return true;
     };
