@@ -17,6 +17,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from experiments.build_paths import binary
+from experiments.shell import summarize_failure
 from experiments.conpty.run import OwnedJob
 from experiments.shell.history_checks import validate_history, validate_native_scroll
 from experiments.shell.paste_checks import validate_paste_workflow
@@ -504,7 +505,15 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
         if not record["desktop_gone"]:
             raise ValueError("owned desktop remained")
         if mode != "watchdog" and (record["timed_out"] or record["exit_code"]):
-            raise ValueError("shell probe failed: " + record["stderr"].strip())
+            # Read the dump back with the shared parser so the raised message always
+            # carries the same verdict instead of a raw multi-line stderr (#73).
+            failures = summarize_failure.parse(record["stderr"])
+            summary = ""
+            if failures:
+                verdicts = summarize_failure.describe(failures[0])
+                if verdicts:
+                    summary = " | " + "; ".join(verdicts)
+            raise ValueError("shell probe failed: " + record["stderr"].strip() + summary)
         result = json.loads(record["stdout"])
         if mode == "watchdog":
             if not record["timed_out"] or result != {"watchdog_ready": True} or record["job_at_timeout"]["active"] < 2:
