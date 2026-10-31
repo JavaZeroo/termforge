@@ -23,6 +23,8 @@
 
 runtime/CPU适用条件修正后的同组回归仍为36/36（17.069s）。实际执行代码与原测量源码哈希保持一致，没有重跑六位置诊断。
 
+首次发布 `c76bab0` 的默认[PR](https://github.com/JavaZeroo/termforge/actions/runs/40504397868)/[push](https://github.com/JavaZeroo/termforge/actions/runs/40504336483)均通过（Windows46/46、Linux29/29）；候选[PR](https://github.com/JavaZeroo/termforge/actions/runs/40504397941)/[push](https://github.com/JavaZeroo/termforge/actions/runs/40504336888)的Linux measurement为41通过/4跳过，Windows因未安装`psutil`在导入新测试时失败。原失败保留；修正候选工作流安装仓库已有固定`benchmarks/requirements.txt`，不跳过缺少依赖的测试。干净Python环境复现同一缺包错误，安装后4个新测试通过（1.583s）。修订CI单独跟踪，不将原两条候选失败写成通过。
+
 [归档](evidence.zip)为100053B，SHA256 `9bec0731e08d7f2ef99d140a9e56acbc01468814cc68fb01fbdcfe30eaa8e10c`。内含46份清单证据及`publication.json`，其中16份stdout/stderr按原字节保留（12份观察、4份身份）。路径改为别名，子PID移除；清单分别保留原始/公开大小和SHA，原元数据里的来源哈希不回填成脱敏后哈希。未上传EXE、进程清单、任意环境变量或私有文件；完整本地原件保留。
 
 离线复核命令，不执行任何测量：

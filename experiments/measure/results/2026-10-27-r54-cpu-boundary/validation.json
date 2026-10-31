@@ -418,5 +418,36 @@
     "Residual includes possible other guest activity, counter quantization and non-atomic endpoints.",
     "New instrumentation does not recreate missing whole-child counters for the old hosted failure.",
     "Full controlled batches, wrapper/projection and component attribution, budget proposal and user confirmation remain incomplete."
-  ]
+  ],
+  "initial_ci": {
+    "source": "c76bab0281843fca298af8b0d9ba521247ac745a",
+    "all_attempts": 1,
+    "default_pr": {
+      "run": 40504397868,
+      "status": "success",
+      "windows": 46,
+      "linux": 29
+    },
+    "default_push": {
+      "run": 40504336483,
+      "status": "success",
+      "windows": 46,
+      "linux": 29
+    },
+    "candidate_pr": {
+      "run": 40504397941,
+      "status": "failure",
+      "windows_failure": "ModuleNotFoundError: No module named psutil",
+      "linux_passed": 41,
+      "linux_skipped": 4
+    },
+    "candidate_push": {
+      "run": 40504336888,
+      "status": "failure",
+      "windows_failure": "ModuleNotFoundError: No module named psutil",
+      "linux_passed": 41,
+      "linux_skipped": 4
+    },
+    "fix": "Install the existing pinned benchmarks/requirements.txt in candidate CI; no measurement source or observation change."
+  }
 }
