@@ -40,6 +40,21 @@ WORKSPACE_DATA_MODES = {
 }
 
 
+def require_fixed_vim(mode):
+    """candidate-tui types a Vim command into the real shell, so Vim must be on PATH.
+
+    Without this check a missing Vim surfaces as a 33-second scenario timeout whose
+    only trace is the shell echoing "not recognized as an internal or external
+    command"; the requirement itself is documented in
+    docs/research/joint-conpty-baseline.md and is a failure, not a skippable
+    optional dependency (docs/research/more-capture-ech.md).
+    """
+    if mode == "candidate-tui" and shutil.which("vim") is None:
+        raise RuntimeError(
+            "candidate-tui drives Vim inside the shell but no fixed Vim is on PATH; "
+            "see docs/research/joint-conpty-baseline.md")
+
+
 def validate(row, mode):
     if mode in WORKSPACE_DATA_MODES:
         closed = 3 if mode in ("ui-workspace-save", "ui-workspace-restore") else 0 if mode == "ui-workspace-empty" else 1
@@ -430,6 +445,7 @@ class OwnedTestDesktop:
 def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False):
     if mode in ("ui-paste-system", "ui-clipboard-system", "ui-copy-system", "ui-copy-bytes-system", "ui-copy-context-system", "ui-actions-system"):
         require_hosted_clipboard(os.environ)
+    require_fixed_vim(mode)
     if resources and mode != "ui-workflow-sessions":
         raise ValueError("resource observation is limited to the bounded sessions workflow")
     out.mkdir(parents=True, exist_ok=False)
