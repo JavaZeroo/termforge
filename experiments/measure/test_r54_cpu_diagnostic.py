@@ -30,7 +30,13 @@ class AccountingTests(unittest.TestCase):
 def native_environment_supported():
     if os.name != 'nt' or sys.implementation.name != 'cpython' or sys.version_info[:2] != (3, 12):
         return False
-    import psutil
+    try:
+        import psutil
+    except ImportError:
+        # The general regression job runs this module without the measurement
+        # requirements; a missing observer means "not supported here", not a
+        # collection error, so the decorator still skips instead of failing.
+        return False
     return 0 < (psutil.cpu_count() or 0) <= 64
 
 
