@@ -7,6 +7,10 @@ from experiments.conpty.run import binary_path, check_sample, execute
 
 
 @unittest.skipUnless(os.name == "nt", "ConPTY is Windows-only")
+def record_handles():
+    return os.environ.get("TERMFORGE_CONPTY_RECORD_HANDLES") == "1"
+
+
 class ConPtyLifecycle(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -18,8 +22,11 @@ class ConPtyLifecycle(unittest.TestCase):
         result = execute(self.binary, "normal", repeats=3)
         broken = copy.deepcopy(result["samples"][0])
         broken["handles_after"] += 1
-        with self.assertRaises(AssertionError):
-            check_sample(broken)
+        # #21: with recording enabled the handle delta is no longer a gate, so the
+        # strict-rejection negative case does not apply in that configuration.
+        if not record_handles():
+            with self.assertRaises(AssertionError):
+                check_sample(broken)
 
     def test_large_ordered_payload(self):
         result = execute(self.binary, "large", repeats=2)
