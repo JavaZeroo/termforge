@@ -818,7 +818,22 @@ class ShellWindow {
             case 1:
                 if (!event.bytes.empty()) require(input_.send(event.bytes), "terminal reply rejected by input queue");
                 break;
-            case 2: terminal_title_ = utf16(event.bytes); break;
+            case 2:
+                // #57: the original failure was an unknown "invalid text" title
+                // event. Report the kind, length and bytes so a recurrence names
+                // the payload instead of only the message.
+                try { terminal_title_ = utf16(event.bytes); }
+                catch (const std::exception&) {
+                    static constexpr char digits[] = "0123456789abcdef";
+                    std::string hex;
+                    for (size_t index = 0; index < event.bytes.size() && index < 32; ++index) {
+                        const auto byte = static_cast<unsigned char>(event.bytes[index]);
+                        hex += digits[byte >> 4]; hex += digits[byte & 15];
+                    }
+                    throw std::runtime_error("invalid text in title event: kind=2 bytes=" +
+                                             std::to_string(event.bytes.size()) + " hex=" + hex);
+                }
+                break;
             case 3: terminal_title_.clear(); break;
             case 4: MessageBeep(MB_OK); break;
             case 5: case 7: case 10: case 11: case 12: break;
