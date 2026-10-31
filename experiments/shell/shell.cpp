@@ -821,8 +821,13 @@ class ShellWindow {
             case 2: terminal_title_ = utf16(event.bytes); break;
             case 3: terminal_title_.clear(); break;
             case 4: MessageBeep(MB_OK); break;
-            case 5: case 7: case 12: break;
+            case 5: case 7: case 10: case 11: case 12: break;
             case 6: begin_close(); break;
+            // The candidate adapter also reports clipboard traffic (8, 9) and the
+            // child's exit status (13). This harness compares text, modes and
+            // lifecycle; it owns no clipboard and reads the exit code from the
+            // session, so these are drained instead of failing the scenario.
+            case 8: case 9: case 13: break;
             default: throw std::runtime_error("unsupported terminal event kind");
             }
         }
