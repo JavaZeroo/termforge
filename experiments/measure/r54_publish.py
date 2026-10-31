@@ -28,6 +28,38 @@ def validate_raw_identity(root, identity):
             value['source'] == identity['GITHUB_SHA'], 'raw evidence belongs to another run, attempt or source')
 
 
+def windows_short_path(path):
+    """Ask Windows for the actual alias; guessing RUNNER~1 is not reliable."""
+    import ctypes
+    from ctypes import wintypes
+    function = ctypes.WinDLL('kernel32', use_last_error=True).GetShortPathNameW
+    function.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
+    function.restype = wintypes.DWORD
+    length = function(path, None, 0)
+    if not length:
+        raise ctypes.WinError(ctypes.get_last_error())
+    buffer = ctypes.create_unicode_buffer(length)
+    copied = function(path, buffer, length)
+    if not copied or copied >= length:
+        raise ValueError('short-path lookup failed or changed during publication')
+    return buffer.value
+
+
+def replacement_forms(prefixes):
+    forms = []
+    for prefix, alias in prefixes:
+        forms.extend((form, alias) for form in (prefix.replace('\\', '\\\\'), prefix, prefix.replace('\\', '/')))
+    return sorted(set(forms), key=lambda item: len(item[0]), reverse=True)
+
+
+def redact_paths(data, replacements):
+    # Preserve arbitrary log bytes. The hosted Windows path prefixes are ASCII
+    # and may use a different case or a compiler-escaped 8.3 alias.
+    for before, after in replacements:
+        data = re.sub(re.escape(before.encode('utf-8')), lambda _: after.encode('utf-8'), data, flags=re.IGNORECASE)
+    return data
+
+
 def publish_jsonl(original, replacements):
     # JSONL is appended, unlike the atomic JSON manifests. A stop can leave an
     # incomplete final row. Preserve it and the complete rows, mark the parse
@@ -39,10 +71,7 @@ def publish_jsonl(original, replacements):
         except (UnicodeDecodeError, json.JSONDecodeError) as error:
             status.update(complete=False, error=f'{type(error).__name__}: {error}', error_line=index)
             break
-    data = original
-    for before, after in replacements:
-        data = data.replace(before.encode('utf-8'), after.encode('utf-8'))
-    return data, status
+    return redact_paths(original, replacements), status
 
 
 def selected_paths(root):
@@ -78,15 +107,12 @@ def publish(root, output):
     staging.mkdir(parents=True, exist_ok=False)
     prefixes = [(str(ROOT), '${WORKSPACE}'), (os.environ.get('USERPROFILE', ''), '${PROFILE}'),
                 (os.environ.get('RUNNER_TEMP', ''), '${RUNNER_TEMP}')]
-    replacements = []
-    for prefix, replacement in prefixes:
-        if prefix:
-            replacements += [(form, replacement) for form in (prefix.replace('\\', '\\\\'), prefix, prefix.replace('\\', '/'))]
+    prefixes = [(prefix, alias) for prefix, alias in prefixes if prefix]
+    prefixes += [(windows_short_path(prefix), alias) for prefix, alias in prefixes]
+    replacements = replacement_forms(prefixes)
 
     def text(value):
-        for before, after in replacements:
-            value = value.replace(before, after)
-        return value
+        return redact_paths(value.encode('utf-8'), replacements).decode('utf-8')
 
     def transform(value):
         if isinstance(value, dict):
@@ -117,9 +143,7 @@ def publish(root, output):
             data, jsonl_status = publish_jsonl(original, replacements)
             treatment = 'jsonl_path_redaction'
         else:
-            data = original
-            for before, after in replacements:
-                data = data.replace(before.encode('utf-8'), after.encode('utf-8'))
+            data = redact_paths(original, replacements)
             treatment = 'complete_log_with_path_prefix_redaction'
         target = staging / relative
         target.parent.mkdir(parents=True, exist_ok=True)

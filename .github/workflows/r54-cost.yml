@@ -18,6 +18,8 @@ concurrency:
 
 jobs:
   fixed-cost:
+    # A code/evidence correction must not silently launch replacement samples.
+    if: github.event.created == true
     runs-on: windows-2025
     timeout-minutes: 30
     env:

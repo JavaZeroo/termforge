@@ -1,0 +1,316 @@
+{
+  "schema": "termforge-r54-hosted-validation-v1",
+  "status": "incomplete_first_batch_stopped_by_environment_guard",
+  "source": "f734d29bc4f8a120eac59da3acac3169d49231b2",
+  "tree": "361683a329aa7c24d34fc34158b42ea55f4786f7",
+  "reviewed_local_source": "a8daaab2202fa5a36cbad216959355583eba78f0",
+  "base": "a7b9685a20396779dc9dff51018470b7638bfdce",
+  "pr_merge_source": "38c6703403948f79c7112d7340df4087d0689edc",
+  "pr_merge_tree_matches_reviewed": true,
+  "protocol_sha256": "fb86f093a1c526979816574ef65896501eaeb9e9c34e7d9a6f2fdd5b61a8e7f6",
+  "review": {
+    "standards_remaining": 0,
+    "spec_remaining": 0,
+    "read_only": true
+  },
+  "local_validation": {
+    "measurement_tests": 31,
+    "passed": 31,
+    "unittest_seconds": 13.809,
+    "ctest_seconds": 13.99,
+    "stdout_sha256": "f31c7251649be1d7d9157eeb3a9d83c8d397e6cadd4a5f80347f689637b6caf5",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "hosted": {
+    "run": 40490861301,
+    "job": 122144148028,
+    "attempt": 1,
+    "conclusion": "failure",
+    "url": "https://github.com/JavaZeroo/termforge/actions/runs/40490861301",
+    "runner_labels": [
+      "windows-2025"
+    ],
+    "contract_tests_passed": 22,
+    "decoded_job_log_sha256": "fbb8fad6fda8eaad64a940cbd0dae55fdec9690c9cde3b2da7df857c4b0ee1ad",
+    "build_status": "built_and_audited",
+    "sanity_passed": 4
+  },
+  "compiler": {
+    "rustc_vv": "rustc 1.92.0 (ded5c06cf 2025-12-08)\nbinary: rustc\ncommit-hash: ded5c06cf21d2b93bffd5d884aa6e96934ee4234\ncommit-date: 2025-12-08\nhost: x86_64-pc-windows-msvc\nrelease: 1.92.0\nLLVM version: 21.1.3\n",
+    "cargo_vv": "cargo 1.92.0 (344c4567c 2025-10-21)\nrelease: 1.92.0\ncommit-hash: 344c4567c634a25837e3c3476aac08af84cf9203\ncommit-date: 2025-10-21\nhost: x86_64-pc-windows-msvc\nlibgit2: 1.9.1 (sys:0.20.2 vendored)\nlibcurl: 8.15.0-DEV (sys:0.4.83+curl-8.15.0 vendored ssl:Schannel)\nos: Windows 10.0.26100 (Windows 11 ServerDatacenter) [64-bit]\n",
+    "sha256": "5f3b5087b95e250378dd7bd829ae627d51c149468aae1e38c0f2a85c17cd374e"
+  },
+  "builds": {
+    "baseline": {
+      "source": "65988f5f20f62294ff52fcac5b5b81e563f93f3b",
+      "version": "0.26.1-dev+termforge.3",
+      "candidate_tree": "38f901ce2407d73ab7d4ae70987c294849bafa92",
+      "tracked_candidate_files": 80,
+      "changed_paths": [
+        "experiments/candidates/alacritty/Cargo.toml",
+        "experiments/candidates/alacritty/src/measure.rs"
+      ],
+      "binary": {
+        "bytes": 523264,
+        "sha256": "ac7c1d4ba996f9fe2c0d911a077bcab557f5b0b7332cde757dfb3f7db2c499a1"
+      },
+      "identity": {
+        "allocator_wrapper_compiled": false,
+        "projection_selectable": true,
+        "schema": "termforge-core-cost-build-v1",
+        "timing_gates_compiled": true
+      },
+      "linker": {
+        "path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.51.36231\\bin\\HostX64\\x64\\link.exe",
+        "sha256": "a8c42e25c91ca2453e1110540ac08f0fc12d7539454a11b9af8baeecb469837d"
+      },
+      "receipt_sha256": "7cabd0c3610017fdb2f296999e2d96083bf5f4ba245aa0b414aab1d1527fa9ea"
+    },
+    "candidate": {
+      "source": "3d6d44d3b3e9a9a3e41da98e8711e9f19a211fd8",
+      "version": "0.26.1-dev+termforge.4",
+      "candidate_tree": "2cce55fcf2d379440110bbbf8612117cce3edf64",
+      "tracked_candidate_files": 84,
+      "changed_paths": [
+        "experiments/candidates/alacritty/Cargo.toml",
+        "experiments/candidates/alacritty/src/measure.rs"
+      ],
+      "binary": {
+        "bytes": 580096,
+        "sha256": "e674f0df59af27151fe2c1ad916b6cb4f4dd6ccd783ed225fe0107e13b74ae0a"
+      },
+      "identity": {
+        "allocator_wrapper_compiled": false,
+        "projection_selectable": true,
+        "schema": "termforge-core-cost-build-v1",
+        "timing_gates_compiled": true
+      },
+      "linker": {
+        "path": "C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\MSVC\\14.51.36231\\bin\\HostX64\\x64\\link.exe",
+        "sha256": "a8c42e25c91ca2453e1110540ac08f0fc12d7539454a11b9af8baeecb469837d"
+      },
+      "receipt_sha256": "eeef0cfd10f469bb44ddade96cae6c81263c600cfa014a984bc4466a452c14f9"
+    }
+  },
+  "batches": [
+    {
+      "seed": 20261026,
+      "status": "failed",
+      "attempted": 24,
+      "valid_samples": 23,
+      "error": "ValueError: ValueError: sample 23 failed: ValueError: host activity guard failed; sample retained, batch stopped",
+      "host": {
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "python": "3.12.10",
+        "psutil": "7.2.2",
+        "cpu_logical": 4,
+        "cpu_physical": 2,
+        "cpu": {
+          "ProcessorNameString": "AMD EPYC 9V45 96-Core Processor                ",
+          "Identifier": "AMD64 Family 26 Model 2 Stepping 1"
+        },
+        "windows": {
+          "CurrentBuildNumber": "26100",
+          "UBR": 33650,
+          "DisplayVersion": "24H2"
+        }
+      },
+      "environment_status": "low_activity_observed",
+      "busy_percent": [
+        1.5625,
+        1.5625,
+        1.953125,
+        1.171875,
+        1.550387596899225,
+        1.550387596899225,
+        1.953125,
+        3.125,
+        1.171875,
+        1.1538461538461537
+      ]
+    }
+  ],
+  "all_attempted_output_oracles_passed": 24,
+  "all_attempted_processes_exit_zero": 24,
+  "stopped_sample": {
+    "item": {
+      "sequence": 23,
+      "repeat": 1,
+      "route": "interactive",
+      "chunk": 1,
+      "variant": "candidate",
+      "observe": 0
+    },
+    "status": "failed",
+    "error": "ValueError: host activity guard failed; sample retained, batch stopped",
+    "guest_total_cpu_seconds": 8.375,
+    "guest_busy_cpu_seconds": 2.484375,
+    "inner_measured_process_cpu_seconds": 2.03125,
+    "unattributed_cpu_seconds": 0.453125,
+    "unattributed_busy_percent_upper_estimate": 5.41044776119403
+  },
+  "second_seed_started": false,
+  "full_batches_completed": 0,
+  "paired_cost_summary_produced": false,
+  "performance_gate": "not_evaluated",
+  "numerical_product_budget": null,
+  "archive": {
+    "path": "evidence.zip",
+    "bytes": 164608,
+    "sha256": "9ade502f03419f55295b4e9f4df9dc136c5c4d50ace02d41417fea1de6952917",
+    "provider_artifact": 12728432619,
+    "files": 131,
+    "inventory_verified_files": 130,
+    "byte_exact_synthetic_streams": 56,
+    "individual_publication_sha256": "75f98a70ae4567eebb7686c5284a84df5f4b137220fe0032cbd6579aa82c36dd",
+    "privacy_review": "Reviewed public copy additionally replaces the observed Windows 8.3 profile aliases in two build logs. No process identities, credentials or remaining workspace/profile prefixes found. Measurement streams unchanged.",
+    "provider_archive_bytes": 165170,
+    "provider_archive_sha256": "6a2713dd96d86ce66e2462a142d46b72e915ccc4cfd45bd3b42c5e7486c3cef5",
+    "provider_original_retained_locally": true,
+    "post_publication_review": [
+      {
+        "path": "bundle/baseline-build.stderr",
+        "previous_published_sha256": "812ba8957f4fcf9b5019361b2b022ad529b695dbc89f89b7bec7c95b89969626",
+        "reviewed_sha256": "585a85a2909b2e5325e6573ee5c9cf6e03a1a389adf09409b7f9da92dd87bee1",
+        "replacements": 10
+      },
+      {
+        "path": "bundle/candidate-build.stderr",
+        "previous_published_sha256": "44c59810fe10f93df597115060e6cf86749350a96f92fe9df174d0241da66579",
+        "reviewed_sha256": "b25d91f15ca587c2fa37420f3bc2a5ca357426a73eb5cc2885b522f87fb66860",
+        "replacements": 10
+      }
+    ]
+  },
+  "ci": [
+    {
+      "run": 40490884320,
+      "event": "pull_request",
+      "name": "default",
+      "jobs": [
+        {
+          "job": 122144220963,
+          "platform": "windows-2025",
+          "passed": 46,
+          "collected": 46,
+          "seconds": 276.62,
+          "decoded_log_sha256": "46d7dc7a0d2adcd51de07e6aa27c132a155f3e313a4bf947bd220df426d98002"
+        },
+        {
+          "job": 122144221116,
+          "platform": "ubuntu-24.04",
+          "passed": 29,
+          "collected": 29,
+          "seconds": 16.67,
+          "decoded_log_sha256": "1df6af066a76fa8d090a46f38a1612d7d1d4c6e3b3db9a5b9a858d19fccb752d"
+        }
+      ],
+      "conclusion": "success",
+      "attempt": 1,
+      "url": "https://github.com/JavaZeroo/termforge/actions/runs/40490884320"
+    },
+    {
+      "run": 40490861189,
+      "event": "push",
+      "name": "default",
+      "jobs": [
+        {
+          "job": 122144147319,
+          "platform": "windows-2025",
+          "passed": 46,
+          "collected": 46,
+          "seconds": 282.38,
+          "decoded_log_sha256": "318d044f96dcccb27983100d3fdbd897073142e63e656e369f6d838d45991d16"
+        },
+        {
+          "job": 122144147638,
+          "platform": "ubuntu-24.04",
+          "passed": 29,
+          "collected": 29,
+          "seconds": 16.02,
+          "decoded_log_sha256": "14366db79e80b31887b26d5e97d0bc9bdd7de001f83812400afd00c63c09f51b"
+        }
+      ],
+      "conclusion": "success",
+      "attempt": 1,
+      "url": "https://github.com/JavaZeroo/termforge/actions/runs/40490861189"
+    },
+    {
+      "run": 40490883616,
+      "event": "pull_request",
+      "name": "candidate",
+      "measurement_jobs": [
+        {
+          "job": 122144218593,
+          "platform": "windows-2025",
+          "passed": 40,
+          "collected": 40,
+          "skipped": 0,
+          "seconds": 30.304,
+          "decoded_log_sha256": "713d9b818aa14dd38480205e81c9d90eee74e94b717ca81ecdbb1b67dade0df9"
+        },
+        {
+          "job": 122144218760,
+          "platform": "ubuntu-24.04",
+          "passed": 39,
+          "collected": 40,
+          "skipped": 1,
+          "seconds": 22.982,
+          "decoded_log_sha256": "b3e3033bd7c232de80b702c7945c1292dbe1ef1e9630416c8021318521fae7e0"
+        }
+      ],
+      "conclusion": "success",
+      "attempt": 1,
+      "url": "https://github.com/JavaZeroo/termforge/actions/runs/40490883616"
+    },
+    {
+      "run": 40490861431,
+      "event": "push",
+      "name": "candidate",
+      "measurement_jobs": [
+        {
+          "job": 122144148011,
+          "platform": "windows-2025",
+          "passed": 40,
+          "collected": 40,
+          "skipped": 0,
+          "seconds": 29.831,
+          "decoded_log_sha256": "f2ecb43c16ef0a8c3f6d75b6d1989f16b9027af852def85c03cb94dbd8f39f00"
+        },
+        {
+          "job": 122144147926,
+          "platform": "ubuntu-24.04",
+          "passed": 39,
+          "collected": 40,
+          "skipped": 1,
+          "seconds": 25.717,
+          "decoded_log_sha256": "8015b82b14881aff82fa1d71db2a1e801d83aa604ac8a83a5a49d281c36f5f2f"
+        }
+      ],
+      "conclusion": "success",
+      "attempt": 1,
+      "url": "https://github.com/JavaZeroo/termforge/actions/runs/40490861431"
+    }
+  ],
+  "ci_logs_representation": "decoded UTF-8, LF; hashes identify retained local text, not provider ZIP bytes",
+  "limitations": [
+    "The batch is incomplete: do not calculate or accept a throughput regression from this prefix.",
+    "5 percent is the frozen guest CPU diagnostic guard, not a user-approved product performance tolerance.",
+    "The remainder includes preparation/oracle/startup and runner CPU excluded by the inner timing interval; it does not identify the responsible process.",
+    "Per-process identities were not exported from the temporary VM; they cannot support retrospective attribution.",
+    "Physical host exclusivity, neighboring VM load, frequency stability, GUI/input/receive/presentation and WindTerm equivalence remain unmeasured.",
+    "No workflow rerun, skipped sample, replacement sample, relaxed guard or resumed second seed."
+  ],
+  "next_investigation": "Separately predeclare a bounded diagnostic of whole-child lifetime CPU and runner CPU to distinguish own work from external guest activity; preserve this first failure and the v1 acceptance rules.",
+  "post_run_publication_fix": {
+    "reason": "Windows compiler logs used short profile aliases absent from the original prefix list.",
+    "native_windows_short_path_lookup": "passed_same_directory",
+    "path_variant_regression": "red_then_green",
+    "measurement_tests": 32,
+    "passed": 32,
+    "unittest_seconds": 15.152,
+    "stdout_sha256": "c8c96d18f0a4f88593607294a831a3163735f74fa9e650a1c74424008b61e95c",
+    "cost_execution": "not_repeated; branch update no longer launches cost job",
+    "original_cost_source_unchanged": true
+  }
+}
