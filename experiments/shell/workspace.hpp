@@ -647,7 +647,10 @@ class Workspace {
             self->failure_=error.what();
             // Workspace scenarios (selection, actions, shells) fail outside the
             // per-tab dump, so report the scenario identity and the message here.
-            std::cerr << "workspace-failure mode=" << self->test_mode_ << " what=" << self->failure_ << '\n';
+            // stage_ is the workspace scenario's own progress; the per-tab stage
+            // stays zero for these modes, so it must be reported here (#73).
+            std::cerr << "workspace-failure mode=" << self->test_mode_ << " stage=" << self->stage_
+                      << " what=" << self->failure_ << '\n';
             // Per-tab counters: which session was waiting matters more than the text.
             for (const auto group : {Group::bottom, Group::main}) {
                 auto& tabs = self->group_tabs(group);
