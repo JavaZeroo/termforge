@@ -425,10 +425,14 @@ class OwnedTestDesktop:
             self.handle = None
         gone = desktop_gone(self.name)
         if gone or record is None:
+            # #160: record the first check even on success so every run carries a
+            # sample instead of only the failing ones.
+            if record is not None:
+                record["desktop_close_settle"] = [{"elapsed_ms": 0, "gone": gone}]
             return gone
         # A desktop handle outlives its owner only while some child still holds
         # one; settle briefly and keep the attempts so a failure shows whether the
-        # desktop was still held or never closed. Nothing is added on success.
+        # desktop was still held or never closed.
         attempts = [{"elapsed_ms": 0, "gone": False}]
         began = time.monotonic()
         for _ in range(10):
@@ -437,8 +441,7 @@ class OwnedTestDesktop:
             attempts.append({"elapsed_ms": int((time.monotonic() - began) * 1000), "gone": gone})
             if gone:
                 break
-        if not gone:
-            record["desktop_close_settle"] = attempts
+        record["desktop_close_settle"] = attempts
         return gone
 
 
