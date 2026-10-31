@@ -45,27 +45,39 @@ static void focus_and_win32_input_mode_are_accepted_without_effect() {
     check(replay("\x1b[?9001lHELLO") == plain, "Win32 input mode reset changed the screen");
 }
 
-static void window_manipulation_is_ignored() {
+static void window_commands_are_ignored_but_queries_are_not() {
     const std::string plain = replay("HELLO");
     check(replay("\x1b[1tHELLO") == plain, "window de-iconify changed the screen");
-    check(replay("\x1b[8tHELLO") == plain, "window operation changed the screen");
+    check(replay("\x1b[2tHELLO") == plain, "window iconify changed the screen");
+    check(replay("\x1b[3tHELLO") == plain, "window move changed the screen");
+}
+
+static void device_attributes_claim_only_vt102() {
+    // The reply states what this terminal claims to support, so it stays at the
+    // level the core implements and matches the reference candidate.
+    Parser parser(5, 20, 10);
+    parser.feed("\x1b[c");
+    parser.finish();
+    const auto replies = parser.take_replies();
+    check(replies.size() == 1 && replies[0] == "\x1b[?6c", "device attributes reply changed");
 }
 
 static void unsupported_sequences_still_fail_loudly() {
-    // Device attributes need a reply that states the terminal's capabilities;
-    // until that is decided the query must stay unsupported rather than be
-    // answered with a claim the core cannot back.
-    check_rejected("\x1b[c", "device attributes query must remain unsupported");
     // Bracketed paste is not implemented, so enabling it must not be accepted
     // silently as if the terminal supported it.
     check_rejected("\x1b[?2004h", "bracketed paste must remain unsupported");
     check_rejected("\x1b[?1000h", "mouse reporting must remain unsupported");
+    // CSI t beyond the iconify/move commands are queries; an unanswered query
+    // must stay a loud failure so it cannot look like a satisfied request.
+    check_rejected("\x1b[4t", "window pixel-size query must remain unsupported");
+    check_rejected("\x1b[11t", "window state query must remain unsupported");
 }
 
 int main() {
     try {
         focus_and_win32_input_mode_are_accepted_without_effect();
-        window_manipulation_is_ignored();
+        window_commands_are_ignored_but_queries_are_not();
+        device_attributes_claim_only_vt102();
         unsupported_sequences_still_fail_loudly();
         std::cout << "private mode checks passed\n";
         return 0;

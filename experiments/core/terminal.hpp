@@ -85,11 +85,14 @@ class Parser {
             break;
         case 'M': screen.delete_lines(n); break;
         case 't':
-            // Window manipulation (XTWINOPS) is advisory: ConPTY emits CSI 1 t
-            // around a native resize. Acting on it would fight the host's own
-            // geometry, so it is accepted and ignored like other terminals do
-            // for operations they do not implement.
-            return;
+            // CSI 1/2/3 t are window commands (de-iconify, iconify, move) that
+            // ConPTY emits around a native resize. Acting on them would fight
+            // the host's own geometry, so they are accepted and ignored. Every
+            // other CSI t is a query this core cannot answer and stays
+            // unsupported rather than swallowing a request the application is
+            // waiting on.
+            if (params.size() == 1 && params[0] >= 1 && params[0] <= 3) return;
+            throw InputError("unsupported CSI command");
         case 'X': screen.erase_characters(n); break;
         case '@': screen.insert_characters(n); break;
         case 'P': screen.delete_characters(n); break;
@@ -99,6 +102,17 @@ class Parser {
             if (params.size() == 1 && params[0] == 6) {
                 pending_replies.push_back("\x1b[" + std::to_string(screen.row + 1) + ";" +
                                           std::to_string(screen.column + 1) + "R");
+                return;
+            }
+            throw InputError("unsupported CSI command");
+        case 'c':
+            // Primary device attributes. The reply states which capabilities
+            // this terminal claims, so it stays at the VT102 level the core
+            // actually implements (cursor addressing, erase, insert/delete line
+            // and character, SGR, DECAWM, alternate screen) and matches the
+            // reference candidate, which also answers \x1b[?6c.
+            if (params.size() == 1 && params[0] == 0) {
+                pending_replies.push_back("\x1b[?6c");
                 return;
             }
             throw InputError("unsupported CSI command");
