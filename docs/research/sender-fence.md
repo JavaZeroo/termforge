@@ -1,6 +1,6 @@
 # 实际输入 worker 的持块合同与 sender fence
 
-本合同对应 [#62](https://github.com/JavaZeroo/termforge/issues/62)，为 [#53](https://github.com/JavaZeroo/termforge/issues/53)提供可复用的协调机制。**实现属于 `fix/conpty-backend-r47` / [Draft #50](https://github.com/JavaZeroo/termforge/pull/50) 的实验整合，尚未进入 main。** 固定运行源码为 `519a3f37d52983062cd99b7efd805f183961fa4d`；完整 source/tree/blob、实际 EXE、官方后端文件对、原始日志 SHA 和逐字段结果见[验证记录](../../experiments/shell/results/2026-10-26-sender-fence/validation.json)。这是实际 `InputQueue` / `PasteTransfer` / ConPTY worker 的限定验证，不是 UI、VT 或操作系统背压验收。
+本合同对应 [#62](https://github.com/JavaZeroo/termforge/issues/62)，为 [#53](https://github.com/JavaZeroo/termforge/issues/53)提供可复用的协调机制。**实现属于 `fix/conpty-backend-r47` / [原 Draft PR #50（已关闭）](https://github.com/JavaZeroo/termforge/pull/50) 的实验整合，尚未进入 main。** 固定运行源码为 `519a3f37d52983062cd99b7efd805f183961fa4d`；完整 source/tree/blob、实际 EXE、官方后端文件对、原始日志 SHA 和逐字段结果见[验证记录](../../experiments/shell/results/2026-10-26-sender-fence/validation.json)。这是实际 `InputQueue` / `PasteTransfer` / ConPTY worker 的限定验证，不是 UI、VT 或操作系统背压验收。
 
 ## 修正的夹具假设
 

@@ -23,7 +23,7 @@
 | 路径 | 现有证据 | 结论 |
 |---|---|---|
 | 上游修复后固定正式包 | 已固定根因；官方包 native 仍红 | 长期首选；需把 oracle/最小补丁送上游，接纳与发布未知 |
-| 小型 MIT fork（固定 1.25 + 单 margin 补丁） | [构建入口](https://github.com/JavaZeroo/termforge/pull/96)：baseline focused 1 fail、patched focused 1/1、full adapter 412/412 零 skip；[同源原生/末端对照](https://github.com/JavaZeroo/termforge/pull/98)：8 次 VT-on/off × 两尺寸，patched 四阶段原生全绿、transport 末端正确、自然 37/EOF109/Job0；[控制场景补充](https://github.com/JavaZeroo/termforge/pull/100)：12 次（main-only / default-alt / repeat-alt × 两尺寸 × 两版），baseline 的错误精确落在预期阶段，patched 全部阶段文字/完整格属性/光标/viewport 正确 | **唯一已有“同输入 red→green”的路径**；仍是候选，未接入产品 |
+| 小型 MIT fork（固定 1.25 + 单 margin 补丁） | [构建入口（原 PR #96，已关闭）](https://github.com/JavaZeroo/termforge/pull/96)：baseline focused 1 fail、patched focused 1/1、full adapter 412/412 零 skip；[同源原生/末端对照（原 PR #98，已关闭）](https://github.com/JavaZeroo/termforge/pull/98)：8 次 VT-on/off × 两尺寸，patched 四阶段原生全绿、transport 末端正确、自然 37/EOF109/Job0；[控制场景补充（原 PR #100，已关闭）](https://github.com/JavaZeroo/termforge/pull/100)：12 次（main-only / default-alt / repeat-alt × 两尺寸 × 两版），baseline 的错误精确落在预期阶段，patched 全部阶段文字/完整格属性/光标/viewport 正确 | **唯一已有“同输入 red→green”的路径**；仍是候选，未接入产品 |
 | 关闭 ENABLE_VIRTUAL_TERMINAL_PROCESSING 当 raw 后端 | 80×24 末端表面正确，但原生格已把 ESC 当字面内容，12×7 丢 BOTTOM_FIXED | 拒绝 |
 | 旧 passthrough flag | 第一方已删除；当前头文件 0x08 是字素宽度策略 | 拒绝 |
 | 换另一 console server / 桥接层 | 无同输入原生+末端证据，维护面远大于局部状态修正 | 不采纳；如要调查需另立证据项 |
