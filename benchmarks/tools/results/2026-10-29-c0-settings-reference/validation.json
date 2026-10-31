@@ -373,7 +373,7 @@
     "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
     "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
     "benchmarks/tools/play.py": "1c83f400d45f94f4d7100c177c7cf42f98d0add037c5d31f232092f4dd6b9fea",
-    "experiments/conpty/run.py": "c8eef1e36b6d200b2d508cef91eaa5ca79a91fa87c5daf6265b2475c31dce329"
+    "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
   },
   "plan_sha256": "d1678750af02c27e60dec373b38ca49cca8cedd254a0c3708ea9e1b841494afc",
   "module_sha256": {
