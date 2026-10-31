@@ -39,6 +39,16 @@ class ResizeReplayTests(unittest.TestCase):
         self.assertEqual(second["retained"], second["history"] + 5)
         self.assertEqual(first["retained"], first["history"] + 3)
 
+    def test_identical_bytes_scale_their_scrollback_with_page_height(self):
+        # #194 measured this on a real capture: the same repaint bytes pushed 30
+        # rows into scrollback behind a 7-row page and none behind a 24-row one.
+        data = "".join(f"R{index:02d}\r\n" for index in range(1, 21)).encode()
+        short, medium, tall = (self.run_steps(data, [(rows, 20, len(data), f"rows-{rows}")])[0]
+                               for rows in (4, 10, 24))
+        self.assertEqual((short["history"], medium["history"], tall["history"]), (17, 11, 0))
+        for row in (short, medium, tall):
+            self.assertEqual(row["retained"], row["history"] + row["rows"])
+
     def test_a_step_longer_than_the_capture_consumes_only_what_is_left(self):
         rows = self.run_steps(b"only\r\n", [(2, 20, 100, "overreach")])
         self.assertEqual(rows[0]["consumed"], len(b"only\r\n"))
