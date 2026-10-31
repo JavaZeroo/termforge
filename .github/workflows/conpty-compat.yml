@@ -4,12 +4,31 @@ name: ConPTY legacy compatibility probe (known failing)
 # Keep a fully automatic, strictly failing reproduction available for follow-up.
 on:
   workflow_dispatch:
+    inputs:
+      # Optional focus: when set, only the named job runs. Sampling one shape
+      # costs a single job instead of eight; the default run is unchanged.
+      only:
+        description: 'Run only this job (empty runs every job)'
+        required: false
+        type: choice
+        default: ''
+        options:
+          - ''
+          - windows-2022-conpty
+          - windows-2025-resize-reply
+          - windows-2025-original-probe-repeat
+          - windows-2025-probe-after-conpty-tests
+          - windows-2025-node-contract-timing
+          - windows-2025-actions-repeat
+          - windows-2025-startup-latency
+          - windows-2025-startup-under-load
 
 permissions:
   contents: read
 
 jobs:
   windows-2022-conpty:
+    if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2022-conpty' }}
     runs-on: windows-2022
     timeout-minutes: 10
     env:
@@ -42,6 +61,7 @@ jobs:
             build/test-artifacts/conpty/
 
   windows-2025-resize-reply:
+    if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2025-resize-reply' }}
     # Bounded diagnostic for #145: the stale resize reply was observed on
     # windows-2025 in build.yml. This job repeats resize + client size query on
     # that host and keeps the raw per-round evidence. It asserts only structural
@@ -80,6 +100,7 @@ jobs:
           path: build/r145-*
 
   windows-2025-original-probe-repeat:
+    if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2025-original-probe-repeat' }}
     # #145 second slice: repeat the *original* lifecycle sample on the hosted
     # image that produced the stale reply. Each iteration keeps its own result;
     # a red sample carries the probe's native failure diagnostics.
@@ -117,6 +138,7 @@ jobs:
             build/test-artifacts/conpty
 
   windows-2025-probe-after-conpty-tests:
+    if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2025-probe-after-conpty-tests' }}
     # #145: the recorded failure happened inside build.yml's long ctest job, not
     # in an isolated probe job. This job runs the console-heavy ConPTY tests
     # first (their exit is recorded, not gated), then samples the original probe.
@@ -160,6 +182,7 @@ jobs:
             build/test-artifacts
 
   windows-2025-node-contract-timing:
+    if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2025-node-contract-timing' }}
     # Bounded diagnostic for #144: the raster style reference test times out at a
     # fixed 10s on the pure Node fixture. This job only measures the exact
     # command, sequentially and under a small concurrent load.
@@ -231,6 +254,7 @@ jobs:
           path: node-contract-timing.json
 
   windows-2025-actions-repeat:
+    if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2025-actions-repeat' }}
     # Bounded reproduction for #99 / #73 / #97 and the clipboard/geometry
     # scenarios: repeats the actions, selection and full shell suites on the
     # hosted image so failure shapes can be ordered against the diagnostics.
@@ -261,6 +285,7 @@ jobs:
           path: build/test-artifacts/
 
   windows-2025-startup-latency:
+    if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2025-startup-latency' }}
     # Bounded measurement for #81 / #144 / #40: how long does a plain
     # PowerShell 5.1 or Node start-up take on this hosted image, and how often
     # does it cross the fixed fixture deadlines. No deadlines are changed.
@@ -315,6 +340,7 @@ jobs:
           path: startup-latency.json
 
   windows-2025-startup-under-load:
+    if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2025-startup-under-load' }}
     # Bounded follow-up for #81 / #144 / #40: does local CPU contention on the
     # runner inflate PowerShell start-up enough to reach the fixture deadlines.
     runs-on: windows-2025
