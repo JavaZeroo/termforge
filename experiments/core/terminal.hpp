@@ -40,6 +40,12 @@ class Parser {
                 if (final == 'h') mode_bits_ |= bit; else mode_bits_ &= ~bit;
                 return;
             }
+            if (params.size() == 1 && (params[0] == 1004 || params[0] == 9001) && (final == 'h' || final == 'l'))
+                // Real ConPTY sessions request focus reporting (?1004) and Win32
+                // input mode (?9001). Neither changes what this core draws or
+                // sends, and the host has nothing to act on yet, so they are
+                // accepted without being recorded.
+                return;
             if (params.size() != 1 || (params[0] != 1049 && params[0] != 7) || (final != 'h' && final != 'l'))
                 throw InputError("unsupported private CSI command");
             if (params[0] == 7) {
@@ -78,6 +84,15 @@ class Parser {
                                      params.size() < 2 || params[1] == 0 ? -1 : params[1] - 1);
             break;
         case 'M': screen.delete_lines(n); break;
+        case 't':
+            // CSI 1/2/3 t are window commands (de-iconify, iconify, move) that
+            // ConPTY emits around a native resize. Acting on them would fight
+            // the host's own geometry, so they are accepted and ignored. Every
+            // other CSI t is a query this core cannot answer and stays
+            // unsupported rather than swallowing a request the application is
+            // waiting on.
+            if (params.size() == 1 && params[0] >= 1 && params[0] <= 3) return;
+            throw InputError("unsupported CSI command");
         case 'X': screen.erase_characters(n); break;
         case '@': screen.insert_characters(n); break;
         case 'P': screen.delete_characters(n); break;
@@ -87,6 +102,17 @@ class Parser {
             if (params.size() == 1 && params[0] == 6) {
                 pending_replies.push_back("\x1b[" + std::to_string(screen.row + 1) + ";" +
                                           std::to_string(screen.column + 1) + "R");
+                return;
+            }
+            throw InputError("unsupported CSI command");
+        case 'c':
+            // Primary device attributes. The reply states which capabilities
+            // this terminal claims, so it stays at the VT102 level the core
+            // actually implements (cursor addressing, erase, insert/delete line
+            // and character, SGR, DECAWM, alternate screen) and matches the
+            // reference candidate, which also answers \x1b[?6c.
+            if (params.size() == 1 && params[0] == 0) {
+                pending_replies.push_back("\x1b[?6c");
                 return;
             }
             throw InputError("unsupported CSI command");
