@@ -41,6 +41,17 @@ std::string env_path(const char* name) {
 #endif
 }
 std::string selection_diag_path() { return env_path("TERMFORGE_SELECTION_DIAG"); }
+// JSON-safe copy of a short diagnostics string; control bytes become hex escapes.
+std::string json_escape(const std::string& text) {
+    static constexpr char digits[] = "0123456789abcdef";
+    std::string escaped;
+    for (const char ch : text) {
+        const auto byte = static_cast<unsigned char>(ch);
+        if (byte >= 0x20 && byte < 0x7f && ch != '"' && ch != 0x5c) escaped.push_back(ch);
+        else { escaped += 0x5c; escaped += 'x'; escaped += digits[byte >> 4]; escaped += digits[byte & 15]; }
+    }
+    return escaped;
+}
 void selection_discard_diagnostic(const termforge::TextSelection::DiscardReport& report) {
     static const std::string path = selection_diag_path();
     if (path.empty()) return;
@@ -49,7 +60,10 @@ void selection_discard_diagnostic(const termforge::TextSelection::DiscardReport&
     stream << "{\"schema\":\"termforge-selection-discard-v1\",\"reason\":\"" << report.reason
            << "\",\"row\":" << report.row << ",\"saved_bytes\":" << report.saved_bytes
            << ",\"current_bytes\":" << report.current_bytes << ",\"saved_columns\":" << report.saved_columns
-           << ",\"current_columns\":" << report.current_columns << ",\"t_ms\":" << GetTickCount64() << "}\n";
+           << ",\"current_columns\":" << report.current_columns
+           << ",\"saved_text\":\"" << json_escape(report.saved_text)
+           << "\",\"current_text\":\"" << json_escape(report.current_text)
+           << "\",\"t_ms\":" << GetTickCount64() << "}\n";
 }
 // Each window owns its trace stream; the hook resolves it by queue pointer so a
 // window that is being destroyed can never leave a dangling global stream.
