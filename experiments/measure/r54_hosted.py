@@ -9,7 +9,8 @@ from experiments.measure.r54_build import prepare_builds
 from experiments.measure.r54_contract import ROOT, SEEDS
 from experiments.measure.r54_inputs import git, require
 
-CPU_BOUNDARY_BRANCHES = ('perf/grapheme-cpu-hosted-r54', 'perf/grapheme-cpu-hosted-r54-setup2')
+CPU_BOUNDARY_BRANCHES = ('perf/grapheme-cpu-hosted-r54', 'perf/grapheme-cpu-hosted-r54-setup2',
+                        'perf/grapheme-cpu-hosted-r54-entry3')
 
 
 def hosted_identity(branch='perf/grapheme-hosted-r54'):
