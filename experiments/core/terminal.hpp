@@ -40,6 +40,12 @@ class Parser {
                 if (final == 'h') mode_bits_ |= bit; else mode_bits_ &= ~bit;
                 return;
             }
+            if (params.size() == 1 && (params[0] == 1004 || params[0] == 9001) && (final == 'h' || final == 'l'))
+                // Real ConPTY sessions request focus reporting (?1004) and Win32
+                // input mode (?9001). Neither changes what this core draws or
+                // sends, and the host has nothing to act on yet, so they are
+                // accepted without being recorded.
+                return;
             if (params.size() != 1 || (params[0] != 1049 && params[0] != 7) || (final != 'h' && final != 'l'))
                 throw InputError("unsupported private CSI command");
             if (params[0] == 7) {
@@ -78,6 +84,12 @@ class Parser {
                                      params.size() < 2 || params[1] == 0 ? -1 : params[1] - 1);
             break;
         case 'M': screen.delete_lines(n); break;
+        case 't':
+            // Window manipulation (XTWINOPS) is advisory: ConPTY emits CSI 1 t
+            // around a native resize. Acting on it would fight the host's own
+            // geometry, so it is accepted and ignored like other terminals do
+            // for operations they do not implement.
+            return;
         case 'X': screen.erase_characters(n); break;
         case '@': screen.insert_characters(n); break;
         case 'P': screen.delete_characters(n); break;
