@@ -20,3 +20,11 @@ WindTerm 2.7.0 官方说明为避免 vi 的非法字符而改用 WinPTY，[已�
 - 合并及切换产品默认前，验证声明配置的完整 shell/TUI、resize/历史、输入、工作区与回收合同；保留内部跳过、旧失败和环境缺口。正式路线与代码是否合入、是否通过验收分别记录。
 - 后端选择不自动批准与原版不同的滚动区域或原生控制台行为。#34 / #41 / #56 中的具体原版差异继续留证；按原版优先调查，接受重要差异或修正原版缺陷前取得用户确认。
 - 正式终端核心和当前 GUI 路线已由后续 [ADR-0008](0008-cpp-core-qt-widgets.md)确认；具体实现、原版差异与整体验收继续分开。性能数值容差在可靠基线后另行商定。
+
+## 已知差异
+
+按 #41 的裁决，以下差异**书面接受**，作为 R2 的声明边界而非待修缺陷。
+
+- **主／备用屏 margin 的原生可见性**：随包固定 Microsoft ConPTY 在源控制台保留 `2;3r` / `4;5r`，末端恢复 `REGION_C` / `REGION_D` / `BOTTOM_FIXED`；但源控制台 CHAR_INFO 的 margin 仍与系统后端同为不匹配。系统后端的对照、VT-off 反例、旧 passthrough flag 的拒绝及第一方来源见[每屏 margin 的同源 A/B](../research/conpty-margin-backends.md)。
+- **边界**：依赖原生 Console API 读取屏幕状态的应用，可能与末端呈现不同步。该差异不阻塞 #27／#28 在 VT／transport／末端层的验收；原生层的证据缺口单独保留，不用末端通过替代。
+- **重启条件**：若后续需要原生 API 精确同步（例如依赖 `CONSOLE_SCREEN_BUFFER_INFO` 的应用），由 [#56](https://github.com/JavaZeroo/termforge/issues/56) 重新评估上游修复或可维护 MIT fork，并按 [ADR-0006](0006-confirmed-project-direction.md) 的原版优先原则重新取得用户确认。
