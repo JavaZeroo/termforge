@@ -51,3 +51,16 @@
 - 隐藏单元格的复制语义（现保留文字）；
 - 暗色与上划线的渲染表现（现只实现状态）；
 - `DA1`/`DA2`、`OSC 10/11` 的回复（未实现）。
+## 实施状态（2026-10-31）
+
+本节记录五项决策的落地情况，避免把"已确认"误读成"已实现"或反之。
+
+| 决策 | 状态 | 证据 |
+|---|---|---|
+| 1 固定 ConPTY 为产品后端 | 产品入口（Qt）已使用；Win32 诊断 shell 仍为系统后端 | `CMakeLists.txt` 的 `termforge_qt_entry`、`cmake/ConptyBackend.cmake` |
+| 2 2022 基线记录制 | **端到端生效** | `TERMFORGE_CONPTY_RECORD_HANDLES` 在探针与测试两侧生效；运行 41193269350 / 41193276156 的 `windows-2022-conpty` 均 success，artifact 仍记录句柄增长 |
+| 3 回归型性能预算 | 规则已写入 `docs/research/r2-performance-budget.md` | 尚无受控基线，未启用为门禁 |
+| 4 R2 单显示器范围 | 已同步到里程碑与 `docs/FEATURES.md` | `R2-local-terminal.md` 的 #31 行、`FEATURES.md` 的 DPI 行 |
+| 5 交付 = 基础 + 已知差异清单 | 清单已成形 | #35 的交付清单评论（A–E 五类，逐项指到仓库位置） |
+
+**未随本 ADR 改变**：各 issue 的验收门槛、原版行为优先原则、性能数值仍需单独确认。
