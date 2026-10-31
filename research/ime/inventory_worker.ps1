@@ -136,4 +136,11 @@ try {
     Save-Progress $phase 'failed' $failure
 }
 $report | ConvertTo-Json -Depth 8 -Compress
+# #40: the report is written but the parent may never receive it when the pipe
+# stalls, so record that the final serialisation completed and was flushed.
+$stdout = [Console]::OpenStandardOutput()
+$bytes = [Text.Encoding]::UTF8.GetBytes('')
+$stdout.Write($bytes, 0, 0)
+$stdout.Flush()
+Save-Progress 'report' 'emitted'
 if ($report.status -ne 'complete') { exit 1 }
