@@ -1,6 +1,6 @@
 # ConPTY 每屏 margin：源控制台与末端 VT 的边界
 
-[#41](https://github.com/JavaZeroo/termforge/issues/41) 的固定源仍是 175 字节，SHA-256 `01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59`：主屏设置 `2;3r`，备用屏设置 `4;5r`，`1049l` 后在主屏滚动。**本机系统 ConPTY 的源控制台已没有恢复主屏 margin；固定官方 side-by-side ConPTY 则能把原 DECSTBM 交给末端核心，使末端恢复正确。** 这是继续整合的可行路径，不是已完成的产品修复。
+[#41](https://github.com/JavaZeroo/termforge/issues/41) 的固定源仍是 175 字节，SHA-256 `01878a5d54c343007309abb89faeb90c89262a8b55e420c5f267342ed9b27e59`：主屏设置 `2;3r`，备用屏设置 `4;5r`，`1049l` 后在主屏滚动。**本机系统 ConPTY 的源控制台已没有恢复主屏 margin；固定官方 side-by-side ConPTY 则能把原 DECSTBM 交给末端核心，使末端恢复正确。** 该路径已由[决策 1A](../adr/0009-r2-scope-decisions.md)确认为 R2 产品后端：Qt 入口经 `termforge_qt_entry` 使用随包固定包（`cmake/ConptyBackend.cmake`）。**但这是"VT 呈现正确"的结论，不等于原生 `CHAR_INFO` 已恢复**——后者按 #41 的裁决登记为已知差异。
 
 ## 三个不同检查点
 
