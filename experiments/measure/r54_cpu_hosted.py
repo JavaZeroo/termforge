@@ -7,11 +7,8 @@ from experiments.measure.r54_batch import sha, utc, write_json
 from experiments.measure.r54_build import prepare_builds
 from experiments.measure.r54_contract import ROOT
 from experiments.measure.r54_cpu_diagnostic import execute as diagnose
-from experiments.measure.r54_hosted import hosted_identity
+from experiments.measure.r54_hosted import CPU_BOUNDARY_BRANCHES, hosted_identity
 from experiments.measure.r54_inputs import git, require
-
-BRANCH = 'perf/grapheme-cpu-hosted-r54'
-
 
 def execute(output):
     output = Path(output).resolve()
@@ -22,7 +19,7 @@ def execute(output):
                     workflow_sha256=sha(ROOT / '.github/workflows/r54-cpu.yml'),
                     performance_gate='not_evaluated', diagnostic=None)
     try:
-        manifest['hosted_identity'] = hosted_identity(BRANCH)
+        manifest['hosted_identity'] = hosted_identity(CPU_BOUNDARY_BRANCHES)
         write_json(output / 'hosted.json', manifest)
         prepare_builds(output / 'bundle')
         declaration = dict(host_kind='hosted_vm', no_known_concurrent_build_or_test=True,

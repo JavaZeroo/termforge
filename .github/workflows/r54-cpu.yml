@@ -2,7 +2,7 @@ name: Bounded R54 hosted CPU diagnosis
 
 on:
   push:
-    branches: ['perf/grapheme-cpu-hosted-r54']
+    branches: ['perf/grapheme-cpu-hosted-r54', 'perf/grapheme-cpu-hosted-r54-setup2']
     paths:
       - '.github/workflows/r54-cpu.yml'
       - 'experiments/measure/*.py'

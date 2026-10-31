@@ -4,7 +4,11 @@
 
 ## 固定执行
 
-以 PR #106 的 `beeb64496b2e2898e8619fa5e9c39f490a3891c4` 为基点。新入口为[工作流](../../.github/workflows/r54-cpu.yml)，仅在分支`perf/grapheme-cpu-hosted-r54`首次创建push执行；拒绝attempt2及后续重跑。后续代码/导出器/证据修正不自动触发替代观察。原 `r54-cost.yml`、两批各112位置、原5%护栏及其失败记录不变。
+以 PR #106 的 `beeb64496b2e2898e8619fa5e9c39f490a3891c4` 为基点。入口为[工作流](../../.github/workflows/r54-cpu.yml)，只接受下述两个明确分支的创建push，拒绝attempt2；后续代码/导出器/证据修正不自动触发替代观察。原 `r54-cost.yml`、两批各112位置、原5%护栏及其失败记录不变。
+
+首个`perf/grapheme-cpu-hosted-r54`创建作业 [40509157581](https://github.com/JavaZeroo/termforge/actions/runs/40509157581) 来自`eed0ab7bae5fcc5d05a25cea5161dabc4f935878`，attempt1，在31项准备测试中的发布夹具路径边界比较处失败。夹具根路径未规范化，被测发布器则将输入路径resolve后比较；旧job没有记录该临时目录的实际路径形式。构建、诊断和导出均未启动，实际观察为0，旧run不重跑。本地使用真实8.3别名复现了该缺陷：旧比较为false、规范化后为true；这不是旧hosted路径形式的直接证据。修正仅将夹具根目录规范化，不放宽发布器路径边界。
+
+修正与审查后，另行预声明的`perf/grapheme-cpu-hosted-r54-setup2`执行分支在创建时完成一次相同构建/六位置诊断，使用新source/run身份。两分支按完整身份区分，第二入口不覆盖首次准备失败，不增加或替换任何已存在的测量样本。该入口仍拒绝attempt2，修订push不会自动重测。
 
 一个新的`windows-2025` VM依次准备Python3.12、psutil7.2.2、Rust1.92.0，执行合同测试，然后[复建并审计](r54_build.py)原固定 `.3/.4` 及四次短正确性。仍是MSVC x64、Release、locked/offline、no-default-features、jobs1、独立target及两个共同harness覆盖；80/84来源文件、原锁文件、真实编译/链接日志和EXE哈希保持可追溯。它是新构建，不借用本地或上次hosted二进制身份。
 
