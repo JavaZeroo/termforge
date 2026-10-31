@@ -643,7 +643,13 @@ class Workspace {
                 try { self->paint(dc); } catch(...) { EndPaint(hwnd,&ps); throw; }
                 EndPaint(hwnd,&ps); return 0;
             }
-        } catch(const std::exception& error) { self->failure_=error.what(); self->discard_and_close(); }
+        } catch(const std::exception& error) {
+            self->failure_=error.what();
+            // Workspace scenarios (selection, actions, shells) fail outside the
+            // per-tab dump, so report the scenario identity and the message here.
+            std::cerr << "workspace-failure mode=" << self->test_mode_ << " what=" << self->failure_ << '\n';
+            self->discard_and_close();
+        }
         return DefWindowProcW(hwnd,message,wp,lp);
     }
 public:
