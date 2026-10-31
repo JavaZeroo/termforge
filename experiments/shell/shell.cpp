@@ -1151,6 +1151,21 @@ public:
         RECT client{}; GetClientRect(hwnd_, &client); size_changed(client.right, client.bottom);
     }
     HWND handle() const { return hwnd_; }
+    // Read-only diagnostic view used by the workspace failure dump (#73): the
+    // same counters the per-tab dump prints, without running its teardown path.
+    std::string diagnostic_line() const {
+        std::ostringstream out;
+        out << "input_high_water=" << input_.high_water
+            << " input_rejected=" << input_.rejected
+            << " output_bytes=" << session_.output_bytes
+            << " read_error=" << session_.read_error
+            << " consumed=" << result_.consumed
+            << " stage=" << stage_
+            << " closing=" << (closing_ ? "true" : "false")
+            << " child_signaled=" << (session_.child_signaled ? "true" : "false")
+            << " exit_code=" << session_.exit_code;
+        return out.str();
+    }
     void enable_operation_observation() {
         require_ui_thread(); require(!closing_,"operation observation must be enabled before close");
         if(operation_observations_.enabled()) return;

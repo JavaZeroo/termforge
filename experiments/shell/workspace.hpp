@@ -648,6 +648,15 @@ class Workspace {
             // Workspace scenarios (selection, actions, shells) fail outside the
             // per-tab dump, so report the scenario identity and the message here.
             std::cerr << "workspace-failure mode=" << self->test_mode_ << " what=" << self->failure_ << '\n';
+            // Per-tab counters: which session was waiting matters more than the text.
+            for (const auto group : {Group::bottom, Group::main}) {
+                auto& tabs = self->group_tabs(group);
+                for (size_t index = 0; index < tabs.size(); ++index) {
+                    if (!tabs[index].shell) continue;
+                    std::cerr << "  tab " << (group == Group::main ? "main" : "bottom") << ':' << index << ' '
+                              << tabs[index].shell->diagnostic_line() << '\n';
+                }
+            }
             self->discard_and_close();
         }
         return DefWindowProcW(hwnd,message,wp,lp);
