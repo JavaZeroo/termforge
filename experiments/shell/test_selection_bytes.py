@@ -199,7 +199,10 @@ class SelectionBytesWindowTest(unittest.TestCase):
             with self.subTest(operation=operation):
                 out = self.out / ("occupied-" + operation)
                 with mock.patch.dict(os.environ, {"TERMFORGE_TEST_SELECTION_CLIPBOARD_HOLD": operation}):
-                    with self.assertRaisesRegex(ValueError, "shell probe failed: OpenClipboard: 5"):
+                    # Workspace scenarios prefix their failure with the scenario
+                    # identity, so the message may carry that prefix (#73).
+                    with self.assertRaisesRegex(
+                            ValueError, "shell probe failed: (workspace-failure .*? what=)?OpenClipboard: 5"):
                         execute(self.exe, "ui-copy-bytes-system", out)
                 sample = json.loads((out / "sample.json").read_text(encoding="utf-8"))
                 self.assertEqual(sample["exit_code"], 2)
