@@ -1,0 +1,3 @@
+*.bin binary
+case-*/*.json -text whitespace=cr-at-eol
+case-*/plan.txt -text
