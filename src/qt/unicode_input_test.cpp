@@ -166,6 +166,36 @@ static QJsonObject normal_keys(const QString& receiver, const QString& directory
     return {{"case", "normal-keys"}, {"received_hex", QString::fromLatin1(actual.toHex())},
             {"exit_code", 0}, {"job_active", 0}};
 }
+static QJsonObject navigation_keys(const QString& receiver, const QString& directory) {
+    const QString path = directory + QStringLiteral("/navigation-keys.bin");
+    SessionModel model;
+    TerminalWidget terminal(model);
+    focus(terminal);
+    require(model.start(receiver.toStdWString(), (QStringLiteral("\"") + path + QLatin1Char('"')).toStdWString(),
+                        directory.toStdWString()), "navigation receiver could not start");
+    await([&] { return has_text(model.screen(), "TF_KEY_READY"); }, "navigation receiver did not become ready");
+    for (int key : {Qt::Key_Home, Qt::Key_End, Qt::Key_Insert, Qt::Key_Delete, Qt::Key_PageUp, Qt::Key_PageDown})
+        QTest::keyClick(&terminal, static_cast<Qt::Key>(key));
+    // Modified navigation belongs to separate terminal/UI contracts. In
+    // particular, Shift+Insert must not become an Insert byte sequence here.
+    QKeyEvent paste_shortcut(QEvent::KeyPress, Qt::Key_Insert, Qt::ShiftModifier);
+    paste_shortcut.setAccepted(false); QApplication::sendEvent(&terminal, &paste_shortcut);
+    require(!paste_shortcut.isAccepted(), "unimplemented paste shortcut became terminal input");
+    // Navigation ends a pending UTF-16 unit without coupling the next character
+    // to it. Verify at the independent receiver, not through the encoder itself.
+    require(text_event(terminal, QString(QChar(0xd83d))), "navigation pending high was rejected");
+    QTest::keyClick(&terminal, Qt::Key_Home);
+    require(text_event(terminal, QString(QChar(0xde00))), "navigation orphan low was rejected");
+    finish(model);
+    const auto actual = received(path);
+    const auto expected = QByteArray::fromHex(
+        "1b5b481b5b461b5b327e1b5b337e1b5b357e1b5b367eefbfbd1b5b48efbfbd");
+    std::cerr << "navigation expected=" << expected.toHex().constData() << " actual="
+              << actual.toHex().constData() << '\n';
+    require(actual == expected, "Qt navigation keys did not reach the receiver as exact bytes");
+    return {{"case", "navigation-keys"}, {"received_hex", QString::fromLatin1(actual.toHex())},
+            {"modified_insert_rejected", true}, {"exit_code", 0}, {"job_active", 0}};
+}
 static QJsonObject tab_and_close_isolation(const QString& receiver, const QString& directory) {
     const auto argument = [&](const QString& name) {
         return (QStringLiteral("\"") + directory + QLatin1Char('/') + name + QLatin1Char('"')).toStdWString();
@@ -264,7 +294,8 @@ int main(int argc, char** argv) {
         const auto receiver = QCoreApplication::applicationDirPath() + QStringLiteral("/shell_input_client.exe");
         require(QFile::exists(receiver), "independent receiver is missing");
         QJsonArray cases{unicode_text(receiver, workspace.path()), focus_and_packet_rejection(receiver, workspace.path()),
-                         normal_keys(receiver, workspace.path()), tab_and_close_isolation(receiver, workspace.path()),
+                         normal_keys(receiver, workspace.path()), navigation_keys(receiver, workspace.path()),
+                         tab_and_close_isolation(receiver, workspace.path()),
                          unavailable_targets(receiver, workspace.path())};
         const QJsonObject result{{"schema", "termforge-qt-unicode-input-v1"}, {"cases", cases},
                                  {"ime", false}, {"presented_done", QJsonValue()}};

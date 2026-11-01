@@ -2,6 +2,8 @@
 #pragma once
 
 #include "terminal_session.hpp"
+#include "../../experiments/core/history_view.hpp"
+#include "../../experiments/core/text_selection.hpp"
 #include "../../experiments/shell/keyboard.hpp"
 #include <QEvent>
 #include <QCoreApplication>
@@ -10,6 +12,7 @@
 #include <QFontMetricsF>
 #include <QInputMethodEvent>
 #include <QKeyEvent>
+#include <QMouseEvent>
 #include <QResizeEvent>
 #include <QShowEvent>
 #include <QPainter>
@@ -24,6 +27,12 @@ namespace termforge::qt {
 class TerminalWidget final : public QWidget {
     SessionModel& model_;
     tf_shell::KeyboardEncoder keyboard_;
+    // Every widget owns its page and selection; row identities are never shared
+    // with another session. Hits resolve the last painted page, not a newer row.
+    HistoryViewport viewport_;
+    std::optional<ViewSnapshot> painted_page_;
+    TextSelection selection_;
+    std::optional<TextPosition> selection_anchor_;
     static constexpr int margin = 8;
     int cell_width_ = 9;
     int cell_height_ = 19;
@@ -37,6 +46,8 @@ class TerminalWidget final : public QWidget {
         cell_height_ = (std::max)(1, qCeil(metrics.height()) + 2);
     }
     void synchronize_grid() {
+        painted_page_.reset();
+        selection_anchor_.reset();
         const int columns = std::clamp((width() - margin * 2) / cell_width_, 1, 500);
         const int rows = std::clamp((height() - margin * 3 - cell_height_) / cell_height_, 1, 200);
         model_.resize(columns, rows);
@@ -67,10 +78,13 @@ class TerminalWidget final : public QWidget {
     }
     void closeEvent(QCloseEvent* event) override {
         keyboard_.reset();
+        selection_anchor_.reset();
         model_.close();
         QWidget::closeEvent(event);
     }
     bool event(QEvent* event) override {
+        if (event->type() == QEvent::FocusOut || event->type() == QEvent::Hide ||
+            event->type() == QEvent::UngrabMouse) selection_anchor_.reset();
         if (event->type() == QEvent::FocusOut || event->type() == QEvent::Hide) {
             keyboard_.reset();
             // Losing focus ends any composition: the input context drops it, and
@@ -87,6 +101,60 @@ class TerminalWidget final : public QWidget {
             synchronize_grid();
         }
         return handled;
+    }
+    std::optional<TextPosition> selection_position(QPointF point, bool nearest) const {
+        if (!painted_page_ || painted_page_->lines.empty()) return std::nullopt;
+        const int row = std::clamp(qFloor((point.y() - margin) / cell_height_),
+                                   0, static_cast<int>(painted_page_->lines.size()) - 1);
+        const int column = std::clamp(qFloor((point.x() - margin + (nearest ? cell_width_ / 2.0 : 0.0)) /
+                                            cell_width_), 0, model_.screen().width());
+        return painted_page_->mapping.hit(TextDocument(model_.screen()),
+            static_cast<size_t>(row), static_cast<size_t>(column), ViewAffinity::leading);
+    }
+    void extend_selection(QPointF point) {
+        const TextDocument document(model_.screen());
+        const auto position = selection_position(point, true);
+        if (!selection_anchor_ || !document.valid(*selection_anchor_) || !position) {
+            selection_anchor_.reset(); return;
+        }
+        selection_.set(document, {*selection_anchor_, *position});
+        update();
+    }
+    void mousePressEvent(QMouseEvent* event) override {
+        if (event->button() != Qt::LeftButton || event->modifiers() != Qt::NoModifier || !preedit_.isEmpty()) {
+            QWidget::mousePressEvent(event); return;
+        }
+        setFocus(Qt::MouseFocusReason);
+        selection_.clear();
+        selection_anchor_ = selection_position(event->position(), false);
+        update();
+        event->setAccepted(selection_anchor_.has_value());
+    }
+    void mouseMoveEvent(QMouseEvent* event) override {
+        if (!selection_anchor_ || !event->buttons().testFlag(Qt::LeftButton)) {
+            QWidget::mouseMoveEvent(event); return;
+        }
+        extend_selection(event->position());
+        event->accept();
+    }
+    void mouseReleaseEvent(QMouseEvent* event) override {
+        if (event->button() != Qt::LeftButton || !selection_anchor_) {
+            QWidget::mouseReleaseEvent(event); return;
+        }
+        extend_selection(event->position());
+        selection_anchor_.reset();
+        event->accept();
+    }
+    static uint32_t navigation_virtual_key(int key) {
+        switch (key) {
+        case Qt::Key_Home: return VK_HOME;
+        case Qt::Key_End: return VK_END;
+        case Qt::Key_Insert: return VK_INSERT;
+        case Qt::Key_Delete: return VK_DELETE;
+        case Qt::Key_PageUp: return VK_PRIOR;
+        case Qt::Key_PageDown: return VK_NEXT;
+        default: return 0;
+        }
     }
     void keyPressEvent(QKeyEvent* event) override {
         if (!isVisible() || !hasFocus()) {
@@ -105,7 +173,16 @@ class TerminalWidget final : public QWidget {
         else if (event->modifiers().testFlag(Qt::ControlModifier) || event->modifiers().testFlag(Qt::AltModifier)) {
             QWidget::keyPressEvent(event); return;
         } else {
-            switch (event->key()) {
+            if (const auto virtual_key = navigation_virtual_key(event->key())) {
+                // Reuse the normal terminal key table. Modified navigation has
+                // separate UI contracts (for example Shift+Insert is Paste),
+                // so it must not fall through as an unmodified terminal key.
+                if (event->modifiers() != Qt::NoModifier) {
+                    QWidget::keyPressEvent(event); return;
+                }
+                bytes = tf_shell::KeyboardEncoder::key_down(
+                    virtual_key, {}, model_.application_cursor_keys()).bytes;
+            } else switch (event->key()) {
             case Qt::Key_Return: case Qt::Key_Enter: bytes = "\r"; break;
             case Qt::Key_Backspace: bytes = std::string(1, '\x7f'); break;
             case Qt::Key_Tab: bytes = "\t"; break;
@@ -207,9 +284,20 @@ class TerminalWidget final : public QWidget {
         QPainter painter(this);
         painter.fillRect(rect(), colour(-1, false));
         const auto& screen = model_.screen();
+        const TextDocument document(screen);
+        selection_.reconcile(document);
+        painted_page_ = viewport_.snapshot(screen);
+        auto& page = *painted_page_;
+        if (selection_.range()) for (const auto& span : page.mapping.project(document, *selection_.range())) {
+            for (size_t column = span.column_begin; column < span.column_end; ++column) {
+                // Only the owned display copy is decorated, never Screen cells.
+                auto& style = page.lines[span.row][column].style;
+                style.bg = 4; style.fg = 15; style.reverse = false;
+            }
+        }
         const auto base_font = font();
         for (int row = 0; row < screen.height(); ++row) {
-            const auto& line = screen.visible_lines()[static_cast<size_t>(row)];
+            const auto& line = page.lines[static_cast<size_t>(row)];
             for (int column = 0; column < screen.width(); ++column) {
                 const auto& cell = line[static_cast<size_t>(column)];
                 const QRectF area(margin + column * cell_width_, margin + row * cell_height_, cell_width_, cell_height_);
@@ -283,6 +371,9 @@ public:
     ~TerminalWidget() override { model_.on_changed = {}; }
     void refresh_session() {
         if (!model_.running()) keyboard_.reset();
+        const TextDocument document(model_.screen());
+        selection_.reconcile(document);
+        if (selection_anchor_ && !document.valid(*selection_anchor_)) selection_anchor_.reset();
         update();
     }
     QSize sizeHint() const override {

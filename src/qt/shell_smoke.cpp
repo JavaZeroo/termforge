@@ -5,6 +5,7 @@
 #include <QElapsedTimer>
 #include <QImage>
 #include <QInputMethodEvent>
+#include <QMouseEvent>
 #include <QFontMetricsF>
 #include <QTemporaryDir>
 #include <QTest>
@@ -59,6 +60,40 @@ static bool has_error_ink(termforge::qt::TerminalWidget& window) {
             if (pixel.red() > pixel.green() + 40 && pixel.red() > pixel.blue() + 40) return true;
         }
     return false;
+}
+static void selection_ink(termforge::qt::TerminalWidget& window,
+                          const termforge::Screen& screen, int row) {
+    const QFontMetricsF metrics(window.font());
+    const int width = qCeil(metrics.horizontalAdvance(QLatin1Char('M')));
+    const int height = qCeil(metrics.height()) + 2;
+    const QImage before = window.grab().toImage();
+    const auto point = [&](int column) { return QPoint(8 + column * width, 8 + row * height + height / 2); };
+    const auto drag = [&](int begin, int end) {
+        QTest::mousePress(&window, Qt::LeftButton, Qt::NoModifier, point(begin));
+        // Deliver a public mouse event without moving the host's cursor.
+        QMouseEvent moving(QEvent::MouseMove, point(end), window.mapToGlobal(point(end)),
+                           Qt::NoButton, Qt::LeftButton, Qt::NoModifier);
+        QApplication::sendEvent(&window, &moving);
+        QTest::mouseRelease(&window, Qt::LeftButton, Qt::NoModifier, point(end));
+    };
+    const auto check_partial = [&] {
+        const QImage selected = window.grab().toImage();
+        for (int column = 0; column < 4; ++column) {
+            const QPoint pixel(8 + column * width, 8 + row * height);
+            require((selected.pixelColor(pixel) != before.pixelColor(pixel)) == (column == 1),
+                    "Qt drag must highlight only the selected middle answer cell");
+        }
+        require(screen.visible_lines()[static_cast<size_t>(row)][1].style.bg == -1,
+                "selection presentation mutated the terminal's cell style");
+    };
+    drag(1, 2);
+    check_partial();
+    drag(2, 1);
+    check_partial();
+    QTest::mouseClick(&window, Qt::LeftButton, Qt::NoModifier, point(3));
+    const QImage cleared = window.grab().toImage();
+    const QPoint pixel(8 + width, 8 + row * height);
+    require(cleared.pixelColor(pixel) == before.pixelColor(pixel), "empty click did not clear the selection");
 }
 static void require_answer_ink(QWidget& window, termforge::qt::TerminalWidget& terminal,
                                const termforge::Screen& screen, std::string_view expected, const QImage& before) {
@@ -322,7 +357,6 @@ int main(int argc, char** argv) {
         require(workspace.isValid(), "owned shell workspace could not be created");
         termforge::qt::SessionModel model;
         termforge::qt::TerminalWidget window(model);
-        model.on_changed = [&] { window.update(); };
         window.show();
         window.setFocus();
         QApplication::processEvents();
@@ -358,6 +392,7 @@ int main(int argc, char** argv) {
             const QRect cell(8 + column * cell_width, 8 + answer_row * cell_height, cell_width, cell_height);
             require(result.copy(cell) != prompt.copy(cell), "arithmetic answer cell has no new rendered ink");
         }
+        selection_ink(window, model.screen(), answer_row);
         // #155: composition must stay a preview, a commit must reach the
         // session, and cancelling (empty preedit) must write nothing.
         {
@@ -431,6 +466,7 @@ int main(int argc, char** argv) {
                   << "\",\"core\":\"cpp\",\"backend\":\"fixed-microsoft-conpty\","
                      "\"arithmetic\":750,\"child_exit\":37,\"cleanup_verified\":true,"
                      "\"image_changed\":true,\"startup_error_visible\":true,"
+                     "\"selection\":{\"partial_forward_reverse_ink\":true,\"view_only\":true,\"empty_click_clears\":true},"
                      "\"manual_close_reclaimed\":true,"
                      "\"tabs\":{\"arithmetic\":[750,427],\"survivor_after_close\":778,"
                      "\"survivor_after_startup_failure\":147,\"natural_exit\":41,"
