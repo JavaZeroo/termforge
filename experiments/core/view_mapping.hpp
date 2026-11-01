@@ -80,10 +80,24 @@ public:
             if (!before(document, span.source.begin, normalized->end) ||
                 !before(document, normalized->begin, span.source.end))
                 continue;
-            if (span.column_begin == span.column_end) continue;
+            auto first = span.column_begin, last = span.column_end;
+            if (span.source.end.column - span.source.begin.column == last - first) {
+                // One-to-one physical cells preserve the selected intersection,
+                // including source/display spans with different starting columns.
+                // normalize() has already expanded wide-glyph endpoints.
+                if (normalized->begin.line_id == span.source.begin.line_id)
+                    first += (std::max)(normalized->begin.column, span.source.begin.column) -
+                        span.source.begin.column;
+                if (normalized->end.line_id == span.source.end.line_id)
+                    last = span.column_begin +
+                        (std::min)(normalized->end.column, span.source.end.column) - span.source.begin.column;
+            }
+            // Unequal-width spans are indivisible display atoms: any overlap
+            // projects the whole atom, matching hit()'s leading/trailing policy.
+            if (first == last) continue;
             if (!result.empty() && result.back().row == span.row &&
-                result.back().column_end == span.column_begin) result.back().column_end = span.column_end;
-            else result.push_back({span.row, span.column_begin, span.column_end});
+                result.back().column_end == first) result.back().column_end = last;
+            else result.push_back({span.row, first, last});
         }
         return result;
     }

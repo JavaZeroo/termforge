@@ -1,6 +1,6 @@
 // Independent physical-row history viewport. No HWND, parser or transport state.
 #pragma once
-#include "screen.hpp"
+#include "view_mapping.hpp"
 
 namespace termforge {
 struct ViewportState {
@@ -10,6 +10,9 @@ struct ViewportState {
 };
 struct ViewSnapshot {
     std::vector<Line> lines;
+    // Coordinates and cells are published together. A consumer validates this
+    // value-only mapping against the current document before using a hit/range.
+    ViewMapping mapping;
     ViewportState viewport;
     int cursor_row = -1, cursor_column = 0;
 };
@@ -68,8 +71,18 @@ public:
         ViewSnapshot result;
         result.viewport = reconcile(screen);
         result.lines.reserve(result.viewport.page);
-        for (size_t i = 0; i < result.viewport.page; ++i)
-            result.lines.push_back(screen.retained_line(result.viewport.top + i));
+        std::vector<ViewSourceSpan> sources;
+        sources.reserve(result.viewport.page);
+        for (size_t i = 0; i < result.viewport.page; ++i) {
+            const auto& line = screen.retained_line(result.viewport.top + i);
+            result.lines.push_back(line);
+            // This viewport preserves physical rows, including their existing
+            // blank cells. It introduces no reflow or source-less padding.
+            sources.push_back({i, 0, line.size(),
+                {{line.id, line.version, 0, screen.buffer_epoch()},
+                 {line.id, line.version, line.size(), screen.buffer_epoch()}}});
+        }
+        result.mapping = ViewMapping(static_cast<size_t>(screen.width()), std::move(sources));
         // A paused historical view must not draw a live caret over unrelated text.
         if (result.viewport.following) {
             result.cursor_row = screen.row;
