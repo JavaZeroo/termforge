@@ -53,6 +53,9 @@ jobs:
       - name: Test
         env:
           TERMFORGE_REQUIRE_SYSTEM_CLIPBOARD: ${{ runner.os == 'Windows' && '1' || '0' }}
+          # [DEBUG-r99] opt-in stage logging for issue #99 bounded observation;
+          # consumed only by the ui-clipboard-system scenario debug logger.
+          TERMFORGE_DEBUG_R99: '1'
         run: ctest --test-dir build -C Release --output-on-failure --output-junit test-results.xml
       - name: Preserve clipboard and window integration evidence
         if: always() && runner.os == 'Windows'

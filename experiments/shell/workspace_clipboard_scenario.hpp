@@ -32,12 +32,53 @@ inline void Workspace::scenario_clipboard() {
         evidence.pending.receiver_bytes=captured().size();
         evidence.cases.push_back(evidence.pending); evidence.receiver.reset(); evidence.helper.reset();
     };
+    // [DEBUG-r99] Bounded stage observation for issue #99 有界观测. Opt-in via
+    // TERMFORGE_DEBUG_R99=1, inert for ordinary PR/candidate checks. The
+    // snapshot is read-only (zero-wait event queries and atomic reads only),
+    // logged on state/event change plus at most one heartbeat per second, and
+    // hard-capped at 256 lines. It never changes scenario logic, deadlines,
+    // retries or sleeps, and never records clipboard content, terminal text,
+    // paths, PIDs, HWNDs or credentials.
+    static const bool debug_r99=[]{
+        wchar_t flag[8]{}; const auto count=GetEnvironmentVariableW(L"TERMFORGE_DEBUG_R99",flag,8);
+        return count==1 && flag[0]==L'1';
+    }();
+    static unsigned r99_callbacks=0;
+    static unsigned r99_lines=0;
+    static std::string r99_last_sig;
+    static long long r99_last_ms=-2000;
+    ++r99_callbacks;
+    const auto debug_log=[&](const char* event) {
+        if(!debug_r99 || r99_lines>=256) return;
+        const long long now=static_cast<long long>(ms(started_));
+        const bool helper0=evidence.helper_exited();
+        const bool busy=first&&first->paste_busy();
+        const char* owner_step=evidence.owner?evidence.owner->debug_step():"none";
+        const bool owner_rel=evidence.owner&&evidence.owner->debug_released_signaled();
+        const DWORD owner_err=evidence.owner?evidence.owner->debug_error():0;
+        const DWORD owner_native=evidence.owner?evidence.owner->debug_native_error():0;
+        const std::string sig=std::to_string(evidence.index)+":"+std::to_string(stage_)+":"+event+":"+
+            (busy?"1":"0")+(helper0?"1":"0")+":"+owner_step+":"+(owner_rel?"1":"0")+":"+
+            std::to_string(owner_err)+":"+std::to_string(owner_native);
+        if(sig==r99_last_sig && now-r99_last_ms<1000) return;
+        r99_last_sig=sig; r99_last_ms=now; ++r99_lines;
+        std::ofstream out(directory/"r99-debug.jsonl",std::ios::app);
+        out<<"{\"tag\":\"DEBUG-r99\",\"event\":\""<<event<<"\",\"case_index\":"<<evidence.index
+           <<",\"stage\":"<<stage_<<",\"elapsed_ms\":"<<now<<",\"callbacks\":"<<r99_callbacks
+           <<",\"helper_zero_wait\":"<<(helper0?"true":"false")
+           <<",\"paste_busy\":"<<(busy?"true":"false")
+           <<",\"owner_step\":\""<<owner_step<<"\""
+           <<",\"owner_released\":"<<(owner_rel?"true":"false")
+           <<",\"owner_error\":"<<owner_err
+           <<",\"owner_native_error\":"<<owner_native<<"}\n"<<std::flush;
+    };
     // Observe every message-pump turn until retry is explicitly begun. A
     // transient confirmation or transfer must not disappear from the record.
     if(first && stage_>=4 && stage_<8) {
         evidence.pending.prompt_seen|=first->paste_prompt_handle()!=nullptr;
         evidence.pending.transfer_seen|=first->observed_paste()!=nullptr;
     }
+    debug_log("pump");
     if(stage_==0 && first->ready()) {
         tf_shell_test::require_hosted_clipboard(); add(); stage_=1;
     } else if(stage_==1 && other && other->ready()) {
@@ -64,13 +105,15 @@ inline void Workspace::scenario_clipboard() {
         evidence.pending.helper_pid=progress->process_id;
         evidence.helper.reset(OpenProcess(SYNCHRONIZE,FALSE,progress->process_id));
         require(evidence.helper.get()!=nullptr,"product clipboard helper observation failed");
+        debug_log("product-read-started");
         evidence.target=first->handle();
-        select(1); ordinary(other,"echo "+evidence.marker(false)+"\r"); stage_=4;
+        select(1); ordinary(other,"echo "+evidence.marker(false)+"\r"); debug_log("marker-during"); stage_=4;
     } else if(stage_==4 && other->live_contains_line(evidence.marker(false))) {
         evidence.pending.other_during=true;
         if(evidence.index<2) {
             if(first->paste_busy() || !evidence.helper_exited()) return;
             if(evidence.index==0) require(evidence.owner->occupied(),"clipboard owner stopped holding before failure");
+            debug_log("error-feedback");
             select(0); no_payload();
             require(first->status_text()==L"system clipboard read failed" && IsWindowVisible(first->handle()) &&
                     active()==first,"clipboard read error is not the selected session's visible status");
@@ -102,14 +145,16 @@ inline void Workspace::scenario_clipboard() {
                     tf_shell_test::ClipboardReleaseReason::target_closed:tf_shell_test::ClipboardReleaseReason::requester_cancelled,proof);
             }
         }
-        stage_=6;
+        debug_log("owner-release"); stage_=6;
     } else if(stage_==6 && (!evidence.owner || evidence.owner->released())) {
         if(evidence.owner) evidence.pending.owner_release=evidence.owner->finish();
+        debug_log("owner-finish");
         evidence.owner.reset();
-        select(target_gone?0:1); ordinary(other,"echo "+evidence.marker(true)+"\r"); stage_=7;
+        select(target_gone?0:1); ordinary(other,"echo "+evidence.marker(true)+"\r"); debug_log("marker-after"); stage_=7;
     } else if(stage_==7 && other->live_contains_line(evidence.marker(true))) {
         evidence.pending.other_after=true; no_payload();
         if(target_gone) {
+            debug_log("case-complete");
             finish_case(); evidence.save(directory/"clipboard-workflow.json");
             Bitmap frame(physical_width_,physical_height_); paint(frame.dc);
             const RECT rect=physical(terminal_); active()->render_to(frame.dc,rect.left,rect.top); frame.save(image_);
@@ -118,13 +163,14 @@ inline void Workspace::scenario_clipboard() {
             require(!first->paste_busy(),"late clipboard result restarted input after cancellation/error");
             select(0); const auto retry=evidence.retry();
             tf_shell::write_unicode_clipboard(window_,std::u16string(retry.begin(),retry.end()));
-            SendMessageW(window_,WM_COMMAND,12,0); stage_=8;
+            SendMessageW(window_,WM_COMMAND,12,0); debug_log("retry-call"); stage_=8;
         }
     } else if(stage_==8 && !first->paste_busy() && captured()==evidence.baseline()+evidence.retry()) {
         require(!first->paste_prompt_handle(),"single-line retry unexpectedly confirmed");
         evidence.pending.retry_verified=true; first->command(std::wstring(1,4)); stage_=9;
     } else if(stage_==9 && first->observed_output().find("TF_KEY_DONE")!=std::string::npos) {
         require(captured()==evidence.baseline()+evidence.retry(),"retry contains late data, Escape or missing bytes");
+        debug_log("case-complete");
         finish_case(); ++evidence.index; start_receiver(); stage_=2;
     }
 }

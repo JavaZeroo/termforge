@@ -247,6 +247,14 @@ public:
         return value.release_event;
     }
     bool occupied() const { return !delayed_ && GetOpenClipboardWindow()==window_; }
+    // [DEBUG-r99] Read-only observation accessors for issue #99 stage logging.
+    // Zero-wait event queries and atomic reads only: no ownership change, no
+    // publication side effects, no waits. Inert unless the scenario debug
+    // logger is enabled and never consulted by product logic.
+    const char* debug_step() const { return step_.load(); }
+    bool debug_released_signaled() const { return clipboard_event(released_.get()); }
+    DWORD debug_error() const { return error_.load(); }
+    DWORD debug_native_error() const { return native_error_.load(); }
     void release() {
         policy_.request_ordinary();
         paste_check(SetEvent(release_.get())!=FALSE,"clipboard owner release failed");
