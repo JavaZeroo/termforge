@@ -32,7 +32,7 @@ An independent, fully open-source terminal project targeting WindTerm 2.7.0 feat
 | 官方发行平台、架构与声明的最低系统边界 | [2.7.0 平台范围台账](research/windterm-2.7.0-platform-scope.md) |
 | R2 分几步交付，每步还缺什么 | [R2 交付路线与验收](docs/milestones/R2-local-terminal.md) |
 | 已验收的基础文字交互合同 | [R1 基础文字交互](docs/milestones/R1-local-text.md) |
-| GitHub milestones、issues 和执行顺序 | [任务跟踪](docs/TRACKING.md) |
+| GitHub milestones、issues、交付看板与执行顺序 | [任务跟踪](docs/TRACKING.md) · [Project 交付总览](https://github.com/users/JavaZeroo/projects/2) |
 | 结论依据、复现命令和全部文档 | [证据索引](docs/EVIDENCE.md) · [文档导航](docs/README.md) |
 
 交付主线：**终端基础能力与性能 → SSH/SFTP 远程工作流 → Windows 高级功能与性能收敛 → Windows 11 x64 完整复刻验收 → Linux/macOS 扩展与全平台验收**。保留 R1–R5 编号，R5 分 Windows 和全平台两个出口；性能工程、原版研究和平台可行性调查持续推进。
