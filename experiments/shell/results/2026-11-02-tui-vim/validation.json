@@ -1,0 +1,183 @@
+{
+  "schema": "termforge-tui-vim-smoke-v1",
+  "status": "fixed-conpty-vim-recovery-pass-strict-fail-xtwinops-title",
+  "generated_utc": "2026-11-01T19:56:43.560Z",
+  "implementation_commit": "2b8105ea1f747758d3aaf73b9b9f01d094dd2919",
+  "platform": "Windows 11 x64, OS build 10.0.26200.9711 (25H2)",
+  "scoped_target": {
+    "application": "Vim 9.1 patches 1-532 (Huge, no GUI, msys2 build; Git for Windows)",
+    "editor_sha256": "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a",
+    "msys2_dll_sha256": "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f",
+    "conpty_version": "1.25.260930003",
+    "os_build": "10.0.26200.9711",
+    "sizes": [
+      "80x24",
+      "60x12"
+    ],
+    "entry": "vim.exe -Nu NONE -n -i NONE --cmd VimEnter/InsertEnter event files editor.txt"
+  },
+  "trajectory": {
+    "enter": "alternate screen 1049h + DECSTBM 1;24r + ED2 + '~' fill + [New] message",
+    "insert": "i -> -- INSERT -- -> TF_CANDIDATE_TUI echoed",
+    "save_exit": "ESC :wq -> write + 1049l main-screen restore + mode-disable",
+    "resize_variant": "60x12 fixed-size run (no mid-session resize)"
+  },
+  "backends": {
+    "fixed-conpty-1.25": {
+      "deterministic": true,
+      "runs_byte_identical": 3,
+      "strict_replay": "fail (too many CSI parameters at ESC[22;0;0t offset 31)",
+      "recovery_replay": "pass",
+      "fixtures": {
+        "80x24": {
+          "path": "experiments/core/fixtures/vim-fixed-80x24-trajectory.bin",
+          "bytes": 2424,
+          "sha256": "745e45d2a4fc165db35e7285e5c7ab4f17d1e08ca81d86c9c9a24e5a6275e56b"
+        },
+        "60x12": {
+          "path": "experiments/core/fixtures/vim-fixed-60x12-trajectory.bin",
+          "bytes": 1180,
+          "sha256": "a50da00f50df32392321f6692ef690fb41fa5d4b9a4c0fb287518da74b1b2bcf"
+        }
+      }
+    }
+  },
+  "source_sha256": {
+    "experiments/core/terminal.hpp": "c1b537efc172ff446f129753b9a673ecb290716ee75e4505b81c371513acc8c7",
+    "experiments/core/screen.hpp": "ebbaa789d793df6a3ac481d859d7f2e5c807b3d4b58e72c8279323490aaae5fc",
+    "experiments/conpty/session.hpp": "0270a7a6c4edec696f9d088e6fd191d7a42e1bb6d672bbb59a3ca766784c5465",
+    "experiments/conpty/backend.hpp": "c64309b7abe229186dece465b795883c2303389ffe93a9fcc648021d057b9d6a",
+    "experiments/core/fixtures/vim-fixed-80x24-trajectory.bin": "745e45d2a4fc165db35e7285e5c7ab4f17d1e08ca81d86c9c9a24e5a6275e56b",
+    "experiments/core/fixtures/vim-fixed-60x12-trajectory.bin": "a50da00f50df32392321f6692ef690fb41fa5d4b9a4c0fb287518da74b1b2bcf"
+  },
+  "binaries": {
+    "recovery_probe": "built from 2b8105ea1f747758d3aaf73b9b9f01d094dd2919 (Visual Studio 17.12 Release)",
+    "replay": "built from 2b8105ea1f747758d3aaf73b9b9f01d094dd2919"
+  },
+  "checks": [
+    {
+      "check": "vim-enter-80x24-recovery",
+      "backend": "fixed-conpty-1.25",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "rows": 24,
+        "history": 0,
+        "nonblank": 23,
+        "last2": [
+          "~",
+          "\"editor.txt\" [New]"
+        ],
+        "ignored_sequences": 13
+      }
+    },
+    {
+      "check": "vim-exit-80x24-recovery",
+      "backend": "fixed-conpty-1.25",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "rows": 24,
+        "history": 0,
+        "nonblank": 0,
+        "last2": [
+          "(blank)",
+          "(blank)"
+        ],
+        "ignored_sequences": 19
+      }
+    },
+    {
+      "check": "vim-full-80x24-recovery",
+      "backend": "fixed-conpty-1.25",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "rows": 24,
+        "history": 0,
+        "main_restored": true,
+        "ignored_sequences": 19
+      }
+    },
+    {
+      "check": "vim-full-80x24-strict",
+      "backend": "fixed-conpty-1.25",
+      "mode": "strict",
+      "exit_code": 2,
+      "status": "fail",
+      "error": "too many CSI parameters at ESC[22;0;0t (offset 31)"
+    },
+    {
+      "check": "vim-enter-60x12-recovery",
+      "backend": "fixed-conpty-1.25",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "rows": 12,
+        "history": 0,
+        "nonblank": 11,
+        "last2": [
+          "~",
+          "\"editor.txt\" [New]"
+        ],
+        "ignored_sequences": 13
+      }
+    },
+    {
+      "check": "vim-exit-60x12-recovery",
+      "backend": "fixed-conpty-1.25",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "rows": 12,
+        "history": 0,
+        "nonblank": 0,
+        "last2": [
+          "(blank)",
+          "(blank)"
+        ],
+        "ignored_sequences": 19
+      }
+    },
+    {
+      "check": "vim-full-60x12-strict",
+      "backend": "fixed-conpty-1.25",
+      "mode": "strict",
+      "exit_code": 2,
+      "status": "fail",
+      "error": "too many CSI parameters at ESC[22;0;0t"
+    }
+  ],
+  "counts": {
+    "pass": 5,
+    "fail": 2,
+    "skip": 0
+  },
+  "protocol_findings": {
+    "alt1049": "present: ESC[?1049h enter (offset 23), ESC[?1049l exit (offset 2385); core handles both (terminal.hpp:55-78)",
+    "da1": "present ESC[c (offset 4) in fixed ConPTY startup packet; strict replies ESC[?6c, recovery silent (#272, terminal.hpp:124-137)",
+    "da2": "present ESC[>c (offset 221); unimplemented, recovery ignores + strict fails",
+    "dsr6n": "present 4x (offsets 161/190/217/2153); core replies ESC[row;colR (terminal.hpp:112-123)",
+    "decstbm": "present ESC[1;24r (offset 63); core handles (terminal.hpp:95-98)",
+    "ed2": "present ESC[2J (offset 117); core handles erase_display(2)",
+    "xtwinops_title": "present ESC[22;0;0t / 22;2t / 22;1t / 23;2t / 23;1t / 23;0;0t; STRICT FAILS at param-count gate terminal.hpp:81-82 (non-H/f/r CSI limited to 1 param)",
+    "bracketed_paste": "present ESC[?2004h/l; unimplemented, recovery ignores + strict fails",
+    "dcs_sync": "present DCS zz; unimplemented, recovery ignores + strict fails"
+  },
+  "gaps": [
+    "strict rejects multi-param XTWINOPS title CSI and bracketed paste / DCS sync / DA2; whether to implement and with what bytes is undecided (no original WindTerm DA/OSC capture)",
+    "60x12 here is ConPTY 60x12 viewport, not the original WindTerm 60x3000 buffer / 60x12 window (dwSize vs srWindow) from vim-windterm-reference.md",
+    "#52/#56 MSYS runtime resize-input race not reproduced on the ConPTY product path (no mid-session resize done)",
+    "DSR 6n reply byte is verified at core capability level (reply_test), not end-to-end consumed by Vim",
+    "TERM variants, other vim flags, multi-window, mouse mode, wide-char content uncovered"
+  ],
+  "semantic_acceptance": false,
+  "presented_done": null,
+  "full_vt_acceptance": false,
+  "performance_measured": false
+}
