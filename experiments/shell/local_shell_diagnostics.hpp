@@ -103,9 +103,20 @@ inline void local_shell_transport_probe(const std::filesystem::path& directory, 
             escaped += buffer;
         }
     }
+    // The window itself is kept as hex so a mismatch can be re-derived offline
+    // without re-running the scenario (#80).
+    std::string window_hex;
+    for (const char ch : raw) {
+        char buffer[4]{};
+        std::snprintf(buffer, sizeof(buffer), "%02x", static_cast<unsigned char>(ch));
+        window_hex += buffer;
+        if (window_hex.size() > 2048) { window_hex += "..."; break; }
+    }
     std::ofstream progress(directory/"shells-transport-probe.jsonl", std::ios::binary | std::ios::app);
     progress << "{\"schema\":\"termforge-local-shell-transport-probe-v1\",\"role\":\"" << role
              << "\",\"marker\":\"" << marker
+             << "\",\"window_bytes\":" << raw.size()
+             << ",\"window_hex\":\"" << window_hex
              << "\",\"output_seen\":" << (output_seen ? "true" : "false")
              << ",\"prompt_seen\":" << (prompt_seen ? "true" : "false")
              << ",\"malformed\":" << (malformed ? "true" : "false")

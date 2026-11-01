@@ -17,6 +17,7 @@ import uuid
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from experiments.build_paths import binary
+from experiments.shell import summarize_failure
 from experiments.conpty.run import OwnedJob
 from experiments.shell.history_checks import validate_history, validate_native_scroll
 from experiments.shell.paste_checks import validate_paste_workflow
@@ -425,10 +426,14 @@ class OwnedTestDesktop:
             self.handle = None
         gone = desktop_gone(self.name)
         if gone or record is None:
+            # #160: record the first check even on success so every run carries a
+            # sample instead of only the failing ones.
+            if record is not None:
+                record["desktop_close_settle"] = [{"elapsed_ms": 0, "gone": gone}]
             return gone
         # A desktop handle outlives its owner only while some child still holds
         # one; settle briefly and keep the attempts so a failure shows whether the
-        # desktop was still held or never closed. Nothing is added on success.
+        # desktop was still held or never closed.
         attempts = [{"elapsed_ms": 0, "gone": False}]
         began = time.monotonic()
         for _ in range(10):
@@ -437,8 +442,7 @@ class OwnedTestDesktop:
             attempts.append({"elapsed_ms": int((time.monotonic() - began) * 1000), "gone": gone})
             if gone:
                 break
-        if not gone:
-            record["desktop_close_settle"] = attempts
+        record["desktop_close_settle"] = attempts
         return gone
 
 
@@ -484,6 +488,10 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
             record["timed_out"] = False
         except subprocess.TimeoutExpired:
             record["timed_out"] = True
+            # #97: frame.bmp is only written once closing/closed/drained all hold,
+            # so its presence at the deadline separates a destroyed window from a
+            # teardown that never finished.
+            record["frame_at_timeout"] = (out / "frame.bmp").is_file()
             record["job_at_timeout"] = job.accounting()
             job.terminate()
             stdout, stderr = process.communicate(timeout=10)
@@ -497,7 +505,15 @@ def execute(exe, mode, out, timeout=40, settings_source=None, *, resources=False
         if not record["desktop_gone"]:
             raise ValueError("owned desktop remained")
         if mode != "watchdog" and (record["timed_out"] or record["exit_code"]):
-            raise ValueError("shell probe failed: " + record["stderr"].strip())
+            # Read the dump back with the shared parser so the raised message always
+            # carries the same verdict instead of a raw multi-line stderr (#73).
+            failures = summarize_failure.parse(record["stderr"])
+            summary = ""
+            if failures:
+                verdicts = summarize_failure.describe(failures[0])
+                if verdicts:
+                    summary = " | " + "; ".join(verdicts)
+            raise ValueError("shell probe failed: " + record["stderr"].strip() + summary)
         result = json.loads(record["stdout"])
         if mode == "watchdog":
             if not record["timed_out"] or result != {"watchdog_ready": True} or record["job_at_timeout"]["active"] < 2:

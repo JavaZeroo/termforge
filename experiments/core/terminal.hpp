@@ -40,6 +40,12 @@ class Parser {
                 if (final == 'h') mode_bits_ |= bit; else mode_bits_ &= ~bit;
                 return;
             }
+            // DECOM (?6) is owned by Screen alongside autowrap; it shifts cursor
+            // addressing and the home position onto the scrolling region.
+            if (params.size() == 1 && params[0] == 6 && (final == 'h' || final == 'l')) {
+                screen.set_origin_mode(final == 'h');
+                return;
+            }
             if (params.size() == 1 && (params[0] == 1004 || params[0] == 9001) && (final == 'h' || final == 'l'))
                 // Real ConPTY sessions request focus reporting (?1004) and Win32
                 // input mode (?9001). Neither changes what this core draws or
@@ -74,8 +80,8 @@ class Parser {
         case 'C': screen.move(screen.row, screen.column + n); break;
         case 'D': screen.move(screen.row, screen.column - n); break;
         case 'G': screen.move(screen.row, n - 1); break;
-        case 'd': screen.move(n - 1, screen.column); break;
-        case 'H': case 'f': screen.move(n - 1, params.size() < 2 || params[1] == 0 ? 0 : params[1] - 1); break;
+        case 'd': screen.move(screen.position_row(n), screen.column); break;
+        case 'H': case 'f': screen.move(screen.position_row(n), params.size() < 2 || params[1] == 0 ? 0 : params[1] - 1); break;
         case 'J': screen.erase_display(params[0]); break;
         case 'K': screen.erase_line(params[0]); break;
         case 'L': screen.insert_lines(n); break;
@@ -97,10 +103,13 @@ class Parser {
         case '@': screen.insert_characters(n); break;
         case 'P': screen.delete_characters(n); break;
         case 'n':
-            // Device status report 6 reports the 1-based cursor position. Other
-            // reports are not implemented and stay unsupported rather than faked.
+            // Device status report 6 reports the 1-based cursor position, which
+            // origin mode makes relative to the scroll-region top. Other reports
+            // are not implemented and stay unsupported rather than faked.
             if (params.size() == 1 && params[0] == 6) {
-                pending_replies.push_back("\x1b[" + std::to_string(screen.row + 1) + ";" +
+                const int report_row =
+                    screen.origin_mode() ? screen.row - screen.region_top() + 1 : screen.row + 1;
+                pending_replies.push_back("\x1b[" + std::to_string(report_row) + ";" +
                                           std::to_string(screen.column + 1) + "R");
                 return;
             }

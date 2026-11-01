@@ -41,6 +41,17 @@ std::string env_path(const char* name) {
 #endif
 }
 std::string selection_diag_path() { return env_path("TERMFORGE_SELECTION_DIAG"); }
+// JSON-safe copy of a short diagnostics string; control bytes become hex escapes.
+std::string json_escape(const std::string& text) {
+    static constexpr char digits[] = "0123456789abcdef";
+    std::string escaped;
+    for (const char ch : text) {
+        const auto byte = static_cast<unsigned char>(ch);
+        if (byte >= 0x20 && byte < 0x7f && ch != '"' && ch != 0x5c) escaped.push_back(ch);
+        else { escaped += 0x5c; escaped += 'x'; escaped += digits[byte >> 4]; escaped += digits[byte & 15]; }
+    }
+    return escaped;
+}
 void selection_discard_diagnostic(const termforge::TextSelection::DiscardReport& report) {
     static const std::string path = selection_diag_path();
     if (path.empty()) return;
@@ -49,7 +60,10 @@ void selection_discard_diagnostic(const termforge::TextSelection::DiscardReport&
     stream << "{\"schema\":\"termforge-selection-discard-v1\",\"reason\":\"" << report.reason
            << "\",\"row\":" << report.row << ",\"saved_bytes\":" << report.saved_bytes
            << ",\"current_bytes\":" << report.current_bytes << ",\"saved_columns\":" << report.saved_columns
-           << ",\"current_columns\":" << report.current_columns << ",\"t_ms\":" << GetTickCount64() << "}\n";
+           << ",\"current_columns\":" << report.current_columns
+           << ",\"saved_text\":\"" << json_escape(report.saved_text)
+           << "\",\"current_text\":\"" << json_escape(report.current_text)
+           << "\",\"t_ms\":" << GetTickCount64() << "}\n";
 }
 // Each window owns its trace stream; the hook resolves it by queue pointer so a
 // window that is being destroyed can never leave a dangling global stream.
@@ -818,7 +832,22 @@ class ShellWindow {
             case 1:
                 if (!event.bytes.empty()) require(input_.send(event.bytes), "terminal reply rejected by input queue");
                 break;
-            case 2: terminal_title_ = utf16(event.bytes); break;
+            case 2:
+                // #57: the original failure was an unknown "invalid text" title
+                // event. Report the kind, length and bytes so a recurrence names
+                // the payload instead of only the message.
+                try { terminal_title_ = utf16(event.bytes); }
+                catch (const std::exception&) {
+                    static constexpr char digits[] = "0123456789abcdef";
+                    std::string hex;
+                    for (size_t index = 0; index < event.bytes.size() && index < 32; ++index) {
+                        const auto byte = static_cast<unsigned char>(event.bytes[index]);
+                        hex += digits[byte >> 4]; hex += digits[byte & 15];
+                    }
+                    throw std::runtime_error("invalid text in title event: kind=2 bytes=" +
+                                             std::to_string(event.bytes.size()) + " hex=" + hex);
+                }
+                break;
             case 3: terminal_title_.clear(); break;
             case 4: MessageBeep(MB_OK); break;
             case 5: case 7: case 10: case 11: case 12: break;
@@ -1151,6 +1180,23 @@ public:
         RECT client{}; GetClientRect(hwnd_, &client); size_changed(client.right, client.bottom);
     }
     HWND handle() const { return hwnd_; }
+    // Read-only diagnostic view used by the workspace failure dump (#73): the
+    // same counters the per-tab dump prints, without running its teardown path.
+    std::string diagnostic_line() const {
+        std::ostringstream out;
+        out << "input_high_water=" << input_.high_water
+            << " input_rejected=" << input_.rejected
+            << " output_bytes=" << session_.output_bytes
+            << " read_error=" << session_.read_error
+            << " consumed=" << result_.consumed
+            << " stage=" << stage_
+            << " closed=" << (closed_.load() ? "true" : "false")
+            << " closer_joined=" << (closer_joined_ ? "true" : "false")
+            << " closing=" << (closing_ ? "true" : "false")
+            << " child_signaled=" << (session_.child_signaled ? "true" : "false")
+            << " exit_code=" << session_.exit_code;
+        return out.str();
+    }
     void enable_operation_observation() {
         require_ui_thread(); require(!closing_,"operation observation must be enabled before close");
         if(operation_observations_.enabled()) return;

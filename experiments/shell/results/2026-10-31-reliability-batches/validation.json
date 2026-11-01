@@ -1,0 +1,47 @@
+{
+  "schema": "termforge-reliability-batches-v1",
+  "run": 41198898623,
+  "platform": "Windows-2025Server-10.0.26100-SP0",
+  "desktop_settle": {
+    "samples_with_field": 425,
+    "samples_without_field": 5,
+    "shapes": [
+      {
+        "length": 1,
+        "last_gone": true,
+        "count": 425
+      }
+    ],
+    "missing_reason": "desktop-failure fixtures are constructed negatives"
+  },
+  "resize_reply": {
+    "files": 10,
+    "rounds": 1500,
+    "stale_buffer": 0,
+    "stale_window": 0,
+    "buffer_window_disagreement": 0,
+    "resize_vt_before_reply": 1000,
+    "median_of_medians_ms": 13.8,
+    "max_ms": 23.6
+  },
+  "node_timing": {
+    "sequential": {
+      "samples": 60,
+      "min_s": 0.046,
+      "median_s": 0.062,
+      "max_s": 1.969,
+      "timeouts": 0
+    },
+    "concurrent": {
+      "samples": 20,
+      "max_s": 0.235,
+      "timeouts": 0
+    }
+  },
+  "closed_issues": [],
+  "limitations": [
+    "single run",
+    "no counter-example found",
+    "timings are probe-local, not performance claims"
+  ]
+}

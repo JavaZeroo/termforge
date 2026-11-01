@@ -103,8 +103,17 @@ class RasterBoundaryTests(unittest.TestCase):
                 # The child state at the deadline separates a process that never
                 # started from one that started and then stalled (#144).
                 state=checkpoint.read_text(encoding="utf-8") if checkpoint.exists() else "preload checkpoint never written"
+                started_at=None
+                try:
+                    started_at=json.loads(state).get("started")
+                except (ValueError,AttributeError):
+                    started_at=None
+                # A written checkpoint means Node reached its first JS line, so the
+                # gap from CreateProcess to that point is the number #144 is about.
+                delay="" if not isinstance(started_at,(int,float)) else (
+                    f" js_start_after_create_ms={round(time.time()*1000-started_at-spawn_seconds*1000)}")
                 self.fail(f"node fixture exceeded its ten second limit; {state}; "
-                          f"pid={process.pid} spawn_seconds={spawn_seconds} "
+                          f"pid={process.pid} spawn_seconds={spawn_seconds}{delay} "
                           f"exit_at_timeout={process.poll()} "
                           f"partial_stdout_bytes={len(expired.output or '')}")
             result=subprocess.CompletedProcess(process.args,process.returncode,stdout,stderr)

@@ -21,6 +21,9 @@ public:
         size_t row = 0;
         size_t saved_bytes = 0, current_bytes = 0;
         size_t saved_columns = 0, current_columns = 0;
+        // #194: the bytes that differed, so a partial repaint can be told apart
+        // from a real content change without re-running the scenario.
+        std::string saved_text, current_text;
     };
     using DiscardObserver = void (*)(const DiscardReport&);
     static void set_discard_observer(DiscardObserver observer) { discard_observer_ = observer; }
@@ -106,6 +109,8 @@ public:
                 if (!same_text(saved, current, compare_boundary)) {
                     DiscardReport report; report.reason = "row-text-changed"; report.row = i;
                     report.saved_bytes = saved.projection.text.size(); report.current_bytes = current.projection.text.size();
+        report.saved_text = saved.projection.text.substr(0, 48);
+        report.current_text = current.projection.text.substr(0, 48);
                     report.saved_columns = saved.columns; report.current_columns = current.columns;
                     return invalidate(report);
                 }

@@ -98,6 +98,10 @@ class Screen {
     };
     // Permission belongs to the terminal; each frame retains its own edge state.
     bool autowrap_enabled_ = true;
+    // DECOM origin mode is terminal-wide like autowrap: it changes cursor
+    // addressing and the home position, not the stored rows. Frames keep only
+    // their own scroll region.
+    bool origin_mode_ = false;
     // Retained storage. Only the owner changes its membership or order:
     // resize, newline, activate_buffer, publish() and restore_frame().
     std::vector<Line> lines;
@@ -219,6 +223,13 @@ public:
     // Keep the edge state: enabling after a disabled last-column write must
     // still let the next printable character start the continuation.
     void set_autowrap(bool enabled) { autowrap_enabled_ = enabled; }
+    // DECOM (?6): enabling homes the cursor to the region top-left, disabling to
+    // the screen origin, matching the observed replies for the fixed margin sample.
+    bool origin_mode() const { return origin_mode_; }
+    void set_origin_mode(bool enabled) {
+        origin_mode_ = enabled;
+        move(enabled ? region_top() : 0, 0);
+    }
     // An in-place logical reset must invalidate old readers even if the next
     // writes reproduce identical text using the same physical row storage.
     void invalidate_buffer_readers() {
@@ -413,11 +424,18 @@ public:
     }
     void invalidate_attachment() { last_row = last_column = -1; }
     void move(int r, int c) {
-        row = std::clamp(r, 0, height() - 1); column = std::clamp(c, 0, width() - 1);
+        // Origin mode confines the row to the scroll region; without it the whole
+        // viewport is addressable. Columns are never origin-relative.
+        const int top = origin_mode_ ? region_top() : 0;
+        const int bottom = origin_mode_ ? region_bottom() : height() - 1;
+        row = std::clamp(r, top, bottom); column = std::clamp(c, 0, width() - 1);
         wrap_pending = false; invalidate_attachment();
     }
     int region_bottom() const { return scroll_bottom < 0 ? height() - 1 : scroll_bottom; }
     int region_top() const { return scroll_top; }
+    // 1-based row argument of CUP/HVP/VPA. Origin mode makes it relative to the
+    // scroll-region top; without it the row is absolute.
+    int position_row(int one_based) const { return (origin_mode_ ? region_top() : 0) + one_based - 1; }
     // DECSTBM: rows inside [top, bottom] scroll together. The list itself keeps
     // whole rows only, so a partial region scroll shifts entries in place; rows
     // that leave a full-screen region still reach history.
@@ -555,6 +573,7 @@ public:
         row = column = 0;
         wrap_pending = false;
         autowrap_enabled_ = true;
+        origin_mode_ = false;
         activate_buffer(ScreenBuffer::primary);
         invalidate_attachment();
     }
