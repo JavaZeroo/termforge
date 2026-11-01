@@ -1,0 +1,327 @@
+{
+  "schema": "termforge-cpp-decom-origin-local-validation-v1",
+  "issue": 27,
+  "base_commit": "33c719c6af054b47f336b9bbf622a8cdefdeba74",
+  "runtime_implementation_commit": "91e0c55ca4b61b8ddc2cff6f10339c18e5bf6ad3",
+  "validated_source_commit": "91e0c55ca4b61b8ddc2cff6f10339c18e5bf6ad3",
+  "final_binary_hash_observation": "After all directed tests completed; hashes taken once at the end and do not claim continuous monitoring.",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "compiler_sha256": "42fd88579adc0e2418a0a71ec9adcfcf677d39ff2724c9d6ac9d901264812bf2",
+    "configuration": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "conpty_runtime_exercised": false
+  },
+  "observed_contract": {
+    "reference_issue": 151,
+    "reference_sha256": "9774e25bab9f5f751368e19f915e5d1ec8f4332be606070f15b5ffb33ce5b675",
+    "whole_original_trace_replayed": true,
+    "phases_replayed": 25,
+    "extracted_source_bytes": 334,
+    "dsr_request_bytes": 100,
+    "dsr_reply_interface_added": false,
+    "dsr_reply_origin_relative_added": true,
+    "original_runs_this_implementation": 0,
+    "parser_modes": [
+      "strict",
+      "recovery"
+    ],
+    "per_mode_two_way_split_cases": 435,
+    "per_mode_bytewise_cases": 1,
+    "cpp_checks": 11,
+    "cpp_test_groups": 11,
+    "phase_replies": [
+      {
+        "phase": 0,
+        "label": "fresh-session-cup",
+        "source_hex": "1b5b324a1b5b484654",
+        "cursor_reply_1based": [
+          1,
+          3
+        ]
+      },
+      {
+        "phase": 1,
+        "label": "explicit-origin-wrap-reset",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b324a1b5b48",
+        "cursor_reply_1based": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 2,
+        "label": "main-margin-set",
+        "source_hex": "1b5b323b3572",
+        "cursor_reply_1based": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 3,
+        "label": "origin-reset-cup",
+        "source_hex": "1b5b313b334844",
+        "cursor_reply_1based": [
+          1,
+          4
+        ]
+      },
+      {
+        "phase": 4,
+        "label": "origin-set",
+        "source_hex": "1b5b3f3668",
+        "cursor_reply_1based": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 5,
+        "label": "origin-set-cup",
+        "source_hex": "1b5b313b33484f",
+        "cursor_reply_1based": [
+          1,
+          4
+        ]
+      },
+      {
+        "phase": 6,
+        "label": "origin-set-upper-relative-bound",
+        "source_hex": "1b5b3939411b5b393944",
+        "cursor_reply_1based": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 7,
+        "label": "origin-set-lower-relative-bound",
+        "source_hex": "1b5b393942",
+        "cursor_reply_1based": [
+          4,
+          1
+        ]
+      },
+      {
+        "phase": 8,
+        "label": "origin-reset-after-margin",
+        "source_hex": "1b5b3f366c",
+        "cursor_reply_1based": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 9,
+        "label": "region-sentinels",
+        "source_hex": "1b5b721b5b324a1b5b313b314854501b5b32353b314842541b5b323b314852301b5b333b314852311b5b343b314852321b5b353b314852331b5b323b3572",
+        "cursor_reply_1based": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 10,
+        "label": "region-bottom-newline",
+        "source_hex": "1b5b353b31480d0a4e57",
+        "cursor_reply_1based": [
+          5,
+          3
+        ]
+      },
+      {
+        "phase": 11,
+        "label": "above-region-newline",
+        "source_hex": "1b5b313b31480a5550",
+        "cursor_reply_1based": [
+          2,
+          3
+        ]
+      },
+      {
+        "phase": 12,
+        "label": "below-region-newline",
+        "source_hex": "1b5b32353b31480a444e",
+        "cursor_reply_1based": [
+          25,
+          3
+        ]
+      },
+      {
+        "phase": 13,
+        "label": "main-margin-reset",
+        "source_hex": "1b5b72",
+        "cursor_reply_1based": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 14,
+        "label": "wrap-enabled-edge",
+        "source_hex": "1b5b3f37681b5b383b3931484142",
+        "cursor_reply_1based": [
+          9,
+          2
+        ]
+      },
+      {
+        "phase": 15,
+        "label": "wrap-disabled-edge",
+        "source_hex": "1b5b3f376c1b5b31303b3931484344",
+        "cursor_reply_1based": [
+          10,
+          91
+        ]
+      },
+      {
+        "phase": 16,
+        "label": "wrap-enabled-again-edge",
+        "source_hex": "1b5b3f37681b5b31323b3931484546",
+        "cursor_reply_1based": [
+          13,
+          2
+        ]
+      },
+      {
+        "phase": 17,
+        "label": "pending-edge-disable-before-next",
+        "source_hex": "1b5b31343b393148471b5b3f376c48",
+        "cursor_reply_1based": [
+          14,
+          91
+        ]
+      },
+      {
+        "phase": 18,
+        "label": "disabled-edge-enable-before-next",
+        "source_hex": "1b5b3f376c1b5b31363b393148491b5b3f37684a",
+        "cursor_reply_1based": [
+          17,
+          2
+        ]
+      },
+      {
+        "phase": 19,
+        "label": "main-margin-origin-before-alt",
+        "source_hex": "1b5b3f37681b5b323b35721b5b3f36681b5b323b34484d",
+        "cursor_reply_1based": [
+          2,
+          5
+        ]
+      },
+      {
+        "phase": 20,
+        "label": "alternate-enter",
+        "source_hex": "1b5b3f3130343968",
+        "cursor_reply_1based": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 21,
+        "label": "alternate-margin-origin",
+        "source_hex": "1b5b333b36721b5b3f36681b5b323b344841",
+        "cursor_reply_1based": [
+          2,
+          5
+        ]
+      },
+      {
+        "phase": 22,
+        "label": "alternate-exit",
+        "source_hex": "1b5b3f313034396c",
+        "cursor_reply_1based": [
+          2,
+          5
+        ]
+      },
+      {
+        "phase": 23,
+        "label": "main-cup-after-alternate",
+        "source_hex": "1b5b313b364852",
+        "cursor_reply_1based": [
+          1,
+          7
+        ]
+      },
+      {
+        "phase": 24,
+        "label": "final-explicit-reset",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b313b3148444f4e45",
+        "cursor_reply_1based": [
+          1,
+          5
+        ]
+      }
+    ]
+  },
+  "final_runtime_sha256": {
+    "experiments/core/decom_origin_test.cpp": "8d75b078a31de0ebefdce62d1ef13dad31023b0a09b749e99474646e99a9bc01",
+    "experiments/core/screen.hpp": "e2b82a211ccc2cecb902c48dc7b345229acbcbd48c6cd6eefc9768e6c05fd09a",
+    "experiments/core/terminal.hpp": "582c5cdb4ac8ffb548d7cbb40336e0667705531779c6c67b66d87ecc196f26e5",
+    "CMakeLists.txt": "faaa7e3b081f52afbd2c1ddd4fa472a8dd14fb33f5d3a30e68e09dc106dd5b84"
+  },
+  "final_binary_sha256": {
+    "decom_origin_test.exe": "9f1042acd6b697bb8a1bc9b9b3be3f9d58f0563c28c9a4772a05787419bb1c7e",
+    "decawm_mode_test.exe": "6babe61db7c3cb7e48f113aaba8cc1317d2798997ac0d7257ab2c3a8a2e78a5f",
+    "alternate_mode_test.exe": "c8f214cf043f50468567dfad2e1a7520f0cf43ba40508b931668c668fd97e98a",
+    "buffer_state_test.exe": "b1c43650527a15a1378ea321277593e41bcee0a3903b9118292de1b179e72a1e",
+    "history_test.exe": "caf12321f09c2f28e77a7e4027db6e7d028534c6df73c353fec7876291f7f4e5",
+    "resize_test.exe": "8b91537d83108aa91e5e61fa3465848633746a23d23d53170291a6fe0c792043",
+    "selection_test.exe": "d6c6e1bbd6e811d4d5ad3885b6cbf19e53e761a2689b7424964e2955bcc0f025",
+    "search_test.exe": "dd01d477e3bccedbac1e48c301259b9df4cf4dc8e82fd28b770297a4fc377f95",
+    "search_reorder_test.exe": "5a3e7e0985129b5f84cc1e18de590a759b536d87b60643f362e6174600c448af",
+    "reply_test.exe": "bbfc942043b677e9fb661705008eacf5a7f14d01533f563585930291349ea100",
+    "edit_csi_test.exe": "1916c0f0c0ec5c473abf292f9ca4830e1aa256d312f878f55b48ea0a5f134a5a",
+    "order_query_test.exe": "57ca9f7bf09cf19ef560404b26d24d24dabbd25f1cbd19a6709fbaa16f7b80ce",
+    "view_mapping_test.exe": "e39554762eac881ade4155358b7400a90ea243d624a00b146573ca0edfeff899",
+    "replay.exe": "e2c7ac70284bf2db1d25aff93d8ee09974a6188d2e0ec7602d5053326102045a",
+    "terminal_trace.exe": "0f702b61d22716fb0362320a2edc744ee6feb083d3b795098359fcd169caab8d",
+    "recovery_probe.exe": "efdfa0847129aafa80ed3cd450eac9a933e9794141b121254f8bb0dab64e6e1f",
+    "receive.exe": "1659b8a8f2c01173c9751693261eec1bea94ddbbc17df69a42a5bcc94bd5dffd"
+  },
+  "executions": [
+    {
+      "label": "configure",
+      "exit_code": 0,
+      "timed_out": false,
+      "note": "build/decom, Qt and candidate disabled"
+    },
+    {
+      "label": "build-core-tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "note": "13 core C++ test executables + replay/terminal_trace/recovery_probe/receive"
+    },
+    {
+      "label": "decom_origin_test",
+      "exit_code": 0,
+      "note": "11/11 checks passed; strict+recovery literal 25-phase replay and 435 two-way splits each"
+    },
+    {
+      "label": "ctest-core",
+      "exit_code": 0,
+      "note": "13/13 core C++ tests passed, 0 failed, 0 skipped"
+    },
+    {
+      "label": "python-core-unicode-recovery",
+      "exit_code": 0,
+      "note": "66 tests passed (experiments.core.test_core/test_unicode/test_recovery)"
+    }
+  ],
+  "skip_count": 0,
+  "residual_gaps": [
+    "per-screen origin bit across 1049 is implemented as terminal-wide (like DECAWM); the reference marks per-screen origin unknown, so this is a conservative choice and not an oracle match.",
+    "post-return margin bottom (returning to primary after alternate sets a different bottom margin) is not oracle-covered.",
+    "origin x wrap at the last column is a composed model check, not a literal-oracle phase (wrap phases 14-18 are origin-off).",
+    "DECSTBM home while origin is set homes to the region top via the same clamp; not directly observed (no intermediate DSR).",
+    "full active grid, per-cell style, and local ConPTY transport are outside this slice."
+  ]
+}
