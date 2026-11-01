@@ -26,6 +26,18 @@ int main() {
     // An unimplemented report must stay unimplemented instead of being faked.
     parser.feed("\x1b[5n");
     require(parser.take_replies().empty(), "unsupported report produced a reply");
+    // DA1 answers only on the strict path. The product recovery path must stay
+    // silent because the fixed ConPTY emits DA1 in its startup packet and a
+    // reply sent back through the bounded input path at startup races with the
+    // session lifecycle (PR #272).
+    parser.feed("\x1b[c");
+    require(parser.take_replies().empty(), "recovery DA1 produced a reply");
+    {
+        Parser strict_parser(3, 10, 10, ParseMode::strict);
+        strict_parser.feed("\x1b[c");
+        const auto da1 = strict_parser.take_replies();
+        require(da1.size() == 1 && da1[0] == "\x1b[?6c", "strict DA1 reply mismatch");
+    }
     // DECCKM and DECTCEM are state-only modes; strict parsing must accept them.
     {
         Parser strict_parser(3, 10, 10, ParseMode::strict);

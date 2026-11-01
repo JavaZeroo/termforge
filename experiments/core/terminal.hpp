@@ -106,12 +106,15 @@ class Parser {
             }
             throw InputError("unsupported CSI command");
         case 'c':
-            // Primary device attributes. The reply states which capabilities
-            // this terminal claims, so it stays at the VT102 level the core
-            // actually implements (cursor addressing, erase, insert/delete line
-            // and character, SGR, DECAWM, alternate screen) and matches the
-            // reference candidate, which also answers \x1b[?6c.
-            if (params.size() == 1 && params[0] == 0) {
+            // Primary device attributes. Only the strict path (replay/tests)
+            // answers, at the VT102 level the core actually implements (cursor
+            // addressing, erase, insert/delete line and character, SGR, DECAWM,
+            // alternate screen), matching the reference candidate's \x1b[?6c.
+            // The product recovery path must stay silent: the fixed ConPTY
+            // emits DA1 once in its startup packet, and a reply bounced back
+            // through the bounded input path at startup races with the session
+            // lifecycle (PR #272).
+            if (mode == ParseMode::strict && params.size() == 1 && params[0] == 0) {
                 pending_replies.push_back("\x1b[?6c");
                 return;
             }
