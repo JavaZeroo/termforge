@@ -171,5 +171,74 @@
       "main-integration-ctest.log": "8fd7d031c8993ae776eeb03f38f46afc07a1d573dd4ead9304beb3026078d84a"
     },
     "not_a_combined_rerun": true
+  },
+  "ci_fixture_followup": {
+    "failed_head": "04b31abc1f22b1e8b62b972d3fa3918567ee359d",
+    "failed_run_url": "https://github.com/JavaZeroo/termforge/actions/runs/41330092575",
+    "windows_ctest": {
+      "passed": 72,
+      "failed": 2,
+      "python_errors": 6
+    },
+    "ci_temp_alias_directly_recorded": false,
+    "fix_commit": "adec6aedd18cd334239a3db19efae27520290fb1",
+    "production_and_frozen_runtime_unchanged": true,
+    "mode_fixture": {
+      "ordinary_passed": 46,
+      "optimized_passed": 46,
+      "equivalent_path_and_escape_checked": true,
+      "test_sha256": "6a4ded71f31017cb56ff703353ae0951534ca72ff260b72439fc1193d69ad153",
+      "log_sha256": {
+        "mode-reentry-path-alias-red.log": "196234b893af84de40575edc7112fb573d76fa3ef2b6287a2320810dd14fcb99",
+        "mode-reentry-path-alias-green.log": "c08c0648752f16c869bdd738f9482ada221bf9d4bdd5a33a2be9b948a7291868",
+        "mode-reentry-path-alias-optimized.log": "5ce8bd7fd535c138e7a90e61960f3b5b7cf16143dd129e7592c8cbb4d5e3c034"
+      }
+    },
+    "attribute_fixture": {
+      "scope": "Attribute unittest fixture only; frozen runtime and production containment checks unchanged",
+      "base_commit": "04b31abc1f22b1e8b62b972d3fa3918567ee359d",
+      "ci_errors": 5,
+      "ci_temp_alias_directly_recorded": false,
+      "local_reproduction": "GetShortPathNameW returns a distinct actual filesystem alias; unresolved patched ROOT does not lexically contain resolved output",
+      "repair": "Resolve TemporaryDirectory path before patching module ROOT",
+      "normal": {
+        "tests": 25,
+        "passed": 25,
+        "exit_code": 0,
+        "seconds": 9.93,
+        "forced_real_short_path_temp": true
+      },
+      "optimized": {
+        "tests": 25,
+        "passed": 25,
+        "exit_code": 0,
+        "seconds": 9.724,
+        "forced_real_short_path_temp": true
+      },
+      "runtime_sha256": "4df7e239c2f026f1edbab038b49e28968c3391cf97620a3661edca994e5a5b97",
+      "test_sha256": "0b9ee7cfe2344141e6db1a6717880f1568d53012eb0b52e025ad4b7ac75f8256",
+      "logs_sha256": {
+        "attribute-ci-alias-red.log": "99b4e920ba590841071989366b503f206445ee95bffff0ea8dd3cd17d14bb141",
+        "attribute-ci-alias-green.log": "09969feef3f80fb68088118326603419d642b75b04a9e73efcac11be3d2a6b81",
+        "attribute-ci-alias-green-optimized.log": "ed99a940a1036f3b8e6d1e8e6d676570ce62be3f7596e5df48279e6c39f1b0e7"
+      }
+    },
+    "windows_job_log_sha256": "87d71ed9b4388f28a5ee98d950d3a193155229f1e173c21e396cb6bccd343989",
+    "remote_rerun_status_owner": "https://github.com/JavaZeroo/termforge/issues/27"
+  },
+  "pending_wrap_integration": {
+    "main_commit": "3b17e92d7e74ace88d3e3f0daf9c1c37dcef946c",
+    "merge_commit": "e01c9e14255446cb2335be1a4185af3967631e81",
+    "unchanged_product_source": true,
+    "added_target": "pending_wrap_core",
+    "ctest_passed": 1,
+    "seconds": 0.07,
+    "not_a_combined_rerun": true,
+    "source_sha256": "8e61049cce8dc21e3a99a71091b4b90051c9d77e6d3998119b2e9e477d718ed6",
+    "log_sha256": {
+      "pending-integration-configure.log": "d377a1e21036269eb775506a26ba87b2d8263a2660aa0679973e9d576b593ae8",
+      "pending-integration-build.log": "5241f1e6882fe4b44656153740a7e1e9c75ee4912cc4b90ad7dc664f1473b694",
+      "pending-integration-ctest.log": "fa167877cc30c4dc683074aed252d5f01a539ec68d97812346a5e1e502721156"
+    }
   }
 }
