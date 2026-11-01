@@ -134,6 +134,31 @@ class RecoveryTests(unittest.TestCase):
                     self.assertEqual((value["screen"]["row"], value["screen"]["column"]), (2, column))
                     self.assertFalse(value["screen"]["wrap_pending"])
 
+    def test_fixed_conpty_more_enter_replays_strict_and_recovery_and_system_variant_stays_a_strict_gap(self):
+        fixtures = ROOT / "experiments/core/fixtures"
+        fixed = (fixtures / "more-pager-fixed-411.bin").read_bytes()
+        system = (fixtures / "more-pager-system-375.bin").read_bytes()
+        self.assertEqual(len(fixed), 411)
+        self.assertEqual(hashlib.sha256(fixed).hexdigest(),
+                         "7a44e90460a794a0afa043c4924b2de0af79f0a8c2629ec4fc06f9301eec6d08")
+        self.assertEqual(len(system), 375)
+        self.assertEqual(hashlib.sha256(system).hexdigest(),
+                         "c2fee3acc9e9d769bb21070b257525e46d06f7dcf55334904994a3599af46e14")
+        # Fixed ConPTY 1.25 emits a startup packet (ESC[1t, ESC[c DA1, ?1004h,
+        # ?9001h) and clears with spaces + CR, so strict replays it end to end.
+        # System ConPTY adds an OSC title that strict still rejects; recovery
+        # accepts both and converges to the same first page.
+        for data, strict_ok in ((fixed, True), (system, False)):
+            for chunks in ([1], [2, 7, 31], [4096]):
+                with self.subTest(bytes=len(data), chunks=chunks):
+                    value = json.loads(self.run_input(data, chunks, rows=24, cols=80).stdout)
+                    self.assertEqual(value["screen"]["lines"][22], "TF_PAGE_23" + " " * 70)
+                    self.assertEqual(value["screen"]["lines"][23], "-- More (56%) --" + " " * 64)
+                    self.assertEqual((value["screen"]["row"], value["screen"]["column"]), (23, 17))
+                    self.assertFalse(value["screen"]["wrap_pending"])
+            strict = self.run_input(data, [1], rows=24, cols=80, mode="strict")
+            self.assertEqual(strict.returncode, 0 if strict_ok else 2)
+
     def test_unknown_csi_consumes_private_and_intermediate(self):
         # CSI 6n is a handled cursor report now, so only the private and the
         # intermediate forms count as ignored here.
