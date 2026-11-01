@@ -1,0 +1,120 @@
+{
+  "schema": "termforge-cpp-widechar-1049-local-validation-v1",
+  "issue": 27,
+  "base_commit": "3b17e92d7e74ace88d3e3f0daf9c1c37dcef946c",
+  "runtime_implementation_commit": "5db6e262a02c7f8042c93412d5fe2e9c0502eb12",
+  "validated_source_commit": "5db6e262a02c7f8042c93412d5fe2e9c0502eb12",
+  "final_binary_hash_observation": "After all directed tests completed; hashes taken once at the end and do not claim continuous monitoring.",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "compiler_sha256": "42fd88579adc0e2418a0a71ec9adcfcf677d39ff2724c9d6ac9d901264812bf2",
+    "configuration": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "conpty_runtime_exercised": false
+  },
+  "observed_contract": {
+    "reference_issues": [
+      27,
+      161,
+      123,
+      151
+    ],
+    "reference_docs": {
+      "docs/adr/0005-physical-row-resize.md": "677d3f889dc61acd8d3b0b0dd27c17b3b3fa0057c3b5f0c7253d823844be6fc2"
+    },
+    "whole_original_trace_replayed": false,
+    "original_runs_this_implementation": 0,
+    "basis": "composed_model_check",
+    "basis_note": "The original WindTerm never observed wide or combining text across 1049, so this slice locks the existing core implementation as the baseline with composed model checks; it is not an independent literal oracle and does not claim original parity.",
+    "parser_modes": [
+      "strict",
+      "recovery"
+    ],
+    "per_mode_two_way_split_cases": 38,
+    "per_mode_bytewise_cases": 1,
+    "cpp_checks": 23,
+    "cpp_test_groups": 23,
+    "covered_crossings": [
+      "wide scalar insufficient space at the last column pre-wraps identically under DECAWM on and off",
+      "wide scalar exact fit arms the delayed edge; DECAWM on wraps the next narrow printable, DECAWM off overwrites the trail and blanks the lead (non-splitting)",
+      "wide lead/trail survive a 1049 entry/exit with the pending edge hidden then restored",
+      "combining cluster (base + marks) survives a 1049 roundtrip and keeps accepting further marks",
+      "combining mark after a wide glyph lands on the lead cell and survives across 1049",
+      "primary and alternate keep independent combining attachments; 1049 re-entry clears the alternate",
+      "strict rejects a combining mark without an adjacent base; recovery replaces it with U+FFFD",
+      "row text round-trips the original wide + combining UTF-8 bytes without duplicating the wide glyph",
+      "1-column crop blanks an orphaned wide lead; resize while hidden crops the primary frame; 1-row crop keeps a row-0 wide glyph; a 1-column screen rejects a wide scalar",
+      "a real size change clears the pending combining base but keeps the cluster text",
+      "byte-wise and two-way split feeding reproduce the same state signature"
+    ]
+  },
+  "final_runtime_sha256": {
+    "experiments/core/widechar_1049_test.cpp": "e53fbdd8ec29bd31ae0aff26af7391955fdfa68b9713a24599d9313eba017396",
+    "CMakeLists.txt": "0b80a69d54e4d67530c8cbdd6a9a04cd84c0789c2dbf46490424def32af9d9d1",
+    "experiments/core/screen.hpp": "142e786bd202a63f948d5443bcd203985d57c30f7ca39bd1cb9133646780a9ed",
+    "experiments/core/terminal.hpp": "486527af086973b21a672699ad5a70cb5b2ed7b709203e420212f0ce0b5bc3c9",
+    "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+  },
+  "final_binary_sha256": {
+    "widechar_1049_test.exe": "02ae31723e2b8d484a3bf311f748a1d48476f3be6dd3a7ec6a902014c9f1910d",
+    "pending_wrap_test.exe": "eb8a717b0c4ba69cf734d6ee93d27b8766e82cd8a45a997b0235eeaf257287e5",
+    "decawm_mode_test.exe": "43c86d7596091df5c0a45e8921ce51fa66c237986de5b22effebde141db5160a",
+    "alternate_mode_test.exe": "80a2b7dc760ce89894c1fc0f11a6af5e2e0e3559b5c9727aa5742088f9aef520",
+    "decom_origin_test.exe": "e3c381cb854e3fef6c3fae4b67e671301301ace4401323b3b8d16478529ba643",
+    "buffer_state_test.exe": "716c88d0ed4e3465d18c093ee98f5942d3b2af6c63cf8977a53363d01752263d",
+    "history_test.exe": "9a003119b9c363f4d7332889884df5974e70d6b7d49f7f5b9d6cac3a8be2f5b7",
+    "resize_test.exe": "91cc03d25f3aa5a3d03d34500568eaaebc8d65acfa188eaf2caf74d4b202a749",
+    "resize_edges_test.exe": "92c970aa4d42934ad82d93d06aa2df5f353f09275387c7e5b1f233100fea6369",
+    "selection_test.exe": "146345a13fa1bc5a5a10b87c2ee79513ae9bf67a23b9feb0de484e53888273cd",
+    "search_test.exe": "afd8c5d077d2f613bbb21e18b9011bf93a0ce0a562991c97647ef71ec05bef46",
+    "search_reorder_test.exe": "2c4421056ccdd3baf7a83717b9361e88f7df757d87d6af158ca619e7cf6e7fef",
+    "reply_test.exe": "2a0cd2b83980af36c9eb4a28144d5af3a83852bee8ea64581c00bfa27ef1b6f4",
+    "edit_csi_test.exe": "547ba7d0ab27b199c22bce2a3abe765d6473b147dcf81d767cf77b14d9f6ef8b",
+    "order_query_test.exe": "4fc5d9bdee1cc8e477acb1ec24a62c885c04a9909a02ee2a57c867d3df97a69a",
+    "view_mapping_test.exe": "5268dafaeb43213fa1a62c7f76ed07b9bef040651656ee69a1233f6536f27c84",
+    "private_mode_test.exe": "b114577527a736aef02a34685d39a7fabc0dc1476ed67b4dfb10ec486eb1e692",
+    "replay.exe": "ccbdd19bd058be45af92812c5aeba80b899d48eb95edc7b47edb1cf397cf8bd3",
+    "terminal_trace.exe": "0f336da7f0c8a522a0508434c602dfc3ab524a2440c93a33853560c68a83b71d",
+    "recovery_probe.exe": "487a4801c5ce9017f893540f7e4d9202980ffab32777ef16204e4860164074b1",
+    "receive.exe": "1e13dd7fcbfe973b8f6b1ea90cbd0d3e8945abb6d857c70bb02101db7d74dfab"
+  },
+  "executions": [
+    {
+      "label": "configure",
+      "exit_code": 0,
+      "timed_out": false,
+      "note": "build/widechar-1049, Qt and candidate disabled"
+    },
+    {
+      "label": "build-core-tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "note": "widechar_1049_test + 16 existing core C++ test executables + replay/terminal_trace/recovery_probe/receive"
+    },
+    {
+      "label": "widechar_1049_test",
+      "exit_code": 0,
+      "note": "23/23 checks passed; strict+recovery 11 composed crossings each, 38 two-way splits and bytewise each"
+    },
+    {
+      "label": "ctest-core",
+      "exit_code": 0,
+      "note": "17/17 core C++ tests passed, 0 failed, 0 skipped"
+    },
+    {
+      "label": "python-core-unicode-recovery",
+      "exit_code": 0,
+      "note": "66 tests passed (experiments.core.test_core/test_unicode/test_recovery)"
+    }
+  ],
+  "skip_count": 0,
+  "residual_gaps": [
+    "Every wide/combining x 1049, x DECAWM-off and x resize crossing is a composed model check; the original WindTerm observed none of them, so they stay unobserved rather than original parity.",
+    "Full active grid, per-cell style, per-screen origin bit and fixed-ConPTY transport are outside this slice.",
+    "Wide char x DECAWM off (insufficient-space prewrap) was never observed in the original; only the exact-fit DECAWM-on wrap and the preserved wide-fit fallback policy derive from the existing #161 batch."
+  ]
+}
