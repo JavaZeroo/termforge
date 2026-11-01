@@ -156,8 +156,14 @@ private:
                     parser_.feed(bytes);
                     // Query replies (a cursor position report today) go back to the
                     // child through the same bounded input path as keystrokes.
-                    for (const auto& reply : parser_.take_replies())
+                    // A reply only matters while the child is still attached: ConPTY
+                    // emits DA1 once in its startup packet, so a session closed before
+                    // its first poll would otherwise record a fatal "terminal input
+                    // is unavailable" error for a reply nobody can receive.
+                    for (const auto& reply : parser_.take_replies()) {
+                        if (!running()) break;
                         send(QByteArray(reply.data(), static_cast<qsizetype>(reply.size())));
+                    }
                 } catch (const std::exception& error) {
                     parser_failed_ = true;
                     remember_error(QString::fromUtf8(error.what()));

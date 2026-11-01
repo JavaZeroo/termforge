@@ -46,6 +46,12 @@ class Parser {
                 screen.set_origin_mode(final == 'h');
                 return;
             }
+            if (params.size() == 1 && (params[0] == 1004 || params[0] == 9001) && (final == 'h' || final == 'l'))
+                // Real ConPTY sessions request focus reporting (?1004) and Win32
+                // input mode (?9001). Neither changes what this core draws or
+                // sends, and the host has nothing to act on yet, so they are
+                // accepted without being recorded.
+                return;
             if (params.size() != 1 || (params[0] != 1049 && params[0] != 7) || (final != 'h' && final != 'l'))
                 throw InputError("unsupported private CSI command");
             if (params[0] == 7) {
@@ -84,6 +90,15 @@ class Parser {
                                      params.size() < 2 || params[1] == 0 ? -1 : params[1] - 1);
             break;
         case 'M': screen.delete_lines(n); break;
+        case 't':
+            // CSI 1/2/3 t are window commands (de-iconify, iconify, move) that
+            // ConPTY emits around a native resize. Acting on them would fight
+            // the host's own geometry, so they are accepted and ignored. Every
+            // other CSI t is a query this core cannot answer and stays
+            // unsupported rather than swallowing a request the application is
+            // waiting on.
+            if (params.size() == 1 && params[0] >= 1 && params[0] <= 3) return;
+            throw InputError("unsupported CSI command");
         case 'X': screen.erase_characters(n); break;
         case '@': screen.insert_characters(n); break;
         case 'P': screen.delete_characters(n); break;
@@ -96,6 +111,20 @@ class Parser {
                     screen.origin_mode() ? screen.row - screen.region_top() + 1 : screen.row + 1;
                 pending_replies.push_back("\x1b[" + std::to_string(report_row) + ";" +
                                           std::to_string(screen.column + 1) + "R");
+                return;
+            }
+            throw InputError("unsupported CSI command");
+        case 'c':
+            // Primary device attributes. Only the strict path (replay/tests)
+            // answers, at the VT102 level the core actually implements (cursor
+            // addressing, erase, insert/delete line and character, SGR, DECAWM,
+            // alternate screen), matching the reference candidate's \x1b[?6c.
+            // The product recovery path must stay silent: the fixed ConPTY
+            // emits DA1 once in its startup packet, and a reply bounced back
+            // through the bounded input path at startup races with the session
+            // lifecycle (PR #272).
+            if (mode == ParseMode::strict && params.size() == 1 && params[0] == 0) {
+                pending_replies.push_back("\x1b[?6c");
                 return;
             }
             throw InputError("unsupported CSI command");
