@@ -1,0 +1,224 @@
+{
+  "schema": "termforge-tui-more-smoke-v1",
+  "status": "fixed-conpty-more-enter-exit-dual-pass-system-conpty-strict-fail",
+  "generated_utc": "2026-11-01T18:42:25.702Z",
+  "implementation_commit": "0e3cd51c240bd3084981b16f7ca42c8817b83e5f",
+  "platform": "Windows 11 Pro x64, OS build 10.0.26200",
+  "scoped_target": {
+    "application": "More.com",
+    "file_version": "10.0.26100.1",
+    "binary_sha256": "dea4ed8963aef4c8ce4aa1491410f614fd6d9b0e07737a9b634612adad731630",
+    "os_build": "10.0.26200",
+    "conpty_size": "80x24",
+    "entry": "more.com pager.txt"
+  },
+  "trajectory": {
+    "enter": "first page 23 lines + -- More (nn%) -- prompt",
+    "page": "space -> next page",
+    "line": "enter -> next line",
+    "quit": "q -> mode-disable + clear prompt line",
+    "search": "not applicable (no /pattern in Windows more.com)"
+  },
+  "backends": {
+    "fixed-conpty-1.25": {
+      "deterministic": true,
+      "strict_replay": "pass",
+      "recovery_replay": "pass",
+      "fixture": "experiments/core/fixtures/more-pager-fixed-411.bin",
+      "fixture_bytes": 411,
+      "fixture_sha256": "7a44e90460a794a0afa043c4924b2de0af79f0a8c2629ec4fc06f9301eec6d08"
+    },
+    "system-conpty": {
+      "deterministic": false,
+      "variants": [
+        "d035d53385788d2b68dcc0d866b5a2fe68897cdcb28a761bd4d36efcc6df6cf9",
+        "c2fee3acc9e9d769bb21070b257525e46d06f7dcf55334904994a3599af46e14"
+      ],
+      "strict_replay": "fail (OSC title -> unsupported escape)",
+      "recovery_replay": "pass"
+    }
+  },
+  "source_sha256": {
+    "experiments/core/terminal.hpp": "c1b537efc172ff446f129753b9a673ecb290716ee75e4505b81c371513acc8c7",
+    "experiments/core/screen.hpp": "ebbaa789d793df6a3ac481d859d7f2e5c807b3d4b58e72c8279323490aaae5fc",
+    "experiments/conpty/session.hpp": "0270a7a6c4edec696f9d088e6fd191d7a42e1bb6d672bbb59a3ca766784c5465",
+    "experiments/conpty/backend.hpp": "c64309b7abe229186dece465b795883c2303389ffe93a9fcc648021d057b9d6a",
+    "experiments/core/fixtures/more-pager-fixed-411.bin": "7a44e90460a794a0afa043c4924b2de0af79f0a8c2629ec4fc06f9301eec6d08",
+    "experiments/core/fixtures/more-pager-system-375.bin": "c2fee3acc9e9d769bb21070b257525e46d06f7dcf55334904994a3599af46e14",
+    "experiments/core/fixtures/more-pager-360.bin": "d035d53385788d2b68dcc0d866b5a2fe68897cdcb28a761bd4d36efcc6df6cf9",
+    "experiments/core/fixtures/more-pager-366.bin": "bb9dbe77353245a2aad7ef07e12da9a8371cc7ac56d6b47ebc0bfecee35b9958"
+  },
+  "binaries": {
+    "recovery_probe": "built from 0e3cd51c240bd3084981b16f7ca42c8817b83e5f (NMake Release)",
+    "replay": "built from 0e3cd51c240bd3084981b16f7ca42c8817b83e5f"
+  },
+  "checks": [
+    {
+      "check": "fixed-enter-recovery",
+      "backend": "fixed-conpty-1.25",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "row": 23,
+        "column": 17,
+        "history": 0,
+        "last2": [
+          "TF_PAGE_23",
+          "-- More (56%) --"
+        ],
+        "ignored_sequences": 1
+      }
+    },
+    {
+      "check": "fixed-enter-strict",
+      "backend": "fixed-conpty-1.25",
+      "mode": "strict",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "row": 23,
+        "column": 17,
+        "history": 0,
+        "last2": [
+          "TF_PAGE_23",
+          "-- More (56%) --"
+        ],
+        "ignored_sequences": 0
+      }
+    },
+    {
+      "check": "fixed-quit-recovery",
+      "backend": "fixed-conpty-1.25",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "row": 23,
+        "column": 0,
+        "history": 17,
+        "last2": [
+          "TF_PAGE_40",
+          ""
+        ],
+        "ignored_sequences": 1
+      }
+    },
+    {
+      "check": "fixed-quit-strict",
+      "backend": "fixed-conpty-1.25",
+      "mode": "strict",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "row": 23,
+        "column": 0,
+        "history": 17,
+        "last2": [
+          "TF_PAGE_40",
+          ""
+        ],
+        "ignored_sequences": 0
+      }
+    },
+    {
+      "check": "system-enter-variantB-recovery",
+      "backend": "system-conpty",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "row": 23,
+        "column": 17,
+        "history": 0,
+        "last2": [
+          "TF_PAGE_23",
+          "-- More (56%) --"
+        ],
+        "ignored_sequences": 1
+      }
+    },
+    {
+      "check": "system-enter-variantB-strict",
+      "backend": "system-conpty",
+      "mode": "strict",
+      "exit_code": 2,
+      "status": "fail",
+      "error": "unsupported escape (OSC title)"
+    },
+    {
+      "check": "system-enter-variantA-recovery",
+      "backend": "system-conpty",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "row": 23,
+        "column": 17,
+        "history": 0,
+        "last2": [
+          "TF_PAGE_23",
+          "-- More (56%) --"
+        ],
+        "ignored_sequences": 1
+      }
+    },
+    {
+      "check": "system-enter-variantA-strict",
+      "backend": "system-conpty",
+      "mode": "strict",
+      "exit_code": 2,
+      "status": "fail",
+      "error": "unsupported escape (OSC title)"
+    },
+    {
+      "check": "system-quit-recovery",
+      "backend": "system-conpty",
+      "mode": "recovery",
+      "exit_code": 0,
+      "status": "pass",
+      "screen": {
+        "row": 23,
+        "column": 0,
+        "history": 17,
+        "last2": [
+          "TF_PAGE_40",
+          ""
+        ],
+        "ignored_sequences": 1
+      }
+    },
+    {
+      "check": "system-quit-strict",
+      "backend": "system-conpty",
+      "mode": "strict",
+      "exit_code": 2,
+      "status": "fail",
+      "error": "unsupported escape (OSC title)"
+    }
+  ],
+  "counts": {
+    "pass": 7,
+    "fail": 3,
+    "skip": 0
+  },
+  "protocol_findings": {
+    "da1": "fix prefix ESC[c present in fixed ConPTY startup packet; strict replies ESC[?6c, recovery silent (ignored_sequences +1). See #272.",
+    "dsr6n": "not present in More trajectory (More does not query cursor position)",
+    "alt1049": "not present (More uses primary screen)",
+    "ed2": "system ConPTY enter emits ESC[2J; fixed ConPTY uses spaces + CR instead (ED2 path not triggered)",
+    "scroll_region": "not present (More does not set DECSTBM)",
+    "osc_title": "system ConPTY enter emits OSC 0;path BEL which strict rejects; fixed ConPTY does not emit it"
+  },
+  "gaps": [
+    "system conhost dual-paint-variant root cause not localized",
+    "only text-file (40/100 line) trajectories observed; binary input, long-line wrap, wide chars, extreme sizes uncovered",
+    "= (line number), F (next file), P<n>/S<n> interactive keys not observed",
+    "search not applicable; other-language More prompts not verified",
+    "main-screen restore checked to prompt-line clear + history push only, not full style/cursor/scroll-region audit"
+  ],
+  "semantic_acceptance": false,
+  "presented_done": null,
+  "full_vt_acceptance": false,
+  "performance_measured": false
+}
