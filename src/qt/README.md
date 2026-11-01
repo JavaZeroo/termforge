@@ -1,10 +1,12 @@
 # C++ / Qt 本地会话迁移入口
 
-按 [ADR-0008](../../docs/adr/0008-cpp-core-qt-widgets.md)采用自主 C++ 核心和 Qt Widgets，Windows 进程由[固定微软 ConPTY](../../third_party/conpty/README.md)承载。当前入口提供默认 80×24、随窗口可用区域变化的本地 cmd 标签、基础 ASCII 与限定 Unicode 按键文本传输、IME 组合/提交/取消、16 色与部分样式绘制、启动错误与关闭回收。R2 按 [ADR-0009](../../docs/adr/0009-r2-scope-decisions.md)交付本地终端基础及已知差异清单，当前入口尚未完成该发布验收，也不是完整 WindTerm 界面。
+按 [ADR-0008](../../docs/adr/0008-cpp-core-qt-widgets.md)采用自主 C++ 核心和 Qt Widgets，Windows 进程由[固定微软 ConPTY](../../third_party/conpty/README.md)承载。当前入口提供默认 80×24、随窗口可用区域变化的本地 cmd 标签、基础 ASCII 与限定 Unicode 按键文本传输、IME 组合/提交/取消、基础鼠标拖选高亮、16 色与部分样式绘制、启动错误与关闭回收。R2 按 [ADR-0009](../../docs/adr/0009-r2-scope-decisions.md)交付本地终端基础及已知差异清单，当前入口尚未完成该发布验收，也不是完整 WindTerm 界面。
 
-现有 C++ 核心的[能力限制](../../experiments/core/README.md)继续有效。Qt 尚未迁移原 Win32 的完整工作区、分屏、历史浏览、选择/复制、Find 或会话恢复；完整键盘/IME 交叉、resize/reflow 仍需按目标调查和实现，也不能继承 Alacritty 分支的通过结果。普通方向键可随 DECCKM 切换 CSI/SS3，另有 F1–F12 编码；当前 Ctrl 字母组合仅接入 Ctrl+C，不能据此声明完整编辑器键盘或 bracketed paste。
+现有 C++ 核心的[能力限制](../../experiments/core/README.md)继续有效。Qt 尚未迁移原 Win32 的完整工作区、分屏、历史浏览/自动滚动、选词/选行、系统复制/粘贴、Find 或会话恢复；完整键盘/IME 交叉、resize/reflow 仍需按目标调查和实现，也不能继承 Alacritty 分支的通过结果。普通方向键与无修饰 Home/End 可随 DECCKM 切换 CSI/SS3，无修饰 Insert/Delete/PageUp/PageDown 复用已有终端键表，另有 F1–F12 编码；当前 Ctrl 字母组合仅接入 Ctrl+C，修饰导航键不被当作普通导航发送，不能据此声明完整编辑器键盘或 bracketed paste。
 
 网格沿当前 Roboto Mono 字体度量和终端可用区域计算，保留八像素边距与一行状态区，并沿现有 Screen 资源上限限制为 1..500 列、1..200 行。字体变化重新计算度量；隐藏标签在显示/布局后同步。GUI 线程负责物理 Screen resize，现有生命周期 worker 用单个最新请求串行执行 ConPTY resize、wait、cancel 和 close；GUI 不等待 native resize。重复同尺寸不重新初始化屏幕或发起新尺寸操作；关闭、错误与退出停止接受并清除待处理请求，已选取的 native 操作由同一 worker 收尾，不重新激活会话。原物理裁剪不回填历史或恢复被裁掉的正文，目标 reflow 和 WindTerm 内容恢复策略未验收。
+
+终端可在无修饰、无组合文本时用左键正向或反向拖选，普通点击清除旧选区。每个 widget 独立持有 `TextSelection`，命中与高亮经 `HistoryViewport` 显示快照中的 `ViewMapping` 映射到文档位置；只装饰显示副本，不修改核心文字或样式。部分列选区只投影到相应列，避免整行高亮。该接线是可见网格的基础拖选，不包含历史浏览、系统剪贴板、选词/选行或 Find；[固定实现与验证边界](../../experiments/shell/results/2026-11-01-r2-core-input/README.md)与完整 #29/#30 出口分开。
 
 标签栏的 `+` 创建同类型 cmd，点击标签选择输入目标，关闭按钮只取消对应会话；关闭父窗口取消所有会话。后台标签继续独立排空输出，已关闭标签完成自有进程回收后释放。成功启动的最后会话结束时沿用原最小入口的应用退出路径；有失败启动页时保留该页错误供关闭。当前标签外观、默认动作和多会话退出汇总仅为这批迁移入口的工程合同，未作 WindTerm 完整标签行为对比。
 
@@ -35,6 +37,8 @@ ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_
 Parser/Screen 仅在 Qt 线程修改；ConPTY reader 向有界输出队列写入，输入由独立有界 worker 发送。自然退出等待子进程、reader EOF、输出排空和 Parser.finish；人工关闭按取消处理。外层监督器在 GO 前把测试根进程纳入自有 Job，超时或残留不能通过。
 
 `qt_cpp_shell` 保留单会话真实 cmd 的 `750` 正文三格新增墨迹、自然退出 37、启动失败可见错误与人工关闭检查。多标签部分实际点击新增、切换及关闭，再核对独立字面量 `750` / `427` 与父窗口中的正文墨迹、输入隔离、关闭后存活页的 `778` 与自然退出 41；失败页关闭后存活页继续得到 `147`，父窗口关闭回收所有会话，单个失败启动页保持可见。外层自有 Job 和原有期限不变。
+
+基础拖选检查通过公开 Qt 鼠标事件核对正反方向的局部高亮、点击清除和核心样式不变；导航键检查通过独立 `ReadConsoleW` 接收端比较字面预期，保留修饰键拒绝、代理项边界与既有会话隔离。源码身份、实际红绿和联合验证结果统一见[核心/输入切片记录](../../experiments/shell/results/2026-11-01-r2-core-input/README.md)，不把消息注入或离屏像素当成物理鼠标、完整应用模式或系统复制验收。
 
 退出路径另在真实 `app.exec()` 中覆盖双会话父窗口关闭、最后活动标签关闭、单个失败启动页关闭，以及已自然结束标签关闭。在统一完成回调、`aboutToQuit` 和 `exec` 返回时分别核对模型已结束、回收可验证和各自 Job active=0；已移除页的记录在其销毁前取得，不用析构后的外层 active=0 代替退出前证明。
 

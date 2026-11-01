@@ -1,0 +1,369 @@
+{
+  "schema": "termforge-r2-core-input-slices-v1",
+  "date": "2026-11-01",
+  "base_commit": "a8d6160a2bf326963d4880f9d74fec619dadeb30",
+  "tested_code_commit": "f20fe0b1c65e20a5df99363f4d68d2f9d9ee4f93",
+  "source_sha256_raw_working_tree_bytes": {
+    "experiments/core/screen.hpp": "142e786bd202a63f948d5443bcd203985d57c30f7ca39bd1cb9133646780a9ed",
+    "experiments/core/decom_origin_test.cpp": "678e7a918b025e7baedeaa21038ea3c22cf8d86ead7f70cc0be4859294797d74",
+    "experiments/core/order_query_test.cpp": "11218bd3ae0ed32b7cffcd642e7194914694ff46cc01fe205f4703309f04871e",
+    "experiments/core/history_view.hpp": "29c56d9d0739d6a6fd0e3b5f5d225b4f8e5bce7aa2fcbea6fee6646a760a802b",
+    "experiments/core/view_mapping.hpp": "60df4271d1763f4c2525d24b19f5f61b482feba14310a93f98d8194e23b63546",
+    "experiments/core/view_mapping_test.cpp": "6ee27b38f46a88067bcbe5f3125c7b3c1a3b7355496632a360bff9992d6bda10",
+    "src/qt/terminal_widget.hpp": "a5f172980f52abb8d30189ab4334643621472839a20e14bb406bb89d81b70c8c",
+    "src/qt/unicode_input_test.cpp": "83662178e07826a4bcd74858146166370b312537e0dddb233b365bed0169209b",
+    "src/qt/shell_smoke.cpp": "3a8099d6aba673bdd6a5c83959c29a235fe4ef4165fe8adcadc52b56049a704e"
+  },
+  "configuration": {
+    "platform": "Windows 11 x64 build 26200",
+    "compiler": "MSVC 19.42.34433",
+    "windows_sdk": "10.0.26100.0",
+    "build_type": "Release",
+    "candidate_adapter": false,
+    "qt_shell": true,
+    "qt_version": "6.10.3",
+    "conpty_version": "1.25.260930003",
+    "msvc_runtime_version": "14.51.36247.0",
+    "python": "3.12.10",
+    "qt_test_platform": "offscreen"
+  },
+  "dependency_manifest_sha256": {
+    "qt": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+    "conpty": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+    "msvc_runtime": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+  },
+  "dependency_file_sha256": {
+    "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+    "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+  },
+  "executable_sha256": {
+    "qt-bin/Release/termforge_qt_shell.exe": "29c6eafdb110b9fdfe5bf8d0f92f2a3158f8f32770295a8daa1fc89b53d3f877",
+    "qt-smoke-bin/Release/qt_cpp_shell_smoke.exe": "6cee710aad5169427f26b557fb6e02139cd3a0aadf6f045e004c7ae78c4c1a17",
+    "qt-unicode-bin/Release/qt_unicode_input_test.exe": "84e9f1cefbbc7bff547be783470cd6268f3666935d292a9dd6e622d9d078f08d",
+    "qt-resize-bin/Release/qt_cpp_resize_smoke.exe": "3e40a95b24e95a7917793aa1baaa06d9af95b2b64cd568265a68091326b9bd78"
+  },
+  "red_cases": [
+    {
+      "case": "region LF and IL/DL readers",
+      "failed_ctests": 2,
+      "expected_failure": "retained region row unreachable; IL/DL structure revision not published"
+    },
+    {
+      "case": "partial source selection mapping",
+      "failed_ctests": 1,
+      "expected_failure": "[2,5) selection projected to entire [0,8) row"
+    },
+    {
+      "case": "Qt normal navigation",
+      "failed_ctests": 1,
+      "actual_hex": "f09f9880",
+      "expected_hex": "1b5b481b5b461b5b327e1b5b337e1b5b357e1b5b367eefbfbd1b5b48efbfbd"
+    },
+    {
+      "case": "Qt mapped selection paint",
+      "failed_ctests": 1,
+      "expected_failure": "Qt drag must highlight only the selected middle answer cell"
+    }
+  ],
+  "final_joint_execution": {
+    "passed": 20,
+    "failed": 1,
+    "skipped": 0,
+    "ctest_seconds": 24.77,
+    "cases": [
+      {
+        "name": "resize_core",
+        "seconds": 0.0186498,
+        "result": "passed"
+      },
+      {
+        "name": "history_core",
+        "seconds": 0.0199707,
+        "result": "passed"
+      },
+      {
+        "name": "selection_core",
+        "seconds": 0.0812841,
+        "result": "passed"
+      },
+      {
+        "name": "search_core",
+        "seconds": 0.116962,
+        "result": "passed"
+      },
+      {
+        "name": "search_reorder_core",
+        "seconds": 0.0158683,
+        "result": "passed"
+      },
+      {
+        "name": "buffer_state_core",
+        "seconds": 0.0162818,
+        "result": "passed"
+      },
+      {
+        "name": "view_mapping_core",
+        "seconds": 0.0154699,
+        "result": "passed"
+      },
+      {
+        "name": "alternate_mode_core",
+        "seconds": 0.0943207,
+        "result": "passed"
+      },
+      {
+        "name": "decawm_mode_core",
+        "seconds": 0.030998,
+        "result": "passed"
+      },
+      {
+        "name": "private_mode_core",
+        "seconds": 0.015346,
+        "result": "passed"
+      },
+      {
+        "name": "decom_origin_core",
+        "seconds": 0.137851,
+        "result": "passed"
+      },
+      {
+        "name": "reply_core",
+        "seconds": 0.0161105,
+        "result": "passed"
+      },
+      {
+        "name": "edit_csi_core",
+        "seconds": 0.0152533,
+        "result": "passed"
+      },
+      {
+        "name": "order_query_core",
+        "seconds": 0.0152244,
+        "result": "passed"
+      },
+      {
+        "name": "keyboard",
+        "seconds": 0.0144967,
+        "result": "passed"
+      },
+      {
+        "name": "core",
+        "seconds": 5.84838,
+        "result": "failed"
+      },
+      {
+        "name": "resize_replay_contract",
+        "seconds": 0.232058,
+        "result": "passed"
+      },
+      {
+        "name": "recovery",
+        "seconds": 10.7521,
+        "result": "passed"
+      },
+      {
+        "name": "qt_cpp_shell",
+        "seconds": 1.62373,
+        "result": "passed"
+      },
+      {
+        "name": "qt_unicode_input",
+        "seconds": 1.10231,
+        "result": "passed"
+      },
+      {
+        "name": "qt_cpp_resize",
+        "seconds": 4.54752,
+        "result": "passed"
+      }
+    ],
+    "failure": "core: receive.exe omitted from focused build target list"
+  },
+  "preparation_correction": "Built existing receive target, without changing source, expectations or timeouts",
+  "failed_test_reexecution": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "ctest_seconds": 5.85,
+    "internal_unittest_cases": 31,
+    "cases": [
+      {
+        "name": "core",
+        "seconds": 5.83599,
+        "result": "passed"
+      }
+    ]
+  },
+  "qt_supervised_results_from_joint_execution": [
+    {
+      "schema": "termforge-qt-cpp-supervisor-v1",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 26,
+        "terminated": 0
+      },
+      "sample": {
+        "schema": "termforge-qt-cpp-smoke-v1",
+        "qt": "6.10.3",
+        "core": "cpp",
+        "backend": "fixed-microsoft-conpty",
+        "arithmetic": 750,
+        "child_exit": 37,
+        "cleanup_verified": true,
+        "image_changed": true,
+        "startup_error_visible": true,
+        "selection": {
+          "partial_forward_reverse_ink": true,
+          "view_only": true,
+          "empty_click_clears": true
+        },
+        "manual_close_reclaimed": true,
+        "tabs": {
+          "arithmetic": [
+            750,
+            427
+          ],
+          "survivor_after_close": 778,
+          "survivor_after_startup_failure": 147,
+          "natural_exit": 41,
+          "input_isolation": true,
+          "answer_ink_visible": true,
+          "independent_close": true,
+          "startup_error_visible": true,
+          "window_close_reclaimed": true,
+          "all_exited_status": 41,
+          "failed_only_kept_visible": true
+        },
+        "app_exec": {
+          "window_close": true,
+          "last_tab_close": true,
+          "failed_only_close": true,
+          "completed_tab_close": true,
+          "cleanup_before_quit": true,
+          "manual_status": 0
+        },
+        "presented_done": null
+      }
+    },
+    {
+      "schema": "termforge-qt-cpp-supervisor-v1",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 19,
+        "terminated": 0
+      },
+      "sample": {
+        "cases": [
+          {
+            "case": "unicode-text",
+            "exit_code": 0,
+            "job_active": 0,
+            "received_hex": "4ce4b8ade6968765cc81f09f9880f09f9880f09f91a9e2808df09f92bb31efb88fe283a3efbfbdefbfbd78efbfbdf09f9880efbfbd0defbfbd52"
+          },
+          {
+            "case": "focus-hide-packet-rejection",
+            "exact_packet_bytes": 1024,
+            "exit_code": 0,
+            "job_active": 0,
+            "received_bytes": 1037,
+            "received_sha256": "97f22206016f52617da7b671f20fea22d85b36bee4d66c04cf3a174264b8d862",
+            "rejected_packet_bytes": 1025
+          },
+          {
+            "case": "normal-keys",
+            "exit_code": 0,
+            "job_active": 0,
+            "received_hex": "4162390d097f031b5b411b5b421b5b431b5b44"
+          },
+          {
+            "case": "navigation-keys",
+            "exit_code": 0,
+            "job_active": 0,
+            "modified_insert_rejected": true,
+            "received_hex": "1b5b481b5b461b5b327e1b5b337e1b5b357e1b5b367eefbfbd1b5b48efbfbd"
+          },
+          {
+            "cancelled_receiver": 1,
+            "case": "tab-close-isolation",
+            "first_hex": "41efbfbd43efbfbd45",
+            "job_active": 0,
+            "natural_receivers": 2,
+            "second_hex": "efbfbd42efbfbd44"
+          },
+          {
+            "case": "unavailable-targets",
+            "ended_rejected": true,
+            "failed_rejected": true,
+            "job_active": 0,
+            "received_hex": "efbfbd52",
+            "unstarted_rejected": true
+          }
+        ],
+        "ime": false,
+        "presented_done": null,
+        "schema": "termforge-qt-unicode-input-v1"
+      }
+    },
+    {
+      "schema": "termforge-qt-cpp-supervisor-v1",
+      "status": "passed",
+      "timed_out": false,
+      "exit_code": 0,
+      "job_after": {
+        "active": 0,
+        "total": 27,
+        "terminated": 0
+      },
+      "sample": {
+        "schema": "termforge-qt-resize-smoke-v1",
+        "grid_sequence_cases": 8,
+        "child_ack_replies": 12,
+        "qt_heartbeat_events": 8,
+        "output_bytes": 2097203,
+        "output_queue_high_water": 262144,
+        "same_size_cmd_output_retained": true,
+        "child_exit": 37,
+        "cleanup_verified": true,
+        "presented_done": null
+      }
+    }
+  ],
+  "local_log_sha256": {
+    "local/r2-region-order/red-ctest.log": "5cb5598538065b014838d700d2410ec3abb09921662d199920cbe5b0169ac2bc",
+    "local/r2-region-order/green-ctest.log": "95898263fbe09f2989b73df8e2f0ff6a77d62feb0616b19d5a95cb7c9021dd51",
+    "local/r2-region-order/regression-ctest.log": "db9351f3d9edd23ab9b5e416a3d44e89fda0184f84db7a5fcfe24cfb031fd30c",
+    "local/r2-view-mapping/red-test.log": "f5c1b4db8be9b4a4be26ee29f5ce218ff02a4e6a68b9e99a14fdb2f915052c38",
+    "local/r2-view-mapping/green-test.log": "b306db2a1aa528d7f311c35f2bb2c98e7ed00c658bfe8fb5d1ac67c1fd8ae147",
+    "local/r2-qt-navigation/red-unicode.log": "f8ec1e032517ae6d6ed8a8833d0877f335458b56123af0b562047031d725e150",
+    "local/r2-qt-navigation/red-shell.log": "00609ad358fb7e0e789c3217603cbba4ecfca652e4390959e1f9bcb08f0eb86c",
+    "local/r2-qt-navigation/green-unicode.log": "08a442d16d71a7f2c7fe3892188db75a3dd2d896ba4a192af6cc5a6277754134",
+    "local/r2-qt-navigation/selection-green-test.log": "f963e077cb8cf2c63b0ab219717ee2ff6a46f5be8a6c588a03307b46a371687c",
+    "local/r2-qt-navigation/joint-build.log": "23295c02416c1d828e66742a6efac3b4f89ca1d7c619993bfb656d9bfe04ffe5",
+    "local/r2-qt-navigation/joint-test.log": "f5f9a048a28fb2df136ee657445d6d97d295a4514acdd535867297a85460444d",
+    "local/r2-qt-navigation/receive-build.log": "2cfd736ba00d49a9f120b195968d5d89728b0d2bb2978bf1a823d4cbb9e1f0ce",
+    "local/r2-qt-navigation/core-retest.log": "3c52c17772a37a5e54934eae881fdb3c0a6c52bb23d20f3dce23350351e43f90"
+  },
+  "limits": {
+    "full_repository_suite_run": false,
+    "full_r2_acceptance": false,
+    "new_windterm_runs": 0,
+    "physical_keyboard": false,
+    "physical_mouse": false,
+    "native_clipboard": false,
+    "native_ime": false,
+    "different_dpi": false,
+    "performance_acceptance": false,
+    "presented_done": null
+  },
+  "build_warnings": [
+    "Existing C4996 getenv/fopen and QApplication::setActiveWindow",
+    "Existing C4456 edit_csi_test margin shadowing",
+    "windeployqt translations unavailable (build uses --no-translations)"
+  ]
+}
