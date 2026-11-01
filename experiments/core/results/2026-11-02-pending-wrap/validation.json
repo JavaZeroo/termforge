@@ -1,0 +1,172 @@
+{
+  "schema": "termforge-cpp-pending-wrap-local-validation-v1",
+  "issue": 27,
+  "base_commit": "3ec11c429abb4ff3075737fdcce94afdd95cc73f",
+  "runtime_implementation_commit": "3a8fc1acdad84730ac7419a2e3e5173978fe5e2a",
+  "validated_source_commit": "3a8fc1acdad84730ac7419a2e3e5173978fe5e2a",
+  "final_binary_hash_observation": "After all directed tests completed; hashes taken once at the end and do not claim continuous monitoring.",
+  "configuration": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "compiler_sha256": "42fd88579adc0e2418a0a71ec9adcfcf677d39ff2724c9d6ac9d901264812bf2",
+    "configuration": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "conpty_runtime_exercised": false
+  },
+  "observed_contract": {
+    "reference_issues": [
+      123,
+      151
+    ],
+    "reference_docs": {
+      "docs/research/windterm-alternate-style-reference-2026-10-28.md": "6a847aa16872d98c79367a407a2cb47c89458460573c850a9b237c6b2fafee74",
+      "docs/research/windterm-origin-wrap-reference-2026-10-29.md": "f21a29f4eff3c34d9df83a74b955d3b0cdca1517f0772a280ff5138d43802e8a"
+    },
+    "whole_original_trace_replayed": true,
+    "phases_replayed": 7,
+    "extracted_source_bytes": 122,
+    "dsr_request_bytes": 28,
+    "dsr_reply_interface_added": false,
+    "original_runs_this_implementation": 0,
+    "parser_modes": [
+      "strict",
+      "recovery"
+    ],
+    "per_mode_two_way_split_cases": 151,
+    "per_mode_bytewise_cases": 1,
+    "per_mode_isolated_arm_split_cases": 2,
+    "cpp_checks": 15,
+    "cpp_test_groups": 15,
+    "phase_replies": [
+      {
+        "phase": 0,
+        "label": "wrap-enabled-edge",
+        "source_hex": "1b5b3f37681b5b383b3931484142",
+        "cursor_reply_1based": [
+          9,
+          2
+        ]
+      },
+      {
+        "phase": 1,
+        "label": "wrap-disabled-edge",
+        "source_hex": "1b5b3f376c1b5b31303b3931484344",
+        "cursor_reply_1based": [
+          10,
+          91
+        ]
+      },
+      {
+        "phase": 2,
+        "label": "wrap-enabled-again-edge",
+        "source_hex": "1b5b3f37681b5b31323b3931484546",
+        "cursor_reply_1based": [
+          13,
+          2
+        ]
+      },
+      {
+        "phase": 3,
+        "label": "pending-edge-disable-before-next",
+        "source_hex": "1b5b31343b393148471b5b3f376c48",
+        "cursor_reply_1based": [
+          14,
+          91
+        ]
+      },
+      {
+        "phase": 4,
+        "label": "disabled-edge-enable-before-next",
+        "source_hex": "1b5b3f376c1b5b31363b393148491b5b3f37684a",
+        "cursor_reply_1based": [
+          17,
+          2
+        ]
+      },
+      {
+        "phase": 5,
+        "label": "alternate-pending-wrap-roundtrip",
+        "source_hex": "1b5b3f37681b5b333b393148571b5b3f3130343968544641341b5b3f313034396c58",
+        "cursor_reply_1based": [
+          4,
+          2
+        ]
+      },
+      {
+        "phase": 6,
+        "label": "pending-wrap-control",
+        "source_hex": "1b5b363b393148565a",
+        "cursor_reply_1based": [
+          7,
+          2
+        ]
+      }
+    ]
+  },
+  "final_runtime_sha256": {
+    "experiments/core/pending_wrap_test.cpp": "8e61049cce8dc21e3a99a71091b4b90051c9d77e6d3998119b2e9e477d718ed6",
+    "CMakeLists.txt": "16b96dbaf86ca58db8cc010e1b4b903d2c6623bc79038171d9cb8e69b1f513f0",
+    "experiments/core/screen.hpp": "142e786bd202a63f948d5443bcd203985d57c30f7ca39bd1cb9133646780a9ed",
+    "experiments/core/terminal.hpp": "486527af086973b21a672699ad5a70cb5b2ed7b709203e420212f0ce0b5bc3c9"
+  },
+  "final_binary_sha256": {
+    "pending_wrap_test.exe": "0d55fd1b368c0c84f5fef3da3529e120210f8aa07c79b67494f49dcb81923100",
+    "decawm_mode_test.exe": "b164ba5236b34423e6116bf461f858884a364060dd3ac67218b4959fbf8369a7",
+    "alternate_mode_test.exe": "c908f885ae3447c1942d8fb0e0230626632f8b2f5dec697ddebdfc18929f7ef0",
+    "decom_origin_test.exe": "20e272d14ffdbaca32b67b61596638985540ed531f091b63d88cf2439797f10a",
+    "buffer_state_test.exe": "83a87096fb8368f4f1fb6bbbea3db72aa79d4e36bf60e1a65129162190f55250",
+    "history_test.exe": "fba45bf6b06fe41976f07eb4f7514cb8bc88571c3fa526fe3ad92bb65b165b21",
+    "resize_test.exe": "435fec501dd6caf98de15b63c080eb1ae38a761592f64469d77c1f5b7d345fdf",
+    "resize_edges_test.exe": "c03c9518086f5ebaf4bf6c2f0353add4eca58cc9f4636fb1ffc5f992b40e734a",
+    "selection_test.exe": "163fb71a9634d68f2c0118c8deb9c02068f26ab215bec95e402f7894a54c983d",
+    "search_test.exe": "263bc8d9ea5afa5294467c5479eb96565739983bb5eec945f176ee21b73f62f2",
+    "search_reorder_test.exe": "23410ec54fa1469991f741d1cf71e39ef5571867459beb7e86da0950a4642f6f",
+    "reply_test.exe": "d1dcba1ebcd5de91d05249bdf43c701e591c6f3fb0858d82518fb3e20af727be",
+    "edit_csi_test.exe": "7f8221af5979d526804dee54ea35e06f5496884ab4f2e7bdaa03bad8efe76221",
+    "order_query_test.exe": "25a36a3b4fd95bb8b06c2d3888af512e3369ed7b2f2067abcbdf41f66c5b4ea7",
+    "view_mapping_test.exe": "de3060254dd79612b9d0c05080d87c9154247ad118ad8299215e8c7611c501cf",
+    "private_mode_test.exe": "c47f4855852ad0bd2e75bd853f3271fe53c9b5c4573e25f8064f74e634a20158",
+    "replay.exe": "cf9941304f5d9235dfd070372357dcb06f61a7829dc61d7c12dcd0243883b61b",
+    "terminal_trace.exe": "38ed959979421df65d445ecdec2c9568c56a7f947c8fc0b5f070cf49899ade22",
+    "recovery_probe.exe": "593ac2fdd3f4505169c393f029e57d9e0d2af2818e346e028f8fba22bd048e9d",
+    "receive.exe": "39d4a74101effa88c3aaf772190e2778a55637fa4e4f1e6e3fff6cbee47871a3"
+  },
+  "executions": [
+    {
+      "label": "configure",
+      "exit_code": 0,
+      "timed_out": false,
+      "note": "build/pending-wrap, Qt and candidate disabled"
+    },
+    {
+      "label": "build-core-tests",
+      "exit_code": 0,
+      "timed_out": false,
+      "note": "pending_wrap_test + 15 existing core C++ test executables + replay/terminal_trace/recovery_probe/receive"
+    },
+    {
+      "label": "pending_wrap_test",
+      "exit_code": 0,
+      "note": "15/15 checks passed; strict+recovery literal 7-phase replay, 151 two-way splits and bytewise each"
+    },
+    {
+      "label": "ctest-core",
+      "exit_code": 0,
+      "note": "16/16 core C++ tests passed, 0 failed, 0 skipped"
+    },
+    {
+      "label": "python-core-unicode-recovery",
+      "exit_code": 0,
+      "note": "66 tests passed (experiments.core.test_core/test_unicode/test_recovery)"
+    }
+  ],
+  "skip_count": 0,
+  "residual_gaps": [
+    "DECOM-on x last-column-wrap cells (origin wrap and origin x autowrap-off) are composed model checks; the original observed the wrap phases with origin off, so those crossings stay unobserved.",
+    "Wide scalars and combining marks across 1049 are outside this slice; the issue splits them from pending-wrap save/restore.",
+    "Per-screen origin bit, full active grid, per-cell style, and fixed-ConPTY transport are outside this slice."
+  ]
+}
