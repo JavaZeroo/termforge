@@ -155,5 +155,21 @@
       },
       "not_a_combined_rerun": true
     }
+  },
+  "upstream_integration": {
+    "main_commit": "3ec11c429abb4ff3075737fdcce94afdd95cc73f",
+    "merge_commit": "88ae75d65052a3d4d08cff3dc4992479ae852c56",
+    "unchanged_product_source": true,
+    "added_target": "resize_edges_core",
+    "ctest_passed": 1,
+    "literal_checks_passed": 7,
+    "seconds": 0.04,
+    "source_sha256": "ca16b2d3bbaa154dbfc06e1a71848ea25145b91f86cd44c17c1a9da86157e49e",
+    "log_sha256": {
+      "main-integration-configure.log": "8a7df0aa3fe251e92a19910f9dc9555ab4a20f931866df3f29121417d4baad97",
+      "main-integration-build.log": "7eb83d407ca9f7c21521910a28695718b9ea2e46691d58e9998cb6413e701ad6",
+      "main-integration-ctest.log": "8fd7d031c8993ae776eeb03f38f46afc07a1d573dd4ead9304beb3026078d84a"
+    },
+    "not_a_combined_rerun": true
   }
 }
