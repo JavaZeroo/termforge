@@ -1,0 +1,327 @@
+{
+  "schema": "termforge-1049-origin-reentry-core-public-v1",
+  "date": "2026-11-02",
+  "issue": 27,
+  "configuration": {
+    "core": "independent C++17",
+    "build": "Visual Studio 2022 / Release",
+    "parallel": 1,
+    "ctest": "decom_origin_core",
+    "transport": false,
+    "qt": false,
+    "candidate_adapter": false
+  },
+  "original_reference": {
+    "readme": "research/ui/results/2026-11-02-mode-state-reference/README.md",
+    "cases": [
+      {
+        "case": "main-on-alt-off",
+        "path": "research/ui/results/2026-11-02-mode-state-reference/main-on-alt-off.json",
+        "status": "published",
+        "sha256": "072b43602aa8d968045a66b350be9410785016177407478f75c4d1a34000b338"
+      },
+      {
+        "case": "main-off-alt-on",
+        "path": "research/ui/results/2026-11-02-mode-state-reference/main-off-alt-on.json",
+        "status": "published",
+        "sha256": "4ad4c8249fe5367772ff6428fca68f3eb27bb9e5fe085559dc42124df7949aa6"
+      },
+      {
+        "case": "alternate-origin-reentry",
+        "path": "research/ui/results/2026-11-02-mode-state-reference/alternate-origin-reentry.json",
+        "status": "published",
+        "sha256": "ae25b0d72836685255fd814b34e1464daf96753b383a6b0b87c6e7344a1bf142"
+      }
+    ],
+    "prior_core_report": "experiments/core/results/2026-11-02-origin-frame/validation.json",
+    "new_case": "alternate-origin-reentry",
+    "new_case_grid": [
+      91,
+      20
+    ],
+    "new_case_raw_ui_sha256": "f2276f1dbb2034a18ce3a00a7a402b90ee1fc37a8e1535d82499dd73aa2e82a1",
+    "new_case_original_phases": 14,
+    "all_three_case_original_phases": 42,
+    "scope": "Direct DSR and selected public text marker observations; no private structure or full grid"
+  },
+  "new_core_replay": {
+    "source_equal_to_original": true,
+    "reply_equal_to_original": true,
+    "phase_count": 14,
+    "replays": 4,
+    "phase_checks": 56,
+    "feeds": [
+      "strict whole",
+      "strict bytewise",
+      "recovery whole",
+      "recovery bytewise"
+    ],
+    "phases": [
+      {
+        "phase": 0,
+        "label": "primary-known-origin-on",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b324a1b5b313b31485230311b5b323b31485230321b5b333b31485230331b5b343b31485230341b5b353b31485230351b5b363b31485230361b5b373b31485230371b5b383b31485230381b5b323b35721b5b3f36681b5b323b3130484d50",
+        "source_sha256": "8b65df8b11020968c5aff764e9b4dbde75218eb35146f66e7cbf9343740b048b",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b323b313252",
+        "reply": [
+          2,
+          12
+        ]
+      },
+      {
+        "phase": 1,
+        "label": "first-alternate-known-origin-on",
+        "source_hex": "1b5b3f31303439681b5b333b37721b5b3f36681b5b323b3130484130",
+        "source_sha256": "fda8c4cb53f5e8751540ad9c18f0577be62b95280a27260d96c0adeeda3edcfd",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b323b313252",
+        "reply": [
+          2,
+          12
+        ]
+      },
+      {
+        "phase": 2,
+        "label": "duplicate-alternate-enter-untouched",
+        "source_hex": "1b5b3f3130343968",
+        "source_sha256": "b7c9b6f9082bb2a92f63566d8800008f96b5dee9d380c2d460b2466ad1496440",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b313b3152",
+        "reply": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 3,
+        "label": "duplicate-origin-sample",
+        "source_hex": "1b5b333b37721b5b313b314844531b5b39393b3148",
+        "source_sha256": "b6f17b33eaaf8476bfb271b713955de030c3276e7e24b5cf0e89ad6611e7893a",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b32303b3152",
+        "reply": [
+          20,
+          1
+        ]
+      },
+      {
+        "phase": 4,
+        "label": "duplicate-origin-on-control",
+        "source_hex": "1b5b3f36681b5b333b37721b5b313b314844491b5b39393b3148",
+        "source_sha256": "38c8cbd128f2ca772788736cda8e07adf3ea8510ba94aa1e7ca17a6c900353b9",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b353b3152",
+        "reply": [
+          5,
+          1
+        ]
+      },
+      {
+        "phase": 5,
+        "label": "duplicate-origin-off-control",
+        "source_hex": "1b5b3f366c1b5b333b37721b5b313b3148444f1b5b39393b3148",
+        "source_sha256": "d805c9055f29647a7d8dd538b4a856b640290d5f4cc7f00ac481a2ebcc3c39dd",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b32303b3152",
+        "reply": [
+          20,
+          1
+        ]
+      },
+      {
+        "phase": 6,
+        "label": "alternate-known-origin-on-before-exit",
+        "source_hex": "1b5b3f36681b5b323b3130484131",
+        "source_sha256": "b052b2ac61fc1285fd5f4bfe6d89fd34deb8b6e7c85b4fb2f6c5032417c5cd24",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b323b313252",
+        "reply": [
+          2,
+          12
+        ]
+      },
+      {
+        "phase": 7,
+        "label": "first-primary-return-untouched",
+        "source_hex": "1b5b3f313034396c",
+        "source_sha256": "36a3d2013e70720f8d7c0105d9b9c23acfa208b175099330c7c820ad3e1e1df5",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b323b313252",
+        "reply": [
+          2,
+          12
+        ]
+      },
+      {
+        "phase": 8,
+        "label": "later-alternate-enter-untouched",
+        "source_hex": "1b5b3f3130343968",
+        "source_sha256": "b7c9b6f9082bb2a92f63566d8800008f96b5dee9d380c2d460b2466ad1496440",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b313b3152",
+        "reply": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 9,
+        "label": "later-origin-sample",
+        "source_hex": "1b5b333b37721b5b313b314845531b5b39393b3148",
+        "source_sha256": "4e4227b2861b1b5e253fdef2b3ebdf2e26629a1e32509b200cfdfc60f867ab61",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b32303b3152",
+        "reply": [
+          20,
+          1
+        ]
+      },
+      {
+        "phase": 10,
+        "label": "later-origin-on-control",
+        "source_hex": "1b5b3f36681b5b333b37721b5b313b314845491b5b39393b3148",
+        "source_sha256": "46c87ad190bae448b45ff5772798dfce9610600dc05616d026dc5a778044efe3",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b353b3152",
+        "reply": [
+          5,
+          1
+        ]
+      },
+      {
+        "phase": 11,
+        "label": "later-origin-off-control",
+        "source_hex": "1b5b3f366c1b5b333b37721b5b313b3148454f1b5b39393b3148",
+        "source_sha256": "48143e6fb28814203e4bfe932fdd79447a9864aae1f27c3c8238d23d08456fc7",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b32303b3152",
+        "reply": [
+          20,
+          1
+        ]
+      },
+      {
+        "phase": 12,
+        "label": "final-primary-return-untouched",
+        "source_hex": "1b5b3f313034396c",
+        "source_sha256": "36a3d2013e70720f8d7c0105d9b9c23acfa208b175099330c7c820ad3e1e1df5",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b323b313252",
+        "reply": [
+          2,
+          12
+        ]
+      },
+      {
+        "phase": 13,
+        "label": "final-explicit-reset",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b313b3148444f4e45",
+        "source_sha256": "f45dfc22cd655dcf31ca27d1c2141a935e1c8ab966caf40824f91d0fedbe1c5f",
+        "dsr_suffix_hex": "1b5b366e",
+        "reply_hex": "1b5b313b3552",
+        "reply": [
+          1,
+          5
+        ]
+      }
+    ],
+    "marker_contract": [
+      {
+        "phase": 3,
+        "marker": "DS",
+        "physical_row_zero_based": 0,
+        "column_zero_based": 0
+      },
+      {
+        "phase": 4,
+        "marker": "DI",
+        "physical_row_zero_based": 2,
+        "column_zero_based": 0
+      },
+      {
+        "phase": 5,
+        "marker": "DO",
+        "physical_row_zero_based": 0,
+        "column_zero_based": 0
+      },
+      {
+        "phase": 9,
+        "marker": "ES",
+        "physical_row_zero_based": 0,
+        "column_zero_based": 0
+      },
+      {
+        "phase": 10,
+        "marker": "EI",
+        "physical_row_zero_based": 2,
+        "column_zero_based": 0
+      },
+      {
+        "phase": 11,
+        "marker": "EO",
+        "physical_row_zero_based": 0,
+        "column_zero_based": 0
+      }
+    ]
+  },
+  "implementation": "Each 1049h resets alternate origin to off; primary origin remains frame-owned and is restored on 1049l.",
+  "red": {
+    "ctest_passed": 0,
+    "ctest_failed": 1,
+    "build_succeeded": true,
+    "named_groups_passed": 31,
+    "named_groups_total": 35,
+    "new_replays_failed": 4,
+    "failed_checks": [
+      "duplicate-sample DSR",
+      "duplicate-sample marker",
+      "later-sample DSR",
+      "later-sample marker"
+    ],
+    "target_seconds": 0.21,
+    "ctest_seconds": 0.23,
+    "exact_source_snapshot": null,
+    "binary_sha256": null
+  },
+  "green": {
+    "ctest_passed": 1,
+    "ctest_failed": 0,
+    "build_succeeded": true,
+    "named_groups_passed": 35,
+    "named_groups_total": 35,
+    "target_seconds": 0.27,
+    "ctest_seconds": 0.29,
+    "exact_source_snapshot": null,
+    "binary_sha256": null,
+    "identity_note": "No dedicated source/binary snapshot was retained for this earlier run; later attribute changes are recorded only in the separate current snapshot."
+  },
+  "logs_sha256": {
+    "reentry-red-build.log": "ded667b96a61a3003fbb0dbb851099dd048799649c066d5b55cdb70254323968",
+    "reentry-red-ctest.log": "216607f414a22e03e58cce30cb44a306a3b0feb05f34b38bc0a88620d7faeded",
+    "reentry-green-build.log": "2fdd5ce5268d2168a18c21f0295738fee4fbf24dc5826f5dd68c434a2ddd20a6",
+    "reentry-green-ctest.log": "5bcd3457b1c6a96008d23c6a8e04dde0a9c71e3b7c5c88976ffff40ce51a5a23"
+  },
+  "current_source_snapshot": {
+    "captured_utc": "2026-11-01T16:58:29.697109+00:00",
+    "source_base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+    "scope": "Selected current files at documentation time; not a retroactive RED/GREEN build manifest",
+    "files_sha256": {
+      "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "experiments/core/screen.hpp": "ef1634bae1286cf9e5159fcb515c31b985186f7fe01680dbdd23bcd6653ed62b",
+      "experiments/core/alternate_mode_test.cpp": "12dd1d488b7a8296b6fecc1fb97b10ccbfebba2d312f89f32cbcb2fac09b7922",
+      "experiments/core/decom_origin_test.cpp": "44dd8d0d124483125c8d55df7859bb979c0cbc415df31dc725bfa335aa23e27a"
+    }
+  },
+  "limitations": {
+    "full_active_grid": false,
+    "full_styles": false,
+    "resize": false,
+    "transport": false,
+    "qt_rendering": false,
+    "performance": false,
+    "r27_closed": false,
+    "presented_done": null
+  },
+  "final_joint_suite_included": false
+}

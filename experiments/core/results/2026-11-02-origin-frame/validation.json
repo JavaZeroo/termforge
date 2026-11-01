@@ -1,0 +1,166 @@
+{
+  "schema": "termforge-origin-frame-validation-v1",
+  "date": "2026-11-02",
+  "issue": 27,
+  "source_base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+  "source_state": "base plus prior R27 changes and independent frame origin implementation",
+  "configuration": {
+    "platform": "Windows 11 x64 build 26200",
+    "compiler": "MSVC 19.42.34433.0",
+    "parallel": 1,
+    "candidate_adapter": false,
+    "build_directory": "local/r2-core-build",
+    "qt_shell": false,
+    "configuration": "Release",
+    "generator": "Visual Studio 17 2022"
+  },
+  "original_observations": {
+    "grid": [
+      91,
+      20
+    ],
+    "replay_modes": [
+      "strict whole",
+      "strict bytewise",
+      "recovery whole",
+      "recovery bytewise"
+    ],
+    "public_archive_status": "published; links added without changing this record's original source or test identities",
+    "cases": [
+      "main-on-alt-off",
+      "main-off-alt-on"
+    ],
+    "local_raw_sha256": {
+      "local/r27-vm/mode-on-ui.json": "610eca67079127a417dbda35c9b19c68abc6e2eaf75328e4d03059fff13f5a71",
+      "local/r27-vm/mode-off-ui.json": "f74c908d3741882989bdf704aa55e9d0ea3cb39083bd004886285df852dcb1dd"
+    },
+    "public_archive": {
+      "readme": "research/ui/results/2026-11-02-mode-state-reference/README.md",
+      "files_sha256": {
+        "research/ui/results/2026-11-02-mode-state-reference/main-on-alt-off.json": "072b43602aa8d968045a66b350be9410785016177407478f75c4d1a34000b338",
+        "research/ui/results/2026-11-02-mode-state-reference/main-off-alt-on.json": "4ad4c8249fe5367772ff6428fca68f3eb27bb9e5fe085559dc42124df7949aa6"
+      }
+    },
+    "unique_phases_per_case": 14,
+    "unique_phases_total": 28,
+    "evidence_scope": "literal DSR, selected public marker positions and active buffer; no private structure or full grid claim",
+    "implementation_replays": 8,
+    "fixed_windterm": "2.7.0 x64",
+    "replayed_phase_checks": 112
+  },
+  "red": {
+    "ctest_selected": 1,
+    "ctest_passed": 0,
+    "screen_sha256": "d687481c7b360639f5bd376df0f394cb01bbd010fc7bda48985d660950516cb2",
+    "named_groups_passed": 23,
+    "decom_test_sha256": "aca4532ea7a7512e68a9962c88f9cb824aa5e3aab47672601f144713841786d2",
+    "new_replays_failed": 8,
+    "ctest_exit_code": 8,
+    "build_exit_code": 0,
+    "elapsed_seconds": 0.19,
+    "named_groups_total": 31
+  },
+  "first_green": {
+    "named_groups_passed": 31,
+    "ctest_passed": 1,
+    "build_exit_code": 0,
+    "identity_note": "before adding the final alternate-RIS engineering safeguard; exact test source hash was not captured separately",
+    "named_groups_total": 31,
+    "ctest_exit_code": 0,
+    "elapsed_seconds": 0.2,
+    "ctest_selected": 1
+  },
+  "final_core_run": {
+    "ctest_selected": 15,
+    "ctest_passed": 15,
+    "build_exit_code": 0,
+    "tests": [
+      "resize_core",
+      "history_core",
+      "selection_core",
+      "search_core",
+      "search_reorder_core",
+      "buffer_state_core",
+      "view_mapping_core",
+      "alternate_mode_core",
+      "decawm_mode_core",
+      "private_mode_core",
+      "decom_origin_core",
+      "reply_core",
+      "edit_csi_core",
+      "order_query_core",
+      "region_wrap_core"
+    ],
+    "ctest_skipped": 0,
+    "ctest_failed": 0,
+    "identity_note": "hashes collected after fresh build and tests; not continuous execution monitoring",
+    "ctest_exit_code": 0,
+    "existing_warning": "edit_csi_test.cpp:172 C4456 margin hides local at line 82; unchanged file",
+    "elapsed_seconds": 0.69,
+    "source_sha256_after_run": {
+      "CMakeLists.txt": "e4a6569ebbed66f7a44628433725607399bb339677f6c0bddcd5dc99a793195d",
+      "experiments/core/alternate_mode_test.cpp": "de63aba001bb0b129d1586053d00c3dba31c1bb90243fe6adabf72dab034ed26",
+      "experiments/core/buffer_state_test.cpp": "f1c78c96e6cff2bb0405a6822cc223b53f1cac3593c965e5efb016d93847c1fc",
+      "experiments/core/decawm_mode_test.cpp": "f3aae3b460a4ee31885b1a840eafaf82fef8af733385090e0c8c443e51df4977",
+      "experiments/core/decom_origin_test.cpp": "8f1660a8df34f2d2bf649fc80427b8958906c27157ba5e320e2ab2eace75059d",
+      "experiments/core/edit_csi_test.cpp": "35899d60a33d3503bad9b096c5f0069d45f6079f2ec879e7db6f0e1dabe3601d",
+      "experiments/core/history_test.cpp": "d54ebed670237b73ea2e855f41aa822a19960a4920801bdd5977e4899763ef69",
+      "experiments/core/order_query_test.cpp": "27ae45ad5daaf17a9d6e2c4eaa021dfb15e03550f01650fe65cc621fa90ea590",
+      "experiments/core/private_mode_test.cpp": "b602921407158836f56cbf89dd3a2fbcec15a38de009d1496dcd907ce040a948",
+      "experiments/core/region_wrap_test.cpp": "9fdd70c76c6ad6f6c13c89dadada43316b25824d0060ae48be52c0802e0401f4",
+      "experiments/core/reply_test.cpp": "1c764efdfdbf98e91257fbc3e763846dd3be3adac23161460275fe61e23cf85a",
+      "experiments/core/resize_test.cpp": "4e4469d18f752ed1d2486b81b19e58cd1bb0cb2acb71b870ce2b333cd8175fd6",
+      "experiments/core/search_reorder_test.cpp": "1ab5121e1497a4a6fc90003dc4332771240f4697229cc99f9a45256fb48e4406",
+      "experiments/core/search_test.cpp": "42e8d13a5b92ee03a6931f71dac1b06fecb8859470caee41fc517f3c1eb7fd8d",
+      "experiments/core/selection_test.cpp": "8f0bd95a9eabba4e23c19d6fbdb9bd7eb37f3e529eb8aea5376d62d8145da28a",
+      "experiments/core/view_mapping_test.cpp": "d8d73da7dab1f994d78ba82d0037e682d03d2788dc09eb7ef2e45ec0804415e8",
+      "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "experiments/core/history_view.hpp": "29c56d9d0739d6a6fd0e3b5f5d225b4f8e5bce7aa2fcbea6fee6646a760a802b",
+      "experiments/core/line_order/adapters.hpp": "f1004dec4e863c9845153d3153663e3b35cc781a99cadf0868c3c982e1ccf12e",
+      "experiments/core/line_order/document.hpp": "325ec5ddc16d4b625b2f8b3aa1fe0d4a1222bac6e272280a06c924b46bb390a1",
+      "experiments/core/screen.hpp": "ef1634bae1286cf9e5159fcb515c31b985186f7fe01680dbdd23bcd6653ed62b",
+      "experiments/core/terminal.hpp": "486527af086973b21a672699ad5a70cb5b2ed7b709203e420212f0ce0b5bc3c9",
+      "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "experiments/core/text_projection.hpp": "3853bcf053964e54ea00bb7acfd0d302abd536ae0ed4eddfe791a6bcffdb6914",
+      "experiments/core/text_search.hpp": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+      "experiments/core/text_selection.hpp": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+      "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "experiments/core/view_mapping.hpp": "60df4271d1763f4c2525d24b19f5f61b482feba14310a93f98d8194e23b63546"
+    },
+    "binary_sha256_after_run": {
+      "resize_test.exe": "27abed85e9ebb0ac43d9647e802d476dffaa4a8113f60b294bb9d2a71cbf0fa3",
+      "history_test.exe": "134075ed3b34be38167e9b186e73b531409c67185cb477eca0318763a500e202",
+      "selection_test.exe": "29f187e196fdaa9124e105b0ae1835de981dff17773bf5f8ce22590dedcf49df",
+      "search_test.exe": "93683e89cb50fed83255cbe3c6359cf48b6fd64dac0b6571dc873420d3f84e6b",
+      "search_reorder_test.exe": "127e515bed0bf8e4ae0974d4ecd6542f440d65c33dbbde89aa4002510050ebe6",
+      "buffer_state_test.exe": "d86d26eae8856bf797e0fa27ec385e176370c388d1ed2c6af3c6f36732c1003e",
+      "view_mapping_test.exe": "20fbb78f664bfe543d32fba0ad597b23f17202a748d6ef1bab1258a3bcb6760b",
+      "alternate_mode_test.exe": "c04f3f17c92a2956ca2e8ea22b4536ad2a465c4e957eef7314f4128615b2a33f",
+      "decawm_mode_test.exe": "bf701fe155ec6a4acce379ef8851e9d08bc0e9976edb06834a6cc6e34e75ebe8",
+      "private_mode_test.exe": "63a1c2cadf6df3300ccec97701315f008a95c6019e77e0c8416e4bc2acd6b72b",
+      "decom_origin_test.exe": "06a4fc48411877011d1bde4c75c5adb0a26886722618c386f9b9488656fdcb5d",
+      "reply_test.exe": "6b07d60c39d0f5823f78cd2a9f0a1b37400efb0edb77f353dd44f075cbb4c204",
+      "edit_csi_test.exe": "f3e9bf963cd03fedd63157cc6c8f2bb2a358a4cb0213f667674fd3d9f3dcf6f1",
+      "order_query_test.exe": "ad59c8a440cbe599a4d511f1d7050b33169471e1fb2c450094529be1b98a3a31",
+      "region_wrap_test.exe": "277a49b7f4454328d228637fd342e85ff5ac96510e2541b9dfdd1d620b072cd1"
+    }
+  },
+  "local_log_sha256": {
+    "local/r27-history-wrap/origin-red-build.log": "2fdd5ce5268d2168a18c21f0295738fee4fbf24dc5826f5dd68c434a2ddd20a6",
+    "local/r27-history-wrap/origin-red-ctest.log": "9828178bda41f7aa706612e5dd3d5a082641bc0ebea7d3a1e4ac39885c988110",
+    "local/r27-history-wrap/origin-green-build.log": "2fdd5ce5268d2168a18c21f0295738fee4fbf24dc5826f5dd68c434a2ddd20a6",
+    "local/r27-history-wrap/origin-green-ctest.log": "f91e9889da2545daa7fda3fa0baa44ba462a1fd3029a0dd09c72fbbe830980a9",
+    "local/r27-history-wrap/origin-all-build.log": "cbdea262b271ffcdc82bade9fd3e3d75886c1c46d449101c99920fc54bf6d1cf",
+    "local/r27-history-wrap/origin-all-ctest.log": "20e97e7be8e7fa09ef0083ca65a43c5060fba85032b024e7855019e0f28a1d48"
+  },
+  "elapsed_is_performance_measurement": false,
+  "remaining_unknowns": [
+    "Original origin policy on repeated alternate entry or exit then re-entry",
+    "Full original RIS behavior including inactive frames",
+    "Complete style/grid and resize/reflow semantics",
+    "Qt fixed ConPTY and real TUI/native action acceptance",
+    "Performance parity and approved numeric tolerances"
+  ],
+  "full_issue27_accepted": false,
+  "r2_complete": false
+}

@@ -8,6 +8,8 @@
 
 | 配置 | 证据定位 | 覆盖边界 |
 |---|---|---|
+| 自主 C++ 区域续接、历史结构通知与每屏 origin | [模式交叉与红绿](../experiments/core/results/2026-11-02-r27-mode-cross/README.md)、[每屏 origin 修正](../experiments/core/results/2026-11-02-origin-frame/README.md)、[原版固定控制对照](../research/ui/results/2026-11-02-mode-state-reference/README.md) | 区域自动换行的跨行复制/Find、RIS/ED3 结构通知、Unicode/分块/重复/异常输入与独立主屏 origin 恢复；当前物理 resize 策略测试不冒充原版匹配，完整 #27 继续开放 |
+| Qt / 固定 ConPTY 模式与正文 resize 差异 | [独立字面预期及失败运输证据](../experiments/shell/results/2026-11-02-qt-terminal-modes/README.md) | 模式阶段经公开 Qt 按键和原生网格核对；缩窄后原生 reflow 与核心物理裁剪不同步，独立运输捕获未见重排字节。失败诊断与模式回归分列，#29 的正文重排和完整 #27 不由基础尺寸通过代替 |
 | 自主 C++ 行序/显示映射与 Qt 基础输入（#27/#29/#30 切片） | [固定实现与验证记录](../experiments/shell/results/2026-11-01-r2-core-input/README.md)：区域 LF、IL/DL 后的精确行序，历史快照到文档的命中/局部选区投影，Qt 正反拖选高亮与无修饰导航键的独立接收字节 | 核心模型涵盖历史、反向、宽字/组合标记、resize 裁剪、淘汰与 epoch；Qt 只接基础可见网格拖选，不含系统复制/粘贴、选词/选行、历史浏览/自动滚动或 Find。不作完整 #27/#29/#30、真实 DPI/IME、TUI 或性能验收；实际源码与红绿分列在记录中 |
 | Qt 终端固定拼音 IME 组合/提交/取消 | [固定结果](../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/README.md)、[验证身份](../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/validation.json)：隔离 VM、固定微软拼音，我们自己的 Qt 应用收到 preedit `ni'hao` → cancel → commit `e4bda0e5a5bd`（「你好」）；光标全局矩形 (295,157) 与同轮屏幕变化框起点 (295,163) 相互印证。未覆盖候选窗身份/矩形、其他 DPI、完整字形与呈现 |
 | hosted Windows 子进程启动耗时 | [固定结果](../research/ui/results/2026-10-30-hosted-startup-latency/README.md)、[验证身份](../research/ui/results/2026-10-30-hosted-startup-latency/validation.json)：windows-2025 上 100 次 PowerShell 5.1 启动 p50 110 ms、max 1.83 s，50 次 node p50 16 ms；8 路 CPU 负载下 p50 172 ms。用于排除 #81/#144/#40 的 10–12 秒超时由启动成本解释，不等于性能预算 |
@@ -32,7 +34,7 @@ R1 固定总出口的源码为 `ce9b24d`，早期 `2dc8d6d` / `9b16acc` 仍分�
 
 [#151 origin/wrap/margin有限观察](research/windterm-origin-wrap-reference-2026-10-29.md)取得一次固定91×25直达终端的25阶段、25条bareDSR及25文档快照，[数据与发布审计](../research/ui/results/2026-10-29-origin-wrap-reference/README.md)保留完整NAWS、源/回复/文档分层、Node与源码身份、主动终止和旧false输出路径别名。严格出口普通/-O逐字节相同；初次Windows夹具CI红、真实路径别名反例及仅fixture规范化的修正另列，原公开字节保留，不推定CI使用8.3。它只为自主C++下一切片提供有限依据，不是完整active grid、产品模式、固定ConPTY或性能验收。
 
-[#146 SGR1 固定样本调查](../research/ui/results/2026-10-29-sgr1-reference/README.md)取得五阶段/五 grab、28 对 H/space 完整有序像素签名；SGR0/SGR1 控制在采样条件下均不可分，进入/重复进入/返回无唯一分类。内部字重、SGR1 是否受字体/profile 偏好影响及全部非颜色属性仍未知；没有据此更改 C++ 策略或验收 #123/#126/#27。
+[#146 SGR1 固定样本调查](../research/ui/results/2026-10-29-sgr1-reference/README.md)取得五阶段/五 grab、28 对 H/space 完整有序像素签名；SGR0/SGR1 控制在采样条件下均不可分，进入/重复进入/返回无唯一分类。内部字重、SGR1 是否受字体/profile 偏好影响仍未知；该次历史调查没有覆盖其他非颜色属性，也没有据此更改 C++ 策略或验收 #123/#126/#27。后续[六项属性独立同帧对照](../research/ui/results/2026-11-02-attribute-state-reference/README.md)及[对应 C++ 修正](../experiments/core/results/2026-11-02-1049-attributes/README.md)另有固定证据，不改写 SGR1 的 unknown。
 
 原版输出自动化见 [cmd 正确性工具](../benchmarks/tools/WINDTERM-CMD.md)及[固定结果](../benchmarks/tools/results/2026-10-28-windterm-cmd/README.md)：小 ASCII 全文、生产事件和 Job 回收已有无人值守闭环，路径元字符修复及各执行源码分列。它没有取得 C0、完整历史、消费/真实呈现端点或正式性能基线。
 

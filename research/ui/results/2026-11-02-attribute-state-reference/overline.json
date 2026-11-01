@@ -1,0 +1,1264 @@
+{
+  "schema": "termforge-original-attribute-state-reference-v1",
+  "issue": 27,
+  "case_id": "sgr53-overline-1049-state-v1",
+  "attribute": "overline",
+  "requested_sgr": 53,
+  "status": "captured-five-attribute-state-raster-phases",
+  "reason": null,
+  "authorized_plan_sha256": "0e87d6ae0ec60bacad505cfa090708c9062ea7de4e533a48deb7f9415d48af80",
+  "offline_exporter_sha256": "237228ab3501a314d27c490f2ed598a251ae365332a29d0cc9a5c579c9b21c44",
+  "offline_reason_allowlist_source_sha256": "581b034eb18944e91e4cc07b23702e224e62939c4616686a15430eca0959261a",
+  "maximum_original_runs": 1,
+  "actual_original_runs": 1,
+  "planned_phase_count": 5,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "frozen_grid": [
+    91,
+    20
+  ],
+  "naws_history": [
+    [
+      91,
+      20
+    ]
+  ],
+  "freeze_event_count": 1,
+  "raw_capture_complete": true,
+  "observed_phase_count": 5,
+  "grab_phases": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "phases": [
+    {
+      "phase": 0,
+      "label": "overline main controls",
+      "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484e3020482048201b5b35336d533020482048",
+      "source_bytes": 35,
+      "source_sha256": "192a814e113dfbabdf41243a6a04cc93ac6a644876a81b6a9461607ec5520122",
+      "dsr_suffix_hex": "1b5b366e",
+      "source_label": "main-controls-end-attribute",
+      "cursor_reply": [
+        2,
+        16
+      ],
+      "cursor_reply_hex": "1b5b323b313652",
+      "capture_valid": true,
+      "reason": null,
+      "grab_attempted": true,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 377,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          376
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 377,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "synthetic_document_lines": [
+        "",
+        "  N0 H H S0 H H"
+      ],
+      "is_alt": false,
+      "is_main": true,
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "control-normal",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "control-normal",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-attribute",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-attribute",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "attribute_signature_comparison": {
+        "attribute": "overline",
+        "requested_sgr": 53,
+        "controls": [
+          "SGR0-control-output",
+          "SGR53-control-output"
+        ],
+        "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+        "repeats_per_group": 2,
+        "same_frame_and_text_row_required": true,
+        "ink_required_for_signature_match": false,
+        "internal_attribute_verified": false,
+        "indistinguishable_controls": "unknown",
+        "unmatched_or_inconsistent": "unknown",
+        "unique_control": null,
+        "matching_controls": [],
+        "reason": "controls-distinct-no-unknown-sample",
+        "unmatched_does_not_imply_reset": true,
+        "full_style_verified": false
+      }
+    },
+    {
+      "phase": 1,
+      "label": "overline entry output",
+      "source_hex": "1b5b3f3130343968453020482048201b5b306d454e20482048201b5b35336d455320482048",
+      "source_bytes": 37,
+      "source_sha256": "c3bcb9137f5b9bfe57ef782d4076bef2aaa3aef97b709b0687c7f9bc00fb4964",
+      "dsr_suffix_hex": "1b5b366e",
+      "source_label": "1049-entry-with-controls",
+      "cursor_reply": [
+        1,
+        21
+      ],
+      "cursor_reply_hex": "1b5b313b323152",
+      "capture_valid": true,
+      "reason": null,
+      "grab_attempted": true,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 377,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          376
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 377,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "synthetic_document_lines": [
+        "",
+        "  N0 H H S0 H H",
+        "E0 H H EN H H ES H H"
+      ],
+      "is_alt": true,
+      "is_main": false,
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "sample",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "sample",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-normal",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-normal",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 4,
+          "group": "control-attribute",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 5,
+          "group": "control-attribute",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "attribute_signature_comparison": {
+        "attribute": "overline",
+        "requested_sgr": 53,
+        "controls": [
+          "SGR0-control-output",
+          "SGR53-control-output"
+        ],
+        "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+        "repeats_per_group": 2,
+        "same_frame_and_text_row_required": true,
+        "ink_required_for_signature_match": false,
+        "internal_attribute_verified": false,
+        "indistinguishable_controls": "unknown",
+        "unmatched_or_inconsistent": "unknown",
+        "unique_control": "SGR0-control-output",
+        "matching_controls": [
+          "SGR0-control-output"
+        ],
+        "reason": "unique-same-frame-output-match",
+        "unmatched_does_not_imply_reset": true,
+        "full_style_verified": false
+      }
+    },
+    {
+      "phase": 2,
+      "label": "overline known alternate output",
+      "source_hex": "1b5b343b33481b5b306d41302048204820414e20482048201b5b35336d415320482048",
+      "source_bytes": 35,
+      "source_sha256": "79ef3ebe129de7315d172a716d8fbc4039d26e51ffb580022682ac403481a48c",
+      "dsr_suffix_hex": "1b5b366e",
+      "source_label": "alternate-end-attribute",
+      "cursor_reply": [
+        4,
+        23
+      ],
+      "cursor_reply_hex": "1b5b343b323352",
+      "capture_valid": true,
+      "reason": null,
+      "grab_attempted": true,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 377,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          376
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 377,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "synthetic_document_lines": [
+        "",
+        "  N0 H H S0 H H",
+        "E0 H H EN H H ES H H",
+        "",
+        "",
+        "  A0 H H AN H H AS H H"
+      ],
+      "is_alt": true,
+      "is_main": false,
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "sample",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "sample",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-normal",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-normal",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 4,
+          "group": "control-attribute",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 5,
+          "group": "control-attribute",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "attribute_signature_comparison": {
+        "attribute": "overline",
+        "requested_sgr": 53,
+        "controls": [
+          "SGR0-control-output",
+          "SGR53-control-output"
+        ],
+        "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+        "repeats_per_group": 2,
+        "same_frame_and_text_row_required": true,
+        "ink_required_for_signature_match": false,
+        "internal_attribute_verified": false,
+        "indistinguishable_controls": "unknown",
+        "unmatched_or_inconsistent": "unknown",
+        "unique_control": "SGR0-control-output",
+        "matching_controls": [
+          "SGR0-control-output"
+        ],
+        "reason": "unique-same-frame-output-match",
+        "unmatched_does_not_imply_reset": true,
+        "full_style_verified": false
+      }
+    },
+    {
+      "phase": 3,
+      "label": "overline repeat output",
+      "source_hex": "1b5b3f3130343968523020482048201b5b306d524e20482048201b5b35336d5253204820481b5b306d",
+      "source_bytes": 41,
+      "source_sha256": "a0eaae203382c5931d6b54a436c84a1461406fe1e8f1de92e117f8f5ada6fb20",
+      "dsr_suffix_hex": "1b5b366e",
+      "source_label": "1049-repeat-with-controls-end-sgr0",
+      "cursor_reply": [
+        1,
+        21
+      ],
+      "cursor_reply_hex": "1b5b313b323152",
+      "capture_valid": true,
+      "reason": null,
+      "grab_attempted": true,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 377,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          376
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 377,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "synthetic_document_lines": [
+        "",
+        "  N0 H H S0 H H",
+        "R0 H H RN H H RS H H"
+      ],
+      "is_alt": true,
+      "is_main": false,
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "sample",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "sample",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-normal",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-normal",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 4,
+          "group": "control-attribute",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 5,
+          "group": "control-attribute",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "attribute_signature_comparison": {
+        "attribute": "overline",
+        "requested_sgr": 53,
+        "controls": [
+          "SGR0-control-output",
+          "SGR53-control-output"
+        ],
+        "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+        "repeats_per_group": 2,
+        "same_frame_and_text_row_required": true,
+        "ink_required_for_signature_match": false,
+        "internal_attribute_verified": false,
+        "indistinguishable_controls": "unknown",
+        "unmatched_or_inconsistent": "unknown",
+        "unique_control": "SGR0-control-output",
+        "matching_controls": [
+          "SGR0-control-output"
+        ],
+        "reason": "unique-same-frame-output-match",
+        "unmatched_does_not_imply_reset": true,
+        "full_style_verified": false
+      }
+    },
+    {
+      "phase": 4,
+      "label": "overline return output",
+      "source_hex": "1b5b3f313034396c204d3120482048201b5b306d4d4e20482048201b5b35336d4d5320482048",
+      "source_bytes": 38,
+      "source_sha256": "e7bc7086dd335c6c999ecf53e62ea58bbd363646bf3dbac9478addfc355a909e",
+      "dsr_suffix_hex": "1b5b366e",
+      "source_label": "1049-return-with-controls",
+      "cursor_reply": [
+        2,
+        37
+      ],
+      "cursor_reply_hex": "1b5b323b333752",
+      "capture_valid": true,
+      "reason": null,
+      "grab_attempted": true,
+      "image": {
+        "viewport_width": 888,
+        "viewport_height": 377,
+        "grab_rect": [
+          0,
+          0,
+          887,
+          376
+        ],
+        "pixmap_dpr": 1,
+        "image_dpr": 1,
+        "width": 888,
+        "height": 377,
+        "is_null": false,
+        "is_null_raw_value": 0,
+        "is_null_raw_type": "number"
+      },
+      "synthetic_document_lines": [
+        "",
+        "  N0 H H S0 H H M1 H H MN H H MS H H"
+      ],
+      "is_alt": false,
+      "is_main": true,
+      "rois": [
+        {
+          "ordinal": 0,
+          "group": "sample",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 1,
+          "group": "sample",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 2,
+          "group": "control-normal",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 3,
+          "group": "control-normal",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "1ecf635bbea0bfeb40dc95f2aeb2161678cfcde544dc0ffa8f581a93d6c02f54",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "8e572b4409fc2c661ec8df07be7fa3e2e40b39110b2a3696f5cd724efa3839be",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 4,
+          "group": "control-attribute",
+          "sample": 0,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        },
+        {
+          "ordinal": 5,
+          "group": "control-attribute",
+          "sample": 1,
+          "signature": {
+            "h": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "4d092765830a075a22e3cdc1fecf3ffe8b958b3b58bb6788a27fcc3b3800ce3d",
+              "samples": 144
+            },
+            "space": {
+              "shape": [
+                8,
+                18
+              ],
+              "sha256": "2426d2bb11b1231342cac2a1927fe6d784a0d9adbae733b0c97d4d265192f780",
+              "samples": 144
+            }
+          }
+        }
+      ],
+      "attribute_signature_comparison": {
+        "attribute": "overline",
+        "requested_sgr": 53,
+        "controls": [
+          "SGR0-control-output",
+          "SGR53-control-output"
+        ],
+        "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+        "repeats_per_group": 2,
+        "same_frame_and_text_row_required": true,
+        "ink_required_for_signature_match": false,
+        "internal_attribute_verified": false,
+        "indistinguishable_controls": "unknown",
+        "unmatched_or_inconsistent": "unknown",
+        "unique_control": "SGR53-control-output",
+        "matching_controls": [
+          "SGR53-control-output"
+        ],
+        "reason": "unique-same-frame-output-match",
+        "unmatched_does_not_imply_reset": true,
+        "full_style_verified": false
+      }
+    }
+  ],
+  "same_frame_signature_comparisons": [
+    {
+      "phase": 0,
+      "attribute": "overline",
+      "requested_sgr": 53,
+      "controls": [
+        "SGR0-control-output",
+        "SGR53-control-output"
+      ],
+      "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+      "repeats_per_group": 2,
+      "same_frame_and_text_row_required": true,
+      "ink_required_for_signature_match": false,
+      "internal_attribute_verified": false,
+      "indistinguishable_controls": "unknown",
+      "unmatched_or_inconsistent": "unknown",
+      "unique_control": null,
+      "matching_controls": [],
+      "reason": "controls-distinct-no-unknown-sample",
+      "unmatched_does_not_imply_reset": true,
+      "full_style_verified": false
+    },
+    {
+      "phase": 1,
+      "attribute": "overline",
+      "requested_sgr": 53,
+      "controls": [
+        "SGR0-control-output",
+        "SGR53-control-output"
+      ],
+      "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+      "repeats_per_group": 2,
+      "same_frame_and_text_row_required": true,
+      "ink_required_for_signature_match": false,
+      "internal_attribute_verified": false,
+      "indistinguishable_controls": "unknown",
+      "unmatched_or_inconsistent": "unknown",
+      "unique_control": "SGR0-control-output",
+      "matching_controls": [
+        "SGR0-control-output"
+      ],
+      "reason": "unique-same-frame-output-match",
+      "unmatched_does_not_imply_reset": true,
+      "full_style_verified": false
+    },
+    {
+      "phase": 2,
+      "attribute": "overline",
+      "requested_sgr": 53,
+      "controls": [
+        "SGR0-control-output",
+        "SGR53-control-output"
+      ],
+      "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+      "repeats_per_group": 2,
+      "same_frame_and_text_row_required": true,
+      "ink_required_for_signature_match": false,
+      "internal_attribute_verified": false,
+      "indistinguishable_controls": "unknown",
+      "unmatched_or_inconsistent": "unknown",
+      "unique_control": "SGR0-control-output",
+      "matching_controls": [
+        "SGR0-control-output"
+      ],
+      "reason": "unique-same-frame-output-match",
+      "unmatched_does_not_imply_reset": true,
+      "full_style_verified": false
+    },
+    {
+      "phase": 3,
+      "attribute": "overline",
+      "requested_sgr": 53,
+      "controls": [
+        "SGR0-control-output",
+        "SGR53-control-output"
+      ],
+      "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+      "repeats_per_group": 2,
+      "same_frame_and_text_row_required": true,
+      "ink_required_for_signature_match": false,
+      "internal_attribute_verified": false,
+      "indistinguishable_controls": "unknown",
+      "unmatched_or_inconsistent": "unknown",
+      "unique_control": "SGR0-control-output",
+      "matching_controls": [
+        "SGR0-control-output"
+      ],
+      "reason": "unique-same-frame-output-match",
+      "unmatched_does_not_imply_reset": true,
+      "full_style_verified": false
+    },
+    {
+      "phase": 4,
+      "attribute": "overline",
+      "requested_sgr": 53,
+      "controls": [
+        "SGR0-control-output",
+        "SGR53-control-output"
+      ],
+      "signature": "Exact ordered H/space QRgb SHA256, shape and sample count",
+      "repeats_per_group": 2,
+      "same_frame_and_text_row_required": true,
+      "ink_required_for_signature_match": false,
+      "internal_attribute_verified": false,
+      "indistinguishable_controls": "unknown",
+      "unmatched_or_inconsistent": "unknown",
+      "unique_control": "SGR53-control-output",
+      "matching_controls": [
+        "SGR53-control-output"
+      ],
+      "reason": "unique-same-frame-output-match",
+      "unmatched_does_not_imply_reset": true,
+      "full_style_verified": false
+    }
+  ],
+  "runtime_module_path_guards": [
+    {
+      "name": "WindTerm.exe",
+      "path_guard_passed": true
+    },
+    {
+      "name": "Qt5Core.dll",
+      "path_guard_passed": true
+    },
+    {
+      "name": "Qt5Gui.dll",
+      "path_guard_passed": true
+    },
+    {
+      "name": "Qt5Widgets.dll",
+      "path_guard_passed": true
+    }
+  ],
+  "provider": {
+    "id": "frida",
+    "version": null,
+    "confidence": "observed",
+    "evidence_id": "ev_89000a19e8b6519d9b3e06b7f61d6713e372f76c29c112b880d48cc7acc3f5e6",
+    "messages": 10,
+    "readiness_messages": 3,
+    "phase_messages": 5,
+    "messages_truncated": false,
+    "cleanup_error": null
+  },
+  "provenance": {
+    "source_identity": {
+      "kind": "source-archive",
+      "manifest_sha256": "db9f8cd97c88b35084be8a6ef0ecd948d4fc61187b3585eafe80c2afa3819b93"
+    },
+    "source_base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+    "source_files_sha256": {
+      "research/ui/attribute_state_reference.py": "4df7e239c2f026f1edbab038b49e28968c3391cf97620a3661edca994e5a5b97",
+      "research/ui/sgr1_reference.py": "963d1164af53e6bc57c5d2841d48a4f422cd2903b4fe0e762fbd26553dc656d8",
+      "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+      "research/ui/raster_raw_analysis.py": "019d2c2616ac3942160da19289c7d4ee0fa7560dcd3c6d27f732cf724da98e50",
+      "research/ui/raster_selection_analysis.py": "745cda14921a383ca9baf6ec85242982ca587396b8464a3d27047ecf204a8845",
+      "research/ui/raster_raw_reference.py": "942902683fac816aa4271faaab31b01505aaab8ea6624f131f272e03a4548824",
+      "research/ui/raster_raw_reference.js": "bc427feb65650b1f90e6f882af405bbc88f93d1df2e2e249fb7960a90696869e",
+      "research/ui/alternate_style_reference.py": "3136e620a462a36ea3358c917eb4e207f32aa52db7c75ae14ba8856eba1eafcd",
+      "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+      "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+      "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+      "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+      "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+    },
+    "offline_audit_files_sha256": {
+      "research/ui/attribute_state_reference.py": "4df7e239c2f026f1edbab038b49e28968c3391cf97620a3661edca994e5a5b97",
+      "research/ui/raster_raw_analysis.py": "019d2c2616ac3942160da19289c7d4ee0fa7560dcd3c6d27f732cf724da98e50",
+      "research/ui/raster_selection_analysis.py": "745cda14921a383ca9baf6ec85242982ca587396b8464a3d27047ecf204a8845"
+    },
+    "generated_capture_sha256": "3910cad68124e288bd2aabdbad0db33f5493bb2e56f6fcac08cca9559a82dc9b",
+    "rea_prepared_identity": {
+      "version": "6.7.0",
+      "shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+      "package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+      "entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738"
+    },
+    "runtime_identity_limit": "Prepared REA identity was checked by the frozen launcher; no OS/Python/Node binary identity was recorded in this plan.",
+    "module_sha256": {
+      "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+      "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+      "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+      "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358"
+    },
+    "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+    "files_verified": 4047,
+    "authorized_plan": {
+      "bytes": 6277,
+      "sha256": "0e87d6ae0ec60bacad505cfa090708c9062ea7de4e533a48deb7f9415d48af80"
+    },
+    "raw_files": {
+      "run.json": {
+        "bytes": 617,
+        "sha256": "a4cc289fa2c1eb93e9cb20292f4f95386c6963921255b6f1593ec3164ad62dd9"
+      },
+      "probe.js": {
+        "bytes": 29447,
+        "sha256": "5c00a5a2dd7ab6291986bec57dedd1eb71c063ef518304729a55748395b45388"
+      },
+      "peer.json": {
+        "bytes": 1865,
+        "sha256": "88c236338a84ee0539dde754b8bf920d0b167e9a0460433efdf8a1de00d8ecde"
+      },
+      "attribute-state-raster-result.json": {
+        "bytes": 106886,
+        "sha256": "a79cc7758fb5b56ac718be654e8c795a1ac7d033757c39a2873251ce6d1046cd"
+      },
+      "evidence.json": {
+        "bytes": 216459,
+        "sha256": "c31280b4e402e96611b3c901406fd256a0ba5040f9d51b74ad43f888c31ea383"
+      },
+      "files.json": {
+        "bytes": 637666,
+        "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+      },
+      "cleanup.json": {
+        "bytes": 42,
+        "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+      },
+      "profile-check.json": {
+        "bytes": 52,
+        "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      },
+      "stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "outer_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    }
+  },
+  "internal_attribute_verified": false,
+  "full_style_verified": false,
+  "full_grid_verified": false,
+  "local_shell_transport_verified": false,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "semantic_acceptance": false,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "deliberate_original_termination": true,
+  "natural_gui_exit_verified": false,
+  "limitations": [
+    "Exact same-frame ordered H/space output signatures compare SGR0 with one requested SGR; no internal pen, attribute flag or mechanism is read.",
+    "Two repeats and equal ROI shapes/counts are required. Identical controls, inconsistent repeats and unmatched samples stay unknown; they do not establish unsupported attributes or resets.",
+    "No visible ink is required for exact signature matching, including hidden output. No cross-frame or cross-attribute pixel comparisons are made.",
+    "Only five fixed sources, one run and at most one grab per phase are covered; no shifted ROI, extra grab or retry.",
+    "QWidget raster and direct Telnet do not establish physical presentation, ConPTY transport, reliability repetition, performance or complete WindTerm parity.",
+    "Capture45/CLI60 exclude startup and later cleanup; no whole-lifecycle deadline is claimed.",
+    "Raw pixels, paths, process identifiers, original resources, profiles and provider diagnostics stay private.",
+    "The offline exporter was added after capture and has a separate identity; it was not part of the frozen execution inventory."
+  ]
+}

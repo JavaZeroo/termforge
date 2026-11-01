@@ -1,0 +1,223 @@
+{
+  "schema": "termforge-r27-mode-cross-validation-v1",
+  "date": "2026-11-02",
+  "issue": 27,
+  "source_base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+  "source_state": "base plus uncommitted implementation and tests identified below",
+  "scope": "Independent C++ core reader consistency and bounded mode composition; no new WindTerm run",
+  "configuration": {
+    "platform": "Windows 11 x64 build 26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "configuration": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "build_directory": "local/r2-core-build",
+    "parallel": 1
+  },
+  "commands": [
+    "cmake -S . -B local/r2-core-build",
+    "cmake --build local/r2-core-build --config Release --target order_query_test region_wrap_test alternate_mode_test decawm_mode_test decom_origin_test --parallel 1",
+    "ctest --test-dir local/r2-core-build -C Release -R '^(order_query|region_wrap|alternate_mode|decawm_mode|decom_origin)_core$' --output-on-failure"
+  ],
+  "configure_exit_code": 0,
+  "red": {
+    "production_screen_sha256": "142e786bd202a63f948d5443bcd203985d57c30f7ca39bd1cb9133646780a9ed",
+    "build_exit_code": 0,
+    "ctest_exit_code": 8,
+    "ctest_selected": 5,
+    "ctest_passed": 2,
+    "ctest_failed": 3,
+    "ctest_skipped": 0,
+    "elapsed_seconds": 0.32,
+    "failures": {
+      "region_wrap_core": "36 of 144 literal copy cases fail only for partial regions ending before the physical last row",
+      "order_query_core": "16 of 32 new structure cases fail; 4 of 64 new incremental Find cases miss Z after RIS with retained history and unordered live identities",
+      "decom_origin_core": "4 of 23 named checks fail for region-bottom logical copy, strict/recovery and whole/bytewise"
+    }
+  },
+  "green": {
+    "build_exit_code": 0,
+    "ctest_exit_code": 0,
+    "ctest_selected": 5,
+    "ctest_passed": 5,
+    "ctest_failed": 0,
+    "ctest_skipped": 0,
+    "elapsed_seconds": 0.29,
+    "named_or_matrix_counts": {
+      "decawm_named_groups": {
+        "passed": 15,
+        "total": 15
+      },
+      "decom_named_groups": {
+        "passed": 23,
+        "total": 23
+      },
+      "new_history_structure_matrix": {
+        "passed": 32,
+        "total": 32
+      },
+      "new_history_find_matrix": {
+        "passed": 64,
+        "total": 64
+      },
+      "region_wrap_matrix": {
+        "passed": 144,
+        "total": 144
+      }
+    },
+    "counting_boundary": "Groups and matrix cases are different units; do not sum them as WindTerm reference matches. alternate_mode_core passed, without a reported internal case count."
+  },
+  "defects": [
+    {
+      "name": "partial-region automatic wrap successor",
+      "observable_error": "ABCD and E copy as ABCD\\r\\nE and logical Find ABCDE misses",
+      "minimal_input": "\u001b[2;3r\u001b[3;1HABCDE",
+      "screen_rows": 4,
+      "screen_columns": 4,
+      "fix": "Link the predecessor to the row allocated at the bottom margin"
+    },
+    {
+      "name": "RIS history removal structure notification",
+      "setup": "A\r\nB\r\nC\r\nD\r\nE\r\nF\u001b[1;3r\u001b[3;1H\r\nN",
+      "screen_rows": 4,
+      "screen_columns": 4,
+      "history_limit": 10,
+      "search_before_mutation": {
+        "query": "Z",
+        "steps": 3,
+        "budget": 2
+      },
+      "mutation": "\u001bcZ",
+      "observable_error": "Visible Z has no incremental Find hit after notify_change",
+      "fix": "Publish order revision when nonempty history is removed; retain existing RIS policy"
+    }
+  ],
+  "ed3_contract_gap": {
+    "notification_missing_before_fix": true,
+    "user_visible_error_observed": false,
+    "fix": "Publish order revision only for actual history membership removal; visible positions survive; counter-only clearing does not publish a structure change"
+  },
+  "source_sha256_after_targeted_run": {
+    "CMakeLists.txt": "3bf8ba80c9668aa492ebe26a1bdfe0b819c634d93c647ec04dda9555eea0e041",
+    "experiments/core/screen.hpp": "c52547244b8318e9003ace3d34552deadfad0ff47e59780d65dd3446b5fb0291",
+    "experiments/core/order_query_test.cpp": "27ae45ad5daaf17a9d6e2c4eaa021dfb15e03550f01650fe65cc621fa90ea590",
+    "experiments/core/region_wrap_test.cpp": "9fdd70c76c6ad6f6c13c89dadada43316b25824d0060ae48be52c0802e0401f4",
+    "experiments/core/alternate_mode_test.cpp": "de63aba001bb0b129d1586053d00c3dba31c1bb90243fe6adabf72dab034ed26",
+    "experiments/core/decawm_mode_test.cpp": "f3aae3b460a4ee31885b1a840eafaf82fef8af733385090e0c8c443e51df4977",
+    "experiments/core/decom_origin_test.cpp": "d511d5fab95352a18accd50523902b4f3bf1d23ad832af94318948e0d31d7609"
+  },
+  "binary_sha256_after_targeted_run": {
+    "order_query_test.exe": "6ac543702fb31bc605c09ee058f1cfc27715aed0d86ce558dcc22f23bd033fc1",
+    "region_wrap_test.exe": "e2165f7a61ea1e73387bce0aacdfd3c7a285bea2e1e2087e96b3cce686fb1d33",
+    "alternate_mode_test.exe": "ac67a1ae08a71f86b006c9900b39b37a8563371025001b8028d813b8f3b4b896",
+    "decawm_mode_test.exe": "0fa59ebcd420478fe3c63728758f8097960b5b3de0a25163e7051e0cb893abd8",
+    "decom_origin_test.exe": "787efee811a58b372d22f98592f9a18d192a8fd10a4873ffed04c2251839bbb6"
+  },
+  "local_log_sha256": {
+    "local/r27-history-wrap/configure.log": "9361db81a057a6048c0d278589721ad39c4f28a0f9fa64c2c84c80e0a9a2c913",
+    "local/r27-history-wrap/red-build.log": "283284c12ddbfef2696704f566244f0c84164585ac6863657d0c2244939f4992",
+    "local/r27-history-wrap/red-ctest.log": "a9ead4a6288bf241a4b0c595c26d223d4cf27447e7f32cf74482c9312ba5947b",
+    "local/r27-history-wrap/green-build.log": "2dd047f02741f472fa28a10750ed89edc2897f8377a919387e7016e74148e66e",
+    "local/r27-history-wrap/green-ctest.log": "cb2bd8987819353f7296ba4034c4c9d569281e033d38c991894cc729988620ca",
+    "local/r27-history-wrap/green-details.log": "5e1139ef58f195c0e2b1f51b9d71480d0ee104f53d853ff9352f6ebb83097108"
+  },
+  "elapsed_is_performance_measurement": false,
+  "new_windterm_runs": 0,
+  "not_accepted_by_this_record": [
+    "Complete issue 27, TUI or R2 acceptance",
+    "Original alternate-buffer RIS, per-buffer origin and complete grid/style semantics",
+    "Qt and fixed ConPTY transport or real GUI actions",
+    "Real system clipboard",
+    "Full-project suite and CI",
+    "Measured performance equivalence or numeric tolerance"
+  ],
+  "later_core_validation": {
+    "source_base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+    "source_state": "same base plus fixes, tests and final explanatory screen comments",
+    "earlier_five_target_identity_preserved": true,
+    "targeted_private_mapping": {
+      "alternate_find_epoch_cases": 52,
+      "private_command_partition_cases": 2244,
+      "build_exit_code": 0,
+      "ctest_exit_code": 0,
+      "ctest_passed": 2,
+      "ctest_selected": 2,
+      "elapsed_seconds": 0.07,
+      "new_view_mapping_combinations": 4
+    },
+    "earlier_mapping_expectation_failure": {
+      "status": "test expectation corrected, not production resize change",
+      "observation": "initial hidden-primary 4-to-6-to-4 copy expected ABCDE but current conservative crop policy produced ABCD CRLF E",
+      "evidence": "local/r27-history-wrap/qt-first-ctest.log: two selected tests both failed; mapping expectation failure is separate from the Qt failure",
+      "corrected_contract": "growth-to-growth verifies retention; separate padding-only shrink assertion records current conservative break as engineering policy, not WindTerm parity"
+    },
+    "final_run": {
+      "ctest_failed": 0,
+      "scope": "targeted fifteen C++ core tests, not the full project suite or Qt",
+      "tests": [
+        "resize_core",
+        "history_core",
+        "selection_core",
+        "search_core",
+        "search_reorder_core",
+        "buffer_state_core",
+        "view_mapping_core",
+        "alternate_mode_core",
+        "decawm_mode_core",
+        "private_mode_core",
+        "decom_origin_core",
+        "reply_core",
+        "edit_csi_core",
+        "order_query_core",
+        "region_wrap_core"
+      ],
+      "elapsed_is_performance_measurement": false,
+      "build_exit_code": 0,
+      "ctest_passed": 15,
+      "ctest_exit_code": 0,
+      "source_sha256_after_run": {
+        "CMakeLists.txt": "e4a6569ebbed66f7a44628433725607399bb339677f6c0bddcd5dc99a793195d",
+        "experiments/core/alternate_mode_test.cpp": "de63aba001bb0b129d1586053d00c3dba31c1bb90243fe6adabf72dab034ed26",
+        "experiments/core/buffer_state_test.cpp": "f1c78c96e6cff2bb0405a6822cc223b53f1cac3593c965e5efb016d93847c1fc",
+        "experiments/core/decawm_mode_test.cpp": "f3aae3b460a4ee31885b1a840eafaf82fef8af733385090e0c8c443e51df4977",
+        "experiments/core/decom_origin_test.cpp": "d511d5fab95352a18accd50523902b4f3bf1d23ad832af94318948e0d31d7609",
+        "experiments/core/edit_csi_test.cpp": "35899d60a33d3503bad9b096c5f0069d45f6079f2ec879e7db6f0e1dabe3601d",
+        "experiments/core/history_test.cpp": "d54ebed670237b73ea2e855f41aa822a19960a4920801bdd5977e4899763ef69",
+        "experiments/core/order_query_test.cpp": "27ae45ad5daaf17a9d6e2c4eaa021dfb15e03550f01650fe65cc621fa90ea590",
+        "experiments/core/private_mode_test.cpp": "b602921407158836f56cbf89dd3a2fbcec15a38de009d1496dcd907ce040a948",
+        "experiments/core/region_wrap_test.cpp": "9fdd70c76c6ad6f6c13c89dadada43316b25824d0060ae48be52c0802e0401f4",
+        "experiments/core/reply_test.cpp": "1c764efdfdbf98e91257fbc3e763846dd3be3adac23161460275fe61e23cf85a",
+        "experiments/core/resize_test.cpp": "4e4469d18f752ed1d2486b81b19e58cd1bb0cb2acb71b870ce2b333cd8175fd6",
+        "experiments/core/search_reorder_test.cpp": "1ab5121e1497a4a6fc90003dc4332771240f4697229cc99f9a45256fb48e4406",
+        "experiments/core/search_test.cpp": "42e8d13a5b92ee03a6931f71dac1b06fecb8859470caee41fc517f3c1eb7fd8d",
+        "experiments/core/selection_test.cpp": "8f0bd95a9eabba4e23c19d6fbdb9bd7eb37f3e529eb8aea5376d62d8145da28a",
+        "experiments/core/view_mapping_test.cpp": "d8d73da7dab1f994d78ba82d0037e682d03d2788dc09eb7ef2e45ec0804415e8",
+        "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+        "experiments/core/history_view.hpp": "29c56d9d0739d6a6fd0e3b5f5d225b4f8e5bce7aa2fcbea6fee6646a760a802b",
+        "experiments/core/line_order/adapters.hpp": "f1004dec4e863c9845153d3153663e3b35cc781a99cadf0868c3c982e1ccf12e",
+        "experiments/core/line_order/document.hpp": "325ec5ddc16d4b625b2f8b3aa1fe0d4a1222bac6e272280a06c924b46bb390a1",
+        "experiments/core/screen.hpp": "d687481c7b360639f5bd376df0f394cb01bbd010fc7bda48985d660950516cb2",
+        "experiments/core/terminal.hpp": "486527af086973b21a672699ad5a70cb5b2ed7b709203e420212f0ce0b5bc3c9",
+        "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+        "experiments/core/text_projection.hpp": "3853bcf053964e54ea00bb7acfd0d302abd536ae0ed4eddfe791a6bcffdb6914",
+        "experiments/core/text_search.hpp": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+        "experiments/core/text_selection.hpp": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+        "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+        "experiments/core/view_mapping.hpp": "60df4271d1763f4c2525d24b19f5f61b482feba14310a93f98d8194e23b63546"
+      },
+      "configuration": "same Windows MSVC Release core-only directory; fresh build of all fifteen targets",
+      "ctest_selected": 15,
+      "elapsed_seconds": 0.64,
+      "ctest_skipped": 0
+    },
+    "local_log_sha256": {
+      "local/r27-history-wrap/private-mapping-build.log": "d08e3e523bd464695c2aaba7744443ba8790e660a7b119bec8f52ab2128f1767",
+      "local/r27-history-wrap/private-mapping-ctest.log": "5427f1e4ea7e399f7d097e5e11d13e1f4c5e98a36547794327826210c152aca1",
+      "local/r27-history-wrap/private-mapping-details.log": "4fbe75bde45d56143a8e6d25bdc0bd2eeab4149a81df3c7fdc5903f66232bab2",
+      "local/r27-history-wrap/core-all-build.log": "184d2bad464b03db40d8f5d7744403852e3b46628c16d54b5a6153409ab9492c",
+      "local/r27-history-wrap/core-all-ctest.log": "8b453eda630a32f8e4b5abc69c6b72dbfd21c6347ed9b1b54d5d60673c3fd61d",
+      "local/r27-history-wrap/qt-first-ctest.log": "a6c6302f78aa5ee02c48593bdd57beb9b141c735724a3e9df5f0542065a17fb9"
+    }
+  }
+}

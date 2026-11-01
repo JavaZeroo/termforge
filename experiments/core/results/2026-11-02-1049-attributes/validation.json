@@ -1,0 +1,700 @@
+{
+  "schema": "termforge-1049-attributes-core-public-v1",
+  "date": "2026-11-02",
+  "issue": 27,
+  "configuration": {
+    "core": "independent C++17",
+    "mode": [
+      "strict",
+      "recovery"
+    ],
+    "build": "Visual Studio 2022 / Release",
+    "parallel": 1,
+    "ctest": "alternate_mode_core",
+    "transport": false,
+    "qt": false,
+    "candidate_adapter": false
+  },
+  "observations": {
+    "original_cases": 6,
+    "original_phases_per_case": 5,
+    "original_phases_total": 30,
+    "readme": "research/ui/results/2026-11-02-attribute-state-reference/README.md",
+    "scope": "Same-frame ordered H/preceding-space output signature comparisons; no original internal style or complete grid claim",
+    "cases": [
+      {
+        "attribute": "underline",
+        "requested_sgr": 4,
+        "raw_sha256": "e851485c0bc87f15362228d5d4907aee4cf2462f5380176e37adf5ab79b8e487",
+        "observations": [
+          {
+            "phase": 0,
+            "unique_control": null,
+            "reason": "controls-distinct-no-unknown-sample",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 1,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 2,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 3,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 4,
+            "unique_control": "SGR4-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          }
+        ],
+        "source_phases": [
+          {
+            "phase": 0,
+            "label": "main-controls-end-attribute",
+            "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484e3020482048201b5b346d533020482048",
+            "source_bytes": 34,
+            "source_sha256": "d7dd04af7451943af76f0a2c6eaf008df689f498023c101f6a90a4d4bb9d9a71",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 1,
+            "label": "1049-entry-with-controls",
+            "source_hex": "1b5b3f3130343968453020482048201b5b306d454e20482048201b5b346d455320482048",
+            "source_bytes": 36,
+            "source_sha256": "14fb6a1ccba1d07f75f742f98e84e4d0067a2e7131646c719d30b864ea517d34",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 2,
+            "label": "alternate-end-attribute",
+            "source_hex": "1b5b343b33481b5b306d41302048204820414e20482048201b5b346d415320482048",
+            "source_bytes": 34,
+            "source_sha256": "fb13c6cd5456a16243718850e959cb9b7587b0291be5e9445d05f20fcd36a9c3",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 3,
+            "label": "1049-repeat-with-controls-end-sgr0",
+            "source_hex": "1b5b3f3130343968523020482048201b5b306d524e20482048201b5b346d5253204820481b5b306d",
+            "source_bytes": 40,
+            "source_sha256": "fd1bed9f349d32e54206c8210f3a6bafbff1be6295bfe4de62da835f1465373e",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 4,
+            "label": "1049-return-with-controls",
+            "source_hex": "1b5b3f313034396c204d3120482048201b5b306d4d4e20482048201b5b346d4d5320482048",
+            "source_bytes": 37,
+            "source_sha256": "bc3d936ffda0c3ce497fc5b8397cbf2e451dd9da8a8f624d9b48ae3833dcae0b",
+            "dsr_suffix_hex": "1b5b366e"
+          }
+        ],
+        "public_archive": {
+          "path": "research/ui/results/2026-11-02-attribute-state-reference/underline.json",
+          "status": "published",
+          "sha256": "7e41deb2948ac37622b0603bec0a57cfca6d8570f8f18909e84dbc177bf2c1f4"
+        }
+      },
+      {
+        "attribute": "reverse",
+        "requested_sgr": 7,
+        "raw_sha256": "8a53b75e9f76ae1e08606e5d8b357cccfa39a305d3ace025572a1e84552c84ac",
+        "observations": [
+          {
+            "phase": 0,
+            "unique_control": null,
+            "reason": "controls-distinct-no-unknown-sample",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 1,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 2,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 3,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 4,
+            "unique_control": "SGR7-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          }
+        ],
+        "source_phases": [
+          {
+            "phase": 0,
+            "label": "main-controls-end-attribute",
+            "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484e3020482048201b5b376d533020482048",
+            "source_bytes": 34,
+            "source_sha256": "7b55a2837843875477f39827d7d65a02d52110c7b04d6b39d6f52ba25598d79d",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 1,
+            "label": "1049-entry-with-controls",
+            "source_hex": "1b5b3f3130343968453020482048201b5b306d454e20482048201b5b376d455320482048",
+            "source_bytes": 36,
+            "source_sha256": "84492207d366feffec2861f74647119622c319c2f1df332404e9cbb78465378a",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 2,
+            "label": "alternate-end-attribute",
+            "source_hex": "1b5b343b33481b5b306d41302048204820414e20482048201b5b376d415320482048",
+            "source_bytes": 34,
+            "source_sha256": "cad13b107667c5a811a2a500845adc6c2650c6b59ad5037e715152210d010d70",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 3,
+            "label": "1049-repeat-with-controls-end-sgr0",
+            "source_hex": "1b5b3f3130343968523020482048201b5b306d524e20482048201b5b376d5253204820481b5b306d",
+            "source_bytes": 40,
+            "source_sha256": "1520714fee73fac9b11863b4b1519d2b4f6972e86660380915e07a6ee4d4f3a1",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 4,
+            "label": "1049-return-with-controls",
+            "source_hex": "1b5b3f313034396c204d3120482048201b5b306d4d4e20482048201b5b376d4d5320482048",
+            "source_bytes": 37,
+            "source_sha256": "c0d19a345dc168f45f65e4188b643cdf96928909885a91e6b923f65872770d8a",
+            "dsr_suffix_hex": "1b5b366e"
+          }
+        ],
+        "public_archive": {
+          "path": "research/ui/results/2026-11-02-attribute-state-reference/reverse.json",
+          "status": "published",
+          "sha256": "2e45e91e6ad8312484845d2049fea67966e67dffe580e5682b5dc96098d918b0"
+        }
+      },
+      {
+        "attribute": "strikethrough",
+        "requested_sgr": 9,
+        "raw_sha256": "f1662fd4fe134cd23424000930fdc135ff3c23e047da96b2626f04469a8387ba",
+        "observations": [
+          {
+            "phase": 0,
+            "unique_control": null,
+            "reason": "controls-distinct-no-unknown-sample",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 1,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 2,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 3,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 4,
+            "unique_control": "SGR9-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          }
+        ],
+        "source_phases": [
+          {
+            "phase": 0,
+            "label": "main-controls-end-attribute",
+            "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484e3020482048201b5b396d533020482048",
+            "source_bytes": 34,
+            "source_sha256": "b1f955f84d34964e28d0e09a3a9bf0526ad4fa3309e2e0e041f2b86547e43fcc",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 1,
+            "label": "1049-entry-with-controls",
+            "source_hex": "1b5b3f3130343968453020482048201b5b306d454e20482048201b5b396d455320482048",
+            "source_bytes": 36,
+            "source_sha256": "c705d039a12b60cd339e297a85a21e320af84ddd1b12c022c9448a99c58e289b",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 2,
+            "label": "alternate-end-attribute",
+            "source_hex": "1b5b343b33481b5b306d41302048204820414e20482048201b5b396d415320482048",
+            "source_bytes": 34,
+            "source_sha256": "ccec57bdcf20438e08ffd3c2d9dca7b1689df324b51178f33eef52644a7ff353",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 3,
+            "label": "1049-repeat-with-controls-end-sgr0",
+            "source_hex": "1b5b3f3130343968523020482048201b5b306d524e20482048201b5b396d5253204820481b5b306d",
+            "source_bytes": 40,
+            "source_sha256": "9d724b01a5fbefd32aee07b5c6287d0bef936cfc7e89969b57e8b8f41d90ef44",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 4,
+            "label": "1049-return-with-controls",
+            "source_hex": "1b5b3f313034396c204d3120482048201b5b306d4d4e20482048201b5b396d4d5320482048",
+            "source_bytes": 37,
+            "source_sha256": "4fa5bd8efa66bef7488807211262700d2c0b6bc2be4f006f944dca63a81365a9",
+            "dsr_suffix_hex": "1b5b366e"
+          }
+        ],
+        "public_archive": {
+          "path": "research/ui/results/2026-11-02-attribute-state-reference/strikethrough.json",
+          "status": "published",
+          "sha256": "8bae0083d41ee6a446a86622021df1ad2155d870570d978be62a90bdb5455678"
+        }
+      },
+      {
+        "attribute": "hidden",
+        "requested_sgr": 8,
+        "raw_sha256": "8ce50e05ce2cf3d2295a6cc2930f5bc503d6acc213517b532af76dbde2bcf5a2",
+        "observations": [
+          {
+            "phase": 0,
+            "unique_control": null,
+            "reason": "controls-distinct-no-unknown-sample",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 1,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 2,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 3,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 4,
+            "unique_control": "SGR8-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          }
+        ],
+        "source_phases": [
+          {
+            "phase": 0,
+            "label": "main-controls-end-attribute",
+            "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484e3020482048201b5b386d533020482048",
+            "source_bytes": 34,
+            "source_sha256": "f0ae84a39f4c745d5abc1dad5dfe382f8572f0806506f791006e42572f8ac346",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 1,
+            "label": "1049-entry-with-controls",
+            "source_hex": "1b5b3f3130343968453020482048201b5b306d454e20482048201b5b386d455320482048",
+            "source_bytes": 36,
+            "source_sha256": "ff323f7f53b5f7dda39f2631dcd47bfdf104cd0cd538c1bb0999124d87a700ea",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 2,
+            "label": "alternate-end-attribute",
+            "source_hex": "1b5b343b33481b5b306d41302048204820414e20482048201b5b386d415320482048",
+            "source_bytes": 34,
+            "source_sha256": "e31c156669bc2b5f1a91cdab609fd1ea86ad1247a57a2033842c9f5dede81336",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 3,
+            "label": "1049-repeat-with-controls-end-sgr0",
+            "source_hex": "1b5b3f3130343968523020482048201b5b306d524e20482048201b5b386d5253204820481b5b306d",
+            "source_bytes": 40,
+            "source_sha256": "ad69ff627d9e03540641e8d1f98caf9b78974cd481b2c72420b3d4a48d072677",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 4,
+            "label": "1049-return-with-controls",
+            "source_hex": "1b5b3f313034396c204d3120482048201b5b306d4d4e20482048201b5b386d4d5320482048",
+            "source_bytes": 37,
+            "source_sha256": "270f838171883a23e2ea6a15157fdd19fd5945afdb7ac77696e92bc2234f0a1b",
+            "dsr_suffix_hex": "1b5b366e"
+          }
+        ],
+        "public_archive": {
+          "path": "research/ui/results/2026-11-02-attribute-state-reference/hidden.json",
+          "status": "published",
+          "sha256": "8768697d1eaa4dc6bee43b366c4d628834a569adab3861fa811ef03ec1dd94ee"
+        }
+      },
+      {
+        "attribute": "overline",
+        "requested_sgr": 53,
+        "raw_sha256": "a79cc7758fb5b56ac718be654e8c795a1ac7d033757c39a2873251ce6d1046cd",
+        "observations": [
+          {
+            "phase": 0,
+            "unique_control": null,
+            "reason": "controls-distinct-no-unknown-sample",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 1,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 2,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 3,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 4,
+            "unique_control": "SGR53-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          }
+        ],
+        "source_phases": [
+          {
+            "phase": 0,
+            "label": "main-controls-end-attribute",
+            "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484e3020482048201b5b35336d533020482048",
+            "source_bytes": 35,
+            "source_sha256": "192a814e113dfbabdf41243a6a04cc93ac6a644876a81b6a9461607ec5520122",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 1,
+            "label": "1049-entry-with-controls",
+            "source_hex": "1b5b3f3130343968453020482048201b5b306d454e20482048201b5b35336d455320482048",
+            "source_bytes": 37,
+            "source_sha256": "c3bcb9137f5b9bfe57ef782d4076bef2aaa3aef97b709b0687c7f9bc00fb4964",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 2,
+            "label": "alternate-end-attribute",
+            "source_hex": "1b5b343b33481b5b306d41302048204820414e20482048201b5b35336d415320482048",
+            "source_bytes": 35,
+            "source_sha256": "79ef3ebe129de7315d172a716d8fbc4039d26e51ffb580022682ac403481a48c",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 3,
+            "label": "1049-repeat-with-controls-end-sgr0",
+            "source_hex": "1b5b3f3130343968523020482048201b5b306d524e20482048201b5b35336d5253204820481b5b306d",
+            "source_bytes": 41,
+            "source_sha256": "a0eaae203382c5931d6b54a436c84a1461406fe1e8f1de92e117f8f5ada6fb20",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 4,
+            "label": "1049-return-with-controls",
+            "source_hex": "1b5b3f313034396c204d3120482048201b5b306d4d4e20482048201b5b35336d4d5320482048",
+            "source_bytes": 38,
+            "source_sha256": "e7bc7086dd335c6c999ecf53e62ea58bbd363646bf3dbac9478addfc355a909e",
+            "dsr_suffix_hex": "1b5b366e"
+          }
+        ],
+        "public_archive": {
+          "path": "research/ui/results/2026-11-02-attribute-state-reference/overline.json",
+          "status": "published",
+          "sha256": "cdfc8221206dff3547148f70655ec7c9d93f670f132b927375a8c85dc7767dfa"
+        }
+      },
+      {
+        "attribute": "dim",
+        "requested_sgr": 2,
+        "raw_sha256": "9c08c09315d1d0a3e2c394b5f88d16d856bb5df2ef4030e0f7de9efc60033508",
+        "observations": [
+          {
+            "phase": 0,
+            "unique_control": null,
+            "reason": "controls-distinct-no-unknown-sample",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 1,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 2,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 3,
+            "unique_control": "SGR0-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          },
+          {
+            "phase": 4,
+            "unique_control": "SGR2-control-output",
+            "reason": "unique-same-frame-output-match",
+            "internal_attribute_verified": false,
+            "full_style_verified": false
+          }
+        ],
+        "source_phases": [
+          {
+            "phase": 0,
+            "label": "main-controls-end-attribute",
+            "source_hex": "1b5b306d1b5b324a1b5b481b5b323b33484e3020482048201b5b326d533020482048",
+            "source_bytes": 34,
+            "source_sha256": "0d49db154e4cacc083074a607e0bfb3c6d710e499239e9d81f479f156893dee0",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 1,
+            "label": "1049-entry-with-controls",
+            "source_hex": "1b5b3f3130343968453020482048201b5b306d454e20482048201b5b326d455320482048",
+            "source_bytes": 36,
+            "source_sha256": "d22eb170cf66f86646f5d3c9daae9dead5e9e20cd2d45617cef00c0215feddbc",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 2,
+            "label": "alternate-end-attribute",
+            "source_hex": "1b5b343b33481b5b306d41302048204820414e20482048201b5b326d415320482048",
+            "source_bytes": 34,
+            "source_sha256": "ffc88e26e03c427525ba90a96d61141e999d8c9824ab0e7dd5903742947da1b7",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 3,
+            "label": "1049-repeat-with-controls-end-sgr0",
+            "source_hex": "1b5b3f3130343968523020482048201b5b306d524e20482048201b5b326d5253204820481b5b306d",
+            "source_bytes": 40,
+            "source_sha256": "5bb7ec1c76564d33c485f31c2ebce14566cb149e86cabc62c07bfa78345418d0",
+            "dsr_suffix_hex": "1b5b366e"
+          },
+          {
+            "phase": 4,
+            "label": "1049-return-with-controls",
+            "source_hex": "1b5b3f313034396c204d3120482048201b5b306d4d4e20482048201b5b326d4d5320482048",
+            "source_bytes": 37,
+            "source_sha256": "f455466dccd90756dc814d0babf0481acf524912c5ac660ae8f2d099af8e706c",
+            "dsr_suffix_hex": "1b5b366e"
+          }
+        ],
+        "public_archive": {
+          "path": "research/ui/results/2026-11-02-attribute-state-reference/dim.json",
+          "status": "published",
+          "sha256": "7652d9ed06ee80fa75eb8db578c913eeaa105b608b6047fa747c28d3506f45c9"
+        }
+      }
+    ]
+  },
+  "core_replay": {
+    "trace_count": 506,
+    "phase_checks": 2530,
+    "phases_per_trace": 5,
+    "feed_modes": [
+      "whole phase",
+      "every two-part split within each phase",
+      "bytewise"
+    ],
+    "dsr_queries_replayed": false,
+    "literal_marker_columns": [
+      [
+        5,
+        7,
+        12,
+        14
+      ],
+      [
+        3,
+        5,
+        10,
+        12,
+        17,
+        19
+      ],
+      [
+        5,
+        7,
+        12,
+        14,
+        19,
+        21
+      ],
+      [
+        3,
+        5,
+        10,
+        12,
+        17,
+        19
+      ],
+      [
+        19,
+        21,
+        26,
+        28,
+        33,
+        35
+      ]
+    ],
+    "source_checks": {
+      "underline": {
+        "exact_source_match": true,
+        "exact_marker_columns_match": true,
+        "strict_plus_recovery_trace_count": 84
+      },
+      "reverse": {
+        "exact_source_match": true,
+        "exact_marker_columns_match": true,
+        "strict_plus_recovery_trace_count": 84
+      },
+      "strikethrough": {
+        "exact_source_match": true,
+        "exact_marker_columns_match": true,
+        "strict_plus_recovery_trace_count": 84
+      },
+      "hidden": {
+        "exact_source_match": true,
+        "exact_marker_columns_match": true,
+        "strict_plus_recovery_trace_count": 84
+      },
+      "overline": {
+        "exact_source_match": true,
+        "exact_marker_columns_match": true,
+        "strict_plus_recovery_trace_count": 86
+      },
+      "dim": {
+        "exact_source_match": true,
+        "exact_marker_columns_match": true,
+        "strict_plus_recovery_trace_count": 84
+      }
+    }
+  },
+  "red": {
+    "ctest": "alternate_mode_core",
+    "exit_code": 8,
+    "failed_attribute_mode_cases": 12,
+    "failure_phase": 3,
+    "failure_column": 3,
+    "prebuild_source_identity": null,
+    "build_succeeded": true,
+    "target_seconds": 0.02,
+    "ctest_seconds": 0.04
+  },
+  "green": {
+    "ctest": "alternate_mode_core",
+    "passed": 1,
+    "failed": 0,
+    "target_seconds": 0.24,
+    "ctest_seconds": 0.26,
+    "build_succeeded": true,
+    "source_base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+    "source_identity_capture_timing": "after_green_execution; selected files only, not a complete pre-build manifest",
+    "selected_sources_sha256_after_run": {
+      "experiments/core/alternate_mode_test.cpp": "12dd1d488b7a8296b6fecc1fb97b10ccbfebba2d312f89f32cbcb2fac09b7922",
+      "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "experiments/core/screen.hpp": "ef1634bae1286cf9e5159fcb515c31b985186f7fe01680dbdd23bcd6653ed62b"
+    },
+    "binary_sha256_recorded_after_run": "0a5be41fcb885af744de05e545e06e17bed57822a7b4dac7919cffb1a65041e7"
+  },
+  "logs_sha256": {
+    "attribute-red-build.log": "70535f23bf3e9e62f100f9066a819b0df10b91010bf4cacd2559a9d364ad1ae3",
+    "attribute-red-ctest.log": "62d6cd078f61df5c6384a395fe9bc6e1ded87b114284b8a8abc6b4de8e682482",
+    "attribute-green-build.log": "9e8559f060b4b38a215036b66adb61902477a1a3976df169613821ff1249d0d5",
+    "attribute-green-ctest.log": "473fa4e02e0cca45860032aea881009916521af7046579a812138abca28293d1"
+  },
+  "current_source_snapshot": {
+    "captured_utc": "2026-11-01T16:58:29.697109+00:00",
+    "source_base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+    "scope": "Selected current files at documentation time; not a retroactive RED/GREEN build manifest",
+    "files_sha256": {
+      "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "experiments/core/screen.hpp": "ef1634bae1286cf9e5159fcb515c31b985186f7fe01680dbdd23bcd6653ed62b",
+      "experiments/core/alternate_mode_test.cpp": "12dd1d488b7a8296b6fecc1fb97b10ccbfebba2d312f89f32cbcb2fac09b7922",
+      "experiments/core/decom_origin_test.cpp": "44dd8d0d124483125c8d55df7859bb979c0cbc415df31dc725bfa335aa23e27a"
+    }
+  },
+  "limitations": {
+    "original_internal_flags_verified": false,
+    "original_full_blank_or_styled_grid_verified": false,
+    "bold_behavior": "unknown; existing policy retained",
+    "transport_test": false,
+    "qt_rendering_test": false,
+    "complete_r27": false,
+    "complete_r29": false,
+    "presented_done": null
+  },
+  "engineering_policy": "Full-cell blank/grid tests verify our frame isolation, not original H/space classification. Primary styles retained; repeated alternate entry clears six observed non-bold attributes and retains existing bold policy.",
+  "final_joint_suite_included": false
+}

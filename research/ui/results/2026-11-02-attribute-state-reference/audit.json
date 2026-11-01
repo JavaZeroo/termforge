@@ -1,0 +1,134 @@
+{
+  "schema": "termforge-attribute-independent-readback-audit-v1",
+  "auditor_sha256": "1050ce37457cdad24c321f01b0512da0a4e05e9ff339971790eb4359e77e5586",
+  "method": "stdlib only; no probe, classifier or exporter imports",
+  "full_package_reaudited_on_host": false,
+  "full_package_identity_source": "strict VM exporter checked both complete packages; host validates retained metadata only",
+  "cases": [
+    {
+      "attribute": "underline",
+      "public_sha256": "7e41deb2948ac37622b0603bec0a57cfca6d8570f8f18909e84dbc177bf2c1f4",
+      "raw_capture_sha256": "e851485c0bc87f15362228d5d4907aee4cf2462f5380176e37adf5ab79b8e487",
+      "plan_sha256": "671dcb6daccc0c55c76864390e073fe28f7aab1bbb6b7e83dff1da908a1e3ac1",
+      "phases": 5,
+      "roi_pairs": 28,
+      "pixel_values_rehashed": 8064,
+      "independent_unique_controls": [
+        null,
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR4-control-output"
+      ],
+      "raw_and_public_projection_equal": true
+    },
+    {
+      "attribute": "reverse",
+      "public_sha256": "2e45e91e6ad8312484845d2049fea67966e67dffe580e5682b5dc96098d918b0",
+      "raw_capture_sha256": "8a53b75e9f76ae1e08606e5d8b357cccfa39a305d3ace025572a1e84552c84ac",
+      "plan_sha256": "2cbe644edc9e627b081352c44767ce0742932cb6a37e35300b1da81bfdfdc002",
+      "phases": 5,
+      "roi_pairs": 28,
+      "pixel_values_rehashed": 8064,
+      "independent_unique_controls": [
+        null,
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR7-control-output"
+      ],
+      "raw_and_public_projection_equal": true
+    },
+    {
+      "attribute": "strikethrough",
+      "public_sha256": "8bae0083d41ee6a446a86622021df1ad2155d870570d978be62a90bdb5455678",
+      "raw_capture_sha256": "f1662fd4fe134cd23424000930fdc135ff3c23e047da96b2626f04469a8387ba",
+      "plan_sha256": "3fae5e7efae2aea7773b9a9d08ffc105b37f610016842a4cad79f7cc9524ad8d",
+      "phases": 5,
+      "roi_pairs": 28,
+      "pixel_values_rehashed": 8064,
+      "independent_unique_controls": [
+        null,
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR9-control-output"
+      ],
+      "raw_and_public_projection_equal": true
+    },
+    {
+      "attribute": "hidden",
+      "public_sha256": "8768697d1eaa4dc6bee43b366c4d628834a569adab3861fa811ef03ec1dd94ee",
+      "raw_capture_sha256": "8ce50e05ce2cf3d2295a6cc2930f5bc503d6acc213517b532af76dbde2bcf5a2",
+      "plan_sha256": "d1ea4fd25e8316e8f04a293035e210fc931d35fcc0242b46d2a78bd7ed9cf408",
+      "phases": 5,
+      "roi_pairs": 28,
+      "pixel_values_rehashed": 8064,
+      "independent_unique_controls": [
+        null,
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR8-control-output"
+      ],
+      "raw_and_public_projection_equal": true
+    },
+    {
+      "attribute": "overline",
+      "public_sha256": "cdfc8221206dff3547148f70655ec7c9d93f670f132b927375a8c85dc7767dfa",
+      "raw_capture_sha256": "a79cc7758fb5b56ac718be654e8c795a1ac7d033757c39a2873251ce6d1046cd",
+      "plan_sha256": "0e87d6ae0ec60bacad505cfa090708c9062ea7de4e533a48deb7f9415d48af80",
+      "phases": 5,
+      "roi_pairs": 28,
+      "pixel_values_rehashed": 8064,
+      "independent_unique_controls": [
+        null,
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR53-control-output"
+      ],
+      "raw_and_public_projection_equal": true
+    },
+    {
+      "attribute": "dim",
+      "public_sha256": "7652d9ed06ee80fa75eb8db578c913eeaa105b608b6047fa747c28d3506f45c9",
+      "raw_capture_sha256": "9c08c09315d1d0a3e2c394b5f88d16d856bb5df2ef4030e0f7de9efc60033508",
+      "plan_sha256": "ee64fbcb7c90f3511d34ab44fb0316623d933a72548ee2954ef9ddd21a52e738",
+      "phases": 5,
+      "roi_pairs": 28,
+      "pixel_values_rehashed": 8064,
+      "independent_unique_controls": [
+        null,
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR0-control-output",
+        "SGR2-control-output"
+      ],
+      "raw_and_public_projection_equal": true
+    }
+  ],
+  "offline_export_execution": {
+    "initial_batch": {
+      "planned_exports": 7,
+      "completed_exports": 6,
+      "completed_attribute_exports": 5,
+      "status": "timed_out",
+      "exit_code": 124,
+      "outer_timeout_seconds": 150,
+      "cleanup_verified": true
+    },
+    "dim_separate_export": {
+      "status": "passed",
+      "exit_code": 0,
+      "cleanup_verified": true
+    },
+    "whole_initial_batch_passed": false,
+    "attribute_files_individually_verified": 6,
+    "export_only_no_new_original_runs": true,
+    "outer_record_sha256": {
+      "export-remaining-result.json": "e3913342ebc15133b89eb57b8e234781caf47131a0e4aaff28f2ce21e0dff47c",
+      "export-dim-result.json": "98d4b1cd7fe77aa51d52f4dcad9a2afdfb6912233817f883d7415df6fbdf6df5"
+    }
+  }
+}

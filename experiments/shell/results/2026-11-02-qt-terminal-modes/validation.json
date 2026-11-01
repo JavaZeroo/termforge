@@ -1,0 +1,1565 @@
+{
+  "schema": "termforge-qt-terminal-modes-evidence-v1",
+  "date": "2026-11-02",
+  "status": "failed-resize-synchronization",
+  "issues": [
+    27,
+    29
+  ],
+  "base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+  "configuration": {
+    "route": "independent C++ / Qt Widgets / bundled Microsoft ConPTY",
+    "platform": "Windows x64 local host",
+    "build": "Visual Studio 17 2022 / Release",
+    "qt": "6.10.3 pinned build",
+    "qt_platform": "offscreen",
+    "conpty": "1.25.260930003",
+    "conpty_creation_flags": 24,
+    "crt": "app-local 14.51.36247.0",
+    "candidate_adapter": false,
+    "supervisor_timeout_seconds": 25,
+    "internal_lifecycle_limit_seconds": 18,
+    "internal_phase_limit_seconds": 2.5
+  },
+  "runs": [
+    {
+      "id": "first-qt",
+      "source_identity": {
+        "kind": "uncommitted-worktree-test",
+        "base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+        "selected_source_sha256": null,
+        "executable_sha256": null,
+        "limitation": "No separate source/binary snapshot was retained before the diagnostic rebuild; not reconstructed from later source."
+      },
+      "qt_ctest_seconds": 0.42,
+      "ctest_invocation_seconds": 0.45,
+      "other_test_in_same_invocation": {
+        "name": "view_mapping_core",
+        "status": "failed",
+        "not_part_of_this_qt_result": true
+      },
+      "supervisor": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 1,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "error": "Qt smoke failed or left owned processes active"
+      },
+      "stages": [
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 1,
+          "source_hex": "1b5b306d1b5b324a1b5b333b33481b5b33313b34346d4d41494e1b5b306d1b5b353b3348e4b8ad65cc811b5b363b3348424153451b5b313b31485331",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": false,
+          "native_main_attributes": 20,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "5331",
+              "core_utf8_hex": "5331"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "20204d41494e",
+              "core_utf8_hex": "20204d41494e"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+              "core_utf8_hex": "2020e4b8ad65cc81"
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 2,
+          "source_hex": "1b5b3f31303439681b5b306d1b5b323b3348414c541b5b333b33481b5b33323b34356d534944451b5b306d1b5b313b31485332",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": true,
+          "native_main_attributes": 82,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "5332",
+              "core_utf8_hex": "5332"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "2020414c54",
+              "core_utf8_hex": "2020414c54"
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "202053494445",
+              "core_utf8_hex": "202053494445"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 3,
+          "source_hex": "1b5b3f31303439681b5b323b33484e45571b5b313b31485333",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": true,
+          "native_main_attributes": 7,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "5333",
+              "core_utf8_hex": "5333"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "20204e4557",
+              "core_utf8_hex": "20204e4557"
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 4,
+          "source_hex": "1b5b3f313034396c211b5b313b31485334",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": false,
+          "native_main_attributes": 20,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "533421",
+              "core_utf8_hex": "533421"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "20204d41494e",
+              "core_utf8_hex": "20204d41494e"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+              "core_utf8_hex": "2020e4b8ad65cc81"
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 5,
+          "source_hex": "1b5b306d1b5b3f376c1b5b383b38304841421b5b3f37681b5b31303b38304843441b5b313b31485335",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": false,
+          "native_main_attributes": 20,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "533521",
+              "core_utf8_hex": "533521"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "20204d41494e",
+              "core_utf8_hex": "20204d41494e"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+              "core_utf8_hex": "2020e4b8ad65cc81"
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+              "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042"
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+              "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043"
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "44",
+              "core_utf8_hex": "44"
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 6,
+          "source_hex": "1b5b31323b3148524553495a45441b5b313b31485336",
+          "native_columns": 60,
+          "native_rows": 12,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 60,
+          "core_rows": 12,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": false,
+          "native_main_attributes": 20,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "533621",
+              "core_utf8_hex": "533621"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "20204d41494e",
+              "core_utf8_hex": "20204d41494e"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+              "core_utf8_hex": "2020e4b8ad65cc81"
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": "44"
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "524553495a45442020202020202020202020204344",
+              "core_utf8_hex": "524553495a4544"
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        }
+      ],
+      "failure": "Stage 6 expected native RESIZED with no tail; this omitted native reflow. The same sample already showed independent native/core divergence."
+    },
+    {
+      "id": "qt-with-independent-transport-diagnostic",
+      "source_identity": {
+        "kind": "uncommitted-worktree-test",
+        "base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+        "selected_source_sha256": {
+          "src/qt/terminal_modes_test.cpp": "ff98834ed9b23fd1f8536a4455491447b8ac4ae6cfe70c68b9b841c2a60de695",
+          "src/qt/terminal_modes_fixture.hpp": "fe54e97653fde1dcfa840b8ac529180130c2a2d337bd4d038ac99f628a20c382",
+          "src/qt/terminal_session.hpp": "fc9390030c3ea72c8f195d92a2ac17877c05e4c16906a829bfd88cb54b50fb22",
+          "src/qt/terminal_widget.hpp": "a5f172980f52abb8d30189ab4334643621472839a20e14bb406bb89d81b70c8c",
+          "experiments/core/terminal.hpp": "486527af086973b21a672699ad5a70cb5b2ed7b709203e420212f0ce0b5bc3c9",
+          "experiments/core/screen.hpp": "d687481c7b360639f5bd376df0f394cb01bbd010fc7bda48985d660950516cb2"
+        },
+        "full_source_manifest": false,
+        "executable_sha256": "10d10790f9de7364e7f4fc60775a221c7436e1a03a907c081711cf5439471cea"
+      },
+      "qt_ctest_seconds": 0.58,
+      "ctest_invocation_seconds": 0.6,
+      "supervisor": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "failed",
+        "timed_out": false,
+        "exit_code": 1,
+        "job_after": {
+          "active": 0,
+          "total": 6,
+          "terminated": 0
+        },
+        "error": "Qt smoke failed or left owned processes active"
+      },
+      "qt_stages": [
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 1,
+          "source_hex": "1b5b306d1b5b324a1b5b333b33481b5b33313b34346d4d41494e1b5b306d1b5b353b3348e4b8ad65cc811b5b363b3348424153451b5b313b31485331",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": false,
+          "native_main_attributes": 20,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "5331",
+              "core_utf8_hex": "5331"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "20204d41494e",
+              "core_utf8_hex": "20204d41494e"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+              "core_utf8_hex": "2020e4b8ad65cc81"
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 8,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 2,
+          "source_hex": "1b5b3f31303439681b5b306d1b5b323b3348414c541b5b333b33481b5b33323b34356d534944451b5b306d1b5b313b31485332",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": true,
+          "native_main_attributes": 82,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "5332",
+              "core_utf8_hex": "5332"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "2020414c54",
+              "core_utf8_hex": "2020414c54"
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "202053494445",
+              "core_utf8_hex": "202053494445"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 8,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 3,
+          "source_hex": "1b5b3f31303439681b5b323b33484e45571b5b313b31485333",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": true,
+          "native_main_attributes": 7,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "5333",
+              "core_utf8_hex": "5333"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "20204e4557",
+              "core_utf8_hex": "20204e4557"
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 8,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 4,
+          "source_hex": "1b5b3f313034396c211b5b313b31485334",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": false,
+          "native_main_attributes": 20,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "533421",
+              "core_utf8_hex": "533421"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "20204d41494e",
+              "core_utf8_hex": "20204d41494e"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+              "core_utf8_hex": "2020e4b8ad65cc81"
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 8,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 5,
+          "source_hex": "1b5b306d1b5b3f376c1b5b383b38304841421b5b3f37681b5b31303b38304843441b5b313b31485335",
+          "native_columns": 80,
+          "native_rows": 24,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 80,
+          "core_rows": 24,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": false,
+          "native_main_attributes": 20,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "533521",
+              "core_utf8_hex": "533521"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "20204d41494e",
+              "core_utf8_hex": "20204d41494e"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+              "core_utf8_hex": "2020e4b8ad65cc81"
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+              "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042"
+            },
+            {
+              "row": 8,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+              "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043"
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "44",
+              "core_utf8_hex": "44"
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        },
+        {
+          "schema": "termforge-qt-modes-stage-v1",
+          "stage": 6,
+          "source_hex": "1b5b31323b3148524553495a45441b5b313b31485336",
+          "native_columns": 60,
+          "native_rows": 12,
+          "native_cursor": [
+            0,
+            2
+          ],
+          "core_columns": 60,
+          "core_rows": 12,
+          "core_cursor": [
+            0,
+            2
+          ],
+          "core_alternate": false,
+          "native_main_attributes": 20,
+          "rows": [
+            {
+              "row": 0,
+              "native_utf8_hex": "533621",
+              "core_utf8_hex": "533621"
+            },
+            {
+              "row": 1,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 2,
+              "native_utf8_hex": "20204d41494e",
+              "core_utf8_hex": "20204d41494e"
+            },
+            {
+              "row": 4,
+              "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+              "core_utf8_hex": "2020e4b8ad65cc81"
+            },
+            {
+              "row": 7,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 8,
+              "native_utf8_hex": "2020202020202020202020202020202020202042",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 9,
+              "native_utf8_hex": "",
+              "core_utf8_hex": ""
+            },
+            {
+              "row": 10,
+              "native_utf8_hex": "",
+              "core_utf8_hex": "44"
+            },
+            {
+              "row": 11,
+              "native_utf8_hex": "524553495a45442020202020202020202020204344",
+              "core_utf8_hex": "524553495a4544"
+            }
+          ],
+          "raw_transport_bytes_observed": false,
+          "presented_done": null
+        }
+      ],
+      "failure": "Stage 6 native literal reflow/overwrite passes; the core has lost B/CD and retained D at its old row.",
+      "separate_direct_transport_run": {
+        "same_child_source": true,
+        "same_backend": true,
+        "qt_session_bytes_captured": false,
+        "source_phases": 6,
+        "capture_limit_bytes": 65536,
+        "actual_output_bytes": 265,
+        "output_sha256": "624da21c59180fde11ffa71a2b5470137a812d6b0298acb4063e26adeb4c1ac0",
+        "events": [
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "feed",
+            "stage": 0,
+            "offset": 0,
+            "hex": "1b5b31741b5b631b5b3f31303034681b5b3f3930303168"
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "feed",
+            "stage": 1,
+            "offset": 23,
+            "hex": "1b5b306d1b5b324a1b5b333b33481b5b33313b34346d4d41494e1b5b306d1b5b353b3348e4b8ad65cc811b5b363b3348424153451b5b313b31485331"
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "feed",
+            "stage": 2,
+            "offset": 83,
+            "hex": "1b5b3f31303439681b5b306d1b5b323b3348414c541b5b333b33481b5b33323b34356d534944451b5b306d1b5b313b31485332"
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "feed",
+            "stage": 3,
+            "offset": 134,
+            "hex": "1b5b3f31303439681b5b323b33484e45571b5b313b31485333"
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "feed",
+            "stage": 4,
+            "offset": 159,
+            "hex": "1b5b3f313034396c211b5b313b31485334"
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "feed",
+            "stage": 5,
+            "offset": 176,
+            "hex": "1b5b306d1b5b3f376c1b5b383b38304841421b5b3f37681b5b31303b38304843441b5b313b31485335"
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "resize",
+            "offset": 217,
+            "rows": 12,
+            "columns": 60
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "feed",
+            "stage": 6,
+            "offset": 217,
+            "hex": "1b5b31323b3148524553495a45441b5b313b314853361b5b366e"
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "feed",
+            "stage": 6,
+            "offset": 243,
+            "hex": "1b5b313b3348"
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "feed",
+            "stage": 7,
+            "offset": 249,
+            "hex": "1b5b3f313030346c1b5b3f393030316c"
+          },
+          {
+            "schema": "termforge-mode-transport-v1",
+            "kind": "finished",
+            "output_bytes": 265,
+            "child_exit": 37,
+            "cleanup_verified": true
+          }
+        ],
+        "stages": [
+          {
+            "schema": "termforge-qt-modes-stage-v1",
+            "stage": 1,
+            "source_hex": "1b5b306d1b5b324a1b5b333b33481b5b33313b34346d4d41494e1b5b306d1b5b353b3348e4b8ad65cc811b5b363b3348424153451b5b313b31485331",
+            "native_columns": 80,
+            "native_rows": 24,
+            "native_cursor": [
+              0,
+              2
+            ],
+            "core_columns": 80,
+            "core_rows": 24,
+            "core_cursor": [
+              0,
+              2
+            ],
+            "core_alternate": false,
+            "native_main_attributes": 20,
+            "rows": [
+              {
+                "row": 0,
+                "native_utf8_hex": "5331",
+                "core_utf8_hex": "5331"
+              },
+              {
+                "row": 1,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 2,
+                "native_utf8_hex": "20204d41494e",
+                "core_utf8_hex": "20204d41494e"
+              },
+              {
+                "row": 4,
+                "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+                "core_utf8_hex": "2020e4b8ad65cc81"
+              },
+              {
+                "row": 7,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 8,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 9,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 10,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 11,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              }
+            ],
+            "raw_transport_bytes_observed": true,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-qt-modes-stage-v1",
+            "stage": 2,
+            "source_hex": "1b5b3f31303439681b5b306d1b5b323b3348414c541b5b333b33481b5b33323b34356d534944451b5b306d1b5b313b31485332",
+            "native_columns": 80,
+            "native_rows": 24,
+            "native_cursor": [
+              0,
+              2
+            ],
+            "core_columns": 80,
+            "core_rows": 24,
+            "core_cursor": [
+              0,
+              2
+            ],
+            "core_alternate": true,
+            "native_main_attributes": 82,
+            "rows": [
+              {
+                "row": 0,
+                "native_utf8_hex": "5332",
+                "core_utf8_hex": "5332"
+              },
+              {
+                "row": 1,
+                "native_utf8_hex": "2020414c54",
+                "core_utf8_hex": "2020414c54"
+              },
+              {
+                "row": 2,
+                "native_utf8_hex": "202053494445",
+                "core_utf8_hex": "202053494445"
+              },
+              {
+                "row": 4,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 7,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 8,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 9,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 10,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 11,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              }
+            ],
+            "raw_transport_bytes_observed": true,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-qt-modes-stage-v1",
+            "stage": 3,
+            "source_hex": "1b5b3f31303439681b5b323b33484e45571b5b313b31485333",
+            "native_columns": 80,
+            "native_rows": 24,
+            "native_cursor": [
+              0,
+              2
+            ],
+            "core_columns": 80,
+            "core_rows": 24,
+            "core_cursor": [
+              0,
+              2
+            ],
+            "core_alternate": true,
+            "native_main_attributes": 7,
+            "rows": [
+              {
+                "row": 0,
+                "native_utf8_hex": "5333",
+                "core_utf8_hex": "5333"
+              },
+              {
+                "row": 1,
+                "native_utf8_hex": "20204e4557",
+                "core_utf8_hex": "20204e4557"
+              },
+              {
+                "row": 2,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 4,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 7,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 8,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 9,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 10,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 11,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              }
+            ],
+            "raw_transport_bytes_observed": true,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-qt-modes-stage-v1",
+            "stage": 4,
+            "source_hex": "1b5b3f313034396c211b5b313b31485334",
+            "native_columns": 80,
+            "native_rows": 24,
+            "native_cursor": [
+              0,
+              2
+            ],
+            "core_columns": 80,
+            "core_rows": 24,
+            "core_cursor": [
+              0,
+              2
+            ],
+            "core_alternate": false,
+            "native_main_attributes": 20,
+            "rows": [
+              {
+                "row": 0,
+                "native_utf8_hex": "533421",
+                "core_utf8_hex": "533421"
+              },
+              {
+                "row": 1,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 2,
+                "native_utf8_hex": "20204d41494e",
+                "core_utf8_hex": "20204d41494e"
+              },
+              {
+                "row": 4,
+                "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+                "core_utf8_hex": "2020e4b8ad65cc81"
+              },
+              {
+                "row": 7,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 8,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 9,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 10,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 11,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              }
+            ],
+            "raw_transport_bytes_observed": true,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-qt-modes-stage-v1",
+            "stage": 5,
+            "source_hex": "1b5b306d1b5b3f376c1b5b383b38304841421b5b3f37681b5b31303b38304843441b5b313b31485335",
+            "native_columns": 80,
+            "native_rows": 24,
+            "native_cursor": [
+              0,
+              2
+            ],
+            "core_columns": 80,
+            "core_rows": 24,
+            "core_cursor": [
+              0,
+              2
+            ],
+            "core_alternate": false,
+            "native_main_attributes": 20,
+            "rows": [
+              {
+                "row": 0,
+                "native_utf8_hex": "533521",
+                "core_utf8_hex": "533521"
+              },
+              {
+                "row": 1,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 2,
+                "native_utf8_hex": "20204d41494e",
+                "core_utf8_hex": "20204d41494e"
+              },
+              {
+                "row": 4,
+                "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+                "core_utf8_hex": "2020e4b8ad65cc81"
+              },
+              {
+                "row": 7,
+                "native_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+                "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042"
+              },
+              {
+                "row": 8,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 9,
+                "native_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+                "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043"
+              },
+              {
+                "row": 10,
+                "native_utf8_hex": "44",
+                "core_utf8_hex": "44"
+              },
+              {
+                "row": 11,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              }
+            ],
+            "raw_transport_bytes_observed": true,
+            "presented_done": null
+          },
+          {
+            "schema": "termforge-qt-modes-stage-v1",
+            "stage": 6,
+            "source_hex": "1b5b31323b3148524553495a45441b5b313b31485336",
+            "native_columns": 60,
+            "native_rows": 12,
+            "native_cursor": [
+              0,
+              2
+            ],
+            "core_columns": 60,
+            "core_rows": 12,
+            "core_cursor": [
+              0,
+              2
+            ],
+            "core_alternate": false,
+            "native_main_attributes": 20,
+            "rows": [
+              {
+                "row": 0,
+                "native_utf8_hex": "533621",
+                "core_utf8_hex": "533621"
+              },
+              {
+                "row": 1,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 2,
+                "native_utf8_hex": "20204d41494e",
+                "core_utf8_hex": "20204d41494e"
+              },
+              {
+                "row": 4,
+                "native_utf8_hex": "2020e4b8ade4b8ad65cc81",
+                "core_utf8_hex": "2020e4b8ad65cc81"
+              },
+              {
+                "row": 7,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 8,
+                "native_utf8_hex": "2020202020202020202020202020202020202042",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 9,
+                "native_utf8_hex": "",
+                "core_utf8_hex": ""
+              },
+              {
+                "row": 10,
+                "native_utf8_hex": "",
+                "core_utf8_hex": "44"
+              },
+              {
+                "row": 11,
+                "native_utf8_hex": "524553495a45442020202020202020202020204344",
+                "core_utf8_hex": "524553495a4544"
+              }
+            ],
+            "raw_transport_bytes_observed": true,
+            "presented_done": null
+          }
+        ],
+        "native_exit": 37,
+        "cleanup_verified": true
+      }
+    }
+  ],
+  "resize_literal_oracles_zero_based": {
+    "native": {
+      "7": "",
+      "8": "2020202020202020202020202020202020202042",
+      "9": "",
+      "10": "",
+      "11": "524553495a45442020202020202020202020204344"
+    },
+    "observed_core": {
+      "7": "",
+      "8": "",
+      "9": "",
+      "10": "44",
+      "11": "524553495a4544"
+    },
+    "source_stage6_bytes": 22,
+    "reason": "80-to-60 native reflow expands the long B row and the wrapped CD line; RESIZED overwrites seven cells without erasing the CD tail."
+  },
+  "private_artifact_sha256": {
+    "qt-first-build.log": "c4d73634bacd2e217f8868b33ca2c82e288fb326d73f9363c6a62cab778e027a",
+    "qt-first-ctest.log": "a6c6302f78aa5ee02c48593bdd57beb9b141c735724a3e9df5f0542065a17fb9",
+    "qt-diagnostic-source.json": "507eed7011da3185e8a9f5e7858e1c638e67aeeeab6d892183d13e6ec31263e2",
+    "qt-diagnostic-binary.json": "6348a05ef5c20b61356d8a6c161c086affb2a76fe086e598264711bf1a4ae00e",
+    "qt-diagnostic-build.log": "8c8b52007038cb8ba208a6214b216d0668385cf5ecdf00da1597c22cba25a83d",
+    "qt-diagnostic-ctest.log": "d646222fdc10a927949b04b04e6f5ccf88280114d5dd5b7606287cbb10a7528b"
+  },
+  "conclusions": {
+    "first_five_phases_passed_in_each_qt_run": true,
+    "full_test_passed": false,
+    "resize_synchronization_passed": false,
+    "terminal_core_ignored_reflow_bytes": false,
+    "direct_transport_contains_reflow_bytes": false,
+    "core_physical_crop_native_reflow_mismatch_reproduced": true,
+    "root_cause_scope": "The independent run has no B/CD relocation or cleanup bytes after resize. This does not claim every ConPTY/native-API resize path behaves identically.",
+    "windterm_executed": false,
+    "windterm_resize_behavior": "unknown",
+    "performance_acceptance": false,
+    "semantic_acceptance": false,
+    "presented_done": null
+  },
+  "limits": [
+    "Qt stages exercise real owned children through the fixed backend under offscreen; they are not physical desktop/input acceptance.",
+    "The direct transport run is separate from Qt SessionModel; its bytes are not relabelled as a capture of the preceding Qt session.",
+    "Native UTF-8 row fields concatenate CHAR_INFO UTF-16 cells, including duplicate wide tails; they are not a normalized grapheme projection.",
+    "Colour checks cover SGR31/44 cell indices and one Qt blue background pixel; they do not validate all style attributes or glyph rendering.",
+    "The failed resize test remains diagnostic evidence, not a passing CI or R2 gate.",
+    "The known native API margin loss is not repaired or bypassed by this test; no synthetic replay is injected into the Qt model.",
+    "First-run missing source/binary identities stay null; later hashes cannot establish its exact full source."
+  ],
+  "resize_probe_preparation": {
+    "status": "offline-ready-not-executed",
+    "actual_original_runs": 0,
+    "runtime_source_identity": {
+      "source_identity": {
+        "kind": "git-checkout"
+      },
+      "source_base_commit": "f72c5c4f68dd7eb579ad1e523762333b135aa074",
+      "source_files_sha256": {
+        "research/ui/resize_state_reference.py": "a00ab0b38f3ac6c2aa0b6acdc35dc9f797740314fff54cb4476a293c1ae6a71f",
+        "research/ui/resize_state_reference.js": "1487453b9c3f1e9240d86d1797858943a9e03945192a15badf60cc5a1a0df4cf",
+        "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+        "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+        "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+        "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+        "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+        "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+        "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+      }
+    },
+    "portable_manifest_sha256": "37067d4c8857b1c92a51524ab0081cae28a4c5c31b434c4e09c8243f0cc99e8f",
+    "runtime_file_count": 9,
+    "offline_test_sources_sha256": {
+      "research/ui/test_resize_state_reference.py": "45f80fa475c48e5e4bc3d1347f96c29593754d430e4dabb39ba8dec6c2fb731c",
+      "research/ui/test_resize_state_stage3.js": "9e4605a6c30628b4d209b6c011fbeac813a966cd2dd21ee2424ba300b8947d79"
+    },
+    "python_tests": {
+      "ordinary": {
+        "passed": 10,
+        "failed": 0
+      },
+      "optimized": {
+        "passed": 10,
+        "failed": 0
+      }
+    },
+    "actual_js_controller_test": {
+      "schema": "termforge-resize-state-controller-test-v1",
+      "node_version": "v24.22.2",
+      "actual_source_sha256": "1487453b9c3f1e9240d86d1797858943a9e03945192a15badf60cc5a1a0df4cf",
+      "case_count": 6,
+      "failed": 0,
+      "child_processes_spawned": 0,
+      "sockets_opened": 0,
+      "target_runs": 0,
+      "results": [
+        {
+          "case": "public shrink waits for peer arm and continuous 600ms NAWS",
+          "status": "passed"
+        },
+        {
+          "case": "same-batch transient resize restarts stable interval",
+          "status": "passed"
+        },
+        {
+          "case": "capacity mismatch cancels old resize stability",
+          "status": "passed"
+        },
+        {
+          "case": "row-count change fails instead of silently accepting another scenario",
+          "status": "passed"
+        },
+        {
+          "case": "three states preserve post-resize cursor observations before any input",
+          "status": "passed"
+        },
+        {
+          "case": "initial transient NAWS does not inherit an old stability window",
+          "status": "passed"
+        }
+      ]
+    },
+    "offline_log_sha256": {
+      "resize-probe-offline-python-final.log": "aa0016cf62c877a60688fbfe2599009cb1532b478f0a0c21cbebca686ea3fcd6",
+      "resize-probe-offline-python-optimized.log": "526ad75e6b85d5d3104f653c4cfdb2a28ca6f425f4942efdf14e392d82f364dc",
+      "resize-probe-offline-node.log": "f9c9ac82a7badae6e13afe2ca4b0896883326c94f3b5e281e14161c68eb080ec"
+    },
+    "plan_contract": {
+      "schema": "termforge-resize-state-plan-v1",
+      "issue": 29,
+      "maximum_original_runs": 1,
+      "actual_original_runs": 0,
+      "phase_count": 3,
+      "windows": [
+        [
+          1360,
+          860
+        ],
+        [
+          1000,
+          860
+        ],
+        [
+          1360,
+          860
+        ]
+      ],
+      "rea_capture_seconds": 45,
+      "cli_wait_timeout_seconds": 60,
+      "whole_lifecycle_bound_seconds": null,
+      "example_grid": [
+        91,
+        25
+      ],
+      "example_phases": [
+        {
+          "phase": 0,
+          "label": "initial-body",
+          "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b323b3148303132333435363738391b5b333b3148414e43484f521b5b3f376c1b5b383b39314875761b5b3f37681b5b31303b3931487778",
+          "source_bytes": 78,
+          "source_sha256": "c7dd4a7fa283dd0003ca8b2ae13dcb46f143a4717bf5a14eb5f5acb068a9fa1c",
+          "dsr_suffix_hex": "1b5b366e"
+        },
+        {
+          "phase": 1,
+          "label": "after-width-shrink",
+          "source_hex": "",
+          "source_bytes": 0,
+          "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "dsr_suffix_hex": "1b5b366e"
+        },
+        {
+          "phase": 2,
+          "label": "after-width-restore",
+          "source_hex": "",
+          "source_bytes": 0,
+          "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "dsr_suffix_hex": "1b5b366e"
+        }
+      ],
+      "reference_exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+      "reference_files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+      "semantic_acceptance": false,
+      "post_initial_terminal_input": "DSR only; no CUP, redraw or replacement text",
+      "scope": "Original Telnet, public Qt resize, DSR and marker rectangles; no ConPTY or full active grid"
+    },
+    "source_archive_rule": "reference-source.json must have exactly this probe runtime file set; an older mode-state archive manifest is rejected."
+  }
+}
