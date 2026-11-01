@@ -4,6 +4,8 @@
 #include "screen.hpp"
 #include "text_document.hpp"
 #include "text_search.hpp"
+#include "text_selection.hpp"
+#include "terminal.hpp"
 #include <initializer_list>
 #include <iostream>
 #include <optional>
@@ -184,6 +186,62 @@ static void viewport_uses_exact_rank() {
     check(view.reconcile(screen).top == 3, "the anchor survives reconciliation");
 }
 
+// IL/DL already edit physical rows inside a configured region. The owner must
+// publish their membership/order change so existing text readers follow the
+// surviving rows instead of bisecting newly non-monotonic identities.
+static void editing_rows_publish_order() {
+    std::string failures;
+    for (const bool insert : {true, false}) {
+        try {
+            Parser parser(6, 4, 2, ParseMode::recovery);
+            parser.feed("a\r\nb\r\nc\r\nd\r\ne\r\nf\x1b[2;5r\x1b[3;1H");
+            TextDocument document(parser.screen);
+            const size_t old_rank = insert ? 2 : 3, new_rank = insert ? 3 : 2;
+            const auto old_position = *document.position(old_rank, 0);
+            const auto retired = document.meta(insert ? 4 : 2).id;
+            TextSelection selection;
+            check(selection.set(document, {old_position, *document.position(old_rank, 1)}),
+                  "row-edit selection setup failed");
+            TextSearch search;
+            auto generation = search.start(document, insert ? "c" : "d");
+            const auto finish_search = [&] {
+                for (int guard = 0; guard < 100 && search.status() == SearchStatus::running; ++guard)
+                    search.step(document, generation, 16);
+                check(search.status() == SearchStatus::complete, "row-edit search exceeded its work bound");
+            };
+            finish_search();
+            const auto revision = document.order_revision();
+            parser.feed(insert ? "\x1b[L" : "\x1b[M");
+            check(document.order_revision() > revision, "row edit did not publish its structure revision");
+            const std::vector<std::string> expected = insert
+                ? std::vector<std::string>{"a", "b", "", "c", "d", "f"}
+                : std::vector<std::string>{"a", "b", "d", "e", "", "f"};
+            check(document.size() == expected.size() && parser.screen.history_lines().empty(),
+                  "row edit changed the retained size or leaked into history");
+            for (size_t index = 0; index < document.size(); ++index) {
+                check(document.line(index).projection.text == expected[index], "row edit changed the literal row order");
+                check(document.index_of(document.meta(index).id) == std::optional<size_t>(index),
+                      "row edit made a retained identity unreachable");
+            }
+            check(!document.index_of(retired) && document.valid(old_position) &&
+                  document.index_of(old_position.line_id) == std::optional<size_t>(new_rank),
+                  "row edit confused removed and surviving identities");
+            const auto copied = selection.copy(document, 8);
+            check(copied.status == SelectionCopyStatus::ok && copied.text == (insert ? "c" : "d"),
+                  "row edit lost an unchanged selected row");
+            generation = search.notify_change(document);
+            finish_search();
+            const auto match = search.match(document, 0);
+            check(match && document.index_of(match->range.begin.line_id) == std::optional<size_t>(new_rank) &&
+                  !search.match(document, 1), "row edit left search at the old rank");
+            parser.finish();
+        } catch (const std::exception& error) {
+            failures += std::string(insert ? "IL: " : "DL: ") + error.what() + "; ";
+        }
+    }
+    if (!failures.empty()) throw std::runtime_error(failures);
+}
+
 int main() {
     try {
         published_order_is_exact();
@@ -196,6 +254,7 @@ int main() {
         rejected_publication_commits_nothing();
         search_navigation_follows_document_order();
         viewport_uses_exact_rank();
+        editing_rows_publish_order();
         std::cout << "exact identity rank, publication and document order passed\n";
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

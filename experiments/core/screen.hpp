@@ -468,7 +468,9 @@ public:
             for (int r = region_top(); r < bottom; ++r) lines[r] = std::move(lines[r + 1]);
             lines[bottom] = make_line(width(), Cell{}, next_id_);
             row = bottom;
-            advance_order(ordered_);
+            // A fresh row before retained rows below the region breaks the
+            // increasing-id shortcut. Exact lookup must then use document order.
+            advance_order(ordered_ && bottom == height() - 1);
             return;
         }
         const auto limit = active_history_limit();
@@ -527,6 +529,8 @@ public:
         for (int r = row; r < row + insert; ++r) lines[r] = make_line(width(), Cell{}, next_id_);
         wrap_pending = false;
         invalidate_attachment();
+        // New ids may precede surviving rows; readers must refresh cached ranks.
+        advance_order(false);
     }
     void delete_lines(int count) {
         if (count < 1) throw InputError("invalid delete line count");
@@ -537,6 +541,7 @@ public:
         for (int r = bottom - remove + 1; r <= bottom; ++r) lines[r] = make_line(width(), Cell{}, next_id_);
         wrap_pending = false;
         invalidate_attachment();
+        advance_order(ordered_ && bottom == height() - 1);
     }
     void insert_characters(int count) {
         if (count < 1) throw InputError("invalid insert character count");

@@ -1,4 +1,6 @@
 #include "terminal.hpp"
+#include "text_search.hpp"
+#include "text_selection.hpp"
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -79,6 +81,74 @@ static void literal_replay(ParseMode mode) {
           parser.screen.column == 4 && !parser.screen.origin_mode() &&
           parser.screen.region_bottom() == 24 && parser.screen.region_top() == 0,
           "trace ended outside the final explicit-reset state");
+}
+
+// The observed partial-region LF (#151 phases 9-12) removes one row and
+// inserts a new identity before retained rows below the region. Text readers
+// must still see that real document order; ids are not sortable coordinates.
+static void observed_region_text_readers(ParseMode mode, bool bytewise) {
+    Parser parser(25, 91, 100, mode);
+    const auto feed = [&](const char* source) {
+        if (bytewise) for (const char byte : std::string_view(source))
+            parser.feed(std::string_view(&byte, 1));
+        else parser.feed(source);
+    };
+    const auto phase = [&](size_t index) {
+        feed(phases[index].source); feed("\x1b[6n");
+        check(parser.take_replies() == std::vector<std::string>{phases[index].reply},
+              "region reader replay changed the observed DSR");
+    };
+    for (size_t index = 0; index <= 9; ++index) phase(index);
+    const TextDocument document(parser.screen);
+    TextSearch search;
+    auto generation = search.start(document, "NW");
+    const auto finish_search = [&] {
+        for (int step = 0; step < 100 && search.status() == SearchStatus::running; ++step)
+            search.step(document, generation, 128);
+        check(search.status() == SearchStatus::complete, "region search did not finish within its work bound");
+    };
+    finish_search();
+    check(!search.match(document, 0), "region test began with an unexpected NW match");
+    const auto retired = document.meta(1).id;
+    const auto top = *document.position(0, 0), bottom = *document.position(24, 0);
+    const auto before_scroll = document.order_revision();
+    phase(10);
+    const std::string expected[] = {"TP", "R1", "R2", "R3", "NW"};
+    for (size_t row = 0; row < 5; ++row)
+        check(document.line(row).projection.text == expected[row], "observed region text differs from the literal source");
+    check(document.line(24).projection.text == "BT" && document.valid(top) && document.valid(bottom),
+          "partial-region scrolling changed an outside sentinel");
+    check(parser.screen.history_lines().empty() && document.order_revision() > before_scroll,
+          "partial-region scroll missed its structure change or leaked into history");
+    check(!document.index_of(retired), "scrolling retained the retired top-region identity");
+    for (size_t row = 0; row < document.size(); ++row) {
+        const auto position = *document.position(row, 0);
+        check(document.index_of(position.line_id) == std::optional<size_t>(row) && document.valid(position),
+              "region scroll made a retained row unreachable to text readers");
+    }
+    TextSelection selection;
+    check(selection.set(document, {*document.position(4, 0), *document.position(4, 2)}),
+          "the new bottom-region text could not be selected");
+    const auto copied = selection.copy(document, 16);
+    check(copied.status == SelectionCopyStatus::ok && copied.text == "NW",
+          "selection did not copy the new bottom-region text");
+    generation = search.notify_change(document);
+    finish_search();
+    const auto match = search.match(document, 0);
+    check(match && document.index_of(match->range.begin.line_id) == std::optional<size_t>(4) &&
+          !search.match(document, 1), "incremental search missed or duplicated the new region text");
+    const auto after_scroll = document.order_revision();
+    phase(11); phase(12);
+    check(document.line(1).projection.text == "UP" && document.line(2).projection.text == "R2" &&
+          document.line(3).projection.text == "R3" && document.line(4).projection.text == "NW" &&
+          document.line(24).projection.text == "DN" && document.order_revision() == after_scroll,
+          "observed outside-region LF scrolled the region or changed its membership");
+    // The same lookup state must survive the observed later 1049 roundtrip.
+    for (size_t index = 13; index < phases.size(); ++index) phase(index);
+    for (size_t row = 0; row < document.size(); ++row)
+        check(document.index_of(document.meta(row).id) == std::optional<size_t>(row),
+              "the observed 1049 roundtrip lost exact row lookup");
+    parser.finish();
 }
 
 // The same 25 replies must not depend on how the byte stream is chunked.
@@ -205,6 +275,8 @@ int main() {
     for (const auto mode : {ParseMode::strict, ParseMode::recovery}) {
         const std::string name = mode == ParseMode::strict ? "strict" : "recovery";
         run(name + " literal replay", [&] { literal_replay(mode); });
+        run(name + " observed region text readers", [&] { observed_region_text_readers(mode, false); });
+        run(name + " bytewise region text readers", [&] { observed_region_text_readers(mode, true); });
         size_t cases = 0;
         run(name + " chunk invariance", [&] { chunk_invariance(mode, &cases); });
         std::cout << "  " << name << " chunk cases: " << cases << "\n";
