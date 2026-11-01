@@ -107,30 +107,50 @@ def run():
 
     def test_archive_preparation_uses_nine_bound_sources_and_false_plan_never_runs(self):
         with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            source = root / "official"
-            source.mkdir()
-            (source / "WindTerm.exe").write_bytes(b"inert original")
-            hashes = {}
-            for name in probe.SOURCE_FILES:
-                path = root / name
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_bytes((probe.ROOT / name).read_bytes())
-                hashes[name] = probe.sha(path)
-            archive = {"schema": probe.ARCHIVE_SCHEMA, "source_base_commit": "b"*40, "source_files_sha256": hashes}
-            (root / probe.ARCHIVE_MANIFEST).write_text(json.dumps(archive))
-            with patch.dict(probe._RUNTIME, ROOT=root, EXE_SHA256=probe.sha(source / "WindTerm.exe"),
-                            rea_identity=lambda _: {"synthetic": True}, host_identity=lambda: {"synthetic_host": True}), \
-                 patch.object(probe._RUNTIME["subprocess"], "check_output", side_effect=AssertionError("must not invoke Git")):
-                plan_path = root / "local/plan.json"
-                plan = probe.prepare_plan(source, root / "local/out", root / "inert-rea.cmd", plan_path, probe.CASE_ID)
-                self.assertEqual(plan["source_files_sha256"], hashes)
-                self.assertEqual(plan["source_identity"]["kind"], "source-archive")
-                self.assertFalse(plan["execution_authorized"])
-                with self.assertRaisesRegex(ValueError, "not been authorized"):
-                    probe.run_plan(plan_path)
-                self.assertFalse(plan_path.with_suffix(".attempted").exists())
-                self.assertFalse((root / "local/out").exists())
+            self.check_archive_preparation(Path(temporary))
+
+    def test_archive_fixture_handles_equivalent_directory_alias_without_relaxing_containment(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary).resolve()
+            hop = directory / "alias-hop"
+            hop.mkdir()
+            alias = hop / ".."
+            self.assertNotEqual(alias, alias.resolve())
+            self.assertEqual(alias.resolve(), directory)
+            self.check_archive_preparation(alias)
+
+    def check_archive_preparation(self, supplied_root):
+        # Production ROOT is resolved from __file__. Match that invariant when
+        # the temporary path uses an equivalent spelling (including Windows 8.3).
+        root = supplied_root.resolve()
+        source = supplied_root / "official"
+        source.mkdir()
+        (source / "WindTerm.exe").write_bytes(b"inert original")
+        hashes = {}
+        for name in probe.SOURCE_FILES:
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes((probe.ROOT / name).read_bytes())
+            hashes[name] = probe.sha(path)
+        archive = {"schema": probe.ARCHIVE_SCHEMA, "source_base_commit": "b"*40, "source_files_sha256": hashes}
+        (root / probe.ARCHIVE_MANIFEST).write_text(json.dumps(archive))
+        with patch.dict(probe._RUNTIME, ROOT=root, EXE_SHA256=probe.sha(source / "WindTerm.exe"),
+                        rea_identity=lambda _: {"synthetic": True}, host_identity=lambda: {"synthetic_host": True}), \
+             patch.object(probe._RUNTIME["subprocess"], "check_output", side_effect=AssertionError("must not invoke Git")):
+            plan_path = supplied_root / "local/plan.json"
+            plan = probe.prepare_plan(source, supplied_root / "local/out", supplied_root / "inert-rea.cmd", plan_path, probe.CASE_ID)
+            self.assertEqual(plan["source_files_sha256"], hashes)
+            self.assertEqual(plan["source_identity"]["kind"], "source-archive")
+            self.assertEqual(Path(plan["out"]), (root / "local/out").resolve())
+            self.assertFalse(plan["execution_authorized"])
+            with self.assertRaisesRegex(ValueError, "not been authorized"):
+                probe.run_plan(plan_path)
+            self.assertFalse(plan_path.with_suffix(".attempted").exists())
+            self.assertFalse((root / "local/out").exists())
+            outside = supplied_root / "local/../outside.json"
+            with self.assertRaisesRegex(ValueError, "must belong to this worktree local directory"):
+                probe.prepare_plan(source, root / "local/rejected", root / "inert-rea.cmd", outside, probe.CASE_ID)
+            self.assertFalse(outside.exists())
 
     def test_grid_and_case_bounds_are_not_reduced_for_new_case(self):
         for rows, columns, case in ((19, 91, probe.CASE_ID), (25, 39, probe.CASE_ID), (25, 91, "other")):

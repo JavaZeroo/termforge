@@ -135,7 +135,8 @@ class AttributePlanTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="attribute-tests-")
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        # Match the real module's resolved ROOT even when TEMP uses an 8.3 alias.
+        self.root = Path(self.temporary.name).resolve()
         for name in reference.SOURCE_FILES:
             destination = self.root / name
             destination.parent.mkdir(parents=True, exist_ok=True)
