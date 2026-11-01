@@ -138,11 +138,22 @@ static void observed_region_text_readers(ParseMode mode, bool bytewise) {
     check(match && document.index_of(match->range.begin.line_id) == std::optional<size_t>(4) &&
           !search.match(document, 1), "incremental search missed or duplicated the new region text");
     const auto after_scroll = document.order_revision();
-    phase(11); phase(12);
+    phase(11);
+    check(document.line(0).projection.text == "TP" && document.line(1).projection.text == "UP" &&
+          document.line(24).projection.text == "BT" && parser.screen.history_lines().empty() &&
+          parser.screen.discarded == 0 && document.order_revision() == after_scroll,
+          "observed above-region LF moved an outside row or leaked into history");
+    phase(12);
     check(document.line(1).projection.text == "UP" && document.line(2).projection.text == "R2" &&
           document.line(3).projection.text == "R3" && document.line(4).projection.text == "NW" &&
           document.line(24).projection.text == "DN" && document.order_revision() == after_scroll,
           "observed outside-region LF scrolled the region or changed its membership");
+    check(document.line(0).projection.text == "TP" && parser.screen.history_lines().empty() &&
+          parser.screen.discarded == 0 && document.size() == 25,
+          "observed below-region LF scrolled the viewport or changed retained history");
+    for (size_t row = 5; row < 24; ++row)
+        check(document.line(row).projection.text.empty(),
+              "observed outside-region LF copied text into an untouched row");
     // The same lookup state must survive the observed later 1049 roundtrip.
     for (size_t index = 13; index < phases.size(); ++index) phase(index);
     for (size_t row = 0; row < document.size(); ++row)
@@ -177,8 +188,8 @@ static void chunk_invariance(ParseMode mode, size_t* cases) {
     }
 }
 
-// DECOM and DECAWM are independent terminal-wide bits: toggling one must not
-// disturb the other, and both survive the 1049 buffer switch.
+// DECOM and DECAWM are independent: toggling one must not disturb the other.
+// Returning through 1049 restores primary origin without changing wrap policy.
 static void origin_autowrap_independence(ParseMode mode) {
     Parser parser(3, 5, 2, mode);
     parser.feed("\x1b[2;3r\x1b[?6h");
@@ -213,6 +224,90 @@ static void origin_autowrap_newline_is_region_bounded(ParseMode mode) {
     parser.feed("\x1b[6n");
     check(parser.take_replies() == std::vector<std::string>{"\x1b[2;2R"},
           "wrap under origin reported an absolute rather than relative reply");
+    parser.finish();
+}
+
+// Composed engineering invariant, not a WindTerm oracle: a soft wrap at the
+// region bottom must link the moved predecessor to the newly created row,
+// never to the untouched physical row below the region. Wide/combining text
+// also lets the independent copy oracle detect a missing continuation.
+static void region_bottom_wrap_keeps_its_successor(ParseMode mode, bool bytewise) {
+    Parser parser(5, 4, 2, mode);
+    const std::string source =
+        "TOP\r\nA\r\nB\r\nC\r\nBOT\x1b[2;4r\x1b[?6h\x1b[3;3H\xe4\xb8\xad\xcc\x81X\x1b[6n";
+    if (bytewise) for (const char byte : source) parser.feed(std::string_view(&byte, 1));
+    else parser.feed(source);
+    check(parser.take_replies() == std::vector<std::string>{"\x1b[3;2R"},
+          "region-bottom autowrap did not retain the origin-relative cursor");
+    const TextDocument document(parser.screen);
+    const std::string expected[]{"TOP", "B", "C \xe4\xb8\xad\xcc\x81", "X", "BOT"};
+    for (size_t row = 0; row < 5; ++row)
+        check(document.line(row).projection.text == expected[row],
+              "region-bottom wrap changed literal text or an outside sentinel");
+    check(parser.screen.history_lines().empty() && parser.screen.discarded == 0 &&
+          parser.screen.visible_lines()[2][2].width == 2 &&
+          parser.screen.visible_lines()[2][2].marks == 1 &&
+          parser.screen.visible_lines()[2][3].width == 0,
+          "region-bottom wrap leaked history or split a wide combining glyph");
+    TextSelection selection;
+    check(selection.set(document, {*document.position(2, 0), *document.position(3, 1)}),
+          "region-bottom wrapped text was not selectable");
+    const auto copy = selection.copy(document, 32);
+    check(copy.status == SelectionCopyStatus::ok && copy.text == "C \xe4\xb8\xad\xcc\x81X",
+          "region-bottom wrap inserted a hard break into copied logical text");
+    check(document.meta(2).joins_next &&
+          parser.screen.visible_lines()[2].next_id == parser.screen.visible_lines()[3].id &&
+          parser.screen.visible_lines()[2].next_id != parser.screen.visible_lines()[4].id,
+          "region-bottom wrap linked its predecessor to the outside sentinel instead of its successor");
+    parser.finish();
+}
+
+// Existing physical-row resize policy, not an observed WindTerm resize trace.
+// Both independently owned frames must share geometry, cropped
+// text must stay discarded on growth, and only primary rows enter history.
+static void origin_margin_resize_both_frames(ParseMode mode, bool bytewise) {
+    Parser parser(6, 6, 3, mode);
+    const auto feed = [&](std::string_view source) {
+        if (bytewise) for (const char byte : source) parser.feed(std::string_view(&byte, 1));
+        else parser.feed(source);
+    };
+    feed("P0\r\nP1\r\nP2\r\nP3\r\nP4\r\nP5\x1b[2;5r\x1b[?6h\x1b[4;6HW"
+         "\x1b[?1049hA0\r\nA1\r\nA2\r\nA3\r\nA4\r\nA5\x1b[3;5r\x1b[?6h\x1b[3;6HQ");
+    parser.screen.resize(3, 4);
+    feed("\x1b[6n");
+    const auto& screen = parser.screen;
+    check(parser.take_replies() == std::vector<std::string>{"\x1b[3;4R"} &&
+          screen.origin_mode() && screen.region_top() == 0 && screen.region_bottom() == 2 &&
+          !screen.wrap_pending && screen.history_lines().empty() && screen.discarded == 2,
+          "alternate shrink retained stale margins/edge or placed discarded rows in history");
+    const TextDocument alternate(screen);
+    check(alternate.line(0).projection.text == "A2" && alternate.line(1).projection.text == "A3" &&
+          alternate.line(2).projection.text == "A4" && alternate.size() == 3,
+          "alternate shrink did not follow the literal physical-row crop");
+    feed("X");
+    parser.screen.resize(5, 6);
+    feed("\x1b[6n");
+    check(parser.take_replies() == std::vector<std::string>{"\x1b[3;4R"} &&
+          screen.region_top() == 0 && screen.region_bottom() == 4 && screen.origin_mode() &&
+          !screen.wrap_pending && alternate.line(0).projection.text == "A2" &&
+          alternate.line(1).projection.text == "A3" && alternate.line(2).projection.text == "A4 X" &&
+          alternate.line(3).projection.text.empty() && alternate.line(4).projection.text.empty() &&
+          screen.history_lines().empty() && screen.discarded == 2,
+          "alternate growth revived cropped rows/text or changed cursor/origin policy");
+    feed("\x1b[?1049l\x1b[6n");
+    check(parser.take_replies() == std::vector<std::string>{"\x1b[3;4R"} &&
+          screen.active_buffer() == ScreenBuffer::primary && screen.origin_mode() &&
+          screen.region_top() == 0 && screen.region_bottom() == 4 && !screen.wrap_pending &&
+          screen.history_lines().size() == 2 && screen.discarded == 0,
+          "return restored stale primary geometry, margins, cursor or history accounting");
+    const TextDocument primary(screen);
+    const std::string expected[]{"P0", "P1", "P2", "P3", "P4", "", ""};
+    for (size_t row = 0; row < 7; ++row)
+        check(primary.line(row).projection.text == expected[row],
+              "hidden primary resize imported alternate text or revived cropped text");
+    feed("Z");
+    check(primary.line(4).projection.text == "P4 Z" && screen.row == 2 && screen.column == 4,
+          "primary output after resize consumed an obsolete pending wrap");
     parser.finish();
 }
 
@@ -261,6 +356,121 @@ static void ris_resets_origin(ParseMode mode) {
     check(!parser.screen.origin_mode() && parser.screen.row == 0 && parser.screen.column == 0,
           "RIS did not reset origin mode and home the cursor");
     parser.finish();
+    // Preserve the pre-existing origin-off reset policy when the former shared
+    // bit becomes frame-owned. This is not an original alternate-RIS oracle.
+    Parser alternate(4, 6, 2, mode);
+    alternate.feed("\x1b[?6h\x1b[?1049h\x1b[?6h\x1b" "c");
+    check(alternate.screen.active_buffer() == ScreenBuffer::primary && !alternate.screen.origin_mode(),
+          "RIS restored a saved primary origin-on state");
+    alternate.feed("\x1b[?1049h");
+    check(!alternate.screen.origin_mode(), "RIS left a saved alternate origin-on state");
+    alternate.finish();
+}
+
+// Two fresh 91x20 WindTerm 2.7.0 observations distinguish main ON/alternate
+// OFF from main OFF/alternate ON. Replies and marker cell positions are literal
+// output oracles; the original document's combined primary/alternate line
+// storage is not imported into this core's frame model.
+static void observed_independent_origins(ParseMode mode, bool main_on, bool bytewise) {
+    static constexpr const char* sentinels =
+        "\x1b[1;1HR01\x1b[2;1HR02\x1b[3;1HR03\x1b[4;1HR04"
+        "\x1b[5;1HR05\x1b[6;1HR06\x1b[7;1HR07\x1b[8;1HR08\x1b[20;1HSB";
+    const std::string initial = std::string("\x1b[?6l\x1b[?7h\x1b[r\x1b[2J") + sentinels;
+    const std::string lower_bound = std::string(sentinels) + "\x1b[?6h\x1b[99;1H";
+    const std::vector<Phase> trace{
+        {"fresh-primary-sentinels", initial.c_str(), "\x1b[20;3R"},
+        {"primary-known-origin", main_on ? "\x1b[2;5r\x1b[?6h\x1b[2;10HMP" : "\x1b[2;5r\x1b[?6l\x1b[2;10HMP", "\x1b[2;12R"},
+        {"first-alternate-enter", "\x1b[?1049h", "\x1b[1;1R"},
+        {"alternate-origin-sample", "\x1b[3;7r\x1b[1;1HAS\x1b[99;1H", "\x1b[20;1R"},
+        {"alternate-origin-on-control", "\x1b[?6h\x1b[3;7r\x1b[1;1HAI\x1b[99;1H", "\x1b[5;1R"},
+        {"alternate-origin-off-control", "\x1b[?6l\x1b[3;7r\x1b[1;1HAO\x1b[99;1H", "\x1b[20;1R"},
+        {"alternate-opposite-origin", main_on ? "\x1b[?6l\x1b[2;10HAP" : "\x1b[?6h\x1b[2;10HAP", "\x1b[2;12R"},
+        {"primary-return-untouched", "\x1b[?1049l", "\x1b[2;12R"},
+        {"primary-origin-sample", "\x1b[1;1HPS\x1b[99;1H", main_on ? "\x1b[4;1R" : "\x1b[20;1R"},
+        {"primary-origin-on-control", "\x1b[?6h\x1b[1;1HPI\x1b[99;1H", "\x1b[4;1R"},
+        {"primary-origin-off-control", "\x1b[?6l\x1b[1;1HPO\x1b[99;1H", "\x1b[20;1R"},
+        {"primary-bottom-sentinels", lower_bound.c_str(), "\x1b[4;1R"},
+        {"primary-bottom-newline", "\r\nNW", "\x1b[4;3R"},
+        {"final-explicit-reset", "\x1b[?6l\x1b[?7h\x1b[r\x1b[1;1HDONE", "\x1b[1;5R"},
+    };
+    Parser parser(20, 91, 100, mode);
+    const auto feed = [&](std::string_view source) {
+        if (bytewise) for (const char byte : source) parser.feed(std::string_view(&byte, 1));
+        else parser.feed(source);
+    };
+    const auto marker_at = [&](size_t row, size_t column, const std::string& marker) {
+        const auto text = project_line(parser.screen.visible_lines()[row]).text;
+        return text.size() >= column + marker.size() && text.substr(column, marker.size()) == marker;
+    };
+    std::string failures;
+    for (size_t phase = 0; phase < trace.size(); ++phase) {
+        feed(trace[phase].source); feed("\x1b[6n");
+        if (parser.take_replies() != std::vector<std::string>{trace[phase].reply})
+            failures += std::string(trace[phase].label) + " literal DSR differs; ";
+        bool markers_match = true;
+        switch (phase) {
+        case 1: markers_match = marker_at(main_on ? 2 : 1, 9, "MP"); break;
+        case 3: markers_match = marker_at(0, 0, "AS"); break;
+        case 4: markers_match = marker_at(2, 0, "AI"); break;
+        case 5: markers_match = marker_at(0, 0, "AO"); break;
+        case 6: markers_match = marker_at(main_on ? 1 : 3, 9, "AP"); break;
+        case 8: markers_match = marker_at(main_on ? 1 : 0, 0, "PS"); break;
+        case 9: markers_match = marker_at(1, 0, "PI"); break;
+        case 10: markers_match = marker_at(0, 0, "PO"); break;
+        case 12:
+            markers_match = marker_at(4, 0, "NW") && marker_at(0, 0, "R01") && marker_at(5, 0, "R06") &&
+                            marker_at(6, 0, "R07") && marker_at(7, 0, "R08") && marker_at(19, 0, "SB");
+            break;
+        default: break;
+        }
+        if (!markers_match) failures += std::string(trace[phase].label) + " literal marker position differs; ";
+        const bool alternate = phase >= 2 && phase <= 6;
+        if ((parser.screen.active_buffer() == ScreenBuffer::alternate) != alternate)
+            failures += std::string(trace[phase].label) + " active buffer differs; ";
+    }
+    parser.finish();
+    if (!failures.empty()) throw std::runtime_error(failures);
+}
+
+// Fresh original re-entry observation: both duplicate and later 1049h match
+// the explicit origin-OFF control; the untouched primary retains origin ON.
+static void observed_origin_reentry(ParseMode mode, bool bytewise) {
+    const Phase trace[]{
+        {"primary", "\x1b[?6l\x1b[?7h\x1b[r\x1b[2J\x1b[1;1HR01\x1b[2;1HR02\x1b[3;1HR03\x1b[4;1HR04\x1b[5;1HR05\x1b[6;1HR06\x1b[7;1HR07\x1b[8;1HR08\x1b[2;5r\x1b[?6h\x1b[2;10HMP", "\x1b[2;12R"},
+        {"first-enter", "\x1b[?1049h\x1b[3;7r\x1b[?6h\x1b[2;10HA0", "\x1b[2;12R"},
+        {"duplicate", "\x1b[?1049h", "\x1b[1;1R"},
+        {"duplicate-sample", "\x1b[3;7r\x1b[1;1HDS\x1b[99;1H", "\x1b[20;1R"},
+        {"duplicate-on", "\x1b[?6h\x1b[3;7r\x1b[1;1HDI\x1b[99;1H", "\x1b[5;1R"},
+        {"duplicate-off", "\x1b[?6l\x1b[3;7r\x1b[1;1HDO\x1b[99;1H", "\x1b[20;1R"},
+        {"before-exit", "\x1b[?6h\x1b[2;10HA1", "\x1b[2;12R"},
+        {"return", "\x1b[?1049l", "\x1b[2;12R"},
+        {"later-enter", "\x1b[?1049h", "\x1b[1;1R"},
+        {"later-sample", "\x1b[3;7r\x1b[1;1HES\x1b[99;1H", "\x1b[20;1R"},
+        {"later-on", "\x1b[?6h\x1b[3;7r\x1b[1;1HEI\x1b[99;1H", "\x1b[5;1R"},
+        {"later-off", "\x1b[?6l\x1b[3;7r\x1b[1;1HEO\x1b[99;1H", "\x1b[20;1R"},
+        {"final-return", "\x1b[?1049l", "\x1b[2;12R"},
+        {"reset", "\x1b[?6l\x1b[?7h\x1b[r\x1b[1;1HDONE", "\x1b[1;5R"},
+    };
+    Parser parser(20, 91, 100, mode);
+    const auto feed = [&](std::string_view source) {
+        if (bytewise) for (const char byte : source) parser.feed(std::string_view(&byte, 1));
+        else parser.feed(source);
+    };
+    std::string failures;
+    for (size_t phase = 0; phase < std::size(trace); ++phase) {
+        feed(trace[phase].source); feed("\x1b[6n");
+        if (parser.take_replies() != std::vector<std::string>{trace[phase].reply})
+            failures += std::string(trace[phase].label) + " DSR differs; ";
+        if (phase == 3 || phase == 4 || phase == 5 || phase == 9 || phase == 10 || phase == 11) {
+            const auto row = phase == 4 || phase == 10 ? 2u : 0u;
+            const char* marker = phase == 3 ? "DS" : phase == 4 ? "DI" : phase == 5 ? "DO" :
+                                 phase == 9 ? "ES" : phase == 10 ? "EI" : "EO";
+            if (project_line(parser.screen.visible_lines()[row]).text.substr(0, 2) != marker)
+                failures += std::string(trace[phase].label) + " marker differs; ";
+        }
+    }
+    parser.finish();
+    if (!failures.empty()) throw std::runtime_error(failures);
 }
 
 int main() {
@@ -282,7 +492,18 @@ int main() {
         std::cout << "  " << name << " chunk cases: " << cases << "\n";
         run(name + " origin/autowrap independence", [&] { origin_autowrap_independence(mode); });
         run(name + " origin/autowrap region wrap", [&] { origin_autowrap_newline_is_region_bounded(mode); });
+        run(name + " region-bottom wrap successor", [&] { region_bottom_wrap_keeps_its_successor(mode, false); });
+        run(name + " bytewise region-bottom wrap successor", [&] { region_bottom_wrap_keeps_its_successor(mode, true); });
+        run(name + " origin/margin resize policy", [&] { origin_margin_resize_both_frames(mode, false); });
+        run(name + " bytewise origin/margin resize policy", [&] { origin_margin_resize_both_frames(mode, true); });
         run(name + " ris origin reset", [&] { ris_resets_origin(mode); });
+        run(name + " observed re-entry", [&] { observed_origin_reentry(mode, false); });
+        run(name + " bytewise observed re-entry", [&] { observed_origin_reentry(mode, true); });
+        for (const bool main_on : {false, true}) {
+            const auto trace = name + (main_on ? " observed main-on/alt-off" : " observed main-off/alt-on");
+            run(trace, [&] { observed_independent_origins(mode, main_on, false); });
+            run(trace + " bytewise", [&] { observed_independent_origins(mode, main_on, true); });
+        }
     }
     run("recovery abnormal sequences", abnormal_origin_sequences);
     std::cout << "DECOM origin checks: " << (checks - failures) << '/' << checks << " passed\n";

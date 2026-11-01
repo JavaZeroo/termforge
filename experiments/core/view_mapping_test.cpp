@@ -6,6 +6,7 @@
 #include "view_mapping.hpp"
 #include "history_view.hpp"
 #include "text_selection.hpp"
+#include "text_search.hpp"
 #include <iostream>
 #include <stdexcept>
 
@@ -177,6 +178,82 @@ static void stale_epoch_positions_do_not_hit() {
     check(projected.empty(), "projection over stale coordinates returns nothing");
 }
 
+// Cross the public parser, document and published-page seams. These are reader
+// invariants under the existing physical resize policy, not new reference facts.
+static void region_mode_pages_survive_as_values(ParseMode mode, bool bytewise) {
+    Parser parser(4, 4, 2, mode);
+    const auto feed = [&](std::string_view source) {
+        if (bytewise) for (const char byte : source) parser.feed(std::string_view(&byte, 1));
+        else parser.feed(source);
+    };
+    feed("TOP\x1b[4;1HBOT\x1b[2;3r\x1b[?6h\x1b[2;1HABCDE");
+    TextDocument document(parser.screen);
+    HistoryViewport viewport;
+    const auto page = viewport.snapshot(parser.screen);
+    const auto begin = page.mapping.hit(document, 1, 0, ViewAffinity::leading);
+    const auto end = page.mapping.hit(document, 2, 1, ViewAffinity::trailing);
+    check(begin && end && page.lines[1].next_id == page.lines[2].id &&
+          page.viewport.total == 4 && page.viewport.maximum_top == 0,
+          "regional automatic wrap did not publish two connected source rows without history");
+    TextSelection selection;
+    check(selection.set(document, {*begin, *end}) && selection.copy(document, 32).text == "ABCDE",
+          "published regional page did not copy its literal continuous source");
+    TextSearch search;
+    const auto generation = search.start(document, "ABCDE");
+    for (int step = 0; step < 100 && search.status() == SearchStatus::running; ++step)
+        search.step(document, generation, 2);
+    check(search.status() == SearchStatus::complete && search.matches().size() == 1,
+          "published regional source did not produce one incremental Find result");
+    const auto spans = page.mapping.project(document, search.matches().front().range);
+    check(spans.size() == 2 && spans[0].row == 1 && spans[0].column_begin == 0 &&
+          spans[0].column_end == 4 && spans[1].row == 2 && spans[1].column_end == 1,
+          "regional Find result did not project to its two literal display spans");
+
+    parser.screen.resize(4, 6);
+    check(!page.mapping.hit(document, 1, 0, ViewAffinity::leading) &&
+          selection.reconcile(document) && selection.copy(document, 32).text == "ABCDE",
+          "geometry growth reused a stale page or lost the retained source selection");
+    const auto grown = viewport.snapshot(parser.screen);
+    feed("\x1b[?1049h\x1b[2;3r\x1b[?6h\x1b[2;1HUVWXYZA");
+    check(selection.copy(document, 32).status == SelectionCopyStatus::invalidated &&
+          !grown.mapping.hit(document, 1, 0, ViewAffinity::leading),
+          "alternate entry reused primary selection or painted-page coordinates");
+    const auto alternate = viewport.snapshot(parser.screen);
+    check(alternate.lines[1][0].text == "U" && alternate.lines[2][0].text == "A" &&
+          alternate.lines[1].next_id == alternate.lines[2].id && alternate.viewport.maximum_top == 0,
+          "alternate regional output leaked history or lost its own continuation");
+    parser.screen.resize(4, 8);
+    feed("\x1b[?1049l");
+    const auto restored = viewport.snapshot(parser.screen);
+    check(restored.lines[1].id == page.lines[1].id && restored.lines[2].id == page.lines[2].id &&
+          restored.lines[1].version != page.lines[1].version && restored.lines[1][0].text == "A" &&
+          restored.lines[2][0].text == "E" && restored.viewport.total == 4,
+          "hidden primary resize did not retain literal row identity and update its version");
+    check(!alternate.mapping.hit(document, 1, 0, ViewAffinity::leading) &&
+          !page.mapping.hit(document, 1, 0, ViewAffinity::leading),
+          "a returned buffer revived old primary or alternate page coordinates");
+    const auto fresh_begin = restored.mapping.hit(document, 1, 0, ViewAffinity::leading);
+    const auto fresh_end = restored.mapping.hit(document, 2, 1, ViewAffinity::trailing);
+    check(fresh_begin && fresh_end && selection.set(document, {*fresh_begin, *fresh_end}) &&
+          selection.copy(document, 32).text == "ABCDE", "fresh restored page cannot copy the retained source");
+    check(page.lines[1].size() == 4 && page.lines[1][0].text == "A" &&
+          grown.lines[1].size() == 6 && grown.lines[1][0].text == "A" &&
+          alternate.lines[1].size() == 6 && alternate.lines[1][4].text == "Y",
+          "published page values changed after subsequent buffer writes or resize");
+    // Current conservative crop policy also severs a continuation when only
+    // newly added padding is cut. This limit is not a WindTerm resize oracle.
+    parser.screen.resize(4, 4);
+    check(selection.copy(document, 32).status == SelectionCopyStatus::invalidated,
+          "physical cropping silently kept an old cross-row selection");
+    const auto cropped = viewport.snapshot(parser.screen);
+    const auto crop_begin = cropped.mapping.hit(document, 1, 0, ViewAffinity::leading);
+    const auto crop_end = cropped.mapping.hit(document, 2, 1, ViewAffinity::trailing);
+    check(crop_begin && crop_end && selection.set(document, {*crop_begin, *crop_end}) &&
+          selection.copy(document, 32).text == "ABCD\r\nE",
+          "fresh cropped page did not expose the current conservative hard-break policy");
+    parser.finish();
+}
+
 int main() {
     try {
         interior_columns_map_by_offset();
@@ -187,6 +264,8 @@ int main() {
         mapped_wide_and_combining_selection();
         old_page_cannot_reuse_evicted_or_changed_source();
         stale_epoch_positions_do_not_hit();
+        for (const auto mode : {ParseMode::strict, ParseMode::recovery})
+            for (const bool bytewise : {false, true}) region_mode_pages_survive_as_values(mode, bytewise);
         std::cout << "view mapping checks passed\n";
         return 0;
     } catch (const std::exception& error) {

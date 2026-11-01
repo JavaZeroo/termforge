@@ -63,8 +63,15 @@ class Parser {
                 // primary writing state must survive until a real return.
                 if (screen.active_buffer() == ScreenBuffer::alternate) screen.invalidate_buffer_readers();
                 screen.activate_buffer(ScreenBuffer::alternate);
-                // Colour reset leaves other attributes owned by this frame.
+                // Each 1049 entry, including re-entry, disables alternate
+                // origin. The saved primary origin is restored on return.
+                screen.set_origin_mode(false);
+                // Entry resets colours and the supported non-bold attributes.
+                // Bold retains this frame's existing policy; the saved primary
+                // writing state is owned by the other frame and remains intact.
                 screen.style.fg = screen.style.bg = -1;
+                screen.style.dim = screen.style.underline = screen.style.reverse = false;
+                screen.style.strikethrough = screen.style.hidden = screen.style.overline = false;
                 screen.erase_display(2);
                 screen.move(0, 0);
             } else screen.activate_buffer(ScreenBuffer::primary);

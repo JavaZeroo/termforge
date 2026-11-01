@@ -6,11 +6,13 @@
 #include "text_search.hpp"
 #include "text_selection.hpp"
 #include "terminal.hpp"
+#include <algorithm>
 #include <initializer_list>
 #include <iostream>
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 using namespace termforge;
@@ -242,6 +244,113 @@ static void editing_rows_publish_order() {
     if (!failures.empty()) throw std::runtime_error(failures);
 }
 
+static void feed_chunks(Parser& parser, std::string_view input, size_t chunk) {
+    for (size_t offset = 0; offset < input.size(); offset += chunk)
+        parser.feed(input.substr(offset, (std::min)(chunk, input.size() - offset)));
+}
+
+// Removing history changes retained ranks, not the document owner. Surviving
+// visible text positions stay valid for ED3; RIS's existing content reset makes
+// those same positions stale. Neither command invents a structural change when
+// there is no history to remove.
+static void clearing_history_publishes_structure() {
+    std::string failures;
+    for (const auto mode : {ParseMode::strict, ParseMode::recovery})
+        for (const size_t chunk : {1u, 256u})
+            for (const size_t history : {0u, 10u})
+                for (const bool unordered : {false, true})
+                    for (const bool reset : {false, true}) {
+                        try {
+                            Parser parser(4, 4, history, mode);
+                            feed_chunks(parser, "A\r\nB\r\nC\r\nD\r\nE\r\nF", chunk);
+                            if (unordered) feed_chunks(parser, "\x1b[1;3r\x1b[3;1H\r\nN", chunk);
+                            const TextDocument document(parser.screen);
+                            const auto history_before = parser.screen.history_lines().size();
+                            check(history_before == (history ? 2u : 0u), "clear-history fixture has wrong history");
+                            const auto history_position = document.position(0, 0);
+                            const auto survivor = *document.position(document.size() - 1, 0);
+                            TextSelection selection;
+                            check(selection.set(document, {survivor, *document.position(document.size() - 1, 1)}),
+                                  "clear-history selection setup failed");
+                            const auto revision = document.order_revision(), epoch = document.epoch();
+                            feed_chunks(parser, reset ? "\x1b" "cZ" : "\x1b[3J", chunk);
+                            parser.finish();
+                            const std::vector<std::string> expected = reset
+                                ? std::vector<std::string>{"Z", "", "", ""}
+                                : unordered ? std::vector<std::string>{"D", "E", "N", "F"}
+                                            : std::vector<std::string>{"C", "D", "E", "F"};
+                            check(document.size() == 4 && parser.screen.history_lines().empty(),
+                                  "clear-history retained a removed row");
+                            for (size_t rank = 0; rank < document.size(); ++rank) {
+                                check(document.line(rank).projection.text == expected[rank], "clear-history changed unexpected text");
+                                check(document.index_of(document.meta(rank).id) == std::optional<size_t>(rank),
+                                      "clear-history lost an exact visible rank");
+                            }
+                            if (history_before) check(!document.valid(*history_position) &&
+                                                      !document.index_of(history_position->line_id),
+                                                      "removed history position remained valid");
+                            check(document.epoch() == epoch, "clearing primary history changed the document owner");
+                            check(document.valid(survivor) != reset &&
+                                  document.index_of(survivor.line_id) == std::optional<size_t>(3),
+                                  "clear-history confused a surviving identity with unchanged content");
+                            const auto copy = selection.copy(document, 16);
+                            check(reset ? copy.status == SelectionCopyStatus::invalidated
+                                        : copy.status == SelectionCopyStatus::ok && copy.text == "F",
+                                  "clear-history selection invalidation was not precise");
+                            if (!reset) check(parser.screen.discarded == 0, "ED3 did not clear the discarded count");
+                            check(history_before ? document.order_revision() > revision
+                                                 : document.order_revision() == revision,
+                                  "clear-history did not publish exactly the membership change");
+                        } catch (const std::exception& error) {
+                            failures += std::string(reset ? "RIS" : "ED3") + (unordered ? " unordered" : " ordered") +
+                                " history=" + std::to_string(history) + " chunk=" + std::to_string(chunk) +
+                                (mode == ParseMode::strict ? " strict: " : " recovery: ") + error.what() + ";\n";
+                        }
+                    }
+    if (!failures.empty()) throw std::runtime_error(failures);
+}
+
+// An in-progress search has consumed three two-unit steps when the clear arrives.
+// With reordered visible identities and retained history, RIS must rewind onto
+// the newly written Z, rather than silently completing without that visible hit.
+static void incremental_search_survives_history_removal() {
+    std::string failures;
+    for (const auto mode : {ParseMode::strict, ParseMode::recovery})
+        for (const size_t chunk : {1u, 256u})
+            for (const size_t history : {0u, 10u})
+                for (const bool unordered : {false, true})
+                    for (const bool reset : {false, true})
+                        for (const bool existing : {false, true}) {
+                            try {
+                                Parser parser(4, 4, history, mode);
+                                feed_chunks(parser, "A\r\nB\r\nC\r\nD\r\nE\r\nF", chunk);
+                                if (unordered) feed_chunks(parser, "\x1b[1;3r\x1b[3;1H\r\nN", chunk);
+                                const TextDocument document(parser.screen);
+                                TextSearch search;
+                                auto generation = search.start(document, existing ? "F" : "Z");
+                                for (int step = 0; step < 3; ++step) search.step(document, generation, 2);
+                                feed_chunks(parser, reset ? "\x1b" "cZ" : "\x1b[3J", chunk);
+                                parser.finish();
+                                generation = search.notify_change(document);
+                                for (int guard = 0; guard < 1000 && search.status() == SearchStatus::running; ++guard)
+                                    search.step(document, generation, 2);
+                                check(search.status() == SearchStatus::complete, "history-removal search exceeded its work bound");
+                                const bool expected = reset ? !existing : existing;
+                                const auto match = search.match(document, 0);
+                                check(match.has_value() == expected && !search.match(document, 1),
+                                      "history-removal incremental Find returned the wrong literal hits");
+                                if (match) check(document.index_of(match->range.begin.line_id) == std::optional<size_t>(reset ? 0 : 3),
+                                                 "history-removal incremental Find returned the wrong rank");
+                            } catch (const std::exception& error) {
+                                failures += std::string(reset ? "RIS" : "ED3") + (unordered ? " unordered" : " ordered") +
+                                    " history=" + std::to_string(history) + " chunk=" + std::to_string(chunk) +
+                                    (existing ? " query=F" : " query=Z") +
+                                    (mode == ParseMode::strict ? " strict: " : " recovery: ") + error.what() + ";\n";
+                            }
+                        }
+    if (!failures.empty()) throw std::runtime_error(failures);
+}
+
 int main() {
     try {
         published_order_is_exact();
@@ -255,6 +364,12 @@ int main() {
         search_navigation_follows_document_order();
         viewport_uses_exact_rank();
         editing_rows_publish_order();
+        std::string clear_failures;
+        try { clearing_history_publishes_structure(); }
+        catch (const std::exception& error) { clear_failures += error.what(); }
+        try { incremental_search_survives_history_removal(); }
+        catch (const std::exception& error) { clear_failures += error.what(); }
+        if (!clear_failures.empty()) throw std::runtime_error(clear_failures);
         std::cout << "exact identity rank, publication and document order passed\n";
     } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }
 }

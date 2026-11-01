@@ -86,9 +86,11 @@ class Screen {
         // keep their own scrolling region across a 1049 switch.
         int scroll_top = 0;
         int scroll_bottom = -1;
+        bool origin_mode_ = false;
         template<class State> void swap(State& other) noexcept {
             std::swap(row, other.row); std::swap(column, other.column);
             std::swap(scroll_top, other.scroll_top); std::swap(scroll_bottom, other.scroll_bottom);
+            std::swap(origin_mode_, other.origin_mode_);
             std::swap(last_row, other.last_row); std::swap(last_column, other.last_column);
             std::swap(wrap_pending, other.wrap_pending); std::swap(discarded, other.discarded);
             std::swap(style, other.style);
@@ -98,9 +100,8 @@ class Screen {
     };
     // Permission belongs to the terminal; each frame retains its own edge state.
     bool autowrap_enabled_ = true;
-    // DECOM origin mode is terminal-wide like autowrap: it changes cursor
-    // addressing and the home position, not the stored rows. Frames keep only
-    // their own scroll region.
+    // Each frame owns its DECOM origin alongside its scrolling margins. A new
+    // alternate frame starts with origin off; switching back restores primary.
     bool origin_mode_ = false;
     // Retained storage. Only the owner changes its membership or order:
     // resize, newline, activate_buffer, publish() and restore_frame().
@@ -120,7 +121,7 @@ class Screen {
     std::optional<FrameState> inactive_;
     FrameState active_state_copy() const {
         return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history, ordered_,
-                scroll_top, scroll_bottom};
+                scroll_top, scroll_bottom, origin_mode_};
     }
     void swap_active(FrameState& state) noexcept {
         state.swap(*this);
@@ -416,8 +417,8 @@ public:
         swap_active(next);
         if (hidden) inactive_->swap(*hidden);
         columns_ = columns; next_id_ = identity;
-        // The reference terminal drops the scrolling margins on resize, so a
-        // stale bottom could point past the new height. Both frames reset.
+        // Physical-row resize policy resets both frames' margins so a stale
+        // bottom cannot point past the new height. This is not a WindTerm claim.
         scroll_top = 0; scroll_bottom = -1;
         if (inactive_) { inactive_->scroll_top = 0; inactive_->scroll_bottom = -1; }
         advance_order(ordered_);
@@ -451,14 +452,15 @@ public:
         move(0, 0);
     }
     void newline(bool automatic = false, size_t used_columns = 0) {
+        const int bottom = region_bottom();
         auto& previous = lines[row];
         changed(previous);
         previous.ending = automatic ? LineEnding::soft_wrap : LineEnding::hard_break;
         previous.wrap_columns = automatic ? used_columns : 0;
-        // A newly allocated bottom row is known before moving its predecessor.
-        previous.next_id = automatic ? (row + 1 < height() ? lines[row + 1].id : next_id_) : 0;
+        // At the bottom margin, the successor is the row about to be allocated,
+        // even when a physical row still exists below the scrolling region.
+        previous.next_id = automatic ? (row == bottom || row + 1 == height() ? next_id_ : lines[row + 1].id) : 0;
         wrap_pending = false; invalidate_attachment();
-        const int bottom = region_bottom();
         // Only the bottom margin scrolls; rows above it move down normally and
         // rows below it must not disturb the region at all.
         if (row < bottom) { ++row; return; }
@@ -570,22 +572,31 @@ public:
         wrap_pending = false; invalidate_attachment();
     }
     void reset() {
-        // RIS: every mode, attribute, region and buffer returns to its start
-        // state; the identities already spent stay spent.
+        // Clear the active text/history and reset the supported modes before
+        // returning to primary. Identities already spent stay spent.
         for (int r = 0; r < height(); ++r) erase_range(lines[r], 0, width());
-        history.clear();
+        if (!history.empty()) {
+            history.clear();
+            advance_order(ordered_);
+        }
         style = Style{};
         row = column = 0;
         wrap_pending = false;
         autowrap_enabled_ = true;
         origin_mode_ = false;
+        // Preserve the existing RIS origin-off policy across the saved frame.
+        if (inactive_) inactive_->origin_mode_ = false;
         activate_buffer(ScreenBuffer::primary);
         invalidate_attachment();
     }
     size_t scrollback_lines() const { return history.size(); }
     void erase_scrollback() {
         // ED3 drops scrollback only; the visible screen is untouched.
-        if (!history.empty() || discarded) { history.clear(); discarded = 0; }
+        if (!history.empty()) {
+            history.clear();
+            advance_order(ordered_);
+        }
+        discarded = 0;
     }
     void erase_display(int mode) {
         if (mode == 3) { erase_scrollback(); return; }

@@ -153,6 +153,68 @@ static void wide_fit_policy_is_preserved(ParseMode mode) {
           "wide scalar fit fallback replaced text, overflowed a row, or lost its trailing cell");
 }
 
+// These Unicode/1049 combinations enforce the existing Screen policy, not
+// observed WindTerm behaviour. A combining mark attaches without advancing;
+// overwriting a wide tail repairs the whole old glyph; the wrap bit is global.
+static void disabled_wide_tail_roundtrip(ParseMode mode, bool bytewise) {
+    Parser parser(3, 4, 2, mode);
+    const auto feed = [&](std::string_view source) {
+        if (bytewise) for (const char byte : source) parser.feed(std::string_view(&byte, 1));
+        else parser.feed(source);
+    };
+    feed("\x1b[?7lAB\xe4\xb8\xad\xcc\x81\x1b[?1049h12345");
+    check(project_line(parser.screen.visible_lines()[0]).text == "1235" &&
+          parser.screen.row == 0 && parser.screen.column == 3 && parser.screen.history_lines().empty(),
+          "disabled autowrap did not remain disabled in the alternate frame");
+    feed("\x1b[?1049l\xcc\x88");
+    const auto& screen = parser.screen;
+    check(project_line(screen.visible_lines()[0]).text == "AB\xe4\xb8\xad\xcc\x81\xcc\x88" &&
+          screen.visible_lines()[0][2].width == 2 && screen.visible_lines()[0][2].marks == 2 &&
+          screen.visible_lines()[0][3].width == 0 && screen.wrap_pending &&
+          screen.row == 0 && screen.column == 3,
+          "return lost the primary wide combining base or consumed its pending edge");
+    feed("X\xcc\x80");
+    check(project_line(screen.visible_lines()[0]).text == "AB X\xcc\x80" &&
+          screen.visible_lines()[0][2].text == " " && screen.visible_lines()[0][2].width == 1 &&
+          screen.visible_lines()[0][3].width == 1 && screen.visible_lines()[0][3].marks == 1 &&
+          screen.row == 0 && screen.column == 3 && screen.wrap_pending &&
+          screen.visible_lines()[0].ending == LineEnding::none &&
+          project_line(screen.visible_lines()[1]).text.empty(),
+          "disabled edge overwrite left a half-wide glyph, stale mark or false continuation");
+    feed("\x1b[?7hY");
+    check(project_line(screen.visible_lines()[0]).text == "AB X\xcc\x80" &&
+          project_line(screen.visible_lines()[1]).text == "Y" && screen.row == 1 && screen.column == 1 &&
+          continues_into(screen.visible_lines()[0], screen.visible_lines()[1]) &&
+          screen.visible_lines()[0].wrap_columns == 4 && screen.history_lines().empty() &&
+          parser.diagnostics().replaced_scalars == 0,
+          "enabling wrap after the repaired edge lost text or the real continuation");
+    parser.finish();
+}
+
+static void alternate_wrap_changes_are_terminal_wide(ParseMode mode) {
+    Parser disabled(3, 4, 2, mode);
+    disabled.feed("ABCD\x1b[?1049h\x1b[?7l\x1b[?1049lE");
+    check(project_line(disabled.screen.visible_lines()[0]).text == "ABCE" &&
+          project_line(disabled.screen.visible_lines()[1]).text.empty() &&
+          disabled.screen.row == 0 && disabled.screen.column == 3,
+          "an alternate wrap-disable was lost when the saved primary edge was restored");
+    disabled.feed("\x1b[?7hF");
+    check(project_line(disabled.screen.visible_lines()[0]).text == "ABCE" &&
+          project_line(disabled.screen.visible_lines()[1]).text == "F" &&
+          disabled.screen.row == 1 && disabled.screen.column == 1,
+          "re-enabling wrap after a cross-buffer overwrite did not consume the edge");
+    disabled.finish();
+
+    Parser enabled(3, 4, 2, mode);
+    enabled.feed("\x1b[?7lABCD\x1b[?1049h\x1b[?7h\x1b[?1049lE");
+    check(project_line(enabled.screen.visible_lines()[0]).text == "ABCD" &&
+          project_line(enabled.screen.visible_lines()[1]).text == "E" &&
+          enabled.screen.row == 1 && enabled.screen.column == 1 &&
+          continues_into(enabled.screen.visible_lines()[0], enabled.screen.visible_lines()[1]),
+          "an alternate wrap-enable was lost when the saved primary edge was restored");
+    enabled.finish();
+}
+
 int main() {
     int failures = 0, checks = 0;
     const auto run = [&](const std::string& name, const auto& action) {
@@ -168,6 +230,9 @@ int main() {
         run(name + " observed chunks", [&] { observed_sources_across_chunks(mode); });
         run(name + " private guards", [&] { private_commands_are_atomic(mode); });
         run(name + " wide fit safety", [&] { wide_fit_policy_is_preserved(mode); });
+        run(name + " wide tail/1049 policy", [&] { disabled_wide_tail_roundtrip(mode, false); });
+        run(name + " bytewise wide tail/1049 policy", [&] { disabled_wide_tail_roundtrip(mode, true); });
+        run(name + " terminal-wide wrap policy", [&] { alternate_wrap_changes_are_terminal_wide(mode); });
     }
     run("recovery cancellation/truncation", recovery_drops_incomplete_mode_commands);
     std::cout << "DECAWM checks: " << (checks - failures) << '/' << checks << " passed\n";

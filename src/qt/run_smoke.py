@@ -26,7 +26,7 @@ def main():
         environment = os.environ.copy()
         environment["QT_QPA_PLATFORM"] = "offscreen"
         environment["QT_QPA_FONTDIR"] = str(binary.parent / "assets/fonts")
-        process = subprocess.Popen([str(binary)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        process = subprocess.Popen([str(binary), *sys.argv[2:]], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, env=environment,
                                    creationflags=subprocess.CREATE_NO_WINDOW)
         # The native smoke reads this bounded gate before constructing Qt.

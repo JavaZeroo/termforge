@@ -3,6 +3,7 @@ project(termforge_experiments VERSION 0.1.0 LANGUAGES CXX)
 
 option(TERMFORGE_BUILD_CANDIDATE_ADAPTER "Build the Rust candidate C++ adapter checks" OFF)
 option(TERMFORGE_BUILD_QT_SHELL "Build the C++/Qt local-shell migration entry" OFF)
+option(TERMFORGE_ENABLE_RESIZE_REPRO "Register the unresolved Qt/ConPTY content-resize reproducer (#29)" OFF)
 
 # Single-config generators use bin/, multi-config generators use bin/<config>/.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -139,6 +140,9 @@ termforge_warnings(edit_csi_test)
 add_executable(order_query_test experiments/core/order_query_test.cpp)
 target_link_libraries(order_query_test PRIVATE termforge_core)
 termforge_warnings(order_query_test)
+add_executable(region_wrap_test experiments/core/region_wrap_test.cpp)
+target_link_libraries(region_wrap_test PRIVATE termforge_core)
+termforge_warnings(region_wrap_test)
 
 add_executable(paste_test experiments/shell/paste_test.cpp)
 termforge_warnings(paste_test)
@@ -351,6 +355,8 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   set_tests_properties(decawm_mode_core PROPERTIES TIMEOUT 10)
   add_test(NAME order_query_core COMMAND order_query_test)
   set_tests_properties(order_query_core PROPERTIES TIMEOUT 10)
+  add_test(NAME region_wrap_core COMMAND region_wrap_test)
+  set_tests_properties(region_wrap_core PROPERTIES TIMEOUT 10)
   add_test(NAME paste COMMAND paste_test)
   add_test(NAME clipboard_policy COMMAND clipboard_policy_test)
   add_test(NAME keyboard COMMAND keyboard_test)
@@ -379,6 +385,9 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_alternate_style_reference -m unittest research.ui.test_export_alternate_style_reference research.ui.test_alternate_style_peer -v)
   termforge_add_python_test(windterm_raster_style_reference -m unittest research.ui.test_raster_style_reference -v)
   termforge_add_python_test(windterm_origin_wrap_reference -m unittest research.ui.test_origin_wrap_reference research.ui.test_export_origin_wrap_reference -v)
+  termforge_add_python_test(windterm_mode_state_reference -m unittest research.ui.test_mode_state_reference research.ui.test_export_mode_state_reference research.ui.test_mode_reentry_reference research.ui.test_export_mode_reentry_reference -v)
+  termforge_add_python_test(windterm_attribute_state_reference -m unittest research.ui.test_attribute_state_reference research.ui.test_export_attribute_state_reference -v)
+  termforge_add_python_test(windterm_resize_state_reference -m unittest research.ui.test_resize_state_reference research.ui.test_export_resize_state_reference -v)
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)
   termforge_add_python_test(recovery_measure_protocol -m unittest experiments.measure.test_recovery_measure -v)
@@ -511,5 +520,25 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_resize_smoke>")
     set_tests_properties(qt_cpp_resize PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_executable(qt_terminal_modes_test src/qt/terminal_modes_test.cpp)
+    set_target_properties(qt_terminal_modes_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-modes-bin/$<CONFIG>")
+    termforge_qt_entry(qt_terminal_modes_test)
+    target_link_libraries(qt_terminal_modes_test PRIVATE Qt6::Test)
+    add_custom_command(TARGET qt_terminal_modes_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_terminal_modes_test>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_terminal_modes COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>")
+    set_tests_properties(qt_terminal_modes PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    if(TERMFORGE_ENABLE_RESIZE_REPRO)
+      add_test(NAME qt_terminal_modes_resize_repro COMMAND "${Python3_EXECUTABLE}"
+        "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --resize)
+      set_tests_properties(qt_terminal_modes_resize_repro PROPERTIES TIMEOUT 35
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen" LABELS "unresolved-resize")
+    endif()
   endif()
 endif()
