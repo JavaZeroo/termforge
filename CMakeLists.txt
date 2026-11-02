@@ -157,6 +157,10 @@ add_executable(resize_combining_test experiments/core/resize_combining_test.cpp)
 target_link_libraries(resize_combining_test PRIVATE termforge_core)
 termforge_warnings(resize_combining_test)
 
+add_executable(resize_caret_test experiments/core/resize_caret_test.cpp)
+target_link_libraries(resize_caret_test PRIVATE termforge_core)
+termforge_warnings(resize_caret_test)
+
 # Direct original resize/addressing comparison. A mismatch is a diagnostic
 # failure; it is not registered as an expected-failure CTest acceptance.
 add_executable(resize_address_test experiments/core/resize_address_test.cpp)
