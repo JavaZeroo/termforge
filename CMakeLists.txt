@@ -147,9 +147,13 @@ termforge_warnings(display_projection_test)
 
 # Direct original resize/addressing comparison. A mismatch is a diagnostic
 # failure; it is not registered as an expected-failure CTest acceptance.
-add_executable(resize_address_test EXCLUDE_FROM_ALL experiments/core/resize_address_test.cpp)
+add_executable(resize_address_test experiments/core/resize_address_test.cpp)
 target_link_libraries(resize_address_test PRIVATE termforge_core)
 termforge_warnings(resize_address_test)
+
+add_executable(retained_columns_test experiments/core/retained_columns_test.cpp)
+target_link_libraries(retained_columns_test PRIVATE termforge_core)
+termforge_warnings(retained_columns_test)
 
 add_executable(reply_test experiments/core/reply_test.cpp)
 target_link_libraries(reply_test PRIVATE termforge_core)
@@ -372,6 +376,8 @@ if(BUILD_TESTING)
 add_test(NAME view_mapping_core COMMAND view_mapping_test)
 add_test(NAME display_projection_core COMMAND display_projection_test)
 set_tests_properties(display_projection_core PROPERTIES TIMEOUT 10)
+add_test(NAME retained_columns_core COMMAND retained_columns_test)
+add_test(NAME retained_resize_address_core COMMAND resize_address_test --retained-columns)
   add_test(NAME alternate_mode_core COMMAND alternate_mode_test)
   add_test(NAME decawm_mode_core COMMAND decawm_mode_test)
 add_test(NAME private_mode_core COMMAND private_mode_test)
@@ -419,12 +425,18 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_resize_state_reference -m unittest research.ui.test_resize_state_reference research.ui.test_export_resize_state_reference -v)
   termforge_add_python_test(windterm_resize_address_reference -m unittest research.ui.test_resize_address_reference research.ui.test_export_resize_address_reference -v)
   termforge_add_python_test(windterm_resize_address_optimized -O -m unittest research.ui.test_resize_address_reference research.ui.test_export_resize_address_reference -v)
+  termforge_add_python_test(windterm_resize_edit_reference -m unittest research.ui.test_resize_edit_reference research.ui.test_export_resize_edit_reference research.ui.test_audit_resize_address_erase -v)
+  termforge_add_python_test(windterm_resize_edit_optimized -O -m unittest research.ui.test_resize_edit_reference research.ui.test_export_resize_edit_reference research.ui.test_audit_resize_address_erase -v)
   find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
   if(TERMFORGE_NODE_EXECUTABLE)
     add_test(NAME windterm_resize_address_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
       ${CMAKE_SOURCE_DIR}/research/ui/test_resize_address_stage4.js
       ${CMAKE_SOURCE_DIR}/research/ui/resize_address_reference.js)
     set_tests_properties(windterm_resize_address_controller PROPERTIES TIMEOUT 15)
+    add_test(NAME windterm_resize_edit_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_edit_stages.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_edit_reference.js)
+    set_tests_properties(windterm_resize_edit_controller PROPERTIES TIMEOUT 15)
   endif()
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)

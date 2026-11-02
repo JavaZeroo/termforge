@@ -401,6 +401,36 @@ public:
         }
         next_id_ = maximum == (std::numeric_limits<uint64_t>::max)() ? maximum : maximum + 1;
     }
+    // Width-only content transaction within this owner.
+    // Source fragments keep their cells, identities, versions and soft links;
+    // changing protocol width is not a content edit or document-order change.
+    // Growth prepares writable padding only for live frames, never for history.
+    // Cursor, pending wrap and margins are independent protocol state. This
+    // entry does not define their later edge/edit policy or a display viewport.
+    void resize_columns_preserving(int columns) {
+        if (columns < 1 || columns > 500)
+            throw std::invalid_argument("invalid screen width");
+        if (columns == width()) return;
+        const auto needs_padding = [columns](const auto& rows) {
+            return std::any_of(rows.begin(), rows.end(), [columns](const Line& line) {
+                return line.size() < static_cast<size_t>(columns);
+            });
+        };
+        const auto prepare = [columns](const std::vector<Line>& rows) {
+            auto next = rows;
+            for (auto& line : next)
+                if (line.size() < static_cast<size_t>(columns)) line.resize(columns);
+            return next;
+        };
+        // No history scan/copy and no allocation on a contraction. Both live
+        // replacements finish before either is published on an expansion.
+        std::optional<std::vector<Line>> next, hidden;
+        if (needs_padding(lines)) next = prepare(lines);
+        if (inactive_ && needs_padding(inactive_->lines)) hidden = prepare(inactive_->lines);
+        if (next) lines.swap(*next);
+        if (hidden) inactive_->lines.swap(*hidden);
+        columns_ = columns;
+    }
     // Physical-row policy: no reflow, no pulling old history into the viewport.
     // Both frames share geometry. Prepare both before committing so invalid
     // dimensions or allocation failure cannot leave one frame half-resized.

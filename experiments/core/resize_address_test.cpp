@@ -165,7 +165,7 @@ static void observe_phase(Checks& checks, Parser& parser, HistoryViewport& viewp
     if (checks.failures == previous_failures) ++checks.passed_phases;
 }
 
-static void replay(Checks& checks, const Case& test, ParseMode mode, bool bytewise) {
+static void replay(Checks& checks, const Case& test, ParseMode mode, bool bytewise, bool retained) {
     Parser parser(20, 91, 0, mode);
     HistoryViewport viewport;
     // Original phase 0: 78 bytes, SHA256
@@ -178,9 +178,15 @@ static void replay(Checks& checks, const Case& test, ParseMode mode, bool bytewi
     for (size_t phase = 0; phase < 4; ++phase) {
         checks.context = prefix + "phase-" + std::to_string(phase);
         if (phase == 0) feed(parser, source, bytewise);
-        else if (phase == 1) parser.screen.resize(20, 61);
+        else if (phase == 1) {
+            if (retained) parser.screen.resize_columns_preserving(61);
+            else parser.screen.resize(20, 61);
+        }
         else if (phase == 2) feed(parser, test.bytes, bytewise);
-        else parser.screen.resize(20, 91);
+        else {
+            if (retained) parser.screen.resize_columns_preserving(91);
+            else parser.screen.resize(20, 91);
+        }
         // Keep all four observations even if an earlier phase failed. A failed
         // pre-action retention check must not hide action/restore diagnostics.
         observe_phase(checks, parser, viewport, test, phase, bytewise);
@@ -188,7 +194,12 @@ static void replay(Checks& checks, const Case& test, ParseMode mode, bool bytewi
     parser.finish();
 }
 
-int main() {
+int main(int argc, char** argv) {
+    const bool retained = argc == 2 && std::string_view(argv[1]) == "--retained-columns";
+    if (argc > 1 && !retained) {
+        std::cerr << "usage: resize_address_test [--retained-columns]\n";
+        return 2;
+    }
     // Strict-export SHA256, in case order:
     // next-char: a4c4a2bca0247984d64f8b121c7828839294397ab5c1d8b3539690310eb93610
     // carriage-return: 4bd3e5fe4e9dccb22cbab05f367beb37eaece8760ffee069f1f96e4d2265532d
@@ -205,12 +216,13 @@ int main() {
         for (const auto mode : {ParseMode::strict, ParseMode::recovery})
             for (const bool bytewise : {false, true}) {
                 try {
-                    replay(checks, test, mode, bytewise);
+                    replay(checks, test, mode, bytewise, retained);
                 } catch (const std::exception& error) {
                     checks.expect(false, std::string("replay failed: ") + error.what());
                 }
             }
-    std::cout << "resize address checks: " << checks.passed_phases << '/' << checks.phases
+    std::cout << (retained ? "retained-column transaction: " : "default resize: ")
+              << "resize address checks: " << checks.passed_phases << '/' << checks.phases
               << " phases, " << checks.failures << " failed assertions of " << checks.assertions
               << " (4 original cases x strict/recovery x whole/bytewise; no full-grid/style claim)\n";
     return checks.failures ? 1 : 0;
