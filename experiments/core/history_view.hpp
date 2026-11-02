@@ -38,6 +38,34 @@ class HistoryViewport {
     uint64_t anchor_ = 0, observed_epoch_ = 0;
     uint64_t layout_revision_ = 0;
     bool following_ = true;
+    // Projection accepts the core's bounded base-scalar plus combining-mark
+    // representation. Imported Cell values need the same structural check;
+    // accepting arbitrary text would defeat the per-page work bound.
+    static bool complete_atom(const Cell& cell) {
+        if ((cell.width != 1 && cell.width != 2) || cell.text.empty() ||
+            cell.text.size() > 68 || cell.marks > 16) return false;
+        size_t count = 0;
+        uint32_t scalar = 0, minimum = 0;
+        unsigned remaining = 0;
+        for (const unsigned char byte : cell.text) {
+            if (!remaining) {
+                if (byte < 0x80) { scalar = byte; minimum = 0; }
+                else if (byte >= 0xc2 && byte <= 0xdf) { scalar = byte & 0x1f; minimum = 0x80; remaining = 1; }
+                else if (byte >= 0xe0 && byte <= 0xef) { scalar = byte & 0xf; minimum = 0x800; remaining = 2; }
+                else if (byte >= 0xf0 && byte <= 0xf4) { scalar = byte & 7; minimum = 0x10000; remaining = 3; }
+                else return false;
+                if (remaining) continue;
+            } else {
+                if ((byte & 0xc0) != 0x80) return false;
+                scalar = (scalar << 6) | (byte & 0x3f);
+                if (--remaining) continue;
+            }
+            if (scalar < minimum || scalar > 0x10ffff || (scalar >= 0xd800 && scalar <= 0xdfff) ||
+                scalar_width(scalar) != (count ? 0 : cell.width)) return false;
+            ++count;
+        }
+        return !remaining && count == cell.marks + 1;
+    }
     void sync_epoch(const Screen& screen) {
         if (observed_epoch_ == screen.buffer_epoch()) return;
         observed_epoch_ = screen.buffer_epoch();
@@ -87,8 +115,9 @@ public:
     bool following() const { return following_; }
     uint64_t anchor() const { return anchor_; }
     uint64_t layout_revision() const { return layout_revision_; }
-    // Explicit, read-only ASCII projection. At most 200 source fragments of at
-    // most 500 cells are examined; no prefix/history expansion is performed.
+    // Explicit, read-only projection of complete core Unicode atoms. At most
+    // 200 source fragments of 500 cells, with 68 bytes per lead, are examined;
+    // no prefix/history expansion is performed. A wide pair never splits.
     // The result owns display cells (row ids stay zero) and maps them to source
     // identities. It does not infer a display caret from the protocol cursor.
     // Legacy viewport totals describe physical rows, so projected pages leave
@@ -153,23 +182,47 @@ public:
             if (line.content_columns > line.size())
                 throw std::invalid_argument("projection content extent exceeds source fragment");
             size_t extent = line.content_columns;
-            for (size_t index = 0; index < line.size(); ++index) {
+            for (size_t index = 0; index < line.size();) {
                 const auto& cell = line[index];
-                if (cell.width != 1 || cell.text.size() != 1 ||
-                    static_cast<unsigned char>(cell.text[0]) < 0x20 ||
-                    static_cast<unsigned char>(cell.text[0]) > 0x7e || cell.marks ||
-                    cell.clipped || cell.grapheme_fragment || cell.leading_spacer)
-                    throw std::invalid_argument("explicit display projection requires single-cell ASCII sources");
+                if (!complete_atom(cell) || cell.clipped || cell.grapheme_fragment || cell.leading_spacer)
+                    throw std::invalid_argument("projection requires complete bounded core Unicode atoms");
+                const auto cells = static_cast<size_t>(cell.width);
+                if (cells == 2) {
+                    if (index + 1 == line.size())
+                        throw std::invalid_argument("projection wide atom has no trailing cell");
+                    const auto& trail = line[index + 1];
+                    if (trail.width != 0 || !trail.text.empty() || trail.marks ||
+                        trail.clipped || trail.grapheme_fragment || trail.leading_spacer)
+                        throw std::invalid_argument("projection wide atom has an invalid trailing cell");
+                }
                 // Explicit spaces and styled erase blanks are owned content.
                 // Only untouched, plain trailing padding may be synthesized.
-                if (cell.written || !cell.style.plain() || cell.text != " ") extent = (std::max)(extent, index + 1);
+                if (cell.written || !cell.style.plain() || cell.text != " ") extent = (std::max)(extent, index + cells);
+                index += cells;
             }
             if (column > extent)
                 throw std::invalid_argument("projection starts beyond the source content extent");
+            if (column < line.size() && line[column].width == 0)
+                throw std::invalid_argument("projection starts inside a wide atom");
             const bool joins = row + 1 < total && continues_into(line, screen.retained_line(row + 1));
             while (column < extent) {
                 begin_row(row, column);
-                const auto count = (std::min)(columns - used, extent - column);
+                if (static_cast<size_t>(line[column].width) > columns)
+                    throw std::invalid_argument("projection width cannot fit a complete atom");
+                size_t count = 0;
+                while (column + count < extent) {
+                    const auto cells = static_cast<size_t>(line[column + count].width);
+                    if (cells > columns - used - count) break;
+                    count += cells;
+                }
+                if (!count) {
+                    // The remaining column is display-only padding. Resume at
+                    // the same source lead after publishing the preceding row.
+                    publish_row();
+                    if (result.snapshot.lines.size() == page_rows)
+                        return finish({row, column}, ProjectionStop::page_full);
+                    continue;
+                }
                 for (size_t index = 0; index < count; ++index) pending[used + index] = line[column + index];
                 pending_sources.push_back({result.snapshot.lines.size(), used, used + count,
                     {{line.id, line.version, column, epoch}, {line.id, line.version, column + count, epoch}}});

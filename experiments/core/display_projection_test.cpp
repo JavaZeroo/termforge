@@ -163,10 +163,10 @@ static void bounded_history_and_cell_fidelity() {
     wide.feed("\xe4\xb8\xad");
     HistoryViewport wide_view;
     rejected = false;
-    try { (void)wide_view.project(wide.screen, 2, 2, {0, 0}, 2); }
+    try { (void)wide_view.project(wide.screen, 1, 2, {0, 0}, 2); }
     catch (const std::invalid_argument&) { rejected = true; }
     check(rejected && wide_view.layout_revision() == 0,
-          "unsupported wide content was silently treated as an ASCII cell");
+          "wide content was silently truncated to a one-column display");
 }
 
 static void empty_soft_successor_does_not_invent_a_display_row() {
