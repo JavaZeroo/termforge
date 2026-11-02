@@ -450,6 +450,8 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_resize_frame_optimized -O -m unittest research.ui.test_resize_frame_reference research.ui.test_export_resize_frame_reference research.ui.test_audit_resize_frame_hidden -v)
   termforge_add_python_test(windterm_resize_erase_reference -m unittest research.ui.test_resize_erase_reference research.ui.test_export_resize_erase_reference research.ui.test_audit_resize_erase_right -v)
   termforge_add_python_test(windterm_resize_erase_optimized -O -m unittest research.ui.test_resize_erase_reference research.ui.test_export_resize_erase_reference research.ui.test_audit_resize_erase_right -v)
+  termforge_add_python_test(windterm_resize_erase_interior_reference -m unittest research.ui.test_resize_erase_interior_reference research.ui.test_export_resize_erase_interior_reference -v)
+  termforge_add_python_test(windterm_resize_erase_interior_optimized -O -m unittest research.ui.test_resize_erase_interior_reference research.ui.test_export_resize_erase_interior_reference -v)
   find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
   if(TERMFORGE_NODE_EXECUTABLE)
     add_test(NAME windterm_resize_address_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
@@ -468,6 +470,10 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
       ${CMAKE_SOURCE_DIR}/research/ui/test_resize_erase_stages.js
       ${CMAKE_SOURCE_DIR}/research/ui/resize_erase_reference.js)
     set_tests_properties(windterm_resize_erase_controller PROPERTIES TIMEOUT 15)
+    add_test(NAME windterm_resize_erase_interior_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_erase_interior_stages.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_erase_interior_reference.js)
+    set_tests_properties(windterm_resize_erase_interior_controller PROPERTIES TIMEOUT 15)
   endif()
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)

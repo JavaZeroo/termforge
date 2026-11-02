@@ -1,0 +1,462 @@
+{
+  "schema": "termforge-retention-frame-integrated-validation-v1",
+  "date": "2026-11-02",
+  "status": "bounded-registered-core-and-default-qt-regressions-passed-with-separate-open-diagnostics",
+  "source_commit": "d765c2b305983815c9ba7a35d2dd4f49d30fb99c",
+  "production_core_commit": "afdcf59f942f2b7cd3607ad7ab9bd8be9dc907dd",
+  "selected_source_files_match_commit_bytes": true,
+  "hashes_collected_after_runs": true,
+  "captured_at_utc": "2026-11-02T03:12:25.666089+00:00",
+  "pre_run_full_input_manifest": null,
+  "source_manifest_scope": "selected core headers and registered-test sources, erase diagnostic, Qt sources and recursive repository includes, root CMake and fixed-backend helpers; not a complete pre-run build manifest",
+  "source_files_sha256": {
+    "cmake/ConptyBackend.cmake": "dcd670e4cec807c5f18e03b797e2abda623fe818dd9c0698c95186009af49300",
+    "cmake/MsvcRuntime.cmake": "2eff277fb9a01b6a1e13c4124372d8504edfd35f7506569314bbeaca1e3a3fa3",
+    "CMakeLists.txt": "45a3466936be0a01e0121f8b347ef4704cbaf02cccab510de03469a9d4f456b2",
+    "experiments/conpty/backend.hpp": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489",
+    "experiments/conpty/session.hpp": "a377562211e5633c838cf3d0f12b6b3a509910499759a2564d7eef4c31a37a64",
+    "experiments/core/alternate_mode_test.cpp": "12dd1d488b7a8296b6fecc1fb97b10ccbfebba2d312f89f32cbcb2fac09b7922",
+    "experiments/core/buffer_state_test.cpp": "f1c78c96e6cff2bb0405a6822cc223b53f1cac3593c965e5efb016d93847c1fc",
+    "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+    "experiments/core/decawm_mode_test.cpp": "f3aae3b460a4ee31885b1a840eafaf82fef8af733385090e0c8c443e51df4977",
+    "experiments/core/decom_origin_test.cpp": "44dd8d0d124483125c8d55df7859bb979c0cbc415df31dc725bfa335aa23e27a",
+    "experiments/core/display_projection_test.cpp": "25ad6d1398fe660babf6a62959422fc467b4e7ebfc01c1d7bdd6219bc85a5139",
+    "experiments/core/edit_csi_test.cpp": "35899d60a33d3503bad9b096c5f0069d45f6079f2ec879e7db6f0e1dabe3601d",
+    "experiments/core/history_test.cpp": "d54ebed670237b73ea2e855f41aa822a19960a4920801bdd5977e4899763ef69",
+    "experiments/core/history_view.hpp": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+    "experiments/core/order_query_test.cpp": "27ae45ad5daaf17a9d6e2c4eaa021dfb15e03550f01650fe65cc621fa90ea590",
+    "experiments/core/pending_wrap_test.cpp": "8e61049cce8dc21e3a99a71091b4b90051c9d77e6d3998119b2e9e477d718ed6",
+    "experiments/core/private_mode_test.cpp": "b602921407158836f56cbf89dd3a2fbcec15a38de009d1496dcd907ce040a948",
+    "experiments/core/region_wrap_test.cpp": "9fdd70c76c6ad6f6c13c89dadada43316b25824d0060ae48be52c0802e0401f4",
+    "experiments/core/reply_test.cpp": "1c764efdfdbf98e91257fbc3e763846dd3be3adac23161460275fe61e23cf85a",
+    "experiments/core/resize_address_test.cpp": "422311aff3b291054290c86073bfef49a1e804c8a0b8bbb519f713f534fc8d9f",
+    "experiments/core/resize_edges_test.cpp": "ca16b2d3bbaa154dbfc06e1a71848ea25145b91f86cd44c17c1a9da86157e49e",
+    "experiments/core/resize_edit_test.cpp": "dc0e0e3c0b18c8f639ddda123f81f6c2f6dcd08650de68e34ca17a8001d49c9b",
+    "experiments/core/resize_erase_test.cpp": "8d2d020c43a5c8e6af5e14520a77081384c027d93332258dc10b913535442fad",
+    "experiments/core/resize_hidden_test.cpp": "b84b9d68de9e9f8959831fdd31fbabd676dabfa12a8b43e204097add7ddfdd65",
+    "experiments/core/resize_pending_test.cpp": "3414245c16fbbbb0efc0404cc2f8def3de2e75a15cb903cd7880a1380649286c",
+    "experiments/core/resize_test.cpp": "4e4469d18f752ed1d2486b81b19e58cd1bb0cb2acb71b870ce2b333cd8175fd6",
+    "experiments/core/retained_columns_test.cpp": "ce2a70d1ca3594a427df009d708731d3f6db860ed26f8811d07ab33fbf5373f2",
+    "experiments/core/screen.hpp": "1ecd6bf02bf3ff22ef5281d7ee07b71e34ff42c38413e05bd71b83c06fdaef46",
+    "experiments/core/search_reorder_test.cpp": "1ab5121e1497a4a6fc90003dc4332771240f4697229cc99f9a45256fb48e4406",
+    "experiments/core/search_test.cpp": "42e8d13a5b92ee03a6931f71dac1b06fecb8859470caee41fc517f3c1eb7fd8d",
+    "experiments/core/selection_test.cpp": "8f0bd95a9eabba4e23c19d6fbdb9bd7eb37f3e529eb8aea5376d62d8145da28a",
+    "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+    "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+    "experiments/core/text_projection.hpp": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+    "experiments/core/text_search.hpp": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+    "experiments/core/text_selection.hpp": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+    "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+    "experiments/core/view_mapping.hpp": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+    "experiments/core/view_mapping_test.cpp": "d8d73da7dab1f994d78ba82d0037e682d03d2788dc09eb7ef2e45ec0804415e8",
+    "experiments/core/widechar_1049_test.cpp": "e53fbdd8ec29bd31ae0aff26af7391955fdfa68b9713a24599d9313eba017396",
+    "experiments/shell/keyboard.hpp": "0bc6ba3b129497e4fb94a3c693bfc5d3280f55536fec8cba750f998ea2fe49ff",
+    "experiments/shell/paste.hpp": "f905a693d840256ca7c6a8ffed2601bff41f74e549413f38822db7aceb1c7c82",
+    "experiments/shell/queues.hpp": "75277a446669aaf4b0f1adec96785cffe31b62ec6a4afc07b60d66efc82bde3c",
+    "src/qt/main.cpp": "4af7c6722ba6847d90d3d9938849aa3b69a8de749c043a278c8725dc46011796",
+    "src/qt/resize_fixture.hpp": "a855779e06b45b2c68daf413108172ee2d51bcb75fd55911263505d7dc6be300",
+    "src/qt/resize_smoke.cpp": "0865f6c5e2083a3a4194b8ec5d57460aa0c856612f0b77dd7f9a882923fd050d",
+    "src/qt/run_smoke.py": "467387975311879ba94c4329410f7cddd4aaa418143935c498d0e08eca8c1e58",
+    "src/qt/session_tabs.hpp": "df3634a37f07a73f92033f29392a7624275a2ce3e4db293dcce01408b9148b07",
+    "src/qt/shell_smoke.cpp": "3a8099d6aba673bdd6a5c83959c29a235fe4ef4165fe8adcadc52b56049a704e",
+    "src/qt/terminal_modes_fixture.hpp": "a527b38750340babacfc05fdecd1901080c2e44ed00023e0bd5eff40e598c782",
+    "src/qt/terminal_modes_test.cpp": "6c27cb1101800f82e188186455853adc7725355327090ae6ecbecfe7fe8892db",
+    "src/qt/terminal_session.hpp": "fc9390030c3ea72c8f195d92a2ac17877c05e4c16906a829bfd88cb54b50fb22",
+    "src/qt/terminal_widget.hpp": "a5f172980f52abb8d30189ab4334643621472839a20e14bb406bb89d81b70c8c",
+    "src/qt/unicode_input_test.cpp": "83662178e07826a4bcd74858146166370b312537e0dddb233b365bed0169209b",
+    "cmake/CopyConptyBackend.cmake": "8bf50df01e302df91ee23a592b8b23d6a203606a35dadb86b63f4eed723dcb67",
+    "third_party/conpty/manifest.json": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+    "third_party/msvc_runtime/manifest.json": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+  },
+  "tested_binary_sha256": {
+    "core/resize_test.exe": "b1651b9fa5e474d007aa47f5133ebb7456a2248821615c2d503799bdc16b2b59",
+    "core/resize_edges_test.exe": "66cd55baa5a69a01e8bfce9706c254b00e92a6d2ceb67600ccc5f1afb5ca4d26",
+    "core/history_test.exe": "3e3c8a855c90770a9bb3350bd33326e1a21f81e49446fbc5bc4baffc4122c394",
+    "core/selection_test.exe": "230964689a0d40d60bd1db7a31a0bdbfc8565bf95021d3ec7455896e0621a15a",
+    "core/search_test.exe": "d72a56d234ac043a5c07b7281b70cbf794c1879d6b85c5fff65f894694df7d22",
+    "core/search_reorder_test.exe": "226ebb8c236fa86544462ce2529f17bca45872931b8a1974bd4c7c88c7b0de43",
+    "core/buffer_state_test.exe": "6f300c6e45bf18288ba54ee95ad70b5e662925241dc2b4a83bba56df191d66ae",
+    "core/view_mapping_test.exe": "f89e726fb73228217e3023980ce08e1ef852514f766964d54d339dfbc0d7e192",
+    "core/display_projection_test.exe": "9d1a0d523eb36bb86a3c2775c12e076ee89e2bf26b4aea8b21544979b39a2e30",
+    "core/retained_columns_test.exe": "7345e8deaa9a69f86e1ac6b44f6f444d8a97359de5bac0d8d70e53a230035ce7",
+    "core/resize_address_test.exe": "876dba5f503b3901de8e6cfc255a1f2a2eb81ab17d490013959c91f250c244a2",
+    "core/resize_edit_test.exe": "9cc9c82cde387879be6c271d5ce0dc70a9c2e3cab1c38b42556e73d91a427362",
+    "core/resize_pending_test.exe": "f35883f39f184e118ddd8afe0bf102f134cb8d3d95def1bbd5bbc27b9e7d513c",
+    "core/resize_hidden_test.exe": "ed321e426d565adcbbc1c6b75c5b9fd9af830ec588d74c138fc537a17d4f9f98",
+    "core/alternate_mode_test.exe": "c3c26843064fb913daa9a6e0e4ef0e795cefa6078e1d82146ec4969e9310c013",
+    "core/decawm_mode_test.exe": "045e744ab08947bda66371db38e581ee13f88f7ce65171f1236b14ad711697a9",
+    "core/private_mode_test.exe": "17175956f80882e3578c2d53dd13fb985ff85eac2c8ee5aae94a948da856ab9c",
+    "core/decom_origin_test.exe": "648f06cacb5a0556fa65a2c00bac38a301132c35cb7d3a7f4543819199aa3645",
+    "core/pending_wrap_test.exe": "8b713c072f5fdb7eeb0002ddc5529b01f23f711246cddf5fea659891dee350c2",
+    "core/widechar_1049_test.exe": "a0f8be93ec6b923839cedf65289839d62b120273da71cf86b1ed53deabc4f983",
+    "core/reply_test.exe": "253c916492f82e673fc8d5367ccde9093b2a699c1400f2722a6279f95869e300",
+    "core/edit_csi_test.exe": "d213bb81fedb5cf5d3aa1d7c3d466141f7e0147b8eedca685c7b24e7ee58b689",
+    "core/order_query_test.exe": "4570dfa55ec524b29c88ef736e619253f1b51e9458756d2d820933afa8bf18d3",
+    "core/region_wrap_test.exe": "8782b8f8238d5b77c8b032fa4a92e3b7520f2754e68c33b237dcd7544f809697",
+    "qt/qt_cpp_shell_smoke.exe": "5418da378f78a6396e67c80b611771a0c510bc335b14b7ec8cf235ba24abd02b",
+    "qt/qt_unicode_input_test.exe": "07be3c2f9e231d33fe7f2d97b69757d0e69b4bc8b1850ad3d734f78dcd9ec47a",
+    "qt/qt_cpp_resize_smoke.exe": "c0e8c666532c4dd87eff2f1cd52d2bead9f61f7e84a2f10db58232c59f1ea54c",
+    "qt/qt_terminal_modes_test.exe": "8157b87d505ebd4c75b158fddd542fb6619f1654afd2293a218182112bb87c04"
+  },
+  "built_only_binary_sha256": {
+    "core/resize_erase_test.exe": "66053d4bee07489c11fe8ec041b943c23c6910aa0eb307fef5d2d07f5571937e",
+    "qt/termforge_qt_shell.exe": "f5419e19408a539afa33bcdb81b8ea05c942ae1e603b99986835a6e3b83453a8"
+  },
+  "selected_deployed_runtime_sha256": {
+    "qt_cpp_shell_smoke/msvcp140.dll": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+    "qt_cpp_shell_smoke/vcruntime140.dll": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+    "qt_cpp_shell_smoke/vcruntime140_1.dll": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+    "qt_cpp_shell_smoke/Qt6Core.dll": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72",
+    "qt_cpp_shell_smoke/Qt6Gui.dll": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f",
+    "qt_cpp_shell_smoke/Qt6Widgets.dll": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127",
+    "qt_cpp_shell_smoke/Qt6Test.dll": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187",
+    "qt_cpp_shell_smoke/Qt6Network.dll": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1",
+    "qt_cpp_shell_smoke/platforms/qoffscreen.dll": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd",
+    "qt_unicode_input_test/msvcp140.dll": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+    "qt_unicode_input_test/vcruntime140.dll": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+    "qt_unicode_input_test/vcruntime140_1.dll": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+    "qt_unicode_input_test/Qt6Core.dll": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72",
+    "qt_unicode_input_test/Qt6Gui.dll": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f",
+    "qt_unicode_input_test/Qt6Widgets.dll": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127",
+    "qt_unicode_input_test/Qt6Test.dll": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187",
+    "qt_unicode_input_test/Qt6Network.dll": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1",
+    "qt_unicode_input_test/platforms/qoffscreen.dll": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd",
+    "qt_cpp_resize_smoke/msvcp140.dll": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+    "qt_cpp_resize_smoke/vcruntime140.dll": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+    "qt_cpp_resize_smoke/vcruntime140_1.dll": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+    "qt_cpp_resize_smoke/Qt6Core.dll": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72",
+    "qt_cpp_resize_smoke/Qt6Gui.dll": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f",
+    "qt_cpp_resize_smoke/Qt6Widgets.dll": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127",
+    "qt_cpp_resize_smoke/Qt6Test.dll": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187",
+    "qt_cpp_resize_smoke/Qt6Network.dll": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1",
+    "qt_cpp_resize_smoke/platforms/qoffscreen.dll": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd",
+    "qt_terminal_modes_test/msvcp140.dll": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+    "qt_terminal_modes_test/vcruntime140.dll": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+    "qt_terminal_modes_test/vcruntime140_1.dll": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+    "qt_terminal_modes_test/Qt6Core.dll": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72",
+    "qt_terminal_modes_test/Qt6Gui.dll": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f",
+    "qt_terminal_modes_test/Qt6Widgets.dll": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127",
+    "qt_terminal_modes_test/Qt6Test.dll": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187",
+    "qt_terminal_modes_test/Qt6Network.dll": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1",
+    "qt_terminal_modes_test/platforms/qoffscreen.dll": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd",
+    "qt_cpp_shell_smoke/conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+    "qt_cpp_shell_smoke/conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+    "qt_unicode_input_test/conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+    "qt_unicode_input_test/conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+    "qt_cpp_resize_smoke/conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+    "qt_cpp_resize_smoke/conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+    "qt_terminal_modes_test/conpty-backend/conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+    "qt_terminal_modes_test/conpty-backend/OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+  },
+  "logs_sha256": {
+    "frame-final-core-build.log": "5dc50de76e04071da967ea6e236af5ec77a419c284292028f7a5e3d9fb6f4ecd",
+    "frame-final-core-ctest.log": "825a3c31d2ee8ce57f60df17a73f33fe86f220b85d948efc8adf4bd9edcbd898",
+    "frame-final-qt-configure.log": "277065f23388d6f75226a5b6bc9a8325476ad6d825e3326ee7ccfd477e6dd6ad",
+    "frame-final-qt-build.log": "d097067375e60f98ebf309e401ead1868f3bd2349d4b1c4b1e2d32810dba355c",
+    "frame-final-qt-ctest.log": "de5cd11a44044cdf9bf9c87219ceb522b138760684e2b6968bea320af041dc95",
+    "frame-erase-registered-ctest.log": "714d2d311ebdb1c5746b6e2de47f2ab95a75cbcbc767a4a138955b57b9a64abd",
+    "erase-supplement-registered-ctest.log": "1f19f46d77932d2aeb6b046cbf9c6f356567c3d0a5ba35878e73ca9508d7d84c"
+  },
+  "build_configuration_sha256": {
+    "core/CMakeCache.txt": "7deb1f3556efbc12fcdb5061f0e6df2986ee7046bf41e530671dc7840bf4f713",
+    "core/CTestTestfile.cmake": "17bfec8ffa9e1757f59044943db2c677a46a1cc249a77ba5b69f2ec05acb1397",
+    "core/CMakeFiles/3.31.0/CMakeCXXCompiler.cmake": "fb18378927420b12ff469fa0c6a737dcf281ee842a208f0456bddeb52cd5505f",
+    "qt/CMakeCache.txt": "6fa997ba45f3c7a45d0e1a9ace7984569add02643413ae072a39e600440da895",
+    "qt/CTestTestfile.cmake": "26d0c88478ac6119be43e7bf8478b5424b9ebabe42f35b5bcd0d4afb7ccd3cde",
+    "qt/CMakeFiles/3.31.0/CMakeCXXCompiler.cmake": "fb18378927420b12ff469fa0c6a737dcf281ee842a208f0456bddeb52cd5505f"
+  },
+  "registered_native_commands": {
+    "resize_core": {
+      "binary": "core/resize_test.exe",
+      "arguments": []
+    },
+    "resize_edges_core": {
+      "binary": "core/resize_edges_test.exe",
+      "arguments": []
+    },
+    "history_core": {
+      "binary": "core/history_test.exe",
+      "arguments": []
+    },
+    "selection_core": {
+      "binary": "core/selection_test.exe",
+      "arguments": []
+    },
+    "search_core": {
+      "binary": "core/search_test.exe",
+      "arguments": []
+    },
+    "search_reorder_core": {
+      "binary": "core/search_reorder_test.exe",
+      "arguments": []
+    },
+    "buffer_state_core": {
+      "binary": "core/buffer_state_test.exe",
+      "arguments": []
+    },
+    "view_mapping_core": {
+      "binary": "core/view_mapping_test.exe",
+      "arguments": []
+    },
+    "display_projection_core": {
+      "binary": "core/display_projection_test.exe",
+      "arguments": []
+    },
+    "retained_columns_core": {
+      "binary": "core/retained_columns_test.exe",
+      "arguments": []
+    },
+    "retained_resize_address_core": {
+      "binary": "core/resize_address_test.exe",
+      "arguments": [
+        "--retained-columns"
+      ]
+    },
+    "retained_resize_edit_core": {
+      "binary": "core/resize_edit_test.exe",
+      "arguments": []
+    },
+    "retained_resize_pending_core": {
+      "binary": "core/resize_pending_test.exe",
+      "arguments": []
+    },
+    "retained_resize_hidden_core": {
+      "binary": "core/resize_hidden_test.exe",
+      "arguments": []
+    },
+    "alternate_mode_core": {
+      "binary": "core/alternate_mode_test.exe",
+      "arguments": []
+    },
+    "decawm_mode_core": {
+      "binary": "core/decawm_mode_test.exe",
+      "arguments": []
+    },
+    "private_mode_core": {
+      "binary": "core/private_mode_test.exe",
+      "arguments": []
+    },
+    "decom_origin_core": {
+      "binary": "core/decom_origin_test.exe",
+      "arguments": []
+    },
+    "pending_wrap_core": {
+      "binary": "core/pending_wrap_test.exe",
+      "arguments": []
+    },
+    "widechar_1049_core": {
+      "binary": "core/widechar_1049_test.exe",
+      "arguments": []
+    },
+    "reply_core": {
+      "binary": "core/reply_test.exe",
+      "arguments": []
+    },
+    "edit_csi_core": {
+      "binary": "core/edit_csi_test.exe",
+      "arguments": []
+    },
+    "order_query_core": {
+      "binary": "core/order_query_test.exe",
+      "arguments": []
+    },
+    "region_wrap_core": {
+      "binary": "core/region_wrap_test.exe",
+      "arguments": []
+    },
+    "qt_cpp_shell": {
+      "binary": "qt/qt_cpp_shell_smoke.exe",
+      "arguments": []
+    },
+    "qt_unicode_input": {
+      "binary": "qt/qt_unicode_input_test.exe",
+      "arguments": []
+    },
+    "qt_cpp_resize": {
+      "binary": "qt/qt_cpp_resize_smoke.exe",
+      "arguments": []
+    },
+    "qt_terminal_modes": {
+      "binary": "qt/qt_terminal_modes_test.exe",
+      "arguments": []
+    }
+  },
+  "core_regression": {
+    "result_log": "frame-final-core-ctest.log",
+    "build_log": "frame-final-core-build.log",
+    "tests": [
+      "resize_core",
+      "resize_edges_core",
+      "history_core",
+      "selection_core",
+      "search_core",
+      "search_reorder_core",
+      "buffer_state_core",
+      "view_mapping_core",
+      "display_projection_core",
+      "retained_columns_core",
+      "retained_resize_address_core",
+      "retained_resize_edit_core",
+      "retained_resize_pending_core",
+      "retained_resize_hidden_core",
+      "alternate_mode_core",
+      "decawm_mode_core",
+      "private_mode_core",
+      "decom_origin_core",
+      "pending_wrap_core",
+      "widechar_1049_core",
+      "reply_core",
+      "edit_csi_core",
+      "order_query_core",
+      "region_wrap_core"
+    ],
+    "passed": 24,
+    "total": 24,
+    "total_seconds": 1.27,
+    "scope": "selected 24 registered native core tests; excludes the unregistered erase diagnostic"
+  },
+  "qt_regression": {
+    "configure_log": "frame-final-qt-configure.log",
+    "build_log": "frame-final-qt-build.log",
+    "result_log": "frame-final-qt-ctest.log",
+    "tests": [
+      "qt_cpp_shell",
+      "qt_unicode_input",
+      "qt_cpp_resize",
+      "qt_terminal_modes"
+    ],
+    "passed": 4,
+    "total": 4,
+    "total_seconds": 12.66,
+    "platform": "offscreen",
+    "backend": "bundled fixed Microsoft ConPTY",
+    "default_screen_resize_path": true,
+    "explicit_retained_projection_integrated": false,
+    "terminal_modes_scope": "five mode stages only; excludes the separate --resize B/CD diagnostic"
+  },
+  "offline_rounds": [
+    {
+      "id": "frame-and-earlier-erase-registration",
+      "result_log": "frame-erase-registered-ctest.log",
+      "tests": [
+        "windterm_resize_frame_reference",
+        "windterm_resize_frame_optimized",
+        "windterm_resize_erase_reference",
+        "windterm_resize_erase_optimized",
+        "windterm_resize_frame_controller",
+        "windterm_resize_erase_controller"
+      ],
+      "passed": 6,
+      "total": 6,
+      "total_seconds": 90.16,
+      "inner_checks": {
+        "frame_python_normal": 31,
+        "frame_python_optimized": 31,
+        "frame_node": 8,
+        "earlier_erase_python_normal": 23,
+        "earlier_erase_python_optimized": 23
+      },
+      "complete_run_input_manifest": null,
+      "same_tree_as_final_native_claimed": false
+    },
+    {
+      "id": "erase-supplement-registration",
+      "result_log": "erase-supplement-registered-ctest.log",
+      "tests": [
+        "windterm_resize_erase_reference",
+        "windterm_resize_erase_optimized",
+        "windterm_resize_erase_controller"
+      ],
+      "passed": 3,
+      "total": 3,
+      "total_seconds": 71.35,
+      "inner_checks": {
+        "erase_python_normal": 35,
+        "erase_python_optimized": 35,
+        "erase_node": 9
+      },
+      "complete_run_input_manifest": null,
+      "same_tree_as_final_native_claimed": false
+    }
+  ],
+  "open_diagnostics": {
+    "erase": {
+      "report": "../2026-11-02-resize-erase/README.md",
+      "passed_phases": 24,
+      "phases": 40,
+      "failed_assertions": 96,
+      "assertions": 600,
+      "exit_code": 1,
+      "in_registered_core_24": false,
+      "rerun_in_this_registered_regression": false,
+      "will_fail": false
+    },
+    "default_screen_resize": {
+      "report": "../2026-11-02-resize-address/README.md",
+      "unresolved": true
+    },
+    "qt_b_cd_resize": {
+      "report": "../../../shell/results/2026-11-02-qt-terminal-modes/README.md",
+      "unresolved": true,
+      "in_qt_4": false
+    }
+  },
+  "default_resize_replaced": false,
+  "qt_retained_projection_integrated": false,
+  "r27_complete": false,
+  "r29_complete": false,
+  "r2_complete": false,
+  "aggregate_pass_percentage": null,
+  "performance_gate": "not_evaluated",
+  "new_original_runs_for_these_regressions": 0,
+  "limitations": [
+    "Build configurations and offline rounds are reported separately; their counts are not pooled.",
+    "Qt passes cover the default path, not the explicit retained content/projection route.",
+    "Successful build of resize_erase_test does not convert its independently recorded failure into acceptance.",
+    "Post-run hashes and selected source comparisons do not establish a full pre-run input manifest.",
+    "No complete frame/Unicode/TUI/product/physical-DPI or performance equivalence is claimed."
+  ],
+  "configuration": {
+    "host": "Windows x64",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "sdk": "10.0.26100.0",
+    "build": "Release",
+    "core_qt": false,
+    "qt_build": true,
+    "candidate_adapter": false,
+    "qt_version": "6.10.3",
+    "qt_platform": "offscreen",
+    "fixed_conpty_version": "1.25.260930003",
+    "fixed_crt_version": "14.51.36247.0",
+    "parallelism": 1
+  },
+  "offline_frozen_group_composition": {
+    "research/ui/test_resize_frame_reference.py": {
+      "test_methods": 13,
+      "source_sha256": "88a95bdd83c761785fb8d7a94ee615897e97a3f581ca11a3dc62cd1d3cd4001d"
+    },
+    "research/ui/test_export_resize_frame_reference.py": {
+      "test_methods": 10,
+      "source_sha256": "370c8a21534cdd7e20d21aed40a4d256aa47387ffd3498b08e2afbcaf869b5d9"
+    },
+    "research/ui/test_audit_resize_frame_hidden.py": {
+      "test_methods": 8,
+      "source_sha256": "8f533a7e97dd4bd5f9101c038ce42d0cf442c28457eff1e97091f1d24130ca2a"
+    },
+    "research/ui/test_resize_erase_reference.py": {
+      "test_methods": 13,
+      "source_sha256": "da70328d07f4b4f28a237b0e4701ac16ec613b55d5af409a7b23366203cb230f"
+    },
+    "research/ui/test_export_resize_erase_reference.py": {
+      "test_methods": 10,
+      "source_sha256": "24faf3806a3ffb20b0927eb4d979e163383590ead09ceb83ad13330baf872845"
+    },
+    "research/ui/test_audit_resize_erase_right.py": {
+      "test_methods": 12,
+      "source_sha256": "2357bc6b41fa4ddffab20913cc9e4aaccd6ab1482f928e6efb7589869252a510"
+    }
+  },
+  "offline_group_composition_note": "Static count of test methods in d765 source confirms frame 23+8 and erase 23+12; historical round identities remain separate and are not upgraded to final-tree runs.",
+  "selected_conpty_pairs_match_fixed_manifest": true
+}
