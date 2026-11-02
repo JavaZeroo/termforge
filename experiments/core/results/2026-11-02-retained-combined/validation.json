@@ -1,0 +1,82 @@
+{
+  "schema": "termforge-retained-combined-validation-v1",
+  "date": "2026-11-02",
+  "status": "explicit-owner-transaction-and-combined-replay-passed",
+  "default_resize_replaced": false,
+  "qt_projection_integrated": false,
+  "r27_complete": false,
+  "r29_complete": false,
+  "implementation_commits": [
+    "eb09421",
+    "4d24c792cf8721167df3bbdeb4c0f768babfc81c"
+  ],
+  "failed_baseline_commit": "13186bff79bb522276364c2f397aab6398fd02f0",
+  "main_base_commit": "8eec75d0b47570681850747e070e2d3e1d8a8ae3",
+  "hashes_collected_after_runs": true,
+  "build": {
+    "platform": "Windows 11 x64",
+    "generator": "Visual Studio 17 2022 17.12.6",
+    "compiler": "MSVC 19.42.34433.0",
+    "windows_sdk": "10.0.26100.0",
+    "configuration": "Release",
+    "qt": false,
+    "candidate_adapter": false,
+    "python": "3.12.10",
+    "node": "24.22.2"
+  },
+  "source_files_sha256": {
+    "CMakeLists.txt": "36b3358fe01cc06b909550eecb99666b8a60a7966bf3a9c200ca1af65e9dc2fd",
+    "experiments/core/screen.hpp": "910735615a453246e499f5fea07296b7e4b6451bc727bcd28324e3590b956769",
+    "experiments/core/resize_combined_test.cpp": "18f926588e8d4986e84f9f640f337da04df1c34a21768a07a99a3fb4df7a8d32",
+    "experiments/core/resize_preserving_transaction_test.cpp": "ece5da0a72676ee489f0524152bfbbcbe1f938f928570f4f0390e17cdbd410fb"
+  },
+  "binary_sha256": {
+    "resize_combined_test.exe": "56213732e8bff541ec9f1a82693ac719f0b4ece01ca2ebcbac5eaf783b8100d5",
+    "resize_preserving_transaction_test.exe": "13ccd207ca33f80db63fecec96b0b7c049d05d263c8e2e65a566891b677c71eb"
+  },
+  "original_runs_this_slice": 0,
+  "original_observation": "research/ui/results/2026-11-02-resize-combined-reference/README.md",
+  "combined_literal_replay": {
+    "configurations": 4,
+    "phases": 20,
+    "baseline": {
+      "phases_passed": 8,
+      "literal_failures": 80,
+      "literal_assertions": 560,
+      "engineering_failures": 60,
+      "engineering_assertions": 648,
+      "exit_code": 1
+    },
+    "after": {
+      "phases_passed": 20,
+      "literal_failures": 0,
+      "literal_assertions": 560,
+      "engineering_failures": 0,
+      "engineering_assertions": 744,
+      "exit_code": 0
+    }
+  },
+  "transaction_checks": {
+    "allocation_sweeps": {
+      "primary_shrink": 151,
+      "primary_grow": 42,
+      "alternate_shrink": 151,
+      "alternate_grow": 42
+    },
+    "history_limits": [0, 3, 10],
+    "growth_allocation_history_rows": [8, 4000],
+    "retry_matches_uninterrupted": true,
+    "no_timing_claim": true
+  },
+  "ctest": {
+    "core": {"passed": 34, "failed": 0, "seconds": 4.52},
+    "combined_probes": {"passed": 3, "failed": 0, "seconds": 44.63, "launches_original": false}
+  },
+  "limitations": [
+    "Fixed 75 B ASCII main-primary sample and five fixed geometries only; no writes after resize, dual-axis change, active alternate frame, Unicode, history eviction or saved-cursor cross.",
+    "Explicit entry only: default Screen::resize and Qt still use physical clipping; Qt B/CD resize failures remain.",
+    "Hidden-frame fitting follows the earlier engineering footprint policy, not a newly confirmed original behavior; the hidden-primary original audit still failed.",
+    "Allocation and history checks are engineering invariants, not allocator, latency or memory acceptance.",
+    "No Qt/fixed-ConPTY transport, user path, or performance measurement in this slice."
+  ]
+}
