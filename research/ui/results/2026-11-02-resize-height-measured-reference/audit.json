@@ -1,0 +1,86 @@
+{
+  "schema": "termforge-resize-height-measured-public-audit-v1",
+  "strict_public_sha256": "32d3f6cf2d1c6746ff517b684ecd8c631c86ecc87874209ba5f831ea244730e0",
+  "strict_public_bytes": 38930,
+  "execution_source_base_commit": "50a560739e45d00ee31177d84b7c54a144f5273e",
+  "source_zip_sha256": "a1171426f142a9fac23e7f163b8ad68d4f2871aa5fedc17dd232f9495bdd5684",
+  "source_manifest_sha256": "14cf4a37472bd90abd30dfd1b1dc916cd1b904f60e4502e10763f7b71b4bfe38",
+  "execution_source_count": 10,
+  "offline_export_source_count": 3,
+  "source_zip_and_current_and_commit_bytes_match_public": true,
+  "original_runs": 1,
+  "phases_checked": 3,
+  "complete_literal_document_arrays_checked": 3,
+  "complete_document_line_count": 19,
+  "complete_document_sha256": "ac5cc0c46768d14945e8c63103f3d7d56f9a5fc2f5631dd4fe8f485e9ba19efc",
+  "literal_marker_records_checked": 21,
+  "status": "observation",
+  "semantic_acceptance": false,
+  "geometry_grids": [
+    [
+      91,
+      20
+    ],
+    [
+      91,
+      14
+    ],
+    [
+      91,
+      20
+    ]
+  ],
+  "protocol_cursor_replies": [
+    [
+      19,
+      7
+    ],
+    [
+      14,
+      7
+    ],
+    [
+      14,
+      7
+    ]
+  ],
+  "api_scroll_values": [
+    0,
+    5,
+    5
+  ],
+  "api_top_values": [
+    null,
+    null,
+    null
+  ],
+  "api_caret": {
+    "caretLine": 17,
+    "caretColumn": 0,
+    "caretPosition": 131
+  },
+  "marker_y_changes_from_initial": [
+    0,
+    -90,
+    -90
+  ],
+  "all_marker_source_positions_unchanged": true,
+  "all_marker_rectangles_restored_equal_shrunk": true,
+  "public_window_geometry_does_not_establish_raster_visibility": true,
+  "internal_history_policy_inferred": false,
+  "raw_run_records_reopened_here": false,
+  "audit_boundary": "Local audit checked strict public bytes, three complete literal ASCII arrays, twenty-one literal marker records, source archive/current/commit bytes, manifest and owned cleanup summary. Complete package/raw/provider verification was performed by the VM strict exporter; those raw records and the original installation were not reopened in this local audit.",
+  "owner_cleanup": {
+    "RootExitCode": 0,
+    "JobAfterActive": 0,
+    "RootReaped": true,
+    "CleanupVerified": true
+  },
+  "old_height_10_row_failure_preserved": true,
+  "old_width_then_height_original_runs": 0,
+  "full_active_grid_verified": false,
+  "post_resize_write_verified": false,
+  "combined_width_height_verified": false,
+  "alternate_frame_verified": false,
+  "performance_gate": "not_evaluated"
+}

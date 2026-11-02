@@ -88,6 +88,12 @@ build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 
 `--fixture unicode` 使用 800,000 字节的中文、组合标记、红色前景和编号记录；期望格位及样式同样直接构造，不调用待测解析器。
 
+## 显示投影续接
+
+显式 `HistoryViewport::begin_projection` / `step_projection` 按每步至多200个源片段生成指定宽度的页面；`ProjectionJob` 独占未完成半行和页面，完成前不发布。源被修改、导入或换屏、真实尺寸变化、新请求及取消会使任务失效；尺寸no-op不打断。它与默认物理`resize`/`snapshot`仍分开，当前Qt未消费这个入口。
+
+返回cursor是绑定owner/行身份/version/epoch/order的源锚点，可以定义另一宽度下的局部起点，不代表全局显示行号。静止500片段的分步进展和选择/Find交叉见[固定验证](results/2026-11-02-projection-job/README.md)；持续输出下的调度与进展、任意显示位置定位仍未交付。旧单次`project`保留有界窗口语义，部分软行在`source_limit`可能不推进，跨预算任务应使用新分步入口。
+
 ## 文字投影与选择
 
 `text_document.hpp` 提供同线程、短生命周期的只读适配；返回行文本与跨度均按值持有，以行身份/版本和物理半开列范围表达位置，不向消费方暴露可变行引用。`text_selection.hpp` 为每个会话独立持有选区，合并真实软折行、以 CRLF 复制硬行边界并保留显式空格；不拆开宽字和有限组合标记。

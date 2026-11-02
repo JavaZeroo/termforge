@@ -1,0 +1,1206 @@
+{
+  "schema": "termforge-original-resize-height-measured-reference-v1",
+  "issue": 29,
+  "related_issue": 27,
+  "case_id": "height-retention-measured",
+  "authorized_plan_sha256": "2c58a7de70724ab61f9606c836cdde2095405f91c9d77e114733d3e054184f9c",
+  "geometry_basis": {
+    "reference": "research/ui/results/2026-11-02-resize-geometry-reference/strict-export.json",
+    "strict_export_sha256": "f18a2320c073ed477f773b42076c9968c0c8af8530af19548d5695e66e8cf9b5",
+    "observed_windows": [
+      [
+        1360,
+        749
+      ],
+      [
+        1360,
+        569
+      ]
+    ],
+    "observed_grids": [
+      [
+        91,
+        20
+      ],
+      [
+        91,
+        14
+      ]
+    ],
+    "restore_geometry_previously_observed": false
+  },
+  "offline_export_source_files_sha256": {
+    "research/ui/export_resize_height_measured_reference.py": "dcc5bf228c0e144d3d05840cb3d97a6082d963cdfc1ea71093a9de06185a4cbb",
+    "research/ui/export_resize_state_reference.py": "473e901305354d4ba8b22c08d22fa506c4d40da0e73bed3bf3122e4ff0e3c9b7",
+    "research/ui/export_mode_state_reference.py": "7e0a1e0e49f149791464c0dec357d3b5260bc2c34ca9f9c1be4edab35626cdf3"
+  },
+  "status": "observation",
+  "observation_kind": "bounded-direct-protocol-and-height",
+  "actual_original_runs": 1,
+  "maximum_original_runs": 1,
+  "semantic_acceptance": false,
+  "height_policy_classification": null,
+  "full_active_grid_verified": false,
+  "terminal_styles_verified": false,
+  "local_shell_transport_verified": false,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "r2_complete": false,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "deliberate_original_process_termination": true,
+  "natural_gui_exit_verified": false,
+  "capture": {
+    "phases": [
+      {
+        "phase": 0,
+        "label": "initial-body",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b323b314848544f501b5b363b3148484152445f410d0a484152445f421b5b31323b3930487576771b5b31393b31484c4f57454e44",
+        "source_bytes": 75,
+        "source_sha256": "ff48cd41220a72e5da2350dc97c3c8c8c884d48cc4f7fa2328609bf8bc0cb09e",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          19,
+          7
+        ],
+        "response_hex": "1b5b31393b3752",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "document_projection": {
+          "line_count": 19,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 17,
+            "caretColumn": 0,
+            "caretPosition": 131
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 90,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "u",
+              "document_line": 11,
+              "line_text_offset_utf16": 89,
+              "line_text_offset_scalar": 89,
+              "line_text_prefix_utf8_bytes": 89,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 116,
+              "rect": {
+                "x": 859,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "v",
+              "document_line": 11,
+              "line_text_offset_utf16": 90,
+              "line_text_offset_scalar": 90,
+              "line_text_prefix_utf8_bytes": 90,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 117,
+              "rect": {
+                "x": 867,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 91,
+              "line_text_offset_scalar": 91,
+              "line_text_prefix_utf8_bytes": 91,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 118,
+              "rect": {
+                "x": 147,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 125,
+              "requested_position_api_value": 125,
+              "rect": {
+                "x": 147,
+                "y": 324,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "ac5cc0c46768d14945e8c63103f3d7d56f9a5fc2f5631dd4fe8f485e9ba19efc",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "resize_height_measured_reference.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 13,
+            "catalog_sha256": "c420a7173a140e0651f3704d8e12996e4b4ff448809df62a104ba8505d68f5f5",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 8,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 4,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 6,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 3,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+                "utf8_bytes": 92,
+                "unicode_scalars": 92,
+                "utf16_code_units": 92
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 10,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "initial-body"
+      },
+      {
+        "phase": 1,
+        "label": "height-shrunk-unmodified",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          14,
+          7
+        ],
+        "response_hex": "1b5b31343b3752",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          14
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          670
+        ],
+        "window_size": [
+          1360,
+          569
+        ],
+        "document_projection": {
+          "line_count": 19,
+          "capacity": 14,
+          "top": null,
+          "scroll": 5,
+          "caret_api": {
+            "caretLine": 17,
+            "caretColumn": 0,
+            "caretPosition": 131
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": -72,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 0,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "u",
+              "document_line": 11,
+              "line_text_offset_utf16": 89,
+              "line_text_offset_scalar": 89,
+              "line_text_prefix_utf8_bytes": 89,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 116,
+              "rect": {
+                "x": 859,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "v",
+              "document_line": 11,
+              "line_text_offset_utf16": 90,
+              "line_text_offset_scalar": 90,
+              "line_text_prefix_utf8_bytes": 90,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 117,
+              "rect": {
+                "x": 867,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 91,
+              "line_text_offset_scalar": 91,
+              "line_text_prefix_utf8_bytes": 91,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 118,
+              "rect": {
+                "x": 147,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 125,
+              "requested_position_api_value": 125,
+              "rect": {
+                "x": 147,
+                "y": 234,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "ac5cc0c46768d14945e8c63103f3d7d56f9a5fc2f5631dd4fe8f485e9ba19efc",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "resize_height_measured_reference.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 13,
+            "catalog_sha256": "c420a7173a140e0651f3704d8e12996e4b4ff448809df62a104ba8505d68f5f5",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 8,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 4,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 6,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 3,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+                "utf8_bytes": 92,
+                "unicode_scalars": 92,
+                "utf16_code_units": 92
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 10,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "height-shrunk-unmodified"
+      },
+      {
+        "phase": 2,
+        "label": "height-restored-unmodified",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          14,
+          7
+        ],
+        "response_hex": "1b5b31343b3752",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "document_projection": {
+          "line_count": 19,
+          "capacity": 20,
+          "top": null,
+          "scroll": 5,
+          "caret_api": {
+            "caretLine": 17,
+            "caretColumn": 0,
+            "caretPosition": 131
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": -72,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 0,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "u",
+              "document_line": 11,
+              "line_text_offset_utf16": 89,
+              "line_text_offset_scalar": 89,
+              "line_text_prefix_utf8_bytes": 89,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 116,
+              "rect": {
+                "x": 859,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "v",
+              "document_line": 11,
+              "line_text_offset_utf16": 90,
+              "line_text_offset_scalar": 90,
+              "line_text_prefix_utf8_bytes": 90,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 117,
+              "rect": {
+                "x": 867,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 91,
+              "line_text_offset_scalar": 91,
+              "line_text_prefix_utf8_bytes": 91,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 118,
+              "rect": {
+                "x": 147,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 125,
+              "requested_position_api_value": 125,
+              "rect": {
+                "x": 147,
+                "y": 234,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "ac5cc0c46768d14945e8c63103f3d7d56f9a5fc2f5631dd4fe8f485e9ba19efc",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "resize_height_measured_reference.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 13,
+            "catalog_sha256": "c420a7173a140e0651f3704d8e12996e4b4ff448809df62a104ba8505d68f5f5",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 8,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 4,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 6,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 3,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+                "utf8_bytes": 92,
+                "unicode_scalars": 92,
+                "utf16_code_units": 92
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 10,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "height-restored-unmodified"
+      }
+    ],
+    "source_bytes": 75,
+    "dsr_request_bytes": 12,
+    "application_reply_bytes": 21,
+    "window_rect_format": "qt-qrect-inclusive-ltrb",
+    "geometry_checks": [
+      {
+        "phase": 0,
+        "expected_size": [
+          1360,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ]
+      },
+      {
+        "phase": 1,
+        "expected_size": [
+          1360,
+          569
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          670
+        ],
+        "window_size": [
+          1360,
+          569
+        ]
+      },
+      {
+        "phase": 2,
+        "expected_size": [
+          1360,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ]
+      }
+    ],
+    "frozen_grids": [
+      [
+        91,
+        20
+      ],
+      [
+        91,
+        14
+      ],
+      [
+        91,
+        20
+      ]
+    ],
+    "naws_history": [
+      [
+        91,
+        20
+      ],
+      [
+        91,
+        14
+      ],
+      [
+        91,
+        20
+      ]
+    ],
+    "freeze_event_counts": [
+      1,
+      2,
+      3
+    ],
+    "resize_boundaries": [
+      {
+        "phase": 1,
+        "before_event_count": 1,
+        "after_event_count": 2,
+        "requested_window": [
+          1360,
+          569
+        ]
+      },
+      {
+        "phase": 2,
+        "before_event_count": 2,
+        "after_event_count": 3,
+        "requested_window": [
+          1360,
+          749
+        ]
+      }
+    ],
+    "job_after": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "provider": {
+      "id": "frida",
+      "version": null,
+      "confidence": "observed",
+      "evidence_id": "ev_14d3159f396ec89c80889ac40ab0cd72aa97b42b688d5248303af5fb375c5631",
+      "messages": 8,
+      "readiness_messages": 3,
+      "phase_messages": 3,
+      "messages_truncated": false,
+      "cleanup_error": null
+    },
+    "stateful_observation_count": 3,
+    "post_initial_terminal_input": "DSR only",
+    "independent_dsr_bounds": {
+      "row": [
+        1,
+        200
+      ],
+      "column": [
+        1,
+        500
+      ]
+    },
+    "text_units": {
+      "source": "UTF-8 bytes",
+      "document_line": "original public API index",
+      "marker_text_offsets": "JS UTF-16 code units; scalar count coincides only for this ASCII source alphabet",
+      "position_api": "recorded lineStart API value plus JS UTF-16 offset, passed unchanged to visibleRectFromPosition",
+      "caret_api": "original API scalar values; numbering policy not inferred",
+      "rectangles": "actual public API pixel rectangles, kept separate from protocol cells",
+      "protocol_cursor": "DSR values kept independent of text offsets and pixel rectangles",
+      "cpp_cell_column_mapping": null,
+      "document_position_unit_classification": null,
+      "ascii_only": true
+    }
+  },
+  "provenance": {
+    "source_identity": {
+      "kind": "source-archive",
+      "manifest_sha256": "14cf4a37472bd90abd30dfd1b1dc916cd1b904f60e4502e10763f7b71b4bfe38"
+    },
+    "execution_source_base_commit": "50a560739e45d00ee31177d84b7c54a144f5273e",
+    "execution_source_files_sha256": {
+      "research/ui/resize_height_measured_reference.py": "efecfcd4ae664c0aa2f9a55f7a9c64f086fe4b0c974878bb6dcd2a348508b158",
+      "research/ui/resize_height_measured_reference.js": "b7966457f1b62833c88bf36a4c4e7ae259a4a100804539147d1946f8891efaa7",
+      "research/ui/resize_state_reference.py": "628f9e3a5e3ecea6c34829810df2cdf0e93dc221bd3d19b31b3f5028759f07fd",
+      "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+      "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+      "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+      "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+      "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+      "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+    },
+    "launcher_namespace_sha256": "67aefd3483418a02c806541da0ec7d2acc96d39cb485690f2b0ea7cac45048c4",
+    "reference_identity": {
+      "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+      "manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+      "files_verified": 4047,
+      "module_files_sha256": {
+        "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+        "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+        "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358",
+        "Qt5Qml.dll": "30035484c81590976627f8face9507caa8581a7dc7630cccf6a8d6de65cab707"
+      }
+    },
+    "launch_host": {
+      "windows_version": "10.0.26300",
+      "python_version_number": "3.12.10",
+      "python_exe_sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "node_exe_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9",
+      "rea_package_version": "6.7.0",
+      "rea_shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+      "rea_package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+      "rea_entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738",
+      "runtime_identity_source": "recorded execution plan; exporter does not execute the captured runtimes"
+    },
+    "raw_files": {
+      "evidence.json": {
+        "bytes": 13878,
+        "sha256": "78984a9b314996260f9003005dc4fdd954ef246a9d84f790b664cabd10b3385e"
+      },
+      "run.json": {
+        "bytes": 617,
+        "sha256": "cbca9d6159e35d4e7cc3c41668339bea0b661d2866889d5b50a97b30caf287bb"
+      },
+      "probe.js": {
+        "bytes": 24488,
+        "sha256": "dce616b9072c2ece56c53c513dd2368d611e0788670f99de670f884a907c1dac"
+      },
+      "peer.json": {
+        "bytes": 1757,
+        "sha256": "824f07b2e0dd740300d33458a26912d6497e1bd07fb947aac9fa381a05e76c82"
+      },
+      "resize-height-measured-result.json": {
+        "bytes": 5905,
+        "sha256": "cd09fb0eb0277a857ae37446c537e1755c56c322f490e2bc466b5d98431570f2"
+      },
+      "files.json": {
+        "bytes": 637666,
+        "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+      },
+      "mechanics-check.json": {
+        "bytes": 404,
+        "sha256": "a8901b74a9635b612e4684ec6cca358de17dc4693661fe57e43acff3bb23b637"
+      },
+      "stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "profile-check.json": {
+        "bytes": 52,
+        "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      },
+      "cleanup.json": {
+        "bytes": 42,
+        "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+      },
+      "fixture-ready": {
+        "bytes": 32,
+        "sha256": "1f0b8ece17746ce41c81df65e45a6f8480747d9b69858dc905a29ae8d4c449cb"
+      },
+      "ack-0": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-1": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-2": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "resize-request-1": {
+        "bytes": 31,
+        "sha256": "7877835ead7ba9526d28e8fd22921cbcb55031971ce9d7ab57a08f56bf7998de"
+      },
+      "resize-ready-1": {
+        "bytes": 42,
+        "sha256": "e8ea4a5a4ee5226ee3630d9b105a223c3a27798fca271b2d1e715a0a4df71a9e"
+      },
+      "resize-request-2": {
+        "bytes": 31,
+        "sha256": "4047eb7c9a836c99a56571e69999fb2173cb23d85412491478a1ea0d3adfde23"
+      },
+      "resize-ready-2": {
+        "bytes": 42,
+        "sha256": "dd2232679e6eeeeaa97bc8e4379bf0d86d88bfd95362f68f5fa94b7dc42daabe"
+      }
+    },
+    "authorized_plan": {
+      "bytes": 6386,
+      "sha256": "2c58a7de70724ab61f9606c836cdde2095405f91c9d77e114733d3e054184f9c"
+    }
+  },
+  "limitations": [
+    "One fresh direct Telnet process executes the immutable height-retention-measured schedule 91x20 -> 91x14 -> 91x20; every stage is observed before the next resize.",
+    "After stage zero, terminal input is DSR only: no CUP, CR/LF, redraw, replacement text or post-resize write.",
+    "Stage zero requires every preloaded sentinel and DSR19;7; later missing markers are observations, never semantic acceptance.",
+    "The lower window height569 and 91x14 endpoint follow the separate geometry observation; restoration to 1360x749 and 91x20 is verified in this run. Exact geometry and NAWS remain mandatory, with no calibration or retries.",
+    "Document indices, API positions, ASCII byte/UTF16 offsets, DSR and pixel rectangles are recorded separately; no general original position-unit or C++ Cell mapping is inferred.",
+    "DSR safety bounds remain row1..200/column1..500 independently of the fourteen-row viewport.",
+    "Only finite ASCII source-derived catalog strings may be published, with complete reconstructible document arrays. Unrestricted recording stays private.",
+    "This single schedule does not establish alternate-frame, combined width/height changes, Unicode, arbitrary dimensions, post-resize editing, ConPTY, performance or R2 acceptance."
+  ]
+}

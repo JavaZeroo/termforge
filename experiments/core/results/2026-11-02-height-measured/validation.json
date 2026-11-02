@@ -1,0 +1,141 @@
+{
+  "schema": "termforge-height-measured-core-validation-v1",
+  "source_commit": "d4c79efb5a0ed1f0968682b4271d207923476417",
+  "execution_head_before_test_commit": "ef1da6e735981ed229b69372a22a5d424a108efa",
+  "execution_wip": [
+    "CMakeLists.txt",
+    "experiments/core/resize_height_measured_test.cpp"
+  ],
+  "production_changed": false,
+  "new_product_red_green_claim": false,
+  "original_public_sha256": "32d3f6cf2d1c6746ff517b684ecd8c631c86ecc87874209ba5f831ea244730e0",
+  "first_fixture_failure": {
+    "schema": "termforge-height-fixture-failure-v1",
+    "execution_head": "ef1da6e735981ed229b69372a22a5d424a108efa",
+    "uncommitted_inputs": [
+      "CMakeLists.txt",
+      "experiments/core/resize_height_measured_test.cpp"
+    ],
+    "source_end_argument": 200,
+    "actual_source_rows": 20,
+    "failed_assertions": 4,
+    "executed_assertions": 88,
+    "completed_phases": 0,
+    "interpretation": "Fixture passed an out-of-range source_end; not a product/original mismatch",
+    "files": [
+      {
+        "source": "CMakeLists.txt",
+        "archived": "CMakeLists.txt",
+        "sha256": "5a6408e7b5aa0e6b8b330050817ca09d401c2b27a400df1a6c43a19b9361c46c"
+      },
+      {
+        "source": "experiments/core/resize_height_measured_test.cpp",
+        "archived": "resize_height_measured_test.cpp",
+        "sha256": "8f99c06b7735e4aaf180ccf4f9beffc3a7f4d57d82817fc99130038b519f7af1"
+      },
+      {
+        "source": "experiments/core/screen.hpp",
+        "archived": "screen.hpp",
+        "sha256": "29705284960207e114a1212d45b76a3824a2594bbb5b7a2adb74cb4666add19e"
+      },
+      {
+        "source": "experiments/core/history_view.hpp",
+        "archived": "history_view.hpp",
+        "sha256": "c61f2b4e79373b9f62ffbdc8c529eae1723c8ec3bea27d99f625c869e58131d0"
+      },
+      {
+        "source": "local/r2-core-build/bin/Release/resize_height_measured_test.exe",
+        "archived": "resize_height_measured_test.exe",
+        "sha256": "0f22b75f2cc921a8660923389328c70a01a8120ec7f9c32c82ca765d2df795ea"
+      },
+      {
+        "source": "local/r29-retention/height-measured-core-build.log",
+        "archived": "height-measured-core-build.log",
+        "sha256": "06780a03d15aa86df5c4fa8b801b9f451864ef7188bba2f3525b1c7ae1381dd1"
+      },
+      {
+        "source": "local/r29-retention/height-measured-core-test.log",
+        "archived": "height-measured-core-test.log",
+        "sha256": "4805598eb5085c14ccf13947f7c0e9efc3b86ac2264768945298c43ae75ee933"
+      }
+    ]
+  },
+  "fixture_fix": "source_end changed from out-of-range 200 to actual retained_size; original expectations unchanged",
+  "phases": {
+    "passed": 12,
+    "total": 12,
+    "original_cases": 1,
+    "feed_modes": 4
+  },
+  "assertions": {
+    "total": 596,
+    "failed": 0,
+    "engineering_subset": 176
+  },
+  "registered_ctest": {
+    "passed": 1,
+    "total": 1,
+    "seconds": 0.04
+  },
+  "identity_capture_timing": "after successful execution and commit; no pre-run source manifest",
+  "files": {
+    "CMakeLists.txt": {
+      "sha256": "5a6408e7b5aa0e6b8b330050817ca09d401c2b27a400df1a6c43a19b9361c46c",
+      "bytes": 45993
+    },
+    "experiments/core/resize_height_measured_test.cpp": {
+      "sha256": "d7ccd42f5861024e0e3637067b23a8c87d8f167c2518c87b9c3a5425e8387901",
+      "bytes": 9238
+    },
+    "experiments/core/screen.hpp": {
+      "sha256": "29705284960207e114a1212d45b76a3824a2594bbb5b7a2adb74cb4666add19e",
+      "bytes": 40365
+    },
+    "experiments/core/terminal.hpp": {
+      "sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "bytes": 17998
+    },
+    "experiments/core/history_view.hpp": {
+      "sha256": "c61f2b4e79373b9f62ffbdc8c529eae1723c8ec3bea27d99f625c869e58131d0",
+      "bytes": 28472
+    },
+    "experiments/core/view_mapping.hpp": {
+      "sha256": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+      "bytes": 5587
+    },
+    "experiments/core/text_document.hpp": {
+      "sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "bytes": 4728
+    },
+    "experiments/core/text_projection.hpp": {
+      "sha256": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+      "bytes": 1841
+    },
+    "experiments/core/unicode_width.hpp": {
+      "sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "bytes": 32445
+    },
+    "local/r2-core-build/bin/Release/resize_height_measured_test.exe": {
+      "sha256": "5a479e8d632096e3fdeade0f631c9a6990ff9e6217112e26990533408916478b",
+      "bytes": 117248
+    },
+    "local/r29-retention/height-measured-core-fixed-build.log": {
+      "sha256": "5d02166f88fa7ffb8dd80db318c3dc73c5f36f7ffa93f4f7b99dc7f0132bee18",
+      "bytes": 265
+    },
+    "local/r29-retention/height-measured-core-fixed-test.log": {
+      "sha256": "492e36e6492da1699b48ca3c07bf918960d93a53a0407863600e50b4594a4144",
+      "bytes": 207
+    },
+    "local/r29-retention/height-measured-core-ctest.log": {
+      "sha256": "6049990e5bcdf45053141a2a2a9eecc33698e433f846879115015dbf8d8b3b24",
+      "bytes": 420
+    }
+  },
+  "limits": [
+    "Pure height at fixed 91 columns only; no width/height interaction.",
+    "Original top=null; scroll=5 is not proof of its internal history allocation.",
+    "Internal empty rows and spaces preserved; only terminal empty strings excluded from body comparison.",
+    "No original full-grid/style, Qt/default-retention, performance or R2 acceptance."
+  ]
+}
