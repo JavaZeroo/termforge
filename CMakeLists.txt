@@ -157,6 +157,10 @@ add_executable(resize_height_measured_test experiments/core/resize_height_measur
 target_link_libraries(resize_height_measured_test PRIVATE termforge_core)
 termforge_warnings(resize_height_measured_test)
 
+add_executable(resize_combined_test experiments/core/resize_combined_test.cpp)
+target_link_libraries(resize_combined_test PRIVATE termforge_core)
+termforge_warnings(resize_combined_test)
+
 add_executable(resize_unicode_test experiments/core/resize_unicode_test.cpp)
 target_link_libraries(resize_unicode_test PRIVATE termforge_core)
 termforge_warnings(resize_unicode_test)
