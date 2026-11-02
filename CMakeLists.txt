@@ -153,6 +153,10 @@ add_executable(resize_unicode_test experiments/core/resize_unicode_test.cpp)
 target_link_libraries(resize_unicode_test PRIVATE termforge_core)
 termforge_warnings(resize_unicode_test)
 
+add_executable(resize_combining_test experiments/core/resize_combining_test.cpp)
+target_link_libraries(resize_combining_test PRIVATE termforge_core)
+termforge_warnings(resize_combining_test)
+
 # Direct original resize/addressing comparison. A mismatch is a diagnostic
 # failure; it is not registered as an expected-failure CTest acceptance.
 add_executable(resize_address_test experiments/core/resize_address_test.cpp)
