@@ -1,0 +1,3784 @@
+{
+  "schema": "termforge-original-resize-geometry-reference-v1",
+  "issue": 29,
+  "related_issue": 27,
+  "case_id": "height-geometry",
+  "authorized_plan_sha256": "0b3f6723183bbd82f1ae3342f6980c1c6ddbba09ccd9173f3b19443e55d9ad67",
+  "offline_export_source_files_sha256": {
+    "research/ui/export_resize_geometry_reference.py": "7225f3e8128094eb36f814678a4a0e72e26ce2b489b719f3ce2d37a4000878f7",
+    "research/ui/export_mode_state_reference.py": "7e0a1e0e49f149791464c0dec357d3b5260bc2c34ca9f9c1be4edab35626cdf3"
+  },
+  "status": "observation",
+  "observation_kind": "bounded-public-window-widget-and-naws-geometry",
+  "actual_original_runs": 1,
+  "maximum_original_runs": 1,
+  "semantic_acceptance": false,
+  "height_policy_classification": null,
+  "full_active_grid_verified": false,
+  "terminal_styles_verified": false,
+  "local_shell_transport_verified": false,
+  "performance_gate": "not_evaluated",
+  "r2_complete": false,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "deliberate_original_process_termination": true,
+  "natural_gui_exit_verified": false,
+  "capture": {
+    "observations": [
+      {
+        "sequence": 1,
+        "phase": 0,
+        "reason": "initial-stable",
+        "elapsed_ms": 1326,
+        "requested_window": [
+          1360,
+          749
+        ],
+        "window": {
+          "rect": [
+            102,
+            102,
+            1461,
+            850
+          ],
+          "size": [
+            1360,
+            749
+          ],
+          "error": null
+        },
+        "peer": {
+          "grid": [
+            91,
+            20
+          ],
+          "event_count": 1,
+          "resize_armed": false,
+          "error": null
+        },
+        "terminal": {
+          "connected": true,
+          "protocol": "Telnet",
+          "capacity": 20,
+          "line_count": 1,
+          "error": null
+        },
+        "widgets": {
+          "status": "observed",
+          "error": null,
+          "nodes": [
+            {
+              "id": 0,
+              "parent_id": 1,
+              "role": "terminal",
+              "rect": [
+                0,
+                0,
+                905,
+                378
+              ],
+              "size": [
+                906,
+                379
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 1,
+              "parent_id": 2,
+              "role": "ancestor",
+              "rect": [
+                0,
+                60,
+                905,
+                438
+              ],
+              "size": [
+                906,
+                379
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 2,
+              "parent_id": 3,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                438
+              ],
+              "size": [
+                906,
+                439
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 3,
+              "parent_id": 4,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                438
+              ],
+              "size": [
+                906,
+                439
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 4,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                227,
+                0,
+                1132,
+                438
+              ],
+              "size": [
+                906,
+                439
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 5,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                438
+              ],
+              "size": [
+                1360,
+                439
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 6,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                658
+              ],
+              "size": [
+                1360,
+                659
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 7,
+              "parent_id": 8,
+              "role": "ancestor",
+              "rect": [
+                0,
+                33,
+                1359,
+                719
+              ],
+              "size": [
+                1360,
+                687
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 8,
+              "parent_id": 9,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                748
+              ],
+              "size": [
+                1360,
+                749
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 9,
+              "parent_id": 10,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                748
+              ],
+              "size": [
+                1360,
+                749
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 10,
+              "parent_id": null,
+              "role": "ancestor",
+              "rect": [
+                102,
+                102,
+                1461,
+                850
+              ],
+              "size": [
+                1360,
+                749
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 11,
+              "parent_id": 0,
+              "role": "editor",
+              "rect": [
+                0,
+                0,
+                905,
+                378
+              ],
+              "size": [
+                906,
+                379
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 12,
+              "parent_id": 11,
+              "role": "viewport",
+              "rect": [
+                1,
+                1,
+                888,
+                377
+              ],
+              "size": [
+                888,
+                377
+              ],
+              "global_origin": [
+                330,
+                196
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 13,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                225,
+                438
+              ],
+              "size": [
+                226,
+                439
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 14,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                224,
+                0,
+                228,
+                438
+              ],
+              "size": [
+                5,
+                439
+              ],
+              "global_origin": [
+                326,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 15,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1134,
+                0,
+                1359,
+                438
+              ],
+              "size": [
+                226,
+                439
+              ],
+              "global_origin": [
+                1194,
+                108
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 16,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1131,
+                0,
+                1135,
+                438
+              ],
+              "size": [
+                5,
+                439
+              ],
+              "global_origin": [
+                1191,
+                108
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 17,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                437,
+                1359,
+                441
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                572
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 18,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                440,
+                1359,
+                658
+              ],
+              "size": [
+                1360,
+                219
+              ],
+              "global_origin": [
+                102,
+                575
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 19,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                660,
+                1359,
+                686
+              ],
+              "size": [
+                1360,
+                27
+              ],
+              "global_origin": [
+                102,
+                795
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 20,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                657,
+                1359,
+                661
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                792
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            }
+          ],
+          "roles": {
+            "terminal": 0,
+            "editor": 11,
+            "viewport": 12
+          }
+        }
+      },
+      {
+        "sequence": 4,
+        "phase": 1,
+        "reason": "final-stable",
+        "elapsed_ms": 2219,
+        "requested_window": [
+          1360,
+          569
+        ],
+        "window": {
+          "rect": [
+            102,
+            102,
+            1461,
+            670
+          ],
+          "size": [
+            1360,
+            569
+          ],
+          "error": null
+        },
+        "peer": {
+          "grid": [
+            91,
+            14
+          ],
+          "event_count": 2,
+          "resize_armed": true,
+          "error": null
+        },
+        "terminal": {
+          "connected": true,
+          "protocol": "Telnet",
+          "capacity": 14,
+          "line_count": 1,
+          "error": null
+        },
+        "widgets": {
+          "status": "observed",
+          "error": null,
+          "nodes": [
+            {
+              "id": 0,
+              "parent_id": 1,
+              "role": "terminal",
+              "rect": [
+                0,
+                0,
+                905,
+                258
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 1,
+              "parent_id": 2,
+              "role": "ancestor",
+              "rect": [
+                0,
+                60,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 2,
+              "parent_id": 3,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 3,
+              "parent_id": 4,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 4,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                227,
+                0,
+                1132,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 5,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                318
+              ],
+              "size": [
+                1360,
+                319
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 6,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                478
+              ],
+              "size": [
+                1360,
+                479
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 7,
+              "parent_id": 8,
+              "role": "ancestor",
+              "rect": [
+                0,
+                33,
+                1359,
+                539
+              ],
+              "size": [
+                1360,
+                507
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 8,
+              "parent_id": 9,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                568
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 9,
+              "parent_id": 10,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                568
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 10,
+              "parent_id": null,
+              "role": "ancestor",
+              "rect": [
+                102,
+                102,
+                1461,
+                670
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 11,
+              "parent_id": 0,
+              "role": "editor",
+              "rect": [
+                0,
+                0,
+                905,
+                258
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 12,
+              "parent_id": 11,
+              "role": "viewport",
+              "rect": [
+                1,
+                1,
+                888,
+                257
+              ],
+              "size": [
+                888,
+                257
+              ],
+              "global_origin": [
+                330,
+                196
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 13,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                225,
+                318
+              ],
+              "size": [
+                226,
+                319
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 14,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                224,
+                0,
+                228,
+                318
+              ],
+              "size": [
+                5,
+                319
+              ],
+              "global_origin": [
+                326,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 15,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1134,
+                0,
+                1359,
+                318
+              ],
+              "size": [
+                226,
+                319
+              ],
+              "global_origin": [
+                1194,
+                108
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 16,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1131,
+                0,
+                1135,
+                318
+              ],
+              "size": [
+                5,
+                319
+              ],
+              "global_origin": [
+                1191,
+                108
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 17,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                317,
+                1359,
+                321
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                452
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 18,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                320,
+                1359,
+                478
+              ],
+              "size": [
+                1360,
+                159
+              ],
+              "global_origin": [
+                102,
+                455
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 19,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                480,
+                1359,
+                506
+              ],
+              "size": [
+                1360,
+                27
+              ],
+              "global_origin": [
+                102,
+                615
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 20,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                477,
+                1359,
+                481
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                612
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            }
+          ],
+          "roles": {
+            "terminal": 0,
+            "editor": 11,
+            "viewport": 12
+          }
+        }
+      }
+    ],
+    "snapshots": [
+      {
+        "sequence": 0,
+        "phase": 0,
+        "reason": "naws-change",
+        "elapsed_ms": 672,
+        "requested_window": [
+          1360,
+          749
+        ],
+        "window": {
+          "rect": [
+            102,
+            102,
+            1461,
+            850
+          ],
+          "size": [
+            1360,
+            749
+          ],
+          "error": null
+        },
+        "peer": {
+          "grid": [
+            91,
+            20
+          ],
+          "event_count": 1,
+          "resize_armed": false,
+          "error": null
+        },
+        "terminal": {
+          "connected": true,
+          "protocol": "Telnet",
+          "capacity": 20,
+          "line_count": 1,
+          "error": null
+        },
+        "widgets": {
+          "status": "observed",
+          "error": null,
+          "nodes": [
+            {
+              "id": 0,
+              "parent_id": 1,
+              "role": "terminal",
+              "rect": [
+                0,
+                0,
+                905,
+                376
+              ],
+              "size": [
+                906,
+                377
+              ],
+              "global_origin": [
+                329,
+                197
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 1,
+              "parent_id": 2,
+              "role": "ancestor",
+              "rect": [
+                0,
+                62,
+                905,
+                438
+              ],
+              "size": [
+                906,
+                377
+              ],
+              "global_origin": [
+                329,
+                197
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 2,
+              "parent_id": 3,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                438
+              ],
+              "size": [
+                906,
+                439
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 3,
+              "parent_id": 4,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                438
+              ],
+              "size": [
+                906,
+                439
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 4,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                227,
+                0,
+                1132,
+                438
+              ],
+              "size": [
+                906,
+                439
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 5,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                438
+              ],
+              "size": [
+                1360,
+                439
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 6,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                658
+              ],
+              "size": [
+                1360,
+                659
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 7,
+              "parent_id": 8,
+              "role": "ancestor",
+              "rect": [
+                0,
+                33,
+                1359,
+                719
+              ],
+              "size": [
+                1360,
+                687
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 8,
+              "parent_id": 9,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                748
+              ],
+              "size": [
+                1360,
+                749
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 9,
+              "parent_id": 10,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                748
+              ],
+              "size": [
+                1360,
+                749
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 10,
+              "parent_id": null,
+              "role": "ancestor",
+              "rect": [
+                102,
+                102,
+                1461,
+                850
+              ],
+              "size": [
+                1360,
+                749
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 11,
+              "parent_id": 0,
+              "role": "editor",
+              "rect": [
+                0,
+                0,
+                905,
+                376
+              ],
+              "size": [
+                906,
+                377
+              ],
+              "global_origin": [
+                329,
+                197
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 12,
+              "parent_id": 11,
+              "role": "viewport",
+              "rect": [
+                1,
+                1,
+                888,
+                375
+              ],
+              "size": [
+                888,
+                375
+              ],
+              "global_origin": [
+                330,
+                198
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 13,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                225,
+                438
+              ],
+              "size": [
+                226,
+                439
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 14,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                224,
+                0,
+                228,
+                438
+              ],
+              "size": [
+                5,
+                439
+              ],
+              "global_origin": [
+                326,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 15,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1134,
+                0,
+                1359,
+                438
+              ],
+              "size": [
+                226,
+                439
+              ],
+              "global_origin": [
+                1194,
+                108
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 16,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1131,
+                0,
+                1135,
+                438
+              ],
+              "size": [
+                5,
+                439
+              ],
+              "global_origin": [
+                1191,
+                108
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 17,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                437,
+                1359,
+                441
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                572
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 18,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                440,
+                1359,
+                658
+              ],
+              "size": [
+                1360,
+                219
+              ],
+              "global_origin": [
+                102,
+                575
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 19,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                660,
+                1359,
+                686
+              ],
+              "size": [
+                1360,
+                27
+              ],
+              "global_origin": [
+                102,
+                795
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 20,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                657,
+                1359,
+                661
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                792
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            }
+          ],
+          "roles": {
+            "terminal": 0,
+            "editor": 11,
+            "viewport": 12
+          }
+        }
+      },
+      {
+        "sequence": 1,
+        "phase": 0,
+        "reason": "initial-stable",
+        "elapsed_ms": 1326,
+        "requested_window": [
+          1360,
+          749
+        ],
+        "window": {
+          "rect": [
+            102,
+            102,
+            1461,
+            850
+          ],
+          "size": [
+            1360,
+            749
+          ],
+          "error": null
+        },
+        "peer": {
+          "grid": [
+            91,
+            20
+          ],
+          "event_count": 1,
+          "resize_armed": false,
+          "error": null
+        },
+        "terminal": {
+          "connected": true,
+          "protocol": "Telnet",
+          "capacity": 20,
+          "line_count": 1,
+          "error": null
+        },
+        "widgets": {
+          "status": "observed",
+          "error": null,
+          "nodes": [
+            {
+              "id": 0,
+              "parent_id": 1,
+              "role": "terminal",
+              "rect": [
+                0,
+                0,
+                905,
+                378
+              ],
+              "size": [
+                906,
+                379
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 1,
+              "parent_id": 2,
+              "role": "ancestor",
+              "rect": [
+                0,
+                60,
+                905,
+                438
+              ],
+              "size": [
+                906,
+                379
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 2,
+              "parent_id": 3,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                438
+              ],
+              "size": [
+                906,
+                439
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 3,
+              "parent_id": 4,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                438
+              ],
+              "size": [
+                906,
+                439
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 4,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                227,
+                0,
+                1132,
+                438
+              ],
+              "size": [
+                906,
+                439
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 5,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                438
+              ],
+              "size": [
+                1360,
+                439
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 6,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                658
+              ],
+              "size": [
+                1360,
+                659
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 7,
+              "parent_id": 8,
+              "role": "ancestor",
+              "rect": [
+                0,
+                33,
+                1359,
+                719
+              ],
+              "size": [
+                1360,
+                687
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 8,
+              "parent_id": 9,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                748
+              ],
+              "size": [
+                1360,
+                749
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 9,
+              "parent_id": 10,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                748
+              ],
+              "size": [
+                1360,
+                749
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 10,
+              "parent_id": null,
+              "role": "ancestor",
+              "rect": [
+                102,
+                102,
+                1461,
+                850
+              ],
+              "size": [
+                1360,
+                749
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 11,
+              "parent_id": 0,
+              "role": "editor",
+              "rect": [
+                0,
+                0,
+                905,
+                378
+              ],
+              "size": [
+                906,
+                379
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 12,
+              "parent_id": 11,
+              "role": "viewport",
+              "rect": [
+                1,
+                1,
+                888,
+                377
+              ],
+              "size": [
+                888,
+                377
+              ],
+              "global_origin": [
+                330,
+                196
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 13,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                225,
+                438
+              ],
+              "size": [
+                226,
+                439
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 14,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                224,
+                0,
+                228,
+                438
+              ],
+              "size": [
+                5,
+                439
+              ],
+              "global_origin": [
+                326,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 15,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1134,
+                0,
+                1359,
+                438
+              ],
+              "size": [
+                226,
+                439
+              ],
+              "global_origin": [
+                1194,
+                108
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 16,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1131,
+                0,
+                1135,
+                438
+              ],
+              "size": [
+                5,
+                439
+              ],
+              "global_origin": [
+                1191,
+                108
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 17,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                437,
+                1359,
+                441
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                572
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 18,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                440,
+                1359,
+                658
+              ],
+              "size": [
+                1360,
+                219
+              ],
+              "global_origin": [
+                102,
+                575
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 19,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                660,
+                1359,
+                686
+              ],
+              "size": [
+                1360,
+                27
+              ],
+              "global_origin": [
+                102,
+                795
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 20,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                657,
+                1359,
+                661
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                792
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            }
+          ],
+          "roles": {
+            "terminal": 0,
+            "editor": 11,
+            "viewport": 12
+          }
+        }
+      },
+      {
+        "sequence": 2,
+        "phase": 1,
+        "reason": "request-returned",
+        "elapsed_ms": 1444,
+        "requested_window": [
+          1360,
+          569
+        ],
+        "window": {
+          "rect": [
+            102,
+            102,
+            1461,
+            670
+          ],
+          "size": [
+            1360,
+            569
+          ],
+          "error": null
+        },
+        "peer": {
+          "grid": [
+            91,
+            20
+          ],
+          "event_count": 1,
+          "resize_armed": true,
+          "error": null
+        },
+        "terminal": {
+          "connected": true,
+          "protocol": "Telnet",
+          "capacity": 14,
+          "line_count": 1,
+          "error": null
+        },
+        "widgets": {
+          "status": "observed",
+          "error": null,
+          "nodes": [
+            {
+              "id": 0,
+              "parent_id": 1,
+              "role": "terminal",
+              "rect": [
+                0,
+                0,
+                905,
+                258
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 1,
+              "parent_id": 2,
+              "role": "ancestor",
+              "rect": [
+                0,
+                60,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 2,
+              "parent_id": 3,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 3,
+              "parent_id": 4,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 4,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                227,
+                0,
+                1132,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 5,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                318
+              ],
+              "size": [
+                1360,
+                319
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 6,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                478
+              ],
+              "size": [
+                1360,
+                479
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 7,
+              "parent_id": 8,
+              "role": "ancestor",
+              "rect": [
+                0,
+                33,
+                1359,
+                539
+              ],
+              "size": [
+                1360,
+                507
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 8,
+              "parent_id": 9,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                568
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 9,
+              "parent_id": 10,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                568
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 10,
+              "parent_id": null,
+              "role": "ancestor",
+              "rect": [
+                102,
+                102,
+                1461,
+                670
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 11,
+              "parent_id": 0,
+              "role": "editor",
+              "rect": [
+                0,
+                0,
+                905,
+                258
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 12,
+              "parent_id": 11,
+              "role": "viewport",
+              "rect": [
+                1,
+                1,
+                888,
+                257
+              ],
+              "size": [
+                888,
+                257
+              ],
+              "global_origin": [
+                330,
+                196
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 13,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                225,
+                318
+              ],
+              "size": [
+                226,
+                319
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 14,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                224,
+                0,
+                228,
+                318
+              ],
+              "size": [
+                5,
+                319
+              ],
+              "global_origin": [
+                326,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 15,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1134,
+                0,
+                1359,
+                318
+              ],
+              "size": [
+                226,
+                319
+              ],
+              "global_origin": [
+                1194,
+                108
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 16,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1131,
+                0,
+                1135,
+                318
+              ],
+              "size": [
+                5,
+                319
+              ],
+              "global_origin": [
+                1191,
+                108
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 17,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                317,
+                1359,
+                321
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                452
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 18,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                320,
+                1359,
+                478
+              ],
+              "size": [
+                1360,
+                159
+              ],
+              "global_origin": [
+                102,
+                455
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 19,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                480,
+                1359,
+                506
+              ],
+              "size": [
+                1360,
+                27
+              ],
+              "global_origin": [
+                102,
+                615
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 20,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                477,
+                1359,
+                481
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                612
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            }
+          ],
+          "roles": {
+            "terminal": 0,
+            "editor": 11,
+            "viewport": 12
+          }
+        }
+      },
+      {
+        "sequence": 3,
+        "phase": 1,
+        "reason": "naws-change",
+        "elapsed_ms": 1601,
+        "requested_window": [
+          1360,
+          569
+        ],
+        "window": {
+          "rect": [
+            102,
+            102,
+            1461,
+            670
+          ],
+          "size": [
+            1360,
+            569
+          ],
+          "error": null
+        },
+        "peer": {
+          "grid": [
+            91,
+            14
+          ],
+          "event_count": 2,
+          "resize_armed": true,
+          "error": null
+        },
+        "terminal": {
+          "connected": true,
+          "protocol": "Telnet",
+          "capacity": 14,
+          "line_count": 1,
+          "error": null
+        },
+        "widgets": {
+          "status": "observed",
+          "error": null,
+          "nodes": [
+            {
+              "id": 0,
+              "parent_id": 1,
+              "role": "terminal",
+              "rect": [
+                0,
+                0,
+                905,
+                258
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 1,
+              "parent_id": 2,
+              "role": "ancestor",
+              "rect": [
+                0,
+                60,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 2,
+              "parent_id": 3,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 3,
+              "parent_id": 4,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 4,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                227,
+                0,
+                1132,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 5,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                318
+              ],
+              "size": [
+                1360,
+                319
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 6,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                478
+              ],
+              "size": [
+                1360,
+                479
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 7,
+              "parent_id": 8,
+              "role": "ancestor",
+              "rect": [
+                0,
+                33,
+                1359,
+                539
+              ],
+              "size": [
+                1360,
+                507
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 8,
+              "parent_id": 9,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                568
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 9,
+              "parent_id": 10,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                568
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 10,
+              "parent_id": null,
+              "role": "ancestor",
+              "rect": [
+                102,
+                102,
+                1461,
+                670
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 11,
+              "parent_id": 0,
+              "role": "editor",
+              "rect": [
+                0,
+                0,
+                905,
+                258
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 12,
+              "parent_id": 11,
+              "role": "viewport",
+              "rect": [
+                1,
+                1,
+                888,
+                257
+              ],
+              "size": [
+                888,
+                257
+              ],
+              "global_origin": [
+                330,
+                196
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 13,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                225,
+                318
+              ],
+              "size": [
+                226,
+                319
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 14,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                224,
+                0,
+                228,
+                318
+              ],
+              "size": [
+                5,
+                319
+              ],
+              "global_origin": [
+                326,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 15,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1134,
+                0,
+                1359,
+                318
+              ],
+              "size": [
+                226,
+                319
+              ],
+              "global_origin": [
+                1194,
+                108
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 16,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1131,
+                0,
+                1135,
+                318
+              ],
+              "size": [
+                5,
+                319
+              ],
+              "global_origin": [
+                1191,
+                108
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 17,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                317,
+                1359,
+                321
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                452
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 18,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                320,
+                1359,
+                478
+              ],
+              "size": [
+                1360,
+                159
+              ],
+              "global_origin": [
+                102,
+                455
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 19,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                480,
+                1359,
+                506
+              ],
+              "size": [
+                1360,
+                27
+              ],
+              "global_origin": [
+                102,
+                615
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 20,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                477,
+                1359,
+                481
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                612
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            }
+          ],
+          "roles": {
+            "terminal": 0,
+            "editor": 11,
+            "viewport": 12
+          }
+        }
+      },
+      {
+        "sequence": 4,
+        "phase": 1,
+        "reason": "final-stable",
+        "elapsed_ms": 2219,
+        "requested_window": [
+          1360,
+          569
+        ],
+        "window": {
+          "rect": [
+            102,
+            102,
+            1461,
+            670
+          ],
+          "size": [
+            1360,
+            569
+          ],
+          "error": null
+        },
+        "peer": {
+          "grid": [
+            91,
+            14
+          ],
+          "event_count": 2,
+          "resize_armed": true,
+          "error": null
+        },
+        "terminal": {
+          "connected": true,
+          "protocol": "Telnet",
+          "capacity": 14,
+          "line_count": 1,
+          "error": null
+        },
+        "widgets": {
+          "status": "observed",
+          "error": null,
+          "nodes": [
+            {
+              "id": 0,
+              "parent_id": 1,
+              "role": "terminal",
+              "rect": [
+                0,
+                0,
+                905,
+                258
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 1,
+              "parent_id": 2,
+              "role": "ancestor",
+              "rect": [
+                0,
+                60,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 2,
+              "parent_id": 3,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 3,
+              "parent_id": 4,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                905,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 4,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                227,
+                0,
+                1132,
+                318
+              ],
+              "size": [
+                906,
+                319
+              ],
+              "global_origin": [
+                329,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 5,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                318
+              ],
+              "size": [
+                1360,
+                319
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 6,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                1359,
+                478
+              ],
+              "size": [
+                1360,
+                479
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 7,
+              "parent_id": 8,
+              "role": "ancestor",
+              "rect": [
+                0,
+                33,
+                1359,
+                539
+              ],
+              "size": [
+                1360,
+                507
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 8,
+              "parent_id": 9,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                568
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 9,
+              "parent_id": 10,
+              "role": "ancestor",
+              "rect": [
+                0,
+                0,
+                1359,
+                568
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 10,
+              "parent_id": null,
+              "role": "ancestor",
+              "rect": [
+                102,
+                102,
+                1461,
+                670
+              ],
+              "size": [
+                1360,
+                569
+              ],
+              "global_origin": [
+                102,
+                102
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 11,
+              "parent_id": 0,
+              "role": "editor",
+              "rect": [
+                0,
+                0,
+                905,
+                258
+              ],
+              "size": [
+                906,
+                259
+              ],
+              "global_origin": [
+                329,
+                195
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 12,
+              "parent_id": 11,
+              "role": "viewport",
+              "rect": [
+                1,
+                1,
+                888,
+                257
+              ],
+              "size": [
+                888,
+                257
+              ],
+              "global_origin": [
+                330,
+                196
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 13,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                0,
+                225,
+                318
+              ],
+              "size": [
+                226,
+                319
+              ],
+              "global_origin": [
+                102,
+                135
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 14,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                224,
+                0,
+                228,
+                318
+              ],
+              "size": [
+                5,
+                319
+              ],
+              "global_origin": [
+                326,
+                135
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 15,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1134,
+                0,
+                1359,
+                318
+              ],
+              "size": [
+                226,
+                319
+              ],
+              "global_origin": [
+                1194,
+                108
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 16,
+              "parent_id": 5,
+              "role": "splitter-child",
+              "rect": [
+                1131,
+                0,
+                1135,
+                318
+              ],
+              "size": [
+                5,
+                319
+              ],
+              "global_origin": [
+                1191,
+                108
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 17,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                317,
+                1359,
+                321
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                452
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            },
+            {
+              "id": 18,
+              "parent_id": 6,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                320,
+                1359,
+                478
+              ],
+              "size": [
+                1360,
+                159
+              ],
+              "global_origin": [
+                102,
+                455
+              ],
+              "is_splitter": true,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 19,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                480,
+                1359,
+                506
+              ],
+              "size": [
+                1360,
+                27
+              ],
+              "global_origin": [
+                102,
+                615
+              ],
+              "is_splitter": false,
+              "is_handle": false,
+              "visible": true
+            },
+            {
+              "id": 20,
+              "parent_id": 7,
+              "role": "splitter-child",
+              "rect": [
+                0,
+                477,
+                1359,
+                481
+              ],
+              "size": [
+                1360,
+                5
+              ],
+              "global_origin": [
+                102,
+                612
+              ],
+              "is_splitter": false,
+              "is_handle": true,
+              "visible": true
+            }
+          ],
+          "roles": {
+            "terminal": 0,
+            "editor": 11,
+            "viewport": 12
+          }
+        }
+      }
+    ],
+    "stateful_observation_count": 2,
+    "snapshot_count": 5,
+    "requested_windows": [
+      [
+        1360,
+        749
+      ],
+      [
+        1360,
+        569
+      ]
+    ],
+    "window_rect_format": "qt-qrect-inclusive-ltrb",
+    "widget_rect_format": "qt-qrect-inclusive-ltrb",
+    "widget_geometry_complete": true,
+    "terminal_input_bytes": 0,
+    "DSR_requests": 0,
+    "dsr_request_bytes": 0,
+    "application_reply_bytes": 0,
+    "application_input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "naws_history": [
+      [
+        91,
+        20
+      ],
+      [
+        91,
+        14
+      ]
+    ],
+    "freeze_event_count": 1,
+    "resize_boundary": {
+      "before_event_count": 1,
+      "after_event_count": 2
+    },
+    "job_after": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "provider": {
+      "id": "frida",
+      "version": null,
+      "confidence": "observed",
+      "evidence_id": "ev_11dbbcd68b34acd5af5273e5c7934d8231b0929e888aec217bdc740593e6a134",
+      "messages": 10,
+      "readiness_messages": 3,
+      "snapshot_messages": 5,
+      "messages_truncated": false,
+      "cleanup_error": null
+    }
+  },
+  "provenance": {
+    "source_identity": {
+      "kind": "source-archive",
+      "manifest_sha256": "0d05af6621aa7077cf57f9e3db1bb3d6386125db7b42c4f0e8593835996a2b13"
+    },
+    "execution_source_base_commit": "3d4c8c2d6222caf0fc024729d9e0b34c020a69cf",
+    "execution_source_files_sha256": {
+      "research/ui/resize_geometry_reference.py": "65e4462d1b0e939602f0de7f61edd7dc42ff93ad61c83007940fdc5c795ca3c0",
+      "research/ui/resize_geometry_reference.js": "ec896cb789ccbd15e7135d08d6c75d1fed0499abca70010d4b635c887c0afd06",
+      "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+      "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+      "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+      "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+      "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+      "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+    },
+    "launcher_namespace_sha256": "3f5f99b086b90bde37ded26b03a4b17a21262a20463300b01d93b4ec55b0bec2",
+    "reference_identity": {
+      "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+      "manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+      "files_verified": 4047,
+      "module_files_sha256": {
+        "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+        "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+        "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358",
+        "Qt5Qml.dll": "30035484c81590976627f8face9507caa8581a7dc7630cccf6a8d6de65cab707"
+      }
+    },
+    "launch_host": {
+      "windows_version": "10.0.26300",
+      "python_version_number": "3.12.10",
+      "python_exe_sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "node_exe_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9",
+      "rea_package_version": "6.7.0",
+      "rea_shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+      "rea_package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+      "rea_entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738",
+      "runtime_identity_source": "recorded execution plan; exporter does not execute the captured runtimes"
+    },
+    "raw_files": {
+      "evidence.json": {
+        "bytes": 49564,
+        "sha256": "6fb0687bab04aa68814251e7a46c3518c33961caaae26c6348735b4307a6fb67"
+      },
+      "run.json": {
+        "bytes": 617,
+        "sha256": "e9cfbdfa296d05f3f8a866a6602ba9eb0ad0748958279be4dbf69d602de7a61f"
+      },
+      "probe.js": {
+        "bytes": 24817,
+        "sha256": "643cd87a944f713d26be570040b2c266da8093bc7d379fea46bca161421d4414"
+      },
+      "peer.json": {
+        "bytes": 352,
+        "sha256": "6e1ebf646dfe1730c9001c9f7c43168eb1821ca636c3c3471ca465b78809a2b0"
+      },
+      "resize-geometry-result.json": {
+        "bytes": 27384,
+        "sha256": "1f7a6166cc129e22f89f7300a11faab92bd914117892ceb1a9f065e42cf87c36"
+      },
+      "files.json": {
+        "bytes": 637666,
+        "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+      },
+      "mechanics-check.json": {
+        "bytes": 273,
+        "sha256": "94344a2d576f88e249a6b3ab764c8fe7bb054aff1a4f1fdfe644d3c4e61d5a4e"
+      },
+      "stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "profile-check.json": {
+        "bytes": 52,
+        "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      },
+      "cleanup.json": {
+        "bytes": 42,
+        "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+      },
+      "fixture-ready": {
+        "bytes": 32,
+        "sha256": "1f0b8ece17746ce41c81df65e45a6f8480747d9b69858dc905a29ae8d4c449cb"
+      },
+      "ack-0": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-1": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "resize-request-1": {
+        "bytes": 31,
+        "sha256": "7877835ead7ba9526d28e8fd22921cbcb55031971ce9d7ab57a08f56bf7998de"
+      },
+      "geometry-ready-1": {
+        "bytes": 42,
+        "sha256": "e8ea4a5a4ee5226ee3630d9b105a223c3a27798fca271b2d1e715a0a4df71a9e"
+      }
+    },
+    "authorized_plan": {
+      "bytes": 4217,
+      "sha256": "0b3f6723183bbd82f1ae3342f6980c1c6ddbba09ccd9173f3b19443e55d9ad67"
+    }
+  },
+  "limitations": [
+    "One fresh synthetic loopback Telnet session requests 1360x749 then 1360x569; actual final geometry and NAWS are observations, not predicted values or acceptance.",
+    "Terminal application input, DSR requests and application replies are all zero; Telnet negotiation and NAWS are recorded independently.",
+    "Widget geometry is optional. Unavailable widget observations preserve the independent window, NAWS and capacity observations.",
+    "Widget IDs are recording-local ordinals, not pointers; rectangles are inclusive Qt coordinates and global origins are pixel coordinates.",
+    "No document body, caret, full active grid, terminal editing, resize policy, ConPTY, performance or complete R2 acceptance is established.",
+    "Private paths, process identifiers, profile content, raw resources and unrestricted provider diagnostics are not published."
+  ]
+}

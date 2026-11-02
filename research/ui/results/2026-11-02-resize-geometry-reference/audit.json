@@ -1,0 +1,93 @@
+{
+  "schema": "termforge-resize-geometry-public-audit-v1",
+  "strict_public_sha256": "f18a2320c073ed477f773b42076c9968c0c8af8530af19548d5695e66e8cf9b5",
+  "source_zip_sha256": "bee6194a440e730ca18f72059c607b3d16882f4397025e3e92460efdf2c10d7f",
+  "execution_source_base_commit": "3d4c8c2d6222caf0fc024729d9e0b34c020a69cf",
+  "execution_source_count": 9,
+  "offline_export_source_count": 2,
+  "source_zip_and_current_bytes_match_public": true,
+  "snapshots_checked": 5,
+  "observations_checked": 2,
+  "widget_nodes_per_observation": [
+    21,
+    21
+  ],
+  "status": "observation",
+  "semantic_acceptance": false,
+  "raw_run_records_reopened_here": false,
+  "audit_boundary": "Local audit checked immutable strict public bytes, scalar/graph projection, source archive and recorded cleanup summary. The VM strict exporter performed complete package/raw-provider verification.",
+  "old_height_failure_actual_window_remains_unknown": true,
+  "old_width_then_height_actual_runs": 0,
+  "requested_window_sizes": [
+    [
+      1360,
+      749
+    ],
+    [
+      1360,
+      569
+    ]
+  ],
+  "actual_window_sizes": [
+    [
+      1360,
+      749
+    ],
+    [
+      1360,
+      569
+    ]
+  ],
+  "actual_naws": [
+    [
+      91,
+      20
+    ],
+    [
+      91,
+      14
+    ]
+  ],
+  "terminal_capacities": [
+    20,
+    14
+  ],
+  "selected_role_sizes": {
+    "terminal": [
+      [
+        906,
+        379
+      ],
+      [
+        906,
+        259
+      ]
+    ],
+    "editor": [
+      [
+        906,
+        379
+      ],
+      [
+        906,
+        259
+      ]
+    ],
+    "viewport": [
+      [
+        888,
+        377
+      ],
+      [
+        888,
+        257
+      ]
+    ]
+  },
+  "owner_cleanup": {
+    "RootExitCode": 0,
+    "JobAfterActive": 0,
+    "RootReaped": true,
+    "CleanupVerified": true
+  }
+}
