@@ -145,6 +145,12 @@ add_executable(display_projection_test experiments/core/display_projection_test.
 target_link_libraries(display_projection_test PRIVATE termforge_core)
 termforge_warnings(display_projection_test)
 
+# Direct original resize/addressing comparison. A mismatch is a diagnostic
+# failure; it is not registered as an expected-failure CTest acceptance.
+add_executable(resize_address_test EXCLUDE_FROM_ALL experiments/core/resize_address_test.cpp)
+target_link_libraries(resize_address_test PRIVATE termforge_core)
+termforge_warnings(resize_address_test)
+
 add_executable(reply_test experiments/core/reply_test.cpp)
 target_link_libraries(reply_test PRIVATE termforge_core)
 termforge_warnings(reply_test)

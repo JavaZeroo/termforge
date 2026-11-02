@@ -1,0 +1,38 @@
+{
+  "schema": "termforge-resize-address-diagnostic-v1",
+  "date": "2026-11-02",
+  "base_commit": "1d2038626a7871afa70f6a79fb1f396380f4450c",
+  "status": "failed",
+  "exit_code": 1,
+  "source_hashes_collected_after_run": true,
+  "source_files_sha256": {
+    "CMakeLists.txt": "9d579bf54ef2197a18674896b4f647754d1ca52e5584079657a587c46afcf7ef",
+    "experiments/core/resize_address_test.cpp": "3f6c09f7cf63839ee3c8c9aa9b8abb8aae0e0571e38c2af6f8618405a16e572a",
+    "experiments/core/screen.hpp": "ef1634bae1286cf9e5159fcb515c31b985186f7fe01680dbdd23bcd6653ed62b",
+    "experiments/core/history_view.hpp": "8a75c86b2fbc63269a31206dce9284e6225373d1db1471dccdce1a03570ad247",
+    "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+    "experiments/core/text_projection.hpp": "3853bcf053964e54ea00bb7acfd0d302abd536ae0ed4eddfe791a6bcffdb6914",
+    "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804"
+  },
+  "binary_sha256": "678965f16a8f7547e4b2453f7af0635e89bac283ca5c8448ed12978482fce593",
+  "logs_sha256": {
+    "resize-address-configure.log": "7c24b4742de508f6d1aadb77a6a5d2bb86e92803498f8a09bf2a62f83ce19314",
+    "resize-address-red-build.log": "6856c3222624b6e4c5e3680fcc5ae701a731b0af0341bad5ad751caf1849eb5d",
+    "resize-address-red.log": "91ad419515bd6a487b2f6085bcf439d6398e3a5caa2c5f895fc44e660aabb2df"
+  },
+  "original_cases": 4,
+  "core_replays": 16,
+  "phases": 64,
+  "passed_phases": 16,
+  "failed_phases": 48,
+  "assertions": 896,
+  "failed_assertions": 308,
+  "actual_resize_called": true,
+  "full_grid_verified": false,
+  "terminal_styles_verified": false,
+  "qt_verified": false,
+  "performance_gate": "not_evaluated",
+  "r27_complete": false,
+  "r29_complete": false,
+  "registered_ctest": false
+}
