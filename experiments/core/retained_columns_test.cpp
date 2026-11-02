@@ -15,7 +15,8 @@ static void check(bool value, const char* message) {
 static void same_source(const Line& before, const Line& after) {
     check(before.id == after.id && before.version == after.version &&
           before.ending == after.ending && before.next_id == after.next_id &&
-          before.wrap_columns == after.wrap_columns && before.cropped == after.cropped,
+          before.wrap_columns == after.wrap_columns && before.content_columns == after.content_columns &&
+          before.cropped == after.cropped,
           "width transaction changed source metadata");
     check(after.size() >= before.size(), "source storage contracted");
     for (size_t i = 0; i < before.size(); ++i) {
@@ -104,10 +105,43 @@ static void cells_and_frames() {
           "hidden primary padding or wide fixture differs");
 }
 
+static void blank_extent() {
+    Parser parser(3, 91, 0, ParseMode::strict);
+    parser.feed("\x1b[1;91Hv");
+    auto& screen = parser.screen;
+    screen.resize_columns_preserving(61);
+    parser.feed("\x1b[1;61H\x1b[1@");
+    const auto identity = screen.visible_lines()[0].id;
+    const auto version = screen.visible_lines()[0].version;
+    check(TextDocument(screen).line(0).projection.text == std::string(61, ' '),
+          "edited blank extent was trimmed to allocation padding");
+    for (const auto& cell : screen.visible_lines()[0])
+        check(!cell.written, "editing blanks were mislabeled as explicitly printed spaces");
+    screen.resize_columns_preserving(91);
+    check(screen.visible_lines()[0].version == version &&
+          TextDocument(screen).line(0).projection.text.size() == 61,
+          "growth changed the retained blank extent");
+    parser.feed("\x1b[1;1HL");
+    screen.resize_columns_preserving(20);
+    parser.feed("\x1b[1;1HM");
+    const auto text = TextDocument(screen).line(0).projection.text;
+    check(text == "M" + std::string(19, ' ') && screen.visible_lines()[0].id == identity &&
+          screen.visible_lines()[0].version > version,
+          "a later edit lost blank extent or retained a deleted tail");
+    auto invalid = screen.visible_lines();
+    invalid[0].content_columns = invalid[0].size() + 1;
+    bool rejected = false;
+    try { screen.publish({}, std::move(invalid)); }
+    catch (const std::invalid_argument&) { rejected = true; }
+    check(rejected && TextDocument(screen).line(0).projection.text == text,
+          "invalid source extent was published");
+}
+
 int main() {
     try {
         history_and_bounds();
         cells_and_frames();
+        blank_extent();
         std::cout << "retained-column owner invariants passed (no original-policy claim)\n";
         return 0;
     } catch (const std::exception& error) {

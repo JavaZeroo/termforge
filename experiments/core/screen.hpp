@@ -67,6 +67,9 @@ struct Line : std::vector<Cell> {
     // Cursor-addressed writes preserve this event and its successor; they may
     // fill the old wrap gap or columns added by a later physical resize.
     size_t wrap_columns = 0;
+    // Minimum source extent, including retained editing blanks. This is not a
+    // claim that those cells were explicitly printed, nor allocated padding.
+    size_t content_columns = 0;
     bool cropped = false; // Physical resize discarded cells; never implies reflow.
 };
 
@@ -164,6 +167,7 @@ class Screen {
             changed(line);
             if (line.size() > static_cast<size_t>(columns)) line.cropped = true;
             line.resize(columns);
+            line.content_columns = (std::min)(line.content_columns, static_cast<size_t>(columns));
             if (line.back().width == 2) line.back() = Cell{};
         };
         for (auto& line : state.lines) fit(line);
@@ -173,6 +177,19 @@ class Screen {
         state.last_row = state.last_column = -1;
     }
     Cell blank() const { return {" ", 1, style, 0}; }
+    // Editing a retained row uses the current protocol footprint. Preserve the
+    // surviving document extent separately from Cell::written so erased blanks
+    // are not mistaken for untouched allocation padding.
+    void materialize_columns(Line& line) {
+        if (line.size() <= static_cast<size_t>(width())) return;
+        size_t extent = line.content_columns;
+        for (size_t index = 0; index < line.size(); ++index)
+            if (line[index].written || !line[index].style.plain() || line[index].text != " ")
+                extent = (std::max)(extent, index + 1);
+        line.resize(width());
+        line.content_columns = (std::min)(extent, line.size());
+        if (line.back().width == 2) line.back() = blank();
+    }
     void break_glyph(Line& line, int col) {
         if (line[col].width == 0 && col > 0) line[col - 1] = blank();
         else if (line[col].width == 2 && col + 1 < width()) line[col + 1] = blank();
@@ -330,6 +347,7 @@ public:
         const auto validate = [row_width](const std::vector<Line>& rows, const char* what) {
             for (const auto& line : rows) {
                 if (line.size() != row_width) throw std::invalid_argument(what);
+                if (line.content_columns > line.size()) throw std::invalid_argument("published content extent exceeds row");
                 if (!line.id) throw std::invalid_argument("published row identity is zero");
             }
         };
@@ -531,6 +549,7 @@ public:
         }
         auto& line = lines[row];
         changed(line);
+        materialize_columns(line);
         for (int c = column; c < column + cells; ++c) break_glyph(line, c);
         line[column] = {utf8, cells, style, 0, true};
         if (cells == 2) line[column + 1] = {"", 0, style, 0, true};
@@ -581,6 +600,7 @@ public:
         if (shift <= 0) { wrap_pending = false; return; }
         Line& line = lines[row];
         changed(line);
+        materialize_columns(line);
         // A wide glyph cannot be split: blank the pair that straddles either
         // boundary instead of leaving half a character behind.
         if (column > 0 && line[column].width == 0) break_glyph(line, column - 1);
@@ -595,6 +615,7 @@ public:
         if (shift <= 0) { wrap_pending = false; return; }
         Line& line = lines[row];
         changed(line);
+        materialize_columns(line);
         if (column > 0 && line[column].width == 0) break_glyph(line, column);
         if (line[width() - shift].width == 2) break_glyph(line, width() - shift);
         for (int c = column; c < width() - shift; ++c) line[c] = line[c + shift];

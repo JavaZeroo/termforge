@@ -23,12 +23,12 @@ inline ProjectedLine project_line(const Line& line, bool trim_unwritten = true) 
     // growth. It must not hide visible text from cursor-addressed edits, or
     // text already present past a wide scalar's early wrap position.
     if (line.ending == LineEnding::soft_wrap) {
-        end = (std::min)(end, line.wrap_columns);
+        end = (std::min)(end, (std::max)(line.wrap_columns, line.content_columns));
         for (size_t column = end; column < line.size(); ++column)
             if (line[column].written) end = column + 1;
     }
     if (trim_unwritten)
-        while (end && !line[end - 1].written) --end;
+        while (end > line.content_columns && !line[end - 1].written) --end;
     for (size_t column = 0; column < end; ++column) {
         const auto& cell = line[column];
         if (cell.width == 0 || cell.leading_spacer) continue;

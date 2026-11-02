@@ -150,7 +150,9 @@ public:
             const auto& line = screen.retained_line(row);
             ++result.source_rows_read;
             if (line.size() > 500) throw std::invalid_argument("projection source fragment exceeds cell bound");
-            size_t extent = 0;
+            if (line.content_columns > line.size())
+                throw std::invalid_argument("projection content extent exceeds source fragment");
+            size_t extent = line.content_columns;
             for (size_t index = 0; index < line.size(); ++index) {
                 const auto& cell = line[index];
                 if (cell.width != 1 || cell.text.size() != 1 ||
@@ -160,7 +162,7 @@ public:
                     throw std::invalid_argument("explicit display projection requires single-cell ASCII sources");
                 // Explicit spaces and styled erase blanks are owned content.
                 // Only untouched, plain trailing padding may be synthesized.
-                if (cell.written || !cell.style.plain() || cell.text != " ") extent = index + 1;
+                if (cell.written || !cell.style.plain() || cell.text != " ") extent = (std::max)(extent, index + 1);
             }
             if (column > extent)
                 throw std::invalid_argument("projection starts beyond the source content extent");
