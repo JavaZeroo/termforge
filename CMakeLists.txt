@@ -145,6 +145,10 @@ add_executable(display_projection_test experiments/core/display_projection_test.
 target_link_libraries(display_projection_test PRIVATE termforge_core)
 termforge_warnings(display_projection_test)
 
+add_executable(display_projection_unicode_test experiments/core/display_projection_unicode_test.cpp)
+target_link_libraries(display_projection_unicode_test PRIVATE termforge_core)
+termforge_warnings(display_projection_unicode_test)
+
 # Direct original resize/addressing comparison. A mismatch is a diagnostic
 # failure; it is not registered as an expected-failure CTest acceptance.
 add_executable(resize_address_test experiments/core/resize_address_test.cpp)
@@ -460,6 +464,8 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_resize_erase_interior_optimized -O -m unittest research.ui.test_resize_erase_interior_reference research.ui.test_export_resize_erase_interior_reference -v)
   termforge_add_python_test(windterm_resize_mode_reference -m unittest research.ui.test_resize_mode_reference research.ui.test_export_resize_mode_reference -v)
   termforge_add_python_test(windterm_resize_mode_optimized -O -m unittest research.ui.test_resize_mode_reference research.ui.test_export_resize_mode_reference -v)
+  termforge_add_python_test(windterm_resize_unicode_reference -m unittest research.ui.test_resize_unicode_reference research.ui.test_export_resize_unicode_reference -v)
+  termforge_add_python_test(windterm_resize_unicode_optimized -O -m unittest research.ui.test_resize_unicode_reference research.ui.test_export_resize_unicode_reference -v)
   find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
   if(TERMFORGE_NODE_EXECUTABLE)
     add_test(NAME windterm_resize_address_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
@@ -486,6 +492,10 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
       ${CMAKE_SOURCE_DIR}/research/ui/test_resize_mode_stages.js
       ${CMAKE_SOURCE_DIR}/research/ui/resize_mode_reference.js)
     set_tests_properties(windterm_resize_mode_controller PROPERTIES TIMEOUT 15)
+    add_test(NAME windterm_resize_unicode_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_unicode_stages.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_unicode_reference.js)
+    set_tests_properties(windterm_resize_unicode_controller PROPERTIES TIMEOUT 15)
   endif()
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)
