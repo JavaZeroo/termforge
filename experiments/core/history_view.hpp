@@ -16,8 +16,27 @@ struct ViewSnapshot {
     ViewportState viewport;
     int cursor_row = -1, cursor_column = 0;
 };
+// A rank hint for one source traversal, never a durable document position.
+// Initial {row,column} requests are unbound; returned cursors bind their rank
+// to the current source identity/version, epoch and owner order revision.
+struct ProjectionCursor {
+    size_t row = 0, column = 0;
+    TextPosition source;
+    uint64_t order_revision = 0;
+    bool bound = false;
+};
+enum class ProjectionStop { page_full, source_end, source_limit };
+struct ProjectionPage {
+    ViewSnapshot snapshot;
+    ProjectionCursor next;
+    ProjectionStop stop = ProjectionStop::source_limit;
+    // Rows whose Cell values were examined, including a rolled-back partial
+    // display row. Constant-size identity/link checks do not scan row contents.
+    size_t source_rows_read = 0;
+};
 class HistoryViewport {
     uint64_t anchor_ = 0, observed_epoch_ = 0;
+    uint64_t layout_revision_ = 0;
     bool following_ = true;
     void sync_epoch(const Screen& screen) {
         if (observed_epoch_ == screen.buffer_epoch()) return;
@@ -67,6 +86,129 @@ public:
     }
     bool following() const { return following_; }
     uint64_t anchor() const { return anchor_; }
+    uint64_t layout_revision() const { return layout_revision_; }
+    // Explicit, read-only ASCII projection. At most 200 source fragments of at
+    // most 500 cells are examined; no prefix/history expansion is performed.
+    // The result owns display cells (row ids stay zero) and maps them to source
+    // identities. It does not infer a display caret from the protocol cursor.
+    // Legacy viewport totals describe physical rows, so projected pages leave
+    // snapshot.viewport empty and use next/stop for bounded forward traversal.
+    ProjectionPage project(const Screen& screen, size_t columns, size_t page_rows,
+                           ProjectionCursor start, size_t source_end) {
+        const auto total = screen.retained_size();
+        if (columns < 1 || columns > 500 || page_rows < 1 || page_rows > 200 ||
+            start.row > source_end || source_end > total || source_end - start.row > 200 ||
+            (start.row == total ? start.column != 0 : start.column > screen.retained_line(start.row).size()))
+            throw std::invalid_argument("invalid bounded projection request");
+        if (layout_revision_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("display layout revision exhausted");
+        const auto epoch = screen.buffer_epoch(), order = screen.order_revision();
+        const auto bind = [&](size_t row, size_t column) {
+            // A document-end sentinel binds the last retained source endpoint;
+            // all other cursors bind the exact next source rank and column.
+            const auto& line = screen.retained_line(row == total ? total - 1 : row);
+            const auto offset = row == total ? line.size() : column;
+            return ProjectionCursor{row, column, {line.id, line.version, offset, epoch}, order, true};
+        };
+        if (start.bound) {
+            const auto current = bind(start.row, start.column);
+            if (start.order_revision != order || start.source != current.source)
+                throw std::invalid_argument("stale projection source cursor");
+        }
+
+        ProjectionPage result;
+        result.snapshot.lines.reserve(page_rows);
+        std::vector<ViewSourceSpan> sources, pending_sources;
+        Line pending;
+        size_t used = 0;
+        ProjectionCursor pending_start;
+        bool pending_active = false;
+        const auto begin_row = [&](size_t row, size_t column) {
+            if (pending_active) return;
+            pending = Line(columns, Cell{});
+            pending_sources.clear(); used = 0;
+            pending_start = bind(row, column);
+            pending_active = true;
+        };
+        const auto publish_row = [&] {
+            result.snapshot.lines.push_back(std::move(pending));
+            sources.insert(sources.end(), pending_sources.begin(), pending_sources.end());
+            pending_sources.clear(); used = 0; pending_active = false;
+        };
+        const auto finish = [&](ProjectionCursor next, ProjectionStop stop) {
+            result.next = bind(next.row, next.column);
+            result.stop = stop;
+            result.snapshot.mapping = ViewMapping(columns, std::move(sources), layout_revision_ + 1);
+            ++layout_revision_;
+            return std::move(result);
+        };
+
+        size_t row = start.row, column = start.column;
+        bool logical_content = start.column != 0;
+        ProjectionCursor last_content_end = start;
+        for (; row < source_end; ++row, column = 0) {
+            const auto& line = screen.retained_line(row);
+            ++result.source_rows_read;
+            if (line.size() > 500) throw std::invalid_argument("projection source fragment exceeds cell bound");
+            size_t extent = 0;
+            for (size_t index = 0; index < line.size(); ++index) {
+                const auto& cell = line[index];
+                if (cell.width != 1 || cell.text.size() != 1 ||
+                    static_cast<unsigned char>(cell.text[0]) < 0x20 ||
+                    static_cast<unsigned char>(cell.text[0]) > 0x7e || cell.marks ||
+                    cell.clipped || cell.grapheme_fragment || cell.leading_spacer)
+                    throw std::invalid_argument("explicit display projection requires single-cell ASCII sources");
+                // Explicit spaces and styled erase blanks are owned content.
+                // Only untouched, plain trailing padding may be synthesized.
+                if (cell.written || !cell.style.plain() || cell.text != " ") extent = index + 1;
+            }
+            if (column > extent)
+                throw std::invalid_argument("projection starts beyond the source content extent");
+            const bool joins = row + 1 < total && continues_into(line, screen.retained_line(row + 1));
+            while (column < extent) {
+                begin_row(row, column);
+                const auto count = (std::min)(columns - used, extent - column);
+                for (size_t index = 0; index < count; ++index) pending[used + index] = line[column + index];
+                pending_sources.push_back({result.snapshot.lines.size(), used, used + count,
+                    {{line.id, line.version, column, epoch}, {line.id, line.version, column + count, epoch}}});
+                used += count; column += count;
+                logical_content = true; last_content_end = {row, column};
+                if (used == columns) {
+                    publish_row();
+                    if (result.snapshot.lines.size() == page_rows) {
+                        // Keep the soft fragment's end when a page stops there:
+                        // a later empty successor must not invent a hard row.
+                        const auto next = column < extent || joins ? ProjectionCursor{row, column} : ProjectionCursor{row + 1, 0};
+                        return finish(next, next.row == total ? ProjectionStop::source_end : ProjectionStop::page_full);
+                    }
+                }
+            }
+            if (!joins) {
+                if (!extent && !logical_content) {
+                    begin_row(row, 0);
+                    // An empty hard source row has a real zero-length anchor;
+                    // its visual padding does not receive invented identities.
+                    pending_sources.push_back({result.snapshot.lines.size(), used, used,
+                        {{line.id, line.version, 0, epoch}, {line.id, line.version, 0, epoch}}});
+                }
+                if (pending_active) {
+                    publish_row();
+                    if (result.snapshot.lines.size() == page_rows)
+                        return finish({row + 1, 0}, row + 1 == total ? ProjectionStop::source_end : ProjectionStop::page_full);
+                }
+                logical_content = false;
+            }
+        }
+        if (source_end == total) {
+            if (pending_active) publish_row();
+            return finish({total, 0}, ProjectionStop::source_end);
+        }
+        // A source-window boundary is not a hard line ending. A partial display
+        // row must be retried from its original source start in a wider window;
+        // the caller can observe that next did not advance and work was spent.
+        const auto next = pending_active ? pending_start : logical_content ? last_content_end : ProjectionCursor{row, column};
+        return finish(next, ProjectionStop::source_limit);
+    }
     ViewSnapshot snapshot(const Screen& screen) {
         ViewSnapshot result;
         result.viewport = reconcile(screen);

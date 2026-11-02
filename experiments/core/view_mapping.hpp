@@ -15,6 +15,7 @@ struct ViewSourceSpan {
 class ViewMapping {
     size_t columns_ = 0;
     std::vector<ViewSourceSpan> sources_;
+    uint64_t layout_revision_ = 0;
 
     // Identities do not order the document: retained sequence does. Document
     // order therefore comes from TextDocument::compare, which stays correct for
@@ -32,11 +33,12 @@ class ViewMapping {
     }
 public:
     ViewMapping() = default;
-    ViewMapping(size_t columns, std::vector<ViewSourceSpan> sources)
-        : columns_(columns), sources_(std::move(sources)) {}
+    ViewMapping(size_t columns, std::vector<ViewSourceSpan> sources, uint64_t layout_revision = 0)
+        : columns_(columns), sources_(std::move(sources)), layout_revision_(layout_revision) {}
 
     std::optional<TextPosition> hit(const TextDocument& document, size_t row, size_t column,
-                                    ViewAffinity affinity) const {
+                                    ViewAffinity affinity, uint64_t current_layout_revision = 0) const {
+        if (layout_revision_ != current_layout_revision) return std::nullopt;
         if (column > columns_) return std::nullopt;
         const ViewSourceSpan* first = nullptr;
         const ViewSourceSpan* previous = nullptr;
@@ -71,7 +73,9 @@ public:
         return previous ? std::optional<TextPosition>{previous->source.end} : std::nullopt;
     }
 
-    std::vector<ViewCellSpan> project(const TextDocument& document, TextRange range) const {
+    std::vector<ViewCellSpan> project(const TextDocument& document, TextRange range,
+                                    uint64_t current_layout_revision = 0) const {
+        if (layout_revision_ != current_layout_revision) return {};
         const auto normalized = document.normalize(range);
         if (!normalized || normalized->begin == normalized->end) return {};
         std::vector<ViewCellSpan> result;
