@@ -1,6 +1,8 @@
 // Independent physical-row history viewport. No HWND, parser or transport state.
 #pragma once
 #include "view_mapping.hpp"
+#include <memory>
+#include <optional>
 
 namespace termforge {
 struct ViewportState {
@@ -18,12 +20,14 @@ struct ViewSnapshot {
 };
 // A rank hint for one source traversal, never a durable document position.
 // Initial {row,column} requests are unbound; returned cursors bind their rank
-// to the current source identity/version, epoch and owner order revision.
+// to the current source identity/version, epoch, owner and order revision.
+// It is a source anchor, not a width-bound checkpoint or global display rank.
 struct ProjectionCursor {
     size_t row = 0, column = 0;
     TextPosition source;
     uint64_t order_revision = 0;
     bool bound = false;
+    const Screen* owner = nullptr;
 };
 enum class ProjectionStop { page_full, source_end, source_limit };
 struct ProjectionPage {
@@ -34,9 +38,44 @@ struct ProjectionPage {
     // display row. Constant-size identity/link checks do not scan row contents.
     size_t source_rows_read = 0;
 };
+class HistoryViewport;
+// A single-owner, move-only preparation. Screen and viewport must outlive it,
+// retain their addresses, and not be replaced by assignment while it is active.
+// No references into Screen storage survive a step; only bounded values do.
+class ProjectionJob {
+    friend class HistoryViewport;
+    struct State {
+        const Screen* owner = nullptr;
+        const HistoryViewport* viewport = nullptr;
+        uint64_t epoch = 0, order = 0, content = 0, request = 0;
+        size_t columns = 0, page_rows = 0, total = 0, row = 0, column = 0;
+        size_t used = 0, source_rows_read = 0;
+        bool logical_content = false, pending_active = false;
+        Line pending;
+        std::vector<Line> completed;
+        std::vector<ViewSourceSpan> sources, pending_sources;
+    };
+    std::unique_ptr<State> state_;
+public:
+    ProjectionJob() = default;
+    ProjectionJob(ProjectionJob&&) noexcept = default;
+    ProjectionJob& operator=(ProjectionJob&&) noexcept = default;
+    ProjectionJob(const ProjectionJob&) = delete;
+    ProjectionJob& operator=(const ProjectionJob&) = delete;
+};
+enum class ProjectionStepStatus { yielded, ready };
+struct ProjectionStep {
+    ProjectionStepStatus status = ProjectionStepStatus::yielded;
+    // Work in this step only, never more than the requested budget (<=200).
+    size_t source_rows_read = 0;
+    // Absent until the requested page or document end is complete. The page's
+    // source_rows_read is cumulative across all steps of this preparation.
+    std::optional<ProjectionPage> page;
+};
 class HistoryViewport {
     uint64_t anchor_ = 0, observed_epoch_ = 0;
     uint64_t layout_revision_ = 0;
+    uint64_t projection_request_ = 0;
     bool following_ = true;
     // Projection accepts the core's bounded base-scalar plus combining-mark
     // representation. Imported Cell values need the same structural check;
@@ -115,6 +154,178 @@ public:
     bool following() const { return following_; }
     uint64_t anchor() const { return anchor_; }
     uint64_t layout_revision() const { return layout_revision_; }
+    // A successful begin supersedes earlier preparations, but does not publish
+    // or invalidate the displayed page. Failed preparation leaves them intact.
+    // Start is the local display origin for this request. A new width may use
+    // the same source anchor; this does not preserve a global visual row number
+    // or infer preceding wrap alignment. No historical prefix is traversed.
+    ProjectionJob begin_projection(const Screen& screen, size_t columns, size_t page_rows,
+                                   ProjectionCursor start = {0, 0}) {
+        const auto total = screen.retained_size();
+        if (columns < 1 || columns > 500 || page_rows < 1 || page_rows > 200 ||
+            start.row > total ||
+            (start.row == total ? start.column != 0 : start.column > screen.retained_line(start.row).size()))
+            throw std::invalid_argument("invalid projection job request");
+        if (projection_request_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("projection request revision exhausted");
+        const auto& first = screen.retained_line(start.row == total ? total - 1 : start.row);
+        const TextPosition source{first.id, first.version,
+            start.row == total ? first.size() : start.column, screen.buffer_epoch()};
+        if (start.bound && (start.owner != &screen || start.order_revision != screen.order_revision() ||
+                            start.source != source))
+            throw std::invalid_argument("stale or foreign projection source cursor");
+        ProjectionJob job;
+        auto state = std::make_unique<ProjectionJob::State>();
+        state->completed.reserve(page_rows);
+        state->owner = &screen; state->viewport = this;
+        state->epoch = screen.buffer_epoch(); state->order = screen.order_revision();
+        state->content = screen.content_revision(); state->request = projection_request_ + 1;
+        state->columns = columns; state->page_rows = page_rows; state->total = total;
+        state->row = start.row; state->column = start.column;
+        state->logical_content = start.column != 0;
+        job.state_ = std::move(state);
+        ++projection_request_;
+        return job;
+    }
+    // Cancellation never invalidates another preparation, including a newer
+    // request or a job owned by a different viewport.
+    void cancel_projection(ProjectionJob& job) noexcept {
+        if (job.state_ && job.state_->viewport == this) job.state_.reset();
+    }
+    // The source owner is read on its own thread. Between steps, any relevant
+    // mutation invalidates the entire unpublished preparation. In particular,
+    // content_revision guards earlier consumed rows, not just the next cursor.
+    // Every exception cancels an owned job; a foreign viewport cannot alter it.
+    ProjectionStep step_projection(const Screen& screen, ProjectionJob& job, size_t source_budget = 200) {
+        if (!job.state_ || job.state_->viewport != this)
+            throw std::invalid_argument("missing or foreign projection job");
+        try {
+            auto& state = *job.state_;
+            if (source_budget < 1 || source_budget > 200)
+                throw std::invalid_argument("invalid projection step budget");
+            if (state.owner != &screen || state.epoch != screen.buffer_epoch() ||
+                state.order != screen.order_revision() || state.content != screen.content_revision() ||
+                state.request != projection_request_ || state.total != screen.retained_size())
+                throw std::invalid_argument("stale or foreign projection job source");
+            if (layout_revision_ == (std::numeric_limits<uint64_t>::max)())
+                throw std::overflow_error("display layout revision exhausted");
+            ProjectionStep result;
+            const auto bind = [&](size_t row, size_t column) {
+                const auto& line = screen.retained_line(row == state.total ? state.total - 1 : row);
+                return ProjectionCursor{row, column,
+                    {line.id, line.version, row == state.total ? line.size() : column, state.epoch},
+                    state.order, true, &screen};
+            };
+            const auto begin_row = [&] {
+                if (state.pending_active) return;
+                state.pending = Line(state.columns, Cell{});
+                state.pending_sources.clear(); state.used = 0; state.pending_active = true;
+            };
+            const auto publish_row = [&] {
+                state.completed.push_back(std::move(state.pending));
+                state.sources.insert(state.sources.end(), state.pending_sources.begin(), state.pending_sources.end());
+                state.pending_sources.clear(); state.used = 0; state.pending_active = false;
+            };
+            const auto finish = [&](size_t row, size_t column, ProjectionStop stop) {
+                ProjectionPage page;
+                page.next = bind(row, column); page.stop = stop;
+                page.source_rows_read = state.source_rows_read;
+                page.snapshot.lines = std::move(state.completed);
+                page.snapshot.mapping = ViewMapping(state.columns, std::move(state.sources), layout_revision_ + 1);
+                result.page.emplace(std::move(page));
+                result.status = ProjectionStepStatus::ready;
+                ++layout_revision_;
+            };
+            while (state.row < state.total && result.source_rows_read < source_budget) {
+                const auto& line = screen.retained_line(state.row);
+                ++result.source_rows_read; ++state.source_rows_read;
+                if (line.size() > 500 || line.content_columns > line.size())
+                    throw std::invalid_argument("projection source fragment exceeds bounds");
+                size_t extent = line.content_columns;
+                for (size_t index = 0; index < line.size();) {
+                    const auto& cell = line[index];
+                    if (!complete_atom(cell) || cell.clipped || cell.grapheme_fragment || cell.leading_spacer)
+                        throw std::invalid_argument("projection requires complete bounded core Unicode atoms");
+                    const auto cells = static_cast<size_t>(cell.width);
+                    if (cells == 2) {
+                        if (index + 1 == line.size())
+                            throw std::invalid_argument("projection wide atom has no trailing cell");
+                        const auto& trail = line[index + 1];
+                        if (trail.width != 0 || !trail.text.empty() || trail.marks ||
+                            trail.clipped || trail.grapheme_fragment || trail.leading_spacer)
+                            throw std::invalid_argument("projection wide atom has an invalid trailing cell");
+                    }
+                    if (cell.written || !cell.style.plain() || cell.text != " ")
+                        extent = (std::max)(extent, index + cells);
+                    index += cells;
+                }
+                if (state.column > extent || (state.column < line.size() && line[state.column].width == 0))
+                    throw std::invalid_argument("invalid projection source atom boundary");
+                const bool joins = state.row + 1 < state.total && continues_into(line, screen.retained_line(state.row + 1));
+                while (state.column < extent) {
+                    begin_row();
+                    if (static_cast<size_t>(line[state.column].width) > state.columns)
+                        throw std::invalid_argument("projection width cannot fit a complete atom");
+                    size_t count = 0;
+                    while (state.column + count < extent) {
+                        const auto cells = static_cast<size_t>(line[state.column + count].width);
+                        if (cells > state.columns - state.used - count) break;
+                        count += cells;
+                    }
+                    if (!count) {
+                        publish_row();
+                        if (state.completed.size() == state.page_rows) {
+                            finish(state.row, state.column, ProjectionStop::page_full);
+                            job.state_.reset(); return result;
+                        }
+                        continue;
+                    }
+                    for (size_t index = 0; index < count; ++index)
+                        state.pending[state.used + index] = line[state.column + index];
+                    state.pending_sources.push_back({state.completed.size(), state.used, state.used + count,
+                        {{line.id, line.version, state.column, state.epoch},
+                         {line.id, line.version, state.column + count, state.epoch}}});
+                    state.used += count; state.column += count; state.logical_content = true;
+                    if (state.used == state.columns) {
+                        publish_row();
+                        if (state.completed.size() == state.page_rows) {
+                            const bool same_row = state.column < extent || joins;
+                            const auto row = same_row ? state.row : state.row + 1;
+                            finish(row, same_row ? state.column : 0,
+                                   row == state.total ? ProjectionStop::source_end : ProjectionStop::page_full);
+                            job.state_.reset(); return result;
+                        }
+                    }
+                }
+                if (!joins) {
+                    if (!extent && !state.logical_content) {
+                        begin_row();
+                        state.pending_sources.push_back({state.completed.size(), state.used, state.used,
+                            {{line.id, line.version, 0, state.epoch}, {line.id, line.version, 0, state.epoch}}});
+                    }
+                    if (state.pending_active) {
+                        publish_row();
+                        if (state.completed.size() == state.page_rows) {
+                            const auto row = state.row + 1;
+                            finish(row, 0, row == state.total ? ProjectionStop::source_end : ProjectionStop::page_full);
+                            job.state_.reset(); return result;
+                        }
+                    }
+                    state.logical_content = false;
+                }
+                ++state.row; state.column = 0;
+            }
+            if (state.row == state.total) {
+                if (state.pending_active) publish_row();
+                finish(state.total, 0, ProjectionStop::source_end);
+                job.state_.reset();
+            }
+            return result;
+        } catch (...) {
+            job.state_.reset();
+            throw;
+        }
+    }
     // Explicit, read-only projection of complete core Unicode atoms. At most
     // 200 source fragments of 500 cells, with 68 bytes per lead, are examined;
     // no prefix/history expansion is performed. A wide pair never splits.
@@ -131,17 +342,19 @@ public:
             throw std::invalid_argument("invalid bounded projection request");
         if (layout_revision_ == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("display layout revision exhausted");
+        if (projection_request_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("projection request revision exhausted");
         const auto epoch = screen.buffer_epoch(), order = screen.order_revision();
         const auto bind = [&](size_t row, size_t column) {
             // A document-end sentinel binds the last retained source endpoint;
             // all other cursors bind the exact next source rank and column.
             const auto& line = screen.retained_line(row == total ? total - 1 : row);
             const auto offset = row == total ? line.size() : column;
-            return ProjectionCursor{row, column, {line.id, line.version, offset, epoch}, order, true};
+            return ProjectionCursor{row, column, {line.id, line.version, offset, epoch}, order, true, &screen};
         };
         if (start.bound) {
             const auto current = bind(start.row, start.column);
-            if (start.order_revision != order || start.source != current.source)
+            if (start.owner != &screen || start.order_revision != order || start.source != current.source)
                 throw std::invalid_argument("stale projection source cursor");
         }
 
@@ -169,6 +382,7 @@ public:
             result.stop = stop;
             result.snapshot.mapping = ViewMapping(columns, std::move(sources), layout_revision_ + 1);
             ++layout_revision_;
+            ++projection_request_;
             return std::move(result);
         };
 
