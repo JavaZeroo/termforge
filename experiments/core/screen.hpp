@@ -177,6 +177,18 @@ class Screen {
         state.last_row = state.last_column = -1;
     }
     Cell blank() const { return {" ", 1, style, 0}; }
+    // After explicit positioning, a zero-width input belongs to the complete
+    // cell immediately before the protocol cursor, including an existing blank.
+    // A wide continuation resolves to its lead; column zero has no such base.
+    void attach_before_cursor() {
+        last_row = last_column = -1;
+        if (column == 0) return;
+        const auto& line = lines[row];
+        int base = column - 1;
+        if (line[base].width == 0 && base > 0 && line[base - 1].width == 2) --base;
+        if (line[base].width < 1) return;
+        last_row = row; last_column = base;
+    }
     // Editing a retained row uses the current protocol footprint. Preserve the
     // surviving document extent separately from Cell::written so erased blanks
     // are not mistaken for untouched allocation padding.
@@ -430,7 +442,7 @@ public:
     // A real width change clamps the active protocol column and cancels the
     // deferred edge write. It does not advance to the next cell when growing.
     // Both scrolling regions reset to the full frame; the origin setting stays
-    // frame-local. Active combining attachment is independent of the cursor.
+    // frame-local. Subsequent marks use the surviving cell before the cursor.
     void resize_columns_preserving(int columns) {
         if (columns < 1 || columns > 500)
             throw std::invalid_argument("invalid screen width");
@@ -464,6 +476,7 @@ public:
         columns_ = columns;
         column = (std::min)(column, columns - 1);
         wrap_pending = false;
+        attach_before_cursor();
         scroll_top = 0; scroll_bottom = -1;
         if (inactive_) {
             inactive_->column = (std::min)(inactive_->column, columns - 1);
@@ -501,7 +514,7 @@ public:
         const int top = origin_mode_ ? region_top() : 0;
         const int bottom = origin_mode_ ? region_bottom() : height() - 1;
         row = std::clamp(r, top, bottom); column = std::clamp(c, 0, width() - 1);
-        wrap_pending = false; invalidate_attachment();
+        wrap_pending = false; attach_before_cursor();
     }
     int region_bottom() const { return scroll_bottom < 0 ? height() - 1 : scroll_bottom; }
     int region_top() const { return scroll_top; }
@@ -559,9 +572,12 @@ public:
         if (cells < 0) throw InputError("unsupported Unicode scalar or sequence component");
         if (cells == 0) {
             if (last_row != row || last_column < 0) throw InputError("combining mark without adjacent base");
-            auto& base = lines[last_row][last_column];
-            if (base.marks == 16) throw InputError("combining mark limit exceeded");
-            base.text += utf8; ++base.marks; changed(lines[last_row]); return;
+            auto& line = lines[last_row];
+            if (line[last_column].marks == 16) throw InputError("combining mark limit exceeded");
+            changed(line);
+            materialize_columns(line);
+            auto& base = line[last_column];
+            base.text += utf8; ++base.marks; return;
         }
         if (cells > width()) throw InputError("wide scalar cannot fit screen");
         // Insufficient room for a wide scalar keeps the existing pre-wrap

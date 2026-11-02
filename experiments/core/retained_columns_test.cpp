@@ -78,11 +78,13 @@ static void cells_and_frames() {
     parser.feed("\x1b[31;44;1;2;4;7;9;8;53mA \xe7\x95\x8c" "e\xcc\x81");
     auto& screen = parser.screen;
     const Line primary = screen.visible_lines()[0];
-    // A width transaction preserves the attachment to the adjacent base.
+    // The narrowed cursor selects a surviving base. The next mark is a write,
+    // so the edited row fits the new protocol width and discards its old tail.
     screen.resize_columns_preserving(2);
     parser.feed("\xcc\x82");
-    check(screen.visible_lines()[0][4].text == "e\xcc\x81\xcc\x82" &&
-          screen.visible_lines()[0][4].marks == 2, "width change detached a combining base");
+    check(screen.visible_lines()[0].size() == 2 && screen.visible_lines()[0][0].text == "A\xcc\x82" &&
+          screen.visible_lines()[0][0].marks == 1 && screen.visible_lines()[0][1].text == " ",
+          "mark ignored the narrowed cursor or retained the edited tail");
     const Line attached = screen.visible_lines()[0];
     screen.activate_buffer(ScreenBuffer::alternate);
     screen.resize_columns_preserving(8);
