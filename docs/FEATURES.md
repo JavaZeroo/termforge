@@ -37,7 +37,7 @@
 
 [行擦除的五例字面回放](../experiments/core/results/2026-11-02-resize-erase/README.md)已覆盖末列/中间列的 EL0、EL2 和独立 EL1：EL0/EL2 从光标所在列起截去保留正文，EL1 保留已用范围中的擦除空格；完整回放由 56/96 修至 96/96。该限定结果不代替一般编辑、样式网格或全部帧组合验收。
 
-这一入口尚未替换默认 resize 或接入 Qt；完整主/备用帧交叉、Unicode、高度变化及历史/选择/Find 的用户流程仍未验收。旧默认路径 [16/64 阶段的失败](../experiments/core/results/2026-11-02-resize-address/README.md)与 B/CD 正式路径失败继续保留，#27/#29 尚未闭合。
+`3c3d3f3` 的[分配置整合回归](../experiments/core/results/2026-11-02-retention-erase-mode-integrated/README.md)为核心 **26/26**、Qt/固定 ConPTY 默认路径 **4/4**，已包含上述擦除与活动区域的有限修正。这一入口尚未替换默认 resize 或接入 Qt；完整主/备用帧交叉、Unicode、高度变化及历史/选择/Find 的用户流程仍未验收。旧默认路径 [16/64 阶段的失败](../experiments/core/results/2026-11-02-resize-address/README.md)与 B/CD 正式路径失败继续保留，#27/#29 尚未闭合。
 
 `DA1` 当前只在 strict/replay 路径回复 `ESC[?6c`；recovery 产品路径保持静默。`?1004`/`?9001` 与单参数 `CSI 1t/2t/3t` 接受后忽略，不代表焦点上报、Win32 输入模式或窗口操作已实现。`?2004`、鼠标模式、DA2 和 OSC 10/11 仍缺；详见 [#28](https://github.com/JavaZeroo/termforge/issues/28)。
 

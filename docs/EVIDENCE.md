@@ -8,7 +8,7 @@
 
 | 配置 | 证据定位 | 覆盖边界 |
 |---|---|---|
-| 保留列宽与帧修正的分配置整合回归 | [固定源码与完整选定清单](../experiments/core/results/2026-11-02-retention-frame-integrated/README.md)：生产核心 `afdcf59`、选定构建输入匹配 `d765c2b`，核心24/24；Qt/固定ConPTY默认路径4/4，另保留两轮离线工具注册验证 | 两配置及离线轮次独立，不相加为总通过率。Qt未接新正文/投影；擦除诊断、默认裁剪及B/CD旧红均未获豁免。源码、实际回归/仅构建产物、部署依赖及执行后哈希在JSON区分；不是完整R2或性能验收 |
+| 保留正文、擦除与活动区域的分配置整合回归 | [当前固定源码与选定清单](../experiments/core/results/2026-11-02-retention-erase-mode-integrated/README.md)：产品源码及CMake匹配 `3c3d3f3`，核心26/26；Qt/固定ConPTY默认路径4/4。[历史 `d765c2b` 记录](../experiments/core/results/2026-11-02-retention-frame-integrated/README.md)保留原24/4及离线轮次身份 | 两配置独立，不相加为总通过率。五例擦除与三例模式的有限红绿已闭合；Qt未接新正文/投影，默认裁剪及B/CD旧红继续保留。30个测试EXE、仅构建产品入口、部署依赖及执行后哈希分列；不是完整R2或性能验收 |
 | 自主 C++ 区域续接、历史结构通知与每屏 origin | [模式交叉与红绿](../experiments/core/results/2026-11-02-r27-mode-cross/README.md)、[每屏 origin 修正](../experiments/core/results/2026-11-02-origin-frame/README.md)、[原版固定控制对照](../research/ui/results/2026-11-02-mode-state-reference/README.md) | 区域自动换行的跨行复制/Find、RIS/ED3 结构通知、Unicode/分块/重复/异常输入与独立主屏 origin 恢复；当前物理 resize 策略测试不冒充原版匹配，完整 #27 继续开放 |
 | Qt / 固定 ConPTY 模式与正文 resize 差异 | [独立字面预期及失败运输证据](../experiments/shell/results/2026-11-02-qt-terminal-modes/README.md) | 模式阶段经公开 Qt 按键和原生网格核对；缩窄后原生 reflow 与核心物理裁剪不同步，独立运输捕获未见重排字节。失败诊断与模式回归分列，#29 的正文重排和完整 #27 不由基础尺寸通过代替 |
 | 原版 resize 后寻址与自主核心字面诊断 | [独立直接协议样本](../research/ui/results/2026-11-02-resize-address-reference/README.md)、[默认裁剪路径的失败诊断](../experiments/core/results/2026-11-02-resize-address/README.md) | 四例自然追加、CR、LF、CUP 保留动作前观测，文档、DSR、显示坐标分别核对；第五例 EL1 保留原审计失败。默认 `Screen::resize` 历史诊断仅 16/64 阶段通过、退出 1；当时 `EXCLUDE_FROM_ALL`，现参与默认构建但 CTest 只注册另行验证的显式保留入口。旧红不设 `WILL_FAIL`，常规 CI 或另一入口通过不能豁免默认路径差异 |
