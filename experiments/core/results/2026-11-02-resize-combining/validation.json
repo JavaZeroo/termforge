@@ -1,0 +1,269 @@
+{
+  "schema": "termforge-resize-combining-diagnostic-v1",
+  "issues": [
+    27,
+    29
+  ],
+  "status": "observed-original-body-mismatch-not-fixed",
+  "execution_source_head": "0a44d44740a6a27c1a949926fda6fc9947ed58b1",
+  "diagnostic_commit_after_execution": "fd96c6753a2f266d5e427ba5554b68e6a14bf3a1",
+  "test_and_cmake_were_working_tree_inputs": true,
+  "production_code_changed_for_diagnostic": false,
+  "captured_at_utc": "2026-11-02T04:23:56.205478+00:00",
+  "archive_path": "local/r29-retention/combining-red-capture",
+  "archive_identity_sha256": "ca3ba6519dc7281269101af154f53c06b7e4241e062bc42b6fbcb5fc921469d4",
+  "archive_files": [
+    {
+      "path": "experiments/core/resize_combining_test.cpp",
+      "bytes": 7217,
+      "sha256": "48accd489520c5d25dd4ab65275f128fd997d3523254605cace432be6ead5a0f",
+      "copy": "resize_combining_test.cpp"
+    },
+    {
+      "path": "experiments/core/screen.hpp",
+      "bytes": 38515,
+      "sha256": "a71e964128ca894dd55c9eb59517ad95eff552822417383461616a21dbd34329",
+      "copy": "screen.hpp"
+    },
+    {
+      "path": "experiments/core/text_document.hpp",
+      "bytes": 4728,
+      "sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "copy": "text_document.hpp"
+    },
+    {
+      "path": "experiments/core/terminal.hpp",
+      "bytes": 17998,
+      "sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "copy": "terminal.hpp"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 43505,
+      "sha256": "e8e9daba683f13b2ffced7700f8559ce48417f66c95061dffa6e806ecbc02d01",
+      "copy": "CMakeLists.txt"
+    },
+    {
+      "path": "local/r2-core-build/bin/Release/resize_combining_test.exe",
+      "bytes": 98816,
+      "sha256": "ef2fece677c8577a11e39dcd87ad4810daf04b1bb33f6c69c2950b66a361f14b",
+      "copy": "resize_combining_test.exe"
+    },
+    {
+      "path": "local/r29-retention/resize-combining-red-build.log",
+      "bytes": 349,
+      "sha256": "5ec242a0597fa164b13ffc3964dbd4d0c95f65e9fff14279453621fc70200b7e",
+      "copy": "resize-combining-red-build.log"
+    },
+    {
+      "path": "local/r29-retention/resize-combining-red.log",
+      "bytes": 3067,
+      "sha256": "93247e0c2f19cdddc73cb9c5f8145de364c420ce29e3d61fffd1e03e7c3bfff9",
+      "copy": "resize-combining-red.log"
+    }
+  ],
+  "all_8_archived_files_rehashed": true,
+  "three_captured_production_headers_match_execution_head": true,
+  "full_pre_run_build_manifest": null,
+  "original": {
+    "case_id": "combining-boundary",
+    "path": "research/ui/results/2026-11-02-resize-unicode-reference/combining-boundary.json",
+    "sha256": "f6ac486eb30ebcc0908d402299728727970df72386f042c8345a0f471e3ab93e",
+    "schema": "termforge-original-resize-unicode-reference-v1",
+    "authorized_plan_sha256": "4225438550c7b3c22353deeeb53a708d2f33545527cd46970799d1faccfa8b89",
+    "strict_original_record": true,
+    "original_runs": 1,
+    "original_phases": 4,
+    "initial_source_bytes": 60,
+    "initial_source_sha256": "c6d08514fb8897ee31059833506de1354f04b69b9721aa1153f34f750e444d49",
+    "mark_source_hex": "cc82",
+    "mark_source_sha256": "4c2ca04592f16379e8baeaaec5f381c566ae771bbdfda88ad32880113b5e31a7",
+    "phase_observations": [
+      {
+        "phase": 0,
+        "label": "combining-initial",
+        "source_sha256": "c6d08514fb8897ee31059833506de1354f04b69b9721aa1153f34f750e444d49",
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "cursor_reply": [
+          8,
+          63
+        ],
+        "complete_original_body_sha256": "881daac9af8dedd04673a48efbd6ac10450ed08c23e461c1b26666e16fa82040"
+      },
+      {
+        "phase": 1,
+        "label": "combining-shrunk-unmodified",
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "cursor_reply": [
+          8,
+          61
+        ],
+        "complete_original_body_sha256": "aa7ae5dd2da851a8c6e32d3db80ab078942418ae66b0bf480e501bf8c1e821ec"
+      },
+      {
+        "phase": 2,
+        "label": "combining-next-circumflex",
+        "source_sha256": "4c2ca04592f16379e8baeaaec5f381c566ae771bbdfda88ad32880113b5e31a7",
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "cursor_reply": [
+          8,
+          61
+        ],
+        "complete_original_body_sha256": "f585595566948a83a6c1b172e9d1c8a0830e6e9cb62ca80dfcbfbb18b17372a6"
+      },
+      {
+        "phase": 3,
+        "label": "combining-restored-after-mark",
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "cursor_reply": [
+          8,
+          61
+        ],
+        "complete_original_body_sha256": "f585595566948a83a6c1b172e9d1c8a0830e6e9cb62ca80dfcbfbb18b17372a6"
+      }
+    ]
+  },
+  "comparison": {
+    "parser_modes": [
+      "strict",
+      "recovery"
+    ],
+    "feed_modes": [
+      "whole",
+      "bytewise"
+    ],
+    "original_stages_per_replay": 4,
+    "replay_phases": 16,
+    "assertions": 176,
+    "observables": [
+      "protocol grid",
+      "DSR reply",
+      "complete logical UTF-8 body"
+    ],
+    "body_normalization": "Only omit trailing empty strings representing capacity; preserve all spaces, space-only extents and interior empty rows. Original phase1 extra empty row remains in literal oracle.",
+    "body_digest_encoding": "Compact JSON with default ASCII escapes encoded as UTF-8",
+    "marker_rectangles_compared": false,
+    "caret_api_offsets_compared": false,
+    "private_attachment_bits_compared": false,
+    "normalization_or_glyph_equivalence_used": false
+  },
+  "result": {
+    "passed_phases": 8,
+    "phases": 16,
+    "failed_assertions": 8,
+    "assertions": 176,
+    "exit_code": 1,
+    "exit_code_basis": "Actual direct-run result reported by the execution agent; summary and all eight body failures independently parsed from the frozen log",
+    "failure_details": [
+      {
+        "parser_mode": "strict",
+        "feed_mode": "whole",
+        "phase": 2,
+        "label": "combining-next-circumflex",
+        "logical_body_row": 7
+      },
+      {
+        "parser_mode": "strict",
+        "feed_mode": "whole",
+        "phase": 3,
+        "label": "combining-restored-after-mark",
+        "logical_body_row": 7
+      },
+      {
+        "parser_mode": "strict",
+        "feed_mode": "bytewise",
+        "phase": 2,
+        "label": "combining-next-circumflex",
+        "logical_body_row": 7
+      },
+      {
+        "parser_mode": "strict",
+        "feed_mode": "bytewise",
+        "phase": 3,
+        "label": "combining-restored-after-mark",
+        "logical_body_row": 7
+      },
+      {
+        "parser_mode": "recovery",
+        "feed_mode": "whole",
+        "phase": 2,
+        "label": "combining-next-circumflex",
+        "logical_body_row": 7
+      },
+      {
+        "parser_mode": "recovery",
+        "feed_mode": "whole",
+        "phase": 3,
+        "label": "combining-restored-after-mark",
+        "logical_body_row": 7
+      },
+      {
+        "parser_mode": "recovery",
+        "feed_mode": "bytewise",
+        "phase": 2,
+        "label": "combining-next-circumflex",
+        "logical_body_row": 7
+      },
+      {
+        "parser_mode": "recovery",
+        "feed_mode": "bytewise",
+        "phase": 3,
+        "label": "combining-restored-after-mark",
+        "logical_body_row": 7
+      }
+    ],
+    "all_grid_and_dsr_assertions_passed": true,
+    "other_body_rows_and_row_counts_passed": true,
+    "failed_logical_row": 7,
+    "expected_ascii_space_prefix": 60,
+    "observed_ascii_space_prefix": 60,
+    "expected_suffix_utf8_hex": "cc8265cc81",
+    "observed_suffix_utf8_hex": "65cc815acc82",
+    "expected_line_utf8_bytes": 65,
+    "observed_line_utf8_bytes": 66
+  },
+  "build_and_registration": {
+    "configuration": "Release",
+    "build_success": true,
+    "build_log": "local/r29-retention/resize-combining-red-build.log",
+    "result_log": "local/r29-retention/resize-combining-red.log",
+    "target": "resize_combining_test",
+    "build_target_available": true,
+    "ctest_registered": false,
+    "will_fail": false,
+    "included_in_prior_core_28": false,
+    "included_in_prior_qt_4": false,
+    "build_success_not_runtime_acceptance": true,
+    "reproduction_commands": [
+      "cmake --build <core-build> --config Release --target resize_combining_test --parallel 1",
+      "<core-build>/bin/Release/resize_combining_test.exe"
+    ]
+  },
+  "limits": {
+    "new_original_runs_for_this_diagnostic": 0,
+    "native_runs_during_report_creation": 0,
+    "remediation_implemented": false,
+    "isolated_mark_storage_policy_decided": false,
+    "dsr_resize_clamp_attachment_causes_separated": false,
+    "new_product_acceptance": false,
+    "complete_unicode_parity": false,
+    "qt_retained_projection_integrated": false,
+    "r27_complete": false,
+    "r29_complete": false,
+    "r2_complete": false
+  }
+}
