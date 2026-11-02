@@ -411,6 +411,15 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_mode_state_reference -m unittest research.ui.test_mode_state_reference research.ui.test_export_mode_state_reference research.ui.test_mode_reentry_reference research.ui.test_export_mode_reentry_reference -v)
   termforge_add_python_test(windterm_attribute_state_reference -m unittest research.ui.test_attribute_state_reference research.ui.test_export_attribute_state_reference -v)
   termforge_add_python_test(windterm_resize_state_reference -m unittest research.ui.test_resize_state_reference research.ui.test_export_resize_state_reference -v)
+  termforge_add_python_test(windterm_resize_address_reference -m unittest research.ui.test_resize_address_reference research.ui.test_export_resize_address_reference -v)
+  termforge_add_python_test(windterm_resize_address_optimized -O -m unittest research.ui.test_resize_address_reference research.ui.test_export_resize_address_reference -v)
+  find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
+  if(TERMFORGE_NODE_EXECUTABLE)
+    add_test(NAME windterm_resize_address_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_address_stage4.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_address_reference.js)
+    set_tests_properties(windterm_resize_address_controller PROPERTIES TIMEOUT 15)
+  endif()
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)
   termforge_add_python_test(recovery_measure_protocol -m unittest experiments.measure.test_recovery_measure -v)
