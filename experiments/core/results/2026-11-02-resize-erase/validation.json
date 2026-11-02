@@ -1,114 +1,15 @@
 {
-  "schema": "termforge-resize-erase-validation-v1",
+  "schema": "termforge-resize-erase-validation-v2",
   "date": "2026-11-02",
-  "status": "actual-core-diagnostic-failed",
-  "production_base_commit": "afdcf59f942f2b7cd3607ad7ab9bd8be9dc907dd",
-  "test_source_sha256": "8d2d020c43a5c8e6af5e14520a77081384c027d93332258dc10b913535442fad",
+  "status": "scoped-core-replay-passed",
+  "implementation_commit": "ed3b8e8c1825dc3a952e3ceced244a3b97209a46",
+  "test_source_sha256": "6448e33f87ecf3bc0d9abeb3279599530478a985b61f6aee8aae9a5208996d17",
   "default_resize_replaced": false,
   "qt_projection_integrated": false,
   "integrated_regression_claimed": false,
   "r27_complete": false,
   "r29_complete": false,
   "performance_gate": "not_evaluated",
-  "hashes_collected_after_run": true,
-  "post_run_identity_record_sha256": "b351e7c451b32aae5cd799dcc386fb9be974dfcd7a29a3914cbc64dbe0a8979e",
-  "pre_run_full_input_manifest": null,
-  "source_manifest_scope": "all top-level core headers, erase test source, root CMake; post-run identity, not a complete pre-run build manifest",
-  "all_core_headers_match_base_commit": true,
-  "source_files_sha256": {
-    "CMakeLists.txt": "45a3466936be0a01e0121f8b347ef4704cbaf02cccab510de03469a9d4f456b2",
-    "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
-    "experiments/core/history_view.hpp": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
-    "experiments/core/screen.hpp": "1ecd6bf02bf3ff22ef5281d7ee07b71e34ff42c38413e05bd71b83c06fdaef46",
-    "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
-    "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
-    "experiments/core/text_projection.hpp": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
-    "experiments/core/text_search.hpp": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
-    "experiments/core/text_selection.hpp": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
-    "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
-    "experiments/core/view_mapping.hpp": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
-    "experiments/core/resize_erase_test.cpp": "8d2d020c43a5c8e6af5e14520a77081384c027d93332258dc10b913535442fad"
-  },
-  "source_base_comparison": {
-    "CMakeLists.txt": {
-      "exists_in_base": true,
-      "matches_base_bytes": false,
-      "base_sha256": "015dd9787627c6089c9e2c6bf27ada4e85c8285a7f1189529dedd3c646f61fe6"
-    },
-    "experiments/core/candidate_terminal.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997"
-    },
-    "experiments/core/history_view.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0"
-    },
-    "experiments/core/screen.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "1ecd6bf02bf3ff22ef5281d7ee07b71e34ff42c38413e05bd71b83c06fdaef46"
-    },
-    "experiments/core/terminal.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804"
-    },
-    "experiments/core/text_document.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32"
-    },
-    "experiments/core/text_projection.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a"
-    },
-    "experiments/core/text_search.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7"
-    },
-    "experiments/core/text_selection.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926"
-    },
-    "experiments/core/unicode_width.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
-    },
-    "experiments/core/view_mapping.hpp": {
-      "exists_in_base": true,
-      "matches_base_bytes": true,
-      "base_sha256": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f"
-    },
-    "experiments/core/resize_erase_test.cpp": {
-      "exists_in_base": false,
-      "matches_base_bytes": null,
-      "base_sha256": null
-    }
-  },
-  "red_binary": {
-    "name": "resize_erase_test.exe",
-    "sha256": "66053d4bee07489c11fe8ec041b943c23c6910aa0eb307fef5d2d07f5571937e",
-    "bytes": 117760
-  },
-  "logs_sha256": {
-    "resize-erase-red-build.log": "c9960ebf5dd6ae9450b4db4dd10c980bae90afe7082ac17a24fc0cbb69eafa7e",
-    "resize-erase-red.log": "4583ff29aafb956fe68a976fd00eafbc842ef08deb31680cd2e7f7342fc00e78"
-  },
-  "build_files_sha256": {
-    "CMakeCache.txt": "7deb1f3556efbc12fcdb5061f0e6df2986ee7046bf41e530671dc7840bf4f713",
-    "resize_erase_test.vcxproj": "a222e461db67b43f3d0b8d1fac810f6162d5b9ce8903e2207dc4feee5e3f8cd6",
-    "CMakeCXXCompiler.cmake": "fb18378927420b12ff469fa0c6a737dcf281ee842a208f0456bddeb52cd5505f"
-  },
-  "reference_files_sha256": {
-    "research/ui/results/2026-11-02-resize-erase-reference/erase-right-supplement.json": "2db5a322d88e843f5dbb1be718d12db9710dcc6080a5f57d6b74dc560f43d57e",
-    "research/ui/results/2026-11-02-resize-erase-reference/erase-whole-line-supplement.json": "60d064d279bfa44afdea005c46f966db661c0a0a7cd502c59a7dcc9952a28f56"
-  },
   "configuration": {
     "host": "Windows x64",
     "generator": "Visual Studio 17 2022",
@@ -118,93 +19,332 @@
     "qt": false,
     "candidate_adapter": false
   },
+  "reference_files_sha256": {
+    "research/ui/results/2026-11-02-resize-erase-reference/erase-right-supplement.json": "2db5a322d88e843f5dbb1be718d12db9710dcc6080a5f57d6b74dc560f43d57e",
+    "research/ui/results/2026-11-02-resize-erase-reference/erase-whole-line-supplement.json": "60d064d279bfa44afdea005c46f966db661c0a0a7cd502c59a7dcc9952a28f56",
+    "research/ui/results/2026-11-02-resize-erase-interior-reference/erase-right.json": "f94a83b9d15755c4434135dcdd85d5b4e0665e844187fc9f51efd502db9e600f",
+    "research/ui/results/2026-11-02-resize-erase-interior-reference/erase-whole-line.json": "f0c2f20aece2415d1f8a9dd4c47972ac007bbe6527b497ee6737ab9a43944d96",
+    "research/ui/results/2026-11-02-resize-address-reference/erase-line-start-supplement.json": "8a28051d31476d8c2016a759c754bd24e3cc49b77f676eb78de68bd260ba3a00"
+  },
   "original_evidence": {
-    "independent_original_runs": 2,
-    "observed_phases": 10,
-    "original_frozen_audits_passed": 0,
-    "original_frozen_audits_failed": 2,
-    "independent_offline_supplemental_audits_passed": 2,
+    "independent_original_runs": 5,
+    "observed_phases": 24,
+    "original_frozen_audits_passed": 2,
+    "original_frozen_audits_failed": 3,
+    "independent_offline_supplemental_audits_passed": 3,
     "original_failures_preserved": true,
     "additional_original_runs_for_supplemental_audits": 0,
-    "supplemental_schema": "termforge-original-resize-erase-extent-supplement-v1",
-    "initial_source_bytes": 85,
-    "initial_source_sha256": "a301c656926ae72c07d2c91b67e1734286ce50b7cb38c5b4f6b64f06db0563b3",
-    "raw_document_phases_independently_compared_to_public_digest": 10
+    "additional_original_runs_for_core_replays": 0,
+    "complete_synthetic_document_arrays_checked_against_public_sha256": 24,
+    "private_raw_document_arrays_independently_compared": 14,
+    "private_raw_scope": "10 right-edge EL0/EL2 phases and 4 earlier EL1 phases; interior uses independently reconstructed arrays checked against strict export hashes"
   },
   "cases": [
     {
-      "id": "erase-right",
-      "action_hex": "1b5b304b",
+      "id": "right-edge-erase-right",
+      "reference": "research/ui/results/2026-11-02-resize-erase-reference/erase-right-supplement.json",
+      "original_audit": "failed-then-independent-supplement-passed",
+      "initial_source_bytes": 85,
+      "initial_source_sha256": "a301c656926ae72c07d2c91b67e1734286ce50b7cb38c5b4f6b64f06db0563b3",
       "original_phases": 5,
+      "phase_columns": [
+        91,
+        61,
+        61,
+        61,
+        91
+      ],
+      "preparation_hex": "1b5b383b363148",
+      "action_hex": "1b5b304b",
+      "expected_dsr": [
+        "11;2",
+        "11;2",
+        "8;61",
+        "8;61",
+        "8;61"
+      ],
       "post_action_document_row7": {
         "prefix": "L",
         "trailing_spaces": 59,
         "length": 60
-      }
+      },
+      "post_action_w_x_document_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          9,
+          91
+        ]
+      ],
+      "post_action_w_x_absolute_positions": [
+        175,
+        176
+      ],
+      "post_action_narrow_w_x_display_coordinates": [
+        [
+          10,
+          29
+        ],
+        [
+          10,
+          30
+        ]
+      ],
+      "post_restore_w_x_display_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          10,
+          0
+        ]
+      ],
+      "post_action_v_present": false,
+      "post_action_L_present": true
     },
     {
-      "id": "erase-whole-line",
-      "action_hex": "1b5b324b",
+      "id": "right-edge-erase-whole-line",
+      "reference": "research/ui/results/2026-11-02-resize-erase-reference/erase-whole-line-supplement.json",
+      "original_audit": "failed-then-independent-supplement-passed",
+      "initial_source_bytes": 85,
+      "initial_source_sha256": "a301c656926ae72c07d2c91b67e1734286ce50b7cb38c5b4f6b64f06db0563b3",
       "original_phases": 5,
+      "phase_columns": [
+        91,
+        61,
+        61,
+        61,
+        91
+      ],
+      "preparation_hex": "1b5b383b363148",
+      "action_hex": "1b5b324b",
+      "expected_dsr": [
+        "11;2",
+        "11;2",
+        "8;61",
+        "8;61",
+        "8;61"
+      ],
       "post_action_document_row7": {
         "prefix": "",
         "trailing_spaces": 60,
         "length": 60
-      }
-    }
-  ],
-  "literal_contract": {
-    "phase_columns": [
-      91,
-      61,
-      61,
-      61,
-      91
-    ],
-    "protocol_rows": 20,
-    "expected_dsr": [
-      "11;2",
-      "11;2",
-      "8;61",
-      "8;61",
-      "8;61"
-    ],
-    "preparation_hex": "1b5b383b363148",
-    "post_action_w_x_document_coordinates": [
-      [
+      },
+      "post_action_w_x_document_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          9,
+          91
+        ]
+      ],
+      "post_action_w_x_absolute_positions": [
+        175,
+        176
+      ],
+      "post_action_narrow_w_x_display_coordinates": [
+        [
+          10,
+          29
+        ],
+        [
+          10,
+          30
+        ]
+      ],
+      "post_restore_w_x_display_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          10,
+          0
+        ]
+      ],
+      "post_action_v_present": false,
+      "post_action_L_present": false
+    },
+    {
+      "id": "interior-erase-right",
+      "reference": "research/ui/results/2026-11-02-resize-erase-interior-reference/erase-right.json",
+      "original_audit": "strict-passed",
+      "initial_source_bytes": 85,
+      "initial_source_sha256": "a301c656926ae72c07d2c91b67e1734286ce50b7cb38c5b4f6b64f06db0563b3",
+      "original_phases": 5,
+      "phase_columns": [
+        91,
+        61,
+        61,
+        61,
+        91
+      ],
+      "preparation_hex": "1b5b383b333148",
+      "action_hex": "1b5b304b",
+      "expected_dsr": [
+        "11;2",
+        "11;2",
+        "8;31",
+        "8;31",
+        "8;31"
+      ],
+      "post_action_document_row7": {
+        "prefix": "L",
+        "trailing_spaces": 29,
+        "length": 30
+      },
+      "post_action_w_x_document_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          9,
+          91
+        ]
+      ],
+      "post_action_w_x_absolute_positions": [
+        145,
+        146
+      ],
+      "post_action_narrow_w_x_display_coordinates": [
+        [
+          10,
+          29
+        ],
+        [
+          10,
+          30
+        ]
+      ],
+      "post_restore_w_x_display_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          10,
+          0
+        ]
+      ],
+      "post_action_v_present": false,
+      "post_action_L_present": true
+    },
+    {
+      "id": "interior-erase-whole-line",
+      "reference": "research/ui/results/2026-11-02-resize-erase-interior-reference/erase-whole-line.json",
+      "original_audit": "strict-passed",
+      "initial_source_bytes": 85,
+      "initial_source_sha256": "a301c656926ae72c07d2c91b67e1734286ce50b7cb38c5b4f6b64f06db0563b3",
+      "original_phases": 5,
+      "phase_columns": [
+        91,
+        61,
+        61,
+        61,
+        91
+      ],
+      "preparation_hex": "1b5b383b333148",
+      "action_hex": "1b5b324b",
+      "expected_dsr": [
+        "11;2",
+        "11;2",
+        "8;31",
+        "8;31",
+        "8;31"
+      ],
+      "post_action_document_row7": {
+        "prefix": "",
+        "trailing_spaces": 30,
+        "length": 30
+      },
+      "post_action_w_x_document_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          9,
+          91
+        ]
+      ],
+      "post_action_w_x_absolute_positions": [
+        145,
+        146
+      ],
+      "post_action_narrow_w_x_display_coordinates": [
+        [
+          10,
+          29
+        ],
+        [
+          10,
+          30
+        ]
+      ],
+      "post_restore_w_x_display_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          10,
+          0
+        ]
+      ],
+      "post_action_v_present": false,
+      "post_action_L_present": false
+    },
+    {
+      "id": "erase-line-start",
+      "reference": "research/ui/results/2026-11-02-resize-address-reference/erase-line-start-supplement.json",
+      "original_audit": "failed-then-independent-supplement-passed",
+      "initial_source_bytes": 78,
+      "initial_source_sha256": "c7dd4a7fa283dd0003ca8b2ae13dcb46f143a4717bf5a14eb5f5acb068a9fa1c",
+      "original_phases": 4,
+      "phase_columns": [
+        91,
+        61,
+        61,
+        91
+      ],
+      "preparation_hex": null,
+      "action_hex": "1b5b314b",
+      "expected_dsr": [
+        "11;2",
+        "11;2",
+        "11;2",
+        "11;2"
+      ],
+      "post_action_document_row9": {
+        "leading_spaces": 90,
+        "text": "w",
+        "trailing_spaces": 1,
+        "length": 92
+      },
+      "post_action_w_document_coordinate": [
         9,
         90
       ],
-      [
-        9,
-        91
-      ]
-    ],
-    "post_action_w_x_absolute_positions": [
-      175,
-      176
-    ],
-    "post_action_narrow_w_x_display_coordinates": [
-      [
-        10,
+      "post_action_w_absolute_position": 206,
+      "post_action_narrow_w_display_coordinate": [
+        11,
         29
       ],
-      [
-        10,
-        30
-      ]
-    ],
-    "post_restore_w_x_display_coordinates": [
-      [
+      "post_restore_w_display_coordinate": [
         9,
         90
       ],
-      [
-        10,
-        0
-      ]
-    ]
-  },
+      "post_action_x_present": false,
+      "post_action_v_present": true,
+      "content_trailing_blank_is_required": true
+    }
+  ],
   "core_replay": {
     "parse_modes": [
       "strict",
@@ -214,17 +354,16 @@
       "whole",
       "bytewise"
     ],
-    "replay_count": 8,
-    "phases": 40,
-    "passed_phases": 24,
-    "failed_phases": 16,
-    "assertions": 600,
-    "failed_assertions": 96,
-    "exit_code": 1,
-    "result_log": "resize-erase-red.log",
-    "build_log": "resize-erase-red-build.log",
+    "replay_count": 20,
+    "phases": 96,
+    "passed_phases": 96,
+    "failed_phases": 0,
+    "assertions": 1440,
+    "failed_assertions": 0,
+    "exit_code": 0,
     "build_succeeded": true,
-    "summary": "retained-column resize erase checks: 24/40 phases, 96 failed assertions of 600 (2 supplement-audited original cases x strict/recovery x whole/bytewise; no active-grid/style claim)"
+    "result_log": "resize-erase-all-green.log",
+    "summary": "retained-column resize erase checks: 96/96 phases, 0 failed assertions of 1440 (3 supplement-audited + 2 strict original cases x strict/recovery x whole/bytewise; no active-grid/style claim)"
   },
   "checks": {
     "real_width_transaction": "Screen::resize_columns_preserving",
@@ -242,20 +381,363 @@
   "build_registration": {
     "target": "resize_erase_test",
     "in_default_build": true,
-    "acceptance_ctest_registered": false,
+    "acceptance_ctest_registered": true,
+    "ctest_name": "retained_resize_erase_core",
     "will_fail": false
   },
-  "fix_for_recorded_failure": null,
-  "green_run": null,
-  "unresolved_interpretation": [
-    "The recorded width and cursor column are both 61; the observed length 60 cannot distinguish cursor-based, width-based or another extent rule.",
-    "Independent interior-column observations are required before defining a general erase policy."
+  "historical_initial_red_note": "Unmodified v1 report for the two right-edge cases. Its unregistered-test status and unresolved interior interpretation describe that earlier run, not the final five-case state.",
+  "historical_initial_red": {
+    "schema": "termforge-resize-erase-validation-v1",
+    "date": "2026-11-02",
+    "status": "actual-core-diagnostic-failed",
+    "production_base_commit": "afdcf59f942f2b7cd3607ad7ab9bd8be9dc907dd",
+    "test_source_sha256": "8d2d020c43a5c8e6af5e14520a77081384c027d93332258dc10b913535442fad",
+    "default_resize_replaced": false,
+    "qt_projection_integrated": false,
+    "integrated_regression_claimed": false,
+    "r27_complete": false,
+    "r29_complete": false,
+    "performance_gate": "not_evaluated",
+    "hashes_collected_after_run": true,
+    "post_run_identity_record_sha256": "b351e7c451b32aae5cd799dcc386fb9be974dfcd7a29a3914cbc64dbe0a8979e",
+    "pre_run_full_input_manifest": null,
+    "source_manifest_scope": "all top-level core headers, erase test source, root CMake; post-run identity, not a complete pre-run build manifest",
+    "all_core_headers_match_base_commit": true,
+    "source_files_sha256": {
+      "CMakeLists.txt": "45a3466936be0a01e0121f8b347ef4704cbaf02cccab510de03469a9d4f456b2",
+      "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "experiments/core/history_view.hpp": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+      "experiments/core/screen.hpp": "1ecd6bf02bf3ff22ef5281d7ee07b71e34ff42c38413e05bd71b83c06fdaef46",
+      "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "experiments/core/text_projection.hpp": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+      "experiments/core/text_search.hpp": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+      "experiments/core/text_selection.hpp": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+      "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "experiments/core/view_mapping.hpp": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+      "experiments/core/resize_erase_test.cpp": "8d2d020c43a5c8e6af5e14520a77081384c027d93332258dc10b913535442fad"
+    },
+    "source_base_comparison": {
+      "CMakeLists.txt": {
+        "exists_in_base": true,
+        "matches_base_bytes": false,
+        "base_sha256": "015dd9787627c6089c9e2c6bf27ada4e85c8285a7f1189529dedd3c646f61fe6"
+      },
+      "experiments/core/candidate_terminal.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997"
+      },
+      "experiments/core/history_view.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0"
+      },
+      "experiments/core/screen.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "1ecd6bf02bf3ff22ef5281d7ee07b71e34ff42c38413e05bd71b83c06fdaef46"
+      },
+      "experiments/core/terminal.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804"
+      },
+      "experiments/core/text_document.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32"
+      },
+      "experiments/core/text_projection.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a"
+      },
+      "experiments/core/text_search.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7"
+      },
+      "experiments/core/text_selection.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926"
+      },
+      "experiments/core/unicode_width.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+      },
+      "experiments/core/view_mapping.hpp": {
+        "exists_in_base": true,
+        "matches_base_bytes": true,
+        "base_sha256": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f"
+      },
+      "experiments/core/resize_erase_test.cpp": {
+        "exists_in_base": false,
+        "matches_base_bytes": null,
+        "base_sha256": null
+      }
+    },
+    "red_binary": {
+      "name": "resize_erase_test.exe",
+      "sha256": "66053d4bee07489c11fe8ec041b943c23c6910aa0eb307fef5d2d07f5571937e",
+      "bytes": 117760
+    },
+    "logs_sha256": {
+      "resize-erase-red-build.log": "c9960ebf5dd6ae9450b4db4dd10c980bae90afe7082ac17a24fc0cbb69eafa7e",
+      "resize-erase-red.log": "4583ff29aafb956fe68a976fd00eafbc842ef08deb31680cd2e7f7342fc00e78"
+    },
+    "build_files_sha256": {
+      "CMakeCache.txt": "7deb1f3556efbc12fcdb5061f0e6df2986ee7046bf41e530671dc7840bf4f713",
+      "resize_erase_test.vcxproj": "a222e461db67b43f3d0b8d1fac810f6162d5b9ce8903e2207dc4feee5e3f8cd6",
+      "CMakeCXXCompiler.cmake": "fb18378927420b12ff469fa0c6a737dcf281ee842a208f0456bddeb52cd5505f"
+    },
+    "reference_files_sha256": {
+      "research/ui/results/2026-11-02-resize-erase-reference/erase-right-supplement.json": "2db5a322d88e843f5dbb1be718d12db9710dcc6080a5f57d6b74dc560f43d57e",
+      "research/ui/results/2026-11-02-resize-erase-reference/erase-whole-line-supplement.json": "60d064d279bfa44afdea005c46f966db661c0a0a7cd502c59a7dcc9952a28f56"
+    },
+    "configuration": {
+      "host": "Windows x64",
+      "generator": "Visual Studio 17 2022",
+      "compiler": "MSVC 19.42.34433.0",
+      "sdk": "10.0.26100.0",
+      "build": "Release",
+      "qt": false,
+      "candidate_adapter": false
+    },
+    "original_evidence": {
+      "independent_original_runs": 2,
+      "observed_phases": 10,
+      "original_frozen_audits_passed": 0,
+      "original_frozen_audits_failed": 2,
+      "independent_offline_supplemental_audits_passed": 2,
+      "original_failures_preserved": true,
+      "additional_original_runs_for_supplemental_audits": 0,
+      "supplemental_schema": "termforge-original-resize-erase-extent-supplement-v1",
+      "initial_source_bytes": 85,
+      "initial_source_sha256": "a301c656926ae72c07d2c91b67e1734286ce50b7cb38c5b4f6b64f06db0563b3",
+      "raw_document_phases_independently_compared_to_public_digest": 10
+    },
+    "cases": [
+      {
+        "id": "erase-right",
+        "action_hex": "1b5b304b",
+        "original_phases": 5,
+        "post_action_document_row7": {
+          "prefix": "L",
+          "trailing_spaces": 59,
+          "length": 60
+        }
+      },
+      {
+        "id": "erase-whole-line",
+        "action_hex": "1b5b324b",
+        "original_phases": 5,
+        "post_action_document_row7": {
+          "prefix": "",
+          "trailing_spaces": 60,
+          "length": 60
+        }
+      }
+    ],
+    "literal_contract": {
+      "phase_columns": [
+        91,
+        61,
+        61,
+        61,
+        91
+      ],
+      "protocol_rows": 20,
+      "expected_dsr": [
+        "11;2",
+        "11;2",
+        "8;61",
+        "8;61",
+        "8;61"
+      ],
+      "preparation_hex": "1b5b383b363148",
+      "post_action_w_x_document_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          9,
+          91
+        ]
+      ],
+      "post_action_w_x_absolute_positions": [
+        175,
+        176
+      ],
+      "post_action_narrow_w_x_display_coordinates": [
+        [
+          10,
+          29
+        ],
+        [
+          10,
+          30
+        ]
+      ],
+      "post_restore_w_x_display_coordinates": [
+        [
+          9,
+          90
+        ],
+        [
+          10,
+          0
+        ]
+      ]
+    },
+    "core_replay": {
+      "parse_modes": [
+        "strict",
+        "recovery"
+      ],
+      "feed_modes": [
+        "whole",
+        "bytewise"
+      ],
+      "replay_count": 8,
+      "phases": 40,
+      "passed_phases": 24,
+      "failed_phases": 16,
+      "assertions": 600,
+      "failed_assertions": 96,
+      "exit_code": 1,
+      "result_log": "resize-erase-red.log",
+      "build_log": "resize-erase-red-build.log",
+      "build_succeeded": true,
+      "summary": "retained-column resize erase checks: 24/40 phases, 96 failed assertions of 600 (2 supplement-audited original cases x strict/recovery x whole/bytewise; no active-grid/style claim)"
+    },
+    "checks": {
+      "real_width_transaction": "Screen::resize_columns_preserving",
+      "source_observation": "TextDocument",
+      "display_observation": "HistoryViewport::project",
+      "complete_observed_logical_text": true,
+      "normalization": "Remove trailing empty strings only; retain all spaces and interior empty strings.",
+      "exact_marker_occurrence_sets": true,
+      "source_absolute_offsets": true,
+      "source_fragment_bound": 200,
+      "display_page_rows": 20,
+      "full_active_grid_verified": false,
+      "terminal_styles_verified": false
+    },
+    "build_registration": {
+      "target": "resize_erase_test",
+      "in_default_build": true,
+      "acceptance_ctest_registered": false,
+      "will_fail": false
+    },
+    "fix_for_recorded_failure": null,
+    "green_run": null,
+    "unresolved_interpretation": [
+      "The recorded width and cursor column are both 61; the observed length 60 cannot distinguish cursor-based, width-based or another extent rule.",
+      "Independent interior-column observations are required before defining a general erase policy."
+    ],
+    "limitations": [
+      "This is an actual failed diagnostic, not expected-failure acceptance.",
+      "The production base does not include the new test or the captured modified root CMake.",
+      "Post-run hashes do not establish a complete pre-run input manifest.",
+      "Original frozen audit failures remain failures despite independent supplemental audit success.",
+      "No general erase, post-erase next-character, other width/column, full Unicode/style/frame, Qt/ConPTY, performance or R2 acceptance is claimed."
+    ]
+  },
+  "full_red": {
+    "production_base_commit": "afdcf59f942f2b7cd3607ad7ab9bd8be9dc907dd",
+    "source_head": "45c53f583267185f6a832ef356994e0746176767",
+    "source_files_sha256": {
+      "experiments/core/screen.hpp": "1ecd6bf02bf3ff22ef5281d7ee07b71e34ff42c38413e05bd71b83c06fdaef46",
+      "experiments/core/resize_erase_test.cpp": "6448e33f87ecf3bc0d9abeb3279599530478a985b61f6aee8aae9a5208996d17",
+      "CMakeLists.txt": "64ba795c42b1b0e21983bbf56ad0d4e1649b159c19c150021d7d33f7dccaf43e"
+    },
+    "source_manifest_scope": "selected source files captured after run only",
+    "hashes_collected_after_run": true,
+    "pre_run_full_input_manifest": null,
+    "binary": {
+      "name": "resize_erase_test.exe",
+      "retained_copy_name": "resize-erase-all-red.exe",
+      "sha256": "f5ddc2c61ecedf4431460faf9a9cab8d864a37760bf82b9842b211a9157c213f"
+    },
+    "logs_sha256": {
+      "resize-erase-all-red.log": "4063fbed80c79d22e8bfd7b6d651d8c82143ff3f288100e5759340af50baac6a",
+      "resize-erase-all-red-build.log": "37db2e126ed938b82052339c3a918188e0f1cfad6af5f92ae8ce1c72f5023285"
+    },
+    "result": {
+      "passed_phases": 56,
+      "phases": 96,
+      "failed_assertions": 200,
+      "assertions": 1440,
+      "exit_code": 1
+    },
+    "build_succeeded": true
+  },
+  "green_run": {
+    "source_commit": "ed3b8e8c1825dc3a952e3ceced244a3b97209a46",
+    "source_files_sha256": {
+      "CMakeLists.txt": "e9a18c1710a50b6256faa0e74f73177936542ca43730db557a9ca109d03b1c82",
+      "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "experiments/core/history_view.hpp": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+      "experiments/core/screen.hpp": "5deae8f71240cc67e2b98fcec794b6f38aa5612b0be116fca10ed584cc81ea29",
+      "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "experiments/core/text_projection.hpp": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+      "experiments/core/text_search.hpp": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+      "experiments/core/text_selection.hpp": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+      "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "experiments/core/view_mapping.hpp": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+      "experiments/core/resize_erase_test.cpp": "6448e33f87ecf3bc0d9abeb3279599530478a985b61f6aee8aae9a5208996d17"
+    },
+    "source_files_match_commit_bytes": true,
+    "hashes_collected_after_run": true,
+    "captured_at_utc": "2026-11-02T03:26:35.153604+00:00",
+    "source_manifest_scope": "all top-level core headers, erase test and root CMake; selected post-run identity only",
+    "pre_run_full_input_manifest": null,
+    "post_run_identity_record_sha256": "beff1eec6d62af1f875805187d0bf89073ead51975e362196fc46e844922b0bb",
+    "source_capture_boundary": "ed3b8e8 after GREEN, before any later active-margin edits or rebuilds",
+    "binary": {
+      "name": "resize_erase_test.exe",
+      "sha256": "f5001d74b54afecf43af2c969054c5730e93428ff4da9e16a361c788d1df6081",
+      "bytes": 121344
+    },
+    "logs_sha256": {
+      "resize-erase-all-green.log": "86e93412a381c53dbce5b31559b5e79f6aaa004a440b4fa9681c64d7d53c51d9",
+      "resize-erase-all-green-build.log": "37db2e126ed938b82052339c3a918188e0f1cfad6af5f92ae8ce1c72f5023285",
+      "resize-erase-registered-build.log": "3cdbbb15a557547faabd34b374426b0b25020421867a46cf2ffb415e239b08dc",
+      "resize-erase-registered-ctest.log": "a4e8ea9498e898c350bee36dc1125d324b7555085439f0a99c640f9fdceb6911"
+    },
+    "result": {
+      "phases": 96,
+      "passed_phases": 96,
+      "assertions": 1440,
+      "failed_assertions": 0,
+      "exit_code": 0
+    },
+    "build_succeeded": true,
+    "registered_ctest": {
+      "passed": 1,
+      "total": 1,
+      "total_seconds": 0.05,
+      "name": "retained_resize_erase_core",
+      "result_log": "resize-erase-registered-ctest.log",
+      "build_log": "resize-erase-registered-build.log"
+    }
+  },
+  "observed_interpretation": [
+    "At the same width 61, cursor columns 61 and 31 yielded logical lengths 60 and 30 for EL0/EL2, excluding an unconditional width-minus-one rule for these samples.",
+    "EL1 preserves the erased final content blank after w; trimming it would violate the observed full logical text.",
+    "The independently implemented extent and materialization representation satisfies these recorded results; it does not identify the original internal algorithm."
   ],
   "limitations": [
-    "This is an actual failed diagnostic, not expected-failure acceptance.",
-    "The production base does not include the new test or the captured modified root CMake.",
-    "Post-run hashes do not establish a complete pre-run input manifest.",
+    "Post-run selected hashes do not establish a complete pre-run input manifest.",
+    "Later active-margin source or binary changes are outside this captured ed3b identity.",
     "Original frozen audit failures remain failures despite independent supplemental audit success.",
-    "No general erase, post-erase next-character, other width/column, full Unicode/style/frame, Qt/ConPTY, performance or R2 acceptance is claimed."
+    "No earlier 24/24 core or 4/4 Qt result is transferred to this implementation commit.",
+    "Default Screen::resize and the Qt product resize path are unchanged.",
+    "No general erase, post-erase next-character, other width/column, continuous edits, full Unicode/style/soft-continuation/frame, Qt/ConPTY, performance or R2 acceptance is claimed."
   ]
 }

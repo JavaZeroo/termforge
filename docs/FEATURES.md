@@ -33,9 +33,11 @@
 
 [有界只读 ASCII 显示投影](../experiments/core/results/2026-11-02-display-projection/README.md)已作为独立核心切片实现（`ec766f2`）：显式 `HistoryViewport::project` 按显示宽度组合源范围，保留源身份、选择文本和 Find 范围，并以布局 revision 拒绝旧页。每次最多扫描 200 个源片段、每片段 500 个 Cell；宽字/marks 等非单 Cell ASCII 明确拒绝，`source_limit` 可能不推进，需调用者扩大有限源窗口。该固定源码的四种 feed 与三个工程场景纳入核心 **19/19**，Qt / 固定 ConPTY 另有 **4/4** 回归；这些旧源码结果不转用于后续保留列宽实现。**`Screen::resize` 仍物理裁剪，默认 Qt 仍使用原 `snapshot()` 路径**，上述 Qt 回归不证明新投影接线或正文保留；[B/CD 缩放失败诊断](../experiments/shell/results/2026-11-02-qt-terminal-modes/README.md)仍未修复，#27/#29 均开放。
 
-[同 owner 保留列宽事务](../experiments/core/results/2026-11-02-retained-columns/README.md)使用独立 `Screen::resize_columns_preserving` 入口：活动正文保留源 Cell、ID/version 与有效软续接，历史不被补齐或重写；普通打印、ICH/DCH 按当前协议宽度更新目标行，独立内容长度保留有意义的尾空白。实际列宽变化会[限制活动光标并取消延迟末列写入](../experiments/core/results/2026-11-02-resize-pending/README.md)；[隐藏主屏](../experiments/core/results/2026-11-02-resize-hidden/README.md)则裁剪 live 正文并恢复全屏滚动边界，不与活动正文采用同一保留策略。原版字面回放分别覆盖寻址、写入/插删、缩放后下一字符和隐藏主屏返回，各组身份与验证范围在对应报告中独立记录。
+[同 owner 保留列宽事务](../experiments/core/results/2026-11-02-retained-columns/README.md)使用独立 `Screen::resize_columns_preserving` 入口：活动正文保留源 Cell、ID/version 与有效软续接，历史不被补齐或重写；普通打印、ICH/DCH 按当前协议宽度更新目标行，独立内容长度保留有意义的尾空白。实际列宽变化会[限制活动光标并取消延迟末列写入](../experiments/core/results/2026-11-02-resize-pending/README.md)，并[复位两帧的滚动边界](../experiments/core/results/2026-11-02-resize-mode/README.md)；[隐藏主屏](../experiments/core/results/2026-11-02-resize-hidden/README.md)还会裁剪 live 正文，不与活动正文采用同一保留策略。原版字面回放分别覆盖寻址、写入/插删、缩放后下一字符和隐藏主屏返回，各组身份与验证范围在对应报告中独立记录。
 
-这一入口尚未替换默认 resize 或接入 Qt；EL0/EL2、一般编辑、完整主/备用帧交叉、Unicode、高度变化及历史/选择/Find 的用户流程仍未验收。旧默认路径 [16/64 阶段的失败](../experiments/core/results/2026-11-02-resize-address/README.md)与 B/CD 正式路径失败继续保留，#27/#29 尚未闭合。
+[行擦除的五例字面回放](../experiments/core/results/2026-11-02-resize-erase/README.md)已覆盖末列/中间列的 EL0、EL2 和独立 EL1：EL0/EL2 从光标所在列起截去保留正文，EL1 保留已用范围中的擦除空格；完整回放由 56/96 修至 96/96。该限定结果不代替一般编辑、样式网格或全部帧组合验收。
+
+这一入口尚未替换默认 resize 或接入 Qt；完整主/备用帧交叉、Unicode、高度变化及历史/选择/Find 的用户流程仍未验收。旧默认路径 [16/64 阶段的失败](../experiments/core/results/2026-11-02-resize-address/README.md)与 B/CD 正式路径失败继续保留，#27/#29 尚未闭合。
 
 `DA1` 当前只在 strict/replay 路径回复 `ESC[?6c`；recovery 产品路径保持静默。`?1004`/`?9001` 与单参数 `CSI 1t/2t/3t` 接受后忽略，不代表焦点上报、Win32 输入模式或窗口操作已实现。`?2004`、鼠标模式、DA2 和 OSC 10/11 仍缺；详见 [#28](https://github.com/JavaZeroo/termforge/issues/28)。
 

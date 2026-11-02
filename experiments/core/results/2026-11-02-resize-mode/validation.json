@@ -1,0 +1,690 @@
+{
+  "schema": "termforge-resize-mode-validation-v1",
+  "issues": [
+    27,
+    29
+  ],
+  "source_commit": "3c3d3f33409df23d163044a5f8202b21c7536090",
+  "identity_captured_at_utc": "2026-11-02T03:39:40.630524+00:00",
+  "source_manifest_scope": "GREEN post-run capture: CMakeLists.txt, all 12 tracked .hpp/.h files under experiments/core, and the three rebuilt test translation units; all 16 exactly match the fixed source commit",
+  "source_files": {
+    "CMakeLists.txt": {
+      "commit_sha256": "81be0814e6daae933f189c9956d4a414d30d16e1fae02ed404ca8a89e68979e5",
+      "working_tree_sha256": "81be0814e6daae933f189c9956d4a414d30d16e1fae02ed404ca8a89e68979e5",
+      "bytes": 40662,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "81be0814e6daae933f189c9956d4a414d30d16e1fae02ed404ca8a89e68979e5"
+    },
+    "experiments/core/candidate_terminal.hpp": {
+      "commit_sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "working_tree_sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "bytes": 1745,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997"
+    },
+    "experiments/core/history_view.hpp": {
+      "commit_sha256": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+      "working_tree_sha256": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+      "bytes": 12744,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0"
+    },
+    "experiments/core/line_order/adapters.hpp": {
+      "commit_sha256": "f1004dec4e863c9845153d3153663e3b35cc781a99cadf0868c3c982e1ccf12e",
+      "working_tree_sha256": "f1004dec4e863c9845153d3153663e3b35cc781a99cadf0868c3c982e1ccf12e",
+      "bytes": 3798,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "f1004dec4e863c9845153d3153663e3b35cc781a99cadf0868c3c982e1ccf12e"
+    },
+    "experiments/core/line_order/document.hpp": {
+      "commit_sha256": "325ec5ddc16d4b625b2f8b3aa1fe0d4a1222bac6e272280a06c924b46bb390a1",
+      "working_tree_sha256": "325ec5ddc16d4b625b2f8b3aa1fe0d4a1222bac6e272280a06c924b46bb390a1",
+      "bytes": 3185,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "325ec5ddc16d4b625b2f8b3aa1fe0d4a1222bac6e272280a06c924b46bb390a1"
+    },
+    "experiments/core/resize_erase_test.cpp": {
+      "commit_sha256": "6448e33f87ecf3bc0d9abeb3279599530478a985b61f6aee8aae9a5208996d17",
+      "working_tree_sha256": "6448e33f87ecf3bc0d9abeb3279599530478a985b61f6aee8aae9a5208996d17",
+      "bytes": 14332,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "6448e33f87ecf3bc0d9abeb3279599530478a985b61f6aee8aae9a5208996d17"
+    },
+    "experiments/core/resize_mode_test.cpp": {
+      "commit_sha256": "f44f8fbd09e32aaa19010c2689b72b42a881f993853fbbf7e3a0c59e5afbe7a6",
+      "working_tree_sha256": "f44f8fbd09e32aaa19010c2689b72b42a881f993853fbbf7e3a0c59e5afbe7a6",
+      "bytes": 15338,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "f44f8fbd09e32aaa19010c2689b72b42a881f993853fbbf7e3a0c59e5afbe7a6"
+    },
+    "experiments/core/retained_columns_test.cpp": {
+      "commit_sha256": "aba87bcdfca2070c9bede9eb67ee9fb4f5e98274716ecdccace049e240473a81",
+      "working_tree_sha256": "aba87bcdfca2070c9bede9eb67ee9fb4f5e98274716ecdccace049e240473a81",
+      "bytes": 8427,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "aba87bcdfca2070c9bede9eb67ee9fb4f5e98274716ecdccace049e240473a81"
+    },
+    "experiments/core/screen.hpp": {
+      "commit_sha256": "a71e964128ca894dd55c9eb59517ad95eff552822417383461616a21dbd34329",
+      "working_tree_sha256": "a71e964128ca894dd55c9eb59517ad95eff552822417383461616a21dbd34329",
+      "bytes": 38515,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "a71e964128ca894dd55c9eb59517ad95eff552822417383461616a21dbd34329"
+    },
+    "experiments/core/terminal.hpp": {
+      "commit_sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "working_tree_sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "bytes": 17998,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804"
+    },
+    "experiments/core/text_document.hpp": {
+      "commit_sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "working_tree_sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "bytes": 4728,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32"
+    },
+    "experiments/core/text_projection.hpp": {
+      "commit_sha256": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+      "working_tree_sha256": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+      "bytes": 1841,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a"
+    },
+    "experiments/core/text_search.hpp": {
+      "commit_sha256": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+      "working_tree_sha256": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+      "bytes": 23018,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7"
+    },
+    "experiments/core/text_selection.hpp": {
+      "commit_sha256": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+      "working_tree_sha256": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+      "bytes": 11762,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926"
+    },
+    "experiments/core/unicode_width.hpp": {
+      "commit_sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "working_tree_sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "bytes": 32445,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926"
+    },
+    "experiments/core/view_mapping.hpp": {
+      "commit_sha256": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+      "working_tree_sha256": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+      "bytes": 5587,
+      "equals_commit_blob": true,
+      "capture_copy_sha256": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f"
+    }
+  },
+  "identity_capture": {
+    "local_directory": "local/r29-retention/resize-mode-green-capture",
+    "manifest_sha256": "6bc43991930eb4e634c78b88cab99e1772401f0ac6354e88784f8d658f0c1432",
+    "source_and_artifact_copies_preserved": true,
+    "source_files_unchanged_at_capture_end": true,
+    "artifact_bytes_unchanged_during_capture": true,
+    "native_execution_at_capture": false,
+    "complete_pre_run_source_manifest": null
+  },
+  "local_artifacts": {
+    "local/r2-core-build/bin/Release/resize_mode_test.exe": {
+      "bytes": 130560,
+      "sha256": "b91de04f55bcc96dcd646ee621ec0d3af5913833a3ac7c726fbcba8f52310fa1",
+      "capture_copy_sha256": "b91de04f55bcc96dcd646ee621ec0d3af5913833a3ac7c726fbcba8f52310fa1"
+    },
+    "local/r2-core-build/bin/Release/retained_columns_test.exe": {
+      "bytes": 98304,
+      "sha256": "72d459f8c6e6248cc9fa72a779a34469a57523d71b6231bc0bc426138b28058a",
+      "capture_copy_sha256": "72d459f8c6e6248cc9fa72a779a34469a57523d71b6231bc0bc426138b28058a"
+    },
+    "local/r2-core-build/bin/Release/resize_erase_test.exe": {
+      "bytes": 121856,
+      "sha256": "60db11d43124e47b36205e9d25d645e7014253ad539c391672ebcf90cdf68420",
+      "capture_copy_sha256": "60db11d43124e47b36205e9d25d645e7014253ad539c391672ebcf90cdf68420"
+    },
+    "local/r29-retention/resize-mode-red.exe": {
+      "bytes": 130560,
+      "sha256": "1931744f3c04d77b1a4f0d6adcf8cad3384781eafdda2471f510d4626b269b30",
+      "capture_copy_sha256": "1931744f3c04d77b1a4f0d6adcf8cad3384781eafdda2471f510d4626b269b30"
+    },
+    "local/r29-retention/resize-mode-red-identity.json": {
+      "bytes": 1004,
+      "sha256": "8c038a74155456a568316a5057951ce78c6a2378122f40574c004b82fa1cdd0a",
+      "capture_copy_sha256": "8c038a74155456a568316a5057951ce78c6a2378122f40574c004b82fa1cdd0a"
+    },
+    "local/r29-retention/resize-mode-red.log": {
+      "bytes": 14868,
+      "sha256": "abd58c98dc3f9890e4022f549c34bdc4afbe0838a0d66d405b87988805b34e98",
+      "capture_copy_sha256": "abd58c98dc3f9890e4022f549c34bdc4afbe0838a0d66d405b87988805b34e98"
+    },
+    "local/r29-retention/resize-mode-red-build.log": {
+      "bytes": 334,
+      "sha256": "a41b673eefb1b9dd3cac7e61d326fdb8a29fe5135f7f95832a79718169f88d47",
+      "capture_copy_sha256": "a41b673eefb1b9dd3cac7e61d326fdb8a29fe5135f7f95832a79718169f88d47"
+    },
+    "local/r29-retention/resize-mode-green.log": {
+      "bytes": 284,
+      "sha256": "e5dcfbd0d50be020bd732d06323dd351170b5a77a117bb0fe82fbac608166ba6",
+      "capture_copy_sha256": "e5dcfbd0d50be020bd732d06323dd351170b5a77a117bb0fe82fbac608166ba6"
+    },
+    "local/r29-retention/resize-mode-green-build.log": {
+      "bytes": 714,
+      "sha256": "0f7bd83c284da32c691c085460a12ebda427b31d192c841c121367f7b089d8ff",
+      "capture_copy_sha256": "0f7bd83c284da32c691c085460a12ebda427b31d192c841c121367f7b089d8ff"
+    },
+    "local/r29-retention/resize-mode-green-ctest.log": {
+      "bytes": 639,
+      "sha256": "6b62d8e0fcc81d21919516790630d5d0771f0f44825cc67d2be3dbeddfe616aa",
+      "capture_copy_sha256": "6b62d8e0fcc81d21919516790630d5d0771f0f44825cc67d2be3dbeddfe616aa"
+    },
+    "local/r29-retention/resize-mode-green-configure.log": {
+      "bytes": 253,
+      "sha256": "592fef76ee5ae9b55230c51531a026814bf8fe6507e516efa935990eca75c3ec",
+      "capture_copy_sha256": "592fef76ee5ae9b55230c51531a026814bf8fe6507e516efa935990eca75c3ec"
+    },
+    "local/r29-retention/resize-mode-core-configure.log": {
+      "bytes": 253,
+      "sha256": "8be29b83ac7f662797256a20d45e6de7b8dfd0da2d63801da091cd1b9cf5c0ed",
+      "capture_copy_sha256": "8be29b83ac7f662797256a20d45e6de7b8dfd0da2d63801da091cd1b9cf5c0ed"
+    }
+  },
+  "configuration": {
+    "platform": "Windows x64",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC",
+    "compiler_version": "19.42.34433.0",
+    "windows_sdk": "10.0.26100.0",
+    "configuration": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "resize_repro": false,
+    "build_log_tool_version": "MSBuild 17.12.6+db5f6012c"
+  },
+  "oracles": [
+    {
+      "case_id": "active-primary",
+      "path": "research/ui/results/2026-11-02-resize-mode-reference/active-primary.json",
+      "sha256": "ad30c3e9228a8fe27da6f47b32fcc6cd91d08685e7622ff037cb26b58dba13b9",
+      "schema": "termforge-original-resize-mode-reference-v1",
+      "status": "bounded-direct-protocol-and-mode-state-observation",
+      "original_runtime_audit_passed": true,
+      "strict_export_passed": true,
+      "original_runs": 1,
+      "original_phases": 5,
+      "authorized_plan_sha256": "9ea54bec96822323661abf038bb37b1ba7f7ec458c3a58d96880fbc5a50ddf8e",
+      "execution_source_base_commit": "45c53f583267185f6a832ef356994e0746176767",
+      "source_archive_manifest_sha256": "df9f2a2c13df2e6a6d97e055c9c05e7319385e287e4b83a439b974cb8dcffaaa",
+      "phase_observations": [
+        {
+          "phase": 0,
+          "label": "primary-region-origin-on",
+          "source_bytes": 98,
+          "source_sha256": "8fac11288896ac3d083ec37a0f756084ae32f6a649573a44c9125d1493075cbb",
+          "cursor_reply": [
+            2,
+            12
+          ],
+          "frozen_grid": [
+            91,
+            20
+          ],
+          "main_full_body_and_source_compared": true,
+          "synthetic_lines_sha256": "558ba8f0712129813799ed178a0759c985f4c5bfd937bcf4c939a34d252f5567"
+        },
+        {
+          "phase": 1,
+          "label": "primary-shrunk-unmodified",
+          "source_bytes": 0,
+          "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "cursor_reply": [
+            3,
+            12
+          ],
+          "frozen_grid": [
+            61,
+            20
+          ],
+          "main_full_body_and_source_compared": true,
+          "synthetic_lines_sha256": "558ba8f0712129813799ed178a0759c985f4c5bfd937bcf4c939a34d252f5567"
+        },
+        {
+          "phase": 2,
+          "label": "primary-upper-CUP",
+          "source_bytes": 8,
+          "source_sha256": "0bdffcec1b2a6965f50807b1af83ea4ccf97f146acc93466a6c284c1da4a9dc5",
+          "cursor_reply": [
+            1,
+            3
+          ],
+          "frozen_grid": [
+            61,
+            20
+          ],
+          "main_full_body_and_source_compared": true,
+          "synthetic_lines_sha256": "30761b9487f188cace80622f063df015011043518b10f1f323834caf9fdc26ac"
+        },
+        {
+          "phase": 3,
+          "label": "primary-lower-CUP",
+          "source_bytes": 9,
+          "source_sha256": "1ce2a01eb0fbd18c01bb6770ed9ce73d4a5f39c5b666fa6b4adbe70be8156203",
+          "cursor_reply": [
+            20,
+            3
+          ],
+          "frozen_grid": [
+            61,
+            20
+          ],
+          "main_full_body_and_source_compared": true,
+          "synthetic_lines_sha256": "1f745ba5d8d6e7fa041f03ef27e79ba3f290578f32bfad5f01009032f227250c"
+        },
+        {
+          "phase": 4,
+          "label": "primary-restored-unmodified",
+          "source_bytes": 0,
+          "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "cursor_reply": [
+            20,
+            3
+          ],
+          "frozen_grid": [
+            91,
+            20
+          ],
+          "main_full_body_and_source_compared": true,
+          "synthetic_lines_sha256": "1f745ba5d8d6e7fa041f03ef27e79ba3f290578f32bfad5f01009032f227250c"
+        }
+      ]
+    },
+    {
+      "case_id": "active-alternate",
+      "path": "research/ui/results/2026-11-02-resize-mode-reference/active-alternate.json",
+      "sha256": "8345169c6f5cc71ee00996d0dee96a7f3ffebfb2ce4dde64f75098abc6213f64",
+      "schema": "termforge-original-resize-mode-reference-v1",
+      "status": "bounded-direct-protocol-and-mode-state-observation",
+      "original_runtime_audit_passed": true,
+      "strict_export_passed": true,
+      "original_runs": 1,
+      "original_phases": 5,
+      "authorized_plan_sha256": "f9e14003f59a95020bc31755aab5eded29aa54dcf75a2813fec8020b51937ff3",
+      "execution_source_base_commit": "45c53f583267185f6a832ef356994e0746176767",
+      "source_archive_manifest_sha256": "df9f2a2c13df2e6a6d97e055c9c05e7319385e287e4b83a439b974cb8dcffaaa",
+      "phase_observations": [
+        {
+          "phase": 0,
+          "label": "alternate-region-origin-on",
+          "source_bytes": 106,
+          "source_sha256": "e898817eda5e89bbe010ac5ca1f5f1a99f7560c7dd8afc7d86da32007ffd4306",
+          "cursor_reply": [
+            2,
+            12
+          ],
+          "frozen_grid": [
+            91,
+            20
+          ],
+          "main_full_body_and_source_compared": false,
+          "synthetic_lines_sha256": null
+        },
+        {
+          "phase": 1,
+          "label": "alternate-shrunk-unmodified",
+          "source_bytes": 0,
+          "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "cursor_reply": [
+            3,
+            12
+          ],
+          "frozen_grid": [
+            61,
+            20
+          ],
+          "main_full_body_and_source_compared": false,
+          "synthetic_lines_sha256": null
+        },
+        {
+          "phase": 2,
+          "label": "alternate-upper-CUP",
+          "source_bytes": 8,
+          "source_sha256": "0bdffcec1b2a6965f50807b1af83ea4ccf97f146acc93466a6c284c1da4a9dc5",
+          "cursor_reply": [
+            1,
+            3
+          ],
+          "frozen_grid": [
+            61,
+            20
+          ],
+          "main_full_body_and_source_compared": false,
+          "synthetic_lines_sha256": null
+        },
+        {
+          "phase": 3,
+          "label": "alternate-lower-CUP",
+          "source_bytes": 9,
+          "source_sha256": "1ce2a01eb0fbd18c01bb6770ed9ce73d4a5f39c5b666fa6b4adbe70be8156203",
+          "cursor_reply": [
+            20,
+            3
+          ],
+          "frozen_grid": [
+            61,
+            20
+          ],
+          "main_full_body_and_source_compared": false,
+          "synthetic_lines_sha256": null
+        },
+        {
+          "phase": 4,
+          "label": "alternate-restored-unmodified",
+          "source_bytes": 0,
+          "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "cursor_reply": [
+            20,
+            3
+          ],
+          "frozen_grid": [
+            91,
+            20
+          ],
+          "main_full_body_and_source_compared": false,
+          "synthetic_lines_sha256": null
+        }
+      ]
+    },
+    {
+      "case_id": "saved-primary-edge",
+      "path": "research/ui/results/2026-11-02-resize-mode-reference/saved-primary-edge.json",
+      "sha256": "22408df94f492e267dea7ad3de2c3a412d6eac3a16c677b250f6d224474fd43a",
+      "schema": "termforge-original-resize-mode-reference-v1",
+      "status": "bounded-direct-protocol-and-mode-state-observation",
+      "original_runtime_audit_passed": true,
+      "strict_export_passed": true,
+      "original_runs": 1,
+      "original_phases": 6,
+      "authorized_plan_sha256": "6a42cdaba9877a0c9d4078dc69ad51ac9e86f316c707ccfe448e3e1c1431e090",
+      "execution_source_base_commit": "45c53f583267185f6a832ef356994e0746176767",
+      "source_archive_manifest_sha256": "df9f2a2c13df2e6a6d97e055c9c05e7319385e287e4b83a439b974cb8dcffaaa",
+      "phase_observations": [
+        {
+          "phase": 0,
+          "label": "primary-old-edge-W",
+          "source_bytes": 57,
+          "source_sha256": "a052dbd92f9c02f5ca260e577ac30424caa775da86dd37532dc2f611f89e2819",
+          "cursor_reply": [
+            8,
+            91
+          ],
+          "frozen_grid": [
+            91,
+            20
+          ],
+          "main_full_body_and_source_compared": true,
+          "synthetic_lines_sha256": "6b7028ebaf76d07c20944d4e6b90dc73f3b6d274ef40b56fecc1ec2770489b87"
+        },
+        {
+          "phase": 1,
+          "label": "alternate-before-shrink",
+          "source_bytes": 17,
+          "source_sha256": "052a83fd2db87f448963799b53cbdba09801ff0e25bd5b4832ec9864b0fc1d34",
+          "cursor_reply": [
+            2,
+            12
+          ],
+          "frozen_grid": [
+            91,
+            20
+          ],
+          "main_full_body_and_source_compared": false,
+          "synthetic_lines_sha256": null
+        },
+        {
+          "phase": 2,
+          "label": "alternate-shrunk-primary-hidden",
+          "source_bytes": 0,
+          "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "cursor_reply": [
+            2,
+            12
+          ],
+          "frozen_grid": [
+            61,
+            20
+          ],
+          "main_full_body_and_source_compared": false,
+          "synthetic_lines_sha256": null
+        },
+        {
+          "phase": 3,
+          "label": "primary-return-unmodified",
+          "source_bytes": 8,
+          "source_sha256": "36a3d2013e70720f8d7c0105d9b9c23acfa208b175099330c7c820ad3e1e1df5",
+          "cursor_reply": [
+            8,
+            61
+          ],
+          "frozen_grid": [
+            61,
+            20
+          ],
+          "main_full_body_and_source_compared": true,
+          "synthetic_lines_sha256": "d406c228d3792cc9550b15fdc7e4ea405e0be7c4a53d859b3159a5f2ef6da919"
+        },
+        {
+          "phase": 4,
+          "label": "primary-next-X",
+          "source_bytes": 1,
+          "source_sha256": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
+          "cursor_reply": [
+            8,
+            61
+          ],
+          "frozen_grid": [
+            61,
+            20
+          ],
+          "main_full_body_and_source_compared": true,
+          "synthetic_lines_sha256": "09574749f53998f85aa66dfbcb8083375c03543ddbdcd89a0ce16e573f1008bc"
+        },
+        {
+          "phase": 5,
+          "label": "primary-restored-after-X",
+          "source_bytes": 0,
+          "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "cursor_reply": [
+            8,
+            61
+          ],
+          "frozen_grid": [
+            91,
+            20
+          ],
+          "main_full_body_and_source_compared": true,
+          "synthetic_lines_sha256": "09574749f53998f85aa66dfbcb8083375c03543ddbdcd89a0ce16e573f1008bc"
+        }
+      ]
+    }
+  ],
+  "comparison_scope": {
+    "independent_original_cases": 3,
+    "original_strict_cases": 3,
+    "original_supplement_cases": 0,
+    "original_runs": 3,
+    "original_phases_by_case": [
+      5,
+      5,
+      6
+    ],
+    "original_phases_total": 16,
+    "parser_modes": [
+      "strict",
+      "recovery"
+    ],
+    "feed_modes": [
+      "whole",
+      "bytewise"
+    ],
+    "replays_per_case": 4,
+    "total_replays": 12,
+    "total_replay_phases": 64,
+    "main_full_body_source_original_phases": 9,
+    "main_full_body_source_replay_phases": 36,
+    "dsr_display_replay_phases": 64,
+    "alternate_original_phases": 7,
+    "alternate_source_document_indices_compared": false,
+    "source_index_adjustment": null,
+    "source_normalization": "omit trailing empty strings only; preserve all spaces, space-only extents and interior empty lines",
+    "display_oracle": "visible synthetic marker rectangles only; measured origin (147,0), cell grid 8x18; negative-y hidden-main markers excluded",
+    "marker_labels": [
+      "T0",
+      "R2",
+      "R3",
+      "R4",
+      "R5",
+      "B6",
+      "B0",
+      "MP",
+      "AP",
+      "UP",
+      "DN",
+      "0123456789",
+      "ANCHOR",
+      "W",
+      "X"
+    ],
+    "private_origin_bit_oracle": false,
+    "private_pending_wrap_bit_oracle": false,
+    "full_active_grid_oracle": false,
+    "terminal_style_oracle": false
+  },
+  "red": {
+    "preserved_run_identity": {
+      "production_base_commit": "ed3b8e8c1825dc3a952e3ceced244a3b97209a46",
+      "source_head": "ed3b8e8c1825dc3a952e3ceced244a3b97209a46",
+      "result": {
+        "passed_phases": 32,
+        "phases": 64,
+        "failed_assertions": 124,
+        "assertions": 2192,
+        "exit_code": 1
+      },
+      "hashes_collected_after_run": true,
+      "sha256": {
+        "experiments/core/screen.hpp": "5deae8f71240cc67e2b98fcec794b6f38aa5612b0be116fca10ed584cc81ea29",
+        "experiments/core/resize_mode_test.cpp": "f44f8fbd09e32aaa19010c2689b72b42a881f993853fbbf7e3a0c59e5afbe7a6",
+        "CMakeLists.txt": "3321239eb9909817b72bb2092c91d8c71211c31d7662f4a2440e50faf4d51268",
+        "local/r29-retention/resize-mode-red.exe": "1931744f3c04d77b1a4f0d6adcf8cad3384781eafdda2471f510d4626b269b30",
+        "local/r29-retention/resize-mode-red.log": "abd58c98dc3f9890e4022f549c34bdc4afbe0838a0d66d405b87988805b34e98",
+        "local/r29-retention/resize-mode-red-build.log": "a41b673eefb1b9dd3cac7e61d326fdb8a29fe5135f7f95832a79718169f88d47"
+      }
+    },
+    "source_identity_limitation": "Selected hashes collected after run. Production baseline is ed3b8e8; new test and CMake target were working-tree changes, not already committed at that baseline. No complete pre-run manifest was saved.",
+    "complete_pre_run_source_manifest": null,
+    "saved_executable_sha256": "1931744f3c04d77b1a4f0d6adcf8cad3384781eafdda2471f510d4626b269b30",
+    "exit_code": 1,
+    "passed_phases": 32,
+    "phases": 64,
+    "failed_assertions": 124,
+    "assertions": 2192,
+    "case_results": [
+      {
+        "case_id": "active-primary",
+        "core_replay_phases": 20,
+        "red_passed_phases": 4,
+        "red_failed_assertions": 92,
+        "green_passed_phases": 20,
+        "green_failed_assertions": 0
+      },
+      {
+        "case_id": "active-alternate",
+        "core_replay_phases": 20,
+        "red_passed_phases": 4,
+        "red_failed_assertions": 32,
+        "green_passed_phases": 20,
+        "green_failed_assertions": 0
+      },
+      {
+        "case_id": "saved-primary-edge",
+        "core_replay_phases": 24,
+        "red_passed_phases": 24,
+        "red_failed_assertions": 0,
+        "green_passed_phases": 24,
+        "green_failed_assertions": 0
+      }
+    ]
+  },
+  "green": {
+    "source_commit": "3c3d3f33409df23d163044a5f8202b21c7536090",
+    "test_expectations_unchanged": true,
+    "test_sha256": "f44f8fbd09e32aaa19010c2689b72b42a881f993853fbbf7e3a0c59e5afbe7a6",
+    "direct_run_exit_code_reported_by_execution_agent": 0,
+    "direct_run_stdout": "retained-column resize-mode checks: 64/64 phases, 0 failed assertions of 2192 (3 separately audited original cases x strict/recovery x whole/bytewise; 36 main source/body observations; all stages DSR/display; no alternate document-index correction or internal-mode/grid/style claim)",
+    "passed_phases": 64,
+    "phases": 64,
+    "failed_assertions": 0,
+    "assertions": 2192,
+    "result_log": "local/r29-retention/resize-mode-green.log",
+    "build_log": "local/r29-retention/resize-mode-green-build.log",
+    "binary_sha256": "b91de04f55bcc96dcd646ee621ec0d3af5913833a3ac7c726fbcba8f52310fa1",
+    "independently_reexecuted_at_identity_capture": false
+  },
+  "owner_and_erase_regression": {
+    "classification": "Existing engineering owner invariants and earlier independent erase oracle run against the same rebuilt production header; no new original runs or independent RED claim",
+    "targets": [
+      "retained_columns_test",
+      "resize_erase_test"
+    ],
+    "owner_expectation_changed": "Active scroll bottom now expects height-1 after real width change; origin setting, epoch and order assertions remain engineering invariants",
+    "erase_literal_test_unchanged": true
+  },
+  "ctest": {
+    "scope": "targeted only",
+    "tests": [
+      "retained_columns_core",
+      "retained_resize_erase_core",
+      "retained_resize_mode_core"
+    ],
+    "passed": 3,
+    "failed": 0,
+    "reported_real_seconds": 0.1,
+    "performance_measurement": false,
+    "log": "local/r29-retention/resize-mode-green-ctest.log",
+    "mode_target_will_fail": false
+  },
+  "implementation": {
+    "production_change": "Reset active scrolling region to full frame on actual retained-width changes; inactive region handling already existed",
+    "frame_local_origin_setting_retained_as_engineering_representation": true,
+    "original_private_origin_bit_inferred_from_bounds": false,
+    "saved_primary_edge_case_was_already_green": true,
+    "unchanged_mode_literal_expectations": true,
+    "default_screen_resize_switched": false,
+    "default_qt_resize_switched": false
+  },
+  "offline_transcription_check": {
+    "original_public_hashes_matched": 3,
+    "actual_cpp_input_grid_dsr_literal_phases_matched": 16,
+    "main_full_body_canonical_json_hashes_matched": 9,
+    "main_source_display_and_alternate_display_marker_literals_matched": true,
+    "native_execution_in_transcription_check": false
+  },
+  "limits": {
+    "full_core_suite_included_in_this_record": false,
+    "qt_suite_included_in_this_record": false,
+    "broader_prior_results_inherited": false,
+    "qt_retained_width_path_integrated": false,
+    "conpty_joint_acceptance": false,
+    "region_line_feed_observed_in_this_protocol": false,
+    "private_origin_state_proven": false,
+    "complete_active_grid_verified": false,
+    "complete_styles_unicode_original_acceptance": false,
+    "height_resize_original_acceptance": false,
+    "allocation_failure_injection_tested": false,
+    "performance_evaluated": false,
+    "r2_complete": false
+  }
+}
