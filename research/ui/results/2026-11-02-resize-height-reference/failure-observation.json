@@ -1,0 +1,306 @@
+{
+  "schema": "termforge-original-resize-height-failure-v1",
+  "status": "failed",
+  "case_id": "height-only",
+  "actual_original_runs": 1,
+  "planned_phases": 3,
+  "observed_phases": 1,
+  "completed_height_cases": 0,
+  "semantic_acceptance": false,
+  "strict_success_export_eligible": false,
+  "failure": "fixed resized grid differs",
+  "width_then_height": {
+    "status": "not_started",
+    "actual_original_runs": 0,
+    "basis": "execution owner report; not inferred from the height-only artifacts"
+  },
+  "identity": {
+    "execution_source_base_commit": "cf58f30f77a83478361b5091b9856cbbf00fda3e",
+    "authorized_plan_sha256": "02b86050bb5956137be6eb9d1ef8a8edb05e16034479f70de51267e5cdb8f877",
+    "source_zip_sha256": "472b5754910c078b55ccfd7551fa7b8c1ddbbaba843643492606389ca2fadad4",
+    "runtime_manifest_sha256": "07fef89910bba0eee86a3daa1385481c2de1bd07c9779d3544ba0a7254d6ba28",
+    "runtime_source_files_sha256": {
+      "research/ui/resize_height_reference.py": "2c19c86dad5d43bf0cce908a9c7ee0e28a84d4ca38b6a84934a0e0f1b3c452c3",
+      "research/ui/resize_height_reference.js": "cc5ff358a59a86e67ee221c26f11be5c27a22d6799a96a4bcee0a72e7d0c2bac",
+      "research/ui/resize_state_reference.py": "628f9e3a5e3ecea6c34829810df2cdf0e93dc221bd3d19b31b3f5028759f07fd",
+      "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+      "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+      "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+      "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+      "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+      "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+    },
+    "launcher_namespace_sha256": "03788f28d4b029b30e35de994827b9a95c8e16f6e437f7f6bef40a0df9bfda89",
+    "template_sha256": "24e3fb78d76207abbf518b0963c45f0b7bea3ced5b4d1e93f5a5e8cdcfc85ac1",
+    "reconstructed_script_sha256": "e3d03007220148f4f22683b1663528b9ba385ecdc23bee9ce699c38b7b67079d",
+    "provider_source_sha256": "e3d03007220148f4f22683b1663528b9ba385ecdc23bee9ce699c38b7b67079d",
+    "evidence_id": "ev_ebd305110b2a2820f67ca4a4b1353146f34eb85cb36c4071be0451ddf04503e6",
+    "declared_reference_exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "canonical_reference_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+    "manifest_entries": 4047,
+    "full_original_files_rehashed_in_this_offline_audit": false,
+    "actual_injected_script_file_downloaded": false,
+    "raw_files_sha256": {
+      "plan.json": "02b86050bb5956137be6eb9d1ef8a8edb05e16034479f70de51267e5cdb8f877",
+      "run.json": "b8d20a39903c13fcd2781bdf9ba7d60aef31e21b6cc85b69ca2349ea6b1938b1",
+      "peer.json": "71fab26e89f7a1519e389294b0cf52f9d26bd7d5508a8d2202799d6d2f455a36",
+      "resize-height-result.json": "b5579aa5ea62894a7b7bc40c585ab86efedbf335ea6abb6e1b5ef9de685c8b92",
+      "cleanup.json": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d",
+      "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1",
+      "evidence.json": "cdf5fa7cc53d1bb9f2f3437c383ef84560a171f93f8c8f594f5598df1808a62e",
+      "files.json": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+    },
+    "owned_request_result_sha256": "4fd8eb54bc262f67f8adc56b7d12d1fafd15f5b26abad17d7e603e692c3ff576"
+  },
+  "stage_zero": {
+    "fixture_valid": true,
+    "phase": 0,
+    "label": "initial-body",
+    "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b323b314848544f501b5b363b3148484152445f410d0a484152445f421b5b31323b3930487576771b5b31393b31484c4f57454e44",
+    "source_bytes": 75,
+    "source_sha256": "ff48cd41220a72e5da2350dc97c3c8c8c884d48cc4f7fa2328609bf8bc0cb09e",
+    "dsr_suffix_hex": "1b5b366e",
+    "cursor_reply": [
+      19,
+      7
+    ],
+    "cursor_reply_private": false,
+    "response_hex": "1b5b31393b3752",
+    "frozen_grid": [
+      91,
+      20
+    ],
+    "window_rect": [
+      102,
+      102,
+      1461,
+      850
+    ],
+    "window_size": [
+      1360,
+      749
+    ],
+    "terminal_capacity": 20,
+    "document_line_count": 19,
+    "synthetic_document_sha256": "ac5cc0c46768d14945e8c63103f3d7d56f9a5fc2f5631dd4fe8f485e9ba19efc",
+    "synthetic_lines_utf8_hex": [
+      "",
+      "48544f50",
+      "",
+      "",
+      "",
+      "484152445f41",
+      "484152445f42",
+      "",
+      "",
+      "",
+      "",
+      "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "4c4f57454e44",
+      ""
+    ],
+    "marker_counts": {
+      "HTOP": 1,
+      "HARD_A": 1,
+      "HARD_B": 1,
+      "u": 1,
+      "v": 1,
+      "w": 1,
+      "LOWEND": 1
+    },
+    "markers": [
+      {
+        "label": "HTOP",
+        "document_line": 1,
+        "line_text_offset_utf16": 0,
+        "line_text_offset_scalar": 0,
+        "line_text_prefix_utf8_bytes": 0,
+        "line_start_api_value": 1,
+        "requested_position_api_value": 1,
+        "rect": {
+          "x": 147,
+          "y": 18,
+          "width": 8,
+          "height": 18
+        }
+      },
+      {
+        "label": "HARD_A",
+        "document_line": 5,
+        "line_text_offset_utf16": 0,
+        "line_text_offset_scalar": 0,
+        "line_text_prefix_utf8_bytes": 0,
+        "line_start_api_value": 9,
+        "requested_position_api_value": 9,
+        "rect": {
+          "x": 147,
+          "y": 90,
+          "width": 8,
+          "height": 18
+        }
+      },
+      {
+        "label": "HARD_B",
+        "document_line": 6,
+        "line_text_offset_utf16": 0,
+        "line_text_offset_scalar": 0,
+        "line_text_prefix_utf8_bytes": 0,
+        "line_start_api_value": 16,
+        "requested_position_api_value": 16,
+        "rect": {
+          "x": 147,
+          "y": 108,
+          "width": 8,
+          "height": 18
+        }
+      },
+      {
+        "label": "u",
+        "document_line": 11,
+        "line_text_offset_utf16": 89,
+        "line_text_offset_scalar": 89,
+        "line_text_prefix_utf8_bytes": 89,
+        "line_start_api_value": 27,
+        "requested_position_api_value": 116,
+        "rect": {
+          "x": 859,
+          "y": 198,
+          "width": 8,
+          "height": 18
+        }
+      },
+      {
+        "label": "v",
+        "document_line": 11,
+        "line_text_offset_utf16": 90,
+        "line_text_offset_scalar": 90,
+        "line_text_prefix_utf8_bytes": 90,
+        "line_start_api_value": 27,
+        "requested_position_api_value": 117,
+        "rect": {
+          "x": 867,
+          "y": 198,
+          "width": 8,
+          "height": 18
+        }
+      },
+      {
+        "label": "w",
+        "document_line": 11,
+        "line_text_offset_utf16": 91,
+        "line_text_offset_scalar": 91,
+        "line_text_prefix_utf8_bytes": 91,
+        "line_start_api_value": 27,
+        "requested_position_api_value": 118,
+        "rect": {
+          "x": 147,
+          "y": 216,
+          "width": 8,
+          "height": 18
+        }
+      },
+      {
+        "label": "LOWEND",
+        "document_line": 17,
+        "line_text_offset_utf16": 0,
+        "line_text_offset_scalar": 0,
+        "line_text_prefix_utf8_bytes": 0,
+        "line_start_api_value": 125,
+        "requested_position_api_value": 125,
+        "rect": {
+          "x": 147,
+          "y": 324,
+          "width": 8,
+          "height": 18
+        }
+      }
+    ],
+    "top_api": null,
+    "scroll_api": 0,
+    "caret_api": {
+      "caretLine": 17,
+      "caretColumn": 0,
+      "caretPosition": 131
+    }
+  },
+  "incomplete_resize": {
+    "phase": 1,
+    "requested_window": [
+      1360,
+      569
+    ],
+    "predicted_grid": [
+      91,
+      10
+    ],
+    "naws_history": [
+      [
+        91,
+        20
+      ],
+      [
+        91,
+        14
+      ]
+    ],
+    "latest_reported_grid": [
+      91,
+      14
+    ],
+    "last_frozen_grid": [
+      91,
+      20
+    ],
+    "resize_armed": 1,
+    "after_event_count": null,
+    "actual_window_rect": null,
+    "actual_window_size": null,
+    "terminal_capacity_at_failure": null,
+    "phase_observation": null,
+    "second_DSR": null,
+    "cause_classification": null,
+    "unknown_reason": "Controller rejected the stabilized NAWS endpoint before checkWindow; no post-resize geometry or document was recorded."
+  },
+  "cleanup": {
+    "launcher_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "profile_check": {
+      "only_synthetic_session": true,
+      "session_count": 1
+    },
+    "owned_request": {
+      "Status": "failed",
+      "RootExitCode": 1,
+      "JobAfterActive": 0,
+      "RootReaped": true,
+      "CleanupVerified": true,
+      "TimedOut": false,
+      "TerminationRequested": false
+    }
+  },
+  "audit_scope": {
+    "frozen_runtime_and_archive_checked": true,
+    "provider_and_saved_phase_agree": true,
+    "finite_ASCII_document_checked": true,
+    "initial_markers_and_DSR_checked": true,
+    "partial_failure_summary_only": true,
+    "successful_height_semantics_verified": false
+  },
+  "limitations": [
+    "This is a partial failed observation, not the frozen successful strict exporter output.",
+    "Only stage zero is complete. No shortened-height document, cursor, pixel layout or restored-height sample exists.",
+    "The actual resized window size is unknown; minimum-size, layout and splitter explanations remain hypotheses.",
+    "The canonical package manifest and recorded original identities were checked; this local audit did not rehash the original binary/package copies or download the injected script.",
+    "No original rerun or source relaxation occurred. Width-then-height was not launched.",
+    "No C++/Qt/ConPTY height implementation, parity, reliability or performance acceptance follows."
+  ]
+}
