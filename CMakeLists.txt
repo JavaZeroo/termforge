@@ -505,6 +505,8 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_resize_geometry_optimized -O -m unittest research.ui.test_resize_geometry_reference research.ui.test_export_resize_geometry_reference -v)
   termforge_add_python_test(windterm_resize_height_measured_reference -m unittest research.ui.test_resize_height_measured_reference research.ui.test_export_resize_height_measured_reference -v)
   termforge_add_python_test(windterm_resize_height_measured_optimized -O -m unittest research.ui.test_resize_height_measured_reference research.ui.test_export_resize_height_measured_reference -v)
+  termforge_add_python_test(windterm_resize_combined_reference -m unittest research.ui.test_resize_combined_reference research.ui.test_export_resize_combined_reference -v)
+  termforge_add_python_test(windterm_resize_combined_optimized -O -m unittest research.ui.test_resize_combined_reference research.ui.test_export_resize_combined_reference -v)
   find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
   if(TERMFORGE_NODE_EXECUTABLE)
     add_test(NAME windterm_resize_address_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
@@ -551,6 +553,10 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
       ${CMAKE_SOURCE_DIR}/research/ui/test_resize_height_measured_stages.js
       ${CMAKE_SOURCE_DIR}/research/ui/resize_height_measured_reference.js)
     set_tests_properties(windterm_resize_height_measured_controller PROPERTIES TIMEOUT 15)
+    add_test(NAME windterm_resize_combined_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_combined_stages.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_combined_reference.js)
+    set_tests_properties(windterm_resize_combined_controller PROPERTIES TIMEOUT 15)
   endif()
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)
