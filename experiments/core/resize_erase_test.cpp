@@ -1,6 +1,7 @@
 // Literal WindTerm 2.7.0 erase observations after a retained-width change.
-// The original frozen audits failed; independent supplemental audits verified
-// the same recordings. Their success does not replace the original failures.
+// Right-edge EL0/EL2 and the earlier EL1 recordings required supplemental
+// audits; the two interior-column recordings passed their frozen audits.
+// Keep those independent evidence identities and original failures separate.
 // Compare observed logical text, DSR and display markers, not private state,
 // full active grids, styles, Qt or native transport behavior.
 #include "terminal.hpp"
@@ -14,13 +15,14 @@
 
 using namespace termforge;
 
-enum class Erase { right, whole_line };
+enum class Erase { right, whole_line, start };
 
 struct Case {
     const char* name;
     Erase erase;
     const char* action_label;
     std::string_view action;
+    bool interior;
 };
 
 struct Marker {
@@ -133,7 +135,7 @@ static void check_markers(Checks& checks, const std::vector<std::string>& lines,
     }
 }
 
-static std::vector<std::string> expected_document(Erase erase, size_t phase) {
+static std::vector<std::string> expected_document(Erase erase, size_t phase, bool interior) {
     // Literal logical text from the same raw observations whose complete
     // arrays were verified against every supplemental synthetic-lines hash.
     // Only their terminal empty-string capacity has been removed.
@@ -141,22 +143,60 @@ static std::vector<std::string> expected_document(Erase erase, size_t phase) {
         "", "0123456789", "ANCHOR", "", "", "", "",
         "L" + std::string(89, ' ') + "v", "", std::string(90, ' ') + "wx",
     };
+    if (erase == Erase::start) {
+        // This independent 78B case has no L and no post-shrink CUP. EL1
+        // replaces x with one content space; that trailing space must survive.
+        result[7] = std::string(90, ' ') + "v";
+        if (phase >= 2) result[9] = std::string(90, ' ') + "w ";
+        return result;
+    }
     if (phase >= 3) {
-        if (erase == Erase::right) result[7] = "L" + std::string(59, ' ');
-        else result[7] = std::string(60, ' ');
+        if (interior) {
+            if (erase == Erase::right) result[7] = "L" + std::string(29, ' ');
+            else result[7] = std::string(30, ' ');
+        } else {
+            if (erase == Erase::right) result[7] = "L" + std::string(59, ' ');
+            else result[7] = std::string(60, ' ');
+        }
     }
     return result;
 }
 
-static std::vector<Marker> expected_markers(Erase erase, size_t phase) {
+static std::vector<Marker> expected_markers(Erase erase, size_t phase, bool interior) {
     // Zero-based document/display coordinates; source_position includes hard
     // line separators. Display literals use the observed 8x18 grid at (147,0).
     std::vector<Marker> expected = {
         {"0123456789", 1, 0, 1, 1, 0},
         {"ANCHOR", 2, 0, 12, 2, 0},
     };
+    if (erase == Erase::start) {
+        const bool narrow = phase == 1 || phase == 2;
+        expected.insert(expected.end(), {
+            {"v", 7, 90, 113, narrow ? 8u : 7u, narrow ? 29u : 90u},
+            {"w", 9, 90, 206, narrow ? 11u : 9u, narrow ? 29u : 90u},
+        });
+        if (phase < 2)
+            expected.push_back({"x", 9, 91, 207, narrow ? 11u : 10u, narrow ? 30u : 0u});
+        return expected;
+    }
     if (phase < 3 || erase == Erase::right)
         expected.push_back({"L", 7, 0, 23, 7, 0});
+    if (interior && phase >= 3) {
+        if (phase == 3) {
+            expected.insert(expected.end(), {
+                {"w", 9, 90, 145, 10, 29},
+                {"x", 9, 91, 146, 10, 30},
+            });
+        } else if (phase == 4) {
+            expected.insert(expected.end(), {
+                {"w", 9, 90, 145, 9, 90},
+                {"x", 9, 91, 146, 10, 0},
+            });
+        } else {
+            throw std::invalid_argument("unknown interior erase phase");
+        }
+        return expected;
+    }
     switch (phase) {
     case 0:
         expected.insert(expected.end(), {
@@ -200,31 +240,46 @@ static void replay(Checks& checks, const Case& test, ParseMode mode, bool bytewi
     const std::string_view source = "\x1b[?6l\x1b[?7h\x1b[r\x1b[0m\x1b[2J"
         "\x1b[2;1H0123456789\x1b[3;1HANCHOR\x1b[8;1HL\x1b[?7l\x1b[8;91Huv"
         "\x1b[?7h\x1b[10;91Hwx";
+    // Independent EL1 source: 78B, SHA256
+    // c7dd4a7fa283dd0003ca8b2ae13dcb46f143a4717bf5a14eb5f5acb068a9fa1c.
+    const std::string_view address_source = "\x1b[?6l\x1b[?7h\x1b[r\x1b[0m\x1b[2J"
+        "\x1b[2;1H0123456789\x1b[3;1HANCHOR\x1b[?7l\x1b[8;91Huv"
+        "\x1b[?7h\x1b[10;91Hwx";
+    const std::string_view preparation = test.interior ? "\x1b[8;31H" : "\x1b[8;61H";
+    const char* prepared_reply = test.interior ? "\x1b[8;31R" : "\x1b[8;61R";
     struct Stage { const char* label; std::string_view bytes; int columns; const char* reply; };
-    const Stage stages[] = {
+    std::vector<Stage> stages = {
         {"initial-derived-body-L", source, 91, "\x1b[11;2R"},
         {"after-shrink-before-preparation", "", 61, "\x1b[11;2R"},
-        {"after-CUP-before-erase", "\x1b[8;61H", 61, "\x1b[8;61R"},
-        {test.action_label, test.action, 61, "\x1b[8;61R"},
-        {"after-restore-after-erase", "", 91, "\x1b[8;61R"},
+        {"after-CUP-before-erase", preparation, 61, prepared_reply},
+        {test.action_label, test.action, 61, prepared_reply},
+        {"after-restore-after-erase", "", 91, prepared_reply},
     };
+    if (test.erase == Erase::start) {
+        stages = {
+            {"initial-body", address_source, 91, "\x1b[11;2R"},
+            {"after-shrink-before-action", "", 61, "\x1b[11;2R"},
+            {"after-erase-line-start", "\x1b[1K", 61, "\x1b[11;2R"},
+            {"after-restore-after-action", "", 91, "\x1b[11;2R"},
+        };
+    }
     const auto prefix = std::string(test.name) + "/" +
         (mode == ParseMode::strict ? "strict/" : "recovery/") + (bytewise ? "bytewise/" : "whole/");
-    for (size_t phase = 0; phase < 5; ++phase) {
+    for (size_t phase = 0; phase < stages.size(); ++phase) {
         const auto& stage = stages[phase];
         checks.context = prefix + stage.label;
         const auto previous_failures = checks.failures;
-        if (phase == 1 || phase == 4) parser.screen.resize_columns_preserving(stage.columns);
+        if (phase == 1 || phase + 1 == stages.size()) parser.screen.resize_columns_preserving(stage.columns);
         feed(parser, stage.bytes, bytewise);
         checks.expect(parser.screen.width() == stage.columns && parser.screen.height() == 20,
                       "actual protocol grid differs from the literal phase dimensions");
         feed(parser, "\x1b[6n", bytewise);
         checks.expect(parser.take_replies() == std::vector<std::string>{stage.reply},
                       "DSR reply differs from the literal phase response");
-        const auto expected = expected_markers(test.erase, phase);
+        const auto expected = expected_markers(test.erase, phase, test.interior);
         try {
             const auto actual = source_lines(parser.screen);
-            const auto document = expected_document(test.erase, phase);
+            const auto document = expected_document(test.erase, phase, test.interior);
             checks.expect(actual == document, "complete logical text differs; expected row lengths " +
                 line_lengths(document) + ", observed " + line_lengths(actual));
             check_markers(checks, actual, expected, false);
@@ -245,12 +300,20 @@ static void replay(Checks& checks, const Case& test, ParseMode mode, bool bytewi
 }
 
 int main() {
-    // Oracles: independent supplemental audits of the original failed runs.
+    // Right-edge oracles: independent supplemental audits of failed runs.
     // erase-right: 2db5a322d88e843f5dbb1be718d12db9710dcc6080a5f57d6b74dc560f43d57e
     // erase-whole-line: 60d064d279bfa44afdea005c46f966db661c0a0a7cd502c59a7dcc9952a28f56
+    // Interior oracles: independent frozen-audit successes, same 85B source.
+    // erase-right-interior: f94a83b9d15755c4434135dcdd85d5b4e0665e844187fc9f51efd502db9e600f
+    // erase-whole-line-interior: f0c2f20aece2415d1f8a9dd4c47972ac007bbe6527b497ee6737ab9a43944d96
+    // Earlier EL1 oracle: separate 78B recording and supplemental audit.
+    // erase-line-start: 8a28051d31476d8c2016a759c754bd24e3cc49b77f676eb78de68bd260ba3a00
     const Case cases[] = {
-        {"erase-right", Erase::right, "after-erase-right", "\x1b[0K"},
-        {"erase-whole-line", Erase::whole_line, "after-erase-whole-line", "\x1b[2K"},
+        {"erase-right", Erase::right, "after-erase-right", "\x1b[0K", false},
+        {"erase-whole-line", Erase::whole_line, "after-erase-whole-line", "\x1b[2K", false},
+        {"erase-right-interior", Erase::right, "after-erase-right", "\x1b[0K", true},
+        {"erase-whole-line-interior", Erase::whole_line, "after-erase-whole-line", "\x1b[2K", true},
+        {"erase-line-start", Erase::start, "after-erase-line-start", "\x1b[1K", false},
     };
     Checks checks;
     for (const auto& test : cases)
@@ -264,6 +327,6 @@ int main() {
             }
     std::cout << "retained-column resize erase checks: " << checks.passed_phases << '/' << checks.phases
               << " phases, " << checks.failures << " failed assertions of " << checks.assertions
-              << " (2 supplement-audited original cases x strict/recovery x whole/bytewise; no active-grid/style claim)\n";
+              << " (3 supplement-audited + 2 strict original cases x strict/recovery x whole/bytewise; no active-grid/style claim)\n";
     return checks.failures ? 1 : 0;
 }

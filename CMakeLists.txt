@@ -397,6 +397,7 @@ add_test(NAME retained_resize_address_core COMMAND resize_address_test --retaine
 add_test(NAME retained_resize_edit_core COMMAND resize_edit_test)
 add_test(NAME retained_resize_pending_core COMMAND resize_pending_test)
 add_test(NAME retained_resize_hidden_core COMMAND resize_hidden_test)
+add_test(NAME retained_resize_erase_core COMMAND resize_erase_test)
   add_test(NAME alternate_mode_core COMMAND alternate_mode_test)
   add_test(NAME decawm_mode_core COMMAND decawm_mode_test)
 add_test(NAME private_mode_core COMMAND private_mode_test)
@@ -452,6 +453,8 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_resize_erase_optimized -O -m unittest research.ui.test_resize_erase_reference research.ui.test_export_resize_erase_reference research.ui.test_audit_resize_erase_right -v)
   termforge_add_python_test(windterm_resize_erase_interior_reference -m unittest research.ui.test_resize_erase_interior_reference research.ui.test_export_resize_erase_interior_reference -v)
   termforge_add_python_test(windterm_resize_erase_interior_optimized -O -m unittest research.ui.test_resize_erase_interior_reference research.ui.test_export_resize_erase_interior_reference -v)
+  termforge_add_python_test(windterm_resize_mode_reference -m unittest research.ui.test_resize_mode_reference research.ui.test_export_resize_mode_reference -v)
+  termforge_add_python_test(windterm_resize_mode_optimized -O -m unittest research.ui.test_resize_mode_reference research.ui.test_export_resize_mode_reference -v)
   find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
   if(TERMFORGE_NODE_EXECUTABLE)
     add_test(NAME windterm_resize_address_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
@@ -474,6 +477,10 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
       ${CMAKE_SOURCE_DIR}/research/ui/test_resize_erase_interior_stages.js
       ${CMAKE_SOURCE_DIR}/research/ui/resize_erase_interior_reference.js)
     set_tests_properties(windterm_resize_erase_interior_controller PROPERTIES TIMEOUT 15)
+    add_test(NAME windterm_resize_mode_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_mode_stages.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_mode_reference.js)
+    set_tests_properties(windterm_resize_mode_controller PROPERTIES TIMEOUT 15)
   endif()
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)

@@ -196,8 +196,7 @@ class Screen {
         else if (line[col].width == 2 && col + 1 < width()) line[col + 1] = blank();
         line[col] = blank();
     }
-    void erase_range(Line& line, int first, int last) {
-        changed(line);
+    void clear_range(Line& line, int first, int last) {
         for (int c = first; c < last; ++c) break_glyph(line, c);
         // Erasing the end destroys a recorded continuation, even if the row
         // happens to remain full of visible characters after later edits.
@@ -205,6 +204,10 @@ class Screen {
         // A complete erasure replaces every remnant of the clipped row.
         // Later real wraps describe new content at the current width.
         if (first == 0 && last == width()) line.cropped = false;
+    }
+    void erase_range(Line& line, int first, int last) {
+        changed(line);
+        clear_range(line, first, last);
     }
     static std::string text(const Line& line) {
         std::string value;
@@ -577,7 +580,13 @@ public:
     }
     void erase_line(int mode) {
         if (mode > 2) throw InputError("unsupported erase mode");
-        erase_range(lines[row], mode == 0 ? column : 0, mode == 1 ? column + 1 : width());
+        auto& line = lines[row];
+        changed(line);
+        materialize_columns(line);
+        clear_range(line, mode == 0 ? column : 0, mode == 1 ? column + 1 : width());
+        // EL0/EL2 discard the retained document tail from the protocol cursor.
+        // EL1 preserves the content extent, including erased prefix blanks.
+        if (mode != 1) line.content_columns = (std::min)(line.content_columns, static_cast<size_t>(column));
         wrap_pending = false; invalidate_attachment();
     }
     void erase_characters(int count) {
