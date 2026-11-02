@@ -1,0 +1,1801 @@
+{
+  "schema": "termforge-display-projection-unicode-validation-v1",
+  "date": "2026-11-02",
+  "issues": [
+    27,
+    29
+  ],
+  "status": "bounded-core-unicode-projection-and-one-wide-original-case-passed; combining-input-policy-and-default-Qt-integration-open",
+  "implementation_commit": "8429935d647a085f63445bca992e85c69c8cffce",
+  "source_commit": "de2628641b5fefbda4cc3ccbe17fa752cf4731be",
+  "pre_run_selected_source_manifest": {
+    "path": "local/r29-retention/unicode-integrated-capture/pre.json",
+    "sha256": "90142276d6d8764c30a0bb06ed8439f5a79a57cf5a68b06feb7f2d3295338e7e",
+    "captured_at_utc": "2026-11-02T04:07:14.338807+00:00",
+    "selected_source_files": 63,
+    "registered_core_tests": 28,
+    "selection_frozen_before_integrated_builds_and_runs": true
+  },
+  "post_run_manifest": {
+    "path": "local/r29-retention/unicode-integrated-capture/post.json",
+    "sha256": "28bb980b1883e6b335617d28a0e52e6f9b69e0d4ca765dc9b75f31a4f22f64d9",
+    "captured_at_utc": "2026-11-02T04:09:37.262144+00:00",
+    "references_pre_manifest_sha256": "90142276d6d8764c30a0bb06ed8439f5a79a57cf5a68b06feb7f2d3295338e7e",
+    "selected_sources_unchanged": true
+  },
+  "complete_pre_run_build_input_manifest": null,
+  "source_manifest_scope": "63 selected repository sources and 28 core registrations frozen before integrated execution; post-run binaries/deployment/logs/configuration. Not a complete toolchain/environment/dependency pre-run manifest.",
+  "source_files": {
+    "CMakeLists.txt": {
+      "path": "CMakeLists.txt",
+      "sha256": "185809daae8fe633d7bb4162138ea082096c21e6d1271f393f6dd2667d71fa33",
+      "bytes": 42035,
+      "equals_source_commit_blob": true
+    },
+    "cmake/ConptyBackend.cmake": {
+      "path": "cmake/ConptyBackend.cmake",
+      "sha256": "dcd670e4cec807c5f18e03b797e2abda623fe818dd9c0698c95186009af49300",
+      "bytes": 1844,
+      "equals_source_commit_blob": true
+    },
+    "cmake/CopyConptyBackend.cmake": {
+      "path": "cmake/CopyConptyBackend.cmake",
+      "sha256": "8bf50df01e302df91ee23a592b8b23d6a203606a35dadb86b63f4eed723dcb67",
+      "bytes": 1827,
+      "equals_source_commit_blob": true
+    },
+    "cmake/MsvcRuntime.cmake": {
+      "path": "cmake/MsvcRuntime.cmake",
+      "sha256": "2eff277fb9a01b6a1e13c4124372d8504edfd35f7506569314bbeaca1e3a3fa3",
+      "bytes": 2543,
+      "equals_source_commit_blob": true
+    },
+    "experiments/conpty/backend.hpp": {
+      "path": "experiments/conpty/backend.hpp",
+      "sha256": "5ee3ab95dc4b9aefce23ff7900cda2ecdd9cd09d1b1044074de2f5e572c31489",
+      "bytes": 6815,
+      "equals_source_commit_blob": true
+    },
+    "experiments/conpty/session.hpp": {
+      "path": "experiments/conpty/session.hpp",
+      "sha256": "a377562211e5633c838cf3d0f12b6b3a509910499759a2564d7eef4c31a37a64",
+      "bytes": 11231,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/alternate_mode_test.cpp": {
+      "path": "experiments/core/alternate_mode_test.cpp",
+      "sha256": "12dd1d488b7a8296b6fecc1fb97b10ccbfebba2d312f89f32cbcb2fac09b7922",
+      "bytes": 21695,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/buffer_state_test.cpp": {
+      "path": "experiments/core/buffer_state_test.cpp",
+      "sha256": "f1c78c96e6cff2bb0405a6822cc223b53f1cac3593c965e5efb016d93847c1fc",
+      "bytes": 17766,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/candidate_terminal.hpp": {
+      "path": "experiments/core/candidate_terminal.hpp",
+      "sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "bytes": 1745,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/decawm_mode_test.cpp": {
+      "path": "experiments/core/decawm_mode_test.cpp",
+      "sha256": "f3aae3b460a4ee31885b1a840eafaf82fef8af733385090e0c8c443e51df4977",
+      "bytes": 12848,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/decom_origin_test.cpp": {
+      "path": "experiments/core/decom_origin_test.cpp",
+      "sha256": "44dd8d0d124483125c8d55df7859bb979c0cbc415df31dc725bfa335aa23e27a",
+      "bytes": 29129,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/display_projection_test.cpp": {
+      "path": "experiments/core/display_projection_test.cpp",
+      "sha256": "28b1d849f1bb6e9522abcb6c2b39036ce84489cddae8b23635db18e7645305e0",
+      "bytes": 11787,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/edit_csi_test.cpp": {
+      "path": "experiments/core/edit_csi_test.cpp",
+      "sha256": "35899d60a33d3503bad9b096c5f0069d45f6079f2ec879e7db6f0e1dabe3601d",
+      "bytes": 12756,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/history_test.cpp": {
+      "path": "experiments/core/history_test.cpp",
+      "sha256": "d54ebed670237b73ea2e855f41aa822a19960a4920801bdd5977e4899763ef69",
+      "bytes": 16800,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/history_view.hpp": {
+      "path": "experiments/core/history_view.hpp",
+      "sha256": "ccaebb82817e8c7f7f1195225b27d9cb605f4dcfc01cc57dca36a827ec3e4184",
+      "bytes": 15728,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/line_order/adapters.hpp": {
+      "path": "experiments/core/line_order/adapters.hpp",
+      "sha256": "f1004dec4e863c9845153d3153663e3b35cc781a99cadf0868c3c982e1ccf12e",
+      "bytes": 3798,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/line_order/document.hpp": {
+      "path": "experiments/core/line_order/document.hpp",
+      "sha256": "325ec5ddc16d4b625b2f8b3aa1fe0d4a1222bac6e272280a06c924b46bb390a1",
+      "bytes": 3185,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/order_query_test.cpp": {
+      "path": "experiments/core/order_query_test.cpp",
+      "sha256": "27ae45ad5daaf17a9d6e2c4eaa021dfb15e03550f01650fe65cc621fa90ea590",
+      "bytes": 22127,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/pending_wrap_test.cpp": {
+      "path": "experiments/core/pending_wrap_test.cpp",
+      "sha256": "8e61049cce8dc21e3a99a71091b4b90051c9d77e6d3998119b2e9e477d718ed6",
+      "bytes": 17627,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/private_mode_test.cpp": {
+      "path": "experiments/core/private_mode_test.cpp",
+      "sha256": "b602921407158836f56cbf89dd3a2fbcec15a38de009d1496dcd907ce040a948",
+      "bytes": 13473,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/region_wrap_test.cpp": {
+      "path": "experiments/core/region_wrap_test.cpp",
+      "sha256": "9fdd70c76c6ad6f6c13c89dadada43316b25824d0060ae48be52c0802e0401f4",
+      "bytes": 6052,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/reply_test.cpp": {
+      "path": "experiments/core/reply_test.cpp",
+      "sha256": "1c764efdfdbf98e91257fbc3e763846dd3be3adac23161460275fe61e23cf85a",
+      "bytes": 2426,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/resize_address_test.cpp": {
+      "path": "experiments/core/resize_address_test.cpp",
+      "sha256": "422311aff3b291054290c86073bfef49a1e804c8a0b8bbb519f713f534fc8d9f",
+      "bytes": 10176,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/resize_edges_test.cpp": {
+      "path": "experiments/core/resize_edges_test.cpp",
+      "sha256": "ca16b2d3bbaa154dbfc06e1a71848ea25145b91f86cd44c17c1a9da86157e49e",
+      "bytes": 14997,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/resize_edit_test.cpp": {
+      "path": "experiments/core/resize_edit_test.cpp",
+      "sha256": "dc0e0e3c0b18c8f639ddda123f81f6c2f6dcd08650de68e34ca17a8001d49c9b",
+      "bytes": 11894,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/resize_erase_test.cpp": {
+      "path": "experiments/core/resize_erase_test.cpp",
+      "sha256": "6448e33f87ecf3bc0d9abeb3279599530478a985b61f6aee8aae9a5208996d17",
+      "bytes": 14332,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/resize_hidden_test.cpp": {
+      "path": "experiments/core/resize_hidden_test.cpp",
+      "sha256": "b84b9d68de9e9f8959831fdd31fbabd676dabfa12a8b43e204097add7ddfdd65",
+      "bytes": 12848,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/resize_mode_test.cpp": {
+      "path": "experiments/core/resize_mode_test.cpp",
+      "sha256": "f44f8fbd09e32aaa19010c2689b72b42a881f993853fbbf7e3a0c59e5afbe7a6",
+      "bytes": 15338,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/resize_pending_test.cpp": {
+      "path": "experiments/core/resize_pending_test.cpp",
+      "sha256": "3414245c16fbbbb0efc0404cc2f8def3de2e75a15cb903cd7880a1380649286c",
+      "bytes": 11846,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/resize_test.cpp": {
+      "path": "experiments/core/resize_test.cpp",
+      "sha256": "4e4469d18f752ed1d2486b81b19e58cd1bb0cb2acb71b870ce2b333cd8175fd6",
+      "bytes": 7418,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/retained_columns_test.cpp": {
+      "path": "experiments/core/retained_columns_test.cpp",
+      "sha256": "aba87bcdfca2070c9bede9eb67ee9fb4f5e98274716ecdccace049e240473a81",
+      "bytes": 8427,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/screen.hpp": {
+      "path": "experiments/core/screen.hpp",
+      "sha256": "a71e964128ca894dd55c9eb59517ad95eff552822417383461616a21dbd34329",
+      "bytes": 38515,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/search_reorder_test.cpp": {
+      "path": "experiments/core/search_reorder_test.cpp",
+      "sha256": "1ab5121e1497a4a6fc90003dc4332771240f4697229cc99f9a45256fb48e4406",
+      "bytes": 6599,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/search_test.cpp": {
+      "path": "experiments/core/search_test.cpp",
+      "sha256": "42e8d13a5b92ee03a6931f71dac1b06fecb8859470caee41fc517f3c1eb7fd8d",
+      "bytes": 20009,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/selection_test.cpp": {
+      "path": "experiments/core/selection_test.cpp",
+      "sha256": "8f0bd95a9eabba4e23c19d6fbdb9bd7eb37f3e529eb8aea5376d62d8145da28a",
+      "bytes": 15286,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/terminal.hpp": {
+      "path": "experiments/core/terminal.hpp",
+      "sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "bytes": 17998,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/text_document.hpp": {
+      "path": "experiments/core/text_document.hpp",
+      "sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "bytes": 4728,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/text_projection.hpp": {
+      "path": "experiments/core/text_projection.hpp",
+      "sha256": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+      "bytes": 1841,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/text_search.hpp": {
+      "path": "experiments/core/text_search.hpp",
+      "sha256": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+      "bytes": 23018,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/text_selection.hpp": {
+      "path": "experiments/core/text_selection.hpp",
+      "sha256": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+      "bytes": 11762,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/unicode_width.hpp": {
+      "path": "experiments/core/unicode_width.hpp",
+      "sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "bytes": 32445,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/view_mapping.hpp": {
+      "path": "experiments/core/view_mapping.hpp",
+      "sha256": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+      "bytes": 5587,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/view_mapping_test.cpp": {
+      "path": "experiments/core/view_mapping_test.cpp",
+      "sha256": "d8d73da7dab1f994d78ba82d0037e682d03d2788dc09eb7ef2e45ec0804415e8",
+      "bytes": 15269,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/widechar_1049_test.cpp": {
+      "path": "experiments/core/widechar_1049_test.cpp",
+      "sha256": "e53fbdd8ec29bd31ae0aff26af7391955fdfa68b9713a24599d9313eba017396",
+      "bytes": 20353,
+      "equals_source_commit_blob": true
+    },
+    "experiments/shell/keyboard.hpp": {
+      "path": "experiments/shell/keyboard.hpp",
+      "sha256": "0bc6ba3b129497e4fb94a3c693bfc5d3280f55536fec8cba750f998ea2fe49ff",
+      "bytes": 5146,
+      "equals_source_commit_blob": true
+    },
+    "experiments/shell/paste.hpp": {
+      "path": "experiments/shell/paste.hpp",
+      "sha256": "f905a693d840256ca7c6a8ffed2601bff41f74e549413f38822db7aceb1c7c82",
+      "bytes": 9038,
+      "equals_source_commit_blob": true
+    },
+    "experiments/shell/queues.hpp": {
+      "path": "experiments/shell/queues.hpp",
+      "sha256": "75277a446669aaf4b0f1adec96785cffe31b62ec6a4afc07b60d66efc82bde3c",
+      "bytes": 7855,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/main.cpp": {
+      "path": "src/qt/main.cpp",
+      "sha256": "4af7c6722ba6847d90d3d9938849aa3b69a8de749c043a278c8725dc46011796",
+      "bytes": 1137,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/resize_fixture.hpp": {
+      "path": "src/qt/resize_fixture.hpp",
+      "sha256": "a855779e06b45b2c68daf413108172ee2d51bcb75fd55911263505d7dc6be300",
+      "bytes": 10084,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/resize_smoke.cpp": {
+      "path": "src/qt/resize_smoke.cpp",
+      "sha256": "0865f6c5e2083a3a4194b8ec5d57460aa0c856612f0b77dd7f9a882923fd050d",
+      "bytes": 30697,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/run_smoke.py": {
+      "path": "src/qt/run_smoke.py",
+      "sha256": "467387975311879ba94c4329410f7cddd4aaa418143935c498d0e08eca8c1e58",
+      "bytes": 4302,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/session_tabs.hpp": {
+      "path": "src/qt/session_tabs.hpp",
+      "sha256": "df3634a37f07a73f92033f29392a7624275a2ce3e4db293dcce01408b9148b07",
+      "bytes": 7007,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/shell_smoke.cpp": {
+      "path": "src/qt/shell_smoke.cpp",
+      "sha256": "3a8099d6aba673bdd6a5c83959c29a235fe4ef4165fe8adcadc52b56049a704e",
+      "bytes": 29170,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/terminal_modes_fixture.hpp": {
+      "path": "src/qt/terminal_modes_fixture.hpp",
+      "sha256": "a527b38750340babacfc05fdecd1901080c2e44ed00023e0bd5eff40e598c782",
+      "bytes": 8900,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/terminal_modes_test.cpp": {
+      "path": "src/qt/terminal_modes_test.cpp",
+      "sha256": "6c27cb1101800f82e188186455853adc7725355327090ae6ecbecfe7fe8892db",
+      "bytes": 19222,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/terminal_session.hpp": {
+      "path": "src/qt/terminal_session.hpp",
+      "sha256": "fc9390030c3ea72c8f195d92a2ac17877c05e4c16906a829bfd88cb54b50fb22",
+      "bytes": 15011,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/terminal_widget.hpp": {
+      "path": "src/qt/terminal_widget.hpp",
+      "sha256": "a5f172980f52abb8d30189ab4334643621472839a20e14bb406bb89d81b70c8c",
+      "bytes": 20021,
+      "equals_source_commit_blob": true
+    },
+    "src/qt/unicode_input_test.cpp": {
+      "path": "src/qt/unicode_input_test.cpp",
+      "sha256": "83662178e07826a4bcd74858146166370b312537e0dddb233b365bed0169209b",
+      "bytes": 20021,
+      "equals_source_commit_blob": true
+    },
+    "third_party/conpty/manifest.json": {
+      "path": "third_party/conpty/manifest.json",
+      "sha256": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "bytes": 1467,
+      "equals_source_commit_blob": true
+    },
+    "third_party/msvc_runtime/manifest.json": {
+      "path": "third_party/msvc_runtime/manifest.json",
+      "sha256": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758",
+      "bytes": 4123,
+      "equals_source_commit_blob": true
+    },
+    "experiments/shell/input_client.cpp": {
+      "path": "experiments/shell/input_client.cpp",
+      "sha256": "67ebb343978ac6822f8feaafa7510f9ee325737fce91b3d2aed8385deea6a969",
+      "bytes": 11706,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/display_projection_unicode_test.cpp": {
+      "path": "experiments/core/display_projection_unicode_test.cpp",
+      "sha256": "b1afe46e49e2cf693564e82c321bc22b4938c2d92e394cc6ab4621ac22e99aaf",
+      "bytes": 17034,
+      "equals_source_commit_blob": true
+    },
+    "experiments/core/resize_unicode_test.cpp": {
+      "path": "experiments/core/resize_unicode_test.cpp",
+      "sha256": "562bc5d925246372f705a9c07fc35a6bf5b370195d33951fa41b0c5d39738089",
+      "bytes": 15440,
+      "equals_source_commit_blob": true
+    }
+  },
+  "all_63_frozen_sources_independently_match_commit_bytes": true,
+  "configuration": {
+    "core": {
+      "host_platform": "Windows x64",
+      "generator": "Visual Studio 17 2022",
+      "generator_platform": "x64",
+      "compiler": "MSVC",
+      "compiler_version": "19.42.34433.0",
+      "windows_sdk": "10.0.26100.0",
+      "configuration": "Release",
+      "build_parallelism": 1,
+      "qt_shell": false,
+      "candidate_adapter": false,
+      "resize_repro": false
+    },
+    "qt": {
+      "host_platform": "Windows x64",
+      "generator": "Visual Studio 17 2022",
+      "generator_platform": "x64",
+      "compiler": "MSVC",
+      "compiler_version": "19.42.34433.0",
+      "windows_sdk": "10.0.26100.0",
+      "configuration": "Release",
+      "build_parallelism": 1,
+      "qt_shell": true,
+      "candidate_adapter": false,
+      "resize_repro": false,
+      "qt_version": "6.10.3",
+      "platform": "offscreen",
+      "backend": "bundled fixed Microsoft ConPTY",
+      "conpty_package_version": "1.25.260930003",
+      "crt_version": "14.51.36247.0",
+      "default_screen_resize_path": true,
+      "retained_projection_integrated": false
+    }
+  },
+  "engineering_red": {
+    "case_count": 18,
+    "passed": 11,
+    "failed": 7,
+    "source_head_at_capture": "cd946bf798be4ee725f7ff518052e5a5a09c1ceb",
+    "test_sha256": "cc2a60c4b0148fde55229f726546fd8f480898d9a7ee8070f4554fae5dc74620",
+    "binary_sha256": "ad1a034521404317007796a3eee19d049c409d474cac407aea76aaeb42a38ba9",
+    "archive_path": "local/r29-retention/projection-unicode-red-capture",
+    "identity_sha256": "80731b65e48544f9d21b162936bfc8a339a9ee5f2b700f99ab3e5958ea7c51ee",
+    "preserved_identity": {
+      "source_head": "cd946bf798be4ee725f7ff518052e5a5a09c1ceb",
+      "captured_utc": "2026-11-02T03:58:17.577333+00:00",
+      "stage": "actual RED 11/18 before production changes",
+      "files": [
+        {
+          "path": "experiments/core/display_projection_unicode_test.cpp",
+          "bytes": 15969,
+          "sha256": "cc2a60c4b0148fde55229f726546fd8f480898d9a7ee8070f4554fae5dc74620",
+          "copy": "display_projection_unicode_test.cpp"
+        },
+        {
+          "path": "experiments/core/history_view.hpp",
+          "bytes": 12744,
+          "sha256": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+          "copy": "history_view.hpp"
+        },
+        {
+          "path": "experiments/core/screen.hpp",
+          "bytes": 38515,
+          "sha256": "a71e964128ca894dd55c9eb59517ad95eff552822417383461616a21dbd34329",
+          "copy": "screen.hpp"
+        },
+        {
+          "path": "CMakeLists.txt",
+          "bytes": 41543,
+          "sha256": "e8379459f047bef207223c97c687d80c2da1a5f03edd9a0bc52fc501f8cd5ced",
+          "copy": "CMakeLists.txt"
+        },
+        {
+          "path": "local/r2-core-build/bin/Release/display_projection_unicode_test.exe",
+          "bytes": 151040,
+          "sha256": "ad1a034521404317007796a3eee19d049c409d474cac407aea76aaeb42a38ba9",
+          "copy": "display_projection_unicode_test.exe"
+        },
+        {
+          "path": "local/r29-retention/display-projection-unicode-red-build.log",
+          "bytes": 379,
+          "sha256": "4a73d3e9e93bf3198ff41d70a1093ddb7a25f18ff0f7fd05be9b4bf09e1ef256",
+          "copy": "display-projection-unicode-red-build.log"
+        },
+        {
+          "path": "local/r29-retention/display-projection-unicode-red.log",
+          "bytes": 704,
+          "sha256": "579223a0dba139939e0ae4a664eb6c8a864e48b518fbec1157797e7495f0a53e",
+          "copy": "display-projection-unicode-red.log"
+        }
+      ]
+    },
+    "all_archived_files_independently_rehashed": true,
+    "new_test_and_CMake_were_working_tree_inputs": true,
+    "full_pre_run_manifest": null,
+    "stdout_stderr": "strict/whole: explicit display projection requires single-cell ASCII sources\nstrict/bytewise: explicit display projection requires single-cell ASCII sources\nrecovery/whole: explicit display projection requires single-cell ASCII sources\nrecovery/bytewise: explicit display projection requires single-cell ASCII sources\nexact-fit-pages: explicit display projection requires single-cell ASCII sources\n68-byte-parser-atom: explicit display projection requires single-cell ASCII sources\nsource-window-resume: explicit display projection requires single-cell ASCII sources\nUnicode display projection engineering checks: 11/18 cases passed (no original resize, remaining-column, attachment or Qt claim)"
+  },
+  "first_engineering_green": {
+    "case_count": 18,
+    "passed": 18,
+    "failed": 0,
+    "same_original_18_case_test_sha256": "cc2a60c4b0148fde55229f726546fd8f480898d9a7ee8070f4554fae5dc74620",
+    "result_log": "local/r29-retention/projection-unicode-green.log",
+    "build_log": "local/r29-retention/projection-unicode-green-build.log",
+    "stdout": "Unicode display projection engineering checks: 18/18 cases passed (no original resize, remaining-column, attachment or Qt claim)",
+    "test_identity_basis": "Execution-agent continuity: same frozen 18-case test before the later import-boundary addition; direct run log retained",
+    "executable_sha256": null,
+    "executable_identity_limitation": "No executable was fixed for the first 18-case GREEN. Current 19-case or integrated executables are not substituted.",
+    "complete_pre_run_source_manifest": null
+  },
+  "later_import_boundary_extension": {
+    "passed": 19,
+    "case_count": 19,
+    "failed": 0,
+    "added_cases": 1,
+    "invalid_import_values_in_added_case": 11,
+    "independent_red_claimed": false,
+    "result_log": "local/r29-retention/projection-unicode-import-test.log",
+    "build_log": "local/r29-retention/projection-unicode-import-build.log",
+    "stdout": "Unicode display projection engineering checks: 19/19 cases passed (no original resize, remaining-column, attachment or Qt claim)",
+    "test_sha256": "b1afe46e49e2cf693564e82c321bc22b4938c2d92e394cc6ab4621ac22e99aaf",
+    "current_integrated_executable": {
+      "path": "local/r2-core-build/bin/Release/display_projection_unicode_test.exe",
+      "sha256": "5957a095bf7e88959c2bbdb3fadaf7c243be1d475679891f9b7bdcf8196d7181",
+      "bytes": 156160
+    },
+    "first_18_green_executable_identity_inherited": false
+  },
+  "wide_original_comparison": {
+    "case_id": "wide-boundary",
+    "path": "research/ui/results/2026-11-02-resize-unicode-reference/wide-boundary.json",
+    "sha256": "2b8f8b17bfb95a418c29dbad55a12df13f27df1a92b3c3d2fc01c374087e2b0e",
+    "schema": "termforge-original-resize-unicode-reference-v1",
+    "status": "bounded-direct-protocol-and-unicode-text-observation",
+    "authorized_plan_sha256": "8a68ac0f68f7a3f1ec91174d60620e4f9a6cae71d816d400079cda1476ffb29a",
+    "original_runs": 1,
+    "original_runtime_strict_audit_passed": true,
+    "original_phases": 4,
+    "source_bytes": 60,
+    "source_sha256": "ef608ca9c74bf7f46eeaffa2b920da7d23a4095498f9a3011034189979c14d30",
+    "parser_modes": [
+      "strict",
+      "recovery"
+    ],
+    "feed_modes": [
+      "whole",
+      "bytewise"
+    ],
+    "total_original_replay_phases": 16,
+    "passed_phases": 16,
+    "assertions": 240,
+    "failed_assertions": 0,
+    "added_after_first_engineering_green": true,
+    "independent_red_claimed": false,
+    "test_sha256": "562bc5d925246372f705a9c07fc35a6bf5b370195d33951fa41b0c5d39738089",
+    "current_integrated_executable": {
+      "path": "local/r2-core-build/bin/Release/resize_unicode_test.exe",
+      "sha256": "a60fa11c354ce5e6e5652e361f16b4858a328a7f69048f481175779d41b0d364",
+      "bytes": 151040
+    },
+    "source_body_comparison": "Exact UTF-8 logical lines, omitting only trailing empty strings when comparing core capacity; original extra empty row retained and hashed in literal oracle",
+    "original_array_hash_format": "Compact JSON with default ensure_ascii=true, encoded as UTF-8",
+    "display_comparison": "Visible start sets for ASCII anchors, CJK after an all-ASCII prefix, and Q; no glyph rectangle width or Z API-position oracle",
+    "z_api_units_calibrated": false,
+    "z_display_coordinate_compared": false,
+    "private_state_oracle": false,
+    "phase_transcription": [
+      {
+        "phase": 0,
+        "label": "wide-initial",
+        "source_bytes": 60,
+        "source_sha256": "ef608ca9c74bf7f46eeaffa2b920da7d23a4095498f9a3011034189979c14d30",
+        "original_body_lines": 8,
+        "body_sha256": "8f166cf4210a90c5732bf6d0025a78a954e1fc1a5881bd268d428049c5f4c00d",
+        "visible_marker_starts": [
+          [
+            "0123456789",
+            1,
+            0
+          ],
+          [
+            "ANCHOR",
+            2,
+            0
+          ],
+          [
+            "界",
+            7,
+            60
+          ]
+        ]
+      },
+      {
+        "phase": 1,
+        "label": "wide-shrunk-unmodified",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "original_body_lines": 9,
+        "body_sha256": "d4c0033f2322c581fff9313e65e57e0b402c182c94c24b31ee71bd8723381926",
+        "visible_marker_starts": [
+          [
+            "0123456789",
+            1,
+            0
+          ],
+          [
+            "ANCHOR",
+            2,
+            0
+          ],
+          [
+            "界",
+            8,
+            0
+          ]
+        ]
+      },
+      {
+        "phase": 2,
+        "label": "wide-next-Q",
+        "source_bytes": 1,
+        "source_sha256": "4ae81572f06e1b88fd5ced7a1a000945432e83e1551e6f721ee9c00b8cc33260",
+        "original_body_lines": 8,
+        "body_sha256": "530f686c138f746be5743e894498a3ac1fd6e113b4497d73fc4845bd3f23c86e",
+        "visible_marker_starts": [
+          [
+            "0123456789",
+            1,
+            0
+          ],
+          [
+            "ANCHOR",
+            2,
+            0
+          ],
+          [
+            "Q",
+            7,
+            60
+          ]
+        ]
+      },
+      {
+        "phase": 3,
+        "label": "wide-restored-after-Q",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "original_body_lines": 8,
+        "body_sha256": "530f686c138f746be5743e894498a3ac1fd6e113b4497d73fc4845bd3f23c86e",
+        "visible_marker_starts": [
+          [
+            "0123456789",
+            1,
+            0
+          ],
+          [
+            "ANCHOR",
+            2,
+            0
+          ],
+          [
+            "Q",
+            7,
+            60
+          ]
+        ]
+      }
+    ],
+    "result_log": "local/r29-retention/resize-unicode-test.log",
+    "build_log": "local/r29-retention/resize-unicode-build.log"
+  },
+  "wide_remainder_engineering": {
+    "passed": 4,
+    "case_count": 4,
+    "assertions": 64,
+    "failed_assertions": 0,
+    "independent_red_claimed": false,
+    "original_observation_claimed": false,
+    "same_test_translation_unit_as_wide_original": true,
+    "scope": [
+      "abc+CJK+Z at display width 4",
+      "one-column display-only padding with next cursor at the same source lead",
+      "wide lead/trail pair preserved on page continuation",
+      "padding maps only to existing source boundary",
+      "complete reverse selection and Find source range Cell columns 3..6; UTF-8 byte end is not used"
+    ],
+    "result_log": "local/r29-retention/resize-unicode-test.log"
+  },
+  "implementation_contract": {
+    "copies_existing_cells_without_reconstructing_from_text": true,
+    "max_source_fragments_per_request": 200,
+    "max_cells_per_fragment": 500,
+    "max_bytes_per_lead": 68,
+    "max_existing_marks_per_lead": 16,
+    "supports_core_complete_width_1_and_2_atoms": true,
+    "rejects_incomplete_or_malformed_atoms": true,
+    "wide_atom_never_split_by_projection": true,
+    "source_less_padding_has_no_new_source_identity": true,
+    "stale_resume_and_layout_guards_preserved": true,
+    "failed_projection_preserves_layout_revision": true,
+    "screen_combining_attachment_modified": false,
+    "complete_grapheme_or_shaping_implementation": false
+  },
+  "integrated_regression": {
+    "core": {
+      "passed": 28,
+      "total": 28,
+      "reported_seconds": 1.05,
+      "tests": [
+        {
+          "name": "resize_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "resize_edges_core",
+          "status": "passed",
+          "reported_seconds": 0.02
+        },
+        {
+          "name": "history_core",
+          "status": "passed",
+          "reported_seconds": 0.02
+        },
+        {
+          "name": "selection_core",
+          "status": "passed",
+          "reported_seconds": 0.09
+        },
+        {
+          "name": "search_core",
+          "status": "passed",
+          "reported_seconds": 0.13
+        },
+        {
+          "name": "search_reorder_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "buffer_state_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "view_mapping_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "display_projection_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "display_projection_unicode_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "retained_resize_unicode_core",
+          "status": "passed",
+          "reported_seconds": 0.02
+        },
+        {
+          "name": "retained_columns_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "retained_resize_address_core",
+          "status": "passed",
+          "reported_seconds": 0.03
+        },
+        {
+          "name": "retained_resize_edit_core",
+          "status": "passed",
+          "reported_seconds": 0.03
+        },
+        {
+          "name": "retained_resize_pending_core",
+          "status": "passed",
+          "reported_seconds": 0.02
+        },
+        {
+          "name": "retained_resize_hidden_core",
+          "status": "passed",
+          "reported_seconds": 0.02
+        },
+        {
+          "name": "retained_resize_erase_core",
+          "status": "passed",
+          "reported_seconds": 0.03
+        },
+        {
+          "name": "retained_resize_mode_core",
+          "status": "passed",
+          "reported_seconds": 0.02
+        },
+        {
+          "name": "alternate_mode_core",
+          "status": "passed",
+          "reported_seconds": 0.15
+        },
+        {
+          "name": "decawm_mode_core",
+          "status": "passed",
+          "reported_seconds": 0.03
+        },
+        {
+          "name": "private_mode_core",
+          "status": "passed",
+          "reported_seconds": 0.02
+        },
+        {
+          "name": "decom_origin_core",
+          "status": "passed",
+          "reported_seconds": 0.15
+        },
+        {
+          "name": "pending_wrap_core",
+          "status": "passed",
+          "reported_seconds": 0.06
+        },
+        {
+          "name": "widechar_1049_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "reply_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "edit_csi_core",
+          "status": "passed",
+          "reported_seconds": 0.01
+        },
+        {
+          "name": "order_query_core",
+          "status": "passed",
+          "reported_seconds": 0.02
+        },
+        {
+          "name": "region_wrap_core",
+          "status": "passed",
+          "reported_seconds": 0.02
+        }
+      ],
+      "build_log": "local/r29-retention/unicode-integrated-core-build.log",
+      "result_log": "local/r29-retention/unicode-integrated-core-ctest.log"
+    },
+    "qt": {
+      "passed": 4,
+      "total": 4,
+      "reported_seconds": 8.67,
+      "tests": [
+        {
+          "name": "qt_cpp_shell",
+          "status": "passed",
+          "reported_seconds": 1.73
+        },
+        {
+          "name": "qt_unicode_input",
+          "status": "passed",
+          "reported_seconds": 1.2
+        },
+        {
+          "name": "qt_cpp_resize",
+          "status": "passed",
+          "reported_seconds": 5.31
+        },
+        {
+          "name": "qt_terminal_modes",
+          "status": "passed",
+          "reported_seconds": 0.41
+        }
+      ],
+      "build_log": "local/r29-retention/unicode-integrated-qt-build.log",
+      "result_log": "local/r29-retention/unicode-integrated-qt-ctest.log",
+      "default_modes_five_stages_only": true,
+      "explicit_resize_B_CD_diagnostic_included": false
+    },
+    "elapsed_values_are_performance_measurements": false
+  },
+  "registered_native_commands": {
+    "resize_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "resize_edges_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_edges_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "history_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/history_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "selection_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/selection_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "search_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/search_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "search_reorder_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/search_reorder_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "buffer_state_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/buffer_state_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "view_mapping_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/view_mapping_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "display_projection_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/display_projection_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "display_projection_unicode_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/display_projection_unicode_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "retained_resize_unicode_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_unicode_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "retained_columns_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/retained_columns_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "retained_resize_address_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_address_test.exe",
+        "--retained-columns"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "retained_resize_edit_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_edit_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "retained_resize_pending_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_pending_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "retained_resize_hidden_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_hidden_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "retained_resize_erase_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_erase_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "retained_resize_mode_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_mode_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "alternate_mode_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/alternate_mode_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "decawm_mode_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/decawm_mode_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "private_mode_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/private_mode_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "decom_origin_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/decom_origin_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "pending_wrap_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/pending_wrap_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "widechar_1049_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/widechar_1049_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "reply_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/reply_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "edit_csi_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/edit_csi_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "order_query_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/order_query_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "region_wrap_core": {
+      "command": [
+        "local/r2-core-build/bin/Release/region_wrap_test.exe"
+      ],
+      "configuration": "Release",
+      "will_fail": false
+    },
+    "qt_cpp_shell": {
+      "command": [
+        "<configured-python>",
+        "src/qt/run_smoke.py",
+        "local/r2-qt-build/qt-smoke-bin/Release/qt_cpp_shell_smoke.exe"
+      ],
+      "configuration": "Release",
+      "environment": {
+        "QT_QPA_PLATFORM": "offscreen"
+      },
+      "ctest_timeout_seconds": 35,
+      "configured_python_executable_hash_captured": false,
+      "will_fail": false
+    },
+    "qt_unicode_input": {
+      "command": [
+        "<configured-python>",
+        "src/qt/run_smoke.py",
+        "local/r2-qt-build/qt-unicode-bin/Release/qt_unicode_input_test.exe"
+      ],
+      "configuration": "Release",
+      "environment": {
+        "QT_QPA_PLATFORM": "offscreen",
+        "TERMFORGE_TEST_ARTIFACTS": "local/r2-qt-build/test-artifacts"
+      },
+      "ctest_timeout_seconds": 35,
+      "configured_python_executable_hash_captured": false,
+      "will_fail": false
+    },
+    "qt_cpp_resize": {
+      "command": [
+        "<configured-python>",
+        "src/qt/run_smoke.py",
+        "local/r2-qt-build/qt-resize-bin/Release/qt_cpp_resize_smoke.exe"
+      ],
+      "configuration": "Release",
+      "environment": {
+        "QT_QPA_PLATFORM": "offscreen"
+      },
+      "ctest_timeout_seconds": 35,
+      "configured_python_executable_hash_captured": false,
+      "will_fail": false
+    },
+    "qt_terminal_modes": {
+      "command": [
+        "<configured-python>",
+        "src/qt/run_smoke.py",
+        "local/r2-qt-build/qt-modes-bin/Release/qt_terminal_modes_test.exe"
+      ],
+      "configuration": "Release",
+      "environment": {
+        "QT_QPA_PLATFORM": "offscreen"
+      },
+      "ctest_timeout_seconds": 35,
+      "configured_python_executable_hash_captured": false,
+      "will_fail": false
+    }
+  },
+  "tested_binaries": {
+    "core/resize_test.exe": {
+      "path": "local/r2-core-build/bin/Release/resize_test.exe",
+      "sha256": "18519dad40c3ed49a85941135cf32e3398a1cd4725456e30fb3ca4d947be9ae3",
+      "bytes": 123392
+    },
+    "core/resize_edges_test.exe": {
+      "path": "local/r2-core-build/bin/Release/resize_edges_test.exe",
+      "sha256": "31a3be364f8a4919a047fa0d2483a889b9c9729999e61ecda3e4447aa8b0286e",
+      "bytes": 113664
+    },
+    "core/history_test.exe": {
+      "path": "local/r2-core-build/bin/Release/history_test.exe",
+      "sha256": "42082c31b0c0954df606f7ae3a29f563fc8deb9227b52b3bdff5181e9adfc3a0",
+      "bytes": 139776
+    },
+    "core/selection_test.exe": {
+      "path": "local/r2-core-build/bin/Release/selection_test.exe",
+      "sha256": "dd501621c9648887b442d1d03ee59e7e78a6946c17adfe8b1b2269815fe8f2d1",
+      "bytes": 147456
+    },
+    "core/search_test.exe": {
+      "path": "local/r2-core-build/bin/Release/search_test.exe",
+      "sha256": "b36204e062c14dc5c02f7ec057659115e66942cebd4a613ce20e2372ab94f3c8",
+      "bytes": 144896
+    },
+    "core/search_reorder_test.exe": {
+      "path": "local/r2-core-build/bin/Release/search_reorder_test.exe",
+      "sha256": "316bda0a1a03eeb4964dfff752764479c0782c32bb3b6d972f958c5b682d5c8c",
+      "bytes": 65536
+    },
+    "core/buffer_state_test.exe": {
+      "path": "local/r2-core-build/bin/Release/buffer_state_test.exe",
+      "sha256": "c443dbecc1bd56e2c87314a90408be7b14b71dd01591767b612bdfee7d513833",
+      "bytes": 155136
+    },
+    "core/view_mapping_test.exe": {
+      "path": "local/r2-core-build/bin/Release/view_mapping_test.exe",
+      "sha256": "a96b9ec13f70eac9490a205d84fe46e7518f379e8c9ddd505d30205f5e255d91",
+      "bytes": 146432
+    },
+    "core/display_projection_test.exe": {
+      "path": "local/r2-core-build/bin/Release/display_projection_test.exe",
+      "sha256": "058a4114fc66be7101d1683c620e2fd177a52b4ec1282eaf171a5dc5c4f1f22b",
+      "bytes": 137216
+    },
+    "core/retained_columns_test.exe": {
+      "path": "local/r2-core-build/bin/Release/retained_columns_test.exe",
+      "sha256": "72d459f8c6e6248cc9fa72a779a34469a57523d71b6231bc0bc426138b28058a",
+      "bytes": 98304
+    },
+    "core/resize_address_test.exe": {
+      "path": "local/r2-core-build/bin/Release/resize_address_test.exe",
+      "sha256": "1874c22b937ec19f61a599f0792c1714e0adbad117d4a499afe3143c24ed3487",
+      "bytes": 115712
+    },
+    "core/resize_edit_test.exe": {
+      "path": "local/r2-core-build/bin/Release/resize_edit_test.exe",
+      "sha256": "d42a5022b5486da8b34e3ce6b216de3f550e5b8f9ce70a30e0525e5f65a61ca3",
+      "bytes": 117760
+    },
+    "core/resize_pending_test.exe": {
+      "path": "local/r2-core-build/bin/Release/resize_pending_test.exe",
+      "sha256": "33e8677363f5fee74a001558fdc856a6f7808177c57975ed7d572dbab9b3dc19",
+      "bytes": 120832
+    },
+    "core/resize_hidden_test.exe": {
+      "path": "local/r2-core-build/bin/Release/resize_hidden_test.exe",
+      "sha256": "234d64dcb35a4b4b0e6d3d8efddf4f180a35e3f96289b89b08046f4f5ba0dfdd",
+      "bytes": 126976
+    },
+    "core/resize_erase_test.exe": {
+      "path": "local/r2-core-build/bin/Release/resize_erase_test.exe",
+      "sha256": "f29730769ab35db578645450d50e69b96423c6189ba9d1406fc3ec2ec7230f3a",
+      "bytes": 123392
+    },
+    "core/resize_mode_test.exe": {
+      "path": "local/r2-core-build/bin/Release/resize_mode_test.exe",
+      "sha256": "4f38558c201ee300dbe9173cea9a1c98a2c224791c3d4b1624a1536e8ef0f88b",
+      "bytes": 131584
+    },
+    "core/alternate_mode_test.exe": {
+      "path": "local/r2-core-build/bin/Release/alternate_mode_test.exe",
+      "sha256": "17b3ad4e3b9925430c682c5630c6eafdce4f2d93f81c58a8624564cd839d86ae",
+      "bytes": 157696
+    },
+    "core/decawm_mode_test.exe": {
+      "path": "local/r2-core-build/bin/Release/decawm_mode_test.exe",
+      "sha256": "f6704cdb6c53319428b4d08c28bad2ec4d7ca46fc238ff59ba82f0ca5c6d3840",
+      "bytes": 108544
+    },
+    "core/private_mode_test.exe": {
+      "path": "local/r2-core-build/bin/Release/private_mode_test.exe",
+      "sha256": "5ba9f05e0bbda277d67e9cf3b7ebe1d04e71501cc9bbeffc2c7337e53db1b4b7",
+      "bytes": 133632
+    },
+    "core/decom_origin_test.exe": {
+      "path": "local/r2-core-build/bin/Release/decom_origin_test.exe",
+      "sha256": "a48cbd8fb6194aefa94274c5ffe75e69bb5746a28889f6e9f06a570f69dc1a77",
+      "bytes": 176640
+    },
+    "core/pending_wrap_test.exe": {
+      "path": "local/r2-core-build/bin/Release/pending_wrap_test.exe",
+      "sha256": "bb33c69e855df300e32739a0ad38cf9f4f05b2df50041163765991594e685408",
+      "bytes": 124416
+    },
+    "core/widechar_1049_test.exe": {
+      "path": "local/r2-core-build/bin/Release/widechar_1049_test.exe",
+      "sha256": "a668831974b83917ed55ad2abd3ddb300dbca6ca1c1a650454ef0fc827bdc672",
+      "bytes": 144896
+    },
+    "core/reply_test.exe": {
+      "path": "local/r2-core-build/bin/Release/reply_test.exe",
+      "sha256": "cb8f9c58e49b038492593f74b7334fadf3d715983ed2a54ff078051016778258",
+      "bytes": 76800
+    },
+    "core/edit_csi_test.exe": {
+      "path": "local/r2-core-build/bin/Release/edit_csi_test.exe",
+      "sha256": "c0c1af34787cc81f97f69fb5a654ffbfec350e0638f29d6f3e27f584f5dcd496",
+      "bytes": 110592
+    },
+    "core/order_query_test.exe": {
+      "path": "local/r2-core-build/bin/Release/order_query_test.exe",
+      "sha256": "35a0b6b9fb945543fff5023dd24e4c06e1aa3869895770fe901535d35ffd2ae4",
+      "bytes": 163840
+    },
+    "core/region_wrap_test.exe": {
+      "path": "local/r2-core-build/bin/Release/region_wrap_test.exe",
+      "sha256": "23ed1ee87243e8d70cb5c4695de50211a37ae928758b8bf17083d6140ff188c0",
+      "bytes": 111104
+    },
+    "qt/qt_cpp_shell_smoke.exe": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/qt_cpp_shell_smoke.exe",
+      "sha256": "3fbf9472234ffab0de8bd2ab66f036497a09b3c6bea417d70191e014ad000fba",
+      "bytes": 267776
+    },
+    "qt/qt_unicode_input_test.exe": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/qt_unicode_input_test.exe",
+      "sha256": "1e758f1e246185a1494312db5c3c48ca95975449c5c4a219ae172d91bc0f739f",
+      "bytes": 260096
+    },
+    "qt/qt_cpp_resize_smoke.exe": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/qt_cpp_resize_smoke.exe",
+      "sha256": "ac88f9aee874483c74571ef4f4154c2fa91650f879a20dc9036d779a3b710f12",
+      "bytes": 264192
+    },
+    "qt/qt_terminal_modes_test.exe": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/qt_terminal_modes_test.exe",
+      "sha256": "55a0129728284869fafd1b026d4378f1ff179c34dd9adb7529d66244958c91d9",
+      "bytes": 242688
+    },
+    "core/display_projection_unicode_test.exe": {
+      "path": "local/r2-core-build/bin/Release/display_projection_unicode_test.exe",
+      "sha256": "5957a095bf7e88959c2bbdb3fadaf7c243be1d475679891f9b7bdcf8196d7181",
+      "bytes": 156160
+    },
+    "core/resize_unicode_test.exe": {
+      "path": "local/r2-core-build/bin/Release/resize_unicode_test.exe",
+      "sha256": "a60fa11c354ce5e6e5652e361f16b4858a328a7f69048f481175779d41b0d364",
+      "bytes": 151040
+    }
+  },
+  "tested_executable_count": 32,
+  "built_only_binaries": {
+    "qt/termforge_qt_shell.exe": {
+      "path": "local/r2-qt-build/qt-bin/Release/termforge_qt_shell.exe",
+      "sha256": "5829be424a5d932d50b4156d91ac543e5616221427f63e246c3d117a3d3cd8fa",
+      "bytes": 206336
+    }
+  },
+  "product_entry_executed": false,
+  "supporting_executables": {
+    "qt/shell_input_client.exe": {
+      "path": "local/r2-qt-build/bin/Release/shell_input_client.exe",
+      "sha256": "33f955a0d28249370e67c99579da4cc722e06cd34d8bbf623fb845cb9d47ffee",
+      "bytes": 41984
+    },
+    "qt/app-local-shell-input-client.exe": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/shell_input_client.exe",
+      "sha256": "33f955a0d28249370e67c99579da4cc722e06cd34d8bbf623fb845cb9d47ffee",
+      "bytes": 41984
+    }
+  },
+  "support_helper_copy_hashes_equal": true,
+  "support_helper_additional_ctest_count": 0,
+  "selected_deployed_runtime": {
+    "qt_cpp_shell_smoke/msvcp140.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/msvcp140.dll",
+      "sha256": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+      "bytes": 643512
+    },
+    "qt_cpp_shell_smoke/vcruntime140.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/vcruntime140.dll",
+      "sha256": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+      "bytes": 178616
+    },
+    "qt_cpp_shell_smoke/vcruntime140_1.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/vcruntime140_1.dll",
+      "sha256": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+      "bytes": 50112
+    },
+    "qt_cpp_shell_smoke/Qt6Core.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/Qt6Core.dll",
+      "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72",
+      "bytes": 10250040
+    },
+    "qt_cpp_shell_smoke/Qt6Gui.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/Qt6Gui.dll",
+      "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f",
+      "bytes": 9514296
+    },
+    "qt_cpp_shell_smoke/Qt6Widgets.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/Qt6Widgets.dll",
+      "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127",
+      "bytes": 6577464
+    },
+    "qt_cpp_shell_smoke/Qt6Test.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/Qt6Test.dll",
+      "sha256": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187",
+      "bytes": 380216
+    },
+    "qt_cpp_shell_smoke/Qt6Network.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/Qt6Network.dll",
+      "sha256": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1",
+      "bytes": 1773880
+    },
+    "qt_cpp_shell_smoke/platforms/qoffscreen.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/platforms/qoffscreen.dll",
+      "sha256": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd",
+      "bytes": 113976
+    },
+    "qt_unicode_input_test/msvcp140.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/msvcp140.dll",
+      "sha256": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+      "bytes": 643512
+    },
+    "qt_unicode_input_test/vcruntime140.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/vcruntime140.dll",
+      "sha256": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+      "bytes": 178616
+    },
+    "qt_unicode_input_test/vcruntime140_1.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/vcruntime140_1.dll",
+      "sha256": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+      "bytes": 50112
+    },
+    "qt_unicode_input_test/Qt6Core.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/Qt6Core.dll",
+      "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72",
+      "bytes": 10250040
+    },
+    "qt_unicode_input_test/Qt6Gui.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/Qt6Gui.dll",
+      "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f",
+      "bytes": 9514296
+    },
+    "qt_unicode_input_test/Qt6Widgets.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/Qt6Widgets.dll",
+      "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127",
+      "bytes": 6577464
+    },
+    "qt_unicode_input_test/Qt6Test.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/Qt6Test.dll",
+      "sha256": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187",
+      "bytes": 380216
+    },
+    "qt_unicode_input_test/Qt6Network.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/Qt6Network.dll",
+      "sha256": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1",
+      "bytes": 1773880
+    },
+    "qt_unicode_input_test/platforms/qoffscreen.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/platforms/qoffscreen.dll",
+      "sha256": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd",
+      "bytes": 113976
+    },
+    "qt_cpp_resize_smoke/msvcp140.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/msvcp140.dll",
+      "sha256": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+      "bytes": 643512
+    },
+    "qt_cpp_resize_smoke/vcruntime140.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/vcruntime140.dll",
+      "sha256": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+      "bytes": 178616
+    },
+    "qt_cpp_resize_smoke/vcruntime140_1.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/vcruntime140_1.dll",
+      "sha256": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+      "bytes": 50112
+    },
+    "qt_cpp_resize_smoke/Qt6Core.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/Qt6Core.dll",
+      "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72",
+      "bytes": 10250040
+    },
+    "qt_cpp_resize_smoke/Qt6Gui.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/Qt6Gui.dll",
+      "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f",
+      "bytes": 9514296
+    },
+    "qt_cpp_resize_smoke/Qt6Widgets.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/Qt6Widgets.dll",
+      "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127",
+      "bytes": 6577464
+    },
+    "qt_cpp_resize_smoke/Qt6Test.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/Qt6Test.dll",
+      "sha256": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187",
+      "bytes": 380216
+    },
+    "qt_cpp_resize_smoke/Qt6Network.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/Qt6Network.dll",
+      "sha256": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1",
+      "bytes": 1773880
+    },
+    "qt_cpp_resize_smoke/platforms/qoffscreen.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/platforms/qoffscreen.dll",
+      "sha256": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd",
+      "bytes": 113976
+    },
+    "qt_terminal_modes_test/msvcp140.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/msvcp140.dll",
+      "sha256": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+      "bytes": 643512
+    },
+    "qt_terminal_modes_test/vcruntime140.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/vcruntime140.dll",
+      "sha256": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+      "bytes": 178616
+    },
+    "qt_terminal_modes_test/vcruntime140_1.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/vcruntime140_1.dll",
+      "sha256": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+      "bytes": 50112
+    },
+    "qt_terminal_modes_test/Qt6Core.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/Qt6Core.dll",
+      "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72",
+      "bytes": 10250040
+    },
+    "qt_terminal_modes_test/Qt6Gui.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/Qt6Gui.dll",
+      "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f",
+      "bytes": 9514296
+    },
+    "qt_terminal_modes_test/Qt6Widgets.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/Qt6Widgets.dll",
+      "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127",
+      "bytes": 6577464
+    },
+    "qt_terminal_modes_test/Qt6Test.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/Qt6Test.dll",
+      "sha256": "9d0473552b332aa378c60da05af97d741fcce06b0fc4dd68e36d885015eb5187",
+      "bytes": 380216
+    },
+    "qt_terminal_modes_test/Qt6Network.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/Qt6Network.dll",
+      "sha256": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1",
+      "bytes": 1773880
+    },
+    "qt_terminal_modes_test/platforms/qoffscreen.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/platforms/qoffscreen.dll",
+      "sha256": "a35f87f597b91121cfc0ef39dcb0a5e7ad2876850fbfaf6377edf80eaa067bfd",
+      "bytes": 113976
+    },
+    "qt_cpp_shell_smoke/conpty-backend/conpty.dll": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/conpty-backend/conpty.dll",
+      "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "bytes": 119608
+    },
+    "qt_cpp_shell_smoke/conpty-backend/OpenConsole.exe": {
+      "path": "local/r2-qt-build/qt-smoke-bin/Release/conpty-backend/OpenConsole.exe",
+      "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+      "bytes": 1089376
+    },
+    "qt_unicode_input_test/conpty-backend/conpty.dll": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/conpty-backend/conpty.dll",
+      "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "bytes": 119608
+    },
+    "qt_unicode_input_test/conpty-backend/OpenConsole.exe": {
+      "path": "local/r2-qt-build/qt-unicode-bin/Release/conpty-backend/OpenConsole.exe",
+      "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+      "bytes": 1089376
+    },
+    "qt_cpp_resize_smoke/conpty-backend/conpty.dll": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/conpty-backend/conpty.dll",
+      "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "bytes": 119608
+    },
+    "qt_cpp_resize_smoke/conpty-backend/OpenConsole.exe": {
+      "path": "local/r2-qt-build/qt-resize-bin/Release/conpty-backend/OpenConsole.exe",
+      "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+      "bytes": 1089376
+    },
+    "qt_terminal_modes_test/conpty-backend/conpty.dll": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/conpty-backend/conpty.dll",
+      "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "bytes": 119608
+    },
+    "qt_terminal_modes_test/conpty-backend/OpenConsole.exe": {
+      "path": "local/r2-qt-build/qt-modes-bin/Release/conpty-backend/OpenConsole.exe",
+      "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+      "bytes": 1089376
+    },
+    "termforge_qt_shell/msvcp140.dll": {
+      "path": "local/r2-qt-build/qt-bin/Release/msvcp140.dll",
+      "sha256": "7c26614e1d733892c2deac7e245ce115504b1d80592dd0a01b08e3e5a55f89ca",
+      "bytes": 643512
+    },
+    "termforge_qt_shell/vcruntime140.dll": {
+      "path": "local/r2-qt-build/qt-bin/Release/vcruntime140.dll",
+      "sha256": "d1f4225df2cd877dbf130d5668a021dce3f94118455ff5ec952061c30afc9ce7",
+      "bytes": 178616
+    },
+    "termforge_qt_shell/vcruntime140_1.dll": {
+      "path": "local/r2-qt-build/qt-bin/Release/vcruntime140_1.dll",
+      "sha256": "a7146c08f89fe5b04541ab507cdb59ff7b44534d4ba3c668a426c6450a03434e",
+      "bytes": 50112
+    },
+    "termforge_qt_shell/Qt6Core.dll": {
+      "path": "local/r2-qt-build/qt-bin/Release/Qt6Core.dll",
+      "sha256": "b712b4754588e89f855dc0aa087d6304b2fd21b0e0639d1cdeb9cb969bd5fb72",
+      "bytes": 10250040
+    },
+    "termforge_qt_shell/Qt6Gui.dll": {
+      "path": "local/r2-qt-build/qt-bin/Release/Qt6Gui.dll",
+      "sha256": "03ba47a2025036a04f5548bce242788ac21edf551e78d5b42e1b87beb799904f",
+      "bytes": 9514296
+    },
+    "termforge_qt_shell/Qt6Widgets.dll": {
+      "path": "local/r2-qt-build/qt-bin/Release/Qt6Widgets.dll",
+      "sha256": "61ddd0316a731b8dbabaf2924cd0d47b756461e37329b4f535902cf450416127",
+      "bytes": 6577464
+    },
+    "termforge_qt_shell/Qt6Network.dll": {
+      "path": "local/r2-qt-build/qt-bin/Release/Qt6Network.dll",
+      "sha256": "203f8ddf83c015ce56752ebe7a1986472be7dbb95c20e13ac8e1d741d9ac93d1",
+      "bytes": 1773880
+    },
+    "termforge_qt_shell/platforms/qwindows.dll": {
+      "path": "local/r2-qt-build/qt-bin/Release/platforms/qwindows.dll",
+      "sha256": "cafd5bfdef3d89d176ee26725c8d4759fd6cb007645b645a4cbf6386364a3f36",
+      "bytes": 997688
+    },
+    "termforge_qt_shell/conpty-backend/conpty.dll": {
+      "path": "local/r2-qt-build/qt-bin/Release/conpty-backend/conpty.dll",
+      "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "bytes": 119608
+    },
+    "termforge_qt_shell/conpty-backend/OpenConsole.exe": {
+      "path": "local/r2-qt-build/qt-bin/Release/conpty-backend/OpenConsole.exe",
+      "sha256": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586",
+      "bytes": 1089376
+    }
+  },
+  "deployment_checks": {
+    "selected_runtime_files": 54,
+    "conpty_files_checked": [
+      "qt_cpp_shell_smoke/conpty-backend/conpty.dll",
+      "qt_cpp_shell_smoke/conpty-backend/OpenConsole.exe",
+      "qt_unicode_input_test/conpty-backend/conpty.dll",
+      "qt_unicode_input_test/conpty-backend/OpenConsole.exe",
+      "qt_cpp_resize_smoke/conpty-backend/conpty.dll",
+      "qt_cpp_resize_smoke/conpty-backend/OpenConsole.exe",
+      "qt_terminal_modes_test/conpty-backend/conpty.dll",
+      "qt_terminal_modes_test/conpty-backend/OpenConsole.exe",
+      "termforge_qt_shell/conpty-backend/conpty.dll",
+      "termforge_qt_shell/conpty-backend/OpenConsole.exe"
+    ],
+    "conpty_matching_pairs": 5,
+    "crt_files_checked": [
+      "qt_cpp_shell_smoke/msvcp140.dll",
+      "qt_cpp_shell_smoke/vcruntime140.dll",
+      "qt_cpp_shell_smoke/vcruntime140_1.dll",
+      "qt_unicode_input_test/msvcp140.dll",
+      "qt_unicode_input_test/vcruntime140.dll",
+      "qt_unicode_input_test/vcruntime140_1.dll",
+      "qt_cpp_resize_smoke/msvcp140.dll",
+      "qt_cpp_resize_smoke/vcruntime140.dll",
+      "qt_cpp_resize_smoke/vcruntime140_1.dll",
+      "qt_terminal_modes_test/msvcp140.dll",
+      "qt_terminal_modes_test/vcruntime140.dll",
+      "qt_terminal_modes_test/vcruntime140_1.dll",
+      "termforge_qt_shell/msvcp140.dll",
+      "termforge_qt_shell/vcruntime140.dll",
+      "termforge_qt_shell/vcruntime140_1.dll"
+    ],
+    "crt_matching_selected_files": 15,
+    "all_selected_manifest_values_match": true,
+    "complete_deployment_manifest_claimed": false
+  },
+  "integrated_logs": {
+    "core-configure": {
+      "path": "local/r29-retention/unicode-integrated-core-configure.log",
+      "sha256": "0a779880efe7ccb9a52e9898ca9ec380cd676825213a8a7ebacec686ae68de2b",
+      "bytes": 249
+    },
+    "qt-configure": {
+      "path": "local/r29-retention/unicode-integrated-qt-configure.log",
+      "sha256": "fb513600956a32d3c60421c3733220e9734205a7d049e3c1d6b738aab3b0ec2a",
+      "bytes": 314
+    },
+    "core-build": {
+      "path": "local/r29-retention/unicode-integrated-core-build.log",
+      "sha256": "1d18ca065940acfbe7d23e6afcd36a4e7350d618a1822e6ffc42908afd715181",
+      "bytes": 6154
+    },
+    "core-ctest": {
+      "path": "local/r29-retention/unicode-integrated-core-ctest.log",
+      "sha256": "b109d56c68911d8fcaebbb92f952f9497bcff3c070d06f8070dcc749eef6f601",
+      "bytes": 3360
+    },
+    "qt-build": {
+      "path": "local/r29-retention/unicode-integrated-qt-build.log",
+      "sha256": "d097067375e60f98ebf309e401ead1868f3bd2349d4b1c4b1e2d32810dba355c",
+      "bytes": 28728
+    },
+    "qt-ctest": {
+      "path": "local/r29-retention/unicode-integrated-qt-ctest.log",
+      "sha256": "5211df1119a9cf9104a4df21a2c8b28c94aaabece9bea3ccfdcac678a0fa6cc2",
+      "bytes": 702
+    }
+  },
+  "integrated_log_count": 6,
+  "build_configuration_artifacts": {
+    "core/CMakeCache.txt": {
+      "path": "local/r2-core-build/CMakeCache.txt",
+      "sha256": "7deb1f3556efbc12fcdb5061f0e6df2986ee7046bf41e530671dc7840bf4f713",
+      "bytes": 16882
+    },
+    "core/CTestTestfile.cmake": {
+      "path": "local/r2-core-build/CTestTestfile.cmake",
+      "sha256": "94a2dd366af49100ca916d8ea2add4cce2b9cb678971555df4a537ea96bb149d",
+      "bytes": 348498
+    },
+    "core/CMakeFiles/3.31.0/CMakeCXXCompiler.cmake": {
+      "path": "local/r2-core-build/CMakeFiles/3.31.0/CMakeCXXCompiler.cmake",
+      "sha256": "fb18378927420b12ff469fa0c6a737dcf281ee842a208f0456bddeb52cd5505f",
+      "bytes": 6372
+    },
+    "qt/CMakeCache.txt": {
+      "path": "local/r2-qt-build/CMakeCache.txt",
+      "sha256": "6fa997ba45f3c7a45d0e1a9ace7984569add02643413ae072a39e600440da895",
+      "bytes": 61145
+    },
+    "qt/CTestTestfile.cmake": {
+      "path": "local/r2-qt-build/CTestTestfile.cmake",
+      "sha256": "bee29981713f9704513e1bd4b9a4892d4ba079a645514728b4df510701fd27b3",
+      "bytes": 359358
+    },
+    "qt/CMakeFiles/3.31.0/CMakeCXXCompiler.cmake": {
+      "path": "local/r2-qt-build/CMakeFiles/3.31.0/CMakeCXXCompiler.cmake",
+      "sha256": "fb18378927420b12ff469fa0c6a737dcf281ee842a208f0456bddeb52cd5505f",
+      "bytes": 6372
+    }
+  },
+  "registration_artifacts": {
+    "core-targets": {
+      "path": "local/r29-retention/unicode-core-targets.json",
+      "sha256": "3c6e6360f45506b561d67904507eac13a73043d9ddb8cdc7f39f7249fc556f97",
+      "bytes": 18086
+    }
+  },
+  "supplemental_result_capture": {
+    "path": "local/r29-retention/unicode-integrated-capture/supplemental/identity.json",
+    "sha256": "24b3b51f4de8507c4c3b0dada6b381aad9e1ef6d9923ac98bb65b99cfbb15a0f",
+    "captured_at_utc": "2026-11-02T04:13:11.085351+00:00",
+    "files": {
+      "local/r29-retention/projection-unicode-green-build.log": {
+        "path": "local/r29-retention/projection-unicode-green-build.log",
+        "sha256": "29184aee6ab6e2785483aa8cbb93c5c49986032369e6bbd0e7bfb314cc5fda76",
+        "bytes": 530
+      },
+      "local/r29-retention/projection-unicode-green.log": {
+        "path": "local/r29-retention/projection-unicode-green.log",
+        "sha256": "79aca42164364649fce8ba90f7ce3e47e9eca1e2e5bf34abd598a8aa9b482101",
+        "bytes": 130
+      },
+      "local/r29-retention/projection-unicode-import-build.log": {
+        "path": "local/r29-retention/projection-unicode-import-build.log",
+        "sha256": "04da99235000c305aa01b3797b9ce1d28ae7ff6db418a8703d959f47de943199",
+        "bytes": 277
+      },
+      "local/r29-retention/projection-unicode-import-test.log": {
+        "path": "local/r29-retention/projection-unicode-import-test.log",
+        "sha256": "e8d5fe0ba3eb9ef765ada5ffdc1eb5257e2694d656b4fada5751a6207fd43dcb",
+        "bytes": 130
+      },
+      "local/r29-retention/resize-unicode-build.log": {
+        "path": "local/r29-retention/resize-unicode-build.log",
+        "sha256": "1af3011cdec551a47934313a9170afd8357543977ba457fc1d0be0590a84c32f",
+        "bytes": 343
+      },
+      "local/r29-retention/resize-unicode-test.log": {
+        "path": "local/r29-retention/resize-unicode-test.log",
+        "sha256": "9db5d4a6f9039813f61c563c8841de8b2e510e5179f80242c33e5ae02ebca358",
+        "bytes": 414
+      },
+      "local/r29-retention/resize-unicode-transcription-check.json": {
+        "path": "local/r29-retention/resize-unicode-transcription-check.json",
+        "sha256": "2e65790615c4f5dd1050c5c89d1efa6dcedb5da17eb4b0600fcbb82c3d2980c3",
+        "bytes": 2805
+      },
+      "research/ui/results/2026-11-02-resize-unicode-reference/wide-boundary.json": {
+        "path": "research/ui/results/2026-11-02-resize-unicode-reference/wide-boundary.json",
+        "sha256": "2b8f8b17bfb95a418c29dbad55a12df13f27df1a92b3c3d2fc01c374087e2b0e",
+        "bytes": 31852
+      },
+      "research/ui/results/2026-11-02-resize-unicode-reference/combining-boundary.json": {
+        "path": "research/ui/results/2026-11-02-resize-unicode-reference/combining-boundary.json",
+        "sha256": "f6ac486eb30ebcc0908d402299728727970df72386f042c8345a0f471e3ab93e",
+        "bytes": 34761
+      }
+    },
+    "scope": "Stable earlier direct-run logs and public references copied after integration; does not provide an executable identity for the first 18-case GREEN",
+    "native_execution": false
+  },
+  "open_combining_original_case": {
+    "path": "research/ui/results/2026-11-02-resize-unicode-reference/combining-boundary.json",
+    "sha256": "f6ac486eb30ebcc0908d402299728727970df72386f042c8345a0f471e3ab93e",
+    "original_strict_record_available": true,
+    "included_in_wide_cpp_original_comparison": false,
+    "literal_after_mark_suffix_utf8_hex": "cc8265cc81",
+    "source_policy_resolved": false,
+    "remaining_question": "Separate DSR, resizing, column clamping and combining attachment before generalizing the observed U+0302,e,U+0301 suffix"
+  },
+  "historical_evidence_preserved": [
+    "../2026-11-02-display-projection/README.md",
+    "../2026-11-02-retention-erase-mode-integrated/README.md",
+    "../2026-11-02-resize-address/README.md",
+    "../../../shell/results/2026-11-02-qt-terminal-modes/README.md"
+  ],
+  "limits": {
+    "default_screen_resize_replaced": false,
+    "qt_retained_projection_integrated": false,
+    "combining_input_original_parity_established": false,
+    "complete_unicode_or_styles_established": false,
+    "height_resize_original_acceptance": false,
+    "complete_user_selection_find_workflow": false,
+    "new_original_runs_for_cpp_and_integrated_regression": 0,
+    "native_runs_at_report_capture": 0,
+    "offline_tool_runs_included_in_product_total": false,
+    "physical_dpi_or_performance_acceptance": false,
+    "r27_complete": false,
+    "r29_complete": false,
+    "r2_complete": false
+  }
+}

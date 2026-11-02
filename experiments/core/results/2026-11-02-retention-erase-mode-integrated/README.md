@@ -47,7 +47,7 @@ Qt 部署的 `Qt6Core.dll` 文件版本为 **6.10.3.0**。选定依赖包括 Qt 
 
 随后补充固定输入支持子程序的源码及实际 app-local 副本：源码同样等于 `3c3d3f3`，EXE 与最初冻结的构建副本一致。共 61 个选定源码文件的身份写入 [validation.json](validation.json)。最初 manifest 不改写，两次采集时间分别保留。
 
-本地归档为 `local/r29-retention/closed-slices-identity-capture/`。其中 `identity.json` SHA 为 `e5422d6576c53a767ec04e4ce3a70b775a68f12c84f302efb4fded8cff0a18ef`，补充 `helper-identity.json` SHA 为 `5888e5e454994457e9876ac4acbdff5dd08cab7a51200271979f513baa28eeac`。采集时仓库 HEAD 是 `21666573bbab9ad0b12ce06c5d5e7a78b1f05373`，该提交新增调查探针；选定产品/CMake 字节仍匹配上述 `3c3d3f3`。后续 Unicode 改头或产物不回填此记录。
+本地归档为 `local/r29-retention/closed-slices-identity-capture/`。其中 `identity.json` SHA 为 `e5422d6576c53a767ec04e4ce3a70b775a68f12c84f302efb4fded8cff0a18ef`，补充 `helper-identity.json` SHA 为 `5888e5e454994457e9876ac4acbdff5dd08cab7a51200271979f513baa28eeac`。采集时仓库 HEAD 是 `cd946bf798be4ee725f7ff518052e5a5a09c1ceb`，选定产品/CMake 字节仍匹配上述 `3c3d3f3`。后续 Unicode 改头或产物不回填此记录。
 
 日志均在 `local/r29-retention/`，文件为 `closed-slices-core-build.log`、`closed-slices-core-ctest.log`、`closed-slices-qt-configure.log`、`closed-slices-qt-build.log`、`closed-slices-qt-ctest.log`。保存的是**执行后选定输入与产物身份**；完整运行前输入 manifest 没有保存，保持 `null`。本轮没有新增原版运行、离线工具测试或为采集身份再次执行 native 测试。
 
