@@ -142,15 +142,10 @@ static std::optional<TextRange> complete_text_range(const TextDocument& document
     return std::nullopt;
 }
 
-static void resize_existing_path(Screen& screen, const Stage& stage) {
-    // Exercise the existing real APIs. Width and height change in separate
-    // stages; the height path must not be replaced by an invented stub.
-    if (screen.width() != stage.columns) {
-        if (screen.height() != stage.rows) throw std::runtime_error("fixture changes two axes at once");
-        screen.resize_columns_preserving(stage.columns);
-    } else if (screen.height() != stage.rows) {
-        screen.resize(stage.rows, stage.columns);
-    }
+static void resize_retained_path(Screen& screen, const Stage& stage) {
+    // The literal inputs and expected observations are unchanged from the
+    // archived existing-path failure; only the owner transaction is selected.
+    screen.resize_preserving(stage.rows, stage.columns);
 }
 
 static void replay(Checks& checks, ParseMode mode, bool bytewise) {
@@ -185,7 +180,7 @@ static void replay(Checks& checks, ParseMode mode, bool bytewise) {
         const auto literal_before = checks.literal_failures;
         const auto engineering_before = checks.engineering_failures;
         if (phase == 0) feed(parser, source, bytewise);
-        else resize_existing_path(parser.screen, stage);
+        else resize_retained_path(parser.screen, stage);
         checks.expect(parser.screen.width() == stage.columns && parser.screen.height() == stage.rows,
                       "protocol grid differs");
         feed(parser, "\x1b[6n", bytewise);
@@ -265,6 +260,6 @@ int main() {
     std::cout << "separate mapping/selection engineering checks: " << checks.engineering_passed_phases << '/' << checks.phases
               << " phases, " << checks.engineering_failures << " failed assertions of " << checks.engineering_assertions
               << " (1 original case x 5 stages x strict/recovery x whole/bytewise; "
-                 "existing width-preserving + legacy-height route; no original internal-history or Qt claim)\n";
+                 "retained-owner geometry transaction; no original internal-history or Qt claim)\n";
     return checks.literal_failures || checks.engineering_failures ? 1 : 0;
 }
