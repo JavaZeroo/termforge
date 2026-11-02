@@ -104,7 +104,13 @@ static void cells_and_frames() {
     screen.resize_columns_preserving(12);
     same_source(alternate, screen.visible_lines()[1]);
     screen.activate_buffer(ScreenBuffer::primary);
-    same_source(attached, screen.visible_lines()[0]);
+    const auto& fitted = screen.visible_lines()[0];
+    check(fitted.id == attached.id && fitted.version > attached.version && fitted.content_columns == 1 &&
+          fitted[0].text == attached[0].text && fitted[0].style.fg == attached[0].style.fg,
+          "hidden frame did not fit its own protocol footprint");
+    for (size_t i = 1; i < fitted.size(); ++i)
+        check(fitted[i].text == " " && fitted[i].width == 1 && !fitted[i].written,
+              "discarded hidden-frame cells revived after growth");
     check(screen.visible_lines()[0].size() == 12 && primary[2].width == 2 && primary[3].width == 0,
           "hidden primary padding or wide fixture differs");
 }

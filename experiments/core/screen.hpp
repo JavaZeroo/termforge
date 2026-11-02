@@ -180,16 +180,17 @@ class Screen {
     // Editing a retained row uses the current protocol footprint. Preserve the
     // surviving document extent separately from Cell::written so erased blanks
     // are not mistaken for untouched allocation padding.
-    void materialize_columns(Line& line) {
-        if (line.size() <= static_cast<size_t>(width())) return;
+    static void materialize_columns(Line& line, int columns, const Cell& empty) {
+        if (line.size() <= static_cast<size_t>(columns)) return;
         size_t extent = line.content_columns;
         for (size_t index = 0; index < line.size(); ++index)
             if (line[index].written || !line[index].style.plain() || line[index].text != " ")
                 extent = (std::max)(extent, index + 1);
-        line.resize(width());
+        line.resize(columns);
         line.content_columns = (std::min)(extent, line.size());
-        if (line.back().width == 2) line.back() = blank();
+        if (line.back().width == 2) line.back() = empty;
     }
+    void materialize_columns(Line& line) { materialize_columns(line, width(), blank()); }
     void break_glyph(Line& line, int col) {
         if (line[col].width == 0 && col > 0) line[col - 1] = blank();
         else if (line[col].width == 2 && col + 1 < width()) line[col + 1] = blank();
@@ -420,9 +421,9 @@ public:
         next_id_ = maximum == (std::numeric_limits<uint64_t>::max)() ? maximum : maximum + 1;
     }
     // Width-only content transaction within this owner.
-    // Source fragments keep their cells, identities, versions and soft links;
-    // changing protocol width is not a content edit or document-order change.
-    // Growth prepares writable padding only for live frames, never for history.
+    // Active source fragments keep their cells, identities and soft links.
+    // Inactive live rows fit the protocol footprint while keeping valid links;
+    // discarded cells change their source versions. History is not rewritten.
     // A real width change clamps the active protocol column and cancels the
     // deferred edge write. It does not advance to the next cell when growing.
     // Margins and combining attachment remain independent protocol state.
@@ -441,16 +442,30 @@ public:
                 if (line.size() < static_cast<size_t>(columns)) line.resize(columns);
             return next;
         };
-        // No history scan/copy and no allocation on a contraction. Both live
-        // replacements finish before either is published on an expansion.
+        // No history scan/copy. Prepare every live replacement before publishing
+        // either frame; a failed allocation cannot expose a partial transaction.
         std::optional<std::vector<Line>> next, hidden;
         if (needs_padding(lines)) next = prepare(lines);
-        if (inactive_ && needs_padding(inactive_->lines)) hidden = prepare(inactive_->lines);
+        if (inactive_) {
+            hidden = prepare(inactive_->lines);
+            for (auto& line : *hidden) {
+                if (line.size() <= static_cast<size_t>(columns)) continue;
+                changed(line);
+                materialize_columns(line, columns, Cell{});
+                line.wrap_columns = (std::min)(line.wrap_columns, static_cast<size_t>(columns));
+            }
+        }
         if (next) lines.swap(*next);
         if (hidden) inactive_->lines.swap(*hidden);
         columns_ = columns;
         column = (std::min)(column, columns - 1);
         wrap_pending = false;
+        if (inactive_) {
+            inactive_->column = (std::min)(inactive_->column, columns - 1);
+            inactive_->wrap_pending = false;
+            inactive_->scroll_top = 0; inactive_->scroll_bottom = -1;
+            inactive_->last_row = inactive_->last_column = -1;
+        }
     }
     // Physical-row policy: no reflow, no pulling old history into the viewport.
     // Both frames share geometry. Prepare both before committing so invalid
