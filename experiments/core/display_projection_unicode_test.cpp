@@ -251,6 +251,31 @@ static void invalid_imported_source(InvalidSource kind) {
     });
 }
 
+static void invalid_imported_atoms() {
+    // publish() is also an import boundary. A byte cap alone must not accept
+    // malformed UTF-8, multiple bases, or metadata incompatible with the atom.
+    const std::vector<Cell> atoms = {
+        {"AB", 1}, {"A", 1, {}, 1}, {"e\xcc\x81", 1},
+        {"\xc3", 1}, {"\x80", 1}, {"\xed\xa0\x80", 1},
+        {"\xc0\xaf", 1}, {"\xf4\x90\x80\x80", 1},
+        {"\xcc\x81", 1}, {"\n", 1}, {"A", 2}
+    };
+    for (const auto& atom : atoms) {
+        Parser parser(2, 8, 0);
+        parser.feed("A");
+        HistoryViewport viewport;
+        (void)viewport.project(parser.screen, 8, 2, {0, 0}, 2);
+        auto rows = parser.screen.visible_lines();
+        rows[0][0] = atom;
+        if (atom.width == 2) rows[0][1] = {"", 0};
+        ++rows[0].version;
+        parser.screen.publish({}, std::move(rows));
+        rejects_without_publication(viewport, parser.screen, [&] {
+            (void)viewport.project(parser.screen, 8, 2, {0, 0}, 2);
+        });
+    }
+}
+
 int main() {
     size_t passed = 0, failed = 0;
     const auto run = [&](const std::string& name, const auto& operation) {
@@ -266,6 +291,7 @@ int main() {
     run("source-window-resume", source_window_does_not_publish_a_partial_logical_row);
     run("mid-trail-start", [] { invalid_atom_request(true); });
     run("width-one", [] { invalid_atom_request(false); });
+    run("11-invalid-imported-atoms", invalid_imported_atoms);
     for (const auto entry : {
         std::pair{InvalidSource::orphan_trail, "orphan-trail"},
         std::pair{InvalidSource::missing_trail, "missing-trail"},

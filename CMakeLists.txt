@@ -149,6 +149,10 @@ add_executable(display_projection_unicode_test experiments/core/display_projecti
 target_link_libraries(display_projection_unicode_test PRIVATE termforge_core)
 termforge_warnings(display_projection_unicode_test)
 
+add_executable(resize_unicode_test experiments/core/resize_unicode_test.cpp)
+target_link_libraries(resize_unicode_test PRIVATE termforge_core)
+termforge_warnings(resize_unicode_test)
+
 # Direct original resize/addressing comparison. A mismatch is a diagnostic
 # failure; it is not registered as an expected-failure CTest acceptance.
 add_executable(resize_address_test experiments/core/resize_address_test.cpp)
@@ -402,6 +406,8 @@ add_test(NAME display_projection_core COMMAND display_projection_test)
 set_tests_properties(display_projection_core PROPERTIES TIMEOUT 10)
 add_test(NAME display_projection_unicode_core COMMAND display_projection_unicode_test)
 set_tests_properties(display_projection_unicode_core PROPERTIES TIMEOUT 10)
+add_test(NAME retained_resize_unicode_core COMMAND resize_unicode_test)
+set_tests_properties(retained_resize_unicode_core PROPERTIES TIMEOUT 10)
 add_test(NAME retained_columns_core COMMAND retained_columns_test)
 add_test(NAME retained_resize_address_core COMMAND resize_address_test --retained-columns)
 add_test(NAME retained_resize_edit_core COMMAND resize_edit_test)
