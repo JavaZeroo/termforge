@@ -423,8 +423,9 @@ public:
     // Source fragments keep their cells, identities, versions and soft links;
     // changing protocol width is not a content edit or document-order change.
     // Growth prepares writable padding only for live frames, never for history.
-    // Cursor, pending wrap and margins are independent protocol state. This
-    // entry does not define their later edge/edit policy or a display viewport.
+    // A real width change clamps the active protocol column and cancels the
+    // deferred edge write. It does not advance to the next cell when growing.
+    // Margins and combining attachment remain independent protocol state.
     void resize_columns_preserving(int columns) {
         if (columns < 1 || columns > 500)
             throw std::invalid_argument("invalid screen width");
@@ -448,6 +449,8 @@ public:
         if (next) lines.swap(*next);
         if (hidden) inactive_->lines.swap(*hidden);
         columns_ = columns;
+        column = (std::min)(column, columns - 1);
+        wrap_pending = false;
     }
     // Physical-row policy: no reflow, no pulling old history into the viewport.
     // Both frames share geometry. Prepare both before committing so invalid

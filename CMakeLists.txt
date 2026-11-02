@@ -159,6 +159,10 @@ add_executable(resize_edit_test experiments/core/resize_edit_test.cpp)
 target_link_libraries(resize_edit_test PRIVATE termforge_core)
 termforge_warnings(resize_edit_test)
 
+add_executable(resize_pending_test experiments/core/resize_pending_test.cpp)
+target_link_libraries(resize_pending_test PRIVATE termforge_core)
+termforge_warnings(resize_pending_test)
+
 add_executable(reply_test experiments/core/reply_test.cpp)
 target_link_libraries(reply_test PRIVATE termforge_core)
 termforge_warnings(reply_test)
@@ -383,6 +387,7 @@ set_tests_properties(display_projection_core PROPERTIES TIMEOUT 10)
 add_test(NAME retained_columns_core COMMAND retained_columns_test)
 add_test(NAME retained_resize_address_core COMMAND resize_address_test --retained-columns)
 add_test(NAME retained_resize_edit_core COMMAND resize_edit_test)
+add_test(NAME retained_resize_pending_core COMMAND resize_pending_test)
   add_test(NAME alternate_mode_core COMMAND alternate_mode_test)
   add_test(NAME decawm_mode_core COMMAND decawm_mode_test)
 add_test(NAME private_mode_core COMMAND private_mode_test)
@@ -432,6 +437,10 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_resize_address_optimized -O -m unittest research.ui.test_resize_address_reference research.ui.test_export_resize_address_reference -v)
   termforge_add_python_test(windterm_resize_edit_reference -m unittest research.ui.test_resize_edit_reference research.ui.test_export_resize_edit_reference research.ui.test_audit_resize_address_erase -v)
   termforge_add_python_test(windterm_resize_edit_optimized -O -m unittest research.ui.test_resize_edit_reference research.ui.test_export_resize_edit_reference research.ui.test_audit_resize_address_erase -v)
+  termforge_add_python_test(windterm_resize_frame_reference -m unittest research.ui.test_resize_frame_reference research.ui.test_export_resize_frame_reference research.ui.test_audit_resize_frame_hidden -v)
+  termforge_add_python_test(windterm_resize_frame_optimized -O -m unittest research.ui.test_resize_frame_reference research.ui.test_export_resize_frame_reference research.ui.test_audit_resize_frame_hidden -v)
+  termforge_add_python_test(windterm_resize_erase_reference -m unittest research.ui.test_resize_erase_reference research.ui.test_export_resize_erase_reference -v)
+  termforge_add_python_test(windterm_resize_erase_optimized -O -m unittest research.ui.test_resize_erase_reference research.ui.test_export_resize_erase_reference -v)
   find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
   if(TERMFORGE_NODE_EXECUTABLE)
     add_test(NAME windterm_resize_address_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
@@ -442,6 +451,14 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
       ${CMAKE_SOURCE_DIR}/research/ui/test_resize_edit_stages.js
       ${CMAKE_SOURCE_DIR}/research/ui/resize_edit_reference.js)
     set_tests_properties(windterm_resize_edit_controller PROPERTIES TIMEOUT 15)
+    add_test(NAME windterm_resize_frame_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_frame_stages.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_frame_reference.js)
+    set_tests_properties(windterm_resize_frame_controller PROPERTIES TIMEOUT 15)
+    add_test(NAME windterm_resize_erase_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_erase_stages.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_erase_reference.js)
+    set_tests_properties(windterm_resize_erase_controller PROPERTIES TIMEOUT 15)
   endif()
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)

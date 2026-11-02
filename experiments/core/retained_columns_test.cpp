@@ -46,9 +46,11 @@ static void history_and_bounds() {
     const auto* history_cells = screen.retained_line(0).data();
     const auto* live_cells = screen.visible_lines()[0].data();
     const auto revision = screen.order_revision(), epoch = screen.buffer_epoch();
-    const auto row = screen.row, column = screen.column;
+    const auto row = screen.row;
+    auto column = screen.column;
     for (const int width : {1, 8, 500, 2, 500}) {
         screen.resize_columns_preserving(width);
+        column = (std::min)(column, width - 1);
         check(screen.width() == width && screen.height() == 2 && screen.history_size() == 5 &&
               screen.retained_size() == source.size(), "width transaction changed membership");
         check(screen.order_revision() == revision && screen.buffer_epoch() == epoch &&
@@ -86,6 +88,8 @@ static void cells_and_frames() {
     screen.resize_columns_preserving(8);
     parser.feed("12345678");
     check(screen.wrap_pending, "edge fixture missing pending wrap");
+    screen.resize_columns_preserving(8);
+    check(screen.wrap_pending && screen.column == 7, "unchanged width edited the pending edge");
     screen.set_scroll_region(0, 1);
     screen.set_origin_mode(true);
     screen.move(1, 7);
@@ -93,10 +97,10 @@ static void cells_and_frames() {
     const Line alternate = screen.visible_lines()[1];
     const auto epoch = screen.buffer_epoch(), revision = screen.order_revision();
     screen.resize_columns_preserving(1);
-    check(screen.row == 1 && screen.column == 7 && screen.wrap_pending && screen.origin_mode() &&
+    check(screen.row == 1 && screen.column == 0 && !screen.wrap_pending && screen.origin_mode() &&
           screen.region_top() == 0 && screen.region_bottom() == 1 &&
           screen.buffer_epoch() == epoch && screen.order_revision() == revision,
-          "width transaction edited frame protocol state");
+          "width transaction failed to bound the active cursor independently of content");
     screen.resize_columns_preserving(12);
     same_source(alternate, screen.visible_lines()[1]);
     screen.activate_buffer(ScreenBuffer::primary);
