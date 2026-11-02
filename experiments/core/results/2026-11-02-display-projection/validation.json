@@ -1,0 +1,573 @@
+{
+  "schema": "termforge-display-projection-validation-v1",
+  "date": "2026-11-02",
+  "status": "limited-read-only-ascii-projection-passed",
+  "r27_complete": false,
+  "r29_complete": false,
+  "commits": {
+    "implementation": "ec766f27d767257f542280f5bb9ca403c82dd683",
+    "merged_main": "68eeb936a32e3a527a3c114274df02f63512ed93",
+    "native_product_source": "ad45b50aa018a354da948f218f81c7e972c0c7a3",
+    "later_offline_probe_and_registration": "f6b16992c12193f3b4c57b6e4df57a4291834f59"
+  },
+  "identity": {
+    "selected_hashes_collected_after_runs": true,
+    "pre_run_full_input_manifest": null,
+    "source_files_sha256": {
+      "cmake/ConptyBackend.cmake": "dcd670e4cec807c5f18e03b797e2abda623fe818dd9c0698c95186009af49300",
+      "cmake/CopyConptyBackend.cmake": "8bf50df01e302df91ee23a592b8b23d6a203606a35dadb86b63f4eed723dcb67",
+      "cmake/MsvcRuntime.cmake": "2eff277fb9a01b6a1e13c4124372d8504edfd35f7506569314bbeaca1e3a3fa3",
+      "experiments/core/alternate_mode_test.cpp": "12dd1d488b7a8296b6fecc1fb97b10ccbfebba2d312f89f32cbcb2fac09b7922",
+      "experiments/core/buffer_state_test.cpp": "f1c78c96e6cff2bb0405a6822cc223b53f1cac3593c965e5efb016d93847c1fc",
+      "experiments/core/candidate_terminal.hpp": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "experiments/core/decawm_mode_test.cpp": "f3aae3b460a4ee31885b1a840eafaf82fef8af733385090e0c8c443e51df4977",
+      "experiments/core/decom_origin_test.cpp": "44dd8d0d124483125c8d55df7859bb979c0cbc415df31dc725bfa335aa23e27a",
+      "experiments/core/display_projection_test.cpp": "25ad6d1398fe660babf6a62959422fc467b4e7ebfc01c1d7bdd6219bc85a5139",
+      "experiments/core/edit_csi_test.cpp": "35899d60a33d3503bad9b096c5f0069d45f6079f2ec879e7db6f0e1dabe3601d",
+      "experiments/core/history_test.cpp": "d54ebed670237b73ea2e855f41aa822a19960a4920801bdd5977e4899763ef69",
+      "experiments/core/history_view.hpp": "8a75c86b2fbc63269a31206dce9284e6225373d1db1471dccdce1a03570ad247",
+      "experiments/core/order_query_test.cpp": "27ae45ad5daaf17a9d6e2c4eaa021dfb15e03550f01650fe65cc621fa90ea590",
+      "experiments/core/pending_wrap_test.cpp": "8e61049cce8dc21e3a99a71091b4b90051c9d77e6d3998119b2e9e477d718ed6",
+      "experiments/core/private_mode_test.cpp": "b602921407158836f56cbf89dd3a2fbcec15a38de009d1496dcd907ce040a948",
+      "experiments/core/region_wrap_test.cpp": "9fdd70c76c6ad6f6c13c89dadada43316b25824d0060ae48be52c0802e0401f4",
+      "experiments/core/reply_test.cpp": "1c764efdfdbf98e91257fbc3e763846dd3be3adac23161460275fe61e23cf85a",
+      "experiments/core/resize_edges_test.cpp": "ca16b2d3bbaa154dbfc06e1a71848ea25145b91f86cd44c17c1a9da86157e49e",
+      "experiments/core/resize_test.cpp": "4e4469d18f752ed1d2486b81b19e58cd1bb0cb2acb71b870ce2b333cd8175fd6",
+      "experiments/core/screen.hpp": "ef1634bae1286cf9e5159fcb515c31b985186f7fe01680dbdd23bcd6653ed62b",
+      "experiments/core/search_reorder_test.cpp": "1ab5121e1497a4a6fc90003dc4332771240f4697229cc99f9a45256fb48e4406",
+      "experiments/core/search_test.cpp": "42e8d13a5b92ee03a6931f71dac1b06fecb8859470caee41fc517f3c1eb7fd8d",
+      "experiments/core/selection_test.cpp": "8f0bd95a9eabba4e23c19d6fbdb9bd7eb37f3e529eb8aea5376d62d8145da28a",
+      "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "experiments/core/text_projection.hpp": "3853bcf053964e54ea00bb7acfd0d302abd536ae0ed4eddfe791a6bcffdb6914",
+      "experiments/core/text_search.hpp": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+      "experiments/core/text_selection.hpp": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+      "experiments/core/unicode_width.hpp": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "experiments/core/view_mapping.hpp": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+      "experiments/core/view_mapping_test.cpp": "d8d73da7dab1f994d78ba82d0037e682d03d2788dc09eb7ef2e45ec0804415e8",
+      "experiments/core/widechar_1049_test.cpp": "e53fbdd8ec29bd31ae0aff26af7391955fdfa68b9713a24599d9313eba017396",
+      "src/qt/main.cpp": "4af7c6722ba6847d90d3d9938849aa3b69a8de749c043a278c8725dc46011796",
+      "src/qt/resize_fixture.hpp": "a855779e06b45b2c68daf413108172ee2d51bcb75fd55911263505d7dc6be300",
+      "src/qt/resize_smoke.cpp": "0865f6c5e2083a3a4194b8ec5d57460aa0c856612f0b77dd7f9a882923fd050d",
+      "src/qt/run_smoke.py": "467387975311879ba94c4329410f7cddd4aaa418143935c498d0e08eca8c1e58",
+      "src/qt/session_tabs.hpp": "df3634a37f07a73f92033f29392a7624275a2ce3e4db293dcce01408b9148b07",
+      "src/qt/shell_smoke.cpp": "3a8099d6aba673bdd6a5c83959c29a235fe4ef4165fe8adcadc52b56049a704e",
+      "src/qt/terminal_modes_fixture.hpp": "a527b38750340babacfc05fdecd1901080c2e44ed00023e0bd5eff40e598c782",
+      "src/qt/terminal_modes_test.cpp": "6c27cb1101800f82e188186455853adc7725355327090ae6ecbecfe7fe8892db",
+      "src/qt/terminal_session.hpp": "fc9390030c3ea72c8f195d92a2ac17877c05e4c16906a829bfd88cb54b50fb22",
+      "src/qt/terminal_widget.hpp": "a5f172980f52abb8d30189ab4334643621472839a20e14bb406bb89d81b70c8c",
+      "src/qt/unicode_input_test.cpp": "83662178e07826a4bcd74858146166370b312537e0dddb233b365bed0169209b",
+      "third_party/conpty/manifest.json": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "third_party/msvc_runtime/manifest.json": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+    },
+    "native_build_cmake_git_blob_sha256": "45a54b46c799eafa58aa3657dbe7c707568d14e375bd75ab65586abf705ce78a",
+    "later_cmake_git_blob_sha256": "4a7523daedba510c762df6f7f7b45d8bffc648bd99a663972800e5939d793edb",
+    "cmake_hash_encoding": "Raw Git blob bytes; selected working-source hashes above use actual file bytes.",
+    "product_source_diff_between_native_and_later_commit": [],
+    "native_build_timing_note": "Core and Qt native builds preceded the later offline Python/Node CMake registrations. They do not certify the complete later source tree.",
+    "cache_observation_note": "Configuration values checked after runs. Core build directory was subsequently reconfigured for offline groups without rebuilding native binaries; no current cache or core LastTest file is presented as a frozen native-run manifest.",
+    "red_source_files_sha256": null,
+    "red_binary_sha256": null,
+    "intermediate_green_source_files_sha256": null,
+    "intermediate_green_binary_sha256": null,
+    "binary_sha256": {
+      "local/r2-core-build/bin/Release/resize_test.exe": "6ed6bd5677831cd110c93afbbac0ab4ec7b28eb13ce7c2c3aa38391555387345",
+      "local/r2-core-build/bin/Release/resize_edges_test.exe": "687976305e94bb8836b6a44731c477a7e95974cd481e5554faef24ba33efba64",
+      "local/r2-core-build/bin/Release/history_test.exe": "07f51ce16341736f9cbb2ba9f0c1ade98bbd1ff6647b46092cfe1406637b745e",
+      "local/r2-core-build/bin/Release/selection_test.exe": "33b3f56fd02d2900e3e1385faac1cd6acedd27c241c8e35ce4f8392550309aea",
+      "local/r2-core-build/bin/Release/search_test.exe": "47194ff65ba012deff7b29cc3ad05a2ffbc58ed9fc9ac1d9cdc3b940226235fc",
+      "local/r2-core-build/bin/Release/search_reorder_test.exe": "127e515bed0bf8e4ae0974d4ecd6542f440d65c33dbbde89aa4002510050ebe6",
+      "local/r2-core-build/bin/Release/buffer_state_test.exe": "d373524518b55dfa545bfad4b7325b0e6d63724e663fe1228c9e9478ca1e546c",
+      "local/r2-core-build/bin/Release/view_mapping_test.exe": "fe2c3da5af3fc33e19b3185d81567f234f0c2556cd762fe5ad472d17850e0442",
+      "local/r2-core-build/bin/Release/display_projection_test.exe": "30f9a8347e4c87ef6598354e941892b38cfc57da8ca452c2d5e96c6e81c90b99",
+      "local/r2-core-build/bin/Release/alternate_mode_test.exe": "eaa57b90204f42ee234f57e0811844232c353fea16705c81320c74d9c4ed7425",
+      "local/r2-core-build/bin/Release/decawm_mode_test.exe": "83f227a9aa127ac34ecc75310baf599a9d6d91828cdd16cdfb9bd718ffd7947d",
+      "local/r2-core-build/bin/Release/private_mode_test.exe": "d7ac23571a3c36e67350beee0e7b2bc5c76577972c77e5734b8499137356eaa4",
+      "local/r2-core-build/bin/Release/decom_origin_test.exe": "6d3cc90128a663cb3e251dbe575f846378a45dbf784343220f5df7005de97cdc",
+      "local/r2-core-build/bin/Release/pending_wrap_test.exe": "808b63605fc9e10f9d5d515a770425adf78d4509933016c9ae74adb31e0de8f9",
+      "local/r2-core-build/bin/Release/widechar_1049_test.exe": "58972329193ac771775c060aebddfe6be90e4bc9882852f57e3df57c6f065bca",
+      "local/r2-core-build/bin/Release/reply_test.exe": "123a4d8fe9d7fb081ac34916ebcee6cf0103cfbe05139fd583cf852ea6b6b4ea",
+      "local/r2-core-build/bin/Release/edit_csi_test.exe": "79e280a3035e2e117947beac68a5d0b05952633bed495ecfb3db4098a02a4f75",
+      "local/r2-core-build/bin/Release/order_query_test.exe": "d6b57df6fc4d4f3ba730a21823300961bae0adda3162fa2af809289e4ccbe5a7",
+      "local/r2-core-build/bin/Release/region_wrap_test.exe": "fd07008a0792a44b62f5be1838ae65322b9db6af00025e0379e37f24ba1abcbc",
+      "local/r2-qt-build/qt-bin/Release/termforge_qt_shell.exe": "eb1db42ddaf88440b24f9d81c44fbafa458c862259f81efb514628059c822b21",
+      "local/r2-qt-build/qt-smoke-bin/Release/qt_cpp_shell_smoke.exe": "7d0cbc66364c374f4b285a6e3c40bc8e2cfe851e666618350d0485d2e9466eb7",
+      "local/r2-qt-build/qt-unicode-bin/Release/qt_unicode_input_test.exe": "494d80b7f038aa2b4079d3fc0e162034f9457a27a0c88a266e9ef03bbcdd13f4",
+      "local/r2-qt-build/qt-resize-bin/Release/qt_cpp_resize_smoke.exe": "1ddf459ce205ed49dd6d294c7c6bd30fbe01ef39ffb4dceac090733f4d9b1589",
+      "local/r2-qt-build/qt-modes-bin/Release/qt_terminal_modes_test.exe": "c3c1a44993e4e2f89c0ef69ecab469d2499a0392ed8dca84eb4c49e28acc7b25"
+    },
+    "local_log_sha256": {
+      "projection-configure.log": "8be29b83ac7f662797256a20d45e6de7b8dfd0da2d63801da091cd1b9cf5c0ed",
+      "projection-red-build.log": "a4941a6d79991705e9bb4f8d7f57667bc41fbaac699ba8e0d2a82ec987f0b41a",
+      "projection-red-build-1.log": "6e185bf454584b653c2e82be2c20ee5894c25963a1bfa61fdb4af48bb918db18",
+      "projection-red-ctest.log": "b0a79d85792e7d2c221f93a29720c5f2c60db9ab52a1199abda9f087e66d7933",
+      "projection-green-build.log": "6e185bf454584b653c2e82be2c20ee5894c25963a1bfa61fdb4af48bb918db18",
+      "projection-green-ctest.log": "d3112fc9b422a4eb5593b662d5427d7dc17deb67aeaf4d503603971ba7204459",
+      "projection-bounds-build.log": "6e185bf454584b653c2e82be2c20ee5894c25963a1bfa61fdb4af48bb918db18",
+      "projection-bounds-ctest.log": "d3112fc9b422a4eb5593b662d5427d7dc17deb67aeaf4d503603971ba7204459",
+      "projection-soft-edge-build.log": "6e185bf454584b653c2e82be2c20ee5894c25963a1bfa61fdb4af48bb918db18",
+      "projection-soft-edge-ctest.log": "4bb7ae3a6b7876b94da6436a8bbda4d808f8e6dedd39657fb9195777d2a056f8",
+      "core-configure.log": "a2bb574d46a203f13fcff8024c986f65e10f8f24f1ab4880abc4df2dc6221c1b",
+      "core-build.log": "c16b62593e4f089d4f14f9475ee2da4fc150b9f90aa15a6028930ddd836e33e6",
+      "core-ctest.log": "34d5740bcb41de94539cfffaf6da63c7bb278a4b048a92d7aa6f719ef5768f25",
+      "qt-build.log": "c9ee106f558243b6bedf70994dc12aac525f6893be2636eaf6fd748882fa07f3",
+      "qt-ctest.log": "cc4eee2f5c6b9708264a021caa110f0e2e0dd6937976b33ae380aa9abf42e6bb"
+    },
+    "qt_last_test_log_sha256": "8aa8be97173d86eca9537cefb72bee75ba80a8b2fc8bb5aeb50e815bcd80a6db",
+    "raw_logs_published": false
+  },
+  "configuration": {
+    "platform": "Windows x64",
+    "windows_target_build_from_configure": "10.0.26200",
+    "windows_sdk": "10.0.26100.0",
+    "generator": "Visual Studio 17 2022",
+    "generator_platform": "x64",
+    "cmake": "3.31.0",
+    "compiler": "MSVC 19.42.34433.0",
+    "build": "Release",
+    "build_parallel": 1,
+    "core": {
+      "TERMFORGE_BUILD_QT_SHELL": false,
+      "TERMFORGE_BUILD_CANDIDATE_ADAPTER": false
+    },
+    "qt": {
+      "TERMFORGE_BUILD_QT_SHELL": true,
+      "TERMFORGE_BUILD_CANDIDATE_ADAPTER": false,
+      "TERMFORGE_ENABLE_RESIZE_REPRO": false,
+      "qt": "6.10.3",
+      "qpa_platform": "offscreen",
+      "conpty": "1.25.260930003",
+      "crt": "14.51.36247.0",
+      "supervisor_python": "3.12.10"
+    }
+  },
+  "fixed_source": {
+    "historical_reference": "research/ui/results/2026-11-02-resize-state-reference/strict-export.json",
+    "historical_reference_sha256": "77709a433e3bcc329d72b851cff20592ff12403a56b5914461e80a505f8cd0e1",
+    "new_original_runs_in_this_report": 0,
+    "bytes": 78,
+    "sha256": "c7dd4a7fa283dd0003ca8b2ae13dcb46f143a4717bf5a14eb5f5acb068a9fa1c",
+    "hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b323b3148303132333435363738391b5b333b3148414e43484f521b5b3f376c1b5b383b39314875761b5b3f37681b5b31303b3931487778",
+    "parser_geometry": [
+      91,
+      20
+    ],
+    "display_widths": [
+      91,
+      61,
+      91
+    ],
+    "screen_resize_called": false,
+    "feed_variants": [
+      {
+        "mode": "strict",
+        "chunking": "whole"
+      },
+      {
+        "mode": "strict",
+        "chunking": "bytewise"
+      },
+      {
+        "mode": "recovery",
+        "chunking": "whole"
+      },
+      {
+        "mode": "recovery",
+        "chunking": "bytewise"
+      }
+    ],
+    "marker_display_positions_zero_based": {
+      "v": [
+        [
+          7,
+          90
+        ],
+        [
+          8,
+          29
+        ],
+        [
+          7,
+          90
+        ]
+      ],
+      "w": [
+        [
+          9,
+          90
+        ],
+        [
+          11,
+          29
+        ],
+        [
+          9,
+          90
+        ]
+      ],
+      "x": [
+        [
+          10,
+          0
+        ],
+        [
+          11,
+          30
+        ],
+        [
+          10,
+          0
+        ]
+      ]
+    },
+    "post_narrow_projection_dsr_query_hex": "1b5b366e",
+    "expected_reply_hex": "1b5b31313b3252",
+    "checks": [
+      "unique marker locations and ANCHOR",
+      "source IDs and versions unchanged",
+      "epoch and document order revision unchanged",
+      "protocol source width remains 91",
+      "source hit and Find highlight at narrow width",
+      "wx selection copy unchanged",
+      "stale layout rejected"
+    ]
+  },
+  "engineering_scenarios": [
+    {
+      "name": "bounded-window-resume-and-stale-source",
+      "checks": [
+        "source_limit rolls back unfinished display row without false progress",
+        "larger bounded window resumes soft line",
+        "page_full continuation preserves exact suffix",
+        "overwrite/order/epoch reject stale continuation",
+        "failed preparation leaves layout revision unchanged"
+      ]
+    },
+    {
+      "name": "bounded-history-and-cell-fidelity",
+      "synthetic_row_outputs": 250,
+      "checks": [
+        "tail reads one source row without history-prefix expansion",
+        "explicit spaces and color/underline Cell state retained",
+        "synthetic padding remains unowned with display row ID zero",
+        "201-row source request rejected",
+        "wide glyph explicitly rejected"
+      ]
+    },
+    {
+      "name": "empty-soft-successor",
+      "checks": [
+        "no extra empty display row after exactly full soft prefix",
+        "page continuation preserves soft boundary",
+        "source-window continuation preserves completed prefix"
+      ],
+      "separate_behavior_red_recorded": false
+    }
+  ],
+  "implementation_limits": {
+    "ascii_single_cell_only": true,
+    "max_source_fragments_per_request": 200,
+    "max_cells_per_fragment": 500,
+    "display_columns": [
+      1,
+      500
+    ],
+    "page_rows": [
+      1,
+      200
+    ],
+    "source_window_can_return_without_progress": true,
+    "caller_must_expand_bounded_window_or_keep_incomplete": true,
+    "source_rows_read_counts_rolled_back_cell_scans": true,
+    "constant_size_identity_link_checks_are_not_cell_scans": true,
+    "legacy_snapshot_unchanged": true,
+    "projected_legacy_viewport_totals_empty": true,
+    "required_layout_stamp": true,
+    "source_cursor_bindings": [
+      "line_id",
+      "version",
+      "column",
+      "epoch",
+      "order_revision"
+    ],
+    "code_rejects": [
+      "non-single-cell width",
+      "non-single-character text",
+      "non-printable/non-ASCII",
+      "marks",
+      "clipped",
+      "grapheme_fragment",
+      "leading_spacer"
+    ],
+    "dedicated_dynamic_rejection_cases_in_new_test": [
+      "wide glyph",
+      "oversize source window"
+    ],
+    "no_claim_of_all_rejection_cases_tested": true
+  },
+  "validation": {
+    "initial_compile_failure": {
+      "log": "projection-red-build.log",
+      "reason": "take_replies vector<string> compared against string literal",
+      "behavioral_red": false,
+      "exact_source_snapshot": null
+    },
+    "behavior_red": {
+      "tests": [
+        {
+          "name": "display_projection_core",
+          "status": "***Failed",
+          "seconds": 0.02
+        }
+      ],
+      "passed": 0,
+      "failed": 1,
+      "seconds": 0.04,
+      "successful_build_log": "projection-red-build-1.log",
+      "log": "projection-red-ctest.log",
+      "message": "explicit display projection is not implemented"
+    },
+    "intermediate_green": [
+      {
+        "tests": [
+          {
+            "name": "display_projection_core",
+            "status": "Passed",
+            "seconds": 0.02
+          }
+        ],
+        "passed": 1,
+        "failed": 0,
+        "seconds": 0.04,
+        "log": "projection-green-ctest.log"
+      },
+      {
+        "tests": [
+          {
+            "name": "display_projection_core",
+            "status": "Passed",
+            "seconds": 0.02
+          }
+        ],
+        "passed": 1,
+        "failed": 0,
+        "seconds": 0.04,
+        "log": "projection-bounds-ctest.log"
+      },
+      {
+        "tests": [
+          {
+            "name": "display_projection_core",
+            "status": "Passed",
+            "seconds": 0.02
+          }
+        ],
+        "passed": 1,
+        "failed": 0,
+        "seconds": 0.03,
+        "log": "projection-soft-edge-ctest.log"
+      }
+    ],
+    "core": {
+      "tests": [
+        {
+          "name": "resize_core",
+          "status": "Passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "resize_edges_core",
+          "status": "Passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "history_core",
+          "status": "Passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "selection_core",
+          "status": "Passed",
+          "seconds": 0.11
+        },
+        {
+          "name": "search_core",
+          "status": "Passed",
+          "seconds": 0.15
+        },
+        {
+          "name": "search_reorder_core",
+          "status": "Passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "buffer_state_core",
+          "status": "Passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "view_mapping_core",
+          "status": "Passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "display_projection_core",
+          "status": "Passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "alternate_mode_core",
+          "status": "Passed",
+          "seconds": 0.17
+        },
+        {
+          "name": "decawm_mode_core",
+          "status": "Passed",
+          "seconds": 0.03
+        },
+        {
+          "name": "private_mode_core",
+          "status": "Passed",
+          "seconds": 0.03
+        },
+        {
+          "name": "decom_origin_core",
+          "status": "Passed",
+          "seconds": 0.18
+        },
+        {
+          "name": "pending_wrap_core",
+          "status": "Passed",
+          "seconds": 0.07
+        },
+        {
+          "name": "widechar_1049_core",
+          "status": "Passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "reply_core",
+          "status": "Passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "edit_csi_core",
+          "status": "Passed",
+          "seconds": 0.01
+        },
+        {
+          "name": "order_query_core",
+          "status": "Passed",
+          "seconds": 0.02
+        },
+        {
+          "name": "region_wrap_core",
+          "status": "Passed",
+          "seconds": 0.01
+        }
+      ],
+      "passed": 19,
+      "failed": 0,
+      "seconds": 0.95
+    },
+    "qt": {
+      "tests": [
+        {
+          "name": "qt_cpp_shell",
+          "status": "Passed",
+          "seconds": 2.03
+        },
+        {
+          "name": "qt_unicode_input",
+          "status": "Passed",
+          "seconds": 1.26
+        },
+        {
+          "name": "qt_cpp_resize",
+          "status": "Passed",
+          "seconds": 5.38
+        },
+        {
+          "name": "qt_terminal_modes",
+          "status": "Passed",
+          "seconds": 0.53
+        }
+      ],
+      "passed": 4,
+      "failed": 0,
+      "seconds": 9.22
+    },
+    "qt_supervisors": [
+      {
+        "sample_schema": "termforge-qt-cpp-smoke-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 26,
+          "terminated": 0
+        },
+        "presented_done": null,
+        "mode_stages": null,
+        "mode_resize_exercised": null
+      },
+      {
+        "sample_schema": "termforge-qt-unicode-input-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 19,
+          "terminated": 0
+        },
+        "presented_done": null,
+        "mode_stages": null,
+        "mode_resize_exercised": null
+      },
+      {
+        "sample_schema": "termforge-qt-resize-smoke-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 27,
+          "terminated": 0
+        },
+        "presented_done": null,
+        "mode_stages": null,
+        "mode_resize_exercised": null
+      },
+      {
+        "sample_schema": "termforge-qt-terminal-modes-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "presented_done": null,
+        "mode_stages": 5,
+        "mode_resize_exercised": false
+      }
+    ],
+    "timings_are_performance_measurements": false,
+    "resize_reproducer_executed_in_this_run": false
+  },
+  "remaining": [
+    "Screen.resize still physically crops source content",
+    "default Qt path does not call explicit project",
+    "actual resize/write/cursor and primary/alternate contracts remain open",
+    "complete Unicode projection not implemented",
+    "full Qt history/selection/Find workflow not accepted",
+    "existing B/CD resize diagnostic not fixed or rerun here",
+    "new original post-resize action research excluded"
+  ],
+  "privacy": {
+    "content": "Reviewed synthetic input, scalar results, hashes and repository-relative paths only. Raw local logs, private VM files and proprietary binaries are not published."
+  }
+}
