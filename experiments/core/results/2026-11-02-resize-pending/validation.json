@@ -1,0 +1,206 @@
+{
+  "schema": "termforge-resize-pending-validation-v1",
+  "date": "2026-11-02",
+  "status": "limited-explicit-width-edge-slice-passed",
+  "implementation_commit": "9b678860f9388aae38d172aeda3d948b2552b2ad",
+  "default_resize_replaced": false,
+  "qt_projection_integrated": false,
+  "integrated_native_regression_claimed": false,
+  "qt_conpty_validation_claimed": false,
+  "full_active_grid_verified": false,
+  "terminal_styles_verified": false,
+  "internal_pending_bit_used_as_original_oracle": false,
+  "r27_complete": false,
+  "r29_complete": false,
+  "performance_gate": "not_evaluated",
+  "hashes_collected_after_runs": true,
+  "hash_capture_boundary": "After pending GREEN and before subsequent hidden-frame production edits and rebuilds; later worktree state is excluded.",
+  "pre_run_full_input_manifest": null,
+  "source_manifest_scope": "selected implementation and targeted regression inputs; not a complete build-input manifest",
+  "source_files_matched_commit_bytes_at_capture": true,
+  "source_files_sha256": {
+    "CMakeLists.txt": "15eeea516795fa322cf4eba7a017bdd2a49f80d45e264f538fa3c21338c58585",
+    "experiments/core/screen.hpp": "698dfbde4da389bcbb42f34326bb38d4204a464e85b4a55cb46620d5bc7be701",
+    "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+    "experiments/core/history_view.hpp": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+    "experiments/core/text_projection.hpp": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+    "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+    "experiments/core/view_mapping.hpp": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+    "experiments/core/resize_pending_test.cpp": "3414245c16fbbbb0efc0404cc2f8def3de2e75a15cb903cd7880a1380649286c",
+    "experiments/core/resize_address_test.cpp": "422311aff3b291054290c86073bfef49a1e804c8a0b8bbb519f713f534fc8d9f",
+    "experiments/core/resize_edit_test.cpp": "dc0e0e3c0b18c8f639ddda123f81f6c2f6dcd08650de68e34ca17a8001d49c9b",
+    "experiments/core/retained_columns_test.cpp": "ca1600c853dbbc3a9804f5d0316b2ba56fd0c2c487e920e28f831fbd7fa88540"
+  },
+  "green_binary_sha256_collected_after_run": {
+    "resize_pending_test.exe": "c72e34a3c0e793e46f88c0151eedec756ee63e65094fd6e3d4c95125281110d1",
+    "resize_address_test.exe": "1bec96d90d2627a8d6e903ea642e5fe6a241ca94a2efe5cbf9ff99a5487f6b2b",
+    "resize_edit_test.exe": "e2ead6fd5864d95268ed70793ebcc5637f55397b3eecb2a96cf687d24f79b3a6",
+    "retained_columns_test.exe": "697f9884b6fe37a006f6336ea7207c5512af44c5a7327d536fc9a113f8270764"
+  },
+  "logs_sha256": {
+    "resize-pending-all-green.log": "88cbda2456f684d63f1ca4d3ed0645f94f35e43659b22179253e46357411c64d",
+    "resize-pending-all-red-build.log": "105efdd445fa482e4ed3c7f2f1ce39870c28b7067aa82ed9fd3bf47c90060932",
+    "resize-pending-all-red.log": "0d6ade0b27882450ca29cf3e7ae0bc3403ce365d3831065ac551900f35edf68a",
+    "resize-pending-first-red-build.log": "5f5c58711c908d49fd63eec75e4bddc94238bff103288df19b72d3eb70da790a",
+    "resize-pending-first-red.log": "580b0f30c3d77a3ca0bb7f1e4c25209c6d5ab87f1565e7c47ee4376bfb763013",
+    "resize-pending-green-build.log": "6680b51bbc051e68efbb7dfb18923cacdf2b3515435ce7d1a214f069d90680f5",
+    "resize-pending-green-ctest.log": "276769c5f96e5b7a6bbde17890a8746790f7fbddaaf8200ebd5f880be2fdab09"
+  },
+  "reference_files_sha256": {
+    "research/ui/results/2026-11-02-resize-frame-reference/pending-on-shrink.json": "0e37a46dccec9c2d0620487c63486d086c205874c62835ce506ba333ebd70bb9",
+    "research/ui/results/2026-11-02-resize-frame-reference/wrap-off-shrink.json": "19b31b4ebe6603f699c203ed7c9b5cb91fa8ff342e5ddecc7951fb5f44a5169a",
+    "research/ui/results/2026-11-02-resize-frame-reference/pending-on-grow.json": "ee5230fcc35cbab1bf47d09eae675733eebcd79f054fa514974f0abc6df7613c",
+    "research/ui/results/2026-11-02-resize-frame-reference/wrap-off-grow.json": "c67554247cd10eb20c9f28c8fb117ac48f395782027f7215947189f80c82ff0f"
+  },
+  "configuration": {
+    "host": "Windows x64",
+    "generator": "Visual Studio 17 2022",
+    "cmake": "3.31.0",
+    "compiler": "MSVC 19.42.34433.0",
+    "sdk": "10.0.26100.0",
+    "build": "Release",
+    "parallelism": 1,
+    "qt": false,
+    "candidate_adapter": false
+  },
+  "cases": [
+    {
+      "id": "pending-on-shrink",
+      "original_phases": 4,
+      "initial_source_bytes": 57,
+      "expected_dsr": [
+        "8;91",
+        "8;61",
+        "8;61",
+        "8;61"
+      ]
+    },
+    {
+      "id": "wrap-off-shrink",
+      "original_phases": 4,
+      "initial_source_bytes": 62,
+      "expected_dsr": [
+        "8;91",
+        "8;61",
+        "8;61",
+        "8;61"
+      ]
+    },
+    {
+      "id": "pending-on-grow",
+      "original_phases": 5,
+      "initial_source_bytes": 49,
+      "expected_dsr": [
+        "3;7",
+        "3;7",
+        "8;61",
+        "8;61",
+        "8;62"
+      ]
+    },
+    {
+      "id": "wrap-off-grow",
+      "original_phases": 5,
+      "initial_source_bytes": 54,
+      "expected_dsr": [
+        "3;7",
+        "3;7",
+        "8;61",
+        "8;61",
+        "8;62"
+      ]
+    }
+  ],
+  "checks": {
+    "parse_modes": [
+      "strict",
+      "recovery"
+    ],
+    "feed_modes": [
+      "whole",
+      "bytewise"
+    ],
+    "protocol_rows": 20,
+    "actual_protocol_width_transaction": "Screen::resize_columns_preserving",
+    "display_projection": "HistoryViewport::project",
+    "source_fragment_limit": 200,
+    "display_page_rows": 20,
+    "markers": [
+      "0123456789",
+      "ANCHOR",
+      "W",
+      "X"
+    ],
+    "exact_occurrence_sets": true,
+    "source_absolute_offsets": true,
+    "extra_cup_or_repaint_injected": false
+  },
+  "runs": [
+    {
+      "id": "first-case-red",
+      "original_case_count": 1,
+      "original_phase_count": 4,
+      "core_replay_count": 4,
+      "phases": 16,
+      "passed_phases": 4,
+      "assertions": 160,
+      "failed_assertions": 44,
+      "test_source_sha256": "ef430c5467a2e310513803b400ae0ac31af645416d2f7cc878d80e8c7fc94402",
+      "full_production_input_manifest": null,
+      "historical_executable_sha256": null,
+      "build_log": "resize-pending-first-red-build.log",
+      "result_log": "resize-pending-first-red.log"
+    },
+    {
+      "id": "all-cases-red",
+      "original_case_count": 4,
+      "original_phase_count": 18,
+      "core_replay_count": 16,
+      "phases": 72,
+      "passed_phases": 44,
+      "assertions": 720,
+      "failed_assertions": 108,
+      "test_source_sha256": "3414245c16fbbbb0efc0404cc2f8def3de2e75a15cb903cd7880a1380649286c",
+      "full_production_input_manifest": null,
+      "historical_executable_sha256": null,
+      "build_log": "resize-pending-all-red-build.log",
+      "result_log": "resize-pending-all-red.log"
+    },
+    {
+      "id": "all-cases-green",
+      "implementation_commit": "9b678860f9388aae38d172aeda3d948b2552b2ad",
+      "original_case_count": 4,
+      "original_phase_count": 18,
+      "core_replay_count": 16,
+      "phases": 72,
+      "passed_phases": 72,
+      "assertions": 720,
+      "failed_assertions": 0,
+      "test_source_sha256": "3414245c16fbbbb0efc0404cc2f8def3de2e75a15cb903cd7880a1380649286c",
+      "executable_sha256_collected_after_run": "c72e34a3c0e793e46f88c0151eedec756ee63e65094fd6e3d4c95125281110d1",
+      "build_log": "resize-pending-green-build.log",
+      "result_log": "resize-pending-all-green.log"
+    }
+  ],
+  "targeted_ctest": {
+    "log": "resize-pending-green-ctest.log",
+    "tests": [
+      "retained_columns_core",
+      "retained_resize_address_core",
+      "retained_resize_edit_core",
+      "retained_resize_pending_core"
+    ],
+    "passed": 4,
+    "total": 4,
+    "total_seconds": 0.11,
+    "duration_is_performance_measurement": false
+  },
+  "new_original_runs_for_core_replay": 0,
+  "limitations": [
+    "Historical RED executable identities are unavailable and remain null.",
+    "Hashes are collected after runs; no complete pre-run input manifest is claimed.",
+    "The unchanged-width no-op and owner storage checks are engineering invariants, not additional original observations.",
+    "Default Screen::resize and Qt still use the previous path; the B/CD resize mismatch is not accepted.",
+    "No hidden-frame activation, general erase, height change, single-column, full Unicode, in-flight transport, product selection/Find or performance acceptance is claimed."
+  ]
+}

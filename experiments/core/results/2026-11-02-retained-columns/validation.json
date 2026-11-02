@@ -1,0 +1,141 @@
+{
+  "schema": "termforge-retained-columns-validation-v1",
+  "date": "2026-11-02",
+  "status": "limited-explicit-owner-and-editing-slices-passed",
+  "default_resize_replaced": false,
+  "qt_projection_integrated": false,
+  "r27_complete": false,
+  "r29_complete": false,
+  "implementation_commits": [
+    "a35be708a43336726a5a9400fe82977fecd01eff",
+    "fdeaed654d47d3f96ab7e7521142bc5bbeced000"
+  ],
+  "native_runtime_commit": "fdeaed654d47d3f96ab7e7521142bc5bbeced000",
+  "hashes_collected_after_runs": true,
+  "pre_run_full_input_manifest": null,
+  "source_files_sha256": {
+    "CMakeLists.txt": "7399b7ec62daaf20af5dc5109f672d200b5d38ed073af7772ff91f81bae4b6e0",
+    "experiments/core/screen.hpp": "c387aaab56c17ae45e1956c76c0a5a33ad2597a50fd6f11d7ba6dac98c083b1c",
+    "experiments/core/history_view.hpp": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+    "experiments/core/text_projection.hpp": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+    "experiments/core/text_document.hpp": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+    "experiments/core/view_mapping.hpp": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+    "experiments/core/terminal.hpp": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+    "experiments/core/retained_columns_test.cpp": "e399db44f0a83a8048f4541562869e18ba557b61cea1ecd6df84713a5950f1af",
+    "experiments/core/resize_address_test.cpp": "422311aff3b291054290c86073bfef49a1e804c8a0b8bbb519f713f534fc8d9f",
+    "experiments/core/resize_edit_test.cpp": "dc0e0e3c0b18c8f639ddda123f81f6c2f6dcd08650de68e34ca17a8001d49c9b",
+    "src/qt/terminal_widget.hpp": "a5f172980f52abb8d30189ab4334643621472839a20e14bb406bb89d81b70c8c",
+    "src/qt/terminal_session.hpp": "fc9390030c3ea72c8f195d92a2ac17877c05e4c16906a829bfd88cb54b50fb22",
+    "src/qt/session_tabs.hpp": "df3634a37f07a73f92033f29392a7624275a2ce3e4db293dcce01408b9148b07",
+    "cmake/ConptyBackend.cmake": "dcd670e4cec807c5f18e03b797e2abda623fe818dd9c0698c95186009af49300",
+    "cmake/MsvcRuntime.cmake": "2eff277fb9a01b6a1e13c4124372d8504edfd35f7506569314bbeaca1e3a3fa3"
+  },
+  "binary_sha256": {
+    "core/retained_columns_test.exe": "14ea8639d9003868ef37ebe7e297d01670fcdd7b19e49e2753faeaf57e33e64a",
+    "core/resize_address_test.exe": "973f397dbaf44f5d33b076cfe5c90c4d1defe93598ec413bcd1582885a4fd0de",
+    "core/resize_edit_test.exe": "0a539a49542f4a95c3e1d25ccc94198e16154e60fa7af3498a8796dee006f9fa",
+    "core/display_projection_test.exe": "3e9e53fb960c90bb303b3d4f64c471540b8b6255b4e211f2ccdd6ee207fac4d9",
+    "qt/qt_cpp_shell_smoke.exe": "933fef63dd88c489aa1879d4b1c99b579fa72d39c003991d3205ce0f581f8497",
+    "qt/qt_terminal_modes_test.exe": "0405f0c4d986948fac8cb52786590cb94c9de0a9ea6394ff0eb8738e15149567",
+    "qt/qt_cpp_resize_smoke.exe": "ecde1067386d9ed62051ec902b91113715990dc2df6f0a19e989d8c3774eeeed",
+    "qt/termforge_qt_shell.exe": "89cc7070f4384f68e4a352d287841dc533c6030df8661527fd68dcf107daa730",
+    "qt/qt_unicode_input_test.exe": "54141c65b68dd0a36e7d7b4127fcc5815158c98b86610f1c99d23de788ad4f51"
+  },
+  "logs_sha256": {
+    "resize-address-retained.log": "15b848c7a8aba9de7af55cad94af00e22d9ed88bcc90b5d3fa3c63949254e43c",
+    "retained-columns-ctest.log": "a3d3648fe4528d93308059c756c9989553f7e3971a5b66a858d789c5869508b4",
+    "retained-core-ctest.log": "332497a4fc5bfd3e712007171de96ab388adb1db6967d9be160532b1230651d1",
+    "resize-edit-edge-red-build.log": "c7f07872a8667aed5f4e960dc81645fdaeb3323a38d6e1983129e439ff3cdf90",
+    "resize-edit-edge-red.log": "190e86120dc2a14fed08f6cab041f4e8ef468276a5302d38a4e5d35af839fd52",
+    "resize-edit-edge-green.log": "4329d0f1c8fb8bb26a71bd162a36ab1098ec3683e01336b733a0abc1c9c6597f",
+    "resize-edit-characters-red.log": "f9971c35644ceb22e3ea97543d755c4b5c7c20d6a32ae38f13523569dd13bfac",
+    "resize-edit-characters-green.log": "840a2bdaa169b5803247fa9476efb80edcf08ec7320e44d6adeaba7444153db2",
+    "resize-edit-characters-green-ctest.log": "37b8e72cba1696e940f98860acf69b24eee3fdf97742919a314d151e48d63ff0",
+    "retained-extent-ctest.log": "b51b483488ec70e8c7ce137a5f2af7da850c3556fc99c2037a235ed4ecb27ebf",
+    "final-retained-core-build.log": "efc0930c11fecf39a2ebfcd5d7ade0564711a522252c0c7f2957b36b1c47742e",
+    "final-retained-core-ctest.log": "1e71e0eb79749cfa7f79dd87610a9f9a17f5453b7807e3ed14c249ee2322d687",
+    "final-retained-qt-configure.log": "b0e7ce656eca14b2eaa661907522b0a38cf2b4915b3a2851230c249913f3b480",
+    "final-retained-qt-build.log": "d097067375e60f98ebf309e401ead1868f3bd2349d4b1c4b1e2d32810dba355c",
+    "final-retained-qt-ctest.log": "af3ec634c9d5bd4fe69904bf68d268afe146fefdae0c7f0ba52d16fbf0f3f16f",
+    "edit-registered-ctest.log": "d2201ccb7a74b0bf4815dc8d06b454783ae345fe7969d49a1e6c60bd63b6cb61"
+  },
+  "configuration": {
+    "qt_version": "6.10.3",
+    "build": "Release",
+    "sdk": "10.0.26100.0",
+    "conpty_version": "1.25.260930003",
+    "core_qt": false,
+    "qt_platform": "offscreen",
+    "qt_resize_repro": false,
+    "compiler": "MSVC 19.42.34433.0",
+    "generator": "Visual Studio 17 2022",
+    "crt_version": "14.51.36247.0",
+    "parallelism": 1,
+    "candidate": false,
+    "host": "Windows x64"
+  },
+  "literal_address": {
+    "failed": 0,
+    "original_cases": 4,
+    "passed": 64,
+    "phases": 64,
+    "feeds": 16,
+    "assertions": 896
+  },
+  "literal_edit": {
+    "failed": 0,
+    "original_cases": 3,
+    "passed": 64,
+    "phases": 64,
+    "feeds": 12,
+    "assertions": 1024
+  },
+  "edge_red": {
+    "binary_sha256": null,
+    "test_source_sha256": "d6d73e64d473372267a96ae371112e16f906d11c817df73630c510130f6a6578",
+    "passed": 12,
+    "phases": 24,
+    "failed": 80,
+    "assertions": 384
+  },
+  "characters_red": {
+    "binary_sha256": null,
+    "test_source_sha256": "dc0e0e3c0b18c8f639ddda123f81f6c2f6dcd08650de68e34ca17a8001d49c9b",
+    "passed": 48,
+    "phases": 64,
+    "failed": 80,
+    "assertions": 1024
+  },
+  "engineering_storage": {
+    "scenarios": 3,
+    "independent_prechange_red_recorded": false
+  },
+  "native_core": {
+    "failed": 0,
+    "passed": 22,
+    "ctest_seconds": 0.98
+  },
+  "qt_regression": {
+    "failed": 0,
+    "physical_presentation_verified": false,
+    "tests_new_width_entry": false,
+    "passed": 4,
+    "ctest_seconds": 8.82
+  },
+  "offline_registered": {
+    "original_runs": 0,
+    "passed": 3,
+    "python_normal": 31,
+    "ctest_seconds": 92.1,
+    "python_optimized": 31,
+    "failed": 0,
+    "javascript_checks": 8
+  },
+  "performance_gate": "not_evaluated",
+  "limitations": [
+    "No default Screen.resize or Qt switch; old crop failures remain.",
+    "Original frame, pending-wrap, erase and broader Unicode/historical behavior are separate investigations.",
+    "Execution times are test records, not performance measurements.",
+    "Intermediate red/green binary identities not retained remain null; no backfilled identities."
+  ]
+}

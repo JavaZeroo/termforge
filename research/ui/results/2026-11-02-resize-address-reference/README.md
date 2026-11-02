@@ -1,6 +1,6 @@
 # WindTerm 2.7.0：缩窄后的单动作寻址观察
 
-本报告承接 [三阶段正文 resize 观察](../2026-11-02-resize-state-reference/README.md)及 [已确认的同 owner 正文保留方案](../../../../docs/adr/0010-bounded-resize-retention.md)，服务于 #27/#29。当前归档 **4 个独立原版进程、每例 4 阶段，共 16 阶段的严格脱敏结果**。第五例 `erase-line-start` 已执行并采集四阶段，但原审计失败，暂未纳入严格成功或公开 JSON。合计启动过 5 次原版，不是同一进程连续执行五个动作，也不是 20 阶段全部审计通过。
+本报告承接 [三阶段正文 resize 观察](../2026-11-02-resize-state-reference/README.md)及 [已确认的同 owner 正文保留方案](../../../../docs/adr/0010-bounded-resize-retention.md)，服务于 #27/#29。当前归档 **4 例原审计通过、共 16 阶段的严格脱敏结果，以及 1 例原审计失败后独立离线补充审计通过的 4 阶段结果**。合计 5 个独立原版进程、20 个采集阶段；补充审计没有重跑原版。不能写成 5 例原审计全部通过，也不是同一进程连续执行五个动作。
 
 ## 固定条件与取证边界
 
@@ -9,7 +9,7 @@
 - 精确窗口为 `1360×749 → 1000×749 → 1000×749 → 1360×749`，对应 NAWS `91×20 → 61×20 → 61×20 → 91×20`。高度不变；没有通过重新绘制正文得到恢复结果。
 - 第一阶段正文为既有 78 字节合成输入，SHA-256 `c7dd4a7fa283dd0003ca8b2ae13dcb46f143a4717bf5a14eb5f5acb068a9fa1c`。各阶段准确输入、回复字节、实际几何及 marker 均在 JSON 中。
 - 严格导出核验计划、源码归档、完整 4047 文件原包、已加载模块、生成执行脚本、provider evidence ID、固定合成文本、NAWS 与四阶段记录。公开文件只保留合成输入、marker/DSR/几何、摘要和标量；原文全文、本地路径、PID、会话、profile 和原始资源均不发布。另逐项核对公开 schema、固定输入及当前冻结源码 SHA，按原字节复制，未修改结果字段。
-- 四份严格 JSON 中 `job_after.active=0`，且明确记录主动终止原版进程；这不证明原版自然退出，也不替代外层生命周期回收核验。
+- 前四份严格 JSON 与第五份补充 JSON 中 `job_after.active=0`，且明确记录主动终止原版进程；这不证明原版自然退出，也不替代外层生命周期回收核验。
 
 ## 直接观察
 
@@ -21,18 +21,19 @@ DSR 为一基协议坐标；下列文档行/列为零基；矩形位置为观测
 | [carriage-return](carriage-return.json)：`0d51`，即 `CR Q` | `11;2` | `11;2` | `11;2` | `11;2` | `Q` 替换原 `x`，位于文档 `(9,91)`；`w` 保留 |
 | [line-feed](line-feed.json)：`0a51`，即 `LF Q` | `11;2` | `11;2` | `12;3` | `12;3` | `Q` 位于文档 `(10,1)`；原文档行 9 的 `w/x` 保留 |
 | [explicit-cup](explicit-cup.json)：`1b5b31313b324851`，即 `CSI 11;2 H Q` | `11;2` | `11;2` | `11;3` | `11;3` | `Q` 位于文档 `(9,92)`，与本次自然续写例相同；`w/x` 保留 |
+| [erase-line-start，离线补充审计](erase-line-start-supplement.json)：`1b5b314b`，即 `CSI 1 K` | `11;2` | `11;2` | `11;2` | `11;2` | `w` 仍位于文档 `(9,90)`；`x` 消失，固定保留文本的第 91 列变为空格；原审计失败状态保留 |
 
 | marker / 所属例 | 文档位置 | 初始矩形位置 | 缩窄矩形位置 | 恢复矩形位置 |
 |---|---|---|---|---|
-| `ANCHOR`，四例全部阶段 | `(2,0)` | `(147,36)` | `(147,36)` | `(147,36)` |
-| `v`，四例全部阶段 | `(7,90)` | `(867,126)` | `(379,144)` | `(867,126)` |
-| `w`，四例全部阶段 | `(9,90)` | `(867,162)` | `(379,198)` | `(867,162)` |
-| `x`，CR 动作前及其余三例全部阶段 | `(9,91)` | `(147,180)` | `(387,198)` | `(147,180)`；CR 动作后不存在 |
+| `ANCHOR`，五例全部阶段 | `(2,0)` | `(147,36)` | `(147,36)` | `(147,36)` |
+| `v`，五例全部阶段 | `(7,90)` | `(867,126)` | `(379,144)` | `(867,126)` |
+| `w`，五例全部阶段 | `(9,90)` | `(867,162)` | `(379,198)` | `(867,162)` |
+| `x`，CR/EL1 动作前及其余三例全部阶段 | `(9,91)` | `(147,180)` | `(387,198)` | `(147,180)`；CR/EL1 动作后不存在 |
 | `Q`，自然续写与显式 CUP | `(9,92)` | 不存在 | `(395,198)` | `(155,180)` |
 | `Q`，CR | `(9,91)` | 不存在 | `(387,198)` | `(147,180)` |
 | `Q`，LF | `(10,1)` | 不存在 | `(155,216)` | `(155,198)` |
 
-四例 `ANCHOR/v/w` 的文档位置和全局 position 不变；CR 将 `x` 的 position `207` 替换为 `Q`。自然续写与显式 CUP 的 `Q` position 均为 `208`；LF 的 `Q` position 为 `210`。文档 `line_count` 在自然续写、CR、CUP 三例均为 `11→12→12→11`，LF 为 `11→12→13→12`。这些是文档 API 的观测，不是完整 active grid 行数；NAWS 高度始终为 20。
+五例 `ANCHOR/v/w` 的文档位置和全局 position 不变；CR 将 `x` 的 position `207` 替换为 `Q`，EL1 后该 `x` marker 消失。自然续写与显式 CUP 的 `Q` position 均为 `208`；LF 的 `Q` position 为 `210`。文档 `line_count` 在自然续写、CR、CUP 及 EL1 四例均为 `11→12→12→11`，LF 为 `11→12→13→12`。这些是文档 API 的观测，不是完整 active grid 行数；NAWS 高度始终为 20。
 
 ## 与工程表示的关系
 
@@ -44,15 +45,21 @@ DSR 为一基协议坐标；下列文档行/列为零基；矩形位置为观测
 
 这些例子仍没有触及新第 61 列的延迟换行、旧片段第 61–90 列保留内容与新软后继冲突、超出新宽度的旧光标、EL0/EL2、ICH/DCH、宽字/结合字、margin/origin、备用屏、隐藏帧、高度变化、历史淘汰及在途输出。下一步应以新右边界及旧尾部哨兵明确 `put/newline/erase` 的合同，不能把保留旧数组直接推广为通用 resize 已完成。
 
-## 第五例：保留失败，等待补充审计
+## 第五例：原失败保留，独立离线补充审计通过
 
-`erase-line-start` 使用独立计划和进程，输入 `CSI 1 K`。四阶段原始记录已产生，但冻结运行时的合成文本白名单拒绝了结果，外层以 exit 1 结束，不能按严格成功计数。原因是白名单只覆盖整个逻辑行的前缀擦除，未覆盖旧软续接片段中 `x` 被擦除而前片段 `w` 保留的源派生结果。
+`erase-line-start` 使用独立计划和进程，输入 `CSI 1 K`。四阶段原始记录已产生，但冻结运行时的合成文本白名单拒绝了结果，原外层以 exit 1 结束，不能按原审计成功计数。原因是白名单只覆盖整个逻辑行的前缀擦除，未覆盖旧软续接片段中 `x` 被擦除而前片段 `w` 保留的源派生结果。
 
-仅作为待核验原始观察：四次 DSR 为 `11;2`；动作后 `w` 仍位于文档 `(9,90)`，`x` marker 消失，`v/ANCHOR` 保留。这里不发布 raw JSON、不修改失败状态、不补造原 `mechanics-check.json`，也不把缺失 `x` 单独当作完整擦除语义证明。独立离线补充审计必须在保留原失败的基础上，重验固定输入、身份及机械约束后才能另行归档。
+[独立离线核验器](../../audit_resize_address_erase.py)先按外部给定的旧计划 SHA 核验计划，再重现原审计的确切 `ValueError: Only fixed action-derived synthetic document lines are allowed`。它仅在阶段 2/3 为固定 92 列合成行增加一个候选：将 `90 个空格 + wx` 中的零基区间 `[91,92)` 替换为空格，得到 `90 个空格 + w + 空格`。不扩大任意文本白名单，不修改冻结执行源，不制造原 `mechanics-check.json`，不重跑原版。
+
+新命名空间复用原机械审计及严格导出约束，重新核验四阶段、NAWS/DSR、provider/generated script、源码与完整 4047 文件原包、合成 profile 和回收记录；独立离线过程 exit 0。公开补充文件采用独立 schema `termforge-original-resize-address-erase-supplement-v1` 和状态 `original-audit-failed-offline-supplement-passed`，明确记录原失败重现、失败保留、补充审计通过及新增原版运行次数为 0。原始记录没有公开，前四份严格 JSON 的身份没有改变。
+
+补充核验后的有界观察为：四次 DSR 都是 `11;2`；动作后 `w` 仍位于文档 `(9,90)`、position `206`，窄屏矩形 `(379,198)`、恢复后 `(867,162)`；`x` marker 消失，`v/ANCHOR` 保留。核对源派生全文摘要后，文档第 9 行的 92 字节合成文本确为上述 `w + 空格` 结果，其 UTF-8 SHA-256 为 `7f0332fb652a2aa979029c21298ff35ce10bbe1102632877d8c3ea6cf9f1f69c`。全部合成文档行的规范 JSON 摘要在阶段 2 为 `2b2ea9f73134138bc754feb21df5a354e94b983fbbfa6973fb996a87b59bd687`，阶段 3 为 `2427d9fd5137259278fec432c8d7bb3e079defbf1a19377c8c9d07adfe24fe98`；这两份摘要随补充 JSON 保存，没有发布文档全文。
+
+`[91,92)` 是此次固定保留文本中可辨识的替换区间，不等于已验证原版完整 EL1 擦除范围。超出该文本长度的空白、显式空格与未写 padding 的内部所有权、原版储存结构及完整 active grid 仍未知。本组核心实现对照目前只使用前四个原审计通过的动作；本报告新增补充观察不自动增加核心测试或实现通过计数。
 
 ## 源码、计划和文件身份
 
-四例源归档基线均为 `f6b16992c12193f3b4c57b6e4df57a4291834f59`，源 manifest SHA-256 为 `cd9e8a35ae8a611b5ce7f8cfb0f7f16eb5d39a175265c32961c4f4239b46c4f4`。运行脚本 [resize_address_reference.py](../../resize_address_reference.py) SHA-256 为 `033f263efc01d48a5e8b78f2277a78b661a6f3d110a3fb5f18dbee615ff2cab4`，JS 为 `e431bf4bebda6283a8ccf50b7d3418bfda0dde6e85cf29d674c27f6b8f68cd2f`；严格导出器 [export_resize_address_reference.py](../../export_resize_address_reference.py) 为 `50e52df2882cfb85ec60d511840a71b720050315ed492eddbcc9916dfc2866a4`。每份 JSON 另列全部十个执行源文件、三个离线导出源文件及 provider evidence ID。
+五例源归档基线均为 `f6b16992c12193f3b4c57b6e4df57a4291834f59`，源 manifest SHA-256 为 `cd9e8a35ae8a611b5ce7f8cfb0f7f16eb5d39a175265c32961c4f4239b46c4f4`。运行脚本 [resize_address_reference.py](../../resize_address_reference.py) SHA-256 为 `033f263efc01d48a5e8b78f2277a78b661a6f3d110a3fb5f18dbee615ff2cab4`，JS 为 `e431bf4bebda6283a8ccf50b7d3418bfda0dde6e85cf29d674c27f6b8f68cd2f`；严格导出器 [export_resize_address_reference.py](../../export_resize_address_reference.py) 为 `50e52df2882cfb85ec60d511840a71b720050315ed492eddbcc9916dfc2866a4`。前四份 JSON 另列全部十个执行源文件、三个离线导出源文件及 provider evidence ID；第五份另外列出补充核验器 SHA-256 `002f56f8f5bf6ac244435391ea41980c005a5fe88efc2f278fd0443e0e05303f`，与三个原导出源文件共同构成离线审计身份，不冒充原版执行源。
 
 原版 EXE SHA-256 为 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`；完整 4047 文件 manifest SHA-256 为 `e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203`。模块及工具链摘要见各 JSON，不包含原版产物。
 
@@ -62,5 +69,6 @@ DSR 为一基协议坐标；下列文档行/列为零基；矩形位置为观测
 | `carriage-return.json` | `4bd3e5fe4e9dccb22cbab05f367beb37eaece8760ffee069f1f96e4d2265532d` | `e98d1e0c536a8a7ee3e80f37335be1987f5c49ee722abbe2e11a54db9b6c603d` |
 | `line-feed.json` | `6104667d2cc60c79eec7d32d6dac567d969b427537a8bb48f332da5079a527c1` | `23dd122c07952fd071f55ad5c2b0bc6fea3663f7d4de72ec5e44f3d5b96a04d4` |
 | `explicit-cup.json` | `052ab73815322a3db97f7531da60b480d7b61efcfe53fdc0cfcec4c91397813e` | `6521e1dbf867124abc0d7671bc189b70d380084a0efa54fdd43abe31cf700e6a` |
+| `erase-line-start-supplement.json`（原失败后补充审计） | `8a28051d31476d8c2016a759c754bd24e3cc49b77f676eb78de68bd260ba3a00` | `194e8a7002544e828676545de50bfea4b61c56e48cea24d10dd727b25e20ba9b` |
 
 这些有界样本不构成完整 grid、样式、正式本地 Shell、可靠性重复或性能验收；#27/#29 和 R2 仍须按各自合同继续闭环。

@@ -1,0 +1,286 @@
+{
+  "schema": "termforge-resize-hidden-validation-v1",
+  "source_commit": "afdcf59f942f2b7cd3607ad7ab9bd8be9dc907dd",
+  "identity_captured_at_utc": "2026-11-02T02:55:06.887220+00:00",
+  "source_files": {
+    "CMakeLists.txt": {
+      "commit_sha256": "015dd9787627c6089c9e2c6bf27ada4e85c8285a7f1189529dedd3c646f61fe6",
+      "working_tree_sha256": "015dd9787627c6089c9e2c6bf27ada4e85c8285a7f1189529dedd3c646f61fe6",
+      "bytes": 38758,
+      "equals_commit_blob": true
+    },
+    "experiments/core/candidate_terminal.hpp": {
+      "commit_sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "working_tree_sha256": "328411c1af6ddb509623ded8fe9c814cb6ac56cd502a2952e8cedd0a3bb2d997",
+      "bytes": 1745,
+      "equals_commit_blob": true
+    },
+    "experiments/core/history_view.hpp": {
+      "commit_sha256": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+      "working_tree_sha256": "c690f7b5d616875c30d5190eb5bf260bb0345e1cdd77db526d4eb44a9cc000c0",
+      "bytes": 12744,
+      "equals_commit_blob": true
+    },
+    "experiments/core/line_order/adapters.hpp": {
+      "commit_sha256": "f1004dec4e863c9845153d3153663e3b35cc781a99cadf0868c3c982e1ccf12e",
+      "working_tree_sha256": "f1004dec4e863c9845153d3153663e3b35cc781a99cadf0868c3c982e1ccf12e",
+      "bytes": 3798,
+      "equals_commit_blob": true
+    },
+    "experiments/core/line_order/document.hpp": {
+      "commit_sha256": "325ec5ddc16d4b625b2f8b3aa1fe0d4a1222bac6e272280a06c924b46bb390a1",
+      "working_tree_sha256": "325ec5ddc16d4b625b2f8b3aa1fe0d4a1222bac6e272280a06c924b46bb390a1",
+      "bytes": 3185,
+      "equals_commit_blob": true
+    },
+    "experiments/core/screen.hpp": {
+      "commit_sha256": "1ecd6bf02bf3ff22ef5281d7ee07b71e34ff42c38413e05bd71b83c06fdaef46",
+      "working_tree_sha256": "1ecd6bf02bf3ff22ef5281d7ee07b71e34ff42c38413e05bd71b83c06fdaef46",
+      "bytes": 37935,
+      "equals_commit_blob": true
+    },
+    "experiments/core/terminal.hpp": {
+      "commit_sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "working_tree_sha256": "d174336ef8343d1dbdec1eb75ec61cab3cf78db50c9623100db58a76e6060804",
+      "bytes": 17998,
+      "equals_commit_blob": true
+    },
+    "experiments/core/text_document.hpp": {
+      "commit_sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "working_tree_sha256": "d4862e269120fb7d9eb5e14f16d86ceadc905b0998fa45dbe8ea21665df5bb32",
+      "bytes": 4728,
+      "equals_commit_blob": true
+    },
+    "experiments/core/text_projection.hpp": {
+      "commit_sha256": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+      "working_tree_sha256": "ad9ed0a45b6f1d92b1f804502405db4bd4e7c767889e22a0a384b8831d4c170a",
+      "bytes": 1841,
+      "equals_commit_blob": true
+    },
+    "experiments/core/text_search.hpp": {
+      "commit_sha256": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+      "working_tree_sha256": "f06e55f1803fe560ff0ee6855c61effbf0c7e2bd43f2427db36d2ba47d2328a7",
+      "bytes": 23018,
+      "equals_commit_blob": true
+    },
+    "experiments/core/text_selection.hpp": {
+      "commit_sha256": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+      "working_tree_sha256": "a8444c05690e01c8ab79f6431df499cd8c7a31b4b15155874670b0ac6162f926",
+      "bytes": 11762,
+      "equals_commit_blob": true
+    },
+    "experiments/core/unicode_width.hpp": {
+      "commit_sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "working_tree_sha256": "d48bf60090a9c6a4263bb46ac587b13814b52c0dbe9d2649cee20e832a1e1926",
+      "bytes": 32445,
+      "equals_commit_blob": true
+    },
+    "experiments/core/view_mapping.hpp": {
+      "commit_sha256": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+      "working_tree_sha256": "c7a77966bbebdad3f037a73805ac6c20221b87dba334f66c499768276e935d3f",
+      "bytes": 5587,
+      "equals_commit_blob": true
+    },
+    "experiments/core/resize_hidden_test.cpp": {
+      "commit_sha256": "b84b9d68de9e9f8959831fdd31fbabd676dabfa12a8b43e204097add7ddfdd65",
+      "working_tree_sha256": "b84b9d68de9e9f8959831fdd31fbabd676dabfa12a8b43e204097add7ddfdd65",
+      "bytes": 12848,
+      "equals_commit_blob": true
+    },
+    "experiments/core/retained_columns_test.cpp": {
+      "commit_sha256": "ce2a70d1ca3594a427df009d708731d3f6db860ed26f8811d07ab33fbf5373f2",
+      "working_tree_sha256": "ce2a70d1ca3594a427df009d708731d3f6db860ed26f8811d07ab33fbf5373f2",
+      "bytes": 8409,
+      "equals_commit_blob": true
+    }
+  },
+  "local_logs": {
+    "local/r29-retention/resize-hidden-red.log": {
+      "bytes": 52633,
+      "sha256": "06bc2c5d06721dd471d04956647c18014902dabe755fc7a672de522f694b36f6"
+    },
+    "local/r29-retention/resize-hidden-green.log": {
+      "bytes": 241,
+      "sha256": "795cd614a08a47b4e030d820bc889a99365e2c747d7aceaf8d303a8b7e216608"
+    },
+    "local/r29-retention/resize-hidden-red-build.log": {
+      "bytes": 340,
+      "sha256": "e38e2bb9bb5ca7c88feb042bce04473e15abc3ff669e49d92168aaad1f9e9a16"
+    },
+    "local/r29-retention/resize-hidden-green-build.log": {
+      "bytes": 485,
+      "sha256": "ab2f3211b0e801c8ea13e7c719c3cd09484d1a876ab76d448b91e0a33e62730c"
+    }
+  },
+  "fresh_binary_runs": [
+    {
+      "command": [
+        "local/r2-core-build/bin/Release/resize_hidden_test.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "retained-column hidden-primary checks: 32/32 phases, 0 failed assertions of 1200 (1 separately audited original case x strict/recovery x whole/bytewise; 6 main source/body stages and 8 DSR/display stages; no internal-mode/grid/style claim)",
+      "stderr": "",
+      "executable_sha256_after": "ed321e426d565adcbbc1c6b75c5b9fd9af830ec588d74c138fc537a17d4f9f98",
+      "executable_bytes": 124416,
+      "binary_unchanged_during_run": true
+    },
+    {
+      "command": [
+        "local/r2-core-build/bin/Release/retained_columns_test.exe"
+      ],
+      "exit_code": 0,
+      "stdout": "retained-column owner invariants passed (no original-policy claim)",
+      "stderr": "",
+      "executable_sha256_after": "7345e8deaa9a69f86e1ac6b44f6f444d8a97359de5bac0d8d70e53a230035ce7",
+      "executable_bytes": 96768,
+      "binary_unchanged_during_run": true
+    }
+  ],
+  "issues": [
+    27,
+    29
+  ],
+  "source_manifest_scope": "GREEN capture: CMakeLists.txt, all 12 tracked .hpp/.h files under experiments/core, and the two executed test translation units; not a RED pre-run manifest",
+  "configuration": {
+    "platform": "Windows x64",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC",
+    "compiler_version": "19.42.34433.0",
+    "windows_sdk": "10.0.26100.0",
+    "configuration": "Release",
+    "qt_shell": false,
+    "candidate_adapter": false,
+    "resize_repro": false,
+    "build_log_tool_version": "MSBuild 17.12.6+db5f6012c"
+  },
+  "oracle": {
+    "path": "research/ui/results/2026-11-02-resize-frame-reference/hidden-primary-supplement.json",
+    "sha256": "1fde75cb4f841177ab868377b8621624afa0383601b994dd511c0f138d2a6974",
+    "schema": "termforge-original-resize-frame-hidden-supplement-v1",
+    "original_runtime_audit_status": "failed",
+    "independent_offline_supplement_status": "passed",
+    "original_runs": 1,
+    "original_phases": 8,
+    "additional_original_runs_for_supplement": 0,
+    "raw_capture_sha256": "4ce293f898ca5bffda960abfd2c55af9da56ea50d43770696c0ab9f4bab39469",
+    "initial_source_bytes": 98,
+    "initial_source_sha256": "7b74dd7b4c304ca21a70e78a6558efeabeffdd24e56ad32ea2e8a3ed58910441"
+  },
+  "comparison_scope": {
+    "parser_modes": [
+      "strict",
+      "recovery"
+    ],
+    "feed_modes": [
+      "whole",
+      "bytewise"
+    ],
+    "replays": 4,
+    "phases_per_replay": 8,
+    "total_replay_phases": 32,
+    "main_full_body_source_phases": [
+      0,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "main_full_body_source_replay_phases": 24,
+    "dsr_display_phases": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "dsr_display_replay_phases": 32,
+    "alternate_phases": [
+      1,
+      2
+    ],
+    "alternate_source_document_indices_compared": false,
+    "source_index_adjustment": null,
+    "source_normalization": "omit trailing empty strings only; preserve all spaces, space-only extents and interior empty lines",
+    "display_oracle": "visible synthetic marker rectangles only; measured origin (147,0) and 8x18 cell grid; no full-grid/style oracle",
+    "private_origin_bit_oracle": false,
+    "private_pending_wrap_bit_oracle": false
+  },
+  "red": {
+    "production_base_commit": "9b678860f9388aae38d172aeda3d948b2552b2ad",
+    "source_identity_basis": "Execution agent confirmed core production source was unchanged from this baseline; new frozen test and CMake target were working-tree additions",
+    "complete_pre_run_source_manifest": null,
+    "test_sha256": "b84b9d68de9e9f8959831fdd31fbabd676dabfa12a8b43e204097add7ddfdd65",
+    "executable_sha256": null,
+    "executable_identity_limitation": "RED executable was overwritten by rebuild and was not saved",
+    "phases_passed": 12,
+    "phases_total": 32,
+    "failed_assertions": 420,
+    "assertions_total": 1200,
+    "result_log": "local/r29-retention/resize-hidden-red.log",
+    "build_log": "local/r29-retention/resize-hidden-red-build.log"
+  },
+  "green": {
+    "source_commit": "afdcf59f942f2b7cd3607ad7ab9bd8be9dc907dd",
+    "test_sha256": "b84b9d68de9e9f8959831fdd31fbabd676dabfa12a8b43e204097add7ddfdd65",
+    "phases_passed": 32,
+    "phases_total": 32,
+    "failed_assertions": 0,
+    "assertions_total": 1200,
+    "result_log": "local/r29-retention/resize-hidden-green.log",
+    "build_log": "local/r29-retention/resize-hidden-green-build.log",
+    "test_expectations_unchanged": true,
+    "independently_reexecuted_at_identity_capture": true
+  },
+  "engineering_owner_validation": {
+    "test": "retained_columns_test",
+    "scope": [
+      "history_and_bounds",
+      "cells_and_frames",
+      "blank_extent"
+    ],
+    "result": "passed",
+    "classification": "engineering invariants, not original-policy comparison",
+    "binary_run_index": 1,
+    "independent_red_claim": false
+  },
+  "implementation": {
+    "active_live_source_retained": true,
+    "inactive_live_fit_current_columns": true,
+    "inactive_valid_soft_links_preserved": true,
+    "inactive_wrap_columns_clamped": true,
+    "truncated_source_versions_incremented": true,
+    "history_rewritten": false,
+    "inactive_protocol_column_clamped": true,
+    "inactive_wrap_pending_cleared": true,
+    "inactive_margins_reset_full_screen": true,
+    "inactive_combining_attachment_cleared": true,
+    "origin_bit_inferred_from_controls": false,
+    "original_internal_mutation_timing_claim": false
+  },
+  "offline_transcription_check": {
+    "raw_capture_matches_public_provenance": true,
+    "phase_synthetic_line_hashes_matched": 8,
+    "input_grid_dsr_literal_phases_matched": 8,
+    "main_normalized_full_bodies_matched": 6,
+    "source_display_marker_literals_matched": true,
+    "native_execution_in_transcription_check": false
+  },
+  "limits": {
+    "full_core_suite_run_for_this_identity": false,
+    "qt_suite_run_for_this_identity": false,
+    "qt_retained_width_path_integrated": false,
+    "conpty_joint_acceptance": false,
+    "inactive_growth_only_original_acceptance": false,
+    "complete_styles_unicode_original_acceptance": false,
+    "height_resize_original_acceptance": false,
+    "complete_active_grid_verified": false,
+    "allocation_failure_injection_tested": false,
+    "performance_evaluated": false,
+    "r2_complete": false,
+    "broader_prior_results_inherited": false
+  }
+}
