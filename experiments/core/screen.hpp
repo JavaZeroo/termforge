@@ -429,7 +429,8 @@ public:
     // discarded cells change their source versions. History is not rewritten.
     // A real width change clamps the active protocol column and cancels the
     // deferred edge write. It does not advance to the next cell when growing.
-    // Margins and combining attachment remain independent protocol state.
+    // Both scrolling regions reset to the full frame; the origin setting stays
+    // frame-local. Active combining attachment is independent of the cursor.
     void resize_columns_preserving(int columns) {
         if (columns < 1 || columns > 500)
             throw std::invalid_argument("invalid screen width");
@@ -463,6 +464,7 @@ public:
         columns_ = columns;
         column = (std::min)(column, columns - 1);
         wrap_pending = false;
+        scroll_top = 0; scroll_bottom = -1;
         if (inactive_) {
             inactive_->column = (std::min)(inactive_->column, columns - 1);
             inactive_->wrap_pending = false;

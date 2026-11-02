@@ -1,0 +1,866 @@
+{
+  "schema": "termforge-original-resize-mode-reference-v1",
+  "issue": 29,
+  "related_issue": 27,
+  "case_id": "saved-primary-edge",
+  "authorized_plan_sha256": "6a42cdaba9877a0c9d4078dc69ad51ac9e86f316c707ccfe448e3e1c1431e090",
+  "offline_export_source_files_sha256": {
+    "research/ui/export_resize_mode_reference.py": "43cb0ae6397f35bba6788abc1c38e5455e714e7730e337136f31e688dd4ef82a",
+    "research/ui/export_resize_state_reference.py": "473e901305354d4ba8b22c08d22fa506c4d40da0e73bed3bf3122e4ff0e3c9b7",
+    "research/ui/export_mode_state_reference.py": "7e0a1e0e49f149791464c0dec357d3b5260bc2c34ca9f9c1be4edab35626cdf3"
+  },
+  "status": "bounded-direct-protocol-and-mode-state-observation",
+  "actual_original_runs": 1,
+  "maximum_original_runs": 1,
+  "semantic_acceptance": false,
+  "mode_policy_classification": null,
+  "full_active_grid_verified": false,
+  "terminal_styles_verified": false,
+  "local_shell_transport_verified": false,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "r2_complete": false,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "deliberate_original_process_termination": true,
+  "natural_gui_exit_verified": false,
+  "capture": {
+    "phases": [
+      {
+        "phase": 0,
+        "label": "primary-old-edge-W",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b323b3148303132333435363738391b5b333b3148414e43484f521b5b383b39314857",
+        "source_bytes": 57,
+        "source_sha256": "a052dbd92f9c02f5ca260e577ac30424caa775da86dd37532dc2f611f89e2819",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          8,
+          91
+        ],
+        "response_hex": "1b5b383b393152",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "document_projection": {
+          "line_count": 8,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 7,
+            "caretColumn": 0,
+            "caretPosition": 113
+          },
+          "markers": [
+            {
+              "label": "0123456789",
+              "document_line": 1,
+              "column": 0,
+              "position": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "ANCHOR",
+              "document_line": 2,
+              "column": 0,
+              "position": 12,
+              "rect": {
+                "x": 147,
+                "y": 36,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "W",
+              "document_line": 7,
+              "column": 90,
+              "position": 113,
+              "rect": {
+                "x": 867,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "6b7028ebaf76d07c20944d4e6b90dc73f3b6d274ef40b56fecc1ec2770489b87"
+        },
+        "stage_role": "primary-old-edge-W"
+      },
+      {
+        "phase": 1,
+        "label": "alternate-before-shrink",
+        "source_hex": "1b5b3f31303439681b5b323b3130484150",
+        "source_bytes": 17,
+        "source_sha256": "052a83fd2db87f448963799b53cbdba09801ff0e25bd5b4832ec9864b0fc1d34",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          2,
+          12
+        ],
+        "response_hex": "1b5b323b313252",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "document_projection": {
+          "line_count": 10,
+          "capacity": 20,
+          "top": null,
+          "scroll": 8,
+          "caret_api": {
+            "caretLine": 9,
+            "caretColumn": 0,
+            "caretPosition": 127
+          },
+          "markers": [
+            {
+              "label": "0123456789",
+              "document_line": 1,
+              "column": 0,
+              "position": 1,
+              "rect": {
+                "x": 147,
+                "y": -126,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "ANCHOR",
+              "document_line": 2,
+              "column": 0,
+              "position": 12,
+              "rect": {
+                "x": 147,
+                "y": -108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "W",
+              "document_line": 7,
+              "column": 90,
+              "position": 113,
+              "rect": {
+                "x": 867,
+                "y": -18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "AP",
+              "document_line": 9,
+              "column": 9,
+              "position": 125,
+              "rect": {
+                "x": 219,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "25d229e85adbbdfe561da379782c6a0e321f4c0f3d96660bbe0d9b913b033f03"
+        },
+        "stage_role": "alternate-before-shrink"
+      },
+      {
+        "phase": 2,
+        "label": "alternate-shrunk-primary-hidden",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          2,
+          12
+        ],
+        "response_hex": "1b5b323b313252",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "document_projection": {
+          "line_count": 11,
+          "capacity": 20,
+          "top": null,
+          "scroll": 9,
+          "caret_api": {
+            "caretLine": 9,
+            "caretColumn": 0,
+            "caretPosition": 127
+          },
+          "markers": [
+            {
+              "label": "0123456789",
+              "document_line": 1,
+              "column": 0,
+              "position": 1,
+              "rect": {
+                "x": 147,
+                "y": -144,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "ANCHOR",
+              "document_line": 2,
+              "column": 0,
+              "position": 12,
+              "rect": {
+                "x": 147,
+                "y": -126,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "W",
+              "document_line": 7,
+              "column": 90,
+              "position": 113,
+              "rect": {
+                "x": 379,
+                "y": -18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "AP",
+              "document_line": 9,
+              "column": 9,
+              "position": 125,
+              "rect": {
+                "x": 219,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "2d158597fdabd52d688cfe13196b0c1aaad09a9f4d9c990cd263f27c6951a3fc"
+        },
+        "stage_role": "alternate-shrunk-primary-hidden"
+      },
+      {
+        "phase": 3,
+        "label": "primary-return-unmodified",
+        "source_hex": "1b5b3f313034396c",
+        "source_bytes": 8,
+        "source_sha256": "36a3d2013e70720f8d7c0105d9b9c23acfa208b175099330c7c820ad3e1e1df5",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          8,
+          61
+        ],
+        "response_hex": "1b5b383b363152",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "document_projection": {
+          "line_count": 8,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 7,
+            "caretColumn": 0,
+            "caretPosition": 83
+          },
+          "markers": [
+            {
+              "label": "0123456789",
+              "document_line": 1,
+              "column": 0,
+              "position": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "ANCHOR",
+              "document_line": 2,
+              "column": 0,
+              "position": 12,
+              "rect": {
+                "x": 147,
+                "y": 36,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "d406c228d3792cc9550b15fdc7e4ea405e0be7c4a53d859b3159a5f2ef6da919"
+        },
+        "stage_role": "primary-return-unmodified"
+      },
+      {
+        "phase": 4,
+        "label": "primary-next-X",
+        "source_hex": "58",
+        "source_bytes": 1,
+        "source_sha256": "4b68ab3847feda7d6c62c1fbcbeebfa35eab7351ed5e78f4ddadea5df64b8015",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          8,
+          61
+        ],
+        "response_hex": "1b5b383b363152",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "document_projection": {
+          "line_count": 8,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 7,
+            "caretColumn": 0,
+            "caretPosition": 83
+          },
+          "markers": [
+            {
+              "label": "0123456789",
+              "document_line": 1,
+              "column": 0,
+              "position": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "ANCHOR",
+              "document_line": 2,
+              "column": 0,
+              "position": 12,
+              "rect": {
+                "x": 147,
+                "y": 36,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "X",
+              "document_line": 7,
+              "column": 60,
+              "position": 83,
+              "rect": {
+                "x": 627,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "09574749f53998f85aa66dfbcb8083375c03543ddbdcd89a0ce16e573f1008bc"
+        },
+        "stage_role": "primary-next-X"
+      },
+      {
+        "phase": 5,
+        "label": "primary-restored-after-X",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          8,
+          61
+        ],
+        "response_hex": "1b5b383b363152",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "document_projection": {
+          "line_count": 8,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 7,
+            "caretColumn": 0,
+            "caretPosition": 83
+          },
+          "markers": [
+            {
+              "label": "0123456789",
+              "document_line": 1,
+              "column": 0,
+              "position": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "ANCHOR",
+              "document_line": 2,
+              "column": 0,
+              "position": 12,
+              "rect": {
+                "x": 147,
+                "y": 36,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "X",
+              "document_line": 7,
+              "column": 60,
+              "position": 83,
+              "rect": {
+                "x": 627,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "09574749f53998f85aa66dfbcb8083375c03543ddbdcd89a0ce16e573f1008bc"
+        },
+        "stage_role": "primary-restored-after-X"
+      }
+    ],
+    "source_bytes": 83,
+    "dsr_request_bytes": 24,
+    "application_reply_bytes": 42,
+    "window_rect_format": "qt-qrect-inclusive-ltrb",
+    "geometry_checks": [
+      {
+        "phase": 0,
+        "expected_size": [
+          1360,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ]
+      },
+      {
+        "phase": 1,
+        "expected_size": [
+          1360,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ]
+      },
+      {
+        "phase": 2,
+        "expected_size": [
+          1000,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ]
+      },
+      {
+        "phase": 3,
+        "expected_size": [
+          1000,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ]
+      },
+      {
+        "phase": 4,
+        "expected_size": [
+          1000,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ]
+      },
+      {
+        "phase": 5,
+        "expected_size": [
+          1360,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ]
+      }
+    ],
+    "frozen_grids": [
+      [
+        91,
+        20
+      ],
+      [
+        91,
+        20
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        91,
+        20
+      ]
+    ],
+    "naws_history": [
+      [
+        91,
+        20
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        91,
+        20
+      ]
+    ],
+    "freeze_event_counts": [
+      1,
+      1,
+      2,
+      2,
+      2,
+      3
+    ],
+    "resize_boundaries": [
+      {
+        "phase": 2,
+        "before_event_count": 1,
+        "after_event_count": 2,
+        "requested_window": [
+          1000,
+          749
+        ]
+      },
+      {
+        "phase": 5,
+        "before_event_count": 2,
+        "after_event_count": 3,
+        "requested_window": [
+          1360,
+          749
+        ]
+      }
+    ],
+    "job_after": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "provider": {
+      "id": "frida",
+      "version": null,
+      "confidence": "observed",
+      "evidence_id": "ev_c9f948839d3c308ee9bf311cf1c66a6118d5102d0994dd97d912f90fff095c1f",
+      "messages": 11,
+      "readiness_messages": 3,
+      "phase_messages": 6,
+      "messages_truncated": false,
+      "cleanup_error": null
+    },
+    "stateful_observation_count": 6,
+    "unmodified_return_stage": 3,
+    "before_next_character_stage": 3,
+    "independent_dsr_bounds": {
+      "row": [
+        1,
+        200
+      ],
+      "column": [
+        1,
+        500
+      ]
+    }
+  },
+  "provenance": {
+    "source_identity": {
+      "kind": "source-archive",
+      "manifest_sha256": "df9f2a2c13df2e6a6d97e055c9c05e7319385e287e4b83a439b974cb8dcffaaa"
+    },
+    "execution_source_base_commit": "45c53f583267185f6a832ef356994e0746176767",
+    "execution_source_files_sha256": {
+      "research/ui/resize_mode_reference.py": "43cfedbd732fbbd258ba72ad6fa64d70f063f8633493b2353be341d66e34f156",
+      "research/ui/resize_mode_reference.js": "c8b5bb57d0da2d4ac311163587d409cb0c5db1a30b0f2add17829972cd328ee1",
+      "research/ui/resize_state_reference.py": "628f9e3a5e3ecea6c34829810df2cdf0e93dc221bd3d19b31b3f5028759f07fd",
+      "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+      "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+      "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+      "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+      "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+      "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+    },
+    "launcher_namespace_sha256": "3903a2eea8b0710ada01605c8f8c43d9ab6f6a60fe60d151ea0d35c85ccd0854",
+    "reference_identity": {
+      "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+      "manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+      "files_verified": 4047,
+      "module_files_sha256": {
+        "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+        "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+        "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358",
+        "Qt5Qml.dll": "30035484c81590976627f8face9507caa8581a7dc7630cccf6a8d6de65cab707"
+      }
+    },
+    "launch_host": {
+      "windows_version": "10.0.26300",
+      "python_version_number": "3.12.10",
+      "python_exe_sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "node_exe_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9",
+      "rea_package_version": "6.7.0",
+      "rea_shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+      "rea_package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+      "rea_entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738",
+      "runtime_identity_source": "recorded execution plan; exporter does not execute the captured runtimes"
+    },
+    "raw_files": {
+      "evidence.json": {
+        "bytes": 15777,
+        "sha256": "516ac9d05bf0b3fc4a7f213445217e132c6d186989be6bc517143505b4c1e170"
+      },
+      "run.json": {
+        "bytes": 617,
+        "sha256": "abea35ee87ec57a5d8b429bb6fcb36b833b778243045c70522a5eaf3fec4360f"
+      },
+      "probe.js": {
+        "bytes": 23825,
+        "sha256": "b8cc445ae9f6152d74d4cdae8e7887233a8825386ab3e12b094097f0f7bb4d3c"
+      },
+      "peer.json": {
+        "bytes": 2801,
+        "sha256": "4e9bc5305a163b96f75c7a57a6ec70f5cf958082ade451167c999c634b07f823"
+      },
+      "resize-mode-result.json": {
+        "bytes": 6875,
+        "sha256": "66d203271a6e9fbae943daf33188884c65a537394d28f63f5ab2b3984b765f1f"
+      },
+      "files.json": {
+        "bytes": 637666,
+        "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+      },
+      "mechanics-check.json": {
+        "bytes": 482,
+        "sha256": "201f18b4f325956987aad37534a732c74ee4628d9a815a31c79a7bbdc9cb5f28"
+      },
+      "stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "profile-check.json": {
+        "bytes": 52,
+        "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      },
+      "cleanup.json": {
+        "bytes": 42,
+        "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+      },
+      "fixture-ready": {
+        "bytes": 32,
+        "sha256": "1f0b8ece17746ce41c81df65e45a6f8480747d9b69858dc905a29ae8d4c449cb"
+      },
+      "ack-0": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-1": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-2": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-3": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-4": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-5": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "resize-request-2": {
+        "bytes": 31,
+        "sha256": "1fccbe51d78d4031445ed960319d463708e17b317ded08383a89227377fbfb56"
+      },
+      "resize-ready-2": {
+        "bytes": 42,
+        "sha256": "08e815a0438741db66fe8773b98bbd220a67c38693e04cb102b19ba46a2be2d1"
+      },
+      "resize-request-5": {
+        "bytes": 31,
+        "sha256": "2c3951727cc3c6c90f7934a75e5474c4d0ae4057bf3eb2c0c683f1b6bf698487"
+      },
+      "resize-ready-5": {
+        "bytes": 42,
+        "sha256": "bbb056339ad5012f3f30c4e26c3ad6519655da1b51c12671bb73d05a1b0ff504"
+      }
+    },
+    "authorized_plan": {
+      "bytes": 6672,
+      "sha256": "6a42cdaba9877a0c9d4078dc69ad51ac9e86f316c707ccfe448e3e1c1431e090"
+    }
+  },
+  "limitations": [
+    "One fresh direct Telnet process executes only its immutable region/saved-edge sequence; every phase is observed before the next input or resize.",
+    "Active cases preserve shrink-only and separate upper/lower CUP stages; saved-primary-edge preserves a separate return-only stage before X.",
+    "Saved-primary-edge stage 3 is unmodified return; active CUP stages are explicit controls, never the pre-action cursor. No LF is sent.",
+    "Document markers, protocol DSR and visible rectangles remain different observations; no internal storage or addressing policy is inferred.",
+    "DSR is bounded independently to row 1..200 and column 1..500; a reply beyond the current 61-column grid is preserved, not rejected as a viewport mismatch.",
+    "The finite allowlist admits literal column-6 sentinel/column-10 frame words, column-1 controls, declared edge writes, fixed-width fragments and trailing blanks. Missing markers or inseparable controls remain observations, not semantic failures.",
+    "Only 91x20 -> 61x20 -> 91x20 is covered, with no full grid, local-shell transport, reliability repetition or performance acceptance.",
+    "Raw document text, paths, process identifiers, profiles, resources and provider diagnostics remain private."
+  ]
+}

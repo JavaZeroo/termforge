@@ -98,7 +98,7 @@ static void cells_and_frames() {
     const auto epoch = screen.buffer_epoch(), revision = screen.order_revision();
     screen.resize_columns_preserving(1);
     check(screen.row == 1 && screen.column == 0 && !screen.wrap_pending && screen.origin_mode() &&
-          screen.region_top() == 0 && screen.region_bottom() == 1 &&
+          screen.region_top() == 0 && screen.region_bottom() == screen.height() - 1 &&
           screen.buffer_epoch() == epoch && screen.order_revision() == revision,
           "width transaction failed to bound the active cursor independently of content");
     screen.resize_columns_preserving(12);
