@@ -49,7 +49,9 @@ static void history_and_bounds() {
     const auto row = screen.row;
     auto column = screen.column;
     for (const int width : {1, 8, 500, 2, 500}) {
+        const auto content = screen.content_revision();
         screen.resize_columns_preserving(width);
+        check(screen.content_revision() > content, "width change left an incremental reader valid");
         column = (std::min)(column, width - 1);
         check(screen.width() == width && screen.height() == 2 && screen.history_size() == 5 &&
               screen.retained_size() == source.size(), "width transaction changed membership");
@@ -64,11 +66,16 @@ static void history_and_bounds() {
             check(screen.retained_line(i).size() <= 500, "fragment exceeded cell bound");
         }
     }
+    const auto content = screen.content_revision();
+    screen.resize_columns_preserving(screen.width());
+    screen.resize(screen.height(), screen.width());
+    check(screen.content_revision() == content, "same geometry invalidated a reader");
     for (const int width : {-1, 0, 501}) {
         bool rejected = false;
         try { screen.resize_columns_preserving(width); }
         catch (const std::invalid_argument&) { rejected = true; }
         check(rejected && screen.width() == 500 && screen.order_revision() == revision &&
+              screen.content_revision() == content &&
               screen.retained_line(0).data() == history_cells, "invalid width partially changed owner");
     }
 }
@@ -141,12 +148,39 @@ static void blank_extent() {
           screen.visible_lines()[0].version > version,
           "a later edit lost blank extent or retained a deleted tail");
     auto invalid = screen.visible_lines();
+    const auto content = screen.content_revision();
     invalid[0].content_columns = invalid[0].size() + 1;
     bool rejected = false;
     try { screen.publish({}, std::move(invalid)); }
     catch (const std::invalid_argument&) { rejected = true; }
-    check(rejected && TextDocument(screen).line(0).projection.text == text,
+    check(rejected && screen.content_revision() == content && TextDocument(screen).line(0).projection.text == text,
           "invalid source extent was published");
+}
+
+static void failed_preparation() {
+    Screen screen(2, 8, 5);
+    auto primary = screen.visible_lines();
+    primary[0].version = (std::numeric_limits<uint64_t>::max)();
+    screen.publish({}, primary);
+    screen.activate_buffer(ScreenBuffer::alternate);
+    screen.put('A', "A");
+    const auto active = screen.visible_lines();
+    const auto content = screen.content_revision(), order = screen.order_revision(), epoch = screen.buffer_epoch();
+    for (const bool physical : {false, true}) {
+        bool rejected = false;
+        try {
+            if (physical) screen.resize(2, 4);
+            else screen.resize_columns_preserving(4);
+        } catch (const std::overflow_error&) { rejected = true; }
+        check(rejected && screen.width() == 8 && screen.content_revision() == content &&
+              screen.order_revision() == order && screen.buffer_epoch() == epoch,
+              "failed hidden-frame preparation published a transaction or reader guard");
+        for (size_t index = 0; index < active.size(); ++index)
+            same_source(active[index], screen.visible_lines()[index]);
+    }
+    screen.activate_buffer(ScreenBuffer::primary);
+    for (size_t index = 0; index < primary.size(); ++index)
+        same_source(primary[index], screen.visible_lines()[index]);
 }
 
 int main() {
@@ -154,6 +188,7 @@ int main() {
         history_and_bounds();
         cells_and_frames();
         blank_extent();
+        failed_preparation();
         std::cout << "retained-column owner invariants passed (no original-policy claim)\n";
         return 0;
     } catch (const std::exception& error) {

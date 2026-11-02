@@ -118,6 +118,7 @@ class Screen {
     int scroll_bottom = -1;
     uint64_t buffer_epoch_ = 0;
     uint64_t order_revision_ = 0;
+    uint64_t content_revision_ = 0;
     bool ordered_ = true;
     int last_row = -1, last_column = -1;
     ScreenBuffer active_buffer_ = ScreenBuffer::primary;
@@ -129,10 +130,19 @@ class Screen {
     void swap_active(FrameState& state) noexcept {
         state.swap(*this);
     }
-    static void changed(Line& line) {
+    static void stamp_line(Line& line) {
         if (line.version == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("line version exhausted");
         ++line.version;
+    }
+    void require_content_revision() const {
+        if (content_revision_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("screen content revision exhausted");
+    }
+    void changed(Line& line) {
+        require_content_revision();
+        stamp_line(line);
+        ++content_revision_;
     }
     // Internal structure mutations advance the document-order revision here.
     // Overflow is reported rather than wrapped; reaching it requires 2^64
@@ -164,7 +174,7 @@ class Screen {
             state.lines.push_back(make_line(columns, Cell{}, identity));
         const auto fit = [columns](Line& line) {
             if (line.size() == static_cast<size_t>(columns)) return;
-            changed(line);
+            stamp_line(line);
             if (line.size() > static_cast<size_t>(columns)) line.cropped = true;
             line.resize(columns);
             line.content_columns = (std::min)(line.content_columns, static_cast<size_t>(columns));
@@ -323,6 +333,11 @@ public:
     // document order or the history/live split changes. It never stands in for a
     // row content version or for the buffer epoch.
     uint64_t order_revision() const { return order_revision_; }
+    // Conservative guard for work spanning several reads. In-place edits,
+    // imports and geometry transactions invalidate previously consumed content,
+    // even when retained identities and structural order remain unchanged.
+    // Readers also bind the owner, buffer epoch and order revision.
+    uint64_t content_revision() const { return content_revision_; }
     // Exact retained rank for a live identity. A missing id is never replaced by
     // a neighbour: callers that need the old evicted-anchor fallback must ask for
     // it explicitly (lower_bound_line).
@@ -344,6 +359,7 @@ public:
     void restore_frame(const Screen& origin) {
         if (order_revision_ == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("screen order revision exhausted");
+        require_content_revision();
         std::vector<Line> next_lines = origin.lines;
         std::deque<Line> next_history = origin.history;
         row = origin.row; column = origin.column;
@@ -351,6 +367,7 @@ public:
         lines.swap(next_lines); history.swap(next_history);
         ordered_ = origin.ordered_;
         ++order_revision_;
+        ++content_revision_;
         invalidate_attachment();
     }
     bool order_known() const { return ordered_; }
@@ -402,6 +419,7 @@ public:
         const bool changed = differs(history, history_rows) || differs(lines, live_rows);
         if (changed && order_revision_ == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("screen order revision exhausted");
+        require_content_revision();
         // Prepare the replacement storage before touching the published frame so
         // an allocation failure cannot leave history and live rows disagreeing.
         std::deque<Line> next_history(std::make_move_iterator(history_rows.begin()),
@@ -411,6 +429,7 @@ public:
         history.swap(next_history);
         lines.swap(next_live);
         if (changed) ++order_revision_;
+        ++content_revision_;
         ordered_ = ordered;
         next_id_ = maximum + 1;
         // The replaced frame may be shorter or narrower, and the old attachment
@@ -447,6 +466,7 @@ public:
         if (columns < 1 || columns > 500)
             throw std::invalid_argument("invalid screen width");
         if (columns == width()) return;
+        require_content_revision();
         const auto needs_padding = [columns](const auto& rows) {
             return std::any_of(rows.begin(), rows.end(), [columns](const Line& line) {
                 return line.size() < static_cast<size_t>(columns);
@@ -466,7 +486,7 @@ public:
             hidden = prepare(inactive_->lines);
             for (auto& line : *hidden) {
                 if (line.size() <= static_cast<size_t>(columns)) continue;
-                changed(line);
+                stamp_line(line);
                 materialize_columns(line, columns, Cell{});
                 line.wrap_columns = (std::min)(line.wrap_columns, static_cast<size_t>(columns));
             }
@@ -474,6 +494,7 @@ public:
         if (next) lines.swap(*next);
         if (hidden) inactive_->lines.swap(*hidden);
         columns_ = columns;
+        ++content_revision_;
         column = (std::min)(column, columns - 1);
         wrap_pending = false;
         attach_before_cursor();
@@ -492,6 +513,9 @@ public:
         if (rows < 1 || rows > 200 || columns < 1 || columns > 500)
             throw std::invalid_argument("invalid screen dimensions");
         if (rows == height() && columns == width()) return;
+        require_content_revision();
+        if (order_revision_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("screen order revision exhausted");
         auto next = active_state_copy();
         auto hidden = inactive_;
         auto identity = next_id_;
@@ -501,6 +525,7 @@ public:
         swap_active(next);
         if (hidden) inactive_->swap(*hidden);
         columns_ = columns; next_id_ = identity;
+        ++content_revision_;
         // Physical-row resize policy resets both frames' margins so a stale
         // bottom cannot point past the new height. This is not a WindTerm claim.
         scroll_top = 0; scroll_bottom = -1;
