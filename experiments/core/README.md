@@ -4,7 +4,7 @@
 
 解析器提供默认 `strict` 和显式 `ParseMode::recovery` 两种模式。replay/receive、trace 默认值和共同子集差分使用严格模式，本地 shell 选择恢复模式；测试 trace 可用第七个参数 `--recovery` 比较恢复行为，或 `--resize=RxC` 在输入结束点 resize 并追加检查点。[恢复策略](RECOVERY.md)定义未知控制序列、非法 UTF-8、超长输入、取消及 EOF 的有界处理；下表未支持输入的失败规则适用于严格模式。
 
-`Screen::resize` 采用[物理行裁剪契约](../../docs/adr/0005-physical-row-resize.md)。`resize_test` 通过根 CTest 在 Windows/Linux 检查内容、历史、宽字符与字节流边界；本地 shell 将它与窗口/ConPTY 尺寸同步，replay CLI 不执行隐式 resize。显式保留入口 `resize_columns_preserving` 与 `resize_preserving` 不替换该默认契约：前者由 `retained_columns_core` 检查，后者的高度保留及五阶段组合回放见[组合保留结果](results/2026-11-02-retained-combined/README.md)。
+`Screen::resize` 采用[物理行裁剪契约](../../docs/adr/0005-physical-row-resize.md)。`resize_test` 通过根 CTest 在 Windows/Linux 检查内容、历史、宽字符与字节流边界；本地 shell 将它与窗口/ConPTY 尺寸同步，replay CLI 不执行隐式 resize。显式保留入口 `resize_columns_preserving` 与 `resize_preserving` 不替换该默认契约：前者由 `retained_columns_core` 检查，后者的高度保留及五阶段组合回放见[组合保留结果](results/2026-11-02-retained-combined/README.md)；缩窄使前方行重排后继续 CUP 写入/DSR 的字面回放见[重排寻址结果](results/2026-11-03-reflow-addressing/README.md)（`reflow_addressing_core`）。
 
 ## 支持范围和约定
 
