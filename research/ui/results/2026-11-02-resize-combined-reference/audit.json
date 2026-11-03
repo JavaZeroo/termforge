@@ -1,0 +1,102 @@
+{
+  "schema": "termforge-resize-combined-public-audit-v1",
+  "strict_public_sha256": "6a1561f3e6f6bc480c6a2f086adf7ed4798d5007b04a7bc71c7ae9deba90cfe6",
+  "strict_public_bytes": 59588,
+  "execution_source_base_commit": "2c7c5929e11d911ad69a7e2b7c420120591862ed",
+  "source_zip_sha256": "fcde0a8233b65fc4f2f786a357d956b26ac24bbcd9838ec8654ff9b190a400de",
+  "source_manifest_sha256": "ee1b034d15c88279be9ca4a94b7e5869a064766310aae753a9367840bcb12a96",
+  "execution_source_count": 10,
+  "offline_export_source_count": 3,
+  "source_zip_and_current_and_commit_bytes_match_public": true,
+  "original_runs": 1,
+  "phases_checked": 5,
+  "complete_literal_document_arrays_checked": 5,
+  "complete_document_line_count": 19,
+  "complete_document_sha256": "ac5cc0c46768d14945e8c63103f3d7d56f9a5fc2f5631dd4fe8f485e9ba19efc",
+  "literal_marker_records_checked": 35,
+  "saved_actual_geometry_records_checked": 5,
+  "status": "observation",
+  "semantic_acceptance": false,
+  "geometry_grids": [
+    [
+      91,
+      20
+    ],
+    [
+      61,
+      20
+    ],
+    [
+      61,
+      14
+    ],
+    [
+      61,
+      20
+    ],
+    [
+      91,
+      20
+    ]
+  ],
+  "protocol_cursor_replies": [
+    [
+      19,
+      7
+    ],
+    [
+      19,
+      7
+    ],
+    [
+      14,
+      7
+    ],
+    [
+      14,
+      7
+    ],
+    [
+      14,
+      7
+    ]
+  ],
+  "api_scroll_values": [
+    0,
+    0,
+    5,
+    5,
+    5
+  ],
+  "api_top_values": [
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "api_caret": {
+    "caretLine": 17,
+    "caretColumn": 0,
+    "caretPosition": 131
+  },
+  "all_marker_source_positions_unchanged": true,
+  "height_restore_marker_rectangles_equal_height_shrink": true,
+  "initial_and_final_semantic_fields_equal_pure_height_initial_and_final": true,
+  "cross_run_comparison_excludes_catalog_identity_metadata": true,
+  "internal_history_policy_inferred": false,
+  "full_active_grid_verified": false,
+  "post_resize_write_verified": false,
+  "alternate_frame_verified": false,
+  "raw_run_records_reopened_here": false,
+  "audit_boundary": "Local audit checked strict public bytes, five complete literal ASCII arrays, thirty-five literal marker records, saved actual geometry/NAWS/DSR, source archive/current/commit bytes, manifest and owned cleanup summary. Full original package/raw/provider checks were performed by the VM strict exporter and not repeated here.",
+  "owner_cleanup": {
+    "RootExitCode": 0,
+    "JobAfterActive": 0,
+    "RootReaped": true,
+    "CleanupVerified": true
+  },
+  "old_height_10_row_failure_preserved": true,
+  "old_width_then_height_original_runs": 0,
+  "performance_gate": "not_evaluated"
+}

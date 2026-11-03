@@ -8,6 +8,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -505,6 +506,97 @@ public:
             inactive_->scroll_top = 0; inactive_->scroll_bottom = -1;
             inactive_->last_row = inactive_->last_column = -1;
         }
+    }
+    // Resize retained source within the existing owner. A height transaction
+    // prepares only live rows and their outgoing prefix; old history bodies are
+    // never traversed or copied. Active fragments retain their right tails.
+    // Hidden live fragments fit the protocol footprint, including on a height
+    // change. Neither frame pulls old history back into newly added bottom rows.
+    void resize_preserving(int rows, int columns) {
+        if (rows < 1 || rows > 200 || columns < 1 || columns > 500)
+            throw std::invalid_argument("invalid screen dimensions");
+        if (rows == height()) { resize_columns_preserving(columns); return; }
+        require_content_revision();
+        if (order_revision_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("screen order revision exhausted");
+        struct Prepared {
+            std::vector<Line> live, outgoing;
+            size_t trim = 0, discarded = 0;
+            int row = 0, column = 0;
+        };
+        auto identity = next_id_;
+        const auto prepare = [&](const auto& state, size_t limit, bool hidden) {
+            Prepared next;
+            const auto shift = static_cast<size_t>((std::max)(0, state.row - rows + 1));
+            const auto evicted = limit ? shift - (std::min)(shift, limit - state.history.size()) : shift;
+            if (evicted > (std::numeric_limits<size_t>::max)() - state.discarded)
+                throw std::overflow_error("screen discarded count exhausted");
+            next.discarded = state.discarded + evicted;
+            next.trim = limit ? evicted : 0;
+            next.row = state.row - static_cast<int>(shift);
+            next.column = (std::min)(state.column, columns - 1);
+            const auto fit = [&](Line& line, bool live) {
+                if (hidden && line.size() > static_cast<size_t>(columns)) {
+                    stamp_line(line);
+                    materialize_columns(line, columns, Cell{});
+                    line.wrap_columns = (std::min)(line.wrap_columns, static_cast<size_t>(columns));
+                }
+                if (live && line.size() < static_cast<size_t>(columns)) line.resize(columns);
+            };
+            if (limit) {
+                next.outgoing.reserve(shift);
+                for (size_t index = 0; index < shift; ++index) {
+                    next.outgoing.push_back(state.lines[index]);
+                    fit(next.outgoing.back(), false);
+                }
+            }
+            next.live.reserve(rows);
+            const auto end = (std::min)(state.lines.size(), shift + static_cast<size_t>(rows));
+            for (size_t index = shift; index < end; ++index) {
+                next.live.push_back(state.lines[index]);
+                fit(next.live.back(), true);
+            }
+            while (next.live.size() < static_cast<size_t>(rows))
+                next.live.push_back(make_line(columns, Cell{}, identity));
+            return next;
+        };
+        auto next = prepare(*this, active_history_limit(), false);
+        std::optional<Prepared> hidden;
+        if (inactive_)
+            hidden = prepare(*inactive_, active_buffer_ == ScreenBuffer::primary ? 0 : history_limit, true);
+
+        // Only primary owns history. Deque growth can allocate blocks or its
+        // pointer map. Append before publishing, and undo every appended row on
+        // failure; existing history nodes and all live state remain untouched.
+        // This bounds copied bodies, not deque map work or elapsed time.
+        static_assert(std::is_nothrow_move_constructible_v<Line>);
+        auto& primary_history = active_buffer_ == ScreenBuffer::primary ? history : inactive_->history;
+        auto& primary_next = active_buffer_ == ScreenBuffer::primary ? next : *hidden;
+        size_t appended = 0;
+        try {
+            for (auto& line : primary_next.outgoing) {
+                primary_history.push_back(std::move(line));
+                ++appended;
+            }
+        } catch (...) {
+            while (appended) { primary_history.pop_back(); --appended; }
+            throw;
+        }
+        // Every operation from here is nonthrowing. Trimming cannot invalidate
+        // the source of a later allocation, and both frames publish together.
+        const auto commit = [](auto& state, Prepared& prepared) noexcept {
+            for (size_t index = 0; index < prepared.trim; ++index) state.history.pop_front();
+            state.lines.swap(prepared.live);
+            state.row = prepared.row; state.column = prepared.column;
+            state.discarded = prepared.discarded;
+            state.wrap_pending = false;
+            state.last_row = state.last_column = -1;
+            state.scroll_top = 0; state.scroll_bottom = -1;
+        };
+        commit(*this, next);
+        if (hidden) commit(*inactive_, *hidden);
+        columns_ = columns; next_id_ = identity;
+        ++content_revision_; ++order_revision_;
     }
     // Physical-row policy: no reflow, no pulling old history into the viewport.
     // Both frames share geometry. Prepare both before committing so invalid

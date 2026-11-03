@@ -157,6 +157,14 @@ add_executable(resize_height_measured_test experiments/core/resize_height_measur
 target_link_libraries(resize_height_measured_test PRIVATE termforge_core)
 termforge_warnings(resize_height_measured_test)
 
+add_executable(resize_combined_test experiments/core/resize_combined_test.cpp)
+target_link_libraries(resize_combined_test PRIVATE termforge_core)
+termforge_warnings(resize_combined_test)
+
+add_executable(resize_preserving_transaction_test experiments/core/resize_preserving_transaction_test.cpp)
+target_link_libraries(resize_preserving_transaction_test PRIVATE termforge_core)
+termforge_warnings(resize_preserving_transaction_test)
+
 add_executable(resize_unicode_test experiments/core/resize_unicode_test.cpp)
 target_link_libraries(resize_unicode_test PRIVATE termforge_core)
 termforge_warnings(resize_unicode_test)
@@ -426,6 +434,10 @@ add_test(NAME projection_job_core COMMAND projection_job_test)
 set_tests_properties(projection_job_core PROPERTIES TIMEOUT 10)
 add_test(NAME resize_height_measured_core COMMAND resize_height_measured_test)
 set_tests_properties(resize_height_measured_core PROPERTIES TIMEOUT 10)
+add_test(NAME resize_combined_core COMMAND resize_combined_test)
+set_tests_properties(resize_combined_core PROPERTIES TIMEOUT 10)
+add_test(NAME resize_preserving_transaction_core COMMAND resize_preserving_transaction_test)
+set_tests_properties(resize_preserving_transaction_core PROPERTIES TIMEOUT 60)
 add_test(NAME retained_resize_unicode_core COMMAND resize_unicode_test)
 set_tests_properties(retained_resize_unicode_core PROPERTIES TIMEOUT 10)
 add_test(NAME retained_resize_combining_core COMMAND resize_combining_test)
@@ -505,6 +517,8 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_resize_geometry_optimized -O -m unittest research.ui.test_resize_geometry_reference research.ui.test_export_resize_geometry_reference -v)
   termforge_add_python_test(windterm_resize_height_measured_reference -m unittest research.ui.test_resize_height_measured_reference research.ui.test_export_resize_height_measured_reference -v)
   termforge_add_python_test(windterm_resize_height_measured_optimized -O -m unittest research.ui.test_resize_height_measured_reference research.ui.test_export_resize_height_measured_reference -v)
+  termforge_add_python_test(windterm_resize_combined_reference -m unittest research.ui.test_resize_combined_reference research.ui.test_export_resize_combined_reference -v)
+  termforge_add_python_test(windterm_resize_combined_optimized -O -m unittest research.ui.test_resize_combined_reference research.ui.test_export_resize_combined_reference -v)
   find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
   if(TERMFORGE_NODE_EXECUTABLE)
     add_test(NAME windterm_resize_address_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
@@ -551,6 +565,10 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
       ${CMAKE_SOURCE_DIR}/research/ui/test_resize_height_measured_stages.js
       ${CMAKE_SOURCE_DIR}/research/ui/resize_height_measured_reference.js)
     set_tests_properties(windterm_resize_height_measured_controller PROPERTIES TIMEOUT 15)
+    add_test(NAME windterm_resize_combined_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_combined_stages.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_combined_reference.js)
+    set_tests_properties(windterm_resize_combined_controller PROPERTIES TIMEOUT 15)
   endif()
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)
