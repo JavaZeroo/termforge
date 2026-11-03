@@ -1,0 +1,68 @@
+{
+  "schema": "termforge-reflow-addressing-validation-v1",
+  "date": "2026-11-03",
+  "status": "literal-reflow-addressing-replay-passed-no-production-change",
+  "default_resize_changed": false,
+  "qt_projection_integrated": false,
+  "r27_complete": false,
+  "r29_complete": false,
+  "main_base_commit": "0420137e9774b0add300e96a78b742f9331d564c",
+  "probe_source_commit": "2d270004afe77b82388a5d40f971c5892af5f41b",
+  "original_observation": "research/ui/results/2026-11-03-reflow-addressing-reference/README.md",
+  "original_runs_this_slice": 1,
+  "hashes_collected_after_runs": true,
+  "build": {
+    "platform": "Windows 11 x64",
+    "generator": "Visual Studio 17 2022 17.12.6",
+    "compiler": "MSVC 19.42.34433.0",
+    "windows_sdk": "10.0.26100.0",
+    "configuration": "Release",
+    "qt": false,
+    "candidate_adapter": false
+  },
+  "source_files_sha256": {
+    "CMakeLists.txt": "dbde0f6ae929c826f718fe545a1f3f56dfd38a8db796dc95494c81d1190f3942",
+    "experiments/core/resize_reflow_addressing_test.cpp": "070814dc2f8b26cf514e9a8c6ce6291cbb6a0cb5ad8bc169d240732aa51f019b",
+    "experiments/core/screen.hpp": "910735615a453246e499f5fea07296b7e4b6451bc727bcd28324e3590b956769",
+    "experiments/core/terminal.hpp": "c1b537efc172ff446f129753b9a673ecb290716ee75e4505b81c371513acc8c7",
+    "experiments/core/history_view.hpp": "93f8c65363421d9b25996e1296fc0db0865cd716943ecdfd8db7b38ed9e4f0e3",
+    "experiments/core/text_document.hpp": "24f331c34b47e305a1706a2898309d6d0ea8267b87e09dd2b1a56a7f651ecc5d",
+    "experiments/core/text_projection.hpp": "b2d6dce33229f5d1ee738612c5e2f07dbbffa53f28693a2f03f3414782505cc7",
+    "experiments/core/view_mapping.hpp": "32ae3d1b2919d50d1614916e4c5e6bfb00f3e491e795287b9e10ae7f8f27c5d4"
+  },
+  "binary_sha256": {
+    "resize_reflow_addressing_test.exe": "7945bd5ac925f59909c22906931eec9798617c5c52537ab10c3dd42038982ef7"
+  },
+  "replay": {
+    "configurations": 4,
+    "phases": 16,
+    "final": {
+      "phases_passed": 16,
+      "literal_failures": 0,
+      "literal_assertions": 620,
+      "exit_code": 0
+    },
+    "initial_gate_authoring_error": {
+      "phases_passed": 12,
+      "literal_failures": 4,
+      "failure": "test-side phase-3 expectation branch treated the post-action phase as pre-action",
+      "product_red": false,
+      "note": "The retained replay itself matched the oracle; only the new test's expected rows were wrong. Corrected without removing assertions or skipping phases."
+    }
+  },
+  "ctest": {
+    "core": {
+      "passed": 35,
+      "failed": 0,
+      "seconds": 4.11,
+      "includes": ["reflow_addressing_core"]
+    },
+    "previous_core_count": 34
+  },
+  "limitations": [
+    "Single fixed 222 B ASCII primary-screen sample, three widths, one CUP+Q action; no height change, alternate/hidden frame, continuous resize, in-flight output, history eviction, Unicode, styles, margin/origin or saved cursor cross.",
+    "Explicit resize_columns_preserving entry only; default Screen::resize and the formal Qt path still physically clip, and the Qt B/CD resize failure is neither fixed nor waived.",
+    "The original observation is one run with fixed geometry; it does not prove internal storage, complete reflow, WindTerm equivalence or any performance result.",
+    "The replay is a literal regression gate, not acceptance of #27/#29, R2 or the Qt/fixed-ConPTY user path."
+  ]
+}
