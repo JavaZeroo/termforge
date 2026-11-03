@@ -269,7 +269,10 @@ public:
             std::lock_guard<std::mutex> lock(control_mutex_);
             if (started_ && !accepting_resize_) return false;
             if (columns == parser_.screen.width() && rows == parser_.screen.height()) return true;
-            parser_.screen.resize(rows, columns);
+            // Formal product entry: keep the retained source frame and let the
+            // display projection reflow it. The protocol cursor/DSR stay in
+            // retained (pre-resize) coordinates; the widget maps the caret.
+            parser_.screen.resize_preserving(rows, columns);
             ++requested_revision_;
             if (started_)
                 pending_resize_ = ResizeRequest{static_cast<short>(columns), static_cast<short>(rows), requested_revision_};

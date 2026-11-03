@@ -90,9 +90,11 @@ build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 
 ## 显示投影续接
 
-显式 `HistoryViewport::begin_projection` / `step_projection` 按每步至多200个源片段生成指定宽度的页面；`ProjectionJob` 独占未完成半行和页面，完成前不发布。源被修改、导入或换屏、真实尺寸变化、新请求及取消会使任务失效；尺寸no-op不打断。它与默认物理`resize`/`snapshot`仍分开，当前Qt未消费这个入口。
+显式 `HistoryViewport::begin_projection` / `step_projection` 按每步至多200个源片段生成指定宽度的页面；`ProjectionJob` 独占未完成半行和页面，完成前不发布。源被修改、导入或换屏、真实尺寸变化、新请求及取消会使任务失效；尺寸no-op不打断。它与默认物理`resize`/`snapshot`仍分开；正式 Qt 目前消费单次 `project` 绘制显示页，分步入口仍未被 Qt 使用。
 
 返回cursor是绑定owner/行身份/version/epoch/order的源锚点，可以定义另一宽度下的局部起点，不代表全局显示行号。静止500片段的分步进展和选择/Find交叉见[固定验证](results/2026-11-02-projection-job/README.md)；持续输出下的调度与进展、任意显示位置定位仍未交付。旧单次`project`保留有界窗口语义，部分软行在`source_limit`可能不推进，跨预算任务应使用新分步入口。
+
+`display_cursor`（`display_cursor.hpp`）把协议光标这一保留源位置翻译为指定投影页上的显示单元，不移动源光标、不创造源文字；`ViewMapping` 暴露 `columns()`/`sources()`/`layout_revision()` 供消费者校验页面。宽度重排、软续接片段、空硬行、尾部 padding 与宽字后的光标位置由 `display_cursor_core` 锁定；Qt 侧光标/IME 与选择命中消费同一页布局 revision，见 [Qt 保留/投影结果](../shell/results/2026-11-03-qt-retained-display/README.md)。
 
 ## 文字投影与选择
 

@@ -1,0 +1,140 @@
+{
+  "schema": "termforge-qt-retained-display-validation-v1",
+  "date": "2026-11-03",
+  "status": "formal-qt-retained-transaction-and-display-projection-verified",
+  "main_base_commit": "7fea912beb8e23cb8e1ef783970475d111dab0ed",
+  "r27_complete": false,
+  "r29_complete": false,
+  "old_six_stage_failure_preserved": true,
+  "native_grid_used_as_addressing_oracle": false,
+  "hashes_collected_after_runs": true,
+  "logs_sha256": {
+    "qt-ctest.log": "1d9a1bf97a71a94f47e79d83c6b5c2b98d6b7fc68fef9f0a71b86e0517809111",
+    "qt-retained-contract.log": "d93c63db43fa6ead7d772dda9db48af10525a15a43f142951b1f3c13ca7821c5",
+    "qt-resize-repro.log": "09568c0e89d10f63210030b5d4be70551babd1ab31737597e49dd3e36de9a331",
+    "core-ctest.log": "694e1b411b95ec74b052d7e4c634757fd5fdf5b068b2d4b8805ba23d39c1400c"
+  },
+  "config": {
+    "platform": "Windows 11 x64",
+    "generator": "Visual Studio 17 2022 17.12.6",
+    "compiler": "MSVC 19.42.34433.0",
+    "windows_sdk": "10.0.26100.0",
+    "configuration": "Release",
+    "qt": "6.10.3 offscreen",
+    "conpty": "bundled 1.25.260930003",
+    "msvc_runtime": "14.51.36247.0 app-local",
+    "candidate_adapter": false
+  },
+  "dependency_preparation": {
+    "summary_sha256": "187428835c2d200a8b5a94ee341b6a0476bae19a13f8442caad3347cf1a12215",
+    "qt_archive_sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7",
+    "input_manifests": {
+      "qt": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+      "conpty": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "msvc_runtime": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+    }
+  },
+  "source_files_sha256": {
+    "CMakeLists.txt": "b3e699147504eaeb02113ec234d622e40ed6fd8d742e2cdf404008d40ba77501",
+    "experiments/core/view_mapping.hpp": "6e410336c66df0ecc1cba4e539cec4db69ebd475f31c4e7882f1e3d2afd5e186",
+    "experiments/core/display_cursor.hpp": "99cae039ff02c86dda6ce0e3ac2cc669addba8915de0ea759843edb3a995968e",
+    "experiments/core/display_cursor_test.cpp": "aa77bfbfe8775e0fda09dd72d16e0c2c5e7a7211a94a5063786e86e6b6efef86",
+    "src/qt/terminal_session.hpp": "52ef8b763b5cbfcf0727eaf090f618cb07a0f5dde19d187ab6e8deed14016dae",
+    "src/qt/terminal_widget.hpp": "bbcc23aa9fcc8cf1a6f40606bfa7d4eac44a476a609c5381ae5814b338ba136f",
+    "src/qt/terminal_modes_test.cpp": "26204e019327fe1825b594219dd819cc348b8a63be8f6d23e248e5f553504d0a",
+    "src/qt/run_smoke.py": "467387975311879ba94c4329410f7cddd4aaa418143935c498d0e08eca8c1e58",
+    ".github/workflows/qt-cpp.yml": "38f0cd33ed06c54b168361e55fce3d79e328f606d8a2a646116f031f900b33e3"
+  },
+  "binary_sha256": {
+    "qt_terminal_modes_test.exe": "3d4bf581d08fe17c3008528896ab612423fe2c69446a0256ad92dd920a76cf6e",
+    "qt_cpp_resize_smoke.exe": "dbf3753bab0a378662738de86914e5454933604b0b8826d18d17ea8a6c79fbcb",
+    "qt_cpp_shell_smoke.exe": "7586235af3e9cfca1e40a5359ea3e25723d76e10c9f72cf72b6820a5dce978c5",
+    "qt_unicode_input_test.exe": "e9b86ba450cb68e1ad0d8d5b2fc78ba51efb02f9fcbef85f1deb4e25503d1b91",
+    "display_cursor_test.exe": "b1a9edffaea1ec270d107854e16c334ae8b70223265d2f913bbecf69702fed3d"
+  },
+  "runs": {
+    "qt_formal_path_ctest": {
+      "command": "ctest -C Release -R ^(qt_cpp_(shell|resize)|qt_unicode_input|qt_terminal_modes(_retained)?)$",
+      "passed": 5,
+      "failed": 0,
+      "seconds": 9.31,
+      "tests": [
+        "qt_cpp_shell",
+        "qt_unicode_input",
+        "qt_cpp_resize",
+        "qt_terminal_modes",
+        "qt_terminal_modes_retained"
+      ]
+    },
+    "retained_contract": {
+      "command": "run_smoke.py qt_terminal_modes_test.exe --retained-contract",
+      "scenario": "modes-retained-contract",
+      "exit_code": 0,
+      "checks": 12,
+      "failures": 0,
+      "stages": 6,
+      "resize": "public Qt widget 80x24 -> 60x24 (width only)",
+      "child_exit": 37,
+      "cleanup_verified": true,
+      "job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "core_cursor": [
+        0,
+        2
+      ],
+      "display_caret": [
+        0,
+        2
+      ],
+      "native_row_8_hex": "2020202020202020202020202020202020202042",
+      "display_row_8_hex": "2020202020202020202020202020202020202042",
+      "native_row_11_hex": "524553495a45442020202020202020202020204344",
+      "display_row_12_hex": "524553495a4544"
+    },
+    "preserved_six_stage_repro": {
+      "command": "run_smoke.py qt_terminal_modes_test.exe --resize",
+      "scenario": "modes-resize-repro",
+      "exit_code": 1,
+      "failure": "stage 6 failed: core resize is not synchronized with the literal native B/CD rows",
+      "job_after": {
+        "active": 0,
+        "total": 4,
+        "terminated": 0
+      },
+      "note": "Old assertion and failure message unchanged; not registered in CI and not marked WILL_FAIL."
+    },
+    "core_ctest": {
+      "command": "ctest -C Release -R _core$",
+      "passed": 36,
+      "failed": 0,
+      "seconds": 4.51,
+      "includes": [
+        "display_cursor_core",
+        "reflow_addressing_core"
+      ]
+    }
+  },
+  "product_contract_facts": [
+    "Screen::resize_preserving keeps pre-resize source rows: retained B(7,79), C(9,79), D(10,0) remain in visible_lines after the 60-column resize.",
+    "The protocol cursor stays a retained source position [0,2]; the widget translates it into the display caret [0,2] without moving the source cursor.",
+    "The widget paints the independent display page: row 8 = 19 spaces + B (byte-identical to the native reflowed row 8), row 11 = 19 spaces + CD, row 12 = RESIZED.",
+    "ViewMapping::hit with the page layout revision maps display (8,19) back to the retained B source cell (line id of source row 7, column 79).",
+    "Child/transport/core agree on 60x24 after the public widget resize; requested and transport revisions are equal and no request remains pending."
+  ],
+  "known_divergence": {
+    "native_row_11": "RESIZED + 12 spaces + CD (child CUP targets its own reflowed grid row 11)",
+    "product_display": "row 11 = 19 spaces + CD; row 12 = RESIZED (product CUP follows the retained source row contract)",
+    "classification": "coordinate-layer difference between native ConPTY reflow and the confirmed retained-row contract, not physical clipping",
+    "resolution_requires": "independent WindTerm 2.7.0 observation of simultaneous width+height resize: viewport/scroll selection and subsequent CUP/DSR/display correspondence"
+  },
+  "limitations": [
+    "One offscreen single-display configuration, fixed 80x24 -> 60x24 width-only contract and the preserved 60x12 repro; no physical presentation, cross-DPI, history-browsing UI, system clipboard/Find or performance.",
+    "Display projection falls back to the physical viewport page for unsupported retained cells or an unmappable cursor; the fallback path has no original comparison in this slice.",
+    "The official WindTerm program was not run in this slice; the retained-row addressing contract comes from the earlier bounded original sample and is not extended to simultaneous width+height resize here.",
+    "Neither #27 nor #29 is closed; no complete reflow, WindTerm equivalence or R2 acceptance is claimed."
+  ]
+}
+
