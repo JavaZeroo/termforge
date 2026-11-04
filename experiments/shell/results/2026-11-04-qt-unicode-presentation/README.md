@@ -58,7 +58,7 @@ cmake --build build/qt-cpp --config Release --target qt_unicode_render_test --pa
 ctest --test-dir build/qt-cpp -C Release -R '^qt_unicode_render$' --no-tests=error --output-on-failure
 ```
 
-本次同源码结果：Qt 正式路径 CTest **6/6**（`qt_cpp_shell`、`qt_unicode_input`、`qt_unicode_render`、`qt_cpp_resize`、`qt_terminal_modes`、`qt_terminal_modes_retained`，合计 10.50 s）；新测试连跑两次内容一致（receiver/echo SHA-256 相同，仅 child pid 不同）。默认/核心配置 CTest **41/41**（28.49 s，含 `core` 的 16 项核心与 15 项 Unicode Python 测试、`keyboard`、`recovery`、`resize_replay_contract` 及全部 `*_core`）。完整源码/二进制/运行文件身份见 [validation.json](validation.json)，不发布 SDK、部署目录或原始日志。
+本次同源码结果：Qt 正式路径 CTest **6/6**（`qt_cpp_shell`、`qt_unicode_input`、`qt_unicode_render`、`qt_cpp_resize`、`qt_terminal_modes`、`qt_terminal_modes_retained`，合计 9.92 s）；新测试连跑两次均通过，receiver/echo SHA-256 相同，除 child pid 与一个混合 cell 的 fallback 面列表顺序外逐字段一致。默认/核心配置 CTest **41/41**（27.61 s，含 `core` 的 16 项核心与 15 项 Unicode Python 测试、`keyboard`、`recovery`、`resize_replay_contract` 及全部 `*_core`）。完整源码/二进制/运行文件身份见 [validation.json](validation.json)，不发布 SDK、部署目录或原始日志。
 
 ## 边界
 
