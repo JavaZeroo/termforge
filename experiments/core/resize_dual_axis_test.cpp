@@ -74,10 +74,10 @@ int main() {
         checks.expect(initial.size() == 18 && initial[11] == std::string(89, ' ') + "uvw",
                       "initial retained body differs from the fixed 92-character row");
 
-        // The recorded single dual-axis window action. Before any edit the
-        // retained owner still keeps the full source row; the recorded original
-        // had already clipped/scroll-5 here. Only the protocol sequence and the
-        // written row below are literal replay inputs.
+        // The recorded single dual-axis window action. The original run has no
+        // pre-write body endpoint: its only post-resize body row includes the
+        // fixed CUP+write. The retained pre-write row is therefore a TermForge
+        // engineering invariant, not a verified original difference.
         parser.screen.resize_preserving(14, 61);
         const auto retained = source_lines(TextDocument(parser.screen));
         checks.expect(retained.size() == 18 && retained[11] == std::string(89, ' ') + "uvw",
