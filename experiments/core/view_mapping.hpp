@@ -36,6 +36,10 @@ public:
     ViewMapping(size_t columns, std::vector<ViewSourceSpan> sources, uint64_t layout_revision = 0)
         : columns_(columns), sources_(std::move(sources)), layout_revision_(layout_revision) {}
 
+    size_t columns() const { return columns_; }
+    const std::vector<ViewSourceSpan>& sources() const { return sources_; }
+    uint64_t layout_revision() const { return layout_revision_; }
+
     std::optional<TextPosition> hit(const TextDocument& document, size_t row, size_t column,
                                     ViewAffinity affinity, uint64_t current_layout_revision = 0) const {
         if (layout_revision_ != current_layout_revision) return std::nullopt;

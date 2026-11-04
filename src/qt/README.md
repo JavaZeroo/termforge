@@ -4,7 +4,9 @@
 
 现有 C++ 核心的[能力限制](../../experiments/core/README.md)继续有效。Qt 尚未迁移原 Win32 的完整工作区、分屏、历史浏览/自动滚动、选词/选行、系统复制/粘贴、Find 或会话恢复；完整键盘/IME 交叉、resize/reflow 仍需按目标调查和实现，也不能继承 Alacritty 分支的通过结果。普通方向键与无修饰 Home/End 可随 DECCKM 切换 CSI/SS3，无修饰 Insert/Delete/PageUp/PageDown 复用已有终端键表，另有 F1–F12 编码；当前 Ctrl 字母组合仅接入 Ctrl+C，修饰导航键不被当作普通导航发送，不能据此声明完整编辑器键盘或 bracketed paste。
 
-网格沿当前 Roboto Mono 字体度量和终端可用区域计算，保留八像素边距与一行状态区，并沿现有 Screen 资源上限限制为 1..500 列、1..200 行。字体变化重新计算度量；隐藏标签在显示/布局后同步。GUI 线程负责物理 Screen resize，现有生命周期 worker 用单个最新请求串行执行 ConPTY resize、wait、cancel 和 close；GUI 不等待 native resize。重复同尺寸不重新初始化屏幕或发起新尺寸操作；关闭、错误与退出停止接受并清除待处理请求，已选取的 native 操作由同一 worker 收尾，不重新激活会话。原物理裁剪不回填历史或恢复被裁掉的正文，目标 reflow 和 WindTerm 内容恢复策略未验收。
+网格沿当前 Roboto Mono 字体度量和终端可用区域计算，保留八像素边距与一行状态区，并沿现有 Screen 资源上限限制为 1..500 列、1..200 行。字体变化重新计算度量；隐藏标签在显示/布局后同步。GUI 线程负责核心尺寸事务，现有生命周期 worker 用单个最新请求串行执行 ConPTY resize、wait、cancel 和 close；GUI 不等待 native resize。重复同尺寸不重新初始化屏幕或发起新尺寸操作；关闭、错误与退出停止接受并清除待处理请求，已选取的 native 操作由同一 worker 收尾，不重新激活会话。
+
+正式路径的尺寸事务改用 `Screen::resize_preserving`：变窄时保留源 Cell、行身份与软续接，不立即销毁右侧正文。绘制消费者按当前宽度生成独立显示投影页（`HistoryViewport::project`），协议光标只被翻译为显示光标，供光标下划线、IME 候选位置与预编辑预览使用；选择/命中继续消费同一份 `ViewMapping`，并用页面 layout revision 拒绝过期页。不支持的保留 Cell 或无法映射的光标回退到物理视图页，避免隐藏输出。当前验证与仍存差异见[固定结果](../../experiments/shell/results/2026-11-03-qt-retained-display/README.md)：只缩宽的显示重排与保留行合同已通过真实 child/固定 ConPTY 核对；旧六阶段 native-sync 诊断仍失败并保留，原生重排网格不被当作产品寻址 oracle。同时缩宽+缩高的原版视口/滚动与后续 CUP 仍缺独立证据，完整 reflow 和历史/选择/Find 用户流程未验收。
 
 终端可在无修饰、无组合文本时用左键正向或反向拖选，普通点击清除旧选区。每个 widget 独立持有 `TextSelection`，命中与高亮经 `HistoryViewport` 显示快照中的 `ViewMapping` 映射到文档位置；只装饰显示副本，不修改核心文字或样式。部分列选区只投影到相应列，避免整行高亮。该接线是可见网格的基础拖选，不包含历史浏览、系统剪贴板、选词/选行或 Find；[固定实现与验证边界](../../experiments/shell/results/2026-11-01-r2-core-input/README.md)与完整 #29/#30 出口分开。
 
@@ -23,12 +25,12 @@ cmake -S . -B build/qt-cpp -G "Visual Studio 17 2022" -A x64 `
   -DQt6_DIR="<Qt SDK prefix>/lib/cmake/Qt6" `
   -DTERMFORGE_CONPTY_BACKEND_DIR="<absolute fixed ConPTY pair directory>" `
   -DTERMFORGE_MSVC_RUNTIME_DIR="<absolute prepared CRT directory>"
-cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test
+cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_terminal_modes_test
 build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe
-ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input)$' --output-on-failure
+ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_terminal_modes(_retained)?)$' --output-on-failure
 ```
 
-当前主线注册的 Qt CTest 就是上述三项；IME 合成事件检查在 `qt_cpp_shell` 内。历史冻结包的 `qt_ime_input_test.exe` 不属于当前主线构建目标，不用于替代这组验证。
+当前主线注册的 Qt CTest 包括上述四项与 `qt_terminal_modes_retained`（只缩宽的保留/投影契约）；IME 合成事件检查在 `qt_cpp_shell` 内。历史冻结包的 `qt_ime_input_test.exe` 不属于当前主线构建目标，不用于替代这组验证。旧六阶段 `--resize` 仍以显式诊断运行并保留失败，不注册进默认 CI。
 
 固定 ConPTY/CRT 输入缺失或篡改时构建明确失败；实际工具集更新到固定 CRT 之外时须重新审查依赖。产品中的 shell 启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/`、`assets/fonts/`、十个固定 CRT DLL 及其原许可/NOTICE；每次构建重新校验并部署 CRT，不运行安装器、不修改 System32。最终目录用 `tools/msvc_runtime.py manifest` 记录全部文件。当前只是本地构建输出，Qt/第三方的完整分发审计及产品打包尚未完成。
 

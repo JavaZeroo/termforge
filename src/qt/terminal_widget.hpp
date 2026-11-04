@@ -2,6 +2,7 @@
 #pragma once
 
 #include "terminal_session.hpp"
+#include "../../experiments/core/display_cursor.hpp"
 #include "../../experiments/core/history_view.hpp"
 #include "../../experiments/core/text_selection.hpp"
 #include "../../experiments/shell/keyboard.hpp"
@@ -31,6 +32,11 @@ class TerminalWidget final : public QWidget {
     // with another session. Hits resolve the last painted page, not a newer row.
     HistoryViewport viewport_;
     std::optional<ViewSnapshot> painted_page_;
+    // First painted display row inside the page and the page-relative display
+    // caret. The protocol cursor itself is never moved by this widget.
+    size_t painted_row_offset_ = 0;
+    int display_cursor_row_ = -1;
+    int display_cursor_column_ = 0;
     TextSelection selection_;
     std::optional<TextPosition> selection_anchor_;
     static constexpr int margin = 8;
@@ -104,12 +110,14 @@ class TerminalWidget final : public QWidget {
     }
     std::optional<TextPosition> selection_position(QPointF point, bool nearest) const {
         if (!painted_page_ || painted_page_->lines.empty()) return std::nullopt;
-        const int row = std::clamp(qFloor((point.y() - margin) / cell_height_),
-                                   0, static_cast<int>(painted_page_->lines.size()) - 1);
+        const int visible = static_cast<int>(painted_page_->lines.size() - painted_row_offset_);
+        if (visible <= 0) return std::nullopt;
+        const int row = std::clamp(qFloor((point.y() - margin) / cell_height_), 0, visible - 1);
         const int column = std::clamp(qFloor((point.x() - margin + (nearest ? cell_width_ / 2.0 : 0.0)) /
-                                            cell_width_), 0, model_.screen().width());
+                                            cell_width_), 0, static_cast<int>(painted_page_->mapping.columns()));
         return painted_page_->mapping.hit(TextDocument(model_.screen()),
-            static_cast<size_t>(row), static_cast<size_t>(column), ViewAffinity::leading);
+            painted_row_offset_ + static_cast<size_t>(row), static_cast<size_t>(column),
+            ViewAffinity::leading, painted_page_->mapping.layout_revision());
     }
     void extend_selection(QPointF point) {
         const TextDocument document(model_.screen());
@@ -236,7 +244,9 @@ class TerminalWidget final : public QWidget {
     QVariant inputMethodQuery(Qt::InputMethodQuery query) const override {
         if (query == Qt::ImCursorRectangle && grid_ready_) {
             const auto& screen = model_.screen();
-            return QRect(margin + screen.column * cell_width_, margin + screen.row * cell_height_, cell_width_, cell_height_);
+            const int row = display_cursor_row_ >= 0 ? display_cursor_row_ : screen.row;
+            const int column = display_cursor_row_ >= 0 ? display_cursor_column_ : screen.column;
+            return QRect(margin + column * cell_width_, margin + row * cell_height_, cell_width_, cell_height_);
         }
         if (query == Qt::ImSurroundingText) return QString();
         if (query == Qt::ImCurrentSelection) return QString();
@@ -253,12 +263,14 @@ class TerminalWidget final : public QWidget {
         if (stream == nullptr) return;
         const QByteArray bytes = text.toUtf8();
         const auto& screen = model_.screen();
+        const int row = display_cursor_row_ >= 0 ? display_cursor_row_ : screen.row;
+        const int column = display_cursor_row_ >= 0 ? display_cursor_column_ : screen.column;
         const QPoint origin = mapToGlobal(QPoint(0, 0));
         std::fprintf(stream, "{\"kind\":\"%s\",\"bytes\":%d,\"utf8\":\"", kind, static_cast<int>(bytes.size()));
         for (const char ch : bytes) std::fprintf(stream, "%02x", static_cast<unsigned char>(ch));
         std::fprintf(stream, "\",\"row\":%d,\"column\":%d,\"caret_x\":%d,\"caret_y\":%d,\"caret_w\":%d,\"caret_h\":%d,\"origin_x\":%d,\"origin_y\":%d}\n",
-                     screen.row, screen.column,
-                     margin + screen.column * cell_width_, margin + screen.row * cell_height_,
+                     row, column,
+                     margin + column * cell_width_, margin + row * cell_height_,
                      cell_width_, cell_height_, origin.x(), origin.y());
         std::fclose(stream);
     }
@@ -280,36 +292,80 @@ class TerminalWidget final : public QWidget {
         }
         event->accept();
     }
+    // The formal Qt path keeps the retained source transaction and paints its
+    // independent display projection; only the caret is translated and the
+    // protocol cursor/source cells are never moved here. A frame that cannot be
+    // projected falls back to the physical viewport page instead of hiding
+    // output, so unsupported retained atoms keep the previous visibility.
+    void refresh_painted_page(const Screen& screen) {
+        painted_page_.reset();
+        painted_row_offset_ = 0;
+        display_cursor_row_ = -1;
+        display_cursor_column_ = 0;
+        const size_t rows = static_cast<size_t>(screen.height());
+        const size_t total = screen.retained_size();
+        const size_t live_top = screen.history_lines().size();
+        if (rows >= 1 && rows <= 200 && total > live_top) {
+            // A soft continuation crossing the live-frame boundary needs its
+            // logical-line start for a faithful reflow; the projection window
+            // is bounded to 200 source rows.
+            size_t start = live_top;
+            while (start > 0 && live_top - start < 199 &&
+                   continues_into(screen.retained_line(start - 1), screen.retained_line(start))) --start;
+            if (total - start <= 200) {
+                try {
+                    auto page = viewport_.project(screen, static_cast<size_t>(screen.width()), 200, {start, 0}, total);
+                    if (const auto caret = display_cursor(screen, page.snapshot)) {
+                        const size_t first = caret->row >= rows ? caret->row - rows + 1 : 0;
+                        painted_page_ = std::move(page.snapshot);
+                        painted_row_offset_ = first;
+                        display_cursor_row_ = static_cast<int>(caret->row - first);
+                        display_cursor_column_ = static_cast<int>(caret->column);
+                        return;
+                    }
+                } catch (const std::exception&) {
+                    // Unsupported retained atoms keep the physical page below.
+                }
+            }
+        }
+        painted_page_ = viewport_.snapshot(screen);
+        display_cursor_row_ = screen.row;
+        display_cursor_column_ = screen.column;
+    }
     void paintEvent(QPaintEvent*) override {
         QPainter painter(this);
         painter.fillRect(rect(), colour(-1, false));
         const auto& screen = model_.screen();
         const TextDocument document(screen);
         selection_.reconcile(document);
-        painted_page_ = viewport_.snapshot(screen);
+        refresh_painted_page(screen);
         auto& page = *painted_page_;
-        if (selection_.range()) for (const auto& span : page.mapping.project(document, *selection_.range())) {
-            for (size_t column = span.column_begin; column < span.column_end; ++column) {
+        const size_t columns = page.mapping.columns() ? page.mapping.columns() : static_cast<size_t>(screen.width());
+        const size_t visible_rows = (std::min)(static_cast<size_t>(screen.height()),
+            page.lines.size() > painted_row_offset_ ? page.lines.size() - painted_row_offset_ : size_t{0});
+        if (selection_.range()) for (const auto& span : page.mapping.project(document, *selection_.range(), page.mapping.layout_revision())) {
+            if (span.row < painted_row_offset_ || span.row - painted_row_offset_ >= visible_rows) continue;
+            for (size_t column = span.column_begin; column < span.column_end && column < columns; ++column) {
                 // Only the owned display copy is decorated, never Screen cells.
                 auto& style = page.lines[span.row][column].style;
                 style.bg = 4; style.fg = 15; style.reverse = false;
             }
         }
         const auto base_font = font();
-        for (int row = 0; row < screen.height(); ++row) {
-            const auto& line = page.lines[static_cast<size_t>(row)];
-            for (int column = 0; column < screen.width(); ++column) {
-                const auto& cell = line[static_cast<size_t>(column)];
-                const QRectF area(margin + column * cell_width_, margin + row * cell_height_, cell_width_, cell_height_);
+        for (size_t row = 0; row < visible_rows; ++row) {
+            const auto& line = page.lines[painted_row_offset_ + row];
+            for (size_t column = 0; column < columns; ++column) {
+                const auto& cell = line[column];
+                const QRectF area(margin + static_cast<int>(column) * cell_width_, margin + static_cast<int>(row) * cell_height_, cell_width_, cell_height_);
                 // Reverse video swaps the cell's own foreground and background.
                 painter.fillRect(area, colour(cell.style.reverse ? cell.style.fg : cell.style.bg, false));
             }
-            for (int column = 0; column < screen.width(); ++column) {
-                const auto& cell = line[static_cast<size_t>(column)];
+            for (size_t column = 0; column < columns; ++column) {
+                const auto& cell = line[column];
                 if (!cell.width || cell.text.empty() || cell.style.hidden) continue;
                 auto cell_font = base_font; cell_font.setBold(cell.style.bold); painter.setFont(cell_font);
                 painter.setPen(colour(cell.style.reverse ? cell.style.bg : cell.style.fg, true));
-                const QRectF area(margin + column * cell_width_, margin + row * cell_height_,
+                const QRectF area(margin + static_cast<int>(column) * cell_width_, margin + static_cast<int>(row) * cell_height_,
                                   cell_width_ * cell.width, cell_height_);
                 painter.save(); painter.setClipRect(area);
                 painter.drawText(area, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine,
@@ -320,17 +376,20 @@ class TerminalWidget final : public QWidget {
                 painter.restore();
             }
         }
-        if (model_.running() && model_.cursor_visible()) {
-            painter.fillRect(QRect(margin + screen.column * cell_width_, margin + (screen.row + 1) * cell_height_ - 2,
+        const bool caret_drawn = display_cursor_row_ >= 0 && display_cursor_row_ < static_cast<int>(visible_rows) &&
+            display_cursor_column_ >= 0 && display_cursor_column_ < static_cast<int>(columns);
+        if (model_.running() && model_.cursor_visible() && caret_drawn) {
+            painter.fillRect(QRect(margin + display_cursor_column_ * cell_width_,
+                                   margin + (display_cursor_row_ + 1) * cell_height_ - 2,
                                    cell_width_, 2), colour(-1, true));
         }
-        if (!preedit_.isEmpty()) {
+        if (!preedit_.isEmpty() && caret_drawn) {
             // Compose in place at the caret; the committed text is what reaches
             // the session, this preview is presentation only.
             // Measure the preview instead of counting characters: a wide or
             // combining preedit is not "one cell per QChar".
             const QFontMetricsF compose_metrics(base_font);
-            const QRectF area(margin + screen.column * cell_width_, margin + screen.row * cell_height_,
+            const QRectF area(margin + display_cursor_column_ * cell_width_, margin + display_cursor_row_ * cell_height_,
                               compose_metrics.horizontalAdvance(preedit_),
                               static_cast<qreal>(cell_height_));
             auto compose_font = base_font; compose_font.setUnderline(true);
@@ -374,8 +433,17 @@ public:
         const TextDocument document(model_.screen());
         selection_.reconcile(document);
         if (selection_anchor_ && !document.valid(*selection_anchor_)) selection_anchor_.reset();
+        // Keep the display page and caret current before Qt asks the input
+        // method for geometry, not only on the next paint.
+        if (grid_ready_) refresh_painted_page(model_.screen());
         update();
     }
+    // Diagnostic observation of the owned display chain; tests only read it and
+    // never mutate the painted page or the protocol cursor.
+    const std::optional<ViewSnapshot>& painted_page() const { return painted_page_; }
+    size_t painted_row_offset() const { return painted_row_offset_; }
+    int display_caret_row() const { return display_cursor_row_; }
+    int display_caret_column() const { return display_cursor_column_; }
     QSize sizeHint() const override {
         return {margin * 2 + SessionModel::initial_columns * cell_width_,
                 margin * 3 + (SessionModel::initial_rows + 1) * cell_height_};

@@ -176,6 +176,77 @@ static void check_stage(const ModeReply& reply, termforge::qt::TerminalWidget& t
     }
 }
 
+static std::string display_row(const termforge::ViewSnapshot& page, size_t row) {
+    if (row >= page.lines.size()) return {};
+    std::string text;
+    for (const auto& cell : page.lines[row]) text += cell.text;
+    while (!text.empty() && text.back() == ' ') text.pop_back();
+    return text;
+}
+
+// Formal Qt path contract after a public width-only resize: the core retains
+// its pre-resize rows and the widget paints the independent reflowed display
+// page. The independent native grid is recorded, not used as the addressing
+// oracle: the child's CUP targets its own reflowed grid, while the product
+// follows the confirmed retained-row contract.
+static size_t retained_contract_checks(const ModeReply& native, termforge::qt::TerminalWidget& terminal,
+                                       const termforge::qt::SessionModel& model) {
+    size_t checks = 0, failures = 0;
+    const auto check = [&](bool condition, const char* message) {
+        ++checks;
+        if (condition) return;
+        ++failures;
+        std::cerr << "retained contract failed: " << message << '\n';
+    };
+    const auto& screen = model.screen();
+    const auto state = model.resize_state();
+    check(native.info.dwSize.X == 60 && native.info.dwSize.Y == 24 && screen.width() == 60 && screen.height() == 24 &&
+          state.transport_columns == 60 && state.transport_rows == 24 && !state.pending &&
+          state.requested_revision == state.transport_revision,
+          "child/transport/core resize identity differs");
+    check(screen.history_lines().empty() && screen.visible_lines().size() == 24,
+          "width-only resize changed the retained frame");
+    check(termforge::project_line(screen.visible_lines()[7]).text == std::string(79, ' ') + "B" &&
+          termforge::project_line(screen.visible_lines()[9]).text == std::string(79, ' ') + "C" &&
+          termforge::project_line(screen.visible_lines()[10]).text == "D",
+          "retained source rows lost the literal B/C/D cells");
+    check(screen.row == 0 && screen.column == 2, "protocol cursor left its retained source position");
+    terminal.grab();
+    const auto& page = terminal.painted_page();
+    check(page.has_value() && terminal.painted_row_offset() == 0, "widget painted no display page");
+    if (page) {
+        check(display_row(*page, 7).empty() && display_row(*page, 8) == std::string(19, ' ') + "B" &&
+              display_row(*page, 9).empty() && display_row(*page, 10).empty(),
+              "display rows 7..10 do not match the reflowed retained B row");
+        check(display_row(*page, 11) == std::string(19, ' ') + "CD",
+              "display row 11 does not reflow the retained CD logical line");
+        check(display_row(*page, 12) == "RESIZED",
+              "CUP write did not follow the retained source row in the display page");
+        check(terminal.display_caret_row() == 0 && terminal.display_caret_column() == 2,
+              "display caret differs from the retained source cursor");
+        const auto hit = page->mapping.hit(termforge::TextDocument(screen), 8, 19,
+                                           termforge::ViewAffinity::leading, page->mapping.layout_revision());
+        check(hit.has_value() && hit->line_id == screen.visible_lines()[7].id && hit->column == 79,
+              "display hit-test did not return the retained B source cell");
+    }
+    // Independent native observation, kept separate and never used as the
+    // product addressing oracle.
+    check(native_row(native, 7).empty() && native_row(native, 8) == std::string(19, ' ') + "B" &&
+          native_row(native, 9).empty() && native_row(native, 10).empty(),
+          "independent native reflow observation differs from its literal rows");
+    check(native_row(native, 11) == "RESIZED" + std::string(12, ' ') + "CD",
+          "independent native row did not keep its own CUP write with the old tail");
+    std::cerr << "{\"schema\":\"termforge-qt-retained-contract-v1\",\"checks\":" << checks
+              << ",\"failures\":" << failures << ",\"core_cursor\":[" << screen.row << ',' << screen.column
+              << "],\"display_caret\":[" << terminal.display_caret_row() << ',' << terminal.display_caret_column()
+              << "],\"native_row_8_hex\":\"" << hex(native_row(native, 8))
+              << "\",\"display_row_8_hex\":\"" << (page ? hex(display_row(*page, 8)) : std::string())
+              << "\",\"native_row_11_hex\":\"" << hex(native_row(native, 11))
+              << "\",\"display_row_12_hex\":\"" << (page ? hex(display_row(*page, 12)) : std::string())
+              << "\",\"presented_done\":null}\n";
+    return failures;
+}
+
 // Opt-in, one-run failure diagnostic using the same owned child and fixed
 // backend. It captures actual VT from the transport's existing public probe
 // interface; this is a separate direct-transport run, never a byte claim about
@@ -250,14 +321,15 @@ int main(int argc, char** argv) {
         catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
     const bool resize_repro = argc == 2 && std::string_view(argv[1]) == "--resize";
-    if (argc != 1 && !resize_repro) {
-        std::cerr << "usage: qt_terminal_modes_test [--resize]\n"; return 2;
+    const bool retained_contract = argc == 2 && std::string_view(argv[1]) == "--retained-contract";
+    if (argc != 1 && !resize_repro && !retained_contract) {
+        std::cerr << "usage: qt_terminal_modes_test [--resize|--retained-contract]\n"; return 2;
     }
     const bool capture_transport = qEnvironmentVariableIsSet("TERMFORGE_MODES_TRANSPORT_DIAGNOSTIC");
     if (capture_transport && !resize_repro) {
         std::cerr << "transport diagnostic requires the explicit --resize entry\n"; return 2;
     }
-    const unsigned final_stage = resize_repro ? 6u : 5u;
+    const unsigned final_stage = (resize_repro || retained_contract) ? 6u : 5u;
     char gate[3]{}; DWORD count = 0; BOOL owned = FALSE;
     if (!ReadFile(GetStdHandle(STD_INPUT_HANDLE), gate, sizeof(gate), &count, nullptr) ||
         count != sizeof(gate) || std::string_view(gate, count) != "GO\n" ||
@@ -284,15 +356,21 @@ int main(int argc, char** argv) {
         require(initial.info.dwSize.X == 80 && initial.info.dwSize.Y == 24,
                 "mode child did not start at the literal 80x24 geometry");
         size_t failures = 0;
+        size_t retained_failures = 0;
         for (unsigned stage = 1; stage <= final_stage; ++stage) {
             if (stage == 6) {
                 const QFontMetricsF metrics(terminal.font());
                 const int width = qCeil(metrics.horizontalAdvance(QLatin1Char('M')));
                 const int height = qCeil(metrics.height()) + 2;
-                terminal.resize(16 + 60 * width, 24 + 13 * height);
+                // The explicit repro keeps the original 60x12 simultaneous
+                // width/height change; the retained contract entry keeps the
+                // frame height so the reflowed display region is unambiguous.
+                const int target_columns = 60, target_rows = retained_contract ? 24 : 12;
+                terminal.resize(16 + target_columns * width, 24 + (target_rows + 1) * height);
                 await([&] { const auto state = model.resize_state();
-                            return state.requested_columns == 60 && state.requested_rows == 12 &&
-                                   !state.pending && state.transport_columns == 60 && state.transport_rows == 12; },
+                            return state.requested_columns == target_columns && state.requested_rows == target_rows &&
+                                   !state.pending && state.transport_columns == target_columns &&
+                                   state.transport_rows == target_rows; },
                       model, lifecycle, "public Qt resize did not finish the bounded native request");
             }
             require(terminal.hasFocus(), "public mode key target lost focus");
@@ -305,7 +383,10 @@ int main(int argc, char** argv) {
                       model, lifecycle, "source stage fence did not reach the core through ConPTY");
             } catch (...) { record(reply, model.screen()); throw; }
             record(reply, model.screen());
-            check_stage(reply, terminal, model, failures);
+            if (retained_contract && stage == final_stage)
+                retained_failures = retained_contract_checks(reply, terminal, model);
+            else
+                check_stage(reply, terminal, model, failures);
         }
         QTest::keyClicks(&terminal, QStringLiteral("x"));
         await([&] { return model.finished(); }, model, lifecycle, "mode child did not exit within its fixed deadline");
@@ -315,13 +396,14 @@ int main(int argc, char** argv) {
         if (capture_transport)
             transport_diagnostic(executable, workspace.path().toStdWString(), lifecycle);
         std::cout << "{\"schema\":\"termforge-qt-terminal-modes-v1\",\"scenario\":\""
-                  << (resize_repro ? "modes-resize-repro" : "modes")
+                  << (retained_contract ? "modes-retained-contract" : resize_repro ? "modes-resize-repro" : "modes")
                   << "\",\"stages\":" << final_stage << ",\"resize_exercised\":"
-                  << (resize_repro ? "true" : "false") << ",\"literal_failures\":"
-                  << failures << ",\"output_bytes\":" << model.received_bytes()
+                  << (resize_repro || retained_contract ? "true" : "false") << ",\"literal_failures\":"
+                  << failures << ",\"retained_contract_failures\":" << retained_failures
+                  << ",\"output_bytes\":" << model.received_bytes()
                   << ",\"child_exit\":37,\"cleanup_verified\":true,\"raw_transport_bytes_observed\":false,"
                      "\"presented_done\":null}\n";
-        return failures ? 1 : 0;
+        return (failures || retained_failures) ? 1 : 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n'; return 1;
     }

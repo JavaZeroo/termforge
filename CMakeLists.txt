@@ -191,6 +191,10 @@ add_executable(resize_reflow_addressing_test experiments/core/resize_reflow_addr
 target_link_libraries(resize_reflow_addressing_test PRIVATE termforge_core)
 termforge_warnings(resize_reflow_addressing_test)
 
+add_executable(display_cursor_test experiments/core/display_cursor_test.cpp)
+target_link_libraries(display_cursor_test PRIVATE termforge_core)
+termforge_warnings(display_cursor_test)
+
 add_executable(resize_edit_test experiments/core/resize_edit_test.cpp)
 target_link_libraries(resize_edit_test PRIVATE termforge_core)
 termforge_warnings(resize_edit_test)
@@ -451,6 +455,8 @@ add_test(NAME retained_columns_core COMMAND retained_columns_test)
 add_test(NAME retained_resize_address_core COMMAND resize_address_test --retained-columns)
 add_test(NAME reflow_addressing_core COMMAND resize_reflow_addressing_test)
 set_tests_properties(reflow_addressing_core PROPERTIES TIMEOUT 10)
+add_test(NAME display_cursor_core COMMAND display_cursor_test)
+set_tests_properties(display_cursor_core PROPERTIES TIMEOUT 10)
 add_test(NAME retained_resize_edit_core COMMAND resize_edit_test)
 add_test(NAME retained_resize_pending_core COMMAND resize_pending_test)
 add_test(NAME retained_resize_hidden_core COMMAND resize_hidden_test)
@@ -721,6 +727,10 @@ if(TERMFORGE_BUILD_QT_SHELL)
     add_test(NAME qt_terminal_modes COMMAND "${Python3_EXECUTABLE}"
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>")
     set_tests_properties(qt_terminal_modes PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_test(NAME qt_terminal_modes_retained COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --retained-contract)
+    set_tests_properties(qt_terminal_modes_retained PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     if(TERMFORGE_ENABLE_RESIZE_REPRO)
       add_test(NAME qt_terminal_modes_resize_repro COMMAND "${Python3_EXECUTABLE}"
