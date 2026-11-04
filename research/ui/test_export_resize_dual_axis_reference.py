@@ -175,7 +175,7 @@ class ResizeDualAxisExportTests(unittest.TestCase):
                 for index, phase in enumerate(result["phases"]):
                     actual = data[probe.RESULT_FILE]["observations"][index]["terminal"]["lines"]
                     public = phase["document_projection"]["synthetic_text"]
-                    catalog = sorted(probe.synthetic_lines(case,index))
+                    catalog = sorted(exporter.dual_document_lines(case,index))
                     self.assertEqual(public["catalog_sha256"], hashlib.sha256(json.dumps(catalog,separators=(',',':')).encode()).hexdigest())
                     rebuilt = [bytes.fromhex(row["utf8_hex"]).decode('ascii') for row in public["lines"]]
                     self.assertEqual(rebuilt, actual)

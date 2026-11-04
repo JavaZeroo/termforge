@@ -1,0 +1,77 @@
+{
+  "schema": "termforge-original-resize-dual-axis-validation-v1",
+  "source_commit": "dee3c78cfda60a99211dcf8f217be6e361172d5f",
+  "source_tree": "c4f5430ca9ed83238472efca8e0376ea2574c2c8",
+  "source_binding": "The probe, exporter, controller and CMake wiring were committed before the authorized original run; strict export and the core replay used the committed source. This validation file and the results README are a documentation follow-up.",
+  "case_id": "dual-axis-retention",
+  "passed": true,
+  "original_behavior_oracle": false,
+  "semantic_acceptance": false,
+  "full_active_grid_verified": false,
+  "physical_presentation_verified": false,
+  "windterm_parity": false,
+  "r27_complete": false,
+  "r29_complete": false,
+  "r2_complete": false,
+  "presented_done": null,
+  "plan": {
+    "sha256": "3beabf9a44537d43a400209786f4aeccc29a255307a74f4a4c13cf0ac812d55d",
+    "attempt_marker_sha256": "ed761217af8e88440bea5afe49a649b79889f25dabd35db03f616895e8f83a34",
+    "maximum_original_runs": 1,
+    "actual_original_runs": 1,
+    "additional_original_runs": 0
+  },
+  "reference": {
+    "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+    "source_archive_manifest_sha256": "96d3783a19e19e50db2c306f1b107373d1e564df2e32b86f8b50fe10dd566434",
+    "execution_source_base_commit": "dee3c78cfda60a99211dcf8f217be6e361172d5f",
+    "windows_version": "10.0.26300",
+    "python": "3.12.10",
+    "node_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9",
+    "rea_version": "6.7.0"
+  },
+  "strict_export": {
+    "path": "research/ui/results/2026-11-04-resize-dual-axis-reference/strict-export.json",
+    "sha256": "95ad9c5bd8d73e278e794fa327e2fd902739c3da9bd4be6add4d560a00a7d18f",
+    "bytes": 38190,
+    "schema": "termforge-original-resize-dual-axis-reference-v1",
+    "status": "observation",
+    "phases": 3
+  },
+  "observed": {
+    "windows": [[1360, 749], [1000, 569], [1360, 749]],
+    "grids": [[91, 20], [61, 14], [91, 20]],
+    "naws_event_count": [1, 2, 3],
+    "dsr": ["19;7", "7;4", "7;4"],
+    "scroll": [0, 5, 5],
+    "document_lines": [19, 19, 18],
+    "document_row_11": [
+      "89 spaces + uvw (92 chars)",
+      " DQ + 58 spaces + w (62 chars)",
+      " DQ + 58 spaces + w (62 chars)"
+    ],
+    "write_probe": {"phase": 1, "cup": [7, 2], "text": "DQ", "document_line": 11, "line_text_offset": 1},
+    "note": "The request is one window action changing both axes; the observed NAWS sequence is recorded and not assumed atomic, and this single run does not establish general behavior."
+  },
+  "core_replay": {
+    "test": "resize_dual_axis_test",
+    "ctest": "resize_dual_axis_core",
+    "assertions": 11,
+    "failed": 0,
+    "scope": "Fixed source/protocol inputs: initial body, resize_preserving(14,61), CUP(7;2)+DQ+DSR, resize_preserving(20,91), final DSR. Pre-write retained row remains full; the edited row materializes to the observed 62-character form; DSR 7;4 both times. No production change."
+  },
+  "preserved": {
+    "old_strict_failures_rewritten": false,
+    "old_six_stage_bcd_assertion_relaxed": false,
+    "existing_combined_hidden_qt_evidence_changed": false,
+    "confirmed_intentional_difference_merged_into_original": false
+  },
+  "limitations": [
+    "One fixed 75 B ASCII direct-Telnet sample; main screen only; no alternate frame, Unicode, other sizes/orders, continuous output, selection/Find, full grid/style, ConPTY transport, physical presentation or performance.",
+    "The observed original scrolled by 5 and clipped the written source row to 62 characters; no internal history-row count or scroll model is inferred.",
+    "The one NAWS event count/order is recorded for this run only; a single window request is not assumed to be an atomic two-axis transport event in general.",
+    "The old six-stage B/CD native-sync failure is not explained by this WindTerm UI observation and is not relaxed; ConPTY native-grid reflow after a simultaneous change remains unobserved.",
+    "The product retained-body direction remains the confirmed direction; this record is an original observation, not a claim of WindTerm equality or a rewrite of the confirmed intentional difference."
+  ]
+}

@@ -108,9 +108,72 @@ def marker_projection(terminal):
                        "line_start_api_value": start, "requested_position_api_value": marker["position"], "rect": rect})
     return result
 geometry = FunctionType(resize_export.geometry.__code__, {**vars(resize_export), "probe": probe})
+
+
+def _base_lines():
+    return {"", "HTOP", "HARD_A", "HARD_B", "LOWEND", " "*89+"uvw"}
+
+
+def dual_document_lines(case, phase):
+    """Bounded source-derived lines for the fixed dual-axis run.
+
+    The observed original reflow clips a retained 91-cell source row to the
+    current 61 columns and keeps the single soft-continuation ``w`` cell; the
+    one fixed write replaces two cells in that first clipped row. Both the
+    pre-write clipped form and its bounded write variants are enumerated here.
+    """
+    lines = set(probe.synthetic_lines(case, phase))
+    for line in _base_lines():
+        clipped = line[:61]
+        if line == " "*89+"uvw":
+            for column in range(0, 60):
+                row = " "*61
+                modified = row[:column] + "DQ" + row[column+2:] + "w"
+                lines.update((modified, modified.rstrip(" ")))
+        for column in range(0, 60):
+            if len(clipped) >= column+2:
+                modified = clipped[:column] + "DQ" + clipped[column+2:]
+            else:
+                modified = clipped.ljust(column) + "DQ"
+            lines.update((modified, modified.rstrip(" "), modified.ljust(61)))
+    return frozenset(lines)
+
+
+def dual_base_lines(case, phase):
+    base = set(probe.base_synthetic_lines(case, phase))
+    base.update(line[:61] for line in _base_lines())
+    base.update(line[:61].rstrip(" ") for line in _base_lines())
+    return frozenset(base)
+
+
+def dual_validate_document(case, phase, terminal):
+    require(type(terminal.get("line_count")) is int and 0 <= terminal["line_count"] <= 200 and
+            type(terminal.get("lines")) is list and len(terminal["lines"]) == terminal["line_count"], "Document bound")
+    lines = terminal["lines"]
+    allowed = dual_document_lines(case, phase)
+    require(all(type(line) is str and line.isascii() and line in allowed for line in lines),
+            "Only fixed dual-axis source-derived synthetic document lines are allowed")
+    counts = {marker: sum(line.count(marker) for line in lines) for marker in MARKERS}
+    require(all(count <= 1 for count in counts.values()), "Repeated dual-axis-source marker")
+    if phase == 0:
+        require(all(count == 1 for count in counts.values()), "Initial fixture sentinel missing")
+        return None
+    written = [line for line in lines if line not in dual_base_lines(case, phase)]
+    require(len(written) == 1 and "DQ" in written[0], "Fixed write marker missing or repeated")
+    return written[0]
+
+def dual_audit_mechanics(directory, case):
+    original = probe.validate_document
+    probe.validate_document = dual_validate_document
+    try:
+        return probe.audit_mechanics(directory, case)
+    finally:
+        probe.validate_document = original
+
+
 _source = extract(Path(resize_export.__file__), "def capture_facts(", "\n\ndef export(")
 _source = adapt(_source, {
-    "probe.audit_mechanics(directory)": 'probe.audit_mechanics(directory, plan["case_id"])',
+    "probe.audit_mechanics(directory)": 'dual_audit_mechanics(directory, plan["case_id"])',
     '"resize-state-result.json"': 'probe.RESULT_FILE',
     "6 <= len(messages) <= 69": 'len(probe.phases(plan["case_id"]))+3 <= len(messages) <= len(probe.phases(plan["case_id"]))+66',
     '"scenario": "resize-state-v1"': '"scenario": "resize-dual-axis-v1", "case_id": plan["case_id"]',
@@ -119,13 +182,14 @@ _source = adapt(_source, {
     '"resize_state_result"': '"resize_dual_axis_result"',
     "for phase in (1, 2):": 'for phase in probe.resize_phases(plan["case_id"]):',
     "probe.phase_records(grids[0][1], grids[0][0])": 'probe.phase_records(plan["case_id"], grids[0][1], grids[0][0])',
-    "synthetic_lines(grids[0][0])": 'probe.synthetic_lines(plan["case_id"], source["phase"])',
+    "synthetic_lines(grids[0][0])": 'dual_document_lines(plan["case_id"], source["phase"])',
     '"dsr_request_bytes": 12': '"dsr_request_bytes": 4*len(probe.phases(plan["case_id"]))',
     'enumerate(peer["resize_boundaries"], 1)': 'zip(probe.RESIZE_PHASES, peer["resize_boundaries"])',
     '"phase_messages": 3': '"phase_messages": len(probe.phases(plan["case_id"]))',
 })
 _CAPTURE = {**vars(resize_export), "ROOT": ROOT, "probe": probe, "read": read,
-            "expected_probe": expected_probe, "geometry": geometry, "marker_projection": marker_projection}
+            "expected_probe": expected_probe, "geometry": geometry, "marker_projection": marker_projection,
+            "dual_audit_mechanics": dual_audit_mechanics, "dual_document_lines": dual_document_lines}
 exec(compile(_source, str(Path(resize_export.__file__)), "exec"), _CAPTURE)
 
 
@@ -157,8 +221,8 @@ def capture_facts(directory, plan, source_root=ROOT):
         phase["document_projection"]["synthetic_lines_sha256"] = hashlib.sha256(json.dumps(lines, separators=(",", ":")).encode()).hexdigest()
         # Validate exact source derivation before publishing any reconstructible
         # text. The unrestricted original recording remains private.
-        probe.validate_document(case, index, observed["terminal"])
-        catalog = sorted(probe.synthetic_lines(case, index))
+        dual_validate_document(case, index, observed["terminal"])
+        catalog = sorted(dual_document_lines(case, index))
         positions = {line: offset for offset, line in enumerate(catalog)}
         phase["document_projection"]["synthetic_text"] = {
             "encoding": "UTF-8", "catalog_source": "resize_dual_axis_reference.synthetic_lines(case_id, phase); sorted ASCII scalar order",
