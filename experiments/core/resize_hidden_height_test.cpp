@@ -1,10 +1,15 @@
 // Retained-frame engineering contract: a hidden primary frame keeps its
 // retained source cells when only the height changes. The original
-// hidden-primary height recording is preserved but its strict audit failed, so
-// these assertions are an implementation invariant under the confirmed
-// retained-body direction (ADR-0010), not an original-behavior oracle. A width
-// change while the frame is hidden still fits it to the protocol footprint,
-// matching the separately recorded hidden-width policy.
+// hidden-primary height recording is preserved but its strict audit failed;
+// the 2026-11-04 supplemental audit observed the original clipping the
+// retained row to the current protocol width on return, and the user then
+// confirmed keeping the full body and accepting that difference as an
+// intentional product difference (ADR-0010, issue #29 comment 6627911863).
+// These assertions therefore remain an engineering regression under the
+// confirmed retained-body direction: not an original-behavior oracle and not
+// the formal-path (real child/ConPTY/Qt) acceptance for the confirmed
+// scenario. A width change while the frame is hidden still fits it to the
+// protocol footprint, matching the separately recorded hidden-width policy.
 #include "terminal.hpp"
 #include "history_view.hpp"
 #include "text_document.hpp"
