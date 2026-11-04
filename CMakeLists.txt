@@ -540,6 +540,8 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_resize_height_measured_optimized -O -m unittest research.ui.test_resize_height_measured_reference research.ui.test_export_resize_height_measured_reference -v)
   termforge_add_python_test(windterm_resize_combined_reference -m unittest research.ui.test_resize_combined_reference research.ui.test_export_resize_combined_reference -v)
   termforge_add_python_test(windterm_resize_combined_optimized -O -m unittest research.ui.test_resize_combined_reference research.ui.test_export_resize_combined_reference -v)
+  termforge_add_python_test(windterm_resize_dual_axis_reference -m unittest research.ui.test_resize_dual_axis_reference research.ui.test_export_resize_dual_axis_reference -v)
+  termforge_add_python_test(windterm_resize_dual_axis_optimized -O -m unittest research.ui.test_resize_dual_axis_reference research.ui.test_export_resize_dual_axis_reference -v)
   termforge_add_python_test(windterm_resize_hidden_height_reference -m unittest research.ui.test_resize_hidden_height_reference research.ui.test_export_resize_hidden_height_reference research.ui.test_audit_resize_hidden_height_tail -v)
   termforge_add_python_test(windterm_resize_hidden_height_optimized -O -m unittest research.ui.test_resize_hidden_height_reference research.ui.test_export_resize_hidden_height_reference research.ui.test_audit_resize_hidden_height_tail -v)
   find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
@@ -592,6 +594,10 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
       ${CMAKE_SOURCE_DIR}/research/ui/test_resize_combined_stages.js
       ${CMAKE_SOURCE_DIR}/research/ui/resize_combined_reference.js)
     set_tests_properties(windterm_resize_combined_controller PROPERTIES TIMEOUT 15)
+    add_test(NAME windterm_resize_dual_axis_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
+      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_dual_axis_stages.js
+      ${CMAKE_SOURCE_DIR}/research/ui/resize_dual_axis_reference.js)
+    set_tests_properties(windterm_resize_dual_axis_controller PROPERTIES TIMEOUT 15)
     add_test(NAME windterm_resize_hidden_height_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
       ${CMAKE_SOURCE_DIR}/research/ui/test_resize_hidden_height_stages.js
       ${CMAKE_SOURCE_DIR}/research/ui/resize_hidden_height_reference.js)
