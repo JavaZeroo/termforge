@@ -442,6 +442,10 @@ public:
     // never mutate the painted page or the protocol cursor.
     const std::optional<ViewSnapshot>& painted_page() const { return painted_page_; }
     size_t painted_row_offset() const { return painted_row_offset_; }
+    // Diagnostic geometry of the owned paint chain; tests only read it.
+    int cell_width() const { return cell_width_; }
+    int cell_height() const { return cell_height_; }
+    static int content_margin() { return margin; }
     int display_caret_row() const { return display_cursor_row_; }
     int display_caret_column() const { return display_cursor_column_; }
     QSize sizeHint() const override {

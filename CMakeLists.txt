@@ -301,6 +301,9 @@ if(WIN32)
   add_executable(shell_queue_probe experiments/shell/queue_probe.cpp)
   add_executable(shell_size_client experiments/shell/size_client.cpp)
   add_executable(shell_input_client experiments/shell/input_client.cpp)
+  add_executable(shell_unicode_echo_client experiments/shell/unicode_echo_client.cpp)
+  termforge_warnings(shell_unicode_echo_client)
+  target_compile_definitions(shell_unicode_echo_client PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
   add_executable(shell_text_client experiments/shell/text_client.cpp)
   termforge_warnings(shell_text_client)
   target_compile_definitions(shell_text_client PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
@@ -711,6 +714,23 @@ if(TERMFORGE_BUILD_QT_SHELL)
     add_test(NAME qt_unicode_input COMMAND "${Python3_EXECUTABLE}"
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_unicode_input_test>")
     set_tests_properties(qt_unicode_input PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+    add_executable(qt_unicode_render_test src/qt/unicode_render_test.cpp)
+    set_target_properties(qt_unicode_render_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-unicode-render-bin/$<CONFIG>")
+    termforge_qt_entry(qt_unicode_render_test)
+    target_link_libraries(qt_unicode_render_test PRIVATE Qt6::Test)
+    add_dependencies(qt_unicode_render_test shell_unicode_echo_client)
+    add_custom_command(TARGET qt_unicode_render_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_unicode_render_test>/platforms/"
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:shell_unicode_echo_client>" "$<TARGET_FILE_DIR:qt_unicode_render_test>/"
+      VERBATIM)
+    add_test(NAME qt_unicode_render COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_unicode_render_test>")
+    set_tests_properties(qt_unicode_render PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
     add_executable(qt_cpp_resize_smoke src/qt/resize_smoke.cpp)
     set_target_properties(qt_cpp_resize_smoke PROPERTIES

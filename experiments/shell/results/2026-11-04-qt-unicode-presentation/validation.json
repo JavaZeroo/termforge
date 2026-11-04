@@ -1,0 +1,957 @@
+{
+  "schema": "termforge-qt-unicode-presentation-validation-v1",
+  "source_commit": "fbe4c4caf3ac050a4dc0c4ea61c28b0e0febc1d0",
+  "source_tree": "5b06235afe861cb0075ed0beda0ab7659fcd186d",
+  "source_binding": "Implementation, test, CI wiring and report were committed before the final builds and regressions; this validation file is a documentation follow-up. The working tree was clean at the start of verification, and the recorded implementation/test source hashes are the verified ones.",
+  "scope": "Fixed five-sample Unicode set through the formal Qt key path into a real child: independent ReadConsoleW receive bytes, CR->CRLF echo source, core Cell/width/marks, offscreen widget ink and per-cell RawFont fallback/missing-glyph/advance measurement. No new grapheme, clustering or width policy.",
+  "passed": true,
+  "scoped_validation_passed": true,
+  "complete_unicode_ime_verified": false,
+  "physical_presentation_verified": false,
+  "native_ime_verified": false,
+  "grapheme_width_policy_approved": false,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 win64_msvc2022_64, offscreen platform",
+    "conpty": "1.25.260930003",
+    "conpty_files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "msvc_runtime": "14.51.36247.0",
+    "python": "3.12.10",
+    "host_font_directory": "%WINDIR%/Fonts (used only to let the offscreen font database load the real fallback faces; the product font is loaded by path)",
+    "font_database_families": 94
+  },
+  "dependencies": {
+    "qt_archive_sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7",
+    "sdk_tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266",
+    "conpty_package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "msvc_runtime_package_sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+    "input_manifests": {
+      "qt": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+      "conpty": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "msvc_runtime": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+    }
+  },
+  "commands": {
+    "configure": "cmake -S . -B build/qt-cpp -G \"Visual Studio 17 2022\" -A x64 -DTERMFORGE_BUILD_QT_SHELL=ON -DBUILD_TESTING=ON -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF -DQt6_DIR=<prepared>/qt/lib/cmake/Qt6 -DTERMFORGE_CONPTY_BACKEND_DIR=<prepared>/conpty -DTERMFORGE_MSVC_RUNTIME_DIR=<prepared>/crt",
+    "new_target": "cmake --build build/qt-cpp --config Release --target qt_unicode_render_test --parallel 2",
+    "new_test": "ctest --test-dir build/qt-cpp -C Release -R '^qt_unicode_render$' --no-tests=error --output-on-failure",
+    "qt_regression": "ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?)$' --output-on-failure",
+    "core_regression": "build the default configuration, then ctest --test-dir build -C Release -R '^(.*_core|core|resize_replay_contract|recovery|keyboard)$' --output-on-failure"
+  },
+  "results": {
+    "qt_formal_path_ctest": {
+      "tests": [
+        "qt_cpp_shell",
+        "qt_unicode_input",
+        "qt_unicode_render",
+        "qt_cpp_resize",
+        "qt_terminal_modes",
+        "qt_terminal_modes_retained"
+      ],
+      "passed": 6,
+      "failed": 0,
+      "seconds": 9.92
+    },
+    "core_ctest": {
+      "includes": "notably core (16 core + 15 Unicode Python tests), keyboard, recovery, resize_replay_contract and every *_core native check",
+      "passed": 41,
+      "failed": 0,
+      "seconds": 27.61
+    },
+    "new_test_runs": {
+      "supervisor": "termforge-qt-cpp-supervisor-v1",
+      "runs": 2,
+      "both_passed": true,
+      "job_after": {
+        "active": 0,
+        "total": 6,
+        "terminated": 0
+      },
+      "content_identical_ignoring_child_pid": true,
+      "nondeterministic_fields": [
+        "child_pid",
+        "QTextLayout glyph-run family order for one mixed U+FFFD+U+20E3 cell"
+      ],
+      "receiver_bytes": 61,
+      "receiver_sha256": "32a5695a4b750861291df737ed9c8d4e7a92726172d6f275ba6c88790fd13f1e",
+      "echo_bytes": 96,
+      "echo_sha256": "96ae6f16c2e6449673b10871fc10881c11566a2de150a5dcb759ebca55628028",
+      "child_pid_run1": 14236,
+      "child_pid_run2": 5876,
+      "isolation_child_pid": 29048,
+      "isolation_received_hex": "",
+      "isolation_sample_text_absent": true
+    },
+    "python_unicode_tests": {
+      "tests": 15,
+      "passed": true
+    },
+    "python_core_tests": {
+      "tests": 16,
+      "passed": true
+    }
+  },
+  "product_identity": {
+    "backend": "cpp-core / qt-widgets / reviewed-side-by-side-1.25.260930003 / 80x24",
+    "font_family": "Roboto Mono",
+    "bundled_font_sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
+    "grid": [
+      80,
+      24
+    ],
+    "cell_geometry": [
+      9,
+      22
+    ],
+    "host_fallback_verified": true
+  },
+  "samples": [
+    {
+      "id": "ascii",
+      "asserted": true,
+      "source_hex": "5465726d466f726765204153434949",
+      "parsed_hex": "5465726d466f726765204153434949",
+      "recovery_replaced_scalars": false,
+      "host_fallback_required": false,
+      "host_fallback_rendered": true,
+      "fallback_cells": 0,
+      "display_span_px": 135,
+      "glyph_families": [
+        "Roboto Mono"
+      ],
+      "cells": [
+        {
+          "marks": 0,
+          "text_hex": "54",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "65",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "72",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "6d",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "46",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "6f",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "72",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "67",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "65",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "20",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "41",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "53",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "43",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "49",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "49",
+          "width": 1
+        }
+      ],
+      "painted_cells": [
+        {
+          "column": 0,
+          "text_hex": "54",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            0,
+            8
+          ],
+          "reference_ink_span": [
+            0,
+            8
+          ]
+        },
+        {
+          "column": 1,
+          "text_hex": "65",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            1,
+            7
+          ],
+          "reference_ink_span": [
+            1,
+            7
+          ]
+        },
+        {
+          "column": 2,
+          "text_hex": "72",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            2,
+            7
+          ],
+          "reference_ink_span": [
+            2,
+            7
+          ]
+        },
+        {
+          "column": 3,
+          "text_hex": "6d",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            0,
+            8
+          ],
+          "reference_ink_span": [
+            0,
+            8
+          ]
+        },
+        {
+          "column": 4,
+          "text_hex": "46",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            1,
+            7
+          ],
+          "reference_ink_span": [
+            1,
+            7
+          ]
+        },
+        {
+          "column": 5,
+          "text_hex": "6f",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            0,
+            7
+          ],
+          "reference_ink_span": [
+            0,
+            7
+          ]
+        },
+        {
+          "column": 6,
+          "text_hex": "72",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            2,
+            7
+          ],
+          "reference_ink_span": [
+            2,
+            7
+          ]
+        },
+        {
+          "column": 7,
+          "text_hex": "67",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            1,
+            7
+          ],
+          "reference_ink_span": [
+            1,
+            7
+          ]
+        },
+        {
+          "column": 8,
+          "text_hex": "65",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            1,
+            7
+          ],
+          "reference_ink_span": [
+            1,
+            7
+          ]
+        },
+        {
+          "column": 10,
+          "text_hex": "41",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            0,
+            8
+          ],
+          "reference_ink_span": [
+            0,
+            8
+          ]
+        },
+        {
+          "column": 11,
+          "text_hex": "53",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            1,
+            8
+          ],
+          "reference_ink_span": [
+            1,
+            8
+          ]
+        },
+        {
+          "column": 12,
+          "text_hex": "43",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            0,
+            8
+          ],
+          "reference_ink_span": [
+            0,
+            8
+          ]
+        },
+        {
+          "column": 13,
+          "text_hex": "49",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            1,
+            7
+          ],
+          "reference_ink_span": [
+            1,
+            7
+          ]
+        },
+        {
+          "column": 14,
+          "text_hex": "49",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            1,
+            7
+          ],
+          "reference_ink_span": [
+            1,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cjk",
+      "asserted": true,
+      "source_hex": "e6b189e5ad97e7bb88e7abaf",
+      "parsed_hex": "e6b189e5ad97e7bb88e7abaf",
+      "recovery_replaced_scalars": false,
+      "host_fallback_required": true,
+      "host_fallback_rendered": true,
+      "fallback_cells": 4,
+      "display_span_px": 72,
+      "glyph_families": [
+        "Alibaba PuHuiTi"
+      ],
+      "cells": [
+        {
+          "marks": 0,
+          "text_hex": "e6b189",
+          "width": 2
+        },
+        {
+          "marks": 0,
+          "text_hex": "",
+          "width": 0
+        },
+        {
+          "marks": 0,
+          "text_hex": "e5ad97",
+          "width": 2
+        },
+        {
+          "marks": 0,
+          "text_hex": "",
+          "width": 0
+        },
+        {
+          "marks": 0,
+          "text_hex": "e7bb88",
+          "width": 2
+        },
+        {
+          "marks": 0,
+          "text_hex": "",
+          "width": 0
+        },
+        {
+          "marks": 0,
+          "text_hex": "e7abaf",
+          "width": 2
+        },
+        {
+          "marks": 0,
+          "text_hex": "",
+          "width": 0
+        }
+      ],
+      "painted_cells": [
+        {
+          "column": 0,
+          "text_hex": "e6b189",
+          "width": 2,
+          "marks": 0,
+          "families": [
+            "Alibaba PuHuiTi"
+          ],
+          "missing_glyphs": 0,
+          "advance": 15,
+          "advance_over_span": false,
+          "cell_span_px": 18,
+          "ink_span": [
+            0,
+            14
+          ],
+          "reference_ink_span": [
+            0,
+            14
+          ]
+        },
+        {
+          "column": 2,
+          "text_hex": "e5ad97",
+          "width": 2,
+          "marks": 0,
+          "families": [
+            "Alibaba PuHuiTi"
+          ],
+          "missing_glyphs": 0,
+          "advance": 15,
+          "advance_over_span": false,
+          "cell_span_px": 18,
+          "ink_span": [
+            0,
+            14
+          ],
+          "reference_ink_span": [
+            0,
+            14
+          ]
+        },
+        {
+          "column": 4,
+          "text_hex": "e7bb88",
+          "width": 2,
+          "marks": 0,
+          "families": [
+            "Alibaba PuHuiTi"
+          ],
+          "missing_glyphs": 0,
+          "advance": 15,
+          "advance_over_span": false,
+          "cell_span_px": 18,
+          "ink_span": [
+            0,
+            14
+          ],
+          "reference_ink_span": [
+            0,
+            14
+          ]
+        },
+        {
+          "column": 6,
+          "text_hex": "e7abaf",
+          "width": 2,
+          "marks": 0,
+          "families": [
+            "Alibaba PuHuiTi"
+          ],
+          "missing_glyphs": 0,
+          "advance": 15,
+          "advance_over_span": false,
+          "cell_span_px": 18,
+          "ink_span": [
+            0,
+            13
+          ],
+          "reference_ink_span": [
+            0,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "id": "supplementary",
+      "asserted": true,
+      "source_hex": "f09f9982f09f9880",
+      "parsed_hex": "f09f9982f09f9880",
+      "recovery_replaced_scalars": false,
+      "host_fallback_required": true,
+      "host_fallback_rendered": true,
+      "fallback_cells": 2,
+      "display_span_px": 36,
+      "glyph_families": [
+        "Segoe UI Emoji"
+      ],
+      "cells": [
+        {
+          "marks": 0,
+          "text_hex": "f09f9982",
+          "width": 2
+        },
+        {
+          "marks": 0,
+          "text_hex": "",
+          "width": 0
+        },
+        {
+          "marks": 0,
+          "text_hex": "f09f9880",
+          "width": 2
+        },
+        {
+          "marks": 0,
+          "text_hex": "",
+          "width": 0
+        }
+      ],
+      "painted_cells": [
+        {
+          "column": 0,
+          "text_hex": "f09f9982",
+          "width": 2,
+          "marks": 0,
+          "families": [
+            "Segoe UI Emoji"
+          ],
+          "missing_glyphs": 0,
+          "advance": 21,
+          "advance_over_span": true,
+          "cell_span_px": 18,
+          "ink_span": [
+            3,
+            17
+          ],
+          "reference_ink_span": [
+            3,
+            17
+          ]
+        },
+        {
+          "column": 2,
+          "text_hex": "f09f9880",
+          "width": 2,
+          "marks": 0,
+          "families": [
+            "Segoe UI Emoji"
+          ],
+          "missing_glyphs": 0,
+          "advance": 21,
+          "advance_over_span": true,
+          "cell_span_px": 18,
+          "ink_span": [
+            3,
+            17
+          ],
+          "reference_ink_span": [
+            3,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "id": "combining",
+      "asserted": true,
+      "source_hex": "65cc81",
+      "parsed_hex": "65cc81",
+      "recovery_replaced_scalars": false,
+      "host_fallback_required": false,
+      "host_fallback_rendered": true,
+      "fallback_cells": 0,
+      "display_span_px": 9,
+      "glyph_families": [
+        "Roboto Mono"
+      ],
+      "cells": [
+        {
+          "marks": 1,
+          "text_hex": "65cc81",
+          "width": 1
+        }
+      ],
+      "painted_cells": [
+        {
+          "column": 0,
+          "text_hex": "65cc81",
+          "width": 1,
+          "marks": 1,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            1,
+            7
+          ],
+          "reference_ink_span": [
+            1,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "zwj-keycap",
+      "asserted": false,
+      "source_hex": "f09f91a9e2808df09f92bb31efb88fe283a3",
+      "parsed_hex": "f09f91a9efbfbdf09f92bb31efbfbde283a3",
+      "recovery_replaced_scalars": true,
+      "host_fallback_required": true,
+      "host_fallback_rendered": true,
+      "fallback_cells": 2,
+      "display_span_px": 63,
+      "glyph_families": [
+        "Microsoft Sans Serif",
+        "Roboto Mono",
+        "Segoe UI Emoji"
+      ],
+      "cells": [
+        {
+          "marks": 0,
+          "text_hex": "f09f91a9",
+          "width": 2
+        },
+        {
+          "marks": 0,
+          "text_hex": "",
+          "width": 0
+        },
+        {
+          "marks": 0,
+          "text_hex": "efbfbd",
+          "width": 1
+        },
+        {
+          "marks": 0,
+          "text_hex": "f09f92bb",
+          "width": 2
+        },
+        {
+          "marks": 0,
+          "text_hex": "",
+          "width": 0
+        },
+        {
+          "marks": 0,
+          "text_hex": "31",
+          "width": 1
+        },
+        {
+          "marks": 1,
+          "text_hex": "efbfbde283a3",
+          "width": 1
+        }
+      ],
+      "painted_cells": [
+        {
+          "column": 0,
+          "text_hex": "f09f91a9",
+          "width": 2,
+          "marks": 0,
+          "families": [
+            "Segoe UI Emoji"
+          ],
+          "missing_glyphs": 0,
+          "advance": 21,
+          "advance_over_span": true,
+          "cell_span_px": 18,
+          "ink_span": [
+            3,
+            17
+          ]
+        },
+        {
+          "column": 2,
+          "text_hex": "efbfbd",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            0,
+            8
+          ]
+        },
+        {
+          "column": 3,
+          "text_hex": "f09f92bb",
+          "width": 2,
+          "marks": 0,
+          "families": [
+            "Segoe UI Emoji"
+          ],
+          "missing_glyphs": 0,
+          "advance": 21,
+          "advance_over_span": true,
+          "cell_span_px": 18,
+          "ink_span": [
+            3,
+            17
+          ]
+        },
+        {
+          "column": 5,
+          "text_hex": "31",
+          "width": 1,
+          "marks": 0,
+          "families": [
+            "Roboto Mono"
+          ],
+          "missing_glyphs": 0,
+          "advance": 9,
+          "advance_over_span": false,
+          "cell_span_px": 9,
+          "ink_span": [
+            1,
+            5
+          ]
+        },
+        {
+          "column": 6,
+          "text_hex": "efbfbde283a3",
+          "width": 1,
+          "marks": 1,
+          "families": [
+            "Roboto Mono",
+            "Microsoft Sans Serif"
+          ],
+          "missing_glyphs": 0,
+          "advance": 18,
+          "advance_over_span": true,
+          "cell_span_px": 9,
+          "ink_span": [
+            0,
+            8
+          ]
+        }
+      ]
+    }
+  ],
+  "observed_gaps": [
+    "U+200D (ZWJ) and U+FE0F (VS16) are not covered by the core Unicode 15 width table, so the recovery parser replaces each with U+FFFD; the record-only ZWJ/keycap sample is parsed as U+1F469 U+FFFD U+1F4BB '1' U+FFFD U+20E3. Recorded only; no clustering or width policy is approved.",
+    "Segoe UI Emoji advances 21 px in an 18 px (two-cell) span; the unclipped reference ink is 3..17 px and the painted ink is also 3..17 px, so these two scalars are not visibly clipped. This is not generalised to other emoji.",
+    "The offscreen platform only loads the host font faces after QT_QPA_FONTDIR points at %WINDIR%/Fonts; without them the test records host_fallback_rendered=false instead of passing a glyph check."
+  ],
+  "source_hashes": {
+    "CMakeLists.txt": "b390893ae8547b380eeaad81529cce9cd3425810c910e19e7556f24b63a1ab37",
+    ".github/workflows/qt-cpp.yml": "65ba8756f0891d2f0b3897d2b7d92b28174c97d74a04bee48e80a363e22ddbea",
+    "src/qt/terminal_widget.hpp": "f1f7724711ae8937e443a61886f9b14fb6e919ddd7f8473dea1044de8dc30e0c",
+    "src/qt/unicode_render_test.cpp": "41a1c3a09c4425f69528fdfc4b0ccef085deb996cbd9a3715b9cc3b04060bcd5",
+    "experiments/shell/unicode_echo_client.cpp": "443570c158e6be7cdf0e94072e1a2082bdc0f35e7653bc1eae7373d175c0f3a7",
+    "src/qt/README.md": "9540fac8a12405cf13946a9079f0b9d2dcb57cb9ae5ad5f3ef72d8b2953e8e4d",
+    "docs/EVIDENCE.md": "ec4f44e13db3844d4e47ca6a6edab57ebb558b6fac05e577ce056b5a8de82300",
+    "docs/FEATURES.md": "ef4f1bf39aa47ccbd5468cfcc4042ea605df5959c5671f070aecaf5aa37cf39c",
+    "experiments/shell/results/2026-11-04-qt-unicode-presentation/README.md": "20753218c990a0fc8f1fbe2ffd1b708fc562178f33ce44a826b7cf38a88cc063"
+  },
+  "artifact_hashes": {
+    "build/qt-cpp/qt-unicode-render-bin/Release/qt_unicode_render_test.exe": {
+      "bytes": 277504,
+      "sha256": "ea147202844ac43be919d14e557606ec329c6e390319b1e7e50d4a29a00bea95"
+    },
+    "build/qt-cpp/bin/Release/shell_unicode_echo_client.exe": {
+      "bytes": 34816,
+      "sha256": "374dbec8fe84b604c190072e928b7805c88dd9e71fac9d96173c3dd32e707ff4"
+    },
+    "build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe": {
+      "bytes": 223232,
+      "sha256": "24488bb9ccc7559902c174180e1780900868a9d79b600c2c5e8c722e54b5b1b2"
+    },
+    "build/qt-cpp/qt-unicode-render-bin/Release/assets/fonts/RobotoMono-Regular.ttf": {
+      "bytes": 125748,
+      "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+    },
+    "build/qt-cpp/qt-unicode-render-bin/Release/conpty-backend/ConPTY.dll": {
+      "bytes": 119608,
+      "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a"
+    }
+  },
+  "implementation_sources_match_recorded_commit": true,
+  "limitations": [
+    "Offscreen local capture only: not physical presentation, not a presented-frame endpoint (presented_done=null), not real 96/144 DPI, not native IME, not a physical keyboard.",
+    "Fallback faces depend on the host font set; only the faces actually selected on this host are recorded. The test does not accept a general fallback contract.",
+    "Fixed five samples and 80x24 grid only; no resize/alternate-screen cross, no selection, copy, Find, TUI, multi-font or performance check.",
+    "Existing 15 Unicode parser tests, qt_unicode_input byte contracts, the old f72c5c4 joint input regression and the historical Win32/DWrite renderer evidence are not repeated or replaced.",
+    "The Windows-platform (qwindows) presented frame and non-BMP input via VT ReadFile are not verified; the fixture uses the already verified ReadConsoleW receive path."
+  ]
+}
