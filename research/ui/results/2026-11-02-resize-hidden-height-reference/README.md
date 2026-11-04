@@ -29,7 +29,7 @@
 当前核心在 #311 后的工程合同是“隐藏帧只在宽度实际变化时适配足迹，纯高度变化保留源 Cell”（`resize_hidden_height_test`，已合入）。实测该路径返回主屏后保留 `89 空格 + uvw`（92 字符）；上表原版返回后为 `61 空格 + w`（62 字符）。因此：
 
 - 原版行为更接近“返回时按当前宽度裁剪隐藏主屏保留行”，与 #311 的保留合同**不一致**；
-- 当前产品按 ADR-0010 已确认的正文保留方向实现，属于对原版观察的**有意差异**，但差异本身尚未经用户确认，也未据本记录修改实现或 #311 报告；
+- 当前产品按 ADR-0010 已确认的正文保留方向实现，属于对原版观察的**有意差异**；该差异当时尚未经用户确认（状态已于 2026-11-04 由用户决定解除，见下方更新），也未据本记录修改实现或 #311 报告；
 - 该差异涉及隐藏帧/1049 返回的具体行为选择，按项目规则应提交用户确认后再决定是否调整合同或实现。
 
 本记录只完成取证与对比，不修改核心代码，不关闭 #27/#29，`semantic_acceptance=false`、`hidden_height_policy_classification=null`。
@@ -56,3 +56,9 @@ python -m research.ui.audit_resize_hidden_height_tail --directory <original reco
 - 未重跑，未修改旧失败或旧计划；补充件不把新环境倒填为旧运行 provenance。
 - 未覆盖 Unicode、其他尺寸/连续输出、保存光标交叉、历史淘汰、Qt/固定 ConPTY 或性能。
 - 环境盘点与恢复条件见[取证环境记录](../../../../docs/research/original-evidence-runtime-2026-11-04.md)。
+
+## 2026-11-04 用户确认（后续）
+
+上述差异已由用户在 2026-11-04 明确确认：**保留完整正文，接受该样本与 WindTerm 2.7.0 的可观察差异**；维持 #311 的保留方向，不为匹配原版返回裁剪新增裁剪（[决定评论](https://github.com/JavaZeroo/termforge/issues/29#issuecomment-6627911863)、[PR #312](https://github.com/JavaZeroo/termforge/pull/312)、[ADR-0010](../../../../docs/adr/0010-bounded-resize-retention.md)）。
+
+本记录仍只作为**原版观察**：严格审计失败、离线补充审计结果、`semantic_acceptance=false` 与 `hidden_height_policy_classification=null` 均不改写；产品保留行为属于已确认有意差异，工程回归见 [hidden-height retention 工程合同](../../../../experiments/core/results/2026-11-04-hidden-height-retention/README.md)。该确认不外推到其他隐藏帧/尺寸/Unicode 行为，也不表示正式 Qt 路径已验收或 #27/#29/R2 完成。

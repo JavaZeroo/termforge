@@ -15,7 +15,7 @@
 | 组合字面回放 `resize_combined_test` | **20/20 阶段、0/560 失败**；映射/选择 20/20、0/744 | 与 #308 相同字面预期，未放宽 |
 | 事务分配失败/历史检查 `resize_preserving_transaction_test` | 通过（151/42 次注入失败后重试一致等） | 既有工程检查，未改断言 |
 | 核心 CTest | **37/37 通过**（新增 `retained_resize_hidden_height_core`） | 本工作树定向构建 |
-| Qt 正式路径 CTest | **5/5 通过**（含 `qt_terminal_modes_retained` 12/12 契约） | 真实 child → 固定 ConPTY → core → widget，offscreen |
+| Qt 正式路径 CTest | **5/5 通过**（含 `qt_terminal_modes_retained` 12/12 契约） | 真实 child → 固定 ConPTY → core → widget，offscreen；既有套件回归，不覆盖本报告的隐藏帧返回场景 |
 | 隐藏高度探针离线 CTest | **3/3 通过，65.76 秒**（normal / `-O` / node controller） | 只校验冻结探针与导出器，不启动原版 |
 | 旧六阶段 `--resize` 诊断 | **exit 1，失败保留** | 未弱化、未设 `WILL_FAIL`；原生重排网格与保留行坐标层差异不变 |
 
@@ -34,4 +34,4 @@ ctest --test-dir build/qt-cpp -C Release -R "^(qt_cpp_(shell|resize)|qt_unicode_
 - 未覆盖备用屏活动期间的后续输出、保存光标交叉、Unicode/宽字/结合字、历史淘汰上限、Qt 物理呈现/DPI、选择/Find 用户流程或性能。
 - #27/#29 保持 OPEN；本切片不声明完整 resize/reflow、WindTerm 等价或 R2 完成。
 
-**2026-11-04 后续：** 取证环境内完整录制恢复后，隐藏主屏高度七阶段记录的离线补充审计已完成，旧严格失败保留；审计显示返回主屏时按当前宽度裁剪隐藏行，与本报告的保留合同存在差异。见[补充审计](../../../../research/ui/results/2026-11-02-resize-hidden-height-reference/README.md)；本报告的工程验证与 #311 身份保持不变。
+**2026-11-04 后续：** 取证环境内完整录制恢复后，隐藏主屏高度七阶段记录的离线补充审计已完成，旧严格失败保留；审计显示返回主屏时按当前宽度裁剪隐藏行，与本报告的保留合同存在差异。用户于同日确认**保留完整正文、接受该原版差异**（[决定评论](https://github.com/JavaZeroo/termforge/issues/29#issuecomment-6627911863)、[ADR-0010](../../../../docs/adr/0010-bounded-resize-retention.md)），因此本报告维持工程回归身份：不是原版 oracle，也不代替正式 Qt 路径对该场景的验收。见[补充审计](../../../../research/ui/results/2026-11-02-resize-hidden-height-reference/README.md)；#311 的身份与验证结果不变。

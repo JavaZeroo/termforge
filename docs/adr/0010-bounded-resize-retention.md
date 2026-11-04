@@ -1,7 +1,7 @@
 # ADR-0010：有界正文保留与独立显示投影
 
-- 状态：已确认实施方向；内容替换与联合验收尚未完成
-- 日期：2026-11-02
+- 状态：已确认实施方向；内容替换与联合验收尚未完成。2026-11-04 另确认隐藏帧返回保留完整正文、接受原版裁剪差异。
+- 日期：2026-11-02（2026-11-04 增补确认）
 - 决策者：项目负责人（用户）
 - 执行范围：[#27](https://github.com/JavaZeroo/termforge/issues/27) / [#29](https://github.com/JavaZeroo/termforge/issues/29) 联合切片；具体证据、责任及切片见[已确认方案](../research/r27-r29-resize-proposal.md)。
 
@@ -26,6 +26,34 @@
 [原版三阶段样本](../../research/ui/results/2026-11-02-resize-state-reference/README.md)在 `91×20 → 61×20 → 91×20` 中保留 marker 文档位置，可见矩形重排后恢复，DSR 却始终为 `11;2`。[独立 Qt / 固定 ConPTY 诊断](../../experiments/shell/results/2026-11-02-qt-terminal-modes/README.md)则记录 native grid 重排而 core 裁剪的失配。两种运输和几何不混为同一对照；这些事实支持分离正文、显示与协议坐标，不能据此补定尚未知的寻址行为。
 
 局部补搬 B/CD 或附加裁剪缓存不能覆盖软硬行、后续写入、历史淘汰和文字锚点的一致性；继续只裁剪也不能完成保留的 #29 任务。因此选择在现有 owner 内完成可验证的内容与视图分离。
+
+## 隐藏帧返回的保留行为差异（2026-11-04 已确认）
+
+[#311](https://github.com/JavaZeroo/termforge/pull/311) 已登记隐藏主屏纯高度变化的正文保留工程合同。[#312](https://github.com/JavaZeroo/termforge/pull/312) 的离线补充审计显示：原版 WindTerm 2.7.0 在“先缩窄主屏、进入备用屏、改变高度、再返回主屏”的固定七阶段路径上，返回时按**当时的协议宽度**裁剪隐藏主屏行。固定样本由 `89 空格 + uvw`（92 字符）变为 `61 空格 + w`（62 字符），`u`/`v` 与第 61–90 列空格消失，DSR `19;7 → 14;7`。这与当前保留合同不一致，需用户决定。该审计不重跑、不改写原严格失败，`semantic_acceptance=false`。
+
+用户原答（2026-11-04）：
+
+> 保留完整正文，明确接受与 WindTerm 的这项差异
+
+**决定**：维持 #311 的保留方向，产品保留完整正文；不为匹配原版的返回裁剪新增裁剪，也不把该场景改写为“原版一致”。该差异登记为**已确认的产品有意差异**，解除 `hidden-frame-return-retention-vs-observed-clipping` 的人工确认阻塞，不再重复要求用户选择同一问题。
+
+**确认依据**：[决定评论](https://github.com/JavaZeroo/termforge/issues/29#issuecomment-6627911863)、[隐藏主屏高度补充审计](../../research/ui/results/2026-11-02-resize-hidden-height-reference/README.md)。
+
+**四项身份分别保留**：
+
+| 身份 | 内容 | 证据/状态 |
+|---|---|---|
+| 原版观察 | WindTerm 2.7.0 在上述单例七阶段路径返回时裁剪隐藏行 | [补充审计](../../research/ui/results/2026-11-02-resize-hidden-height-reference/README.md)；旧严格失败保留，未重跑 |
+| 产品有意差异 | TermForge 返回主屏保留完整源正文 | 本节；用户 2026-11-04 确认 |
+| 工程回归 | `resize_hidden_height_test`（`retained_resize_hidden_height_core`，核心显式入口） | [#311 工程合同](../../experiments/core/results/2026-11-04-hidden-height-retention/README.md)；工程不变量，不是原版 oracle |
+| 正式路径验收 | 真实 child → 固定 ConPTY → Qt 路径上的同一场景 | **未完成**：既有 Qt 保留契约只覆盖仅缩宽、同高度（12/12），#311 的 Qt CTest 5/5 只是既有套件回归；留 #29 后续切片 |
+
+**边界**：
+
+- 仅覆盖上述路径与固定样本；不外推到所有隐藏帧、其他尺寸、连续 resize、Unicode/宽字/结合字、保存光标、历史淘汰或备用屏后续输出。
+- 不改写原严格失败、[离线补充审计](../../research/ui/results/2026-11-02-resize-hidden-height-reference/README.md)、`semantic_acceptance=false` 或原版隐藏策略分类保持 null 的事实。
+- 不改变 [R2 范围及验收合同](../milestones/R2-local-terminal.md)；#27/#29 保持 OPEN，不据此声明完整 resize/reflow、WindTerm 等价或 R2 完成。
+- 若正式路径实测未保留完整正文，按新证据修正并重新取证；本确认不豁免工程回归。
 
 ## 实施与确认边界
 
