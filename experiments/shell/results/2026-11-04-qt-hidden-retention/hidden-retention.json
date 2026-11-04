@@ -1,0 +1,132 @@
+{
+    "backend": "cpp-core / qt-widgets / reviewed-side-by-side-1.25.260930003 / 91x20",
+    "checks": 58,
+    "child_pid": 41356,
+    "failures": 0,
+    "fixed_formal_path_scenario": true,
+    "offscreen_only": true,
+    "original_behavior_oracle": false,
+    "physical_presentation": false,
+    "presented_done": null,
+    "r27_complete": false,
+    "r29_complete": false,
+    "retained_row_id": 12,
+    "scenario": "primary-91x20-narrow-61-1049h-height-14-20-1049l-widen-91",
+    "schema": "termforge-qt-hidden-retention-run-v1",
+    "source_bytes": 75,
+    "stages": [
+        {
+            "body_sha256": "0e683ff0a35c4b0a07acd6c5ca015280f99e3586911bc1d3da7f40252b3ff50e",
+            "core_alternate": false,
+            "core_columns": 91,
+            "core_cursor": [
+                18,
+                6
+            ],
+            "core_rows": 20,
+            "native_columns": 91,
+            "native_row_11_hex": "20202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020207576",
+            "native_row_18_hex": "4c4f57454e44",
+            "native_rows": 20,
+            "presented_done": null,
+            "stage": 1
+        },
+        {
+            "body_sha256": "0e683ff0a35c4b0a07acd6c5ca015280f99e3586911bc1d3da7f40252b3ff50e",
+            "core_alternate": false,
+            "core_columns": 61,
+            "core_cursor": [
+                18,
+                6
+            ],
+            "core_rows": 20,
+            "native_columns": 61,
+            "native_row_11_hex": "",
+            "native_row_18_hex": "4c4f57454e44",
+            "native_rows": 20,
+            "presented_done": null,
+            "stage": 2
+        },
+        {
+            "body_sha256": "014b988ab50ec1f18d053946673dab3f52ae70d154bb30c26f79efd6d114c171",
+            "core_alternate": true,
+            "core_columns": 61,
+            "core_cursor": [
+                1,
+                8
+            ],
+            "core_rows": 20,
+            "native_columns": 61,
+            "native_row_11_hex": "",
+            "native_row_18_hex": "",
+            "native_rows": 20,
+            "presented_done": null,
+            "stage": 3
+        },
+        {
+            "body_sha256": "341aa5e43b3a9ffa9d04043386f01ee18f08dade4b10cca568a1ebb5c89ee030",
+            "core_alternate": true,
+            "core_columns": 61,
+            "core_cursor": [
+                2,
+                10
+            ],
+            "core_rows": 14,
+            "native_columns": 61,
+            "native_row_11_hex": "",
+            "native_row_18_hex": "",
+            "native_rows": 14,
+            "presented_done": null,
+            "stage": 4
+        },
+        {
+            "body_sha256": "e085c7cef2438b5acf9cd04ed2cc311e7b6ebdd9fbf3fe49e74eba6610a93e3f",
+            "core_alternate": true,
+            "core_columns": 61,
+            "core_cursor": [
+                2,
+                12
+            ],
+            "core_rows": 20,
+            "native_columns": 61,
+            "native_row_11_hex": "",
+            "native_row_18_hex": "",
+            "native_rows": 20,
+            "presented_done": null,
+            "stage": 5
+        },
+        {
+            "body_sha256": "0e683ff0a35c4b0a07acd6c5ca015280f99e3586911bc1d3da7f40252b3ff50e",
+            "core_alternate": false,
+            "core_columns": 61,
+            "core_cursor": [
+                13,
+                6
+            ],
+            "core_rows": 20,
+            "native_columns": 61,
+            "native_row_11_hex": "",
+            "native_row_18_hex": "4c4f57454e44",
+            "native_rows": 20,
+            "presented_done": null,
+            "stage": 6
+        },
+        {
+            "body_sha256": "0e683ff0a35c4b0a07acd6c5ca015280f99e3586911bc1d3da7f40252b3ff50e",
+            "core_alternate": false,
+            "core_columns": 91,
+            "core_cursor": [
+                13,
+                6
+            ],
+            "core_rows": 20,
+            "native_columns": 91,
+            "native_row_11_hex": "20202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020207576",
+            "native_row_18_hex": "4c4f57454e44",
+            "native_rows": 20,
+            "presented_done": null,
+            "stage": 7
+        }
+    ],
+    "windterm_equivalence": false
+}

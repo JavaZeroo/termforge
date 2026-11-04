@@ -46,7 +46,7 @@
 | 原版观察 | WindTerm 2.7.0 在上述单例七阶段路径返回时裁剪隐藏行 | [补充审计](../../research/ui/results/2026-11-02-resize-hidden-height-reference/README.md)；旧严格失败保留，未重跑 |
 | 产品有意差异 | TermForge 返回主屏保留完整源正文 | 本节；用户 2026-11-04 确认 |
 | 工程回归 | `resize_hidden_height_test`（`retained_resize_hidden_height_core`，核心显式入口） | [#311 工程合同](../../experiments/core/results/2026-11-04-hidden-height-retention/README.md)；工程不变量，不是原版 oracle |
-| 正式路径验收 | 真实 child → 固定 ConPTY → Qt 路径上的同一场景 | **未完成**：既有 Qt 保留契约只覆盖仅缩宽、同高度（12/12），#311 的 Qt CTest 5/5 只是既有套件回归；留 #29 后续切片 |
+| 正式路径验收 | 真实 child → 固定 ConPTY → Qt 路径上的同一场景 | **已通过固定七阶段离屏证据**（[结果](../../experiments/shell/results/2026-11-04-qt-hidden-retention/README.md)：58 检查、2 次运行一致，保留行 id/正文/历史前缀/显示映射保持）；物理呈现/DPI、其他尺寸/Unicode/连续输出仍未验收 |
 
 **边界**：
 
