@@ -1,0 +1,67 @@
+{
+  "schema": "termforge-hidden-height-retention-validation-v1",
+  "date": "2026-11-04",
+  "status": "engineering-retention-contract-passed",
+  "original_oracle": false,
+  "r27_complete": false,
+  "r29_complete": false,
+  "base_commit": "9884884cd89fb9990acb937c11af0a439f6f04a6",
+  "implementation_commits": [
+    "0f4b4d18504951f388455a5b370aa7cdb7e5f3b1",
+    "6158f1b534ce66d0d2a8dbe75ce3f43c835d21d5"
+  ],
+  "hashes_collected_after_runs": true,
+  "build": {
+    "platform": "Windows 11 x64",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 offscreen",
+    "conpty": "1.25.260930003",
+    "configuration": "Release"
+  },
+  "source_files_sha256": {
+    "CMakeLists.txt": "8cbff18b9c4a7d97bf4505e17d60174bd88207cc7ca211bbeee205f7dde56ccf",
+    "experiments/core/screen.hpp": "60c75e1a19929fae16920677a4b81fec30d689c6d9ee34af155b304fc70341d6",
+    "experiments/core/resize_hidden_height_test.cpp": "4dfb04cb7e818c7aa393e774ba296f65a6ceab2c95bb7fd6fd73c5103437cb73"
+  },
+  "binary_sha256": {
+    "resize_hidden_height_test.exe": "b48b80f5406d8303a0829ca9364ebb4bb7880c94184dcb962093059d7b441229",
+    "resize_combined_test.exe": "4c1aa54c54b99b005e9a263e1579c6f6be057565d26970482e150562d0c8811d",
+    "resize_preserving_transaction_test.exe": "0b3ffdad20a135c2fdc49ccf9b914ccb39711b2b9a850d7f564348385be0420d"
+  },
+  "red": {
+    "test": "resize_hidden_height_test before 6158f1b",
+    "failures": [
+      "hidden live row lost its retained tail across height-only changes",
+      "returning to the primary frame lost retained source text"
+    ]
+  },
+  "green": {
+    "hidden_height_scenarios": 3,
+    "hidden_height_failures": 0,
+    "combined_literal_phases": 20,
+    "combined_literal_failures": 0,
+    "combined_literal_assertions": 560,
+    "combined_mapping_phases": 20,
+    "combined_mapping_failures": 0,
+    "combined_mapping_assertions": 744,
+    "transaction_test": "passed",
+    "core_ctest_passed": 37,
+    "core_ctest_failed": 0,
+    "core_ctest_seconds": 4.78,
+    "qt_ctest_passed": 5,
+    "qt_ctest_failed": 0,
+    "qt_ctest_seconds": 9.72,
+    "hidden_probe_ctest_passed": 3,
+    "hidden_probe_ctest_failed": 0,
+    "hidden_probe_ctest_seconds": 65.76,
+    "old_six_stage_resize_diagnostic_exit": 1
+  },
+  "limitations": [
+    "Engineering invariant under the confirmed retained-body direction, not an original hidden-height behavior oracle.",
+    "The preserved hidden-height original recording still fails its strict audit; the archived recording lacks the harness distribution/profile needed to complete a strict provenance re-verification, so no original run was repeated or reclassified.",
+    "Hidden frame still fits to the new protocol footprint when the width actually changes (separately recorded hidden-width policy).",
+    "No active-alternate output, saved-cursor cross, Unicode/wide/combining, history eviction, physical Qt presentation/DPI, selection/Find user flow or performance coverage.",
+    "Runs are limited to this worktree's directed build; Qt was offscreen and the old six-stage diagnostic remains an explicit non-CI failure."
+  ]
+}

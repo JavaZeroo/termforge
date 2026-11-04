@@ -509,9 +509,11 @@ public:
     }
     // Resize retained source within the existing owner. A height transaction
     // prepares only live rows and their outgoing prefix; old history bodies are
-    // never traversed or copied. Active fragments retain their right tails.
-    // Hidden live fragments fit the protocol footprint, including on a height
-    // change. Neither frame pulls old history back into newly added bottom rows.
+    // never traversed or copied. Neither frame pulls old history back into
+    // newly added bottom rows. A width change fits the hidden frame to the new
+    // protocol footprint (the separately recorded hidden-width policy); a
+    // height-only change keeps hidden retained source cells instead of
+    // rewriting them to the unchanged current width.
     void resize_preserving(int rows, int columns) {
         if (rows < 1 || rows > 200 || columns < 1 || columns > 500)
             throw std::invalid_argument("invalid screen dimensions");
@@ -525,7 +527,8 @@ public:
             int row = 0, column = 0;
         };
         auto identity = next_id_;
-        const auto prepare = [&](const auto& state, size_t limit, bool hidden) {
+        const bool fit_hidden_width = columns != width();
+        const auto prepare = [&](const auto& state, size_t limit, bool fit_width) {
             Prepared next;
             const auto shift = static_cast<size_t>((std::max)(0, state.row - rows + 1));
             const auto evicted = limit ? shift - (std::min)(shift, limit - state.history.size()) : shift;
@@ -536,7 +539,7 @@ public:
             next.row = state.row - static_cast<int>(shift);
             next.column = (std::min)(state.column, columns - 1);
             const auto fit = [&](Line& line, bool live) {
-                if (hidden && line.size() > static_cast<size_t>(columns)) {
+                if (fit_width && line.size() > static_cast<size_t>(columns)) {
                     stamp_line(line);
                     materialize_columns(line, columns, Cell{});
                     line.wrap_columns = (std::min)(line.wrap_columns, static_cast<size_t>(columns));
@@ -563,7 +566,8 @@ public:
         auto next = prepare(*this, active_history_limit(), false);
         std::optional<Prepared> hidden;
         if (inactive_)
-            hidden = prepare(*inactive_, active_buffer_ == ScreenBuffer::primary ? 0 : history_limit, true);
+            hidden = prepare(*inactive_, active_buffer_ == ScreenBuffer::primary ? 0 : history_limit,
+                             fit_hidden_width);
 
         // Only primary owns history. Deque growth can allocate blocks or its
         // pointer map. Append before publishing, and undo every appended row on
