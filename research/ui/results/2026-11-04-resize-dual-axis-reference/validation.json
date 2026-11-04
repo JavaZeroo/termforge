@@ -68,8 +68,9 @@
   },
   "documentation": {
     "prior_report_commit": "1e41fc729493b2fe2d15d1286b69c5e3b6e89028",
-    "correction_commit": "aed633381d309db44ff3e361a27a6818cf724391",
-    "identity_note": "The correction commit contains the narrowed attribution and this validation; it did not rerun the original or alter the frozen source/plan/attempt identity."
+    "attribution_correction_commit": "aed633381d309db44ff3e361a27a6818cf724391",
+    "identity_correction_commit": "e3296fca590db12b722deaa8de25de14eee339fd",
+    "identity_note": "aed6333 contains the narrowed attribution; e3296fc records the documentation identity. Neither reran the original nor altered the frozen source/plan/attempt identity."
   },
   "observed_endpoints": {
     "condition": "Endpoint 1 follows the dual-axis window action AND the fixed CUP(7;2)+DQ write; there is no original pre-write body observation.",
