@@ -6,7 +6,7 @@
 
 网格沿当前 Roboto Mono 字体度量和终端可用区域计算，保留八像素边距与一行状态区，并沿现有 Screen 资源上限限制为 1..500 列、1..200 行。字体变化重新计算度量；隐藏标签在显示/布局后同步。GUI 线程负责核心尺寸事务，现有生命周期 worker 用单个最新请求串行执行 ConPTY resize、wait、cancel 和 close；GUI 不等待 native resize。重复同尺寸不重新初始化屏幕或发起新尺寸操作；关闭、错误与退出停止接受并清除待处理请求，已选取的 native 操作由同一 worker 收尾，不重新激活会话。
 
-正式路径的尺寸事务改用 `Screen::resize_preserving`：变窄时保留源 Cell、行身份与软续接，不立即销毁右侧正文。绘制消费者按当前宽度生成独立显示投影页（`HistoryViewport::project`），协议光标只被翻译为显示光标，供光标下划线、IME 候选位置与预编辑预览使用；选择/命中继续消费同一份 `ViewMapping`，并用页面 layout revision 拒绝过期页。不支持的保留 Cell 或无法映射的光标回退到物理视图页，避免隐藏输出。当前验证与仍存差异见[固定结果](../../experiments/shell/results/2026-11-03-qt-retained-display/README.md)：只缩宽的显示重排与保留行合同已通过真实 child/固定 ConPTY 核对；旧六阶段 native-sync 诊断仍失败并保留，原生重排网格不被当作产品寻址 oracle。同时缩宽+缩高的原版视口/滚动与后续 CUP 仍缺独立证据，完整 reflow 和历史/选择/Find 用户流程未验收。
+正式路径的尺寸事务改用 `Screen::resize_preserving`：变窄时保留源 Cell、行身份与软续接，不立即销毁右侧正文。绘制消费者按当前宽度生成独立显示投影页（`HistoryViewport::project`），协议光标只被翻译为显示光标，供光标下划线、IME 候选位置与预编辑预览使用；选择/命中继续消费同一份 `ViewMapping`，并用页面 layout revision 拒绝过期页。不支持的保留 Cell 或无法映射的光标回退到物理视图页，避免隐藏输出。当前验证与仍存差异见[固定结果](../../experiments/shell/results/2026-11-03-qt-retained-display/README.md)：只缩宽的显示重排与保留行合同已通过真实 child/固定 ConPTY 核对；旧六阶段 native-sync 诊断仍失败并保留，原生重排网格不被当作产品寻址 oracle。2026-11-04 又补[隐藏帧七阶段正式路径离屏证据](../../experiments/shell/results/2026-11-04-qt-hidden-retention/README.md)：主屏正文→缩窄→1049h→仅缩高→恢复→1049l→恢复宽度的保留正文、行身份、显示页/光标/命中通过 58 项检查；child 原生网格仅记录，不是保留文本 oracle。同时缩宽+缩高的原版视口/滚动与后续 CUP 仍缺独立证据，物理呈现/DPI、完整 reflow 和历史/选择/Find 用户流程未验收。
 
 终端可在无修饰、无组合文本时用左键正向或反向拖选，普通点击清除旧选区。每个 widget 独立持有 `TextSelection`，命中与高亮经 `HistoryViewport` 显示快照中的 `ViewMapping` 映射到文档位置；只装饰显示副本，不修改核心文字或样式。部分列选区只投影到相应列，避免整行高亮。该接线是可见网格的基础拖选，不包含历史浏览、系统剪贴板、选词/选行或 Find；[固定实现与验证边界](../../experiments/shell/results/2026-11-01-r2-core-input/README.md)与完整 #29/#30 出口分开。
 
@@ -25,9 +25,9 @@ cmake -S . -B build/qt-cpp -G "Visual Studio 17 2022" -A x64 `
   -DQt6_DIR="<Qt SDK prefix>/lib/cmake/Qt6" `
   -DTERMFORGE_CONPTY_BACKEND_DIR="<absolute fixed ConPTY pair directory>" `
   -DTERMFORGE_MSVC_RUNTIME_DIR="<absolute prepared CRT directory>"
-cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_terminal_modes_test
+cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_terminal_modes_test qt_hidden_retention_test
 build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe
-ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?)$' --output-on-failure
+ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?|qt_hidden_retention)$' --output-on-failure
 ```
 
 当前主线注册的 Qt CTest 包括上述五项与 `qt_terminal_modes_retained`（只缩宽的保留/投影契约）、`qt_unicode_render`（固定 Unicode 样本的独立接收 + 离屏绘制/fallback 记录）；IME 合成事件检查在 `qt_cpp_shell` 内。历史冻结包的 `qt_ime_input_test.exe` 不属于当前主线构建目标，不用于替代这组验证。旧六阶段 `--resize` 仍以显式诊断运行并保留失败，不注册进默认 CI。

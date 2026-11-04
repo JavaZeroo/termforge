@@ -1,0 +1,126 @@
+{
+  "schema": "termforge-qt-hidden-retention-validation-v1",
+  "source_commit": "185c893e64f43c69c73d9be2de69ff7dddb0106c",
+  "source_tree": "1d7a425fa5d168b35636d261dd4e5c5fbd5b839f",
+  "source_binding": "The fixture, test, CMake registration and Qt workflow wiring were committed before the final local builds and regressions; this validation file is a documentation follow-up. The working tree was clean at the start of verification, and the recorded source hashes are the committed (LF) blob contents.",
+  "scope": "One fixed 75 B ASCII hidden-frame scenario through the formal Qt / fixed-ConPTY path: real child primary body at 91x20, public Qt width shrink to 61, alternate-screen entry, height-only 20->14->20 changes, 1049l return at 61, and width restore to 91. Checks retained source body, owner/line identity, history prefix, display page, display caret and hit mapping; the child native grid is recorded separately and is not the retained-body oracle.",
+  "passed": true,
+  "scoped_validation_passed": true,
+  "original_behavior_oracle": false,
+  "semantic_acceptance": false,
+  "intentional_difference_confirmed": true,
+  "physical_presentation_verified": false,
+  "native_ime_verified": false,
+  "offscreen_only": true,
+  "windterm_parity": false,
+  "r27_complete": false,
+  "r29_complete": false,
+  "r2_complete": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 win64_msvc2022_64, offscreen platform",
+    "conpty": "1.25.260930003",
+    "conpty_files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "msvc_runtime": "14.51.36247.0",
+    "python": "3.12.10",
+    "configuration": "Release, Visual Studio 17 2022, offscreen, owned Job"
+  },
+  "dependencies": {
+    "preparation": "Prepared dependency tree reused from the just-merged #313 verification slice; the pinned input manifests, archive identities and SDK tree identity are recorded below. CI prepares the same inputs independently.",
+    "qt_archive_sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7",
+    "sdk_tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266",
+    "conpty_package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "msvc_runtime_package_sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+    "input_manifests": {
+      "qt": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+      "conpty": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "msvc_runtime": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+    }
+  },
+  "commands": {
+    "configure": "cmake -S . -B build/qt-cpp -G \"Visual Studio 17 2022\" -A x64 -DTERMFORGE_BUILD_QT_SHELL=ON -DBUILD_TESTING=ON -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF -DQt6_DIR=<prepared>/qt/lib/cmake/Qt6 -DTERMFORGE_CONPTY_BACKEND_DIR=<prepared>/conpty -DTERMFORGE_MSVC_RUNTIME_DIR=<prepared>/crt",
+    "new_target": "cmake --build build/qt-cpp --config Release --target qt_hidden_retention_test --parallel 2",
+    "new_test": "ctest --test-dir build/qt-cpp -C Release -R '^qt_hidden_retention$' --output-on-failure",
+    "qt_regression": "ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?|qt_hidden_retention)$' --output-on-failure",
+    "core_regression": "cmake --build build --config Release --parallel 4 && ctest --test-dir build -C Release -R '^(.*_core|core|resize_replay_contract|recovery|keyboard)$' --output-on-failure"
+  },
+  "results": {
+    "qt_formal_path_ctest": {
+      "tests": [
+        "qt_cpp_shell",
+        "qt_unicode_input",
+        "qt_unicode_render",
+        "qt_cpp_resize",
+        "qt_terminal_modes",
+        "qt_terminal_modes_retained",
+        "qt_hidden_retention"
+      ],
+      "passed": 7,
+      "failed": 0,
+      "seconds": 8.99
+    },
+    "core_ctest": {
+      "includes": "every *_core native check, core, keyboard, recovery and resize_replay_contract",
+      "passed": 41,
+      "failed": 0,
+      "seconds": 23.05
+    },
+    "new_test_runs": {
+      "supervisor": "termforge-qt-cpp-supervisor-v1",
+      "runs": 2,
+      "both_passed": true,
+      "job_after": {"active": 0, "total": 4, "terminated": 0},
+      "checks": 58,
+      "failures": 0,
+      "content_identical_ignoring_child_pid": true,
+      "nondeterministic_fields": ["child_pid"],
+      "ctest_seconds": 0.44
+    }
+  },
+  "product_identity": {
+    "backend": "cpp-core / qt-widgets / reviewed-side-by-side-1.25.260930003 / 91x20",
+    "retained_row_id": 12,
+    "fixed_source_bytes": 75,
+    "source_sha256": "ff48cd41220a72e5da2350dc97c3c8c8c884d48cc4f7fa2328609bf8bc0cb09e",
+    "retained_body_sha256_phases_1_2_6_7": "0e683ff0a35c4b0a07acd6c5ca015280f99e3586911bc1d3da7f40252b3ff50e"
+  },
+  "stages": [
+    {"stage": 1, "native": [91, 20], "core": [91, 20], "alternate": false, "core_cursor": [18, 6], "body_sha256": "0e683ff0a35c4b0a07acd6c5ca015280f99e3586911bc1d3da7f40252b3ff50e"},
+    {"stage": 2, "native": [61, 20], "core": [61, 20], "alternate": false, "core_cursor": [18, 6], "body_sha256": "0e683ff0a35c4b0a07acd6c5ca015280f99e3586911bc1d3da7f40252b3ff50e"},
+    {"stage": 3, "native": [61, 20], "core": [61, 20], "alternate": true, "core_cursor": [1, 8]},
+    {"stage": 4, "native": [61, 14], "core": [61, 14], "alternate": true, "core_cursor": [2, 10]},
+    {"stage": 5, "native": [61, 20], "core": [61, 20], "alternate": true, "core_cursor": [2, 12]},
+    {"stage": 6, "native": [61, 20], "core": [61, 20], "alternate": false, "core_cursor": [13, 6], "body_sha256": "0e683ff0a35c4b0a07acd6c5ca015280f99e3586911bc1d3da7f40252b3ff50e"},
+    {"stage": 7, "native": [91, 20], "core": [91, 20], "alternate": false, "core_cursor": [13, 6], "body_sha256": "0e683ff0a35c4b0a07acd6c5ca015280f99e3586911bc1d3da7f40252b3ff50e"}
+  ],
+  "display_observations": {
+    "phase_1": {"caret": [18, 6], "row_11": "89 spaces + uv", "row_12": "w", "row_18": "LOWEND", "hit_row_column": [11, 89]},
+    "phase_2": {"caret": [18, 6], "row_11": "", "row_12": "28 spaces + uvw", "row_18": "LOWEND", "hit_row_column": [12, 28]},
+    "phase_6": {"caret": [13, 6], "row_6": "", "row_7": "28 spaces + uvw", "row_13": "LOWEND", "hit_row_column": [7, 28]},
+    "phase_7": {"caret": [13, 6], "row_6": "89 spaces + uv", "row_7": "w", "row_13": "LOWEND", "hit_row_column": [6, 89]}
+  },
+  "source_hashes": {
+    "src/qt/hidden_retention_fixture.hpp": "d55bdd7f0dc0dc3d19c7966b3a79f152b0a3d4a62cab28b5c3a5d7868d4ccf83",
+    "src/qt/hidden_retention_test.cpp": "adb5f8d555847c5f43fbd7c1c619566dc8b72da04f401c77d64ae921b6da3fe3",
+    "CMakeLists.txt": "c4b1f9f8c00f89b6aca41aadd4c78825cdf9cc4b64dfd37e386ceffe3a00ddec",
+    ".github/workflows/qt-cpp.yml": "164cdd67f9da238dbc0c75ec8e434f6377ea9e899a62052610c1283573c7da77"
+  },
+  "artifact_hashes": {
+    "hidden-retention.json": "c107a11d90384ddc0a6e0f36273f1fbe98bd2fddff96b813c385e35a36da0ba4",
+    "qt_hidden_retention_test.exe": "063eb4d46e579c20ff536037612d59711fb906292ba0e18cc365e4ea45366e78"
+  },
+  "implementation_sources_match_recorded_commit": true,
+  "limitations": [
+    "Offscreen local evidence only: not physical presentation, not a presented-frame endpoint (presented_done=null), not real 96/144 DPI, not native IME, not a physical keyboard or performance measurement.",
+    "One fixed 75 B ASCII sample and the literal 91x20 -> 61x20 -> 61x14 -> 61x20 -> 61x20 -> 91x20 sequence; no other sizes, continuous output, wide/Unicode/combining text, saved-cursor cross, history eviction limit, selection/copy/Find/history user flow or complete TUI.",
+    "The child native grid and selected native rows are recorded as a separate transport observation; they are not the oracle for the user-confirmed retained body, and no native grid equivalence is claimed.",
+    "The original WindTerm hidden-height observation, its preserved strict audit failure, the offline supplement and semantic_acceptance=false are unchanged; this product evidence does not reclassify them or remove the confirmed intentional difference.",
+    "The formal-path scenario does not close #27/#29/#30/#7, does not claim complete resize/reflow or WindTerm equivalence, and does not change the default Screen::resize physical-clipping behavior.",
+    "The local build reused the just-merged #313 prepared dependency tree identity; the Qt workflow prepares the same pinned manifests independently on CI."
+  ]
+}
