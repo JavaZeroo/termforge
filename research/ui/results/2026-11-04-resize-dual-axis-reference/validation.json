@@ -37,7 +37,9 @@
     "bytes": 38190,
     "schema": "termforge-original-resize-dual-axis-reference-v1",
     "status": "observation",
-    "phases": 3
+    "phases": 3,
+    "first_export": "refused by the frozen document-line whitelist on the observed clipped/write row; run_plan stopped before writing mechanics-check.json",
+    "follow_up": "offline whitelist/exporter correction only; same raw recording, plan and .attempted marker; no original rerun"
   },
   "observed": {
     "windows": [[1360, 749], [1000, 569], [1360, 749]],

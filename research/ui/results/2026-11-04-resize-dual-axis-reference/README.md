@@ -4,6 +4,8 @@
 
 公开件：[strict-export.json](strict-export.json)，SHA256 `95ad9c5bd8d73e278e794fa327e2fd902739c3da9bd4be6add4d560a00a7d18f`；单次计划 SHA256 `3beabf9a44537d43a400209786f4aeccc29a255307a74f4a4c13cf0ac812d55d`，`.attempted` 单次标记见 [plan.attempted.txt](plan.attempted.txt)（SHA256 `ed761217af8e88440bea5afe49a649b79889f25dabd35db03f616895e8f83a34`）。执行源基点 `dee3c78cfda60a99211dcf8f217be6e361172d5f`；参考 EXE `7b10531d…`、4047 文件清单 `e459adf2…`、源码归档清单 `96d3783a…` 由严格出口核验。
 
+首次严格导出因冻结白名单未接受本轮实际出现的“当前列裁剪 + 固定写入”文档行而拒绝（`run_plan` 在 `audit_mechanics` 停止，`mechanics-check.json` 未写出）；失败保留，未重跑原版。修正仅限严格的离线行白名单/导出器，随后在同一原始录制、同一计划与同一 `.attempted` 标记上重新生成公开件。
+
 ## 三阶段实测
 
 | 阶段 | 实际窗口 | NAWS | 事件数 | DSR | scroll | 文档行数 | 文档行 11（零基） |
