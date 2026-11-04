@@ -1,0 +1,2508 @@
+{
+  "schema": "termforge-original-resize-hidden-height-tail-supplement-v1",
+  "issue": 29,
+  "related_issue": 27,
+  "case_id": "hidden-primary-height",
+  "authorized_plan_sha256": "938992c4c68eb0c0587d3c789e4d17121a70264df5f7631c904707e29c7280fb",
+  "offline_audit_source_files_sha256": {
+    "research/ui/audit_resize_hidden_height_tail.py": "6e829ca05e0aeda2363f9985f585a62d105c858a929c0c64e5bcd54bfdf184d0",
+    "research/ui/export_resize_hidden_height_reference.py": "bcd8ed771ca0233dfb63b2a11876daf5a13020ba612e4bc6f306acdb9133094f",
+    "research/ui/export_resize_state_reference.py": "473e901305354d4ba8b22c08d22fa506c4d40da0e73bed3bf3122e4ff0e3c9b7",
+    "research/ui/export_mode_state_reference.py": "7e0a1e0e49f149791464c0dec357d3b5260bc2c34ca9f9c1be4edab35626cdf3"
+  },
+  "status": "original-audit-failed-offline-supplement-passed",
+  "failure_preserved": true,
+  "original_audit": {
+    "status": "failed",
+    "error_type": "ValueError",
+    "message": "Only fixed hidden-height-source synthetic document lines are allowed",
+    "failure_reproduced": true,
+    "mechanics_file_absent": true
+  },
+  "offline_supplemental_audit": {
+    "status": "passed",
+    "additional_original_runs": 0,
+    "source_interval": {
+      "source_ascii_bytes": 92,
+      "begin": 61,
+      "end": 91,
+      "operation": "S[:61] + S[91:]",
+      "source_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+      "candidate_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202077",
+      "candidate_sha256": "fd45397fff8c462d3d86f913e07aab5f74f3e2675d07c05fdc61ad7e0a08110a"
+    },
+    "additional_text_candidates": 1,
+    "applicable_phases": [
+      5,
+      6
+    ],
+    "document_line": 11
+  },
+  "geometry_basis": {
+    "combined": {
+      "reference": "research/ui/results/2026-11-02-resize-combined-reference/strict-export.json",
+      "strict_export_sha256": "6a1561f3e6f6bc480c6a2f086adf7ed4798d5007b04a7bc71c7ae9deba90cfe6",
+      "execution_source_base_commit": "2c7c5929e11d911ad69a7e2b7c420120591862ed"
+    },
+    "hidden_primary_height_previously_observed": false
+  },
+  "actual_original_runs": 1,
+  "maximum_original_runs": 1,
+  "semantic_acceptance": false,
+  "hidden_height_policy_classification": null,
+  "full_active_grid_verified": false,
+  "terminal_styles_verified": false,
+  "local_shell_transport_verified": false,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "r2_complete": false,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "deliberate_original_process_termination": true,
+  "natural_gui_exit_verified": false,
+  "capture": {
+    "phases": [
+      {
+        "phase": 0,
+        "label": "primary-initial-body",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b323b314848544f501b5b363b3148484152445f410d0a484152445f421b5b31323b3930487576771b5b31393b31484c4f57454e44",
+        "source_bytes": 75,
+        "source_sha256": "ff48cd41220a72e5da2350dc97c3c8c8c884d48cc4f7fa2328609bf8bc0cb09e",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          19,
+          7
+        ],
+        "response_hex": "1b5b31393b3752",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "document_projection": {
+          "line_count": 19,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 17,
+            "caretColumn": 0,
+            "caretPosition": 131
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 90,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "u",
+              "document_line": 11,
+              "line_text_offset_utf16": 89,
+              "line_text_offset_scalar": 89,
+              "line_text_prefix_utf8_bytes": 89,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 116,
+              "rect": {
+                "x": 859,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "v",
+              "document_line": 11,
+              "line_text_offset_utf16": 90,
+              "line_text_offset_scalar": 90,
+              "line_text_prefix_utf8_bytes": 90,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 117,
+              "rect": {
+                "x": 867,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 91,
+              "line_text_offset_scalar": 91,
+              "line_text_prefix_utf8_bytes": 91,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 118,
+              "rect": {
+                "x": 147,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 125,
+              "requested_position_api_value": 125,
+              "rect": {
+                "x": 147,
+                "y": 324,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "ac5cc0c46768d14945e8c63103f3d7d56f9a5fc2f5631dd4fe8f485e9ba19efc",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "audit_resize_hidden_height_tail.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 13,
+            "catalog_sha256": "c420a7173a140e0651f3704d8e12996e4b4ff448809df62a104ba8505d68f5f5",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 8,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 4,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 6,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 3,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+                "utf8_bytes": 92,
+                "unicode_scalars": 92,
+                "utf16_code_units": 92
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 10,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "primary-initial-body"
+      },
+      {
+        "phase": 1,
+        "label": "primary-width-shrunk",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          19,
+          7
+        ],
+        "response_hex": "1b5b31393b3752",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "document_projection": {
+          "line_count": 19,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 17,
+            "caretColumn": 0,
+            "caretPosition": 131
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 90,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "u",
+              "document_line": 11,
+              "line_text_offset_utf16": 89,
+              "line_text_offset_scalar": 89,
+              "line_text_prefix_utf8_bytes": 89,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 116,
+              "rect": {
+                "x": 371,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "v",
+              "document_line": 11,
+              "line_text_offset_utf16": 90,
+              "line_text_offset_scalar": 90,
+              "line_text_prefix_utf8_bytes": 90,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 117,
+              "rect": {
+                "x": 379,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 91,
+              "line_text_offset_scalar": 91,
+              "line_text_prefix_utf8_bytes": 91,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 118,
+              "rect": {
+                "x": 387,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 125,
+              "requested_position_api_value": 125,
+              "rect": {
+                "x": 147,
+                "y": 324,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "ac5cc0c46768d14945e8c63103f3d7d56f9a5fc2f5631dd4fe8f485e9ba19efc",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "audit_resize_hidden_height_tail.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 19,
+            "catalog_sha256": "0b70999b5513a2dc9b22820cdea8ef8509adc6f52a1759c9417209fac376f5f2",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 12,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 6,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 9,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 4,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+                "utf8_bytes": 92,
+                "unicode_scalars": 92,
+                "utf16_code_units": 92
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 15,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "primary-width-shrunk"
+      },
+      {
+        "phase": 2,
+        "label": "alternate-entered",
+        "source_hex": "1b5b3f3130343968",
+        "source_bytes": 8,
+        "source_sha256": "b7c9b6f9082bb2a92f63566d8800008f96b5dee9d380c2d460b2466ad1496440",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "response_hex": "1b5b313b3152",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "document_projection": {
+          "line_count": 20,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 0,
+            "caretColumn": 0,
+            "caretPosition": 0
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 90,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "u",
+              "document_line": 11,
+              "line_text_offset_utf16": 89,
+              "line_text_offset_scalar": 89,
+              "line_text_prefix_utf8_bytes": 89,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 116,
+              "rect": {
+                "x": 371,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "v",
+              "document_line": 11,
+              "line_text_offset_utf16": 90,
+              "line_text_offset_scalar": 90,
+              "line_text_prefix_utf8_bytes": 90,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 117,
+              "rect": {
+                "x": 379,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 91,
+              "line_text_offset_scalar": 91,
+              "line_text_prefix_utf8_bytes": 91,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 118,
+              "rect": {
+                "x": 387,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 125,
+              "requested_position_api_value": 125,
+              "rect": {
+                "x": 147,
+                "y": 324,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "89149529a66cb9534a3fedc373b2090abef15f5c0f1752a3a247c8ed09b090c0",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "audit_resize_hidden_height_tail.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 19,
+            "catalog_sha256": "0b70999b5513a2dc9b22820cdea8ef8509adc6f52a1759c9417209fac376f5f2",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 12,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 6,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 9,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 4,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+                "utf8_bytes": 92,
+                "unicode_scalars": 92,
+                "utf16_code_units": 92
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 15,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "alternate-entered"
+      },
+      {
+        "phase": 3,
+        "label": "alternate-height-shrunk",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "response_hex": "1b5b313b3152",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          61,
+          14
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          670
+        ],
+        "window_size": [
+          1000,
+          569
+        ],
+        "document_projection": {
+          "line_count": 20,
+          "capacity": 14,
+          "top": null,
+          "scroll": 6,
+          "caret_api": {
+            "caretLine": 0,
+            "caretColumn": 0,
+            "caretPosition": 0
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": -90,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": -18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 0,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "u",
+              "document_line": 11,
+              "line_text_offset_utf16": 89,
+              "line_text_offset_scalar": 89,
+              "line_text_prefix_utf8_bytes": 89,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 116,
+              "rect": {
+                "x": 371,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "v",
+              "document_line": 11,
+              "line_text_offset_utf16": 90,
+              "line_text_offset_scalar": 90,
+              "line_text_prefix_utf8_bytes": 90,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 117,
+              "rect": {
+                "x": 379,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 91,
+              "line_text_offset_scalar": 91,
+              "line_text_prefix_utf8_bytes": 91,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 118,
+              "rect": {
+                "x": 387,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 125,
+              "requested_position_api_value": 125,
+              "rect": {
+                "x": 147,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "89149529a66cb9534a3fedc373b2090abef15f5c0f1752a3a247c8ed09b090c0",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "audit_resize_hidden_height_tail.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 19,
+            "catalog_sha256": "0b70999b5513a2dc9b22820cdea8ef8509adc6f52a1759c9417209fac376f5f2",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 12,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 6,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 9,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 4,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+                "utf8_bytes": 92,
+                "unicode_scalars": 92,
+                "utf16_code_units": 92
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 15,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "alternate-height-shrunk"
+      },
+      {
+        "phase": 4,
+        "label": "alternate-height-restored",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "response_hex": "1b5b313b3152",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "document_projection": {
+          "line_count": 20,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 0,
+            "caretColumn": 0,
+            "caretPosition": 0
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 90,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "u",
+              "document_line": 11,
+              "line_text_offset_utf16": 89,
+              "line_text_offset_scalar": 89,
+              "line_text_prefix_utf8_bytes": 89,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 116,
+              "rect": {
+                "x": 371,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "v",
+              "document_line": 11,
+              "line_text_offset_utf16": 90,
+              "line_text_offset_scalar": 90,
+              "line_text_prefix_utf8_bytes": 90,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 117,
+              "rect": {
+                "x": 379,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 91,
+              "line_text_offset_scalar": 91,
+              "line_text_prefix_utf8_bytes": 91,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 118,
+              "rect": {
+                "x": 387,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 125,
+              "requested_position_api_value": 125,
+              "rect": {
+                "x": 147,
+                "y": 324,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "89149529a66cb9534a3fedc373b2090abef15f5c0f1752a3a247c8ed09b090c0",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "audit_resize_hidden_height_tail.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 19,
+            "catalog_sha256": "0b70999b5513a2dc9b22820cdea8ef8509adc6f52a1759c9417209fac376f5f2",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 12,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 6,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 9,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 4,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+                "utf8_bytes": 92,
+                "unicode_scalars": 92,
+                "utf16_code_units": 92
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 15,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "alternate-height-restored"
+      },
+      {
+        "phase": 5,
+        "label": "primary-restored",
+        "source_hex": "1b5b3f313034396c",
+        "source_bytes": 8,
+        "source_sha256": "36a3d2013e70720f8d7c0105d9b9c23acfa208b175099330c7c820ad3e1e1df5",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          14,
+          7
+        ],
+        "response_hex": "1b5b31343b3752",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "document_projection": {
+          "line_count": 19,
+          "capacity": 20,
+          "top": null,
+          "scroll": 5,
+          "caret_api": {
+            "caretLine": 17,
+            "caretColumn": 0,
+            "caretPosition": 101
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": -72,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 0,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 61,
+              "line_text_offset_scalar": 61,
+              "line_text_prefix_utf8_bytes": 61,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 88,
+              "rect": {
+                "x": 147,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 95,
+              "requested_position_api_value": 95,
+              "rect": {
+                "x": 147,
+                "y": 234,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "25924feb7d89f603c4a830f2019744954b17404094046606e1b2b26772d6a567",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "audit_resize_hidden_height_tail.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 20,
+            "catalog_sha256": "9e005e66ee762dc91d979bff86b06ab41c7e61f10d2a48c351f8384f586e510a",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 13,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 7,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 10,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 5,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202077",
+                "utf8_bytes": 62,
+                "unicode_scalars": 62,
+                "utf16_code_units": 62
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 16,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "primary-restored"
+      },
+      {
+        "phase": 6,
+        "label": "primary-width-restored",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          14,
+          7
+        ],
+        "response_hex": "1b5b31343b3752",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "document_projection": {
+          "line_count": 18,
+          "capacity": 20,
+          "top": null,
+          "scroll": 5,
+          "caret_api": {
+            "caretLine": 17,
+            "caretColumn": 0,
+            "caretPosition": 101
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": -72,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 0,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 61,
+              "line_text_offset_scalar": 61,
+              "line_text_prefix_utf8_bytes": 61,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 88,
+              "rect": {
+                "x": 635,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 95,
+              "requested_position_api_value": 95,
+              "rect": {
+                "x": 147,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "853a67974b10be59a009598f60433e26c04da68177094eec790bb239dee511d0",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "audit_resize_hidden_height_tail.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 20,
+            "catalog_sha256": "9e005e66ee762dc91d979bff86b06ab41c7e61f10d2a48c351f8384f586e510a",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 13,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 7,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 10,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 5,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202077",
+                "utf8_bytes": 62,
+                "unicode_scalars": 62,
+                "utf16_code_units": 62
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 16,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              }
+            ]
+          }
+        },
+        "stage_role": "primary-width-restored"
+      }
+    ],
+    "source_bytes": 91,
+    "dsr_request_bytes": 28,
+    "application_reply_bytes": 46,
+    "window_rect_format": "qt-qrect-inclusive-ltrb",
+    "geometry_checks": [
+      {
+        "phase": 0,
+        "expected_size": [
+          1360,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "observed_grid": [
+          91,
+          20
+        ],
+        "terminal_capacity": 20,
+        "event_count": 1
+      },
+      {
+        "phase": 1,
+        "expected_size": [
+          1000,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "observed_grid": [
+          61,
+          20
+        ],
+        "terminal_capacity": 20,
+        "event_count": 2
+      },
+      {
+        "phase": 2,
+        "expected_size": [
+          1000,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "observed_grid": [
+          61,
+          20
+        ],
+        "terminal_capacity": 20,
+        "event_count": 2
+      },
+      {
+        "phase": 3,
+        "expected_size": [
+          1000,
+          569
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          670
+        ],
+        "window_size": [
+          1000,
+          569
+        ],
+        "observed_grid": [
+          61,
+          14
+        ],
+        "terminal_capacity": 14,
+        "event_count": 3
+      },
+      {
+        "phase": 4,
+        "expected_size": [
+          1000,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "observed_grid": [
+          61,
+          20
+        ],
+        "terminal_capacity": 20,
+        "event_count": 4
+      },
+      {
+        "phase": 5,
+        "expected_size": [
+          1000,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          850
+        ],
+        "window_size": [
+          1000,
+          749
+        ],
+        "observed_grid": [
+          61,
+          20
+        ],
+        "terminal_capacity": 20,
+        "event_count": 4
+      },
+      {
+        "phase": 6,
+        "expected_size": [
+          1360,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "observed_grid": [
+          91,
+          20
+        ],
+        "terminal_capacity": 20,
+        "event_count": 5
+      }
+    ],
+    "frozen_grids": [
+      [
+        91,
+        20
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        61,
+        14
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        91,
+        20
+      ]
+    ],
+    "naws_history": [
+      [
+        91,
+        20
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        61,
+        14
+      ],
+      [
+        61,
+        20
+      ],
+      [
+        91,
+        20
+      ]
+    ],
+    "freeze_event_counts": [
+      1,
+      2,
+      2,
+      3,
+      4,
+      4,
+      5
+    ],
+    "resize_boundaries": [
+      {
+        "phase": 1,
+        "before_event_count": 1,
+        "after_event_count": 2,
+        "requested_window": [
+          1000,
+          749
+        ]
+      },
+      {
+        "phase": 3,
+        "before_event_count": 2,
+        "after_event_count": 3,
+        "requested_window": [
+          1000,
+          569
+        ]
+      },
+      {
+        "phase": 4,
+        "before_event_count": 3,
+        "after_event_count": 4,
+        "requested_window": [
+          1000,
+          749
+        ]
+      },
+      {
+        "phase": 6,
+        "before_event_count": 4,
+        "after_event_count": 5,
+        "requested_window": [
+          1360,
+          749
+        ]
+      }
+    ],
+    "job_after": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "provider": {
+      "id": "frida",
+      "version": null,
+      "confidence": "observed",
+      "evidence_id": "ev_d894daedf05e12cc18827784a565dc3df084caf26fdcf528edab65d15c834bd4",
+      "messages": 12,
+      "readiness_messages": 3,
+      "phase_messages": 7,
+      "messages_truncated": false,
+      "cleanup_error": null
+    },
+    "stateful_observation_count": 7,
+    "post_initial_terminal_input": "1049h atphase2 and1049l atphase5, each followed by DSR; otherwise DSR only, no replacement text or redraw",
+    "independent_dsr_bounds": {
+      "row": [
+        1,
+        200
+      ],
+      "column": [
+        1,
+        500
+      ]
+    },
+    "text_units": {
+      "source": "UTF-8 bytes",
+      "document_line": "original public API index",
+      "marker_text_offsets": "JS UTF-16 code units; scalar count coincides only for this ASCII source alphabet",
+      "position_api": "recorded lineStart API value plus JS UTF-16 offset, passed unchanged to visibleRectFromPosition",
+      "caret_api": "original API scalar values; numbering policy not inferred",
+      "rectangles": "actual public API pixel rectangles, kept separate from protocol cells",
+      "protocol_cursor": "DSR values kept independent of text offsets and pixel rectangles",
+      "cpp_cell_column_mapping": null,
+      "document_position_unit_classification": null,
+      "ascii_only": true
+    }
+  },
+  "provenance": {
+    "source_identity": {
+      "kind": "source-archive",
+      "manifest_sha256": "51e80b939c4c026a88fd098eeffe4473921815601fbb1435cb7eabd7adedb5cf"
+    },
+    "execution_source_base_commit": "88ace8dec723f0fe2fb41d7077e83b6cda6a4d61",
+    "execution_source_files_sha256": {
+      "research/ui/resize_hidden_height_reference.py": "565d10b69b7a1015c3412b4b5fd974818acd395aa8ba846835d23cc8998bb0bc",
+      "research/ui/resize_hidden_height_reference.js": "d03cb790dd9db24275f859e297d867453e35675db2ab3f730e0b3f775fd57bc9",
+      "research/ui/resize_state_reference.py": "628f9e3a5e3ecea6c34829810df2cdf0e93dc221bd3d19b31b3f5028759f07fd",
+      "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+      "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+      "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+      "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+      "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+      "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+    },
+    "launcher_namespace_sha256": "87991144533e11820b03cc9fcf49e0afa14ae99106f75bed81231247a53bcdbd",
+    "reference_identity": {
+      "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+      "manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+      "files_verified": 4047,
+      "module_files_sha256": {
+        "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+        "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+        "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358",
+        "Qt5Qml.dll": "30035484c81590976627f8face9507caa8581a7dc7630cccf6a8d6de65cab707"
+      }
+    },
+    "launch_host": {
+      "windows_version": "10.0.26300",
+      "python_version_number": "3.12.10",
+      "python_exe_sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "node_exe_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9",
+      "rea_package_version": "6.7.0",
+      "rea_shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+      "rea_package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+      "rea_entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738",
+      "runtime_identity_source": "recorded execution plan; exporter does not execute the captured runtimes"
+    },
+    "raw_files": {
+      "evidence.json": {
+        "bytes": 27809,
+        "sha256": "20699f4afbb0bfeb437839d6c42495977f4e2997f3a9c2d55b008da648adf755"
+      },
+      "run.json": {
+        "bytes": 617,
+        "sha256": "fb49d299168f82634da6319ab9ab65d03123dcd6052951dc8fc8b578835c4e71"
+      },
+      "probe.js": {
+        "bytes": 26320,
+        "sha256": "e4452806e0eddf45b7588af89276536465d904f36b52d8f3fc67eab74ef43396"
+      },
+      "peer.json": {
+        "bytes": 3343,
+        "sha256": "66489b4315e5fa7f635aecd11bba99404dcb228bc78f7852ef0ee679eca09b52"
+      },
+      "resize-hidden-height-result.json": {
+        "bytes": 13066,
+        "sha256": "c70c40bc3bbe0a0cd27ce4ea783bc62ccf25a97fec3179991996f3646729f979"
+      },
+      "files.json": {
+        "bytes": 637666,
+        "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+      },
+      "stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "profile-check.json": {
+        "bytes": 52,
+        "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      },
+      "cleanup.json": {
+        "bytes": 42,
+        "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+      },
+      "fixture-ready": {
+        "bytes": 32,
+        "sha256": "1f0b8ece17746ce41c81df65e45a6f8480747d9b69858dc905a29ae8d4c449cb"
+      },
+      "ack-0": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-1": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-2": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-3": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-4": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-5": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-6": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "resize-request-1": {
+        "bytes": 31,
+        "sha256": "38caa2237388a5f1b45a7e96077c0f8424d279f6c34ca97d177e16cc47b99fe9"
+      },
+      "resize-ready-1": {
+        "bytes": 42,
+        "sha256": "311f5ead4d5362d9c2e384404d7d2b293d6cbd037cefa590190e8b208c00a89c"
+      },
+      "resize-request-3": {
+        "bytes": 31,
+        "sha256": "73aa257b7660d2159287f7b1e9a6f11aafcb03a68232a4570b6b855b2acb4d44"
+      },
+      "resize-ready-3": {
+        "bytes": 42,
+        "sha256": "46b124472a0f3d50a84e690e7eec5d4cf679ea908611ccfacbcc223dcc1c7948"
+      },
+      "resize-request-4": {
+        "bytes": 31,
+        "sha256": "90e0e09f8ab7c5ca1c8f408880ba931490e6841a6527b4304ef3d4bba91e32bb"
+      },
+      "resize-ready-4": {
+        "bytes": 42,
+        "sha256": "1b44f9cbaf24d2e1a09d2d730c32e6c8b61578c7f617281b2dc69e30b7b9b747"
+      },
+      "resize-request-6": {
+        "bytes": 31,
+        "sha256": "31e66f70e3c075552d07158146b4b58eae1775b25bd5e29526dbdc317a955983"
+      },
+      "resize-ready-6": {
+        "bytes": 42,
+        "sha256": "d6701e5a8b78e229395c936079bc41b1348bb8d7c66d42e7cc841ecab9a0c2cc"
+      }
+    },
+    "authorized_plan": {
+      "bytes": 8077,
+      "sha256": "938992c4c68eb0c0587d3c789e4d17121a70264df5f7631c904707e29c7280fb"
+    }
+  },
+  "limitations": [
+    "The original fixed audit failed; that failure is reproduced and its missing mechanics file is not fabricated.",
+    "Only S[:61]+S[91:] from the fixed 89-space-plus-uvw source is added, at document row11 in phases5/6; no target is rerun.",
+    "The separate offline audit rechecks the frozen protocol, geometry, generated script, provider, complete original package, sources and profile.",
+    "Document markers, DSR and visible rectangles remain separate observations; exposed text during alternate stages is not classified as the active alternate grid or private buffer storage.",
+    "This one direct Telnet recording does not establish full grid, styles, local-shell transport, reliability repetition or performance acceptance.",
+    "Only complete finite source-derived ASCII arrays are reconstructed publicly; unrestricted raw text, paths, process identifiers, profiles and original artifacts remain private."
+  ]
+}
