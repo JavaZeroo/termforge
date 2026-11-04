@@ -25,12 +25,12 @@ cmake -S . -B build/qt-cpp -G "Visual Studio 17 2022" -A x64 `
   -DQt6_DIR="<Qt SDK prefix>/lib/cmake/Qt6" `
   -DTERMFORGE_CONPTY_BACKEND_DIR="<absolute fixed ConPTY pair directory>" `
   -DTERMFORGE_MSVC_RUNTIME_DIR="<absolute prepared CRT directory>"
-cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_terminal_modes_test
+cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_terminal_modes_test
 build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe
-ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_terminal_modes(_retained)?)$' --output-on-failure
+ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?)$' --output-on-failure
 ```
 
-当前主线注册的 Qt CTest 包括上述四项与 `qt_terminal_modes_retained`（只缩宽的保留/投影契约）；IME 合成事件检查在 `qt_cpp_shell` 内。历史冻结包的 `qt_ime_input_test.exe` 不属于当前主线构建目标，不用于替代这组验证。旧六阶段 `--resize` 仍以显式诊断运行并保留失败，不注册进默认 CI。
+当前主线注册的 Qt CTest 包括上述五项与 `qt_terminal_modes_retained`（只缩宽的保留/投影契约）、`qt_unicode_render`（固定 Unicode 样本的独立接收 + 离屏绘制/fallback 记录）；IME 合成事件检查在 `qt_cpp_shell` 内。历史冻结包的 `qt_ime_input_test.exe` 不属于当前主线构建目标，不用于替代这组验证。旧六阶段 `--resize` 仍以显式诊断运行并保留失败，不注册进默认 CI。
 
 固定 ConPTY/CRT 输入缺失或篡改时构建明确失败；实际工具集更新到固定 CRT 之外时须重新审查依赖。产品中的 shell 启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/`、`assets/fonts/`、十个固定 CRT DLL 及其原许可/NOTICE；每次构建重新校验并部署 CRT，不运行安装器、不修改 System32。最终目录用 `tools/msvc_runtime.py manifest` 记录全部文件。当前只是本地构建输出，Qt/第三方的完整分发审计及产品打包尚未完成。
 
@@ -49,6 +49,8 @@ Parser/Screen 仅在 Qt 线程修改；ConPTY reader 向有界输出队列写入
 字面网格测试使用可见父窗口内的终端子区域；独立顶层测试保留一列请求并根据原生事件处理后的实际可用区域核对 core 和 child，记录平台调整差异。大 child 的资源上限验证保留 owner 裁剪范围。旧 678 离屏通过后的原生极窄失败、新夹具离屏验证及[0ff 冻结包的一次隔离原生成功](../../experiments/shell/results/2026-10-29-qt-resize/native-validation.json)分别保留；后者只观察到 DPI 96，不代替不同 DPI 或完整产品验收。
 
 `qt_unicode_input` 通过公开 Qt 文本/焦点/隐藏/标签动作，将 UTF-16 整事件及跨事件代理项经每目标 `KeyboardEncoder` 交给固定 ConPTY，独立 `ReadConsoleW` 接收端核对中文、NFD、非BMP、固定ZWJ/keycap、NUL与原有正常模式按键的精确UTF-8。整包1024B上限与拒绝反馈、失焦/关闭/不可用目标的状态隔离有[红绿与联合源码验证](../../experiments/shell/results/2026-10-29-qt-unicode-input/README.md)；未配对单元及焦点清理是当前 TermForge 策略，尚无原版对照。该测试核对按键文本编码，不替代 OS IME 事件、相应字形、字素宽度或原始物理按键验收。
+
+`qt_unicode_render` 补上同一正式路径此前未覆盖的“解析后实际绘制”合同：固定 ASCII/CJK/补充平面/结合标样本经公开 Qt 事件进入真实 child，独立 `ReadConsoleW` 接收端与 child 回显文件分别核对接收字节和呈现源；核心解析为既有 `Cell`/width/marks 后由 `TerminalWidget` 离屏抓图，并逐 cell 记录实际 glyph faces、missing glyph、advance 与无裁剪参考墨迹，同时用第二条空会话观察目标隔离。实测 CJK 使用宿主 fallback 字体、emoji 的 advance 超出两格但参考墨迹未越格；U+200D/U+FE0F 被 recovery parser 替换为 U+FFFD（既有缺口，只记录）。该检查只证明离屏局部链，`presented_done=null`，不是物理呈现、原生 IME 或字素/宽度策略的批准，详见[固定结果](../../experiments/shell/results/2026-11-04-qt-unicode-presentation/README.md)。
 
 IME 实现通过 `QInputMethodEvent` 绘制未提交的 preedit，仅把 commit 的 UTF-8 交给会话；空 preedit 取消预览，失焦/隐藏清理预览，光标格通过 `ImCursorRectangle` 查询。预览按字体度量计算宽度，失败提交保留错误反馈。`qt_cpp_shell` 的合成事件检查覆盖 preedit 不进入终端正文、commit 到达、cancel 不写入。独立的[固定微软拼音记录](../../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/README.md)已有隔离 Windows VM 中 `ni'hao` 组合、取消及「你好」提交的限定证据；完整会话交叉、候选窗身份、其他 DPI 和实际呈现仍由 [#155](https://github.com/JavaZeroo/termforge/issues/155) / [#30](https://github.com/JavaZeroo/termforge/issues/30) 接续。
 
