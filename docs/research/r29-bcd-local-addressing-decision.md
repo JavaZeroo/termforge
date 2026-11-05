@@ -2,6 +2,7 @@
 
 - 状态：**方案材料，未改变产品行为、测试或用户已确认差异**；等待用户决定
 - 日期：2026-11-05
+- 取证状态：2026-11-05 已按 §6 授权的单次原版尝试失败于初始几何（目标 `80×24`，实际 `80×25`，未进入正文），保留[失败记录](../../research/ui/results/2026-11-06-resize-bcd-address-pre-write-failed/README.md)；未重跑、未形成 A/B/C 结论。
 - 范围：[#29](https://github.com/JavaZeroo/termforge/issues/29) / [#27](https://github.com/JavaZeroo/termforge/issues/27) 联合出口中的“旧六阶段 `--resize` B/CD 同步失败”
 - 依据：[ADR-0010](../adr/0010-bounded-resize-retention.md)、[#308 顺序宽高样本](../../research/ui/results/2026-11-02-resize-combined-reference/README.md)、[#309 只缩宽样本](../../research/ui/results/2026-11-02-resize-state-reference/README.md)、[#316 双轴写后端点](../../research/ui/results/2026-11-04-resize-dual-axis-reference/README.md)、[#317 同次 Qt/固定 ConPTY trace](../../experiments/shell/results/2026-11-05-qt-resize-divergence/README.md)
 
@@ -72,7 +73,9 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
 
 **不能形成“原版已证明应选哪条”的结论。** 现有 WindTerm 样本要么只缩宽、要么顺序宽高、要么双轴写后端点，几何/写入/阶段不同，不能拼成一个同场景原版结论；#317 是 Qt/固定 ConPTY trace，不是 WindTerm oracle。真实应用影响也只有推断。缺的不是更多同义转述，而是下列一个最小观察。
 
-## 6. 单个最小取证计划（未执行）
+## 6. 单个最小取证计划（已授权尝试一次，因几何失败）
+
+**2026-11-05 执行结果**：计划 `windterm-bcd-address-pre-write-v1` 已冻结并由调度者授权一次运行；实际初始 NAWS 为 **80×25**（非目标 80×24），控制器在 `fixed initial grid differs` 停止，未发送 B/C/D、未产生写前/写后端点，严格导出未运行。失败身份、计划/attempt 哈希与精确阻塞见[失败记录](../../research/ui/results/2026-11-06-resize-bcd-address-pre-write-failed/README.md)；同一计划不重放，也未据此选择 A/B/C。下面是原计划的目标与区分力，保留为下一次新计划的设计依据。
 
 **固定问题**：WindTerm 2.7.0 在同一轮 `80×24→60×12` 主屏会话中，缩高后、写入前的正文/滚动/DSR 是什么；随后固定 `CUP 12;1+marker+DSR` 的 marker 落在保留源的哪一行、显示在哪一行。
 
