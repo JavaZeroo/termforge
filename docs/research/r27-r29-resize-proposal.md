@@ -100,3 +100,5 @@ Qt 现有 B/CD 诊断在 resize 后还发送了 CUP 与 `RESIZED`。因此“保
 > Substantial replacements, new major dependencies or important behavior deviations need a concrete evidence-backed proposal and user confirmation.
 
 本方案改变既有 Screen 内容及 resize 的核心职责，因此适用上述重大替换要求；本会话的明确答复已满足此次方案的确认要求。后续在确认范围内自主推进，不重复申请同一批准；新的重要行为差异或范围变更仍另行确认。
+
+旧六阶段 B/CD 在正式 Qt/固定 ConPTY 中的寻址取舍尚未决定，具体冲突、互斥路线与最小取证计划见[决策材料](r29-bcd-local-addressing-decision.md)；该材料不改变本方案已确认的内容保留方向。
