@@ -1,0 +1,60 @@
+{
+  "schema": "termforge-resize-bcd-address-pre-write-failure-v1",
+  "case_id": "shrink-bcd-cup",
+  "plan_name": "windterm-bcd-address-pre-write-v1",
+  "status": "failed-before-body",
+  "authorized_original_runs": 1,
+  "actual_original_runs": 1,
+  "retry_attempted": false,
+  "plan_sha256": "7718a4b8cb41e3b45f249e3a5479aa78803f2df3eae5e7cf7eed4e7efe03c260",
+  "plan_bytes": 5104,
+  "attempt_marker_sha256": "20fd56d7a9b72e43aee2ba364cb1a30c6149690a3deb97e7fcecc55d460e6523",
+  "source_base_commit": "53cf24fc17c00924d19bbed18063e978d259954c",
+  "source_archive_manifest_sha256": "dab9307c0fca1e936f817a1823620bb5bc0661b7aa5ccbf4d258607150a345f9",
+  "source_files_sha256": {
+    "research/ui/resize_bcd_address_reference.py": "b91c95ddf85f79b6f4164d4fbdaab033fd7ff828b3414cff3893a735c6e3c1d6",
+    "research/ui/resize_bcd_address_reference.js": "2225f470514e27b9550e94c4065c746f31b2b0cc44856ecda2bddfa0f2e4ac36"
+  },
+  "reference": {
+    "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+    "rea": "6.7.0",
+    "node_executable_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9"
+  },
+  "request": {
+    "id": "r29-bcd-address-pre-write-0",
+    "exit_code": 1,
+    "execution_elapsed_ms": 90731,
+    "job_after": {"active": 0, "total": 3, "terminated": 0},
+    "root_reaped": true,
+    "cleanup_verified": true
+  },
+  "observed": {
+    "peer_naws": [[80, 25]],
+    "peer_columns": 80,
+    "peer_rows": 25,
+    "phase": null,
+    "records": 0,
+    "result_status": "failed",
+    "result_error": "Error: fixed initial grid differs",
+    "observations": 0,
+    "pre_write_body_captured": false,
+    "post_write_endpoint_captured": false,
+    "public_export_created": false
+  },
+  "recording_sha256": {
+    "peer.json": "7ed82ccafe15fdbafb8ca580c47e8505552c44dc228d005972f603bef6d739aa",
+    "bcd-address-result.json": "8a1c7b035ecb48b88a625badafdb6f481e547512ca354900437712f4dc48879b",
+    "evidence.json": "dc1d9064f5058618bab1864a6f2a09f8570895dfb9a92745c69fc8205acb7d4e",
+    "probe.js": "930e7b00549aafb0f9df72449b8dbfa67fdda493441f4f570ec0c5d8c7925ac2",
+    "run.json": "3eb7b87db2c4f23a24b1723d5711c792313f92cc515d3027e2b1356636f15200"
+  },
+  "environment_note": "The fixed VM display was temporarily changed from 1024x768 to 1600x1200 to fit the planned 1228x869 window and restored to 1024x768 afterwards. The actual window rectangle was not recorded because the failure occurred before the geometry check. This environment change is not presented as the normal fixed environment.",
+  "blocker": "The requested 1228x869 window produced actual NAWS 80x25, not the required 80x24. The attempt stopped before any B/C/D body bytes, so there is no pre-write or post-write evidence. The same plan must not be replayed; a new frozen plan with a correctly calibrated window or a separately authorized geometry calibration is required.",
+  "not_conclusions": [
+    "No conclusion about WindTerm CUP/source/display addressing.",
+    "No A/B/C route choice.",
+    "No change to the old six-stage assertion or its preserved failure.",
+    "No claim of 80x24 observation; the actual grid was 80x25."
+  ]
+}
