@@ -1,7 +1,7 @@
 {
   "schema": "termforge-qt-history-anchor-validation-v1",
   "baseline_main": "c11e85eb05814bfdd25201bcf785b999f387e0b7",
-  "source_commit": "PENDING_FIX_COMMIT",
+  "source_commit": "19c9f64fb04276766323030ce3829ad843c4813f",
   "source_commit_note": "Validation identity is a documentation follow-up; implementation/test hashes below are the committed sources.",
   "source_files_sha256": {
     "src/qt/terminal_widget.hpp": "b878cc8c2dae0aefcc6b3c2e996a35c8dc30cd06be098a0d53c3e919dfb4ecf2",
