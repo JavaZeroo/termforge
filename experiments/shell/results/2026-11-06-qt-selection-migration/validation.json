@@ -1,13 +1,13 @@
 {
   "schema": "termforge-qt-selection-migration-validation-v1",
   "baseline_main": "be667ee91d4d8c4541cff2989da6643d33041511",
-  "source_commit": "PENDING_COMMIT",
+  "source_commit": "3ba17a17cea0c151f4c722340ed47f4321ef11da",
   "source_hash_note": "Hashes are SHA-256 of the committed LF Git blob content; Windows may materialize CRLF while the blob identity stays this value.",
   "source_files_sha256": {
-    "src/qt/terminal_widget.hpp": "19cd59b3dbad936f9e709cb7eece3b4f0d83299a936ad340dc1495b584166e16",
+    "src/qt/terminal_widget.hpp": "a42d31f9c9b9a496f8bf8bd9ac54e8ed6cb65ddc0930abe94a2d5574cb2796d9",
     "src/qt/selection_migration_test.cpp": "e0104451589e55f5699412b8184e47fd92c7cb9d7ae8030b29fcf54a123ff3c5",
     "src/qt/selection_fixture.hpp": "cc355a467c8453036561d28aa55afc1e954fa1a86c17a7261b57de6397ce4c0d",
-    "CMakeLists.txt": "bf44ba914fcf5b8b5b9fd4fe0df343d823d1edec5967725a40b200eb9c0d5922",
+    "CMakeLists.txt": "71044637e9e187d5ed0e15e12094c36d0aa76937e30bb10843f67a5716b2aeee",
     ".github/workflows/qt-cpp.yml": "2875b1781cf1fc0bbd5d8247a41e53777c28bd2d2115aa5149c7ca8ae8ec3fb4"
   },
   "environment": {
