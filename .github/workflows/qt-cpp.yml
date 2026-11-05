@@ -42,7 +42,7 @@ jobs:
             "-DTERMFORGE_CONPTY_BACKEND_DIR=$dependencyRoot/conpty" `
             "-DTERMFORGE_MSVC_RUNTIME_DIR=$dependencyRoot/crt"
       - name: Build Qt product and independent smoke
-        run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_terminal_modes_test qt_hidden_retention_test qt_history_navigation_test --parallel 2
+        run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_terminal_modes_test qt_hidden_retention_test qt_history_navigation_test qt_selection_migration_test --parallel 2
       - name: Record complete path-free runtime manifests
         run: |
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-bin/Release --executable termforge_qt_shell.exe
@@ -61,6 +61,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-history-bin/Release --executable qt_history_navigation_test.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-selection-bin/Release --executable qt_selection_migration_test.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Preserve runtime file identities without binaries
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -77,8 +79,9 @@ jobs:
             build/qt-cpp/qt-modes-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-hidden-retention-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-history-bin/Release/runtime-manifest.json
+            build/qt-cpp/qt-selection-bin/Release/runtime-manifest.json
       - name: Run Qt offscreen smoke in its owned Job
-        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation)$' --no-tests=error --verbose
+        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration)$' --no-tests=error --verbose
       # Keep this configuration independent from the default/system-backend and
       # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
       # publication artifacts; this job does not produce a release package.

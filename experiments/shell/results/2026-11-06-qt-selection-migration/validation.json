@@ -1,0 +1,79 @@
+{
+  "schema": "termforge-qt-selection-migration-validation-v1",
+  "baseline_main": "be667ee91d4d8c4541cff2989da6643d33041511",
+  "source_commit": "PENDING_COMMIT",
+  "source_hash_note": "Hashes are SHA-256 of the committed LF Git blob content; Windows may materialize CRLF while the blob identity stays this value.",
+  "source_files_sha256": {
+    "src/qt/terminal_widget.hpp": "19cd59b3dbad936f9e709cb7eece3b4f0d83299a936ad340dc1495b584166e16",
+    "src/qt/selection_migration_test.cpp": "e0104451589e55f5699412b8184e47fd92c7cb9d7ae8030b29fcf54a123ff3c5",
+    "src/qt/selection_fixture.hpp": "cc355a467c8453036561d28aa55afc1e954fa1a86c17a7261b57de6397ce4c0d",
+    "CMakeLists.txt": "bf44ba914fcf5b8b5b9fd4fe0df343d823d1edec5967725a40b200eb9c0d5922",
+    ".github/workflows/qt-cpp.yml": "2875b1781cf1fc0bbd5d8247a41e53777c28bd2d2115aa5149c7ca8ae8ec3fb4"
+  },
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 offscreen",
+    "conpty": "1.25.260930003",
+    "crt": "14.51.36247.0",
+    "binary_sha256": "ebe085f4ead085ae85af79487218c57ebf1f13d58636fd7ca8163e903d77aded"
+  },
+  "entry": {
+    "test": "qt_selection_migration",
+    "source": "src/qt/selection_migration_test.cpp",
+    "fixture": "src/qt/selection_fixture.hpp",
+    "child": "real child via fixed ConPTY; 120 numbered lines, soft line, hard line, tail, 40 retained history lines; o/a/3/r/q commands",
+    "public_inputs": [
+      "QWheelEvent history browsing",
+      "QMouseEvent reverse and forward drag",
+      "public Qt resize",
+      "Ctrl+Shift+Home/End"
+    ],
+    "internal_api": [
+      "TerminalWidget::copy_selection(max_bytes)",
+      "TerminalWidget::selection_spans()",
+      "has_selection()"
+    ]
+  },
+  "results": {
+    "qt_selection_migration": {
+      "passed": true,
+      "seconds": 0.86
+    },
+    "qt_formal_path_regression": {
+      "passed": 9,
+      "failed": 0,
+      "seconds": 11.5
+    },
+    "checks": {
+      "reverse_cross_soft": "text == soft.substr(50,50); highlighted columns 50",
+      "partial_column_hard_boundary": "text == soft.substr(150) + CRLF + hard.substr(0,5); highlighted columns 14",
+      "display_reflow_60x20_restore_80x24": true,
+      "browsing_page_change": true,
+      "unrelated_output": "SEL_APPEND arrived; source text unchanged",
+      "real_eviction": "selection invalid, copy not ok and empty; no neighbour resurrection",
+      "ed3": "fresh selection invalidated",
+      "ris": "fresh post-ED3 selection invalidated",
+      "second_session": "no selection leakage",
+      "child_exit": 37,
+      "job_after": {
+        "active": 0,
+        "total": 6,
+        "terminated": 0
+      }
+    },
+    "red_green_note": "The first test attempt failed on fixture placement (soft line still on the live page: 'selection unexpectedly resumed live output'); adding 40 retained-history lines fixed the fixture. No product selection/projection RED was found in the covered path. The GREEN run asserts source text, highlighted column counts, reflow, browsing, unrelated output, eviction, ED3, RIS and isolation.",
+    "offscreen_only": true,
+    "presented_done": null
+  },
+  "screenshots": {
+    "screens/selection-history-highlight.png": "626a4731fdd6b14f0b4956c4af7358a0b9d38faf9e2197dc60f46695631cc308"
+  },
+  "limitations": [
+    "Single offscreen display, fixed short ASCII and one soft line; no wide/combining selection columns, physical presentation/DPI, system clipboard/shortcuts, paste, word/line selection, autoscroll, full Find UI, other sizes, continuous resize or performance.",
+    "Internal text extraction and highlight projection are not a system-clipboard delivery and do not establish full copy UI.",
+    "No product selection semantics change was needed in the covered path; this slice adds end-to-end coverage and bounded extraction/observation APIs.",
+    "Old six-stage --resize failure, A/B/C decision and #27/#29/#30/#7 remain open. Remote VM geometry calibration/v2 is separately blocked and not used here."
+  ]
+}
