@@ -28,6 +28,15 @@
 
 namespace termforge::qt {
 
+// Isolated diagnostic injection for the wheel regression. It models the three
+// native outcomes without changing the host setting: a line count (0 disables),
+// WHEEL_PAGESCROLL, or a failed SPI query (the R1 fallback is 3 lines).
+struct WheelSettingForTest {
+    enum class Kind { line_count, page, query_failure };
+    Kind kind = Kind::line_count;
+    int lines = 0;
+};
+
 class TerminalWidget final : public QWidget {
     SessionModel& model_;
     tf_shell::KeyboardEncoder keyboard_;
@@ -52,9 +61,9 @@ class TerminalWidget final : public QWidget {
     // Whole wheel detents only; the remainder is retained like the Win32
     // history path. A browsing page is projected from its source anchor.
     int wheel_remainder_ = 0;
-    // Recoverable application-level diagnostic override used by the isolated
-    // Qt history regression; production uses QStyleHints.
-    std::optional<int> wheel_scroll_lines_override_;
+    // Recoverable diagnostic override used by the isolated Qt history
+    // regression; production reads the native Windows setting per event.
+    std::optional<WheelSettingForTest> wheel_setting_override_;
     void refresh_metrics() {
         const QFontMetricsF metrics(font());
         cell_width_ = (std::max)(1, qCeil(metrics.horizontalAdvance(QLatin1Char('M'))));
@@ -162,6 +171,34 @@ class TerminalWidget final : public QWidget {
         selection_anchor_.reset();
         event->accept();
     }
+    int64_t wheel_step_rows() const {
+        if (wheel_setting_override_) {
+            switch (wheel_setting_override_->kind) {
+            case WheelSettingForTest::Kind::line_count:
+                return wheel_setting_override_->lines > 0 ? wheel_setting_override_->lines : 0;
+            case WheelSettingForTest::Kind::page:
+                return (std::max)(int64_t{1}, static_cast<int64_t>(model_.screen().height()) - 1);
+            case WheelSettingForTest::Kind::query_failure:
+                return 3;
+            }
+        }
+#ifdef Q_OS_WIN
+        // Reuse the R1 native query on every wheel event. R1 initializes the
+        // value to 3 before SPI; a failed query therefore keeps 3 lines rather
+        // than inventing a page mode. WHEEL_PAGESCROLL is the documented
+        // page-sized value and becomes visible height minus one, at least one.
+        UINT lines = 3;
+        if (!SystemParametersInfoW(SPI_GETWHEELSCROLLLINES, 0, &lines, 0)) return 3;
+        if (lines == WHEEL_PAGESCROLL)
+            return (std::max)(int64_t{1}, static_cast<int64_t>(model_.screen().height()) - 1);
+        return static_cast<int64_t>(lines);
+#else
+        // Other platforms have no confirmed page marker in this route: only a
+        // positive QStyleHints line count scrolls; zero disables.
+        const int lines = QGuiApplication::styleHints()->wheelScrollLines();
+        return lines > 0 ? lines : 0;
+#endif
+    }
     void wheelEvent(QWheelEvent* event) override {
         if (!isVisible() || !model_.running() || !grid_ready_) {
             QWidget::wheelEvent(event); return;
@@ -174,16 +211,9 @@ class TerminalWidget final : public QWidget {
         const int detents = wheel_remainder_ / 120;
         wheel_remainder_ %= 120;
         if (detents) {
-            // QStyleHints::wheelScrollLines is a line count. A zero value
-            // disables wheel scrolling and is not a page step. The fixed Qt
-            // 6.10 Windows theme maps the native WHEEL_PAGESCROLL setting to
-            // its default 3 ("unimplemented in Qt"), so no separate page
-            // marker is observable on this route; non-positive values are
-            // therefore treated as disabled rather than inventing a page mode.
-            const int lines = wheel_scroll_lines_override_.value_or(
-                QGuiApplication::styleHints()->wheelScrollLines());
-            if (lines > 0) {
-                viewport_.scroll_by(model_.screen(), -static_cast<int64_t>(detents) * lines);
+            const int64_t step = wheel_step_rows();
+            if (step > 0) {
+                viewport_.scroll_by(model_.screen(), -static_cast<int64_t>(detents) * step);
                 update();
             }
         }
@@ -532,7 +562,9 @@ public:
     // Diagnostic/read-only history state for the Qt regression; state is
     // reconciled against the current owner screen.
     // Isolated Qt test/diagnostic setting; does not change the host setting.
-    void setWheelScrollLinesForTest(std::optional<int> lines) { wheel_scroll_lines_override_ = lines; }
+    void setWheelSettingForTest(std::optional<WheelSettingForTest> setting) {
+        wheel_setting_override_ = setting;
+    }
     ViewportState history_state() { return viewport_.reconcile(model_.screen()); }
     bool history_following() const { return viewport_.following(); }
     uint64_t history_anchor() const { return viewport_.anchor(); }

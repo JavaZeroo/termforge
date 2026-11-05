@@ -2,7 +2,7 @@
 
 按 [ADR-0008](../../docs/adr/0008-cpp-core-qt-widgets.md)采用自主 C++ 核心和 Qt Widgets，Windows 进程由[固定微软 ConPTY](../../third_party/conpty/README.md)承载。当前入口提供默认 80×24、随窗口可用区域变化的本地 cmd 标签、基础 ASCII 与限定 Unicode 按键文本传输、IME 组合/提交/取消、基础鼠标拖选高亮、16 色与部分样式绘制、启动错误与关闭回收。R2 按 [ADR-0009](../../docs/adr/0009-r2-scope-decisions.md)交付本地终端基础及已知差异清单，当前入口尚未完成该发布验收，也不是完整 WindTerm 界面。
 
-现有 C++ 核心的[能力限制](../../experiments/core/README.md)继续有效。Qt 已迁移有限历史浏览与源阅读锚点（滚轮、`Ctrl+Shift+Home/End`，见[固定结果](../../experiments/shell/results/2026-11-05-qt-history-anchor/README.md)），尚未迁移原 Win32 的完整工作区、分屏、滚动条/翻页键历史、自动滚动、选词/选行、系统复制/粘贴、Find 或会话恢复；完整键盘/IME 交叉、resize/reflow 仍需按目标调查和实现，也不能继承 Alacritty 分支的通过结果。普通方向键与无修饰 Home/End 可随 DECCKM 切换 CSI/SS3，无修饰 Insert/Delete/PageUp/PageDown 复用已有终端键表，另有 F1–F12 编码；当前 Ctrl 字母组合仅接入 Ctrl+C，修饰导航键不被当作普通导航发送，不能据此声明完整编辑器键盘或 bracketed paste。
+现有 C++ 核心的[能力限制](../../experiments/core/README.md)继续有效。Qt 已迁移有限历史浏览与源阅读锚点（滚轮、`Ctrl+Shift+Home/End`，见[固定结果](../../experiments/shell/results/2026-11-05-qt-history-anchor/README.md)）；Windows 滚轮入口直接读取 `SPI_GETWHEELSCROLLLINES`，区分 0 禁用、正整数行数与 `WHEEL_PAGESCROLL` 页步长，并在查询失败时按 R1 回退 3 行（见[原生滚轮结果](../../experiments/shell/results/2026-11-05-qt-wheel-native/README.md)），尚未迁移原 Win32 的完整工作区、分屏、滚动条/翻页键历史、自动滚动、选词/选行、系统复制/粘贴、Find 或会话恢复；完整键盘/IME 交叉、resize/reflow 仍需按目标调查和实现，也不能继承 Alacritty 分支的通过结果。普通方向键与无修饰 Home/End 可随 DECCKM 切换 CSI/SS3，无修饰 Insert/Delete/PageUp/PageDown 复用已有终端键表，另有 F1–F12 编码；当前 Ctrl 字母组合仅接入 Ctrl+C，修饰导航键不被当作普通导航发送，不能据此声明完整编辑器键盘或 bracketed paste。
 
 网格沿当前 Roboto Mono 字体度量和终端可用区域计算，保留八像素边距与一行状态区，并沿现有 Screen 资源上限限制为 1..500 列、1..200 行。字体变化重新计算度量；隐藏标签在显示/布局后同步。GUI 线程负责核心尺寸事务，现有生命周期 worker 用单个最新请求串行执行 ConPTY resize、wait、cancel 和 close；GUI 不等待 native resize。重复同尺寸不重新初始化屏幕或发起新尺寸操作；关闭、错误与退出停止接受并清除待处理请求，已选取的 native 操作由同一 worker 收尾，不重新激活会话。
 

@@ -17,6 +17,9 @@
 #include <optional>
 #include <string>
 #include <vector>
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
 
 using termforge::Screen;
 using termforge::TextDocument;
@@ -164,34 +167,104 @@ int main(int argc, char** argv) {
         require(first_terminal.hasFocus(), "first history terminal did not regain focus");
         capture(first_terminal, QStringLiteral("history-bottom"));
 
-        // Isolated app-level line-count cases. Zero disables wheel scrolling;
-        // Qt 6.10 on Windows maps the native WHEEL_PAGESCROLL setting to its
-        // default 3, so this route has no separate page marker. Negative
-        // values are likewise not treated as an invented page step.
+        // Isolated native-wheel contract cases. Production queries
+        // SPI_GETWHEELSCROLLLINES per wheel event; the diagnostic override
+        // models line counts, WHEEL_PAGESCROLL and a failed query without
+        // changing the host setting.
+        auto return_bottom = [&] {
+            QTest::keyClick(&first_terminal, Qt::Key_End, Qt::ControlModifier | Qt::ShiftModifier);
+            await([&] { return first_terminal.history_following(); }, first, lifecycle,
+                  "wheel contract case did not return to the bottom");
+        };
         {
+            // Real native query: compare the observed step with the current
+            // read-only system value (0, positive, or WHEEL_PAGESCROLL).
+            first_terminal.setWheelSettingForTest(std::nullopt);
+            return_bottom();
             const auto base = first_terminal.history_state();
-            first_terminal.setWheelScrollLinesForTest(0);
+            UINT native = 0;
+            const bool native_ok = SystemParametersInfoW(SPI_GETWHEELSCROLLLINES, 0, &native, 0);
+            const int64_t expected = !native_ok ? 3 :
+                native == WHEEL_PAGESCROLL ? (std::max)(int64_t{1}, int64_t{first.screen().height() - 1}) :
+                static_cast<int64_t>(native);
+            send_wheel(first_terminal, 120);
+            if (expected == 0) {
+                require(first_terminal.history_following() &&
+                        first_terminal.history_state().top == base.maximum_top,
+                        "native zero wheel setting did not disable scrolling");
+            } else {
+                require(!first_terminal.history_following() &&
+                        first_terminal.history_state().top + expected == base.maximum_top,
+                        "native wheel step did not match the system setting");
+            }
+            return_bottom();
+
+            first_terminal.setWheelSettingForTest(termforge::qt::WheelSettingForTest{
+                termforge::qt::WheelSettingForTest::Kind::line_count, 0});
             send_wheel(first_terminal, 120);
             require(first_terminal.history_following() &&
                     first_terminal.history_state().top == base.maximum_top,
                     "zero wheel lines did not disable scrolling");
-            first_terminal.setWheelScrollLinesForTest(-1);
-            send_wheel(first_terminal, 120);
-            require(first_terminal.history_following() &&
-                    first_terminal.history_state().top == base.maximum_top,
-                    "negative wheel lines were incorrectly treated as a page step");
-            first_terminal.setWheelScrollLinesForTest(3);
+
+            first_terminal.setWheelSettingForTest(termforge::qt::WheelSettingForTest{
+                termforge::qt::WheelSettingForTest::Kind::line_count, 3});
             send_wheel(first_terminal, 60);
             require(first_terminal.history_following(), "half a wheel detent scrolled early");
             send_wheel(first_terminal, 60);
             await([&] { return !first_terminal.history_following(); }, first, lifecycle,
                   "second half detent did not scroll");
-            const auto after = first_terminal.history_state();
-            require(after.top + 3 == base.maximum_top, "three-line wheel step did not match the setting");
-            first_terminal.setWheelScrollLinesForTest(std::nullopt);
-            QTest::keyClick(&first_terminal, Qt::Key_End, Qt::ControlModifier | Qt::ShiftModifier);
-            await([&] { return first_terminal.history_following(); }, first, lifecycle,
-                  "wheel-line test did not return to the bottom");
+            require(first_terminal.history_state().top + 3 == base.maximum_top,
+                    "three-line wheel step did not match the setting");
+
+            // WHEEL_PAGESCROLL uses visible height minus one, at least one.
+            first_terminal.setWheelSettingForTest(termforge::qt::WheelSettingForTest{
+                termforge::qt::WheelSettingForTest::Kind::page, 0});
+            return_bottom();
+            const auto page_base = first_terminal.history_state();
+            const int64_t page = (std::max)(int64_t{1}, int64_t{first.screen().height() - 1});
+            send_wheel(first_terminal, 120);
+            require(!first_terminal.history_following() &&
+                    first_terminal.history_state().top + page == page_base.maximum_top,
+                    "WHEEL_PAGESCROLL did not use visible height minus one");
+
+            // The page step follows the current visible height on later events.
+            resize_public(first_terminal, first, 80, 20, lifecycle);
+            return_bottom();
+            const auto short_base = first_terminal.history_state();
+            const int64_t short_page = (std::max)(int64_t{1}, int64_t{first.screen().height() - 1});
+            send_wheel(first_terminal, 120);
+            require(!first_terminal.history_following() &&
+                    first_terminal.history_state().top + short_page == short_base.maximum_top,
+                    "page step did not follow the current visible height");
+            resize_public(first_terminal, first, 80, 24, lifecycle);
+            return_bottom();
+
+            // A failed native query keeps the R1 initialization value of 3
+            // lines; it is not treated as page mode.
+            first_terminal.setWheelSettingForTest(termforge::qt::WheelSettingForTest{
+                termforge::qt::WheelSettingForTest::Kind::query_failure, 0});
+            const auto failure_base = first_terminal.history_state();
+            send_wheel(first_terminal, 120);
+            require(!first_terminal.history_following() &&
+                    first_terminal.history_state().top + 3 == failure_base.maximum_top,
+                    "failed native query did not fall back to 3 lines");
+
+            // A later setting change is observed by the next wheel event.
+            first_terminal.setWheelSettingForTest(termforge::qt::WheelSettingForTest{
+                termforge::qt::WheelSettingForTest::Kind::line_count, 2});
+            return_bottom();
+            const auto update_base = first_terminal.history_state();
+            send_wheel(first_terminal, 120);
+            const auto first_change = first_terminal.history_state();
+            require(first_change.top + 2 == update_base.maximum_top,
+                    "initial line-count setting was not used");
+            first_terminal.setWheelSettingForTest(termforge::qt::WheelSettingForTest{
+                termforge::qt::WheelSettingForTest::Kind::line_count, 5});
+            send_wheel(first_terminal, 120);
+            require(first_terminal.history_state().top + 5 == first_change.top,
+                    "later setting change was not re-read by the next wheel event");
+            first_terminal.setWheelSettingForTest(std::nullopt);
+            return_bottom();
         }
 
         // Wheel up leaves the live bottom; the same source anchor is addressable
@@ -326,7 +399,7 @@ int main(int argc, char** argv) {
         close_session(first, lifecycle);
         close_session(second, lifecycle);
         std::cout << "{\"schema\":\"termforge-qt-history-navigation-v1\",\"status\":\"passed\","
-                     "\"sessions\":2,\"wheel\":true,\"anchor_resize\":true,\"output_during_read\":true,"
+                     "\"sessions\":2,\"wheel\":true,\"wheel_native\":true,\"wheel_zero\":true,\"wheel_page\":true,\"wheel_page_height\":true,\"wheel_query_failure\":true,\"wheel_setting_update\":true,\"anchor_resize\":true,\"output_during_read\":true,"
                      "\"top_bottom\":true,\"eviction\":true,\"ed3\":true,\"ris\":true,"
                      "\"ordinary_input_bottom\":true,\"offscreen_only\":true,\"presented_done\":null}\n";
         return 0;
