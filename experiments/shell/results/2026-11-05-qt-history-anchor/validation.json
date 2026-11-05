@@ -1,11 +1,11 @@
 {
   "schema": "termforge-qt-history-anchor-validation-v1",
   "baseline_main": "c11e85eb05814bfdd25201bcf785b999f387e0b7",
-  "source_commit": "bbbabfb9ac208c961651ee71d06791932db0f9c4",
+  "source_commit": "PENDING_FIX_COMMIT",
   "source_commit_note": "Validation identity is a documentation follow-up; implementation/test hashes below are the committed sources.",
   "source_files_sha256": {
-    "src/qt/terminal_widget.hpp": "3ab036e59aceb29da86f94d0364ba52c6f3275bc5534c2cce39064992a50a342",
-    "src/qt/history_navigation_test.cpp": "01a63d4af8af647d1ba9791b7342133845e72ca537c0c10b5ce7c968c84a41c1",
+    "src/qt/terminal_widget.hpp": "b878cc8c2dae0aefcc6b3c2e996a35c8dc30cd06be098a0d53c3e919dfb4ecf2",
+    "src/qt/history_navigation_test.cpp": "7db2dce86c8bacccd5bf4ad3eea8da8d4bec59a249391ad4dc19909989035a09",
     "src/qt/history_fixture.hpp": "a1f3f5130378b94553ad1abc880c1509744d226a7e7e2036d9bb1d301610c1aa",
     "CMakeLists.txt": "a1bbe472f5d926fc08edc09c60c13b2dfabdbdefa0185e97db931d1895579ff1",
     ".github/workflows/qt-cpp.yml": "e4eb5936d360a634ef3010f53ea51ea006aeeec85602de77f2b97baa7dd873c2"
@@ -17,29 +17,49 @@
     "qt": "6.10.3 offscreen",
     "conpty": "1.25.260930003",
     "crt": "14.51.36247.0",
-    "binary_sha256": "d0d9f842f14352f566e7a3567191a1ee80ffa3a5e32dc50924a73537e3703542"
+    "binary_sha256": "87978c76fd2a46126dc7a3334301544663bedea4a4b9b12cba47bbfbfc682e1d"
   },
   "entry": {
     "test": "qt_history_navigation",
     "source": "src/qt/history_navigation_test.cpp",
     "fixture": "src/qt/history_fixture.hpp",
     "child": "real child via fixed ConPTY; initial 160 numbered lines, one spontaneous append, m/3/r/q commands",
-    "public_inputs": ["QWheelEvent", "Ctrl+Shift+Home/End key events", "ordinary key event"],
-    "controls": ["bounded 100-row retained history", "source-anchor projection at current width", "per-widget HistoryViewport"]
+    "public_inputs": [
+      "QWheelEvent",
+      "Ctrl+Shift+Home/End key events",
+      "ordinary key event"
+    ],
+    "controls": [
+      "bounded 100-row retained history",
+      "source-anchor projection at current width",
+      "per-widget HistoryViewport"
+    ]
   },
   "rules": {
-    "wheel": "accumulate 120-unit detents; step = system wheelScrollLines, non-positive falls back to height-1 page rows (R1 WHEEL_PAGESCROLL rule); remainder retained",
+    "wheel": "accumulate 120-unit detents; step = QStyleHints::wheelScrollLines line count. 0 disables wheel scrolling and is NOT a page step; >0 uses that many lines; negative values are not treated as an invented page marker. Fixed Qt 6.10 Windows maps native WHEEL_PAGESCROLL to its default 3 (\"unimplemented in Qt\"), so page-per-step is flattened to 3 and is a recorded known difference vs the R1 Win32 direct SPI path. App-internal recoverable override covers 0/3/half detent; host global setting is untouched.",
     "home_end": "Ctrl+Shift+Home -> oldest retained row; Ctrl+Shift+End -> live bottom",
     "new_output": "paused reading page keeps the same source anchor; new output does not replace it",
     "ordinary_input": "any ordinary terminal key returns to the live bottom before encoding",
     "eviction_ed3_ris": "invalid anchor clamps to the earliest retained row and stays paused until an explicit bottom action",
-    "isolation": "each widget owns its HistoryViewport; two sessions do not share viewport state"
+    "isolation": "each widget owns its HistoryViewport; two sessions do not share viewport state",
+    "half_detent": "two 60-unit events produce one 120-unit detent; the first half must not scroll"
   },
   "results": {
-    "qt_history_navigation": {"passed": true, "seconds": 1.93},
-    "qt_formal_path_regression": {"passed": 8, "failed": 0, "seconds": 13.71},
+    "qt_history_navigation": {
+      "passed": true,
+      "seconds": 2.07
+    },
+    "qt_formal_path_regression": {
+      "passed": 8,
+      "failed": 0,
+      "seconds": 13.71
+    },
     "child_exit": 37,
-    "job_after": {"active": 0, "total": 6, "terminated": 0},
+    "job_after": {
+      "active": 0,
+      "total": 6,
+      "terminated": 0
+    },
     "offscreen_only": true,
     "presented_done": null
   },
@@ -59,8 +79,18 @@
   },
   "limitations": [
     "Single offscreen display, fixed 80x24/60x24, short ASCII lines and bounded history; no scrollbar drag, PageUp/PageDown history mapping, paste-return, selection/copy/Find UI during history reading, physical presentation/DPI, full reflow, Unicode history or performance.",
-    "The wheel/reading-anchor behavior derives from the R1 Win32 product contract, not a new WindTerm runtime oracle; original WindTerm wheel/PageUp behavior remains unknown.",
+    "Wheel/reading-anchor behavior derives from the R1 Win32 product contract, not a new WindTerm runtime oracle; original WindTerm wheel/PageUp behavior remains unknown.",
+    "Qt 6.10 Windows flattens the native page-scroll setting to 3 lines (unimplemented page marker), so this Qt path does not preserve the R1 WHEEL_PAGESCROLL page step; this is a recorded known difference, not an equivalence claim. Zero disables scrolling and is not a page step.",
     "History pages are bounded source-anchor projections; unsupported retained atoms fall back to a clipped physical history page and do not claim complete mapping coverage.",
     "No production policy change to the six-stage native-grid question; #27/#29/#30/#7 remain open."
-  ]
+  ],
+  "qt_wheel_source": {
+    "qt_version": "6.10.3",
+    "windows_theme": "https://github.com/qt/qtbase/blob/6.10/src/plugins/platforms/windows/qwindowstheme.cpp#L626-L631",
+    "windows_theme_fact": "DWORD(-1) WHEEL_PAGESCROLL is kept as default 3 and marked unimplemented; other values including 0 pass through",
+    "style_hints": "https://github.com/qt/qtbase/blob/6.10/src/gui/kernel/qstylehints.cpp#L644-L655",
+    "style_hints_fact": "wheelScrollLines() is a line-count getter; the internal setter only overrides positive values and defines no negative page marker",
+    "host_setting_modified": false,
+    "test_override": "TerminalWidget::setWheelScrollLinesForTest(std::optional<int>), restored after use"
+  }
 }

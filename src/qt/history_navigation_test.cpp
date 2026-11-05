@@ -14,6 +14,7 @@
 #include <QTest>
 #include <QWheelEvent>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -162,6 +163,36 @@ int main(int argc, char** argv) {
         QTest::qWait(20);
         require(first_terminal.hasFocus(), "first history terminal did not regain focus");
         capture(first_terminal, QStringLiteral("history-bottom"));
+
+        // Isolated app-level line-count cases. Zero disables wheel scrolling;
+        // Qt 6.10 on Windows maps the native WHEEL_PAGESCROLL setting to its
+        // default 3, so this route has no separate page marker. Negative
+        // values are likewise not treated as an invented page step.
+        {
+            const auto base = first_terminal.history_state();
+            first_terminal.setWheelScrollLinesForTest(0);
+            send_wheel(first_terminal, 120);
+            require(first_terminal.history_following() &&
+                    first_terminal.history_state().top == base.maximum_top,
+                    "zero wheel lines did not disable scrolling");
+            first_terminal.setWheelScrollLinesForTest(-1);
+            send_wheel(first_terminal, 120);
+            require(first_terminal.history_following() &&
+                    first_terminal.history_state().top == base.maximum_top,
+                    "negative wheel lines were incorrectly treated as a page step");
+            first_terminal.setWheelScrollLinesForTest(3);
+            send_wheel(first_terminal, 60);
+            require(first_terminal.history_following(), "half a wheel detent scrolled early");
+            send_wheel(first_terminal, 60);
+            await([&] { return !first_terminal.history_following(); }, first, lifecycle,
+                  "second half detent did not scroll");
+            const auto after = first_terminal.history_state();
+            require(after.top + 3 == base.maximum_top, "three-line wheel step did not match the setting");
+            first_terminal.setWheelScrollLinesForTest(std::nullopt);
+            QTest::keyClick(&first_terminal, Qt::Key_End, Qt::ControlModifier | Qt::ShiftModifier);
+            await([&] { return first_terminal.history_following(); }, first, lifecycle,
+                  "wheel-line test did not return to the bottom");
+        }
 
         // Wheel up leaves the live bottom; the same source anchor is addressable
         // through the painted page mapping.

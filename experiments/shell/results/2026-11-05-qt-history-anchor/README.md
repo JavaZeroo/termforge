@@ -10,16 +10,23 @@
 
 ## 实现
 
-- `TerminalWidget` 新增滚轮处理：累计 `angleDelta` 的整 detent，步长取系统 `QStyleHints::wheelScrollLines()`；非正数回退到 `height-1` 页步长（对应 R1 的 `WHEEL_PAGESCROLL` 规则），余量保留。
+- `TerminalWidget` 新增滚轮处理：累计 `angleDelta` 的整 detent；步长取 `QStyleHints::wheelScrollLines()` 的行数。**0 表示禁用滚动，不是页步长**；正值按行数。固定 Qt 6.10 Windows 主题把原生 `WHEEL_PAGESCROLL` 映射为默认 3 行（Qt 源码注明 "unimplemented in Qt"），因此该 Qt 路径没有可观察的页标记；负值也不实现额外翻页。R1 Win32 直接读 `SPI_GETWHEELSCROLLLINES` 并在 `WHEEL_PAGESCROLL` 时翻页，Qt 正式路径因 Qt 的扁平化不保留该页设置，是已记录的已知差异，不宣称等价。
 - 非跟随状态用 `HistoryViewport::project` 从当前源锚点按当前宽度、最多 200 源行、页高行投影；`ViewMapping`、可见正文和选择命中消费同一页。宽度/高度变化后锚点仍按行身份定位，不按视觉行号。
 - `Ctrl+Shift+Home/End` 显式到最早/最底；其他任何普通键在编码前先回到底部再发送。锚点无效（淘汰、ED3、RIS）时 `HistoryViewport` 的有序回退钳制到最早保留行，视图保持暂停直到显式回底。
 - 每个 widget 独立 `HistoryViewport`；两个会话互不影响。
 
 ## 真实 Qt + 受控 child 回归
 
+## 固定 Qt 6.10 的零值/按页来源
+
+- [`qwindowstheme.cpp` L626–L631](https://github.com/qt/qtbase/blob/6.10/src/plugins/platforms/windows/qwindowstheme.cpp#L626-L631)：Windows 主题从 `SPI_GETWHEELSCROLLLINES` 读取时，`DWORD(-1)`（`WHEEL_PAGESCROLL`）被保留为默认 3 并注明 "unimplemented in Qt"；其他值（含 0）原样映射。因此在固定 Windows Qt 路径上，宿主“按页”设置被 Qt 扁平化为 3 行，0 仍为 0。
+- [`qstylehints.cpp` L644–L655](https://github.com/qt/qtbase/blob/6.10/src/gui/kernel/qstylehints.cpp#L644-L655)：`wheelScrollLines()` 是行数 getter；内部 setter 仅在正数时覆盖平台主题值，不定义负值页标记。
+- 结论：Qt 入口只承诺 `0=禁用、>0=行数`；原生按页设置经 Qt 变为 3 行，不能在此路径单独实现/宣称翻页语义。测试用 `TerminalWidget::setWheelScrollLinesForTest`（可恢复的应用内隔离设置）覆盖 0/3/半 detent；未修改宿主全局设置。R1 Win32 的直接 `WHEEL_PAGESCROLL` 页步长由此成为已知差异，未回填为 Qt 行为。
+
 `qt_history_navigation`（`src/qt/history_navigation_test.cpp`、`src/qt/history_fixture.hpp`）用真实 child 写 160 行编号日志和一次自发追加，随后接受 `m`（追加）、`3`（ED3）、`r`（RIS）、`q`（退出）。公开 Qt 事件驱动浏览；检查：
 
 - 滚轮离开底部、历史页含旧编号行，页映射 `hit(0,0)` 返回同一源行 id/top；
+- 隔离应用设置覆盖 0（禁用）、正值 3（每次 3 行）与半 detent（60+60 才滚一次）；负值不被当作页步长；
 - 缩窄 60 列、恢复 80 列、缩高/恢复后阅读锚点与源内容前缀保持；
 - 阅读中新输出不移动锚点、不替换阅读页；
 - `Ctrl+Shift+End` 回底、`Ctrl+Shift+Home` 到最早行；

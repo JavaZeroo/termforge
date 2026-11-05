@@ -52,6 +52,9 @@ class TerminalWidget final : public QWidget {
     // Whole wheel detents only; the remainder is retained like the Win32
     // history path. A browsing page is projected from its source anchor.
     int wheel_remainder_ = 0;
+    // Recoverable application-level diagnostic override used by the isolated
+    // Qt history regression; production uses QStyleHints.
+    std::optional<int> wheel_scroll_lines_override_;
     void refresh_metrics() {
         const QFontMetricsF metrics(font());
         cell_width_ = (std::max)(1, qCeil(metrics.horizontalAdvance(QLatin1Char('M'))));
@@ -171,11 +174,18 @@ class TerminalWidget final : public QWidget {
         const int detents = wheel_remainder_ / 120;
         wheel_remainder_ %= 120;
         if (detents) {
-            const int lines = QGuiApplication::styleHints()->wheelScrollLines();
-            const int64_t page = (std::max)(int64_t{1}, static_cast<int64_t>(model_.screen().height()) - 1);
-            const int64_t step = lines > 0 ? lines : page;
-            viewport_.scroll_by(model_.screen(), -static_cast<int64_t>(detents) * step);
-            update();
+            // QStyleHints::wheelScrollLines is a line count. A zero value
+            // disables wheel scrolling and is not a page step. The fixed Qt
+            // 6.10 Windows theme maps the native WHEEL_PAGESCROLL setting to
+            // its default 3 ("unimplemented in Qt"), so no separate page
+            // marker is observable on this route; non-positive values are
+            // therefore treated as disabled rather than inventing a page mode.
+            const int lines = wheel_scroll_lines_override_.value_or(
+                QGuiApplication::styleHints()->wheelScrollLines());
+            if (lines > 0) {
+                viewport_.scroll_by(model_.screen(), -static_cast<int64_t>(detents) * lines);
+                update();
+            }
         }
         event->accept();
     }
@@ -187,7 +197,8 @@ class TerminalWidget final : public QWidget {
         viewport_.bottom(model_.screen());
         update();
     }
-    static uint32_t navigation_virtual_key(int key) {        switch (key) {
+    static uint32_t navigation_virtual_key(int key) {
+        switch (key) {
         case Qt::Key_Home: return VK_HOME;
         case Qt::Key_End: return VK_END;
         case Qt::Key_Insert: return VK_INSERT;
@@ -520,6 +531,8 @@ public:
     size_t painted_row_offset() const { return painted_row_offset_; }
     // Diagnostic/read-only history state for the Qt regression; state is
     // reconciled against the current owner screen.
+    // Isolated Qt test/diagnostic setting; does not change the host setting.
+    void setWheelScrollLinesForTest(std::optional<int> lines) { wheel_scroll_lines_override_ = lines; }
     ViewportState history_state() { return viewport_.reconcile(model_.screen()); }
     bool history_following() const { return viewport_.following(); }
     uint64_t history_anchor() const { return viewport_.anchor(); }
