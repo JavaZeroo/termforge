@@ -11,12 +11,15 @@
 #include <QCloseEvent>
 #include <QFontDatabase>
 #include <QFontMetricsF>
+#include <QGuiApplication>
 #include <QInputMethodEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QResizeEvent>
 #include <QShowEvent>
+#include <QStyleHints>
 #include <QPainter>
+#include <QWheelEvent>
 #include <QtMath>
 #include <QWidget>
 #include <array>
@@ -46,6 +49,12 @@ class TerminalWidget final : public QWidget {
     // Uncommitted input-method composition. Commits go to the session as UTF-8;
     // cancelling is simply an empty preedit, so no partial text is ever written.
     QString preedit_;
+    // Whole wheel detents only; the remainder is retained like the Win32
+    // history path. A browsing page is projected from its source anchor.
+    int wheel_remainder_ = 0;
+    // Recoverable application-level diagnostic override used by the isolated
+    // Qt history regression; production uses QStyleHints.
+    std::optional<int> wheel_scroll_lines_override_;
     void refresh_metrics() {
         const QFontMetricsF metrics(font());
         cell_width_ = (std::max)(1, qCeil(metrics.horizontalAdvance(QLatin1Char('M'))));
@@ -153,6 +162,41 @@ class TerminalWidget final : public QWidget {
         selection_anchor_.reset();
         event->accept();
     }
+    void wheelEvent(QWheelEvent* event) override {
+        if (!isVisible() || !model_.running() || !grid_ready_) {
+            QWidget::wheelEvent(event); return;
+        }
+        const int delta = event->angleDelta().y();
+        if (delta == 0) {
+            QWidget::wheelEvent(event); return;
+        }
+        wheel_remainder_ += delta;
+        const int detents = wheel_remainder_ / 120;
+        wheel_remainder_ %= 120;
+        if (detents) {
+            // QStyleHints::wheelScrollLines is a line count. A zero value
+            // disables wheel scrolling and is not a page step. The fixed Qt
+            // 6.10 Windows theme maps the native WHEEL_PAGESCROLL setting to
+            // its default 3 ("unimplemented in Qt"), so no separate page
+            // marker is observable on this route; non-positive values are
+            // therefore treated as disabled rather than inventing a page mode.
+            const int lines = wheel_scroll_lines_override_.value_or(
+                QGuiApplication::styleHints()->wheelScrollLines());
+            if (lines > 0) {
+                viewport_.scroll_by(model_.screen(), -static_cast<int64_t>(detents) * lines);
+                update();
+            }
+        }
+        event->accept();
+    }
+    void scroll_history_top() {
+        viewport_.scroll_to(model_.screen(), 0);
+        update();
+    }
+    void scroll_history_bottom() {
+        viewport_.bottom(model_.screen());
+        update();
+    }
     static uint32_t navigation_virtual_key(int key) {
         switch (key) {
         case Qt::Key_Home: return VK_HOME;
@@ -174,6 +218,18 @@ class TerminalWidget final : public QWidget {
             model_.send(std::string{});
             event->ignore(); return;
         }
+        // Reading-history controls follow the existing Win32 behavior: wheel
+        // and Ctrl+Shift+Home/End browse retained rows; any ordinary terminal
+        // input returns to the live bottom before it is encoded.
+        if (event->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) &&
+            event->key() == Qt::Key_Home) {
+            scroll_history_top(); event->accept(); return;
+        }
+        if (event->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) &&
+            event->key() == Qt::Key_End) {
+            scroll_history_bottom(); event->accept(); return;
+        }
+        if (!viewport_.following()) scroll_history_bottom();
         std::string bytes;
         auto next = keyboard_;
         bool character_text = false;
@@ -305,6 +361,37 @@ class TerminalWidget final : public QWidget {
         const size_t rows = static_cast<size_t>(screen.height());
         const size_t total = screen.retained_size();
         const size_t live_top = screen.history_lines().size();
+        if (!viewport_.following()) {
+            // Reading-history pages are projected from the retained source
+            // anchor at the current width; this keeps the same source rows when
+            // the frame is narrowed/restored while the page is bounded.
+            const auto state = viewport_.reconcile(screen);
+            const size_t source_end = (std::min)(total, state.top + 200);
+            try {
+                auto page = viewport_.project(screen, static_cast<size_t>(screen.width()), rows,
+                                              {state.top, 0}, source_end);
+                painted_page_ = std::move(page.snapshot);
+                painted_row_offset_ = 0;
+                display_cursor_row_ = -1;
+                display_cursor_column_ = 0;
+                return;
+            } catch (const std::exception&) {
+                // Unsupported retained atoms fall back to the physical history
+                // page; clip/pad only the display copy so painting stays bounded.
+                auto fallback = viewport_.snapshot(screen);
+                for (auto& line : fallback.lines) {
+                    if (line.size() < static_cast<size_t>(screen.width()))
+                        line.resize(static_cast<size_t>(screen.width()), Cell{});
+                    else if (line.size() > static_cast<size_t>(screen.width()))
+                        line.resize(static_cast<size_t>(screen.width()));
+                }
+                painted_page_ = std::move(fallback);
+                painted_row_offset_ = 0;
+                display_cursor_row_ = -1;
+                display_cursor_column_ = 0;
+                return;
+            }
+        }
         if (rows >= 1 && rows <= 200 && total > live_top) {
             // A soft continuation crossing the live-frame boundary needs its
             // logical-line start for a faithful reflow; the projection window
@@ -442,6 +529,13 @@ public:
     // never mutate the painted page or the protocol cursor.
     const std::optional<ViewSnapshot>& painted_page() const { return painted_page_; }
     size_t painted_row_offset() const { return painted_row_offset_; }
+    // Diagnostic/read-only history state for the Qt regression; state is
+    // reconciled against the current owner screen.
+    // Isolated Qt test/diagnostic setting; does not change the host setting.
+    void setWheelScrollLinesForTest(std::optional<int> lines) { wheel_scroll_lines_override_ = lines; }
+    ViewportState history_state() { return viewport_.reconcile(model_.screen()); }
+    bool history_following() const { return viewport_.following(); }
+    uint64_t history_anchor() const { return viewport_.anchor(); }
     // Diagnostic geometry of the owned paint chain; tests only read it.
     int cell_width() const { return cell_width_; }
     int cell_height() const { return cell_height_; }

@@ -2,13 +2,13 @@
 
 按 [ADR-0008](../../docs/adr/0008-cpp-core-qt-widgets.md)采用自主 C++ 核心和 Qt Widgets，Windows 进程由[固定微软 ConPTY](../../third_party/conpty/README.md)承载。当前入口提供默认 80×24、随窗口可用区域变化的本地 cmd 标签、基础 ASCII 与限定 Unicode 按键文本传输、IME 组合/提交/取消、基础鼠标拖选高亮、16 色与部分样式绘制、启动错误与关闭回收。R2 按 [ADR-0009](../../docs/adr/0009-r2-scope-decisions.md)交付本地终端基础及已知差异清单，当前入口尚未完成该发布验收，也不是完整 WindTerm 界面。
 
-现有 C++ 核心的[能力限制](../../experiments/core/README.md)继续有效。Qt 尚未迁移原 Win32 的完整工作区、分屏、历史浏览/自动滚动、选词/选行、系统复制/粘贴、Find 或会话恢复；完整键盘/IME 交叉、resize/reflow 仍需按目标调查和实现，也不能继承 Alacritty 分支的通过结果。普通方向键与无修饰 Home/End 可随 DECCKM 切换 CSI/SS3，无修饰 Insert/Delete/PageUp/PageDown 复用已有终端键表，另有 F1–F12 编码；当前 Ctrl 字母组合仅接入 Ctrl+C，修饰导航键不被当作普通导航发送，不能据此声明完整编辑器键盘或 bracketed paste。
+现有 C++ 核心的[能力限制](../../experiments/core/README.md)继续有效。Qt 已迁移有限历史浏览与源阅读锚点（滚轮、`Ctrl+Shift+Home/End`，见[固定结果](../../experiments/shell/results/2026-11-05-qt-history-anchor/README.md)），尚未迁移原 Win32 的完整工作区、分屏、滚动条/翻页键历史、自动滚动、选词/选行、系统复制/粘贴、Find 或会话恢复；完整键盘/IME 交叉、resize/reflow 仍需按目标调查和实现，也不能继承 Alacritty 分支的通过结果。普通方向键与无修饰 Home/End 可随 DECCKM 切换 CSI/SS3，无修饰 Insert/Delete/PageUp/PageDown 复用已有终端键表，另有 F1–F12 编码；当前 Ctrl 字母组合仅接入 Ctrl+C，修饰导航键不被当作普通导航发送，不能据此声明完整编辑器键盘或 bracketed paste。
 
 网格沿当前 Roboto Mono 字体度量和终端可用区域计算，保留八像素边距与一行状态区，并沿现有 Screen 资源上限限制为 1..500 列、1..200 行。字体变化重新计算度量；隐藏标签在显示/布局后同步。GUI 线程负责核心尺寸事务，现有生命周期 worker 用单个最新请求串行执行 ConPTY resize、wait、cancel 和 close；GUI 不等待 native resize。重复同尺寸不重新初始化屏幕或发起新尺寸操作；关闭、错误与退出停止接受并清除待处理请求，已选取的 native 操作由同一 worker 收尾，不重新激活会话。
 
 正式路径的尺寸事务改用 `Screen::resize_preserving`：变窄时保留源 Cell、行身份与软续接，不立即销毁右侧正文。绘制消费者按当前宽度生成独立显示投影页（`HistoryViewport::project`），协议光标只被翻译为显示光标，供光标下划线、IME 候选位置与预编辑预览使用；选择/命中继续消费同一份 `ViewMapping`，并用页面 layout revision 拒绝过期页。不支持的保留 Cell 或无法映射的光标回退到物理视图页，避免隐藏输出。当前验证与仍存差异见[固定结果](../../experiments/shell/results/2026-11-03-qt-retained-display/README.md)：只缩宽的显示重排与保留行合同已通过真实 child/固定 ConPTY 核对；旧六阶段 native-sync 诊断仍失败并保留，原生重排网格不被当作产品寻址 oracle。2026-11-04 又补[隐藏帧七阶段正式路径离屏证据](../../experiments/shell/results/2026-11-04-qt-hidden-retention/README.md)：主屏正文→缩窄→1049h→仅缩高→恢复→1049l→恢复宽度的保留正文、行身份、显示页/光标/命中通过 58 项检查；child 原生网格仅记录，不是保留文本 oracle。同时缩宽+缩高的原版视口/滚动与后续 CUP 仍缺独立证据，物理呈现/DPI、完整 reflow 和历史/选择/Find 用户流程未验收。
 
-终端可在无修饰、无组合文本时用左键正向或反向拖选，普通点击清除旧选区。每个 widget 独立持有 `TextSelection`，命中与高亮经 `HistoryViewport` 显示快照中的 `ViewMapping` 映射到文档位置；只装饰显示副本，不修改核心文字或样式。部分列选区只投影到相应列，避免整行高亮。该接线是可见网格的基础拖选，不包含历史浏览、系统剪贴板、选词/选行或 Find；[固定实现与验证边界](../../experiments/shell/results/2026-11-01-r2-core-input/README.md)与完整 #29/#30 出口分开。
+终端可在无修饰、无组合文本时用左键正向或反向拖选，普通点击清除旧选区。每个 widget 独立持有 `TextSelection`，命中与高亮经 `HistoryViewport` 显示快照中的 `ViewMapping` 映射到文档位置；只装饰显示副本，不修改核心文字或样式。部分列选区只投影到相应列，避免整行高亮。该接线是可见网格的基础拖选，不包含滚动条/翻页键历史浏览、系统剪贴板、选词/选行或 Find；[固定实现与验证边界](../../experiments/shell/results/2026-11-01-r2-core-input/README.md)与完整 #29/#30 出口分开。
 
 标签栏的 `+` 创建同类型 cmd，点击标签选择输入目标，关闭按钮只取消对应会话；关闭父窗口取消所有会话。后台标签继续独立排空输出，已关闭标签完成自有进程回收后释放。成功启动的最后会话结束时沿用原最小入口的应用退出路径；有失败启动页时保留该页错误供关闭。当前标签外观、默认动作和多会话退出汇总仅为这批迁移入口的工程合同，未作 WindTerm 完整标签行为对比。
 
