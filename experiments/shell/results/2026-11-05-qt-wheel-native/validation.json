@@ -1,0 +1,66 @@
+{
+  "schema": "termforge-qt-wheel-native-validation-v1",
+  "baseline_main": "0ab3c9810cd6d07df5903a534fcffdd9f833a03e",
+  "source_commit": "PENDING_COMMIT",
+  "source_hash_note": "Hashes are SHA-256 of the committed Git blob content (LF); Windows materializes CRLF but the blob identity stays this value.",
+  "source_files_sha256": {
+    "src/qt/terminal_widget.hpp": "c873c57ae7f524fef2550cb5f0baae1486fc0a2e7b60454c361bdadbe63ed8f9",
+    "src/qt/history_navigation_test.cpp": "19907040738767529b4c368c99b3aef54aab4d211609e6e5c08fe38b9b4e9fca"
+  },
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 offscreen",
+    "conpty": "1.25.260930003",
+    "crt": "14.51.36247.0",
+    "binary_sha256": "8de1b6a4a3ad0ddd608229ef5b62b5eb631df3e22b292217e96bd9d72f78eb33"
+  },
+  "contract": {
+    "source": "experiments/shell/shell.cpp history_wheel: SPI_GETWHEELSCROLLLINES per wheel event; initialized 3; WHEEL_PAGESCROLL -> max(1, height-1)",
+    "query": "SystemParametersInfoW(SPI_GETWHEELSCROLLLINES) on each wheel detent; not cached",
+    "zero": "disabled, no scroll",
+    "positive": "that many physical history rows per whole detent",
+    "page": "WHEEL_PAGESCROLL (DWORD(-1)) -> current visible height - 1, at least 1",
+    "query_failure": "3 lines, matching the R1 pre-query initialization; never guessed as page mode",
+    "other_platforms": "QStyleHints positive line count only; 0 disables; no unverified page marker",
+    "half_detent": "120-unit accumulation; a 60+60 pair scrolls once",
+    "setting_updates": "re-read on the next wheel event, so normal users observe later system changes"
+  },
+  "test": {
+    "entry": "qt_history_navigation",
+    "source": "src/qt/history_navigation_test.cpp",
+    "fixture": "src/qt/history_fixture.hpp (unchanged from the merged history slice)",
+    "injection": "recoverable app-internal WheelSettingForTest; host global setting is never modified",
+    "native_check": "read-only SPI value compared with the observed native wheel step",
+    "cases": ["native", "zero", "positive 3", "half detent", "WHEEL_PAGESCROLL", "page height 24->20", "query failure", "setting update 2->5", "existing anchor/resize/output/eviction/ED3/RIS/isolation"],
+    "results": {
+      "qt_history_navigation": {"passed": true, "seconds": 1.98},
+      "qt_formal_path_regression": {"passed": 8, "failed": 0, "seconds": 14.33}
+    },
+    "supervisor": {"status": "passed", "exit_code": 0, "job_after": {"active": 0, "total": 6, "terminated": 0}},
+    "sample": {
+      "schema": "termforge-qt-history-navigation-v1",
+      "wheel_native": true,
+      "wheel_zero": true,
+      "wheel_page": true,
+      "wheel_page_height": true,
+      "wheel_query_failure": true,
+      "wheel_setting_update": true,
+      "anchor_resize": true,
+      "offscreen_only": true
+    }
+  },
+  "visual_evidence": {
+    "new_layout": false,
+    "reason": "Only the wheel step source changes; history pages and screenshots remain the merged history slice's offscreen states.",
+    "reference": "experiments/shell/results/2026-11-05-qt-history-anchor/screens/"
+  },
+  "limitations": [
+    "Windows 11 x64 offscreen Qt 6.10.3 only; host global wheel setting is read, never modified.",
+    "Page step is the R1 product contract (visible height minus one, at least one), not a new WindTerm runtime oracle.",
+    "No scrollbar drag, PageUp/PageDown history mapping, paste-return, selection/copy/Find during reading, physical presentation/DPI, Unicode history or performance.",
+    "The query-failure fallback is exercised through the recoverable diagnostic injection; the native failure branch itself was not induced by changing host policy.",
+    "#317 native-grid vs retained-source decision remains separate; old six-stage --resize exit 1 is preserved. #27/#29/#30/#7 remain open."
+  ]
+}
