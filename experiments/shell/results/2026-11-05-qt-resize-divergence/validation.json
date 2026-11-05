@@ -1,7 +1,8 @@
 {
   "schema": "termforge-qt-resize-divergence-validation-v1",
   "baseline_main": "8b9c977634ab0b5e301dbcc4d923710ebd864d6b",
-  "source_commit": "PENDING_FIRST_COMMIT",
+  "source_commit": "5e294376917670bc6ef44352211b2d8a624b75db",
+  "source_commit_note": "The trace, report and diagnostic code are in 5e29437; this validation identity is a documentation follow-up commit containing this file.",
   "source_files_sha256": {
     "src/qt/terminal_session.hpp": "bae44c8b5d49e7a096258ae75d32fcae4603fcb80d5e4afbdc6f080bb1356767",
     "src/qt/terminal_modes_test.cpp": "b8b3b4ba21d62365a280dca65d1c1ecfaa863fb44ff864ae50e1523c1c215288"
