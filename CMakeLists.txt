@@ -790,6 +790,20 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_hidden_retention_test>")
     set_tests_properties(qt_hidden_retention PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+    add_executable(qt_history_navigation_test src/qt/history_navigation_test.cpp)
+    set_target_properties(qt_history_navigation_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-history-bin/$<CONFIG>")
+    termforge_qt_entry(qt_history_navigation_test)
+    target_link_libraries(qt_history_navigation_test PRIVATE Qt6::Test)
+    add_custom_command(TARGET qt_history_navigation_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_history_navigation_test>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_history_navigation COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_history_navigation_test>")
+    set_tests_properties(qt_history_navigation PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     if(TERMFORGE_ENABLE_RESIZE_REPRO)
       add_test(NAME qt_terminal_modes_resize_repro COMMAND "${Python3_EXECUTABLE}"
         "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --resize)
