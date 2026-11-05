@@ -1,0 +1,112 @@
+{
+  "schema": "termforge-original-resize-dual-axis-validation-v1",
+  "case_id": "dual-axis-retention",
+  "source_binding": "Separate identities: the frozen original run used the probe/source snapshot committed at dee3c78; the first strict export failed before mechanics; the offline document-line/exporter correction and the core replay were later committed at 2fc3f25; this validation and results README are documentation corrections. The original run was not repeated, and later files are not backfilled into the frozen run source identity.",
+  "passed": true,
+  "original_behavior_oracle": false,
+  "semantic_acceptance": false,
+  "full_active_grid_verified": false,
+  "physical_presentation_verified": false,
+  "windterm_parity": false,
+  "r27_complete": false,
+  "r29_complete": false,
+  "r2_complete": false,
+  "presented_done": null,
+  "frozen_original_run": {
+    "source_commit": "dee3c78cfda60a99211dcf8f217be6e361172d5f",
+    "source_tree": "c4f5430ca9ed83238472efca8e0376ea2574c2c8",
+    "execution_source_files_sha256": {
+      "research/ui/resize_dual_axis_reference.py": "5bac5094335f5dbe5bfa4a904dafae13c0507bbf3d0b7e5cf40ec1003d91df66",
+      "research/ui/resize_dual_axis_reference.js": "e92d7098a170c5ef648e615df8e335c9d8ab1a6ddb5d193c8562958546ac7ea0",
+      "research/ui/resize_state_reference.py": "628f9e3a5e3ecea6c34829810df2cdf0e93dc221bd3d19b31b3f5028759f07fd",
+      "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+      "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+      "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+      "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+      "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+      "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+    },
+    "plan_sha256": "3beabf9a44537d43a400209786f4aeccc29a255307a74f4a4c13cf0ac812d55d",
+    "attempt_marker_sha256": "ed761217af8e88440bea5afe49a649b79889f25dabd35db03f616895e8f83a34",
+    "maximum_original_runs": 1,
+    "actual_original_runs": 1,
+    "additional_original_runs": 0,
+    "reference_exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "reference_files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+    "source_archive_manifest_sha256": "96d3783a19e19e50db2c306f1b107373d1e564df2e32b86f8b50fe10dd566434",
+    "windows_version": "10.0.26300",
+    "python": "3.12.10",
+    "node_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9",
+    "rea_version": "6.7.0"
+  },
+  "offline_strict_export": {
+    "first_export": "refused by the frozen document-line whitelist on the observed post-write row; run_plan stopped before writing mechanics-check.json; failure preserved",
+    "correction": "document-line whitelist/exporter only; same raw recording, plan and .attempted marker; no original rerun",
+    "applicable_source_commit": "2fc3f25cb1887b569c583068a49e874fa4bd9156",
+    "source_files_sha256": {
+      "research/ui/export_resize_dual_axis_reference.py": "3f4f270d69a465f0a9291c055de238fc605a6aa31fe27a3954919fdcaf9d2a84",
+      "research/ui/export_resize_state_reference.py": "473e901305354d4ba8b22c08d22fa506c4d40da0e73bed3bf3122e4ff0e3c9b7",
+      "research/ui/export_mode_state_reference.py": "7e0a1e0e49f149791464c0dec357d3b5260bc2c34ca9f9c1be4edab35626cdf3"
+    },
+    "public_file": "research/ui/results/2026-11-04-resize-dual-axis-reference/strict-export.json",
+    "public_sha256": "95ad9c5bd8d73e278e794fa327e2fd902739c3da9bd4be6add4d560a00a7d18f",
+    "public_bytes": 38190,
+    "schema": "termforge-original-resize-dual-axis-reference-v1",
+    "status": "observation",
+    "phases": 3
+  },
+  "core_replay": {
+    "applicable_source_commit": "2fc3f25cb1887b569c583068a49e874fa4bd9156",
+    "test": "resize_dual_axis_test",
+    "ctest": "resize_dual_axis_core",
+    "test_source_sha256": "9afd9762a2d3559c32d30707bb482461cd466ab99b07c16dc665c5b400e5504f",
+    "cmake_source_sha256": "10939636f534db304108c50b6d7b10af1f59db9953175707f135ab00753586ee",
+    "assertions": 11,
+    "failed": 0,
+    "scope": "Engineering replay of fixed source/protocol inputs: initial body, resize_preserving(14,61), pre-write retained-row invariant, CUP(7;2)+DQ+DSR, resize_preserving(20,91), final DSR. Pre-write full-row retention is a product invariant only; the post-write 62-character row and 7;4 DSR are the fixed observation. No production change."
+  },
+  "documentation": {
+    "prior_report_commit": "1e41fc729493b2fe2d15d1286b69c5e3b6e89028",
+    "attribution_correction_commit": "aed633381d309db44ff3e361a27a6818cf724391",
+    "identity_correction_commit": "e3296fca590db12b722deaa8de25de14eee339fd",
+    "identity_note": "aed6333 contains the narrowed attribution; e3296fc records the documentation identity. Neither reran the original nor altered the frozen source/plan/attempt identity."
+  },
+  "observed_endpoints": {
+    "condition": "Endpoint 1 follows the dual-axis window action AND the fixed CUP(7;2)+DQ write; there is no original pre-write body observation.",
+    "windows": [[1360, 749], [1000, 569], [1360, 749]],
+    "grids": [[91, 20], [61, 14], [91, 20]],
+    "naws_event_count": [1, 2, 3],
+    "dsr": ["19;7", "7;4", "7;4"],
+    "scroll": [0, 5, 5],
+    "document_lines": [19, 19, 18],
+    "document_row_11": [
+      "initial: 89 spaces + uvw (92 chars)",
+      "after resize + CUP(7;2)+DQ: ' DQ' + 58 spaces + w (62 chars)",
+      "after restore: same 62-char written row"
+    ],
+    "write_probe": {"phase": 1, "cup": [7, 2], "text": "DQ", "document_line": 11, "line_text_offset": 1},
+    "notes": [
+      "The request is one window action changing both axes; the observed NAWS sequence is recorded and not assumed atomic.",
+      "The observed 62-character row/scroll are post-write results. Whether clipping/materialization happened at resize, CUP, or the write is not observed.",
+      "The sequential #308 sample had no equivalent follow-up write, so the two samples cannot adjudicate a dual-axis vs sequential resize clipping difference.",
+      "No original pre-write body endpoint exists; pre-write full-row retention is only the TermForge engineering invariant asserted by the core replay."
+    ]
+  },
+  "preserved": {
+    "old_strict_failures_rewritten": false,
+    "old_six_stage_bcd_assertion_relaxed": false,
+    "existing_combined_hidden_qt_evidence_changed": false,
+    "confirmed_intentional_difference_merged_into_original": false,
+    "original_was_not_rerun": true
+  },
+  "limitations": [
+    "One fixed 75 B ASCII direct-Telnet sample; main screen only; no alternate frame, Unicode, other sizes/orders, continuous output, selection/Find, full grid/style, ConPTY transport, physical presentation or performance.",
+    "The only post-resize body endpoint includes the fixed CUP+write; clipping/materialization attribution between resize, CUP and write remains unknown. There is no original pre-write body observation.",
+    "The observed original had scroll=5 and a written row of 62 characters; no internal history-row count or general scroll model is inferred.",
+    "The sequential width-then-height sample is not a comparable control for this write-intervened sample; no dual-axis vs sequential resize cropping conclusion is drawn.",
+    "The one NAWS event count/order is recorded for this run only; a single window request is not assumed to be an atomic two-axis transport event in general.",
+    "The old six-stage B/CD native-sync failure is not explained by this WindTerm UI observation and is not relaxed; ConPTY native-grid reflow after a simultaneous change remains unobserved.",
+    "The product retained-body direction remains the confirmed direction; this record is an original observation with a post-write endpoint, not a claim of WindTerm equality."
+  ]
+}

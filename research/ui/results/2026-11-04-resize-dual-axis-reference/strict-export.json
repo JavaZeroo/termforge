@@ -1,0 +1,1169 @@
+{
+  "schema": "termforge-original-resize-dual-axis-reference-v1",
+  "issue": 29,
+  "related_issue": 27,
+  "case_id": "dual-axis-retention",
+  "authorized_plan_sha256": "3beabf9a44537d43a400209786f4aeccc29a255307a74f4a4c13cf0ac812d55d",
+  "geometry_basis": {
+    "dual_axis_grid_previously_observed": false,
+    "geometry": {
+      "reference": "research/ui/results/2026-11-02-resize-geometry-reference/strict-export.json",
+      "strict_export_sha256": "f18a2320c073ed477f773b42076c9968c0c8af8530af19548d5695e66e8cf9b5",
+      "execution_source_base_commit": "3d4c8c2d6222caf0fc024729d9e0b34c020a69cf"
+    },
+    "sequential_width_height": {
+      "reference": "research/ui/results/2026-11-02-resize-combined-reference/strict-export.json",
+      "strict_export_sha256": "6a1561f3e6f6bc480c6a2f086adf7ed4798d5007b04a7bc71c7ae9deba90cfe6",
+      "execution_source_base_commit": "2c7c5929e11d911ad69a7e2b7c420120591862ed"
+    }
+  },
+  "offline_export_source_files_sha256": {
+    "research/ui/export_resize_dual_axis_reference.py": "3f4f270d69a465f0a9291c055de238fc605a6aa31fe27a3954919fdcaf9d2a84",
+    "research/ui/export_resize_state_reference.py": "473e901305354d4ba8b22c08d22fa506c4d40da0e73bed3bf3122e4ff0e3c9b7",
+    "research/ui/export_mode_state_reference.py": "7e0a1e0e49f149791464c0dec357d3b5260bc2c34ca9f9c1be4edab35626cdf3"
+  },
+  "status": "observation",
+  "observation_kind": "bounded-direct-protocol-and-dual-axis-resize",
+  "actual_original_runs": 1,
+  "maximum_original_runs": 1,
+  "semantic_acceptance": false,
+  "dual_axis_policy_classification": null,
+  "full_active_grid_verified": false,
+  "terminal_styles_verified": false,
+  "local_shell_transport_verified": false,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "r2_complete": false,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "deliberate_original_process_termination": true,
+  "natural_gui_exit_verified": false,
+  "capture": {
+    "phases": [
+      {
+        "phase": 0,
+        "label": "initial-body",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b323b314848544f501b5b363b3148484152445f410d0a484152445f421b5b31323b3930487576771b5b31393b31484c4f57454e44",
+        "source_bytes": 75,
+        "source_sha256": "ff48cd41220a72e5da2350dc97c3c8c8c884d48cc4f7fa2328609bf8bc0cb09e",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          19,
+          7
+        ],
+        "response_hex": "1b5b31393b3752",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "document_projection": {
+          "line_count": 19,
+          "capacity": 20,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 17,
+            "caretColumn": 0,
+            "caretPosition": 131
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 90,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "u",
+              "document_line": 11,
+              "line_text_offset_utf16": 89,
+              "line_text_offset_scalar": 89,
+              "line_text_prefix_utf8_bytes": 89,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 116,
+              "rect": {
+                "x": 859,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "v",
+              "document_line": 11,
+              "line_text_offset_utf16": 90,
+              "line_text_offset_scalar": 90,
+              "line_text_prefix_utf8_bytes": 90,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 117,
+              "rect": {
+                "x": 867,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 91,
+              "line_text_offset_scalar": 91,
+              "line_text_prefix_utf8_bytes": 91,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 118,
+              "rect": {
+                "x": 147,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 125,
+              "requested_position_api_value": 125,
+              "rect": {
+                "x": 147,
+                "y": 324,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "ac5cc0c46768d14945e8c63103f3d7d56f9a5fc2f5631dd4fe8f485e9ba19efc",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "resize_dual_axis_reference.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 658,
+            "catalog_sha256": "3fa7b73143c16ded196c7b5ef48d0f0d02393f41cf1a1fc279199077efd11a46",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 427,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 201,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 310,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 3,
+                "utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020757677",
+                "utf8_bytes": 92,
+                "unicode_scalars": 92,
+                "utf16_code_units": 92
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 548,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "initial-body"
+      },
+      {
+        "phase": 1,
+        "label": "dual-shrunk-with-write",
+        "source_hex": "1b5b373b32484451",
+        "source_bytes": 8,
+        "source_sha256": "7dbfd84d8b35cc3e9bf04dae08d9106e409e3fa0864806d35c11080d009ee01d",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          7,
+          4
+        ],
+        "response_hex": "1b5b373b3452",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          61,
+          14
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          670
+        ],
+        "window_size": [
+          1000,
+          569
+        ],
+        "document_projection": {
+          "line_count": 19,
+          "capacity": 14,
+          "top": null,
+          "scroll": 5,
+          "caret_api": {
+            "caretLine": 11,
+            "caretColumn": 0,
+            "caretPosition": 30
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": -72,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 0,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 61,
+              "line_text_offset_scalar": 61,
+              "line_text_prefix_utf8_bytes": 61,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 88,
+              "rect": {
+                "x": 147,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 95,
+              "requested_position_api_value": 95,
+              "rect": {
+                "x": 147,
+                "y": 234,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "0767142d684e0773f9abec05b70b77e19e8f6768fabf51738bf1ec29e3417fdb",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "resize_dual_axis_reference.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 1030,
+            "catalog_sha256": "99a2f6a071f35047e6d1237a311c290f40e4df00c24f6c3b7bca147f65eb7710",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 679,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 335,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 501,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 302,
+                "utf8_hex": "2044512020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202077",
+                "utf8_bytes": 62,
+                "unicode_scalars": 62,
+                "utf16_code_units": 62
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 863,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              }
+            ]
+          }
+        },
+        "stage_role": "dual-shrunk-with-write"
+      },
+      {
+        "phase": 2,
+        "label": "dual-restored-unmodified",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          7,
+          4
+        ],
+        "response_hex": "1b5b373b3452",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "document_projection": {
+          "line_count": 18,
+          "capacity": 20,
+          "top": null,
+          "scroll": 5,
+          "caret_api": {
+            "caretLine": 11,
+            "caretColumn": 0,
+            "caretPosition": 30
+          },
+          "markers": [
+            {
+              "label": "HTOP",
+              "document_line": 1,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 1,
+              "requested_position_api_value": 1,
+              "rect": {
+                "x": 147,
+                "y": -72,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_A",
+              "document_line": 5,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 9,
+              "requested_position_api_value": 9,
+              "rect": {
+                "x": 147,
+                "y": 0,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "HARD_B",
+              "document_line": 6,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 16,
+              "requested_position_api_value": 16,
+              "rect": {
+                "x": 147,
+                "y": 18,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "w",
+              "document_line": 11,
+              "line_text_offset_utf16": 61,
+              "line_text_offset_scalar": 61,
+              "line_text_prefix_utf8_bytes": 61,
+              "line_start_api_value": 27,
+              "requested_position_api_value": 88,
+              "rect": {
+                "x": 635,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "LOWEND",
+              "document_line": 17,
+              "line_text_offset_utf16": 0,
+              "line_text_offset_scalar": 0,
+              "line_text_prefix_utf8_bytes": 0,
+              "line_start_api_value": 95,
+              "requested_position_api_value": 95,
+              "rect": {
+                "x": 147,
+                "y": 216,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "877bad342f6e3c728a74fac3e75c85898568ed58acd737f2ab59c78cdd057bda",
+          "synthetic_text": {
+            "encoding": "UTF-8",
+            "catalog_source": "resize_dual_axis_reference.synthetic_lines(case_id, phase); sorted ASCII scalar order",
+            "catalog_count": 1030,
+            "catalog_sha256": "99a2f6a071f35047e6d1237a311c290f40e4df00c24f6c3b7bca147f65eb7710",
+            "lines": [
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 679,
+                "utf8_hex": "48544f50",
+                "utf8_bytes": 4,
+                "unicode_scalars": 4,
+                "utf16_code_units": 4
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 335,
+                "utf8_hex": "484152445f41",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 501,
+                "utf8_hex": "484152445f42",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 302,
+                "utf8_hex": "2044512020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202077",
+                "utf8_bytes": 62,
+                "unicode_scalars": 62,
+                "utf16_code_units": 62
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 0,
+                "utf8_hex": "",
+                "utf8_bytes": 0,
+                "unicode_scalars": 0,
+                "utf16_code_units": 0
+              },
+              {
+                "catalog_index": 863,
+                "utf8_hex": "4c4f57454e44",
+                "utf8_bytes": 6,
+                "unicode_scalars": 6,
+                "utf16_code_units": 6
+              }
+            ]
+          }
+        },
+        "stage_role": "dual-restored-unmodified"
+      }
+    ],
+    "source_bytes": 83,
+    "dsr_request_bytes": 12,
+    "application_reply_bytes": 19,
+    "window_rect_format": "qt-qrect-inclusive-ltrb",
+    "geometry_checks": [
+      {
+        "phase": 0,
+        "expected_size": [
+          1360,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "observed_grid": [
+          91,
+          20
+        ],
+        "terminal_capacity": 20,
+        "event_count": 1
+      },
+      {
+        "phase": 1,
+        "expected_size": [
+          1000,
+          569
+        ],
+        "window_rect": [
+          102,
+          102,
+          1101,
+          670
+        ],
+        "window_size": [
+          1000,
+          569
+        ],
+        "observed_grid": [
+          61,
+          14
+        ],
+        "terminal_capacity": 14,
+        "event_count": 2
+      },
+      {
+        "phase": 2,
+        "expected_size": [
+          1360,
+          749
+        ],
+        "window_rect": [
+          102,
+          102,
+          1461,
+          850
+        ],
+        "window_size": [
+          1360,
+          749
+        ],
+        "observed_grid": [
+          91,
+          20
+        ],
+        "terminal_capacity": 20,
+        "event_count": 3
+      }
+    ],
+    "frozen_grids": [
+      [
+        91,
+        20
+      ],
+      [
+        61,
+        14
+      ],
+      [
+        91,
+        20
+      ]
+    ],
+    "naws_history": [
+      [
+        91,
+        20
+      ],
+      [
+        61,
+        14
+      ],
+      [
+        91,
+        20
+      ]
+    ],
+    "freeze_event_counts": [
+      1,
+      2,
+      3
+    ],
+    "resize_boundaries": [
+      {
+        "phase": 1,
+        "before_event_count": 1,
+        "after_event_count": 2,
+        "requested_window": [
+          1000,
+          569
+        ]
+      },
+      {
+        "phase": 2,
+        "before_event_count": 2,
+        "after_event_count": 3,
+        "requested_window": [
+          1360,
+          749
+        ]
+      }
+    ],
+    "job_after": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "provider": {
+      "id": "frida",
+      "version": null,
+      "confidence": "observed",
+      "evidence_id": "ev_90c7760b89eb2fbba93093ac9f9ff1c907bce8d18ea274b8a878fb70c7db5c75",
+      "messages": 8,
+      "readiness_messages": 3,
+      "phase_messages": 3,
+      "messages_truncated": false,
+      "cleanup_error": null
+    },
+    "stateful_observation_count": 3,
+    "post_initial_terminal_input": "After the dual-axis shrink: one fixed CUP(7;2)+\"DQ\" write and DSR. After the dual restore: DSR only. No redraw, CR/LF or other text.",
+    "independent_dsr_bounds": {
+      "row": [
+        1,
+        200
+      ],
+      "column": [
+        1,
+        500
+      ]
+    },
+    "text_units": {
+      "source": "UTF-8 bytes",
+      "document_line": "original public API index",
+      "marker_text_offsets": "JS UTF-16 code units; scalar count coincides only for this ASCII source alphabet",
+      "position_api": "recorded lineStart API value plus JS UTF-16 offset, passed unchanged to visibleRectFromPosition",
+      "caret_api": "original API scalar values; numbering policy not inferred",
+      "rectangles": "actual public API pixel rectangles, kept separate from protocol cells",
+      "protocol_cursor": "DSR values kept independent of text offsets and pixel rectangles",
+      "cpp_cell_column_mapping": null,
+      "document_position_unit_classification": null,
+      "ascii_only": true
+    }
+  },
+  "provenance": {
+    "source_identity": {
+      "kind": "source-archive",
+      "manifest_sha256": "96d3783a19e19e50db2c306f1b107373d1e564df2e32b86f8b50fe10dd566434"
+    },
+    "execution_source_base_commit": "dee3c78cfda60a99211dcf8f217be6e361172d5f",
+    "execution_source_files_sha256": {
+      "research/ui/resize_dual_axis_reference.py": "5bac5094335f5dbe5bfa4a904dafae13c0507bbf3d0b7e5cf40ec1003d91df66",
+      "research/ui/resize_dual_axis_reference.js": "e92d7098a170c5ef648e615df8e335c9d8ab1a6ddb5d193c8562958546ac7ea0",
+      "research/ui/resize_state_reference.py": "628f9e3a5e3ecea6c34829810df2cdf0e93dc221bd3d19b31b3f5028759f07fd",
+      "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+      "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+      "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+      "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+      "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+      "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+    },
+    "launcher_namespace_sha256": "fdf1cd327557c7fdb8c5643c4b0e5092f4d0840adc7ddf8e6b79c7c985a58718",
+    "reference_identity": {
+      "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+      "manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+      "files_verified": 4047,
+      "module_files_sha256": {
+        "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+        "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+        "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358",
+        "Qt5Qml.dll": "30035484c81590976627f8face9507caa8581a7dc7630cccf6a8d6de65cab707"
+      }
+    },
+    "launch_host": {
+      "windows_version": "10.0.26300",
+      "python_version_number": "3.12.10",
+      "python_exe_sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "node_exe_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9",
+      "rea_package_version": "6.7.0",
+      "rea_shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+      "rea_package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+      "rea_entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738",
+      "runtime_identity_source": "recorded execution plan; exporter does not execute the captured runtimes"
+    },
+    "raw_files": {
+      "evidence.json": {
+        "bytes": 12461,
+        "sha256": "97c6109581bca7c143b8ff0aaaa8510a91e05e7e0fa64f80911bc1d3346f03d3"
+      },
+      "run.json": {
+        "bytes": 617,
+        "sha256": "1660c25aaf48326fe109ce82355fc4e1fbdcf4563ab250fb8fa2faa63326f206"
+      },
+      "probe.js": {
+        "bytes": 26048,
+        "sha256": "6a72072c30ce8ac8bbfa401bb1ee1dd7c59fc6f97864a90c75096f53b51bdfad"
+      },
+      "peer.json": {
+        "bytes": 1751,
+        "sha256": "177300389661778bae58ec5982892cc4abcc2b5459ebe472c4100bff91bda4ed"
+      },
+      "resize-dual-axis-result.json": {
+        "bytes": 5309,
+        "sha256": "88991bb1d644a73b2e9e023a91b41bb4a9ae5a7356fa1de8a163bc3fb4ff376b"
+      },
+      "files.json": {
+        "bytes": 637666,
+        "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+      },
+      "mechanics-check.json": {
+        "bytes": 891,
+        "sha256": "c601bde95eee544b484ab305ac52ac2b20e4cb6ad8c96e75fd93640530c9114c"
+      },
+      "stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "profile-check.json": {
+        "bytes": 52,
+        "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      },
+      "cleanup.json": {
+        "bytes": 42,
+        "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+      },
+      "fixture-ready": {
+        "bytes": 32,
+        "sha256": "1f0b8ece17746ce41c81df65e45a6f8480747d9b69858dc905a29ae8d4c449cb"
+      },
+      "ack-0": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-1": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-2": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "resize-request-1": {
+        "bytes": 31,
+        "sha256": "4a3944bd5e1f7fc518c7a12685e282c6998e460ab9d87e023ece3e332b1888d1"
+      },
+      "resize-ready-1": {
+        "bytes": 42,
+        "sha256": "db412d038712fcb1df8d1601b1397dc2982d6d3c19872ea34b6d1e60a2ae12b1"
+      },
+      "resize-request-2": {
+        "bytes": 31,
+        "sha256": "4047eb7c9a836c99a56571e69999fb2173cb23d85412491478a1ea0d3adfde23"
+      },
+      "resize-ready-2": {
+        "bytes": 42,
+        "sha256": "dd2232679e6eeeeaa97bc8e4379bf0d86d88bfd95362f68f5fa94b7dc42daabe"
+      }
+    },
+    "authorized_plan": {
+      "bytes": 6849,
+      "sha256": "3beabf9a44537d43a400209786f4aeccc29a255307a74f4a4c13cf0ac812d55d"
+    }
+  },
+  "write_probes": [
+    {
+      "phase": 1,
+      "document_line": 11,
+      "line_text_offset": 1,
+      "line": " DQ                                                          w"
+    },
+    {
+      "phase": 2,
+      "document_line": 11,
+      "line_text_offset": 1,
+      "line": " DQ                                                          w"
+    }
+  ],
+  "write_probe_definition": {
+    "phase": 1,
+    "cup": [
+      7,
+      2
+    ],
+    "text": "DQ",
+    "source_hex": "1b5b373b32484451"
+  },
+  "limitations": [
+    "One fresh direct Telnet process executes the immutable dual-axis-retention schedule 91x20 -> 61x14 (one window request changing both axes) -> 91x20; every stage is observed before the next resize.",
+    "After the dual-axis shrink, one fixed CUP(7;2)+\"DQ\" write and DSR are sent; after the dual restore, DSR only. No other CUP, CR/LF, redraw or replacement text is sent.",
+    "Stage zero requires every preloaded sentinel and DSR19;7; later missing markers and the observed write position are observations, never semantic acceptance.",
+    "The dual-axis 61x14 endpoint and its NAWS event count/order are saved before assertions; the request is one window action, not an assumed atomic two-axis transport event. No calibration or retries.",
+    "The one write is recorded through its document line, text offset and DSR; no general original position-unit, scroll or C++ Cell mapping is inferred.",
+    "The existing geometry and sequential width/height records identify prior evidence only; this run does not inherit their semantic behavior.",
+    "DSR safety bounds remain row1..200/column1..500 independently of the fourteen-row viewport.",
+    "Only finite ASCII source-derived catalog strings may be published, with complete reconstructible document arrays. Unrestricted recording stays private.",
+    "This single schedule does not establish alternate-frame, Unicode, arbitrary dimensions or resize order, further post-resize editing, ConPTY, performance or R2 acceptance, and does not merge the original observation with any confirmed TermForge difference."
+  ]
+}
