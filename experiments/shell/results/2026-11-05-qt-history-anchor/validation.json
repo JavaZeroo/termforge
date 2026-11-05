@@ -4,10 +4,10 @@
   "source_commit": "19c9f64fb04276766323030ce3829ad843c4813f",
   "source_commit_note": "Validation identity is a documentation follow-up; implementation/test hashes below are the committed sources.",
   "source_files_sha256": {
-    "src/qt/terminal_widget.hpp": "b878cc8c2dae0aefcc6b3c2e996a35c8dc30cd06be098a0d53c3e919dfb4ecf2",
+    "src/qt/terminal_widget.hpp": "cec2b6d45c7b953d1a9baa78d66774109beece92bdfe6931f44ff19033493ac9",
     "src/qt/history_navigation_test.cpp": "7db2dce86c8bacccd5bf4ad3eea8da8d4bec59a249391ad4dc19909989035a09",
     "src/qt/history_fixture.hpp": "a1f3f5130378b94553ad1abc880c1509744d226a7e7e2036d9bb1d301610c1aa",
-    "CMakeLists.txt": "a1bbe472f5d926fc08edc09c60c13b2dfabdbdefa0185e97db931d1895579ff1",
+    "CMakeLists.txt": "3081470d7d3b1b62e421e1ee57d68f4b1f9f7877f6e174000953af37d8eb57d7",
     ".github/workflows/qt-cpp.yml": "e4eb5936d360a634ef3010f53ea51ea006aeeec85602de77f2b97baa7dd873c2"
   },
   "environment": {
@@ -92,5 +92,6 @@
     "style_hints_fact": "wheelScrollLines() is a line-count getter; the internal setter only overrides positive values and defines no negative page marker",
     "host_setting_modified": false,
     "test_override": "TerminalWidget::setWheelScrollLinesForTest(std::optional<int>), restored after use"
-  }
+  },
+  "source_hash_note": "Hashes are SHA-256 of the committed Git blob content (LF); the Windows working tree may materialize CRLF while the blob identity stays this value."
 }
