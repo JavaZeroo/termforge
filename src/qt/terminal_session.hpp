@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QString>
 #include <QTimer>
+#include <algorithm>
 #include <atomic>
 #include <functional>
 #include <memory>
@@ -63,6 +64,11 @@ private:
     bool cleanup_verified_ = false;
     DWORD exit_code_ = STILL_ACTIVE;
     QString error_;
+    // Opt-in, bounded diagnostic for the explicit Qt resize trace. Disabled by
+    // default and never affects parsing, resize or transport behavior.
+    size_t transport_capture_limit_ = 0;
+    std::string transport_capture_;
+    unsigned long long transport_consumed_ = 0;
 
     void notify() { if (on_changed) on_changed(); }
     void remember_error(const QString& error) {
@@ -151,6 +157,11 @@ private:
         const auto bytes = output_.take(32 * 1024);
         if (!bytes.empty()) {
             changed = true;
+            transport_consumed_ += bytes.size();
+            if (transport_capture_.size() < transport_capture_limit_) {
+                const size_t room = transport_capture_limit_ - transport_capture_.size();
+                transport_capture_.append(bytes.data(), (std::min)(room, bytes.size()));
+            }
             if (!parser_failed_) {
                 try {
                     parser_.feed(bytes);
@@ -300,6 +311,18 @@ public:
                 started_ && accepting && requested_revision_ != transport_revision_, session_ ? session_->pid : 0};
     }
     const Screen& screen() const { return parser_.screen; }
+    // Explicit resize-trace diagnostic. The capture is bounded and read on the
+    // Qt thread; enabling it never changes the terminal or transport state.
+    void enable_transport_capture(size_t limit = 65536) {
+        transport_capture_limit_ = (std::min)(limit, static_cast<size_t>(65536));
+        transport_capture_.clear();
+        transport_consumed_ = 0;
+    }
+    unsigned long long transport_consumed() const { return transport_consumed_; }
+    std::string transport_capture(size_t offset = 0) const {
+        if (offset >= transport_capture_.size()) return {};
+        return transport_capture_.substr(offset);
+    }
     bool cursor_visible() const { return parser_.cursor_visible(); }
     bool application_cursor_keys() const { return parser_.application_cursor_keys(); }
     bool running() const { return started_ && !finished_ && !close_requested_.load(std::memory_order_acquire); }

@@ -1,0 +1,600 @@
+{
+  "schema": "termforge-qt-resize-same-session-trace-v1",
+  "old_resize_assertion": {
+    "exit_code": 1,
+    "message": "stage 6 failed: core resize is not synchronized with the literal native B/CD rows",
+    "preserved": true
+  },
+  "stages": [
+    {
+      "stage": 1,
+      "transport_offset": 0,
+      "transport_hex": "1b5b306d1b5b324a1b5b333b33481b5b33313b34346d4d41494e1b5b306d1b5b353b3348e4b8ad65cc811b5b363b3348424153451b5b313b31485331",
+      "transport_bytes": 60,
+      "native": [
+        80,
+        24
+      ],
+      "core": [
+        80,
+        24
+      ],
+      "core_cursor": [
+        0,
+        2
+      ],
+      "native_cursor": [
+        0,
+        2
+      ],
+      "selected_rows": {
+        "0": {
+          "native_hex": "5331",
+          "core_hex": "5331"
+        },
+        "1": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "2": {
+          "native_hex": "20204d41494e",
+          "core_hex": "20204d41494e"
+        },
+        "4": {
+          "native_hex": "2020e4b8ade4b8ad65cc81",
+          "core_hex": "2020e4b8ad65cc81"
+        },
+        "7": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "8": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "9": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "10": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "11": {
+          "native_hex": "",
+          "core_hex": ""
+        }
+      },
+      "recorded_asserted_rows": [
+        2
+      ],
+      "asserted_row_mismatches": [],
+      "display": {
+        "offset": 0,
+        "caret": [
+          0,
+          2
+        ],
+        "rows": {
+          "0": "5331",
+          "2": "20204d41494e",
+          "4": "2020e4b8ad65cc81",
+          "5": "202042415345"
+        },
+        "source_rows": {
+          "0": "5331",
+          "2": "20204d41494e",
+          "4": "2020e4b8ad65cc81",
+          "5": "202042415345"
+        }
+      }
+    },
+    {
+      "stage": 2,
+      "transport_offset": 60,
+      "transport_hex": "1b5b3f31303439681b5b306d1b5b323b3348414c541b5b333b33481b5b33323b34356d534944451b5b306d1b5b313b31485332",
+      "transport_bytes": 51,
+      "native": [
+        80,
+        24
+      ],
+      "core": [
+        80,
+        24
+      ],
+      "core_cursor": [
+        0,
+        2
+      ],
+      "native_cursor": [
+        0,
+        2
+      ],
+      "selected_rows": {
+        "0": {
+          "native_hex": "5332",
+          "core_hex": "5332"
+        },
+        "1": {
+          "native_hex": "2020414c54",
+          "core_hex": "2020414c54"
+        },
+        "2": {
+          "native_hex": "202053494445",
+          "core_hex": "202053494445"
+        },
+        "4": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "7": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "8": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "9": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "10": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "11": {
+          "native_hex": "",
+          "core_hex": ""
+        }
+      },
+      "recorded_asserted_rows": [],
+      "asserted_row_mismatches": [],
+      "display": {
+        "offset": 0,
+        "caret": [
+          0,
+          2
+        ],
+        "rows": {
+          "0": "5332",
+          "1": "2020414c54",
+          "2": "202053494445"
+        },
+        "source_rows": {
+          "0": "5332",
+          "1": "2020414c54",
+          "2": "202053494445"
+        }
+      }
+    },
+    {
+      "stage": 3,
+      "transport_offset": 111,
+      "transport_hex": "1b5b3f31303439681b5b323b33484e45571b5b313b31485333",
+      "transport_bytes": 25,
+      "native": [
+        80,
+        24
+      ],
+      "core": [
+        80,
+        24
+      ],
+      "core_cursor": [
+        0,
+        2
+      ],
+      "native_cursor": [
+        0,
+        2
+      ],
+      "selected_rows": {
+        "0": {
+          "native_hex": "5333",
+          "core_hex": "5333"
+        },
+        "1": {
+          "native_hex": "20204e4557",
+          "core_hex": "20204e4557"
+        },
+        "2": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "4": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "7": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "8": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "9": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "10": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "11": {
+          "native_hex": "",
+          "core_hex": ""
+        }
+      },
+      "recorded_asserted_rows": [],
+      "asserted_row_mismatches": [],
+      "display": {
+        "offset": 0,
+        "caret": [
+          0,
+          2
+        ],
+        "rows": {
+          "0": "5333",
+          "1": "20204e4557"
+        },
+        "source_rows": {
+          "0": "5333",
+          "1": "20204e4557"
+        }
+      }
+    },
+    {
+      "stage": 4,
+      "transport_offset": 136,
+      "transport_hex": "1b5b3f313034396c211b5b313b31485334",
+      "transport_bytes": 17,
+      "native": [
+        80,
+        24
+      ],
+      "core": [
+        80,
+        24
+      ],
+      "core_cursor": [
+        0,
+        2
+      ],
+      "native_cursor": [
+        0,
+        2
+      ],
+      "selected_rows": {
+        "0": {
+          "native_hex": "533421",
+          "core_hex": "533421"
+        },
+        "1": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "2": {
+          "native_hex": "20204d41494e",
+          "core_hex": "20204d41494e"
+        },
+        "4": {
+          "native_hex": "2020e4b8ade4b8ad65cc81",
+          "core_hex": "2020e4b8ad65cc81"
+        },
+        "7": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "8": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "9": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "10": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "11": {
+          "native_hex": "",
+          "core_hex": ""
+        }
+      },
+      "recorded_asserted_rows": [
+        2
+      ],
+      "asserted_row_mismatches": [],
+      "display": {
+        "offset": 0,
+        "caret": [
+          0,
+          2
+        ],
+        "rows": {
+          "0": "533421",
+          "2": "20204d41494e",
+          "4": "2020e4b8ad65cc81",
+          "5": "202042415345"
+        },
+        "source_rows": {
+          "0": "533421",
+          "2": "20204d41494e",
+          "4": "2020e4b8ad65cc81",
+          "5": "202042415345"
+        }
+      }
+    },
+    {
+      "stage": 5,
+      "transport_offset": 153,
+      "transport_hex": "1b5b306d1b5b3f376c1b5b383b38304841421b5b3f37681b5b31303b38304843441b5b313b31485335",
+      "transport_bytes": 41,
+      "native": [
+        80,
+        24
+      ],
+      "core": [
+        80,
+        24
+      ],
+      "core_cursor": [
+        0,
+        2
+      ],
+      "native_cursor": [
+        0,
+        2
+      ],
+      "selected_rows": {
+        "0": {
+          "native_hex": "533521",
+          "core_hex": "533521"
+        },
+        "1": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "2": {
+          "native_hex": "20204d41494e",
+          "core_hex": "20204d41494e"
+        },
+        "4": {
+          "native_hex": "2020e4b8ade4b8ad65cc81",
+          "core_hex": "2020e4b8ad65cc81"
+        },
+        "7": {
+          "native_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+          "core_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042"
+        },
+        "8": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "9": {
+          "native_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+          "core_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043"
+        },
+        "10": {
+          "native_hex": "44",
+          "core_hex": "44"
+        },
+        "11": {
+          "native_hex": "",
+          "core_hex": ""
+        }
+      },
+      "recorded_asserted_rows": [
+        7,
+        9,
+        10
+      ],
+      "asserted_row_mismatches": [],
+      "display": {
+        "offset": 0,
+        "caret": [
+          0,
+          2
+        ],
+        "rows": {
+          "0": "533521",
+          "2": "20204d41494e",
+          "4": "2020e4b8ad65cc81",
+          "5": "202042415345",
+          "7": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+          "9": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+          "10": "44"
+        },
+        "source_rows": {
+          "0": "533521",
+          "2": "20204d41494e",
+          "4": "2020e4b8ad65cc81",
+          "5": "202042415345",
+          "7": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+          "9": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+          "10": "44"
+        }
+      }
+    },
+    {
+      "stage": 6,
+      "transport_offset": 194,
+      "transport_hex": "1b5b31323b3148524553495a45441b5b313b314853361b5b366e",
+      "transport_bytes": 26,
+      "native": [
+        60,
+        12
+      ],
+      "core": [
+        60,
+        12
+      ],
+      "core_cursor": [
+        0,
+        2
+      ],
+      "native_cursor": [
+        0,
+        2
+      ],
+      "selected_rows": {
+        "0": {
+          "native_hex": "533621",
+          "core_hex": "533621"
+        },
+        "1": {
+          "native_hex": "",
+          "core_hex": ""
+        },
+        "2": {
+          "native_hex": "20204d41494e",
+          "core_hex": "20204d41494e"
+        },
+        "4": {
+          "native_hex": "2020e4b8ade4b8ad65cc81",
+          "core_hex": "2020e4b8ad65cc81"
+        },
+        "7": {
+          "native_hex": "",
+          "core_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042"
+        },
+        "8": {
+          "native_hex": "2020202020202020202020202020202020202042",
+          "core_hex": ""
+        },
+        "9": {
+          "native_hex": "",
+          "core_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043"
+        },
+        "10": {
+          "native_hex": "",
+          "core_hex": "44"
+        },
+        "11": {
+          "native_hex": "524553495a45442020202020202020202020204344",
+          "core_hex": "524553495a4544"
+        }
+      },
+      "recorded_asserted_rows": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "asserted_row_mismatches": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "display": {
+        "offset": 0,
+        "caret": [
+          0,
+          2
+        ],
+        "rows": {
+          "0": "533621",
+          "2": "20204d41494e",
+          "4": "2020e4b8ad65cc81",
+          "5": "202042415345",
+          "8": "2020202020202020202020202020202020202042",
+          "11": "202020202020202020202020202020202020204344",
+          "12": "524553495a4544"
+        },
+        "source_rows": {
+          "0": "533621",
+          "2": "20204d41494e",
+          "4": "2020e4b8ad65cc81",
+          "5": "202042415345",
+          "7": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+          "9": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+          "10": "44",
+          "11": "524553495a4544"
+        }
+      }
+    }
+  ],
+  "post_resize_pre_stage6": {
+    "transport": [
+      60,
+      12
+    ],
+    "core": [
+      60,
+      12
+    ],
+    "core_cursor": [
+      0,
+      2
+    ],
+    "transport_offset": 194,
+    "display": {
+      "offset": 0,
+      "caret": [
+        0,
+        2
+      ]
+    },
+    "display_rows": {
+      "0": "533521",
+      "2": "20204d41494e",
+      "4": "2020e4b8ad65cc81",
+      "5": "202042415345",
+      "8": "2020202020202020202020202020202020202042",
+      "11": "202020202020202020202020202020202020204344"
+    },
+    "source_rows": {
+      "0": "533521",
+      "2": "20204d41494e",
+      "4": "2020e4b8ad65cc81",
+      "5": "202042415345",
+      "7": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+      "9": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+      "10": "44"
+    }
+  },
+  "trace_rows_note": "The selected trace rows omit native row 5 for stages 1/4; the old assertion still checked it and reported no earlier failure. Stage 6 is the first failing stage in the preserved old assertion.",
+  "first_divergence": {
+    "first_failing_stage": 6,
+    "asserted_row_mismatches_by_stage": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    "no_earlier_asserted_stage_mismatch": true,
+    "post_resize_pre_write_native_observed": false,
+    "stage6_diff_rows": [
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "native_vs_core": "native row7/9/10 empty while core retains B/C/D; native row8 19 spaces+B vs display row8 19 spaces+B (matches)",
+    "native_vs_display": "native row11 RESIZED+12 spaces+CD vs display row11 19 spaces+CD; native row12 empty vs display row12 RESIZED",
+    "cursor": "native [0,2] and core [0,2] after stage 6; no DSR/cursor side-effect difference observed",
+    "transport_after_resize": "offset 194..220 = 26 B: CUP12;1+RESIZED+CUP1;1+S6 (22 B) + DSR query ESC[6n (4 B); no B/C/D move, erase or reflow bytes",
+    "wide_cell_note": "Selected row 4 native hex duplicates the wide lead/tail (CHAR_INFO representation), so it is excluded from asserted-row mismatch counts; the earlier assertion only checks that cell and the core projection separately."
+  },
+  "conclusions": [
+    "The old six-stage assertion first fails at stage 6; stages 1-5 have no asserted-row mismatch.",
+    "Immediately after the public Qt resize and before stage-6 output, the core keeps B/C/D source rows and the display page reflows B to row 8 and CD to row 11; the native grid at that instant is not observed (child ACK comes only after its stage-6 write).",
+    "At stage 6, native ConPTY has reflowed the old rows; native row 8 matches the display row 8, while native row 11/12 differ by the CUP 12;1 coordinate layer and core retains the old source rows. No transport bytes move/erase B/C/D.",
+    "This is a native-grid vs retained-source/display coordinate difference, not evidence that the parser ignored reflow bytes. It does not decide which product policy should win, does not change the old --resize failure, and does not use the WindTerm write endpoint as this oracle."
+  ]
+}

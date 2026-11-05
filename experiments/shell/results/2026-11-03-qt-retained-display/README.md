@@ -59,4 +59,6 @@ python src/qt/run_smoke.py build/qt-cpp/qt-modes-bin/Release/qt_terminal_modes_t
 - 显示投影对不支持的保留 Cell 与无法映射的光标回退到物理视图页（有界、不隐藏输出）；回退路径未做单独原版对照。
 - 本切片不关闭 #27/#29，不声明 WindTerm 等价、性能等价比或 R2 完成；合并由用户/调度者决定。
 
+**2026-11-05 后续：** 已补同一次 `SessionModel` 会话的六阶段 trace，首次断言失败定位在 stage 6；resize 后 transport 只有阶段 6 源与 DSR 查询，无 B/C/D 搬移/擦除字节；resize 完成到 stage 6 ACK 之间的原生网格未采。见[同次分歧](../2026-11-05-qt-resize-divergence/README.md)；本报告旧失败、身份和边界不变。
+
 

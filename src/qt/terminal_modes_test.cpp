@@ -35,8 +35,10 @@ static std::string native_row(const ModeReply& reply, int row) {
 static std::string model_row(const termforge::Screen& screen, int row) {
     return termforge::project_line(screen.visible_lines()[static_cast<size_t>(row)]).text;
 }
-static void record(const ModeReply& reply, const termforge::Screen& screen, bool raw_transport = false) {
-    std::cerr << "{\"schema\":\"termforge-qt-modes-stage-v1\",\"stage\":" << reply.stage
+static std::string display_row(const termforge::ViewSnapshot& page, size_t row);
+static void record(const ModeReply& reply, const termforge::Screen& screen, bool raw_transport = false,
+                   termforge::qt::TerminalWidget* terminal = nullptr,
+                   const std::string& transport_hex = {}, unsigned long long transport_offset = 0) {    std::cerr << "{\"schema\":\"termforge-qt-modes-stage-v1\",\"stage\":" << reply.stage
               << ",\"source_hex\":\"" << hex(mode_source(reply.stage)) << "\",\"native_columns\":"
               << reply.info.dwSize.X << ",\"native_rows\":" << reply.info.dwSize.Y
               << ",\"native_cursor\":[" << reply.info.dwCursorPosition.Y << ',' << reply.info.dwCursorPosition.X
@@ -44,7 +46,8 @@ static void record(const ModeReply& reply, const termforge::Screen& screen, bool
               << ",\"core_cursor\":[" << screen.row << ',' << screen.column << "],\"core_alternate\":"
               << (screen.active_buffer() == termforge::ScreenBuffer::alternate ? "true" : "false")
               << ",\"native_main_attributes\":" << reply.cells[2 * 80 + 2].Attributes
-              << ",\"rows\":[";
+              << ",\"transport_offset\":" << transport_offset << ",\"transport_hex\":\""
+              << transport_hex << "\",\"rows\":[";
     bool first = true;
     for (const int row : {0, 1, 2, 4, 7, 8, 9, 10, 11}) {
         if (!first) std::cerr << ',';
@@ -52,7 +55,31 @@ static void record(const ModeReply& reply, const termforge::Screen& screen, bool
         std::cerr << "{\"row\":" << row << ",\"native_utf8_hex\":\"" << hex(native_row(reply, row))
                   << "\",\"core_utf8_hex\":\"" << hex(model_row(screen, row)) << "\"}";
     }
-    std::cerr << "],\"raw_transport_bytes_observed\":" << (raw_transport ? "true" : "false")
+    std::cerr << "]";
+    const termforge::ViewSnapshot* page = nullptr;
+    if (terminal) {
+        terminal->grab();
+        page = terminal->painted_page() ? &*terminal->painted_page() : nullptr;
+        std::cerr << ",\"display\":{\"offset\":" << terminal->painted_row_offset()
+                  << ",\"caret\":[" << terminal->display_caret_row() << ',' << terminal->display_caret_column()
+                  << "],\"rows\":[";
+        bool first_display = true;
+        for (size_t row = 0; page && row < page->lines.size(); ++row) {
+            if (!first_display) std::cerr << ',';
+            first_display = false;
+            std::cerr << "{\"row\":" << row << ",\"utf8_hex\":\"" << hex(display_row(*page, row)) << "\"}";
+        }
+        std::cerr << "],\"source_rows\":[";
+        bool first_source = true;
+        for (size_t row = 0; row < screen.height(); ++row) {
+            if (!first_source) std::cerr << ',';
+            first_source = false;
+            std::cerr << "{\"row\":" << row << ",\"utf8_hex\":\"" << hex(model_row(screen, static_cast<int>(row)))
+                      << "\"}";
+        }
+        std::cerr << "]}";
+    }
+    std::cerr << ",\"raw_transport_bytes_observed\":" << (raw_transport ? "true" : "false")
               << ",\"presented_done\":null}\n";
 }
 
@@ -357,6 +384,8 @@ int main(int argc, char** argv) {
                 "mode child did not start at the literal 80x24 geometry");
         size_t failures = 0;
         size_t retained_failures = 0;
+        const bool trace_resize = resize_repro && !retained_contract;
+        if (trace_resize) model.enable_transport_capture();
         for (unsigned stage = 1; stage <= final_stage; ++stage) {
             if (stage == 6) {
                 const QFontMetricsF metrics(terminal.font());
@@ -372,17 +401,52 @@ int main(int argc, char** argv) {
                                    !state.pending && state.transport_columns == target_columns &&
                                    state.transport_rows == target_rows; },
                       model, lifecycle, "public Qt resize did not finish the bounded native request");
+                if (trace_resize) {
+                    terminal.grab();
+                    const auto state = model.resize_state();
+                    std::cerr << "{\"schema\":\"termforge-qt-resize-state-v1\",\"where\":\"post-resize-pre-stage6\","
+                              << "\"transport\":[" << state.transport_columns << ',' << state.transport_rows << "]"
+                              << ",\"core\":[" << model.screen().width() << ',' << model.screen().height() << "]"
+                              << ",\"core_cursor\":[" << model.screen().row << ',' << model.screen().column << "]"
+                              << ",\"transport_offset\":" << model.transport_consumed() << ",\"display\":{";
+                    const auto& page = terminal.painted_page();
+                    std::cerr << "\"offset\":" << terminal.painted_row_offset() << ",\"caret\":["
+                              << terminal.display_caret_row() << ',' << terminal.display_caret_column()
+                              << "],\"rows\":[";
+                    bool first_display = true;
+                    for (size_t row = 0; page && row < page->lines.size(); ++row) {
+                        if (!first_display) std::cerr << ',';
+                        first_display = false;
+                        std::cerr << "{\"row\":" << row << ",\"utf8_hex\":\"" << hex(display_row(*page, row)) << "\"}";
+                    }
+                    std::cerr << "]},\"source_rows\":[";
+                    bool first_source = true;
+                    for (size_t row = 0; row < model.screen().height(); ++row) {
+                        if (!first_source) std::cerr << ',';
+                        first_source = false;
+                        std::cerr << "{\"row\":" << row << ",\"utf8_hex\":\""
+                                  << hex(model_row(model.screen(), static_cast<int>(row))) << "\"}";
+                    }
+                    std::cerr << "]}\n";
+                }
             }
             require(terminal.hasFocus(), "public mode key target lost focus");
+            const unsigned long long transport_mark = trace_resize ? model.transport_consumed() : 0;
             QTest::keyClicks(&terminal, QString::number(stage));
             const auto reply = wait_reply(fixture, stage, model, lifecycle);
             const auto marker = "S" + std::to_string(stage);
+            std::string transport_segment;
             try {
                 await([&] { return model_row(model.screen(), 0).compare(0, marker.size(), marker) == 0 &&
                                    model.screen().row == 0 && model.screen().column == 2; },
                       model, lifecycle, "source stage fence did not reach the core through ConPTY");
-            } catch (...) { record(reply, model.screen()); throw; }
-            record(reply, model.screen());
+            } catch (...) {
+                transport_segment = trace_resize ? model.transport_capture(static_cast<size_t>(transport_mark)) : std::string{};
+                record(reply, model.screen(), false, &terminal, hex(transport_segment), transport_mark);
+                throw;
+            }
+            transport_segment = trace_resize ? model.transport_capture(static_cast<size_t>(transport_mark)) : std::string{};
+            record(reply, model.screen(), false, &terminal, hex(transport_segment), transport_mark);
             if (retained_contract && stage == final_stage)
                 retained_failures = retained_contract_checks(reply, terminal, model);
             else
