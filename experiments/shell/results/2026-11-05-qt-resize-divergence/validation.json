@@ -1,0 +1,71 @@
+{
+  "schema": "termforge-qt-resize-divergence-validation-v1",
+  "baseline_main": "8b9c977634ab0b5e301dbcc4d923710ebd864d6b",
+  "source_commit": "5e294376917670bc6ef44352211b2d8a624b75db",
+  "source_commit_note": "The trace, report and diagnostic code are in 5e29437; this validation identity is a documentation follow-up commit containing this file.",
+  "source_files_sha256": {
+    "src/qt/terminal_session.hpp": "bae44c8b5d49e7a096258ae75d32fcae4603fcb80d5e4afbdc6f080bb1356767",
+    "src/qt/terminal_modes_test.cpp": "b8b3b4ba21d62365a280dca65d1c1ecfaa863fb44ff864ae50e1523c1c215288"
+  },
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "generator": "Visual Studio 17 2022 17.12.6",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 offscreen",
+    "conpty": "1.25.260930003",
+    "crt": "14.51.36247.0",
+    "binary_sha256": "904b41db10aafe9833031c244ee7a7531a008c71ba2f89808ffbe32a774206a6"
+  },
+  "trace": {
+    "path": "experiments/shell/results/2026-11-05-qt-resize-divergence/trace.json",
+    "sha256": "e1663ac00f2e241a19ef79342c5efc44be1e2815cbce31ae311163c4d1b9af57",
+    "schema": "termforge-qt-resize-same-session-trace-v1",
+    "session": "same SessionModel/Qt session; explicit --resize six-stage diagnostic",
+    "transport_capture": "bounded 64 KiB, disabled by default, enabled only by --resize trace"
+  },
+  "old_assertion": {
+    "entry": "qt_terminal_modes_test --resize",
+    "exit_code": 1,
+    "message": "stage 6 failed: core resize is not synchronized with the literal native B/CD rows",
+    "preserved": true,
+    "weakened": false,
+    "registered_workaround": false
+  },
+  "results": {
+    "same_session_stages": 6,
+    "first_failing_stage": 6,
+    "earlier_asserted_row_mismatches": false,
+    "stage6_transport_offset": [194, 220],
+    "stage6_transport_bytes": 26,
+    "stage6_transport_decoded": "CUP12;1H + RESIZED + CUP1;1H + S6 (22 B) + ESC[6n (4 B)",
+    "post_resize_pre_stage6": {
+      "native_grid_observed": false,
+      "core": [60, 12],
+      "core_cursor": [0, 2],
+      "retained_source_rows": {"7": "B at column 79", "9": "C at column 79", "10": "D at column 0"},
+      "display_rows": {"8": "19 spaces + B", "11": "19 spaces + CD"}
+    },
+    "stage6_native": {"grid": [60, 12], "row8": "19 spaces + B", "row11": "RESIZED + 12 spaces + CD", "row12": ""},
+    "stage6_core": {"grid": [60, 12], "row7": "B at column 79", "row9": "C at column 79", "row10": "D at column 0", "row11": "RESIZED"},
+    "stage6_display": {"row8": "19 spaces + B", "row11": "19 spaces + CD", "row12": "RESIZED"},
+    "cursor": {"native": [0, 2], "core": [0, 2], "observed_side_effect_difference": false},
+    "move_or_erase_bytes_after_resize": false
+  },
+  "normal_entries": {
+    "qt_terminal_modes": "1/1 passed",
+    "qt_terminal_modes_retained": "1/1 passed"
+  },
+  "conclusions": [
+    "The preserved six-stage assertion first fails at stage 6; stages 1-5 have no asserted-row mismatch.",
+    "After the public Qt resize but before stage-6 output, no native grid was observed; the core retained B/C/D and the Qt display already reflowed B to row 8 and CD to row 11. The intermediate native state remains unobserved.",
+    "At stage 6 both native and core are 60x12 and cursors are [0,2]. Native row 8 matches display row 8; divergences are row 7/9/10 (native reflow vs retained source) and row 11/12 (CUP 12;1 landing in the reflowed native grid vs the retained source/display coordinate layer).",
+    "The only post-resize transport bytes are the fixed stage-6 source plus a DSR query; no move, erase or redraw bytes for B/C/D exist. The failure is not a parser that ignored reflow bytes.",
+    "No product policy is changed or decided; the old --resize failure and old reports remain, and the WindTerm write endpoint from #316 is not used as this session's oracle."
+  ],
+  "limitations": [
+    "Offscreen single-display fixed 80x24 -> 60x12; no physical presentation, DPI, history/Find/clipboard, other sizes/orders, Unicode, complete native grid/style or performance.",
+    "The native state between resize completion and the stage-6 ACK is not sampled; the final ACK cannot reconstruct it.",
+    "The diagnostic captures only transport bytes consumed after enable (startup bytes before stage 1 are outside the stage segments); it is bounded and does not add a production observation interface.",
+    "The old six-stage failure is preserved and not relaxed; this record does not close #27/#29 or accept a new native-grid difference."
+  ]
+}
