@@ -1,0 +1,63 @@
+{
+  "schema": "termforge-qt-system-paste-validation-v1",
+  "baseline_main": "3b063e3c8f6c57cd01a0c5339c2145969b92aa86",
+  "source_commit": "354c1e1",
+  "documentation_note": "Paste implementation is in 354c1e1; this validation is a docs-only follow-up.",
+  "source_hash_note": "Hashes are SHA-256 of committed LF Git blob content at 354c1e1; Windows may materialize CRLF while the blob identity stays this value.",
+  "source_files_sha256": {
+    "src/qt/clipboard_reader.hpp": "9c923eb646fc176900484af1e4607cae37c7211548f092746a19683edbb9fd66",
+    "src/qt/terminal_widget.hpp": "0aa6c9d3beaaebcb400ea4377c4434de7c7fa73371da7186c0dd34b96f9b95f2",
+    "src/qt/paste_fixture.hpp": "d6c203eb9f2aa04513831ec2a18412c900bcf0233adf625e1b1ec90331f56ffb",
+    "src/qt/paste_test.cpp": "9bae6b304e520b7abd211d8373384a19def1f5e0c2ab5e54dff07e1f84099a49",
+    "src/qt/clipboard_system_test.cpp": "a16037c1bba86690789cae6b6c6a523154f96637f53ab49046f99ad4b3d7cfbb",
+    "src/qt/unicode_input_test.cpp": "f6867c5d2006ed6b75dc0a3693f58d0a0b0022896e87bb7cbe55739881f842c2",
+    "src/qt/run_smoke.py": "74d4c882bb859e8c85bace5e6db9741af7128008ca04df7a97da22c76d870692",
+    "CMakeLists.txt": "f98f9c0014a378b5df9a9686ce2aa16d67c6d89c7ec9103171fde01aa6935e74",
+    ".github/workflows/qt-cpp.yml": "1cfa893ce4cb64743e6b2e9ffe53a778de749e23c16611b2aa9659be43b006b4"
+  },
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 offscreen (local) / Windows QPA (hosted)",
+    "conpty": "1.25.260930003",
+    "crt": "14.51.36247.0",
+    "binary_sha256": "6a0b457bdf187f00dab47720221a8c91fe591b34d4145c8c530fd200b1f01677"
+  },
+  "entries": {
+    "keyboard": "Ctrl+Shift+V",
+    "shift_insert": "Shift+Insert",
+    "menu": "actual QMenu Paste action clicked with QTest mouse",
+    "reader": "SystemClipboardReader CF_UNICODETEXT; fake reader locally",
+    "target": "initiating SessionModel child PID"
+  },
+  "local": {
+    "qt_paste": {"passed": true, "seconds": 1.01},
+    "qt_formal_path_regression": {"passed": 10, "failed": 0, "seconds": 14.91},
+    "checks": ["keyboard single-line once", "Shift+Insert multiline cancel sends zero", "confirm sends normalized CR once", "actual menu Unicode + NFD", "busy rejects second entry", "closed target rejected", "system_cf_touched=false", "offscreen_only=true"],
+    "child": "real child records received bytes to a file; never executes the pasted text"
+  },
+  "hosted_windows_qpa": {
+    "run_id": "42183487961",
+    "job_id": "127778260596",
+    "status": "passed",
+    "qpa": "windows",
+    "product_default_owner_verified": true,
+    "keyboard_cf": true,
+    "menu_cf": true,
+    "shift_insert_cf": true,
+    "child_bytes_verified": true,
+    "occupied_failure": true,
+    "release_success": true,
+    "multiline_confirm": false,
+    "multiline_cancel": false,
+    "multiline_scope": "local-fake-reader-only",
+    "description": "Real CF content written by the test, read by the default product reader through the real Windows QPA widget; each public entry appended exactly the expected child bytes. A real holder process caused an explicit failure; after release a second explicit action succeeded. Multiline dialog branch was not included in this hosted run and is covered only by the local fake-reader test."
+  },
+  "limitations": [
+    "Hosted real-CF paste covers the three single-line entries and owner-held failure/release; multiline confirmation is local-fake-reader-only, and second-session switch/close reuse is not hosted-combined.",
+    "No bracketed paste, alternate-screen/TUI paste policy, automatic line-by-line send, Find, word/line selection, physical presentation/DPI or performance.",
+    "Child byte recording is transport/child-observed input, not an execution or rendering oracle; no system clipboard is touched locally.",
+    "Old B/CD addressing, remote VM calibration/v2, A/B/C, old six-stage failure and #27/#29/#30/#35/#7 remain unchanged."
+  ]
+}
