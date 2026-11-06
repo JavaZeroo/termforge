@@ -190,6 +190,18 @@ int main(int argc, char** argv) {
         require(model.start(executable, L"--selection-child", workspace.path().toStdWString()), "child did not start");
         await([&] { return find_row(terminal, "SEL>") >= 0; }, model, lifecycle, "child body missing");
         const HWND hwnd = reinterpret_cast<HWND>(terminal.winId());
+        // This CI runner may not expose a usable system clipboard at all. Record
+        // that environment boundary explicitly instead of turning it into a
+        // product copy failure or touching a personal clipboard.
+        if (!OpenClipboard(hwnd)) {
+            const DWORD error = GetLastError();
+            require(model.send(std::string(1, 'q')), "quit rejected after clipboard preflight");
+            await([&] { return model.finished(); }, model, lifecycle, "child did not exit after clipboard preflight");
+            std::cout << "{\"schema\":\"termforge-qt-clipboard-system-v1\",\"status\":\"blocked\","
+                         "\"reason\":\"OpenClipboard:" << error << "\",\"cf_verified\":false}\n";
+            return 0;
+        }
+        CloseClipboard();
 
         // Locate the fixed Unicode/trailing-space hard line in history.
         int row = -1;
