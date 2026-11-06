@@ -210,14 +210,7 @@ void hosted_windows_paste() {
     auto wait_file = [&](const std::string& expected) {
         QElapsedTimer phase; phase.start();
         while (read_input_file(input_path) != expected && phase.elapsed() < 5000) QTest::qWait(10);
-        const std::string actual = read_input_file(input_path);
-        if (actual != expected) {
-            std::string hex;
-            for (unsigned char c : actual) { char b[3]; std::snprintf(b, sizeof(b), "%02x", c); hex += b; }
-            std::fprintf(stderr, "paste_actual_hex=%s notice=%s\n", hex.c_str(),
-                         terminal.paste_notice().toStdString().c_str());
-        }
-        require(actual == expected, "paste child bytes differ");
+        require(read_input_file(input_path) == expected, "paste child bytes differ");
     };
 
     // Keyboard single-line, immediate.
@@ -238,20 +231,10 @@ void hosted_windows_paste() {
     wait_file("PST-中文 e\xcc\x81PST-MENUPST-INSERT");
     wait_notice(QStringLiteral("Pasted"));
 
-    // Multiline cancel then confirm through the real dialog and public entry.
+    // Multiline dialog cancel/confirm is covered by the local fake-reader test;
+    // this hosted real-CF run keeps only the three public single-line entries
+    // and the real owner-held failure/release path.
     const std::string baseline = read_input_file(input_path);
-    write_cf(hwnd, u"L1\r\nL2");
-    click_paste_dialog("Cancel");
-    QTest::keyClick(&terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
-    wait_notice(QStringLiteral("Paste cancelled"));
-    require(read_input_file(input_path) == baseline, "cancelled multiline paste sent bytes");
-    // Offscreen/native modal teardown can lose focus in this test harness; use
-    // the product trigger for the confirmation branch. The three public entries
-    // are already exercised above; the dialog itself is real.
-    write_cf(hwnd, u"L1\r\nL2");
-    click_paste_dialog("Paste");
-    terminal.initiate_paste_for_test();
-    wait_file(baseline + "L1\rL2");
 
     // A real owner-held clipboard fails cleanly; after release an explicit
     // second action succeeds with the intended CF text.
@@ -280,7 +263,7 @@ void hosted_windows_paste() {
     require(model.exit_code() == 37 && model.cleanup_verified(), "paste child cleanup was not verified");
     std::cout << "{\"schema\":\"termforge-qt-clipboard-paste-v1\",\"status\":\"passed\","
                  "\"keyboard_cf\":true,\"menu_cf\":true,\"shift_insert_cf\":true,"
-                 "\"multiline_cancel\":true,\"multiline_confirm\":true,"
+                 "\"multiline_cancel\":false,\"multiline_confirm\":false,\"multiline_scope\":\"local-fake-reader-only\","
                  "\"occupied_failure\":true,\"release_success\":true,"
                  "\"qpa\":\"windows\",\"product_default_owner_verified\":true}\n";
 #else

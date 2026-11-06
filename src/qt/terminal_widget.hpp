@@ -175,7 +175,6 @@ class TerminalWidget final : public QWidget {
         update();
     }
     void finish_paste_read(ClipboardRead result) {
-        std::fprintf(stderr, "PASTE_FINISH status=%d\n", static_cast<int>(result.status));
         paste_reading_ = false;
         if (paste_read_thread_.joinable()) paste_read_thread_.join();
         if (result.status == ClipboardRead::Status::empty) {
@@ -281,8 +280,6 @@ class TerminalWidget final : public QWidget {
         QTimer::singleShot(0, this, [this] { pump_paste(); });
     }
     void initiate_paste() {
-        std::fprintf(stderr, "PASTE_INIT reading=%d transfer=%d running=%d\n", paste_reading_ ? 1 : 0,
-                     paste_transfer_ ? 1 : 0, model_.running() ? 1 : 0);
         if (paste_reading_ || paste_transfer_) {
             set_paste_notice(QStringLiteral("Paste busy"));
             return;
