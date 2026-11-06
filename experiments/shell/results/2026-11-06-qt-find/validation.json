@@ -1,13 +1,14 @@
 {
   "schema": "termforge-qt-find-validation-v1",
   "baseline_main": "3b063e3c8f6c57cd01a0c5339c2145969b92aa86",
-  "source_commit": "3888d84",
+  "source_commit": "e6aa53a",
   "source_hash_note": "Hashes are SHA-256 of committed LF Git blob content at 3888d84; this validation is a docs-only follow-up.",
   "source_files_sha256": {
-    "src/qt/terminal_widget.hpp": "bc97bc949fde6a742ffedc9546d0c9eb7e4fd5035c768249a42e5bb5d15624c8",
-    "src/qt/find_test.cpp": "a9f8357206f331074cffd78ac4c363229f987169b319dd248be57366b7ee35a9",
+    "src/qt/terminal_widget.hpp": "982cd64329ad8b952606486a8ee0f90b8ca5c0e192218868ab6503cdfd90dfa9",
+    "src/qt/find_test.cpp": "222e6d5df8bb7e0090b80d67350d230b3e225751ebd1b8b83efd033c2f7aaf62",
     "CMakeLists.txt": "93c6977a6978c061bdf675eac3bcf3b61ee3b775f9454676f86c0930bf3ab2d9",
-    ".github/workflows/qt-cpp.yml": "e1a0f4c0496a02bb2434e71befcaaf0a114808629950d10c59f3ff29fbbefded"
+    ".github/workflows/qt-cpp.yml": "e1a0f4c0496a02bb2434e71befcaaf0a114808629950d10c59f3ff29fbbefded",
+    "src/qt/selection_fixture.hpp": "cd2461e0ada22cf56435b1c578e41fa611575b4bbc0bf68568fc89d0067e8591"
   },
   "environment": {
     "os": "Windows 11 x64 build 26200",
@@ -35,11 +36,34 @@
     "query_limit_4096": true,
     "query_sent_to_child": false,
     "system_clipboard_touched": false,
-    "offscreen_only": true
+    "offscreen_only": true,
+    "multiple_matches_order": true,
+    "exact_painted_width": true,
+    "wrap_previous_next": true,
+    "resize_source_migration": true,
+    "eviction_no_resurrection": true,
+    "epoch_invalidation": true,
+    "two_real_sessions": true,
+    "query_zero_leak_independent_input": true,
+    "escape_input_once_correct_child": true,
+    "empty_query": true,
+    "case_toggle": true,
+    "limit_ascii_4097_rejected": true,
+    "limit_chinese_bytes_rejected": true,
+    "limit_nfd_bytes_rejected": true,
+    "return_f3_shift_f3": true
   },
   "tests": {
-    "qt_find": {"passed": 1, "failed": 0, "seconds": 1.08},
-    "qt_formal_path_regression": {"passed": 10, "failed": 0, "seconds": 14.51}
+    "qt_find": {
+      "passed": 1,
+      "failed": 0,
+      "seconds": 4.93
+    },
+    "qt_formal_path_regression": {
+      "passed": 10,
+      "failed": 0,
+      "seconds": 18.92
+    }
   },
   "evidence": {
     "readme": "README.md",
@@ -48,6 +72,7 @@
   },
   "limitations": [
     "Fixed ASCII literal sample and offscreen Qt; Chinese/NFD only claims literal scalar matching.",
+    "The Qt query field/TextSearch honors the 4096-byte limit and explicitly rejects over-limit text; the fixed 100-row child history cannot reach the 1024-result cap, so that exact cap remains covered by the existing core TextSearch capped test rather than a real-child UI sample.",
     "No word/line selection, scrollbar/page-key history, alternate-screen/TUI Find, physical presentation/DPI, full Unicode graphemes or performance thresholds.",
     "This slice does not close #29/#30/R2; old B/CD, remote VM calibration/v2, A/B/C and old six-stage failures remain unchanged."
   ]
