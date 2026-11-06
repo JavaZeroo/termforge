@@ -4,6 +4,7 @@
 #pragma once
 #include "../../experiments/conpty/session.hpp"
 #include <cstdio>
+#include <fstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -31,7 +32,7 @@ inline void selection_numbered(HANDLE output, int first, int last) {
     selection_write(output, batch);
 }
 
-inline int selection_child() {
+inline int selection_child(const std::wstring& record_path = {}) {
     BOOL owned = FALSE;
     if (!IsProcessInJob(GetCurrentProcess(), nullptr, &owned) || !owned)
         throw std::runtime_error("selection child requires its owned Session Job");
@@ -52,10 +53,16 @@ inline int selection_child() {
         "COPY_UNICODE:\xe4\xb8\xad\xe6\x96\x87 e\xcc\x81  \r\nCOPY_TAIL\r\n");
     selection_numbered(output.get(), 126, 165);
     selection_write(output.get(), "SEL>");
+    std::ofstream received;
+    if (!record_path.empty()) {
+        received.open(record_path, std::ios::binary | std::ios::trunc);
+        if (!received) tf_conpty::fail("selection child input record");
+    }
     for (;;) {
         char key = 0; DWORD count = 0;
         if (!ReadFile(input.get(), &key, 1, &count, nullptr) || count != 1)
             tf_conpty::fail("ReadFile(selection child input)");
+        if (received) { received.put(key); received.flush(); }
         if (key == 'q') return 37;
         if (key == 'o') {
             selection_numbered(output.get(), 121, 125);
@@ -73,6 +80,19 @@ inline int selection_child() {
         }
         if (key == 'r') {
             selection_write(output.get(), "\x1b" "cSEL_RIS\r\nSEL>");
+            continue;
+        }
+        if (key == 'm') {
+            // Bounded deterministic loads: 30 rows x 40 "AB" hits (1200 total)
+            // and 100 rows with one sparse "ZZ" near the end (>8000 scan bytes).
+            std::string many;
+            for (int row = 0; row < 52; ++row) many += std::string(78, 'X') + "ZZ\r\n";
+            for (int row = 0; row < 26; ++row) {
+                for (int hit = 0; hit < 40; ++hit) many += "AB";
+                many += "\r\n";
+            }
+            many += "SEL_MANY\r\nSEL>";
+            selection_write(output.get(), many);
             continue;
         }
     }

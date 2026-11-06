@@ -6,11 +6,20 @@
 #include "../../experiments/core/display_cursor.hpp"
 #include "../../experiments/core/history_view.hpp"
 #include "../../experiments/core/text_selection.hpp"
+#include "../../experiments/core/text_search.hpp"
 #include "../../experiments/shell/keyboard.hpp"
 #include <QEvent>
 #include <QCoreApplication>
 #include <QCloseEvent>
 #include <QFontDatabase>
+#include <QFrame>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QTimer>
 #include <QFontMetricsF>
 #include <QGuiApplication>
 #include <QInputMethodEvent>
@@ -55,6 +64,17 @@ class TerminalWidget final : public QWidget {
     int display_cursor_column_ = 0;
     TextSelection selection_;
     std::optional<TextPosition> selection_anchor_;
+    QFrame* find_panel_ = nullptr;
+    QLineEdit* find_query_ = nullptr;
+    QLabel* find_status_ = nullptr;
+    QCheckBox* find_case_ = nullptr;
+    TextSearch find_search_;
+    std::optional<SearchMatch> find_current_;
+    size_t find_current_index_ = 0;
+    bool find_last_wrapped_ = false;
+    uint64_t find_generation_ = 0;
+    int find_interval_ms_ = 0;
+    QTimer find_timer_;
     std::unique_ptr<ClipboardWriter> clipboard_;
     ClipboardWrite last_copy_;
     QString copy_notice_;
@@ -85,6 +105,7 @@ class TerminalWidget final : public QWidget {
     }
     void resizeEvent(QResizeEvent* event) override {
         QWidget::resizeEvent(event);
+        if (find_panel_) find_panel_->setGeometry(margin, margin, (std::max)(1, width() - margin * 2), 62);
         synchronize_grid();
     }
     void showEvent(QShowEvent* event) override {
@@ -298,6 +319,15 @@ class TerminalWidget final : public QWidget {
             model_.send(std::string{});
             event->ignore(); return;
         }
+        if (find_panel_ && find_panel_->isVisible() &&
+            (event->key() == Qt::Key_F3)) {
+            navigate_find(event->modifiers().testFlag(Qt::ShiftModifier) ? SearchDirection::previous : SearchDirection::next);
+            event->accept(); return;
+        }
+        if (event->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) &&
+            event->key() == Qt::Key_F) {
+            open_find(); event->accept(); return;
+        }
         if (event->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) &&
             event->key() == Qt::Key_C) {
             copy_selection_to_clipboard();
@@ -505,6 +535,146 @@ class TerminalWidget final : public QWidget {
         display_cursor_row_ = screen.row;
         display_cursor_column_ = screen.column;
     }
+    void set_find_status(const QString& text) {
+        if (find_status_) find_status_->setText(text);
+    }
+    TextPosition find_anchor() {
+        const auto& screen = model_.screen();
+        const auto state = viewport_.reconcile(screen);
+        const size_t total = screen.retained_size();
+        const size_t row = total ? (std::min)(state.top, total - 1) : 0;
+        const auto& line = screen.retained_line(row);
+        return {line.id, line.version, 0, screen.buffer_epoch()};
+    }
+    void start_find() {
+        if (!find_query_) return;
+        const QByteArray query = find_query_->text().toUtf8();
+        if (query.isEmpty()) {
+            find_search_.cancel(); find_current_.reset(); set_find_status(QStringLiteral("No query"));
+            update(); return;
+        }
+        try {
+            find_generation_ = find_search_.start(TextDocument(model_.screen()), query.toStdString(),
+                {find_case_->isChecked(), 1024});
+        } catch (const std::exception& error) {
+            find_current_.reset();
+            set_find_status(QStringLiteral("Find: ") + QString::fromUtf8(error.what()));
+            return;
+        }
+        find_current_.reset(); find_current_index_ = 0;
+        set_find_status(QStringLiteral("Searching..."));
+        find_timer_.start(find_interval_ms_);
+    }
+    void step_find() {
+        const TextDocument document(model_.screen());
+        const auto progress = find_search_.step(document, find_generation_, 4096);
+        if (progress.status == SearchStatus::running) {
+            set_find_status(QStringLiteral("Searching... %1").arg(find_search_.matches().size()));
+            update(); return;
+        }
+        find_timer_.stop();
+        if (progress.status == SearchStatus::capped)
+            set_find_status(QStringLiteral("%1 matches (capped)").arg(find_search_.matches().size()));
+        else if (progress.status == SearchStatus::complete || progress.status == SearchStatus::idle)
+            set_find_status(find_search_.matches().empty() ? QStringLiteral("No matches") :
+                QStringLiteral("%1 matches").arg(find_search_.matches().size()));
+        else if (progress.status == SearchStatus::invalidated)
+            set_find_status(QStringLiteral("Search invalidated"));
+        else if (progress.status == SearchStatus::cancelled)
+            set_find_status(QStringLiteral("No query"));
+        if (!find_current_ && !find_search_.matches().empty()) {
+            if (const auto nav = find_search_.navigate(document, SearchDirection::next, find_anchor(), true)) {
+                find_current_ = nav->match; find_current_index_ = nav->index;
+                viewport_.reveal(model_.screen(), nav->match.range.begin.line_id);
+            }
+        }
+        update();
+    }
+    void navigate_find(SearchDirection direction) {
+        const TextDocument document(model_.screen());
+        const std::optional<TextPosition> anchor = find_current_
+            ? std::optional<TextPosition>{find_current_->range.begin} : std::optional<TextPosition>{find_anchor()};
+        const bool allow_wrap = find_search_.status() == SearchStatus::complete ||
+            find_search_.status() == SearchStatus::capped;
+        const auto nav = find_search_.navigate(document, direction, anchor, allow_wrap);
+        if (!nav) {
+            set_find_status(allow_wrap ? QStringLiteral("No matches")
+                                       : QStringLiteral("No further scanned match"));
+            find_last_wrapped_ = false; update(); return;
+        }
+        find_current_ = nav->match; find_current_index_ = nav->index;
+        find_last_wrapped_ = nav->wrapped;
+        viewport_.reveal(model_.screen(), nav->match.range.begin.line_id);
+        set_find_status(QStringLiteral("%1 / %2%3").arg(nav->index + 1)
+            .arg(find_search_.matches().size()).arg(nav->wrapped ? QStringLiteral(" (wrapped)") : QString()));
+        update();
+    }
+    void open_find() {
+        if (!find_panel_) return;
+        find_panel_->show();
+        find_panel_->raise();
+        find_query_->setFocus(Qt::ShortcutFocusReason);
+        find_query_->selectAll();
+        if (!find_query_->text().isEmpty()) start_find();
+    }
+    void close_find() {
+        find_timer_.stop();
+        find_search_.close();
+        find_current_.reset();
+        if (find_panel_) find_panel_->hide();
+        setFocus(Qt::OtherFocusReason);
+        update();
+    }
+    void build_find_panel() {
+        find_panel_ = new QFrame(this);
+        find_panel_->setObjectName(QStringLiteral("findPanel"));
+        find_panel_->setStyleSheet(QStringLiteral("QFrame#findPanel { background: palette(window); border: 1px solid palette(mid); }"));
+        auto* outer = new QVBoxLayout(find_panel_);
+        outer->setContentsMargins(6, 4, 6, 4);
+        auto* controls = new QHBoxLayout();
+        find_query_ = new QLineEdit(find_panel_);
+        find_query_->setObjectName(QStringLiteral("findQuery"));
+        find_query_->setPlaceholderText(QStringLiteral("Find literal text"));
+        controls->addWidget(find_query_, 1);
+        auto* previous = new QPushButton(QStringLiteral("Previous"), find_panel_);
+        previous->setObjectName(QStringLiteral("findPrevious"));
+        auto* next = new QPushButton(QStringLiteral("Next"), find_panel_);
+        next->setObjectName(QStringLiteral("findNext"));
+        auto* close = new QPushButton(QStringLiteral("Close"), find_panel_);
+        close->setObjectName(QStringLiteral("findClose"));
+        find_case_ = new QCheckBox(QStringLiteral("Match case"), find_panel_);
+        find_case_->setObjectName(QStringLiteral("findCase"));
+        find_case_->setChecked(true);
+        controls->addWidget(previous); controls->addWidget(next); controls->addWidget(close); controls->addWidget(find_case_);
+        outer->addLayout(controls);
+        find_status_ = new QLabel(QStringLiteral("Ctrl+Shift+F: literal Find, max 4096 UTF-8 bytes"), find_panel_);
+        find_status_->setObjectName(QStringLiteral("findStatus"));
+        outer->addWidget(find_status_);
+        find_panel_->hide();
+        connect(find_query_, &QLineEdit::textChanged, this, [this] { start_find(); });
+        connect(find_case_, &QCheckBox::toggled, this, [this] { start_find(); });
+        connect(previous, &QPushButton::clicked, this, [this] { navigate_find(SearchDirection::previous); });
+        connect(next, &QPushButton::clicked, this, [this] { navigate_find(SearchDirection::next); });
+        connect(close, &QPushButton::clicked, this, [this] { close_find(); });
+        connect(&find_timer_, &QTimer::timeout, this, [this] { step_find(); });
+        find_timer_.setSingleShot(false);
+        find_query_->installEventFilter(this);
+    }
+    bool eventFilter(QObject* watched, QEvent* event) override {
+        if (watched == find_query_ && event->type() == QEvent::KeyPress) {
+            auto* key = static_cast<QKeyEvent*>(event);
+            if (key->key() == Qt::Key_Escape) { close_find(); return true; }
+            if (key->key() == Qt::Key_F3) {
+                navigate_find(key->modifiers().testFlag(Qt::ShiftModifier) ? SearchDirection::previous : SearchDirection::next);
+                return true;
+            }
+            if (key->key() == Qt::Key_Return || key->key() == Qt::Key_Enter) {
+                navigate_find(key->modifiers().testFlag(Qt::ShiftModifier) ? SearchDirection::previous : SearchDirection::next);
+                return true;
+            }
+        }
+        return QWidget::eventFilter(watched, event);
+    }
     void paintEvent(QPaintEvent*) override {
         QPainter painter(this);
         painter.fillRect(rect(), colour(-1, false));
@@ -513,6 +683,20 @@ class TerminalWidget final : public QWidget {
         selection_.reconcile(document);
         refresh_painted_page(screen);
         auto& page = *painted_page_;
+        if (find_current_ && find_search_.match(document, find_current_index_)) {
+            for (const auto& span : page.mapping.project(document, find_current_->range,
+                                                          page.mapping.layout_revision())) {
+                if (span.row < painted_row_offset_) continue;
+                const size_t row = span.row - painted_row_offset_;
+                if (row >= page.lines.size()) continue;
+                for (size_t column = span.column_begin; column < span.column_end && column < page.lines[row].size(); ++column) {
+                    auto& style = page.lines[row][column].style;
+                    style.bg = 3; style.fg = 15; style.reverse = false;
+                }
+            }
+        } else if (find_current_) {
+            find_current_.reset();
+        }
         const size_t columns = page.mapping.columns() ? page.mapping.columns() : static_cast<size_t>(screen.width());
         const size_t visible_rows = (std::min)(static_cast<size_t>(screen.height()),
             page.lines.size() > painted_row_offset_ ? page.lines.size() - painted_row_offset_ : size_t{0});
@@ -600,6 +784,7 @@ public:
         resize(sizeHint());
         grid_ready_ = true;
         clipboard_ = std::make_unique<SystemClipboardWriter>(*this);
+        build_find_panel();
         model_.on_changed = [this] { refresh_session(); };
     }
     ~TerminalWidget() override { model_.on_changed = {}; }
@@ -608,6 +793,13 @@ public:
         const TextDocument document(model_.screen());
         selection_.reconcile(document);
         if (selection_anchor_ && !document.valid(*selection_anchor_)) selection_anchor_.reset();
+        if (find_panel_ && find_panel_->isVisible() && !find_query_->text().isEmpty()) {
+            if (find_search_.status() == SearchStatus::running || find_search_.status() == SearchStatus::complete ||
+                find_search_.status() == SearchStatus::capped) {
+                find_generation_ = find_search_.notify_change(document);
+                find_timer_.start(0);
+            }
+        }
         // Keep the display page and caret current before Qt asks the input
         // method for geometry, not only on the next paint.
         if (grid_ready_) refresh_painted_page(model_.screen());
@@ -632,6 +824,28 @@ public:
         return selection_.copy(TextDocument(model_.screen()), maximum_bytes);
     }
     ClipboardWrite copy_to_clipboard() { return copy_selection_to_clipboard(); }
+    void open_find_for_test() { open_find(); }
+    void close_find_for_test() { close_find(); }
+    void set_find_query_for_test(const QString& text) { if (find_query_) find_query_->setText(text); }
+    QString find_query_text_for_test() const { return find_query_ ? find_query_->text() : QString{}; }
+    bool find_visible_for_test() const { return find_panel_ && find_panel_->isVisible(); }
+    QString find_status_for_test() const { return find_status_ ? find_status_->text() : QString{}; }
+    size_t find_match_count_for_test() const { return find_search_.matches().size(); }
+    size_t find_current_index_for_test() const { return find_current_index_; }
+    bool find_last_wrapped_for_test() const { return find_last_wrapped_; }
+    void set_find_timer_interval_for_test(int milliseconds) { find_interval_ms_ = (std::max)(0, milliseconds); }
+    SearchStatus find_search_status_for_test() const { return find_search_.status(); }
+    std::optional<TextRange> find_current_range_for_test() const {
+        return find_current_ ? std::optional<TextRange>{find_current_->range} : std::nullopt;
+    }
+    void find_next_for_test() { navigate_find(SearchDirection::next); }
+    void find_previous_for_test() { navigate_find(SearchDirection::previous); }
+    std::vector<ViewCellSpan> find_spans_for_test() {
+        if (!find_current_ || !painted_page_) return {};
+        const TextDocument document(model_.screen());
+        return painted_page_->mapping.project(document, find_current_->range,
+                                              painted_page_->mapping.layout_revision());
+    }
     void setClipboardWriterForTest(std::unique_ptr<ClipboardWriter> writer) {
         clipboard_ = std::move(writer);
     }
