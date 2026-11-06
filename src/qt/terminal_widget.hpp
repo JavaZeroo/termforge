@@ -568,6 +568,20 @@ public:
     ViewportState history_state() { return viewport_.reconcile(model_.screen()); }
     bool history_following() const { return viewport_.following(); }
     uint64_t history_anchor() const { return viewport_.anchor(); }
+    // Internal selection extraction for the Qt regression and future copy UI.
+    // This is not a system-clipboard path and is bounded by the caller's limit.
+    SelectionCopy copy_selection(size_t maximum_bytes = 4 * 1024 * 1024) {
+        return selection_.copy(TextDocument(model_.screen()), maximum_bytes);
+    }
+    bool has_selection() const { return selection_.range().has_value(); }
+    // Read-only projection of the current selection onto the last painted page;
+    // the test checks the highlighted source columns without copying cells.
+    std::vector<ViewCellSpan> selection_spans() {
+        if (!selection_.range() || !painted_page_) return {};
+        const TextDocument document(model_.screen());
+        return painted_page_->mapping.project(document, *selection_.range(),
+                                              painted_page_->mapping.layout_revision());
+    }
     // Diagnostic geometry of the owned paint chain; tests only read it.
     int cell_width() const { return cell_width_; }
     int cell_height() const { return cell_height_; }
