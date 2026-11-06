@@ -12,7 +12,7 @@
 ## 验证
 
 - `qt_find` 1/1，Qt 正式路径 10/10；two real selection children with independent input recording：multiple `SEL_N_` matches 的顺序/index、双向 wrap、精确源文本/列与显示宽度、历史 reveal、缩窄/扩大同源迁移、淘汰不复活、RIS 旧 epoch 失效；两个会话查询隔离，查询零泄漏到 child，Escape 后 `Z` 恰好一次只到正确 child；空查询、实际 Match case、4097-byte/中文/NFD 超限拒绝、Return/F3/Shift+F3。未触个人剪贴板/桌面。
-- 1024 结果上限由既有 TextSearch 合同/核心 capped 测试覆盖；固定 child 的 100 行历史无法在真实入口达到 1024，未用伪造大文档冒充用户证据。
+- **1024 截断/有限循环已通过真实入口**：第 3 个真实 child 输出 52 行 `X...ZZ`（52 命中，>4096 字节扫描）+ 26 行 × 40 个 `AB`（1040 命中）；正式查询框输入 `ZZ` 在 25ms 测试节拍下保留 Searching/部分命中，公开 Next 不越出已扫描前缀；输入 `AB` 达到 1024 capped、提示截断，首尾 Previous/Next wrap 有限（1023↔0）。未改产品上限/预算/注入文档。
 - 截图：[find-panel.png](find-panel.png)（同一真实 Qt 测试窗口，历史命中态；离屏，不代表物理 DPI/呈现）。
 - 当前 head CI 与源码/构建身份见 [validation.json](validation.json)；本切片不代表 #29/#30/R2 完成。
 
@@ -20,7 +20,7 @@
 
 - 固定样例/ASCII 字面量与离屏 Qt；中文/NFD 只声明字面标量匹配，不宣称字素/glyph/宽度等价。
 - 不覆盖选词/选行、滚动条/翻页键历史、备用屏/TUI Find、物理呈现/DPI、完整 Unicode 字素或性能阈值；不新增数值性能验收。
-- 1024 结果截断仅有核心合同覆盖；真实 child 保留上限 100 行，不能到达 1024，未伪造。
+- 1024 截断现在由真实 child/查询入口覆盖；固定 child 仍受 100 行历史 + 24 live 行容量约束，本次负载 78 行（52 ZZ + 26 AB）在容量内。
 - 旧 B/CD、192.168.3.210 校准/v2、A/B/C、旧六阶段失败、#27/#29/#30/#35/#7 状态不变。
 
 
@@ -31,8 +31,8 @@
 | 多命中准确顺序/循环/当前页与历史页 | 多个 `SEL_N_` 顺序/index、双向 wrap、历史 reveal、精确源文本/列和显示宽度 |
 | 缩窄扩大同源迁移、写入/淘汰失效、旧 epoch | resize 前后源 range 不变；淘汰后无复活；RIS 后旧位置拒绝、新 epoch 可查 |
 | 双会话隔离、Escape 后输入只到正确 child | 两个真实 child + 独立输入文件；查询零泄漏，Escape 后 `Z` 恰好一次到目标 |
-| 空查询、大小写、1024 截断/有限循环、4096 字节边界 | 空查询/Match case/Return/F3/Shift+F3/ASCII+中文+NFD 超限明确拒绝；1024 由核心 capped 测试覆盖，真实 child 100 行无法到达，明确记录 |
-| 公开入口而非测试 setter 替代 | 首次查询、空查询、大小写、超限、Return/F3 均经真实查询框按键/编辑；setter 只用于前置观测 |
+| 空查询、大小写、1024 截断/有限循环、4096 字节边界 | 空查询/Match case/Return/F3/Shift+F3；真实键盘 4096 合法/4097 拒绝，中文/NFD 经 Qt IME commit 合法与超限；真实 child 1040 命中达到 1024 capped，首尾有限 wrap；>4096 扫描保留 Searching/部分命中且不越界 |
+| 公开入口而非测试 setter 替代 | 首次查询、空查询、大小写、ASCII 键盘超限、中文/NFD IME commit、Return/F3 均经真实查询框；setter 仅用于失效/前置观测 |
 
 ## 身份
 
