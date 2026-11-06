@@ -24,7 +24,7 @@ def main():
             return process is not None
     try:
         environment = os.environ.copy()
-        environment["QT_QPA_PLATFORM"] = "offscreen"
+        environment["QT_QPA_PLATFORM"] = os.environ.get("TERMFORGE_QT_QPA_PLATFORM", "offscreen")
         environment["QT_QPA_FONTDIR"] = str(binary.parent / "assets/fonts")
         process = subprocess.Popen([str(binary), *sys.argv[2:]], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, env=environment,

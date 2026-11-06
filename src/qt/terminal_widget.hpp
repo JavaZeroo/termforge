@@ -2,6 +2,7 @@
 #pragma once
 
 #include "terminal_session.hpp"
+#include "clipboard_writer.hpp"
 #include "../../experiments/core/display_cursor.hpp"
 #include "../../experiments/core/history_view.hpp"
 #include "../../experiments/core/text_selection.hpp"
@@ -14,6 +15,8 @@
 #include <QGuiApplication>
 #include <QInputMethodEvent>
 #include <QKeyEvent>
+#include <QMenu>
+#include <QContextMenuEvent>
 #include <QMouseEvent>
 #include <QResizeEvent>
 #include <QShowEvent>
@@ -25,6 +28,7 @@
 #include <array>
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 
 namespace termforge::qt {
 
@@ -51,6 +55,9 @@ class TerminalWidget final : public QWidget {
     int display_cursor_column_ = 0;
     TextSelection selection_;
     std::optional<TextPosition> selection_anchor_;
+    std::unique_ptr<ClipboardWriter> clipboard_;
+    ClipboardWrite last_copy_;
+    QString copy_notice_;
     static constexpr int margin = 8;
     int cell_width_ = 9;
     int cell_height_ = 19;
@@ -145,6 +152,49 @@ class TerminalWidget final : public QWidget {
         }
         selection_.set(document, {*selection_anchor_, *position});
         update();
+    }
+    ClipboardWrite copy_selection_to_clipboard() {
+        const TextDocument document(model_.screen());
+        const auto copied = selection_.copy(document, 4 * 1024 * 1024);
+        ClipboardWrite result;
+        if (copied.status == SelectionCopyStatus::empty) {
+            result = {ClipboardWrite::Status::empty, {}};
+            copy_notice_ = QStringLiteral("Nothing selected");
+        } else if (copied.status == SelectionCopyStatus::invalidated) {
+            result = {ClipboardWrite::Status::invalidated, "selection changed"};
+            copy_notice_ = QStringLiteral("Copy failed: selection changed");
+        } else if (copied.status == SelectionCopyStatus::limit_exceeded) {
+            result = {ClipboardWrite::Status::limit_exceeded, "copy exceeds limit"};
+            copy_notice_ = QStringLiteral("Copy failed: selection too large");
+        } else {
+            const QString utf8 = QString::fromUtf8(copied.text.data(), static_cast<qsizetype>(copied.text.size()));
+            const std::u16string text = utf8.toStdU16String();
+            if (text.size() > 1024 * 1024) {
+                result = {ClipboardWrite::Status::limit_exceeded, "clipboard UTF-16 limit"};
+                copy_notice_ = QStringLiteral("Copy failed: selection too large");
+            } else {
+                result = clipboard_ ? clipboard_->write(text) : ClipboardWrite{};
+                if (result.status == ClipboardWrite::Status::ok) {
+                    copy_notice_ = QStringLiteral("Copied");
+                } else if (result.status == ClipboardWrite::Status::empty) {
+                    copy_notice_ = QStringLiteral("Nothing selected");
+                } else {
+                    copy_notice_ = QStringLiteral("Copy failed: ") +
+                        QString::fromStdString(result.error.empty() ? "clipboard error" : result.error);
+                }
+            }
+        }
+        last_copy_ = result;
+        update();
+        return result;
+    }
+    void contextMenuEvent(QContextMenuEvent* event) override {
+        QMenu menu(this);
+        QAction* copy = menu.addAction(QStringLiteral("Copy"));
+        copy->setEnabled(selection_.range().has_value());
+        QAction* chosen = menu.exec(event->globalPos());
+        if (chosen == copy) copy_selection_to_clipboard();
+        event->accept();
     }
     void mousePressEvent(QMouseEvent* event) override {
         if (event->button() != Qt::LeftButton || event->modifiers() != Qt::NoModifier || !preedit_.isEmpty()) {
@@ -247,6 +297,12 @@ class TerminalWidget final : public QWidget {
             // Report the unavailable target even for an uncommitted high unit.
             model_.send(std::string{});
             event->ignore(); return;
+        }
+        if (event->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) &&
+            event->key() == Qt::Key_C) {
+            copy_selection_to_clipboard();
+            event->accept();
+            return;
         }
         // Reading-history controls follow the existing Win32 behavior: wheel
         // and Ctrl+Shift+Home/End browse retained rows; any ordinary terminal
@@ -516,9 +572,10 @@ class TerminalWidget final : public QWidget {
         }
         painter.setFont(base_font);
         painter.setPen(model_.error().isEmpty() ? colour(8, true) : colour(9, true));
-        const QString status = !model_.error().isEmpty() ? model_.error() : model_.finished() ?
+        QString status = !model_.error().isEmpty() ? model_.error() : model_.finished() ?
             QStringLiteral("Session exited: %1").arg(model_.exit_code()) :
             QStringLiteral("Terminal %1 x %2").arg(screen.width()).arg(screen.height());
+        if (!copy_notice_.isEmpty()) status = copy_notice_ + QStringLiteral(" | ") + status;
         painter.drawText(QRect(margin, height() - margin * 2 - cell_height_,
                                width() - margin * 2, cell_height_ + margin),
                          Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, status);
@@ -542,6 +599,7 @@ public:
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         resize(sizeHint());
         grid_ready_ = true;
+        clipboard_ = std::make_unique<SystemClipboardWriter>(*this);
         model_.on_changed = [this] { refresh_session(); };
     }
     ~TerminalWidget() override { model_.on_changed = {}; }
@@ -573,6 +631,12 @@ public:
     SelectionCopy copy_selection(size_t maximum_bytes = 4 * 1024 * 1024) {
         return selection_.copy(TextDocument(model_.screen()), maximum_bytes);
     }
+    ClipboardWrite copy_to_clipboard() { return copy_selection_to_clipboard(); }
+    void setClipboardWriterForTest(std::unique_ptr<ClipboardWriter> writer) {
+        clipboard_ = std::move(writer);
+    }
+    ClipboardWrite last_copy() const { return last_copy_; }
+    QString copy_notice() const { return copy_notice_; }
     bool has_selection() const { return selection_.range().has_value(); }
     // Read-only projection of the current selection onto the last painted page;
     // the test checks the highlighted source columns without copying cells.
