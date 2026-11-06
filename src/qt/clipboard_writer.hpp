@@ -26,14 +26,19 @@ public:
 
 class SystemClipboardWriter final : public ClipboardWriter {
     QWidget& owner_;
+    quintptr native_owner_ = 0;
 public:
-    explicit SystemClipboardWriter(QWidget& owner) : owner_(owner) {}
+    // native_owner is an offscreen-test escape hatch; production uses the
+    // widget's native window handle.
+    explicit SystemClipboardWriter(QWidget& owner, quintptr native_owner = 0)
+        : owner_(owner), native_owner_(native_owner) {}
     ClipboardWrite write(const std::u16string& text) override {
         if (text.empty()) return {ClipboardWrite::Status::empty, {}};
         if (text.size() > 1024 * 1024) return {ClipboardWrite::Status::limit_exceeded, "clipboard UTF-16 limit"};
         if (text.find(u'\0') != std::u16string::npos) return {ClipboardWrite::Status::failure, "embedded NUL"};
 #ifdef Q_OS_WIN
-        const HWND owner = reinterpret_cast<HWND>(owner_.winId());
+        const HWND owner = native_owner_ ? reinterpret_cast<HWND>(native_owner_) :
+            reinterpret_cast<HWND>(owner_.winId());
         bool opened = false;
         for (int attempt = 0; attempt < 3 && !opened; ++attempt) {
             if (OpenClipboard(owner)) {

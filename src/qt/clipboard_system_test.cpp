@@ -84,6 +84,15 @@ int clipboard_holder(const std::string& ready, const std::string& release) {
     return 0;
 }
 #endif
+HWND create_native_owner() {
+    WNDCLASSW cls{}; cls.lpfnWndProc = DefWindowProcW; cls.hInstance = GetModuleHandleW(nullptr);
+    cls.lpszClassName = L"TermForgeQtClipboardOwner";
+    RegisterClassW(&cls);
+    HWND window = CreateWindowExW(0, cls.lpszClassName, L"", WS_OVERLAPPED, 0, 0, 1, 1,
+                                  nullptr, nullptr, nullptr, nullptr);
+    require(window != nullptr, "native clipboard owner window unavailable");
+    return window;
+}
 std::vector<std::string> page_rows(TerminalWidget& terminal) {
     terminal.grab();
     std::vector<std::string> rows;
@@ -189,7 +198,11 @@ int main(int argc, char** argv) {
         window.resize(1200, 900); window.show(); terminal.setFocus();
         require(model.start(executable, L"--selection-child", workspace.path().toStdWString()), "child did not start");
         await([&] { return find_row(terminal, "SEL>") >= 0; }, model, lifecycle, "child body missing");
-        const HWND hwnd = reinterpret_cast<HWND>(terminal.winId());
+        const HWND hwnd = create_native_owner();
+        // The Qt test runs with the offscreen platform, whose QWidget winId is
+        // not a Win32 HWND; use the same writer with a real hidden owner.
+        terminal.setClipboardWriterForTest(
+            std::make_unique<termforge::qt::SystemClipboardWriter>(terminal, reinterpret_cast<quintptr>(hwnd)));
         // This CI runner may not expose a usable system clipboard at all. Record
         // that environment boundary explicitly instead of turning it into a
         // product copy failure or touching a personal clipboard.
@@ -267,6 +280,7 @@ int main(int argc, char** argv) {
         require(model.send(std::string(1, 'q')), "quit rejected");
         await([&] { return model.finished(); }, model, lifecycle, "child did not exit");
         require(model.exit_code() == 37 && model.cleanup_verified(), "child cleanup was not verified");
+        DestroyWindow(hwnd);
         std::cout << "{\"schema\":\"termforge-qt-clipboard-system-v1\",\"status\":\"passed\","
                      "\"keyboard_cf\":true,\"menu_cf\":true,\"empty_sentinel\":true,"
                      "\"occupied_failure\":true,\"release_success\":true,\"eviction_invalid\":true,"
