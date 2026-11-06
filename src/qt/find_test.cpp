@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
         const auto spans = terminal.find_spans_for_test();
         require(!spans.empty(), "Find hit did not project onto the painted page");
         require(!terminal.history_following(), "revealing a history hit did not leave the live bottom");
+        window.grab().save(QStringLiteral("find-panel.png"));
 
         // Next/previous public buttons keep the hit source-anchored; single hit wraps.
         auto* next = window.findChild<QPushButton*>(QStringLiteral("findNext"));
