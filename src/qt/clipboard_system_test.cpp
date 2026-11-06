@@ -210,7 +210,14 @@ void hosted_windows_paste() {
     auto wait_file = [&](const std::string& expected) {
         QElapsedTimer phase; phase.start();
         while (read_input_file(input_path) != expected && phase.elapsed() < 5000) QTest::qWait(10);
-        require(read_input_file(input_path) == expected, "paste child bytes differ");
+        const std::string actual = read_input_file(input_path);
+        if (actual != expected) {
+            std::string hex;
+            for (unsigned char c : actual) { char b[3]; std::snprintf(b, sizeof(b), "%02x", c); hex += b; }
+            std::fprintf(stderr, "paste_actual_hex=%s notice=%s\n", hex.c_str(),
+                         terminal.paste_notice().toStdString().c_str());
+        }
+        require(actual == expected, "paste child bytes differ");
     };
 
     // Keyboard single-line, immediate.
