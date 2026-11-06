@@ -1,0 +1,62 @@
+{
+  "schema": "termforge-qt-system-copy-validation-v1",
+  "baseline_main": "b5b17cdaca3851e32f88347eec7030e752bf70ec",
+  "source_commit": "3fb54d7dde63bc622787fd5dcc99140f8f0652b7",
+  "source_hash_note": "Hashes are SHA-256 of the committed LF Git blob content; Windows may materialize CRLF while the blob identity stays this value.",
+  "source_files_sha256": {
+    "src/qt/clipboard_writer.hpp": "88077015e142b994240c19d8c63d063be966a31c7e9537ca734ac4982b8031a6",
+    "src/qt/clipboard_system_test.cpp": "749c074dff9f2c69aefbc0bf85bb87e7efa9538ae8b6ce9c55ef2bab21c01cc1",
+    "src/qt/terminal_widget.hpp": "33413111593e0eb853dbb44b53b290339397b5dc7f6cd053ca0e9c478f4be884",
+    "src/qt/selection_fixture.hpp": "6892e018de96e79b21918e4b8d035c993548f8129429db1ef6a200ab87516b3d",
+    "src/qt/selection_migration_test.cpp": "2c1df85050552d32af2307558f2811f0e21c5cbfb89c5d750b0f0a75d73edcc4",
+    "CMakeLists.txt": "da853622032f4ec1e13ae36a8f29ecbd0d7fdc21d2fcb192bb577947c2c563ef",
+    ".github/workflows/qt-cpp.yml": "16612c941122528817f430f0c30dd8575a4ab719aeda0d842a594a0c4c5e5dfb"
+  },
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 offscreen (local); Windows QPA/hosted runner",
+    "conpty": "1.25.260930003",
+    "crt": "14.51.36247.0",
+    "binary_sha256": "e1c02a24524ad47817fe61070cbbebea40782696217f160c6a4d274ee6080b66"
+  },
+  "entries": {
+    "keyboard": "Ctrl+Shift+C (real Qt key event)",
+    "menu": "actual QMenu Copy action clicked with QTest mouse",
+    "clipboard": "SystemClipboardWriter CF_UNICODETEXT; fake writer locally",
+    "preserved_semantics": ["Ctrl+C sends 0x03", "no paste/find/word/line/autoscroll additions"]
+  },
+  "local": {
+    "qt_selection_migration": {"passed": true, "seconds": 1.10},
+    "qt_formal_path_regression": {"passed": 9, "failed": 0, "seconds": 13.59},
+    "fake_writer_checks": ["empty selection does not call writer", "keyboard entry exact selection text", "actual menu entry exact selection text", "synthetic failure leaves selection intact", "eviction reports invalidated"],
+    "system_cf_touched": false
+  },
+  "hosted": {
+    "test": "qt_clipboard_system",
+    "guard": "GITHUB_ACTIONS=true and RUNNER_ENVIRONMENT=github-hosted",
+    "status": "passed",
+    "cf_verified": true,
+    "run_id": "42143570635",
+    "job_id": "127649515327",
+    "checks": {
+      "keyboard_cf": true,
+      "menu_cf": true,
+      "empty_sentinel": true,
+      "occupied_failure": true,
+      "release_success": true,
+      "eviction_invalid": true
+    },
+    "expected_text": "COPY_UNICODE:中文 é  \\r\\n",
+    "holder": "separate process holding a real CF owner; explicit failure, release by test file, second explicit copy succeeds",
+    "initial_failure": "First hosted attempt returned OpenClipboard:1400 because Qt offscreen QWidget::winId is not a Win32 HWND; a hidden native owner window passed to the same SystemClipboardWriter fixed the test binding. Not a product copy failure.",
+    "personal_clipboard_guard": "No local CF writes; hosted test only runs with the disposable runner guard and does not alter user desktop."
+  },
+  "limitations": [
+    "System CF verification is bound to the disposable GitHub-hosted Windows run above; local/offscreen cache is not CF evidence.",
+    "Wide/combining-character copy columns, full clipboard-occupancy product UX/retry policy, paste, Find, word/line selection, autoscroll, physical presentation/DPI and performance are not covered.",
+    "The hosted test uses a hidden native owner window because it runs offscreen; product code uses the widget's native handle in a real Qt window.",
+    "Old B/CD addressing, remote VM calibration/v2, A/B/C, old six-stage failure and #27/#29/#30/#7 remain unchanged."
+  ]
+}
