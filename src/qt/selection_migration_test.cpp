@@ -7,8 +7,10 @@
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFontMetricsF>
+#include <QMenu>
 #include <QMouseEvent>
 #include <QTest>
+#include <QTimer>
 #include <QWheelEvent>
 #include <iostream>
 #include <string>
@@ -23,6 +25,21 @@ using termforge::qt::test::kSelectionSoftLine;
 using termforge::qt::test::selection_child;
 
 namespace {
+class FakeClipboard final : public termforge::qt::ClipboardWriter {
+public:
+    std::u16string text;
+    bool fail = false;
+    int writes = 0;
+    termforge::qt::ClipboardWrite write(const std::u16string& value) override {
+        ++writes;
+        if (fail) return {termforge::qt::ClipboardWrite::Status::failure, "synthetic failure"};
+        text = value;
+        return {termforge::qt::ClipboardWrite::Status::ok, {}};
+    }
+};
+std::u16string utf16(std::string_view value) {
+    return QString::fromUtf8(value.data(), static_cast<qsizetype>(value.size())).toStdU16String();
+}
 void require(bool condition, const std::string& message) {
     if (!condition) throw std::runtime_error(message);
 }
@@ -170,6 +187,14 @@ int main(int argc, char** argv) {
         QTest::qWait(20);
         require(first_terminal.hasFocus(), "first terminal did not regain focus");
 
+        // Empty selection is a distinct no-write result; it must not call the writer.
+        auto fake = std::make_unique<FakeClipboard>();
+        FakeClipboard* clipboard = fake.get();
+        first_terminal.setClipboardWriterForTest(std::move(fake));
+        const auto empty_copy = first_terminal.copy_to_clipboard();
+        require(empty_copy.status == termforge::qt::ClipboardWrite::Status::empty && clipboard->writes == 0,
+                "empty selection wrote the clipboard or reported success");
+
         // Browse back until the soft line is on the projected history page.
         int soft_row = -1;
         for (int attempt = 0; attempt < 30 && (soft_row = find_row(first_terminal, "SEL_SOFT_")) < 0; ++attempt)
@@ -197,6 +222,36 @@ int main(int argc, char** argv) {
         require(highlighted_cells(first_terminal) == 14,
                 "partial hard/soft highlight does not match the selected columns");
         capture(first_terminal, QStringLiteral("selection-history-highlight"));
+        const std::string partial_text =
+            kSelectionSoftLine.substr(150) + "\r\n" + kSelectionHardLine.substr(0, 5);
+
+        // Real Ctrl+Shift+C shortcut through the product entry.
+        QTest::keyClick(&first_terminal, Qt::Key_C, Qt::ControlModifier | Qt::ShiftModifier);
+        require(clipboard->writes == 1 && clipboard->text == utf16(partial_text),
+                "Ctrl+Shift+C did not send the selected source text to the clipboard writer");
+
+        // Actual context-menu Copy action (not a direct business-slot call).
+        QTimer::singleShot(0, [] {
+            auto* popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
+            require(popup != nullptr, "Copy context menu did not become active");
+            const auto actions = popup->actions();
+            require(!actions.empty() && actions.front()->text() == QStringLiteral("Copy"),
+                    "Copy context menu action is missing");
+            QTest::mouseClick(popup, Qt::LeftButton, Qt::NoModifier, popup->actionGeometry(actions.front()).center());
+            popup->close();
+        });
+        QContextMenuEvent menu_event(QContextMenuEvent::Mouse, QPoint(20, 20), first_terminal.mapToGlobal(QPoint(20, 20)));
+        QApplication::sendEvent(&first_terminal, &menu_event);
+        require(clipboard->writes == 2 && clipboard->text == utf16(partial_text),
+                "context-menu Copy did not send the selected source text");
+
+        // A system writer failure stays a failure and leaves the selection intact.
+        clipboard->fail = true;
+        const auto failed = first_terminal.copy_to_clipboard();
+        require(failed.status == termforge::qt::ClipboardWrite::Status::failure &&
+                first_terminal.has_selection() && first_terminal.copy_notice().startsWith("Copy failed"),
+                "clipboard failure was reported as success or cleared the selection");
+        clipboard->fail = false;
 
         // Display reflow: the same source range must survive a simultaneous resize.
         const std::string before_reflow = selected_text(first_terminal);
@@ -226,6 +281,9 @@ int main(int argc, char** argv) {
         const auto evicted_copy = first_terminal.copy_selection();
         require(evicted_copy.status != SelectionCopyStatus::ok && evicted_copy.text.empty(),
                 "evicted selection was resurrected or copied");
+        const auto evicted_write = first_terminal.copy_to_clipboard();
+        require(evicted_write.status == termforge::qt::ClipboardWrite::Status::invalidated,
+                "evicted product copy was not reported invalidated");
 
         // A new selection on the surviving page is invalidated by ED3, not
         // resurrected from an evicted range.

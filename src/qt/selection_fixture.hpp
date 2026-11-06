@@ -48,7 +48,8 @@ inline int selection_child() {
         tf_conpty::fail("SetConsoleMode(selection child)");
     selection_numbered(output.get(), 1, 120);
     selection_write(output.get(), "SEL_HEAD\r\n" + kSelectionSoftLine + "\r\n" +
-        kSelectionHardLine + "\r\nSEL_TAIL\r\n");
+        kSelectionHardLine + "\r\nSEL_TAIL\r\n"
+        "COPY_UNICODE:\xe4\xb8\xad\xe6\x96\x87 e\xcc\x81  \r\nCOPY_TAIL\r\n");
     selection_numbered(output.get(), 126, 165);
     selection_write(output.get(), "SEL>");
     for (;;) {
