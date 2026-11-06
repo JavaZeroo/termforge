@@ -71,6 +71,7 @@ class TerminalWidget final : public QWidget {
     TextSearch find_search_;
     std::optional<SearchMatch> find_current_;
     size_t find_current_index_ = 0;
+    bool find_last_wrapped_ = false;
     uint64_t find_generation_ = 0;
     QTimer find_timer_;
     std::unique_ptr<ClipboardWriter> clipboard_;
@@ -316,6 +317,11 @@ class TerminalWidget final : public QWidget {
             // Report the unavailable target even for an uncommitted high unit.
             model_.send(std::string{});
             event->ignore(); return;
+        }
+        if (find_panel_ && find_panel_->isVisible() &&
+            (event->key() == Qt::Key_F3)) {
+            navigate_find(event->modifiers().testFlag(Qt::ShiftModifier) ? SearchDirection::previous : SearchDirection::next);
+            event->accept(); return;
         }
         if (event->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier) &&
             event->key() == Qt::Key_F) {
@@ -590,9 +596,10 @@ class TerminalWidget final : public QWidget {
         const auto nav = find_search_.navigate(document, direction, anchor, true);
         if (!nav) {
             set_find_status(QStringLiteral("No matches"));
-            find_current_.reset(); update(); return;
+            find_current_.reset(); find_last_wrapped_ = false; update(); return;
         }
         find_current_ = nav->match; find_current_index_ = nav->index;
+        find_last_wrapped_ = nav->wrapped;
         viewport_.reveal(model_.screen(), nav->match.range.begin.line_id);
         set_find_status(QStringLiteral("%1 / %2%3").arg(nav->index + 1)
             .arg(find_search_.matches().size()).arg(nav->wrapped ? QStringLiteral(" (wrapped)") : QString()));
@@ -624,7 +631,6 @@ class TerminalWidget final : public QWidget {
         find_query_ = new QLineEdit(find_panel_);
         find_query_->setObjectName(QStringLiteral("findQuery"));
         find_query_->setPlaceholderText(QStringLiteral("Find literal text"));
-        find_query_->setMaxLength(4096);
         controls->addWidget(find_query_, 1);
         auto* previous = new QPushButton(QStringLiteral("Previous"), find_panel_);
         previous->setObjectName(QStringLiteral("findPrevious"));
@@ -654,6 +660,10 @@ class TerminalWidget final : public QWidget {
         if (watched == find_query_ && event->type() == QEvent::KeyPress) {
             auto* key = static_cast<QKeyEvent*>(event);
             if (key->key() == Qt::Key_Escape) { close_find(); return true; }
+            if (key->key() == Qt::Key_F3) {
+                navigate_find(key->modifiers().testFlag(Qt::ShiftModifier) ? SearchDirection::previous : SearchDirection::next);
+                return true;
+            }
             if (key->key() == Qt::Key_Return || key->key() == Qt::Key_Enter) {
                 navigate_find(key->modifiers().testFlag(Qt::ShiftModifier) ? SearchDirection::previous : SearchDirection::next);
                 return true;
@@ -817,6 +827,8 @@ public:
     bool find_visible_for_test() const { return find_panel_ && find_panel_->isVisible(); }
     QString find_status_for_test() const { return find_status_ ? find_status_->text() : QString{}; }
     size_t find_match_count_for_test() const { return find_search_.matches().size(); }
+    size_t find_current_index_for_test() const { return find_current_index_; }
+    bool find_last_wrapped_for_test() const { return find_last_wrapped_; }
     std::optional<TextRange> find_current_range_for_test() const {
         return find_current_ ? std::optional<TextRange>{find_current_->range} : std::nullopt;
     }
