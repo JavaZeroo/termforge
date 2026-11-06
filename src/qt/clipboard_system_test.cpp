@@ -170,8 +170,11 @@ int main(int argc, char** argv) {
     if (argc == 2 && std::string_view(argv[1]) == "--selection-child") {
         try { return selection_child(); } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
-    if (argc != 2 || std::string_view(argv[1]) != "--hosted-copy") {
-        std::cerr << "usage: qt_clipboard_system_test --hosted-copy|--selection-child|--clipboard-holder <ready> <release>\n";
+    const std::string_view mode = argc == 2 ? std::string_view(argv[1]) : std::string_view{};
+    const bool injected_owner = mode == "--hosted-copy";
+    const bool windows_qpa = mode == "--hosted-windows-copy";
+    if (!injected_owner && !windows_qpa) {
+        std::cerr << "usage: qt_clipboard_system_test --hosted-copy|--hosted-windows-copy|--selection-child|--clipboard-holder <ready> <release>\n";
         return 2;
     }
     if (!hosted()) {
@@ -198,11 +201,18 @@ int main(int argc, char** argv) {
         window.resize(1200, 900); window.show(); terminal.setFocus();
         require(model.start(executable, L"--selection-child", workspace.path().toStdWString()), "child did not start");
         await([&] { return find_row(terminal, "SEL>") >= 0; }, model, lifecycle, "child body missing");
-        const HWND hwnd = create_native_owner();
-        // The Qt test runs with the offscreen platform, whose QWidget winId is
-        // not a Win32 HWND; use the same writer with a real hidden owner.
-        terminal.setClipboardWriterForTest(
-            std::make_unique<termforge::qt::SystemClipboardWriter>(terminal, reinterpret_cast<quintptr>(hwnd)));
+        // The offscreen test needs an injected native owner because QWidget::winId
+        // is not a Win32 HWND there. The Windows-QPA mode deliberately leaves the
+        // default product writer and the widget's real native handle untouched.
+        HWND hwnd = nullptr;
+        if (injected_owner) {
+            hwnd = create_native_owner();
+            terminal.setClipboardWriterForTest(
+                std::make_unique<termforge::qt::SystemClipboardWriter>(terminal, reinterpret_cast<quintptr>(hwnd)));
+        } else {
+            hwnd = reinterpret_cast<HWND>(terminal.winId());
+            require(hwnd != nullptr, "Windows QPA did not provide a native widget HWND");
+        }
         // This CI runner may not expose a usable system clipboard at all. Record
         // that environment boundary explicitly instead of turning it into a
         // product copy failure or touching a personal clipboard.
@@ -211,7 +221,10 @@ int main(int argc, char** argv) {
             require(model.send(std::string(1, 'q')), "quit rejected after clipboard preflight");
             await([&] { return model.finished(); }, model, lifecycle, "child did not exit after clipboard preflight");
             std::cout << "{\"schema\":\"termforge-qt-clipboard-system-v1\",\"status\":\"blocked\","
-                         "\"reason\":\"OpenClipboard:" << error << "\",\"cf_verified\":false}\n";
+                         "\"reason\":\"OpenClipboard:" << error << "\",\"cf_verified\":false,"
+                         "\"qpa\":\"" << (windows_qpa ? "windows" : "offscreen") << "\","
+                         "\"offscreen_only\":" << (windows_qpa ? "false" : "true") << ","
+                         "\"clipboard_owner\":\"" << (injected_owner ? "injected-hidden-win32-window" : "product-widget-native-hwnd") << "\"}\n";
             return 0;
         }
         CloseClipboard();
@@ -280,11 +293,14 @@ int main(int argc, char** argv) {
         require(model.send(std::string(1, 'q')), "quit rejected");
         await([&] { return model.finished(); }, model, lifecycle, "child did not exit");
         require(model.exit_code() == 37 && model.cleanup_verified(), "child cleanup was not verified");
-        DestroyWindow(hwnd);
+        if (injected_owner) DestroyWindow(hwnd);
         std::cout << "{\"schema\":\"termforge-qt-clipboard-system-v1\",\"status\":\"passed\","
                      "\"keyboard_cf\":true,\"menu_cf\":true,\"empty_sentinel\":true,"
                      "\"occupied_failure\":true,\"release_success\":true,\"eviction_invalid\":true,"
-                     "\"cf_verified\":true,\"offscreen_only\":false}\n";
+                     "\"cf_verified\":true,\"qpa\":\"" << (windows_qpa ? "windows" : "offscreen") << "\","
+                     "\"offscreen_only\":" << (windows_qpa ? "false" : "true") << ","
+                     "\"clipboard_owner\":\"" << (injected_owner ? "injected-hidden-win32-window" : "product-widget-native-hwnd") << "\","
+                     "\"product_default_owner_verified\":" << (windows_qpa ? "true" : "false") << "}\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "Qt clipboard system: " << error.what() << '\n';

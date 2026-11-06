@@ -87,6 +87,10 @@ jobs:
         run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration)$' --no-tests=error --verbose
       - name: Run hosted-only Qt system clipboard copy
         run: python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe --hosted-copy
+      - name: Run hosted Windows QPA product-writer clipboard copy
+        env:
+          TERMFORGE_QT_QPA_PLATFORM: windows
+        run: python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe --hosted-windows-copy
       # Keep this configuration independent from the default/system-backend and
       # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
       # publication artifacts; this job does not produce a release package.
