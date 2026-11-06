@@ -12,9 +12,9 @@
 
 | 层 | 入口 | 结果 |
 |---|---|---|
-| 本地 fake reader + 真实 child 输入记录 | Ctrl+Shift+V 单行、Shift+Insert 多行取消/确认、实际 Paste 菜单中文/NFD、busy、目标关闭 | `qt_paste` 1/1；Qt 正式路径 10/10；fake reader，未触个人 CF |
-| hosted Windows QPA 默认 reader + 真实控件 HWND | Ctrl+Shift+V、实际 Paste 菜单、Shift+Insert；真实 CF；自有 holder 占用失败/释放后第二次动作 | run `42183487961` / job `127778260596`：`keyboard_cf/menu_cf/shift_insert_cf/occupied_failure/release_success=true`，`cf_verified` 由 child 接收字节核对；`qpa=windows`、默认 owner |
-| 同上 | 多行确认 | hosted 场景未验证（`multiline_confirm=false`, `multiline_scope=local-fake-reader-only`）；本地 fake reader 已覆盖取消零增量/确认一次 |
+| 本地 fake reader + 真实 child 输入记录 | Ctrl+Shift+V 单行、Shift+Insert 多行取消/确认、实际 Paste 菜单中文/NFD、busy、目标关闭、双会话切换、读取中关闭、新会话隔离 | `qt_paste` 1/1；Qt 正式路径 10/10；fake reader，未触个人 CF |
+| hosted Windows QPA 默认 reader + 真实控件 HWND | Ctrl+Shift+V、实际 Paste 菜单、Shift+Insert；真实 CF；自有 holder 占用失败/释放后第二次动作 | run `42183487961` / job `127778260596`：`keyboard_cf/menu_cf/shift_insert_cf/occupied_failure/release_success=true`，child 字节核对；`qpa=windows`、默认 owner |
+| 同上 | 多行确认 | **hosted 历史失败，未闭合**：首次 `eecf21f` 及修复后 `bc6a5af`/`5ea8e44` 均未出现 `L1\rL2`，notice cancelled；恢复额度已用尽，本轮不再 hosted 重试。详见[尝试账本](attempt-ledger.md)。本地 fake reader 覆盖取消零增量/确认一次，不能替代 hosted |
 
 本地 `qt_paste` 的 child 把收到的每个字节写入文件，不执行粘贴文本；每步以动作前文件内容为基线，按精确字节增量核对单行一次、多行取消零增量、确认一次。hosted 场景的独立 child 同样只记录固定合成输入，不执行粘贴内容。
 
@@ -22,6 +22,7 @@
 
 - 开发中先发现既有 `qt_unicode_input` 仍断言粘贴快捷键“未实现”，更新该测试并禁用其 reader，使其不会触碰个人 CF；这是测试合同随入口实现更新，不是产品回归。
 - 本地 Qt 正式路径 10/10；hosted 真实 CF 三入口与占用/释放通过。多行 hosted 确认未纳入（明确标注）；第二会话切换/关闭复用只在本地 fake reader 场景覆盖关闭目标，未在 hosted 组合验证。
+- 多行 hosted 失败保留为历史失败，不删除、不称 flaky；已用一次修复后重试仍失败，恢复额度耗尽，本 PR 不把它当通过。离线诊断/最小修复方案见[尝试账本](attempt-ledger.md)。
 - 不覆盖 bracketed paste、备用屏/TUI 粘贴、自动逐行、Find、完整文字/选择、物理呈现/DPI/性能。系统 CF 只在该一次性 hosted Windows QPA 运行内验证；本地/offscreen 缓存不是 CF 证据。
 
 ## 身份

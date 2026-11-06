@@ -1,14 +1,14 @@
 {
   "schema": "termforge-qt-system-paste-validation-v1",
   "baseline_main": "3b063e3c8f6c57cd01a0c5339c2145969b92aa86",
-  "source_commit": "354c1e1",
+  "source_commit": "f4f50f2",
   "documentation_note": "Paste implementation is in 354c1e1; this validation is a docs-only follow-up.",
   "source_hash_note": "Hashes are SHA-256 of committed LF Git blob content at 354c1e1; Windows may materialize CRLF while the blob identity stays this value.",
   "source_files_sha256": {
     "src/qt/clipboard_reader.hpp": "9c923eb646fc176900484af1e4607cae37c7211548f092746a19683edbb9fd66",
-    "src/qt/terminal_widget.hpp": "0aa6c9d3beaaebcb400ea4377c4434de7c7fa73371da7186c0dd34b96f9b95f2",
+    "src/qt/terminal_widget.hpp": "d452c5d484aa456d27fd985976adc8ae0e9e7e2e94c80600518c291b6df73825",
     "src/qt/paste_fixture.hpp": "d6c203eb9f2aa04513831ec2a18412c900bcf0233adf625e1b1ec90331f56ffb",
-    "src/qt/paste_test.cpp": "9bae6b304e520b7abd211d8373384a19def1f5e0c2ab5e54dff07e1f84099a49",
+    "src/qt/paste_test.cpp": "646f9a4395aa10b89d1cab601751142b9f13162436ea60eb6a23103fa189230f",
     "src/qt/clipboard_system_test.cpp": "a16037c1bba86690789cae6b6c6a523154f96637f53ab49046f99ad4b3d7cfbb",
     "src/qt/unicode_input_test.cpp": "f6867c5d2006ed6b75dc0a3693f58d0a0b0022896e87bb7cbe55739881f842c2",
     "src/qt/run_smoke.py": "74d4c882bb859e8c85bace5e6db9741af7128008ca04df7a97da22c76d870692",
@@ -32,9 +32,28 @@
     "target": "initiating SessionModel child PID"
   },
   "local": {
-    "qt_paste": {"passed": true, "seconds": 1.01},
-    "qt_formal_path_regression": {"passed": 10, "failed": 0, "seconds": 14.91},
-    "checks": ["keyboard single-line once", "Shift+Insert multiline cancel sends zero", "confirm sends normalized CR once", "actual menu Unicode + NFD", "busy rejects second entry", "closed target rejected", "system_cf_touched=false", "offscreen_only=true"],
+    "qt_paste": {
+      "passed": true,
+      "seconds": 1.6
+    },
+    "qt_formal_path_regression": {
+      "passed": 10,
+      "failed": 0,
+      "seconds": 14.87
+    },
+    "checks": [
+      "keyboard single-line once",
+      "Shift+Insert multiline cancel sends zero",
+      "confirm sends normalized CR once",
+      "actual menu Unicode + NFD",
+      "busy rejects second entry",
+      "closed target rejected",
+      "system_cf_touched=false",
+      "offscreen_only=true",
+      "focus switch stays with origin",
+      "close during read sends nothing to old/new session",
+      "second session independent"
+    ],
     "child": "real child records received bytes to a file; never executes the pasted text"
   },
   "hosted_windows_qpa": {
@@ -51,10 +70,26 @@
     "release_success": true,
     "multiline_confirm": false,
     "multiline_cancel": false,
-    "multiline_scope": "local-fake-reader-only",
-    "description": "Real CF content written by the test, read by the default product reader through the real Windows QPA widget; each public entry appended exactly the expected child bytes. A real holder process caused an explicit failure; after release a second explicit action succeeded. Multiline dialog branch was not included in this hosted run and is covered only by the local fake-reader test."
+    "multiline_scope": "historical hosted failure; local-fake-reader-only success",
+    "description": "Real CF content written by the test, read by the default product reader through the real Windows QPA widget; each public entry appended exactly the expected child bytes. A real holder process caused an explicit failure; after release a second explicit action succeeded. Multiline dialog branch was not included in this hosted run and is covered only by the local fake-reader test.",
+    "multiline_failure": {
+      "first_head": "eecf21f",
+      "first_run_id": "42181178347",
+      "first_job_id": "127770923069",
+      "retry_head": "bc6a5af/5ea8e44",
+      "retry_run_id": "42182236823",
+      "retry_job_id": "127774271059",
+      "actual_hex": "5053542de4b8ade696872065cc815053542d4d454e555053542d494e53455254",
+      "notice": "Paste cancelled",
+      "exit_code": 1,
+      "timed_out": false,
+      "job_active": 0,
+      "recovery_status": "one fix plus retry failed; exhausted; no further hosted multiline retry this round",
+      "ledger": "attempt-ledger.md"
+    }
   },
   "limitations": [
+    "Hosted multiline confirmation is a preserved historical failure, not a pass; recovery budget exhausted and no new hosted retry was run.",
     "Hosted real-CF paste covers the three single-line entries and owner-held failure/release; multiline confirmation is local-fake-reader-only, and second-session switch/close reuse is not hosted-combined.",
     "No bracketed paste, alternate-screen/TUI paste policy, automatic line-by-line send, Find, word/line selection, physical presentation/DPI or performance.",
     "Child byte recording is transport/child-observed input, not an execution or rendering oracle; no system clipboard is touched locally.",
