@@ -82,6 +82,19 @@ inline int selection_child(const std::wstring& record_path = {}) {
             selection_write(output.get(), "\x1b" "cSEL_RIS\r\nSEL>");
             continue;
         }
+        if (key == 'm') {
+            // Bounded deterministic loads: 30 rows x 40 "AB" hits (1200 total)
+            // and 100 rows with one sparse "ZZ" near the end (>8000 scan bytes).
+            std::string many;
+            for (int row = 0; row < 52; ++row) many += std::string(78, 'X') + "ZZ\r\n";
+            for (int row = 0; row < 26; ++row) {
+                for (int hit = 0; hit < 40; ++hit) many += "AB";
+                many += "\r\n";
+            }
+            many += "SEL_MANY\r\nSEL>";
+            selection_write(output.get(), many);
+            continue;
+        }
     }
 }
 

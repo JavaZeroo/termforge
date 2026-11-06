@@ -73,6 +73,7 @@ class TerminalWidget final : public QWidget {
     size_t find_current_index_ = 0;
     bool find_last_wrapped_ = false;
     uint64_t find_generation_ = 0;
+    int find_interval_ms_ = 0;
     QTimer find_timer_;
     std::unique_ptr<ClipboardWriter> clipboard_;
     ClipboardWrite last_copy_;
@@ -562,7 +563,7 @@ class TerminalWidget final : public QWidget {
         }
         find_current_.reset(); find_current_index_ = 0;
         set_find_status(QStringLiteral("Searching..."));
-        find_timer_.start(0);
+        find_timer_.start(find_interval_ms_);
     }
     void step_find() {
         const TextDocument document(model_.screen());
@@ -593,10 +594,13 @@ class TerminalWidget final : public QWidget {
         const TextDocument document(model_.screen());
         const std::optional<TextPosition> anchor = find_current_
             ? std::optional<TextPosition>{find_current_->range.begin} : std::optional<TextPosition>{find_anchor()};
-        const auto nav = find_search_.navigate(document, direction, anchor, true);
+        const bool allow_wrap = find_search_.status() == SearchStatus::complete ||
+            find_search_.status() == SearchStatus::capped;
+        const auto nav = find_search_.navigate(document, direction, anchor, allow_wrap);
         if (!nav) {
-            set_find_status(QStringLiteral("No matches"));
-            find_current_.reset(); find_last_wrapped_ = false; update(); return;
+            set_find_status(allow_wrap ? QStringLiteral("No matches")
+                                       : QStringLiteral("No further scanned match"));
+            find_last_wrapped_ = false; update(); return;
         }
         find_current_ = nav->match; find_current_index_ = nav->index;
         find_last_wrapped_ = nav->wrapped;
@@ -829,6 +833,8 @@ public:
     size_t find_match_count_for_test() const { return find_search_.matches().size(); }
     size_t find_current_index_for_test() const { return find_current_index_; }
     bool find_last_wrapped_for_test() const { return find_last_wrapped_; }
+    void set_find_timer_interval_for_test(int milliseconds) { find_interval_ms_ = (std::max)(0, milliseconds); }
+    SearchStatus find_search_status_for_test() const { return find_search_.status(); }
     std::optional<TextRange> find_current_range_for_test() const {
         return find_current_ ? std::optional<TextRange>{find_current_->range} : std::nullopt;
     }

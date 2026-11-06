@@ -8,6 +8,7 @@
 #include <QCheckBox>
 #include <QElapsedTimer>
 #include <QFile>
+#include <QInputMethodEvent>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTest>
@@ -52,6 +53,21 @@ void await_find_done(TerminalWidget& terminal, SessionModel& model, QElapsedTime
 size_t line_rank(SessionModel& model, uint64_t id) {
     const TextDocument document(model.screen());
     return document.index_of(id).value_or(std::numeric_limits<size_t>::max());
+}
+void clear_query(QLineEdit* query) {
+    query->setFocus();
+    QTest::keyClick(query, Qt::Key_A, Qt::ControlModifier);
+    QTest::keyClick(query, Qt::Key_Backspace);
+}
+void type_ascii(QLineEdit* query, const QString& text) {
+    clear_query(query);
+    QTest::keyClicks(query, text);
+}
+void commit_ime(QLineEdit* query, const QString& text) {
+    clear_query(query);
+    QInputMethodEvent event;
+    event.setCommitString(text);
+    QApplication::sendEvent(query, &event);
 }
 void start_child(SessionModel& model, TerminalWidget& terminal, QWidget& window,
                  const std::wstring& executable, const QString& record, const std::wstring& working, const char* message) {
@@ -179,7 +195,7 @@ int main(int argc, char** argv) {
         require(terminal.find_match_count_for_test() == 0, "empty query retained matches");
         require(terminal.find_status_for_test() == QStringLiteral("No query"), "empty query lacks explicit status");
 
-        terminal.set_find_query_for_test(QStringLiteral("sel_head"));
+        type_ascii(first_query, QStringLiteral("sel_head"));
         await_find_done(terminal, first, lifecycle, "case-sensitive no-match did not finish");
         require(terminal.find_match_count_for_test() == 0, "case-sensitive query unexpectedly matched");
         auto* match_case = first_window.findChild<QCheckBox*>(QStringLiteral("findCase"));
@@ -189,16 +205,33 @@ int main(int argc, char** argv) {
               "unchecked Match case did not find the folded hit");
         QTest::mouseClick(match_case, Qt::LeftButton);
 
-        terminal.set_find_query_for_test(QString(4097, QLatin1Char('x')));
-        require(terminal.find_query_text_for_test().size() == 4097, "query was silently truncated");
+        // Real edit path: exactly 4096 ASCII bytes is legal, one more is rejected
+        // with the full input preserved and an explicit status.
+        type_ascii(first_query, QString(4096, QLatin1Char('x')));
+        require(terminal.find_query_text_for_test().size() == 4096, "4096-byte legal query was changed");
+        require(!terminal.find_status_for_test().contains(QStringLiteral("4096")),
+                "legal 4096-byte query was rejected");
+        QTest::keyClicks(first_query, QStringLiteral("x"));
+        require(terminal.find_query_text_for_test().size() == 4097, "4097-byte query was truncated");
         require(terminal.find_status_for_test().contains(QStringLiteral("4096")),
                 "4097-byte query did not report the existing limit");
-        terminal.set_find_query_for_test(QString(1366, QChar(0x4e2d)));
+
+        // Chinese/NFD input uses Qt input-method commit events (not physical IME).
+        commit_ime(first_query, QString(1365, QChar(0x4e2d)));  // 4095 UTF-8 bytes
+        require(terminal.find_query_text_for_test().size() == 1365, "legal Chinese query was changed");
+        require(!terminal.find_status_for_test().contains(QStringLiteral("4096")),
+                "legal 4095-byte Chinese query was rejected");
+        commit_ime(first_query, QString(1366, QChar(0x4e2d)));  // 4098 bytes
+        require(terminal.find_query_text_for_test().size() == 1366, "over-limit Chinese query was truncated");
         require(terminal.find_status_for_test().contains(QStringLiteral("4096")),
                 "over-limit Chinese query did not report the limit");
-        terminal.set_find_query_for_test(QString(QString::fromUtf8("e\xcc\x81")).repeated(2049));
+        commit_ime(first_query, QString(QString::fromUtf8("e\xcc\x81")).repeated(2049));
+        require(terminal.find_query_text_for_test() == QString(QString::fromUtf8("e\xcc\x81")).repeated(2049),
+                "over-limit NFD query was truncated");
         require(terminal.find_status_for_test().contains(QStringLiteral("4096")),
                 "over-limit NFD query did not report the limit");
+        require(read_input(first_input).empty(),
+                "query edit path leaked into the first child");
 
         terminal.set_find_query_for_test(QStringLiteral("SEL_HEAD"));
         await([&] { return terminal.find_current_range_for_test().has_value(); }, first, lifecycle,
@@ -248,13 +281,77 @@ int main(int argc, char** argv) {
         require(read_input(first_input) == "a" || read_input(first_input) == "ar",
                 "post-Escape input reached the wrong child");
 
+        // A third real session provides bounded, deterministic >1024 hits and
+        // a scan longer than one 4096-unit budget, without injecting documents.
+        const QString third_input = workspace.path() + "/third-input.bin";
+        SessionModel third; QWidget third_window; TerminalWidget third_terminal(third, &third_window);
+        third_window.resize(1200, 900);
+        start_child(third, third_terminal, third_window, executable, third_input,
+                    workspace.path().toStdWString(), "find third child did not start");
+        QTest::qWait(500);
+        require(third.send(std::string(1, 'm')), "many-hit command rejected");
+        await([&] { return third.screen().retained_size() >= 78; }, third, lifecycle,
+              "many-hit child output missing");
+        third_window.activateWindow(); third_terminal.setFocus(); QTest::qWait(30);
+        third_terminal.set_find_timer_interval_for_test(25);
+        QTest::keyClick(&third_terminal, Qt::Key_F, Qt::ControlModifier | Qt::ShiftModifier);
+        auto* third_query = third_window.findChild<QLineEdit*>(QStringLiteral("findQuery"));
+        require(third_query && third_query->hasFocus(), "third Find query did not focus");
+        type_ascii(third_query, QStringLiteral("ZZ"));
+        QTest::qWait(35);
+        require(third_terminal.find_search_status_for_test() == termforge::SearchStatus::running,
+                "long scan did not remain running after one bounded stage");
+        require(third_terminal.find_match_count_for_test() > 0,
+                "long scan exposed no partial matches");
+        require(third_terminal.find_status_for_test().startsWith(QStringLiteral("Searching")),
+                "long scan lacks an observable Searching stage");
+        auto* third_next = third_window.findChild<QPushButton*>(QStringLiteral("findNext"));
+        const size_t partial_before = third_terminal.find_current_index_for_test();
+        QTest::mouseClick(third_next, Qt::LeftButton);
+        require(third_terminal.find_current_index_for_test() < third_terminal.find_match_count_for_test(),
+                "running-scan navigation left the scanned prefix");
+        require(!third_terminal.find_last_wrapped_for_test(),
+                "running-scan navigation wrapped into an unscanned area");
+        require(third_terminal.find_current_index_for_test() != partial_before ||
+                third_terminal.find_status_for_test() == QStringLiteral("No further scanned match"),
+                "running-scan Next neither advanced nor reported the scanned-prefix boundary");
+        await([&] {
+            const auto state = third_terminal.find_search_status_for_test();
+            return state == termforge::SearchStatus::complete || state == termforge::SearchStatus::capped;
+        }, third, lifecycle, "long scan did not complete");
+        require(third_terminal.find_match_count_for_test() == 52, "long scan hit count differs");
+        require(third_terminal.find_status_for_test().contains(QStringLiteral("52 matches")),
+                "long scan completion status differs");
+
+        // Repeated short literals exceed 1024 in retained rows; the existing cap
+        // is asserted through the real query entry, including finite wrap.
+        type_ascii(third_query, QStringLiteral("AB"));
+        await([&] { return third_terminal.find_search_status_for_test() == termforge::SearchStatus::capped; },
+              third, lifecycle, "1024-result cap was not reached through real child output");
+        require(third_terminal.find_match_count_for_test() == 1024, "capped result count is not 1024");
+        require(third_terminal.find_status_for_test().contains(QStringLiteral("capped")),
+                "capped status lacks the truncation notice");
+        for (int guard = 0; guard < 1030 && third_terminal.find_current_index_for_test() != 0; ++guard)
+            QTest::mouseClick(third_window.findChild<QPushButton*>(QStringLiteral("findPrevious")), Qt::LeftButton);
+        require(third_terminal.find_current_index_for_test() == 0, "could not position at capped first hit");
+        QTest::mouseClick(third_window.findChild<QPushButton*>(QStringLiteral("findPrevious")), Qt::LeftButton);
+        require(third_terminal.find_last_wrapped_for_test() &&
+                third_terminal.find_current_index_for_test() == 1023,
+                "capped Previous did not wrap finitely to the last hit");
+        QTest::mouseClick(third_window.findChild<QPushButton*>(QStringLiteral("findNext")), Qt::LeftButton);
+        require(third_terminal.find_last_wrapped_for_test() &&
+                third_terminal.find_current_index_for_test() == 0,
+                "capped Next did not wrap finitely to the first hit");
+        require(read_input(third_input) == "m", "many-hit query leaked into the third child");
+
         std::cout << "{\"schema\":\"termforge-qt-find-v1\",\"status\":\"passed\","
                      "\"multi_match_order\":true,\"wrap\":true,\"exact_highlight\":true,"
                      "\"history_reveal\":true,\"resize_source_migration\":true,"
                      "\"eviction_no_resurrection\":true,\"epoch_invalidation\":true,"
                      "\"two_session_isolation\":true,\"query_zero_leak\":true,"
                      "\"escape_input_once\":true,\"empty_query\":true,\"case_toggle\":true,"
-                     "\"limit_bytes\":true,\"return_f3\":true,\"offscreen_only\":true}\n";
+                     "\"limit_bytes\":true,\"return_f3\":true,\"real_4096_limit\":true,"
+                     "\"real_1024_cap\":true,\"partial_scan_no_wrap\":true,\"offscreen_only\":true}\n";
         require(first.send(std::string(1, 'q')), "first child quit rejected");
         require(second.send(std::string(1, 'q')), "second child quit rejected");
         await([&] { return first.finished(); }, first, lifecycle, "first child did not exit");
