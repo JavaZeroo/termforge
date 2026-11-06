@@ -1,0 +1,54 @@
+{
+  "schema": "termforge-qt-find-validation-v1",
+  "baseline_main": "3b063e3c8f6c57cd01a0c5339c2145969b92aa86",
+  "source_commit": "3888d84",
+  "source_hash_note": "Hashes are SHA-256 of committed LF Git blob content at 3888d84; this validation is a docs-only follow-up.",
+  "source_files_sha256": {
+    "src/qt/terminal_widget.hpp": "bc97bc949fde6a742ffedc9546d0c9eb7e4fd5035c768249a42e5bb5d15624c8",
+    "src/qt/find_test.cpp": "a9f8357206f331074cffd78ac4c363229f987169b319dd248be57366b7ee35a9",
+    "CMakeLists.txt": "93c6977a6978c061bdf675eac3bcf3b61ee3b775f9454676f86c0930bf3ab2d9",
+    ".github/workflows/qt-cpp.yml": "e1a0f4c0496a02bb2434e71befcaaf0a114808629950d10c59f3ff29fbbefded"
+  },
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 offscreen",
+    "conpty": "1.25.260930003",
+    "crt": "14.51.36247.0"
+  },
+  "entries": {
+    "shortcut": "Ctrl+Shift+F actual Qt key event",
+    "query": "QLineEdit in current-session Find panel",
+    "navigation": "actual Previous/Next buttons and Return/Shift+Return",
+    "close": "Escape or Close restores terminal focus"
+  },
+  "checks": {
+    "shortcut_open": true,
+    "query_focus": true,
+    "literal_source_hit": true,
+    "history_reveal": true,
+    "painted_highlight_projection": true,
+    "previous_next": true,
+    "no_match": true,
+    "escape_focus": true,
+    "query_limit_4096": true,
+    "query_sent_to_child": false,
+    "system_clipboard_touched": false,
+    "offscreen_only": true
+  },
+  "tests": {
+    "qt_find": {"passed": 1, "failed": 0, "seconds": 1.08},
+    "qt_formal_path_regression": {"passed": 10, "failed": 0, "seconds": 14.51}
+  },
+  "evidence": {
+    "readme": "README.md",
+    "screenshot": "find-panel.png",
+    "fixture": "deterministic selection child (SEL_SOFT_ source hit; query not sent as terminal input)"
+  },
+  "limitations": [
+    "Fixed ASCII literal sample and offscreen Qt; Chinese/NFD only claims literal scalar matching.",
+    "No word/line selection, scrollbar/page-key history, alternate-screen/TUI Find, physical presentation/DPI, full Unicode graphemes or performance thresholds.",
+    "This slice does not close #29/#30/R2; old B/CD, remote VM calibration/v2, A/B/C and old six-stage failures remain unchanged."
+  ]
+}
