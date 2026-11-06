@@ -14,7 +14,7 @@
 #include <QCloseEvent>
 #include <QFontDatabase>
 #include <QFontMetricsF>
-#include <QGuiApplication>
+#include <QApplication>\n#include <QGuiApplication>
 #include <QInputMethodEvent>
 #include <QKeyEvent>
 #include <QDialog>
@@ -203,7 +203,12 @@ class TerminalWidget final : public QWidget {
             box.addButton(QStringLiteral("Cancel"), QMessageBox::RejectRole);
             box.setDefaultButton(qobject_cast<QPushButton*>(accept));
             confirmed = box.exec() == QDialog::Accepted;
+            if (QWidget* top = window()) {
+                top->activateWindow();
+                top->raise();
+            }
             setFocus(Qt::OtherFocusReason);
+            QApplication::processEvents();
             if (!confirmed) {
                 set_paste_notice(QStringLiteral("Paste cancelled"));
                 return;
