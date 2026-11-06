@@ -109,6 +109,7 @@ int main(int argc, char** argv) {
         const DWORD length = GetModuleFileNameW(nullptr, executable, 32768);
         require(length && length < 32768, "paste executable unavailable");
         const QString child_input = workspace.path() + "/child-input.bin";
+        const QString second_input = workspace.path() + "/second-input.bin";
         SessionModel model; QWidget window; TerminalWidget terminal(model, &window);
         window.resize(1200, 900); window.show(); terminal.setFocus();
         require(model.start(executable, L"--paste-child \"" + child_input.toStdWString() + L"\"",
@@ -119,6 +120,19 @@ int main(int argc, char** argv) {
         FakeReader* fake = reader.get();
         terminal.setClipboardReaderForTest(std::move(reader));
         require(terminal.hasFocus(), "paste terminal lacks focus");
+        SessionModel second; QWidget second_window; TerminalWidget second_terminal(second, &second_window);
+        second_window.resize(1200, 900); second_window.show();
+        require(second.start(executable, L"--paste-child \"" + second_input.toStdWString() + L"\"",
+                             workspace.path().toStdWString()), "second paste child did not start");
+        await([&] { return termforge::project_line(second.screen().visible_lines()[0]).text.find("PASTE_READY") != std::string::npos; },
+              second, lifecycle, "second paste prompt missing");
+        auto second_reader = std::make_unique<FakeReader>();
+        FakeReader* second_fake = second_reader.get();
+        second_terminal.setClipboardReaderForTest(std::move(second_reader));
+        window.activateWindow();
+        terminal.setFocus();
+        QTest::qWait(20);
+        require(terminal.hasFocus(), "first paste terminal did not regain focus");
 
         // Keyboard single-line: immediate, exactly once, no confirmation.
         fake->value = {ClipboardRead::Status::ok, u"TF-PASTE", {}};
@@ -159,18 +173,48 @@ int main(int argc, char** argv) {
         QTest::qWait(350);
         require(terminal.paste_notice() == QStringLiteral("Pasted"), "first blocked paste did not finish");
 
-        // Closing the target ends the transfer/target distinction.
-        fake->delay_ms = 0;
-        require(model.send(std::string(1, '\x03')), "paste child quit rejected");
-        await([&] { return model.finished(); }, model, lifecycle, "paste child did not exit");
-        require(model.exit_code() == 37 && model.cleanup_verified(), "paste child cleanup was not verified");
-        terminal.initiate_paste_for_test();
-        require(terminal.paste_notice().startsWith(QStringLiteral("Paste failed: no active terminal")),
-                "paste after target close was not rejected");
-
+        // Focus/tab switch: the in-flight task stays with the initiating session.
+        const std::string switch_baseline = read_file(child_input);
+        {
+            fake->delay_ms = 120;
+            fake->value = {ClipboardRead::Status::ok, u"ISO-SWITCH", {}};
+            terminal.initiate_paste_for_test();
+            second_window.activateWindow();
+            second_terminal.setFocus();
+            QTest::qWait(30);
+            QElapsedTimer phase; phase.start();
+            while (read_file(child_input) != switch_baseline + "ISO-SWITCH" && phase.elapsed() < 3000) QTest::qWait(10);
+            require(read_file(child_input) == switch_baseline + "ISO-SWITCH", "switched-target paste did not stay with its origin");
+            require(read_file(second_input).empty(), "paste leaked into the second session after focus switch");
+        }
+        // Close during the asynchronous read: the old task must not reach a new session.
+        const std::string close_baseline = read_file(child_input);
+        {
+            fake->delay_ms = 300;
+            fake->value = {ClipboardRead::Status::ok, u"ISO-CLOSED", {}};
+            terminal.initiate_paste_for_test();
+            QTest::qWait(30);
+            model.close();
+            await([&] { return model.finished(); }, model, lifecycle, "paste target did not close");
+            QTest::qWait(400);
+            require(read_file(child_input) == close_baseline, "closed-target paste reached the old child");
+            require(read_file(second_input).empty(), "closed-target paste reached the new session");
+        }
+        // New session remains independent and usable.
+        second_fake->value = {ClipboardRead::Status::ok, u"ISO-SECOND", {}};
+        second_window.activateWindow(); second_terminal.setFocus(); QTest::qWait(20);
+        QTest::keyClick(&second_terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
+        QElapsedTimer second_phase; second_phase.start();
+        while (read_file(second_input) != "ISO-SECOND" && second_phase.elapsed() < 3000) QTest::qWait(10);
+        require(read_file(second_input) == "ISO-SECOND", "second session paste did not work independently");
+        require(model.finished(), "closed first session unexpectedly restarted");
+        require(second.send(std::string(1, '\x03')), "second paste child quit rejected");
+        await([&] { return second.finished(); }, second, lifecycle, "second paste child did not exit");
+        require(second.exit_code() == 37 && second.cleanup_verified(), "second paste child cleanup was not verified");
         std::cout << "{\"schema\":\"termforge-qt-paste-v1\",\"status\":\"passed\","
                      "\"keyboard_single\":true,\"shift_insert_cancel_confirm\":true,"
                      "\"menu_unicode\":true,\"busy\":true,\"closed_target\":true,"
+                     "\"switch_isolation\":true,\"close_during_read\":true,\"new_session_isolated\":true,"
                      "\"system_cf_touched\":false,\"offscreen_only\":true,\"presented_done\":null}\n";
         return 0;
     } catch (const std::exception& error) {

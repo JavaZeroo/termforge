@@ -185,6 +185,11 @@ class TerminalWidget final : public QWidget {
             set_paste_notice(QStringLiteral("Paste failed: ") + QString::fromStdString(result.error));
             return;
         }
+        if (!model_.running() || model_.resize_state().child_pid != paste_target_) {
+            set_paste_notice(QStringLiteral("Paste failed: target session changed or closed"));
+            paste_target_ = 0;
+            return;
+        }
         tf_shell::PreparedPaste prepared;
         try {
             prepared = tf_shell::prepare_paste(result.text);
@@ -218,9 +223,8 @@ class TerminalWidget final : public QWidget {
             set_paste_notice(QStringLiteral("Paste failed: no active terminal"));
             return;
         }
-        paste_target_ = model_.resize_state().child_pid;
-        if (!paste_target_) {
-            set_paste_notice(QStringLiteral("Paste failed: no active terminal"));
+        if (!paste_target_ || model_.resize_state().child_pid != paste_target_) {
+            set_paste_notice(QStringLiteral("Paste failed: target session changed or closed"));
             return;
         }
         try {
@@ -285,6 +289,11 @@ class TerminalWidget final : public QWidget {
             return;
         }
         if (!model_.running()) {
+            set_paste_notice(QStringLiteral("Paste failed: no active terminal"));
+            return;
+        }
+        paste_target_ = model_.resize_state().child_pid;
+        if (!paste_target_) {
             set_paste_notice(QStringLiteral("Paste failed: no active terminal"));
             return;
         }
