@@ -893,7 +893,12 @@ public:
     }
     ~TerminalWidget() override { model_.on_changed = {}; }
     void refresh_session() {
-        if (!model_.running()) keyboard_.reset();
+        if (!model_.running()) {
+            keyboard_.reset();
+            stop_selection_autoscroll();
+            selecting_ = false;
+            selection_anchor_.reset();
+        }
         const TextDocument document(model_.screen());
         selection_.reconcile(document);
         if (selection_anchor_ && !document.valid(*selection_anchor_)) selection_anchor_.reset();
@@ -961,6 +966,7 @@ public:
     ClipboardWrite last_copy() const { return last_copy_; }
     QString copy_notice() const { return copy_notice_; }
     bool has_selection() const { return selection_.range().has_value(); }
+    std::optional<TextRange> selection_range_for_test() const { return selection_.range(); }
     bool selection_autoscroll_active_for_test() const { return selection_autoscroll_timer_.isActive(); }
     int selection_autoscroll_direction_for_test() const { return selection_autoscroll_direction_; }
     int selection_autoscroll_ticks_for_test() const { return selection_autoscroll_ticks_; }
