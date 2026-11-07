@@ -1,16 +1,21 @@
 {
   "schema": "termforge-qt-history-scrollbar-validation-v1",
   "baseline_main": "ce2bbbacacf49b3864932fad19464d465e638426",
-  "source_commit": "fe3a79a",
-  "source_hash_note": "SHA-256 of committed LF blob content at fe3a79a; docs follow-up.",
+  "source_commit": "6a2749f",
+  "source_hash_note": "SHA-256 of committed LF blob content at 6a2749f; docs follow-up.",
   "source_files_sha256": {
     "src/qt/terminal_widget.hpp": "770242a69cfb04688a0d60f71532b251901b70b34fe5704db096ad7137ca747b",
-    "src/qt/history_navigation_test.cpp": "d1ce06e5a8696af5a2c6384aead1d0af4c6f62f5a3ad3d5c619ba2651edb1d76",
+    "src/qt/history_navigation_test.cpp": "a4929e20def0538d640b651b2a788c455601a68c729be611165549f982b6c44d",
     "src/qt/hidden_retention_test.cpp": "29ccbbd91fb279a9dd159f96cddd0224b1716421a2f3349e200d2e522c03e271",
     "src/qt/selection_migration_test.cpp": "31cb8ed0d4ab4708b3885c8e6969d4a0125b5a07b64f92de0890bfca90809882",
     "src/qt/resize_smoke.cpp": "92587fd2aa32296b9b784854c800fca86a8bf0ad52b28390a63a36e4c6fec631",
     "src/qt/terminal_modes_test.cpp": "ac2af74f312cfde6b4ef799bbe91fb2eab5c5f7b292981d30ff7fdfbedca06e9",
-    "src/qt/find_test.cpp": "f1df33c4bb3f36acc6366492d8a94e5ed9c54c854c52ef1cb95bd67f44b6bfcc"
+    "src/qt/find_test.cpp": "f1df33c4bb3f36acc6366492d8a94e5ed9c54c854c52ef1cb95bd67f44b6bfcc",
+    "src/qt/history_fixture.hpp": "d9fb37df2a7834a49788ec7eb4ea07ddab9766570838075c581cbbd738c931d9",
+    "src/qt/resize_fixture.hpp": "065745e70db5f3341be60dd4c7f3d3d2aea0b995ca1782090ce2ddfa9b87e774",
+    "src/qt/scrollbar_size_test.cpp": "a280dccac1fee1f6dee0e61e75e1f32d32f8465d791d2a74869eb22f82f1ef28",
+    "CMakeLists.txt": "24efd481f48a43a66e5c91f4fbd4120ba2382af9dc69347e42ce731008cb58fa",
+    ".github/workflows/qt-cpp.yml": "7d9bab2caed2d3ee2fdee41adffbc5708ac6e6227d1968a3948a7bfdbf56b018"
   },
   "environment": {
     "os": "Windows 11 x64 build 26200",
@@ -33,7 +38,14 @@
     "two_sessions": true,
     "existing_wheel_keys_selection": true,
     "system_clipboard_touched": false,
-    "offscreen_only": true
+    "offscreen_only": true,
+    "child_csbi_no_history": true,
+    "child_csbi_reserved": true,
+    "child_csbi_narrow_restore": true,
+    "child_csbi_clear_hides": true,
+    "public_find_entry": true,
+    "public_selection_copy_fake": true,
+    "third_child_input_after_find": true
   },
   "tests": {
     "qt_history_navigation": {
@@ -42,9 +54,14 @@
       "seconds": 2.17
     },
     "qt_formal_path_regression": {
-      "passed": 10,
+      "passed": 11,
       "failed": 0,
-      "seconds": 19.69
+      "seconds": 22.94
+    },
+    "qt_scrollbar_size": {
+      "passed": 1,
+      "failed": 0,
+      "seconds": 1.29
     }
   },
   "evidence": {
@@ -52,8 +69,9 @@
     "screenshot": "screens/history-scrollbar.png"
   },
   "limitations": [
+    "Child size is now independently ACKed at every scrollbar stage via real CSBI replies; the public Find/selection/input checks run with the scrollbar enabled. The Copy check uses an injected writer and is not real CF.",
     "Offscreen Qt; physical presentation/DPI, alternate-screen/TUI, autoscroll, word/line selection, persistence and performance thresholds are not covered.",
-    "The scrollbar-enabled path uses Qt/core/transport dimensions; an independent child ACK of the scrollbar-adjusted child window is not part of this slice.",
-    "This slice does not close #29/#30/R2; #324 remains blocked pending a user decision; BCD/VM/v2 and old failures are unchanged."
+    "This slice does not close #29/#30/R2; #324 remains blocked pending a user decision; BCD/VM/v2 and old failures are unchanged.",
+    "Physical presentation/DPI and a WindTerm scrollbar oracle remain out of scope; fixed-layout tests keep their own disabled-reservation config, while the default enabled path is covered by qt_history_navigation and qt_scrollbar_size."
   ]
 }
