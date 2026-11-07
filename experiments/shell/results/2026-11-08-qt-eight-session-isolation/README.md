@@ -20,26 +20,26 @@
 
 | creation | PID | nonce | 接收文件 | 结果 |
 |---|---|---|---|---|
-| 0 | 33032 | `08e96ee51af4e742` | `08e96ee51af4e742.bin` | 输入后关闭（pending 目标） |
-| 1 | 13452 | `08e9db79916fe771` | `08e9db79916fe771.bin` | 存活至父窗关闭 |
-| 2 | 41320 | `08e94e974a48e7b0` | `08e94e974a48e7b0.bin` | 非活动标签关闭 |
-| 3 | 8140 | `08e9efc45289e7ee` | `08e9efc45289e7ee.bin` | 活动标签关闭 |
-| 4 | 25012 | `08e991ac900ae85c` | `08e991ac900ae85c.bin` | 存活 |
-| 5 | 28748 | `08e98065e628e8c9` | `08e98065e628e8c9.bin` | 存活 |
-| 6 | 19408 | `08e9bb946b76e975` | `08e9bb946b76e975.bin` | 存活 |
-| 7 | 3212 | `08e9fcdd3e73e9d3` | `08e9fcdd3e73e9d3.bin` | 存活 |
-| 8（替代页） | 23648 | `08e9ad8826e5f433` | `08e9ad8826e5f433.bin` | 首个输入仅 `NEW`+Home |
+| 0 | 43348 | `08eaee5cc32f221f` | `08eaee5cc32f221f.bin` | 输入后关闭（pending 目标），READY≈41 ms |
+| 1 | 20808 | `08ea16595fcd224e` | `08ea16595fcd224e.bin` | 存活至父窗关闭，READY≈98 ms |
+| 2 | 39768 | `08eadc42011f228c` | `08eadc42011f228c.bin` | 非活动标签关闭，READY≈151 ms |
+| 3 | 8276 | `08ea677636ff22bb` | `08ea677636ff22bb.bin` | 活动标签关闭，READY≈205 ms |
+| 4 | 13248 | `08ea74ea6ead22fa` | `08ea74ea6ead22fa.bin` | 存活，READY≈259 ms |
+| 5 | 26452 | `08ea206652522329` | `08ea206652522329.bin` | 存活，READY≈312 ms |
+| 6 | 27920 | `08ea2a2aa56b2367` | `08ea2a2aa56b2367.bin` | 存活，READY≈367 ms |
+| 7 | 10396 | `08ea6fdec4a22396` | `08ea6fdec4a22396.bin` | 存活，READY≈421 ms |
+| 8（替代页） | 19492 | `08ea04e4b4c22d5a` | `08ea04e4b4c22d5a.bin` | 首个输入仅 `NEW`+Home，READY≈2922 ms |
 
 逐会话隔离与字面预期（节选，均为实际 receiver hex＝预期 hex）：
 
-- 创建顺序切换 8 次（t0=705 ms … t7=1169 ms 内完成）：每次只向当前活动目标发送 `*BG*`+样本+Home；ASCII `TF8-A0 ASCII`、CJK `汉字`、补充平面 `🙂`、结合标 `e`+U+0301、`é`、`终端`、`😀`、`plain` 的接收字节与字面预期逐字节一致。
+- 创建顺序切换 8 次（首个样本步起始≈434 ms，末个≈845 ms；每步接收校验 2–5 ms）：每次只向当前活动目标发送 `*BG*`+样本+Home；ASCII `TF8-A0 ASCII`、CJK `汉字`、补充平面 `🙂`、结合标 `e`+U+0301、`é`、`终端`、`😀`、`plain` 的接收字节与字面预期逐字节一致。
 - 非创建顺序切换 `[4, 0, 7, 2, 5, 1, 6, 3]`：每步追加 `B<n>`+Home，8 个 receiver 均精确匹配，且每次仅目标文件变化（`isolation_checked=true`）。
 - 后台有界输出：8 个 child 全部到达 `seq=120`、`queued_bytes=0`（high-water 96–98 B），即后台输出被排空；期间输入只进入活动目标。
-- 非活动关闭（creation 2, PID 41320）：63 ms 内标签 8→7、页面释放；存活目标（creation 3）继续收到 `+CLOSE`+Home 且字节精确。
-- 活动关闭（creation 3, PID 8140）：55 ms 内标签 7→6、页面释放；新活动目标（creation 4）继续收到 `+ACTIVE`+Home 且字节精确。
-- 待发文字隔离：对 creation 0 发送孤立高代理项（未产生字节，文件不变），关闭该标签（39 ms，6→5）后点击 `+` 创建替代页；替代页首个输入接收为 `4e45571b5b48`（`NEW`+Home），**无 U+FFFD 前缀或旧待发单元泄漏**，旧文件保持不变。
-- 父窗口关闭：6 个存活会话全部 `finished=true`、`cleanup_verified=true`、`active_processes_after=0`、`output_eof=true`；`app.exec()` 经 `aboutToQuit`/`on_all_exited` 完成，status=0、completions=1，关闭时刻与完成时刻两处清理检查均为 true。外层 OwnedJob 由 supervisor 断言 `active=0`。
-- 总运行约 3.38 s（CTest `qt_eight_session` 3.22–3.28 s，连跑两次）。
+- 非活动关闭（creation 2, PID 39768）：43 ms 内标签 8→7、页面释放；存活目标（creation 3）继续收到 `+CLOSE`+Home 且字节精确。
+- 活动关闭（creation 3, PID 8276）：30 ms 内标签 7→6、页面释放；新活动目标（creation 4）继续收到 `+ACTIVE`+Home 且字节精确。
+- 待发文字隔离：对 creation 0 发送孤立高代理项（未产生字节，文件不变），关闭该标签（38 ms，6→5）后点击 `+` 创建替代页；替代页首个输入接收为 `4e45571b5b48`（`NEW`+Home），**无 U+FFFD 前缀或旧待发单元泄漏**，旧文件保持不变。
+- 父窗口关闭：6 个存活会话全部 `finished=true`、`cleanup_verified=true`、`active_processes_after=0`、`output_eof=true`；`app.exec()` 经 `aboutToQuit`/`on_all_exited` 完成，status=0、completions=1，关闭时刻与完成时刻两处清理检查均为 true。外层 OwnedJob supervisor 记录 `job_after={active:0,total:20,terminated:0}`。
+- 总运行约 2.93 s（CTest `qt_eight_session` 3.20 s，连跑两次均通过）。
 
 字体/呈现与 glyph 不在本切片范围；`presented_done=null`，测试不抓图、不比较像素。
 

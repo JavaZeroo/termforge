@@ -1,0 +1,1186 @@
+{
+  "schema": "termforge-qt-eight-session-validation-v1",
+  "source_commit": "197aa9a9248e4db3f48325a53e59c098352c9cb5",
+  "source_tree": "7862b48eaedfe977b6d768735be92e3cf84965e9",
+  "source_binding": "Implementation, tests, CI wiring and report were committed before the final runs; this validation file is a documentation follow-up. The recorded implementation sources match the committed blobs, and the working tree was clean before the final runs started.",
+  "scope": "Eight real fixed-ConPTY children created only through the public +/tab/close entries: per-session PID/nonce/receiver file, literal ASCII/CJK/supplementary/combining text and unmodified Home isolation, non-creation-order switching, bounded background drain, non-active/active close survival, replacement pending-unit isolation and parent-window cleanup.",
+  "passed": true,
+  "scoped_validation_passed": true,
+  "eight_session_isolation_verified": true,
+  "ninth_session_policy_approved": false,
+  "physical_keyboard_verified": false,
+  "native_ime_verified": false,
+  "system_clipboard_verified": false,
+  "full_copy_paste_ime_workflow_verified": false,
+  "r2_complete": false,
+  "windterm_parity": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 win64_msvc2022_64, offscreen platform",
+    "conpty": "1.25.260930003",
+    "conpty_files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "msvc_runtime": "14.51.36247.0",
+    "python": "3.12.10",
+    "backend_identity": "cpp-core / qt-widgets / reviewed-side-by-side-1.25.260930003 / 80x24",
+    "grid": [
+      80,
+      24
+    ]
+  },
+  "dependencies": {
+    "qt_archive_sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7",
+    "sdk_tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266",
+    "conpty_package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "msvc_runtime_package_sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+    "input_manifests": {
+      "qt": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+      "conpty": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "msvc_runtime": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+    }
+  },
+  "commands": {
+    "configure": "cmake -S . -B build/qt-cpp -G \"Visual Studio 17 2022\" -A x64 -DTERMFORGE_BUILD_QT_SHELL=ON -DBUILD_TESTING=ON -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF -DQt6_DIR=<prepared>/qt/lib/cmake/Qt6 -DTERMFORGE_CONPTY_BACKEND_DIR=<prepared>/conpty -DTERMFORGE_MSVC_RUNTIME_DIR=<prepared>/crt",
+    "build": "cmake --build build/qt-cpp --config Release --target qt_eight_session_test --parallel 2",
+    "new_test": "ctest --test-dir build/qt-cpp -C Release -R '^qt_eight_session$' --no-tests=error --output-on-failure",
+    "qt_regression": "ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_eight_session|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration|qt_find|qt_scrollbar_size)$' --output-on-failure",
+    "core_regression": "ctest --test-dir build -C Release -R '^(.*_core|core|resize_replay_contract|recovery|keyboard)$' --output-on-failure",
+    "python_core": "python -m unittest experiments.core.test_unicode experiments.core.test_core -v"
+  },
+  "results": {
+    "eight_session_runs": [
+      {
+        "label": "run1",
+        "supervisor_status": "passed",
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "presented_done_null": true,
+        "backend": "cpp-core / qt-widgets / reviewed-side-by-side-1.25.260930003 / 80x24",
+        "grid": [
+          80,
+          24
+        ],
+        "sessions_created": 8,
+        "replacement_created": true,
+        "live_sessions_at_parent_close": 6,
+        "switch_order": [
+          4,
+          0,
+          7,
+          2,
+          5,
+          1,
+          6,
+          3
+        ],
+        "total_elapsed_ms": 2928,
+        "session_matrix": [
+          {
+            "creation": 0,
+            "pid": 43348,
+            "nonce": "08eaee5cc32f221f",
+            "receiver_file": "08eaee5cc32f221f.bin",
+            "closed": true,
+            "received_bytes": 20,
+            "ready_ms": 41
+          },
+          {
+            "creation": 1,
+            "pid": 20808,
+            "nonce": "08ea16595fcd224e",
+            "receiver_file": "08ea16595fcd224e.bin",
+            "closed": false,
+            "received_bytes": 24,
+            "ready_ms": 98
+          },
+          {
+            "creation": 2,
+            "pid": 39768,
+            "nonce": "08eadc42011f228c",
+            "receiver_file": "08eadc42011f228c.bin",
+            "closed": true,
+            "received_bytes": 23,
+            "ready_ms": 151
+          },
+          {
+            "creation": 3,
+            "pid": 8276,
+            "nonce": "08ea677636ff22bb",
+            "receiver_file": "08ea677636ff22bb.bin",
+            "closed": true,
+            "received_bytes": 29,
+            "ready_ms": 205
+          },
+          {
+            "creation": 4,
+            "pid": 13248,
+            "nonce": "08ea74ea6ead22fa",
+            "receiver_file": "08ea74ea6ead22fa.bin",
+            "closed": false,
+            "received_bytes": 27,
+            "ready_ms": 259
+          },
+          {
+            "creation": 5,
+            "pid": 26452,
+            "nonce": "08ea206652522329",
+            "receiver_file": "08ea206652522329.bin",
+            "closed": false,
+            "received_bytes": 21,
+            "ready_ms": 312
+          },
+          {
+            "creation": 6,
+            "pid": 27920,
+            "nonce": "08ea2a2aa56b2367",
+            "receiver_file": "08ea2a2aa56b2367.bin",
+            "closed": false,
+            "received_bytes": 19,
+            "ready_ms": 367
+          },
+          {
+            "creation": 7,
+            "pid": 10396,
+            "nonce": "08ea6fdec4a22396",
+            "receiver_file": "08ea6fdec4a22396.bin",
+            "closed": false,
+            "received_bytes": 20,
+            "ready_ms": 421
+          },
+          {
+            "creation": 8,
+            "pid": 19492,
+            "nonce": "08ea04e4b4c22d5a",
+            "receiver_file": "08ea04e4b4c22d5a.bin",
+            "closed": false,
+            "received_bytes": 6,
+            "ready_ms": 2922
+          }
+        ],
+        "step_counts": {
+          "creation-order-trigger-text-home": 8,
+          "non-creation-order-text-home": 8,
+          "survivor-input-after-non-active-close": 1,
+          "survivor-input-after-active-close": 1,
+          "replacement-first-input": 1
+        },
+        "steps": [
+          {
+            "actual_hex": "5446382d41302041534349491b5b48",
+            "actual_sha256": "027467573e90a7ffb5de8787ab44e915a00f0ae260d48e0d264d8ac52fec4f26",
+            "creation": 0,
+            "duration_ms": 5,
+            "expected_hex": "5446382d41302041534349491b5b48",
+            "isolation_checked": true,
+            "nonce": "08eaee5cc32f221f",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 43348,
+            "started_ms": 434,
+            "tab": 0
+          },
+          {
+            "actual_hex": "5446382d413120e6b189e5ad971b5b48",
+            "actual_sha256": "39888f6392d86c661b4c0427f140e24d006009d3c65bcac8706ee1ee60940ea2",
+            "creation": 1,
+            "duration_ms": 3,
+            "expected_hex": "5446382d413120e6b189e5ad971b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea16595fcd224e",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 20808,
+            "started_ms": 496,
+            "tab": 1
+          },
+          {
+            "actual_hex": "5446382d413220f09f99821b5b48",
+            "actual_sha256": "027cbb6c4972fdd916a06e6cd08a9efc1c53d5bedf28ca9db1a054ba3456ca5a",
+            "creation": 2,
+            "duration_ms": 4,
+            "expected_hex": "5446382d413220f09f99821b5b48",
+            "isolation_checked": true,
+            "nonce": "08eadc42011f228c",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 39768,
+            "started_ms": 562,
+            "tab": 2
+          },
+          {
+            "actual_hex": "5446382d41332065cc811b5b48",
+            "actual_sha256": "1c8843663e10273c736f12f0b8d8417cad8ac0bd1efba103b8f8bb448ecf0309",
+            "creation": 3,
+            "duration_ms": 2,
+            "expected_hex": "5446382d41332065cc811b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea677636ff22bb",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 8276,
+            "started_ms": 612,
+            "tab": 3
+          },
+          {
+            "actual_hex": "5446382d413420c3a91b5b48",
+            "actual_sha256": "573d8b22b581424a4ab6a391b48a5b0776a95893b08e89c91b3b3c2af844ec16",
+            "creation": 4,
+            "duration_ms": 3,
+            "expected_hex": "5446382d413420c3a91b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea74ea6ead22fa",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 13248,
+            "started_ms": 673,
+            "tab": 4
+          },
+          {
+            "actual_hex": "5446382d413520e7bb88e7abaf1b5b48",
+            "actual_sha256": "453cfe23f21237feda6af7e619fd726d53837b5cc623837bf4f6e0287131c628",
+            "creation": 5,
+            "duration_ms": 3,
+            "expected_hex": "5446382d413520e7bb88e7abaf1b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea206652522329",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 26452,
+            "started_ms": 737,
+            "tab": 5
+          },
+          {
+            "actual_hex": "5446382d413620f09f98801b5b48",
+            "actual_sha256": "1320e092025f4d0916fc65db4573a32a234e6f03dd30fc70fc870d97c3c57160",
+            "creation": 6,
+            "duration_ms": 4,
+            "expected_hex": "5446382d413620f09f98801b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea2a2aa56b2367",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 27920,
+            "started_ms": 780,
+            "tab": 6
+          },
+          {
+            "actual_hex": "5446382d413720706c61696e1b5b48",
+            "actual_sha256": "3dbd0a9640f8d1297044af10d4cf14b5a4826f1bd3caa62bc261a12b7bdf2062",
+            "creation": 7,
+            "duration_ms": 3,
+            "expected_hex": "5446382d413720706c61696e1b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea6fdec4a22396",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 10396,
+            "started_ms": 845,
+            "tab": 7
+          },
+          {
+            "actual_hex": "5446382d413420c3a91b5b4842341b5b48",
+            "actual_sha256": "d51f7927ddfa10f0b00c64a2b96c00012924951421cd6e36b1fbb30f79951e11",
+            "creation": 4,
+            "duration_ms": 33,
+            "expected_hex": "5446382d413420c3a91b5b4842341b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea74ea6ead22fa",
+            "phase": "non-creation-order-text-home",
+            "pid": 13248,
+            "started_ms": 893,
+            "tab": 4
+          },
+          {
+            "actual_hex": "5446382d41302041534349491b5b4842301b5b48",
+            "actual_sha256": "09efa4e3a70c8873195ba6e471e1be545f27114a61b2228ebcc9963a30217fc5",
+            "creation": 0,
+            "duration_ms": 28,
+            "expected_hex": "5446382d41302041534349491b5b4842301b5b48",
+            "isolation_checked": true,
+            "nonce": "08eaee5cc32f221f",
+            "phase": "non-creation-order-text-home",
+            "pid": 43348,
+            "started_ms": 941,
+            "tab": 0
+          },
+          {
+            "actual_hex": "5446382d413720706c61696e1b5b4842371b5b48",
+            "actual_sha256": "7c73c27d8e810e17e65c7067683b9970f43f23a66017ef5f8839ab5a81389a48",
+            "creation": 7,
+            "duration_ms": 26,
+            "expected_hex": "5446382d413720706c61696e1b5b4842371b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea6fdec4a22396",
+            "phase": "non-creation-order-text-home",
+            "pid": 10396,
+            "started_ms": 981,
+            "tab": 7
+          },
+          {
+            "actual_hex": "5446382d413220f09f99821b5b484232f09f99821b5b48",
+            "actual_sha256": "a21a1cfb2e7542e1fe2b784df1f0ecea69443cdf740664b9aca729886d92c169",
+            "creation": 2,
+            "duration_ms": 32,
+            "expected_hex": "5446382d413220f09f99821b5b484232f09f99821b5b48",
+            "isolation_checked": true,
+            "nonce": "08eadc42011f228c",
+            "phase": "non-creation-order-text-home",
+            "pid": 39768,
+            "started_ms": 1022,
+            "tab": 2
+          },
+          {
+            "actual_hex": "5446382d413520e7bb88e7abaf1b5b4842351b5b48",
+            "actual_sha256": "10eb9f3682aac873596f4523395da5a5961845c13193eeb3e5941f78196a8049",
+            "creation": 5,
+            "duration_ms": 31,
+            "expected_hex": "5446382d413520e7bb88e7abaf1b5b4842351b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea206652522329",
+            "phase": "non-creation-order-text-home",
+            "pid": 26452,
+            "started_ms": 1069,
+            "tab": 5
+          },
+          {
+            "actual_hex": "5446382d413120e6b189e5ad971b5b484231e6b1891b5b48",
+            "actual_sha256": "325f9dcd529fd60d49fdc3838de5c34e10f0ddb76d0603dc501575d836abc3ef",
+            "creation": 1,
+            "duration_ms": 28,
+            "expected_hex": "5446382d413120e6b189e5ad971b5b484231e6b1891b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea16595fcd224e",
+            "phase": "non-creation-order-text-home",
+            "pid": 20808,
+            "started_ms": 1114,
+            "tab": 1
+          },
+          {
+            "actual_hex": "5446382d413620f09f98801b5b4842361b5b48",
+            "actual_sha256": "4a376e3035044ee47acf735343b93f1b8e674ecb7891ba0575670ce48c0014bf",
+            "creation": 6,
+            "duration_ms": 18,
+            "expected_hex": "5446382d413620f09f98801b5b4842361b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea2a2aa56b2367",
+            "phase": "non-creation-order-text-home",
+            "pid": 27920,
+            "started_ms": 1157,
+            "tab": 6
+          },
+          {
+            "actual_hex": "5446382d41332065cc811b5b484233cc811b5b48",
+            "actual_sha256": "29c5f5c2cc5bebc12a0d379a435c56b8c8c0bc9613127f3c548aa833f85ca437",
+            "creation": 3,
+            "duration_ms": 26,
+            "expected_hex": "5446382d41332065cc811b5b484233cc811b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea677636ff22bb",
+            "phase": "non-creation-order-text-home",
+            "pid": 8276,
+            "started_ms": 1189,
+            "tab": 3
+          },
+          {
+            "actual_hex": "5446382d41332065cc811b5b484233cc811b5b482b434c4f53451b5b48",
+            "actual_sha256": "39fbb1c5d57e608456124b8c952c152b13aa1d6dae6e8ef678a73fb70426dbc5",
+            "creation": 3,
+            "duration_ms": 7,
+            "expected_hex": "5446382d41332065cc811b5b484233cc811b5b482b434c4f53451b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea677636ff22bb",
+            "phase": "survivor-input-after-non-active-close",
+            "pid": 8276,
+            "started_ms": 2771,
+            "tab": 2
+          },
+          {
+            "actual_hex": "5446382d413420c3a91b5b4842341b5b482b4143544956451b5b48",
+            "actual_sha256": "5b690abd0dcd7b13feff473402c4e56ee5029bb7f69adf7a226976c70abf4c86",
+            "creation": 4,
+            "duration_ms": 5,
+            "expected_hex": "5446382d413420c3a91b5b4842341b5b482b4143544956451b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea74ea6ead22fa",
+            "phase": "survivor-input-after-active-close",
+            "pid": 13248,
+            "started_ms": 2808,
+            "tab": 2
+          },
+          {
+            "actual_hex": "4e45571b5b48",
+            "actual_sha256": "38fd3633bdf05071f3fa8b52dd5d99f315aac4a32c68415f56225944d4d3fe1c",
+            "creation": 8,
+            "duration_ms": 5,
+            "expected_hex": "4e45571b5b48",
+            "isolation_checked": false,
+            "nonce": "08ea04e4b4c22d5a",
+            "phase": "replacement-first-input",
+            "pid": 19492,
+            "started_ms": 2922,
+            "tab": 5
+          }
+        ],
+        "steps_expected_equal_actual": true,
+        "background": [
+          {
+            "creation": 0,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d41302041534349491b5b4842301b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 1,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413120e6b189e5ad971b5b484231e6b1891b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 2,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413220f09f99821b5b484232f09f99821b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 3,
+            "high_water_bytes": 96,
+            "queued_bytes": 0,
+            "received_hex": "5446382d41332065cc811b5b484233cc811b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 4,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413420c3a91b5b4842341b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 5,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413520e7bb88e7abaf1b5b4842351b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 6,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413620f09f98801b5b4842361b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 7,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413720706c61696e1b5b4842371b5b48",
+            "sequence": 120
+          }
+        ],
+        "closures": [
+          {
+            "creation": 2,
+            "elapsed_ms": 43,
+            "nonce": "08eadc42011f228c",
+            "page_released": true,
+            "phase": "non-active-tab",
+            "pid": 39768,
+            "tabs_after": 7
+          },
+          {
+            "creation": 3,
+            "elapsed_ms": 30,
+            "nonce": "08ea677636ff22bb",
+            "page_released": true,
+            "phase": "active-tab",
+            "pid": 8276,
+            "tabs_after": 6
+          },
+          {
+            "creation": 0,
+            "elapsed_ms": 38,
+            "nonce": "08eaee5cc32f221f",
+            "page_released": true,
+            "phase": "pending-tab",
+            "pid": 43348,
+            "tabs_after": 5
+          }
+        ],
+        "parent_close": {
+          "cleanup_at_completion": true,
+          "cleanup_at_quit": true,
+          "completions": 1,
+          "sessions": [
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            }
+          ],
+          "status": 0
+        },
+        "flags": {
+          "offscreen_only": true,
+          "physical_keyboard": false,
+          "native_ime": false,
+          "clipboard_used": false,
+          "presented_done": null
+        }
+      },
+      {
+        "label": "run2",
+        "supervisor_status": "passed",
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 20,
+          "terminated": 0
+        },
+        "presented_done_null": true,
+        "backend": "cpp-core / qt-widgets / reviewed-side-by-side-1.25.260930003 / 80x24",
+        "grid": [
+          80,
+          24
+        ],
+        "sessions_created": 8,
+        "replacement_created": true,
+        "live_sessions_at_parent_close": 6,
+        "switch_order": [
+          4,
+          0,
+          7,
+          2,
+          5,
+          1,
+          6,
+          3
+        ],
+        "total_elapsed_ms": 2937,
+        "session_matrix": [
+          {
+            "creation": 0,
+            "pid": 16184,
+            "nonce": "08ea77c02b3b2ed1",
+            "receiver_file": "08ea77c02b3b2ed1.bin",
+            "closed": true,
+            "received_bytes": 20,
+            "ready_ms": 43
+          },
+          {
+            "creation": 1,
+            "pid": 44756,
+            "nonce": "08eae7d5595c2f00",
+            "receiver_file": "08eae7d5595c2f00.bin",
+            "closed": false,
+            "received_bytes": 24,
+            "ready_ms": 102
+          },
+          {
+            "creation": 2,
+            "pid": 32112,
+            "nonce": "08ea3479c3a12f3e",
+            "receiver_file": "08ea3479c3a12f3e.bin",
+            "closed": true,
+            "received_bytes": 23,
+            "ready_ms": 160
+          },
+          {
+            "creation": 3,
+            "pid": 42104,
+            "nonce": "08eaed6b2e0c2f7d",
+            "receiver_file": "08eaed6b2e0c2f7d.bin",
+            "closed": true,
+            "received_bytes": 29,
+            "ready_ms": 219
+          },
+          {
+            "creation": 4,
+            "pid": 35688,
+            "nonce": "08eac2749df02fbb",
+            "receiver_file": "08eac2749df02fbb.bin",
+            "closed": false,
+            "received_bytes": 27,
+            "ready_ms": 283
+          },
+          {
+            "creation": 5,
+            "pid": 27736,
+            "nonce": "08ea257e38722ffa",
+            "receiver_file": "08ea257e38722ffa.bin",
+            "closed": false,
+            "received_bytes": 21,
+            "ready_ms": 343
+          },
+          {
+            "creation": 6,
+            "pid": 44244,
+            "nonce": "08eae5fac8623038",
+            "receiver_file": "08eae5fac8623038.bin",
+            "closed": false,
+            "received_bytes": 19,
+            "ready_ms": 403
+          },
+          {
+            "creation": 7,
+            "pid": 26552,
+            "nonce": "08ea2e8048e33077",
+            "receiver_file": "08ea2e8048e33077.bin",
+            "closed": false,
+            "received_bytes": 20,
+            "ready_ms": 464
+          },
+          {
+            "creation": 8,
+            "pid": 20004,
+            "nonce": "08ea048b94ed3a0c",
+            "receiver_file": "08ea048b94ed3a0c.bin",
+            "closed": false,
+            "received_bytes": 6,
+            "ready_ms": 2925
+          }
+        ],
+        "step_counts": {
+          "creation-order-trigger-text-home": 8,
+          "non-creation-order-text-home": 8,
+          "survivor-input-after-non-active-close": 1,
+          "survivor-input-after-active-close": 1,
+          "replacement-first-input": 1
+        },
+        "steps": [
+          {
+            "actual_hex": "5446382d41302041534349491b5b48",
+            "actual_sha256": "027467573e90a7ffb5de8787ab44e915a00f0ae260d48e0d264d8ac52fec4f26",
+            "creation": 0,
+            "duration_ms": 3,
+            "expected_hex": "5446382d41302041534349491b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea77c02b3b2ed1",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 16184,
+            "started_ms": 477,
+            "tab": 0
+          },
+          {
+            "actual_hex": "5446382d413120e6b189e5ad971b5b48",
+            "actual_sha256": "39888f6392d86c661b4c0427f140e24d006009d3c65bcac8706ee1ee60940ea2",
+            "creation": 1,
+            "duration_ms": 3,
+            "expected_hex": "5446382d413120e6b189e5ad971b5b48",
+            "isolation_checked": true,
+            "nonce": "08eae7d5595c2f00",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 44756,
+            "started_ms": 540,
+            "tab": 1
+          },
+          {
+            "actual_hex": "5446382d413220f09f99821b5b48",
+            "actual_sha256": "027cbb6c4972fdd916a06e6cd08a9efc1c53d5bedf28ca9db1a054ba3456ca5a",
+            "creation": 2,
+            "duration_ms": 3,
+            "expected_hex": "5446382d413220f09f99821b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea3479c3a12f3e",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 32112,
+            "started_ms": 587,
+            "tab": 2
+          },
+          {
+            "actual_hex": "5446382d41332065cc811b5b48",
+            "actual_sha256": "1c8843663e10273c736f12f0b8d8417cad8ac0bd1efba103b8f8bb448ecf0309",
+            "creation": 3,
+            "duration_ms": 4,
+            "expected_hex": "5446382d41332065cc811b5b48",
+            "isolation_checked": true,
+            "nonce": "08eaed6b2e0c2f7d",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 42104,
+            "started_ms": 634,
+            "tab": 3
+          },
+          {
+            "actual_hex": "5446382d413420c3a91b5b48",
+            "actual_sha256": "573d8b22b581424a4ab6a391b48a5b0776a95893b08e89c91b3b3c2af844ec16",
+            "creation": 4,
+            "duration_ms": 4,
+            "expected_hex": "5446382d413420c3a91b5b48",
+            "isolation_checked": true,
+            "nonce": "08eac2749df02fbb",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 35688,
+            "started_ms": 691,
+            "tab": 4
+          },
+          {
+            "actual_hex": "5446382d413520e7bb88e7abaf1b5b48",
+            "actual_sha256": "453cfe23f21237feda6af7e619fd726d53837b5cc623837bf4f6e0287131c628",
+            "creation": 5,
+            "duration_ms": 3,
+            "expected_hex": "5446382d413520e7bb88e7abaf1b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea257e38722ffa",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 27736,
+            "started_ms": 754,
+            "tab": 5
+          },
+          {
+            "actual_hex": "5446382d413620f09f98801b5b48",
+            "actual_sha256": "1320e092025f4d0916fc65db4573a32a234e6f03dd30fc70fc870d97c3c57160",
+            "creation": 6,
+            "duration_ms": 4,
+            "expected_hex": "5446382d413620f09f98801b5b48",
+            "isolation_checked": true,
+            "nonce": "08eae5fac8623038",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 44244,
+            "started_ms": 806,
+            "tab": 6
+          },
+          {
+            "actual_hex": "5446382d413720706c61696e1b5b48",
+            "actual_sha256": "3dbd0a9640f8d1297044af10d4cf14b5a4826f1bd3caa62bc261a12b7bdf2062",
+            "creation": 7,
+            "duration_ms": 4,
+            "expected_hex": "5446382d413720706c61696e1b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea2e8048e33077",
+            "phase": "creation-order-trigger-text-home",
+            "pid": 26552,
+            "started_ms": 867,
+            "tab": 7
+          },
+          {
+            "actual_hex": "5446382d413420c3a91b5b4842341b5b48",
+            "actual_sha256": "d51f7927ddfa10f0b00c64a2b96c00012924951421cd6e36b1fbb30f79951e11",
+            "creation": 4,
+            "duration_ms": 17,
+            "expected_hex": "5446382d413420c3a91b5b4842341b5b48",
+            "isolation_checked": true,
+            "nonce": "08eac2749df02fbb",
+            "phase": "non-creation-order-text-home",
+            "pid": 35688,
+            "started_ms": 931,
+            "tab": 4
+          },
+          {
+            "actual_hex": "5446382d41302041534349491b5b4842301b5b48",
+            "actual_sha256": "09efa4e3a70c8873195ba6e471e1be545f27114a61b2228ebcc9963a30217fc5",
+            "creation": 0,
+            "duration_ms": 28,
+            "expected_hex": "5446382d41302041534349491b5b4842301b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea77c02b3b2ed1",
+            "phase": "non-creation-order-text-home",
+            "pid": 16184,
+            "started_ms": 964,
+            "tab": 0
+          },
+          {
+            "actual_hex": "5446382d413720706c61696e1b5b4842371b5b48",
+            "actual_sha256": "7c73c27d8e810e17e65c7067683b9970f43f23a66017ef5f8839ab5a81389a48",
+            "creation": 7,
+            "duration_ms": 28,
+            "expected_hex": "5446382d413720706c61696e1b5b4842371b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea2e8048e33077",
+            "phase": "non-creation-order-text-home",
+            "pid": 26552,
+            "started_ms": 1005,
+            "tab": 7
+          },
+          {
+            "actual_hex": "5446382d413220f09f99821b5b484232f09f99821b5b48",
+            "actual_sha256": "a21a1cfb2e7542e1fe2b784df1f0ecea69443cdf740664b9aca729886d92c169",
+            "creation": 2,
+            "duration_ms": 30,
+            "expected_hex": "5446382d413220f09f99821b5b484232f09f99821b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea3479c3a12f3e",
+            "phase": "non-creation-order-text-home",
+            "pid": 32112,
+            "started_ms": 1049,
+            "tab": 2
+          },
+          {
+            "actual_hex": "5446382d413520e7bb88e7abaf1b5b4842351b5b48",
+            "actual_sha256": "10eb9f3682aac873596f4523395da5a5961845c13193eeb3e5941f78196a8049",
+            "creation": 5,
+            "duration_ms": 28,
+            "expected_hex": "5446382d413520e7bb88e7abaf1b5b4842351b5b48",
+            "isolation_checked": true,
+            "nonce": "08ea257e38722ffa",
+            "phase": "non-creation-order-text-home",
+            "pid": 27736,
+            "started_ms": 1093,
+            "tab": 5
+          },
+          {
+            "actual_hex": "5446382d413120e6b189e5ad971b5b484231e6b1891b5b48",
+            "actual_sha256": "325f9dcd529fd60d49fdc3838de5c34e10f0ddb76d0603dc501575d836abc3ef",
+            "creation": 1,
+            "duration_ms": 31,
+            "expected_hex": "5446382d413120e6b189e5ad971b5b484231e6b1891b5b48",
+            "isolation_checked": true,
+            "nonce": "08eae7d5595c2f00",
+            "phase": "non-creation-order-text-home",
+            "pid": 44756,
+            "started_ms": 1136,
+            "tab": 1
+          },
+          {
+            "actual_hex": "5446382d413620f09f98801b5b4842361b5b48",
+            "actual_sha256": "4a376e3035044ee47acf735343b93f1b8e674ecb7891ba0575670ce48c0014bf",
+            "creation": 6,
+            "duration_ms": 29,
+            "expected_hex": "5446382d413620f09f98801b5b4842361b5b48",
+            "isolation_checked": true,
+            "nonce": "08eae5fac8623038",
+            "phase": "non-creation-order-text-home",
+            "pid": 44244,
+            "started_ms": 1183,
+            "tab": 6
+          },
+          {
+            "actual_hex": "5446382d41332065cc811b5b484233cc811b5b48",
+            "actual_sha256": "29c5f5c2cc5bebc12a0d379a435c56b8c8c0bc9613127f3c548aa833f85ca437",
+            "creation": 3,
+            "duration_ms": 35,
+            "expected_hex": "5446382d41332065cc811b5b484233cc811b5b48",
+            "isolation_checked": true,
+            "nonce": "08eaed6b2e0c2f7d",
+            "phase": "non-creation-order-text-home",
+            "pid": 42104,
+            "started_ms": 1226,
+            "tab": 3
+          },
+          {
+            "actual_hex": "5446382d41332065cc811b5b484233cc811b5b482b434c4f53451b5b48",
+            "actual_sha256": "39fbb1c5d57e608456124b8c952c152b13aa1d6dae6e8ef678a73fb70426dbc5",
+            "creation": 3,
+            "duration_ms": 4,
+            "expected_hex": "5446382d41332065cc811b5b484233cc811b5b482b434c4f53451b5b48",
+            "isolation_checked": true,
+            "nonce": "08eaed6b2e0c2f7d",
+            "phase": "survivor-input-after-non-active-close",
+            "pid": 42104,
+            "started_ms": 2787,
+            "tab": 2
+          },
+          {
+            "actual_hex": "5446382d413420c3a91b5b4842341b5b482b4143544956451b5b48",
+            "actual_sha256": "5b690abd0dcd7b13feff473402c4e56ee5029bb7f69adf7a226976c70abf4c86",
+            "creation": 4,
+            "duration_ms": 6,
+            "expected_hex": "5446382d413420c3a91b5b4842341b5b482b4143544956451b5b48",
+            "isolation_checked": true,
+            "nonce": "08eac2749df02fbb",
+            "phase": "survivor-input-after-active-close",
+            "pid": 35688,
+            "started_ms": 2819,
+            "tab": 2
+          },
+          {
+            "actual_hex": "4e45571b5b48",
+            "actual_sha256": "38fd3633bdf05071f3fa8b52dd5d99f315aac4a32c68415f56225944d4d3fe1c",
+            "creation": 8,
+            "duration_ms": 12,
+            "expected_hex": "4e45571b5b48",
+            "isolation_checked": false,
+            "nonce": "08ea048b94ed3a0c",
+            "phase": "replacement-first-input",
+            "pid": 20004,
+            "started_ms": 2925,
+            "tab": 5
+          }
+        ],
+        "steps_expected_equal_actual": true,
+        "background": [
+          {
+            "creation": 0,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d41302041534349491b5b4842301b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 1,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413120e6b189e5ad971b5b484231e6b1891b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 2,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413220f09f99821b5b484232f09f99821b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 3,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d41332065cc811b5b484233cc811b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 4,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413420c3a91b5b4842341b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 5,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413520e7bb88e7abaf1b5b4842351b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 6,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413620f09f98801b5b4842361b5b48",
+            "sequence": 120
+          },
+          {
+            "creation": 7,
+            "high_water_bytes": 98,
+            "queued_bytes": 0,
+            "received_hex": "5446382d413720706c61696e1b5b4842371b5b48",
+            "sequence": 120
+          }
+        ],
+        "closures": [
+          {
+            "creation": 2,
+            "elapsed_ms": 43,
+            "nonce": "08ea3479c3a12f3e",
+            "page_released": true,
+            "phase": "non-active-tab",
+            "pid": 32112,
+            "tabs_after": 7
+          },
+          {
+            "creation": 3,
+            "elapsed_ms": 27,
+            "nonce": "08eaed6b2e0c2f7d",
+            "page_released": true,
+            "phase": "active-tab",
+            "pid": 42104,
+            "tabs_after": 6
+          },
+          {
+            "creation": 0,
+            "elapsed_ms": 27,
+            "nonce": "08ea77c02b3b2ed1",
+            "page_released": true,
+            "phase": "pending-tab",
+            "pid": 16184,
+            "tabs_after": 5
+          }
+        ],
+        "parent_close": {
+          "cleanup_at_completion": true,
+          "cleanup_at_quit": true,
+          "completions": 1,
+          "sessions": [
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            },
+            {
+              "active_processes_after": 0,
+              "cleanup_verified": true,
+              "error": "",
+              "exit_code": 91,
+              "finished": true,
+              "natural_exit": false,
+              "output_eof": true,
+              "verified": true
+            }
+          ],
+          "status": 0
+        },
+        "flags": {
+          "offscreen_only": true,
+          "physical_keyboard": false,
+          "native_ime": false,
+          "clipboard_used": false,
+          "presented_done": null
+        }
+      }
+    ],
+    "qt_formal_path_ctest": {
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "seconds": 23.23
+    },
+    "core_ctest": {
+      "total": 42,
+      "passed": 42,
+      "failed": 0,
+      "seconds": 23.4
+    },
+    "python_core": {
+      "unicode_tests": 15,
+      "core_tests": 16,
+      "log": "Ran 31 tests in 7.450s"
+    },
+    "determinism": {
+      "both_runs_passed": true,
+      "same_phase_counts": true,
+      "same_session_count_and_states": true,
+      "pid_values_differ_between_runs": true,
+      "nonce_values_differ_between_runs": true
+    }
+  },
+  "source_hashes": {
+    "CMakeLists.txt": "997d314a92de0b08b052ac946433545d980c746e9004acece02496e4aa527eb3",
+    ".github/workflows/qt-cpp.yml": "039802fc64f72a973479b84a6bc24ee03b1cccdfa21ac70024753cd8df22c183",
+    "src/qt/eight_session_test.cpp": "60b475983259fd6d73d819973519912cfa09e2ad54874cdd4b594415102c2d6c",
+    "experiments/shell/eight_session_client.cpp": "922bb556bb51213740a70f2ff65434a174dcd41e579d301abfbadcf9b35bf5dc",
+    "src/qt/README.md": "5e604f8e3f393f2b6f8a0d72a4ca5e59a5e7cb699b787bb460cd7bc9f82c7f0b",
+    "docs/EVIDENCE.md": "f8c26d42dde23ab3497dee91375b77104e28972d859ff32b56987706389acc89",
+    "docs/FEATURES.md": "db84f1ec837739af1e6bab48370fa81abe5359a14491a2896405a9d9752e70e4",
+    "experiments/shell/results/2026-11-08-qt-eight-session-isolation/README.md": "d751422601d036b1b46d446b3d9a7146e498ddbdae2ece9f307207c8d274dcae"
+  },
+  "artifact_hashes": {
+    "build/qt-cpp/qt-eight-session-bin/Release/qt_eight_session_test.exe": {
+      "bytes": 372736,
+      "sha256": "e3a28487917174c3443080c45c4cc27302c40317085dceb7e4d4168d9bf1ab9d"
+    },
+    "build/qt-cpp/bin/Release/shell_eight_session_client.exe": {
+      "bytes": 34816,
+      "sha256": "ba8907216ad88f6b1ddf26e99edff61e4802c6fb5ff1374e429e68847c37d53f"
+    },
+    "build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe": {
+      "bytes": 284672,
+      "sha256": "2b70a76059ed168fccdd7412df5fde1779887a346458df99de22ef56811e734d"
+    },
+    "build/qt-cpp/qt-eight-session-bin/Release/assets/fonts/RobotoMono-Regular.ttf": {
+      "bytes": 125748,
+      "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4"
+    },
+    "build/qt-cpp/qt-eight-session-bin/Release/conpty-backend/ConPTY.dll": {
+      "bytes": 119608,
+      "sha256": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a"
+    }
+  },
+  "implementation_sources_match_recorded_commit": true,
+  "limitations": [
+    "Offscreen synthetic Qt events only: not a physical keyboard, native IME, real system clipboard, real DPI or presented frame (presented_done=null).",
+    "Fixed eight sessions plus one replacement at 80x24, one window, one monitor; no split panes, more than eight sessions, other shells, long-running or performance workload.",
+    "SessionTabs has no session cap today; the ninth-session behavior, a maximum session count and any resource policy are not defined, tested or approved by this slice.",
+    "The bounded background block is a synthetic 120-line fixture protocol, not a throughput or latency measurement.",
+    "The Win32 R1 eight-session workflow, real Copy->Paste->IME combination and #155 IME acceptance remain separate; #30/#155/#7 stay open."
+  ]
+}
