@@ -28,6 +28,8 @@
 #include <QContextMenuEvent>
 #include <QMouseEvent>
 #include <QResizeEvent>
+#include <QScrollBar>
+#include <QStyle>
 #include <QShowEvent>
 #include <QStyleHints>
 #include <QPainter>
@@ -35,6 +37,7 @@
 #include <QtMath>
 #include <QWidget>
 #include <array>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
@@ -56,6 +59,11 @@ class TerminalWidget final : public QWidget {
     // Every widget owns its page and selection; row identities are never shared
     // with another session. Hits resolve the last painted page, not a newer row.
     HistoryViewport viewport_;
+    QScrollBar* history_scrollbar_ = nullptr;
+    int scrollbar_extent_ = 0;
+    bool updating_scrollbar_ = false;
+    bool scrollbar_reserved_ = false;
+    static inline bool scrollbar_enabled_for_test_ = true;
     std::optional<ViewSnapshot> painted_page_;
     // First painted display row inside the page and the page-relative display
     // caret. The protocol cursor itself is never moved by this widget.
@@ -99,14 +107,40 @@ class TerminalWidget final : public QWidget {
     void synchronize_grid() {
         painted_page_.reset();
         selection_anchor_.reset();
-        const int columns = std::clamp((width() - margin * 2) / cell_width_, 1, 500);
+        const int available = width() - margin * 2 - (scrollbar_reserved_ ? scrollbar_extent_ : 0);
+        const int columns = std::clamp(available / cell_width_, 1, 500);
         const int rows = std::clamp((height() - margin * 3 - cell_height_) / cell_height_, 1, 200);
         model_.resize(columns, rows);
+    }
+    void update_scrollbar() {
+        if (!history_scrollbar_) return;
+        if (!scrollbar_enabled_for_test_) {
+            history_scrollbar_->hide();
+            if (scrollbar_reserved_) { scrollbar_reserved_ = false; synchronize_grid(); }
+            return;
+        }
+        const auto& screen = model_.screen();
+        const auto state = viewport_.reconcile(screen);
+        updating_scrollbar_ = true;
+        history_scrollbar_->setRange(0, static_cast<int>((std::min)(state.maximum_top, size_t{INT_MAX})));
+        history_scrollbar_->setPageStep((std::max)(1, screen.height()));
+        history_scrollbar_->setSingleStep(1);
+        history_scrollbar_->setValue(static_cast<int>((std::min)(state.top, size_t{INT_MAX})));
+        history_scrollbar_->setGeometry(width() - margin - scrollbar_extent_, margin,
+                                        scrollbar_extent_, (std::max)(1, height() - margin * 2));
+        const bool should_reserve = state.maximum_top > 0;
+        history_scrollbar_->setVisible(should_reserve);
+        updating_scrollbar_ = false;
+        if (should_reserve != scrollbar_reserved_) {
+            scrollbar_reserved_ = should_reserve;
+            synchronize_grid();
+        }
     }
     void resizeEvent(QResizeEvent* event) override {
         QWidget::resizeEvent(event);
         if (find_panel_) find_panel_->setGeometry(margin, margin, (std::max)(1, width() - margin * 2), 62);
         synchronize_grid();
+        update_scrollbar();
     }
     void showEvent(QShowEvent* event) override {
         QWidget::showEvent(event);
@@ -285,6 +319,7 @@ class TerminalWidget final : public QWidget {
             const int64_t step = wheel_step_rows();
             if (step > 0) {
                 viewport_.scroll_by(model_.screen(), -static_cast<int64_t>(detents) * step);
+                update_scrollbar();
                 update();
             }
         }
@@ -292,10 +327,12 @@ class TerminalWidget final : public QWidget {
     }
     void scroll_history_top() {
         viewport_.scroll_to(model_.screen(), 0);
+        update_scrollbar();
         update();
     }
     void scroll_history_bottom() {
         viewport_.bottom(model_.screen());
+        update_scrollbar();
         update();
     }
     static uint32_t navigation_virtual_key(int key) {
@@ -586,6 +623,7 @@ class TerminalWidget final : public QWidget {
             if (const auto nav = find_search_.navigate(document, SearchDirection::next, find_anchor(), true)) {
                 find_current_ = nav->match; find_current_index_ = nav->index;
                 viewport_.reveal(model_.screen(), nav->match.range.begin.line_id);
+                update_scrollbar();
             }
         }
         update();
@@ -605,6 +643,7 @@ class TerminalWidget final : public QWidget {
         find_current_ = nav->match; find_current_index_ = nav->index;
         find_last_wrapped_ = nav->wrapped;
         viewport_.reveal(model_.screen(), nav->match.range.begin.line_id);
+                update_scrollbar();
         set_find_status(QStringLiteral("%1 / %2%3").arg(nav->index + 1)
             .arg(find_search_.matches().size()).arg(nav->wrapped ? QStringLiteral(" (wrapped)") : QString()));
         update();
@@ -784,6 +823,19 @@ public:
         resize(sizeHint());
         grid_ready_ = true;
         clipboard_ = std::make_unique<SystemClipboardWriter>(*this);
+        history_scrollbar_ = new QScrollBar(Qt::Vertical, this);
+        history_scrollbar_->setObjectName(QStringLiteral("historyScrollbar"));
+        scrollbar_extent_ = style()->pixelMetric(QStyle::PM_ScrollBarExtent);
+        if (scrollbar_extent_ <= 0) scrollbar_extent_ = 14;
+        history_scrollbar_->hide();
+        connect(history_scrollbar_, &QScrollBar::valueChanged, this, [this](int value) {
+            if (updating_scrollbar_) return;
+            const auto& screen = model_.screen();
+            const auto state = viewport_.reconcile(screen);
+            if (value >= static_cast<int>(state.maximum_top)) viewport_.bottom(screen);
+            else viewport_.scroll_to(screen, static_cast<size_t>((std::max)(0, value)));
+            update();
+        });
         build_find_panel();
         model_.on_changed = [this] { refresh_session(); };
     }
@@ -803,6 +855,7 @@ public:
         // Keep the display page and caret current before Qt asks the input
         // method for geometry, not only on the next paint.
         if (grid_ready_) refresh_painted_page(model_.screen());
+        update_scrollbar();
         update();
     }
     // Diagnostic observation of the owned display chain; tests only read it and
@@ -816,6 +869,9 @@ public:
         wheel_setting_override_ = setting;
     }
     ViewportState history_state() { return viewport_.reconcile(model_.screen()); }
+    static void setHistoryScrollbarEnabledForTest(bool enabled) { scrollbar_enabled_for_test_ = enabled; }
+    QScrollBar* history_scrollbar_for_test() { return history_scrollbar_; }
+    int history_scrollbar_extent_for_test() const { return scrollbar_extent_; }
     bool history_following() const { return viewport_.following(); }
     uint64_t history_anchor() const { return viewport_.anchor(); }
     // Internal selection extraction for the Qt regression and future copy UI.
@@ -835,6 +891,7 @@ public:
     bool find_last_wrapped_for_test() const { return find_last_wrapped_; }
     void set_find_timer_interval_for_test(int milliseconds) { find_interval_ms_ = (std::max)(0, milliseconds); }
     SearchStatus find_search_status_for_test() const { return find_search_.status(); }
+    void step_find_once_for_test() { step_find(); }
     std::optional<TextRange> find_current_range_for_test() const {
         return find_current_ ? std::optional<TextRange>{find_current_->range} : std::nullopt;
     }

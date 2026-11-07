@@ -59,3 +59,5 @@ IME 实现通过 `QInputMethodEvent` 绘制未提交的 preedit，仅把 commit 
 上述三项自动测试使用 Qt offscreen 平台和本项目独立取得的 OFL Roboto Mono 字体；没有物理键盘、实际不同 DPI、Windows 原生窗口上屏或用户呈现时间验收，`presented_done=null`。隔离 VM 原生观察保留自己的源码与环境身份。两会话隔离不代表八会话、完整 IME 交叉或工作区验收，测试耗时不是终端性能指标。
 
 构建开关默认关闭只是从旧原型向新入口迁移的状态；正式路线已确认，旧构建保留为回归对照。Qt 文字与图形资源均独立取得，不使用 WindTerm 的专有字体、图标或主题。
+
+- 历史滚动条：真实 `QScrollBar` 拖动/页区/Home/End 通过 `HistoryViewport` 源锚点定位；见[结果](../../experiments/shell/results/2026-11-07-qt-history-scrollbar/README.md)。

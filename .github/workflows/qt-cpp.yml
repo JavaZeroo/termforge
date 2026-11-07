@@ -42,7 +42,7 @@ jobs:
             "-DTERMFORGE_CONPTY_BACKEND_DIR=$dependencyRoot/conpty" `
             "-DTERMFORGE_MSVC_RUNTIME_DIR=$dependencyRoot/crt"
       - name: Build Qt product and independent smoke
-        run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_terminal_modes_test qt_hidden_retention_test qt_history_navigation_test qt_selection_migration_test qt_find_test qt_clipboard_system_test --parallel 2
+        run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_terminal_modes_test qt_hidden_retention_test qt_history_navigation_test qt_selection_migration_test qt_find_test qt_scrollbar_size_test qt_clipboard_system_test --parallel 2
       - name: Record complete path-free runtime manifests
         run: |
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-bin/Release --executable termforge_qt_shell.exe
@@ -65,6 +65,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-find-bin/Release --executable qt_find_test.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-scrollbar-size-bin/Release --executable qt_scrollbar_size_test.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-clipboard-bin/Release --executable qt_clipboard_system_test.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Preserve runtime file identities without binaries
@@ -86,7 +88,7 @@ jobs:
             build/qt-cpp/qt-selection-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-clipboard-bin/Release/runtime-manifest.json
       - name: Run Qt offscreen smoke in its owned Job
-        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration|qt_find)$' --no-tests=error --verbose
+        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration|qt_find|qt_scrollbar_size)$' --no-tests=error --verbose
       - name: Run hosted-only Qt system clipboard copy
         run: python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe --hosted-copy
       - name: Run hosted Windows QPA product-writer clipboard copy

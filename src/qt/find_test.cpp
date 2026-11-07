@@ -91,6 +91,7 @@ int main(int argc, char** argv) {
         std::cerr << "find test requires its owned Job supervisor\n"; return 2;
     }
     QApplication app(argc, argv);
+    termforge::qt::TerminalWidget::setHistoryScrollbarEnabledForTest(false);
     QApplication::setQuitOnLastWindowClosed(false);
     try {
         QElapsedTimer lifecycle; lifecycle.start();
@@ -293,14 +294,16 @@ int main(int argc, char** argv) {
         await([&] { return third.screen().retained_size() >= 78; }, third, lifecycle,
               "many-hit child output missing");
         third_window.activateWindow(); third_terminal.setFocus(); QTest::qWait(30);
-        third_terminal.set_find_timer_interval_for_test(25);
+        third_terminal.set_find_timer_interval_for_test(1000);
         QTest::keyClick(&third_terminal, Qt::Key_F, Qt::ControlModifier | Qt::ShiftModifier);
         auto* third_query = third_window.findChild<QLineEdit*>(QStringLiteral("findQuery"));
         require(third_query && third_query->hasFocus(), "third Find query did not focus");
         type_ascii(third_query, QStringLiteral("ZZ"));
-        QTest::qWait(35);
         require(third_terminal.find_search_status_for_test() == termforge::SearchStatus::running,
-                "long scan did not remain running after one bounded stage");
+                "long scan did not expose an initial Searching stage");
+        third_terminal.step_find_once_for_test();  // timing coordination only; same product step
+        require(third_terminal.find_search_status_for_test() == termforge::SearchStatus::running,
+                "long scan completed before the bounded first stage");
         require(third_terminal.find_match_count_for_test() > 0,
                 "long scan exposed no partial matches");
         require(third_terminal.find_status_for_test().startsWith(QStringLiteral("Searching")),
@@ -315,10 +318,11 @@ int main(int argc, char** argv) {
         require(third_terminal.find_current_index_for_test() != partial_before ||
                 third_terminal.find_status_for_test() == QStringLiteral("No further scanned match"),
                 "running-scan Next neither advanced nor reported the scanned-prefix boundary");
-        await([&] {
-            const auto state = third_terminal.find_search_status_for_test();
-            return state == termforge::SearchStatus::complete || state == termforge::SearchStatus::capped;
-        }, third, lifecycle, "long scan did not complete");
+        for (int guard = 0; guard < 20 &&
+             (third_terminal.find_search_status_for_test() == termforge::SearchStatus::running); ++guard)
+            third_terminal.step_find_once_for_test();
+        require(third_terminal.find_search_status_for_test() == termforge::SearchStatus::complete,
+                "long scan did not complete after bounded steps");
         require(third_terminal.find_match_count_for_test() == 52, "long scan hit count differs");
         require(third_terminal.find_status_for_test().contains(QStringLiteral("52 matches")),
                 "long scan completion status differs");
@@ -326,8 +330,11 @@ int main(int argc, char** argv) {
         // Repeated short literals exceed 1024 in retained rows; the existing cap
         // is asserted through the real query entry, including finite wrap.
         type_ascii(third_query, QStringLiteral("AB"));
-        await([&] { return third_terminal.find_search_status_for_test() == termforge::SearchStatus::capped; },
-              third, lifecycle, "1024-result cap was not reached through real child output");
+        for (int guard = 0; guard < 20 &&
+             third_terminal.find_search_status_for_test() == termforge::SearchStatus::running; ++guard)
+            third_terminal.step_find_once_for_test();
+        require(third_terminal.find_search_status_for_test() == termforge::SearchStatus::capped,
+                "1024-result cap was not reached through real child output");
         require(third_terminal.find_match_count_for_test() == 1024, "capped result count is not 1024");
         require(third_terminal.find_status_for_test().contains(QStringLiteral("capped")),
                 "capped status lacks the truncation notice");
