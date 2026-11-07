@@ -1,8 +1,8 @@
 {
   "schema": "termforge-qt-history-scrollbar-validation-v1",
   "baseline_main": "ce2bbbacacf49b3864932fad19464d465e638426",
-  "source_commit": "6a2749f",
-  "source_hash_note": "SHA-256 of committed LF blob content at 6a2749f; docs follow-up.",
+  "source_commit": "cdf6a1e",
+  "source_hash_note": "SHA-256 of committed LF blob content at cdf6a1e; docs follow-up.",
   "source_files_sha256": {
     "src/qt/terminal_widget.hpp": "770242a69cfb04688a0d60f71532b251901b70b34fe5704db096ad7137ca747b",
     "src/qt/history_navigation_test.cpp": "a4929e20def0538d640b651b2a788c455601a68c729be611165549f982b6c44d",
@@ -13,7 +13,7 @@
     "src/qt/find_test.cpp": "f1df33c4bb3f36acc6366492d8a94e5ed9c54c854c52ef1cb95bd67f44b6bfcc",
     "src/qt/history_fixture.hpp": "d9fb37df2a7834a49788ec7eb4ea07ddab9766570838075c581cbbd738c931d9",
     "src/qt/resize_fixture.hpp": "065745e70db5f3341be60dd4c7f3d3d2aea0b995ca1782090ce2ddfa9b87e774",
-    "src/qt/scrollbar_size_test.cpp": "a280dccac1fee1f6dee0e61e75e1f32d32f8465d791d2a74869eb22f82f1ef28",
+    "src/qt/scrollbar_size_test.cpp": "f4c6bd6cbce8ccee75ce5a058ca8c8eac1e8049559dbce730e88e4186f58aa55",
     "CMakeLists.txt": "24efd481f48a43a66e5c91f4fbd4120ba2382af9dc69347e42ce731008cb58fa",
     ".github/workflows/qt-cpp.yml": "7d9bab2caed2d3ee2fdee41adffbc5708ac6e6227d1968a3948a7bfdbf56b018"
   },
