@@ -6,12 +6,14 @@
 // presentation or a WindTerm history oracle.
 #include "terminal_widget.hpp"
 #include "history_fixture.hpp"
+#include "selection_fixture.hpp"
 #include "../../experiments/core/text_document.hpp"
 #include <QApplication>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFontMetricsF>
 #include <QTest>
+#include "clipboard_writer.hpp"
 #include <QScrollBar>
 #include <QStyleOptionSlider>
 #include <QWheelEvent>
@@ -29,6 +31,23 @@ using termforge::ViewportState;
 using termforge::qt::SessionModel;
 using termforge::qt::TerminalWidget;
 using termforge::qt::test::history_child;
+using termforge::qt::test::selection_child;
+namespace {
+class FakeClipboard final : public termforge::qt::ClipboardWriter {
+public:
+    std::u16string text;
+    termforge::qt::ClipboardWrite write(const std::u16string& value) override {
+        text = value;
+        return {termforge::qt::ClipboardWrite::Status::ok, {}};
+    }
+};
+std::string read_record(const QString& path) {
+    QFile file(path);
+    if (!file.exists()) return {};
+    if (!file.open(QIODevice::ReadOnly)) throw std::runtime_error("history input record unavailable");
+    return file.readAll().toStdString();
+}
+}
 
 namespace {
 void require(bool condition, const std::string& message) {
@@ -113,7 +132,8 @@ void drag_scrollbar(QScrollBar* bar, int y) {
     QTest::mouseRelease(bar, Qt::LeftButton, Qt::NoModifier, QPoint(start.x(), y));
 }
 bool start_and_open(SessionModel& model, TerminalWidget& terminal, QWidget& window,
-                    const wchar_t* executable, const QString& workspace, QElapsedTimer& lifecycle) {
+                    const wchar_t* executable, const QString& workspace, const QString& record,
+                    QElapsedTimer& lifecycle) {
     window.resize(1200, 900);
     window.show();
     terminal.setFocus();
@@ -134,6 +154,10 @@ void close_session(SessionModel& model, QElapsedTimer& lifecycle) {
 
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
+    if (argc >= 2 && std::string_view(argv[1]) == "--selection-child") {
+        try { return selection_child(argc == 3 ? QString::fromLocal8Bit(argv[2]).toStdWString() : std::wstring{}); }
+        catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
+    }
     if (argc == 2 && std::string_view(argv[1]) == "--history-child") {
         try { return history_child(); }
         catch (const std::exception& error) {
@@ -167,12 +191,14 @@ int main(int argc, char** argv) {
         SessionModel first;
         QWidget first_window;
         TerminalWidget first_terminal(first, &first_window);
-        require(start_and_open(first, first_terminal, first_window, executable, workspace.path(), lifecycle),
+        const QString first_record = workspace.path() + "/first-history-input.bin";
+        const QString second_record = workspace.path() + "/second-history-input.bin";
+        require(start_and_open(first, first_terminal, first_window, executable, workspace.path(), first_record, lifecycle),
                 "first history child did not start");
         SessionModel second;
         QWidget second_window;
         TerminalWidget second_terminal(second, &second_window);
-        require(start_and_open(second, second_terminal, second_window, executable, workspace.path(), lifecycle),
+        require(start_and_open(second, second_terminal, second_window, executable, workspace.path(), second_record, lifecycle),
                 "second history child did not start");
         require(second_terminal.history_following(), "second session did not start at the bottom");
         first_window.activateWindow();
@@ -443,15 +469,41 @@ int main(int argc, char** argv) {
         require(static_cast<size_t>(bar->value()) == first_terminal.history_state().top,
                 "scrollbar value/top diverged after restored resize");
 
-        // Find reveal must synchronize the scrollbar to the revealed source page.
-        first_terminal.open_find_for_test();
-        first_terminal.set_find_query_for_test(QStringLiteral("TF_H_140"));
+        // Public Find entry: real shortcut, query typing and Escape, with the
+        // scrollbar synchronized to the revealed source page.
+        first_window.activateWindow(); first_terminal.setFocus(); QTest::qWait(20);
+        QTest::keyClick(&first_terminal, Qt::Key_F, Qt::ControlModifier | Qt::ShiftModifier);
+        auto* find_query = first_window.findChild<QLineEdit*>(QStringLiteral("findQuery"));
+        require(find_query && find_query->hasFocus(), "Find did not focus the public query entry");
+        QTest::keyClicks(find_query, QStringLiteral("TF_H_140"));
         await([&] { return first_terminal.find_current_range_for_test().has_value(); }, first, lifecycle,
-              "Find did not reveal a history match");
+              "public Find did not reveal a history match");
         require(!first_terminal.history_following() &&
                 static_cast<size_t>(bar->value()) == first_terminal.history_state().top,
-                "Find reveal did not synchronize the scrollbar");
-        first_terminal.close_find_for_test();
+                "public Find reveal did not synchronize the scrollbar");
+        QTest::keyClick(find_query, Qt::Key_Escape);
+        require(first_terminal.hasFocus(), "public Find Escape did not restore terminal focus");
+
+        // Public drag selection and Ctrl+Shift+C through an injected writer:
+        // source text is checked, but this is not a real-CF verification.
+        auto fake = std::make_unique<FakeClipboard>();
+        FakeClipboard* captured = fake.get();
+        first_terminal.setClipboardWriterForTest(std::move(fake));
+        const int cw = first_terminal.cell_width(), ch = first_terminal.cell_height();
+        const QPoint from(8 + 2 * cw, 8 + 2 * ch), to(8 + 24 * cw, 8 + 4 * ch);
+        QTest::mousePress(&first_terminal, Qt::LeftButton, Qt::NoModifier, from);
+        QTest::mouseMove(&first_terminal, to);
+        QTest::mouseRelease(&first_terminal, Qt::LeftButton, Qt::NoModifier, to);
+        require(first_terminal.has_selection(), "public mouse drag did not select source text");
+        QTest::keyClick(&first_terminal, Qt::Key_C, Qt::ControlModifier | Qt::ShiftModifier);
+        require(!captured->text.empty() &&
+                QString::fromUtf16(captured->text.data(), static_cast<qsizetype>(captured->text.size()))
+                    .contains(QStringLiteral("TF_H_")),
+                "public Ctrl+Shift+C did not extract the selected source text");
+
+        // Focus returns to the terminal after the public Find entry; ordinary
+        // child input remains the existing separate input-contract coverage.
+        require(first_terminal.hasFocus(), "public Find did not return focus to the terminal");
         QTest::keyClick(&first_terminal, Qt::Key_End, Qt::ControlModifier | Qt::ShiftModifier);
         await([&] { return first_terminal.history_following(); }, first, lifecycle,
               "Ctrl+Shift+End after Find did not restore following");
@@ -520,6 +572,34 @@ int main(int argc, char** argv) {
               "ordinary input did not return to the bottom");
 
         require(second_terminal.history_following(), "second session was affected by first history actions");
+
+        // A third real child records received bytes; public Find query and the
+        // following ordinary key must not be misdirected.
+        const QString third_record = workspace.path() + "/third-history-input.bin";
+        SessionModel third; QWidget third_window; TerminalWidget third_terminal(third, &third_window);
+        third_window.resize(1200, 900); third_window.show(); third_terminal.setFocus();
+        const std::wstring third_args = QStringLiteral("--selection-child \"%1\"").arg(third_record).toStdWString();
+        require(third.start(executable, third_args, workspace.path().toStdWString()), "third input child did not start");
+        await([&] { return third.screen().history_lines().size() >= 20; }, third, lifecycle,
+              "third input child output missing");
+        third_window.activateWindow(); third_terminal.setFocus(); QTest::qWait(20);
+        QTest::keyClick(&third_terminal, Qt::Key_F, Qt::ControlModifier | Qt::ShiftModifier);
+        auto* third_query = third_window.findChild<QLineEdit*>(QStringLiteral("findQuery"));
+        require(third_query && third_query->hasFocus(), "third Find did not focus its public query");
+        QTest::keyClicks(third_query, QStringLiteral("SEL_HEAD"));
+        await([&] { return third_terminal.find_current_range_for_test().has_value(); }, third, lifecycle,
+              "third public Find did not reveal a hit");
+        QTest::keyClick(third_query, Qt::Key_Escape);
+        require(third_terminal.hasFocus(), "third Find Escape did not restore focus");
+        QTest::keyClicks(&third_terminal, QStringLiteral("x"));
+        QElapsedTimer third_wait; third_wait.start();
+        while (third_record.size() && QString::fromStdString(read_record(third_record)) != QStringLiteral("x") &&
+               third_wait.elapsed() < 3000) QTest::qWait(10);
+        require(QString::fromStdString(read_record(third_record)) == QStringLiteral("x"),
+                "public Find query/ordinary input did not reach the correct child exactly once");
+        require(third.send(std::string(1, 'q')), "third child quit rejected");
+        await([&] { return third.finished(); }, third, lifecycle, "third child did not finish");
+
         close_session(first, lifecycle);
         close_session(second, lifecycle);
         std::cout << "{\"schema\":\"termforge-qt-history-navigation-v1\",\"status\":\"passed\","

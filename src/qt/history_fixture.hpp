@@ -4,6 +4,7 @@
 #pragma once
 #include "../../experiments/conpty/session.hpp"
 #include <cstdio>
+#include <fstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -28,7 +29,7 @@ inline void history_child_lines(HANDLE output, int first, int last, const char* 
     history_child_write(output, batch);
 }
 
-inline int history_child() {
+inline int history_child(const std::wstring& record_path = {}) {
     BOOL owned = FALSE;
     if (!IsProcessInJob(GetCurrentProcess(), nullptr, &owned) || !owned)
         throw std::runtime_error("history child requires its owned Session Job");
@@ -47,10 +48,16 @@ inline int history_child() {
     // real child output without host input returning to the bottom.
     Sleep(1500);
     history_child_lines(output.get(), 161, 180, "TF_END2\r\nTF>");
+    std::ofstream received;
+    if (!record_path.empty()) {
+        received.open(record_path, std::ios::binary | std::ios::trunc);
+        if (!received) tf_conpty::fail("history child input record");
+    }
     for (;;) {
         char key = 0; DWORD count = 0;
         if (!ReadFile(input.get(), &key, 1, &count, nullptr) || count != 1)
             tf_conpty::fail("ReadFile(history child input)");
+        if (received) { received.put(key); received.flush(); }
         if (key == 'q') return 37;
         if (key == 'm') {
             history_child_lines(output.get(), 181, 220, "TF_END3\r\nTF>");
