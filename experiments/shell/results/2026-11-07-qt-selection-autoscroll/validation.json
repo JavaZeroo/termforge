@@ -1,11 +1,11 @@
 {
   "schema": "termforge-qt-selection-autoscroll-validation-v1",
   "baseline_main": "0dae679283817eb77ef0d3e63fcbc051e6babc81",
-  "source_commit": "932c9c0",
-  "source_hash_note": "SHA-256 of committed LF blobs at 932c9c0; docs follow-up.",
+  "source_commit": "71e08e1",
+  "source_hash_note": "SHA-256 of committed LF blobs at 71e08e1; docs follow-up.",
   "source_files_sha256": {
-    "src/qt/terminal_widget.hpp": "62a8b37920748afda61478c33c25b29e9583e5dc35feab46e62ed591d88f4069",
-    "src/qt/autoscroll_test.cpp": "98e6b8a11055f61c6afbbd9a82792363cbf764821c1032c72cd973b245ac68a6",
+    "src/qt/terminal_widget.hpp": "d62e6c261f897a9eef02002f931c7aad28e81bfaedb2e7a4c555080894153d3c",
+    "src/qt/autoscroll_test.cpp": "b8b1025838b19ccc487733c9c4dace3b46dadc4cd01e51bb9157a67f249ee58d",
     "CMakeLists.txt": "73a315611909ad686a8e6f0ede15103a96d49579c101dce5e089c28124aefde4",
     ".github/workflows/qt-cpp.yml": "9cfe91b25b06a0329970d798968d5f5eae0261c1b8fe9ebed9d6e0b536faed66"
   },
@@ -19,7 +19,15 @@
   "policy": {
     "timer_ms": 40,
     "scroll_per_tick_rows": 1,
-    "stop": ["drag_back_inside", "mouse_release", "focus_loss", "hide", "ungrab", "resize", "session_close"],
+    "stop": [
+      "drag_back_inside",
+      "mouse_release",
+      "focus_loss",
+      "hide",
+      "ungrab",
+      "resize",
+      "session_close"
+    ],
     "default_scrollbar": "enabled"
   },
   "checks": {
@@ -32,16 +40,37 @@
     "two_sessions": true,
     "child_cleanup": true,
     "injected_writer_not_real_cf": true,
-    "offscreen_only": true
+    "offscreen_only": true,
+    "exact_source_oracle": true,
+    "exact_highlight": true,
+    "active_edge_release": true,
+    "default_40ms_path": true,
+    "active_focus_loss": true,
+    "active_session_close": true
   },
   "tests": {
-    "qt_autoscroll": {"passed": 1, "failed": 0, "seconds": 2.78},
-    "qt_formal_path_regression": {"passed": 12, "failed": 0, "seconds": 50.63}
+    "qt_autoscroll": {
+      "passed": 1,
+      "failed": 0,
+      "seconds": 2.78
+    },
+    "qt_formal_path_regression": {
+      "passed": 12,
+      "failed": 0,
+      "seconds": 50.63
+    }
   },
   "limitations": [
     "Offscreen Qt; physical presentation/DPI is not covered.",
     "Copy uses an injected writer, not real system CF.",
     "No word/line/rect selection, alternate-screen/TUI, persistence or performance threshold.",
-    "Does not close #29/#30/R2; #324 remains blocked."
+    "Does not close #29/#30/R2; #324 remains blocked.",
+    "Not executed: soft/wide/combining, coordinated narrow/restore, append/eviction/ED3/RIS and Find/scrollbar crossings with an active autoscroll timer. These are not covered by the 12/12 result."
+  ],
+  "not_executed": [
+    "soft/hard mixed and wide/combining autoscroll source columns",
+    "narrow/restore while autoscroll active",
+    "continuous append/eviction/ED3/RIS combined with active autoscroll",
+    "Find/scrollbar cross while actively auto-scrolling"
   ]
 }
