@@ -39,7 +39,7 @@ SizeReply query_size(SizeFixture& fixture, SessionModel& model, uint64_t nonce) 
 }
 bool ack_matches(const SizeReply& reply, TerminalWidget& terminal, SessionModel& model,
                  int columns, int rows) {
-    if (terminal.screen().width() != columns || terminal.screen().height() != rows) return false;
+    if (model.screen().width() != columns || model.screen().height() != rows) return false;
     const auto state = model.resize_state();
     if (!(state.requested_columns == columns && state.requested_rows == rows &&
           state.transport_columns == columns && state.transport_rows == rows && !state.pending && state.accepting))
