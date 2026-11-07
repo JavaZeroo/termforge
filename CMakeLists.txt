@@ -832,6 +832,20 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_find_test>")
     set_tests_properties(qt_find PROPERTIES TIMEOUT 45
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_executable(qt_autoscroll_test src/qt/autoscroll_test.cpp)
+    set_target_properties(qt_autoscroll_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-autoscroll-bin/$<CONFIG>")
+    termforge_qt_entry(qt_autoscroll_test)
+    target_link_libraries(qt_autoscroll_test PRIVATE Qt6::Test)
+    add_custom_command(TARGET qt_autoscroll_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_autoscroll_test>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_autoscroll COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_autoscroll_test>")
+    set_tests_properties(qt_autoscroll PROPERTIES TIMEOUT 45
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     add_executable(qt_scrollbar_size_test src/qt/scrollbar_size_test.cpp)
     set_target_properties(qt_scrollbar_size_test PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-scrollbar-size-bin/$<CONFIG>")
