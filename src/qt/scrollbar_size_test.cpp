@@ -37,6 +37,16 @@ SizeReply query_size(SizeFixture& fixture, SessionModel& model, uint64_t nonce) 
     require(model.send("Q " + std::to_string(nonce) + "\r"), "size query input rejected");
     return wait_reply(fixture, nonce, model);
 }
+bool ack_matches(const SizeReply& reply, TerminalWidget& terminal, SessionModel& model,
+                 int columns, int rows) {
+    if (terminal.screen().width() != columns || terminal.screen().height() != rows) return false;
+    const auto state = model.resize_state();
+    if (!(state.requested_columns == columns && state.requested_rows == rows &&
+          state.transport_columns == columns && state.transport_rows == rows && !state.pending && state.accepting))
+        return false;
+    return reply.buffer_columns == columns && reply.buffer_rows == rows &&
+           reply.window_columns() == columns && reply.window_rows() == rows;
+}
 void require_ack(const SizeReply& reply, TerminalWidget& terminal, SessionModel& model,
                  int columns, int rows, const char* stage) {
     require(model.screen().width() == columns && model.screen().height() == rows,
@@ -106,9 +116,18 @@ int main(int argc, char** argv) {
             return std::clamp((terminal.width() - 16 - (reserved ? terminal.history_scrollbar_extent_for_test() : 0)) / cw, 1, 500);
         };
         auto expected_rows = [&] { return std::clamp((terminal.height() - 24 - ch) / ch, 1, 200); };
+        uint64_t next_nonce = 10;
+        auto await_ack = [&](int columns, int rows, const char* stage) {
+            for (int attempt = 0; attempt < 200; ++attempt) {
+                auto reply = query_size(fixture, model, next_nonce++);
+                if (ack_matches(reply, terminal, model, columns, rows)) return;
+                QTest::qWait(20);
+            }
+            require(false, std::string(stage) + ": child CSBI ACK did not settle");
+        };
         auto* bar = terminal.history_scrollbar_for_test();
         require(bar && !bar->isVisible(), "scrollbar appeared without history");
-        require_ack(query_size(fixture, model, 1), terminal, model, expected_columns(false), expected_rows(), "no-history");
+        await_ack(expected_columns(false), expected_rows(), "no-history");
 
         // A finite real-child burst fills retained history; the product
         // scrollbar appears and its extent changes the grid seen by the child.
@@ -119,13 +138,13 @@ int main(int argc, char** argv) {
             QTest::qWait(10);
         require(bar->isVisible(), "scrollbar did not appear after history output");
         require(model.screen().width() == expected_columns(true), "scrollbar-reserved grid width differs");
-        require_ack(query_size(fixture, model, 3), terminal, model, expected_columns(true), expected_rows(), "history-reserved");
+        await_ack(expected_columns(true), expected_rows(), "history-reserved");
 
         resize_public(terminal, model, 60, 20, lifecycle);
         require(bar->isVisible(), "scrollbar disappeared after narrow resize");
-        require_ack(query_size(fixture, model, 5), terminal, model, 60, 20, "narrow-reserved");
+        await_ack(60, 20, "narrow-reserved");
         resize_public(terminal, model, 80, 24, lifecycle);
-        require_ack(query_size(fixture, model, 6), terminal, model, 80, 24, "restored-reserved");
+        await_ack(80, 24, "restored-reserved");
 
         // ED3 clears retained history; the scrollbar disappears and the full
         // available width is acknowledged by the independent child again.
@@ -136,7 +155,7 @@ int main(int argc, char** argv) {
             QTest::qWait(10);
         require(!bar->isVisible(), "scrollbar remained visible after history clear");
         require(model.screen().width() == expected_columns(false), "cleared grid width differs");
-        require_ack(query_size(fixture, model, 8), terminal, model, expected_columns(false), expected_rows(), "cleared");
+        await_ack(expected_columns(false), expected_rows(), "cleared");
 
         require(model.send(std::string("X 9\r")), "size child exit command rejected");
         wait_reply(fixture, 9, model);
