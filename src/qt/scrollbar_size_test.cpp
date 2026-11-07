@@ -16,6 +16,21 @@ using termforge::qt::test::SizeFixture;
 using termforge::qt::test::SizeReply;
 using termforge::qt::test::size_child;
 
+struct Observation {
+    std::string stage, error;
+    int order = 0, attempt = 0;
+    uint64_t nonce = 0;
+    int expected_columns = 0, expected_rows = 0;
+    int client_width = 0, scrollbar_extent = 0;
+    bool scrollbar_visible = false;
+    int requested_columns = 0, requested_rows = 0, transport_columns = 0, transport_rows = 0;
+    bool pending = true, accepting = false;
+    int child_pid = 0;
+    int buffer_columns = 0, buffer_rows = 0, window_columns = 0, window_rows = 0;
+    int query_error = 0;
+    bool match = false;
+};
+
 namespace {
 void require(bool condition, const std::string& message) {
     if (!condition) throw std::runtime_error(message);
@@ -117,13 +132,44 @@ int main(int argc, char** argv) {
         };
         auto expected_rows = [&] { return std::clamp((terminal.height() - 24 - ch) / ch, 1, 200); };
         uint64_t next_nonce = 10;
+        std::vector<Observation> observations;
+        int observation_order = 0;
+        auto observe = [&](const char* stage, int attempt, uint64_t nonce, const SizeReply& reply,
+                           int columns, int rows, const std::string& error = {}) {
+            const auto state = model.resize_state();
+            const auto* scroll = terminal.history_scrollbar_for_test();
+            Observation item;
+            item.stage = stage; item.error = error; item.order = ++observation_order; item.attempt = attempt;
+            item.nonce = nonce; item.expected_columns = columns; item.expected_rows = rows;
+            item.client_width = terminal.width();
+            item.scrollbar_extent = terminal.history_scrollbar_extent_for_test();
+            item.scrollbar_visible = scroll && scroll->isVisible();
+            item.requested_columns = state.requested_columns; item.requested_rows = state.requested_rows;
+            item.transport_columns = state.transport_columns; item.transport_rows = state.transport_rows;
+            item.pending = state.pending; item.accepting = state.accepting;
+            item.child_pid = reply.child_pid;
+            item.buffer_columns = reply.buffer_columns; item.buffer_rows = reply.buffer_rows;
+            item.window_columns = reply.window_columns(); item.window_rows = reply.window_rows();
+            item.query_error = reply.query_error;
+            item.match = ack_matches(reply, terminal, model, columns, rows);
+            observations.push_back(std::move(item));
+        };
         auto await_ack = [&](int columns, int rows, const char* stage) {
             for (int attempt = 0; attempt < 200; ++attempt) {
-                auto reply = query_size(fixture, model, next_nonce++);
-                if (ack_matches(reply, terminal, model, columns, rows)) return;
+                const uint64_t nonce = next_nonce++;
+                try {
+                    auto reply = query_size(fixture, model, nonce);
+                    observe(stage, attempt, nonce, reply, columns, rows);
+                    if (ack_matches(reply, terminal, model, columns, rows)) return;
+                } catch (const std::exception& error) {
+                    SizeReply missing; missing.nonce = nonce;
+                    observe(stage, attempt, nonce, missing, columns, rows, error.what());
+                }
                 QTest::qWait(20);
             }
-            require(false, std::string(stage) + ": child CSBI ACK did not settle");
+            SizeReply missing; missing.nonce = next_nonce;
+            observe(stage, 200, next_nonce, missing, columns, rows, "timeout");
+            require(false, std::string(stage) + ": child CSBI ACK did not settle; see trace");
         };
         auto* bar = terminal.history_scrollbar_for_test();
         require(bar && !bar->isVisible(), "scrollbar appeared without history");
@@ -167,7 +213,33 @@ int main(int argc, char** argv) {
                      "\"no_history_scrollbar\":true,\"history_reserved\":true,"
                      "\"narrow_reserved\":true,\"restored_reserved\":true,"
                      "\"clear_hides\":true,\"child_csbi_ack\":true,"
-                     "\"offscreen_only\":true,\"presented_done\":null}\n";
+                     "\"observations\":["; 
+        for (size_t i = 0; i < observations.size(); ++i) {
+            const auto& o = observations[i];
+            if (i) std::cout << ',';
+            std::cout << "{\"stage\":\"" << o.stage << "\",\"order\":" << o.order
+                      << ",\"attempt\":" << o.attempt << ",\"nonce\":" << o.nonce
+                      << ",\"expected_columns\":" << o.expected_columns
+                      << ",\"expected_rows\":" << o.expected_rows
+                      << ",\"client_width\":" << o.client_width
+                      << ",\"scrollbar_extent\":" << o.scrollbar_extent
+                      << ",\"scrollbar_visible\":" << (o.scrollbar_visible ? "true" : "false")
+                      << ",\"requested_columns\":" << o.requested_columns
+                      << ",\"requested_rows\":" << o.requested_rows
+                      << ",\"transport_columns\":" << o.transport_columns
+                      << ",\"transport_rows\":" << o.transport_rows
+                      << ",\"pending\":" << (o.pending ? "true" : "false")
+                      << ",\"accepting\":" << (o.accepting ? "true" : "false")
+                      << ",\"child_pid\":" << o.child_pid
+                      << ",\"buffer_columns\":" << o.buffer_columns
+                      << ",\"buffer_rows\":" << o.buffer_rows
+                      << ",\"window_columns\":" << o.window_columns
+                      << ",\"window_rows\":" << o.window_rows
+                      << ",\"query_error\":" << o.query_error
+                      << ",\"match\":" << (o.match ? "true" : "false")
+                      << ",\"error\":\"" << o.error << "\"}";
+        }
+        std::cout << "],\"offscreen_only\":true,\"presented_done\":null}\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "Qt scrollbar size: " << error.what() << '\n';
