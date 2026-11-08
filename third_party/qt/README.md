@@ -6,7 +6,7 @@
 
 manifest 固定了 Qt 官方 Updates.xml 和原始 qtbase 7z 的 URL、大小与哈希。官方包名为 `qt.qt6.6103.win64_msvc2022_64`，归档大小 **42,748,757 B**，SHA-256 为 `4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7`；本次整理已重新核对本地原始归档及 Updates.xml。
 
-对应源码为 [qtbase 6.10.3 源码归档](https://download.qt.io/archive/qt/6.10/6.10.3/submodules/qtbase-everywhere-src-6.10.3.tar.xz)及 Qt 官方仓库的 `v6.10.3`。这里只标识源码获取位置，没有把源码归档下载、哈希复核或完整对应源码交付算作已完成。
+对应源码为 [qtbase 6.10.3 源码归档](https://download.qt.io/archive/qt/6.10/6.10.3/submodules/qtbase-everywhere-src-6.10.3.tar.xz)及 Qt 官方仓库的 `v6.10.3`。本次为提取随包许可文本下载并测量了该源码归档：**50,509,856 B**，SHA-256 `383dc907816338f0cba72088a524c07458dfc69ce684ca9132fcc4fe91c24b0b`；归档本身不提交、不随产品分发。产品的完整对应源码交付条件仍属于分发审计，不因本记录完成。
 
 最初本地准备使用 aqtinstall 3.3.0，会修补 qmake 和 `.prl` 的安装前缀。下面的自动复建直接解压同一官方归档，仅写相对的 `bin/qt.conf`（`Prefix=..`），保留原始 qmake 与 `.prl` 字节。**原始归档、两种准备方式得到的 SDK、最终部署目录是不同身份**，不能用归档哈希冒充 SDK 或产品目录的完整哈希；具体构建结果按各次证据绑定实际输入和输出。
 
@@ -45,8 +45,14 @@ ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_(shell|resize)$' --no-tests
 
 CI 的 `windows-2025` 已实际解析到 `windows-2025-vs2026`，该映像没有 VS 2022 实例；因此工作流显式使用 [CMake 的 VS 2026 generator](https://cmake.org/cmake/help/latest/generator/Visual%20Studio%2018%202026.html)，要求 CMake 4.2 或更新。Qt SDK 仍是固定的 MSVC 2022 x64 包，不把 SDK 名称改称 VS 2026。[微软的二进制兼容说明](https://learn.microsoft.com/en-us/cpp/porting/binary-compat-2015-2017?view=msvc-170)允许较新链接器消费较早工具链构建的动态库，但实际兼容性仍由这次独立构建和会话检查证明；本地 VS 2022 验证与 hosted VS 2026 验证分别记录。
 
+## 产品 staging 与部署边界
+
+`windeployqt` 调用显式带 `--no-system-d3d-compiler --no-system-dxc-compiler`：系统 D3D 编译器与微软 DXC OOB 重分发文件既不在本仓库固定依赖中，也不是当前 Widgets 光栅入口静态链接的依赖，因此不从开发机 Windows SDK/System32 借用。`Qt6Core.dll` 静态导入的 `icuuc.dll` 由 Windows 11 System32 提供；构建目录中由 windeployqt 复制的副本只作为来源证据核对（必须与 System32 字节一致），staging 排除它而不随包分发。
+
+[`packaging/qt-product/manifest.json`](../../packaging/qt-product/manifest.json) 冻结正式入口实际部署的 Qt 库/插件集合、OS 提供项、被排除的系统重分发文件与许可证据。`python -m tools.stage_qt_product stage` 只接受该清单、当前固定依赖准备摘要、固定 SDK 树哈希与逐文件字节都匹配的构建目录，输出路径无关的 `product-manifest.json`（含 source commit/tree、构建参数、入口、逐文件 SHA-256 和许可证据）；`verify` 子命令可重新核对已生成 staging 的文件集合与哈希。该 staging 是工程候选，不是 R2 包：干净 Windows 运行、单屏 96/144 DPI、完整第三方许可清单及最终包验收均未完成。
+
 ## 许可与分发边界
 
-Qt 模块保留自己的许可，不由项目 MIT 许可覆盖。[Qt 6.10 许可说明](https://doc.qt.io/qt-6.10/licensing.html)与 SDK SBOM／头文件显示，当前 Core、Gui、Widgets、Test 的模块许可选项包含 LGPL-3.0-only，以及相应 GPL／商业许可选项；manifest 保留精确 SPDX 表达式及实际 SBOM 身份。当前应用计划采用**动态链接的 LGPLv3 路径**，这不是对完整产品分发条件已经满足的声明。
+Qt 模块保留自己的许可，不由项目 MIT 许可覆盖。[Qt 6.10 许可说明](https://doc.qt.io/qt-6.10/licensing.html)与 SDK SBOM／头文件显示，当前 Core、Gui、Widgets、Test 的模块许可选项包含 LGPL-3.0-only，以及相应 GPL／商业许可选项；manifest 保留精确 SPDX 表达式及实际 SBOM 身份。当前应用计划采用**动态链接的 LGPLv3 路径**，这不是对完整产品分发条件已经满足的声明。仓库随附从固定 qtbase 6.10.3 源码归档 `LICENSES/LGPL-3.0-only.txt` 提取的许可原文（[LICENSES/LGPL-3.0-only.txt](LICENSES/LGPL-3.0-only.txt)），staging 会把该文本连同其归档成员身份与 SHA-256 一起带入产品目录。
 
-Qt 内还包含使用其他许可的第三方代码；不能仅凭模块级许可表达式代替实际部署文件清单。产品分发前仍须完成运行库／插件及第三方许可声明、对应源码与替换条件的核对，以及干净机器运行验证；当前记录只支持本地构建依赖的来源与身份。
+Qt 内还包含使用其他许可的第三方代码；不能仅凭模块级许可表达式代替实际部署文件清单。产品分发前仍须完成运行库／插件及第三方许可声明、对应源码与替换条件的核对，以及干净机器运行验证；当前记录只支持本地构建依赖的来源与身份。staging 的许可索引将该项明确标为 `third_party_component_inventory_pending`，不将其写成已完成的再分发结论。

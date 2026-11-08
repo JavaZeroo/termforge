@@ -683,8 +683,14 @@ if(TERMFORGE_BUILD_QT_SHELL)
         "$<TARGET_FILE_DIR:${target}>/assets/fonts"
       VERBATIM)
     add_dependencies(${target} ${target}_font_bundle)
+    # The system D3D compiler and Microsoft DXC redistributables are not part
+    # of the fixed, pinned product set: the Widgets raster entry does not link
+    # them, and windeployqt would otherwise copy them from the developer's
+    # Windows SDK/system directories. Product staging verifies the remaining
+    # files against the pinned SDK; see tools/stage_qt_product.py.
     add_custom_command(TARGET ${target} POST_BUILD
       COMMAND "${qt_deploy_tool}" --release --no-translations --no-compiler-runtime
+        --no-system-d3d-compiler --no-system-dxc-compiler
         "$<TARGET_FILE:${target}>"
       VERBATIM)
   endfunction()
