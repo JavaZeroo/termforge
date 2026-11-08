@@ -1,0 +1,114 @@
+{
+  "schema": "termforge-qt-product-staging-contract-v1",
+  "scope": "Frozen Windows x64 C++/Qt/ConPTY product staging inputs for the termforge_qt_shell entry. This is an engineering candidate: not a released package, not an accepted R2 deliverable and not a redistribution clearance.",
+  "entry_executable": "termforge_qt_shell.exe",
+  "platform": "windows-x64",
+  "configuration": "Release",
+  "staging_entry": "python -m tools.stage_qt_product stage",
+  "build": {
+    "cmake_options": [
+      "-DTERMFORGE_BUILD_QT_SHELL=ON",
+      "-DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF"
+    ],
+    "windeployqt_flags": [
+      "--release",
+      "--no-translations",
+      "--no-compiler-runtime",
+      "--no-system-d3d-compiler",
+      "--no-system-dxc-compiler"
+    ],
+    "note": "The Qt SDK, fixed ConPTY pair and fixed CRT are prepared by tools.prepare_qt_build. BUILD_TESTING only adds separate test output directories; no test executable belongs to this product staging."
+  },
+  "qt_deployed": {
+    "libraries": [
+      "Qt6Core.dll",
+      "Qt6Gui.dll",
+      "Qt6Network.dll",
+      "Qt6Widgets.dll"
+    ],
+    "plugins": [
+      "generic/qtuiotouchplugin.dll",
+      "imageformats/qgif.dll",
+      "imageformats/qico.dll",
+      "imageformats/qjpeg.dll",
+      "networkinformation/qnetworklistmanager.dll",
+      "platforms/qwindows.dll",
+      "styles/qmodernwindowsstyle.dll",
+      "tls/qcertonlybackend.dll",
+      "tls/qschannelbackend.dll"
+    ],
+    "source_layout": "Libraries must be byte-identical to <prepared-qt>/bin/<name>; plugins must be byte-identical to <prepared-qt>/plugins/<relative path>."
+  },
+  "os_provided": [
+    {
+      "name": "icuuc.dll",
+      "provider": "Microsoft Windows 11 System32 ICU common forwarder",
+      "deployment": "excluded_not_bundled",
+      "reason": "Qt6Core imports icuuc.dll, and windeployqt copies the developer machine's System32 forwarder into the build directory. The staged product must not redistribute or pin that OS component; the Windows 11 target supplies it at run time.",
+      "verification": "Staging requires the build copy to be byte-identical to the running system's System32 copy before excluding it. A copy from another source fails explicitly instead of being silently dropped."
+    }
+  ],
+  "excluded_system_redistributables": [
+    {
+      "name": "D3Dcompiler_47.dll",
+      "reason": "windeployqt --no-system-d3d-compiler; the Windows system D3D compiler is not pinned or redistributed in this package."
+    },
+    {
+      "name": "dxcompiler.dll",
+      "reason": "windeployqt --no-system-dxc-compiler; the Microsoft DXC out-of-band redistributable is not pinned, and the Widgets raster entry does not link it."
+    },
+    {
+      "name": "dxil.dll",
+      "reason": "windeployqt --no-system-dxc-compiler; the Microsoft DXC out-of-band redistributable is not pinned, and the Widgets raster entry does not link it."
+    }
+  ],
+  "license_evidence": {
+    "termforge": {
+      "spdx": "MIT",
+      "files": [
+        "LICENSE"
+      ]
+    },
+    "qt": {
+      "license_manifest": "third_party/qt/manifest.json",
+      "bundled_texts": [
+        "licenses/LGPL-3.0-only.txt"
+      ],
+      "status": "third_party_component_inventory_pending"
+    },
+    "conpty": {
+      "license_manifest": "third_party/conpty/manifest.json",
+      "files": [
+        "conpty-backend/LICENSE",
+        "conpty-backend/manifest.json"
+      ],
+      "status": "bundled"
+    },
+    "msvc_runtime": {
+      "license_manifest": "third_party/msvc_runtime/manifest.json",
+      "files": [
+        "LICENSE-MICROSOFT-VC-REDIST.docx",
+        "NOTICE.txt"
+      ],
+      "status": "bundled"
+    },
+    "font": {
+      "license_manifest": "assets/fonts/manifest.json",
+      "files": [
+        "assets/fonts/OFL.txt"
+      ],
+      "status": "bundled"
+    }
+  },
+  "test_fixture_policy": "Staging admits only this contract and the pinned dependency manifests. Test executables (qt_*_test, qt_cpp_* smoke, shell_*_client), debug/link/log artifacts and any other unlisted file are rejected rather than copied.",
+  "ignored_build_artifacts": {
+    "runtime-manifest.json": "Derived inventory written into the same directory by tools/msvc_runtime.py manifest; it is evidence output, never part of the product staging."
+  },
+  "claims": {
+    "r2_acceptance": false,
+    "clean_machine_run": "not_performed",
+    "single_screen_96_144_dpi": "not_verified_in_this_slice",
+    "full_third_party_license_inventory": "pending",
+    "performance_equivalence": false
+  }
+}

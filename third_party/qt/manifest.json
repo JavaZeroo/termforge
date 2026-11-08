@@ -36,9 +36,10 @@
     "version_tag": "v6.10.3",
     "repository": "https://code.qt.io/qt/qtbase.git",
     "source_archive_url": "https://download.qt.io/archive/qt/6.10/6.10.3/submodules/qtbase-everywhere-src-6.10.3.tar.xz",
-    "source_archive_downloaded_for_this_record": false,
-    "source_archive_sha256": null,
-    "note": "The matching official source archive is identified, not included or locally hash-verified by this build-dependency record."
+    "source_archive_downloaded_for_this_record": true,
+    "source_archive_bytes": 50509856,
+    "source_archive_sha256": "383dc907816338f0cba72088a524c07458dfc69ce684ca9132fcc4fe91c24b0b",
+    "note": "The matching official source archive was downloaded and hashed on 2026-11-08 to extract the bundled GNU LGPL v3 license text. The archive itself is not committed or redistributed by this record."
   },
   "linkage": "dynamic",
   "license": {
@@ -86,7 +87,19 @@
       "https://doc.qt.io/qt-6.10/licenses-used-in-qt.html"
     ],
     "third_party_code_scope": "Qt includes third-party components with their own licenses; the module-level expression is not a full deployed-file license inventory.",
-    "redistribution_review_status": "pending_before_product_distribution"
+    "redistribution_review_status": "pending_before_product_distribution",
+    "bundled_text_files": [
+      {
+        "spdx": "LGPL-3.0-only",
+        "path": "LICENSES/LGPL-3.0-only.txt",
+        "bytes": 7651,
+        "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+        "selection": "Bundled because the current product plan takes the dynamic-link LGPL-3.0-only option; this is not a completed redistribution review.",
+        "source_archive_url": "https://download.qt.io/archive/qt/6.10/6.10.3/submodules/qtbase-everywhere-src-6.10.3.tar.xz",
+        "source_archive_sha256": "383dc907816338f0cba72088a524c07458dfc69ce684ca9132fcc4fe91c24b0b",
+        "source_archive_member": "qtbase-everywhere-src-6.10.3/LICENSES/LGPL-3.0-only.txt"
+      }
+    ]
   },
   "installer": {
     "name": "aqtinstall",
