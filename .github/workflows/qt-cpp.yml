@@ -20,9 +20,16 @@ jobs:
         with:
           python-version: '3.12'
       - name: Verify preparation failure contracts
-        run: python -m unittest tools.test_prepare_qt_build tools.test_prepare_msvc_runtime tools.test_msvc_runtime tools.test_stage_qt_product -v
+        run: python -m unittest tools.test_prepare_qt_build tools.test_prepare_msvc_runtime tools.test_msvc_runtime tools.test_stage_qt_product tools.test_build_qt_component_inventory -v
       - name: Prepare manifest-pinned Qt qtbase, Microsoft ConPTY and CRT
         run: python -m tools.prepare_qt_build
+      - name: Verify deployed Qt component inventory against the pinned archive and SBOM
+        run: |
+          python -m tools.build_qt_component_inventory check `
+            --cache local/qt-downloads `
+            --sbom local/qt-build-deps/qt/sbom/qtbase-6.10.3.spdx.json `
+            --sdk-dir local/qt-build-deps/qt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Preserve path-free dependency preparation identity
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -64,6 +71,8 @@ jobs:
           path: |
             local/qt-product-staging.json
             local/qt-product-staging/product-manifest.json
+            local/qt-product-staging/licenses/qt/components.json
+            local/qt-product-staging/QT-THIRD-PARTY-NOTICES.txt
             local/qt-product-staging/THIRD-PARTY-NOTICES.txt
       - name: Record complete path-free runtime manifests
         run: |
