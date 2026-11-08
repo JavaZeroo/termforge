@@ -1,0 +1,169 @@
+{
+  "schema": "termforge-qt-query-reply-validation-v1",
+  "source_commit": "480681263fdd270c73469cf2bab406f5dc6bb83a",
+  "source_tree": "826dd68dfea4a1ed774095c4a2ecb699d6aa2ce9",
+  "source_binding": "Implementation, test and CMake/CTest wiring were committed before the final two runs; this validation file is a documentation follow-up. The working tree was clean when both recorded runs started.",
+  "scope": "One bounded, deterministic DSR 6n scenario on the formal C++/Qt/fixed-ConPTY path: 80x24 primary screen, single session, no resize, alternate screen or scroll region; child writes AB + ESC[6n from home; independent expected reply ESC[1;3R comes from the existing core reply contract (reply_test.cpp), not from the product output.",
+  "passed": true,
+  "scoped_validation_passed": true,
+  "dsr6n_product_path_verified": true,
+  "core_reply_contract_verified": true,
+  "conpty_independent_reply_observed": false,
+  "host_written_bytes_reach_child_verified": true,
+  "product_behavior_changed": false,
+  "query_support_expanded": false,
+  "windterm_parity": false,
+  "full_tui_verified": false,
+  "presented_done": null,
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 win64_msvc2022_64, offscreen platform",
+    "conpty": "1.25.260930003",
+    "conpty_files": {
+      "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+      "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+    },
+    "msvc_runtime": "14.51.36247.0",
+    "python_for_ctest": "3.12.10",
+    "backend_identity": "reviewed-side-by-side-1.25.260930003",
+    "creation_flags": 24,
+    "product_configuration_identity": "cpp-core / qt-widgets / reviewed-side-by-side-1.25.260930003 / 80x24",
+    "grid": [80, 24]
+  },
+  "dependencies": {
+    "qt_archive_sha256": "4db84dee7fe3c558f242bef0a88852613af76580dc6d2b24596479f47004dad7",
+    "sdk_tree_sha256": "a35ab6fe76b62e4d9bd6d3c6b0d476c63583070cea5c9118ef5bb02042ffe266",
+    "conpty_package_sha256": "6d6f8b008c655d814c498d8205d4012dcd4d0b6dfc1096461d0a185d1e3caf03",
+    "msvc_runtime_package_sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+    "input_manifests": {
+      "qt": "2796294f254f7fe0370be99d2de8f7745734c7352ac2648b1f8d9a8fab5ad2cd",
+      "conpty": "e75e522a3355c0a66c6d60cafa02413a83d8757262747f650b77c959c09ed439",
+      "msvc_runtime": "154176c8b4ae6dd57fce453e2c2002ff484344b39451fa9880b07db4794f3758"
+    }
+  },
+  "commands": {
+    "configure": "cmake -S . -B build/query-reply -G \"Visual Studio 17 2022\" -A x64 -DTERMFORGE_BUILD_QT_SHELL=ON -DBUILD_TESTING=ON -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF -DQt6_DIR=<prepared>/qt/lib/cmake/Qt6 -DTERMFORGE_CONPTY_BACKEND_DIR=<prepared>/conpty -DTERMFORGE_MSVC_RUNTIME_DIR=<prepared>/crt",
+    "build": "cmake --build build/query-reply --config Release --target qt_query_reply_test reply_test private_mode_test --parallel 2",
+    "new_test": "ctest --test-dir build/query-reply -C Release -R '^qt_query_reply$' --no-tests=error --output-on-failure",
+    "core_regression": "ctest --test-dir build/query-reply -C Release -R '^(reply_core|private_mode_core)$' --no-tests=error --output-on-failure"
+  },
+  "inputs": {
+    "scenario": "dsr-6n-fixed-primary",
+    "child_source_hex": "41421b5b366e",
+    "child_source_bytes": 6,
+    "child_source_decode": "AB + ESC[6n written once from the primary-screen home position",
+    "expected_reply_hex": "1b5b313b3352",
+    "expected_reply_decode": "ESC[1;3R",
+    "expected_derivation": "Existing confirmed core reply contract in experiments/core/reply_test.cpp: CSI 6n replies ESC[row;colR with 1-based row and column; the same test asserts ab + ESC[6n => ESC[1;3R. After two printable cells from home the protocol cursor is (0,2), so the literal expectation is ESC[1;3R.",
+    "diagnostic_distinct_reply_hex": "1b5b393b3952",
+    "diagnostic_distinct_reply_scope": "Raw host control only; it is not product output and does not change query support."
+  },
+  "results": {
+    "runs": [
+      {
+        "label": "run1",
+        "supervisor_status": "passed",
+        "exit_code": 0,
+        "job_after": {"active": 0, "total": 8, "terminated": 0},
+        "raw_silent": {
+          "child_pid": 15976,
+          "query_seen": true,
+          "timed_out": true,
+          "complete": false,
+          "received_hex": "",
+          "exit_code": 42,
+          "transport_hex": "1b5b31741b5b631b5b3f31303034681b5b3f393030316841421b5b366e",
+          "cleanup_verified": true
+        },
+        "raw_distinct": {
+          "child_pid": 41008,
+          "query_seen": true,
+          "timed_out": false,
+          "complete": true,
+          "received_hex": "1b5b393b3952",
+          "exit_code": 0,
+          "transport_hex": "1b5b31741b5b631b5b3f31303034681b5b3f393030316841421b5b366e",
+          "cleanup_verified": true
+        },
+        "product": {
+          "child_pid": 16284,
+          "transport_hex": "1b5b31741b5b631b5b3f31303034681b5b3f393030316841421b5b366e1b5b3f313030346c1b5b3f393030316c",
+          "query_offset": 23,
+          "da1_startup_observed": true,
+          "core_cursor": [0, 2],
+          "core_row0_hex": "4142",
+          "expected_hex": "1b5b313b3352",
+          "received_hex": "1b5b313b3352",
+          "timed_out": false,
+          "complete": true,
+          "exit_code": 0,
+          "natural_exit": true,
+          "cleanup_verified": true,
+          "active_after": 0
+        }
+      },
+      {
+        "label": "run2",
+        "supervisor_status": "passed",
+        "exit_code": 0,
+        "job_after": {"active": 0, "total": 8, "terminated": 0},
+        "raw_silent": {
+          "query_seen": true,
+          "timed_out": true,
+          "complete": false,
+          "received_hex": "",
+          "exit_code": 42,
+          "transport_hex": "1b5b31741b5b631b5b3f31303034681b5b3f393030316841421b5b366e",
+          "cleanup_verified": true
+        },
+        "raw_distinct": {
+          "query_seen": true,
+          "timed_out": false,
+          "complete": true,
+          "received_hex": "1b5b393b3952",
+          "exit_code": 0,
+          "transport_hex": "1b5b31741b5b631b5b3f31303034681b5b3f393030316841421b5b366e",
+          "cleanup_verified": true
+        },
+        "product": {
+          "child_pid": 13780,
+          "transport_hex": "1b5b31741b5b631b5b3f31303034681b5b3f393030316841421b5b366e1b5b3f313030346c1b5b3f393030316c",
+          "query_offset": 23,
+          "da1_startup_observed": true,
+          "core_cursor": [0, 2],
+          "core_row0_hex": "4142",
+          "expected_hex": "1b5b313b3352",
+          "received_hex": "1b5b313b3352",
+          "timed_out": false,
+          "complete": true,
+          "exit_code": 0,
+          "natural_exit": true,
+          "cleanup_verified": true,
+          "active_after": 0
+        }
+      }
+    ],
+    "core_regression": {
+      "reply_core": "passed 0.01 s",
+      "private_mode_core": "passed 0.02 s"
+    },
+    "ctest_query_reply": {
+      "status": "passed",
+      "wall_seconds": 4.34
+    }
+  },
+  "recorded_observations": {
+    "transport_decode": "startup ESC[1t ESC[c ESC[?1004h ESC[?9001h (23 B) + AB + ESC[6n, then shutdown ESC[?1004l ESC[?9001l; the product capture includes shutdown, the raw stages were captured before close.",
+    "silent_control": "With the host silent the real child received no bytes and exited through its own 4 s timeout (42); the fixed ConPTY therefore did not answer the DSR query itself in this configuration.",
+    "distinct_control": "The host-written diagnostic value ESC[9;9R reached the child unchanged, proving the host -> ConPTY -> child write path.",
+    "product_chain": "SessionModel parsed the exact fixed source at transport offset 23, held the core cursor at (0,2) with primary row 0 = AB, and the real child received exactly ESC[1;3R; the child raw file and metadata cross-check, PID identity and cleanup all agree."
+  },
+  "limitations": [
+    "Single 80x24 primary-screen, single-session, home-start scenario; no resize, alternate screen, scroll region, wide/combining text, history, selection or Find.",
+    "Only the implemented DSR 6n query. DA1 stays strict-only/recovery-silent; DA2, OSC 10/11, bracketed paste and mouse/focus modes remain unimplemented or unverified; this slice adds no product query support.",
+    "The child enables ENABLE_VIRTUAL_TERMINAL_INPUT, which is the pinned ConPTY condition for passing unhandled CSI through to the child; non-VT-input children were not tested and their byte delivery is unknown.",
+    "No WindTerm original comparison and no real TUI consumption evidence (e.g. Vim continuing after the reply); #28 overall TUI matrix and #27/#29/#30 joint acceptance remain open.",
+    "Runs take about 4.5 s and are not performance or presentation measurements; presented_done is null."
+  ]
+}
