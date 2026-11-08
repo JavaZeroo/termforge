@@ -2,7 +2,7 @@
 
 本切片在**正式 C++ / Qt Widgets / 随包固定 Microsoft ConPTY** 构建中，对一个有界、确定的单会话场景核对“核心回复 → Qt 回写 → 真实 child 收到字节”的完整证据链，并分别保留核心孤立合同、ConPTY 原始传输、Qt 产品回写和 child 实际接收四层观察。
 
-**结论先行（限定场景）**：在 80×24 固定主屏、单会话、无 resize/备用屏/滚动区、child 已启用 VT 输入模式的场景下，正式 `SessionModel` 在 transport offset 23 解析到 child 的 `ESC[6n`，按既有 reply 合同生成 `ESC[1;3R` 并经同一有界输入队列回写；真实 child 的独立接收文件恰好收到 `1b5b313b3352`（`ESC[1;3R`），PID 与 SessionModel 绑定，自然退出与 OwnedJob 回收均通过。固定 ConPTY 在本配置下**不会自行代答** DSR：host 静默对照中 child 只观察到自己的超时（exit 42），host 写入的另一个位置值也能原样到达 child。
+**结论先行（限定场景）**：在 80×24 固定主屏、单会话、无 resize/备用屏/滚动区、child 已启用 VT 输入模式的场景下，正式 `SessionModel` 在 transport 的固定源串起点 23（`AB`+`ESC[6n` 的 `AB` 起点；`ESC[6n` 本身从零基字节 25 开始）解析到 child 的查询，按既有 reply 合同生成 `ESC[1;3R` 并经同一有界输入队列回写；真实 child 的独立接收文件恰好收到 `1b5b313b3352`（`ESC[1;3R`），PID 与 SessionModel 绑定，自然退出与 OwnedJob 回收均通过。固定 ConPTY 在本配置下**不会自行代答** DSR：host 静默对照中 child 只观察到自己的超时（exit 42），host 写入的另一个位置值也能原样到达 child。
 
 不修改产品行为、默认入口或 query 支持；不新增 DA1/DA2/OSC 回复；不进入 #28 整体 TUI 验收，也不宣称 WindTerm 对齐或性能。
 
@@ -20,7 +20,7 @@
 | 1. 核心孤立合同 | 既有 `experiments/core/reply_test.cpp` + CTest `reply_core`（`CMakeLists.txt` 注册） | 本轮复跑通过（0.01 s）；契约断言 “ab”+`ESC[6n` → `ESC[1;3R`，`5n` 负例不回复，DA1 仅 strict 回复 `ESC[?6c`、recovery 静默 | 只有核心 Parser 能生成该字节；不含 Qt/ConPTY/child |
 | 2. ConPTY 原始传输（host 静默） | 本切片 `qt_query_reply_test` 的 raw-silent 阶段：`tf_conpty::Session` + 固定后端，观察到 query 后**不写任何回复** | transport = `1b5b31741b5b631b5b3f31303034681b5b3f393030316841421b5b366e`（`ESC[1t`、`ESC[c`、`ESC[?1004h`、`ESC[?9001h` 启动包 + `AB` + `ESC[6n`）；child 接收为空、exit 42（自身 4 s 超时），`cleanup_complete=true`、`active_after=0` | 固定 ConPTY 转发了 child 查询，但**没有自行产生回复**；此时 child 收不到任何 DSR 字节 |
 | 3. ConPTY 原始传输（host 写入诊断值） | 同一 raw 阶段，host 在观察到 query 后写入 `1b5b393b3952`（`ESC[9;9R`，仅诊断用） | child 原始接收文件 = `1b5b393b3952`，exit 0；transport 与层 2 相同 | host→ConPTY→child 的写入路径确实送达真实 child，且未被 conhost 改写为实际位置 |
-| 4. Qt 产品回写 + child 实际接收 | 正式 `SessionModel`：`poll()` 中 `parser_.feed()` → `take_replies()` → `send(QByteArray)` → 同一有界 `InputQueue` | transport 含启动包 + `AB` + `ESC[6n`（query_offset=23）与关闭 `ESC[?1004l/ESC[?9001l`；`da1_startup_observed=true`；core 主屏行 0 = `AB`、协议光标 (0,2)；child 原始接收 = `1b5b313b3352`，metadata 自报接收一致；child PID 与 `model.resize_state().child_pid` 一致；`natural_exit=true`、`cleanup_verified=true`、`output_eof=true`、`active_after=0` | 产品路径把合同回复送达真实 child；启动包中的 DA1 请求未产生回写（child 精确等于 DSR 回复，未收到 `ESC[?6c`） |
+| 4. Qt 产品回写 + child 实际接收 | 正式 `SessionModel`：`poll()` 中 `parser_.feed()` → `take_replies()` → `send(QByteArray)` → 同一有界 `InputQueue` | transport 含启动包 + `AB` + `ESC[6n` 与关闭 `ESC[?1004l/ESC[?9001l`；`query_offset`=23 是固定源串 `AB`+`ESC[6n` 的起点（`AB` 占 23/24，`ESC[6n` 从零基字节 25 开始）；`da1_startup_observed=true`；core 主屏行 0 = `AB`、协议光标 (0,2)；child 原始接收 = `1b5b313b3352`，metadata 自报接收一致；child PID 与 `model.resize_state().child_pid` 一致；`natural_exit=true`、`cleanup_verified=true`、`output_eof=true`、`active_after=0` | 产品路径把合同回复送达真实 child；启动包中的 DA1 请求未产生回写（child 精确等于 DSR 回复，未收到 `ESC[?6c`） |
 
 两次完整运行（实现提交后的干净工作树）字节结果一致，仅 PID 不同：
 

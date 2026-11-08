@@ -154,10 +154,10 @@
     }
   },
   "recorded_observations": {
-    "transport_decode": "startup ESC[1t ESC[c ESC[?1004h ESC[?9001h (23 B) + AB + ESC[6n, then shutdown ESC[?1004l ESC[?9001l; the product capture includes shutdown, the raw stages were captured before close.",
+    "transport_decode": "startup ESC[1t ESC[c ESC[?1004h ESC[?9001h (23 B) + AB + ESC[6n, then shutdown ESC[?1004l ESC[?9001l; the product capture includes shutdown, the raw stages were captured before close. Zero-based offsets: the fixed 6-byte source AB+ESC[6n starts at byte 23 (AB at 23/24; the ESC[6n sequence itself starts at byte 25).",
     "silent_control": "With the host silent the real child received no bytes and exited through its own 4 s timeout (42); the fixed ConPTY therefore did not answer the DSR query itself in this configuration.",
     "distinct_control": "The host-written diagnostic value ESC[9;9R reached the child unchanged, proving the host -> ConPTY -> child write path.",
-    "product_chain": "SessionModel parsed the exact fixed source at transport offset 23, held the core cursor at (0,2) with primary row 0 = AB, and the real child received exactly ESC[1;3R; the child raw file and metadata cross-check, PID identity and cleanup all agree."
+    "product_chain": "SessionModel parsed the exact fixed source at transport offset 23 (start of AB+ESC[6n; ESC[6n itself starts at zero-based byte 25), held the core cursor at (0,2) with primary row 0 = AB, and the real child received exactly ESC[1;3R; the child raw file and metadata cross-check, PID identity and cleanup all agree."
   },
   "limitations": [
     "Single 80x24 primary-screen, single-session, home-start scenario; no resize, alternate screen, scroll region, wide/combining text, history, selection or Find.",
