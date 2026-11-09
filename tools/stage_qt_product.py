@@ -25,15 +25,23 @@ SCHEMA = "termforge-qt-product-manifest-v1"
 OPERATION_SCHEMA = "termforge-qt-product-operation-v1"
 CONTRACT_PATH = "packaging/qt-product/manifest.json"
 PREPARATION_SCHEMA = "termforge-qt-build-preparation-v1"
+COMPONENT_SCHEMA = "termforge-qt-deployed-components-v1"
 ENTRY = "termforge_qt_shell.exe"
 NOTICES_PATH = "THIRD-PARTY-NOTICES.txt"
+QT_NOTICES_PATH = "QT-THIRD-PARTY-NOTICES.txt"
+QT_INVENTORY_STAGED = "licenses/qt/components.json"
+QT_LICENSE_DIR = "licenses/qt"
 MANIFEST_PATH = "product-manifest.json"
 MAX_DETAIL = 8
 
 if __package__:
     from tools.prepare_qt_build import tree_identity
+    from tools.build_qt_component_inventory import (derive_deployed_files, license_ids,
+                                                    sbom_component_map)
 else:  # pragma: no cover - direct script execution is diagnostic only
     from prepare_qt_build import tree_identity
+    from build_qt_component_inventory import (derive_deployed_files, license_ids,
+                                              sbom_component_map)
 
 
 class StagingError(Exception):
@@ -236,7 +244,94 @@ def load_contract(root: Path) -> dict:
     return contract
 
 
-def expected_files(root: Path, dependencies: Path, contract: dict, bin_dir: Path) -> dict:
+def safe_relative(root: Path, relative: str, code: str) -> Path:
+    if not isinstance(relative, str):
+        raise StagingError(code)
+    candidate = Path(relative)
+    if candidate.is_absolute() or ".." in candidate.parts or len(candidate.parts) < 2:
+        raise StagingError(code)
+    path = root / candidate
+    if not path.is_file():
+        raise StagingError(code)
+    return path
+
+
+def load_component_inventory(root: Path, dependencies: Path, contract: dict) -> tuple[dict, str]:
+    """Load and cross-check the committed Qt third-party inventory against the SBOM."""
+    evidence = contract["license_evidence"].get("qt") or {}
+    inventory = read_json(safe_relative(root, evidence.get("component_inventory"),
+                                        "component_inventory_contract"))
+    if (inventory.get("schema") != COMPONENT_SCHEMA or
+            inventory.get("review_status") != "materials_prepared_user_review_pending"):
+        raise StagingError("component_inventory_schema")
+    deployed = derive_deployed_files(contract)
+    deployed_files = inventory.get("deployed_files")
+    components = inventory.get("components")
+    if not isinstance(deployed_files, dict) or sorted(deployed_files) != deployed:
+        raise StagingError("component_inventory_deployed_files")
+    if not isinstance(components, dict) or not components:
+        raise StagingError("component_inventory_schema")
+
+    sbom_path = dependencies / "qt" / "sbom" / "qtbase-6.10.3.spdx.json"
+    if not sbom_path.is_file():
+        raise StagingError("component_inventory_sbom_missing")
+    try:
+        sbom = json.loads(sbom_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        raise StagingError("component_inventory_sbom_missing") from None
+    if inventory.get("sbom", {}).get("sha256") != sha256_path(sbom_path):
+        raise StagingError("component_inventory_sbom_identity")
+    try:
+        recomputed = sbom_component_map(sbom, deployed)
+    except Exception:  # builder raises code-carrying errors; keep staging summary path-free
+        raise StagingError("component_inventory_sbom_mismatch") from None
+    for name in deployed:
+        declared = deployed_files[name]
+        actual = recomputed[name]
+        if declared.get("module_package") != actual["module"]:
+            raise StagingError("component_inventory_sbom_mismatch")
+        if sorted(declared.get("component_ids") or []) != sorted(actual["components"]):
+            raise StagingError("component_inventory_sbom_mismatch")
+        for identifier in declared.get("component_ids") or []:
+            if identifier not in components:
+                raise StagingError("component_inventory_sbom_mismatch")
+
+    required = set()
+    for identifier, record in components.items():
+        expression = record.get("license_expression")
+        identifiers = record.get("license_ids")
+        if license_ids(expression) != identifiers:
+            raise StagingError("component_inventory_license_ids")
+        required.update(identifiers)
+        if record.get("id") != identifier or not record.get("deployed_files"):
+            raise StagingError("component_inventory_schema")
+    module_option = (inventory.get("qt_module_license") or {}).get("selected_option")
+    if not isinstance(module_option, str):
+        raise StagingError("component_inventory_license_ids")
+    required.add(module_option)
+    texts = inventory.get("license_texts")
+    if not isinstance(texts, dict) or set(texts) != required:
+        raise StagingError("component_inventory_license_texts")
+    for identifier, identity in texts.items():
+        source = safe_relative(root, identity.get("path"), f"component_license_identity:{identifier}")
+        if (source.stat().st_size != identity.get("bytes") or
+                sha256_path(source) != identity.get("sha256")):
+            raise StagingError(f"component_license_identity:{identifier}")
+
+    qt_source = read_json(root / "third_party" / "qt" / "manifest.json").get("source") or {}
+    if inventory.get("source", {}).get("sha256") != qt_source.get("source_archive_sha256"):
+        raise StagingError("component_inventory_source_identity")
+    if inventory.get("qt_version") != summary_qt_version(root):
+        raise StagingError("component_inventory_schema")
+    return inventory, sha256_path(root / evidence["component_inventory"])
+
+
+def summary_qt_version(root: Path) -> str:
+    return read_json(root / "third_party" / "qt" / "manifest.json").get("version")
+
+
+def expected_files(root: Path, dependencies: Path, contract: dict, bin_dir: Path,
+                   inventory: dict, inventory_sha256: str) -> dict:
     """Map staged relative path to its verified origin and evidence class."""
     expected = {}
 
@@ -294,19 +389,12 @@ def expected_files(root: Path, dependencies: Path, contract: dict, bin_dir: Path
             raise StagingError("staging_contract_qt")
         add(name, dependencies / "qt" / "plugins" / relative, "qt", "runtime", True)
 
-    bundled_texts = qt_manifest.get("license", {}).get("bundled_text_files") or []
-    declared_texts = contract["license_evidence"].get("qt", {}).get("bundled_texts") or []
-    for target in declared_texts:
-        match = [entry for entry in bundled_texts
-                 if isinstance(entry, dict) and Path(str(entry.get("path", ""))).name == Path(target).name]
-        if len(match) != 1:
-            raise StagingError("qt_license_manifest")
-        entry = match[0]
-        source = root / "third_party" / "qt" / entry["path"]
-        if (not source.is_file() or source.stat().st_size != entry.get("bytes") or
-                sha256_path(source) != entry.get("sha256")):
-            raise StagingError("qt_license_identity")
-        add(target, source, "qt", "license", False, entry.get("sha256"))
+    for identifier, identity in inventory["license_texts"].items():
+        source = safe_relative(root, identity.get("path"), f"component_license_identity:{identifier}")
+        add(f"{QT_LICENSE_DIR}/{identifier}.txt", source, "qt", "license", False,
+            identity.get("sha256"))
+    add(QT_INVENTORY_STAGED, root / contract["license_evidence"]["qt"]["component_inventory"],
+        "qt", "evidence", False, inventory_sha256)
 
     conpty_manifest_path = root / "third_party" / "conpty" / "manifest.json"
     conpty_manifest = read_json(conpty_manifest_path)
@@ -338,6 +426,7 @@ def expected_files(root: Path, dependencies: Path, contract: dict, bin_dir: Path
         runtime_manifest.get("notice_sha256"))
 
     add(NOTICES_PATH, root / CONTRACT_PATH, "termforge", "documentation", False)
+    add(QT_NOTICES_PATH, root / CONTRACT_PATH, "qt", "documentation", False)
     return expected
 
 
@@ -401,24 +490,49 @@ def verify_build(bin_dir: Path, expected: dict, contract: dict, system_root: Pat
     return observed_os
 
 
-def bundled_texts(root: Path, contract: dict) -> list[dict]:
-    """Declared Qt license texts with their pinned source identity."""
-    qt_manifest = read_json(root / "third_party" / "qt" / "manifest.json")
-    available = qt_manifest.get("license", {}).get("bundled_text_files") or []
-    bundled = []
-    for target in contract["license_evidence"]["qt"]["bundled_texts"]:
-        matches = [entry for entry in available
-                   if isinstance(entry, dict) and Path(str(entry.get("path", ""))).name == Path(target).name]
-        if len(matches) != 1:
-            raise StagingError("qt_license_manifest")
-        entry = matches[0]
-        bundled.append({"component": "qt", "path": target,
-                        "source": f"third_party/qt/{entry['path']}",
-                        "sha256": entry["sha256"], "spdx": entry.get("spdx")})
-    return bundled
+def qt_component_notices(inventory: dict) -> bytes:
+    """Generate the Qt deployed-component notice index from the committed inventory."""
+    lines = [
+        "Qt 6.10.3 deployed third-party components - generated evidence index",
+        "",
+        "This file lists the source components that the pinned Qt SDK SBOM package graph",
+        "connects to the deployed Qt binaries, with their attribution and bundled license",
+        "texts. It is not a legal review or a redistribution clearance. Canonical license",
+        "texts are under licenses/qt/; the machine-readable inventory is",
+        "licenses/qt/components.json.",
+        "",
+        "Deployed Qt files: " + ", ".join(sorted(inventory["deployed_files"])),
+        "",
+    ]
+    for identifier, record in sorted(inventory["components"].items()):
+        attribution = record["attribution"]
+        lines.append(f"- {record['name']} {record['version']} [{identifier}]")
+        lines.append(f"  license: {record['license_expression']}")
+        lines.append(f"  deployed in: {', '.join(record['deployed_files'])}")
+        lines.append(f"  attribution: {attribution['member']} entry {attribution['entry_index']}"
+                     f" sha256 {attribution['sha256']}")
+        for license_file in attribution["license_files"]:
+            lines.append(f"  upstream license file: {license_file['member']} sha256 {license_file['sha256']}")
+        if attribution.get("copyright"):
+            for line in attribution["copyright"].splitlines():
+                lines.append(f"  copyright: {line}")
+        lines.append("  bundled license texts: "
+                     + ", ".join(f"{QT_LICENSE_DIR}/{item}.txt" for item in record["license_ids"]))
+        lines.append("")
+    lines.append("Recorded as not established for the deployed binaries:")
+    for record in sorted(inventory.get("excluded_attributions", []), key=lambda item: item["id"] or ""):
+        lines.append(f"- {record.get('name')} [{record.get('id')}]: {record.get('category')}")
+    for record in sorted(inventory.get("declared_not_deployed", []), key=lambda item: item["id"] or ""):
+        lines.append(f"- {record.get('name')} [{record.get('id')}]: {record.get('category')}")
+    lines.append("")
+    lines.append("Corresponding-source delivery, replacement conditions and a clean-machine")
+    lines.append("run remain pending user review.")
+    lines.append("")
+    return "\n".join(lines).encode("utf-8")
 
 
-def notices_text(contract: dict, source: dict, summary: dict, observed_os: list[dict]) -> bytes:
+def notices_text(contract: dict, source: dict, summary: dict, observed_os: list[dict],
+                 inventory: dict) -> bytes:
     qt = summary.get("qt_version", "unknown")
     conpty = summary.get("conpty_version", "unknown")
     runtime = (summary.get("msvc_runtime") or {}).get("version", "unknown")
@@ -429,8 +543,10 @@ def notices_text(contract: dict, source: dict, summary: dict, observed_os: list[
         "engineering staging. It is not a legal review or a redistribution clearance.",
         "",
         f"TermForge original code: MIT; bundled at LICENSE (source commit {source['commit']}).",
-        f"Qt {qt}: dynamic-link LGPL-3.0-only option; bundled license text at",
-        "  licenses/LGPL-3.0-only.txt; full Qt third-party inventory is pending.",
+        f"Qt {qt}: dynamic-link LGPL-3.0-only option; component inventory and notices at",
+        f"  {QT_INVENTORY_STAGED} and {QT_NOTICES_PATH}; canonical Qt license texts under",
+        f"  {QT_LICENSE_DIR}/. {len(inventory['components'])} deployed third-party components",
+        "  are traced from the pinned SDK SBOM and source attributions.",
         f"Microsoft Windows Console ConPTY {conpty}: MIT; bundled at conpty-backend/LICENSE.",
         f"Microsoft Visual C++ v14 Runtime {runtime}: bundled with its original license",
         "  and NOTICE at LICENSE-MICROSOFT-VC-REDIST.docx and NOTICE.txt.",
@@ -440,8 +556,8 @@ def notices_text(contract: dict, source: dict, summary: dict, observed_os: list[
         + ", ".join(entry["name"] for entry in contract["os_provided"]) + ".",
         "Deliberately not deployed because they are neither pinned nor linked by this",
         "  entry: " + ", ".join(entry["name"] for entry in contract["excluded_system_redistributables"]) + ".",
-        "Redistribution clearance: pending user review (Qt/third-party deployed file",
-        "  inventory, corresponding-source conditions and clean-machine run).",
+        "Redistribution clearance: pending user review (corresponding-source conditions,",
+        "  replacement relinking conditions and a clean-machine run).",
         "",
     ]
     return "\n".join(lines).encode("utf-8")
@@ -449,19 +565,20 @@ def notices_text(contract: dict, source: dict, summary: dict, observed_os: list[
 
 def product_manifest(root: Path, contract: dict, source: dict, build: dict, summary: dict,
                      expected: dict, observed_os: list[dict], tool_sha256: str,
-                     contract_sha256: str, bundled: list[dict]) -> dict:
+                     contract_sha256: str, inventory: dict, inventory_sha256: str) -> dict:
     files = {}
     for path, spec in sorted(expected.items()):
-        if path == MANIFEST_PATH:
-            continue
-        if path == NOTICES_PATH:
+        if path in (MANIFEST_PATH, NOTICES_PATH, QT_NOTICES_PATH):
             continue
         data = spec["source"].read_bytes()
         files[path] = {"bytes": len(data), "sha256": sha256_bytes(data),
                        "component": spec["component"], "role": spec["role"]}
-    notices = notices_text(contract, source, summary, observed_os)
+    notices = notices_text(contract, source, summary, observed_os, inventory)
     files[NOTICES_PATH] = {"bytes": len(notices), "sha256": sha256_bytes(notices),
                            "component": "termforge", "role": "documentation"}
+    qt_notices = qt_component_notices(inventory)
+    files[QT_NOTICES_PATH] = {"bytes": len(qt_notices), "sha256": sha256_bytes(qt_notices),
+                              "component": "qt", "role": "documentation"}
 
     def manifest_sha(relative: str) -> str:
         return sha256_path(root / relative)
@@ -493,6 +610,18 @@ def product_manifest(root: Path, contract: dict, source: dict, build: dict, summ
                 "prepared_sdk": summary.get("sdk"),
                 "license_manifest": "third_party/qt/manifest.json",
                 "license_manifest_sha256": manifest_sha("third_party/qt/manifest.json"),
+                "component_inventory": {
+                    "path": "third_party/qt/components.json",
+                    "sha256": inventory_sha256,
+                    "sbom_sha256": inventory.get("sbom", {}).get("sha256"),
+                    "deployed_files": len(inventory["deployed_files"]),
+                    "third_party_components": len(inventory["components"]),
+                    "excluded_attributions": len(inventory.get("excluded_attributions", [])),
+                    "declared_not_deployed": len(inventory.get("declared_not_deployed", [])),
+                    "review_status": inventory.get("review_status"),
+                    "staged_copy": QT_INVENTORY_STAGED,
+                    "notices": QT_NOTICES_PATH,
+                },
             },
             "conpty": {
                 "version": summary.get("conpty_version"),
@@ -525,11 +654,18 @@ def product_manifest(root: Path, contract: dict, source: dict, build: dict, summ
             "termforge": {"spdx": "MIT", "bundled_paths": ["LICENSE"],
                           "sha256": files["LICENSE"]["sha256"],
                           "scope": "original TermForge code and documentation"},
-            "qt": {"selected_option": "LGPL-3.0-only (dynamic link)",
-                   "bundled_paths": [item["path"] for item in bundled],
-                   "bundled_sha256": {item["path"]: item["sha256"] for item in bundled},
-                   "evidence_manifest": "third_party/qt/manifest.json",
-                   "status": "third_party_component_inventory_pending"},
+            "qt": {
+                "selected_option": "LGPL-3.0-only (dynamic link)",
+                "bundled_paths": sorted(f"{QT_LICENSE_DIR}/{identifier}.txt"
+                                        for identifier in inventory["license_texts"]),
+                "component_inventory": QT_INVENTORY_STAGED,
+                "third_party_notices": QT_NOTICES_PATH,
+                "evidence_manifest": "third_party/qt/components.json",
+                "sbom_sha256": inventory.get("sbom", {}).get("sha256"),
+                "deployed_files": len(inventory["deployed_files"]),
+                "third_party_components": len(inventory["components"]),
+                "status": inventory.get("review_status"),
+            },
             "conpty": {"spdx": "MIT", "bundled_paths": ["conpty-backend/LICENSE"],
                        "evidence_manifest": "conpty-backend/manifest.json", "status": "bundled"},
             "msvc_runtime": {"bundled_paths": ["LICENSE-MICROSOFT-VC-REDIST.docx", "NOTICE.txt"],
@@ -540,7 +676,7 @@ def product_manifest(root: Path, contract: dict, source: dict, build: dict, summ
         },
         "redistribution_clearance": {
             "status": "pending_user_review",
-            "reason": "The Qt third-party deployed-file inventory, corresponding-source and replacement conditions, and a clean-machine run are not closed. This staging is an engineering candidate, not a redistribution clearance.",
+            "reason": "The Qt deployed-component inventory and canonical license texts are prepared, but corresponding-source/replacement conditions, a clean-machine run and user review are not closed. This staging is an engineering candidate, not a redistribution clearance.",
         },
         "claims": contract["claims"],
         "files": dict(sorted(files.items())),
@@ -552,7 +688,8 @@ def product_manifest(root: Path, contract: dict, source: dict, build: dict, summ
         "limitations": [
             "No clean Windows machine extraction/run has been performed for this staging.",
             "Single-screen 96/144 DPI, IME, resize/history and reliability acceptance are outside this build-preparation slice.",
-            "Qt's deployed third-party component licenses, corresponding-source conditions and clean-machine runtime completeness remain open.",
+            "Qt's deployed-component provenance and license texts are recorded, but corresponding-source/replacement conditions and clean-machine runtime completeness remain open.",
+            "The pinned SBOM's per-file SHA-1 values do not match the archived SDK binaries; byte identity is bound by the pinned archive/SDK tree identity instead.",
             "icuuc.dll is provided by the Windows 11 system and is not bundled; this staging is not validated on other Windows versions.",
             "No tag, release or published binary is created by this tool.",
         ],
@@ -616,22 +753,26 @@ def stage(source_root: Path, bin_dir: Path, dependencies: Path, dependency_summa
         raise StagingError("build_directory")
     contract = load_contract(source_root)
     summary = verify_dependency_summary(source_root, dependencies, dependency_summary)
+    inventory, inventory_sha256 = load_component_inventory(source_root, dependencies, contract)
     source = source_identity(source_root, allow_dirty)
     build = build_configuration(bin_dir)
-    expected = expected_files(source_root, dependencies, contract, bin_dir)
-    bundled = bundled_texts(source_root, contract)
+    expected = expected_files(source_root, dependencies, contract, bin_dir,
+                              inventory, inventory_sha256)
 
     system = Path(system_root or os.environ.get("SystemRoot", r"C:\Windows"))
     observed_os = verify_build(bin_dir, expected, contract, system)
 
     out.parent.mkdir(parents=True, exist_ok=True)
-    notices = notices_text(contract, source, summary, observed_os)
+    notices = notices_text(contract, source, summary, observed_os, inventory)
+    qt_notices = qt_component_notices(inventory)
     with tempfile.TemporaryDirectory(prefix="qt-product-", dir=out.parent) as temporary:
         staging = Path(temporary) / "product"
         staging.mkdir()
         for path, spec in sorted(expected.items()):
             if path == NOTICES_PATH:
                 data = notices
+            elif path == QT_NOTICES_PATH:
+                data = qt_notices
             else:
                 data = spec["source"].read_bytes()
                 if spec["pinned_sha256"] is not None and sha256_bytes(data) != spec["pinned_sha256"]:
@@ -641,7 +782,8 @@ def stage(source_root: Path, bin_dir: Path, dependencies: Path, dependency_summa
             target.write_bytes(data)
         manifest = product_manifest(source_root, contract, source, build, summary, expected,
                                     observed_os, sha256_path(Path(__file__).resolve()),
-                                    sha256_path(source_root / CONTRACT_PATH), bundled)
+                                    sha256_path(source_root / CONTRACT_PATH),
+                                    inventory, inventory_sha256)
         manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
         (staging / MANIFEST_PATH).write_bytes(manifest_bytes)
         identity = tree_identity(staging)
@@ -650,6 +792,8 @@ def stage(source_root: Path, bin_dir: Path, dependencies: Path, dependency_summa
                   "source": {key: source[key] for key in ("commit", "tree", "dirty", "development_override")},
                   "product": {"entry_executable": ENTRY, "files": len(manifest["files"]),
                               "distribution_state": "engineering_candidate_not_released"},
+                  "qt_components": len(inventory["components"]),
+                  "qt_license_texts": len(inventory["license_texts"]),
                   "os_provided": [entry["name"] for entry in observed_os],
                   "claims": contract["claims"],
                   "scope": "Engineering product staging only; no release, clean-machine acceptance or R2 acceptance."}

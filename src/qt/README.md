@@ -42,11 +42,11 @@ python -m tools.stage_qt_product stage `
 python -m tools.stage_qt_product verify --staging local/qt-product-staging
 ```
 
-staging 只接收 [`packaging/qt-product/manifest.json`](../../packaging/qt-product/manifest.json) 冻结的文件集合，并要求依赖准备摘要、固定 Qt SDK 树哈希、ConPTY/CRT/字体许可标识和每个实际文件字节都匹配；缺文件、测试夹具、额外文件、来源不符或摘要与当前仓库清单不一致都会明确失败。输出 `product-manifest.json` 记录 source commit/tree、构建参数、入口、逐文件 SHA-256、许可文件与仍未闭合的分发项，不含本机绝对路径；同目录由 `tools/msvc_runtime.py manifest` 生成的 `runtime-manifest.json` 视为派生证据，不进入 staging。本地产物只写入忽略的 `local/`。
+staging 只接收 [`packaging/qt-product/manifest.json`](../../packaging/qt-product/manifest.json) 冻结的文件集合，并要求依赖准备摘要、固定 Qt SDK 树哈希、ConPTY/CRT/字体许可标识和每个实际文件字节都匹配；缺文件、测试夹具、额外文件、来源不符或摘要与当前仓库清单不一致都会明确失败。Qt 部署组件清单 [`components.json`](../../third_party/qt/components.json) 会对照固定 SDK 的 SBOM 重新推导并核验，随后连同 22 份规范许可文本、`QT-THIRD-PARTY-NOTICES.txt` 和机器可读清单副本一起进入 staging。输出 `product-manifest.json` 记录 source commit/tree、构建参数、入口、逐文件 SHA-256、部署组件证据、许可文件与仍未闭合的分发项，不含本机绝对路径；同目录由 `tools/msvc_runtime.py manifest` 生成的 `runtime-manifest.json` 视为派生证据，不进入 staging。本地产物只写入忽略的 `local/`。
 
 当前主线注册的 Qt CTest 包括上述六项与 `qt_terminal_modes_retained`（只缩宽的保留/投影契约）、`qt_unicode_render`（固定 Unicode 样本的独立接收 + 离屏绘制/fallback 记录）、`qt_eight_session`（八会话目标隔离与生命周期）；IME 合成事件检查在 `qt_cpp_shell` 内。历史冻结包的 `qt_ime_input_test.exe` 不属于当前主线构建目标，不用于替代这组验证。旧六阶段 `--resize` 仍以显式诊断运行并保留失败，不注册进默认 CI。
 
-固定 ConPTY/CRT 输入缺失或篡改时构建明确失败；实际工具集更新到固定 CRT 之外时须重新审查依赖。产品中的 shell 启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/`、`assets/fonts/`、十个固定 CRT DLL 及其原许可/NOTICE；每次构建重新校验并部署 CRT，不运行安装器、不修改 System32。windeployqt 显式跳过系统 D3D/DXC 重分发文件；`icuuc.dll` 由 Windows 11 提供，构建目录中由 windeployqt 从 System32 复制的副本在 staging 核对一致后被排除，不随包分发。`tools/msvc_runtime.py manifest` 仍可记录构建目录的全部运行时文件。当前产物是工程候选 staging，不是 R2 包：干净 Windows 运行、单屏 96/144 DPI、完整 IME/TUI/reliability、Qt 第三方分发审计及最终包验收仍未完成。
+固定 ConPTY/CRT 输入缺失或篡改时构建明确失败；实际工具集更新到固定 CRT 之外时须重新审查依赖。产品中的 shell 启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/`、`assets/fonts/`、十个固定 CRT DLL 及其原许可/NOTICE；每次构建重新校验并部署 CRT，不运行安装器、不修改 System32。windeployqt 显式跳过系统 D3D/DXC 重分发文件；`icuuc.dll` 由 Windows 11 提供，构建目录中由 windeployqt 从 System32 复制的副本在 staging 核对一致后被排除，不随包分发。`tools/msvc_runtime.py manifest` 仍可记录构建目录的全部运行时文件。当前产物是工程候选 staging，不是 R2 包：Qt 部署组件来源/许可材料已整理（42 个组件、22 份许可文本，`materials_prepared_user_review_pending`），但对应源码/替换条件审查、干净 Windows 运行、单屏 96/144 DPI、完整 IME/TUI/reliability 及最终包验收仍未完成。
 
 ## 独立验证面
 

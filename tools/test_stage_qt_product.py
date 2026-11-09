@@ -49,6 +49,10 @@ def git(root: Path, *arguments: str) -> str:
     return result.stdout.strip()
 
 
+def make_deployed_names(contract: dict) -> list[str]:
+    return list(contract["qt_deployed"]["libraries"]) + list(contract["qt_deployed"]["plugins"])
+
+
 class Fixture:
     """A synthetic repository, dependency preparation and build output."""
 
@@ -72,6 +76,7 @@ class Fixture:
         self._fonts()
         self._manifests()
         self._dependencies()
+        self._component_evidence()
         self._build_output()
         self._commit()
 
@@ -169,6 +174,85 @@ class Fixture:
         self.runtime_manifest["notice_sha256"] = digest((crt / "NOTICE.txt").read_bytes())
         (self.root / "third_party/msvc_runtime/manifest.json").write_text(
             json.dumps(self.runtime_manifest, indent=2) + "\n", encoding="utf-8")
+
+    def _component_evidence(self):
+        """Fake SBOM, license texts and inventory consistent with the contract."""
+        modules = {"Qt6Core.dll": "Core", "Qt6Gui.dll": "Gui",
+                   "Qt6Widgets.dll": "Widgets", "Qt6Network.dll": "Network"}
+        packages = []
+        files = []
+        relationships = []
+        deployed_files = {}
+        for index, name in enumerate(make_deployed_names(self.contract)):
+            module = modules.get(name, "Plugin" + str(index))
+            package_id = f"SPDXRef-Package-{index}"
+            file_id = f"SPDXRef-File-{index}"
+            packages.append({"SPDXID": package_id, "name": module})
+            files.append({"SPDXID": file_id,
+                          "fileName": ("./bin/" + name) if "/" not in name else ("./plugins/" + name)})
+            relationships.append({"spdxElementId": package_id, "relatedSpdxElement": file_id,
+                                  "relationshipType": "CONTAINS"})
+            ids = []
+            if name == "Qt6Core.dll":
+                ids = ["zlib"]
+                relationships.append({"spdxElementId": package_id,
+                                      "relatedSpdxElement": "SPDXRef-Package-zlib",
+                                      "relationshipType": "DEPENDS_ON"})
+            deployed_files[name] = {"module_package": module, "component_ids": ids}
+        packages.append({
+            "SPDXID": "SPDXRef-Package-zlib", "name": "BundledZLIB",
+            "downloadLocation": "https://zlib.example/zlib-1.3.2.tar.gz",
+            "licenseConcluded": "Zlib",
+            "comment": ("\nCMake target name: BundledZLIB\n    Information extracted from:\n"
+                        "     /src_dir/qtbase/src/3rdparty/zlib/qt_attribution.json\n"
+                        "    Entry index: 0\n    Id: zlib\n"),
+        })
+        sbom = {"spdxVersion": "SPDX-2.3",
+                "creationInfo": {"created": "2026-01-01T00:00:00Z"},
+                "packages": packages, "files": files, "relationships": relationships}
+        sbom_path = self.deps / "qt/sbom/qtbase-6.10.3.spdx.json"
+        sbom_path.parent.mkdir(parents=True, exist_ok=True)
+        sbom_data = (json.dumps(sbom, indent=2) + "\n").encode("utf-8")
+        sbom_path.write_bytes(sbom_data)
+
+        license_data = {}
+        for identifier, data in (("Zlib", b"Zlib fixture license text\n"),
+                                 ("LGPL-3.0-only",
+                                  (self.root / "third_party/qt/LICENSES/LGPL-3.0-only.txt").read_bytes())):
+            path = self.root / "third_party/qt/LICENSES" / f"{identifier}.txt"
+            path.write_bytes(data)
+            license_data[identifier] = {
+                "path": f"third_party/qt/LICENSES/{identifier}.txt",
+                "bytes": len(data), "sha256": digest(data)}
+        inventory = {
+            "schema": stage_qt_product.COMPONENT_SCHEMA,
+            "review_status": "materials_prepared_user_review_pending",
+            "qt_version": "6.10.3",
+            "source": {"sha256": None},
+            "sbom": {"sha256": digest(sbom_data)},
+            "deployed_files": deployed_files,
+            "components": {
+                "zlib": {
+                    "id": "zlib", "name": "Zlib fixture", "version": "1.3.2",
+                    "license_expression": "Zlib", "license_ids": ["Zlib"],
+                    "deployed_files": ["Qt6Core.dll"],
+                    "evidence": {"level": "sbom_module_dependency", "depth": 1,
+                                 "sbom_packages": ["BundledZLIB"]},
+                    "attribution": {"member": "fixture/src/3rdparty/zlib/qt_attribution.json",
+                                    "entry_index": 0, "bytes": 1, "sha256": "a" * 64,
+                                    "qt_usage": "fixture", "qt_parts": None,
+                                    "license_files": [], "copyright": "fixture"},
+                    "source": {"homepage": None, "download_location": None, "purl": None},
+                }
+            },
+            "excluded_attributions": [],
+            "declared_not_deployed": [],
+            "license_texts": license_data,
+            "qt_module_license": {"selected_option": "LGPL-3.0-only"},
+            "unresolved": [],
+        }
+        (self.root / "third_party/qt/components.json").write_text(
+            json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
         qt_manifest = json.loads((self.root / "third_party/qt/manifest.json").read_text(encoding="utf-8"))
         self.write_preparation_summary(qt_manifest)
 
@@ -269,9 +353,15 @@ class StagingTests(unittest.TestCase):
         self.assertFalse(manifest["source"]["dirty"])
         self.assertEqual(manifest["source"]["commit"], git(self.fixture.root, "rev-parse", "HEAD"))
         self.assertEqual(manifest["dependencies"]["qt"]["version"], "6.10.3")
-        self.assertIn("licenses/LGPL-3.0-only.txt", manifest["files"])
+        self.assertIn("licenses/qt/LGPL-3.0-only.txt", manifest["files"])
+        self.assertIn("licenses/qt/Zlib.txt", manifest["files"])
+        self.assertIn("licenses/qt/components.json", manifest["files"])
+        self.assertIn("QT-THIRD-PARTY-NOTICES.txt", manifest["files"])
         self.assertIn("THIRD-PARTY-NOTICES.txt", manifest["files"])
         self.assertIn("conpty-backend/LICENSE", manifest["files"])
+        self.assertEqual(manifest["dependencies"]["qt"]["component_inventory"]["third_party_components"], 1)
+        self.assertEqual(manifest["licenses"]["qt"]["status"],
+                         "materials_prepared_user_review_pending")
         self.assertEqual(manifest["test_fixtures"]["included"], [])
         self.assertEqual(manifest["os_provided"][0]["name"], "icuuc.dll")
         self.assertTrue(manifest["os_provided"][0]["present_in_build"])
@@ -285,6 +375,10 @@ class StagingTests(unittest.TestCase):
         notices = (out / "THIRD-PARTY-NOTICES.txt").read_text(encoding="utf-8")
         self.assertIn("pending user review", notices)
         self.assertIn("D3Dcompiler_47.dll", notices)
+        self.assertIn("traced from the pinned SDK SBOM", notices)
+        qt_notices = (out / "QT-THIRD-PARTY-NOTICES.txt").read_text(encoding="utf-8")
+        self.assertIn("Zlib fixture", qt_notices)
+        self.assertIn("licenses/qt/Zlib.txt", qt_notices)
         staged = {path.relative_to(out).as_posix() for path in out.rglob("*") if path.is_file()}
         self.assertEqual(staged, set(manifest["files"]) | {"product-manifest.json"})
         self.assertNotIn(str(self.fixture.root), json.dumps(manifest))
@@ -325,6 +419,36 @@ class StagingTests(unittest.TestCase):
     def test_missing_entry_and_test_fixture_are_rejected(self):
         (self.fixture.bin / "termforge_qt_shell.exe").unlink()
         self.assert_failure("missing_product_file:termforge_qt_shell.exe")
+
+    def test_component_inventory_and_license_evidence_fail_closed(self):
+        with self.subTest("missing canonical license text"):
+            fixture = Fixture(self)
+            (fixture.root / "third_party/qt/LICENSES/Zlib.txt").unlink()
+            with self.assertRaises(stage_qt_product.StagingError) as raised:
+                fixture.stage()
+            self.assertIn("component_license_identity:Zlib", str(raised.exception))
+        with self.subTest("tampered canonical license text"):
+            fixture = Fixture(self)
+            target = fixture.root / "third_party/qt/LICENSES/Zlib.txt"
+            target.write_bytes(target.read_bytes() + b"tampered")
+            with self.assertRaises(stage_qt_product.StagingError) as raised:
+                fixture.stage(allow_dirty=True)
+            self.assertIn("component_license_identity:Zlib", str(raised.exception))
+        with self.subTest("inventory disagrees with the SBOM"):
+            fixture = Fixture(self)
+            inventory_path = fixture.root / "third_party/qt/components.json"
+            inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+            inventory["deployed_files"]["Qt6Core.dll"]["component_ids"] = []
+            inventory_path.write_text(json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
+            with self.assertRaises(stage_qt_product.StagingError) as raised:
+                fixture.stage()
+            self.assertIn("component_inventory_sbom_mismatch", str(raised.exception))
+        with self.subTest("contract points at a missing inventory"):
+            fixture = Fixture(self)
+            (fixture.root / "third_party/qt/components.json").unlink()
+            with self.assertRaises(stage_qt_product.StagingError) as raised:
+                fixture.stage()
+            self.assertIn("component_inventory_contract", str(raised.exception))
 
     def test_extra_test_executable_is_rejected_by_name(self):
         (self.fixture.bin / "qt_cpp_shell_smoke.exe").write_bytes(pe_fixture("exe"))
@@ -407,7 +531,7 @@ class StagingTests(unittest.TestCase):
         (second.root / "third_party/qt/LICENSES/LGPL-3.0-only.txt").write_bytes(b"tampered license\n")
         with self.assertRaises(stage_qt_product.StagingError) as raised:
             second.stage(allow_dirty=True)
-        self.assertIn("qt_license_identity", str(raised.exception))
+        self.assertIn("component_license_identity:LGPL-3.0-only", str(raised.exception))
 
     def test_pe_identity_rejects_wrong_architectures(self):
         with self.assertRaises(stage_qt_product.StagingError):
@@ -453,3 +577,4 @@ class StagingTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -87,7 +87,7 @@
       "https://doc.qt.io/qt-6.10/licenses-used-in-qt.html"
     ],
     "third_party_code_scope": "Qt includes third-party components with their own licenses; the module-level expression is not a full deployed-file license inventory.",
-    "redistribution_review_status": "pending_before_product_distribution",
+    "redistribution_review_status": "materials_prepared_user_review_pending",
     "bundled_text_files": [
       {
         "spdx": "LGPL-3.0-only",
@@ -99,7 +99,23 @@
         "source_archive_sha256": "383dc907816338f0cba72088a524c07458dfc69ce684ca9132fcc4fe91c24b0b",
         "source_archive_member": "qtbase-everywhere-src-6.10.3/LICENSES/LGPL-3.0-only.txt"
       }
-    ]
+    ],
+    "deployed_component_note": "The complete deployed-component and license-text set is recorded in components.json; bundled_text_files records the LGPL text the product itself relies on."
+  },
+  "deployed_component_inventory": {
+    "path": "components.json",
+    "schema": "termforge-qt-deployed-components-v1",
+    "entry": "python -m tools.build_qt_component_inventory build",
+    "check_entry": "python -m tools.build_qt_component_inventory check",
+    "sbom_path_in_prepared_sdk": "sbom/qtbase-6.10.3.spdx.json",
+    "sbom_sha256": "51bdcf25ae10a6af0ce10030bf816ab10da0b2f70b35e0e9c55bd4b43241e659",
+    "evidence_levels": {
+      "sbom_module_dependency": "The SBOM package graph connects the component to the deployed module/plugin package; recorded for every shipped component.",
+      "source_attribution_match": "The component's Id, license ids, version and license files are cross-checked against qt_attribution.json from the pinned source archive.",
+      "excluded_attributions": "Build-system/tool-only attributions and packages owned by non-deployed modules; recorded as not shipped rather than silently ignored.",
+      "sbom_binary_checksum": "Not usable: the SBOM packaged-file SHA-1 values do not match the archived SDK binaries; deployed-file byte identity comes from the pinned archive and prepared SDK tree digest."
+    },
+    "review_status": "materials_prepared_user_review_pending"
   },
   "installer": {
     "name": "aqtinstall",
@@ -119,8 +135,9 @@
   "deployment_status": {
     "published_product_package": false,
     "clean_machine_runtime_validation": "pending",
+    "third_party_component_provenance": "materials_prepared_user_review_pending",
     "license_notices_and_corresponding_source_review": "pending",
     "sdk_translations_installed": false,
-    "note": "The current local build uses windeployqt without translations or compiler-runtime deployment; no standalone clean-machine runtime completeness is claimed."
+    "note": "The current local build uses windeployqt without translations or compiler-runtime deployment. Deployed-component provenance and canonical license texts are recorded in components.json; corresponding-source/replacement conditions and clean-machine runtime completeness are not claimed."
   }
 }

@@ -71,10 +71,9 @@
     },
     "qt": {
       "license_manifest": "third_party/qt/manifest.json",
-      "bundled_texts": [
-        "licenses/LGPL-3.0-only.txt"
-      ],
-      "status": "third_party_component_inventory_pending"
+      "component_inventory": "third_party/qt/components.json",
+      "third_party_notices": "QT-THIRD-PARTY-NOTICES.txt",
+      "status": "component_inventory_prepared_user_review_pending"
     },
     "conpty": {
       "license_manifest": "third_party/conpty/manifest.json",
@@ -108,7 +107,7 @@
     "r2_acceptance": false,
     "clean_machine_run": "not_performed",
     "single_screen_96_144_dpi": "not_verified_in_this_slice",
-    "full_third_party_license_inventory": "pending",
+    "full_third_party_license_inventory": "materials_prepared_user_review_pending",
     "performance_equivalence": false
   }
 }
