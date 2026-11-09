@@ -77,6 +77,8 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
 
 **2026-11-05 执行结果**：计划 `windterm-bcd-address-pre-write-v1` 已冻结并由调度者授权一次运行；实际初始 NAWS 为 **80×25**（非目标 80×24），控制器在 `fixed initial grid differs` 停止，未发送 B/C/D、未产生写前/写后端点，严格导出未运行。失败身份、计划/attempt 哈希与精确阻塞见[失败记录](../../research/ui/results/2026-11-06-resize-bcd-address-pre-write-failed/README.md)；同一计划不重放，也未据此选择 A/B/C。下面是原计划的目标与区分力，保留为下一次新计划的设计依据。
 
+**2026-11-09 恢复进展（blocked）**：主机重新可达后完成严格身份核验；`1228×839` 初始窗口实测为 **80×24**，但固定 `988×509` 的 `60×12` resize 在校准 peer 报 `Resize changed row count`，仅 phase0 完成。未发送 B/C/D 正文，未执行原 v2 正式重试；旧 plan/marker 未变。一次校准计划 SHA `954636ee…`，详见[恢复记录](../../research/ui/results/2026-11-09-bcd-recovery/README.md)。解除条件：另一次授权的 60×12 校准/诊断解释该错误并成功，之后才可冻结 v2。
+
 **固定问题**：WindTerm 2.7.0 在同一轮 `80×24→60×12` 主屏会话中，缩高后、写入前的正文/滚动/DSR 是什么；随后固定 `CUP 12;1+marker+DSR` 的 marker 落在保留源的哪一行、显示在哪一行。
 
 - 唯一计划 `windterm-bcd-address-pre-write-v1`，一次授权运行；固定窗口请求 `80×24→60×12`，先写稳定 B/C/D，resize 后**不写入**先读快照，再仅发送固定 CUP/marker/DSR；不重跑、不补写。
