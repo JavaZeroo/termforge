@@ -1,19 +1,20 @@
 {
   "schema": "termforge-qt-system-paste-validation-v1",
-  "baseline_main": "3b063e3c8f6c57cd01a0c5339c2145969b92aa86",
-  "source_commit": "f4f50f2",
-  "documentation_note": "Paste implementation is in 354c1e1; this validation is a docs-only follow-up.",
-  "source_hash_note": "Hashes are SHA-256 of committed LF Git blob content at 354c1e1; Windows may materialize CRLF while the blob identity stays this value.",
+  "baseline_main": "859e59538fed671070d3833033ac738502f97d95",
+  "source_commit": "1cde247",
+  "documentation_note": "Implementation fix is 1cde247; hosted recovery harness f99f693; this validation is a docs/results follow-up on top of the main merge 99aae95.",
+  "source_hash_note": "Hashes are SHA-256 of committed LF Git blob content at the result-follow-up head; Windows may materialize CRLF while the blob identity stays this value.",
   "source_files_sha256": {
     "src/qt/clipboard_reader.hpp": "9c923eb646fc176900484af1e4607cae37c7211548f092746a19683edbb9fd66",
-    "src/qt/terminal_widget.hpp": "d452c5d484aa456d27fd985976adc8ae0e9e7e2e94c80600518c291b6df73825",
+    "src/qt/terminal_widget.hpp": "de2a5460568835a7687da8d250d719954631dedacf6602ac653cbb3122c0d60c",
     "src/qt/paste_fixture.hpp": "d6c203eb9f2aa04513831ec2a18412c900bcf0233adf625e1b1ec90331f56ffb",
-    "src/qt/paste_test.cpp": "646f9a4395aa10b89d1cab601751142b9f13162436ea60eb6a23103fa189230f",
-    "src/qt/clipboard_system_test.cpp": "a16037c1bba86690789cae6b6c6a523154f96637f53ab49046f99ad4b3d7cfbb",
+    "src/qt/paste_test.cpp": "ed0d4731150446214b7467d33980e4d25c2438c777a1b1fda130dee65264b8b5",
+    "src/qt/clipboard_system_test.cpp": "bdbc445f0f83505fea2da851fa9c76ba8e54e851905df9fa56fabf3c9f018f41",
     "src/qt/unicode_input_test.cpp": "f6867c5d2006ed6b75dc0a3693f58d0a0b0022896e87bb7cbe55739881f842c2",
     "src/qt/run_smoke.py": "74d4c882bb859e8c85bace5e6db9741af7128008ca04df7a97da22c76d870692",
-    "CMakeLists.txt": "f98f9c0014a378b5df9a9686ce2aa16d67c6d89c7ec9103171fde01aa6935e74",
-    ".github/workflows/qt-cpp.yml": "1cfa893ce4cb64743e6b2e9ffe53a778de749e23c16611b2aa9659be43b006b4"
+    "CMakeLists.txt": "566e8a2fe059bd38d134816da36167d3e91e69256b4fb741be90cf249fddeb8d",
+    ".github/workflows/qt-cpp.yml": "f484e496de90ef0d579ff2d4f12fda3dafbf570b80a4eaaa8e64f63213ce739e",
+    ".github/workflows/qt-hosted-paste-multiline.yml": "c66498518377a168f9dc93d44444a26dfc185ceb433f459fbb8e66d58c010858"
   },
   "environment": {
     "os": "Windows 11 x64 build 26200",
@@ -22,7 +23,8 @@
     "qt": "6.10.3 offscreen (local) / Windows QPA (hosted)",
     "conpty": "1.25.260930003",
     "crt": "14.51.36247.0",
-    "binary_sha256": "6a0b457bdf187f00dab47720221a8c91fe591b34d4145c8c530fd200b1f01677"
+    "binary_sha256": "1fd339af0c1294e4ad8c8da71ff768a468112fe4b80afddbee813ebb426e9b3c",
+    "binary_sha256_note": "local qt_paste_test.exe Release at the result-follow-up head (trace-free); the hosted attempt-3 binary was built on the runner and is identified by run 43101420107"
   },
   "entries": {
     "keyboard": "Ctrl+Shift+V",
@@ -58,11 +60,10 @@
     "child": "real child records received bytes to a file; never executes the pasted text"
   },
   "root_cause": {
-    "status": "proven offline",
+    "status": "proven offline, closed by hosted attempt 3",
     "fact": "QMessageBox::exec() returns the clicked standard button value (measured: accept=2, escape=3), not QDialog::DialogCode; the product compared it against QDialog::Accepted(1), so a real accept was always recorded as rejected and no transfer started.",
-    "repro": "local/dialog_probe.cpp probe plus strengthened qt_paste, offscreen, no clipboard access",
-    "fix": "classify the user choice via box.clickedButton() buttonRole() == QMessageBox::AcceptRole",
-    "hosted_closure": "pending the single authorized opt-in run"
+    "repro": "dialog_probe.cpp probe plus strengthened qt_paste, offscreen, no clipboard access",
+    "fix": "classify the user choice via box.clickedButton() buttonRole() == QMessageBox::AcceptRole"
   },
   "hosted_windows_qpa": {
     "run_id": "42183487961",
@@ -76,23 +77,25 @@
     "child_bytes_verified": true,
     "occupied_failure": true,
     "release_success": true,
-    "multiline_confirm": false,
-    "multiline_cancel": false,
-    "multiline_scope": "historical hosted failure; attempt-3 recovery in progress (see attempt-ledger.md)",
+    "multiline_confirm": true,
+    "multiline_cancel": true,
+    "multiline_scope": "hosted-real-cf via opt-in recovery run 43101420107 / job 130793595825",
     "multiline_recovery_attempt_3": {
       "authorized_quota": 1,
       "prior_attempts_preserved": 2,
       "workflow": ".github/workflows/qt-hosted-paste-multiline.yml",
-      "trigger": "push to agent/qt-paste/record-hidden-retention-2e7373117ea0 (paths-filtered)",
+      "trigger": "single push-scoped execution on agent/qt-paste/record-hidden-retention-2e7373117ea0; later dispatch-only",
       "gate": "TERMFORGE_QT_HOSTED_MULTILINE=1 in the test binary only",
       "entries": "cancel via Ctrl+Shift+V, confirm via real Paste menu; default product CF reader",
       "fixture": "role-based dialog selection with full stderr logging; no auto-confirm",
-      "product_trace": "temporary PASTE_FINISH/PASTE_PREP/PASTE_CONFIRM/PASTE_TRANSFER stderr lines, removed after the run",
-      "run_id": null,
-      "job_id": null,
-      "status": "pending"
+      "run_head": "b2536fe (with temporary PASTE_* traces; behavior-identical follow-up removes them)",
+      "run_id": "43101420107",
+      "job_id": "130793595825",
+      "status": "passed",
+      "sample": "multiline_cancel=true,multiline_confirm=true,multiline_scope=hosted-real-cf,keyboard_cf=true,menu_cf=true,shift_insert_cf=true,occupied_failure=true,release_success=true,qpa=windows,product_default_owner_verified=true",
+      "log_evidence": "cancel: click 'Cancel' via role -> PASTE_CONFIRM accepted=0, child bytes unchanged; confirm: click 'Paste' via role -> accepted=1 -> PASTE_TRANSFER total=5 (L1\\rL2 CRLF->CR once); occupied: PASTE_FINISH status=2 -> OpenClipboard: 5; release: PST-OWN total=7; exit 0, job_after.active=0"
     },
-    "description": "Real CF content written by the test, read by the default product reader through the real Windows QPA widget; each public entry appended exactly the expected child bytes. A real holder process caused an explicit failure; after release a second explicit action succeeded. Multiline dialog branch runs only in the opt-in recovery workflow and stays a historical failure until attempt 3 is recorded.",
+    "description": "Real CF content written by the test, read by the default product reader through the real Windows QPA widget; each public entry appended exactly the expected child bytes. A real holder process caused an explicit failure; after release a second explicit action succeeded. The multiline dialog branch ran once in the opt-in recovery workflow and passed: real Ctrl+Shift+V cancel sent zero bytes with an explicit cancellation, real Paste menu confirm transferred CRLF normalized to CR exactly once.",
     "multiline_failure": {
       "first_head": "eecf21f",
       "first_run_id": "42181178347",
@@ -105,13 +108,13 @@
       "exit_code": 1,
       "timed_out": false,
       "job_active": 0,
-      "recovery_status": "one fix plus retry failed; exhausted; no further hosted multiline retry this round",
+      "recovery_status": "superseded: root cause proven offline (QMessageBox::exec return semantics) and closed by attempt 3 run 43101420107 / job 130793595825",
       "ledger": "attempt-ledger.md"
     }
   },
   "limitations": [
-    "Hosted multiline confirmation is a preserved historical failure, not a pass; recovery budget exhausted and no new hosted retry was run.",
-    "Hosted real-CF paste covers the three single-line entries and owner-held failure/release; multiline confirmation is local-fake-reader-only, and second-session switch/close reuse is not hosted-combined.",
+    "Attempt 3 consumed the single recovery quota and passed; no further hosted multiline run is authorized or needed for this failure.",
+    "Second-session switch/close reuse is covered only by the local fake-reader scenario and is not combined with hosted real CF.",
     "No bracketed paste, alternate-screen/TUI paste policy, automatic line-by-line send, Find, word/line selection, physical presentation/DPI or performance.",
     "Child byte recording is transport/child-observed input, not an execution or rendering oracle; no system clipboard is touched locally.",
     "Old B/CD addressing, remote VM calibration/v2, A/B/C, old six-stage failure and #27/#29/#30/#35/#7 remain unchanged."

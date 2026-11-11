@@ -230,9 +230,6 @@ class TerminalWidget final : public QWidget {
         update();
     }
     void finish_paste_read(ClipboardRead result) {
-        // TEMP hosted-multiline diagnostic trace (removed after the single
-        // authorized recovery run; results recorded in the paste attempt ledger).
-        std::fprintf(stderr, "PASTE_FINISH status=%d\n", static_cast<int>(result.status));
         paste_reading_ = false;
         if (paste_read_thread_.joinable()) paste_read_thread_.join();
         if (result.status == ClipboardRead::Status::empty) {
@@ -255,9 +252,6 @@ class TerminalWidget final : public QWidget {
             set_paste_notice(QStringLiteral("Paste failed: ") + QString::fromUtf8(error.what()));
             return;
         }
-        std::fprintf(stderr, "PASTE_PREP confirmation_required=%d newlines=%zu target=%llu current=%llu\n",
-                     prepared.confirmation_required ? 1 : 0, prepared.newline_count,
-                     paste_target_, model_.resize_state().child_pid);
         bool confirmed = true;
         if (prepared.confirmation_required && paste_dialog_auto_confirm_) {
             confirmed = *paste_dialog_auto_confirm_;
@@ -274,7 +268,6 @@ class TerminalWidget final : public QWidget {
             // clicked button's role instead of comparing against QDialog codes.
             QAbstractButton* clicked = box.clickedButton();
             confirmed = clicked && box.buttonRole(clicked) == QMessageBox::AcceptRole;
-            std::fprintf(stderr, "PASTE_CONFIRM accepted=%d\n", confirmed ? 1 : 0);
             if (QWidget* top = window()) {
                 top->activateWindow();
                 top->raise();
@@ -300,9 +293,6 @@ class TerminalWidget final : public QWidget {
             set_paste_notice(QStringLiteral("Paste failed: ") + QString::fromUtf8(error.what()));
             return;
         }
-        std::fprintf(stderr, "PASTE_TRANSFER state=%d total=%zu target=%llu\n",
-                     static_cast<int>(paste_transfer_->progress().state), paste_transfer_->progress().total,
-                     paste_target_);
         if (paste_transfer_->progress().state == tf_shell::PasteState::completed) {
             set_paste_notice(QStringLiteral("Pasted"));
             paste_transfer_.reset();

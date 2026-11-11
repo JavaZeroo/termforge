@@ -17,8 +17,9 @@
 | 诊断重试（同故障，不新增额度） | `5ea8e44` | `42182236823` / `127774271059` | 仍失败；实际仍为三条单行，notice cancelled；调试显示多行 read 均 finish，但无传输/child 字节 |
 | 删除多行 hosted 分支后的单行回归 | `10df02e` | `42182751375` / `127775920833` | 通过，但 `multiline_confirm=false`，不能算多行成功 |
 | 交付前巡检 | `9b48627` | `42184032136` / `127780005871` | 通过；sample 明示 `multiline_cancel=false`/`multiline_confirm=false` |
+| 恢复尝试 3（授权额度 1） | `b2536fe` | `43101420107` / `130793595825` | **通过**：`multiline_cancel=true`、`multiline_confirm=true`、`multiline_scope=hosted-real-cf`，sample 全项真；日志见下 |
 
-结论：该多行故障已经历一次修复后重试仍失败，既有恢复额度已使用；本轮不再启动相同 hosted 多行重试，也没有把单行/本地 fake 成功或删除失败分支当作修复。
+结论：该多行故障已经历一次修复后重试仍失败，既有恢复额度已使用；本轮不再启动相同 hosted 多行重试，也没有把单行/本地 fake 成功或删除失败分支当作修复。恢复尝试 3 按根因修复（exec 返回值语义）在唯一一次授权 hosted run 中通过，故障闭合。
 
 ## 离线诊断（事实与假设分开）
 
@@ -73,5 +74,11 @@
   - `PASTE_CONFIRM accepted=1` + `PASTE_TRANSFER state=1`（sending）但 child 无字节 ⇒ 发送/传输侧候选，按目标绑定合同离线修，不重跑。
   - 任何 `no match ... rejecting` ⇒ 夹具选择失败（角色缺失），属于夹具 bug，记录后修复需新额度。
 
-结果（运行后回填）：待填。
+结果（运行后回填）：
+
+- 唯一 run `43101420107` / 唯一 job `130793595825`（opt-in workflow、windows-2025 QPA、`TERMFORGE_QT_HOSTED_MULTILINE=1`）：**通过**，exit 0、`timed_out=false`、`job_after.active=0`（资源全回收）、sample `multiline_cancel=true`/`multiline_confirm=true`/`multiline_scope=hosted-real-cf"`，三入口与占用/释放全项真。
+- 关键日志（21:16:08Z）：取消动作 `dialog_helper: box=activeModal buttons=2` → `button='Paste' role=0` / `button='Cancel' role=1` → `click 'Cancel' via role` → `click sent` → `PASTE_CONFIRM accepted=0`，child 字节 == 基线（零增量断言通过）。确认动作（真实 Paste 菜单入口）`click 'Paste' via role` → `click sent` → `PASTE_CONFIRM accepted=1` → `PASTE_TRANSFER state=0 total=5 target=2960`（`L1\rL2` 恰好 5 字节，CRLF→CR、恰好一次，wait_file 断言通过）；占用动作 `PASTE_FINISH status=2` → `Paste failed: OpenClipboard: 5`；释放后 `PST-OWN` 再成功（`total=7`）。
+- 执行顺序核对：单次 push 仅触发该 workflow 一次；`qt-cpp.yml` 的 push/PR 双触发在本轮全部保持门控关闭（单行范围），未重复执行真实 hosted 多行路径。
+- 判定矩阵落在第一行：修复成功，hosted 多行确认闭合。根因（exec 返回值语义误判）与修复与本次 hosted 实得一致。
+- 运行 head 为 `b2536fe`（含临时 PASTE_* 痕迹）；结果回填后提交移除痕迹并把该 workflow 触发改为 workflow_dispatch-only，行为代码与运行 head 完全一致，差异仅诊断输出。
 

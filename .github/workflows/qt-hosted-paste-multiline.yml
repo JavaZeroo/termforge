@@ -1,18 +1,13 @@
 # Opt-in single hosted Windows QPA run for the #324 multiline paste recovery.
 # The default qt-cpp.yml lane keeps the historical single-line hosted scope; the
-# multiline real-CF dialog branch only executes here, with TERMFORGE_QT_HOSTED_MULTILINE=1.
-# The push trigger is scoped to this branch and to the paste test identity so a
-# docs-only follow-up push cannot re-execute the real hosted path.
+# multiline real-CF dialog branch only executes with TERMFORGE_QT_HOSTED_MULTILINE=1.
+# Attempt 3 consumed the recovery quota on 2026-11-12 (run 43101420107 / job
+# 130793595825, passed); the trigger is dispatch-only so later pushes of result
+# docs or trace cleanups cannot re-execute the real hosted path.
 name: Qt hosted Windows multiline paste recovery
 
 on:
-  push:
-    branches:
-      - agent/qt-paste/record-hidden-retention-2e7373117ea0
-    paths:
-      - src/qt/clipboard_system_test.cpp
-      - src/qt/terminal_widget.hpp
-      - .github/workflows/qt-hosted-paste-multiline.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
