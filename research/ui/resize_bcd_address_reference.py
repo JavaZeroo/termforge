@@ -69,10 +69,39 @@ def peer_class(case):
     base._serve.__globals__["phases"] = lambda rows, columns: phases(case, rows, columns)
 
     class BcdPeer(base):
+        """B/C/D peer; see resize_bcd_calibration.BcdPeer for the shared contract.
+
+        The baseline width-only row-count guard contradicts this plan's fixed
+        80x24 -> 60x12 -> 60x12 -> 80x24 dual-axis resize, so the NAWS gate is
+        overridden with the same calibration contract used by the geometry
+        calibration: phases 1/3 are resize events requiring a new post-request
+        target-grid NAWS, phase 2 is a same-size checkpoint (no new NAWS
+        required, duplicates recorded only), and any unexpected size change
+        fails. The literal acceptance below is unchanged.
+        """
+
         def _freeze_initial(self):
             super()._freeze_initial()
             require(self.state["frozen_grid"] == list(GRIDS[0]), "Fixed initial grid differs")
             self.state["case_id"] = case
+
+        def _on_naws(self):
+            grid = [self.state["columns"], self.state["rows"]]
+            history = self.state.setdefault("naws_history", [])
+            require(len(history) < 64 and all(type(n) is int and 0 <= n <= 65535 for n in grid), "NAWS event bound")
+            history.append(grid)
+            self._record()
+            changes = self.state.setdefault("naws_size_changes", [])
+            if not changes or changes[-1] != grid:
+                changes.append(list(grid))
+            if self.state.get("frozen_grid"):
+                armed = self.state.get("resize_armed")
+                if grid == self.state["frozen_grid"]:
+                    # Same-size repeat (phase-2 checkpoint or a duplicate during an
+                    # armed resize): record only, never a new-size acknowledgement.
+                    return
+                require(armed is not None, "NAWS changed outside an armed resize")
+                require(grid == list(GRIDS[armed]), "Unexpected resized grid")
 
         def _phase_ready(self, index):
             if index == -1:
