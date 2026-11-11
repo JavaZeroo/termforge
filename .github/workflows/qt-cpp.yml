@@ -20,9 +20,16 @@ jobs:
         with:
           python-version: '3.12'
       - name: Verify preparation failure contracts
-        run: python -m unittest tools.test_prepare_qt_build tools.test_prepare_msvc_runtime tools.test_msvc_runtime -v
+        run: python -m unittest tools.test_prepare_qt_build tools.test_prepare_msvc_runtime tools.test_msvc_runtime tools.test_stage_qt_product tools.test_build_qt_component_inventory -v
       - name: Prepare manifest-pinned Qt qtbase, Microsoft ConPTY and CRT
         run: python -m tools.prepare_qt_build
+      - name: Verify deployed Qt component inventory against the pinned archive and SBOM
+        run: |
+          python -m tools.build_qt_component_inventory check `
+            --cache local/qt-downloads `
+            --sbom local/qt-build-deps/qt/sbom/qtbase-6.10.3.spdx.json `
+            --sdk-dir local/qt-build-deps/qt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Preserve path-free dependency preparation identity
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -42,7 +49,31 @@ jobs:
             "-DTERMFORGE_CONPTY_BACKEND_DIR=$dependencyRoot/conpty" `
             "-DTERMFORGE_MSVC_RUNTIME_DIR=$dependencyRoot/crt"
       - name: Build Qt product and independent smoke
-        run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_terminal_modes_test qt_hidden_retention_test qt_history_navigation_test qt_selection_migration_test qt_find_test qt_scrollbar_size_test qt_autoscroll_test qt_clipboard_system_test --parallel 2
+        run: cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_eight_session_test qt_terminal_modes_test qt_hidden_retention_test qt_history_navigation_test qt_selection_migration_test qt_find_test qt_scrollbar_size_test qt_autoscroll_test qt_clipboard_system_test qt_query_reply_test qt_paste_test --parallel 2
+      - name: Stage the frozen Qt product and verify every file identity
+        run: |
+          python -m tools.stage_qt_product stage `
+            --bin-dir build/qt-cpp/qt-bin/Release `
+            --dependencies local/qt-build-deps `
+            --dependency-summary local/qt-build-preparation.json `
+            --out local/qt-product-staging `
+            --summary local/qt-product-staging.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m tools.stage_qt_product verify --staging local/qt-product-staging
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve path-free product staging identities
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qt-cpp-product-staging
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            local/qt-product-staging.json
+            local/qt-product-staging/product-manifest.json
+            local/qt-product-staging/licenses/qt/components.json
+            local/qt-product-staging/QT-THIRD-PARTY-NOTICES.txt
+            local/qt-product-staging/THIRD-PARTY-NOTICES.txt
       - name: Record complete path-free runtime manifests
         run: |
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-bin/Release --executable termforge_qt_shell.exe
@@ -54,6 +85,8 @@ jobs:
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-unicode-bin/Release --executable qt_unicode_input_test.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-unicode-render-bin/Release --executable qt_unicode_render_test.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-eight-session-bin/Release --executable qt_eight_session_test.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-modes-bin/Release --executable qt_terminal_modes_test.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -71,6 +104,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-clipboard-bin/Release --executable qt_clipboard_system_test.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-query-reply-bin/Release --executable qt_query_reply_test.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/msvc_runtime.py manifest --directory build/qt-cpp/qt-paste-bin/Release --executable qt_paste_test.exe
       - name: Preserve runtime file identities without binaries
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -84,19 +120,26 @@ jobs:
             build/qt-cpp/qt-resize-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-unicode-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-unicode-render-bin/Release/runtime-manifest.json
+            build/qt-cpp/qt-eight-session-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-modes-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-hidden-retention-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-history-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-selection-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-clipboard-bin/Release/runtime-manifest.json
+            build/qt-cpp/qt-query-reply-bin/Release/runtime-manifest.json
+            build/qt-cpp/qt-paste-bin/Release/runtime-manifest.json
       - name: Run Qt offscreen smoke in its owned Job
-        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration|qt_find|qt_scrollbar_size|qt_autoscroll)$' --no-tests=error --verbose
+        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_eight_session|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration|qt_find|qt_scrollbar_size|qt_autoscroll|qt_query_reply|qt_paste)$' --no-tests=error --verbose
       - name: Run hosted-only Qt system clipboard copy
         run: python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe --hosted-copy
       - name: Run hosted Windows QPA product-writer clipboard copy
         env:
           TERMFORGE_QT_QPA_PLATFORM: windows
         run: python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe --hosted-windows-copy
+      - name: Run hosted Windows QPA product-reader paste
+        env:
+          TERMFORGE_QT_QPA_PLATFORM: windows
+        run: python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe --hosted-windows-paste
       # Keep this configuration independent from the default/system-backend and
       # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
       # publication artifacts; this job does not produce a release package.

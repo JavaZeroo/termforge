@@ -2,9 +2,12 @@
 // Locally this executable returns a bounded skip without touching the user CF.
 #include "terminal_widget.hpp"
 #include "selection_fixture.hpp"
+#include "paste_fixture.hpp"
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QFile>
+#include <QMessageBox>
+#include <QPushButton>
 #include <QFontMetricsF>
 #include <QContextMenuEvent>
 #include <QMenu>
@@ -17,12 +20,14 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 
 using termforge::qt::ClipboardWrite;
 using termforge::qt::SessionModel;
 using termforge::qt::TerminalWidget;
 using termforge::qt::test::selection_child;
+using termforge::qt::test::paste_child;
 
 namespace {
 void require(bool condition, const std::string& message) {
@@ -148,6 +153,174 @@ void await(Predicate predicate, const SessionModel& model, QElapsedTimer& lifecy
     }
     require(predicate(), message);
 }
+void menu_paste(TerminalWidget& terminal) {
+    QTimer::singleShot(0, [] {
+        auto* popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
+        require(popup != nullptr, "Paste context menu missing");
+        const auto actions = popup->actions();
+        require(!actions.empty() && actions.back()->text() == QStringLiteral("Paste"), "Paste action missing");
+        QTest::mouseClick(popup, Qt::LeftButton, Qt::NoModifier, popup->actionGeometry(actions.back()).center());
+    });
+    QContextMenuEvent event(QContextMenuEvent::Mouse, QPoint(20, 20), terminal.mapToGlobal(QPoint(20, 20)));
+    QApplication::sendEvent(&terminal, &event);
+}
+// Hosted dialog driver: select the button by its QMessageBox role first (the
+// product assigns explicit roles), falling back to the label only as a
+// diagnostic. Every decision is logged so a rejected dialog can be attributed
+// to the fixture instead of being silently treated as a user cancellation.
+void click_paste_dialog(const char* label, QMessageBox::ButtonRole role) {
+    auto polls = std::make_shared<int>(0);
+    auto* timer = new QTimer(qApp);
+    timer->setInterval(20);
+    QObject::connect(timer, &QTimer::timeout, [timer, label, role, polls] {
+        ++*polls;
+        auto* box = qobject_cast<QMessageBox*>(QApplication::activeModalWidget());
+        const char* found = "activeModal";
+        if (!box) {
+            for (auto* widget : QApplication::topLevelWidgets()) {
+                if (auto* candidate = qobject_cast<QMessageBox*>(widget)) { box = candidate; break; }
+            }
+            found = "topLevelScan";
+        }
+        if (!box) {
+            if (*polls >= 250) {
+                std::fprintf(stderr, "dialog_helper: no QMessageBox after %d polls\n", *polls);
+                timer->stop();
+            }
+            return;
+        }
+        timer->stop();
+        std::fprintf(stderr, "dialog_helper: box=%s buttons=%d\n", found, static_cast<int>(box->buttons().size()));
+        for (auto* button : box->buttons())
+            std::fprintf(stderr, "dialog_helper: button='%s' role=%d\n",
+                         button->text().toUtf8().constData(), static_cast<int>(box->buttonRole(button)));
+        QAbstractButton* chosen = nullptr;
+        const char* matched = "";
+        for (auto* button : box->buttons())
+            if (box->buttonRole(button) == role) { chosen = button; matched = "role"; break; }
+        if (!chosen)
+            for (auto* button : box->buttons())
+                if (button->text() == QString::fromLatin1(label)) { chosen = button; matched = "text"; break; }
+        if (!chosen) {
+            std::fprintf(stderr, "dialog_helper: no match label='%s' role=%d; rejecting\n", label,
+                         static_cast<int>(role));
+            box->reject();
+            return;
+        }
+        std::fprintf(stderr, "dialog_helper: click '%s' via %s\n", chosen->text().toUtf8().constData(), matched);
+        QTest::mouseClick(chosen, Qt::LeftButton);
+        std::fprintf(stderr, "dialog_helper: click sent\n");
+    });
+    timer->start();
+}
+std::string read_input_file(const QString& path) {
+    QFile file(path); require(file.open(QIODevice::ReadOnly), "paste input file unavailable");
+    return file.readAll().toStdString();
+}
+void hosted_windows_paste() {
+#ifdef Q_OS_WIN
+    QElapsedTimer lifecycle; lifecycle.start();
+    QTemporaryDir workspace;
+    require(workspace.isValid(), "paste workspace unavailable");
+    wchar_t executable[32768]{};
+    const DWORD length = GetModuleFileNameW(nullptr, executable, 32768);
+    require(length && length < 32768, "paste executable unavailable");
+    const QString input_path = workspace.path() + "/paste-input.bin";
+    SessionModel model; QWidget window; TerminalWidget terminal(model, &window);
+    window.resize(1200, 900); window.show(); terminal.setFocus();
+    require(model.start(executable, L"--paste-child \"" + input_path.toStdWString() + L"\"",
+                        workspace.path().toStdWString()), "paste child did not start");
+    await([&] { return termforge::project_line(model.screen().visible_lines()[0]).text.find("PASTE_READY") != std::string::npos; },
+          model, lifecycle, "paste child prompt missing");
+    require(terminal.hasFocus(), "paste terminal lost focus");
+    const HWND hwnd = reinterpret_cast<HWND>(terminal.winId());
+    require(hwnd != nullptr, "Windows QPA widget has no native HWND");
+    auto wait_notice = [&](const QString& text) {
+        QElapsedTimer phase; phase.start();
+        while (terminal.paste_notice() != text && phase.elapsed() < 5000) QTest::qWait(10);
+        require(terminal.paste_notice() == text, "paste notice differs: " + terminal.paste_notice().toStdString());
+    };
+    auto wait_file = [&](const std::string& expected) {
+        QElapsedTimer phase; phase.start();
+        while (read_input_file(input_path) != expected && phase.elapsed() < 5000) QTest::qWait(10);
+        require(read_input_file(input_path) == expected, "paste child bytes differ");
+    };
+
+    // Keyboard single-line, immediate.
+    write_cf(hwnd, u"PST-中文 e\u0301");
+    QTest::keyClick(&terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
+    wait_file("PST-中文 e\xcc\x81");
+    wait_notice(QStringLiteral("Pasted"));
+
+    // Actual Paste menu, single line.
+    write_cf(hwnd, u"PST-MENU");
+    menu_paste(terminal);
+    wait_file("PST-中文 e\xcc\x81PST-MENU");
+    wait_notice(QStringLiteral("Pasted"));
+
+    // Shift+Insert single line.
+    write_cf(hwnd, u"PST-INSERT");
+    QTest::keyClick(&terminal, Qt::Key_Insert, Qt::ShiftModifier);
+    wait_file("PST-中文 e\xcc\x81PST-MENUPST-INSERT");
+    wait_notice(QStringLiteral("Pasted"));
+
+    // Multiline cancel/confirm runs only in the opt-in single hosted recovery
+    // workflow (TERMFORGE_QT_HOSTED_MULTILINE=1); the default CI lane keeps the
+    // historical single-line scope and the local fake-reader coverage.
+    const std::string baseline = read_input_file(input_path);
+    const bool multiline = qgetenv("TERMFORGE_QT_HOSTED_MULTILINE") == "1";
+    if (multiline) {
+        // Real Ctrl+Shift+V entry; the real dialog must reject and send nothing.
+        write_cf(hwnd, u"L1\r\nL2");
+        click_paste_dialog("Cancel", QMessageBox::RejectRole);
+        QTest::keyClick(&terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
+        wait_notice(QStringLiteral("Paste cancelled"));
+        require(read_input_file(input_path) == baseline, "cancelled multiline paste sent bytes");
+        // Real Paste menu entry; the real dialog accept must transfer CRLF
+        // normalized to CR exactly once into the independent child.
+        write_cf(hwnd, u"L1\r\nL2");
+        click_paste_dialog("Paste", QMessageBox::AcceptRole);
+        menu_paste(terminal);
+        wait_file(baseline + "L1\rL2");
+        wait_notice(QStringLiteral("Pasted"));
+    }
+
+    // A real owner-held clipboard fails cleanly; after release an explicit
+    // second action succeeds with the intended CF text.
+    const QString ready = workspace.path() + "/paste-hold-ready";
+    const QString release = workspace.path() + "/paste-hold-release";
+    write_cf(hwnd, u"PST-OWN");
+    QProcess holder;
+    holder.start(QString::fromWCharArray(executable), {"--clipboard-holder", ready, release});
+    require(holder.waitForStarted(5000), "paste clipboard holder did not start");
+    for (int i = 0; i < 100 && !QFile::exists(ready); ++i) QTest::qWait(20);
+    require(QFile::exists(ready), "paste clipboard holder did not acquire CF");
+    QTest::keyClick(&terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
+    wait_notice(QStringLiteral("Paste failed: OpenClipboard: 5"));
+    {
+        QFile release_file(release);
+        require(release_file.open(QIODevice::WriteOnly), "paste release file unavailable");
+        release_file.write("release"); release_file.close();
+    }
+    require(holder.waitForFinished(5000), "paste clipboard holder did not release");
+    write_cf(hwnd, u"PST-OWN");
+    QTest::keyClick(&terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
+    wait_file(baseline + (multiline ? "L1\rL2" : "") + "PST-OWN");
+
+    require(model.send(std::string(1, '\x03')), "paste child quit rejected");
+    await([&] { return model.finished(); }, model, lifecycle, "paste child did not exit");
+    require(model.exit_code() == 37 && model.cleanup_verified(), "paste child cleanup was not verified");
+    std::cout << "{\"schema\":\"termforge-qt-clipboard-paste-v1\",\"status\":\"passed\","
+                 "\"keyboard_cf\":true,\"menu_cf\":true,\"shift_insert_cf\":true,"
+                 "\"multiline_cancel\":" << (multiline ? "true" : "false")
+              << ",\"multiline_confirm\":" << (multiline ? "true" : "false")
+              << ",\"multiline_scope\":\"" << (multiline ? "hosted-real-cf" : "local-fake-reader-only") << "\","
+                 "\"occupied_failure\":true,\"release_success\":true,"
+                 "\"qpa\":\"windows\",\"product_default_owner_verified\":true}\n";
+#else
+    throw std::runtime_error("hosted Windows paste requires Windows");
+#endif
+}
 void menu_copy(TerminalWidget& terminal) {
     QTimer::singleShot(0, [] {
         auto* popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
@@ -170,11 +343,16 @@ int main(int argc, char** argv) {
     if (argc == 2 && std::string_view(argv[1]) == "--selection-child") {
         try { return selection_child(); } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
+    if (argc == 3 && std::string_view(argv[1]) == "--paste-child") {
+        try { return paste_child(QString::fromLocal8Bit(argv[2]).toStdWString()); }
+        catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
+    }
     const std::string_view mode = argc == 2 ? std::string_view(argv[1]) : std::string_view{};
     const bool injected_owner = mode == "--hosted-copy";
     const bool windows_qpa = mode == "--hosted-windows-copy";
-    if (!injected_owner && !windows_qpa) {
-        std::cerr << "usage: qt_clipboard_system_test --hosted-copy|--hosted-windows-copy|--selection-child|--clipboard-holder <ready> <release>\n";
+    const bool windows_paste = mode == "--hosted-windows-paste";
+    if (!injected_owner && !windows_qpa && !windows_paste) {
+        std::cerr << "usage: qt_clipboard_system_test --hosted-copy|--hosted-windows-copy|--hosted-windows-paste|--selection-child|--paste-child <file>|--clipboard-holder <ready> <release>\n";
         return 2;
     }
     if (!hosted()) {
@@ -191,6 +369,10 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
     QApplication::setQuitOnLastWindowClosed(false);
     try {
+        if (windows_paste) {
+            hosted_windows_paste();
+            return 0;
+        }
         QElapsedTimer lifecycle; lifecycle.start();
         QTemporaryDir workspace;
         require(workspace.isValid(), "workspace unavailable");

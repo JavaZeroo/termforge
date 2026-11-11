@@ -308,6 +308,9 @@ if(WIN32)
   add_executable(shell_unicode_echo_client experiments/shell/unicode_echo_client.cpp)
   termforge_warnings(shell_unicode_echo_client)
   target_compile_definitions(shell_unicode_echo_client PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
+  add_executable(shell_eight_session_client experiments/shell/eight_session_client.cpp)
+  termforge_warnings(shell_eight_session_client)
+  target_compile_definitions(shell_eight_session_client PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
   add_executable(shell_text_client experiments/shell/text_client.cpp)
   termforge_warnings(shell_text_client)
   target_compile_definitions(shell_text_client PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
@@ -522,6 +525,7 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_mode_state_reference -m unittest research.ui.test_mode_state_reference research.ui.test_export_mode_state_reference research.ui.test_mode_reentry_reference research.ui.test_export_mode_reentry_reference -v)
   termforge_add_python_test(windterm_attribute_state_reference -m unittest research.ui.test_attribute_state_reference research.ui.test_export_attribute_state_reference -v)
   termforge_add_python_test(windterm_resize_state_reference -m unittest research.ui.test_resize_state_reference research.ui.test_export_resize_state_reference -v)
+  termforge_add_python_test(windterm_resize_bcd_calibration -m unittest research.ui.test_resize_bcd_calibration -v)
   termforge_add_python_test(windterm_resize_address_reference -m unittest research.ui.test_resize_address_reference research.ui.test_export_resize_address_reference -v)
   termforge_add_python_test(windterm_resize_address_optimized -O -m unittest research.ui.test_resize_address_reference research.ui.test_export_resize_address_reference -v)
   termforge_add_python_test(windterm_resize_edit_reference -m unittest research.ui.test_resize_edit_reference research.ui.test_export_resize_edit_reference research.ui.test_audit_resize_address_erase -v)
@@ -680,8 +684,14 @@ if(TERMFORGE_BUILD_QT_SHELL)
         "$<TARGET_FILE_DIR:${target}>/assets/fonts"
       VERBATIM)
     add_dependencies(${target} ${target}_font_bundle)
+    # The system D3D compiler and Microsoft DXC redistributables are not part
+    # of the fixed, pinned product set: the Widgets raster entry does not link
+    # them, and windeployqt would otherwise copy them from the developer's
+    # Windows SDK/system directories. Product staging verifies the remaining
+    # files against the pinned SDK; see tools/stage_qt_product.py.
     add_custom_command(TARGET ${target} POST_BUILD
       COMMAND "${qt_deploy_tool}" --release --no-translations --no-compiler-runtime
+        --no-system-d3d-compiler --no-system-dxc-compiler
         "$<TARGET_FILE:${target}>"
       VERBATIM)
   endfunction()
@@ -743,6 +753,23 @@ if(TERMFORGE_BUILD_QT_SHELL)
     add_test(NAME qt_unicode_render COMMAND "${Python3_EXECUTABLE}"
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_unicode_render_test>")
     set_tests_properties(qt_unicode_render PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+    add_executable(qt_eight_session_test src/qt/eight_session_test.cpp)
+    set_target_properties(qt_eight_session_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-eight-session-bin/$<CONFIG>")
+    termforge_qt_entry(qt_eight_session_test)
+    target_link_libraries(qt_eight_session_test PRIVATE Qt6::Test)
+    add_dependencies(qt_eight_session_test shell_eight_session_client)
+    add_custom_command(TARGET qt_eight_session_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_eight_session_test>/platforms/"
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:shell_eight_session_client>" "$<TARGET_FILE_DIR:qt_eight_session_test>/"
+      VERBATIM)
+    add_test(NAME qt_eight_session COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_eight_session_test>")
+    set_tests_properties(qt_eight_session PROPERTIES TIMEOUT 60
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
     add_executable(qt_cpp_resize_smoke src/qt/resize_smoke.cpp)
     set_target_properties(qt_cpp_resize_smoke PROPERTIES
@@ -818,6 +845,20 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_selection_migration_test>")
     set_tests_properties(qt_selection_migration PROPERTIES TIMEOUT 40
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_executable(qt_paste_test src/qt/paste_test.cpp)
+    set_target_properties(qt_paste_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-paste-bin/$<CONFIG>")
+    termforge_qt_entry(qt_paste_test)
+    target_link_libraries(qt_paste_test PRIVATE Qt6::Test)
+    add_custom_command(TARGET qt_paste_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_paste_test>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_paste COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_paste_test>")
+    set_tests_properties(qt_paste PROPERTIES TIMEOUT 45
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     add_executable(qt_find_test src/qt/find_test.cpp)
     set_target_properties(qt_find_test PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-find-bin/$<CONFIG>")
@@ -870,6 +911,20 @@ if(TERMFORGE_BUILD_QT_SHELL)
         "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
         "$<TARGET_FILE_DIR:qt_clipboard_system_test>/platforms/"
       VERBATIM)
+    add_executable(qt_query_reply_test src/qt/query_reply_test.cpp)
+    set_target_properties(qt_query_reply_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-query-reply-bin/$<CONFIG>")
+    termforge_qt_entry(qt_query_reply_test)
+    target_link_libraries(qt_query_reply_test PRIVATE Qt6::Test)
+    add_custom_command(TARGET qt_query_reply_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_query_reply_test>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_query_reply COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_query_reply_test>")
+    set_tests_properties(qt_query_reply PROPERTIES TIMEOUT 45
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     if(TERMFORGE_ENABLE_RESIZE_REPRO)
       add_test(NAME qt_terminal_modes_resize_repro COMMAND "${Python3_EXECUTABLE}"
         "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --resize)
