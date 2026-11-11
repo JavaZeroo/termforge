@@ -252,6 +252,7 @@ int main(int argc, char** argv) {
         return 2;
     }
     QApplication app(argc, argv);
+    termforge::qt::TerminalWidget::setHistoryScrollbarEnabledForTest(false);
     QApplication::setQuitOnLastWindowClosed(false);
     QByteArray child_log_path;
     try {

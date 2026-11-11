@@ -166,10 +166,16 @@ inline int size_child(const std::wstring& pipe_name) {
             command += character;
             continue;
         }
-        if (command.size() < 3 || (command[0] != 'Q' && command[0] != 'X' && command[0] != 'F') || command[1] != ' ')
+        if (command.size() < 3 || (command[0] != 'Q' && command[0] != 'X' && command[0] != 'F' && command[0] != 'E') || command[1] != ' ')
             throw std::runtime_error("Size child input command malformed");
         const auto nonce = size_nonce(std::string_view(command).substr(2));
         const bool exit = command[0] == 'X';
+        if (command[0] == 'E') {
+            const char clear[] = "\x1b[3J\x1b[H";
+            DWORD written = 0;
+            if (!WriteFile(output.get(), clear, sizeof(clear) - 1, &written, nullptr) ||
+                written != sizeof(clear) - 1) tf_conpty::fail("WriteFile(size child clear output)");
+        }
         if (command[0] == 'F') {
             const std::string block(4096, 's');
             for (int chunk = 0; chunk < 512; ++chunk) {

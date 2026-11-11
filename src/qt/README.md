@@ -25,14 +25,28 @@ cmake -S . -B build/qt-cpp -G "Visual Studio 17 2022" -A x64 `
   -DQt6_DIR="<Qt SDK prefix>/lib/cmake/Qt6" `
   -DTERMFORGE_CONPTY_BACKEND_DIR="<absolute fixed ConPTY pair directory>" `
   -DTERMFORGE_MSVC_RUNTIME_DIR="<absolute prepared CRT directory>"
-cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_terminal_modes_test qt_hidden_retention_test
+cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_eight_session_test qt_terminal_modes_test qt_hidden_retention_test
 build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe
-ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_terminal_modes(_retained)?|qt_hidden_retention)$' --output-on-failure
+ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_eight_session|qt_terminal_modes(_retained)?|qt_hidden_retention)$' --output-on-failure
 ```
 
-当前主线注册的 Qt CTest 包括上述五项与 `qt_terminal_modes_retained`（只缩宽的保留/投影契约）、`qt_unicode_render`（固定 Unicode 样本的独立接收 + 离屏绘制/fallback 记录）；IME 合成事件检查在 `qt_cpp_shell` 内。历史冻结包的 `qt_ime_input_test.exe` 不属于当前主线构建目标，不用于替代这组验证。旧六阶段 `--resize` 仍以显式诊断运行并保留失败，不注册进默认 CI。
+生成可核对的工程候选 staging（仍不是 R2 包，也不发布或执行产品）：
 
-固定 ConPTY/CRT 输入缺失或篡改时构建明确失败；实际工具集更新到固定 CRT 之外时须重新审查依赖。产品中的 shell 启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/`、`assets/fonts/`、十个固定 CRT DLL 及其原许可/NOTICE；每次构建重新校验并部署 CRT，不运行安装器、不修改 System32。最终目录用 `tools/msvc_runtime.py manifest` 记录全部文件。当前只是本地构建输出，Qt/第三方的完整分发审计及产品打包尚未完成。
+```powershell
+python -m tools.stage_qt_product stage `
+  --bin-dir build/qt-cpp/qt-bin/Release `
+  --dependencies local/qt-build-deps `
+  --dependency-summary local/qt-build-preparation.json `
+  --out local/qt-product-staging `
+  --summary local/qt-product-staging.json
+python -m tools.stage_qt_product verify --staging local/qt-product-staging
+```
+
+staging 只接收 [`packaging/qt-product/manifest.json`](../../packaging/qt-product/manifest.json) 冻结的文件集合，并要求依赖准备摘要、固定 Qt SDK 树哈希、ConPTY/CRT/字体许可标识和每个实际文件字节都匹配；缺文件、测试夹具、额外文件、来源不符或摘要与当前仓库清单不一致都会明确失败。Qt 部署组件清单 [`components.json`](../../third_party/qt/components.json) 会对照固定 SDK 的 SBOM 重新推导并核验，随后连同 22 份规范许可文本、`QT-THIRD-PARTY-NOTICES.txt` 和机器可读清单副本一起进入 staging。输出 `product-manifest.json` 记录 source commit/tree、构建参数、入口、逐文件 SHA-256、部署组件证据、许可文件与仍未闭合的分发项，不含本机绝对路径；同目录由 `tools/msvc_runtime.py manifest` 生成的 `runtime-manifest.json` 视为派生证据，不进入 staging。本地产物只写入忽略的 `local/`。
+
+当前主线注册的 Qt CTest 包括上述六项与 `qt_terminal_modes_retained`（只缩宽的保留/投影契约）、`qt_unicode_render`（固定 Unicode 样本的独立接收 + 离屏绘制/fallback 记录）、`qt_eight_session`（八会话目标隔离与生命周期）；IME 合成事件检查在 `qt_cpp_shell` 内。历史冻结包的 `qt_ime_input_test.exe` 不属于当前主线构建目标，不用于替代这组验证。旧六阶段 `--resize` 仍以显式诊断运行并保留失败，不注册进默认 CI。
+
+固定 ConPTY/CRT 输入缺失或篡改时构建明确失败；实际工具集更新到固定 CRT 之外时须重新审查依赖。产品中的 shell 启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/`、`assets/fonts/`、十个固定 CRT DLL 及其原许可/NOTICE；每次构建重新校验并部署 CRT，不运行安装器、不修改 System32。windeployqt 显式跳过系统 D3D/DXC 重分发文件；`icuuc.dll` 由 Windows 11 提供，构建目录中由 windeployqt 从 System32 复制的副本在 staging 核对一致后被排除，不随包分发。`tools/msvc_runtime.py manifest` 仍可记录构建目录的全部运行时文件。当前产物是工程候选 staging，不是 R2 包：Qt 部署组件来源/许可材料已整理（42 个组件、22 份许可文本，`materials_prepared_user_review_pending`），但对应源码/替换条件审查、干净 Windows 运行、单屏 96/144 DPI、完整 IME/TUI/reliability 及最终包验收仍未完成。
 
 ## 独立验证面
 
@@ -52,10 +66,14 @@ Parser/Screen 仅在 Qt 线程修改；ConPTY reader 向有界输出队列写入
 
 `qt_unicode_render` 补上同一正式路径此前未覆盖的“解析后实际绘制”合同：固定 ASCII/CJK/补充平面/结合标样本经公开 Qt 事件进入真实 child，独立 `ReadConsoleW` 接收端与 child 回显文件分别核对接收字节和呈现源；核心解析为既有 `Cell`/width/marks 后由 `TerminalWidget` 离屏抓图，并逐 cell 记录实际 glyph faces、missing glyph、advance 与无裁剪参考墨迹，同时用第二条空会话观察目标隔离。实测 CJK 使用宿主 fallback 字体、emoji 的 advance 超出两格但参考墨迹未越格；U+200D/U+FE0F 被 recovery parser 替换为 U+FFFD（既有缺口，只记录）。该检查只证明离屏局部链，`presented_done=null`，不是物理呈现、原生 IME 或字素/宽度策略的批准，详见[固定结果](../../experiments/shell/results/2026-11-04-qt-unicode-presentation/README.md)。
 
+`qt_eight_session` 用公开 `+`/标签切换/关闭入口创建 8 个真实固定 ConPTY child，每个 child 通过 `TF8_READY pid=… nonce=…` 打印身份并写独立 `<nonce>.bin` 接收文件；测试以硬编码字面预期核对 ASCII/CJK/补充平面/结合标文本与无修饰 Home 只到达活动目标，按非创建顺序切换，用固定 120 行受控后台输出核对后台排空/不夺输入，关闭非活动与活动标签后核对存活目标，替代页不继承已关闭会话的待发单元，父窗口关闭经 `aboutToQuit`/`on_all_exited` 与模型 `cleanup_verified/active_processes_after` 核对 6 个存活会话回收（外层 Job active=0）。只覆盖固定 8 会话/80×24/离屏合成事件；未定义或测试第 9 个会话行为，不是真实键盘、原生 IME、系统剪贴板或完整 R2 验收，详见[固定结果](../../experiments/shell/results/2026-11-08-qt-eight-session-isolation/README.md)。
+
 IME 实现通过 `QInputMethodEvent` 绘制未提交的 preedit，仅把 commit 的 UTF-8 交给会话；空 preedit 取消预览，失焦/隐藏清理预览，光标格通过 `ImCursorRectangle` 查询。预览按字体度量计算宽度，失败提交保留错误反馈。`qt_cpp_shell` 的合成事件检查覆盖 preedit 不进入终端正文、commit 到达、cancel 不写入。独立的[固定微软拼音记录](../../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/README.md)已有隔离 Windows VM 中 `ni'hao` 组合、取消及「你好」提交的限定证据；完整会话交叉、候选窗身份、其他 DPI 和实际呈现仍由 [#155](https://github.com/JavaZeroo/termforge/issues/155) / [#30](https://github.com/JavaZeroo/termforge/issues/30) 接续。
 
 [N11 候选框几何对照](../../docs/research/qt-ime-candidate-panel-reference-2026-11-01.md)在冻结源 `5fab30b` 与官方 WindTerm 2.7.0 上各采集三次：输出后两侧面板均保持旧位置，resize 后均在固定延后采集点前更新；原版字体放大未触发，字体阶段仍不可比。这份历史冻结包证据不等于当前主线已复验；亮度带几何不证明候选窗身份，原版三次收尾关闭均失败，也不能把几何片段记成整次原生验收通过。
 
-上述三项自动测试使用 Qt offscreen 平台和本项目独立取得的 OFL Roboto Mono 字体；没有物理键盘、实际不同 DPI、Windows 原生窗口上屏或用户呈现时间验收，`presented_done=null`。隔离 VM 原生观察保留自己的源码与环境身份。两会话隔离不代表八会话、完整 IME 交叉或工作区验收，测试耗时不是终端性能指标。
+上述自动测试使用 Qt offscreen 平台和本项目独立取得的 OFL Roboto Mono 字体；没有物理键盘、实际不同 DPI、Windows 原生窗口上屏或用户呈现时间验收，`presented_done=null`。隔离 VM 原生观察保留自己的源码与环境身份。八会话目标隔离已有本切片的限定证据（合成 Qt 事件/离屏/固定 120 行后台输出），但仍不代表真实物理键盘、原生 IME、系统剪贴板或完整 Copy→Paste→IME 与工作区验收；测试耗时不是终端性能指标。
 
 构建开关默认关闭只是从旧原型向新入口迁移的状态；正式路线已确认，旧构建保留为回归对照。Qt 文字与图形资源均独立取得，不使用 WindTerm 的专有字体、图标或主题。
+
+- 历史滚动条：真实 `QScrollBar` 拖动/页区/Home/End 通过 `HistoryViewport` 源锚点定位；见[结果](../../experiments/shell/results/2026-11-07-qt-history-scrollbar/README.md)。

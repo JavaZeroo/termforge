@@ -1,0 +1,87 @@
+{
+  "schema": "termforge-qt-find-validation-v1",
+  "baseline_main": "3b063e3c8f6c57cd01a0c5339c2145969b92aa86",
+  "source_commit": "ea6425a",
+  "source_hash_note": "Hashes are SHA-256 of committed LF Git blob content at ea6425a; this validation is a docs-only follow-up.",
+  "source_files_sha256": {
+    "src/qt/terminal_widget.hpp": "90ea07333992b7e7f380e17ae2fc8b647a74c4f0bbfdb511d7a5d17e0b7976fa",
+    "src/qt/find_test.cpp": "25fc9922d7e007fe8b65860079c59dd9d0de6e257e4f4b930ee205f41330b265",
+    "CMakeLists.txt": "93c6977a6978c061bdf675eac3bcf3b61ee3b775f9454676f86c0930bf3ab2d9",
+    ".github/workflows/qt-cpp.yml": "e1a0f4c0496a02bb2434e71befcaaf0a114808629950d10c59f3ff29fbbefded",
+    "src/qt/selection_fixture.hpp": "1f44bbed1358442febacca5f9ee89134508cd8bf75fb6e67a863f9351d07e222"
+  },
+  "environment": {
+    "os": "Windows 11 x64 build 26200",
+    "generator": "Visual Studio 17 2022",
+    "compiler": "MSVC 19.42.34433.0",
+    "qt": "6.10.3 offscreen",
+    "conpty": "1.25.260930003",
+    "crt": "14.51.36247.0"
+  },
+  "entries": {
+    "shortcut": "Ctrl+Shift+F actual Qt key event",
+    "query": "QLineEdit in current-session Find panel",
+    "navigation": "actual Previous/Next buttons and Return/Shift+Return",
+    "close": "Escape or Close restores terminal focus"
+  },
+  "checks": {
+    "shortcut_open": true,
+    "query_focus": true,
+    "literal_source_hit": true,
+    "history_reveal": true,
+    "painted_highlight_projection": true,
+    "previous_next": true,
+    "no_match": true,
+    "escape_focus": true,
+    "query_limit_4096": true,
+    "query_sent_to_child": false,
+    "system_clipboard_touched": false,
+    "offscreen_only": true,
+    "multiple_matches_order": true,
+    "exact_painted_width": true,
+    "wrap_previous_next": true,
+    "resize_source_migration": true,
+    "eviction_no_resurrection": true,
+    "epoch_invalidation": true,
+    "two_real_sessions": true,
+    "query_zero_leak_independent_input": true,
+    "escape_input_once_correct_child": true,
+    "empty_query": true,
+    "case_toggle": true,
+    "limit_ascii_4097_rejected": true,
+    "limit_chinese_bytes_rejected": true,
+    "limit_nfd_bytes_rejected": true,
+    "return_f3_shift_f3": true,
+    "real_1024_cap_via_child": true,
+    "cap_notice_and_finite_wrap": true,
+    "long_scan_searching_partial_hits": true,
+    "partial_navigation_no_unscanned_wrap": true,
+    "real_keyboard_limit_text": true,
+    "real_ime_commit_chinese_nfd": true,
+    "legal_and_over_limit_preserved": true
+  },
+  "tests": {
+    "qt_find": {
+      "passed": 1,
+      "failed": 0,
+      "seconds": 7.38
+    },
+    "qt_formal_path_regression": {
+      "passed": 10,
+      "failed": 0,
+      "seconds": 20.6
+    }
+  },
+  "evidence": {
+    "readme": "README.md",
+    "screenshot": "find-panel.png",
+    "fixture": "deterministic selection child (SEL_SOFT_ source hit; query not sent as terminal input)"
+  },
+  "limitations": [
+    "The 1024 cap and finite wrap are now exercised through the real Qt query entry and a bounded real child (26 rows x 40 non-overlapping AB hits = 1040); a 25 ms test-only pacing observes a >4096-byte scan in progress with partial hits, without changing product budgets.",
+    "Fixed ASCII literal sample and offscreen Qt; Chinese/NFD only claims literal scalar matching.",
+    "No word/line selection, scrollbar/page-key history, alternate-screen/TUI Find, physical presentation/DPI, full Unicode graphemes or performance thresholds.",
+    "This slice does not close #29/#30/R2; old B/CD, remote VM calibration/v2, A/B/C and old six-stage failures remain unchanged.",
+    "Windows/line capacity used here: 80 columns, 40 AB hits per row, 26 rows = 1040 hits; 52 ZZ rows (4160 bytes) plus 26 AB rows remain within the 100-row history + live rows. No injected document or product cap change."
+  ]
+}

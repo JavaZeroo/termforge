@@ -362,6 +362,7 @@ int main(int argc, char** argv) {
         count != sizeof(gate) || std::string_view(gate, count) != "GO\n" ||
         !IsProcessInJob(GetCurrentProcess(), nullptr, &owned) || !owned) return 2;
     QApplication app(argc, argv);
+    termforge::qt::TerminalWidget::setHistoryScrollbarEnabledForTest(false);
     QApplication::setQuitOnLastWindowClosed(false);
     try {
         QElapsedTimer lifecycle; lifecycle.start();

@@ -163,6 +163,7 @@ int main(int argc, char** argv) {
         std::cerr << "selection test requires its owned Job supervisor\n"; return 2;
     }
     QApplication app(argc, argv);
+    termforge::qt::TerminalWidget::setHistoryScrollbarEnabledForTest(false);
     QApplication::setQuitOnLastWindowClosed(false);
     try {
         QElapsedTimer lifecycle; lifecycle.start();
