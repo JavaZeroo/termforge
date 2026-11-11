@@ -1,0 +1,36 @@
+{
+  "schema": "termforge-font-resource-v1",
+  "name": "Roboto Mono",
+  "style": "Regular (static)",
+  "scope": "Workspace UI font for the C++/Qt entry, loaded privately per process. It is not the terminal grid font and not a claim of WindTerm font parity.",
+  "upstream": {
+    "repository": "https://github.com/googlefonts/RobotoMono",
+    "fixed_commit": "895ec691990d041dd727c7b5afa3ce56525d98e6",
+    "acquired": "2026-10-23",
+    "note": "The unmodified static Regular font and the same-commit license are kept as the upstream original bytes. No subsetting, conversion or renaming is applied."
+  },
+  "license": {
+    "spdx": "OFL-1.1",
+    "bundled_path": "OFL.txt",
+    "upstream_url": "https://raw.githubusercontent.com/googlefonts/RobotoMono/895ec691990d041dd727c7b5afa3ce56525d98e6/OFL.txt"
+  },
+  "files": {
+    "RobotoMono-Regular.ttf": {
+      "bytes": 125748,
+      "sha256": "af0bff7599c3df3831755c16e39b3c496df74b8c8d8a1161b14dc8461be17cb4",
+      "upstream_path": "fonts/ttf/RobotoMono-Regular.ttf"
+    },
+    "OFL.txt": {
+      "bytes": 4395,
+      "sha256": "50ab8dd54680d3473f649c9db86fece88434d097c7834475c1c72d2f8c429215",
+      "upstream_path": "OFL.txt"
+    }
+  },
+  "deployment": {
+    "source_directory": "assets/fonts",
+    "staged_directory": "assets/fonts",
+    "additional_documentation": "README.md",
+    "required": true,
+    "note": "Product staging requires the pinned font and license, verifies the build copy is byte-identical to this source tree, and also carries README.md as provenance documentation."
+  }
+}

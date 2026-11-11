@@ -1,0 +1,13 @@
+{
+  "pid": 2436,
+  "tid": 4460,
+  "sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "files_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "script_sha256": "dc3230a767184491dadb6e4b347e3b022a0bab95ad30030a864a172be0d98e32",
+  "fixture_sha256": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+  "template_sha256": "9cc60b12c92fc1189d9291f487a3a2eaa56dc6bab473ebf7666f6aab1e7f0722",
+  "scenario": "menu-wrap",
+  "profile": "synthetic-local-only",
+  "window_station": "TermForgeR1-2664",
+  "clipboard": "owned-window-station"
+}

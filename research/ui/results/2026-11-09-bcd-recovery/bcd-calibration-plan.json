@@ -1,0 +1,132 @@
+{
+  "schema": "termforge-resize-bcd-calibration-plan-v1",
+  "issue": 29,
+  "related_issue": 27,
+  "case_id": "calibrate",
+  "maximum_original_runs": 1,
+  "actual_original_runs": 0,
+  "phase_count": 4,
+  "windows": [
+    [
+      1228,
+      839
+    ],
+    [
+      988,
+      509
+    ],
+    [
+      988,
+      509
+    ],
+    [
+      1228,
+      839
+    ]
+  ],
+  "required_grids": [
+    [
+      80,
+      24
+    ],
+    [
+      60,
+      12
+    ],
+    [
+      60,
+      12
+    ],
+    [
+      80,
+      24
+    ]
+  ],
+  "resize_phases": [
+    1,
+    3
+  ],
+  "window_rect_format": "qt-qrect-inclusive-ltrb",
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "phases": [
+    {
+      "phase": 0,
+      "label": "initial-80x24",
+      "source_hex": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 1,
+      "label": "shrunk-60x12",
+      "source_hex": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 2,
+      "label": "shrunk-60x12-second",
+      "source_hex": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dsr_suffix_hex": "1b5b366e"
+    },
+    {
+      "phase": 3,
+      "label": "restored-80x24",
+      "source_hex": "",
+      "source_bytes": 0,
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dsr_suffix_hex": "1b5b366e"
+    }
+  ],
+  "reference_exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "reference_files_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "semantic_acceptance": false,
+  "action_phase": 2,
+  "pre_action_phases": [
+    0,
+    1
+  ],
+  "post_initial_terminal_input": "DSR at every phase; pre-write body snapshot is phase 1; exactly one declared CUP+RESIZED action after it is acknowledged",
+  "scope": "Fresh direct Telnet process per case; WindTerm protocol/display evidence only, not local-shell/native-grid proof; document, DSR and public marker rectangles remain separate",
+  "stop": "Wrong fixed geometry/grid, unarmed NAWS, stale snapshots, source/reply/phase mismatch, bounds or deadline failure; no retries",
+  "source_identity": {
+    "kind": "source-archive",
+    "manifest": "reference-source.json",
+    "manifest_sha256": "12ad742c2ead9d5cb8ac2fd84a03143f02a64212d923024cbbcbf47ea04301af"
+  },
+  "source_base_commit": "53cf24fc17c00924d19bbed18063e978d259954c",
+  "source_files_sha256": {
+    "research/ui/resize_bcd_calibration.py": "de1d6c0aba4a70727f08b86061fd51ec7a3e14559e41de13c7612ddd4fa3b9c2",
+    "research/ui/resize_bcd_calibration.js": "296f02e4f384f8a722e62b7f8b39f3f70918d5bbc4ba95d35ff8b1c82f946efe",
+    "research/ui/resize_state_reference.py": "628f9e3a5e3ecea6c34829810df2cdf0e93dc221bd3d19b31b3f5028759f07fd",
+    "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+    "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+    "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+    "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+    "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+    "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+    "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+  },
+  "python_sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+  "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "windows_version": "10.0.26300",
+  "execution_authorized": true,
+  "source": "C:\\TermForgeHarness\\Tools\\r27-reference-runtime-0\\reference",
+  "out": "C:\\TermForgeHarness\\Tools\\r29-bcd-calibration-src-0\\local\\bcd-calibration-0",
+  "rea": "C:\\TermForgeHarness\\Tools\\r27-reference-runtime-0\\node_modules\\.bin\\rea.cmd",
+  "rea_prepared_identity": {
+    "version": "6.7.0",
+    "shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+    "package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+    "entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738",
+    "node_executable": "C:\\TermForgeHarness\\Tools\\r27-reference-runtime-0\\node\\node.exe",
+    "node_executable_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9"
+  },
+  "launcher_source_sha256": "c38b97cfe7942bc772fba03b13e583fc7978783e46da6ac422a995b06884aac0"
+}

@@ -178,9 +178,14 @@ static QJsonObject navigation_keys(const QString& receiver, const QString& direc
         QTest::keyClick(&terminal, static_cast<Qt::Key>(key));
     // Modified navigation belongs to separate terminal/UI contracts. In
     // particular, Shift+Insert must not become an Insert byte sequence here.
+    // Shift+Insert now belongs to the implemented paste entry, not to the
+    // terminal key table. Disable the system reader so this local test never
+    // touches a personal clipboard; the shortcut must be accepted without
+    // becoming an Insert byte sequence.
+    terminal.setClipboardReaderForTest(nullptr);
     QKeyEvent paste_shortcut(QEvent::KeyPress, Qt::Key_Insert, Qt::ShiftModifier);
     paste_shortcut.setAccepted(false); QApplication::sendEvent(&terminal, &paste_shortcut);
-    require(!paste_shortcut.isAccepted(), "unimplemented paste shortcut became terminal input");
+    require(paste_shortcut.isAccepted(), "paste shortcut fell through as terminal input");
     // Navigation ends a pending UTF-16 unit without coupling the next character
     // to it. Verify at the independent receiver, not through the encoder itself.
     require(text_event(terminal, QString(QChar(0xd83d))), "navigation pending high was rejected");

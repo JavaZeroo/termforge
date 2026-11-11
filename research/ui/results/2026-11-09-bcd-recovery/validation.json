@@ -1,0 +1,109 @@
+{
+  "schema": "termforge-bcd-recovery-calibration-blocked-v1",
+  "status": "blocked-calibration-resize",
+  "issue": 29,
+  "related_issue": 27,
+  "old_failure": {
+    "id": "bcd-prewrite-initial-grid-80x25-v1",
+    "plan_sha256": "7718a4b8cb41e3b45f249e3a5479aa78803f2df3eae5e7cf7eed4e7efe03c260",
+    "attempted_sha256": "20fd56d7a9b72e43aee2ba364cb1a30c6149690a3deb97e7fcecc55d460e6523",
+    "changed": false,
+    "replayed": false
+  },
+  "host_identity": {
+    "ssh": "192.168.3.210:22",
+    "host": "8845hs",
+    "os": "Ubuntu 24.04.3 LTS",
+    "strict_host_key": true
+  },
+  "vm_identity": {
+    "libvirt_name": "termforge-r2-win11-20261028-7d7e678b",
+    "guest": "TF-R2-W11",
+    "windows": "10.0.26300",
+    "user": "TFTest",
+    "session_id": 1,
+    "windterm_exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0"
+  },
+  "display": {
+    "before": "1024x768",
+    "during": "1600x1200",
+    "after": "1024x768",
+    "restore_result": 0
+  },
+  "calibration": {
+    "plan_name": "windterm-bcd-calibration-v1",
+    "plan_sha256": "954636ee3f776fd9629a57a41ce8880e736640a3d76562a7913be369c54f1590",
+    "attempted_sha256": "20fd56d7a9b72e43aee2ba364cb1a30c6149690a3deb97e7fcecc55d460e6523",
+    "authorized_runs": 1,
+    "actual_runs": 1,
+    "originals_retries": 0,
+    "components_body_sent": false
+  },
+  "observed": {
+    "phase0": {
+      "label": "initial-80x24",
+      "window_rect_inclusive": [
+        160,
+        145,
+        1387,
+        983
+      ],
+      "window_size": [
+        1228,
+        839
+      ],
+      "frozen_grid": [
+        80,
+        24
+      ],
+      "capacity": 24,
+      "cursor_reply": [
+        1,
+        1
+      ],
+      "status": "observed"
+    },
+    "phase1": {
+      "label": "shrunk-60x12",
+      "requested_window": [
+        988,
+        509
+      ],
+      "requested_grid": [
+        60,
+        12
+      ],
+      "naws_history": [
+        [
+          80,
+          24
+        ],
+        [
+          60,
+          12
+        ]
+      ],
+      "status": "failed",
+      "peer_error": "Resize changed row count"
+    },
+    "result_error": "BCD peer did not complete cleanly",
+    "completed_phases": 1,
+    "v2_executed": false
+  },
+  "evidence_sha256": {
+    "bcd-calibration-plan.json": "954636ee3f776fd9629a57a41ce8880e736640a3d76562a7913be369c54f1590",
+    "bcd-calibration-result.json": "834e32b8ec9d6622d82b2108b6a9539a91a4c9ae24100c4f1e4baf40a3754ff7",
+    "peer.json": "8524236edfb2aeb0c6aff83780d884c4370aafb66bab39d1754f78047ebc92ed",
+    "cleanup.json": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d",
+    "profile-check.json": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1",
+    "run.json": "0ee1603288e036164605fe80d9e7574603783c38acf09313ff1b258be428ef1d"
+  },
+  "blocker": "Calibration reached the initial 80x24 grid but failed on the fixed 60x12 resize with peer error \"Resize changed row count\"; phase 1 did not complete. No B/C/D body was sent and no v2 formal retry was executed.",
+  "unblock_condition": "A new user-authorized calibration/diagnosis plan for the 60x12 resize (without replaying this plan or changing expected grids) must explain whether the error is WindTerm behavior, an REA/controller guard, or a sampling/DSR issue; only after 60x12 calibration succeeds may the original unused v2 retry be frozen and run.",
+  "not_conclusions": [
+    "No A/B/C route choice.",
+    "No B/C/D pre-write or post-write observation.",
+    "The 80x24 phase alone is not a complete calibration.",
+    "No change to old failure, plan, raw or product behavior."
+  ]
+}
