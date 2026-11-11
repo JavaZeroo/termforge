@@ -14,6 +14,7 @@
 #include <chrono>
 #include <cstdio>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <thread>
 
@@ -50,22 +51,36 @@ void await(Predicate predicate, const SessionModel& model, QElapsedTimer& lifecy
     }
     require(predicate(), message);
 }
-void click_dialog(const char* label, bool accept) {
+void click_dialog(const char* label, QMessageBox::ButtonRole role) {
+    auto polls = std::make_shared<int>(0);
     auto* timer = new QTimer(qApp);
     timer->setInterval(20);
-    QObject::connect(timer, &QTimer::timeout, [timer, label, accept] {
+    QObject::connect(timer, &QTimer::timeout, [timer, label, role, polls] {
+        ++*polls;
         auto* box = qobject_cast<QMessageBox*>(QApplication::activeModalWidget());
-        if (!box) return;
-        timer->stop();
-        for (auto* button : box->buttons()) {
-            if (button->text() == QString::fromLatin1(label)) {
-                std::cerr << "dialog_click=" << button->text().toStdString() << "\n";
-                QTest::mouseClick(button, Qt::LeftButton);
-                return;
+        if (!box) {
+            if (*polls >= 250) {
+                std::cerr << "dialog_helper: no QMessageBox after " << *polls << " polls\n";
+                timer->stop();
             }
+            return;
         }
-        std::cerr << "dialog_fallback_accept=" << accept << "\n";
-        if (accept) box->accept(); else box->reject();
+        timer->stop();
+        for (auto* button : box->buttons())
+            std::cerr << "dialog_helper: button='" << button->text().toStdString() << "' role="
+                      << static_cast<int>(box->buttonRole(button)) << "\n";
+        QAbstractButton* chosen = nullptr;
+        for (auto* button : box->buttons())
+            if (box->buttonRole(button) == role) { chosen = button; break; }
+        if (!chosen) {
+            std::cerr << "dialog_helper: no button for role=" << static_cast<int>(role) << "; rejecting\n";
+            box->reject();
+            return;
+        }
+        std::cerr << "dialog_helper: click '" << chosen->text().toStdString() << "' role="
+                  << static_cast<int>(role) << "\n";
+        QTest::mouseClick(chosen, Qt::LeftButton);
+        std::cerr << "dialog_helper: click sent\n";
     });
     timer->start();
 }
@@ -140,23 +155,25 @@ int main(int argc, char** argv) {
         await([&] { return read_file(child_input) == "TF-PASTE"; }, model, lifecycle, "single-line paste bytes differ");
         require(terminal.paste_notice() == QStringLiteral("Pasted"), "single-line paste did not report success");
 
-        // Shift+Insert multiline: dialog cancel sends nothing; confirm sends CR once.
+        // Shift+Insert multiline: dialog cancel sends nothing; confirm through the
+        // real dialog sends normalized CR once (no auto-confirm shortcut).
         const std::string baseline = read_file(child_input);
         fake->value = {ClipboardRead::Status::ok, u"A\r\nB", {}};
-        click_dialog("Cancel", false);
+        click_dialog("Cancel", QMessageBox::RejectRole);
         QTest::keyClick(&terminal, Qt::Key_Insert, Qt::ShiftModifier);
         await([&] { return terminal.paste_notice() == QStringLiteral("Paste cancelled"); },
               model, lifecycle, "cancel dialog did not report cancellation");
         require(read_file(child_input) == baseline, "cancel sent child bytes");
         // Offscreen modal teardown does not reliably return focus; use the
-        // product paste trigger for the confirmation branch while the hosted
-        // Windows QPA run covers the public key/menu entries.
-        terminal.setPasteDialogAutoConfirmForTest(true);
+        // product paste trigger as the entry, but confirm through the real
+        // QMessageBox exactly like the hosted Windows QPA recovery run.
+        fake->value = {ClipboardRead::Status::ok, u"A\r\nB", {}};
+        click_dialog("Paste", QMessageBox::AcceptRole);
         terminal.initiate_paste_for_test();
         await([&] { return read_file(child_input) == baseline + "A\rB"; },
               model, lifecycle, "confirmed multiline paste bytes differ");
         require(read_file(child_input) == baseline + "A\rB", "multiline paste was duplicated or not CR-normalized");
-        terminal.setPasteDialogAutoConfirmForTest(std::nullopt);
+        require(terminal.paste_notice() == QStringLiteral("Pasted"), "confirmed dialog did not report success");
 
         // Actual Paste context-menu action, Unicode + NFD, immediate single line.
         fake->value = {ClipboardRead::Status::ok, u"中文 e\u0301", {}};

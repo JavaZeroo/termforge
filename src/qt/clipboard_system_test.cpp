@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 
 using termforge::qt::ClipboardWrite;
@@ -163,20 +164,52 @@ void menu_paste(TerminalWidget& terminal) {
     QContextMenuEvent event(QContextMenuEvent::Mouse, QPoint(20, 20), terminal.mapToGlobal(QPoint(20, 20)));
     QApplication::sendEvent(&terminal, &event);
 }
-void click_paste_dialog(const char* label) {
+// Hosted dialog driver: select the button by its QMessageBox role first (the
+// product assigns explicit roles), falling back to the label only as a
+// diagnostic. Every decision is logged so a rejected dialog can be attributed
+// to the fixture instead of being silently treated as a user cancellation.
+void click_paste_dialog(const char* label, QMessageBox::ButtonRole role) {
+    auto polls = std::make_shared<int>(0);
     auto* timer = new QTimer(qApp);
     timer->setInterval(20);
-    QObject::connect(timer, &QTimer::timeout, [timer, label] {
+    QObject::connect(timer, &QTimer::timeout, [timer, label, role, polls] {
+        ++*polls;
         auto* box = qobject_cast<QMessageBox*>(QApplication::activeModalWidget());
-        if (!box) return;
-        timer->stop();
-        for (auto* button : box->buttons()) {
-            if (button->text() == QString::fromLatin1(label)) {
-                QTest::mouseClick(button, Qt::LeftButton);
-                return;
+        const char* found = "activeModal";
+        if (!box) {
+            for (auto* widget : QApplication::topLevelWidgets()) {
+                if (auto* candidate = qobject_cast<QMessageBox*>(widget)) { box = candidate; break; }
             }
+            found = "topLevelScan";
         }
-        box->reject();
+        if (!box) {
+            if (*polls >= 250) {
+                std::fprintf(stderr, "dialog_helper: no QMessageBox after %d polls\n", *polls);
+                timer->stop();
+            }
+            return;
+        }
+        timer->stop();
+        std::fprintf(stderr, "dialog_helper: box=%s buttons=%d\n", found, static_cast<int>(box->buttons().size()));
+        for (auto* button : box->buttons())
+            std::fprintf(stderr, "dialog_helper: button='%s' role=%d\n",
+                         button->text().toUtf8().constData(), static_cast<int>(box->buttonRole(button)));
+        QAbstractButton* chosen = nullptr;
+        const char* matched = "";
+        for (auto* button : box->buttons())
+            if (box->buttonRole(button) == role) { chosen = button; matched = "role"; break; }
+        if (!chosen)
+            for (auto* button : box->buttons())
+                if (button->text() == QString::fromLatin1(label)) { chosen = button; matched = "text"; break; }
+        if (!chosen) {
+            std::fprintf(stderr, "dialog_helper: no match label='%s' role=%d; rejecting\n", label,
+                         static_cast<int>(role));
+            box->reject();
+            return;
+        }
+        std::fprintf(stderr, "dialog_helper: click '%s' via %s\n", chosen->text().toUtf8().constData(), matched);
+        QTest::mouseClick(chosen, Qt::LeftButton);
+        std::fprintf(stderr, "dialog_helper: click sent\n");
     });
     timer->start();
 }
@@ -231,10 +264,26 @@ void hosted_windows_paste() {
     wait_file("PST-中文 e\xcc\x81PST-MENUPST-INSERT");
     wait_notice(QStringLiteral("Pasted"));
 
-    // Multiline dialog cancel/confirm is covered by the local fake-reader test;
-    // this hosted real-CF run keeps only the three public single-line entries
-    // and the real owner-held failure/release path.
+    // Multiline cancel/confirm runs only in the opt-in single hosted recovery
+    // workflow (TERMFORGE_QT_HOSTED_MULTILINE=1); the default CI lane keeps the
+    // historical single-line scope and the local fake-reader coverage.
     const std::string baseline = read_input_file(input_path);
+    const bool multiline = qgetenv("TERMFORGE_QT_HOSTED_MULTILINE") == "1";
+    if (multiline) {
+        // Real Ctrl+Shift+V entry; the real dialog must reject and send nothing.
+        write_cf(hwnd, u"L1\r\nL2");
+        click_paste_dialog("Cancel", QMessageBox::RejectRole);
+        QTest::keyClick(&terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
+        wait_notice(QStringLiteral("Paste cancelled"));
+        require(read_input_file(input_path) == baseline, "cancelled multiline paste sent bytes");
+        // Real Paste menu entry; the real dialog accept must transfer CRLF
+        // normalized to CR exactly once into the independent child.
+        write_cf(hwnd, u"L1\r\nL2");
+        click_paste_dialog("Paste", QMessageBox::AcceptRole);
+        menu_paste(terminal);
+        wait_file(baseline + "L1\rL2");
+        wait_notice(QStringLiteral("Pasted"));
+    }
 
     // A real owner-held clipboard fails cleanly; after release an explicit
     // second action succeeds with the intended CF text.
@@ -256,14 +305,16 @@ void hosted_windows_paste() {
     require(holder.waitForFinished(5000), "paste clipboard holder did not release");
     write_cf(hwnd, u"PST-OWN");
     QTest::keyClick(&terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
-    wait_file(baseline + "PST-OWN");
+    wait_file(baseline + (multiline ? "L1\rL2" : "") + "PST-OWN");
 
     require(model.send(std::string(1, '\x03')), "paste child quit rejected");
     await([&] { return model.finished(); }, model, lifecycle, "paste child did not exit");
     require(model.exit_code() == 37 && model.cleanup_verified(), "paste child cleanup was not verified");
     std::cout << "{\"schema\":\"termforge-qt-clipboard-paste-v1\",\"status\":\"passed\","
                  "\"keyboard_cf\":true,\"menu_cf\":true,\"shift_insert_cf\":true,"
-                 "\"multiline_cancel\":false,\"multiline_confirm\":false,\"multiline_scope\":\"local-fake-reader-only\","
+                 "\"multiline_cancel\":" << (multiline ? "true" : "false")
+              << ",\"multiline_confirm\":" << (multiline ? "true" : "false")
+              << ",\"multiline_scope\":\"" << (multiline ? "hosted-real-cf" : "local-fake-reader-only") << "\","
                  "\"occupied_failure\":true,\"release_success\":true,"
                  "\"qpa\":\"windows\",\"product_default_owner_verified\":true}\n";
 #else
