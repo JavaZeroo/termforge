@@ -845,6 +845,20 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_selection_migration_test>")
     set_tests_properties(qt_selection_migration PROPERTIES TIMEOUT 40
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_executable(qt_paste_test src/qt/paste_test.cpp)
+    set_target_properties(qt_paste_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-paste-bin/$<CONFIG>")
+    termforge_qt_entry(qt_paste_test)
+    target_link_libraries(qt_paste_test PRIVATE Qt6::Test)
+    add_custom_command(TARGET qt_paste_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+        "$<TARGET_FILE_DIR:qt_paste_test>/platforms/"
+      VERBATIM)
+    add_test(NAME qt_paste COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_paste_test>")
+    set_tests_properties(qt_paste PROPERTIES TIMEOUT 45
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     add_executable(qt_find_test src/qt/find_test.cpp)
     set_target_properties(qt_find_test PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-find-bin/$<CONFIG>")
