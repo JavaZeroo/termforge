@@ -34,17 +34,18 @@
   "local": {
     "qt_paste": {
       "passed": true,
-      "seconds": 1.6
+      "seconds": 1.8,
+      "multiline_confirm_fixture": "real QMessageBox; role-selected Paste button mouse click; no auto-confirm"
     },
     "qt_formal_path_regression": {
-      "passed": 10,
+      "passed": 14,
       "failed": 0,
-      "seconds": 14.87
+      "seconds": 35.0
     },
     "checks": [
       "keyboard single-line once",
       "Shift+Insert multiline cancel sends zero",
-      "confirm sends normalized CR once",
+      "real-dialog confirm sends normalized CR once",
       "actual menu Unicode + NFD",
       "busy rejects second entry",
       "closed target rejected",
@@ -55,6 +56,13 @@
       "second session independent"
     ],
     "child": "real child records received bytes to a file; never executes the pasted text"
+  },
+  "root_cause": {
+    "status": "proven offline",
+    "fact": "QMessageBox::exec() returns the clicked standard button value (measured: accept=2, escape=3), not QDialog::DialogCode; the product compared it against QDialog::Accepted(1), so a real accept was always recorded as rejected and no transfer started.",
+    "repro": "local/dialog_probe.cpp probe plus strengthened qt_paste, offscreen, no clipboard access",
+    "fix": "classify the user choice via box.clickedButton() buttonRole() == QMessageBox::AcceptRole",
+    "hosted_closure": "pending the single authorized opt-in run"
   },
   "hosted_windows_qpa": {
     "run_id": "42183487961",
@@ -70,8 +78,21 @@
     "release_success": true,
     "multiline_confirm": false,
     "multiline_cancel": false,
-    "multiline_scope": "historical hosted failure; local-fake-reader-only success",
-    "description": "Real CF content written by the test, read by the default product reader through the real Windows QPA widget; each public entry appended exactly the expected child bytes. A real holder process caused an explicit failure; after release a second explicit action succeeded. Multiline dialog branch was not included in this hosted run and is covered only by the local fake-reader test.",
+    "multiline_scope": "historical hosted failure; attempt-3 recovery in progress (see attempt-ledger.md)",
+    "multiline_recovery_attempt_3": {
+      "authorized_quota": 1,
+      "prior_attempts_preserved": 2,
+      "workflow": ".github/workflows/qt-hosted-paste-multiline.yml",
+      "trigger": "push to agent/qt-paste/record-hidden-retention-2e7373117ea0 (paths-filtered)",
+      "gate": "TERMFORGE_QT_HOSTED_MULTILINE=1 in the test binary only",
+      "entries": "cancel via Ctrl+Shift+V, confirm via real Paste menu; default product CF reader",
+      "fixture": "role-based dialog selection with full stderr logging; no auto-confirm",
+      "product_trace": "temporary PASTE_FINISH/PASTE_PREP/PASTE_CONFIRM/PASTE_TRANSFER stderr lines, removed after the run",
+      "run_id": null,
+      "job_id": null,
+      "status": "pending"
+    },
+    "description": "Real CF content written by the test, read by the default product reader through the real Windows QPA widget; each public entry appended exactly the expected child bytes. A real holder process caused an explicit failure; after release a second explicit action succeeded. Multiline dialog branch runs only in the opt-in recovery workflow and stays a historical failure until attempt 3 is recorded.",
     "multiline_failure": {
       "first_head": "eecf21f",
       "first_run_id": "42181178347",
