@@ -92,6 +92,11 @@ class TerminalWidget final : public QWidget {
     uint64_t find_generation_ = 0;
     int find_interval_ms_ = 0;
     QTimer find_timer_;
+    QTimer selection_autoscroll_timer_;
+    bool selecting_ = false;
+    QPointF selection_pointer_;
+    int selection_autoscroll_direction_ = 0;
+    int selection_autoscroll_ticks_ = 0;
     std::unique_ptr<ClipboardWriter> clipboard_;
     std::unique_ptr<ClipboardReader> clipboard_reader_;
     ClipboardWrite last_copy_;
@@ -122,6 +127,8 @@ class TerminalWidget final : public QWidget {
         cell_height_ = (std::max)(1, qCeil(metrics.height()) + 2);
     }
     void synchronize_grid() {
+        stop_selection_autoscroll();
+        selecting_ = false;
         painted_page_.reset();
         selection_anchor_.reset();
         const int available = width() - margin * 2 - (scrollbar_reserved_ ? scrollbar_extent_ : 0);
@@ -181,13 +188,19 @@ class TerminalWidget final : public QWidget {
     }
     void closeEvent(QCloseEvent* event) override {
         keyboard_.reset();
+        stop_selection_autoscroll();
+        selecting_ = false;
         selection_anchor_.reset();
         model_.close();
         QWidget::closeEvent(event);
     }
     bool event(QEvent* event) override {
         if (event->type() == QEvent::FocusOut || event->type() == QEvent::Hide ||
-            event->type() == QEvent::UngrabMouse) selection_anchor_.reset();
+            event->type() == QEvent::UngrabMouse) {
+            stop_selection_autoscroll();
+            selecting_ = false;
+            selection_anchor_.reset();
+        }
         if (event->type() == QEvent::FocusOut || event->type() == QEvent::Hide) {
             keyboard_.reset();
             // Losing focus ends any composition: the input context drops it, and
@@ -422,13 +435,48 @@ class TerminalWidget final : public QWidget {
         else if (chosen == paste) initiate_paste();
         event->accept();
     }
+    void stop_selection_autoscroll() {
+        selection_autoscroll_timer_.stop();
+        selection_autoscroll_direction_ = 0;
+    }
+    void update_selection_autoscroll(QPointF point) {
+        selection_pointer_ = point;
+        const int top = margin;
+        const int bottom = margin + model_.screen().height() * cell_height_;
+        const int direction = point.y() < top ? -1 : point.y() >= bottom ? 1 : 0;
+        if (!direction) { stop_selection_autoscroll(); return; }
+        selection_autoscroll_direction_ = direction;
+        if (!selection_autoscroll_timer_.isActive()) {
+            selection_autoscroll_ticks_ = 0;
+            selection_autoscroll_timer_.start(40);
+        }
+    }
+    void selection_autoscroll_tick() {
+        if (!selecting_ || !selection_anchor_ || !selection_autoscroll_direction_) { stop_selection_autoscroll(); return; }
+        const auto& screen = model_.screen();
+        const auto before = viewport_.reconcile(screen).top;
+        viewport_.scroll_by(screen, selection_autoscroll_direction_);
+        const auto after = viewport_.reconcile(screen).top;
+        if (after == before) { stop_selection_autoscroll(); return; }
+        ++selection_autoscroll_ticks_;
+        refresh_painted_page(screen);
+        update_scrollbar();
+        const int visible_bottom = margin + static_cast<int>(screen.height()) * cell_height_;
+        const QPointF edge(selection_pointer_.x(),
+            selection_autoscroll_direction_ < 0 ? margin : visible_bottom - 1);
+        extend_selection(edge);
+        update();
+    }
     void mousePressEvent(QMouseEvent* event) override {
         if (event->button() != Qt::LeftButton || event->modifiers() != Qt::NoModifier || !preedit_.isEmpty()) {
             QWidget::mousePressEvent(event); return;
         }
         setFocus(Qt::MouseFocusReason);
+        stop_selection_autoscroll();
+        selecting_ = false;
         selection_.clear();
         selection_anchor_ = selection_position(event->position(), false);
+        selecting_ = selection_anchor_.has_value();
         update();
         event->setAccepted(selection_anchor_.has_value());
     }
@@ -437,6 +485,7 @@ class TerminalWidget final : public QWidget {
             QWidget::mouseMoveEvent(event); return;
         }
         extend_selection(event->position());
+        update_selection_autoscroll(event->position());
         event->accept();
     }
     void mouseReleaseEvent(QMouseEvent* event) override {
@@ -444,6 +493,8 @@ class TerminalWidget final : public QWidget {
             QWidget::mouseReleaseEvent(event); return;
         }
         extend_selection(event->position());
+        stop_selection_autoscroll();
+        selecting_ = false;
         selection_anchor_.reset();
         event->accept();
     }
@@ -1016,6 +1067,7 @@ public:
             else viewport_.scroll_to(screen, static_cast<size_t>((std::max)(0, value)));
             update();
         });
+        connect(&selection_autoscroll_timer_, &QTimer::timeout, this, [this] { selection_autoscroll_tick(); });
         build_find_panel();
         model_.on_changed = [this] { refresh_session(); };
     }
@@ -1024,7 +1076,12 @@ public:
         if (paste_read_thread_.joinable()) paste_read_thread_.join();
     }
     void refresh_session() {
-        if (!model_.running()) keyboard_.reset();
+        if (!model_.running()) {
+            keyboard_.reset();
+            stop_selection_autoscroll();
+            selecting_ = false;
+            selection_anchor_.reset();
+        }
         const TextDocument document(model_.screen());
         selection_.reconcile(document);
         if (selection_anchor_ && !document.valid(*selection_anchor_)) selection_anchor_.reset();
@@ -1096,6 +1153,13 @@ public:
     ClipboardWrite last_copy() const { return last_copy_; }
     QString copy_notice() const { return copy_notice_; }
     bool has_selection() const { return selection_.range().has_value(); }
+    std::optional<TextRange> selection_range_for_test() const { return selection_.range(); }
+    bool selection_autoscroll_active_for_test() const { return selection_autoscroll_timer_.isActive(); }
+    int selection_autoscroll_direction_for_test() const { return selection_autoscroll_direction_; }
+    int selection_autoscroll_ticks_for_test() const { return selection_autoscroll_ticks_; }
+    void set_selection_autoscroll_interval_for_test(int milliseconds) {
+        selection_autoscroll_timer_.setInterval((std::max)(1, milliseconds));
+    }
     // Read-only projection of the current selection onto the last painted page;
     // the test checks the highlighted source columns without copying cells.
     std::vector<ViewCellSpan> selection_spans() {
