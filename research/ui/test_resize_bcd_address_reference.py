@@ -4,14 +4,17 @@ import json
 import unittest
 
 from research.ui import resize_bcd_address_reference as probe
+from research.ui import resize_bcd_calibration as calibration
 from research.ui import export_resize_bcd_address_reference as exporter
 
 
 class BcdAddressContractTests(unittest.TestCase):
     def test_fixed_geometry_and_four_phases(self):
-        self.assertEqual(probe.WINDOWS, ((1228, 869), (988, 509), (988, 509), (1228, 869)))
+        self.assertEqual(probe.WINDOWS, ((1228, 839), (988, 509), (988, 509), (1228, 839)))
         self.assertEqual(probe.GRIDS, ((80, 24), (60, 12), (60, 12), (80, 24)))
         self.assertEqual(probe.RESIZE_PHASES, (1, 3))
+        self.assertEqual((probe.WINDOWS, probe.GRIDS, probe.RESIZE_PHASES),
+                         (calibration.WINDOWS, calibration.GRIDS, calibration.RESIZE_PHASES))
         records = probe.phase_records("shrink-bcd-cup")
         self.assertEqual([r["label"] for r in records],
                          ["initial-bcd-body", "after-shrink-before-write",
@@ -49,6 +52,9 @@ class BcdAddressContractTests(unittest.TestCase):
         source = (probe.ROOT / probe.CONTROLLER).read_text(encoding="utf-8")
         self.assertEqual(source.count(probe.CONTROLLER_ANCHOR), 1)
         fragment = probe.probe_fragment("shrink-bcd-cup")
+        windows = json.dumps(probe.WINDOWS, separators=(",", ":"))
+        grids = json.dumps(probe.GRIDS, separators=(",", ":"))
+        self.assertIn(f"const windows={windows},grids={grids};", fragment)
         self.assertIn(json.dumps("shrink-bcd-cup"), fragment)
         self.assertNotIn(probe.CONTROLLER_ANCHOR, fragment)
 

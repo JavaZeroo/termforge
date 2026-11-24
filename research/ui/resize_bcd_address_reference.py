@@ -28,7 +28,7 @@ RESET = b"\x1b[?6l\x1b[?7h\x1b[r\x1b[0m\x1b[2J"
 
 BODY = (RESET + b"\x1b[8;80HB" + b"\x1b[10;80HC" + b"\x1b[11;1HD")
 CASES = {"shrink-bcd-cup": b"\x1b[12;1HRESIZED"}
-WINDOWS = ((1228, 869), (988, 509), (988, 509), (1228, 869))
+WINDOWS = ((1228, 839), (988, 509), (988, 509), (1228, 839))
 GRIDS = ((80, 24), (60, 12), (60, 12), (80, 24))
 RESIZE_PHASES = (1, 3)
 # The shared controller writes this file name and message kinds; both probes use
