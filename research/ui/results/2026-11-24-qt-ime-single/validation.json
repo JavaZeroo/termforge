@@ -1,0 +1,284 @@
+{
+  "schema": "termforge-r30-native-ime-single-validation-v1",
+  "issue": 155,
+  "parent": 30,
+  "status": "input_bytes_observed_observer_finalize_failed",
+  "build": {
+    "run_id": 45400268011,
+    "job_id": 138466702802,
+    "source": "65b840aa17ae3de7bfe0b333bb9800fb6448b059",
+    "tree": "e8eb416b112308370d3679a29d14e56c8afdefd9",
+    "executable_sha256": {
+      "qt_native_ime_single_test.exe": "fc8bcfb91a8458192d4c7eb6baffc2147771dfa8ca4fe220f530d0525df5fdb9",
+      "shell_input_client.exe": "20c2ff389bd5d6cd3abf3743afa1db2c1629d718d4b60990f65ab7e7375385ec"
+    },
+    "runner": "20261116.315.1"
+  },
+  "observer_controller_sha256": "8a92e80c7740d18ebb7bebc34c72f3c2d6b443b6c8a5ec9daf29c0b1bdd81dda",
+  "windows_version": "10.0.26300.0",
+  "setup": {
+    "prelaunch_error": "PowerShell Add-Type missing System.Drawing reference; observer not started",
+    "prelaunch_native_runs": 0,
+    "pinyin_sha256": "86f136c8eb175bd3a4153584fae6ab64e6b35d14e25ceec380d511633aac811a",
+    "pinyin_version": "10.0.26100.9818 (WinBuild.160101.0800)",
+    "fixed_profile_registered": true,
+    "display": [
+      1024,
+      768
+    ]
+  },
+  "actual_native_runs": 1,
+  "received_hex": "e4bda0e5a5bd",
+  "received_bytes": 6,
+  "ime_log": {
+    "events": {
+      "preedit": 10,
+      "cancel": 2,
+      "commit": 1
+    },
+    "commits": [
+      "e4bda0e5a5bd"
+    ]
+  },
+  "controller": {
+    "status": "failed",
+    "source": "65b840aa17ae3de7bfe0b333bb9800fb6448b059",
+    "stage": "receive-and-exit",
+    "completed": false,
+    "error": "Timed out at receiver exit evidence",
+    "receiver": null,
+    "actions": [
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 78,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 73,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 72,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 65,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 79,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 27,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 78,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 73,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 72,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 65,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 79,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 32,
+        "requested": 2
+      }
+    ],
+    "outer_job": {
+      "status": "failed",
+      "exit_code": 1,
+      "cleanup_verified": true,
+      "root_reaped": true,
+      "active_after": 0
+    },
+    "inner_cleanup": {
+      "CleanupVerified": true,
+      "Passed": false,
+      "JobAfterActive": 0,
+      "RootReaped": true,
+      "TimedOut": null
+    },
+    "initial": {
+      "foreground": true,
+      "terminal_focus": true,
+      "cursor_in_window": {
+        "height": 22,
+        "width": 9,
+        "x": 10,
+        "y": 55
+      },
+      "columns": 84,
+      "rows": 21,
+      "resize_pending": false,
+      "dpr": 1,
+      "window_width": 780,
+      "window_height": 540,
+      "thread_profile": {
+        "get_active_profile_hresult": 0,
+        "thread_hkl": "8040804",
+        "focused_context_available": true,
+        "ime_open": true,
+        "conversion_query_succeeded": true,
+        "conversion_mode": 1025,
+        "profile": {
+          "type": 1,
+          "language_id": 2052,
+          "clsid": "{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}",
+          "guid": "{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+          "flags": 3
+        }
+      }
+    },
+    "composing": {
+      "foreground": true,
+      "terminal_focus": true,
+      "cursor_in_window": {
+        "height": 22,
+        "width": 9,
+        "x": 10,
+        "y": 55
+      },
+      "columns": 84,
+      "rows": 21,
+      "resize_pending": false,
+      "dpr": 1,
+      "window_width": 780,
+      "window_height": 540,
+      "thread_profile": {
+        "get_active_profile_hresult": 0,
+        "thread_hkl": "8040804",
+        "focused_context_available": true,
+        "ime_open": true,
+        "conversion_query_succeeded": true,
+        "conversion_mode": 1025,
+        "profile": {
+          "type": 1,
+          "language_id": 2052,
+          "clsid": "{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}",
+          "guid": "{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+          "flags": 3
+        }
+      }
+    },
+    "resized": {
+      "foreground": true,
+      "terminal_focus": true,
+      "cursor_in_window": {
+        "height": 22,
+        "width": 9,
+        "x": 10,
+        "y": 55
+      },
+      "columns": 94,
+      "rows": 23,
+      "resize_pending": false,
+      "dpr": 1,
+      "window_width": 876,
+      "window_height": 588,
+      "thread_profile": {
+        "get_active_profile_hresult": 0,
+        "thread_hkl": "8040804",
+        "focused_context_available": true,
+        "ime_open": true,
+        "conversion_query_succeeded": true,
+        "conversion_mode": 1025,
+        "profile": {
+          "type": 1,
+          "language_id": 2052,
+          "clsid": "{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}",
+          "guid": "{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+          "flags": 3
+        }
+      }
+    },
+    "candidates_before": [
+      {
+        "class": "Windows.UI.Core.CoreWindow",
+        "owner_root_matches": false,
+        "rect_physical": [
+          0,
+          0,
+          1024,
+          768
+        ]
+      }
+    ],
+    "candidates_during": [
+      {
+        "class": "Windows.UI.Core.CoreWindow",
+        "owner_root_matches": false,
+        "rect_physical": [
+          0,
+          0,
+          1024,
+          768
+        ]
+      }
+    ],
+    "candidates_after_resize": [
+      {
+        "class": "Windows.UI.Core.CoreWindow",
+        "owner_root_matches": false,
+        "rect_physical": [
+          0,
+          0,
+          1024,
+          768
+        ]
+      }
+    ],
+    "candidates_after_cancel": [
+      {
+        "class": "Windows.UI.Core.CoreWindow",
+        "owner_root_matches": false,
+        "rect_physical": [
+          0,
+          0,
+          1024,
+          768
+        ]
+      }
+    ]
+  },
+  "observer_final_file": false,
+  "candidate_identity_verified": null,
+  "physical_presentation_verified": null,
+  "alternate_dpi_verified": null
+}

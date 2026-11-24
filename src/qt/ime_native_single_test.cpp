@@ -85,7 +85,8 @@ int main(int argc, char** argv) {
         bool ready = false;
         bool finishing = false;
         int next_capture = 1;
-        window.on_all_exited = [&](int) { app.exit(1); };
+        // The production tab may announce its exit before the next observer
+        // poll. Let that poll verify the receiver file before ending the app.
         QObject::connect(&timer, &QTimer::timeout, &app, [&] {
             try {
                 require(lifecycle.elapsed() < 45000, "Native IME observation deadline expired");
