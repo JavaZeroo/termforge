@@ -13,6 +13,8 @@ from research.ui import mode_state_reference as base
 CASE_ID = "alternate-ris"
 PHASE_COUNT = 10
 MARKERS = ("HIST", "MAIN", "ALT", "AFTER")
+RIS_PHASES = (2, 9)
+FLOW_CONTROL = b"\x13\x11"
 SOURCE_FILES = ("research/ui/alternate_ris_reference.py", *base.SOURCE_FILES)
 EXE_SHA256, MANIFEST_SHA256 = base.EXE_SHA256, base.MANIFEST_SHA256
 require = base.require
@@ -44,6 +46,20 @@ def substitute(source, substitutions):
     return source
 
 
+def observed_reply(data, phase):
+    # The reset prefix is part of the observed wire response. It is only
+    # allowed before the DSR in the two phases that actually send RIS.
+    if phase in RIS_PHASES and data.startswith(FLOW_CONTROL[:1]):
+        if data == FLOW_CONTROL[:1]:
+            return None
+        require(data.startswith(FLOW_CONTROL), "Unexpected RIS flow-control prefix")
+        reply = base.reply_observation(data[len(FLOW_CONTROL):])
+        if reply is not None:
+            reply.update(response_hex=data.hex(), flow_control_hex=FLOW_CONTROL.hex())
+        return reply
+    return base.reply_observation(data)
+
+
 def javascript_source():
     source = (ROOT / "research/ui/mode_state_reference.js").read_text(encoding="utf-8")
     return substitute(source, {
@@ -52,6 +68,8 @@ def javascript_source():
         "['main-on-alt-off','main-off-alt-on']": json.dumps([CASE_ID]),
         "['MP','AS','AI','AO','AP','PS','PI','PO','NW','SB','R01','R02','R03','R04','R05','R06','R07','R08']":
             json.dumps(list(MARKERS)),
+        "response_hex:record.response_hex,frozen_grid":
+            "response_hex:record.response_hex,flow_control_hex:record.flow_control_hex,frozen_grid",
     })
 
 
@@ -67,21 +85,26 @@ def launcher_source(case):
 
 
 _runtime = {"__file__": __file__, "__name__": "termforge_alternate_ris_runtime"}
-source = Path(base.__file__).read_text(encoding="utf-8")
+source = substitute(Path(base.__file__).read_text(encoding="utf-8"), {
+    "observed = reply_observation(raw)": "observed = observed_reply(raw, index)",
+    "        reply = reply_observation(raw)": '        reply = observed_reply(raw, row["phase"])',
+    "reply_observation=reply_observation)": "observed_reply=observed_reply)",
+})
 exec(compile(source, str(Path(base.__file__)), "exec"), _runtime)
 _runtime.update(CASES=(CASE_ID,), PHASE_COUNT=PHASE_COUNT, SOURCE_FILES=SOURCE_FILES,
-                phases=phases, launcher_source=launcher_source)
+                phases=phases, launcher_source=launcher_source, observed_reply=observed_reply)
 _base_contract = _runtime["fixed_contract"]
 
 
 def fixed_contract(case):
     contract = _base_contract(case)
-    contract.update(schema="termforge-alternate-ris-plan-v1",
+    contract.update(schema="termforge-alternate-ris-plan-v2",
                     generated_driver_sha256=hashlib.sha256(javascript_source().encode()).hexdigest(),
                     interpretation_notes=[
                         "Seed primary history and distinct non-default margins in both buffers, then send RIS in the alternate buffer.",
                         "Observe unmodified DSR and buffer flags before any addressing. Compare saturated CUP before and after explicit origin enable.",
                         "Observe explicit return, reentry, and a primary RIS control in the same session.",
+                        "Only RIS phases may carry the observed XOFF/XON pair before DSR. Retain the complete response bytes.",
                         "The document may include both buffers. Document markers and flags remain separate from a full active grid or style audit.",
                     ])
     return contract

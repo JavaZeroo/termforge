@@ -30,6 +30,8 @@ def expected_probe(plan, run, source_root):
 source = probe.substitute(Path(base.__file__).read_text(encoding="utf-8"), {
     "from research.ui import mode_state_reference as probe": "from research.ui import alternate_ris_reference as probe",
     "termforge-original-mode-state-reference-v1": "termforge-original-alternate-ris-reference-v1",
+    '"response_hex": row["response_hex"], "private_dsr_prefix":':
+        '"response_hex": row["response_hex"], "flow_control_hex": row.get("flow_control_hex"), "private_dsr_prefix":',
     '"offline_exporter_sha256": sha(Path(__file__)),':
         '"offline_exporter_sha256": sha(Path(__file__)), "base_exporter_sha256": sha(ROOT / "research/ui/export_mode_state_reference.py"),',
 })
