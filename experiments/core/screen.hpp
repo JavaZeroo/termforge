@@ -791,6 +791,7 @@ public:
     void reset() {
         // Clear the active text/history and reset the supported modes before
         // returning to primary. Identities already spent stay spent.
+        const bool was_alternate = active_buffer_ == ScreenBuffer::alternate;
         for (int r = 0; r < height(); ++r) erase_range(lines[r], 0, width());
         if (!history.empty()) {
             history.clear();
@@ -804,6 +805,13 @@ public:
         // Preserve the existing RIS origin-off policy across the saved frame.
         if (inactive_) inactive_->origin_mode_ = false;
         activate_buffer(ScreenBuffer::primary);
+        if (was_alternate) {
+            // RIS in alternate returns to a homed primary with full-height
+            // margins. Activation alone restores the previous primary state.
+            scroll_top = 0;
+            scroll_bottom = -1;
+            move(0, 0);
+        }
         invalidate_attachment();
     }
     size_t scrollback_lines() const { return history.size(); }
