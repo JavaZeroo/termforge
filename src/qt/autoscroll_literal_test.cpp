@@ -19,6 +19,7 @@
 #include <QScrollBar>
 #include <QTemporaryDir>
 #include <QTest>
+#include <QVBoxLayout>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -122,6 +123,11 @@ int main(int argc, char** argv) {
         const DWORD length = GetModuleFileNameW(nullptr, executable, 32768);
         require(length && length < 32768, "literal autoscroll executable unavailable");
         SessionModel model; QWidget window; TerminalWidget terminal(model, &window);
+        // The fixture's intended viewport also determines how many rows of
+        // the fixed workload fit alongside the default bounded scrollback.
+        auto* layout = new QVBoxLayout(&window);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->addWidget(&terminal);
         window.resize(1200, 900); window.show(); terminal.setFocus();
         require(model.start(executable, L"--history-child", workspace.path().toStdWString()),
                 "literal autoscroll child did not start");
@@ -166,6 +172,20 @@ int main(int argc, char** argv) {
         evidence["screen_height"] = model.screen().height();
         const std::string start_row0 = painted_row_text(terminal, 0);
         evidence["home_row0"] = QString::fromStdString(start_row0);
+        // Establish that both expected rows survived before trying to reach
+        // them through public scrolling. Resolve rank from the source rather
+        // than deriving the byte oracle from the painted page or selection.
+        const TextDocument document(model.screen());
+        size_t target_top = 0;
+        for (size_t index = 1; index < document.size(); ++index) {
+            if (document.line(index).projection.text == "TF_H_100" &&
+                document.line(index - 1).projection.text == "TF_H_099") {
+                target_top = index;
+                break;
+            }
+        }
+        require(target_top != 0, "settled source does not retain adjacent TF_H_099 and TF_H_100");
+        evidence["target_top"] = QString::number(target_top);
         QJsonArray steps;
         size_t step_count = 0;
         for (; step_count < 400; ++step_count) {
@@ -173,7 +193,7 @@ int main(int argc, char** argv) {
             if (row0 == "TF_H_100") break;
             require(row0.size() == 8 && row0.compare(0, 5, "TF_H_") == 0,
                     "positioning row0 is not a TF_H_ literal: " + hex_bytes(row0));
-            const int number = std::stoi(row0.substr(6, 3));
+            const int number = std::stoi(row0.substr(5, 3));
             require(number < 100, "positioning overshot TF_H_100 at row0=" + row0);
             scrollbar->triggerAction(QAbstractSlider::SliderSingleStepAdd);
             QJsonObject step;
@@ -184,22 +204,6 @@ int main(int argc, char** argv) {
         require(step_count < 400, "public scrollbar steps could not reach TF_H_100");
         evidence["position_steps"] = steps;
         evidence["position_step_count"] = QString::number(step_count);
-        // Independent cross-check: the document rank of the fixed literal
-        // TF_H_100 must equal the viewport top and scrollbar value. The rank
-        // comes from the source document, not from the painted page or the
-        // selection range.
-        size_t target_top = 0;
-        {
-            const TextDocument document(model.screen());
-            bool found = false;
-            for (size_t index = 0; index < document.size(); ++index) {
-                if (document.line(index).projection.text == "TF_H_100") {
-                    target_top = index; found = true; break;
-                }
-            }
-            require(found, "document has no TF_H_100 source line");
-        }
-        evidence["target_top"] = QString::number(target_top);
         const auto positioned = terminal.history_state();
         require(positioned.top == target_top && scrollbar->value() == static_cast<int>(target_top),
                 "positioned top/value is not the TF_H_100 document rank");
