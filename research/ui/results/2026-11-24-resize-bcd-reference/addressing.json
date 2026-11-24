@@ -1,0 +1,680 @@
+{
+  "schema": "termforge-original-resize-bcd-address-reference-v1",
+  "issue": 29,
+  "related_issue": 27,
+  "case_id": "shrink-bcd-cup",
+  "authorized_plan_sha256": "4b1f2f7f77dc423b307392f486a6688cb1f6617c8a41c13079e6c8636538d986",
+  "offline_export_source_files_sha256": {
+    "research/ui/export_resize_bcd_address_reference.py": "dc8297e2319f4c52722b99171d818ed1fbd1ed8ba3ce788937b1f1bbacdfcabb",
+    "research/ui/export_resize_state_reference.py": "473e901305354d4ba8b22c08d22fa506c4d40da0e73bed3bf3122e4ff0e3c9b7",
+    "research/ui/export_mode_state_reference.py": "7e0a1e0e49f149791464c0dec357d3b5260bc2c34ca9f9c1be4edab35626cdf3"
+  },
+  "status": "bounded-direct-protocol-bcd-addressing-observation",
+  "actual_original_runs": 1,
+  "maximum_original_runs": 1,
+  "semantic_acceptance": false,
+  "addressing_policy_classification": null,
+  "full_active_grid_verified": false,
+  "terminal_styles_verified": false,
+  "local_shell_transport_verified": false,
+  "presented_done": null,
+  "performance_gate": "not_evaluated",
+  "r2_complete": false,
+  "rea_capture_seconds": 45,
+  "cli_wait_timeout_seconds": 60,
+  "whole_lifecycle_bound_seconds": null,
+  "deliberate_original_process_termination": true,
+  "natural_gui_exit_verified": false,
+  "capture": {
+    "phases": [
+      {
+        "phase": 0,
+        "label": "initial-bcd-body",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b383b383048421b5b31303b383048431b5b31313b314844",
+        "source_bytes": 46,
+        "source_sha256": "0f6461a36d321073614dca51e3512e8f32019de22bf82f3c14cdffcac7fa1ef0",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          11,
+          2
+        ],
+        "response_hex": "1b5b31313b3252",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          80,
+          24
+        ],
+        "window_rect": [
+          160,
+          145,
+          1387,
+          983
+        ],
+        "window_size": [
+          1228,
+          839
+        ],
+        "document_projection": {
+          "line_count": 11,
+          "capacity": 24,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 10,
+            "caretColumn": 0,
+            "caretPosition": 171
+          },
+          "markers": [
+            {
+              "label": "B",
+              "document_line": 7,
+              "column": 79,
+              "position": 86,
+              "rect": {
+                "x": 779,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "C",
+              "document_line": 9,
+              "column": 79,
+              "position": 168,
+              "rect": {
+                "x": 779,
+                "y": 162,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "D",
+              "document_line": 10,
+              "column": 0,
+              "position": 170,
+              "rect": {
+                "x": 147,
+                "y": 180,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "00a42d5b7cd89bdddf1388e9fcd0cbb654b22cf0935205acbb6e55616b07d335"
+        },
+        "stage_role": "initial-baseline"
+      },
+      {
+        "phase": 1,
+        "label": "after-shrink-before-write",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          11,
+          2
+        ],
+        "response_hex": "1b5b31313b3252",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          60,
+          12
+        ],
+        "window_rect": [
+          160,
+          145,
+          1147,
+          653
+        ],
+        "window_size": [
+          988,
+          509
+        ],
+        "document_projection": {
+          "line_count": 13,
+          "capacity": 12,
+          "top": null,
+          "scroll": 1,
+          "caret_api": {
+            "caretLine": 10,
+            "caretColumn": 0,
+            "caretPosition": 171
+          },
+          "markers": [
+            {
+              "label": "B",
+              "document_line": 7,
+              "column": 79,
+              "position": 86,
+              "rect": {
+                "x": 299,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "C",
+              "document_line": 9,
+              "column": 79,
+              "position": 168,
+              "rect": {
+                "x": 299,
+                "y": 180,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "D",
+              "document_line": 10,
+              "column": 0,
+              "position": 170,
+              "rect": {
+                "x": 147,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "9e256849092a25e1c149eb7c875608309723bd4bab8374bcbaee9fabd820eea5"
+        },
+        "stage_role": "shrunk-before-write"
+      },
+      {
+        "phase": 2,
+        "label": "after-shrink-cup-write",
+        "source_hex": "1b5b31323b3148524553495a4544",
+        "source_bytes": 14,
+        "source_sha256": "00f65b92f52d62757e697efe187f47e920d10df643af9c4a3e2b472386f60c92",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          12,
+          8
+        ],
+        "response_hex": "1b5b31323b3852",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          60,
+          12
+        ],
+        "window_rect": [
+          160,
+          145,
+          1147,
+          653
+        ],
+        "window_size": [
+          988,
+          509
+        ],
+        "document_projection": {
+          "line_count": 14,
+          "capacity": 12,
+          "top": null,
+          "scroll": 2,
+          "caret_api": {
+            "caretLine": 11,
+            "caretColumn": 0,
+            "caretPosition": 179
+          },
+          "markers": [
+            {
+              "label": "B",
+              "document_line": 7,
+              "column": 79,
+              "position": 86,
+              "rect": {
+                "x": 299,
+                "y": 108,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "C",
+              "document_line": 9,
+              "column": 79,
+              "position": 168,
+              "rect": {
+                "x": 299,
+                "y": 162,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "D",
+              "document_line": 10,
+              "column": 0,
+              "position": 170,
+              "rect": {
+                "x": 147,
+                "y": 180,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "D",
+              "document_line": 11,
+              "column": 6,
+              "position": 178,
+              "rect": {
+                "x": 195,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "RESIZED",
+              "document_line": 11,
+              "column": 0,
+              "position": 172,
+              "rect": {
+                "x": 147,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "bf8f9520e6c1f21acd07257f195b83eb1384f893aa5135b070afbc9e41f98d08"
+        },
+        "stage_role": "shrunk-after-cup-write"
+      },
+      {
+        "phase": 3,
+        "label": "after-restore-after-write",
+        "source_hex": "",
+        "source_bytes": 0,
+        "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "dsr_suffix_hex": "1b5b366e",
+        "cursor_reply": [
+          12,
+          8
+        ],
+        "response_hex": "1b5b31323b3852",
+        "private_dsr_prefix": false,
+        "frozen_grid": [
+          80,
+          24
+        ],
+        "window_rect": [
+          160,
+          145,
+          1387,
+          983
+        ],
+        "window_size": [
+          1228,
+          839
+        ],
+        "document_projection": {
+          "line_count": 12,
+          "capacity": 24,
+          "top": null,
+          "scroll": 0,
+          "caret_api": {
+            "caretLine": 11,
+            "caretColumn": 0,
+            "caretPosition": 179
+          },
+          "markers": [
+            {
+              "label": "B",
+              "document_line": 7,
+              "column": 79,
+              "position": 86,
+              "rect": {
+                "x": 779,
+                "y": 126,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "C",
+              "document_line": 9,
+              "column": 79,
+              "position": 168,
+              "rect": {
+                "x": 779,
+                "y": 162,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "D",
+              "document_line": 10,
+              "column": 0,
+              "position": 170,
+              "rect": {
+                "x": 147,
+                "y": 180,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "D",
+              "document_line": 11,
+              "column": 6,
+              "position": 178,
+              "rect": {
+                "x": 195,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            },
+            {
+              "label": "RESIZED",
+              "document_line": 11,
+              "column": 0,
+              "position": 172,
+              "rect": {
+                "x": 147,
+                "y": 198,
+                "width": 8,
+                "height": 18
+              }
+            }
+          ],
+          "synthetic_lines_sha256": "e73cdecfb12fbaaada137ff2abbc4c22a1290739b3780cf9d1a20b333bc9599a"
+        },
+        "stage_role": "restored-after-cup-write"
+      }
+    ],
+    "source_bytes": 60,
+    "dsr_request_bytes": 16,
+    "application_reply_bytes": 28,
+    "window_rect_format": "qt-qrect-inclusive-ltrb",
+    "geometry_checks": [
+      {
+        "phase": 0,
+        "expected_size": [
+          1228,
+          839
+        ],
+        "window_rect": [
+          160,
+          145,
+          1387,
+          983
+        ],
+        "window_size": [
+          1228,
+          839
+        ]
+      },
+      {
+        "phase": 1,
+        "expected_size": [
+          988,
+          509
+        ],
+        "window_rect": [
+          160,
+          145,
+          1147,
+          653
+        ],
+        "window_size": [
+          988,
+          509
+        ]
+      },
+      {
+        "phase": 2,
+        "expected_size": [
+          988,
+          509
+        ],
+        "window_rect": [
+          160,
+          145,
+          1147,
+          653
+        ],
+        "window_size": [
+          988,
+          509
+        ]
+      },
+      {
+        "phase": 3,
+        "expected_size": [
+          1228,
+          839
+        ],
+        "window_rect": [
+          160,
+          145,
+          1387,
+          983
+        ],
+        "window_size": [
+          1228,
+          839
+        ]
+      }
+    ],
+    "frozen_grids": [
+      [
+        80,
+        24
+      ],
+      [
+        60,
+        12
+      ],
+      [
+        60,
+        12
+      ],
+      [
+        80,
+        24
+      ]
+    ],
+    "naws_history": [
+      [
+        80,
+        24
+      ],
+      [
+        60,
+        12
+      ],
+      [
+        80,
+        24
+      ]
+    ],
+    "freeze_event_counts": [
+      1,
+      2,
+      2,
+      3
+    ],
+    "resize_boundaries": [
+      {
+        "phase": 1,
+        "before_event_count": 1,
+        "after_event_count": 2,
+        "requested_window": [
+          988,
+          509
+        ]
+      },
+      {
+        "phase": 3,
+        "before_event_count": 2,
+        "after_event_count": 3,
+        "requested_window": [
+          1228,
+          839
+        ]
+      }
+    ],
+    "job_after": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "provider": {
+      "id": "frida",
+      "version": null,
+      "confidence": "observed",
+      "evidence_id": "ev_9e34486e37f58639e8f3161b7e047681c097f21b903a2598ca293ee54ec756ab",
+      "messages": 9,
+      "readiness_messages": 3,
+      "phase_messages": 4,
+      "messages_truncated": false,
+      "cleanup_error": null
+    },
+    "pre_action_observation_count": 2,
+    "declared_action_hex": "1b5b31323b3148524553495a4544"
+  },
+  "provenance": {
+    "source_identity": {
+      "kind": "source-archive",
+      "manifest_sha256": "c052877d17cab4a8d202bfffb8c7ffae2113d9182e543a4527f8a9b232c74518"
+    },
+    "execution_source_base_commit": "8442e3abf98caf81d62155f51299d5f65fa427b0",
+    "execution_source_files_sha256": {
+      "research/ui/resize_bcd_address_reference.py": "1dbb14262f2691631c4dc9721ca3a1f95e26a23c6075098b5daf3b552c90b4a1",
+      "research/ui/resize_bcd_address_reference.js": "da8564b360cc4ee44c0ac37d37893590e8b43edbe6fa4f61eae41f4d16075667",
+      "research/ui/resize_state_reference.py": "628f9e3a5e3ecea6c34829810df2cdf0e93dc221bd3d19b31b3f5028759f07fd",
+      "research/ui/mode_state_reference.py": "bac745e74a2653412ea7a701e3a1f3defa1fb97fdd7841b73fad483120496ec4",
+      "research/ui/alternate_reference.py": "94b85d49347e0e9813f7acddf0244f58520a7d1fce14084677c91cf4ddafffea",
+      "research/ui/r1_launch.py": "54fb41872c6abcc48242a0938044184854b016785cc13659c66b1bf404da0d8a",
+      "research/ui/launch.py": "6970e0d4f2fe5e7ec4827df7aa1026cd0e74aeb828cdc9b7a0b42b3c887eb4e6",
+      "research/ui/qt_r1_text.js": "f5820d413fdd72c13dffcefbf4d0ade615abfe15754c6b0b52e1e098814eea6f",
+      "research/ui/r1_vt_fixture.py": "5853f684d5b8a4c17a30f22a536f04f0eb212813b8d6b3cc3c197df392eb732a",
+      "experiments/conpty/run.py": "3766879cafe38aabf53cfac8ab2f62985b1976b6fa24c8b6031258bdc914258f"
+    },
+    "launcher_namespace_sha256": "bfc3147048e38702dafbac21987f616c31d0277002f24cab03910f1d9c9f340e",
+    "reference_identity": {
+      "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+      "manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+      "files_verified": 4047,
+      "module_files_sha256": {
+        "WindTerm.exe": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+        "Qt5Core.dll": "8d2ff4ce9096ddccc4f4cd62c2e41fc854cfd1b0d6e8d296645a7f5fd4ae565a",
+        "Qt5Gui.dll": "5e7d2d41b8b92a880e83b8cc0ca173f5da61218604186196787ee1600956be1e",
+        "Qt5Widgets.dll": "3788c669d4b645e5a576de9fc77fca776bf516d43c89143dc2ca28291ba14358",
+        "Qt5Qml.dll": "30035484c81590976627f8face9507caa8581a7dc7630cccf6a8d6de65cab707"
+      }
+    },
+    "launch_host": {
+      "windows_version": "10.0.26300",
+      "python_version_number": "3.12.10",
+      "python_exe_sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "node_exe_sha256": "1c331340fa6cac5e4294725959070a143fa0507195a78ad77eed7943f719aac9",
+      "rea_package_version": "6.7.0",
+      "rea_shim_sha256": "d092352a4088e7df223e9fe39039d703411dc5cbd39990f69756ade448ef1de4",
+      "rea_package_json_sha256": "3f6c47fb12c8388f291a21e7f99a876495d03aee671b3b6a0708dd12d6ebb570",
+      "rea_entry_sha256": "ed06cee49505b95a3cc5fceb1b4b279167e26df86227c644bb366ffffdbaf738",
+      "runtime_identity_source": "recorded execution plan; exporter does not execute the captured runtimes"
+    },
+    "raw_files": {
+      "evidence.json": {
+        "bytes": 13039,
+        "sha256": "7a51873e46b23d973dbcc24768f25346fef89520916a768d73c57d7edf7ebbc4"
+      },
+      "run.json": {
+        "bytes": 617,
+        "sha256": "3ca3f490fd9ac87b2ab751a96f15c8ccefa3ee4df3b17df1fb8b07980313bf67"
+      },
+      "probe.js": {
+        "bytes": 22955,
+        "sha256": "08d15f680053be97da085d5199dd282fe76b7035cd941589b62909dd76ac7fda"
+      },
+      "peer.json": {
+        "bytes": 2115,
+        "sha256": "c67d392e017c50dc588f9795cc0e3ac028a687eedaed5b337df2d6f1b9765468"
+      },
+      "bcd-address-result.json": {
+        "bytes": 5525,
+        "sha256": "b78e51af4806346cfd9e140af4ced992f0de8c99016009de299b04e021e17017"
+      },
+      "files.json": {
+        "bytes": 637666,
+        "sha256": "a25c87cba935294d5bfd3bbc76c650d31a8473809564d798ad5a889e4aea00e8"
+      },
+      "mechanics-check.json": {
+        "bytes": 412,
+        "sha256": "7af316dc315bc8685bdad627c595ae465bd04340c2b1c2114eccc0e9f1ebc7b7"
+      },
+      "stderr.txt": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "profile-check.json": {
+        "bytes": 52,
+        "sha256": "5e522a64e98197722ccd084639b1ce50258b238e03be2f016e81c8af023b5ee1"
+      },
+      "cleanup.json": {
+        "bytes": 42,
+        "sha256": "8400f93b6a4a4a50cde35b5d474660590ed215732f55772a9d8afac138da4f1d"
+      },
+      "fixture-ready": {
+        "bytes": 32,
+        "sha256": "19259d3a3faf0e429ba9967182c16d37325e3f03f15e6a6ff3c7ea6de53dc803"
+      },
+      "ack-0": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-1": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-2": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "ack-3": {
+        "bytes": 8,
+        "sha256": "604cee807f644af47487bf2bbab442b94212ac5119f36f995f78e9e4694dae8c"
+      },
+      "resize-request-1": {
+        "bytes": 30,
+        "sha256": "43775595111336cd9c89072bd020faa94fc85cd9b34a2e3a6e0f39496fb1d7b8"
+      },
+      "resize-ready-1": {
+        "bytes": 42,
+        "sha256": "59fd818a733452cbccd8c7666db8680e862a2f4cac84af1c4e3a729dac2859de"
+      },
+      "resize-request-3": {
+        "bytes": 31,
+        "sha256": "3d193325c645f278c3798b8ac072127edc6042e065e680dd6bda9245eb9b72ac"
+      },
+      "resize-ready-3": {
+        "bytes": 42,
+        "sha256": "ea0c803a241eaa413c9f1845cf348ab3063ec3e8b9cc3dbd22340339071bfdd3"
+      }
+    },
+    "authorized_plan": {
+      "bytes": 5108,
+      "sha256": "4b1f2f7f77dc423b307392f486a6688cb1f6617c8a41c13079e6c8636538d986"
+    }
+  },
+  "limitations": [
+    "One fresh direct Telnet process records B/C/D, the shrunk pre-write body, one CUP 12;1 RESIZED action, then the restored endpoint; direct Telnet is protocol/display evidence only.",
+    "The initial body places B/C/D at source rows 7/9/10; the fixed 80x24 -> 60x12 shrink follows.",
+    "Four stages preserve the pre-write body and post-write endpoint; only phases 1 and 3 resize, while phase 2 sends the exact declared CUP+RESIZED bytes.",
+    "Document markers, protocol DSR, caret API and visible rectangles remain different observations; no internal storage or addressing policy is inferred.",
+    "The finite text allowlist admits the fixed CUP 12;1 RESIZED prefix overwrite without predicting the actually affected row.",
+    "Only 80x24 -> 60x12 -> 80x24 with fixed ASCII is covered; no full grid, styles, local-shell/native-grid transport, alternate screen, reliability repetition or performance acceptance.",
+    "Raw document text, paths, process identifiers, profiles, resources and provider diagnostics remain private."
+  ]
+}

@@ -3,7 +3,7 @@ let stage=0,busy=false,finished=false,due=0,stable=null,stableSince=0,lastPhase=
 let gridKey=null,gridSince=0,nawsSeen=0,lastNaws=null,requested=0,resized=0,committed=0;
 const caseId=__RESIZE_BCD_CASE_JSON__;
 const started=Date.now(),observations=[],geometryChecks=[];
-const windows=[[1228,869],[988,509],[988,509],[1228,869]],grids=[[80,24],[60,12],[60,12],[80,24]];
+const windows=[[1228,839],[988,509],[988,509],[1228,839]],grids=[[80,24],[60,12],[60,12],[80,24]];
 for(const module of [wind,core,gui,widgets]){
     const expected=(__RUN_DIRECTORY_JSON__+'/app/'+module.name).replace(/\\/g,'/').toLowerCase();
     if(module.path.replace(/\\/g,'/').toLowerCase()!==expected)throw Error('pinned Qt module path guard');

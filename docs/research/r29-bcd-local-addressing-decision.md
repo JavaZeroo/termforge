@@ -2,7 +2,7 @@
 
 - 状态：**方案材料，未改变产品行为、测试或用户已确认差异**；等待用户决定
 - 日期：2026-11-05
-- 取证状态：2026-11-05 已按 §6 授权的单次原版尝试失败于初始几何（目标 `80×24`，实际 `80×25`，未进入正文），保留[失败记录](../../research/ui/results/2026-11-06-resize-bcd-address-pre-write-failed/README.md)；未重跑、未形成 A/B/C 结论。
+- 取证状态：2026-11-24 已完成独立几何校准与单次正式取证，得到固定场景的写前、写后和恢复端点。产品方案仍待决定。 [最新观察](../../research/ui/results/2026-11-24-resize-bcd-reference/README.md)
 - 范围：[#29](https://github.com/JavaZeroo/termforge/issues/29) / [#27](https://github.com/JavaZeroo/termforge/issues/27) 联合出口中的“旧六阶段 `--resize` B/CD 同步失败”
 - 依据：[ADR-0010](../adr/0010-bounded-resize-retention.md)、[#308 顺序宽高样本](../../research/ui/results/2026-11-02-resize-combined-reference/README.md)、[#309 只缩宽样本](../../research/ui/results/2026-11-02-resize-state-reference/README.md)、[#316 双轴写后端点](../../research/ui/results/2026-11-04-resize-dual-axis-reference/README.md)、[#317 同次 Qt/固定 ConPTY trace](../../experiments/shell/results/2026-11-05-qt-resize-divergence/README.md)
 
@@ -73,11 +73,13 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
 
 **不能形成“原版已证明应选哪条”的结论。** 现有 WindTerm 样本要么只缩宽、要么顺序宽高、要么双轴写后端点，几何/写入/阶段不同，不能拼成一个同场景原版结论；#317 是 Qt/固定 ConPTY trace，不是 WindTerm oracle。真实应用影响也只有推断。缺的不是更多同义转述，而是下列一个最小观察。
 
-## 6. 单个最小取证计划（已授权尝试一次，因几何失败）
+## 6. 单个最小取证计划与运行结果
 
 **2026-11-05 执行结果**：计划 `windterm-bcd-address-pre-write-v1` 已冻结并由调度者授权一次运行；实际初始 NAWS 为 **80×25**（非目标 80×24），控制器在 `fixed initial grid differs` 停止，未发送 B/C/D、未产生写前/写后端点，严格导出未运行。失败身份、计划/attempt 哈希与精确阻塞见[失败记录](../../research/ui/results/2026-11-06-resize-bcd-address-pre-write-failed/README.md)；同一计划不重放，也未据此选择 A/B/C。下面是原计划的目标与区分力，保留为下一次新计划的设计依据。
 
 **2026-11-09 恢复进展（blocked）**：主机重新可达后完成严格身份核验；`1228×839` 初始窗口实测为 **80×24**，但固定 `988×509` 的 `60×12` resize 在校准 peer 报 `Resize changed row count`，仅 phase0 完成。未发送 B/C/D 正文，未执行原 v2 正式重试；旧 plan/marker 未变。一次校准计划 SHA `954636ee…`，详见[恢复记录](../../research/ui/results/2026-11-09-bcd-recovery/README.md)。解除条件：另一次授权的 60×12 校准/诊断解释该错误并成功，之后才可冻结 v2。
+
+**2026-11-24 取证结果**：校准实测窗口 `1228×839 → 988×509 → 1228×839` 对应 `80×24 → 60×12 → 80×24`。正式探针改用这组尺寸后执行一次，严格导出通过。缩小写前 `B/C/D` 的文档位置与 `11;2` DSR 保持，`scrollTop` 由 0 到 1。执行 `CUP 12;1` 后，`RESIZED` 出现在 0 基文档行 11、列 0，三个原标记均保留，DSR 为 `12;8`，恢复时正文位置保持。 [四阶段记录](../../research/ui/results/2026-11-24-resize-bcd-reference/README.md)
 
 **固定问题**：WindTerm 2.7.0 在同一轮 `80×24→60×12` 主屏会话中，缩高后、写入前的正文/滚动/DSR 是什么；随后固定 `CUP 12;1+marker+DSR` 的 marker 落在保留源的哪一行、显示在哪一行。
 
@@ -91,7 +93,7 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
 
 ## 7. 建议
 
-在现有证据下不建议现在切换 B；C 也只有在取得原生↔源映射后才能评估。当前默认 **A** 是唯一不新增行为风险的选择，但它是**暂定保持**，不是已证明的原版等价或用户已接受的差异。建议按第 6 节完成一次最小原版观察，再由用户决定：
+固定样本的写前位置及写后落点支持继续验证 **A** 的源坐标寻址。自主 C++ 核心相同输入的四阶段正文和 DSR 已对齐。正式 Qt／固定 ConPTY 尚需独立核对传输和显示投影，再确认旧六阶段原生网格断言的处置。方案选择仍待用户确认。适用其余样本的判定条件如下。
 
 1. 若原版表现为源保留/源寻址，A 保持并明确旧测试的已知差异记录方式；
 2. 若原版表现为原生 reflow 寻址，优先评估 C（保留正文、单一权威、显式回退），只有 C 不可行时才讨论 B 及其对保留正文/锚点/跨平台的影响；

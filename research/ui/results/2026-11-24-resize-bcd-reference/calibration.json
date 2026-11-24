@@ -1,0 +1,215 @@
+{
+  "schema": "termforge-r29-bcd-calibration-recovery-v1",
+  "issue": 29,
+  "related_issue": 27,
+  "status": "passed",
+  "execution_source_commit": "0493076f38c9ea391e265b58dbd3c2409ed33ea7",
+  "execution_source_manifest_sha256": "a842f369b7ddc8ebeddd48f3d532450f3117e79bcbf602d296e8725ff8e08dac",
+  "plan_sha256": "3dda95214a5e234a633ede749bee235a1c12d3f8d53dbe7dfea9b3741338c25e",
+  "reference_exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "reference_package_manifest_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "original_runs": 1,
+  "maximum_original_runs": 1,
+  "body_bytes_by_phase": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "naws": [
+    [
+      80,
+      24
+    ],
+    [
+      60,
+      12
+    ],
+    [
+      80,
+      24
+    ]
+  ],
+  "freeze_event_counts": [
+    1,
+    2,
+    2,
+    3
+  ],
+  "resize_boundaries": [
+    {
+      "phase": 1,
+      "before_event_count": 1,
+      "requested_window": [
+        988,
+        509
+      ],
+      "after_event_count": 2
+    },
+    {
+      "phase": 3,
+      "before_event_count": 2,
+      "requested_window": [
+        1228,
+        839
+      ],
+      "phase2_observed_naws": [],
+      "after_event_count": 3
+    }
+  ],
+  "phases": [
+    {
+      "phase": 0,
+      "grid": [
+        80,
+        24
+      ],
+      "capacity": 24,
+      "dsr": [
+        1,
+        1
+      ],
+      "window_size": [
+        1228,
+        839
+      ],
+      "window_rect": [
+        160,
+        145,
+        1387,
+        983
+      ]
+    },
+    {
+      "phase": 1,
+      "grid": [
+        60,
+        12
+      ],
+      "capacity": 12,
+      "dsr": [
+        1,
+        1
+      ],
+      "window_size": [
+        988,
+        509
+      ],
+      "window_rect": [
+        160,
+        145,
+        1147,
+        653
+      ]
+    },
+    {
+      "phase": 2,
+      "grid": [
+        60,
+        12
+      ],
+      "capacity": 12,
+      "dsr": [
+        1,
+        1
+      ],
+      "window_size": [
+        988,
+        509
+      ],
+      "window_rect": [
+        160,
+        145,
+        1147,
+        653
+      ]
+    },
+    {
+      "phase": 3,
+      "grid": [
+        80,
+        24
+      ],
+      "capacity": 24,
+      "dsr": [
+        1,
+        1
+      ],
+      "window_size": [
+        1228,
+        839
+      ],
+      "window_rect": [
+        160,
+        145,
+        1387,
+        983
+      ]
+    }
+  ],
+  "owned_supervisor": {
+    "status": "passed",
+    "exit_code": 0,
+    "cleanup_verified": true,
+    "root_reaped": true,
+    "job_after_active": 0
+  },
+  "mechanics": {
+    "schema": "termforge-resize-bcd-calibration-mechanics-v1",
+    "case_id": "calibrate",
+    "stage_count": 4,
+    "dsr_count": 4,
+    "pre_action_stage_count": 2,
+    "frozen_grids": [
+      [
+        80,
+        24
+      ],
+      [
+        60,
+        12
+      ],
+      [
+        60,
+        12
+      ],
+      [
+        80,
+        24
+      ]
+    ],
+    "naws_events": 3,
+    "job_active": 0,
+    "semantic_acceptance": false,
+    "presented_done": null
+  },
+  "display": {
+    "before": [
+      1024,
+      768
+    ],
+    "during": [
+      1600,
+      1200
+    ],
+    "after": [
+      1024,
+      768
+    ]
+  },
+  "pre_launch_failures": [
+    {
+      "gate": "same-process WinForms bounds check read the old size after successful display API return",
+      "original_runs": 0
+    },
+    {
+      "gate": "current-mode enumeration did not return a readable sample",
+      "original_runs": 0
+    },
+    {
+      "gate": "fresh PowerShell display probe rejected quoting before the display change",
+      "original_runs": 0
+    }
+  ],
+  "scope": "One geometry-only calibration on the dedicated Windows 11 VM via direct Telnet. No B/C/D or CUP body, product behavior decision or performance result."
+}

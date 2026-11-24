@@ -1,4 +1,4 @@
-// Bounded literal replay of the 2026-11-04 WindTerm dual-axis observation.
+// Bounded literal replays of the 2026-11-04 and 2026-11-24 WindTerm observations.
 //
 // Recorded original sample (research/ui/results/2026-11-04-resize-dual-axis-reference):
 // 91x20 body -> one window action 61x14 -> CUP(7;2)+"DQ"+DSR (original DSR
@@ -60,6 +60,38 @@ std::string take_reply(Parser& parser) {
     const auto replies = parser.take_replies();
     return replies.empty() ? std::string{} : replies.front();
 }
+
+void check_bcd_addressing(Checks& checks) {
+    // The direct Telnet sample observes document coordinates and DSR at each
+    // stage. It also supplies display rectangles, which the core does not own.
+    constexpr std::string_view initial_body = "\x1b[?6l\x1b[?7h\x1b[r\x1b[0m\x1b[2J"
+        "\x1b[8;80HB\x1b[10;80HC\x1b[11;1HD";
+    std::vector<std::string> expected(11);
+    expected[7] = std::string(79, ' ') + 'B';
+    expected[9] = std::string(79, ' ') + 'C';
+    expected[10] = "D";
+    Parser parser(24, 80, 1000);
+    parser.feed(initial_body);
+    parser.feed("\x1b[6n");
+    checks.expect(parser.take_replies() == std::vector<std::string>{"\x1b[11;2R"}, "BCD initial DSR differs");
+    checks.expect(source_lines(TextDocument(parser.screen)) == expected, "BCD initial document differs");
+
+    parser.screen.resize_preserving(12, 60);
+    parser.feed("\x1b[6n");
+    checks.expect(parser.take_replies() == std::vector<std::string>{"\x1b[11;2R"}, "BCD pre-write DSR differs");
+    checks.expect(source_lines(TextDocument(parser.screen)) == expected, "BCD pre-write document differs");
+
+    parser.feed("\x1b[12;1HRESIZED\x1b[6n");
+    expected.emplace_back("RESIZED");
+    checks.expect(parser.take_replies() == std::vector<std::string>{"\x1b[12;8R"}, "BCD post-write DSR differs");
+    checks.expect(source_lines(TextDocument(parser.screen)) == expected, "BCD post-write document differs");
+
+    parser.screen.resize_preserving(24, 80);
+    parser.feed("\x1b[6n");
+    checks.expect(parser.take_replies() == std::vector<std::string>{"\x1b[12;8R"}, "BCD restored DSR differs");
+    checks.expect(source_lines(TextDocument(parser.screen)) == expected, "BCD restored document differs");
+    parser.finish();
+}
 } // namespace
 
 int main() {
@@ -103,9 +135,10 @@ int main() {
         checks.expect(restored == shrunk, "width restore rewrote the recorded written row");
         checks.expect(restored[11] == clipped, "restored document row differs from the recording");
         parser.finish();
+        check_bcd_addressing(checks);
         if (checks.failures) throw std::runtime_error("dual-axis literal replay failures");
         std::cout << "dual-axis literal replay passed; " << checks.assertions
-                  << " assertions against the fixed 2026-11-04 observation\n";
+                  << " assertions for the fixed WindTerm observations\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
