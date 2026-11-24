@@ -739,6 +739,19 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_unicode_input_test>")
     set_tests_properties(qt_unicode_input PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+
+    # Native IME input is driven only by the isolated Windows VM controller.
+    add_executable(qt_native_ime_single_test src/qt/ime_native_single_test.cpp)
+    set_target_properties(qt_native_ime_single_test PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-native-ime-bin/$<CONFIG>")
+    termforge_qt_entry(qt_native_ime_single_test)
+    target_link_libraries(qt_native_ime_single_test PRIVATE imm32 ole32 uuid)
+    add_dependencies(qt_native_ime_single_test shell_input_client)
+    add_custom_command(TARGET qt_native_ime_single_test POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+        "$<TARGET_FILE:shell_input_client>" "$<TARGET_FILE_DIR:qt_native_ime_single_test>/"
+      VERBATIM)
+
     add_executable(qt_unicode_render_test src/qt/unicode_render_test.cpp)
     set_target_properties(qt_unicode_render_test PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-unicode-render-bin/$<CONFIG>")
