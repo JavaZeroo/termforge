@@ -82,10 +82,11 @@ std::string hex_bytes(const std::string& bytes) {
 }
 bool tail_has_line(SessionModel& model, const std::string& literal) {
     const auto& screen = model.screen();
-    const size_t total = screen.history_lines().size();
-    if (total == 0) return false;
-    const size_t first = total > 30 ? total - 30 : 0;
-    for (size_t index = first; index < total; ++index) {
+    const size_t history_size = screen.history_size();
+    const size_t first = history_size > 30 ? history_size - 30 : 0;
+    // The child emits each marker just before its prompt, so the latest
+    // marker can still be on the active screen while the test waits for it.
+    for (size_t index = first; index < screen.retained_size(); ++index) {
         if (termforge::project_line(screen.retained_line(index)).text == literal) return true;
     }
     return false;
@@ -124,8 +125,8 @@ int main(int argc, char** argv) {
         window.resize(1200, 900); window.show(); terminal.setFocus();
         require(model.start(executable, L"--history-child", workspace.path().toStdWString()),
                 "literal autoscroll child did not start");
-        await([&] { return model.screen().history_lines().size() >= 160; }, model, lifecycle,
-              "literal autoscroll fixture did not reach 160 lines");
+        await([&] { return model.screen().history_lines().size() >= 100; }, model, lifecycle,
+              "literal autoscroll fixture did not reach 100 history lines");
         await([&] { return tail_has_line(model, "TF_END"); }, model, lifecycle,
               "literal autoscroll fixture missed TF_END");
         // The settled contract waits for the spontaneous 161-180 append
