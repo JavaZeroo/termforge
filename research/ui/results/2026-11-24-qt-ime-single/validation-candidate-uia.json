@@ -1,0 +1,600 @@
+{
+  "schema": "termforge-r30-native-ime-candidate-uia-v1",
+  "issue": 155,
+  "build": {
+    "source": "5fe10a5c4cbd551122e19086be4b934ceae22856",
+    "run_id": 45401506639,
+    "executable_sha256": "017e413b0b70a36cf0710acd57a73194652c7a9c3234fddd213b0cdfabc5703f"
+  },
+  "environment": {
+    "windows_version": "10.0.26300.0",
+    "display": [
+      1024,
+      768
+    ],
+    "dpi": 96,
+    "qt_version": "6.10.3",
+    "fixed_pinyin": true
+  },
+  "capture_tool_sha256": "c68197cefd21809f8a8e1e888beab4072f554d66650ace1f423e3ae4c8c2ccf8",
+  "initial_sample": {
+    "controller_sha256": "5e515a8d3b9fdc95180965f133d2da996a0864454bf5ff0b00783a439177889a",
+    "status": "pass_input_and_exit_uia_point_probe_failed",
+    "point_error": "PowerShell parsed two coordinate expressions as an array in arithmetic (MethodNotFound: op_Addition)",
+    "capture_hashes": {
+      "baseline": "b182191c56957478481828d6d691cfe719ee6cd590d1e654e7ec2f1d56b55a69",
+      "composition": "0463b0a4e44430861296081d311d19e41bee65a5b4b9184e366800c16344cffa",
+      "resize": "2ca4b3a1ba205ad073bf8bfd5e3b399fefbfa38794386bcf45f1c0898a4f9afd",
+      "resize-delayed": "2ca4b3a1ba205ad073bf8bfd5e3b399fefbfa38794386bcf45f1c0898a4f9afd",
+      "move-delayed": "058e444c76012f010f5f076b3bb6f83c889d292ba500a233ae822ec7dc0fdefa",
+      "cancelled": "a9e640a12d3c7e4ea99bf045696190ca299d35bab25b96c95639ccf63d1e9364"
+    }
+  },
+  "corrected_sample": {
+    "controller_sha256": "f9082877fba21a88d9ab0c8339d81fe03ac0f8dd18790ecb5c4e62320bbf872c",
+    "status": "passed",
+    "receiver_hex": "e4bda0e5a5bd",
+    "events": {
+      "preedit": 10,
+      "cancel": 2,
+      "commit": 1
+    },
+    "outer_job": {
+      "status": "passed",
+      "exit": 0,
+      "active": 0,
+      "verified": true
+    },
+    "inner_job": {
+      "Passed": true,
+      "CleanupVerified": true,
+      "JobAfterActive": 0
+    },
+    "captures": [
+      {
+        "phase": "baseline",
+        "screen_pixels": [
+          0,
+          0,
+          1024,
+          768
+        ],
+        "app_rect_physical": [
+          114,
+          59,
+          910,
+          638
+        ],
+        "from_baseline_ms": 0,
+        "png_sha256": "f286179b1dd77edb406f30810345891c4bca7f91c6e29b194d20c02e70f50544",
+        "bands": [
+          {
+            "seed": [
+              123,
+              61,
+              901,
+              119
+            ],
+            "rect": [
+              123,
+              61,
+              533,
+              113
+            ]
+          }
+        ],
+        "host_uia": [
+          {
+            "class": "Windows.UI.Core.CoreWindow",
+            "host_process": true
+          }
+        ],
+        "matching_uia_items": 0,
+        "coord_hits": [
+          {
+            "own_app": true,
+            "control_type": "ControlType.TitleBar",
+            "class": "",
+            "point": [
+              328,
+              87
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          }
+        ],
+        "coordinate_errors": []
+      },
+      {
+        "phase": "composition",
+        "screen_pixels": [
+          0,
+          0,
+          1024,
+          768
+        ],
+        "app_rect_physical": [
+          114,
+          59,
+          910,
+          638
+        ],
+        "from_baseline_ms": 1156,
+        "png_sha256": "f06bd8937201e902fa40d4cf2f02c8c423f4b3673d8bdcbb86b02a152d722cd4",
+        "bands": [
+          {
+            "seed": [
+              122,
+              60,
+              902,
+              119
+            ],
+            "rect": [
+              122,
+              60,
+              532,
+              113
+            ]
+          },
+          {
+            "seed": [
+              133,
+              168,
+              772,
+              188
+            ],
+            "rect": [
+              133,
+              168,
+              771,
+              182
+            ]
+          },
+          {
+            "seed": [
+              133,
+              179,
+              772,
+              202
+            ],
+            "rect": [
+              133,
+              185,
+              771,
+              202
+            ]
+          }
+        ],
+        "host_uia": [
+          {
+            "class": "Windows.UI.Core.CoreWindow",
+            "host_process": true
+          }
+        ],
+        "matching_uia_items": 0,
+        "coord_hits": [
+          {
+            "own_app": true,
+            "control_type": "ControlType.TitleBar",
+            "class": "",
+            "point": [
+              327,
+              86.5
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          },
+          {
+            "own_app": true,
+            "control_type": "ControlType.Group",
+            "class": "QWidget",
+            "point": [
+              452,
+              175
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          },
+          {
+            "own_app": true,
+            "control_type": "ControlType.Group",
+            "class": "QWidget",
+            "point": [
+              452,
+              193.5
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          }
+        ],
+        "coordinate_errors": []
+      },
+      {
+        "phase": "resize",
+        "screen_pixels": [
+          0,
+          0,
+          1024,
+          768
+        ],
+        "app_rect_physical": [
+          114,
+          59,
+          1006,
+          686
+        ],
+        "from_baseline_ms": 1297,
+        "png_sha256": "c68ceec877d58f2c30d0b66fcae9f2bcaad0d122cd01f52e8b47980be54042b9",
+        "bands": [
+          {
+            "seed": [
+              122,
+              60,
+              998,
+              119
+            ],
+            "rect": [
+              122,
+              60,
+              532,
+              113
+            ]
+          },
+          {
+            "seed": [
+              133,
+              168,
+              772,
+              188
+            ],
+            "rect": [
+              133,
+              168,
+              771,
+              182
+            ]
+          },
+          {
+            "seed": [
+              133,
+              179,
+              772,
+              202
+            ],
+            "rect": [
+              133,
+              185,
+              771,
+              202
+            ]
+          }
+        ],
+        "host_uia": [
+          {
+            "class": "Windows.UI.Core.CoreWindow",
+            "host_process": true
+          }
+        ],
+        "matching_uia_items": 0,
+        "coord_hits": [
+          {
+            "own_app": true,
+            "control_type": "ControlType.TitleBar",
+            "class": "",
+            "point": [
+              327,
+              86.5
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          },
+          {
+            "own_app": true,
+            "control_type": "ControlType.Group",
+            "class": "QWidget",
+            "point": [
+              452,
+              175
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          },
+          {
+            "own_app": true,
+            "control_type": "ControlType.Group",
+            "class": "QWidget",
+            "point": [
+              452,
+              193.5
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          }
+        ],
+        "coordinate_errors": []
+      },
+      {
+        "phase": "resize-delayed",
+        "screen_pixels": [
+          0,
+          0,
+          1024,
+          768
+        ],
+        "app_rect_physical": [
+          114,
+          59,
+          1006,
+          686
+        ],
+        "from_baseline_ms": 1625,
+        "png_sha256": "c68ceec877d58f2c30d0b66fcae9f2bcaad0d122cd01f52e8b47980be54042b9",
+        "bands": [
+          {
+            "seed": [
+              122,
+              60,
+              998,
+              119
+            ],
+            "rect": [
+              122,
+              60,
+              532,
+              113
+            ]
+          },
+          {
+            "seed": [
+              133,
+              168,
+              772,
+              188
+            ],
+            "rect": [
+              133,
+              168,
+              771,
+              182
+            ]
+          },
+          {
+            "seed": [
+              133,
+              179,
+              772,
+              202
+            ],
+            "rect": [
+              133,
+              185,
+              771,
+              202
+            ]
+          }
+        ],
+        "host_uia": [
+          {
+            "class": "Windows.UI.Core.CoreWindow",
+            "host_process": true
+          }
+        ],
+        "matching_uia_items": 0,
+        "coord_hits": [
+          {
+            "own_app": true,
+            "control_type": "ControlType.TitleBar",
+            "class": "",
+            "point": [
+              327,
+              86.5
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          },
+          {
+            "own_app": true,
+            "control_type": "ControlType.Group",
+            "class": "QWidget",
+            "point": [
+              452,
+              175
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          },
+          {
+            "own_app": true,
+            "control_type": "ControlType.Group",
+            "class": "QWidget",
+            "point": [
+              452,
+              193.5
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          }
+        ],
+        "coordinate_errors": []
+      },
+      {
+        "phase": "move-delayed",
+        "screen_pixels": [
+          0,
+          0,
+          1024,
+          768
+        ],
+        "app_rect_physical": [
+          66,
+          123,
+          958,
+          750
+        ],
+        "from_baseline_ms": 1984,
+        "png_sha256": "b2b99d4d73bf79efc9ece8efa0abfaba3eccc572d8644349901df69f63f7bb2f",
+        "bands": [
+          {
+            "seed": [
+              74,
+              124,
+              950,
+              173
+            ],
+            "rect": [
+              74,
+              124,
+              484,
+              167
+            ]
+          },
+          {
+            "seed": [
+              74,
+              162,
+              950,
+              188
+            ],
+            "rect": [
+              74,
+              168,
+              771,
+              182
+            ]
+          },
+          {
+            "seed": [
+              133,
+              179,
+              772,
+              202
+            ],
+            "rect": [
+              133,
+              185,
+              771,
+              202
+            ]
+          }
+        ],
+        "host_uia": [
+          {
+            "class": "Windows.UI.Core.CoreWindow",
+            "host_process": true
+          }
+        ],
+        "matching_uia_items": 0,
+        "coord_hits": [
+          {
+            "own_app": true,
+            "control_type": "ControlType.TitleBar",
+            "class": "",
+            "point": [
+              279,
+              145.5
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          },
+          {
+            "own_app": true,
+            "control_type": "ControlType.Group",
+            "class": "QTabWidget",
+            "point": [
+              422.5,
+              175
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          },
+          {
+            "own_app": true,
+            "control_type": "ControlType.Group",
+            "class": "QWidget",
+            "point": [
+              452,
+              193.5
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          }
+        ],
+        "coordinate_errors": []
+      },
+      {
+        "phase": "cancelled",
+        "screen_pixels": [
+          0,
+          0,
+          1024,
+          768
+        ],
+        "app_rect_physical": [
+          66,
+          123,
+          958,
+          750
+        ],
+        "from_baseline_ms": 2078,
+        "png_sha256": "8addadc9ee208c703ff58adb4b80503c98454f8e55edfe6c0d0f650d77b10fc4",
+        "bands": [
+          {
+            "seed": [
+              74,
+              124,
+              950,
+              183
+            ],
+            "rect": [
+              74,
+              124,
+              484,
+              177
+            ]
+          }
+        ],
+        "host_uia": [
+          {
+            "class": "Windows.UI.Core.CoreWindow",
+            "host_process": true
+          }
+        ],
+        "matching_uia_items": 0,
+        "coord_hits": [
+          {
+            "own_app": true,
+            "control_type": "ControlType.TitleBar",
+            "class": "",
+            "point": [
+              279,
+              150.5
+            ],
+            "matching_term": false,
+            "text_input_host": false
+          }
+        ],
+        "coordinate_errors": []
+      }
+    ]
+  },
+  "fixed_interior_crop": {
+    "rect": [
+      134,
+      185,
+      771,
+      200
+    ],
+    "format": "Format32bppArgb, underlying bytes including row stride",
+    "sha256_by_phase": {
+      "baseline": "0f85729a426ab4b5b6eb8b26ba005df931f721ce4c4ceb0f85732ece5060681c",
+      "composition": "452e9efffe00f5800140b775b2b011299f3ad19cc97161e7858133fb095246c7",
+      "resize": "452e9efffe00f5800140b775b2b011299f3ad19cc97161e7858133fb095246c7",
+      "resize-delayed": "452e9efffe00f5800140b775b2b011299f3ad19cc97161e7858133fb095246c7",
+      "move-delayed": "6a74ac9e5bfabc31a6bd93833d318c353cb08fca4ac93262345656f6e8292d6a",
+      "cancelled": "006f96121a475165186cb8af7f00285b16fd6bab96f59b625db2ff44c2534553"
+    }
+  },
+  "candidate_overlay_observed": true,
+  "candidate_hwnd_association": null,
+  "physical_presented_done": null
+}
