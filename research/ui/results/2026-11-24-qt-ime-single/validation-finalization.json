@@ -1,0 +1,290 @@
+{
+  "schema": "termforge-r30-native-ime-single-validation-v1",
+  "issue": 155,
+  "parent": 30,
+  "status": "passed_fixed_pinyin_single_session_input_resize_and_exit",
+  "build": {
+    "run_id": 45401506639,
+    "job_id": 138471015213,
+    "source": "5fe10a5c4cbd551122e19086be4b934ceae22856",
+    "tree": "3141c46e88af50cb0f749d3543c6c252ff5ec732",
+    "executable_sha256": {
+      "qt_native_ime_single_test.exe": "017e413b0b70a36cf0710acd57a73194652c7a9c3234fddd213b0cdfabc5703f",
+      "shell_input_client.exe": "63a59740e5d19b5806b03c1be8ce28bed3e624f091822ed38873bd9c46d2afde"
+    },
+    "runner": "20261116.315.1"
+  },
+  "observer_controller_sha256": "e57de8afbdc10ef54fcb7cf486d203d9384456025401e4ca58a0e302602d468b",
+  "windows_version": "10.0.26300.0",
+  "qt_version": "6.10.3",
+  "setup": {
+    "pinyin_sha256": "86f136c8eb175bd3a4153584fae6ab64e6b35d14e25ceec380d511633aac811a",
+    "pinyin_version": "10.0.26100.9818 (WinBuild.160101.0800)",
+    "fixed_profile_registered": true,
+    "display": [
+      1024,
+      768
+    ],
+    "dpi": 96
+  },
+  "actual_native_runs": 1,
+  "received_hex": "e4bda0e5a5bd",
+  "received_bytes": 6,
+  "ime_log": {
+    "events": {
+      "preedit": 10,
+      "cancel": 2,
+      "commit": 1
+    },
+    "commits": [
+      "e4bda0e5a5bd"
+    ]
+  },
+  "observer_final_file": true,
+  "controller": {
+    "status": "passed",
+    "source": "5fe10a5c4cbd551122e19086be4b934ceae22856",
+    "stage": "receive-and-exit",
+    "completed": true,
+    "error": null,
+    "receiver": {
+      "exact_commit": true,
+      "job_active": 0,
+      "presented_done": null,
+      "received_hex": "e4bda0e5a5bd",
+      "schema": "termforge-qt-native-ime-single-v1"
+    },
+    "actions": [
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 78,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 73,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 72,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 65,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 79,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 27,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 78,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 73,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 72,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 65,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 79,
+        "requested": 2
+      },
+      {
+        "returned": 2,
+        "foreground_verified": true,
+        "vk": 32,
+        "requested": 2
+      }
+    ],
+    "outer_job": {
+      "status": "passed",
+      "exit_code": 0,
+      "cleanup_verified": true,
+      "root_reaped": true,
+      "active_after": 0
+    },
+    "inner_cleanup": {
+      "CleanupVerified": true,
+      "Passed": true,
+      "JobAfterActive": 0,
+      "RootReaped": true,
+      "TimedOut": null
+    },
+    "initial": {
+      "foreground": true,
+      "terminal_focus": true,
+      "cursor_in_window": {
+        "height": 22,
+        "width": 9,
+        "x": 10,
+        "y": 55
+      },
+      "columns": 84,
+      "rows": 21,
+      "resize_pending": false,
+      "dpr": 1,
+      "window_width": 780,
+      "window_height": 540,
+      "thread_profile": {
+        "get_active_profile_hresult": 0,
+        "thread_hkl": "8040804",
+        "focused_context_available": true,
+        "ime_open": true,
+        "conversion_query_succeeded": true,
+        "conversion_mode": 1025,
+        "profile": {
+          "type": 1,
+          "language_id": 2052,
+          "clsid": "{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}",
+          "guid": "{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+          "flags": 3
+        }
+      }
+    },
+    "composing": {
+      "foreground": true,
+      "terminal_focus": true,
+      "cursor_in_window": {
+        "height": 22,
+        "width": 9,
+        "x": 10,
+        "y": 55
+      },
+      "columns": 84,
+      "rows": 21,
+      "resize_pending": false,
+      "dpr": 1,
+      "window_width": 780,
+      "window_height": 540,
+      "thread_profile": {
+        "get_active_profile_hresult": 0,
+        "thread_hkl": "8040804",
+        "focused_context_available": true,
+        "ime_open": true,
+        "conversion_query_succeeded": true,
+        "conversion_mode": 1025,
+        "profile": {
+          "type": 1,
+          "language_id": 2052,
+          "clsid": "{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}",
+          "guid": "{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+          "flags": 3
+        }
+      }
+    },
+    "resized": {
+      "foreground": true,
+      "terminal_focus": true,
+      "cursor_in_window": {
+        "height": 22,
+        "width": 9,
+        "x": 10,
+        "y": 55
+      },
+      "columns": 94,
+      "rows": 23,
+      "resize_pending": false,
+      "dpr": 1,
+      "window_width": 876,
+      "window_height": 588,
+      "thread_profile": {
+        "get_active_profile_hresult": 0,
+        "thread_hkl": "8040804",
+        "focused_context_available": true,
+        "ime_open": true,
+        "conversion_query_succeeded": true,
+        "conversion_mode": 1025,
+        "profile": {
+          "type": 1,
+          "language_id": 2052,
+          "clsid": "{81D4E9C9-1D3B-41BC-9E6C-4B40BF79E35E}",
+          "guid": "{FA550B04-5AD7-411F-A5AC-CA038EC515D7}",
+          "flags": 3
+        }
+      }
+    },
+    "candidates_before": [
+      {
+        "class": "Windows.UI.Core.CoreWindow",
+        "owner_root_matches": false,
+        "rect_physical": [
+          0,
+          0,
+          1024,
+          768
+        ]
+      }
+    ],
+    "candidates_during": [
+      {
+        "class": "Windows.UI.Core.CoreWindow",
+        "owner_root_matches": false,
+        "rect_physical": [
+          0,
+          0,
+          1024,
+          768
+        ]
+      }
+    ],
+    "candidates_after_resize": [
+      {
+        "class": "Windows.UI.Core.CoreWindow",
+        "owner_root_matches": false,
+        "rect_physical": [
+          0,
+          0,
+          1024,
+          768
+        ]
+      }
+    ],
+    "candidates_after_cancel": [
+      {
+        "class": "Windows.UI.Core.CoreWindow",
+        "owner_root_matches": false,
+        "rect_physical": [
+          0,
+          0,
+          1024,
+          768
+        ]
+      }
+    ]
+  },
+  "candidate_identity_verified": null,
+  "physical_presentation_verified": null,
+  "alternate_dpi_verified": null
+}
