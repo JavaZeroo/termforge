@@ -26,3 +26,11 @@
 - UIA 从宿主窗口句柄识别出属于 `TextInputHost` 的 `CoreWindow`，其可枚举子树未返回「你好」候选元素。亮带中心点命中的 UIA 元素均属于 Qt 窗口。当前证据确认候选相关像素及这条 UIA 路径的覆盖边界，候选元素到窗口句柄的关联仍未知。 [Microsoft UIA 元素查询接口](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-obtainingelements)
 
 以上 resize 固定原点、纯移动条件与历史 N11 对照轨迹不同。保持输出、字体、候选关联以及该纯移动动作的 WindTerm 对照为独立待验项。
+
+## 目标线程 TSF 和 IMM 候选观测
+
+冻结 `daf4520` 后在同一 VM 用相同按键、resize 和移动重新观测一次。Qt 线程已存在 TSF 线程管理器和有焦点的文档管理器。基线、组合、resize 后、移动后和 Esc 后，`EnumUIElements` 都返回成功，第一次 `Next` 即 `S_FALSE`，没有候选列表可用于核对文档关联。 [冻结构建](https://github.com/JavaZeroo/termforge/actions/runs/45404974749) · [复验结果](validation-candidate-context.json) · [TSF 接口](https://learn.microsoft.com/en-us/windows/win32/api/msctf/nf-msctf-itfuielementmgr-enumuielements)
+
+IMM 在组合期间可读到请求的候选框 `CFS_EXCLUDE` 矩形 `[10,55,19,77]` 和位置 `(10,77)`，同时候选列表容量查询返回 0。64 像素纵向窗口移动后，Qt 窗口内查询值仍相同。这个矩形描述输入上下文的请求，屏幕物理区域和候选关联仍需独立证据。观察进程仅查询已有对象，没有激活 provider、创建线程管理器或改写输入上下文。
+
+同轮屏幕亮带、一次「你好」提交、独立接收端 6 字节和两级 Job 回收均已保存。候选窗候选元素到文档或实际窗口的直接关联保持未知。
