@@ -162,16 +162,10 @@ int main(int argc, char** argv) {
         settle_json["child_pid"] = QString::number(static_cast<qulonglong>(model.resize_state().child_pid));
         evidence["settled"] = settle_json;
 
-        // Public keyboard to the earliest retained row, then public scrollbar
-        // single steps until the painted page row0 is literally TF_H_100.
-        QTest::keyClick(&terminal, Qt::Key_Home, Qt::ControlModifier | Qt::ShiftModifier);
-        QTest::qWait(30);
         const int margin = TerminalWidget::content_margin();
         const int cw = terminal.cell_width(), ch = terminal.cell_height();
         evidence["cell_width"] = cw; evidence["cell_height"] = ch;
         evidence["screen_height"] = model.screen().height();
-        const std::string start_row0 = painted_row_text(terminal, 0);
-        evidence["home_row0"] = QString::fromStdString(start_row0);
         // Establish that both expected rows survived before trying to reach
         // them through public scrolling. Resolve rank from the source rather
         // than deriving the byte oracle from the painted page or selection.
@@ -186,29 +180,37 @@ int main(int argc, char** argv) {
         }
         require(target_top != 0, "settled source does not retain adjacent TF_H_099 and TF_H_100");
         evidence["target_top"] = QString::number(target_top);
-        QJsonArray steps;
-        size_t step_count = 0;
-        for (; step_count < 400; ++step_count) {
-            const std::string row0 = painted_row_text(terminal, 0);
-            if (row0 == "TF_H_100") break;
-            require(row0.size() == 8 && row0.compare(0, 5, "TF_H_") == 0,
-                    "positioning row0 is not a TF_H_ literal: " + hex_bytes(row0));
-            const int number = std::stoi(row0.substr(5, 3));
-            require(number < 100, "positioning overshot TF_H_100 at row0=" + row0);
-            scrollbar->triggerAction(QAbstractSlider::SliderSingleStepAdd);
-            QJsonObject step;
-            step["value"] = scrollbar->value();
-            step["row0"] = QString::fromStdString(row0);
-            steps.append(step);
-        }
-        require(step_count < 400, "public scrollbar steps could not reach TF_H_100");
-        evidence["position_steps"] = steps;
-        evidence["position_step_count"] = QString::number(step_count);
-        const auto positioned = terminal.history_state();
-        require(positioned.top == target_top && scrollbar->value() == static_cast<int>(target_top),
-                "positioned top/value is not the TF_H_100 document rank");
-        require(painted_row_text(terminal, 0) == "TF_H_100" && painted_row_text(terminal, 1) == "TF_H_101",
-                "positioned painted rows are not TF_H_100/TF_H_101");
+        // Both drags start from the same public history position. Copy is
+        // a separate action and may change the viewport before the second drag.
+        const auto position_target = [&](const QString& evidence_key) {
+            QTest::keyClick(&terminal, Qt::Key_Home, Qt::ControlModifier | Qt::ShiftModifier);
+            QTest::qWait(30);
+            std::string row0 = painted_row_text(terminal, 0);
+            QJsonObject position{{"home_row0", QString::fromStdString(row0)}};
+            QJsonArray steps;
+            while (row0 != "TF_H_100" && steps.size() < 400) {
+                position["steps"] = steps;
+                evidence[evidence_key] = position;
+                require(row0.size() == 8 && row0.compare(0, 5, "TF_H_") == 0,
+                        "positioning row0 is not a TF_H_ literal: " + hex_bytes(row0));
+                const int number = std::stoi(row0.substr(5, 3));
+                require(number < 100, "positioning overshot TF_H_100 at row0=" + row0);
+                scrollbar->triggerAction(QAbstractSlider::SliderSingleStepAdd);
+                row0 = painted_row_text(terminal, 0);
+                steps.append(QJsonObject{{"value", scrollbar->value()}, {"row0", QString::fromStdString(row0)}});
+            }
+            const auto positioned = terminal.history_state();
+            position["steps"] = steps;
+            position["row0"] = QString::fromStdString(row0);
+            position["top"] = QString::number(positioned.top);
+            position["value"] = scrollbar->value();
+            evidence[evidence_key] = position;
+            require(row0 == "TF_H_100", "public scrollbar steps could not reach TF_H_100");
+            require(positioned.top == target_top && scrollbar->value() == static_cast<int>(target_top),
+                    "positioned top/value is not the TF_H_100 document rank");
+            require(painted_row_text(terminal, 1) == "TF_H_101", "positioned painted row1 is not TF_H_101");
+        };
+        position_target(QStringLiteral("sanity_position"));
 
         // Non-scroll sanity: public mouse press at row0/column8 (line end,
         // half-open), release at row0/column0; Copy must be the 8 literal
@@ -217,6 +219,8 @@ int main(int argc, char** argv) {
         FakeClipboard* captured = fake.get();
         terminal.setClipboardWriterForTest(std::move(fake));
         send_mouse(terminal, QEvent::MouseButtonPress, QPointF(margin + 8 * cw, margin + 1), Qt::LeftButton, Qt::LeftButton);
+        send_mouse(terminal, QEvent::MouseMove, QPointF(margin, margin + 1), Qt::NoButton, Qt::LeftButton);
+        require(!terminal.selection_autoscroll_active_for_test(), "sanity drag activated the auto-scroll timer");
         send_mouse(terminal, QEvent::MouseButtonRelease, QPointF(margin, margin + 1), Qt::LeftButton, Qt::NoButton);
         require(terminal.has_selection(), "sanity drag left no selection");
         const auto sanity_range = terminal.selection_range_for_test();
@@ -230,6 +234,10 @@ int main(int argc, char** argv) {
         const std::string sanity_copy = QString::fromUtf16(captured->text.data(), static_cast<qsizetype>(captured->text.size())).toStdString();
         evidence["sanity_copy_hex"] = QString::fromStdString(hex_bytes(sanity_copy));
         require(sanity_copy == "TF_H_100", "sanity copy is not the 8 literal bytes TF_H_100");
+        evidence["after_sanity_copy"] = QJsonObject{{"value", scrollbar->value()},
+            {"top", QString::number(terminal.history_state().top)},
+            {"row0", QString::fromStdString(painted_row_text(terminal, 0))}};
+        position_target(QStringLiteral("tick_position"));
 
         // One bounded up tick at the default 40ms interval. The release is
         // sent publicly inside the first valid valueChanged slot, so a second
