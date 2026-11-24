@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: 5fe10a5c4cbd551122e19086be4b934ceae22856
+          ref: daf45208a6297381d06672d730bcc1eff844f13e
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
@@ -53,7 +53,7 @@ jobs:
       - name: Build the observer and stage project binaries
         run: |
           $source = git rev-parse HEAD
-          if ($source -ne '5fe10a5c4cbd551122e19086be4b934ceae22856') { throw 'Frozen source differs' }
+          if ($source -ne 'daf45208a6297381d06672d730bcc1eff844f13e') { throw 'Frozen source differs' }
           cmake --build build/qt-cpp --config Release --target qt_native_ime_single_test --parallel 2
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $dir = 'build/qt-cpp/qt-native-ime-bin/Release'
