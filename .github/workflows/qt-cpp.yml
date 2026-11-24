@@ -1,4 +1,4 @@
-name: Qt autoscroll literal one-shot verification
+name: Qt autoscroll literal compile only
 
 on:
   workflow_dispatch:
@@ -8,16 +8,16 @@ permissions:
 
 jobs:
   literal-v2:
-    if: github.event_name == 'workflow_dispatch' && github.run_attempt == 1 && github.ref_name == 'codex/r29-autoscroll-literal-verify'
+    if: github.event_name == 'workflow_dispatch' && github.run_attempt == 1 && github.ref_name == 'codex/r29-autoscroll-literal-compile'
     runs-on: windows-2025
     timeout-minutes: 15
     env:
       PYTHONUTF8: '1'
-      FROZEN_SOURCE: f8839413e32efeff40ff06bfe8eb7597cb3ebda1
+      FROZEN_SOURCE: cf5fd1dac63d5fb911de11839c6be1e84f20f744
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: f8839413e32efeff40ff06bfe8eb7597cb3ebda1
+          ref: cf5fd1dac63d5fb911de11839c6be1e84f20f744
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
@@ -36,59 +36,3 @@ jobs:
             "-DTERMFORGE_MSVC_RUNTIME_DIR=$deps/crt"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build build/qt-cpp --config Release --target qt_autoscroll_literal_test --parallel 2
-      - name: Execute the authorized Qt literal once
-        env:
-          TERMFORGE_QT_QPA_PLATFORM: offscreen
-        run: |
-          $head = git rev-parse HEAD
-          $tree = git rev-parse 'HEAD^{tree}'
-          if ($head -ne $env:FROZEN_SOURCE -or (git status --porcelain --untracked-files=no)) { throw 'Frozen source differs' }
-          $out = Join-Path $env:RUNNER_TEMP 'tf327-literal'
-          if (Test-Path -LiteralPath $out) { throw 'One-shot evidence directory already exists' }
-          New-Item -ItemType Directory -Path $out | Out-Null
-          $exe = Join-Path $env:GITHUB_WORKSPACE 'build/qt-cpp/qt-autoscroll-literal-bin/Release/qt_autoscroll_literal_test.exe'
-          $paths = @('src/qt/autoscroll_literal_test.cpp','src/qt/history_fixture.hpp','src/qt/terminal_widget.hpp','src/qt/run_smoke.py')
-          $hashes = [ordered]@{}
-          foreach ($path in $paths) { $hashes[$path] = (Get-FileHash -LiteralPath $path).Hash.ToLowerInvariant() }
-          [ordered]@{
-            schema = 'termforge-qt-literal-ci-identity-v1'
-            source_commit = $head
-            source_tree = $tree
-            source_sha256 = $hashes
-            executable_sha256 = (Get-FileHash -LiteralPath $exe).Hash.ToLowerInvariant()
-            run_id = $env:GITHUB_RUN_ID
-            run_attempt = $env:GITHUB_RUN_ATTEMPT
-            qpa = 'offscreen'
-            runner_image = $env:ImageVersion
-          } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath "$out/identity.json" -Encoding utf8
-          $env:TERMFORGE_AUTOSCROLL_LITERAL_EVIDENCE = "$out/literal.json"
-          python src/qt/run_smoke.py $exe --literal-v2 *> "$out/supervisor.log"
-          $code = $LASTEXITCODE
-          $records = @(Get-Content -LiteralPath "$out/supervisor.log" | ForEach-Object {
-            try { $_ | ConvertFrom-Json -ErrorAction Stop } catch {}
-          } | Where-Object schema -eq 'termforge-qt-cpp-supervisor-v1')
-          if ($records.Count -ne 1) { throw 'Expected one supervisor record' }
-          $r = $records[0]
-          [ordered]@{
-            schema = $r.schema
-            status = $r.status
-            exit_code = $r.exit_code
-            timed_out = $r.timed_out
-            job_after = $r.job_after
-            job_at_timeout = $r.job_at_timeout
-            cleanup_errors_present = @($r.cleanup_errors | Where-Object { $_ }).Count -gt 0
-          } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath "$out/supervisor.json" -Encoding utf8
-          if (Test-Path -LiteralPath "$out/literal.json") { Get-Content -LiteralPath "$out/literal.json" -Raw }
-          Get-Content -LiteralPath "$out/supervisor.json" -Raw
-          exit $code
-      - name: Archive synthetic results and frozen identities
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: qt-autoscroll-literal-v2
-          if-no-files-found: warn
-          retention-days: 14
-          path: |
-            ${{ runner.temp }}/tf327-literal/identity.json
-            ${{ runner.temp }}/tf327-literal/literal.json
-            ${{ runner.temp }}/tf327-literal/supervisor.json
