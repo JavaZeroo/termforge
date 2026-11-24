@@ -76,6 +76,17 @@ class BcdAddressContractTests(unittest.TestCase):
         self.assertIn("bcd-address-result.json", generated)
         self.assertNotIn("__RESIZE_BCD_CASE_JSON__", generated)
 
+    def test_exporter_binds_all_bcd_markers_in_controller_order(self):
+        terminal = {"lines": [" " * 79 + "B", " " * 79 + "C", "D", "RESIZED"], "markers": [
+            {"label": label, "document_line": row, "column": column, "position": position, "rect": None}
+            for label, row, column, position in (("B", 0, 79, 79), ("C", 1, 79, 160), ("D", 2, 0, 162),
+                                                 ("D", 3, 6, 170), ("RESIZED", 3, 0, 164))
+        ]}
+        self.assertEqual(exporter.marker_projection(terminal), terminal["markers"])
+        terminal["markers"].pop(1)
+        with self.assertRaisesRegex(ValueError, "Marker text binding differs"):
+            exporter.marker_projection(terminal)
+
 
 if __name__ == "__main__":
     unittest.main()

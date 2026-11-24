@@ -20,7 +20,7 @@ from research.ui import export_resize_state_reference as resize_export
 from research.ui import resize_bcd_address_reference as probe
 
 require, sha, digest, integer = common.require, common.sha, common.digest, common.integer
-MARKERS = (*resize_export.MARKERS, "RESIZED")
+MARKERS = ("B", "C", "D", "RESIZED")
 RAW_NAMES = ("evidence.json", "run.json", "probe.js", "peer.json", probe.RESULT_FILE, "files.json",
              "mechanics-check.json", "stderr.txt", "profile-check.json", "cleanup.json", "fixture-ready",
              *(f"ack-{n}" for n in range(4)), *(f"resize-{kind}-{n}" for n in (1, 3) for kind in ("request", "ready")))
