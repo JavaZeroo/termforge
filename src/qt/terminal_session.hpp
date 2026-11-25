@@ -382,6 +382,7 @@ public:
                 started_ && accepting && requested_revision_ != transport_revision_, session_ ? session_->pid : 0};
     }
     const Screen& screen() const { return parser_.screen; }
+    bool uses_host_resize_maps() const { return apply_native_maps_; }
     // Observe one host-generated transaction independently of parser state.
     void observe_native_resize_map() {
         if (started_ || native_map_) throw std::logic_error("Resize map observation must be initialized before launch");
