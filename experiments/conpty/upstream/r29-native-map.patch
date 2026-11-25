@@ -15,20 +15,7 @@ diff --git a/src/buffer/out/textBuffer.cpp b/src/buffer/out/textBuffer.cpp
 +            {
 +                mapping->spans.push_back({ oldY, oldX, state.sourceColumnEnd, newY, newX, state.columnEnd });
 +            }
-@@ -3174,0 +3184,12 @@
-+    // When a shrinking viewport would move a cursor with a blank line
-+    // below it onto the last writable row, retain that blank line in the
-+    // reflow. The ring rotates the preceding content by the same amount.
-+    // A cursor already on the old bottom row keeps its existing policy.
-+    if (mapping && newHeight < oldBuffer.GetSize().Height() &&
-+        oldCursorPos.y == lastRowWithText && oldCursorPos.y + 1 < oldBuffer.GetSize().Height() &&
-+        newY >= newHeight && newCursorPos.y + 1 == newY)
-+    {
-+        newBuffer.GetMutableRowByOffset(newY).Reset(newBuffer._initialAttributes);
-+        newY++;
-+    }
-+
-@@ -3186,0 +3208,5 @@
+@@ -3186,0 +3196,5 @@
 +    }
 +
 +    if (mapping)
