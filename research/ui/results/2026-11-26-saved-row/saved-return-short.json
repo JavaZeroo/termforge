@@ -1,0 +1,211 @@
+{
+  "schema": "termforge-original-saved-cursor-summary-v1",
+  "issue": 27,
+  "case_id": "saved-return-short",
+  "reference": {
+    "executable_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "plan_sha256": "91d729c8c6c81067ee0cda55bedcecde96de345b274df37a460a2b4da7cd2bc5",
+    "export_sha256": "7e77e1819749696f561eb071cf3908d4d603bdc961cd195ce92c21fc57d955a1",
+    "source_base_commit": "be986f8db89295f244f80be8f9b2bd3c333bf061",
+    "capture_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "outer_cleanup": true,
+    "original_runs": 1,
+    "evidence_id": "ev_8a92ab8a61785c6e5730fd29294978a02ed19d26cfcf400ca6b952b95b5ee330",
+    "phases": [
+      {
+        "phase": 0,
+        "label": "saved-primary-row",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b31393b364857",
+        "response_hex": "1b5b31393b3752",
+        "cursor_reply": [
+          19,
+          7
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 324,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 1,
+        "label": "enter-alternate",
+        "source_hex": "1b5b3f3130343968",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 324,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "label": "shrink-while-hidden",
+        "source_hex": "",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          14
+        ],
+        "scroll": 6,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 216,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "label": "restore-primary-cursor",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b31343b3752",
+        "cursor_reply": [
+          14,
+          7
+        ],
+        "frozen_grid": [
+          91,
+          14
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 4,
+        "label": "write-at-restored-cursor",
+        "source_hex": "58",
+        "response_hex": "1b5b31343b3852",
+        "cursor_reply": [
+          14,
+          8
+        ],
+        "frozen_grid": [
+          91,
+          14
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          },
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 6,
+            "rect": {
+              "x": 195,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 5,
+        "label": "grow-after-write",
+        "source_hex": "",
+        "response_hex": "1b5b31343b3852",
+        "cursor_reply": [
+          14,
+          8
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          },
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 6,
+            "rect": {
+              "x": 195,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

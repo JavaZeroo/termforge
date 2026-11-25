@@ -1,0 +1,200 @@
+{
+  "schema": "termforge-original-saved-cursor-summary-v1",
+  "issue": 27,
+  "case_id": "saved-return-tall",
+  "reference": {
+    "executable_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "plan_sha256": "5a933e6171ae610fb857fb813e11ec8c2c062cb0af116ff2e47fd4527cc58f85",
+    "export_sha256": "859fed6d12b94c7ac097d33f33beaf08360f7baf04ec118dd9fbd48a4cc92f77",
+    "source_base_commit": "be986f8db89295f244f80be8f9b2bd3c333bf061",
+    "capture_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "outer_cleanup": true,
+    "original_runs": 1,
+    "evidence_id": "ev_7897575570d8f314184a74cc6b09a581331475e58ecbcb092e2d7e4551d3a182",
+    "phases": [
+      {
+        "phase": 0,
+        "label": "saved-primary-row",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b31393b364857",
+        "response_hex": "1b5b31393b3752",
+        "cursor_reply": [
+          19,
+          7
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 324,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 1,
+        "label": "enter-alternate",
+        "source_hex": "1b5b3f3130343968",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 324,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "label": "shrink-while-hidden",
+        "source_hex": "",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          14
+        ],
+        "scroll": 6,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 216,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "label": "grow-while-hidden",
+        "source_hex": "",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 324,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 4,
+        "label": "restore-primary-cursor",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b31343b3752",
+        "cursor_reply": [
+          14,
+          7
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 5,
+        "label": "write-at-restored-cursor",
+        "source_hex": "58",
+        "response_hex": "1b5b31343b3852",
+        "cursor_reply": [
+          14,
+          8
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 18,
+            "column": 5,
+            "rect": {
+              "x": 187,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          },
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 6,
+            "rect": {
+              "x": 195,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

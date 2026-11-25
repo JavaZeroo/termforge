@@ -164,6 +164,14 @@ jobs:
             python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/results/2026-11-02-resize-frame-reference/$case.json"
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
+      - name: Check saved row and next write after hidden height changes
+        run: |
+          $failed = 0
+          foreach ($case in 'saved-return-short','saved-return-tall') {
+            python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/results/2026-11-26-saved-row/$case.json"
+            if ($LASTEXITCODE -ne 0) { $failed = 1 }
+          }
+          exit $failed
       # Keep this configuration independent from the default/system-backend and
       # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
       # publication artifacts; this job does not produce a release package.

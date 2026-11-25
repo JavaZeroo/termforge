@@ -189,10 +189,10 @@ std::string native_marker_grid(HANDLE output) {
     std::array<CHAR_INFO, columns * rows> cells{};
     SMALL_RECT bounds{0, 0, columns - 1, rows - 1};
     require(ReadConsoleOutputW(output, cells.data(), {columns, rows}, {0, 0}, &bounds) &&
-            bounds.Left == 0 && bounds.Top == 0 && bounds.Bottom == rows - 1 &&
+            bounds.Left == 0 && bounds.Top == 0 && (bounds.Bottom == rows - 1 || bounds.Bottom == 13) &&
             (bounds.Right == columns - 1 || bounds.Right == 60), "native marker grid read failed");
     std::string grid;
-    for (int row = 0; row < rows; ++row)
+    for (int row = 0; row <= bounds.Bottom; ++row)
         for (int column = 0; column <= bounds.Right; ++column) {
             const auto cell = cells[row * columns + column].Char.UnicodeChar;
             grid.push_back(cell == L'W' || cell == L'X' ? static_cast<char>(cell) : ' ');
@@ -423,8 +423,9 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     const bool resized = option == "--saved-cursor-reference";
     const bool margin_case = option == "--duplicate-margin-reference";
     const auto case_id = document.object().value("case_id").toString();
+    const bool height_case = case_id == QStringLiteral("saved-return-short") || case_id == QStringLiteral("saved-return-tall");
     if (resized)
-        require(case_id == QStringLiteral("saved-return-narrow") || case_id == QStringLiteral("saved-return-wide"),
+        require(height_case || case_id == QStringLiteral("saved-return-narrow") || case_id == QStringLiteral("saved-return-wide"),
                 "wrong saved cursor reference file");
     else if (margin_case)
         require(document.object().value("case_id").toString() == QStringLiteral("alternate-duplicate-margin"),
@@ -468,24 +469,27 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
         for (int index = 0; index < phases.size(); ++index) {
             const auto phase = phases[index].toObject();
             const auto size = phase.value("frozen_grid").toArray();
-            require(size.size() == 2 && size[1].toInt() == 20, "invalid saved cursor grid");
-            const int width = size[0].toInt();
-            require((width == 61 || width == 91) && model.resize(width, 20), "saved cursor resize failed");
+            require(size.size() == 2, "missing saved cursor grid");
+            const int width = size[0].toInt(), height = size[1].toInt();
+            require(height_case ? width == 91 && (height == 14 || height == 20)
+                                : height == 20 && (width == 61 || width == 91), "invalid saved cursor grid");
+            require(model.resize(width, height), "saved cursor resize failed");
             wait([&] {
                 const auto state = model.resize_state();
-                return !state.pending && state.transport_columns == width && model.screen().width() == width;
+                return !state.pending && state.transport_columns == width && state.transport_rows == height &&
+                       model.screen().width() == width && model.screen().height() == height;
             }, "saved cursor resize did not complete");
             write_binary(directory / ("release-" + std::to_string(index)), "");
             wait([&] { return std::filesystem::exists(directory / ("done-" + std::to_string(index))); },
                  "saved cursor child did not receive the phase reply");
             // WindTerm's document API also exposes the hidden primary text;
             // compare cells only when the source has made the primary visible.
-            const int restore = case_id == QStringLiteral("saved-return-narrow") ? 3 : 4;
+            const int restore = (case_id == QStringLiteral("saved-return-narrow") || case_id == QStringLiteral("saved-return-short")) ? 3 : 4;
             const bool primary = index == 0 || index >= restore;
             if ((model.screen().active_buffer() == termforge::ScreenBuffer::primary) != primary) ++differences;
             if (!primary) continue;
             const auto markers = phase.value("markers").toArray();
-            std::string expected_native(width * 20, ' ');
+            std::string expected_native(width * height, ' ');
             int found = 0;
             for (const auto& line : model.screen().visible_lines())
                 for (int column = 0; column < width; ++column)
@@ -493,8 +497,12 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
             if (found != markers.size()) ++differences;
             for (const auto& value : markers) {
                 const auto marker = value.toObject();
-                const int row = marker.value("document_line").toInt(-1), col = marker.value("column").toInt(-1);
-                require(row >= 0 && row < 20 && col >= 0 && col < width, "reference marker is outside the primary grid");
+                const int row = marker.value("document_line").toInt(-1) - (height_case ? phase.value("scroll").toInt() : 0);
+                const int col = marker.value("column").toInt(-1);
+                require(row >= 0 && row < height && col >= 0 && col < width, "reference marker is outside the primary grid");
+                if (height_case)
+                    require(marker.value("rect").toObject().value("y").toInt(-1) == row * 18,
+                            "reference scroll offset and measured cell rectangle disagree");
                 const auto label = marker.value("label").toString();
                 require(label == QStringLiteral("W") || label == QStringLiteral("X"), "invalid saved cursor marker");
                 expected_native[row * width + col] = label.at(0).toLatin1();
@@ -503,9 +511,12 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
                     std::cerr << "saved cursor marker differs at phase " << index << " cell " << row << ',' << col << '\n';
                 }
             }
-            if (read_binary(directory / ("cells-" + std::to_string(index))) != expected_native) {
+            const auto native = read_binary(directory / ("cells-" + std::to_string(index)));
+            if (native != expected_native) {
                 ++differences;
                 std::cerr << "native marker grid differs at phase " << index << '\n';
+                for (size_t cell = 0; cell < native.size(); ++cell)
+                    if (native[cell] != ' ') std::cerr << native[cell] << " at " << cell / width << ',' << cell % width << '\n';
             }
         }
     }
