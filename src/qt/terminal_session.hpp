@@ -173,8 +173,12 @@ private:
             }
             if (!parser_failed_) {
                 try {
-                    if (native_map_) native_map_->observe(bytes);
-                    parser_.feed(bytes);
+                    if (native_map_) {
+                        native_map_->feed(bytes, [this](std::string_view output) { parser_.feed(output); },
+                                          [](const tf_conpty::NativeResizeMap&) {});
+                    } else {
+                        parser_.feed(bytes);
+                    }
                     // Query replies (a cursor position report today) go back to the
                     // child through the same bounded input path as keystrokes.
                     // A reply only matters while the child is still attached: ConPTY
@@ -194,7 +198,10 @@ private:
         }
         if (cleanup_done_.load(std::memory_order_acquire) && !output_.snapshot().queued_bytes) {
             if (!parser_failed_) {
-                try { parser_.finish(); }
+                try {
+                    if (native_map_) native_map_->finish([this](std::string_view output) { parser_.feed(output); });
+                    parser_.finish();
+                }
                 catch (const std::exception& error) {
                     parser_failed_ = true;
                     remember_error(QString::fromUtf8(error.what()));
