@@ -13,11 +13,11 @@ jobs:
     timeout-minutes: 15
     env:
       PYTHONUTF8: '1'
-      FROZEN_SOURCE: 1aafddd7f6c45e7507b46a319d2e369aecde2b1f
+      FROZEN_SOURCE: 724dc9a87952cfe77bb397b6b09762907b5a8865
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: 1aafddd7f6c45e7507b46a319d2e369aecde2b1f
+          ref: 724dc9a87952cfe77bb397b6b09762907b5a8865
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
@@ -60,7 +60,7 @@ jobs:
             runner_image = $env:ImageVersion
             qpa = $env:TERMFORGE_QT_QPA_PLATFORM
           } | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath "$out/identity.json" -Encoding UTF8
-          python src/qt/run_smoke.py $exe --bcd-comparison *> "$out/run.log"
+          python src/qt/run_smoke.py $exe --bcd-depth-control *> "$out/run.log"
           $code = $LASTEXITCODE
           $records = @(Get-Content -LiteralPath "$out/run.log" | ForEach-Object {
             try { $_ | ConvertFrom-Json -ErrorAction Stop } catch {}
