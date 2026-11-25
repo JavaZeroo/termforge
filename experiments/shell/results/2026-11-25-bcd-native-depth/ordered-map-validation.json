@@ -1,0 +1,1593 @@
+{
+  "schema": "termforge-r29-ordered-native-map-evidence-v1",
+  "hosted": {
+    "build_run": 45560850010,
+    "runtime_run": 45561963694,
+    "first_compile_failed_run": 45561569436,
+    "artifact_digests": [
+      {
+        "digest": "sha256:3f96a77a38bae782dfce304738f2677f67c62f8e76c92dfb9de865f06079a469",
+        "id": 14998282273,
+        "name": "r29-native-map-runtime-official"
+      },
+      {
+        "digest": "sha256:90509b604133b048e9211a29af8fdf1eb639c149a71918a1de507e64b1b9e57c",
+        "id": 14998062653,
+        "name": "r29-native-map-runtime-candidate"
+      }
+    ],
+    "observations": {
+      "official": {
+        "identity": {
+          "variant": "official",
+          "files": {
+            "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+            "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+          },
+          "source": "c6c48de73daa8da9433f5f560eb32527f8871906",
+          "variant_build_run": "45560850010",
+          "variant_build_head": "271b1b102e6ff2c64255291d05343424b169eedf",
+          "pair_artifact": null,
+          "runner_image": "20261116.315.1",
+          "workflow_run": "45561963694",
+          "executable_sha256": "5c0117eeb3fb822ebb55c53ed9683f576c9c64f169d3946593c843611f43f1b0",
+          "win32_executable_sha256": "e6172cda122eabdf943b4b0cb3c3e7a533347a7220b98cbdadb07065e7ab6d75"
+        },
+        "legacy_exit": 1,
+        "legacy_cleanup": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "win32": [
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 2202,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23,
+            "win32_checks": 31,
+            "win32_error": 0
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 2206,
+            "query_error": 0,
+            "buffer_columns": 60,
+            "buffer_rows": 12,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 59,
+            "window_bottom": 11,
+            "win32_checks": 31,
+            "win32_error": 0
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 2209,
+            "query_error": 0,
+            "buffer_columns": 100,
+            "buffer_rows": 30,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 99,
+            "window_bottom": 29,
+            "win32_checks": 31,
+            "win32_error": 0
+          }
+        ],
+        "win32_supervisor": {
+          "schema": "termforge-qt-cpp-supervisor-v1",
+          "status": "passed",
+          "timed_out": false,
+          "exit_code": 0,
+          "job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "sample": {
+            "schema": "termforge-qt-win32-resize-v1",
+            "grids": 3,
+            "api_checks_per_grid": 5,
+            "child_exit": 37,
+            "cleanup_verified": true,
+            "presented_done": null
+          }
+        }
+      },
+      "candidate": {
+        "identity": {
+          "variant": "candidate",
+          "files": {
+            "conpty.dll": "b102b321c7af26e4dee941a52d254494e6e53fef03bc8f084917dc7b07e57b11",
+            "OpenConsole.exe": "9fd7785b60b89383ab794b78236a32565af627ab4e20d8915cb74d0d270b5ad9"
+          },
+          "source": "c6c48de73daa8da9433f5f560eb32527f8871906",
+          "variant_build_run": "45560850010",
+          "variant_build_head": "271b1b102e6ff2c64255291d05343424b169eedf",
+          "pair_artifact": {
+            "files": {
+              "conpty.dll": "b102b321c7af26e4dee941a52d254494e6e53fef03bc8f084917dc7b07e57b11",
+              "OpenConsole.exe": "9fd7785b60b89383ab794b78236a32565af627ab4e20d8915cb74d0d270b5ad9"
+            },
+            "artifact": 14997668071,
+            "archive_sha256": "92ac61fb594b29705e0d0d4f951d382cf8002e8f5ff726f19057ba1ccfa91c25"
+          },
+          "runner_image": "20261116.315.1",
+          "workflow_run": "45561963694",
+          "executable_sha256": "9b4397a00108fa91392baf8989436eec53093697386db32e6d2383980ba77bb1",
+          "win32_executable_sha256": "24ab8a7001ee360d4d9e838e63bd83d97e9ffb7762013978a6a36d7f5b25ab2d"
+        },
+        "legacy_exit": 1,
+        "legacy_cleanup": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "win32": [
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 2202,
+            "query_error": 0,
+            "buffer_columns": 80,
+            "buffer_rows": 24,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 79,
+            "window_bottom": 23,
+            "win32_checks": 31,
+            "win32_error": 0
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 2206,
+            "query_error": 0,
+            "buffer_columns": 60,
+            "buffer_rows": 12,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 59,
+            "window_bottom": 11,
+            "win32_checks": 31,
+            "win32_error": 0
+          },
+          {
+            "schema": "termforge-qt-child-size-v1",
+            "nonce": 2209,
+            "query_error": 0,
+            "buffer_columns": 100,
+            "buffer_rows": 30,
+            "window_left": 0,
+            "window_top": 0,
+            "window_right": 99,
+            "window_bottom": 29,
+            "win32_checks": 31,
+            "win32_error": 0
+          }
+        ],
+        "win32_supervisor": {
+          "schema": "termforge-qt-cpp-supervisor-v1",
+          "status": "passed",
+          "timed_out": false,
+          "exit_code": 0,
+          "job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "sample": {
+            "schema": "termforge-qt-win32-resize-v1",
+            "grids": 3,
+            "api_checks_per_grid": 5,
+            "child_exit": 37,
+            "cleanup_verified": true,
+            "presented_done": null
+          }
+        },
+        "map": {
+          "schema": "termforge-qt-native-resize-map-v1",
+          "steps": 2,
+          "mapped_cells": [
+            {
+              "marker": "B",
+              "from": [
+                7,
+                79
+              ],
+              "to": [
+                8,
+                19
+              ]
+            },
+            {
+              "marker": "C",
+              "from": [
+                9,
+                79
+              ],
+              "to": [
+                11,
+                19
+              ]
+            },
+            {
+              "marker": "D",
+              "from": [
+                10,
+                0
+              ],
+              "to": [
+                11,
+                20
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "windterm": {
+    "os": "Windows 11 x64 build 26300",
+    "test_runner": "isolated QEMU guest using fixed REA 6.7.0",
+    "reference": {
+      "width_only": {
+        "source": {
+          "winpty_bcd_native.py": "05938eca3a73fd79aca3e17f0c2f75ed29e0b25a4e56a3b234614079ecaae3aa",
+          "r29_local_legacy_reference.py": "81ffd94f5f6fd2d8e44897e6b7c970a22be87a419bee466ed8abc47231736183",
+          "r29_local_legacy_reference.js": "778810639b8c0168af00c5b477af772477ae8242f27f9acbc3fda324d0ecad66"
+        },
+        "identity": {
+          "sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+          "files_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+          "script_sha256": "c5e7ea57875e55bf6f4065b079b410168decf8226b41128aa367a6db36848eb6",
+          "fixture_sha256": "05938eca3a73fd79aca3e17f0c2f75ed29e0b25a4e56a3b234614079ecaae3aa",
+          "template_sha256": "d55b5a6cb9d425b9ec1d8b49c3cdd85456e50f31ebadf5f17177dc8061a892c4"
+        },
+        "inner_job": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "outer_job": {
+          "remaining": 0,
+          "root_reaped": true
+        },
+        "geometry_calibration": [
+          {
+            "phase": 0,
+            "window": [
+              1228,
+              749
+            ],
+            "native_grid": [
+              80,
+              19
+            ],
+            "requested": [
+              1228,
+              839
+            ]
+          },
+          {
+            "phase": 0,
+            "window": [
+              1228,
+              839
+            ],
+            "native_grid": [
+              80,
+              22
+            ],
+            "requested": [
+              1228,
+              875
+            ]
+          },
+          {
+            "phase": 5,
+            "window": [
+              988,
+              749
+            ],
+            "native_grid": [
+              60,
+              19
+            ],
+            "requested": [
+              988,
+              839
+            ]
+          },
+          {
+            "phase": 5,
+            "window": [
+              988,
+              839
+            ],
+            "native_grid": [
+              60,
+              22
+            ],
+            "requested": [
+              988,
+              875
+            ]
+          }
+        ],
+        "stages": [
+          {
+            "phase": 0,
+            "widget_pixels": [
+              1228,
+              875
+            ],
+            "native": {
+              "phase": 0,
+              "source_hex": "1b5b306d1b5b324a1b5b333b33481b5b33313b34346d4d41494e1b5b306d1b5b353b3348e4b8ad65cc811b5b363b3348424153451b5b313b31485331",
+              "size": [
+                80,
+                3000
+              ],
+              "window": [
+                0,
+                0,
+                79,
+                23
+              ],
+              "cursor_rc": [
+                0,
+                2
+              ],
+              "native_rows": [
+                "S1",
+                "",
+                "  MAIN",
+                "",
+                "  中中é",
+                "  BASE",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            "document": {
+              "capacity": 24,
+              "scroll": 0,
+              "line_count": 6,
+              "lines": [
+                "S1",
+                "",
+                "  MAIN",
+                "",
+                "  中é",
+                "  BASE"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 5,
+                  "column": 2,
+                  "rect": {
+                    "x": 163,
+                    "y": 90,
+                    "width": 8,
+                    "height": 18,
+                    "left": 163,
+                    "right": 170,
+                    "top": 90,
+                    "bottom": 107
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "phase": 1,
+            "widget_pixels": [
+              1228,
+              875
+            ],
+            "native": {
+              "phase": 1,
+              "source_hex": "1b5b3f31303439681b5b306d1b5b323b3348414c541b5b333b33481b5b33323b34356d534944451b5b306d1b5b313b31485332",
+              "size": [
+                80,
+                24
+              ],
+              "window": [
+                0,
+                0,
+                79,
+                23
+              ],
+              "cursor_rc": [
+                0,
+                2
+              ],
+              "native_rows": [
+                "S2",
+                "  ALT",
+                "  SIDE",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            "document": {
+              "capacity": 24,
+              "scroll": 6,
+              "line_count": 9,
+              "lines": [
+                "S1",
+                "",
+                "  MAIN",
+                "",
+                "  中é",
+                "  BASE",
+                "S2",
+                "  ALT",
+                "  SIDE"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 5,
+                  "column": 2,
+                  "rect": {
+                    "x": 163,
+                    "y": -18,
+                    "width": 8,
+                    "height": 18,
+                    "left": 163,
+                    "right": 170,
+                    "top": -18,
+                    "bottom": -1
+                  }
+                },
+                {
+                  "word": "D",
+                  "row": 8,
+                  "column": 4,
+                  "rect": {
+                    "x": 179,
+                    "y": 36,
+                    "width": 8,
+                    "height": 18,
+                    "left": 179,
+                    "right": 186,
+                    "top": 36,
+                    "bottom": 53
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "phase": 2,
+            "widget_pixels": [
+              1228,
+              875
+            ],
+            "native": {
+              "phase": 2,
+              "source_hex": "1b5b3f31303439681b5b323b33484e45571b5b313b31485333",
+              "size": [
+                80,
+                24
+              ],
+              "window": [
+                0,
+                0,
+                79,
+                23
+              ],
+              "cursor_rc": [
+                0,
+                2
+              ],
+              "native_rows": [
+                "S3",
+                "  NEW",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            "document": {
+              "capacity": 24,
+              "scroll": 6,
+              "line_count": 8,
+              "lines": [
+                "S1",
+                "",
+                "  MAIN",
+                "",
+                "  中é",
+                "  BASE",
+                "S3",
+                "  NEW"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 5,
+                  "column": 2,
+                  "rect": {
+                    "x": 163,
+                    "y": -18,
+                    "width": 8,
+                    "height": 18,
+                    "left": 163,
+                    "right": 170,
+                    "top": -18,
+                    "bottom": -1
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "phase": 3,
+            "widget_pixels": [
+              1228,
+              875
+            ],
+            "native": {
+              "phase": 3,
+              "source_hex": "1b5b3f313034396c211b5b313b31485334",
+              "size": [
+                80,
+                3000
+              ],
+              "window": [
+                0,
+                0,
+                79,
+                23
+              ],
+              "cursor_rc": [
+                0,
+                2
+              ],
+              "native_rows": [
+                "S4!",
+                "",
+                "  MAIN",
+                "",
+                "  中中é",
+                "  BASE",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            "document": {
+              "capacity": 24,
+              "scroll": 8,
+              "line_count": 14,
+              "lines": [
+                "S1",
+                "",
+                "  MAIN",
+                "",
+                "  中é",
+                "  BASE",
+                "S3",
+                "  NEW",
+                "S4!",
+                "",
+                "  MAIN",
+                "",
+                "  中é",
+                "  BASE"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 5,
+                  "column": 2,
+                  "rect": {
+                    "x": 163,
+                    "y": -54,
+                    "width": 8,
+                    "height": 18,
+                    "left": 163,
+                    "right": 170,
+                    "top": -54,
+                    "bottom": -37
+                  }
+                },
+                {
+                  "word": "B",
+                  "row": 13,
+                  "column": 2,
+                  "rect": {
+                    "x": 163,
+                    "y": 90,
+                    "width": 8,
+                    "height": 18,
+                    "left": 163,
+                    "right": 170,
+                    "top": 90,
+                    "bottom": 107
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "phase": 4,
+            "widget_pixels": [
+              1228,
+              875
+            ],
+            "native": {
+              "phase": 4,
+              "source_hex": "1b5b306d1b5b3f376c1b5b383b38304841421b5b3f37681b5b31303b38304843441b5b313b31485335",
+              "size": [
+                80,
+                3000
+              ],
+              "window": [
+                0,
+                0,
+                79,
+                23
+              ],
+              "cursor_rc": [
+                0,
+                2
+              ],
+              "native_rows": [
+                "S5!",
+                "",
+                "  MAIN",
+                "",
+                "  中中é",
+                "  BASE",
+                "",
+                "                                                                               B",
+                "",
+                "                                                                               C",
+                "D",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            "document": {
+              "capacity": 24,
+              "scroll": 8,
+              "line_count": 19,
+              "lines": [
+                "S1",
+                "",
+                "  MAIN",
+                "",
+                "  中é",
+                "  BASE",
+                "S3",
+                "  NEW",
+                "S5!",
+                "",
+                "  MAIN",
+                "",
+                "  中é",
+                "  BASE",
+                "",
+                "                                                                               B",
+                "",
+                "                                                                               C",
+                "D"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 5,
+                  "column": 2,
+                  "rect": {
+                    "x": 163,
+                    "y": -54,
+                    "width": 8,
+                    "height": 18,
+                    "left": 163,
+                    "right": 170,
+                    "top": -54,
+                    "bottom": -37
+                  }
+                },
+                {
+                  "word": "B",
+                  "row": 13,
+                  "column": 2,
+                  "rect": {
+                    "x": 163,
+                    "y": 90,
+                    "width": 8,
+                    "height": 18,
+                    "left": 163,
+                    "right": 170,
+                    "top": 90,
+                    "bottom": 107
+                  }
+                },
+                {
+                  "word": "B",
+                  "row": 15,
+                  "column": 79,
+                  "rect": {
+                    "x": 779,
+                    "y": 126,
+                    "width": 8,
+                    "height": 18,
+                    "left": 779,
+                    "right": 786,
+                    "top": 126,
+                    "bottom": 143
+                  }
+                },
+                {
+                  "word": "C",
+                  "row": 17,
+                  "column": 79,
+                  "rect": {
+                    "x": 779,
+                    "y": 162,
+                    "width": 8,
+                    "height": 18,
+                    "left": 779,
+                    "right": 786,
+                    "top": 162,
+                    "bottom": 179
+                  }
+                },
+                {
+                  "word": "D",
+                  "row": 18,
+                  "column": 0,
+                  "rect": {
+                    "x": 147,
+                    "y": 180,
+                    "width": 8,
+                    "height": 18,
+                    "left": 147,
+                    "right": 154,
+                    "top": 180,
+                    "bottom": 197
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "phase": 5,
+            "widget_pixels": [
+              988,
+              875
+            ],
+            "native": {
+              "phase": 5,
+              "source_hex": "1b5b31323b3148524553495a45441b5b313b31485336",
+              "size": [
+                60,
+                3000
+              ],
+              "window": [
+                0,
+                0,
+                59,
+                23
+              ],
+              "cursor_rc": [
+                0,
+                2
+              ],
+              "native_rows": [
+                "S6!",
+                "",
+                "  MAIN",
+                "",
+                "  中中é",
+                "  BASE",
+                "",
+                "",
+                "                   B",
+                "",
+                "",
+                "RESIZED            CD",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            "document": {
+              "capacity": 24,
+              "scroll": 8,
+              "line_count": 20,
+              "lines": [
+                "S1",
+                "",
+                "  MAIN",
+                "",
+                "  中é",
+                "  BASE",
+                "S3",
+                "  NEW",
+                "S6!",
+                "",
+                "  MAIN",
+                "",
+                "  中é",
+                "  BASE",
+                "",
+                "",
+                "                   B",
+                "",
+                "",
+                "RESIZED            CD"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 5,
+                  "column": 2,
+                  "rect": {
+                    "x": 163,
+                    "y": -54,
+                    "width": 8,
+                    "height": 18,
+                    "left": 163,
+                    "right": 170,
+                    "top": -54,
+                    "bottom": -37
+                  }
+                },
+                {
+                  "word": "B",
+                  "row": 13,
+                  "column": 2,
+                  "rect": {
+                    "x": 163,
+                    "y": 90,
+                    "width": 8,
+                    "height": 18,
+                    "left": 163,
+                    "right": 170,
+                    "top": 90,
+                    "bottom": 107
+                  }
+                },
+                {
+                  "word": "B",
+                  "row": 16,
+                  "column": 19,
+                  "rect": {
+                    "x": 299,
+                    "y": 144,
+                    "width": 8,
+                    "height": 18,
+                    "left": 299,
+                    "right": 306,
+                    "top": 144,
+                    "bottom": 161
+                  }
+                },
+                {
+                  "word": "RESIZED",
+                  "row": 19,
+                  "column": 0,
+                  "rect": {
+                    "x": 147,
+                    "y": 198,
+                    "width": 8,
+                    "height": 18,
+                    "left": 147,
+                    "right": 154,
+                    "top": 198,
+                    "bottom": 215
+                  }
+                },
+                {
+                  "word": "C",
+                  "row": 19,
+                  "column": 19,
+                  "rect": {
+                    "x": 299,
+                    "y": 198,
+                    "width": 8,
+                    "height": 18,
+                    "left": 299,
+                    "right": 306,
+                    "top": 198,
+                    "bottom": 215
+                  }
+                },
+                {
+                  "word": "D",
+                  "row": 19,
+                  "column": 20,
+                  "rect": {
+                    "x": 307,
+                    "y": 198,
+                    "width": 8,
+                    "height": 18,
+                    "left": 307,
+                    "right": 314,
+                    "top": 198,
+                    "bottom": 215
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "shrink_write_restore": {
+        "source": {
+          "winpty_bcd_native.py": "6895b2608d4a62a703b4905bd7c459559c0dd346bba886df7d4dddcc59f306c1",
+          "r29_local_legacy_reference.py": "598f4c5afc5ef2d57f9dedf76a911ed13fbb558c1d6c957e47199521e7659c15",
+          "r29_local_legacy_reference.js": "401ad01d03fbb6c0ca470a21135c551e2567ccff6e2063dc37341e2b33699a13"
+        },
+        "identity": {
+          "sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+          "files_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+          "script_sha256": "4ad0ab6b7ed683084bbe925a41e57faccd16792ed2dc674c328b39b4a0e3a34a",
+          "fixture_sha256": "6895b2608d4a62a703b4905bd7c459559c0dd346bba886df7d4dddcc59f306c1",
+          "template_sha256": "d252cb2b59e8cbfaa1a0be61d30dd6f35fa1f55c5297252a29534f6a2f0a334a"
+        },
+        "inner_job": {
+          "active": 0,
+          "total": 9,
+          "terminated": 0
+        },
+        "outer_job": {
+          "remaining": 0,
+          "root_reaped": true
+        },
+        "geometry_calibration": [
+          {
+            "phase": 0,
+            "window": [
+              1228,
+              749
+            ],
+            "native_grid": [
+              80,
+              19
+            ],
+            "requested": [
+              1228,
+              839
+            ]
+          },
+          {
+            "phase": 0,
+            "window": [
+              1228,
+              839
+            ],
+            "native_grid": [
+              80,
+              22
+            ],
+            "requested": [
+              1228,
+              875
+            ]
+          },
+          {
+            "phase": 1,
+            "window": [
+              988,
+              509
+            ],
+            "native_grid": [
+              60,
+              10
+            ],
+            "requested": [
+              988,
+              545
+            ]
+          },
+          {
+            "phase": 3,
+            "window": [
+              1228,
+              749
+            ],
+            "native_grid": [
+              80,
+              19
+            ],
+            "requested": [
+              1228,
+              839
+            ]
+          },
+          {
+            "phase": 3,
+            "window": [
+              1228,
+              839
+            ],
+            "native_grid": [
+              80,
+              22
+            ],
+            "requested": [
+              1228,
+              875
+            ]
+          }
+        ],
+        "stages": [
+          {
+            "phase": 0,
+            "widget_pixels": [
+              1228,
+              875
+            ],
+            "native": {
+              "phase": 0,
+              "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b383b383048421b5b31303b383048431b5b31313b3148441b5b366e",
+              "size": [
+                80,
+                3000
+              ],
+              "window": [
+                0,
+                0,
+                79,
+                23
+              ],
+              "cursor_rc": [
+                10,
+                1
+              ],
+              "native_rows": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "                                                                               B",
+                "",
+                "                                                                               C",
+                "D",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            "document": {
+              "capacity": 24,
+              "scroll": 0,
+              "line_count": 11,
+              "lines": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "                                                                               B",
+                "",
+                "                                                                               C",
+                "D"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 7,
+                  "column": 79,
+                  "rect": {
+                    "x": 779,
+                    "y": 126,
+                    "width": 8,
+                    "height": 18,
+                    "left": 779,
+                    "right": 786,
+                    "top": 126,
+                    "bottom": 143
+                  }
+                },
+                {
+                  "word": "C",
+                  "row": 9,
+                  "column": 79,
+                  "rect": {
+                    "x": 779,
+                    "y": 162,
+                    "width": 8,
+                    "height": 18,
+                    "left": 779,
+                    "right": 786,
+                    "top": 162,
+                    "bottom": 179
+                  }
+                },
+                {
+                  "word": "D",
+                  "row": 10,
+                  "column": 0,
+                  "rect": {
+                    "x": 147,
+                    "y": 180,
+                    "width": 8,
+                    "height": 18,
+                    "left": 147,
+                    "right": 154,
+                    "top": 180,
+                    "bottom": 197
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "phase": 1,
+            "widget_pixels": [
+              988,
+              545
+            ],
+            "native": {
+              "phase": 1,
+              "source_hex": "1b5b366e",
+              "size": [
+                60,
+                3000
+              ],
+              "window": [
+                0,
+                1,
+                59,
+                12
+              ],
+              "cursor_rc": [
+                10,
+                21
+              ],
+              "native_rows": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "                   B",
+                "",
+                "                   CD",
+                "",
+                ""
+              ]
+            },
+            "document": {
+              "capacity": 12,
+              "scroll": 1,
+              "line_count": 11,
+              "lines": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "                   B",
+                "",
+                "                   CD"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 8,
+                  "column": 19,
+                  "rect": {
+                    "x": 299,
+                    "y": 126,
+                    "width": 8,
+                    "height": 18,
+                    "left": 299,
+                    "right": 306,
+                    "top": 126,
+                    "bottom": 143
+                  }
+                },
+                {
+                  "word": "C",
+                  "row": 10,
+                  "column": 19,
+                  "rect": {
+                    "x": 299,
+                    "y": 162,
+                    "width": 8,
+                    "height": 18,
+                    "left": 299,
+                    "right": 306,
+                    "top": 162,
+                    "bottom": 179
+                  }
+                },
+                {
+                  "word": "D",
+                  "row": 10,
+                  "column": 20,
+                  "rect": {
+                    "x": 307,
+                    "y": 162,
+                    "width": 8,
+                    "height": 18,
+                    "left": 307,
+                    "right": 314,
+                    "top": 162,
+                    "bottom": 179
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "phase": 2,
+            "widget_pixels": [
+              988,
+              545
+            ],
+            "native": {
+              "phase": 2,
+              "source_hex": "1b5b31323b3148524553495a45441b5b366e",
+              "size": [
+                60,
+                3000
+              ],
+              "window": [
+                0,
+                1,
+                59,
+                12
+              ],
+              "cursor_rc": [
+                12,
+                7
+              ],
+              "native_rows": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "                   B",
+                "",
+                "                   CD",
+                "",
+                "RESIZED"
+              ]
+            },
+            "document": {
+              "capacity": 12,
+              "scroll": 1,
+              "line_count": 13,
+              "lines": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "                   B",
+                "",
+                "                   CD",
+                "",
+                "RESIZED"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 8,
+                  "column": 19,
+                  "rect": {
+                    "x": 299,
+                    "y": 126,
+                    "width": 8,
+                    "height": 18,
+                    "left": 299,
+                    "right": 306,
+                    "top": 126,
+                    "bottom": 143
+                  }
+                },
+                {
+                  "word": "C",
+                  "row": 10,
+                  "column": 19,
+                  "rect": {
+                    "x": 299,
+                    "y": 162,
+                    "width": 8,
+                    "height": 18,
+                    "left": 299,
+                    "right": 306,
+                    "top": 162,
+                    "bottom": 179
+                  }
+                },
+                {
+                  "word": "D",
+                  "row": 10,
+                  "column": 20,
+                  "rect": {
+                    "x": 307,
+                    "y": 162,
+                    "width": 8,
+                    "height": 18,
+                    "left": 307,
+                    "right": 314,
+                    "top": 162,
+                    "bottom": 179
+                  }
+                },
+                {
+                  "word": "RESIZED",
+                  "row": 12,
+                  "column": 0,
+                  "rect": {
+                    "x": 147,
+                    "y": 198,
+                    "width": 8,
+                    "height": 18,
+                    "left": 147,
+                    "right": 154,
+                    "top": 198,
+                    "bottom": 215
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "phase": 3,
+            "widget_pixels": [
+              1228,
+              875
+            ],
+            "native": {
+              "phase": 3,
+              "source_hex": "1b5b366e",
+              "size": [
+                80,
+                3000
+              ],
+              "window": [
+                0,
+                0,
+                79,
+                23
+              ],
+              "cursor_rc": [
+                11,
+                7
+              ],
+              "native_rows": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "                                                                               B",
+                "                                                                               C",
+                "D",
+                "",
+                "RESIZED",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+              ]
+            },
+            "document": {
+              "capacity": 24,
+              "scroll": 1,
+              "line_count": 12,
+              "lines": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "                                                                               B",
+                "                                                                               C",
+                "D",
+                "",
+                "RESIZED"
+              ],
+              "markers": [
+                {
+                  "word": "B",
+                  "row": 7,
+                  "column": 79,
+                  "rect": {
+                    "x": 779,
+                    "y": 108,
+                    "width": 8,
+                    "height": 18,
+                    "left": 779,
+                    "right": 786,
+                    "top": 108,
+                    "bottom": 125
+                  }
+                },
+                {
+                  "word": "C",
+                  "row": 8,
+                  "column": 79,
+                  "rect": {
+                    "x": 779,
+                    "y": 126,
+                    "width": 8,
+                    "height": 18,
+                    "left": 779,
+                    "right": 786,
+                    "top": 126,
+                    "bottom": 143
+                  }
+                },
+                {
+                  "word": "D",
+                  "row": 9,
+                  "column": 0,
+                  "rect": {
+                    "x": 147,
+                    "y": 144,
+                    "width": 8,
+                    "height": 18,
+                    "left": 147,
+                    "right": 154,
+                    "top": 144,
+                    "bottom": 161
+                  }
+                },
+                {
+                  "word": "RESIZED",
+                  "row": 11,
+                  "column": 0,
+                  "rect": {
+                    "x": 147,
+                    "y": 180,
+                    "width": 8,
+                    "height": 18,
+                    "left": 147,
+                    "right": 154,
+                    "top": 180,
+                    "bottom": 197
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
