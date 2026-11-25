@@ -1,6 +1,6 @@
 # 本地 Qt 构建依赖
 
-当前 C++/Qt 迁移入口固定使用 Qt **6.10.3**、Windows desktop **MSVC 2022 x64** 的 `qtbase` SDK，应用动态链接 Core、Gui、Widgets；测试入口另使用 Test。Qt Widgets 的当前路线见 [ADR-0008](../../docs/adr/0008-cpp-core-qt-widgets.md)。本目录只保存来源说明和 [manifest.json](manifest.json)，不提交 Qt 归档、DLL、插件或本地 SDK。
+正式 C++／Qt 构建固定使用 Qt **6.10.3** 的 Windows desktop **MSVC 2022 x64** `qtbase` SDK。应用动态链接 Core、Gui、Widgets，测试另使用 Test。此目录保存[归档清单](manifest.json)、[部署组件清单](components.json)和[许可文本](LICENSES/)；SDK 归档、运行库及插件由准备与部署工具取得。
 
 ## 来源与身份
 
@@ -41,7 +41,7 @@ ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_(shell|resize)$' --no-tests
 
 `Qt6_DIR` 应包含该版本的 `Qt6Config.cmake`；正式入口缺少或不匹配固定 ConPTY/CRT 时明确失败，不回退系统版本。CRT 按实际 VC Tools 目录版本检查兼容上限。最小 SDK 未安装翻译，当前构建使用 `windeployqt --no-translations --no-compiler-runtime` 部署 Qt，另显式复制固定 app-local CRT；Qt 默认 compiler-runtime 部署会携带待执行的安装包，不能代替这批便携目录的 DLL。完整运行时清单绑定最终目录，不代表所有许可和产品打包已验收。
 
-专用 [Qt C++ CI](../../.github/workflows/qt-cpp.yml) 在 `windows-2025` 中执行同一准备、产品及两个显式 Qt smoke target 构建，以及 `qt_cpp_shell` / `qt_cpp_resize` 的 offscreen / OwnedJob 检查。它不继承默认／系统后端或 Alacritty 作业的通过结果；runner 验证不扩大 Windows 11 x64 或其他平台的产品支持声明。自动产物仅保留路径无关的准备摘要和三份完整运行时清单，不上传 SDK、部署目录或原始日志；runner 的 offscreen 成功不替代隔离 Windows 的原生加载与交互验证。
+上面的命令用于本地最小检查。专用 [Qt C++ CI](../../.github/workflows/qt-cpp.yml) 还从固定源码重建 ConPTY、校验 Qt 组件清单、核对产品暂存目录，并运行离屏回归、Windows QPA 剪贴板检查和真实子进程协议对照。CI 上传路径无关的准备与固定源码摘要、暂存清单、许可索引及运行时文件身份。完整覆盖和产物白名单以工作流为准。
 
 CI 的 `windows-2025` 已实际解析到 `windows-2025-vs2026`，该映像没有 VS 2022 实例；因此工作流显式使用 [CMake 的 VS 2026 generator](https://cmake.org/cmake/help/latest/generator/Visual%20Studio%2018%202026.html)，要求 CMake 4.2 或更新。Qt SDK 仍是固定的 MSVC 2022 x64 包，不把 SDK 名称改称 VS 2026。[微软的二进制兼容说明](https://learn.microsoft.com/en-us/cpp/porting/binary-compat-2015-2017?view=msvc-170)允许较新链接器消费较早工具链构建的动态库，但实际兼容性仍由这次独立构建和会话检查证明；本地 VS 2022 验证与 hosted VS 2026 验证分别记录。
 

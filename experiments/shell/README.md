@@ -2,7 +2,7 @@
 
 本说明负责工作区的运行、接口、所有权和验证入口。当前能力统一见[功能矩阵](../../docs/FEATURES.md)，剩余联合验收见 [R2 合同](../../docs/milestones/R2-local-terminal.md)，执行状态见[跟踪索引](../../docs/TRACKING.md)。受控编号日志、洪流、八会话 data-only 场景及资源接缝见 [WORKFLOW](WORKFLOW.md)。
 
-这是可从源码运行的 Windows 本地交互原型：真实 shell → ConPTY → 有界输出队列 → 核心 → 历史视口/只读快照 → DirectWrite/Direct2D → 自有 HWND；窗口输入经有界队列回到 ConPTY。默认构建使用自研 Recovery 核心；显式 `TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 构建使用候选 Term/Processor，接口见[候选适配说明](../core/CANDIDATE.md)。两条路径分别验证，不能把候选核心的能力算给默认构建，也不能把默认核心的限制算成候选能力缺失。R1 的固定基础文字验收不代替 R2 日常开发版出口。
+本页说明默认 Win32 工作区。窗口使用 DirectWrite/Direct2D，系统 ConPTY 与自主恢复模式核心之间通过有界队列传输。`TERMFORGE_BUILD_CANDIDATE_ADAPTER=ON` 接入 [Alacritty 参考适配器](../core/CANDIDATE.md)。正式 Qt／固定源码 ConPTY 的构建和使用见 [Qt 说明](../../src/qt/README.md)。
 
 ## 运行
 
@@ -14,13 +14,13 @@ cmake --build build --config Release --target termforge_shell --parallel 2
 .\build\bin\Release\termforge_shell.exe
 ```
 
-程序为 Windows GUI 子系统，不额外打开宿主控制台。默认打开真实可见窗口，在启动目录运行系统 `cmd.exe /d /q`，关闭 AutoRun，设置 UTF-8 code page 与固定 `TF>` 提示符。支持普通字符、中文字符消息、回车、退格和方向键；R1 历史证据包含 Ctrl-C，但当前 Windows 11 持续 `cmd for /L` 输出的中断回归 [#36](https://github.com/JavaZeroo/termforge/issues/36) 尚未解决，不能宣称当前该场景通过。输入 `exit` 或关闭标签会结束本会话并回收其自有子树；关闭主窗口回收全部标签。最后一个标签关闭后工作区保留，可以继续新建。用户启动的进程仍可访问用户自己的文件；这里是本地 shell，不是沙箱。
+程序打开可见窗口，在启动目录运行系统 `cmd.exe /d /q`，关闭 AutoRun，设置 UTF-8 code page 与固定 `TF>` 提示符。支持普通字符、中文字符消息、回车、退格和方向键。[持续输出 Ctrl+C 同源复验](../conpty/results/2026-10-26-ctrl-c-retest/validation.json)通过，原始失败原因仍未知。输入 `exit` 或关闭标签会回收该会话，关闭主窗口会回收全部标签。关闭最后一个标签后仍可新建会话。会话中的进程沿用启动用户的文件访问权限。
 
 构建会自动复制独立开源的 Roboto Mono UI 字体及许可到 EXE 旁的 `assets/fonts/`；移动或分发 EXE 时保留此目录及同目录的 `shell_clipboard_reader.exe`。字体从可执行文件目录私有加载，不依赖当前工作目录，不安装到系统。缺失或实际字体不匹配时明确失败。来源、固定哈希及 OFL 许可见[字体说明](../../assets/fonts/README.md)。
 
 `ShellLaunch` 将可执行文件、参数、工作目录和命令差异放在同一启动描述中。默认仍为原 cmd；固定测试另覆盖 Windows PowerShell 5.1、PowerShell 7 和显式 Ubuntu WSL。PowerShell 原生命令使用 `&`，WSL helper 将绝对 Windows 路径转换为 `/mnt/<drive>/...`，不能用同一字符串拼法处理三种 shell。两轮真实启动/目录/尺寸/逐个正常退出及启动失败恢复见[验证](results/2026-10-24-r2-shell-lifecycle/validation.json)；通用分屏/排序、任意 profile/参数和全部运行时错误提示尚未完成。
 
-默认 1360×860 逻辑内容区（以 96 DPI 为基准），底部真实 ShellPane，每会话保留最多 100 行历史；网格按扣除原生滚动条的客户区和实际单元格计算。窗口支持拖动缩放/最大化，网格范围为 1–500 列、1–200 行。默认自研路径采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄会截去右侧内容，增宽不会恢复；不执行备用屏、滚动区域和终端查询，未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。候选路径具有独立的备用屏、滚动区域、真实回复、流式字素和 reflow 切片，完整 resize 合同仍由 [#29](https://github.com/JavaZeroo/termforge/issues/29)验收，不能由上游行为直接替换产品策略。共享[逐格 renderer](../presentation/README.md)的布局缓存至多 1,024 项，满时清空重建；这不是产品级缓存或性能验收。
+默认 1360×860 逻辑内容区以 96 DPI 为基准，每会话保留最多 100 行历史。网格由扣除原生滚动条的客户区决定，范围为 1–500 列、1–200 行。默认自研路径采用[物理行 resize 契约](../../docs/adr/0005-physical-row-resize.md)，缩窄截去右侧内容。自主核心提供基本备用屏、滚动区域及 DSR 光标位置回复，支持范围见[核心说明](../core/README.md)。未知序列按 [Recovery 契约](../core/RECOVERY.md)消费。共享[逐格 renderer](../presentation/README.md)的布局缓存至多 1,024 项，满时清空重建。
 
 ## 基础文字操作
 
