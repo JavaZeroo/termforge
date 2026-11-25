@@ -19,7 +19,7 @@
 | `CUP 12;1` 后写入 `RESIZED` | `60×12` | `12;8` | 2 | 三个原标记保留，`RESIZED` 出现在 `(11,0)` |
 | 恢复 | `80×24` | `12;8` | 0 | 三个原标记及 `RESIZED` 的文档位置保持 |
 
-固定样本支持正文坐标与显示投影分离。旧 Qt／固定 ConPTY 六阶段例子的原生网格在写入后同一行可见 `RESIZED` 和 `CD`，本次原版观察中 `RESIZED` 位于原 `D` 的下一文档行。两个场景的精确输入和观察层不同。后续需在正式配置上执行同一输入的对照，并就旧原生网格断言的处理取得决定。 [Qt 六阶段记录](../../../../experiments/shell/results/2026-11-05-qt-resize-divergence/README.md) · [方案材料](../../../../docs/research/r29-bcd-local-addressing-decision.md)
+固定样本支持正文坐标与显示投影分离。旧 Qt／固定 ConPTY 六阶段例子的原生网格在写入后同一行可见 `RESIZED` 和 `CD`，本次原版观察中 `RESIZED` 位于原 `D` 的下一文档行。后续正式 Qt 复验使用本样本相同字节，独立核对源、可见坐标、DSR 与原生网格，旧六阶段断言的处置仍待决定。 [Qt 四阶段同输入记录](../../../../experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md) · [Qt 六阶段记录](../../../../experiments/shell/results/2026-11-05-qt-resize-divergence/README.md) · [方案材料](../../../../docs/research/r29-bcd-local-addressing-decision.md)
 
 自主 C++ 核心以相同字节和行列回放四个阶段，逐阶段核对文档和 DSR，新增 8 个断言全部通过。Windows 本地 GNU 16.2.0 构建的组合回放为 19 个断言，连同两组探针离线测试，定向 CTest 为 3/3。核心回放覆盖文档和协议回复，显示矩形、`scrollTop` 和真实 shell 留待正式 Qt 配置验证。 [核心回放](../../../../experiments/core/resize_dual_axis_test.cpp)
 
