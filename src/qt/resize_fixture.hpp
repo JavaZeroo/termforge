@@ -11,7 +11,7 @@ namespace termforge::qt::test {
 
 struct SizeReply {
     uint32_t magic = 0x54514653;
-    uint32_t version = 2;
+    uint32_t version = 3;
     uint64_t nonce = 0;
     uint32_t child_pid = 0;
     uint32_t query_error = ERROR_SUCCESS;
@@ -19,10 +19,11 @@ struct SizeReply {
     int32_t window_left = 0, window_top = 0, window_right = 0, window_bottom = 0;
     uint32_t win32_checks = 0;
     uint32_t win32_error = 0;
+    int32_t event_columns = 0, event_rows = 0;
     int window_columns() const { return window_right - window_left + 1; }
     int window_rows() const { return window_bottom - window_top + 1; }
 };
-static_assert(sizeof(SizeReply) == 56, "fixed local size-reply protocol");
+static_assert(sizeof(SizeReply) == 64, "fixed local size-reply protocol");
 inline constexpr uint32_t win32_resize_all_checks = 0x1f;
 
 // One caller/thread owns this polling endpoint. PIPE_NOWAIT is used for tiny
@@ -36,7 +37,7 @@ class SizeFixture final {
 public:
     SizeFixture() {
         static std::atomic<unsigned long> sequence{0};
-        name_ = L"\\\\.\\pipe\\TermForgeQtResize-v2-" + std::to_wstring(GetCurrentProcessId()) + L"-" +
+        name_ = L"\\\\.\\pipe\\TermForgeQtResize-v3-" + std::to_wstring(GetCurrentProcessId()) + L"-" +
             std::to_wstring(GetTickCount64()) + L"-" + std::to_wstring(++sequence);
         pipe_.reset(CreateNamedPipeW(name_.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE,
             PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_NOWAIT | PIPE_REJECT_REMOTE_CLIENTS,
@@ -80,7 +81,7 @@ public:
         SizeReply reply; DWORD count = 0;
         if (!ReadFile(pipe_.get(), &reply, sizeof(reply), &count, nullptr))
             tf_conpty::fail("ReadFile(size reply)");
-        if (count != sizeof(reply) || reply.magic != 0x54514653 || reply.version != 2 ||
+        if (count != sizeof(reply) || reply.magic != 0x54514653 || reply.version != 3 ||
             reply.child_pid != client_pid_)
             throw std::runtime_error("Size fixture reply identity mismatch");
         return reply;
@@ -148,7 +149,7 @@ inline void verify_win32_resize(HANDLE output, SizeReply& reply, const CONSOLE_S
 // trailing marker before its own independent reply.
 // Replies contain only independently queried child state, never requested size.
 inline int size_child(const std::wstring& pipe_name) {
-    const std::wstring prefix = L"\\\\.\\pipe\\TermForgeQtResize-v2-";
+    const std::wstring prefix = L"\\\\.\\pipe\\TermForgeQtResize-v3-";
     if (pipe_name.rfind(prefix, 0) != 0 || pipe_name.size() > 180)
         throw std::runtime_error("Size fixture pipe name invalid");
     const auto separator = pipe_name.find(L'-', prefix.size());
@@ -187,8 +188,9 @@ inline int size_child(const std::wstring& pipe_name) {
         tf_conpty::fail("CreateFile(size child console)");
     if (!SetConsoleMode(input.get(), ENABLE_VIRTUAL_TERMINAL_INPUT))
         tf_conpty::fail("SetConsoleMode(size child input)");
-    const auto reply = [&](uint64_t nonce, bool check_access = false) {
+    const auto reply = [&](uint64_t nonce, bool check_access = false, COORD event = {}) {
         SizeReply value; value.nonce = nonce; value.child_pid = GetCurrentProcessId();
+        value.event_columns = event.X; value.event_rows = event.Y;
         CONSOLE_SCREEN_BUFFER_INFO state{};
         if (!GetConsoleScreenBufferInfo(output.get(), &state)) value.query_error = GetLastError();
         else {
@@ -214,11 +216,31 @@ inline int size_child(const std::wstring& pipe_name) {
             command += character;
             continue;
         }
-        if (command.size() < 3 || std::string_view("QXFEBW").find(command[0]) == std::string_view::npos ||
+        if (command.size() < 3 || std::string_view("QXFEBWA").find(command[0]) == std::string_view::npos ||
             command[1] != ' ')
             throw std::runtime_error("Size child input command malformed");
         const auto nonce = size_nonce(std::string_view(command).substr(2));
         const bool exit = command[0] == 'X';
+        if (command[0] == 'A') {
+            if (!SetConsoleMode(input.get(), ENABLE_WINDOW_INPUT))
+                tf_conpty::fail("SetConsoleMode(Win32 window input)");
+            reply(nonce);
+            bool ended = false;
+            for (int index = 0; index < 128 && !ended; ++index) {
+                INPUT_RECORD record{}; DWORD count = 0;
+                if (!ReadConsoleInputW(input.get(), &record, 1, &count) || count != 1)
+                    tf_conpty::fail("ReadConsoleInputW(Win32 resize event)");
+                if (record.EventType == WINDOW_BUFFER_SIZE_EVENT)
+                    reply(nonce, false, record.Event.WindowBufferSizeEvent.dwSize);
+                if (record.EventType == KEY_EVENT && record.Event.KeyEvent.bKeyDown &&
+                    record.Event.KeyEvent.uChar.UnicodeChar == L'~') ended = true;
+            }
+            if (!ended || !SetConsoleMode(input.get(), ENABLE_VIRTUAL_TERMINAL_INPUT))
+                throw std::runtime_error("Win32 resize event phase did not finish");
+            reply(nonce + 1);
+            command.clear();
+            continue;
+        }
         if (command[0] == 'E') {
             const char clear[] = "\x1b[3J\x1b[H";
             DWORD written = 0;
