@@ -98,7 +98,8 @@ inline uint64_t size_nonce(std::string_view text) {
 // Entry before QApplication/GO parsing. The containing Session owns this child
 // and its blocking console read; the outer test Job keeps the fixed 25s bound.
 // Commands Q <nonce> CR and X <nonce> CR arrive through public Session input.
-// F <nonce> writes a fixed finite ASCII burst before one independent reply.
+// B <nonce> acknowledges the prefix of a finite burst; F writes the body and
+// trailing marker before its own independent reply.
 // Replies contain only independently queried child state, never requested size.
 inline int size_child(const std::wstring& pipe_name) {
     const std::wstring prefix = L"\\\\.\\pipe\\TermForgeQtResize-v1-";
@@ -166,7 +167,8 @@ inline int size_child(const std::wstring& pipe_name) {
             command += character;
             continue;
         }
-        if (command.size() < 3 || (command[0] != 'Q' && command[0] != 'X' && command[0] != 'F' && command[0] != 'E') || command[1] != ' ')
+        if (command.size() < 3 || std::string_view("QXFEB").find(command[0]) == std::string_view::npos ||
+            command[1] != ' ')
             throw std::runtime_error("Size child input command malformed");
         const auto nonce = size_nonce(std::string_view(command).substr(2));
         const bool exit = command[0] == 'X';
@@ -176,13 +178,21 @@ inline int size_child(const std::wstring& pipe_name) {
             if (!WriteFile(output.get(), clear, sizeof(clear) - 1, &written, nullptr) ||
                 written != sizeof(clear) - 1) tf_conpty::fail("WriteFile(size child clear output)");
         }
-        if (command[0] == 'F') {
-            const std::string block(4096, 's');
-            for (int chunk = 0; chunk < 512; ++chunk) {
+        if (command[0] == 'B' || command[0] == 'F') {
+            const auto write = [&](std::string_view text) {
                 DWORD written = 0;
-                if (!WriteFile(output.get(), block.data(), static_cast<DWORD>(block.size()), &written, nullptr) ||
-                    written != block.size()) tf_conpty::fail("WriteFile(size child finite output)");
+                if (!WriteFile(output.get(), text.data(), static_cast<DWORD>(text.size()), &written, nullptr) ||
+                    written != text.size()) tf_conpty::fail("WriteFile(size child finite output)");
+            };
+            if (command[0] == 'B') {
+                write("TF_RESIZE_BEGIN\r\n");
+                reply(nonce);
+                command.clear();
+                continue;
             }
+            const std::string block(4096, 's');
+            for (int chunk = 0; chunk < 512; ++chunk) write(block);
+            write("\r\nTF_RESIZE_END\r\n");
         }
         reply(nonce);
         if (exit) return 37;

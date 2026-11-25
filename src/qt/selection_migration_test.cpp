@@ -7,6 +7,8 @@
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFontMetricsF>
+#include <QInputMethodEvent>
+#include <QLineEdit>
 #include <QMenu>
 #include <QMouseEvent>
 #include <QTest>
@@ -131,6 +133,72 @@ void resize_public(TerminalWidget& terminal, SessionModel& model, int columns, i
             state.transport_columns == columns && state.transport_rows == rows;
     }, model, lifecycle, "selection resize did not finish");
 }
+
+void check_unicode_readers(TerminalWidget& terminal, SessionModel& model, QElapsedTimer& lifecycle) {
+    constexpr std::string_view marker = "COPY_UNICODE:";
+    constexpr std::string_view text = "\xe4\xb8\xad\xe6\x96\x87 e\xcc\x81";
+    QTest::keyClick(&terminal, Qt::Key_Home, Qt::ControlModifier | Qt::ShiftModifier);
+    int visible = -1;
+    for (int attempt = 0; attempt < 40; ++attempt) {
+        const int projected = find_row(terminal, marker);
+        const auto offset = static_cast<int>(terminal.painted_row_offset());
+        if (projected >= offset && projected - offset < model.screen().height()) {
+            visible = projected - offset;
+            break;
+        }
+        send_wheel(terminal, -120);
+    }
+    require(visible >= 0, "wide/combining fixture row was not visible");
+    const int margin = terminal.content_margin();
+    const int y = margin + visible * terminal.cell_height() + terminal.cell_height() / 2;
+    drag(terminal, {margin + 13 * terminal.cell_width(), y}, {margin + 19 * terminal.cell_width(), y});
+    require(selected_text(terminal) == text && highlighted_cells(terminal) == 6,
+            "wide/combining selection did not keep literal text and six cells");
+    const auto original = terminal.selection_range_for_test();
+    require(original.has_value(), "wide/combining selection source range missing");
+
+    QTest::keyClick(&terminal, Qt::Key_F, Qt::ControlModifier | Qt::ShiftModifier);
+    auto* query = terminal.findChild<QLineEdit*>(QStringLiteral("findQuery"));
+    require(query && query->hasFocus(), "wide/combining Find query was not focused");
+    QInputMethodEvent commit;
+    commit.setCommitString(QString::fromUtf8(text.data(), static_cast<qsizetype>(text.size())));
+    QApplication::sendEvent(query, &commit);
+    await([&] { return terminal.find_current_range_for_test().has_value(); }, model, lifecycle,
+          "wide/combining literal Find did not produce a hit");
+
+    const auto check = [&](size_t expected_projected_rows) {
+        require(selected_text(terminal) == text, "wide/combining copy changed across resize");
+        const auto selection = terminal.selection_range_for_test();
+        const auto found = terminal.find_current_range_for_test();
+        require(selection && found && selection->begin == original->begin && selection->end == original->end &&
+                found->begin == original->begin && found->end == original->end,
+                "wide/combining selection or Find moved to a different source range");
+        const auto spans = terminal.find_spans_for_test();
+        size_t cells = 0;
+        for (const auto& span : spans) cells += span.column_end - span.column_begin;
+        require(terminal.find_match_count_for_test() == 1 && spans.size() == expected_projected_rows &&
+                cells == 6 && highlighted_cells(terminal) == 6,
+                "wide/combining Find or selection highlight differs after projection");
+    };
+    check(1);
+    resize_public(terminal, model, 16, 20, lifecycle);
+    check(2);
+    resize_public(terminal, model, 80, 24, lifecycle);
+    check(1);
+
+    require(model.send(std::string(1, 'a')), "wide/combining eviction command was rejected");
+    await([&] { return screen_has_text(model.screen(), "SEL_EVICT") &&
+        !terminal.find_current_range_for_test() && terminal.find_match_count_for_test() == 0; },
+          model, lifecycle, "eviction did not invalidate wide/combining Find");
+    require(!TextDocument(model.screen()).index_of(original->begin.line_id) && !terminal.has_selection(),
+            "eviction kept a wide/combining source identity or selection");
+    resize_public(terminal, model, 16, 20, lifecycle);
+    resize_public(terminal, model, 80, 24, lifecycle);
+    require(!terminal.find_current_range_for_test() && terminal.find_spans_for_test().empty() &&
+            !terminal.has_selection() && terminal.copy_selection().text.empty(),
+            "resize after eviction resurrected wide/combining Find or selection");
+}
+
 bool start(SessionModel& model, TerminalWidget& terminal, QWidget& window, const wchar_t* exe,
            const QString& workspace, QElapsedTimer& lifecycle) {
     window.resize(1200, 900);
@@ -312,12 +380,17 @@ int main(int argc, char** argv) {
               "RIS marker did not arrive");
         require(!first_terminal.has_selection(), "RIS preserved a stale selection");
 
+        second_window.activateWindow();
+        second_terminal.setFocus();
+        await([&] { return second_terminal.hasFocus(); }, second, lifecycle, "second selection terminal was not focused");
+        check_unicode_readers(second_terminal, second, lifecycle);
         close_session(first, lifecycle);
         close_session(second, lifecycle);
         std::cout << "{\"schema\":\"termforge-qt-selection-migration-v1\",\"status\":\"passed\","
                      "\"sessions\":2,\"reverse_cross_soft\":true,\"partial_hard\":true,"
                      "\"reflow\":true,\"browse\":true,\"unrelated_output\":true,"
-                     "\"eviction\":true,\"ed3\":true,\"ris\":true,\"offscreen_only\":true,\"presented_done\":null}\n";
+                     "\"eviction\":true,\"ed3\":true,\"ris\":true,\"wide_combining_find_copy\":true,"
+                     "\"offscreen_only\":true,\"presented_done\":null}\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "Qt selection migration: " << error.what() << '\n';

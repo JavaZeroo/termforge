@@ -295,30 +295,56 @@ static void resize_lifecycle_boundaries(const std::wstring& executable, const st
             "startup failure left resize state or cleanup unresolved");
     record_state(903, state.requested_columns, state.requested_rows, error_view, failed);
 }
+static bool has_line(const termforge::Screen& screen, std::string_view expected);
+
 static std::pair<unsigned long long, size_t> output_continues_during_resize(const std::wstring& executable,
                                                                           const std::wstring& directory) {
     SizeFixture fixture;
     termforge::qt::SessionModel model;
-    termforge::qt::TerminalWidget terminal(model);
-    terminal.show();
+    QWidget window;
+    window.resize(1200, 900);
+    termforge::qt::TerminalWidget terminal(model, &window);
+    window.show();
     require(model.start(executable, L"--size-child \"" + fixture.pipe_name() + L"\"", directory),
             "finite-output child did not start");
     wait_reply(fixture, 0);
+    require(model.send(std::string("B 1300\r")), "finite-output prefix command rejected");
+    const auto prefix = wait_reply(fixture, 1300);
+    require(prefix.child_pid == model.resize_state().child_pid, "finite-output prefix peer changed");
+    await([&] { return has_line(model.screen(), "TF_RESIZE_BEGIN"); }, model, "finite-output prefix was not parsed");
     require(model.send(std::string("F 1301\r")), "finite-output command rejected");
     bool gui_event = false;
     QTimer::singleShot(0, &terminal, [&] { gui_event = true; });
-    require(model.resize(100, 30), "finite-output resize rejected");
+    auto revision = model.resize_state().requested_revision;
+    const QSize sequence[] = {{60, 12}, {42, 18}, {100, 30}};
+    int stage = 130;
+    // Dispatch the three public resize events contiguously. Native completion
+    // may skip intermediate requests; the last request must reach the child.
+    for (const auto grid : sequence) {
+        terminal.resize(16 + grid.width() * terminal.cell_width(),
+                        24 + (grid.height() + 1) * terminal.cell_height());
+        const auto state = model.resize_state();
+        require(state.requested_revision == ++revision && state.requested_columns == grid.width() &&
+                state.requested_rows == grid.height(), "contiguous resize lost a public request");
+        record_state(stage++, grid.width(), grid.height(), terminal, model);
+    }
     const auto burst_reply = wait_reply(fixture, 1301);
     require(burst_reply.child_pid == model.resize_state().child_pid, "finite-output peer changed");
     unsigned long long nonce = 1301;
     await_child_size(fixture, model, 100, 30, nonce);
+    await([&] {
+        const auto state = model.resize_state();
+        return !state.pending && state.transport_revision == revision &&
+            state.transport_columns == 100 && state.transport_rows == 30 && has_line(model.screen(), "TF_RESIZE_END");
+    }, model, "last transport revision or finite-output suffix did not reach the session");
+    record_state(stage, 100, 30, terminal, model);
     require(gui_event, "Qt did not dispatch its event during the output/resize case");
     require(model.send(std::string("X 1401\r")), "finite-output exit command rejected");
     wait_reply(fixture, 1401);
     await([&] { return model.finished(); }, model, "finite-output child did not finish draining");
     const auto output = model.output_state();
     require(model.natural_exit() && model.exit_code() == 37 && model.cleanup_verified() && model.output_eof() &&
-            model.received_bytes() > 0 && output.high_water_bytes > 0 && output.high_water_bytes <= 256 * 1024 &&
+            model.received_bytes() >= 512ULL * 4096 && output.high_water_bytes > 0 && output.high_water_bytes <= 256 * 1024 &&
             output.queued_bytes == 0, "output queue/drain or resize lifecycle did not remain bounded and complete");
     return {model.received_bytes(), output.high_water_bytes};
 }
@@ -472,6 +498,7 @@ int main(int argc, char** argv) {
         std::cout << "{\"schema\":\"termforge-qt-resize-smoke-v1\",\"grid_sequence_cases\":" << sizes.size() << ",\"child_ack_replies\":"
                   << reply_count << ",\"qt_heartbeat_events\":" << heartbeat_events
                   << ",\"output_bytes\":" << output.first << ",\"output_queue_high_water\":" << output.second
+                  << ",\"contiguous_resize_requests\":3,\"finite_output_endpoints\":true"
                   << ",\"same_size_cmd_output_retained\":true"
                   << ",\"child_exit\":37,\"cleanup_verified\":true,\"presented_done\":null}\n";
         return 0;
