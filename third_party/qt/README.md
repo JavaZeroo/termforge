@@ -12,15 +12,15 @@ manifest 固定了 Qt 官方 Updates.xml 和原始 qtbase 7z 的 URL、大小与
 
 ## 本地构建
 
-在 Windows x64、Python 3.12、CMake 3.31 和 Visual Studio 2022 C++ 工具环境中，无须全局安装 Qt 或修改 PATH：
+在 Windows x64、Python 3.12、CMake 3.31 和 Visual Studio 2022 C++ 工具环境中，可以使用已经完成的[固定 ConPTY 源构建](../conpty/README.md)准备 SDK 和本地运行时：
 
 ```powershell
-python -m tools.prepare_qt_build
+python -m tools.prepare_qt_build --conpty-pair local/conpty-source-build/candidate-pair
 ```
 
-命令读取本目录、ConPTY 和 [Microsoft CRT](../msvc_runtime/README.md) 的 manifest，下载固定官方输入至忽略的 `local/qt-downloads/`，核对每项大小及 SHA-256，再用 CMake 的归档读取器生成全新的 `local/qt-build-deps/qt/` SDK、`local/qt-build-deps/conpty/` 文件对和 `local/qt-build-deps/crt/`。它核对 Qt 构建／部署工具、四个模块、两个平台插件、SDK SBOM 和实际 qmake 版本；ConPTY 只提取命名成员并再次核对双文件；CRT 安装包仅作归档读取，固定十个 AMD64 DLL，并保留原许可和 NOTICE。没有全局注册、运行安装程序或环境修改。
+命令把固定 Qt 和 [Microsoft CRT](../msvc_runtime/README.md) 官方输入存入忽略的 `local/qt-downloads/`，核对归档大小及 SHA-256，再生成新的 `local/qt-build-deps/qt/`、`local/qt-build-deps/conpty/` 和 `local/qt-build-deps/crt/`。它核对 Qt 构建／部署工具、四个模块、两个平台插件、SDK SBOM 和实际 qmake 版本。准备好的 ConPTY 文件对带有本次源构建的身份，CRT 安装包仅作归档读取并保留原许可与 NOTICE。
 
-`--cache <directory>` 可复用已取得的原始输入；`--offline` 要求 Qt、ConPTY、CRT 固定归档及 CRT 原许可文档四项均已缓存，不允许下载。缓存身份不符直接失败，不覆盖坏文件；`--out <directory>` 必须尚不存在，避免覆盖或混用已有 SDK。准备失败不发布半成依赖；原始下载和临时提取目录不会进入源码。命令输出及 `local/qt-build-preparation.json` 仅包含公开版本、内容哈希、文件数和固定错误码，不含本地路径或原始日志。SDK 的树哈希绑定写入相对配置后的所有文件，不等于归档哈希。
+`--cache <directory>` 可以复用已取得的输入，`--offline` 要求所选官方归档和许可文档已经缓存。`--out <directory>` 应指向新目录。准备失败时保留已有缓存和 SDK，路径无关的结果记录在 `local/qt-build-preparation.json`。SDK 树哈希包含准备时写入相对配置的变化。
 
 使用已核对的 Qt SDK 和[固定微软 ConPTY 文件对](../conpty/README.md)，只设置本次构建参数，无须修改全局 PATH：
 

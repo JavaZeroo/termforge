@@ -11,7 +11,7 @@ permissions:
 jobs:
   qt-cpp-windows:
     runs-on: windows-2025
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       PYTHONUTF8: '1'
     steps:
@@ -21,8 +21,9 @@ jobs:
           python-version: '3.12'
       - name: Verify preparation failure contracts
         run: python -m unittest tools.test_prepare_qt_build tools.test_prepare_msvc_runtime tools.test_msvc_runtime tools.test_stage_qt_product tools.test_build_qt_component_inventory -v
+      - uses: ./.github/actions/build-fixed-conpty
       - name: Prepare manifest-pinned Qt qtbase, Microsoft ConPTY and CRT
-        run: python -m tools.prepare_qt_build
+        run: python -m tools.prepare_qt_build --conpty-pair local/conpty-source-build/candidate-pair
       - name: Verify deployed Qt component inventory against the pinned archive and SBOM
         run: |
           python -m tools.build_qt_component_inventory check `
@@ -38,6 +39,14 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
           path: local/qt-build-preparation.json
+      - name: Preserve the fixed source-build identity
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qt-cpp-native-source-identity
+          retention-days: 14
+          if-no-files-found: warn
+          path: local/conpty-source-build/public/summary.json
       - name: Configure explicit Qt product and test entries
         run: |
           $dependencyRoot = Join-Path $env:GITHUB_WORKSPACE 'local/qt-build-deps'
@@ -130,7 +139,7 @@ jobs:
             build/qt-cpp/qt-query-reply-bin/Release/runtime-manifest.json
             build/qt-cpp/qt-paste-bin/Release/runtime-manifest.json
       - name: Run Qt offscreen smoke in its owned Job
-        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_eight_session|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration|qt_find|qt_scrollbar_size|qt_autoscroll|qt_query_reply|qt_paste)$' --no-tests=error --verbose
+        run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_win32_resize_compat|qt_native_resize_map|qt_bcd_local_reference|qt_unicode_input|qt_unicode_render|qt_eight_session|qt_terminal_modes(_retained|_resize_repro)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration|qt_find|qt_scrollbar_size|qt_autoscroll|qt_query_reply|qt_paste)$' --no-tests=error --verbose
       - name: Run hosted-only Qt system clipboard copy
         run: python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe --hosted-copy
       - name: Run hosted Windows QPA product-writer clipboard copy

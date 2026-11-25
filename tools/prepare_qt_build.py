@@ -21,6 +21,9 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = "termforge-qt-build-preparation-v1"
+CONPTY_PAIR = ("conpty.dll", "OpenConsole.exe")
+CONPTY_SOURCE_MANIFEST = "third_party/conpty/source-revision.json"
+CONPTY_BUILD_SCHEMA = "termforge-r29-conpty-map-build-v1"
 
 
 class PreparationError(Exception):
@@ -140,7 +143,38 @@ def prepare_runtime(cache, staging, offline):
             "license_sha256": license_metadata["sha256"], "notice_sha256": metadata["notice_sha256"]}
 
 
-def prepare(cache, out, offline, crt_only=False):
+def source_conpty_metadata(root, pair):
+    source = json.loads((root / CONPTY_SOURCE_MANIFEST).read_text(encoding="utf-8"))
+    build = json.loads((pair / "summary.json").read_text(encoding="utf-8-sig"))
+    patch_path = root / "experiments/conpty/upstream/r29-native-map.patch"
+    if (build.get("schema") != CONPTY_BUILD_SCHEMA or build.get("status") != "built" or
+            build.get("upstream_source") != source["source_commit"] or
+            build.get("vcpkg_source") != source["vcpkg_commit"] or
+            build.get("configuration") != source["configuration"] or
+            build.get("patch_sha256") != sha256(patch_path) or
+            sha256(pair / "r29-native-map.patch") != build["patch_sha256"] or
+            sha256(pair / "LICENSE") != source["license_source_sha256"] or
+            sha256(pair / "NOTICE.md") != source["notice_sha256"]):
+        raise PreparationError("conpty_source_identity")
+    identity = build["candidate_files"]
+    if set(identity) != set(CONPTY_PAIR):
+        raise PreparationError("conpty_file_identity")
+    files = {}
+    for name in CONPTY_PAIR:
+        binary = pair / name
+        digest = sha256(binary)
+        if digest != identity[name]["sha256"] or binary.stat().st_size != identity[name]["bytes"]:
+            raise PreparationError("conpty_file_identity")
+        files[name] = digest
+    # Bind the two file names and bytes under one package identity. The build
+    # itself need not produce byte-identical PE files across runner versions.
+    pair_identity = hashlib.sha256("".join(f"{name} {files[name]}\n" for name in CONPTY_PAIR).encode()).hexdigest()
+    return {**source, "schema": "termforge-conpty-source-pair-v1",
+            "builder_tools": build["tools"], "files": files,
+            "patch_sha256": build["patch_sha256"], "package_sha256": pair_identity}
+
+
+def prepare(cache, out, offline, crt_only=False, conpty_pair=None):
     if out.exists():
         raise PreparationError("output_exists")
     if crt_only:
@@ -155,11 +189,15 @@ def prepare(cache, out, offline, crt_only=False):
                 "preparation_script_sha256": sha256(Path(__file__)),
                 "scope": "Fixed CRT build inputs only; no installer execution or product acceptance"}
     qt = json.loads((ROOT / "third_party/qt/manifest.json").read_text(encoding="utf-8"))
-    conpty = json.loads((ROOT / "third_party/conpty/manifest.json").read_text(encoding="utf-8"))
+    conpty_spec = CONPTY_SOURCE_MANIFEST if conpty_pair else "third_party/conpty/manifest.json"
     archive = qt["official_binary_archive"]
     qt_archive = acquire(cache, archive["archive"], archive["url"], archive["bytes"], archive["sha256"], offline)
-    package = acquire(cache, conpty["package_url"].rsplit("/", 1)[1], conpty["package_url"],
-                      conpty["package_bytes"], conpty["package_sha256"], offline)
+    if conpty_pair:
+        conpty = source_conpty_metadata(ROOT, conpty_pair)
+    else:
+        conpty = json.loads((ROOT / conpty_spec).read_text(encoding="utf-8"))
+        package = acquire(cache, conpty["package_url"].rsplit("/", 1)[1], conpty["package_url"],
+                          conpty["package_bytes"], conpty["package_sha256"], offline)
     license_path = ROOT / "third_party/conpty/LICENSE"
     if sha256(license_path) != conpty["bundled_license_sha256"]:
         raise PreparationError("conpty_license_identity")
@@ -186,26 +224,40 @@ def prepare(cache, out, offline, crt_only=False):
         (sdk / "bin/qt.conf").write_text("[Paths]\nPrefix=..\n", encoding="utf-8", newline="\n")
         if run_tool([str(sdk / "bin/qmake.exe"), "-query", "QT_VERSION"]) != qt["version"]:
             raise PreparationError("sdk_version")
-        with zipfile.ZipFile(package) as source:
-            for name, member in conpty["package_members"].items():
-                try:
-                    contents = source.read(member)
-                except KeyError:
-                    raise PreparationError("conpty_missing_member") from None
-                if hashlib.sha256(contents).hexdigest() != conpty["files"][name]:
+        if conpty_pair:
+            for name in CONPTY_PAIR:
+                shutil.copyfile(conpty_pair / name, backend / name)
+                if sha256(backend / name) != conpty["files"][name]:
                     raise PreparationError("conpty_file_identity")
-                (backend / name).write_bytes(contents)
+            shutil.copyfile(conpty_pair / "NOTICE.md", backend / "NOTICE.md")
+            if sha256(backend / "NOTICE.md") != conpty["notice_sha256"]:
+                raise PreparationError("conpty_source_identity")
+        else:
+            with zipfile.ZipFile(package) as source:
+                for name, member in conpty["package_members"].items():
+                    try:
+                        contents = source.read(member)
+                    except KeyError:
+                        raise PreparationError("conpty_missing_member") from None
+                    if hashlib.sha256(contents).hexdigest() != conpty["files"][name]:
+                        raise PreparationError("conpty_file_identity")
+                    (backend / name).write_bytes(contents)
+        manifest = backend / "manifest.json"
+        manifest.write_text(json.dumps(conpty, indent=2) + "\n", encoding="utf-8", newline="\n")
+        conpty_manifest_sha256 = sha256(manifest)
         sdk_identity = tree_identity(sdk)
         runtime = prepare_runtime(cache, staging, offline)
         staging.replace(out)
     return {"schema": SCHEMA, "status": "passed", "qt_version": qt["version"],
             "qt_architecture": qt["architecture"], "qt_archive_sha256": archive["sha256"],
-            "input_manifests": {name: sha256(ROOT / "third_party" / name / "manifest.json")
-                                for name in ("qt", "conpty", "msvc_runtime")},
+            "input_manifests": {name: sha256(ROOT / spec) for name, spec in (
+                ("qt", "third_party/qt/manifest.json"), ("conpty", conpty_spec),
+                ("msvc_runtime", "third_party/msvc_runtime/manifest.json"))},
             "preparation_script_sha256": sha256(Path(__file__)),
             "sdk_transformation": "bin/qt.conf contains [Paths] and Prefix=..; no binary or .prl patch",
             "sdk": sdk_identity, "conpty_version": conpty["version"],
             "conpty_package_sha256": conpty["package_sha256"], "conpty_files": conpty["files"],
+            "conpty_manifest_sha256": conpty_manifest_sha256, "conpty_source_build": bool(conpty_pair),
             "msvc_runtime": runtime,
             "scope": "Windows local/CI build inputs only; no product package or platform acceptance"}
 
@@ -217,9 +269,13 @@ def main(argv=None):
     parser.add_argument("--summary", type=Path, default=ROOT / "local/qt-build-preparation.json")
     parser.add_argument("--offline", action="store_true", help="Require all selected pinned archives and license documents in cache")
     parser.add_argument("--crt-only", action="store_true", help="Prepare only the fixed Microsoft CRT and its license")
+    parser.add_argument("--conpty-pair", type=Path, help="Verified candidate-pair directory from the fixed source build")
     arguments = parser.parse_args(argv)
+    if arguments.crt_only and arguments.conpty_pair:
+        parser.error("--crt-only and --conpty-pair select different inputs")
     try:
-        result = prepare(arguments.cache.resolve(), arguments.out.resolve(), arguments.offline, arguments.crt_only)
+        result = prepare(arguments.cache.resolve(), arguments.out.resolve(), arguments.offline, arguments.crt_only,
+                         arguments.conpty_pair.resolve() if arguments.conpty_pair else None)
     except PreparationError as error:
         result = {"schema": SCHEMA, "status": "failed", "error": str(error)}
     except (OSError, ValueError, KeyError, zipfile.BadZipFile):

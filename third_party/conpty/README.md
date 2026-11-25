@@ -6,9 +6,22 @@ Windows 本地 Shell 的产品路线已按 [ADR-0007](../../docs/adr/0007-bundle
 
 首次取得组件时，按 manifest 的官方 URL 获取包并核对包大小及 SHA-256，仅提取列出的 `package_members`，保持 `conpty.dll` / `OpenConsole.exe` 名称。不得混合其他包或系统目录的文件。现有同哈希组件可直接复用，构建不隐式下载或修改 Windows 组件。
 
-Qt 正式入口的本地／CI 依赖准备可使用 `python -m tools.prepare_qt_build`，详见 [Qt 复建说明](../qt/README.md)。该独立准备命令先验证完整 nupkg 身份，再提取并验证文件对；CMake 构建本身仍不下载、不修改 Windows 组件。归档与文件对都只放在被忽略的本地目录，CI 不把它们发布为产品包。
+Qt 正式入口使用 [source-revision.json](source-revision.json) 固定的源码、补丁和工具链配置。补丁让宿主记录右边界换行以及实际执行的重排，并在输出流中按序交付尺寸版本和单元格迁移。旧官方包仍可用作对照。 [补丁](../../experiments/conpty/upstream/r29-native-map.patch) · [行为对照](../../experiments/shell/results/2026-11-25-bcd-native-depth/same-source-ab.md)
 
-根构建将 `TERMFORGE_CONPTY_BACKEND_DIR` 设为该文件对的绝对目录，对正式入口调用 `termforge_use_bundled_conpty(target)`。该函数不依赖 Rust 候选开关；配置和每次构建均核对双文件及本目录许可的身份，并把两文件、manifest 和 LICENSE 复制到目标旁的 `conpty-backend/`。缺包或身份错误直接失败，不退回系统版本。
+Windows x64 复建原生文件对需要 PowerShell 7、Visual Studio 2026 v145 和 Windows SDK 10.0.26100.0。在仓库根目录执行以下命令，新建两个专用 checkout。构建脚本会在 Terminal checkout 应用补丁。
+
+```powershell
+git -c core.autocrlf=false clone --no-checkout --filter=blob:none https://github.com/microsoft/terminal.git local/conpty-upstream
+git -C local/conpty-upstream -c core.autocrlf=false checkout --detach dc8ae365847d41f62d1ebca93815bb00959bc12f
+git -c core.autocrlf=false clone --no-checkout https://github.com/microsoft/vcpkg.git local/conpty-vcpkg
+git -C local/conpty-vcpkg -c core.autocrlf=false checkout --detach 927f62e4b8838bd7e441e9c45103a16ffd75007e
+pwsh -NoProfile -File experiments/conpty/upstream/build_r29_map.ps1 -Source local/conpty-upstream -Vcpkg local/conpty-vcpkg -Out local/conpty-source-build -CandidateOnly
+python -m tools.prepare_qt_build --conpty-pair local/conpty-source-build/candidate-pair
+```
+
+准备脚本核对源码、补丁、许可、NOTICE 和双文件实际哈希，并生成这次构建的固定清单。CI 在同一作业构建与验证文件对。原生源码、构建输出和准备目录均保存在忽略的 `local/` 下。本地 Qt SDK、CRT 及应用构建参数见 [Qt 复建说明](../qt/README.md)。
+
+根构建将 `TERMFORGE_CONPTY_BACKEND_DIR` 设为准备目录下 `conpty/` 的绝对路径。配置和每次构建都核对双文件、MIT 许可和 NOTICE 的身份，再部署至目标旁的 `conpty-backend/`。运行时以编译时绑定的哈希确认文件对，加载修订版的有序重排接口。使用 `-DTERMFORGE_CONPTY_SOURCE_BUILD=OFF` 可显式构建旧官方包对照。
 
 运行时 `Backend::configured()` 再核对固定双文件，从可执行文件旁的绝对目录加载；create/resize/close 与模块生命周期由同一个 Backend 拥有。当前复用已验证接口的 Console 字符宽度策略 `0x18`，不是旧 passthrough flag。该策略与原版 Unicode、原生控制台和末端行为的完整匹配仍需分别验证。
 

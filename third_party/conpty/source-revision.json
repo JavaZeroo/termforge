@@ -1,0 +1,13 @@
+{
+  "name": "Microsoft Windows Console ConPTY (TermForge source revision)",
+  "version": "1.25.260930003-termforge.1",
+  "architecture": "win-x64",
+  "license": "MIT",
+  "source_commit": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+  "vcpkg_commit": "927f62e4b8838bd7e441e9c45103a16ffd75007e",
+  "configuration": "Release/x64/v145/WindowsSDK10.0.26100.0",
+  "license_source_sha256": "5d177f23ecfeb0ea8e050b6a5a16355e1ae9a0b286436ca8f83ed08b3795be6b",
+  "bundled_license_sha256": "ad0cf28f3381ca9bb0bf101d127402d44c17bfa0991e1a00bff7ae6679e9dada",
+  "notice_sha256": "e7fbaadee6ab20c28b87730a510ee5f5815d8fb4bd88d1d54d282dc2a74c0726",
+  "configured_creation_flags": 24
+}

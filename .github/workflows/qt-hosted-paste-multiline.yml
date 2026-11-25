@@ -15,7 +15,7 @@ permissions:
 jobs:
   hosted-multiline-paste:
     runs-on: windows-2025
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       PYTHONUTF8: '1'
       TERMFORGE_QT_HOSTED_MULTILINE: '1'
@@ -26,8 +26,9 @@ jobs:
           python-version: '3.12'
       - name: Verify preparation failure contracts
         run: python -m unittest tools.test_prepare_qt_build tools.test_prepare_msvc_runtime tools.test_msvc_runtime -v
+      - uses: ./.github/actions/build-fixed-conpty
       - name: Prepare manifest-pinned Qt qtbase, Microsoft ConPTY and CRT
-        run: python -m tools.prepare_qt_build
+        run: python -m tools.prepare_qt_build --conpty-pair local/conpty-source-build/candidate-pair
       - name: Configure explicit Qt product and test entries
         run: |
           $dependencyRoot = Join-Path $env:GITHUB_WORKSPACE 'local/qt-build-deps'

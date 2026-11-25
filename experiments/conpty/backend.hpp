@@ -124,8 +124,12 @@ public:
         wchar_t image[32768]{};
         const auto count = GetModuleFileNameW(nullptr, image, 32768);
         if (!count || count >= 32768) throw std::runtime_error("ConPTY backend executable location unavailable");
-        return load_side_by_side(std::filesystem::path(image).parent_path() / L"conpty-backend",
-                                 GlyphWidth::Console, TERMFORGE_CONPTY_DLL_SHA256, TERMFORGE_CONPTY_HOST_SHA256);
+        auto backend = load_side_by_side(std::filesystem::path(image).parent_path() / L"conpty-backend",
+                                         GlyphWidth::Console, TERMFORGE_CONPTY_DLL_SHA256, TERMFORGE_CONPTY_HOST_SHA256);
+#ifdef TERMFORGE_CONPTY_REQUIRE_RESIZE_MAP
+        if (!backend.supports_resize_map()) throw std::runtime_error("ConPTY native resize map API missing");
+#endif
+        return backend;
 #else
         return system();
 #endif

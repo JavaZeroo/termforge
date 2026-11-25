@@ -35,11 +35,11 @@ MANIFEST_PATH = "product-manifest.json"
 MAX_DETAIL = 8
 
 if __package__:
-    from tools.prepare_qt_build import tree_identity
+    from tools.prepare_qt_build import CONPTY_SOURCE_MANIFEST, tree_identity
     from tools.build_qt_component_inventory import (derive_deployed_files, license_ids,
                                                     sbom_component_map)
 else:  # pragma: no cover - direct script execution is diagnostic only
-    from prepare_qt_build import tree_identity
+    from prepare_qt_build import CONPTY_SOURCE_MANIFEST, tree_identity
     from build_qt_component_inventory import (derive_deployed_files, license_ids,
                                               sbom_component_map)
 
@@ -171,6 +171,12 @@ def build_configuration(bin_dir: Path) -> dict:
             "msvc_toolset_version": toolset}
 
 
+def conpty_manifest_path(root: Path, dependencies: Path, summary: dict) -> Path:
+    if summary.get("conpty_source_build"):
+        return dependencies / "conpty" / "manifest.json"
+    return root / "third_party" / "conpty" / "manifest.json"
+
+
 def verify_dependency_summary(root: Path, dependencies: Path, summary_path: Path) -> dict:
     summary = read_json(summary_path)
     if summary.get("schema") != PREPARATION_SCHEMA or summary.get("status") != "passed":
@@ -180,6 +186,8 @@ def verify_dependency_summary(root: Path, dependencies: Path, summary_path: Path
         raise StagingError("dependency_summary_invalid")
     for name in ("qt", "conpty", "msvc_runtime"):
         manifest = root / "third_party" / name / "manifest.json"
+        if name == "conpty" and summary.get("conpty_source_build"):
+            manifest = root / CONPTY_SOURCE_MANIFEST
         if not manifest.is_file() or input_manifests.get(name) != sha256_path(manifest):
             raise StagingError("dependency_manifest_mismatch")
     script = root / "tools" / "prepare_qt_build.py"
@@ -195,11 +203,22 @@ def verify_dependency_summary(root: Path, dependencies: Path, summary_path: Path
     else:
         raise StagingError("dependency_directory")
 
-    conpty_manifest = read_json(root / "third_party" / "conpty" / "manifest.json")
+    conpty_path = conpty_manifest_path(root, dependencies, summary)
+    conpty_manifest = read_json(conpty_path)
+    if summary.get("conpty_source_build"):
+        recipe = read_json(root / CONPTY_SOURCE_MANIFEST)
+        patch = root / "experiments/conpty/upstream/r29-native-map.patch"
+        if (sha256_path(conpty_path) != summary.get("conpty_manifest_sha256") or
+                conpty_manifest.get("schema") != "termforge-conpty-source-pair-v1" or
+                any(conpty_manifest.get(key) != value for key, value in recipe.items()) or
+                conpty_manifest.get("patch_sha256") != sha256_path(patch)):
+            raise StagingError("dependency_manifest_identity")
     if summary.get("qt_archive_sha256") != read_json(
             root / "third_party" / "qt" / "manifest.json").get("official_binary_archive", {}).get("sha256"):
         raise StagingError("dependency_manifest_identity")
     if summary.get("conpty_package_sha256") != conpty_manifest.get("package_sha256"):
+        raise StagingError("dependency_manifest_identity")
+    if summary.get("conpty_files") != conpty_manifest.get("files"):
         raise StagingError("dependency_manifest_identity")
     for name, digest in (summary.get("conpty_files") or {}).items():
         path = dependencies / "conpty" / name
@@ -331,7 +350,7 @@ def summary_qt_version(root: Path) -> str:
 
 
 def expected_files(root: Path, dependencies: Path, contract: dict, bin_dir: Path,
-                   inventory: dict, inventory_sha256: str) -> dict:
+                   inventory: dict, inventory_sha256: str, summary: dict) -> dict:
     """Map staged relative path to its verified origin and evidence class."""
     expected = {}
 
@@ -396,8 +415,8 @@ def expected_files(root: Path, dependencies: Path, contract: dict, bin_dir: Path
     add(QT_INVENTORY_STAGED, root / contract["license_evidence"]["qt"]["component_inventory"],
         "qt", "evidence", False, inventory_sha256)
 
-    conpty_manifest_path = root / "third_party" / "conpty" / "manifest.json"
-    conpty_manifest = read_json(conpty_manifest_path)
+    conpty_path = conpty_manifest_path(root, dependencies, summary)
+    conpty_manifest = read_json(conpty_path)
     for name, digest in (conpty_manifest.get("files") or {}).items():
         if Path(name).name != name:
             raise StagingError("conpty_manifest")
@@ -408,7 +427,10 @@ def expected_files(root: Path, dependencies: Path, contract: dict, bin_dir: Path
         raise StagingError("conpty_identity")
     add("conpty-backend/LICENSE", conpty_license, "conpty", "license", True,
         conpty_manifest.get("bundled_license_sha256"))
-    add("conpty-backend/manifest.json", conpty_manifest_path, "conpty", "evidence", True)
+    add("conpty-backend/manifest.json", conpty_path, "conpty", "evidence", True)
+    if summary.get("conpty_source_build"):
+        add("conpty-backend/NOTICE.md", dependencies / "conpty" / "NOTICE.md",
+            "conpty", "license", True, conpty_manifest["notice_sha256"])
 
     runtime_manifest_path = root / "third_party" / "msvc_runtime" / "manifest.json"
     runtime_manifest = read_json(runtime_manifest_path)
@@ -536,6 +558,7 @@ def notices_text(contract: dict, source: dict, summary: dict, observed_os: list[
     qt = summary.get("qt_version", "unknown")
     conpty = summary.get("conpty_version", "unknown")
     runtime = (summary.get("msvc_runtime") or {}).get("version", "unknown")
+    conpty_notice = " See conpty-backend/NOTICE.md." if summary.get("conpty_source_build") else ""
     lines = [
         "TermForge product staging - third-party components and bundled license evidence",
         "",
@@ -547,7 +570,7 @@ def notices_text(contract: dict, source: dict, summary: dict, observed_os: list[
         f"  {QT_INVENTORY_STAGED} and {QT_NOTICES_PATH}; canonical Qt license texts under",
         f"  {QT_LICENSE_DIR}/. {len(inventory['components'])} deployed third-party components",
         "  are traced from the pinned SDK SBOM and source attributions.",
-        f"Microsoft Windows Console ConPTY {conpty}: MIT; bundled at conpty-backend/LICENSE.",
+        f"Microsoft Windows Console ConPTY {conpty}: MIT; bundled at conpty-backend/LICENSE.{conpty_notice}",
         f"Microsoft Visual C++ v14 Runtime {runtime}: bundled with its original license",
         "  and NOTICE at LICENSE-MICROSOFT-VC-REDIST.docx and NOTICE.txt.",
         "Roboto Mono (Regular, static): SIL Open Font License 1.1; bundled at",
@@ -582,6 +605,11 @@ def product_manifest(root: Path, contract: dict, source: dict, build: dict, summ
 
     def manifest_sha(relative: str) -> str:
         return sha256_path(root / relative)
+
+    conpty_spec = CONPTY_SOURCE_MANIFEST if summary.get("conpty_source_build") else "third_party/conpty/manifest.json"
+    conpty_licenses = ["conpty-backend/LICENSE"]
+    if "conpty-backend/NOTICE.md" in files:
+        conpty_licenses.append("conpty-backend/NOTICE.md")
 
     runtime = summary.get("msvc_runtime") or {}
     manifest = {
@@ -627,8 +655,8 @@ def product_manifest(root: Path, contract: dict, source: dict, build: dict, summ
                 "version": summary.get("conpty_version"),
                 "package_sha256": summary.get("conpty_package_sha256"),
                 "files": summary.get("conpty_files"),
-                "license_manifest": "third_party/conpty/manifest.json",
-                "license_manifest_sha256": manifest_sha("third_party/conpty/manifest.json"),
+                "license_manifest": conpty_spec,
+                "license_manifest_sha256": manifest_sha(conpty_spec),
             },
             "msvc_runtime": {
                 "version": runtime.get("version"),
@@ -666,7 +694,7 @@ def product_manifest(root: Path, contract: dict, source: dict, build: dict, summ
                 "third_party_components": len(inventory["components"]),
                 "status": inventory.get("review_status"),
             },
-            "conpty": {"spdx": "MIT", "bundled_paths": ["conpty-backend/LICENSE"],
+            "conpty": {"spdx": "MIT", "bundled_paths": conpty_licenses,
                        "evidence_manifest": "conpty-backend/manifest.json", "status": "bundled"},
             "msvc_runtime": {"bundled_paths": ["LICENSE-MICROSOFT-VC-REDIST.docx", "NOTICE.txt"],
                              "evidence_manifest": "third_party/msvc_runtime/manifest.json",
@@ -757,7 +785,7 @@ def stage(source_root: Path, bin_dir: Path, dependencies: Path, dependency_summa
     source = source_identity(source_root, allow_dirty)
     build = build_configuration(bin_dir)
     expected = expected_files(source_root, dependencies, contract, bin_dir,
-                              inventory, inventory_sha256)
+                              inventory, inventory_sha256, summary)
 
     system = Path(system_root or os.environ.get("SystemRoot", r"C:\Windows"))
     observed_os = verify_build(bin_dir, expected, contract, system)

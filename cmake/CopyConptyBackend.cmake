@@ -19,6 +19,14 @@ function(termforge_validate_conpty_pair directory manifest license)
   if(NOT actual_license STREQUAL expected_license)
     message(FATAL_ERROR "Fixed ConPTY license identity mismatch")
   endif()
+  string(JSON schema ERROR_VARIABLE schema_error GET "${metadata}" schema)
+  if(NOT schema_error AND schema STREQUAL "termforge-conpty-source-pair-v1")
+    string(JSON expected_notice GET "${metadata}" notice_sha256)
+    file(SHA256 "${directory}/NOTICE.md" actual_notice)
+    if(NOT actual_notice STREQUAL expected_notice)
+      message(FATAL_ERROR "Fixed ConPTY notice identity mismatch")
+    endif()
+  endif()
 endfunction()
 
 if(CMAKE_SCRIPT_MODE_FILE STREQUAL CMAKE_CURRENT_LIST_FILE)
@@ -28,10 +36,15 @@ if(CMAKE_SCRIPT_MODE_FILE STREQUAL CMAKE_CURRENT_LIST_FILE)
     message(FATAL_ERROR "Fixed ConPTY output must be an absolute directory")
   endif()
   file(MAKE_DIRECTORY "${CONPTY_BUNDLE_OUTPUT_DIRECTORY}")
+  file(READ "${CONPTY_BUNDLE_MANIFEST}" metadata)
+  string(JSON schema ERROR_VARIABLE schema_error GET "${metadata}" schema)
+  if(NOT schema_error AND schema STREQUAL "termforge-conpty-source-pair-v1")
+    set(notice "${CONPTY_BUNDLE_INPUT_DIRECTORY}/NOTICE.md")
+  endif()
   execute_process(COMMAND "${CMAKE_COMMAND}" -E copy_if_different
     "${CONPTY_BUNDLE_INPUT_DIRECTORY}/conpty.dll"
     "${CONPTY_BUNDLE_INPUT_DIRECTORY}/OpenConsole.exe"
-    "${CONPTY_BUNDLE_MANIFEST}" "${CONPTY_BUNDLE_LICENSE}"
+    "${CONPTY_BUNDLE_MANIFEST}" "${CONPTY_BUNDLE_LICENSE}" ${notice}
     "${CONPTY_BUNDLE_OUTPUT_DIRECTORY}"
     RESULT_VARIABLE copy_status)
   if(NOT copy_status EQUAL 0)

@@ -88,6 +88,44 @@ class PreparationCommandTests(unittest.TestCase):
         self.assertNotIn(str(self.root), stdout.getvalue())
         self.assertEqual(list(self.summary.iterdir()), [])
 
+    def test_source_pair_keeps_build_identity_and_rejects_modified_inputs(self):
+        recipe = self.root / prepare_qt_build.CONPTY_SOURCE_MANIFEST
+        patch_path = self.root / "experiments/conpty/upstream/r29-native-map.patch"
+        pair = self.root / "candidate-pair"
+        for directory in (recipe.parent, patch_path.parent, pair):
+            directory.mkdir(parents=True)
+        patch_path.write_bytes(b"fixed patch\n")
+        for name, contents in (("r29-native-map.patch", patch_path.read_bytes()),
+                               ("LICENSE", b"license"), ("NOTICE.md", b"notice"),
+                               ("conpty.dll", b"dll"), ("OpenConsole.exe", b"host")):
+            (pair / name).write_bytes(contents)
+        source = {"source_commit": "terminal", "vcpkg_commit": "vcpkg",
+                  "configuration": "Release/x64/v145/SDK",
+                  "license_source_sha256": prepare_qt_build.sha256(pair / "LICENSE"),
+                  "notice_sha256": prepare_qt_build.sha256(pair / "NOTICE.md")}
+        recipe.write_text(json.dumps(source), encoding="utf-8")
+        identities = {name: {"sha256": prepare_qt_build.sha256(pair / name),
+                             "bytes": (pair / name).stat().st_size}
+                      for name in prepare_qt_build.CONPTY_PAIR}
+        build = {"schema": prepare_qt_build.CONPTY_BUILD_SCHEMA,
+                 "status": "built", "upstream_source": source["source_commit"],
+                 "vcpkg_source": source["vcpkg_commit"], "configuration": source["configuration"],
+                 "patch_sha256": prepare_qt_build.sha256(patch_path), "candidate_files": identities,
+                 "tools": {"msvc": "14.52.37025"}}
+        (pair / "summary.json").write_text(json.dumps(build), encoding="utf-8")
+
+        result = prepare_qt_build.source_conpty_metadata(self.root, pair)
+        self.assertEqual(result["files"], {name: entry["sha256"] for name, entry in identities.items()})
+        self.assertEqual(result["source_commit"], source["source_commit"])
+        self.assertEqual(result["builder_tools"], build["tools"])
+
+        (pair / "conpty.dll").write_bytes(b"dli")
+        with self.assertRaisesRegex(prepare_qt_build.PreparationError, "^conpty_file_identity$"):
+            prepare_qt_build.source_conpty_metadata(self.root, pair)
+        patch_path.write_bytes(b"changed patch\n")
+        with self.assertRaisesRegex(prepare_qt_build.PreparationError, "^conpty_source_identity$"):
+            prepare_qt_build.source_conpty_metadata(self.root, pair)
+
 
 if __name__ == "__main__":
     unittest.main()

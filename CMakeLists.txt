@@ -3,7 +3,8 @@ project(termforge_experiments VERSION 0.1.0 LANGUAGES CXX)
 
 option(TERMFORGE_BUILD_CANDIDATE_ADAPTER "Build the Rust candidate C++ adapter checks" OFF)
 option(TERMFORGE_BUILD_QT_SHELL "Build the C++/Qt local-shell migration entry" OFF)
-option(TERMFORGE_ENABLE_RESIZE_REPRO "Register the unresolved Qt/ConPTY content-resize reproducer (#29)" OFF)
+option(TERMFORGE_CONPTY_SOURCE_BUILD "Use the fixed source-built ConPTY for the Qt local shell" ON)
+option(TERMFORGE_ENABLE_RESIZE_REPRO "Run the original resize diagnostic with the comparison backend" OFF)
 
 # Single-config generators use bin/, multi-config generators use bin/<config>/.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -946,11 +947,21 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_query_reply_test>")
     set_tests_properties(qt_query_reply PROPERTIES TIMEOUT 45
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    if(TERMFORGE_ENABLE_RESIZE_REPRO)
+    if(TERMFORGE_CONPTY_SOURCE_BUILD OR TERMFORGE_ENABLE_RESIZE_REPRO)
       add_test(NAME qt_terminal_modes_resize_repro COMMAND "${Python3_EXECUTABLE}"
         "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --resize)
       set_tests_properties(qt_terminal_modes_resize_repro PROPERTIES TIMEOUT 35
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen" LABELS "unresolved-resize")
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    endif()
+    if(TERMFORGE_CONPTY_SOURCE_BUILD)
+      add_test(NAME qt_bcd_local_reference COMMAND "${Python3_EXECUTABLE}"
+        "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --bcd-local-reference)
+      set_tests_properties(qt_bcd_local_reference PROPERTIES TIMEOUT 35
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+      add_test(NAME qt_native_resize_map COMMAND "${Python3_EXECUTABLE}"
+        "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --native-resize-map)
+      set_tests_properties(qt_native_resize_map PROPERTIES TIMEOUT 35
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     endif()
   endif()
 endif()

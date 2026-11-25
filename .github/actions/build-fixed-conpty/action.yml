@@ -1,0 +1,31 @@
+name: Build the fixed Microsoft ConPTY source revision
+description: Build and identify the Windows x64 ConPTY pair used by the Qt product
+runs:
+  using: composite
+  steps:
+    - name: Preserve the pinned source bytes on the hosted runner
+      shell: pwsh
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: microsoft/terminal
+        ref: dc8ae365847d41f62d1ebca93815bb00959bc12f
+        path: local/conpty-upstream
+        persist-credentials: false
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: microsoft/vcpkg
+        ref: 927f62e4b8838bd7e441e9c45103a16ffd75007e
+        fetch-depth: 0
+        path: local/conpty-vcpkg
+        persist-credentials: false
+    - name: Build the fixed source pair
+      shell: pwsh
+      env:
+        NUGET_CLI_LANGUAGE: en-us
+      run: >-
+        ./experiments/conpty/upstream/build_r29_map.ps1
+        -Source ./local/conpty-upstream -Vcpkg ./local/conpty-vcpkg
+        -Out ./local/conpty-source-build -CandidateOnly

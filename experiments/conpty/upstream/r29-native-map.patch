@@ -1,0 +1,204 @@
+diff --git a/src/buffer/out/textBuffer.cpp b/src/buffer/out/textBuffer.cpp
+--- a/src/buffer/out/textBuffer.cpp
++++ b/src/buffer/out/textBuffer.cpp
+@@ -2970 +2970 @@
+-void TextBuffer::Reflow(TextBuffer& oldBuffer, TextBuffer& newBuffer, const Viewport* lastCharacterViewport, PositionInformation* positionInfo)
++void TextBuffer::Reflow(TextBuffer& oldBuffer, TextBuffer& newBuffer, const Viewport* lastCharacterViewport, PositionInformation* positionInfo, ReflowMapping* mapping)
+@@ -3028,0 +3029,5 @@
++            if (mapping)
++            {
++                const auto width = std::min(oldBuffer.GetSize().Width(), newWidth);
++                mapping->spans.push_back({ oldY, 0, width, newY, 0, width });
++            }
+@@ -3116,0 +3122,4 @@
++            if (mapping && state.sourceColumnEnd > oldX && state.columnEnd > newX)
++            {
++                mapping->spans.push_back({ oldY, oldX, state.sourceColumnEnd, newY, newX, state.columnEnd });
++            }
+@@ -3186,0 +3196,5 @@
++    }
++
++    if (mapping)
++    {
++        mapping->firstRetainedRow = std::max<til::CoordType>(0, newY - newHeight);
+diff --git a/src/buffer/out/textBuffer.hpp b/src/buffer/out/textBuffer.hpp
+--- a/src/buffer/out/textBuffer.hpp
++++ b/src/buffer/out/textBuffer.hpp
+@@ -299 +299,8 @@
+-    static void Reflow(TextBuffer& oldBuffer, TextBuffer& newBuffer, const Microsoft::Console::Types::Viewport* lastCharacterViewport = nullptr, PositionInformation* positionInfo = nullptr);
++    struct ReflowMapping
++    {
++        // Source row/column/end followed by unrotated destination row/column/end.
++        std::vector<std::array<til::CoordType, 6>> spans;
++        til::CoordType firstRetainedRow = 0;
++    };
++
++    static void Reflow(TextBuffer& oldBuffer, TextBuffer& newBuffer, const Microsoft::Console::Types::Viewport* lastCharacterViewport = nullptr, PositionInformation* positionInfo = nullptr, ReflowMapping* mapping = nullptr);
+diff --git a/src/host/PtySignalInputThread.cpp b/src/host/PtySignalInputThread.cpp
+--- a/src/host/PtySignalInputThread.cpp
++++ b/src/host/PtySignalInputThread.cpp
+@@ -72 +72 @@
+-        _DoResizeWindow(*_earlyResize);
++        _DoResizeWindow(*_earlyResize, _earlyResizeToken ? &*_earlyResizeToken : nullptr);
+@@ -146,0 +147,10 @@
++        case PtySignal::ResizeWindowWithMap:
++        {
++            ResizeWindowWithMapData request{};
++            if (!_GetData(&request, sizeof(request)))
++            {
++                return S_OK;
++            }
++            _DoResizeWindow(request.size, &request.token);
++            break;
++        }
+@@ -171 +181 @@
+-void PtySignalInputThread::_DoResizeWindow(const ResizeWindowData& data)
++void PtySignalInputThread::_DoResizeWindow(const ResizeWindowData& data, const std::array<uint8_t, 16>* token)
+@@ -182,0 +193 @@
++        _earlyResizeToken = token ? std::optional(*token) : std::nullopt;
+@@ -186 +197,58 @@
+-    _api.ResizeWindow(data.sx, data.sy);
++    if (!token)
++    {
++        _api.ResizeWindow(data.sx, data.sy);
++        return;
++    }
++
++    auto& gci = ServiceLocator::LocateGlobals().getConsoleInformation();
++    auto& screen = gci.GetActiveOutputBuffer();
++    const auto source = screen.GetBufferSize().Dimensions();
++    const auto sourceWindow = screen.GetViewport().ToInclusive();
++    std::vector<SCREEN_INFORMATION::PtyResizeOperation> operations;
++    screen.PtyResizeOperations = &operations;
++    const auto stopRecording = wil::scope_exit([&] { screen.PtyResizeOperations = nullptr; });
++    const auto success = _api.ResizeWindow(data.sx, data.sy);
++    auto& primary = screen.GetMainBuffer();
++    if (success && &primary != &screen)
++    {
++        // The terminal retains the hidden primary during each size revision.
++        // Bring its native viewport forward under the same console lock.
++        const til::size size{ data.sx, data.sy };
++        primary.SetViewportSize(&size);
++    }
++    const auto target = screen.GetBufferSize().Dimensions();
++    const auto window = screen.GetViewport().ToInclusive();
++    const auto cursor = screen.GetTextBuffer().GetCursor().GetPosition();
++
++    // Submit inside the console lock so a later client write cannot precede the map.
++    if (auto writer = gci.GetVtWriter())
++    {
++        std::string packet = "\x1b]633;TermForgeResizeMap;2;";
++        auto out = std::back_inserter(packet);
++        for (const auto byte : *token)
++        {
++            fmt::format_to(out, "{:02x}", byte);
++        }
++        fmt::format_to(out, ";{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
++                       success ? 1 : 0, source.width, source.height, sourceWindow.left, sourceWindow.top,
++                       sourceWindow.right, sourceWindow.bottom, target.width, target.height, window.left,
++                       window.top, window.right, window.bottom, cursor.x, cursor.y);
++        for (const auto& operation : operations)
++        {
++            fmt::format_to(out, "|{},{},{},{},{},{}", operation.traditional ? 1 : 0,
++                           operation.source.width, operation.source.height, operation.target.width,
++                           operation.target.height, operation.mapping.firstRetainedRow);
++            for (const auto& span : operation.mapping.spans)
++            {
++                fmt::format_to(out, ";{},{},{},{},{},{}", span[0], span[1], span[2], span[3], span[4], span[5]);
++            }
++        }
++        packet.append("|wrap;");
++        for (auto row = window.top; row <= window.bottom; ++row)
++        {
++            packet.push_back(screen.GetTextBuffer().GetRowByOffset(row).WasWrapForced() ? '1' : '0');
++        }
++        packet.append("\x1b\\");
++        writer.WriteUTF8(packet);
++        writer.Submit();
++    }
+diff --git a/src/host/PtySignalInputThread.hpp b/src/host/PtySignalInputThread.hpp
+--- a/src/host/PtySignalInputThread.hpp
++++ b/src/host/PtySignalInputThread.hpp
+@@ -44 +44,2 @@
+-            ResizeWindow = 8
++            ResizeWindow = 8,
++            ResizeWindowWithMap = 9
+@@ -51,0 +53,7 @@
++
++        struct ResizeWindowWithMapData
++        {
++            ResizeWindowData size;
++            std::array<uint8_t, 16> token;
++        };
++        static_assert(sizeof(ResizeWindowWithMapData) == 20);
+@@ -70 +78 @@
+-        void _DoResizeWindow(const ResizeWindowData& data);
++        void _DoResizeWindow(const ResizeWindowData& data, const std::array<uint8_t, 16>* token = nullptr);
+@@ -80,0 +89 @@
++        std::optional<std::array<uint8_t, 16>> _earlyResizeToken;
+diff --git a/src/host/screenInfo.cpp b/src/host/screenInfo.cpp
+--- a/src/host/screenInfo.cpp
++++ b/src/host/screenInfo.cpp
+@@ -1299 +1299,7 @@
+-    TextBuffer::Reflow(*_textBuffer.get(), *newTextBuffer.get());
++    PtyResizeOperation operation{ GetBufferSize().Dimensions(), coordNewScreenSize, {}, false };
++    TextBuffer::Reflow(*_textBuffer.get(), *newTextBuffer.get(), nullptr, nullptr,
++                       PtyResizeOperations ? &operation.mapping : nullptr);
++    if (PtyResizeOperations)
++    {
++        PtyResizeOperations->push_back(std::move(operation));
++    }
+@@ -1338,0 +1345,4 @@
++    if (PtyResizeOperations)
++    {
++        PtyResizeOperations->push_back({ GetBufferSize().Dimensions(), coordNewScreenSize, {}, true });
++    }
+diff --git a/src/host/screenInfo.hpp b/src/host/screenInfo.hpp
+--- a/src/host/screenInfo.hpp
++++ b/src/host/screenInfo.hpp
+@@ -83,0 +84,9 @@
++    struct PtyResizeOperation
++    {
++        til::size source;
++        til::size target;
++        TextBuffer::ReflowMapping mapping;
++        bool traditional;
++    };
++    // A caller scoped to the console lock can subscribe to the actual resize copies.
++    std::vector<PtyResizeOperation>* PtyResizeOperations = nullptr;
+diff --git a/src/terminal/adapter/adaptDispatch.cpp b/src/terminal/adapter/adaptDispatch.cpp
+--- a/src/terminal/adapter/adaptDispatch.cpp
++++ b/src/terminal/adapter/adaptDispatch.cpp
+@@ -190,0 +191,7 @@
++                // Keep end-of-row provenance for resize even when CUP cancels
++                // the pending cursor motion. A real line feed can still clear
++                // the wrap; disabling DECAWM never creates it.
++                if (textPositionBefore != textPositionAfter && state.columnEnd == textBuffer.GetLineWidth(cursorPosition.y))
++                {
++                    textBuffer.GetMutableRowByOffset(cursorPosition.y).SetWrapForced(true);
++                }
+diff --git a/src/winconpty/dll/winconpty.def b/src/winconpty/dll/winconpty.def
+--- a/src/winconpty/dll/winconpty.def
++++ b/src/winconpty/dll/winconpty.def
+@@ -5,0 +6 @@
++    ConptyResizePseudoConsoleWithMap
+diff --git a/src/winconpty/winconpty.cpp b/src/winconpty/winconpty.cpp
+--- a/src/winconpty/winconpty.cpp
++++ b/src/winconpty/winconpty.cpp
+@@ -519,0 +520,16 @@
++// Send the same geometry request with a caller token used to identify the
++// ordered host-generated resize map in the output stream.
++extern "C" HRESULT WINAPI ConptyResizePseudoConsoleWithMap(_In_ HPCON hPC, _In_ COORD size, _In_reads_(16) const uint8_t* token)
++{
++    const auto pty = reinterpret_cast<const PseudoConsole*>(hPC);
++    if (!pty || !token || size.X < 1 || size.Y < 1 || size.X > 500 || size.Y > 200)
++    {
++        return E_INVALIDARG;
++    }
++
++    unsigned short packet[11]{ 9, static_cast<unsigned short>(size.X), static_cast<unsigned short>(size.Y) };
++    memcpy(packet + 3, token, 16);
++    return WriteFile(pty->hSignal, packet, sizeof(packet), nullptr, nullptr)
++        ? S_OK : HRESULT_FROM_WIN32(GetLastError());
++}
++
