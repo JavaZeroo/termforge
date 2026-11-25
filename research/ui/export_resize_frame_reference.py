@@ -124,6 +124,9 @@ def capture_facts(directory, plan, source_root=ROOT):
     result["stateful_observation_count"] = len(roles)
     result["unmodified_return_stage"] = 3 if case == "hidden-primary" else None
     result["before_next_character_stage"] = (3 if case.endswith("-grow") else 1) if case not in ("alternate-active", "hidden-primary") else None
+    if case in probe.SAVED_CASES:
+        result["unmodified_return_stage"] = roles.index("restore-primary-cursor")
+        result["before_next_character_stage"] = result["unmodified_return_stage"]
     result["independent_dsr_bounds"] = {"row": [1, 200], "column": [1, 500]}
     return result
 

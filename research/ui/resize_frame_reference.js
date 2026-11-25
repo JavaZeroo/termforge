@@ -2,7 +2,7 @@
 let stage=0,busy=false,finished=false,due=0,stable=null,stableSince=0,lastPhase=-1;
 let gridKey=null,gridSince=0,nawsSeen=0,lastNaws=null,requested=0,resized=0,committed=0;
 const contract=__RESIZE_FRAME_CASE_JSON__,caseId=contract.case_id;
-const counts={'alternate-active':3,'hidden-primary':8,'pending-on-shrink':4,'wrap-off-shrink':4,'pending-on-grow':5,'wrap-off-grow':5};
+const counts={'alternate-active':3,'hidden-primary':8,'pending-on-shrink':4,'wrap-off-shrink':4,'pending-on-grow':5,'wrap-off-grow':5,'saved-return-narrow':6,'saved-return-wide':6};
 const phaseCount=counts[caseId],lastStage=phaseCount-1;
 const windows=contract.windows,grids=contract.grids,resizePhases=contract.resize_phases;
 if(!phaseCount||windows.length!==phaseCount||grids.length!==phaseCount||contract.labels.length!==phaseCount||resizePhases.length!==2)throw Error('fixed frame contract');

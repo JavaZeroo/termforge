@@ -126,7 +126,13 @@ class FrameReferenceTests(unittest.TestCase):
         for case,sources in expected.items():
             self.assertEqual([source for _,source in probe.phases(case)],sources)
         self.assertEqual(len(body),78)
-        self.assertEqual(sum(len(probe.phases(c)) for c in probe.CASES),29)
+        self.assertEqual(sum(len(probe.phases(c)) for c in expected),29)
+        for case in probe.SAVED_CASES:
+            sources = [source for _, source in probe.phases(case)]
+            restore = sources.index(b"\x1b[?1049l")
+            self.assertEqual(sources[:3], [prefix+b"\x1b[8;91HW\x1b[8;91H",b"\x1b[?1049h",b""])
+            self.assertEqual(sources[restore+1], b"X")
+            self.assertEqual(probe.required_grids(case)[restore], (61 if case == "saved-return-narrow" else 91, 20))
         self.assertEqual(sum(len(probe.phases(c)) for c in probe.INITIAL_CASES),19)
 
     def test_variable_resize_indices_and_exact_fragmented_replies_at_every_stateful_stage(self):

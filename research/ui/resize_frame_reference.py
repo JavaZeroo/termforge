@@ -18,9 +18,23 @@ EXE_SHA256, MANIFEST_SHA256 = common.EXE_SHA256, common.MANIFEST_SHA256
 RESET = b"\x1b[?6l\x1b[?7h\x1b[r\x1b[0m\x1b[2J"
 PREFIX = RESET + b"\x1b[2;1H0123456789\x1b[3;1HANCHOR"
 BODY = baseline.phases(20, 91)[0][1]
+SAVED_PRIMARY = PREFIX + b"\x1b[8;91HW\x1b[8;91H"
+SAVED_CASES = ("saved-return-narrow", "saved-return-wide")
 require(len(BODY) == 78 and hashlib.sha256(BODY).hexdigest() ==
         "c7dd4a7fa283dd0003ca8b2ae13dcb46f143a4717bf5a14eb5f5acb068a9fa1c", "Fixed 78-byte body differs")
 CASES = {
+    "saved-return-narrow": (("saved-primary-cell", 91, SAVED_PRIMARY),
+                            ("enter-alternate", 91, b"\x1b[?1049h"),
+                            ("shrink-while-hidden", 61, b""),
+                            ("restore-primary-cursor", 61, b"\x1b[?1049l"),
+                            ("write-at-restored-cursor", 61, b"X"),
+                            ("grow-after-write", 91, b"")),
+    "saved-return-wide": (("saved-primary-cell", 91, SAVED_PRIMARY),
+                          ("enter-alternate", 91, b"\x1b[?1049h"),
+                          ("shrink-while-hidden", 61, b""),
+                          ("grow-while-hidden", 91, b""),
+                          ("restore-primary-cursor", 91, b"\x1b[?1049l"),
+                          ("write-at-restored-cursor", 91, b"X")),
     "alternate-active": (("alternate-body", 91, b"\x1b[?1049h"+BODY),
                          ("alternate-shrunk", 61, b""), ("alternate-restored", 91, b"")),
     "hidden-primary": (("primary-origin-on-body", 91, BODY+b"\x1b[2;5r\x1b[?6h\x1b[2;10HMP"),
@@ -193,7 +207,7 @@ def fixed_contract(case):
             "phases": phase_records(case), "reference_exe_sha256": EXE_SHA256,
             "reference_files_manifest_sha256": MANIFEST_SHA256, "semantic_acceptance": False,
             "controller_contract": controller_contract(case),
-            "execution_group": "initial-four" if case in INITIAL_CASES else "deferred-grow",
+            "execution_group": "saved-primary" if case in SAVED_CASES else "initial-four" if case in INITIAL_CASES else "deferred-grow",
             "independent_dsr_bounds": {"row": [1, 200], "column": [1, 500]}, "post_initial_terminal_input":
             "Each exact stage is observed and acknowledged before the next; zero-byte stages add only DSR, no corrective CUP or redraw",
             "scope": "Fresh direct Telnet process per case; document, DSR and public marker rectangles remain separate",
@@ -237,7 +251,8 @@ def synthetic_lines(case, phase):
                     for variant in [overwrite(line, 9, middle) if middle else line] for head in heads}
         return frozenset(bounded_fragments(base, split))
     grow = case.endswith("-grow")
-    w_phase, x_phase = (2, 4) if grow else (0, 2)
+    w_phase = 2 if grow else 0
+    x_phase = next(i for i, (_, action) in enumerate(phases(case)) if action == b"X")
     if phase >= w_phase:
         base.add(" "*(60 if grow else 90)+"W")
     base = bounded_fragments(base, split)
@@ -245,6 +260,8 @@ def synthetic_lines(case, phase):
         written = set(base)
         for line in base:
             columns = {0, 60, 61, 90, 91}
+            if case in SAVED_CASES:
+                columns.add(90 - 61)
             if "W" in line:
                 columns.update((line.index("W"), line.index("W")+1))
             for column in columns:
@@ -268,7 +285,7 @@ def validate_document(case, phase, terminal):
               "PI": int(hidden and phase >= 5), "BI": int(hidden and phase >= 5),
               "PO": int(hidden and phase >= 6), "BO": int(hidden and phase >= 6),
               "W": int(not body and phase >= (2 if grow else 0)),
-              "X": int(not body and phase >= (4 if grow else 2))}
+              "X": int(any(action == b"X" for _, action in phases(case)[:phase + 1]))}
     require(all(sum(line.count(marker) for line in terminal["lines"]) <= maximum for marker, maximum in limits.items()),
             "Repeated or premature frame-source marker")
 
