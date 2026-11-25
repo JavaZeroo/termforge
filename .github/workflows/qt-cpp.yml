@@ -72,7 +72,7 @@ jobs:
             "-DTERMFORGE_CONPTY_BACKEND_DIR=$pair" `
             "-DTERMFORGE_MSVC_RUNTIME_DIR=$deps/crt"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cmake --build build/qt-cpp --config Release --target qt_terminal_modes_test qt_cpp_resize_smoke --parallel 2
+          cmake --build build/qt-cpp --config Release --target qt_terminal_modes_test qt_cpp_resize_smoke qt_cpp_shell_smoke qt_unicode_input_test qt_unicode_render_test qt_eight_session_test qt_hidden_retention_test qt_history_navigation_test qt_selection_migration_test qt_find_test qt_scrollbar_size_test qt_autoscroll_test qt_query_reply_test qt_paste_test --parallel 2
       - name: Run the original resize, Win32 I/O and ordered host map
         run: |
           $ErrorActionPreference = 'Stop'
@@ -98,7 +98,13 @@ jobs:
             Get-Content -LiteralPath "$out/$scenario.log"
           }
           $codes | ConvertTo-Json | Set-Content -LiteralPath "$out/exit-codes.json" -Encoding UTF8
-          if ($codes['win32-compat'] -ne 0 -or ($env:VARIANT -eq 'candidate' -and $codes['native-resize-map'] -ne 0)) { exit 1 }
+          if ($codes['win32-compat'] -ne 0 -or ($env:VARIANT -eq 'candidate' -and
+            ($codes['native-resize-map'] -ne 0 -or $codes['resize'] -ne 0))) { exit 1 }
+      - name: Run the retained text, resize and Qt interaction matrix
+        if: always()
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP 'tf29-native-runtime'
+          ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_eight_session|qt_terminal_modes(_retained)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration|qt_find|qt_scrollbar_size|qt_autoscroll|qt_query_reply|qt_paste)$' --no-tests=error --output-on-failure --output-junit "$out/qt-junit.xml"
       - name: Preserve frozen synthetic runtime observations
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -106,4 +112,6 @@ jobs:
           name: r29-native-map-runtime-${{ matrix.variant }}
           if-no-files-found: warn
           retention-days: 14
-          path: ${{ runner.temp }}/tf29-native-runtime/*.json
+          path: |
+            ${{ runner.temp }}/tf29-native-runtime/*.json
+            ${{ runner.temp }}/tf29-native-runtime/*.xml
