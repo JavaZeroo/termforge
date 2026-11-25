@@ -179,6 +179,17 @@ diff --git a/src/host/screenInfo.hpp b/src/host/screenInfo.hpp
 +    };
 +    // A caller scoped to the console lock can subscribe to the actual resize copies.
 +    std::vector<PtyResizeOperation>* PtyResizeOperations = nullptr;
+diff --git a/src/terminal/adapter/adaptDispatch.cpp b/src/terminal/adapter/adaptDispatch.cpp
+--- a/src/terminal/adapter/adaptDispatch.cpp
++++ b/src/terminal/adapter/adaptDispatch.cpp
+@@ -190,0 +191,7 @@
++                // Keep end-of-row provenance for resize even when CUP cancels
++                // the pending cursor motion. A real line feed can still clear
++                // the wrap; disabling DECAWM never creates it.
++                if (textPositionBefore != textPositionAfter && state.columnEnd == textBuffer.GetLineWidth(cursorPosition.y))
++                {
++                    textBuffer.GetMutableRowByOffset(cursorPosition.y).SetWrapForced(true);
++                }
 diff --git a/src/winconpty/dll/winconpty.def b/src/winconpty/dll/winconpty.def
 --- a/src/winconpty/dll/winconpty.def
 +++ b/src/winconpty/dll/winconpty.def

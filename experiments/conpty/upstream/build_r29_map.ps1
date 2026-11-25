@@ -89,6 +89,7 @@ try {
         'src/host/PtySignalInputThread.hpp' = '97326cdf181b11aa9129030e6090b11d2107c4872bda100e69d0ab0bb8e048db'
         'src/host/screenInfo.cpp' = 'fced7e15d63ce8e7cf791d09fd1ba57a46a7bf65430e8770a372340650b483b0'
         'src/host/screenInfo.hpp' = 'a6ea94d71190d758429a8684887d5a60809cee1b5da4c7364facebfe9cfb003c'
+        'src/terminal/adapter/adaptDispatch.cpp' = '8a3efbcb63c1023dc138e49aed90eeb36ac75f67de1a348ab969440894813560'
         'src/winconpty/dll/winconpty.def' = 'c91709c990b832ec64e121ffa12541bf5a3b3f69a7ef26b67a80893a5608d02b'
         'src/winconpty/winconpty.cpp' = '37db0407bb0193d4ce26e5a8aa96fbed24b63e9e07f56ca201cbc3f840670c0c'
     }
@@ -98,10 +99,18 @@ try {
     $state.source_hashes = $sourceHashes
     $patch = "$PSScriptRoot/r29-native-map.patch"
     $state.patch_sha256 = Digest $patch
-    # Both pinned upstream files use CRLF on disk.
+    # Use the canonical newline of each upstream file in the patch.
     $applicablePatch = "$Out/_private/r29-native-map.patch"
-    $patchText = [IO.File]::ReadAllText($patch).Replace("`r`n", "`n").Replace("`n", "`r`n")
-    [IO.File]::WriteAllText($applicablePatch, $patchText)
+    $patchText = [IO.File]::ReadAllText($patch).Replace("`r`n", "`n")
+    $patchSections = [regex]::Split($patchText, '(?m)(?=^diff --git )')
+    $appliedSections = foreach ($section in $patchSections) {
+        if ($section.StartsWith('diff --git a/src/terminal/adapter/adaptDispatch.cpp ')) {
+            $section
+        } else {
+            $section.Replace("`n", "`r`n")
+        }
+    }
+    [IO.File]::WriteAllText($applicablePatch, ($appliedSections -join ''))
     $state.applied_patch_sha256 = Digest $applicablePatch
     $state.source_hashes_verified = $true
     $triplet = Get-Content -Raw -LiteralPath "$Source/dep/vcpkg-overlay-triplets/x64-windows-static.cmake"
