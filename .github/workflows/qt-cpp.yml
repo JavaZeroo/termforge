@@ -13,11 +13,11 @@ jobs:
     timeout-minutes: 15
     env:
       PYTHONUTF8: '1'
-      FROZEN_SOURCE: b7ef9cef5218e866c35ba6d80acb8d0717209af7
+      FROZEN_SOURCE: 1aafddd7f6c45e7507b46a319d2e369aecde2b1f
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: b7ef9cef5218e866c35ba6d80acb8d0717209af7
+          ref: 1aafddd7f6c45e7507b46a319d2e369aecde2b1f
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
