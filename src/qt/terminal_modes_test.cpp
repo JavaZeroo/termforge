@@ -283,10 +283,9 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         const size_t offset = terminal.painted_row_offset();
         for (size_t row = 0; row < page->lines.size(); ++row)
             painted_rows.append(QString::fromStdString(hex(display_row(*page, row))));
-        // The frozen local shell records child coordinates and the visible
-        // viewport independently. Its original console has a deeper buffer.
+        // WindTerm's local shell was also observed with a viewport-sized
+        // backing buffer, matching the geometry requested by this child.
         auto expected_native = std::vector<std::string>(static_cast<size_t>(rows));
-        auto local_visible = expected_native;
         const std::string full_b = std::string(79, ' ') + 'B';
         const std::string full_c = std::string(79, ' ') + 'C';
         const std::string narrow_b = std::string(19, ' ') + 'B';
@@ -295,21 +294,15 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
             expected_native[7] = full_b;
             expected_native[9] = full_c;
             expected_native[10] = "D";
-            local_visible = expected_native;
         } else if (shrunk) {
-            expected_native[7] = narrow_b;
-            expected_native[9] = narrow_cd;
+            expected_native[8] = narrow_b;
+            expected_native[10] = narrow_cd;
             if (stage == 3) expected_native[11] = "RESIZED";
-            local_visible = expected_native;
         } else {
             expected_native[7] = full_b;
             expected_native[8] = full_c;
             expected_native[9] = "D";
-            expected_native[11] = "RESIZED";
-            local_visible[6] = full_b;
-            local_visible[7] = full_c;
-            local_visible[8] = "D";
-            local_visible[10] = "RESIZED";
+            expected_native[10] = "RESIZED";
         }
         // The frozen reference's marker rectangles are aligned to its 8x18
         // cells. Normalize them to visible row/column before comparing the
@@ -330,7 +323,7 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
             expected_visible[10] = "D";
             expected_visible[11] = "RESIZED";
         }
-        const auto& visible_reference = local_reference ? local_visible : expected_visible;
+        const auto& visible_reference = local_reference ? expected_native : expected_visible;
         bool display_matches = offset + visible_reference.size() <= page->lines.size();
         bool native_matches = viewport_rows == rows;
         bool core_matches = screen.height() == rows;

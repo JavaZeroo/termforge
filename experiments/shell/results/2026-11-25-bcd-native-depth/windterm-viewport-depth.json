@@ -1,0 +1,249 @@
+{
+  "schema": "termforge-windterm-bcd-viewport-depth-v1",
+  "environment": "WindTerm 2.7.0 local shell, Windows 11 x64 QEMU guest",
+  "initial_child_buffer_request": [
+    80,
+    24
+  ],
+  "identity": {
+    "sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "files_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+    "script_sha256": "18da1ccc5a238765a4d3bcb105d6f2c8f5c5181d32201ad94d89faa42293b150",
+    "fixture_sha256": "ed7f9e36c50d2646f5efc3c4bdb0dd7d165a5a5c00203d003522f00052fc3a61",
+    "template_sha256": "f2b6679c383ddce67e319140c3506196954d78db6cc8580a7b3b11d6a92f5b57"
+  },
+  "phases": [
+    {
+      "phase": 0,
+      "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b383b383048421b5b31303b383048431b5b31313b3148441b5b366e",
+      "size": [
+        80,
+        24
+      ],
+      "window": [
+        0,
+        0,
+        79,
+        23
+      ],
+      "cursor_rc": [
+        10,
+        1
+      ],
+      "native_rows": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "                                                                               B",
+        "",
+        "                                                                               C",
+        "D",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "display": [
+        {
+          "text": "B",
+          "row": 7,
+          "column": 79
+        },
+        {
+          "text": "C",
+          "row": 9,
+          "column": 79
+        },
+        {
+          "text": "D",
+          "row": 10,
+          "column": 0
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "source_hex": "1b5b366e",
+      "size": [
+        60,
+        12
+      ],
+      "window": [
+        0,
+        0,
+        59,
+        11
+      ],
+      "cursor_rc": [
+        10,
+        21
+      ],
+      "native_rows": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "                   B",
+        "",
+        "                   CD",
+        ""
+      ],
+      "display": [
+        {
+          "text": "B",
+          "row": 8,
+          "column": 19
+        },
+        {
+          "text": "C",
+          "row": 10,
+          "column": 19
+        },
+        {
+          "text": "D",
+          "row": 10,
+          "column": 20
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "source_hex": "1b5b31323b3148524553495a45441b5b366e",
+      "size": [
+        60,
+        12
+      ],
+      "window": [
+        0,
+        0,
+        59,
+        11
+      ],
+      "cursor_rc": [
+        11,
+        7
+      ],
+      "native_rows": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "                   B",
+        "",
+        "                   CD",
+        "RESIZED"
+      ],
+      "display": [
+        {
+          "text": "B",
+          "row": 8,
+          "column": 19
+        },
+        {
+          "text": "C",
+          "row": 10,
+          "column": 19
+        },
+        {
+          "text": "D",
+          "row": 10,
+          "column": 20
+        },
+        {
+          "text": "RESIZED",
+          "row": 11,
+          "column": 0
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "source_hex": "1b5b366e",
+      "size": [
+        80,
+        24
+      ],
+      "window": [
+        0,
+        0,
+        79,
+        23
+      ],
+      "cursor_rc": [
+        10,
+        7
+      ],
+      "native_rows": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "                                                                               B",
+        "                                                                               C",
+        "D",
+        "RESIZED",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "display": [
+        {
+          "text": "B",
+          "row": 7,
+          "column": 79
+        },
+        {
+          "text": "C",
+          "row": 8,
+          "column": 79
+        },
+        {
+          "text": "D",
+          "row": 9,
+          "column": 0
+        },
+        {
+          "text": "RESIZED",
+          "row": 10,
+          "column": 0
+        }
+      ]
+    }
+  ],
+  "cleanup_verified": true,
+  "job_active": 0
+}
