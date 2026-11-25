@@ -183,10 +183,26 @@ std::string exchange(HANDLE input, HANDLE output, std::string_view source, bool&
     return received;
 }
 
-// Child-side receiver. It never reads the screen or console APIs beyond modes,
-// so it cannot trigger conhost's cursor-sync DSR path; the only observed input
-// is what the host actually delivered through ConPTY.
-int query_child(const std::filesystem::path& result, int trace_phases = 0) {
+// Read glyphs without querying cursor info, which can itself cause a DSR.
+std::string native_marker_grid(HANDLE output) {
+    constexpr SHORT columns = 91, rows = 20;
+    std::array<CHAR_INFO, columns * rows> cells{};
+    SMALL_RECT bounds{0, 0, columns - 1, rows - 1};
+    require(ReadConsoleOutputW(output, cells.data(), {columns, rows}, {0, 0}, &bounds) &&
+            bounds.Left == 0 && bounds.Top == 0 && bounds.Bottom == rows - 1 &&
+            (bounds.Right == columns - 1 || bounds.Right == 60), "native marker grid read failed");
+    std::string grid;
+    for (int row = 0; row < rows; ++row)
+        for (int column = 0; column <= bounds.Right; ++column) {
+            const auto cell = cells[row * columns + column].Char.UnicodeChar;
+            grid.push_back(cell == L'W' || cell == L'X' ? static_cast<char>(cell) : ' ');
+        }
+    return grid;
+}
+
+enum class CursorTrace { single_query, fixed_grid, saved_resize };
+
+int query_child(const std::filesystem::path& result, CursorTrace trace = CursorTrace::single_query) {
     try {
         const HANDLE input = GetStdHandle(STD_INPUT_HANDLE);
         const HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -203,7 +219,7 @@ int query_child(const std::filesystem::path& result, int trace_phases = 0) {
                                           ENABLE_VIRTUAL_TERMINAL_PROCESSING |
                                           DISABLE_NEWLINE_AUTO_RETURN),
                 "query child VT output mode setup failed");
-        if (trace_phases) {
+        if (trace != CursorTrace::single_query) {
             std::ifstream phases("sources.hex");
             std::ofstream replies(result, std::ios::binary);
             require(bool(phases) && bool(replies), "Cursor trace files unavailable");
@@ -211,7 +227,7 @@ int query_child(const std::filesystem::path& result, int trace_phases = 0) {
             size_t count = 0;
             while (std::getline(phases, line)) {
                 const auto phase = std::to_string(count);
-                if (trace_phases == 6) {
+                if (trace == CursorTrace::saved_resize) {
                     const auto deadline = GetTickCount64() + child_reply_timeout_ms;
                     while (!std::filesystem::exists("release-" + phase) && GetTickCount64() < deadline) Sleep(2);
                     require(std::filesystem::exists("release-" + phase), "cursor trace resize gate timed out");
@@ -221,10 +237,13 @@ int query_child(const std::filesystem::path& result, int trace_phases = 0) {
                 const auto received = exchange(input, output, source, timed_out, complete);
                 replies << hex(received) << std::endl;
                 require(bool(replies) && complete && !timed_out, "Cursor phase reply incomplete");
-                if (trace_phases == 6) write_binary("done-" + phase, "");
+                if (trace == CursorTrace::saved_resize) {
+                    write_binary("cells-" + phase, native_marker_grid(output));
+                    write_binary("done-" + phase, "");
+                }
                 ++count;
             }
-            return phases.eof() && count == static_cast<size_t>(trace_phases) ? 0 : 5;
+            return phases.eof() && count == (trace == CursorTrace::saved_resize ? 6u : 14u) ? 0 : 5;
         }
         bool timed_out, complete;
         const auto received = exchange(input, output, query_source, timed_out, complete);
@@ -414,6 +433,7 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
         require(document.object().value("schema").toString() == QStringLiteral("termforge-original-alternate-ris-followup-summary-v1"),
                 "wrong RIS reference file");
     const auto phases = record.value("phases").toArray();
+    require(!phases.isEmpty(), "empty cursor trace");
     const auto grid = resized ? phases.at(0).toObject().value("frozen_grid").toArray() : record.value("grid").toArray();
     require(grid.size() == 2 && grid[0].toInt() == 91 && grid[1].toInt() == (resized ? 20 : 25) &&
             phases.size() == (resized ? 6 : 14),
@@ -465,6 +485,7 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
             if ((model.screen().active_buffer() == termforge::ScreenBuffer::primary) != primary) ++differences;
             if (!primary) continue;
             const auto markers = phase.value("markers").toArray();
+            std::string expected_native(width * 20, ' ');
             int found = 0;
             for (const auto& line : model.screen().visible_lines())
                 for (int column = 0; column < width; ++column)
@@ -474,10 +495,17 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
                 const auto marker = value.toObject();
                 const int row = marker.value("document_line").toInt(-1), col = marker.value("column").toInt(-1);
                 require(row >= 0 && row < 20 && col >= 0 && col < width, "reference marker is outside the primary grid");
+                const auto label = marker.value("label").toString();
+                require(label == QStringLiteral("W") || label == QStringLiteral("X"), "invalid saved cursor marker");
+                expected_native[row * width + col] = label.at(0).toLatin1();
                 if (model.screen().visible_lines()[row][col].text != marker.value("label").toString().toStdString()) {
                     ++differences;
                     std::cerr << "saved cursor marker differs at phase " << index << " cell " << row << ',' << col << '\n';
                 }
+            }
+            if (read_binary(directory / ("cells-" + std::to_string(index))) != expected_native) {
+                ++differences;
+                std::cerr << "native marker grid differs at phase " << index << '\n';
             }
         }
     }
@@ -525,8 +553,8 @@ int main(int argc, char** argv) {
     if (argc == 3 && std::string_view(argv[1]) == "--query-child") {
         return query_child(std::filesystem::path(argv[2]));
     }
-    if (argc == 2 && (std::string_view(argv[1]) == "--cursor-child" || std::string_view(argv[1]) == "--ris-child")) return query_child("replies.hex", 14);
-    if (argc == 2 && std::string_view(argv[1]) == "--saved-cursor-child") return query_child("replies.hex", 6);
+    if (argc == 2 && (std::string_view(argv[1]) == "--cursor-child" || std::string_view(argv[1]) == "--ris-child")) return query_child("replies.hex", CursorTrace::fixed_grid);
+    if (argc == 2 && std::string_view(argv[1]) == "--saved-cursor-child") return query_child("replies.hex", CursorTrace::saved_resize);
     const bool ris = argc == 3 && std::string_view(argv[1]) == "--ris-reference";
     const bool margin = argc == 3 && std::string_view(argv[1]) == "--duplicate-margin-reference";
     const bool saved = argc == 3 && std::string_view(argv[1]) == "--saved-cursor-reference";

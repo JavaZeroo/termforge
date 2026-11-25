@@ -56,7 +56,7 @@ diff --git a/src/host/PtySignalInputThread.cpp b/src/host/PtySignalInputThread.c
 +void PtySignalInputThread::_DoResizeWindow(const ResizeWindowData& data, const std::array<uint8_t, 16>* token)
 @@ -182,0 +193 @@
 +        _earlyResizeToken = token ? std::optional(*token) : std::nullopt;
-@@ -186 +197,58 @@
+@@ -186 +197,55 @@
 -    _api.ResizeWindow(data.sx, data.sy);
 +    if (!token)
 +    {
@@ -75,10 +75,7 @@ diff --git a/src/host/PtySignalInputThread.cpp b/src/host/PtySignalInputThread.c
 +    auto& primary = screen.GetMainBuffer();
 +    if (success && &primary != &screen)
 +    {
-+        // The terminal retains the hidden primary during each size revision.
-+        // Bring its native viewport forward under the same console lock.
-+        const til::size size{ data.sx, data.sy };
-+        primary.SetViewportSize(&size);
++        primary.ResizeHiddenPrimary({ data.sx, data.sy }, (sourceWindow.right - sourceWindow.left + 1) != data.sx);
 +    }
 +    const auto target = screen.GetBufferSize().Dimensions();
 +    const auto window = screen.GetViewport().ToInclusive();
@@ -139,7 +136,25 @@ diff --git a/src/host/PtySignalInputThread.hpp b/src/host/PtySignalInputThread.h
 diff --git a/src/host/screenInfo.cpp b/src/host/screenInfo.cpp
 --- a/src/host/screenInfo.cpp
 +++ b/src/host/screenInfo.cpp
-@@ -1299 +1299,7 @@
+@@ -597,0 +598,17 @@
++void SCREEN_INFORMATION::ResizeHiddenPrimary(const til::size size, const bool widthChanged)
++{
++    if (widthChanged)
++    {
++        // The state machine is shared between the two pages. Update its saved
++        // protocol column on every width change, even if the text later fits.
++        auto& engine = static_cast<OutputStateMachineEngine&>(GetStateMachine().Engine());
++        static_cast<AdaptDispatch&>(engine.Dispatch()).ClampSavedPrimaryColumn(size.width);
++        _fitWidthOnReturn = true;
++    }
++    // Apply height revisions now, retaining the main buffer's source columns.
++    // The active alternate already owns the requested viewport dimensions.
++    const til::size retained{ GetBufferSize().Width(), size.height };
++    SetViewportSize(&retained);
++    _deferredPtyResize = size;
++}
++
+@@ -1299 +1316,7 @@
 -    TextBuffer::Reflow(*_textBuffer.get(), *newTextBuffer.get());
 +    PtyResizeOperation operation{ GetBufferSize().Dimensions(), coordNewScreenSize, {}, false };
 +    TextBuffer::Reflow(*_textBuffer.get(), *newTextBuffer.get(), nullptr, nullptr,
@@ -148,15 +163,27 @@ diff --git a/src/host/screenInfo.cpp b/src/host/screenInfo.cpp
 +    {
 +        PtyResizeOperations->push_back(std::move(operation));
 +    }
-@@ -1338,0 +1345,4 @@
+@@ -1338,0 +1362,4 @@
 +    if (PtyResizeOperations)
 +    {
 +        PtyResizeOperations->push_back({ GetBufferSize().Dimensions(), coordNewScreenSize, {}, true });
 +    }
+@@ -1381 +1408 @@
+-    if (fWrapText && !_IsAltBuffer())
++    if (fWrapText && !_IsAltBuffer() && !(_fitWidthOnReturn && coordNewScreenSize.width != GetBufferSize().Width()))
+@@ -1908 +1935,4 @@
+-    _handleDeferredResize(siMain);
++    if (!siMain._fitWidthOnReturn)
++    {
++        _handleDeferredResize(siMain);
++    }
+@@ -1952,0 +1983 @@
++        psiMain->_fitWidthOnReturn = false;
 diff --git a/src/host/screenInfo.hpp b/src/host/screenInfo.hpp
 --- a/src/host/screenInfo.hpp
 +++ b/src/host/screenInfo.hpp
-@@ -83,0 +84,9 @@
+@@ -83,0 +84,10 @@
++    void ResizeHiddenPrimary(til::size size, bool widthChanged);
 +    struct PtyResizeOperation
 +    {
 +        til::size source;
@@ -166,6 +193,8 @@ diff --git a/src/host/screenInfo.hpp b/src/host/screenInfo.hpp
 +    };
 +    // A caller scoped to the console lock can subscribe to the actual resize copies.
 +    std::vector<PtyResizeOperation>* PtyResizeOperations = nullptr;
+@@ -175,0 +186 @@
++    bool _fitWidthOnReturn = false;
 diff --git a/src/terminal/adapter/adaptDispatch.cpp b/src/terminal/adapter/adaptDispatch.cpp
 --- a/src/terminal/adapter/adaptDispatch.cpp
 +++ b/src/terminal/adapter/adaptDispatch.cpp
@@ -183,6 +212,17 @@ diff --git a/src/terminal/adapter/adaptDispatch.cpp b/src/terminal/adapter/adapt
 +        const auto alternate = _pages.ActivePage();
 +        alternate.Cursor().ResetDelayEOLWrap();
 +        alternate.Cursor().SetPosition({ 0, alternate.Top() });
+diff --git a/src/terminal/adapter/adaptDispatch.hpp b/src/terminal/adapter/adaptDispatch.hpp
+--- a/src/terminal/adapter/adaptDispatch.hpp
++++ b/src/terminal/adapter/adaptDispatch.hpp
+@@ -39,0 +40,7 @@
++        void ClampSavedPrimaryColumn(const VTInt width) noexcept
++        {
++            auto& saved = _savedCursorState.front();
++            saved.Column = std::min(saved.Column, width);
++            saved.IsDelayedEOLWrap = false;
++        }
++
 diff --git a/src/winconpty/dll/winconpty.def b/src/winconpty/dll/winconpty.def
 --- a/src/winconpty/dll/winconpty.def
 +++ b/src/winconpty/dll/winconpty.def

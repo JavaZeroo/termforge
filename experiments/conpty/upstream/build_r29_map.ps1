@@ -95,6 +95,7 @@ try {
         'src/host/screenInfo.cpp' = 'fced7e15d63ce8e7cf791d09fd1ba57a46a7bf65430e8770a372340650b483b0'
         'src/host/screenInfo.hpp' = 'a6ea94d71190d758429a8684887d5a60809cee1b5da4c7364facebfe9cfb003c'
         'src/terminal/adapter/adaptDispatch.cpp' = '8a3efbcb63c1023dc138e49aed90eeb36ac75f67de1a348ab969440894813560'
+        'src/terminal/adapter/adaptDispatch.hpp' = 'db406433e54c4b8857da7aa686ee4cc481e419b4f5b735b742dca5804e00939f'
         'src/winconpty/dll/winconpty.def' = 'c91709c990b832ec64e121ffa12541bf5a3b3f69a7ef26b67a80893a5608d02b'
         'src/winconpty/winconpty.cpp' = '37db0407bb0193d4ce26e5a8aa96fbed24b63e9e07f56ca201cbc3f840670c0c'
     }
@@ -109,7 +110,7 @@ try {
     $patchText = [IO.File]::ReadAllText($patch).Replace("`r`n", "`n")
     $patchSections = [regex]::Split($patchText, '(?m)(?=^diff --git )')
     $appliedSections = foreach ($section in $patchSections) {
-        if ($section.StartsWith('diff --git a/src/terminal/adapter/adaptDispatch.cpp ')) {
+        if ($section.StartsWith('diff --git a/src/terminal/adapter/adaptDispatch.')) {
             $section
         } else {
             $section.Replace("`n", "`r`n")
