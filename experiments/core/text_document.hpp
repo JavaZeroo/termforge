@@ -41,7 +41,9 @@ public:
     }
     DocumentLine line(size_t index) const {
         const auto value = meta(index);
-        return {project_line(screen_.retained_line(index)), value.columns, value.joins_next, value.ending};
+        const auto& source = screen_.retained_line(index);
+        return {project_line(source, !(value.joins_next && source.logical_wrap_padding)),
+                value.columns, value.joins_next, value.ending};
     }
     // Exact current rank: identity is not document order, so a missing row is
     // reported as missing instead of snapping to a neighbour.

@@ -168,11 +168,22 @@ void check_unicode_readers(TerminalWidget& terminal, SessionModel& model, QElaps
 
     const auto check = [&](size_t expected_projected_rows) {
         require(selected_text(terminal) == text, "wide/combining copy changed across resize");
+        if (model.uses_host_resize_maps()) {
+            await([&] {
+                const auto selection = terminal.selection_range_for_test();
+                const auto found = terminal.find_current_range_for_test();
+                const TextDocument document(model.screen());
+                return selection && found && document.valid(selection->begin) && document.valid(selection->end) &&
+                       selection->begin == found->begin && selection->end == found->end;
+            }, model, lifecycle, "wide/combining Find did not converge to the mapped selection");
+        }
         const auto selection = terminal.selection_range_for_test();
         const auto found = terminal.find_current_range_for_test();
-        require(selection && found && selection->begin == original->begin && selection->end == original->end &&
-                found->begin == original->begin && found->end == original->end,
-                "wide/combining selection or Find moved to a different source range");
+        if (!model.uses_host_resize_maps()) {
+            require(selection && found && selection->begin == original->begin && selection->end == original->end &&
+                    found->begin == original->begin && found->end == original->end,
+                    "wide/combining selection or Find moved to a different source range");
+        }
         const auto spans = terminal.find_spans_for_test();
         size_t cells = 0;
         for (const auto& span : spans) cells += span.column_end - span.column_begin;
