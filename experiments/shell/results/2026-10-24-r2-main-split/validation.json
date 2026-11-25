@@ -28,7 +28,7 @@
     "desktop_gone_after_each_round": true,
     "final_frame_sha256": "fb0746b7ffbe672718ab3ff3427e99fe62dc934ccf5b046011a390f6ca944a97",
     "split_frame_sha256": "540f93a153f980775007625a8c16a0be449fc92d2c26c7afa6f845511bcb5b07",
-    "split_frame": "split.bmp",
+    "split_frame": "https://github.com/JavaZeroo/termforge/blob/b1671e15fe6517e243895595afec7b4e0980467b/experiments/shell/results/2026-10-24-r2-main-split/split.bmp",
     "frames_reviewed": true,
     "presented_done": null
   },
