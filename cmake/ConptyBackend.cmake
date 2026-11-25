@@ -16,7 +16,13 @@ function(termforge_use_bundled_conpty target)
   set(manifest "${repository}/third_party/conpty/manifest.json")
   set(license "${repository}/third_party/conpty/LICENSE")
   termforge_validate_conpty_pair("${TERMFORGE_CONPTY_BACKEND_DIR}" "${manifest}" "${license}")
-  target_compile_definitions(${target} PRIVATE TERMFORGE_CONPTY_SIDEBYSIDE=1)
+  file(READ "${manifest}" metadata)
+  string(JSON dll_sha256 GET "${metadata}" files conpty.dll)
+  string(JSON host_sha256 GET "${metadata}" files OpenConsole.exe)
+  target_compile_definitions(${target} PRIVATE TERMFORGE_CONPTY_SIDEBYSIDE=1
+    "TERMFORGE_CONPTY_DLL_SHA256=\"${dll_sha256}\""
+    "TERMFORGE_CONPTY_HOST_SHA256=\"${host_sha256}\"")
+  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${manifest}")
   target_link_libraries(${target} PRIVATE bcrypt)
 
   # An always-run dependency also repairs a missing bundle when no source
