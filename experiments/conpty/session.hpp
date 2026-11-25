@@ -169,6 +169,10 @@ public:
         const HRESULT hr = backend_.resize(console_, {columns, rows});
         if (FAILED(hr)) fail("ResizePseudoConsole", static_cast<DWORD>(hr));
     }
+    void resize_with_map(short columns, short rows, const std::array<uint8_t, 16>& token) {
+        const HRESULT hr = backend_.resize_with_map(console_, {columns, rows}, token);
+        if (FAILED(hr)) fail("ConptyResizePseudoConsoleWithMap", static_cast<DWORD>(hr));
+    }
     bool wait_exit(unsigned timeout_ms, DWORD* observed_wait_result = nullptr, DWORD* observed_wait_error = nullptr) {
         const auto result = WaitForSingleObject(process_.get(), timeout_ms);
         const DWORD error = result == WAIT_FAILED ? GetLastError() : ERROR_SUCCESS;

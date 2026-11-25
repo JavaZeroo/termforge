@@ -99,7 +99,9 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
 
 WindTerm 本地 Shell 用旧六阶段完全相同的子进程输入运行。第 6 阶段原版可见页和独立原生网格均得到 `RESIZED` + 12 空格 + `CD`。TermForge 的源行和显示页仍将写入分开。这一原版观测直接支持把旧失败作为产品可见回归。 [本地 Shell 证据](../../experiments/shell/results/2026-11-25-bcd-native-depth/windterm-local-legacy.json)
 
-### 固定 ConPTY 源码修订提案（待确认）
+### 固定 ConPTY 源码修订（已确认验证）
+
+2026-11-25，项目负责人确认基于同一固定 Microsoft 源码验证 ConPTY 修订版，继续根因修复。旧 `--resize` 与 Win32 兼容性通过后推送并合入 main，随后更新并关闭 #29。
 
 在已固定的 Microsoft 源提交上，验证由 resize 事务产生版本化的网格到逻辑行映射，使原生 Console API 及 VT 写入能在同一尺寸版本中与 Qt 的正文、显示和读者位置对应。沿用 Screen 的正文所有权、行 ID、版本和淘汰规则。官方固定包的导出接口提供尺寸请求与进程生命周期，缺少可供 Qt 消费的网格映射。需要验证源码修订版能提供准确映射，并处理新行、软换行、结合字和淘汰条件。 [固定 DLL 导出](https://github.com/microsoft/terminal/blob/dc8ae365847d41f62d1ebca93815bb00959bc12f/src/winconpty/dll/winconpty.def)
 

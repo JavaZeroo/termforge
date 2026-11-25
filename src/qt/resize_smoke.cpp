@@ -21,7 +21,8 @@ static void record_reply(const SizeReply& reply) {
               << ",\"query_error\":" << reply.query_error << ",\"buffer_columns\":" << reply.buffer_columns
               << ",\"buffer_rows\":" << reply.buffer_rows << ",\"window_left\":" << reply.window_left
               << ",\"window_top\":" << reply.window_top << ",\"window_right\":" << reply.window_right
-              << ",\"window_bottom\":" << reply.window_bottom << "}\n";
+              << ",\"window_bottom\":" << reply.window_bottom << ",\"win32_checks\":" << reply.win32_checks
+              << ",\"win32_error\":" << reply.win32_error << "}\n";
 }
 static void record_state(int stage, int columns, int rows, const termforge::qt::TerminalWidget& terminal,
                          const termforge::qt::SessionModel& model) {
@@ -409,12 +410,57 @@ static void oversized_area_uses_existing_bounds(const std::wstring& executable, 
     await([&] { return model.finished(); }, model, "bounded-size Session did not finish");
     require(model.natural_exit() && model.exit_code() == 37 && model.cleanup_verified(), "bounded-size Session cleanup failed");
 }
+static void win32_resize_compat(const std::wstring& executable, const std::wstring& directory) {
+    SizeFixture fixture;
+    termforge::qt::SessionModel model;
+    QWidget window;
+    window.resize(1200, 900);
+    termforge::qt::TerminalWidget terminal(model, &window);
+    window.show();
+    require(model.start(executable, L"--size-child \"" + fixture.pipe_name() + L"\"", directory),
+            "Win32 resize child did not start");
+    wait_reply(fixture, 0);
+    unsigned long long nonce = 2200;
+    const QSize grids[]{{80, 24}, {60, 12}, {100, 30}};
+    for (const auto grid : grids) {
+        terminal.resize(16 + grid.width() * terminal.cell_width(),
+                        24 + (grid.height() + 1) * terminal.cell_height());
+        await_child_size(fixture, model, grid.width(), grid.height(), nonce);
+        require(model.send("W " + std::to_string(++nonce) + "\r"), "Win32 child request was rejected");
+        const auto reply = wait_reply(fixture, nonce);
+        require(reply.child_pid == model.resize_state().child_pid && reply.buffer_columns == grid.width() &&
+                reply.buffer_rows == grid.height() && reply.window_left == 0 && reply.window_top == 0 &&
+                reply.window_columns() == grid.width() && reply.window_rows() == grid.height(),
+                "Win32 child geometry differs from the requested active frame");
+        require(reply.win32_checks == termforge::qt::test::win32_resize_all_checks &&
+                reply.win32_error == ERROR_SUCCESS, "Win32 cursor, text, rectangular I/O or extended query failed");
+        await([&] {
+            const auto& screen = model.screen();
+            if (screen.width() != grid.width() || screen.height() != grid.height()) return false;
+            const auto& last = screen.visible_lines().back();
+            const std::string_view expected = "W32EDGE";
+            for (size_t i = 0; i < expected.size(); ++i)
+                if (last[i + 2].text != expected.substr(i, 1)) return false;
+            return last[10].text == "Z" && last[10].style.fg == 10 && last[10].style.bg == 4;
+        }, model, "Qt did not apply Win32 writes at the independently read native coordinates");
+    }
+    require(model.send("X " + std::to_string(++nonce) + "\r"), "Win32 child exit was rejected");
+    wait_reply(fixture, nonce);
+    await([&] { return model.finished(); }, model, "Win32 resize child did not exit");
+    require(model.natural_exit() && model.exit_code() == 37 && model.cleanup_verified() && model.output_eof() &&
+            model.active_processes_after() == 0, "Win32 resize child cleanup failed");
+    std::cout << "{\"schema\":\"termforge-qt-win32-resize-v1\",\"grids\":3,\"api_checks_per_grid\":5,"
+                 "\"child_exit\":37,\"cleanup_verified\":true,\"presented_done\":null}\n";
+}
+
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     if (argc == 3 && std::string_view(argv[1]) == "--size-child") {
         try { return termforge::qt::test::size_child(QString::fromLocal8Bit(argv[2]).toStdWString()); }
         catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
+    const bool win32_compat = argc == 2 && std::string_view(argv[1]) == "--win32-compat";
+    if (argc != 1 && !win32_compat) return 2;
     char gate[3]{}; DWORD count = 0; BOOL owned = FALSE;
     if (!ReadFile(GetStdHandle(STD_INPUT_HANDLE), gate, sizeof(gate), &count, nullptr) ||
         count != sizeof(gate) || std::string_view(gate, count) != "GO\n" ||
@@ -428,6 +474,10 @@ int main(int argc, char** argv) {
         wchar_t executable[32768]{};
         const DWORD length = GetModuleFileNameW(nullptr, executable, 32768);
         require(length && length < 32768, "resize fixture executable unavailable");
+        if (win32_compat) {
+            win32_resize_compat(executable, workspace.path().toStdWString());
+            return 0;
+        }
         SizeFixture fixture;
         termforge::qt::SessionModel model;
         QWidget window;

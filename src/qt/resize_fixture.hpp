@@ -1,6 +1,7 @@
 // Test-only real-child CSBI replies, independent of the terminal's tiny grid.
 #pragma once
 #include "../../experiments/conpty/session.hpp"
+#include <algorithm>
 #include <atomic>
 #include <cstdint>
 #include <limits>
@@ -10,16 +11,19 @@ namespace termforge::qt::test {
 
 struct SizeReply {
     uint32_t magic = 0x54514653;
-    uint32_t version = 1;
+    uint32_t version = 2;
     uint64_t nonce = 0;
     uint32_t child_pid = 0;
     uint32_t query_error = ERROR_SUCCESS;
     int32_t buffer_columns = 0, buffer_rows = 0;
     int32_t window_left = 0, window_top = 0, window_right = 0, window_bottom = 0;
+    uint32_t win32_checks = 0;
+    uint32_t win32_error = 0;
     int window_columns() const { return window_right - window_left + 1; }
     int window_rows() const { return window_bottom - window_top + 1; }
 };
-static_assert(sizeof(SizeReply) == 48, "fixed local size-reply protocol");
+static_assert(sizeof(SizeReply) == 56, "fixed local size-reply protocol");
+inline constexpr uint32_t win32_resize_all_checks = 0x1f;
 
 // One caller/thread owns this polling endpoint. PIPE_NOWAIT is used for tiny
 // test-control messages, not background transport: no operation or OVERLAPPED
@@ -32,7 +36,7 @@ class SizeFixture final {
 public:
     SizeFixture() {
         static std::atomic<unsigned long> sequence{0};
-        name_ = L"\\\\.\\pipe\\TermForgeQtResize-v1-" + std::to_wstring(GetCurrentProcessId()) + L"-" +
+        name_ = L"\\\\.\\pipe\\TermForgeQtResize-v2-" + std::to_wstring(GetCurrentProcessId()) + L"-" +
             std::to_wstring(GetTickCount64()) + L"-" + std::to_wstring(++sequence);
         pipe_.reset(CreateNamedPipeW(name_.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE,
             PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_NOWAIT | PIPE_REJECT_REMOTE_CLIENTS,
@@ -76,7 +80,7 @@ public:
         SizeReply reply; DWORD count = 0;
         if (!ReadFile(pipe_.get(), &reply, sizeof(reply), &count, nullptr))
             tf_conpty::fail("ReadFile(size reply)");
-        if (count != sizeof(reply) || reply.magic != 0x54514653 || reply.version != 1 ||
+        if (count != sizeof(reply) || reply.magic != 0x54514653 || reply.version != 2 ||
             reply.child_pid != client_pid_)
             throw std::runtime_error("Size fixture reply identity mismatch");
         return reply;
@@ -95,6 +99,48 @@ inline uint64_t size_nonce(std::string_view text) {
     return value;
 }
 
+inline void verify_win32_resize(HANDLE output, SizeReply& reply, const CONSOLE_SCREEN_BUFFER_INFO& info) {
+    // The controller independently asserts the geometry. Use the child's
+    // actual viewport for Win32 API coordinates, including its bottom edge.
+    const COORD start{static_cast<SHORT>(info.srWindow.Left + 2), info.srWindow.Bottom};
+    const COORD adjacent{static_cast<SHORT>(start.X + 8), start.Y};
+    if (adjacent.X > info.srWindow.Right) return;
+    const auto api = [&](BOOL passed) {
+        if (!passed && reply.win32_error == ERROR_SUCCESS) reply.win32_error = GetLastError();
+        return passed != FALSE;
+    };
+    if (api(SetConsoleCursorPosition(output, start))) reply.win32_checks |= 1;
+
+    constexpr wchar_t expected[] = L"W32EDGE";
+    DWORD written = 0;
+    if (api(WriteConsoleW(output, expected, 7, &written, nullptr)) && written == 7) reply.win32_checks |= 2;
+
+    CHAR_INFO cell{};
+    cell.Char.UnicodeChar = L'Z';
+    cell.Attributes = FOREGROUND_GREEN | FOREGROUND_INTENSITY | BACKGROUND_BLUE;
+    const SMALL_RECT one{adjacent.X, adjacent.Y, adjacent.X, adjacent.Y};
+    SMALL_RECT region = one;
+    if (api(WriteConsoleOutputW(output, &cell, {1, 1}, {0, 0}, &region)) &&
+        region.Left == one.Left && region.Top == one.Top && region.Right == one.Right && region.Bottom == one.Bottom)
+        reply.win32_checks |= 4;
+
+    CHAR_INFO cells[9]{};
+    SMALL_RECT read{start.X, start.Y, adjacent.X, adjacent.Y};
+    if (api(ReadConsoleOutputW(output, cells, {9, 1}, {0, 0}, &read)) &&
+        read.Left == start.X && read.Top == start.Y && read.Right == adjacent.X && read.Bottom == adjacent.Y &&
+        std::equal(expected, expected + 7, cells, [](wchar_t expected_cell, const CHAR_INFO& native) {
+            return expected_cell == native.Char.UnicodeChar;
+        }) && cells[8].Char.UnicodeChar == cell.Char.UnicodeChar && cells[8].Attributes == cell.Attributes)
+        reply.win32_checks |= 8;
+
+    CONSOLE_SCREEN_BUFFER_INFOEX after{};
+    after.cbSize = sizeof(after);
+    if (api(GetConsoleScreenBufferInfoEx(output, &after)) &&
+        after.dwSize.X == info.dwSize.X && after.dwSize.Y == info.dwSize.Y &&
+        after.dwCursorPosition.X == start.X + 7 && after.dwCursorPosition.Y == start.Y)
+        reply.win32_checks |= 16;
+}
+
 // Entry before QApplication/GO parsing. The containing Session owns this child
 // and its blocking console read; the outer test Job keeps the fixed 25s bound.
 // Commands Q <nonce> CR and X <nonce> CR arrive through public Session input.
@@ -102,7 +148,7 @@ inline uint64_t size_nonce(std::string_view text) {
 // trailing marker before its own independent reply.
 // Replies contain only independently queried child state, never requested size.
 inline int size_child(const std::wstring& pipe_name) {
-    const std::wstring prefix = L"\\\\.\\pipe\\TermForgeQtResize-v1-";
+    const std::wstring prefix = L"\\\\.\\pipe\\TermForgeQtResize-v2-";
     if (pipe_name.rfind(prefix, 0) != 0 || pipe_name.size() > 180)
         throw std::runtime_error("Size fixture pipe name invalid");
     const auto separator = pipe_name.find(L'-', prefix.size());
@@ -141,7 +187,7 @@ inline int size_child(const std::wstring& pipe_name) {
         tf_conpty::fail("CreateFile(size child console)");
     if (!SetConsoleMode(input.get(), ENABLE_VIRTUAL_TERMINAL_INPUT))
         tf_conpty::fail("SetConsoleMode(size child input)");
-    const auto reply = [&](uint64_t nonce) {
+    const auto reply = [&](uint64_t nonce, bool check_access = false) {
         SizeReply value; value.nonce = nonce; value.child_pid = GetCurrentProcessId();
         CONSOLE_SCREEN_BUFFER_INFO state{};
         if (!GetConsoleScreenBufferInfo(output.get(), &state)) value.query_error = GetLastError();
@@ -149,6 +195,7 @@ inline int size_child(const std::wstring& pipe_name) {
             value.buffer_columns = state.dwSize.X; value.buffer_rows = state.dwSize.Y;
             value.window_left = state.srWindow.Left; value.window_top = state.srWindow.Top;
             value.window_right = state.srWindow.Right; value.window_bottom = state.srWindow.Bottom;
+            if (check_access) verify_win32_resize(output.get(), value, state);
         }
         DWORD count = 0;
         if (!WriteFile(pipe.get(), &value, sizeof(value), &count, nullptr)) tf_conpty::fail("WriteFile(size child reply)");
@@ -167,7 +214,7 @@ inline int size_child(const std::wstring& pipe_name) {
             command += character;
             continue;
         }
-        if (command.size() < 3 || std::string_view("QXFEB").find(command[0]) == std::string_view::npos ||
+        if (command.size() < 3 || std::string_view("QXFEBW").find(command[0]) == std::string_view::npos ||
             command[1] != ' ')
             throw std::runtime_error("Size child input command malformed");
         const auto nonce = size_nonce(std::string_view(command).substr(2));
@@ -194,7 +241,7 @@ inline int size_child(const std::wstring& pipe_name) {
             for (int chunk = 0; chunk < 512; ++chunk) write(block);
             write("\r\nTF_RESIZE_END\r\n");
         }
-        reply(nonce);
+        reply(nonce, command[0] == 'W');
         if (exit) return 37;
         command.clear();
     }

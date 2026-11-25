@@ -787,6 +787,10 @@ if(TERMFORGE_BUILD_QT_SHELL)
       "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_resize_smoke>")
     set_tests_properties(qt_cpp_resize PROPERTIES TIMEOUT 35
       ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_test(NAME qt_win32_resize_compat COMMAND "${Python3_EXECUTABLE}"
+      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_resize_smoke>" --win32-compat)
+    set_tests_properties(qt_win32_resize_compat PROPERTIES TIMEOUT 35
+      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     add_executable(qt_terminal_modes_test src/qt/terminal_modes_test.cpp)
     set_target_properties(qt_terminal_modes_test PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-modes-bin/$<CONFIG>")

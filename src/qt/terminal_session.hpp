@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../../experiments/core/terminal.hpp"
+#include "../../experiments/conpty/resize_map.hpp"
 #include "../../experiments/shell/queues.hpp"
 #include <QByteArray>
 #include <QObject>
@@ -69,6 +70,8 @@ private:
     size_t transport_capture_limit_ = 0;
     std::string transport_capture_;
     unsigned long long transport_consumed_ = 0;
+    std::optional<std::array<uint8_t, 16>> native_map_token_;
+    std::optional<tf_conpty::NativeResizeMapObservation> native_map_;
 
     void notify() { if (on_changed) on_changed(); }
     void remember_error(const QString& error) {
@@ -80,6 +83,7 @@ private:
     // ConPTY reader to make progress while ClosePseudoConsole waits for EOF.
     void supervise(bool startup_succeeded) noexcept {
         bool child_exited = false;
+        bool map_requested = false;
         try {
             if (startup_succeeded) {
                 while (!close_requested_.load(std::memory_order_acquire)) {
@@ -96,7 +100,12 @@ private:
                     if (request) {
                         // A successful call is transport progress, never proof
                         // that the child has observed its new console geometry.
-                        if (native_resize_needed) session_->resize(request->columns, request->rows);
+                        if (native_resize_needed && native_map_token_ && !map_requested) {
+                            session_->resize_with_map(request->columns, request->rows, *native_map_token_);
+                            map_requested = true;
+                        } else if (native_resize_needed) {
+                            session_->resize(request->columns, request->rows);
+                        }
                         std::lock_guard<std::mutex> lock(control_mutex_);
                         transport_size_ = {request->columns, request->rows};
                         transport_revision_ = request->revision;
@@ -164,6 +173,7 @@ private:
             }
             if (!parser_failed_) {
                 try {
+                    if (native_map_) native_map_->observe(bytes);
                     parser_.feed(bytes);
                     // Query replies (a cursor position report today) go back to the
                     // child through the same bounded input path as keystrokes.
@@ -311,6 +321,18 @@ public:
                 started_ && accepting && requested_revision_ != transport_revision_, session_ ? session_->pid : 0};
     }
     const Screen& screen() const { return parser_.screen; }
+    // Observe one host-generated transaction independently of parser state.
+    void observe_native_resize_map() {
+        if (started_ || native_map_) throw std::logic_error("Resize map observation must be initialized before launch");
+        std::array<uint8_t, 16> token{};
+        if (BCryptGenRandom(nullptr, token.data(), static_cast<ULONG>(token.size()), BCRYPT_USE_SYSTEM_PREFERRED_RNG) < 0)
+            throw std::runtime_error("Cannot generate ConPTY resize request identity");
+        native_map_.emplace(token);
+        native_map_token_ = token;
+    }
+    const tf_conpty::NativeResizeMap* observed_native_resize_map() const {
+        return native_map_ && native_map_->record() ? &*native_map_->record() : nullptr;
+    }
     // Explicit resize-trace diagnostic. The capture is bounded and read on the
     // Qt thread; enabling it never changes the terminal or transport state.
     void enable_transport_capture(size_t limit = 65536) {

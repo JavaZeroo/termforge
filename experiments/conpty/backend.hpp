@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <bcrypt.h>
 #include <array>
+#include <cstdint>
 #include <filesystem>
 #include <memory>
 #include <stdexcept>
@@ -18,6 +19,7 @@ private:
         HMODULE module = nullptr;
         decltype(&::CreatePseudoConsole) create = ::CreatePseudoConsole;
         decltype(&::ResizePseudoConsole) resize = ::ResizePseudoConsole;
+        HRESULT (WINAPI* resize_with_map)(HPCON, COORD, const uint8_t*) = nullptr;
         decltype(&::ClosePseudoConsole) close = ::ClosePseudoConsole;
         ~Api() { if (module) FreeLibrary(module); }
     };
@@ -96,6 +98,8 @@ public:
         if (!api->module) throw std::runtime_error("ConPTY reviewed backend load failed");
         api->create = reinterpret_cast<decltype(api->create)>(GetProcAddress(api->module, "ConptyCreatePseudoConsole"));
         api->resize = reinterpret_cast<decltype(api->resize)>(GetProcAddress(api->module, "ConptyResizePseudoConsole"));
+        api->resize_with_map = reinterpret_cast<decltype(api->resize_with_map)>(
+            GetProcAddress(api->module, "ConptyResizePseudoConsoleWithMap"));
         api->close = reinterpret_cast<decltype(api->close)>(GetProcAddress(api->module, "ConptyClosePseudoConsole"));
         if (!api->create || !api->resize || !api->close)
             throw std::runtime_error("ConPTY reviewed backend API missing");
@@ -125,6 +129,9 @@ public:
         return api_->create(size, input, output, flags | creation_flags_, console);
     }
     HRESULT resize(HPCON console, COORD size) const { return api_->resize(console, size); }
+    HRESULT resize_with_map(HPCON console, COORD size, const std::array<uint8_t, 16>& token) const {
+        return api_->resize_with_map ? api_->resize_with_map(console, size, token.data()) : E_NOTIMPL;
+    }
     void close(HPCON console) const { api_->close(console); }
     bool side_by_side() const { return api_->module != nullptr; }
     DWORD creation_flags() const { return creation_flags_; }

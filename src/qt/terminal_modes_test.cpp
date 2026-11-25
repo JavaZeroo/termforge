@@ -479,6 +479,29 @@ static void transport_diagnostic(const std::wstring& executable, const std::wstr
               << offset << ",\"child_exit\":37,\"cleanup_verified\":true}\n";
 }
 
+static void check_native_resize_map(const tf_conpty::NativeResizeMap& map, const ModeReply& reply) {
+    using tf_conpty::NativeCell;
+    require(map.succeeded && map.origin == tf_conpty::NativeSize{80, 24} &&
+            map.destination == tf_conpty::NativeSize{60, 12} && !map.steps.empty(),
+            "native map did not describe the real size transition");
+    require(map.new_window == tf_conpty::NativeWindow{reply.info.srWindow.Left, reply.info.srWindow.Top,
+            reply.info.srWindow.Right, reply.info.srWindow.Bottom}, "native map and child viewport differ");
+    const std::pair<NativeCell, wchar_t> source[]{{{79, 7}, L'B'}, {{79, 9}, L'C'}, {{0, 10}, L'D'}};
+    std::cerr << "{\"schema\":\"termforge-qt-native-resize-map-v1\",\"steps\":" << map.steps.size()
+              << ",\"mapped_cells\":[";
+    size_t index = 0;
+    for (const auto& [cell, marker] : source) {
+        const auto destination = map.locate(cell);
+        require(destination && destination->row < reply.info.dwSize.Y && destination->column < reply.info.dwSize.X &&
+                reply.cells[destination->row * 80 + destination->column].Char.UnicodeChar == marker,
+                "mapped cell differs from the child's independently read native grid");
+        if (index++) std::cerr << ',';
+        std::cerr << "{\"marker\":\"" << static_cast<char>(marker) << "\",\"from\":[" << cell.row << ',' << cell.column
+                  << "],\"to\":[" << destination->row << ',' << destination->column << "]}";
+    }
+    std::cerr << "]}\n";
+}
+
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     const bool depth_child = argc == 5 && std::string_view(argv[3]) == "4" &&
@@ -490,17 +513,19 @@ int main(int argc, char** argv) {
         catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
     const bool resize_repro = argc == 2 && std::string_view(argv[1]) == "--resize";
+    const bool native_map_probe = argc == 2 && std::string_view(argv[1]) == "--native-resize-map";
     const bool retained_contract = argc == 2 && std::string_view(argv[1]) == "--retained-contract";
     const bool depth_control = argc == 2 && std::string_view(argv[1]) == "--bcd-depth-control";
     const bool bcd = depth_control || (argc == 2 && std::string_view(argv[1]) == "--bcd-comparison");
-    if (argc != 1 && !resize_repro && !retained_contract && !bcd) {
-        std::cerr << "usage: qt_terminal_modes_test [--resize|--retained-contract|--bcd-comparison|--bcd-depth-control]\n"; return 2;
+    if (argc != 1 && !resize_repro && !native_map_probe && !retained_contract && !bcd) {
+        std::cerr << "usage: qt_terminal_modes_test [--resize|--native-resize-map|--retained-contract|--bcd-comparison|--bcd-depth-control]\n";
+        return 2;
     }
     const bool capture_transport = qEnvironmentVariableIsSet("TERMFORGE_MODES_TRANSPORT_DIAGNOSTIC");
     if (capture_transport && !resize_repro) {
         std::cerr << "transport diagnostic requires the explicit --resize entry\n"; return 2;
     }
-    const unsigned final_stage = bcd ? 4u : (resize_repro || retained_contract) ? 6u : 5u;
+    const unsigned final_stage = bcd ? 4u : (resize_repro || native_map_probe || retained_contract) ? 6u : 5u;
     char gate[3]{}; DWORD count = 0; BOOL owned = FALSE;
     if (!ReadFile(GetStdHandle(STD_INPUT_HANDLE), gate, sizeof(gate), &count, nullptr) ||
         count != sizeof(gate) || std::string_view(gate, count) != "GO\n" ||
@@ -517,6 +542,7 @@ int main(int argc, char** argv) {
         require(length && length < 32768, "mode fixture executable unavailable");
         ModeFixture fixture(bcd, depth_control);
         termforge::qt::SessionModel model;
+        if (native_map_probe) model.observe_native_resize_map();
         QWidget window;
         window.resize(1200, 900);
         termforge::qt::TerminalWidget terminal(model, &window);
@@ -548,6 +574,9 @@ int main(int argc, char** argv) {
                                    !state.pending && state.transport_columns == target_columns &&
                                    state.transport_rows == target_rows; },
                       model, lifecycle, "public Qt resize did not finish the bounded native request");
+                if (native_map_probe)
+                    await([&] { return model.observed_native_resize_map() != nullptr; }, model, lifecycle,
+                          "native resize mapping did not reach the ordered output stream");
                 if (trace_resize) {
                     terminal.grab();
                     const auto state = model.resize_state();
@@ -594,7 +623,9 @@ int main(int argc, char** argv) {
             }
             transport_segment = trace_resize ? model.transport_capture(static_cast<size_t>(transport_mark)) : std::string{};
             record(reply, model.screen(), false, &terminal, hex(transport_segment), transport_mark);
-            if (retained_contract && stage == final_stage)
+            if (native_map_probe && stage == final_stage)
+                check_native_resize_map(*model.observed_native_resize_map(), reply);
+            else if (retained_contract && stage == final_stage)
                 retained_failures = retained_contract_checks(reply, terminal, model);
             else
                 check_stage(reply, terminal, model, failures);
@@ -607,9 +638,10 @@ int main(int argc, char** argv) {
         if (capture_transport)
             transport_diagnostic(executable, workspace.path().toStdWString(), lifecycle);
         std::cout << "{\"schema\":\"termforge-qt-terminal-modes-v1\",\"scenario\":\""
-                  << (retained_contract ? "modes-retained-contract" : resize_repro ? "modes-resize-repro" : "modes")
+                  << (retained_contract ? "modes-retained-contract" : native_map_probe ? "modes-native-resize-map" :
+                      resize_repro ? "modes-resize-repro" : "modes")
                   << "\",\"stages\":" << final_stage << ",\"resize_exercised\":"
-                  << (resize_repro || retained_contract ? "true" : "false") << ",\"literal_failures\":"
+                  << (resize_repro || native_map_probe || retained_contract ? "true" : "false") << ",\"literal_failures\":"
                   << failures << ",\"retained_contract_failures\":" << retained_failures
                   << ",\"output_bytes\":" << model.received_bytes()
                   << ",\"child_exit\":37,\"cleanup_verified\":true,\"raw_transport_bytes_observed\":false,"
