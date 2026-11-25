@@ -43,4 +43,6 @@ Windows 11 x64 QEMU 来宾中的原版 WindTerm 2.7.0 本地 Shell 也完成同�
 
 原版恢复后的 UI 文档滚动量为一行，UI 可见标记比同次原生视口各高一行。正式产品依赖和 #29 的四阶段合同仍待验证。
 
-原版另跑同一四阶段。子进程在发送首段输入前用 `SetConsoleScreenBufferSize` 把默认 3000 行缓冲调成与视口相等的 24 行。缩小的缓冲和视口均为 `60×12`，恢复均为 `80×24`。缩小后原生和 UI 可见坐标为 `B(8,19) C(10,19) D(10,20)`，CUP 后另有 `RESIZED(11,0))。恢复后两层均为 `B(7,79) C(8,79) D(9,0) RESIZED(10,0)`。这组坐标使用与旧 Win32 几何合同一致的缓冲深度，供 `--bcd-local-reference` 独立比对。 [视口深度对照](windterm-viewport-depth.json)
+原版另跑同一四阶段。子进程在发送首段输入前用 `SetConsoleScreenBufferSize` 把默认 3000 行缓冲调成与视口相等的 24 行。缩小的缓冲和视口均为 `60×12`，恢复均为 `80×24`。缩小后原生和 UI 可见坐标为 `B(8,19) C(10,19) D(10,20)`，CUP 后另有 `RESIZED(11,0)`。恢复后两层均为 `B(7,79) C(8,79) D(9,0) RESIZED(10,0)`。这组坐标使用与旧 Win32 几何合同一致的缓冲深度，供 `--bcd-local-reference` 独立比对。 [视口深度对照](windterm-viewport-depth.json)
+
+最终源码修订在自动换行开启且成功写到物理右边界时记录软续接，后续 CUP 仍可取消待执行的光标移动，显式换行仍可清除软续接。此修订移除了前一实验的额外空行保留。固定 Windows 对照中原样 `--resize`、真实 Win32、四阶段本地 Shell 字面比对和有序映射各自返回 0，原有 Qt 离屏矩阵通过 15/15。四阶段分别核对原生网格、核心行、Qt 可见行以及来自真实子进程的 DSR，收缩写入和恢复均保留 `D` 与 `RESIZED`。原版 Telnet 四阶段的不同寻址结果保存在历史对照。 [最终同源构建](https://github.com/JavaZeroo/termforge/actions/runs/45568908048) · [Windows 对照](https://github.com/JavaZeroo/termforge/actions/runs/45569985144)
