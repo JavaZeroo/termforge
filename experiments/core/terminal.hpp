@@ -61,8 +61,7 @@ class Parser {
             if (final == 'h') {
                 // Re-entry clears only the active alternate frame; the saved
                 // primary writing state must survive until a real return.
-                if (screen.active_buffer() == ScreenBuffer::alternate) screen.invalidate_buffer_readers();
-                screen.activate_buffer(ScreenBuffer::alternate);
+                screen.enter_alternate_mode();
                 // Each 1049 entry, including re-entry, disables alternate
                 // origin. The saved primary origin is restored on return.
                 screen.set_origin_mode(false);
@@ -74,7 +73,7 @@ class Parser {
                 screen.style.strikethrough = screen.style.hidden = screen.style.overline = false;
                 screen.erase_display(2);
                 screen.move(0, 0);
-            } else screen.activate_buffer(ScreenBuffer::primary);
+            } else screen.leave_alternate_mode();
             return;
         }
         if (final == 'm') { screen.sgr(params); return; }
