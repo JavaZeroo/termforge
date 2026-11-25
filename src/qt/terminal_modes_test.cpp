@@ -217,7 +217,7 @@ static std::string display_row(const termforge::ViewSnapshot& page, size_t row) 
 }
 
 static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& terminal,
-                          termforge::qt::SessionModel& model, QElapsedTimer& lifecycle) {
+                          termforge::qt::SessionModel& model, QElapsedTimer& lifecycle, bool depth_control) {
     int compared = 0;
     int different = 0;
     size_t transport_offset = 0;
@@ -246,7 +246,8 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         require(transport_end == transport_offset + transport.size(), "BCD transport capture lost bytes");
 
         QJsonArray native_rows, source_rows, painted_rows;
-        for (int row = 0; row < reply.info.dwSize.Y; ++row)
+        const int viewport_rows = reply.info.srWindow.Bottom - reply.info.srWindow.Top + 1;
+        for (int row = 0; row < viewport_rows; ++row)
             native_rows.append(QString::fromStdString(hex(native_row(reply, row))));
         const termforge::TextDocument document(screen);
         require(document.size() <= 200, "BCD document exceeds its fixed observation bound");
@@ -272,9 +273,9 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         const bool source_matches = logical_lines == expected;
         const bool dsr_matches = dsr == reference_dsr;
         const auto& info = reply.info;
-        const bool geometry_matches = info.dwSize.X == columns && info.dwSize.Y == rows &&
+        const bool geometry_matches = info.dwSize.X == columns && (depth_control || info.dwSize.Y == rows) &&
             info.srWindow.Right - info.srWindow.Left + 1 == columns &&
-            info.srWindow.Bottom - info.srWindow.Top + 1 == rows;
+            viewport_rows == rows;
         terminal.grab();
         const auto& page = terminal.painted_page();
         require(page.has_value(), "BCD painted page unavailable");
@@ -303,7 +304,7 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         bool display_matches = offset + expected_visible.size() <= page->lines.size();
         for (size_t row = 0; display_matches && row < expected_visible.size(); ++row)
             display_matches = display_row(*page, offset + row) == expected_visible[row];
-        const QJsonObject record{
+        QJsonObject record{
             {"schema", "termforge-qt-bcd-stage-v1"}, {"reference_phase", static_cast<int>(stage - 1)},
             {"child_source_hex", QString::fromStdString(hex(bcd_source(stage)))},
             {"child_dsr_hex", QString::fromStdString(hex(dsr))},
@@ -325,6 +326,10 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
             {"source_matches_reference", source_matches}, {"dsr_matches_reference", dsr_matches},
             {"display_matches_reference", display_matches},
             {"child_geometry_matches", geometry_matches}};
+        if (depth_control && stage == 1) {
+            record["native_depth_request_succeeded"] = reply.depth_request_succeeded;
+            record["native_depth_request_error"] = static_cast<qint64>(reply.depth_request_error);
+        }
         std::cerr << QJsonDocument(record).toJson(QJsonDocument::Compact).constData() << '\n';
         transport_offset = static_cast<size_t>(transport_end);
         ++compared;
@@ -338,6 +343,7 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
     const QJsonObject result{
         {"schema", "termforge-qt-bcd-comparison-v1"}, {"compared_stages", compared},
         {"different_stages", different}, {"child_exit", 37}, {"cleanup_verified", true},
+        {"native_depth_control", depth_control},
         {"presented_done", QJsonValue()}};
     const auto json = QJsonDocument(result).toJson(QJsonDocument::Compact);
     std::cerr << json.constData() << '\n';
@@ -475,17 +481,20 @@ static void transport_diagnostic(const std::wstring& executable, const std::wstr
 
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
-    if (argc == 4 && std::string_view(argv[1]) == "--modes-child" &&
+    const bool depth_child = argc == 5 && std::string_view(argv[3]) == "4" &&
+        std::string_view(argv[4]) == "--native-depth-control";
+    if ((argc == 4 || depth_child) && std::string_view(argv[1]) == "--modes-child" &&
         (std::string_view(argv[3]) == "4" || std::string_view(argv[3]) == "5" || std::string_view(argv[3]) == "6")) {
         try { return termforge::qt::test::modes_child(QString::fromLocal8Bit(argv[2]).toStdWString(),
-                                                    static_cast<unsigned>(argv[3][0] - '0'), argv[3][0] == '4'); }
+                                                    static_cast<unsigned>(argv[3][0] - '0'), argv[3][0] == '4', depth_child); }
         catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
     const bool resize_repro = argc == 2 && std::string_view(argv[1]) == "--resize";
     const bool retained_contract = argc == 2 && std::string_view(argv[1]) == "--retained-contract";
-    const bool bcd = argc == 2 && std::string_view(argv[1]) == "--bcd-comparison";
+    const bool depth_control = argc == 2 && std::string_view(argv[1]) == "--bcd-depth-control";
+    const bool bcd = depth_control || (argc == 2 && std::string_view(argv[1]) == "--bcd-comparison");
     if (argc != 1 && !resize_repro && !retained_contract && !bcd) {
-        std::cerr << "usage: qt_terminal_modes_test [--resize|--retained-contract|--bcd-comparison]\n"; return 2;
+        std::cerr << "usage: qt_terminal_modes_test [--resize|--retained-contract|--bcd-comparison|--bcd-depth-control]\n"; return 2;
     }
     const bool capture_transport = qEnvironmentVariableIsSet("TERMFORGE_MODES_TRANSPORT_DIAGNOSTIC");
     if (capture_transport && !resize_repro) {
@@ -506,7 +515,7 @@ int main(int argc, char** argv) {
         wchar_t executable[32768]{};
         const DWORD length = GetModuleFileNameW(nullptr, executable, 32768);
         require(length && length < 32768, "mode fixture executable unavailable");
-        ModeFixture fixture(bcd);
+        ModeFixture fixture(bcd, depth_control);
         termforge::qt::SessionModel model;
         QWidget window;
         window.resize(1200, 900);
@@ -514,12 +523,12 @@ int main(int argc, char** argv) {
         window.show(); terminal.setFocus();
         if (bcd) model.enable_transport_capture();
         require(model.start(executable, L"--modes-child \"" + fixture.pipe_name() + L"\" " +
-                            std::to_wstring(final_stage),
+                            std::to_wstring(final_stage) + (depth_control ? L" --native-depth-control" : L""),
                             workspace.path().toStdWString()), "mode child did not start");
         const auto initial = wait_reply(fixture, 0, model, lifecycle);
         require(initial.info.dwSize.X == 80 && initial.info.dwSize.Y == 24,
                 "mode child did not start at the literal 80x24 geometry");
-        if (bcd) return bcd_comparison(fixture, terminal, model, lifecycle);
+        if (bcd) return bcd_comparison(fixture, terminal, model, lifecycle, depth_control);
         size_t failures = 0;
         size_t retained_failures = 0;
         const bool trace_resize = resize_repro && !retained_contract;

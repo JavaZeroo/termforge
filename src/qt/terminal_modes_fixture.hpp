@@ -39,6 +39,8 @@ struct ModeReply {
     std::array<CHAR_INFO, 80 * 24> cells{};
     std::array<char, 16> dsr{};
     uint32_t dsr_bytes = 0;
+    uint32_t depth_request_error = 0;
+    bool depth_request_succeeded = false;
 };
 
 class ModeFixture final {
@@ -47,8 +49,9 @@ class ModeFixture final {
     bool connected_ = false;
     DWORD client_pid_ = 0;
     bool bcd_;
+    bool depth_control_;
 public:
-    explicit ModeFixture(bool bcd = false) : bcd_(bcd) {
+    explicit ModeFixture(bool bcd = false, bool depth_control = false) : bcd_(bcd), depth_control_(depth_control) {
         name_ = L"\\\\.\\pipe\\TermForgeQtModes-v1-" + std::to_wstring(GetCurrentProcessId()) + L"-" +
             std::to_wstring(GetTickCount64());
         pipe_.reset(CreateNamedPipeW(name_.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE,
@@ -88,7 +91,7 @@ public:
             reply.stage > (bcd_ ? 4u : 6u) || reply.source_bytes != (bcd_ ? bcd_source : mode_source)(reply.stage).size() ||
             reply.dsr_bytes > reply.dsr.size() || ((!bcd_ || reply.stage == 0) && reply.dsr_bytes != 0) ||
             reply.info.dwSize.X < 1 || reply.info.dwSize.X > 80 ||
-            reply.info.dwSize.Y < 1 || reply.info.dwSize.Y > 24)
+            reply.info.dwSize.Y < 1 || reply.info.dwSize.Y > (depth_control_ ? 3000 : 24))
             throw std::runtime_error("Mode fixture reply identity/source/geometry mismatch");
         return reply;
     }
@@ -113,7 +116,7 @@ inline uint32_t read_mode_dsr(HANDLE input, std::array<char, 16>& bytes) {
     return size;
 }
 
-inline int modes_child(const std::wstring& pipe_name, unsigned final_stage, bool bcd = false) {
+inline int modes_child(const std::wstring& pipe_name, unsigned final_stage, bool bcd = false, bool depth_control = false) {
     if (bcd ? final_stage != 4 : final_stage != 5 && final_stage != 6)
         throw std::runtime_error("Mode child final stage invalid");
     const std::wstring prefix = L"\\\\.\\pipe\\TermForgeQtModes-v1-";
@@ -152,22 +155,34 @@ inline int modes_child(const std::wstring& pipe_name, unsigned final_stage, bool
         !SetConsoleMode(output.get(), ENABLE_PROCESSED_OUTPUT | ENABLE_WRAP_AT_EOL_OUTPUT |
             ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN))
         tf_conpty::fail("SetConsoleMode(mode child)");
+    bool depth_succeeded = false;
+    DWORD depth_error = 0;
     const auto reply = [&](unsigned stage) {
         ModeReply value; value.stage = stage; value.child_pid = GetCurrentProcessId();
         value.source_bytes = static_cast<uint32_t>((bcd ? bcd_source : mode_source)(stage).size());
         // Receive the query before asking for the native grid. The latter
         // can involve its own ConPTY cursor synchronization.
         if (bcd && stage != 0) value.dsr_bytes = read_mode_dsr(input.get(), value.dsr);
+        if (depth_control && stage == 1) {
+            value.depth_request_succeeded = depth_succeeded;
+            value.depth_request_error = depth_error;
+        }
         tf_conpty::Handle active(CreateFileW(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
             FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr));
         if (active.get() == INVALID_HANDLE_VALUE || !GetConsoleScreenBufferInfo(active.get(), &value.info))
             tf_conpty::fail("GetConsoleScreenBufferInfo(mode child)");
         const auto size = value.info.dwSize;
-        if (size.X < 1 || size.X > 80 || size.Y < 1 || size.Y > 24)
+        const SMALL_RECT viewport = value.info.srWindow;
+        const int viewport_rows = viewport.Bottom - viewport.Top + 1;
+        if (size.X < 1 || size.X > 80 || size.Y < 1 || size.Y > (depth_control ? 3000 : 24) ||
+            viewport_rows < 1 || viewport_rows > 24)
             throw std::runtime_error("Mode child native grid exceeds fixed bound");
-        SMALL_RECT rect{0, 0, static_cast<SHORT>(size.X - 1), static_cast<SHORT>(size.Y - 1)};
+        const SMALL_RECT expected = depth_control ?
+            viewport : SMALL_RECT{0, 0, static_cast<SHORT>(size.X - 1), static_cast<SHORT>(size.Y - 1)};
+        SMALL_RECT rect = expected;
         if (!ReadConsoleOutputW(active.get(), value.cells.data(), {80, 24}, {0, 0}, &rect) ||
-            rect.Left != 0 || rect.Top != 0 || rect.Right != size.X - 1 || rect.Bottom != size.Y - 1)
+            rect.Left != expected.Left || rect.Top != expected.Top ||
+            rect.Right != expected.Right || rect.Bottom != expected.Bottom)
             tf_conpty::fail("ReadConsoleOutputW(mode child)");
         DWORD count = 0;
         if (!WriteFile(pipe.get(), &value, sizeof(value), &count, nullptr) || count != sizeof(value))
@@ -183,6 +198,12 @@ inline int modes_child(const std::wstring& pipe_name, unsigned final_stage, bool
         if (key != static_cast<char>('1' + stage) || stage >= final_stage)
             throw std::runtime_error("Mode child input stage out of order");
         ++stage;
+        if (depth_control && stage == 1) {
+            // The control probes native backing depth through the child's
+            // documented console API. The host resize request stays identical.
+            depth_succeeded = SetConsoleScreenBufferSize(output.get(), {80, 3000}) != FALSE;
+            if (!depth_succeeded) depth_error = GetLastError();
+        }
         const auto source = (bcd ? bcd_source : mode_source)(stage);
         DWORD written = 0;
         if (!WriteFile(output.get(), source.data(), static_cast<DWORD>(source.size()), &written, nullptr) ||
