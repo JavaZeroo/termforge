@@ -1,12 +1,12 @@
 # #29/#27 决策材料：旧六阶段 B/CD 的本地终端寻址
 
-- 状态：**方案材料，未改变产品行为、测试或用户已确认差异**；等待用户决定
+- 状态：**用户要求根因修复**。2026-11-25 用户回复「不要保留workaround，做根因修复」。
 - 日期：2026-11-05
-- 取证状态：已完成 WindTerm 校准和单次正式取证，以及 Qt／固定 ConPTY 四阶段同输入复验。固定样本的产品可见行为已有比较结果，旧诊断定性仍待决定。 [原版观察](../../research/ui/results/2026-11-24-resize-bcd-reference/README.md) · [正式 Qt 对照](../../experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md)
+- 取证状态：WindTerm Telnet、Qt／固定 ConPTY、WindTerm 随附 WinPTY 都已有四阶段记录。固定 ConPTY 内部缓冲深度的干预已复现覆盖。 [原版观察](../../research/ui/results/2026-11-24-resize-bcd-reference/README.md) · [正式 Qt 对照](../../experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md) · [原生缓冲对照](../../experiments/shell/results/2026-11-25-bcd-native-depth/README.md)
 - 范围：[#29](https://github.com/JavaZeroo/termforge/issues/29) / [#27](https://github.com/JavaZeroo/termforge/issues/27) 联合出口中的“旧六阶段 `--resize` B/CD 同步失败”
 - 依据：[ADR-0010](../adr/0010-bounded-resize-retention.md)、[#308 顺序宽高样本](../../research/ui/results/2026-11-02-resize-combined-reference/README.md)、[#309 只缩宽样本](../../research/ui/results/2026-11-02-resize-state-reference/README.md)、[#316 双轴写后端点](../../research/ui/results/2026-11-04-resize-dual-axis-reference/README.md)、[#317 同次 Qt/固定 ConPTY trace](../../experiments/shell/results/2026-11-05-qt-resize-divergence/README.md)
 
-本文只整理“用户需要决定什么”。旧六阶段测试与失败保留，不把任何差异记为用户已接受，也不预先批准下面的路线。
+本文记录历史方案和用户决定。旧六阶段 `--resize` 及其原断言继续作为根因修复的回归入口。
 
 ## 1. 一句话冲突
 
@@ -91,15 +91,11 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
   - 原版裁剪/滚动出第三种行为 → 不能映射到 A/B/C，需要新方案。
 - 该计划不测量真实 shell/TUI 兼容性；若选择 B/C，还需一个独立的真实应用探针作为后续验收，不应与本计划混合成一次“原版等价”结论。
 
-## 7. 建议
+## 7. 用户决定与根因验证
 
-固定四阶段样本已在正式 Qt／固定 ConPTY 入口用同一 VT 源核对。Qt 保留源位置、可见标记行列和 child DSR 均与 WindTerm 样本一致。ConPTY 原生网格在 `CUP 12;1` 写入后覆盖了原 `D`，恢复后仍缺。此证据支持 **A** 作为该固定样本的产品寻址合同，建议保留旧 `--resize` 作为独立的原生网格差异诊断，保留原断言和失败退出码。旧诊断的正式定性和更广适用范围仍待用户确认。 [同输入正式路径对照](../../experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md)
+固定四阶段样本中，Qt 保留源位置、可见标记和 child DSR 都与 WindTerm Telnet 样本一致。固定 ConPTY 原生网格在 `CUP 12;1` 写入后覆盖了原 `D`，恢复后仍缺。用户明确要求根因修复，旧六阶段失败仍计入 #29 的待解决范围。 [同输入正式路径对照](../../experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md)
 
-其余样本的判定条件如下。
-
-1. 若原版表现为源保留/源寻址，A 保持并明确旧测试的已知差异记录方式；
-2. 若原版表现为原生 reflow 寻址，优先评估 C（保留正文、单一权威、显式回退），只有 C 不可行时才讨论 B 及其对保留正文/锚点/跨平台的影响；
-3. 若结果不属于上述两者，先记录新行为，不强行二选一。
+原生缓冲对照进一步复现了一个中间步骤。应用在初始阶段将固定 ConPTY 原生缓冲设置为 `80×3000`。公开 resize 将原生缓冲和视口都变为 `60×12`。写入前，原生重排让 `D` 占据 0 基第 11 行第 0 列。紧随的写入覆盖该单元格。WindTerm 随附 WinPTY 在独立 Windows VM 保持 3000 行缓冲，并将 `D` 和 `RESIZED` 放在不同原生行。两条路径同时存在主机和重排实现差异。待验证固定 ConPTY 的缓冲与视口分离能否消除覆盖，以及旧六阶段输入上的同步是否恢复。 [原生缓冲对照](../../experiments/shell/results/2026-11-25-bcd-native-depth/README.md)
 
 ## 8. 现有批准与未批准
 

@@ -23,4 +23,4 @@
 
 通过现有监督器传入 `--bcd-comparison`。子进程完成四阶段后由公开 Qt 键退出，核对退出码 37、输出 EOF、内外 Job 活动进程为 0。此入口核对保留源正文、真实 DSR、child 尺寸和可见行，保留原生网格作为对照。
 
-固定样本支持保留源坐标与独立显示投影。旧六阶段 `--resize` 使用另一套输入，保留历史失败、原断言和退出码。旧诊断的正式定性、其他应用和 Console API、连续缩放、宽字、历史及选择／Find 交叉仍待处理。 [旧六阶段](../2026-11-05-qt-resize-divergence/README.md) · [寻址决策材料](../../../../docs/research/r29-bcd-local-addressing-decision.md)
+旧六阶段 `--resize` 使用另一套输入。用户要求根因修复，旧断言仍用于回归。后续对照已复现固定 ConPTY 收回应用设置的缓冲高度，以及写入前后旧 `D` 的变化。 [旧六阶段](../2026-11-05-qt-resize-divergence/README.md) · [原生缓冲对照](../2026-11-25-bcd-native-depth/README.md) · [用户决定](../../../../docs/research/r29-bcd-local-addressing-decision.md)
