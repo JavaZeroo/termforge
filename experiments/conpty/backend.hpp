@@ -77,20 +77,14 @@ private:
         for (const auto byte : bytes) { value += hex[byte >> 4]; value += hex[byte & 15]; }
         return value;
     }
-public:
-    static Backend system() {
-        static const auto api = std::make_shared<const Api>();
-        return Backend(api);
-    }
-    static Backend reviewed_side_by_side(const std::filesystem::path& directory,
-                                        GlyphWidth width = GlyphWidth::Default) {
+    static Backend load_side_by_side(const std::filesystem::path& directory, GlyphWidth width,
+                                     const char* dll_sha256, const char* host_sha256) {
         if (sizeof(void*) != 8 || !directory.is_absolute())
             throw std::runtime_error("ConPTY reviewed backend requires x64 and an absolute directory");
         const auto canonical = std::filesystem::canonical(directory);
         const auto dll = canonical / L"conpty.dll";
         File dll_file(dll), host_file(canonical / L"OpenConsole.exe");
-        if (digest(dll_file.get()) != "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a" ||
-            digest(host_file.get()) != "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586")
+        if (digest(dll_file.get()) != dll_sha256 || digest(host_file.get()) != host_sha256)
             throw std::runtime_error("ConPTY reviewed backend identity mismatch");
         auto api = std::make_shared<Api>();
         api->module = LoadLibraryExW(dll.c_str(), nullptr,
@@ -113,13 +107,25 @@ public:
         // a console API compatibility policy, not the removed passthrough.
         return Backend(std::move(api), width == GlyphWidth::Console ? 0x18 : 0);
     }
+public:
+    static Backend system() {
+        static const auto api = std::make_shared<const Api>();
+        return Backend(api);
+    }
+    static Backend reviewed_side_by_side(const std::filesystem::path& directory,
+                                        GlyphWidth width = GlyphWidth::Default) {
+        // Diagnostic probes can still load the original NuGet pair explicitly.
+        return load_side_by_side(directory, width,
+            "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+            "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586");
+    }
     static Backend configured() {
 #ifdef TERMFORGE_CONPTY_SIDEBYSIDE
         wchar_t image[32768]{};
         const auto count = GetModuleFileNameW(nullptr, image, 32768);
         if (!count || count >= 32768) throw std::runtime_error("ConPTY backend executable location unavailable");
-        return reviewed_side_by_side(std::filesystem::path(image).parent_path() / L"conpty-backend",
-                                     GlyphWidth::Console);
+        return load_side_by_side(std::filesystem::path(image).parent_path() / L"conpty-backend",
+                                 GlyphWidth::Console, TERMFORGE_CONPTY_DLL_SHA256, TERMFORGE_CONPTY_HOST_SHA256);
 #else
         return system();
 #endif
