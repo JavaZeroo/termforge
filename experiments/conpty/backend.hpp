@@ -134,6 +134,7 @@ public:
     }
     void close(HPCON console) const { api_->close(console); }
     bool side_by_side() const { return api_->module != nullptr; }
+    bool supports_resize_map() const { return api_->resize_with_map != nullptr; }
     DWORD creation_flags() const { return creation_flags_; }
 };
 } // namespace tf_conpty
