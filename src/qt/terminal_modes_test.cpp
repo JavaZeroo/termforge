@@ -217,7 +217,8 @@ static std::string display_row(const termforge::ViewSnapshot& page, size_t row) 
 }
 
 static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& terminal,
-                          termforge::qt::SessionModel& model, QElapsedTimer& lifecycle, bool depth_control) {
+                          termforge::qt::SessionModel& model, QElapsedTimer& lifecycle,
+                          bool depth_control, bool local_reference) {
     int compared = 0;
     int different = 0;
     size_t transport_offset = 0;
@@ -282,6 +283,34 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         const size_t offset = terminal.painted_row_offset();
         for (size_t row = 0; row < page->lines.size(); ++row)
             painted_rows.append(QString::fromStdString(hex(display_row(*page, row))));
+        // The frozen local shell records child coordinates and the visible
+        // viewport independently. Its original console has a deeper buffer.
+        auto expected_native = std::vector<std::string>(static_cast<size_t>(rows));
+        auto local_visible = expected_native;
+        const std::string full_b = std::string(79, ' ') + 'B';
+        const std::string full_c = std::string(79, ' ') + 'C';
+        const std::string narrow_b = std::string(19, ' ') + 'B';
+        const std::string narrow_cd = std::string(19, ' ') + "CD";
+        if (stage == 1) {
+            expected_native[7] = full_b;
+            expected_native[9] = full_c;
+            expected_native[10] = "D";
+            local_visible = expected_native;
+        } else if (shrunk) {
+            expected_native[7] = narrow_b;
+            expected_native[9] = narrow_cd;
+            if (stage == 3) expected_native[11] = "RESIZED";
+            local_visible = expected_native;
+        } else {
+            expected_native[7] = full_b;
+            expected_native[8] = full_c;
+            expected_native[9] = "D";
+            expected_native[11] = "RESIZED";
+            local_visible[6] = full_b;
+            local_visible[7] = full_c;
+            local_visible[8] = "D";
+            local_visible[10] = "RESIZED";
+        }
         // The frozen reference's marker rectangles are aligned to its 8x18
         // cells. Normalize them to visible row/column before comparing the
         // Qt paint page. This oracle uses neither native cells nor source rank.
@@ -301,9 +330,20 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
             expected_visible[10] = "D";
             expected_visible[11] = "RESIZED";
         }
-        bool display_matches = offset + expected_visible.size() <= page->lines.size();
-        for (size_t row = 0; display_matches && row < expected_visible.size(); ++row)
-            display_matches = display_row(*page, offset + row) == expected_visible[row];
+        const auto& visible_reference = local_reference ? local_visible : expected_visible;
+        bool display_matches = offset + visible_reference.size() <= page->lines.size();
+        bool native_matches = viewport_rows == rows;
+        bool core_matches = screen.height() == rows;
+        for (size_t row = 0; row < visible_reference.size(); ++row) {
+            display_matches &= display_row(*page, offset + row) == visible_reference[row];
+            native_matches = native_matches && native_row(reply, static_cast<int>(row)) == expected_native[row];
+            core_matches = core_matches && model_row(screen, static_cast<int>(row)) == expected_native[row];
+        }
+        const int native_row_in_viewport = info.dwCursorPosition.Y - info.srWindow.Top;
+        const auto native_dsr = "\x1b[" + std::to_string(native_row_in_viewport + 1) + ';' +
+            std::to_string(info.dwCursorPosition.X + 1) + 'R';
+        const bool child_address_matches = dsr == native_dsr && screen.row == native_row_in_viewport &&
+            screen.column == info.dwCursorPosition.X;
         QJsonObject record{
             {"schema", "termforge-qt-bcd-stage-v1"}, {"reference_phase", static_cast<int>(stage - 1)},
             {"child_source_hex", QString::fromStdString(hex(bcd_source(stage)))},
@@ -326,6 +366,11 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
             {"source_matches_reference", source_matches}, {"dsr_matches_reference", dsr_matches},
             {"display_matches_reference", display_matches},
             {"child_geometry_matches", geometry_matches}};
+        if (local_reference) {
+            record["native_rows_match_local_reference"] = native_matches;
+            record["core_rows_match_local_reference"] = core_matches;
+            record["child_address_matches"] = child_address_matches;
+        }
         if (depth_control && stage == 1) {
             record["native_depth_request_succeeded"] = reply.depth_request_succeeded;
             record["native_depth_request_error"] = static_cast<qint64>(reply.depth_request_error);
@@ -333,7 +378,10 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         std::cerr << QJsonDocument(record).toJson(QJsonDocument::Compact).constData() << '\n';
         transport_offset = static_cast<size_t>(transport_end);
         ++compared;
-        if (!source_matches || !dsr_matches || !geometry_matches || !display_matches) ++different;
+        const bool content_matches = local_reference
+            ? native_matches && core_matches && child_address_matches
+            : source_matches && dsr_matches;
+        if (!content_matches || !geometry_matches || !display_matches) ++different;
     }
     QTest::keyClicks(&terminal, QStringLiteral("x"));
     await([&] { return model.finished(); }, model, lifecycle, "BCD child did not finish naturally");
@@ -343,7 +391,7 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
     const QJsonObject result{
         {"schema", "termforge-qt-bcd-comparison-v1"}, {"compared_stages", compared},
         {"different_stages", different}, {"child_exit", 37}, {"cleanup_verified", true},
-        {"native_depth_control", depth_control},
+        {"native_depth_control", depth_control}, {"local_reference", local_reference},
         {"presented_done", QJsonValue()}};
     const auto json = QJsonDocument(result).toJson(QJsonDocument::Compact);
     std::cerr << json.constData() << '\n';
@@ -541,9 +589,10 @@ int main(int argc, char** argv) {
     const bool native_map_probe = argc == 2 && std::string_view(argv[1]) == "--native-resize-map";
     const bool retained_contract = argc == 2 && std::string_view(argv[1]) == "--retained-contract";
     const bool depth_control = argc == 2 && std::string_view(argv[1]) == "--bcd-depth-control";
-    const bool bcd = depth_control || (argc == 2 && std::string_view(argv[1]) == "--bcd-comparison");
+    const bool local_reference = argc == 2 && std::string_view(argv[1]) == "--bcd-local-reference";
+    const bool bcd = depth_control || local_reference || (argc == 2 && std::string_view(argv[1]) == "--bcd-comparison");
     if (argc != 1 && !resize_repro && !native_map_probe && !retained_contract && !bcd) {
-        std::cerr << "usage: qt_terminal_modes_test [--resize|--native-resize-map|--retained-contract|--bcd-comparison|--bcd-depth-control]\n";
+        std::cerr << "usage: qt_terminal_modes_test [--resize|--native-resize-map|--retained-contract|--bcd-comparison|--bcd-depth-control|--bcd-local-reference]\n";
         return 2;
     }
     const bool capture_transport = qEnvironmentVariableIsSet("TERMFORGE_MODES_TRANSPORT_DIAGNOSTIC");
@@ -579,7 +628,7 @@ int main(int argc, char** argv) {
         const auto initial = wait_reply(fixture, 0, model, lifecycle);
         require(initial.info.dwSize.X == 80 && initial.info.dwSize.Y == 24,
                 "mode child did not start at the literal 80x24 geometry");
-        if (bcd) return bcd_comparison(fixture, terminal, model, lifecycle, depth_control);
+        if (bcd) return bcd_comparison(fixture, terminal, model, lifecycle, depth_control, local_reference);
         size_t failures = 0;
         size_t retained_failures = 0;
         const bool trace_resize = resize_repro && !retained_contract;
