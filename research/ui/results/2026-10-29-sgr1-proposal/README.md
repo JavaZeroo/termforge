@@ -1,6 +1,6 @@
 # SGR1 固定输出签名：离线预审材料
 
-[#146](https://github.com/JavaZeroo/termforge/issues/146) 当前仅有[工具/停止合同](../../../../docs/research/windterm-sgr1-plan.md)、[false 提案](plan.json)和[离线验证身份](validation.json)。**实际 WindTerm 启动 0 次，guest 请求 0 次**；没有原版像素、SGR1 行为或内部字重结论。
+这次离线预审保存了[工具与停止合同](https://github.com/JavaZeroo/termforge/blob/e9982e9c70e8496f4de9179c50ea781ba4318b09/docs/research/windterm-sgr1-plan.md)、[false 提案](plan.json)和[离线验证身份](validation.json)。WindTerm 启动和 guest 请求均为 0 次。后续运行另有记录，见 [#146](https://github.com/JavaZeroo/termforge/issues/146)。
 
 工具源为 `8d44041cefbf566b5fb1eb7433bdfa0231235ef1`。其后两个提交只修改测试输入/等待：`5d18c34d94093e03871ff240c3d811e8d98757b9` 隔离旧 fixture 的共享标签列表，`14b28609b59c789d5b78e2f0463c53321e296ada` 等待新 peer 测试的记录发布。8 个生产源及 5 个离线审计源的字节与工具提交逐一一致；旧 raw-capture-v1 七个生产源、旧计划和旧证据未改。
 

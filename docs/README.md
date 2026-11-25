@@ -1,23 +1,13 @@
-# 文档目录
+# 文档导航
 
-当前是有限 Windows 本地终端原型。先读现状，再沿路标选择任务；研究和历史记录用于证明结论，不代表当前 TODO。
+TermForge 目前是有限的 Windows 本地终端原型，当前推进 R2。
 
-| 问题 | 唯一维护入口 |
+| 内容 | 维护入口 |
 |---|---|
-| 已经能做什么，离目标差在哪里？ | [功能与差异矩阵](FEATURES.md) |
-| 最终目标是什么，如何分阶段完成？ | [五个路标，远到近](PLAN.md) |
-| 用户确认了什么，哪些决策仍待确认？ | [ADR-0006：方向与决策权限](adr/0006-confirmed-project-direction.md)、[ADR-0007：随包固定微软 ConPTY](adr/0007-bundled-microsoft-conpty.md)、[ADR-0008：自主 C++ 与 Qt Widgets](adr/0008-cpp-core-qt-widgets.md)、[ADR-0010：有界正文保留与显示重排](adr/0010-bounded-resize-retention.md) |
-| R2 分几步交付，当前先做什么、怎样验收？ | [R2 交付路线与验收](milestones/R2-local-terminal.md) |
-| 已验收的基础文字交互合同是什么？ | [R1 基础文字交互](milestones/R1-local-text.md) |
-| 字体、网格和真实显示如何验收？ | [R2 字体与显示合同](milestones/R2-font-display.md) |
-| 哪项可开工，谁阻塞谁？ | [GitHub 跟踪索引](TRACKING.md) |
-| 已完成结论由什么支持？ | [证据索引](EVIDENCE.md) |
-| 历史 Alacritty 参考如何构建和复验？ | [Alacritty 固定候选实验](../experiments/candidates/alacritty/README.md) |
-| 当前可下载什么版本？ | [Alpha 1 发布说明](releases/v0.1.0-alpha.1.md)、[发行验证](releases/v0.1.0-alpha.1-validation.json) |
-| 如何构建、运行与贡献？ | [贡献指南](../CONTRIBUTING.md)、[本地 shell](../experiments/shell/README.md) |
-| 逆向什么、如何测量？ | [研究工具](../research/README.md)、[UI 探针](../research/ui/README.md)、[ConPTY 中断输入机制](research/conpty-ctrl-c-input.md)、[性能协议](../benchmarks/PROTOCOL.md) |
-| 为什么采用当前技术和限制？ | [ADR-0001](adr/0001-evidence-before-stack.md)、[ADR-0002](adr/0002-automation-first-investigation.md)、[ADR-0003](adr/0003-core-reference-and-reuse.md)、[ADR-0004](adr/0004-presentation-backend.md)、[ADR-0005](adr/0005-physical-row-resize.md) |
-| 哪些材料可以进入完整开源项目？ | [来源与公开边界](PROVENANCE.md)、[字体来源](../assets/fonts/README.md) |
-| 旧 M0/G1、批次审查和规格去哪里了？ | [历史归档及迁移表](archive/README.md) |
-
-维护分工：FEATURES 说明已合并能力和配置边界；PLAN 维护 R1–R5 范围；当前路标维护交付顺序与验收；TRACKING 只作 issue 导航；GitHub 保存实时状态、阻塞和执行清单；EVIDENCE 索引固定来源。新增事实进入研究/结果，历史审查进入归档，不再在多个计划文件中追加同一段过程。
+| 当前能力与差异、R1–R5 范围 | [功能矩阵](FEATURES.md)、[总体路线](PLAN.md) |
+| 交付顺序和验收合同 | [R2 本地终端](milestones/R2-local-terminal.md)、[R2 字体与显示](milestones/R2-font-display.md)、[R1 基础文字交互](milestones/R1-local-text.md) |
+| 执行状态、阻塞和证据 | [GitHub 任务索引](TRACKING.md)、[证据索引](EVIDENCE.md) |
+| 已确认的项目和技术决策 | [方向与权限](adr/0006-confirmed-project-direction.md)、[固定 ConPTY](adr/0007-bundled-microsoft-conpty.md)、[C++ 与 Qt Widgets](adr/0008-cpp-core-qt-widgets.md)、[R2 范围](adr/0009-r2-scope-decisions.md)、[正文保留与重排](adr/0010-bounded-resize-retention.md) |
+| 构建、贡献和下载 | [贡献指南](../CONTRIBUTING.md)、[Alpha 1 发布说明](releases/v0.1.0-alpha.1.md) |
+| 调查与可公开材料 | [研究工具](../research/README.md)、[性能协议](../benchmarks/PROTOCOL.md)、[来源与公开边界](PROVENANCE.md) |
+| 早期决策、旧任务编号和批次记录 | [决策记录](adr/)、[历史归档及迁移表](archive/README.md) |

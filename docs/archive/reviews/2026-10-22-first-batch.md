@@ -18,4 +18,4 @@
 
 V1/P1 是规格允许独立开始的任务，并未宣称完成；没有实际窗口、产品核心选型或性能对等的越界声明。短批次资源回收不代表长期无泄漏。
 
-审查发现：Standards 1 项（显式目录回退），Spec 0 项。最终修复与远端验收见[状态表](../../STATUS-AND-BACKLOG.md)。
+审查发现：Standards 1 项（显式目录回退），Spec 0 项。最终修复与远端验收见[当时的状态表](https://github.com/JavaZeroo/termforge/blob/51b50ef1f2101dbf456f63630c0bbb478c1f5aee/docs/STATUS-AND-BACKLOG.md)。
