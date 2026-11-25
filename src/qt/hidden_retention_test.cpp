@@ -210,6 +210,15 @@ StageRecord capture_stage(unsigned stage, const HiddenRetentionReply& reply, con
     record.native_row_18 = native_row(reply, 18);
     return record;
 }
+void report_body(unsigned stage, const Screen& screen) {
+    QJsonArray body;
+    for (const auto& line : body_of(screen)) body.append(QString::fromStdString(hex(line)));
+    const QJsonObject record{{"schema", "termforge-qt-hidden-retention-rows-v1"},
+                             {"stage", static_cast<int>(stage)},
+                             {"history_rows", static_cast<int>(screen.history_size())},
+                             {"cursor_row", screen.row}, {"cursor_column", screen.column}, {"body_hex", body}};
+    std::cerr << QJsonDocument(record).toJson(QJsonDocument::Compact).constData() << '\n';
+}
 } // namespace
 
 int main(int argc, char** argv) {
@@ -328,6 +337,7 @@ int main(int argc, char** argv) {
         resize_public(terminal, model, 61, 20, lifecycle);
         reply = send_stage(terminal, fixture, 2, model, lifecycle);
         check_native_geometry(reply, 61, 20, check, "phase 2");
+        if (model.uses_host_resize_maps()) report_body(2, model.screen());
         await([&] { return model.screen().width() == 61 && body_of(model.screen()) == expected_body(); },
               model, lifecycle, "phase 2 narrowed retained body did not reach the core");
         records.push_back(capture_stage(2, reply, model.screen()));
@@ -422,6 +432,7 @@ int main(int argc, char** argv) {
         // WindTerm clipping recorded separately.
         reply = send_stage(terminal, fixture, 6, model, lifecycle);
         check_native_geometry(reply, 61, 20, check, "phase 6");
+        if (model.uses_host_resize_maps()) report_body(6, model.screen());
         await([&] {
             return model.screen().active_buffer() == ScreenBuffer::primary &&
                 body_of(model.screen()) == expected_body();
@@ -467,6 +478,7 @@ int main(int argc, char** argv) {
         resize_public(terminal, model, 91, 20, lifecycle);
         reply = send_stage(terminal, fixture, 7, model, lifecycle);
         check_native_geometry(reply, 91, 20, check, "phase 7");
+        if (model.uses_host_resize_maps()) report_body(7, model.screen());
         await([&] { return model.screen().width() == 91 && body_of(model.screen()) == expected_body(); },
               model, lifecycle, "phase 7 width restore lost the retained body");
         records.push_back(capture_stage(7, reply, model.screen()));

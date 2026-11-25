@@ -674,6 +674,7 @@ public:
             next.live[r].ending = LineEnding::soft_wrap;
             next.live[r].next_id = next.live[r + 1].id;
             next.live[r].wrap_columns = static_cast<size_t>(columns);
+            next.live[r].content_columns = static_cast<size_t>(columns);
         }
         size_t outgoing = 0;
         for (int r = 0; r < height(); ++r) {

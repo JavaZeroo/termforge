@@ -373,6 +373,31 @@ static size_t retained_contract_checks(const ModeReply& native, termforge::qt::T
           "child/transport/core resize identity differs");
     check(screen.history_lines().empty() && screen.visible_lines().size() == 24,
           "width-only resize changed the retained frame");
+    if (model.uses_host_resize_maps()) {
+        // The same-input WindTerm local shell supplies the width-only oracle.
+        const std::string b = std::string(19, ' ') + "B";
+        const std::string cd = "RESIZED" + std::string(12, ' ') + "CD";
+        check(native_row(native, 8) == b && native_row(native, 11) == cd,
+              "child native width-only rows differ from the local reference");
+        check(model_row(screen, 7).empty() && model_row(screen, 8) == b &&
+              model_row(screen, 9).empty() && model_row(screen, 10).empty() && model_row(screen, 11) == cd,
+              "mapped width-only core rows differ from the local reference");
+        terminal.grab();
+        const auto& page = terminal.painted_page();
+        check(page && terminal.painted_row_offset() == 0 && display_row(*page, 7).empty() &&
+              display_row(*page, 8) == b && display_row(*page, 11) == cd && display_row(*page, 12).empty(),
+              "mapped width-only display differs from the local reference");
+        if (page) {
+            const auto hit = page->mapping.hit(termforge::TextDocument(screen), 8, 19,
+                                               termforge::ViewAffinity::leading,
+                                               page->mapping.layout_revision());
+            check(hit && hit->line_id == screen.visible_lines()[8].id && hit->column == 19,
+                  "width-only hit-test did not resolve the mapped B");
+        }
+        check(screen.row == 0 && screen.column == 2 && terminal.display_caret_row() == 0 &&
+              terminal.display_caret_column() == 2, "width-only cursor differs from the child position");
+        return failures;
+    }
     check(termforge::project_line(screen.visible_lines()[7]).text == std::string(79, ' ') + "B" &&
           termforge::project_line(screen.visible_lines()[9]).text == std::string(79, ' ') + "C" &&
           termforge::project_line(screen.visible_lines()[10]).text == "D",
