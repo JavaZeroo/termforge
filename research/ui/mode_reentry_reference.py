@@ -16,7 +16,8 @@ sys.path.insert(0, str(ROOT))
 from research.ui import mode_state_reference as base
 
 CASE_ID = "alternate-origin-reentry"
-CASES = (CASE_ID,)
+MARGIN_CASE = "alternate-duplicate-margin"
+CASES = (CASE_ID, MARGIN_CASE)
 PHASE_COUNT = 14
 SOURCE_FILES = ("research/ui/mode_reentry_reference.py", *base.SOURCE_FILES)
 MARKERS = ("MP", "A0", "DS", "DI", "DO", "A1", "ES", "EI", "EO",
@@ -30,9 +31,29 @@ ARCHIVE_SCHEMA = base.ARCHIVE_SCHEMA
 
 
 def phases(rows, columns, case):
-    require(case == CASE_ID, "Unknown immutable reentry case")
+    require(case in CASES, "Unknown immutable reentry case")
     require(type(rows) is int and type(columns) is int and 20 <= rows <= 60 and 40 <= columns <= 160,
             "Controlled grid out of bounds")
+    if case == MARGIN_CASE:
+        require([columns, rows] == [91, 25], "Expected the fixed 91x25 comparison grid")
+        # An origin-relative saturated CUP reports the height of the region.
+        # Do not set margins between the duplicate entry and its measurement.
+        return [
+            ("primary-four-row-control", b"\x1b[2;5r\x1b[?6h\x1b[99;1H"),
+            ("alternate-five-row-control", b"\x1b[?1049h\x1b[3;7r\x1b[?6h\x1b[99;1H"),
+            ("duplicate-entry-home", b"\x1b[?1049h"),
+            ("enable-origin-after-duplicate", b"\x1b[?6h\x1b[99;1H"),
+            ("disable-origin-control", b"\x1b[?6l\x1b[99;1H"),
+            ("alternate-nine-row-control", b"\x1b[9;17r\x1b[?6h\x1b[99;1H"),
+            ("two-duplicate-entries", b"\x1b[?1049h\x1b[?1049h\x1b[?6h\x1b[99;1H"),
+            ("restore-primary-cursor", b"\x1b[?1049l"),
+            ("primary-margin-after-duplicates", b"\x1b[?6h\x1b[99;1H"),
+            ("later-entry-after-exit", b"\x1b[?1049h\x1b[?6h\x1b[99;1H"),
+            ("alternate-five-row-control-again", b"\x1b[3;7r\x1b[?6h\x1b[99;1H"),
+            ("duplicate-after-later-entry", b"\x1b[?1049h\x1b[?6h\x1b[99;1H"),
+            ("return-to-primary", b"\x1b[?1049l"),
+            ("full-viewport-control", b"\x1b[?6l\x1b[r\x1b[25;91H"),
+        ]
     esc = b"\x1b["
     cup = lambda row, column: f"\x1b[{row};{column}H".encode("ascii")
     sentinels = b"".join(cup(row, 1)+f"R{row:02}".encode("ascii") for row in range(1, 9))
@@ -55,12 +76,13 @@ def phases(rows, columns, case):
     ]
 
 
-def javascript_source():
+def javascript_source(case=CASE_ID):
+    require(case in CASES, "Unknown immutable reentry case")
     source = (ROOT / "research/ui/mode_state_reference.js").read_text(encoding="utf-8")
     old_markers = "['MP','AS','AI','AO','AP','PS','PI','PO','NW','SB','R01','R02','R03','R04','R05','R06','R07','R08']"
     substitutions = {
-        "['main-on-alt-off','main-off-alt-on']": json.dumps(list(CASES)),
-        "__MODE_STATE_CASE_JSON__": json.dumps(CASE_ID),
+        "['main-on-alt-off','main-off-alt-on']": json.dumps([case]),
+        "__MODE_STATE_CASE_JSON__": json.dumps(case),
         old_markers: json.dumps(list(MARKERS)),
         "'mode-state-v1'": "'mode-reentry-v1'",
         "'/mode-state-result.json'": "'/mode-reentry-result.json'",
@@ -75,12 +97,12 @@ def javascript_source():
 
 
 def launcher_source(case):
-    require(case == CASE_ID, "Unknown immutable reentry case")
+    require(case in CASES, "Unknown immutable reentry case")
     source = (ROOT / "research/ui/r1_launch.py").read_text(encoding="utf-8")
     substitutions = {
         "from research.ui.r1_vt_fixture import Peer":
             f"from research.ui.mode_reentry_reference import peer_class, javascript_source\n        Peer = peer_class({case!r})",
-        'Path(__file__).with_name("r1_menu_wrap.js").read_text(encoding="utf-8")': "javascript_source()",
+        'Path(__file__).with_name("r1_menu_wrap.js").read_text(encoding="utf-8")': f"javascript_source({case!r})",
     }
     for old, new in substitutions.items():
         require(source.count(old) == 1, "Protected launcher source changed")
@@ -97,7 +119,14 @@ _original_contract = _RUNTIME["fixed_contract"]
 
 def fixed_contract(case):
     value = _original_contract(case)
-    value["generated_driver_sha256"] = hashlib.sha256(javascript_source().encode()).hexdigest()
+    value["generated_driver_sha256"] = hashlib.sha256(javascript_source(case).encode()).hexdigest()
+    if case == MARGIN_CASE:
+        value["interpretation_notes"] = [
+            "Compare the origin-relative saturated cursor report before and after duplicate alternate entry.",
+            "The controls use region heights 5 and 9, primary height 4, and viewport height 25.",
+            "Exit and later entry is a separate control. DSR alone does not identify individual blank cells or styles.",
+        ]
+        return value
     value["interpretation_notes"] = [
         "One fresh process observes duplicate 1049h while alternate origin was explicitly ON, then exit and later entry after restoring alternate ON.",
         "Duplicate/later samples reapply DECSTBM 3..7 without changing origin; compare with explicit ON/OFF controls using the same DECSTBM.",
@@ -119,16 +148,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--prepare", action="store_true")
+    parser.add_argument("--case", choices=CASES)
     parser.add_argument("--authorize-execution", action="store_true")
     for name in ("source", "out", "rea"):
         parser.add_argument("--"+name, type=Path)
     args = parser.parse_args()
     if args.prepare:
         require(args.source and args.out and args.rea, "Source/output/REA required")
-        prepare_plan(args.source, args.out, args.rea, args.plan, CASE_ID, args.authorize_execution)
-        print(json.dumps({"prepared": True, "case_id": CASE_ID, "phase_count": PHASE_COUNT,
+        case = args.case or CASE_ID
+        prepare_plan(args.source, args.out, args.rea, args.plan, case, args.authorize_execution)
+        print(json.dumps({"prepared": True, "case_id": case, "phase_count": PHASE_COUNT,
                           "maximum_original_runs": 1, "execution_authorized": args.authorize_execution}))
     else:
-        require(not args.authorize_execution and args.source is None and args.out is None and args.rea is None,
+        require(not args.case and not args.authorize_execution and args.source is None and args.out is None and args.rea is None,
                 "Execution uses only the immutable plan")
         run_plan(args.plan)

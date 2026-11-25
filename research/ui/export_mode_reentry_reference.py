@@ -23,7 +23,7 @@ def expected_probe(plan, run, source_root):
     original.integer(run["tid"], 2**32-1)
     original.require(type(run["window_station"]) is str and re.fullmatch(r"TermForgeR1-[0-9]+", run["window_station"]),
                      "Owned station identity differs")
-    driver = probe.javascript_source()
+    driver = probe.javascript_source(plan["case_id"])
     original.require(hashlib.sha256(driver.encode()).hexdigest() == plan["generated_driver_sha256"], "Derived reentry driver differs")
     template = (source_root / "research/ui/qt_r1_text.js").read_text(encoding="utf-8").split("// Scenario driver", 1)[0]+driver
     original.require(hashlib.sha256(template.encode()).hexdigest() == run["template_sha256"], "Probe template differs")
