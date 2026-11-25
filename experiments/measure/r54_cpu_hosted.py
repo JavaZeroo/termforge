@@ -16,10 +16,13 @@ def execute(output):
     output.mkdir(parents=True, exist_ok=False)
     manifest = dict(schema='termforge-r54-cpu-hosted-v1', status='preparing', started_utc=utc(),
                     source=git(ROOT, 'rev-parse', 'HEAD'), runner_sha256=sha(Path(__file__)),
-                    workflow_sha256=sha(ROOT / '.github/workflows/r54-cpu.yml'),
+                    workflow_sha256=None,
                     performance_gate='not_evaluated', diagnostic=None)
     try:
         manifest['hosted_identity'] = hosted_identity(CPU_BOUNDARY_BRANCHES)
+        workflow = ROOT / '.github/workflows/r54-cpu.yml'
+        require(workflow.is_file(), 'R54 CPU workflow is archived; use the original source checkout')
+        manifest['workflow_sha256'] = sha(workflow)
         write_json(output / 'hosted.json', manifest)
         prepare_builds(output / 'bundle')
         declaration = dict(host_kind='hosted_vm', no_known_concurrent_build_or_test=True,
