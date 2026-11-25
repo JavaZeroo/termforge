@@ -1,10 +1,14 @@
 // Public Qt keys -> owned child -> fixed ConPTY -> SessionModel/TerminalWidget.
 #include "terminal_widget.hpp"
 #include "terminal_modes_fixture.hpp"
+#include "../../experiments/core/text_document.hpp"
 #include "../../experiments/core/text_projection.hpp"
 #include <QApplication>
 #include <QElapsedTimer>
 #include <QImage>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QTemporaryDir>
 #include <QTest>
 #include <iostream>
@@ -12,6 +16,7 @@
 
 using termforge::qt::test::ModeFixture;
 using termforge::qt::test::ModeReply;
+using termforge::qt::test::bcd_source;
 using termforge::qt::test::mode_source;
 
 static void require(bool condition, const char* message) {
@@ -211,6 +216,111 @@ static std::string display_row(const termforge::ViewSnapshot& page, size_t row) 
     return text;
 }
 
+static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& terminal,
+                          termforge::qt::SessionModel& model, QElapsedTimer& lifecycle) {
+    int compared = 0;
+    int different = 0;
+    size_t transport_offset = 0;
+    for (unsigned stage = 1; stage <= 4; ++stage) {
+        const bool shrunk = stage == 2 || stage == 3;
+        const int columns = shrunk ? 60 : 80;
+        const int rows = shrunk ? 12 : 24;
+        if (stage == 2 || stage == 4) {
+            const int margin = terminal.content_margin();
+            terminal.resize(2 * margin + columns * terminal.cell_width(),
+                            3 * margin + (rows + 1) * terminal.cell_height());
+        }
+        await([&] {
+            const auto size = model.resize_state();
+            return !size.pending && size.requested_revision == size.transport_revision &&
+                size.requested_columns == columns && size.requested_rows == rows &&
+                size.transport_columns == columns && size.transport_rows == rows;
+        }, model, lifecycle, "BCD Qt resize did not finish its transport request");
+        require(terminal.hasFocus(), "BCD public key target lost focus");
+        QTest::keyClicks(&terminal, QString::number(stage));
+        const auto reply = wait_reply(fixture, stage, model, lifecycle);
+        const auto size = model.resize_state();
+        const auto& screen = model.screen();
+        const auto transport_end = model.transport_consumed();
+        const auto transport = model.transport_capture(transport_offset);
+        require(transport_end == transport_offset + transport.size(), "BCD transport capture lost bytes");
+
+        QJsonArray native_rows, source_rows, painted_rows;
+        for (int row = 0; row < reply.info.dwSize.Y; ++row)
+            native_rows.append(QString::fromStdString(hex(native_row(reply, row))));
+        const termforge::TextDocument document(screen);
+        require(document.size() <= 200, "BCD document exceeds its fixed observation bound");
+        std::vector<std::string> logical_lines;
+        std::string logical_line;
+        for (size_t row = 0; row < document.size(); ++row) {
+            const auto line = document.line(row);
+            source_rows.append(QString::fromStdString(hex(line.projection.text)));
+            logical_line += line.projection.text;
+            if (!line.joins_next) {
+                logical_lines.push_back(std::move(logical_line));
+                logical_line.clear();
+            }
+        }
+        while (!logical_lines.empty() && logical_lines.back().empty()) logical_lines.pop_back();
+        std::vector<std::string> expected(11);
+        expected[7] = std::string(79, ' ') + 'B';
+        expected[9] = std::string(79, ' ') + 'C';
+        expected[10] = "D";
+        if (stage >= 3) expected.emplace_back("RESIZED");
+        const std::string_view dsr(reply.dsr.data(), reply.dsr_bytes);
+        const std::string_view reference_dsr = stage < 3 ? "\x1b[11;2R" : "\x1b[12;8R";
+        const bool source_matches = logical_lines == expected;
+        const bool dsr_matches = dsr == reference_dsr;
+        const auto& info = reply.info;
+        const bool geometry_matches = info.dwSize.X == columns && info.dwSize.Y == rows &&
+            info.srWindow.Right - info.srWindow.Left + 1 == columns &&
+            info.srWindow.Bottom - info.srWindow.Top + 1 == rows;
+        terminal.grab();
+        const auto& page = terminal.painted_page();
+        require(page.has_value(), "BCD painted page unavailable");
+        for (size_t row = 0; row < page->lines.size(); ++row)
+            painted_rows.append(QString::fromStdString(hex(display_row(*page, row))));
+        const QJsonObject record{
+            {"schema", "termforge-qt-bcd-stage-v1"}, {"reference_phase", static_cast<int>(stage - 1)},
+            {"child_source_hex", QString::fromStdString(hex(bcd_source(stage)))},
+            {"child_dsr_hex", QString::fromStdString(hex(dsr))},
+            {"reference_dsr_hex", QString::fromStdString(hex(reference_dsr))},
+            {"transport_offset", static_cast<qint64>(transport_offset)},
+            {"transport_hex", QString::fromStdString(hex(transport))},
+            {"terminal_pixels", QJsonArray{terminal.width(), terminal.height()}},
+            {"core_size", QJsonArray{screen.width(), screen.height()}},
+            {"transport_size", QJsonArray{size.transport_columns, size.transport_rows}},
+            {"resize_revisions", QJsonArray{static_cast<qint64>(size.requested_revision),
+                                           static_cast<qint64>(size.transport_revision)}},
+            {"native_size", QJsonArray{info.dwSize.X, info.dwSize.Y}},
+            {"native_window", QJsonArray{info.srWindow.Left, info.srWindow.Top, info.srWindow.Right, info.srWindow.Bottom}},
+            {"native_cursor_rc", QJsonArray{info.dwCursorPosition.Y, info.dwCursorPosition.X}},
+            {"core_cursor_rc", QJsonArray{screen.row, screen.column}},
+            {"painted_caret_rc", QJsonArray{terminal.display_caret_row(), terminal.display_caret_column()}},
+            {"painted_row_offset", static_cast<qint64>(terminal.painted_row_offset())},
+            {"native_rows_hex", native_rows}, {"source_rows_hex", source_rows}, {"projected_rows_hex", painted_rows},
+            {"source_matches_reference", source_matches}, {"dsr_matches_reference", dsr_matches},
+            {"child_geometry_matches", geometry_matches}};
+        std::cerr << QJsonDocument(record).toJson(QJsonDocument::Compact).constData() << '\n';
+        transport_offset = static_cast<size_t>(transport_end);
+        ++compared;
+        if (!source_matches || !dsr_matches || !geometry_matches) ++different;
+    }
+    QTest::keyClicks(&terminal, QStringLiteral("x"));
+    await([&] { return model.finished(); }, model, lifecycle, "BCD child did not finish naturally");
+    require(model.natural_exit() && model.exit_code() == 37 && model.cleanup_verified() &&
+            model.active_processes_after() == 0 && model.output_eof(),
+            "BCD child natural exit or owned cleanup was not verified");
+    const QJsonObject result{
+        {"schema", "termforge-qt-bcd-comparison-v1"}, {"compared_stages", compared},
+        {"different_stages", different}, {"child_exit", 37}, {"cleanup_verified", true},
+        {"presented_done", QJsonValue()}};
+    const auto json = QJsonDocument(result).toJson(QJsonDocument::Compact);
+    std::cerr << json.constData() << '\n';
+    std::cout << json.constData() << '\n';
+    return different ? 1 : 0;
+}
+
 // Formal Qt path contract after a public width-only resize: the core retains
 // its pre-resize rows and the widget paints the independent reflowed display
 // page. The independent native grid is recorded, not used as the addressing
@@ -342,21 +452,22 @@ static void transport_diagnostic(const std::wstring& executable, const std::wstr
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
     if (argc == 4 && std::string_view(argv[1]) == "--modes-child" &&
-        (std::string_view(argv[3]) == "5" || std::string_view(argv[3]) == "6")) {
+        (std::string_view(argv[3]) == "4" || std::string_view(argv[3]) == "5" || std::string_view(argv[3]) == "6")) {
         try { return termforge::qt::test::modes_child(QString::fromLocal8Bit(argv[2]).toStdWString(),
-                                                    argv[3][0] == '5' ? 5u : 6u); }
+                                                    static_cast<unsigned>(argv[3][0] - '0'), argv[3][0] == '4'); }
         catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
     const bool resize_repro = argc == 2 && std::string_view(argv[1]) == "--resize";
     const bool retained_contract = argc == 2 && std::string_view(argv[1]) == "--retained-contract";
-    if (argc != 1 && !resize_repro && !retained_contract) {
-        std::cerr << "usage: qt_terminal_modes_test [--resize|--retained-contract]\n"; return 2;
+    const bool bcd = argc == 2 && std::string_view(argv[1]) == "--bcd-comparison";
+    if (argc != 1 && !resize_repro && !retained_contract && !bcd) {
+        std::cerr << "usage: qt_terminal_modes_test [--resize|--retained-contract|--bcd-comparison]\n"; return 2;
     }
     const bool capture_transport = qEnvironmentVariableIsSet("TERMFORGE_MODES_TRANSPORT_DIAGNOSTIC");
     if (capture_transport && !resize_repro) {
         std::cerr << "transport diagnostic requires the explicit --resize entry\n"; return 2;
     }
-    const unsigned final_stage = (resize_repro || retained_contract) ? 6u : 5u;
+    const unsigned final_stage = bcd ? 4u : (resize_repro || retained_contract) ? 6u : 5u;
     char gate[3]{}; DWORD count = 0; BOOL owned = FALSE;
     if (!ReadFile(GetStdHandle(STD_INPUT_HANDLE), gate, sizeof(gate), &count, nullptr) ||
         count != sizeof(gate) || std::string_view(gate, count) != "GO\n" ||
@@ -371,18 +482,20 @@ int main(int argc, char** argv) {
         wchar_t executable[32768]{};
         const DWORD length = GetModuleFileNameW(nullptr, executable, 32768);
         require(length && length < 32768, "mode fixture executable unavailable");
-        ModeFixture fixture;
+        ModeFixture fixture(bcd);
         termforge::qt::SessionModel model;
         QWidget window;
         window.resize(1200, 900);
         termforge::qt::TerminalWidget terminal(model, &window);
         window.show(); terminal.setFocus();
+        if (bcd) model.enable_transport_capture();
         require(model.start(executable, L"--modes-child \"" + fixture.pipe_name() + L"\" " +
                             std::to_wstring(final_stage),
                             workspace.path().toStdWString()), "mode child did not start");
         const auto initial = wait_reply(fixture, 0, model, lifecycle);
         require(initial.info.dwSize.X == 80 && initial.info.dwSize.Y == 24,
                 "mode child did not start at the literal 80x24 geometry");
+        if (bcd) return bcd_comparison(fixture, terminal, model, lifecycle);
         size_t failures = 0;
         size_t retained_failures = 0;
         const bool trace_resize = resize_repro && !retained_contract;

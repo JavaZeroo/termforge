@@ -19,12 +19,26 @@ inline std::string_view mode_source(unsigned stage) {
     }
 }
 
+inline std::string_view bcd_source(unsigned stage) {
+    switch (stage) {
+    case 0: return {};
+    case 1: return "\x1b[?6l\x1b[?7h\x1b[r\x1b[0m\x1b[2J"
+                   "\x1b[8;80HB\x1b[10;80HC\x1b[11;1HD\x1b[6n";
+    case 2: return "\x1b[6n";
+    case 3: return "\x1b[12;1HRESIZED\x1b[6n";
+    case 4: return "\x1b[6n";
+    default: throw std::runtime_error("BCD fixture stage invalid");
+    }
+}
+
 struct ModeReply {
     uint32_t magic = 0x54464d31, stage = 0, child_pid = 0, source_bytes = 0;
     CONSOLE_SCREEN_BUFFER_INFO info{};
     // The fixture is bounded to its literal 80x24 -> 60x12 sequence. CHAR_INFO
     // is an independent native cell view, not a complete grapheme observation.
     std::array<CHAR_INFO, 80 * 24> cells{};
+    std::array<char, 16> dsr{};
+    uint32_t dsr_bytes = 0;
 };
 
 class ModeFixture final {
@@ -32,8 +46,9 @@ class ModeFixture final {
     std::wstring name_;
     bool connected_ = false;
     DWORD client_pid_ = 0;
+    bool bcd_;
 public:
-    ModeFixture() {
+    explicit ModeFixture(bool bcd = false) : bcd_(bcd) {
         name_ = L"\\\\.\\pipe\\TermForgeQtModes-v1-" + std::to_wstring(GetCurrentProcessId()) + L"-" +
             std::to_wstring(GetTickCount64());
         pipe_.reset(CreateNamedPipeW(name_.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE,
@@ -70,7 +85,8 @@ public:
         ModeReply reply; DWORD count = 0;
         if (!ReadFile(pipe_.get(), &reply, sizeof(reply), &count, nullptr)) tf_conpty::fail("ReadFile(mode reply)");
         if (count != sizeof(reply) || reply.magic != 0x54464d31 || reply.child_pid != client_pid_ ||
-            reply.stage > 6 || reply.source_bytes != mode_source(reply.stage).size() ||
+            reply.stage > (bcd_ ? 4u : 6u) || reply.source_bytes != (bcd_ ? bcd_source : mode_source)(reply.stage).size() ||
+            reply.dsr_bytes > reply.dsr.size() || ((!bcd_ || reply.stage == 0) && reply.dsr_bytes != 0) ||
             reply.info.dwSize.X < 1 || reply.info.dwSize.X > 80 ||
             reply.info.dwSize.Y < 1 || reply.info.dwSize.Y > 24)
             throw std::runtime_error("Mode fixture reply identity/source/geometry mismatch");
@@ -78,8 +94,27 @@ public:
     }
 };
 
-inline int modes_child(const std::wstring& pipe_name, unsigned final_stage) {
-    if (final_stage != 5 && final_stage != 6)
+inline uint32_t read_mode_dsr(HANDLE input, std::array<char, 16>& bytes) {
+    const auto deadline = GetTickCount64() + 1800;
+    uint32_t size = 0;
+    while (size < bytes.size()) {
+        const auto now = GetTickCount64();
+        if (now >= deadline) break;
+        const DWORD ready = WaitForSingleObject(input, static_cast<DWORD>(deadline - now));
+        if (ready == WAIT_TIMEOUT) break;
+        if (ready != WAIT_OBJECT_0) tf_conpty::fail("WaitForSingleObject(BCD DSR)");
+        wchar_t unit = 0;
+        DWORD count = 0;
+        if (!ReadConsoleW(input, &unit, 1, &count, nullptr) || count != 1 || unit > 127)
+            throw std::runtime_error("BCD DSR receiver lost an ASCII input unit");
+        bytes[size++] = static_cast<char>(unit);
+        if (unit == L'R') break;
+    }
+    return size;
+}
+
+inline int modes_child(const std::wstring& pipe_name, unsigned final_stage, bool bcd = false) {
+    if (bcd ? final_stage != 4 : final_stage != 5 && final_stage != 6)
         throw std::runtime_error("Mode child final stage invalid");
     const std::wstring prefix = L"\\\\.\\pipe\\TermForgeQtModes-v1-";
     if (pipe_name.rfind(prefix, 0) != 0 || pipe_name.size() > 180)
@@ -119,7 +154,10 @@ inline int modes_child(const std::wstring& pipe_name, unsigned final_stage) {
         tf_conpty::fail("SetConsoleMode(mode child)");
     const auto reply = [&](unsigned stage) {
         ModeReply value; value.stage = stage; value.child_pid = GetCurrentProcessId();
-        value.source_bytes = static_cast<uint32_t>(mode_source(stage).size());
+        value.source_bytes = static_cast<uint32_t>((bcd ? bcd_source : mode_source)(stage).size());
+        // Receive the query before asking for the native grid. The latter
+        // can involve its own ConPTY cursor synchronization.
+        if (bcd && stage != 0) value.dsr_bytes = read_mode_dsr(input.get(), value.dsr);
         tf_conpty::Handle active(CreateFileW(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
             FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr));
         if (active.get() == INVALID_HANDLE_VALUE || !GetConsoleScreenBufferInfo(active.get(), &value.info))
@@ -145,7 +183,7 @@ inline int modes_child(const std::wstring& pipe_name, unsigned final_stage) {
         if (key != static_cast<char>('1' + stage) || stage >= final_stage)
             throw std::runtime_error("Mode child input stage out of order");
         ++stage;
-        const auto source = mode_source(stage);
+        const auto source = (bcd ? bcd_source : mode_source)(stage);
         DWORD written = 0;
         if (!WriteFile(output.get(), source.data(), static_cast<DWORD>(source.size()), &written, nullptr) ||
             written != source.size()) tf_conpty::fail("WriteFile(mode child source)");
