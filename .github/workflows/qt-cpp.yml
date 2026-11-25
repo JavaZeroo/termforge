@@ -85,7 +85,10 @@ jobs:
           $identity.win32_executable_sha256 = (Get-FileHash -LiteralPath $resize).Hash.ToLowerInvariant()
           $identity | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath "$out/identity.json" -Encoding UTF8
           $scenarios = [ordered]@{ 'resize' = $modes; 'win32-compat' = $resize }
-          if ($env:VARIANT -eq 'candidate') { $scenarios['native-resize-map'] = $modes }
+          if ($env:VARIANT -eq 'candidate') {
+            $scenarios['native-resize-map'] = $modes
+            $scenarios['bcd-comparison'] = $modes
+          }
           $codes = [ordered]@{}
           foreach ($case in $scenarios.GetEnumerator()) {
             $scenario = $case.Key
