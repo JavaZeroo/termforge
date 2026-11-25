@@ -154,6 +154,10 @@ jobs:
         run: >-
           python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe
           --ris-reference research/ui/results/2026-11-24-alternate-ris-reference/follow-up-20261125.json
+      - name: Compare repeated alternate entry with WindTerm's margin controls
+        run: >-
+          python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe
+          --duplicate-margin-reference research/ui/results/2026-11-24-alternate-ris-reference/duplicate-margin.json
       # Keep this configuration independent from the default/system-backend and
       # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
       # publication artifacts; this job does not produce a release package.

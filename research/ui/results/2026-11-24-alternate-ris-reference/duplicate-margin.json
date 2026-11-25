@@ -1,0 +1,165 @@
+{
+  "schema": "termforge-original-duplicate-margin-summary-v1",
+  "issue": 27,
+  "case_id": "alternate-duplicate-margin",
+  "reference": {
+    "executable_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "plan_sha256": "068d8233f6b41a4b185cb69b80729b584181cfd108aa672edfe3fdbd5addc97a",
+    "export_sha256": "98e2f67486e1bf0de26fa2089a13c6e89dfcad7fb84190c0788105d2a4018567",
+    "source_base_commit": "fb5d76516bc0e2535def3a52693a586b8428aeb9",
+    "grid": [
+      91,
+      25
+    ],
+    "capture_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "outer_cleanup": true,
+    "original_runs": 1,
+    "evidence_id": "ev_223eb3697acffe4669c046490c798da3c1c96222362bbcee41a4bdf7c30a06d8",
+    "phases": [
+      {
+        "phase": 0,
+        "label": "primary-four-row-control",
+        "source_hex": "1b5b323b35721b5b3f36681b5b39393b3148",
+        "response_hex": "1b5b343b3152",
+        "cursor_reply": [
+          4,
+          1
+        ]
+      },
+      {
+        "phase": 1,
+        "label": "alternate-five-row-control",
+        "source_hex": "1b5b3f31303439681b5b333b37721b5b3f36681b5b39393b3148",
+        "response_hex": "1b5b353b3152",
+        "cursor_reply": [
+          5,
+          1
+        ]
+      },
+      {
+        "phase": 2,
+        "label": "duplicate-entry-home",
+        "source_hex": "1b5b3f3130343968",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ]
+      },
+      {
+        "phase": 3,
+        "label": "enable-origin-after-duplicate",
+        "source_hex": "1b5b3f36681b5b39393b3148",
+        "response_hex": "1b5b32353b3152",
+        "cursor_reply": [
+          25,
+          1
+        ]
+      },
+      {
+        "phase": 4,
+        "label": "disable-origin-control",
+        "source_hex": "1b5b3f366c1b5b39393b3148",
+        "response_hex": "1b5b32353b3152",
+        "cursor_reply": [
+          25,
+          1
+        ]
+      },
+      {
+        "phase": 5,
+        "label": "alternate-nine-row-control",
+        "source_hex": "1b5b393b3137721b5b3f36681b5b39393b3148",
+        "response_hex": "1b5b393b3152",
+        "cursor_reply": [
+          9,
+          1
+        ]
+      },
+      {
+        "phase": 6,
+        "label": "two-duplicate-entries",
+        "source_hex": "1b5b3f31303439681b5b3f31303439681b5b3f36681b5b39393b3148",
+        "response_hex": "1b5b32353b3152",
+        "cursor_reply": [
+          25,
+          1
+        ]
+      },
+      {
+        "phase": 7,
+        "label": "restore-primary-cursor",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b343b3152",
+        "cursor_reply": [
+          4,
+          1
+        ]
+      },
+      {
+        "phase": 8,
+        "label": "primary-margin-after-duplicates",
+        "source_hex": "1b5b3f36681b5b39393b3148",
+        "response_hex": "1b5b343b3152",
+        "cursor_reply": [
+          4,
+          1
+        ]
+      },
+      {
+        "phase": 9,
+        "label": "later-entry-after-exit",
+        "source_hex": "1b5b3f31303439681b5b3f36681b5b39393b3148",
+        "response_hex": "1b5b32353b3152",
+        "cursor_reply": [
+          25,
+          1
+        ]
+      },
+      {
+        "phase": 10,
+        "label": "alternate-five-row-control-again",
+        "source_hex": "1b5b333b37721b5b3f36681b5b39393b3148",
+        "response_hex": "1b5b353b3152",
+        "cursor_reply": [
+          5,
+          1
+        ]
+      },
+      {
+        "phase": 11,
+        "label": "duplicate-after-later-entry",
+        "source_hex": "1b5b3f31303439681b5b3f36681b5b39393b3148",
+        "response_hex": "1b5b32353b3152",
+        "cursor_reply": [
+          25,
+          1
+        ]
+      },
+      {
+        "phase": 12,
+        "label": "return-to-primary",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b343b3152",
+        "cursor_reply": [
+          4,
+          1
+        ]
+      },
+      {
+        "phase": 13,
+        "label": "full-viewport-control",
+        "source_hex": "1b5b3f366c1b5b721b5b32353b393148",
+        "response_hex": "1b5b32353b393152",
+        "cursor_reply": [
+          25,
+          91
+        ]
+      }
+    ]
+  }
+}

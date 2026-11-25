@@ -92,7 +92,7 @@ int main() {
             row_text(margin.screen, 2).empty() && row_text(margin.screen, 3) == "d",
             "DL ignored the scroll margins");
 
-    // Margins belong to the buffer: a 1049 switch keeps each buffer's region.
+    // Alternate entry starts with full-height margins. Returning restores the primary region.
     {
         Parser buffers(4, 10, 10, termforge::ParseMode::recovery);
         buffers.feed("\x1b[2;3r");

@@ -429,6 +429,24 @@ static void alternate_ris_across_host_resize(ParseMode mode) {
           "writes following RIS cursor restores landed in the wrong cells");
     parser.finish();
 }
+static void duplicate_entry_resets_alternate_margins(ParseMode mode) {
+    Parser parser(25, 91, 2, mode);
+    parser.feed("\x1b[2;5r\x1b[?6h\x1b[99;1H\x1b[?1049h");
+    for (const auto setup : {"\x1b[3;7r", "\x1b[9;17r"}) {
+        parser.feed(setup);
+        parser.feed("\x1b[?6h\x1b[99;1H\x1b[?1049h\x1b[?6h\x1b[99;1H\x1b[6nX");
+        const auto replies = parser.take_replies();
+        check(replies.size() == 1 && replies[0] == "\x1b[25;1R" &&
+              parser.screen.visible_lines()[24][0].text == "X",
+              "duplicate 1049h retained the old alternate scroll region");
+    }
+    parser.feed("\x1b[?1049l\x1b[6n");
+    const auto replies = parser.take_replies();
+    check(replies.size() == 1 && replies[0] == "\x1b[4;1R" &&
+          parser.screen.region_top() == 1 && parser.screen.region_bottom() == 4,
+          "duplicate alternate entry changed the saved primary region or cursor");
+    parser.finish();
+}
 static void strict_rejects_unsupported_private_modes_atomically() {
     for (const auto* input : {"\x1b[?31m", "\x1b[?1049;25h", "\x1b[?1049;1049h", "\x1b[?12l"}) {
         Parser parser(2, 8, 1);
@@ -457,6 +475,7 @@ int main() {
             observed_alternate_ris_cursor_transitions(mode, false);
             observed_alternate_ris_cursor_transitions(mode, true);
             alternate_ris_across_host_resize(mode);
+            duplicate_entry_resets_alternate_margins(mode);
             // The fixed five sources contain 208 bytes, excluding DSR queries.
             for (size_t split = 0; split <= 208; ++split) observed_colour_trace(mode, split, false);
             observed_colour_trace(mode, 0, true);
