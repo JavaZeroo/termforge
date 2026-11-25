@@ -28,10 +28,11 @@ gh release download 2.7.0 --repo kingToolbox/WindTerm --pattern WindTerm_2.7.0_W
 
 1. 打开 `local/windterm-official/WindTerm_2.7.0/WindTerm.exe`。核对配置目录在新建的 `profile-home` 下；如出现目录选择框，选择该目录。
 2. 新建本地 Cmd 或 PowerShell 会话。先只运行 100 行烟测，不将其计入 T01 基线。
-3. 在该会话中进入仓库根目录，执行以下命令。`--app` 必须替换为本机准备器生成的 EXE 绝对路径。
+3. 在该会话中进入仓库根目录，执行以下命令。`--app` 使用准备器生成的 EXE。
 
 ```powershell
-.venv\Scripts\python benchmarks/tools/terminal_run.py benchmarks/generated/windterm-smoke --app D:\Code\termforge\local\windterm-official\WindTerm_2.7.0\WindTerm.exe --out benchmarks/local-results/windterm-smoke-01 --sample
+$windTermExe = (Resolve-Path -LiteralPath 'local/windterm-official/WindTerm_2.7.0/WindTerm.exe').Path
+.venv\Scripts\python benchmarks/tools/terminal_run.py benchmarks/generated/windterm-smoke --app $windTermExe --out benchmarks/local-results/windterm-smoke-01 --sample
 ```
 
 4. 核对可见结束标记 `TERMFORGE-END ascii 0000000100` 与 `oracle.txt` 末尾文本。诊断状态行出现在标记之后；不要把人工看到标记的时刻充当呈现时间。结果保存于指定目录。

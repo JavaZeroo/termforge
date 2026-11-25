@@ -2,11 +2,13 @@
 
 本工具对应 #119，是 #3 的一个有界切片。它启动固定官方 2.7.0 的独立副本、全新合成 profile 和本地 cmd；cmd 运行一个 14 行 ASCII producer。它不操作用户输入桌面、剪贴板或显示设置，不连接远程服务。
 
+从仓库根目录运行。先按[隔离诊断准备步骤](WINDTERM-LAB.md#准备)解包固定发行物，并使用已安装的 REA 6.7.0 公共 CLI。若 `rea.cmd` 未加入 PATH，将示例中 `$reaCli` 的赋值改为该入口的路径。
+
 ```powershell
-# 使用已有 REA 6.7.0 公共 CLI，不安装/更新 provider。
-D:/Code/termforge/.venv/Scripts/python.exe -B -X utf8 benchmarks/tools/windterm_cmd.py run `
-  --source D:/Code/termforge/local/windterm-official/WindTerm_2.7.0 `
-  --rea D:/Code/termforge/research/ui/r1-tools/node_modules/.bin/rea.cmd `
+$reaCli = (Get-Command rea.cmd -CommandType Application -ErrorAction Stop).Source
+.\.venv\Scripts\python.exe -B -X utf8 benchmarks/tools/windterm_cmd.py run `
+  --source local/windterm-official/WindTerm_2.7.0 `
+  --rea $reaCli `
   --out local/windterm-cmd/new-run --seconds 30
 ```
 
