@@ -1,0 +1,30 @@
+diff --git a/src/host/getset.cpp b/src/host/getset.cpp
+--- a/src/host/getset.cpp
++++ b/src/host/getset.cpp
+@@ -880,7 +880,12 @@
+         if (g.getConsoleInformation().IsInVtIoMode())
+         {
+             // SetViewportRect doesn't cause the buffer to resize. Manually resize the buffer.
+-            RETURN_IF_NTSTATUS_FAILED(context.ResizeScreenBuffer(Viewport::FromInclusive(Window).Dimensions(), false));
++            auto backingSize = Viewport::FromInclusive(Window).Dimensions();
++            if (&context == &context.GetMainBuffer())
++            {
++                backingSize.height = std::max(backingSize.height, context.GetBufferSize().Height());
++            }
++            RETURN_IF_NTSTATUS_FAILED(context.ResizeScreenBuffer(backingSize, false));
+         }
+         if (!g.IsHeadless())
+         {
+diff --git a/src/host/screenInfo.cpp b/src/host/screenInfo.cpp
+--- a/src/host/screenInfo.cpp
++++ b/src/host/screenInfo.cpp
+@@ -611,3 +611,8 @@
+     if (_IsInPtyMode())
+     {
+-        LOG_IF_FAILED(ResizeScreenBuffer(*pcoordSize, TRUE));
++        auto backingSize = *pcoordSize;
++        if (!_IsAltBuffer())
++        {
++            backingSize.height = std::max(backingSize.height, GetBufferSize().Height());
++        }
++        LOG_IF_FAILED(ResizeScreenBuffer(backingSize, TRUE));
