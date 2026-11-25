@@ -56,7 +56,7 @@ diff --git a/src/host/PtySignalInputThread.cpp b/src/host/PtySignalInputThread.c
 +void PtySignalInputThread::_DoResizeWindow(const ResizeWindowData& data, const std::array<uint8_t, 16>* token)
 @@ -182,0 +193 @@
 +        _earlyResizeToken = token ? std::optional(*token) : std::nullopt;
-@@ -186 +197,45 @@
+@@ -186 +197,50 @@
 -    _api.ResizeWindow(data.sx, data.sy);
 +    if (!token)
 +    {
@@ -79,7 +79,7 @@ diff --git a/src/host/PtySignalInputThread.cpp b/src/host/PtySignalInputThread.c
 +    // Submit inside the console lock so a later client write cannot precede the map.
 +    if (auto writer = gci.GetVtWriter())
 +    {
-+        std::string packet = "\x1b]633;TermForgeResizeMap;1;";
++        std::string packet = "\x1b]633;TermForgeResizeMap;2;";
 +        auto out = std::back_inserter(packet);
 +        for (const auto byte : *token)
 +        {
@@ -98,6 +98,11 @@ diff --git a/src/host/PtySignalInputThread.cpp b/src/host/PtySignalInputThread.c
 +            {
 +                fmt::format_to(out, ";{},{},{},{},{},{}", span[0], span[1], span[2], span[3], span[4], span[5]);
 +            }
++        }
++        packet.append("|wrap;");
++        for (auto row = window.top; row <= window.bottom; ++row)
++        {
++            packet.push_back(screen.GetTextBuffer().GetRowByOffset(row).WasWrapForced() ? '1' : '0');
 +        }
 +        packet.append("\x1b\\");
 +        writer.WriteUTF8(packet);
