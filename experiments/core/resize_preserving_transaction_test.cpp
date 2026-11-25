@@ -235,13 +235,14 @@ static void reachable_overflow_failures() {
     for (const bool identity : {false, true}) {
         Fixture fixture(2, 6, 8, 0, false);
         auto& screen = fixture.screen;
+        if (!identity) screen.activate_buffer(ScreenBuffer::alternate);
         auto imported = screen.visible_lines();
         if (identity) {
             imported[0].id = (std::numeric_limits<uint64_t>::max)() - 3;
             imported[1].id = (std::numeric_limits<uint64_t>::max)() - 2;
         } else imported[0].version = (std::numeric_limits<uint64_t>::max)();
         screen.publish({}, std::move(imported));
-        if (!identity) screen.activate_buffer(ScreenBuffer::alternate); // Hidden primary must be cropped.
+        if (!identity) screen.activate_buffer(ScreenBuffer::primary); // The hidden alternate is cropped during resize.
         const auto before = owner_image(screen);
         const auto next = next_identity_probe(screen);
         bool rejected = false;

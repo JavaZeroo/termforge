@@ -125,6 +125,7 @@ class Screen {
     int last_row = -1, last_column = -1;
     ScreenBuffer active_buffer_ = ScreenBuffer::primary;
     std::optional<FrameState> inactive_;
+    bool fit_primary_on_return_ = false;
     std::optional<std::pair<int, int>> primary_cursor_after_alternate_reset_;
     FrameState active_state_copy() const {
         return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history, ordered_,
@@ -216,6 +217,12 @@ class Screen {
         if (line.back().width == 2) line.back() = empty;
     }
     void materialize_columns(Line& line) { materialize_columns(line, width(), blank()); }
+    static void crop_retained_line(Line& line, int columns) {
+        if (line.size() <= static_cast<size_t>(columns)) return;
+        stamp_line(line);
+        materialize_columns(line, columns, Cell{});
+        line.wrap_columns = (std::min)(line.wrap_columns, static_cast<size_t>(columns));
+    }
     void break_glyph(Line& line, int col) {
         if (line[col].width == 0 && col > 0) line[col - 1] = blank();
         else if (line[col].width == 2 && col + 1 < width()) line[col + 1] = blank();
@@ -268,8 +275,8 @@ class Screen {
         next.trim = limit ? evicted : 0;
     }
     template<class State>
-    static PreparedResize prepare_retained_resize(const State& state, int rows, int columns,
-                                                 size_t limit, bool fit_width, uint64_t& identity) {
+    PreparedResize prepare_retained_resize(const State& state, int rows, int columns,
+                                          size_t limit, bool fit_hidden_width, uint64_t& identity) const {
         PreparedResize next;
         const auto shift = static_cast<size_t>((std::max)(0, state.row - rows + 1));
         next.discarded = state.discarded;
@@ -277,11 +284,10 @@ class Screen {
         next.row = state.row - static_cast<int>(shift);
         next.column = (std::min)(state.column, columns - 1);
         const auto fit = [&](Line& line, bool live) {
-            if (fit_width && line.size() > static_cast<size_t>(columns)) {
-                stamp_line(line);
-                materialize_columns(line, columns, Cell{});
-                line.wrap_columns = (std::min)(line.wrap_columns, static_cast<size_t>(columns));
-            }
+            // Outgoing rows leave the frame now. Live hidden primary rows use
+            // the return width, even when their saved cursor has already clamped.
+            if (fit_hidden_width && (!live || active_buffer_ == ScreenBuffer::primary))
+                crop_retained_line(line, columns);
             if (live && line.size() < static_cast<size_t>(columns)) line.resize(columns);
         };
         if (limit) {
@@ -333,6 +339,7 @@ class Screen {
         };
         commit(*this, next);
         if (hidden) commit(*inactive_, *hidden);
+        if (active_buffer_ == ScreenBuffer::alternate && columns != width()) fit_primary_on_return_ = true;
         columns_ = columns; next_id_ = identity;
         ++content_revision_; ++order_revision_;
     }
@@ -378,6 +385,8 @@ public:
         if (buffer == active_buffer_) return;
         if (buffer_epoch_ == (std::numeric_limits<uint64_t>::max)())
             throw std::overflow_error("buffer epoch exhausted");
+        if (order_revision_ == (std::numeric_limits<uint64_t>::max)())
+            throw std::overflow_error("screen order revision exhausted");
         auto identity = next_id_;
         if (!inactive_) {
             FrameState target;
@@ -385,6 +394,17 @@ public:
             for (int index = 0; index < height(); ++index)
                 target.lines.push_back(make_line(width(), Cell{}, identity));
             inactive_.emplace(std::move(target));
+        }
+        if (buffer == ScreenBuffer::primary && fit_primary_on_return_) {
+            auto& live = inactive_->lines;
+            if (std::any_of(live.begin(), live.end(), [this](const Line& line) {
+                    return line.size() > static_cast<size_t>(width());
+                })) {
+                auto fitted = live;
+                for (auto& line : fitted) crop_retained_line(line, width());
+                live.swap(fitted);
+            }
+            fit_primary_on_return_ = false;
         }
         swap_active(*inactive_);
         active_buffer_ = buffer;
@@ -566,8 +586,8 @@ public:
     }
     // Width-only content transaction within this owner.
     // Active source fragments keep their cells, identities and soft links.
-    // Inactive live rows fit the protocol footprint while keeping valid links;
-    // discarded cells change their source versions. History is not rewritten.
+    // Hidden primary rows fit the protocol footprint when they return.
+    // Discarded cells change their source versions. History is not rewritten.
     // A real width change clamps the active protocol column and cancels the
     // deferred edge write. It does not advance to the next cell when growing.
     // Both scrolling regions reset to the full frame; the origin setting stays
@@ -592,17 +612,14 @@ public:
         // either frame; a failed allocation cannot expose a partial transaction.
         std::optional<std::vector<Line>> next, hidden;
         if (needs_padding(lines)) next = prepare(lines);
-        if (inactive_) {
+        if (inactive_ && (active_buffer_ == ScreenBuffer::primary || needs_padding(inactive_->lines))) {
             hidden = prepare(inactive_->lines);
-            for (auto& line : *hidden) {
-                if (line.size() <= static_cast<size_t>(columns)) continue;
-                stamp_line(line);
-                materialize_columns(line, columns, Cell{});
-                line.wrap_columns = (std::min)(line.wrap_columns, static_cast<size_t>(columns));
-            }
+            if (active_buffer_ == ScreenBuffer::primary)
+                for (auto& line : *hidden) crop_retained_line(line, columns);
         }
         if (next) lines.swap(*next);
         if (hidden) inactive_->lines.swap(*hidden);
+        if (active_buffer_ == ScreenBuffer::alternate) fit_primary_on_return_ = true;
         columns_ = columns;
         ++content_revision_;
         column = (std::min)(column, columns - 1);
@@ -619,10 +636,9 @@ public:
     // Resize retained source within the existing owner. A height transaction
     // prepares only live rows and their outgoing prefix; old history bodies are
     // never traversed or copied. Neither frame pulls old history back into
-    // newly added bottom rows. A width change fits the hidden frame to the new
-    // protocol footprint (the separately recorded hidden-width policy); a
-    // height-only change keeps hidden retained source cells instead of
-    // rewriting them to the unchanged current width.
+    // newly added bottom rows. On width changes the hidden alternate is fitted
+    // immediately; surviving hidden primary rows are fitted on return. A
+    // height-only change preserves hidden source cells.
     void resize_preserving(int rows, int columns) {
         if (rows < 1 || rows > 200 || columns < 1 || columns > 500)
             throw std::invalid_argument("invalid screen dimensions");

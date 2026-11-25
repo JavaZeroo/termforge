@@ -186,7 +186,7 @@ std::string exchange(HANDLE input, HANDLE output, std::string_view source, bool&
 // Child-side receiver. It never reads the screen or console APIs beyond modes,
 // so it cannot trigger conhost's cursor-sync DSR path; the only observed input
 // is what the host actually delivered through ConPTY.
-int query_child(const std::filesystem::path& result, bool cursor_trace = false) {
+int query_child(const std::filesystem::path& result, int trace_phases = 0) {
     try {
         const HANDLE input = GetStdHandle(STD_INPUT_HANDLE);
         const HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -203,21 +203,28 @@ int query_child(const std::filesystem::path& result, bool cursor_trace = false) 
                                           ENABLE_VIRTUAL_TERMINAL_PROCESSING |
                                           DISABLE_NEWLINE_AUTO_RETURN),
                 "query child VT output mode setup failed");
-        if (cursor_trace) {
+        if (trace_phases) {
             std::ifstream phases("sources.hex");
             std::ofstream replies(result, std::ios::binary);
             require(bool(phases) && bool(replies), "Cursor trace files unavailable");
             std::string line;
             size_t count = 0;
             while (std::getline(phases, line)) {
+                const auto phase = std::to_string(count);
+                if (trace_phases == 6) {
+                    const auto deadline = GetTickCount64() + child_reply_timeout_ms;
+                    while (!std::filesystem::exists("release-" + phase) && GetTickCount64() < deadline) Sleep(2);
+                    require(std::filesystem::exists("release-" + phase), "cursor trace resize gate timed out");
+                }
                 const auto source = QByteArray::fromHex(QByteArray::fromStdString(line)).toStdString() + "\x1b[6n";
                 bool timed_out, complete;
                 const auto received = exchange(input, output, source, timed_out, complete);
                 replies << hex(received) << std::endl;
                 require(bool(replies) && complete && !timed_out, "Cursor phase reply incomplete");
+                if (trace_phases == 6) write_binary("done-" + phase, "");
                 ++count;
             }
-            return phases.eof() && count == 14 ? 0 : 5;
+            return phases.eof() && count == static_cast<size_t>(trace_phases) ? 0 : 5;
         }
         bool timed_out, complete;
         const auto received = exchange(input, output, query_source, timed_out, complete);
@@ -391,24 +398,32 @@ ProductStage run_product(const std::filesystem::path& executable, const std::fil
 // The child receives only the recorded inputs. Collect the entire trajectory
 // before comparing its DSR replies with the independent WindTerm observation.
 int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem::path& directory,
-                      const std::filesystem::path& reference, bool margin_case) {
+                         const std::filesystem::path& reference, std::string_view option) {
     const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(read_binary(reference)));
     const auto record = document.object().value("reference").toObject();
-    if (margin_case)
+    const bool resized = option == "--saved-cursor-reference";
+    const bool margin_case = option == "--duplicate-margin-reference";
+    const auto case_id = document.object().value("case_id").toString();
+    if (resized)
+        require(case_id == QStringLiteral("saved-return-narrow") || case_id == QStringLiteral("saved-return-wide"),
+                "wrong saved cursor reference file");
+    else if (margin_case)
         require(document.object().value("case_id").toString() == QStringLiteral("alternate-duplicate-margin"),
                 "wrong duplicate-margin reference file");
     else
         require(document.object().value("schema").toString() == QStringLiteral("termforge-original-alternate-ris-followup-summary-v1"),
                 "wrong RIS reference file");
     const auto phases = record.value("phases").toArray();
-    const auto grid = record.value("grid").toArray();
-    require(grid.size() == 2 && grid[0].toInt() == 91 && grid[1].toInt() == 25 && phases.size() == 14,
+    const auto grid = resized ? phases.at(0).toObject().value("frozen_grid").toArray() : record.value("grid").toArray();
+    require(grid.size() == 2 && grid[0].toInt() == 91 && grid[1].toInt() == (resized ? 20 : 25) &&
+            phases.size() == (resized ? 6 : 14),
             "invalid cursor reference geometry or phase count");
     std::ofstream sources(directory / "sources.hex");
     for (int index = 0; index < phases.size(); ++index) {
         const auto phase = phases[index].toObject();
         const auto source = phase.value("source_hex").toString().toLatin1();
-        require(phase.value("phase").toInt(-1) == index && !source.isEmpty() &&
+        require(phase.value("phase").toInt(-1) == index && phase.value("source_hex").isString() &&
+                (resized || !source.isEmpty()) &&
                 QByteArray::fromHex(source).toHex() == source, "invalid cursor phase input");
         sources << source.toStdString() << '\n';
     }
@@ -417,10 +432,55 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
 
     SessionModel model;
     model.enable_transport_capture();
-    require(model.resize(91, 25) && model.start(exe.wstring(), L"--cursor-child", directory.wstring()),
+    require(model.resize(91, grid[1].toInt()) &&
+            model.start(exe.wstring(), resized ? L"--saved-cursor-child" : L"--cursor-child", directory.wstring()),
             "could not start the cursor trace session");
     QElapsedTimer lifecycle;
     lifecycle.start();
+    int differences = 0;
+    if (resized) {
+        require(model.uses_host_resize_maps(), "saved cursor test requires the product resize path");
+        const auto wait = [&](auto ready, const char* failure) {
+            while (!ready() && !model.finished() && model.error().isEmpty() &&
+                   lifecycle.elapsed() < static_cast<qint64>(product_finish_timeout_ms)) QTest::qWait(3);
+            require(ready(), failure);
+        };
+        for (int index = 0; index < phases.size(); ++index) {
+            const auto phase = phases[index].toObject();
+            const auto size = phase.value("frozen_grid").toArray();
+            require(size.size() == 2 && size[1].toInt() == 20, "invalid saved cursor grid");
+            const int width = size[0].toInt();
+            require((width == 61 || width == 91) && model.resize(width, 20), "saved cursor resize failed");
+            wait([&] {
+                const auto state = model.resize_state();
+                return !state.pending && state.transport_columns == width && model.screen().width() == width;
+            }, "saved cursor resize did not complete");
+            write_binary(directory / ("release-" + std::to_string(index)), "");
+            wait([&] { return std::filesystem::exists(directory / ("done-" + std::to_string(index))); },
+                 "saved cursor child did not receive the phase reply");
+            // WindTerm's document API also exposes the hidden primary text;
+            // compare cells only when the source has made the primary visible.
+            const int restore = case_id == QStringLiteral("saved-return-narrow") ? 3 : 4;
+            const bool primary = index == 0 || index >= restore;
+            if ((model.screen().active_buffer() == termforge::ScreenBuffer::primary) != primary) ++differences;
+            if (!primary) continue;
+            const auto markers = phase.value("markers").toArray();
+            int found = 0;
+            for (const auto& line : model.screen().visible_lines())
+                for (int column = 0; column < width; ++column)
+                    if (line[column].text == "X" || line[column].text == "W") ++found;
+            if (found != markers.size()) ++differences;
+            for (const auto& value : markers) {
+                const auto marker = value.toObject();
+                const int row = marker.value("document_line").toInt(-1), col = marker.value("column").toInt(-1);
+                require(row >= 0 && row < 20 && col >= 0 && col < width, "reference marker is outside the primary grid");
+                if (model.screen().visible_lines()[row][col].text != marker.value("label").toString().toStdString()) {
+                    ++differences;
+                    std::cerr << "saved cursor marker differs at phase " << index << " cell " << row << ',' << col << '\n';
+                }
+            }
+        }
+    }
     while (!model.finished() && lifecycle.elapsed() < static_cast<qint64>(product_finish_timeout_ms))
         QTest::qWait(5);
     require(model.finished() && model.error().isEmpty() && model.natural_exit() && model.output_eof() &&
@@ -428,7 +488,6 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     std::cerr << "cursor trace transport_hex=" << hex(model.transport_capture())
               << " child_exit=" << model.exit_code() << '\n';
     std::ifstream replies(directory / "replies.hex", std::ios::binary);
-    int differences = 0;
     for (int index = 0; index < phases.size(); ++index) {
         const auto cursor = phases[index].toObject().value("cursor_reply").toArray();
         require(cursor.size() == 2, "reference cursor missing");
@@ -441,8 +500,9 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     }
     require(replies.peek() == std::char_traits<char>::eof() && model.exit_code() == 0,
             "cursor trace child did not finish the fixed trajectory");
-    std::cout << "{\"scenario\":\"" << (margin_case ? "alternate-duplicate-margin" : "alternate-ris-cursor")
-              << "\",\"phases\":14,\"differences\":"
+    std::cout << "{\"scenario\":\"" << (resized ? case_id.toStdString() :
+              margin_case ? "alternate-duplicate-margin" : "alternate-ris-cursor")
+              << "\",\"phases\":" << phases.size() << ",\"differences\":"
               << differences << ",\"cleanup_verified\":true}\n";
     return differences ? 1 : 0;
 }
@@ -465,11 +525,13 @@ int main(int argc, char** argv) {
     if (argc == 3 && std::string_view(argv[1]) == "--query-child") {
         return query_child(std::filesystem::path(argv[2]));
     }
-    if (argc == 2 && (std::string_view(argv[1]) == "--cursor-child" || std::string_view(argv[1]) == "--ris-child")) return query_child("replies.hex", true);
+    if (argc == 2 && (std::string_view(argv[1]) == "--cursor-child" || std::string_view(argv[1]) == "--ris-child")) return query_child("replies.hex", 14);
+    if (argc == 2 && std::string_view(argv[1]) == "--saved-cursor-child") return query_child("replies.hex", 6);
     const bool ris = argc == 3 && std::string_view(argv[1]) == "--ris-reference";
     const bool margin = argc == 3 && std::string_view(argv[1]) == "--duplicate-margin-reference";
-    if (argc != 1 && !ris && !margin) {
-        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE]\n";
+    const bool saved = argc == 3 && std::string_view(argv[1]) == "--saved-cursor-reference";
+    if (argc != 1 && !ris && !margin && !saved) {
+        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE|--saved-cursor-reference FILE]\n";
         return 2;
     }
     char gate[3]{};
@@ -490,7 +552,7 @@ int main(int argc, char** argv) {
         const std::filesystem::path exe(executable);
         const std::filesystem::path directory(workspace.path().toStdWString());
 
-        if (ris || margin) return compare_cursor_trace(exe, directory, argv[2], margin);
+        if (ris || margin || saved) return compare_cursor_trace(exe, directory, argv[2], argv[1]);
 
         const auto silent = run_raw(exe, directory, directory / "raw-silent.bin", std::nullopt);
         emit_raw("raw-silent", silent);

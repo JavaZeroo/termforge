@@ -1,0 +1,171 @@
+{
+  "schema": "termforge-original-saved-cursor-summary-v1",
+  "issue": 27,
+  "case_id": "saved-return-narrow",
+  "reference": {
+    "executable_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "plan_sha256": "b9d328337a45c946ea6bfb9d1268e7e4bcc84d5d87aeb09b7994fe11f88deaef",
+    "export_sha256": "1bdd471aa80ce7c789250f01f955947fc71378568a76991c8e37bc25441bf3ca",
+    "source_base_commit": "1aa217a60798e7d06b40f096a8f1f369fb0bf4c3",
+    "capture_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "outer_cleanup": true,
+    "original_runs": 1,
+    "evidence_id": "ev_0aad78c5b8bd9e7982ea59c7ac1356bc23e6810ab24c2775520f3c6267dde251",
+    "phases": [
+      {
+        "phase": 0,
+        "label": "saved-primary-cell",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b323b3148303132333435363738391b5b333b3148414e43484f521b5b383b393148571b5b383b393148",
+        "response_hex": "1b5b383b393152",
+        "cursor_reply": [
+          8,
+          91
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 7,
+            "column": 90,
+            "rect": {
+              "x": 867,
+              "y": 126,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 1,
+        "label": "enter-alternate",
+        "source_hex": "1b5b3f3130343968",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 7,
+            "column": 90,
+            "rect": {
+              "x": 867,
+              "y": 126,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "label": "shrink-while-hidden",
+        "source_hex": "",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "markers": [
+          {
+            "label": "W",
+            "document_line": 7,
+            "column": 90,
+            "rect": {
+              "x": 379,
+              "y": 144,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "label": "restore-primary-cursor",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b383b363152",
+        "cursor_reply": [
+          8,
+          61
+        ],
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "markers": []
+      },
+      {
+        "phase": 4,
+        "label": "write-at-restored-cursor",
+        "source_hex": "58",
+        "response_hex": "1b5b383b363152",
+        "cursor_reply": [
+          8,
+          61
+        ],
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 7,
+            "column": 60,
+            "rect": {
+              "x": 627,
+              "y": 126,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 5,
+        "label": "grow-after-write",
+        "source_hex": "",
+        "response_hex": "1b5b383b363152",
+        "cursor_reply": [
+          8,
+          61
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 7,
+            "column": 60,
+            "rect": {
+              "x": 627,
+              "y": 126,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -158,6 +158,12 @@ jobs:
         run: >-
           python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe
           --duplicate-margin-reference research/ui/results/2026-11-24-alternate-ris-reference/duplicate-margin.json
+      - name: Check saved cursor returns and writes at both widths
+        run: |
+          foreach ($case in 'saved-return-narrow','saved-return-wide') {
+            python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/results/2026-11-02-resize-frame-reference/$case.json"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
       # Keep this configuration independent from the default/system-backend and
       # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
       # publication artifacts; this job does not produce a release package.

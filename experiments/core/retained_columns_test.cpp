@@ -114,16 +114,29 @@ static void cells_and_frames() {
     same_source(alternate, screen.visible_lines()[1]);
     screen.activate_buffer(ScreenBuffer::primary);
     const auto& fitted = screen.visible_lines()[0];
-    check(fitted.id == attached.id && fitted.version > attached.version && fitted.content_columns == 1 &&
-          fitted[0].text == attached[0].text && fitted[0].style.fg == attached[0].style.fg,
-          "hidden frame did not fit its own protocol footprint");
-    for (size_t i = 1; i < fitted.size(); ++i)
+    same_source(attached, fitted);
+    for (size_t i = attached.size(); i < fitted.size(); ++i)
         check(fitted[i].text == " " && fitted[i].width == 1 && !fitted[i].written,
-              "discarded hidden-frame cells revived after growth");
+              "padding after the restored primary row is not blank");
     check(screen.visible_lines()[0].size() == 12 && primary[2].width == 2 && primary[3].width == 0,
           "hidden primary padding or wide fixture differs");
 }
 
+static void saved_cursor_after_hidden_resize(bool return_wide) {
+    Parser parser(20, 91, 4);
+    parser.feed("\x1b[8;91HW\x1b[8;91H\x1b[?1049h");
+    parser.screen.resize_preserving(20, 61);
+    if (return_wide) parser.screen.resize_preserving(20, 91);
+    parser.feed("\x1b[?1049l\x1b[6nX\x1b[6n");
+    const auto replies = parser.take_replies();
+    check(replies.size() == 2 && replies[0] == "\x1b[8;61R" &&
+          replies[1] == (return_wide ? "\x1b[8;62R" : "\x1b[8;61R"),
+          "restored cursor or subsequent write differs from recorded DSR");
+    if (!return_wide) parser.screen.resize_preserving(20, 91);
+    const auto& line = parser.screen.visible_lines()[7];
+    check(line[60].text == "X" && line[90].text == (return_wide ? "W" : " "),
+          "return width did not determine the surviving primary text");
+}
 static void blank_extent() {
     Parser parser(3, 91, 0, ParseMode::strict);
     parser.feed("\x1b[1;91Hv");
@@ -166,18 +179,22 @@ static void failed_preparation() {
     screen.put('A', "A");
     const auto active = screen.visible_lines();
     const auto content = screen.content_revision(), order = screen.order_revision(), epoch = screen.buffer_epoch();
-    for (const bool physical : {false, true}) {
-        bool rejected = false;
-        try {
-            if (physical) screen.resize(2, 4);
-            else screen.resize_columns_preserving(4);
-        } catch (const std::overflow_error&) { rejected = true; }
-        check(rejected && screen.width() == 8 && screen.content_revision() == content &&
-              screen.order_revision() == order && screen.buffer_epoch() == epoch,
-              "failed hidden-frame preparation published a transaction or reader guard");
-        for (size_t index = 0; index < active.size(); ++index)
-            same_source(active[index], screen.visible_lines()[index]);
-    }
+    bool rejected = false;
+    try { screen.resize(2, 4); } catch (const std::overflow_error&) { rejected = true; }
+    check(rejected && screen.width() == 8 && screen.content_revision() == content &&
+          screen.order_revision() == order && screen.buffer_epoch() == epoch,
+          "failed physical resize published a transaction or reader guard");
+    for (size_t index = 0; index < active.size(); ++index)
+        same_source(active[index], screen.visible_lines()[index]);
+    screen.resize_columns_preserving(4);
+    const auto narrowed_revision = screen.content_revision();
+    rejected = false;
+    try { screen.activate_buffer(ScreenBuffer::primary); }
+    catch (const std::overflow_error&) { rejected = true; }
+    check(rejected && screen.active_buffer() == ScreenBuffer::alternate && screen.width() == 4 &&
+          screen.content_revision() == narrowed_revision && screen.order_revision() == order &&
+          screen.buffer_epoch() == epoch, "failed primary fit partially switched the frame");
+    screen.resize_columns_preserving(8);
     screen.activate_buffer(ScreenBuffer::primary);
     for (size_t index = 0; index < primary.size(); ++index)
         same_source(primary[index], screen.visible_lines()[index]);
@@ -186,6 +203,8 @@ static void failed_preparation() {
 int main() {
     try {
         history_and_bounds();
+        saved_cursor_after_hidden_resize(false);
+        saved_cursor_after_hidden_resize(true);
         cells_and_frames();
         blank_extent();
         failed_preparation();
