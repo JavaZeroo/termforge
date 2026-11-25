@@ -17,13 +17,16 @@ require, sha = common.require, common.sha
 qrect_size = baseline.qrect_size
 EXE_SHA256, MANIFEST_SHA256 = common.EXE_SHA256, common.MANIFEST_SHA256
 RESET = b"\x1b[?6l\x1b[?7h\x1b[r\x1b[0m\x1b[2J"
-BODY = (RESET + b"\x1b[2;1HHTOP\x1b[6;1HHARD_A\r\nHARD_B"
-        b"\x1b[12;90Huvw\x1b[19;1HLOWEND")
-MARKERS = ("HTOP", "HARD_A", "HARD_B", "u", "v", "w", "LOWEND")
+BODY = RESET + b"\x1b[19;6HW"
+MARKERS = ("W", "X")
+INITIAL = ("saved-primary-row", 91, 20, BODY)
+ENTER = ("enter-alternate", 91, 20, b"\x1b[?1049h")
+SHRINK = ("shrink-while-hidden", 91, 14, b"")
 CASES = {
-    "height-retention-measured": (("initial-body", 91, 20, BODY),
-                                  ("height-shrunk-unmodified", 91, 14, b""),
-                                  ("height-restored-unmodified", 91, 20, b"")),
+    "saved-return-short": (INITIAL, ENTER, SHRINK, ("restore-primary-cursor", 91, 14, b"\x1b[?1049l"),
+                           ("write-at-restored-cursor", 91, 14, b"X"), ("grow-after-write", 91, 20, b"")),
+    "saved-return-tall": (INITIAL, ENTER, SHRINK, ("grow-while-hidden", 91, 20, b""),
+                          ("restore-primary-cursor", 91, 20, b"\x1b[?1049l"), ("write-at-restored-cursor", 91, 20, b"X")),
 }
 RESULT_FILE = "resize-height-measured-result.json"
 ATTEMPT = "One original resize-height-measured launch attempt; preserve failures and never retry this plan.\n"
@@ -202,15 +205,15 @@ def fixed_contract(case):
             "rea_capture_seconds": 45, "cli_wait_timeout_seconds": 60, "whole_lifecycle_bound_seconds": None,
             "phases": phase_records(case), "reference_exe_sha256": EXE_SHA256,
             "reference_files_manifest_sha256": MANIFEST_SHA256, "semantic_acceptance": False,
-            "controller_contract": controller_contract(case), "execution_group": "one-measured-height-case",
+            "controller_contract": controller_contract(case), "execution_group": "saved-row-height",
             "independent_dsr_bounds": {"row": [1, 200], "column": [1, 500]},
-            "initial_fixture_dsr": [19, 7], "initial_fixture_markers": list(MARKERS),
+            "initial_fixture_dsr": [19, 7], "initial_fixture_markers": ["W"],
             "geometry_basis": {"reference": "research/ui/results/2026-11-02-resize-geometry-reference/strict-export.json",
                 "strict_export_sha256": "f18a2320c073ed477f773b42076c9968c0c8af8530af19548d5695e66e8cf9b5",
                 "observed_windows": [[1360, 749], [1360, 569]], "observed_grids": [[91, 20], [91, 14]],
                 "restore_geometry_previously_observed": False},
             "height_geometry_status": "The two shrink geometries were independently measured; restore91x20 is checked in this new run, without calibration or retries",
-            "post_initial_terminal_input": "DSR only; no CUP, redraw, CR/LF or replacement text",
+            "post_initial_terminal_input": "1049h, 1049l and one X; DSR after every stage",
             "scope": "Fresh direct Telnet process per case; document/API positions, DSR and pixel rectangles remain separate observations",
             "stop": "Wrong fixed geometry/grid, unarmed or wrong-axis NAWS, stale snapshots, initial fixture/source/reply/phase mismatch, bounds or deadline failure; no retries"}
 
@@ -233,7 +236,9 @@ def synthetic_lines(case, phase):
     """Finite ASCII source-derived words; loss is observation, not acceptance."""
     validate_case(case)
     require(type(phase) is int and 0 <= phase < len(phases(case)), "Phase bound")
-    base = {"", "HTOP", "HARD_A", "HARD_B", "LOWEND", " "*89+"uvw"}
+    base = {"", " " * 5 + "W"}
+    if phase >= (4 if case == "saved-return-short" else 5):
+        base.update((" " * 6 + "X", " " * 5 + "WX"))
     return frozenset(bounded_fragments(base, False))
 
 
@@ -246,7 +251,7 @@ def validate_document(case, phase, terminal):
     counts = {marker: sum(line.count(marker) for line in lines) for marker in MARKERS}
     require(all(count <= 1 for count in counts.values()), "Repeated height-source marker")
     if phase == 0:
-        require(all(count == 1 for count in counts.values()), "Initial fixture sentinel missing")
+        require(counts == {"W": 1, "X": 0}, "Initial fixture sentinel missing")
 
 
 def audit_mechanics(directory, case):
