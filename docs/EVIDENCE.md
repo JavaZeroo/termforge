@@ -8,6 +8,7 @@
 
 | 配置 | 证据定位 | 覆盖边界 |
 |---|---|---|
+| 主屏保存行超出缩短后的视口（#27） | [原版轨迹与微软宿主修复前后对照](../research/ui/results/2026-11-26-saved-row/README.md) | 91 列，20→14→20 行。在 14 行时返回或恢复 20 行后返回均于第 14 行继续写入。两条轨迹各六阶段，核对协议回复、Qt 与 Win32 的 W/X 位置。 |
 | 备用屏缩窄后的主屏保存列与下一次写入（#27） | [两份 WindTerm 原版录制摘要](../research/ui/results/2026-11-02-resize-frame-reference/README.md#2026-11-25-补充主屏保存格超出新宽度) · [修复前的备用屏 DSR 差异](https://github.com/JavaZeroo/termforge/actions/runs/45592679379/job/139130652324) · [修订版 Qt 与固定 ConPTY](https://github.com/JavaZeroo/termforge/actions/runs/45594749102/job/139137763521) | 20 行、91→61→91 列。窄屏返回与扩宽后返回各六阶段，逐次核对子进程实收 DSR，主屏可见时检查 Qt 单元格与 Win32 读出的 W/X 位置。两例均为零差异，原有 Qt 离屏 19 项通过。 |
 | 保留正文、Unicode投影与编辑的分配置整合回归 | [当前固定源码与前后身份](../experiments/core/results/2026-11-02-projection-job/README.md)：源码`ef1da6e`，核心31/31；Qt/固定ConPTY默认路径4/4。[旧30/4](../experiments/core/results/2026-11-02-resize-caret/README.md)、[旧28/4](../experiments/core/results/2026-11-02-display-projection-unicode/README.md)及其历史记录保持原身份 | 两配置独立。66份选定源码先冻结，35个实际测试EXE及产品/辅助程序/部署依赖运行后固定，非完整构建输入manifest。后续纯高度单项1/1单列；Qt仍未接新保留/投影，B/CD不豁免，不是完整R2或性能验收 |
 | 增量显示投影与跨步骤源身份 | [旧停滞诊断、13工程用例及身份](../experiments/core/results/2026-11-02-projection-job/README.md)：500单列片段按200/200/100步完成一行，跨200边界反向选择/复制/Find一致，取消/同身份导入/旧owner等拒绝 | 新API无先行RED；旧诊断exit0表示复现停滞，归档于运行后。每步仍限200，不发布半页；源锚点非全局视觉行号。持续输出可能反复取消，任意定位/Qt调度未交付 |

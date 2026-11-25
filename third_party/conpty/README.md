@@ -23,6 +23,8 @@ python -m tools.prepare_qt_build --conpty-pair local/conpty-source-build/candida
 
 修订版 `termforge.2` 在进入备用屏时将原生光标移至该页起点。备用屏宽度变化时同步限制保存的主屏列，保留隐藏正文直到返回时按实际宽度裁剪。两种返回顺序的固定样本均检查下一字符的写入位置。[WindTerm 对照](../../research/ui/results/2026-11-02-resize-frame-reference/README.md#2026-11-25-补充主屏保存格超出新宽度)
 
+修订版 `termforge.3` 也在备用屏缩短时限制保存行，随后增高仍保留该行。原生子进程在返回主屏后写入，两种返回顺序都用 Win32 单元格读取和实际 DSR 回复核对。[高度对照](../../research/ui/results/2026-11-26-saved-row/README.md)
+
 ## 官方包对照
 
 `-DTERMFORGE_CONPTY_SOURCE_BUILD=OFF` 启用 `Microsoft.Windows.Console.ConPTY 1.25.260930003` 的旧官方包对照。按 [manifest.json](manifest.json) 的 URL 获取归档并核对大小和 SHA-256，只保留指定的 `conpty.dll` 与 `OpenConsole.exe`。双文件须来自同一归档。清单中的 `experimental`、`default_backend` 和 `supported_client_platforms_verified` 记录该包当时的集成状态。系统 ConPTY 也保留为独立诊断对照。
