@@ -10,6 +10,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from research.ui import mode_state_reference as common
+from research.ui import resize_observation_plan
 from research.ui import resize_state_reference as baseline
 
 require, sha = common.require, common.sha
@@ -32,6 +33,7 @@ CASES = {
 RESULT_FILE = "resize-height-result.json"
 ATTEMPT = "One original resize-height launch attempt; preserve failures and never retry this plan.\n"
 SOURCE_FILES = ("research/ui/resize_height_reference.py", "research/ui/resize_height_reference.js",
+                "research/ui/resize_observation_plan.py",
                 "research/ui/resize_state_reference.py", "research/ui/mode_state_reference.py",
                 "research/ui/alternate_reference.py", "research/ui/r1_launch.py", "research/ui/launch.py",
                 "research/ui/qt_r1_text.js", "research/ui/r1_vt_fixture.py", "experiments/conpty/run.py")
@@ -312,20 +314,10 @@ def audit_mechanics(directory, case):
 
 def prepare_plan(source, out, rea, destination, case, execution_authorized=False):
     validate_case(case)
-    source, out, rea, destination = [Path(path).resolve() for path in (source, out, rea, destination)]
-    require(type(execution_authorized) is bool, "Execution authorization must be boolean")
-    require(not out.exists() and not destination.exists(), "Plan/output must be new")
-    require(out != ROOT / "local" and out.is_relative_to(ROOT / "local") and destination.is_relative_to(ROOT / "local"),
-            "Plan/output must belong to this worktree local directory")
-    require(not out.is_relative_to(source) and not source.is_relative_to(out), "Source/output overlap")
-    require(sha(source / "WindTerm.exe") == EXE_SHA256, "Pinned original executable differs")
-    plan = {**fixed_contract(case), **source_identity(), **common.host_identity(), "execution_authorized": execution_authorized,
-            "source": str(source), "out": str(out), "rea": str(rea), "rea_prepared_identity": common.rea_identity(rea),
-            "launcher_source_sha256": hashlib.sha256(launcher_source(case).encode()).hexdigest()}
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    with destination.open("x", encoding="utf-8", newline="\n") as stream:
-        stream.write(json.dumps(plan, indent=2)+"\n")
-    return plan
+    return resize_observation_plan.prepare_plan(
+        source, out, rea, destination, case, execution_authorized, root=ROOT,
+        executable_sha256=EXE_SHA256, fixed_contract=fixed_contract,
+        source_identity=source_identity, launcher_source=launcher_source)
 
 
 def run_plan(path):

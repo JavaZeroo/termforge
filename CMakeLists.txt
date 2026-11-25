@@ -78,21 +78,16 @@ if(TERMFORGE_BUILD_CANDIDATE_ADAPTER)
   endif()
 endif()
 
-add_executable(resize_test experiments/core/resize_test.cpp)
-target_link_libraries(resize_test PRIVATE termforge_core)
-termforge_warnings(resize_test)
+function(termforge_add_core_test_executable target)
+  add_executable(${target} "experiments/core/${target}.cpp")
+  target_link_libraries(${target} PRIVATE termforge_core)
+  termforge_warnings(${target})
+endfunction()
 
-add_executable(resize_edges_test experiments/core/resize_edges_test.cpp)
-target_link_libraries(resize_edges_test PRIVATE termforge_core)
-termforge_warnings(resize_edges_test)
-
-add_executable(history_test experiments/core/history_test.cpp)
-target_link_libraries(history_test PRIVATE termforge_core)
-termforge_warnings(history_test)
-
-add_executable(selection_test experiments/core/selection_test.cpp)
-target_link_libraries(selection_test PRIVATE termforge_core)
-termforge_warnings(selection_test)
+termforge_add_core_test_executable(resize_test)
+termforge_add_core_test_executable(resize_edges_test)
+termforge_add_core_test_executable(history_test)
+termforge_add_core_test_executable(selection_test)
 
 # Explicit, data-only diagnosis; observed bad states are never CTest passes.
 add_executable(resize_repaint_witness EXCLUDE_FROM_ALL experiments/core/resize_repaint_witness.cpp)
@@ -103,88 +98,27 @@ target_link_libraries(history_memory_probe PRIVATE termforge_core)
 target_compile_definitions(history_memory_probe PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
 termforge_warnings(history_memory_probe)
 
-add_executable(search_test experiments/core/search_test.cpp)
-target_link_libraries(search_test PRIVATE termforge_core)
-termforge_warnings(search_test)
-add_executable(search_reorder_test experiments/core/search_reorder_test.cpp)
-target_link_libraries(search_reorder_test PRIVATE termforge_core)
-termforge_warnings(search_reorder_test)
-
-add_executable(buffer_state_test experiments/core/buffer_state_test.cpp)
-target_link_libraries(buffer_state_test PRIVATE termforge_core)
-termforge_warnings(buffer_state_test)
-
-add_executable(alternate_mode_test experiments/core/alternate_mode_test.cpp)
-target_link_libraries(alternate_mode_test PRIVATE termforge_core)
-termforge_warnings(alternate_mode_test)
-
-add_executable(private_mode_test experiments/core/private_mode_test.cpp)
-target_link_libraries(private_mode_test PRIVATE termforge_core)
-termforge_warnings(private_mode_test)
-
-add_executable(decawm_mode_test experiments/core/decawm_mode_test.cpp)
-target_link_libraries(decawm_mode_test PRIVATE termforge_core)
-termforge_warnings(decawm_mode_test)
-
-add_executable(decom_origin_test experiments/core/decom_origin_test.cpp)
-target_link_libraries(decom_origin_test PRIVATE termforge_core)
-termforge_warnings(decom_origin_test)
-
-add_executable(pending_wrap_test experiments/core/pending_wrap_test.cpp)
-target_link_libraries(pending_wrap_test PRIVATE termforge_core)
-termforge_warnings(pending_wrap_test)
-
-add_executable(widechar_1049_test experiments/core/widechar_1049_test.cpp)
-target_link_libraries(widechar_1049_test PRIVATE termforge_core)
-termforge_warnings(widechar_1049_test)
-
-add_executable(view_mapping_test experiments/core/view_mapping_test.cpp)
-target_link_libraries(view_mapping_test PRIVATE termforge_core)
-termforge_warnings(view_mapping_test)
-
-add_executable(display_projection_test experiments/core/display_projection_test.cpp)
-target_link_libraries(display_projection_test PRIVATE termforge_core)
-termforge_warnings(display_projection_test)
-
-add_executable(display_projection_unicode_test experiments/core/display_projection_unicode_test.cpp)
-target_link_libraries(display_projection_unicode_test PRIVATE termforge_core)
-termforge_warnings(display_projection_unicode_test)
-
-add_executable(projection_job_test experiments/core/projection_job_test.cpp)
-target_link_libraries(projection_job_test PRIVATE termforge_core)
-termforge_warnings(projection_job_test)
-
-add_executable(resize_height_measured_test experiments/core/resize_height_measured_test.cpp)
-target_link_libraries(resize_height_measured_test PRIVATE termforge_core)
-termforge_warnings(resize_height_measured_test)
-
-add_executable(resize_combined_test experiments/core/resize_combined_test.cpp)
-target_link_libraries(resize_combined_test PRIVATE termforge_core)
-termforge_warnings(resize_combined_test)
-
-add_executable(resize_dual_axis_test experiments/core/resize_dual_axis_test.cpp)
-target_link_libraries(resize_dual_axis_test PRIVATE termforge_core)
-termforge_warnings(resize_dual_axis_test)
-
-add_executable(resize_preserving_transaction_test experiments/core/resize_preserving_transaction_test.cpp)
-target_link_libraries(resize_preserving_transaction_test PRIVATE termforge_core)
-termforge_warnings(resize_preserving_transaction_test)
-
-add_executable(resize_hidden_height_test experiments/core/resize_hidden_height_test.cpp)
-target_link_libraries(resize_hidden_height_test PRIVATE termforge_core)
-termforge_warnings(resize_hidden_height_test)
-
-add_executable(resize_unicode_test experiments/core/resize_unicode_test.cpp)
-target_link_libraries(resize_unicode_test PRIVATE termforge_core)
-termforge_warnings(resize_unicode_test)
-
-add_executable(resize_combining_test experiments/core/resize_combining_test.cpp)
-target_link_libraries(resize_combining_test PRIVATE termforge_core)
-termforge_warnings(resize_combining_test)
-
-add_executable(resize_caret_test experiments/core/resize_caret_test.cpp)
-target_link_libraries(resize_caret_test PRIVATE termforge_core)
-termforge_warnings(resize_caret_test)
+termforge_add_core_test_executable(search_test)
+termforge_add_core_test_executable(search_reorder_test)
+termforge_add_core_test_executable(buffer_state_test)
+termforge_add_core_test_executable(alternate_mode_test)
+termforge_add_core_test_executable(private_mode_test)
+termforge_add_core_test_executable(decawm_mode_test)
+termforge_add_core_test_executable(decom_origin_test)
+termforge_add_core_test_executable(pending_wrap_test)
+termforge_add_core_test_executable(widechar_1049_test)
+termforge_add_core_test_executable(view_mapping_test)
+termforge_add_core_test_executable(display_projection_test)
+termforge_add_core_test_executable(display_projection_unicode_test)
+termforge_add_core_test_executable(projection_job_test)
+termforge_add_core_test_executable(resize_height_measured_test)
+termforge_add_core_test_executable(resize_combined_test)
+termforge_add_core_test_executable(resize_dual_axis_test)
+termforge_add_core_test_executable(resize_preserving_transaction_test)
+termforge_add_core_test_executable(resize_hidden_height_test)
+termforge_add_core_test_executable(resize_unicode_test)
+termforge_add_core_test_executable(resize_combining_test)
+termforge_add_core_test_executable(resize_caret_test)
 
 # Direct original resize/addressing comparison. A mismatch is a diagnostic
 # failure; it is not registered as an expected-failure CTest acceptance.
@@ -192,52 +126,18 @@ add_executable(resize_address_test experiments/core/resize_address_test.cpp)
 target_link_libraries(resize_address_test PRIVATE termforge_core)
 termforge_warnings(resize_address_test)
 
-add_executable(retained_columns_test experiments/core/retained_columns_test.cpp)
-target_link_libraries(retained_columns_test PRIVATE termforge_core)
-termforge_warnings(retained_columns_test)
-
-add_executable(resize_reflow_addressing_test experiments/core/resize_reflow_addressing_test.cpp)
-target_link_libraries(resize_reflow_addressing_test PRIVATE termforge_core)
-termforge_warnings(resize_reflow_addressing_test)
-
-add_executable(display_cursor_test experiments/core/display_cursor_test.cpp)
-target_link_libraries(display_cursor_test PRIVATE termforge_core)
-termforge_warnings(display_cursor_test)
-
-add_executable(resize_edit_test experiments/core/resize_edit_test.cpp)
-target_link_libraries(resize_edit_test PRIVATE termforge_core)
-termforge_warnings(resize_edit_test)
-
-add_executable(resize_pending_test experiments/core/resize_pending_test.cpp)
-target_link_libraries(resize_pending_test PRIVATE termforge_core)
-termforge_warnings(resize_pending_test)
-
-add_executable(resize_hidden_test experiments/core/resize_hidden_test.cpp)
-target_link_libraries(resize_hidden_test PRIVATE termforge_core)
-termforge_warnings(resize_hidden_test)
-
-add_executable(resize_erase_test experiments/core/resize_erase_test.cpp)
-target_link_libraries(resize_erase_test PRIVATE termforge_core)
-termforge_warnings(resize_erase_test)
-
-add_executable(resize_mode_test experiments/core/resize_mode_test.cpp)
-target_link_libraries(resize_mode_test PRIVATE termforge_core)
-termforge_warnings(resize_mode_test)
-
-add_executable(reply_test experiments/core/reply_test.cpp)
-target_link_libraries(reply_test PRIVATE termforge_core)
-termforge_warnings(reply_test)
-
-add_executable(edit_csi_test experiments/core/edit_csi_test.cpp)
-target_link_libraries(edit_csi_test PRIVATE termforge_core)
-termforge_warnings(edit_csi_test)
-
-add_executable(order_query_test experiments/core/order_query_test.cpp)
-target_link_libraries(order_query_test PRIVATE termforge_core)
-termforge_warnings(order_query_test)
-add_executable(region_wrap_test experiments/core/region_wrap_test.cpp)
-target_link_libraries(region_wrap_test PRIVATE termforge_core)
-termforge_warnings(region_wrap_test)
+termforge_add_core_test_executable(retained_columns_test)
+termforge_add_core_test_executable(resize_reflow_addressing_test)
+termforge_add_core_test_executable(display_cursor_test)
+termforge_add_core_test_executable(resize_edit_test)
+termforge_add_core_test_executable(resize_pending_test)
+termforge_add_core_test_executable(resize_hidden_test)
+termforge_add_core_test_executable(resize_erase_test)
+termforge_add_core_test_executable(resize_mode_test)
+termforge_add_core_test_executable(reply_test)
+termforge_add_core_test_executable(edit_csi_test)
+termforge_add_core_test_executable(order_query_test)
+termforge_add_core_test_executable(region_wrap_test)
 
 add_executable(paste_test experiments/shell/paste_test.cpp)
 termforge_warnings(paste_test)
@@ -528,92 +428,47 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   termforge_add_python_test(windterm_resize_state_reference -m unittest research.ui.test_resize_state_reference research.ui.test_export_resize_state_reference -v)
   termforge_add_python_test(windterm_resize_bcd_calibration -m unittest research.ui.test_resize_bcd_calibration -v)
   termforge_add_python_test(windterm_resize_bcd_address_reference -m unittest research.ui.test_resize_bcd_address_reference -v)
-  termforge_add_python_test(windterm_resize_address_reference -m unittest research.ui.test_resize_address_reference research.ui.test_export_resize_address_reference -v)
-  termforge_add_python_test(windterm_resize_address_optimized -O -m unittest research.ui.test_resize_address_reference research.ui.test_export_resize_address_reference -v)
-  termforge_add_python_test(windterm_resize_edit_reference -m unittest research.ui.test_resize_edit_reference research.ui.test_export_resize_edit_reference research.ui.test_audit_resize_address_erase -v)
-  termforge_add_python_test(windterm_resize_edit_optimized -O -m unittest research.ui.test_resize_edit_reference research.ui.test_export_resize_edit_reference research.ui.test_audit_resize_address_erase -v)
-  termforge_add_python_test(windterm_resize_frame_reference -m unittest research.ui.test_resize_frame_reference research.ui.test_export_resize_frame_reference research.ui.test_audit_resize_frame_hidden -v)
-  termforge_add_python_test(windterm_resize_frame_optimized -O -m unittest research.ui.test_resize_frame_reference research.ui.test_export_resize_frame_reference research.ui.test_audit_resize_frame_hidden -v)
-  termforge_add_python_test(windterm_resize_erase_reference -m unittest research.ui.test_resize_erase_reference research.ui.test_export_resize_erase_reference research.ui.test_audit_resize_erase_right -v)
-  termforge_add_python_test(windterm_resize_erase_optimized -O -m unittest research.ui.test_resize_erase_reference research.ui.test_export_resize_erase_reference research.ui.test_audit_resize_erase_right -v)
-  termforge_add_python_test(windterm_resize_erase_interior_reference -m unittest research.ui.test_resize_erase_interior_reference research.ui.test_export_resize_erase_interior_reference -v)
-  termforge_add_python_test(windterm_resize_erase_interior_optimized -O -m unittest research.ui.test_resize_erase_interior_reference research.ui.test_export_resize_erase_interior_reference -v)
-  termforge_add_python_test(windterm_resize_mode_reference -m unittest research.ui.test_resize_mode_reference research.ui.test_export_resize_mode_reference -v)
-  termforge_add_python_test(windterm_resize_mode_optimized -O -m unittest research.ui.test_resize_mode_reference research.ui.test_export_resize_mode_reference -v)
-  termforge_add_python_test(windterm_resize_unicode_reference -m unittest research.ui.test_resize_unicode_reference research.ui.test_export_resize_unicode_reference -v)
-  termforge_add_python_test(windterm_resize_unicode_optimized -O -m unittest research.ui.test_resize_unicode_reference research.ui.test_export_resize_unicode_reference -v)
-  termforge_add_python_test(windterm_resize_height_reference -m unittest research.ui.test_resize_height_reference research.ui.test_export_resize_height_reference -v)
-  termforge_add_python_test(windterm_resize_height_optimized -O -m unittest research.ui.test_resize_height_reference research.ui.test_export_resize_height_reference -v)
-  termforge_add_python_test(windterm_unicode_caret_reference -m unittest research.ui.test_unicode_caret_reference research.ui.test_export_unicode_caret_reference -v)
-  termforge_add_python_test(windterm_unicode_caret_optimized -O -m unittest research.ui.test_unicode_caret_reference research.ui.test_export_unicode_caret_reference -v)
-  termforge_add_python_test(windterm_resize_geometry_reference -m unittest research.ui.test_resize_geometry_reference research.ui.test_export_resize_geometry_reference -v)
-  termforge_add_python_test(windterm_resize_geometry_optimized -O -m unittest research.ui.test_resize_geometry_reference research.ui.test_export_resize_geometry_reference -v)
-  termforge_add_python_test(windterm_resize_height_measured_reference -m unittest research.ui.test_resize_height_measured_reference research.ui.test_export_resize_height_measured_reference -v)
-  termforge_add_python_test(windterm_resize_height_measured_optimized -O -m unittest research.ui.test_resize_height_measured_reference research.ui.test_export_resize_height_measured_reference -v)
-  termforge_add_python_test(windterm_resize_combined_reference -m unittest research.ui.test_resize_combined_reference research.ui.test_export_resize_combined_reference -v)
-  termforge_add_python_test(windterm_resize_combined_optimized -O -m unittest research.ui.test_resize_combined_reference research.ui.test_export_resize_combined_reference -v)
-  termforge_add_python_test(windterm_resize_dual_axis_reference -m unittest research.ui.test_resize_dual_axis_reference research.ui.test_export_resize_dual_axis_reference -v)
-  termforge_add_python_test(windterm_resize_dual_axis_optimized -O -m unittest research.ui.test_resize_dual_axis_reference research.ui.test_export_resize_dual_axis_reference -v)
-  termforge_add_python_test(windterm_resize_hidden_height_reference -m unittest research.ui.test_resize_hidden_height_reference research.ui.test_export_resize_hidden_height_reference research.ui.test_audit_resize_hidden_height_tail -v)
-  termforge_add_python_test(windterm_resize_hidden_height_optimized -O -m unittest research.ui.test_resize_hidden_height_reference research.ui.test_export_resize_hidden_height_reference research.ui.test_audit_resize_hidden_height_tail -v)
+  set(windterm_reference_suites "")
+  function(termforge_add_windterm_reference_suite suite)
+    set(modules
+      research.ui.test_${suite}_reference
+      research.ui.test_export_${suite}_reference
+      ${ARGN})
+    termforge_add_python_test(windterm_${suite}_reference -m unittest ${modules} -v)
+    termforge_add_python_test(windterm_${suite}_optimized -O -m unittest ${modules} -v)
+    list(APPEND windterm_reference_suites "${suite}")
+    set(windterm_reference_suites "${windterm_reference_suites}" PARENT_SCOPE)
+  endfunction()
+  termforge_add_windterm_reference_suite(resize_address)
+  termforge_add_windterm_reference_suite(resize_edit
+    research.ui.test_audit_resize_address_erase)
+  termforge_add_windterm_reference_suite(resize_frame
+    research.ui.test_audit_resize_frame_hidden)
+  termforge_add_windterm_reference_suite(resize_erase
+    research.ui.test_audit_resize_erase_right)
+  termforge_add_windterm_reference_suite(resize_erase_interior)
+  termforge_add_windterm_reference_suite(resize_mode)
+  termforge_add_windterm_reference_suite(resize_unicode)
+  termforge_add_windterm_reference_suite(resize_height)
+  termforge_add_windterm_reference_suite(unicode_caret)
+  termforge_add_windterm_reference_suite(resize_geometry)
+  termforge_add_windterm_reference_suite(resize_height_measured)
+  termforge_add_windterm_reference_suite(resize_combined)
+  termforge_add_windterm_reference_suite(resize_dual_axis)
+  termforge_add_windterm_reference_suite(resize_hidden_height
+    research.ui.test_audit_resize_hidden_height_tail)
   find_program(TERMFORGE_NODE_EXECUTABLE NAMES node)
   if(TERMFORGE_NODE_EXECUTABLE)
-    add_test(NAME windterm_resize_address_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_address_stage4.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_address_reference.js)
-    set_tests_properties(windterm_resize_address_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_edit_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_edit_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_edit_reference.js)
-    set_tests_properties(windterm_resize_edit_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_frame_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_frame_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_frame_reference.js)
-    set_tests_properties(windterm_resize_frame_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_erase_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_erase_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_erase_reference.js)
-    set_tests_properties(windterm_resize_erase_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_erase_interior_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_erase_interior_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_erase_interior_reference.js)
-    set_tests_properties(windterm_resize_erase_interior_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_mode_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_mode_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_mode_reference.js)
-    set_tests_properties(windterm_resize_mode_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_unicode_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_unicode_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_unicode_reference.js)
-    set_tests_properties(windterm_resize_unicode_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_height_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_height_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_height_reference.js)
-    set_tests_properties(windterm_resize_height_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_unicode_caret_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_unicode_caret_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/unicode_caret_reference.js)
-    set_tests_properties(windterm_unicode_caret_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_geometry_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_geometry_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_geometry_reference.js)
-    set_tests_properties(windterm_resize_geometry_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_height_measured_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_height_measured_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_height_measured_reference.js)
-    set_tests_properties(windterm_resize_height_measured_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_combined_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_combined_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_combined_reference.js)
-    set_tests_properties(windterm_resize_combined_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_dual_axis_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_dual_axis_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_dual_axis_reference.js)
-    set_tests_properties(windterm_resize_dual_axis_controller PROPERTIES TIMEOUT 15)
-    add_test(NAME windterm_resize_hidden_height_controller COMMAND ${TERMFORGE_NODE_EXECUTABLE}
-      ${CMAKE_SOURCE_DIR}/research/ui/test_resize_hidden_height_stages.js
-      ${CMAKE_SOURCE_DIR}/research/ui/resize_hidden_height_reference.js)
-    set_tests_properties(windterm_resize_hidden_height_controller PROPERTIES TIMEOUT 15)
+    foreach(suite IN LISTS windterm_reference_suites)
+      set(driver "test_${suite}_stages.js")
+      if(suite STREQUAL "resize_address")
+        set(driver "test_resize_address_stage4.js")
+      endif()
+      add_test(NAME windterm_${suite}_controller COMMAND "${TERMFORGE_NODE_EXECUTABLE}"
+        "${CMAKE_SOURCE_DIR}/research/ui/${driver}"
+        "${CMAKE_SOURCE_DIR}/research/ui/${suite}_reference.js")
+      set_tests_properties(windterm_${suite}_controller PROPERTIES TIMEOUT 15)
+    endforeach()
   endif()
   # Pure offline regressions only; OwnedNodeTests and frozen batches are never launched here.
   termforge_add_python_test(node_contract_export -m unittest research.ui.test_export_node_contract_deadline research.ui.test_node_contract_deadline.CheckpointTests research.ui.test_node_contract_deadline.LauncherVerdictTests -v)

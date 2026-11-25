@@ -60,6 +60,16 @@ QWidget 字体与 QPainter 文本绘制字体分别记录，后者仅读取 devi
 
 新增探针与纯 schema 测试不构成运行观察；真实结果按保留字段范围独立审核后更新参考合同。`--export-context` 仅在原始 strict 门槛通过后导出安全有序事件，`replay_context` 可重算完整动作门槛；原始运行脚本字节不公开，记录的运行时 source digest 与独立重算的固定模板摘要分开说明。rename、busy 与关闭中的目标行为仍须单独取证，不能从普通查找框结果外推。
 
+## Resize 离线复验
+
+复算历史导出时，按报告核对执行源、导出源与计划 SHA-256。例如[双轴报告](results/2026-11-04-resize-dual-axis-reference/README.md)分别记录运行源 `dee3c78` 和离线导出源 `2fc3f25`。用对应版本的导出器读取原始目录（`--directory`）和冻结计划（`--plan`），填入报告中的 `--expected-plan-sha256`。`--source-root` 指向对应执行源。使用源码归档时保留其原始 `reference-source.json`。如果参考发行物已移动，用 `--reference-source` 指定其目录。结果写入新 `--destination`，再与报告的公开件 SHA-256 比对。旧公开脚本见[共享模块引入前的快照](https://github.com/JavaZeroo/termforge/tree/2c5d7f0d78475e21b4b52ee988eb4b6de2bc5829/research/ui)。
+
+在已配置的构建目录中，可运行下列离线测试，复验当前脚本的纯高度、测量高度、顺序宽高和双轴场景。
+
+```powershell
+ctest --test-dir build -C Release -R '^windterm_resize_(height|height_measured|combined|dual_axis)_(reference|optimized|controller)$' --no-tests=error --output-on-failure
+```
+
 ## 解释约束
 
 - `rect` 是父控件坐标系下的 Qt QRect `[x1,y1,x2,y2]`，右下端包含在内。尺寸是 `x2-x1+1`、`y2-y1+1`，允许零尺寸；不要把主窗口桌面坐标当成子控件偏移。
