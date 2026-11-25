@@ -44,9 +44,15 @@ private:
     std::atomic<bool> close_requested_{false};
     std::atomic<bool> cleanup_done_{false};
     struct ResizeRequest { short columns, rows; unsigned long long revision; };
+    struct NativeResizeRequest {
+        ResizeRequest request;
+        std::array<uint8_t, 16> token;
+    };
     mutable std::mutex control_mutex_;
     std::optional<ResizeRequest> pending_resize_;
+    std::optional<NativeResizeRequest> native_resize_;
     unsigned long long requested_revision_ = 0, transport_revision_ = 0;
+    COORD requested_size_{initial_columns, initial_rows};
     COORD transport_size_{};
     bool accepting_resize_ = false;
     struct Completion {
@@ -72,10 +78,18 @@ private:
     unsigned long long transport_consumed_ = 0;
     std::optional<std::array<uint8_t, 16>> native_map_token_;
     std::optional<tf_conpty::NativeResizeMapObservation> native_map_;
+    std::optional<unsigned long long> native_reader_revision_;
+    bool apply_native_maps_ = false;
 
     void notify() { if (on_changed) on_changed(); }
     void remember_error(const QString& error) {
         if (error_.isEmpty()) error_ = error;
+    }
+    static std::array<uint8_t, 16> create_resize_token() {
+        std::array<uint8_t, 16> token{};
+        if (BCryptGenRandom(nullptr, token.data(), static_cast<ULONG>(token.size()), BCRYPT_USE_SYSTEM_PREFERRED_RNG) < 0)
+            throw std::runtime_error("Cannot generate ConPTY resize request identity");
+        return token;
     }
     // Only this worker calls resize/wait/cancel/close after startup. The latest
     // bounded request is taken without holding a lock over a native API call.
@@ -92,7 +106,7 @@ private:
                     bool native_resize_needed = false;
                     {
                         std::lock_guard<std::mutex> lock(control_mutex_);
-                        if (accepting_resize_ && !close_requested_.load(std::memory_order_acquire)) {
+                        if (accepting_resize_ && !native_resize_ && !close_requested_.load(std::memory_order_acquire)) {
                             request = std::exchange(pending_resize_, std::nullopt);
                             native_resize_needed = request && (request->columns != transport_size_.X || request->rows != transport_size_.Y);
                         }
@@ -100,6 +114,15 @@ private:
                     if (request) {
                         // A successful call is transport progress, never proof
                         // that the child has observed its new console geometry.
+                        if (native_resize_needed && apply_native_maps_) {
+                            const auto token = create_resize_token();
+                            {
+                                std::lock_guard<std::mutex> lock(control_mutex_);
+                                native_resize_ = NativeResizeRequest{*request, token};
+                            }
+                            session_->resize_with_map(request->columns, request->rows, token);
+                            continue;
+                        }
                         if (native_resize_needed && native_map_token_ && !map_requested) {
                             session_->resize_with_map(request->columns, request->rows, *native_map_token_);
                             map_requested = true;
@@ -160,6 +183,43 @@ private:
         }
         cleanup_done_.store(true, std::memory_order_release);
     }
+    void apply_native_resize(const tf_conpty::NativeResizeMap& map, const ResizeRequest& request) {
+        const auto& old = map.old_window;
+        const auto& window = map.new_window;
+        if (!map.succeeded || old.right - old.left + 1 != parser_.screen.width() ||
+            old.bottom - old.top + 1 != parser_.screen.height() ||
+            window.right - window.left + 1 != request.columns || window.bottom - window.top + 1 != request.rows)
+            throw std::runtime_error("ConPTY resize map does not match the two active viewport sizes");
+        parser_.screen.resize_from_host(request.rows, request.columns,
+            std::clamp(map.cursor.row - window.top, 0, request.rows - 1),
+            std::clamp(map.cursor.column - window.left, 0, request.columns - 1),
+            map.viewport_sources(), map.wraps);
+        std::lock_guard<std::mutex> lock(control_mutex_);
+        if (!native_resize_ || native_resize_->request.revision != request.revision)
+            throw std::logic_error("ConPTY resize acknowledgment has no pending request");
+        transport_size_ = {request.columns, request.rows};
+        transport_revision_ = request.revision;
+        native_resize_.reset();
+    }
+    void feed_output(std::string_view bytes) {
+        std::optional<NativeResizeRequest> expected;
+        if (apply_native_maps_) {
+            std::lock_guard<std::mutex> lock(control_mutex_);
+            expected = native_resize_;
+        }
+        if (expected && native_reader_revision_ != expected->request.revision) {
+            native_map_.emplace(expected->token);
+            native_reader_revision_ = expected->request.revision;
+        }
+        if (!native_map_) {
+            parser_.feed(bytes);
+            return;
+        }
+        native_map_->feed(bytes, [this](std::string_view output) { parser_.feed(output); },
+            [&](const tf_conpty::NativeResizeMap& map) {
+                if (expected) apply_native_resize(map, expected->request);
+            });
+    }
     void poll() {
         if (finished_) return;
         bool changed = false;
@@ -173,12 +233,7 @@ private:
             }
             if (!parser_failed_) {
                 try {
-                    if (native_map_) {
-                        native_map_->feed(bytes, [this](std::string_view output) { parser_.feed(output); },
-                                          [](const tf_conpty::NativeResizeMap&) {});
-                    } else {
-                        parser_.feed(bytes);
-                    }
+                    feed_output(bytes);
                     // Query replies (a cursor position report today) go back to the
                     // child through the same bounded input path as keystrokes.
                     // A reply only matters while the child is still attached: ConPTY
@@ -247,6 +302,7 @@ public:
             session_ = std::make_unique<tf_conpty::Session>(tf_conpty::Backend::configured());
             if (std::string_view(session_->backend_identity()) == "system")
                 throw std::runtime_error("The Qt product entry requires the fixed bundled ConPTY backend");
+            apply_native_maps_ = session_->supports_resize_map() && !native_map_token_;
             input_ = std::make_unique<InputQueue>(*session_);
             session_->start(executable, arguments, [this](std::string_view bytes) { output_.push(bytes); },
                             working_directory, {static_cast<short>(parser_.screen.width()),
@@ -296,11 +352,9 @@ public:
         try {
             std::lock_guard<std::mutex> lock(control_mutex_);
             if (started_ && !accepting_resize_) return false;
-            if (columns == parser_.screen.width() && rows == parser_.screen.height()) return true;
-            // Formal product entry: keep the retained source frame and let the
-            // display projection reflow it. The protocol cursor/DSR stay in
-            // retained (pre-resize) coordinates; the widget maps the caret.
-            parser_.screen.resize_preserving(rows, columns);
+            if (columns == requested_size_.X && rows == requested_size_.Y) return true;
+            if (!started_ || !apply_native_maps_) parser_.screen.resize_preserving(rows, columns);
+            requested_size_ = {static_cast<short>(columns), static_cast<short>(rows)};
             ++requested_revision_;
             if (started_)
                 pending_resize_ = ResizeRequest{static_cast<short>(columns), static_cast<short>(rows), requested_revision_};
@@ -323,7 +377,7 @@ public:
         std::lock_guard<std::mutex> lock(control_mutex_);
         const bool accepting = !finished_ && !close_requested_.load(std::memory_order_acquire) &&
             (!started_ || accepting_resize_);
-        return {parser_.screen.width(), parser_.screen.height(), transport_size_.X, transport_size_.Y,
+        return {requested_size_.X, requested_size_.Y, transport_size_.X, transport_size_.Y,
                 requested_revision_, transport_revision_, accepting,
                 started_ && accepting && requested_revision_ != transport_revision_, session_ ? session_->pid : 0};
     }
@@ -331,9 +385,7 @@ public:
     // Observe one host-generated transaction independently of parser state.
     void observe_native_resize_map() {
         if (started_ || native_map_) throw std::logic_error("Resize map observation must be initialized before launch");
-        std::array<uint8_t, 16> token{};
-        if (BCryptGenRandom(nullptr, token.data(), static_cast<ULONG>(token.size()), BCRYPT_USE_SYSTEM_PREFERRED_RNG) < 0)
-            throw std::runtime_error("Cannot generate ConPTY resize request identity");
+        const auto token = create_resize_token();
         native_map_.emplace(token);
         native_map_token_ = token;
     }

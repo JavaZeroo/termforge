@@ -48,6 +48,52 @@ struct NativeResizeMap {
     NativeWindow old_window, new_window;
     NativeCell cursor;
     std::vector<NativeReflow> steps;
+    std::string wraps;
+
+    // Each destination viewport cell points to its original viewport cell.
+    // Unoccupied cells and native backing cells outside the old viewport
+    // carry no source position.
+    std::vector<int> viewport_sources() const {
+        const auto area = [](NativeSize size) {
+            if (size.columns > 500 || size.rows > 3000)
+                throw std::runtime_error("Native resize backing geometry exceeds the retained model bound");
+            return static_cast<size_t>(size.columns) * size.rows;
+        };
+        const int old_width = old_window.right - old_window.left + 1;
+        std::vector<int> current(area(origin), -1);
+        for (int row = old_window.top; row <= old_window.bottom; ++row)
+            for (int column = old_window.left; column <= old_window.right; ++column)
+                current[row * origin.columns + column] =
+                    (row - old_window.top) * old_width + column - old_window.left;
+        for (const auto& step : steps) {
+            std::vector<int> next(area(step.destination), -1);
+            if (step.traditional) {
+                const int height = (std::min)(step.origin.rows, step.destination.rows);
+                const int width = (std::min)(step.origin.columns, step.destination.columns);
+                for (int row = 0; row < height; ++row)
+                    std::copy_n(current.begin() + row * step.origin.columns, width,
+                                next.begin() + row * step.destination.columns);
+            } else {
+                for (const auto& span : step.spans) {
+                    const int row = span.destination.row - step.first_retained_row;
+                    if (row < 0 || row >= step.destination.rows) continue;
+                    const int count = (std::min)(span.origin_end - span.origin.column,
+                                                  span.destination_end - span.destination.column);
+                    std::copy_n(current.begin() + span.origin.row * step.origin.columns + span.origin.column, count,
+                                next.begin() + row * step.destination.columns + span.destination.column);
+                }
+            }
+            current.swap(next);
+        }
+        const int columns = new_window.right - new_window.left + 1;
+        std::vector<int> viewport;
+        viewport.reserve(static_cast<size_t>(columns) * wraps.size());
+        for (int row = new_window.top; row <= new_window.bottom; ++row) {
+            const auto first = current.begin() + row * destination.columns + new_window.left;
+            viewport.insert(viewport.end(), first, first + columns);
+        }
+        return viewport;
+    }
 
     std::optional<NativeCell> locate(NativeCell cell) const {
         for (const auto& step : steps) {
@@ -117,7 +163,7 @@ inline NativeResizeMap decode_native_resize_map(std::string_view input) {
     const auto header = numbers<15>(take(input, '|'));
     NativeResizeMap map{header[0] == 1, {header[1], header[2]}, {header[7], header[8]},
                         {header[3], header[4], header[5], header[6]}, {header[9], header[10], header[11], header[12]},
-                        {header[13], header[14]}, {}};
+                        {header[13], header[14]}, {}, {}};
     if (header[0] > 1 || !valid(map.origin) || !valid(map.destination) ||
         !valid(map.old_window, map.origin) || !valid(map.new_window, map.destination) ||
         map.cursor.column >= map.destination.columns || map.cursor.row >= map.destination.rows)
@@ -126,6 +172,14 @@ inline NativeResizeMap decode_native_resize_map(std::string_view input) {
     auto origin = map.origin;
     while (!input.empty()) {
         auto record = take(input, '|');
+        if (record.substr(0, 5) == "wrap;") {
+            const auto flags = record.substr(5);
+            if (!input.empty() || flags.size() != static_cast<size_t>(map.new_window.bottom - map.new_window.top + 1) ||
+                flags.find_first_not_of("01") != std::string_view::npos)
+                throw std::runtime_error("Invalid wrap boundaries in ConPTY resize map");
+            map.wraps.assign(flags);
+            break;
+        }
         const auto fields = numbers<6>(take(record, ';'));
         NativeReflow step{{fields[1], fields[2]}, {fields[3], fields[4]}, fields[5], fields[0] == 1, {}};
         if (fields[0] > 1 || !(step.origin == origin) || !valid(step.destination) || map.steps.size() == 8)
@@ -140,12 +194,13 @@ inline NativeResizeMap decode_native_resize_map(std::string_view input) {
         origin = step.destination;
         map.steps.push_back(std::move(step));
     }
-    if (!(origin == map.destination)) throw std::runtime_error("ConPTY resize operation chain ended at the wrong size");
+    if (!(origin == map.destination) || map.wraps.empty())
+        throw std::runtime_error("Incomplete ConPTY resize operation chain");
     return map;
 }
 
 class NativeResizeMapObservation {
-    std::string prefix_ = "\x1b]633;TermForgeResizeMap;1;";
+    std::string prefix_ = "\x1b]633;TermForgeResizeMap;2;";
     std::string pending_;
     std::optional<NativeResizeMap> observed_;
     size_t scan_ = 0;
