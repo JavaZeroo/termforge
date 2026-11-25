@@ -1,0 +1,286 @@
+{
+  "schema": "termforge-r29-winpty-legacy-v1",
+  "probe_sha256": "ed07468daf97fcf8e8571b08044f20defb8c42e33c177df20788e909ea60a4b1",
+  "reference_package": "WindTerm 2.7.0",
+  "environment": {
+    "platform": "Microsoft Windows 11",
+    "architecture": "x86_64",
+    "build": "26300",
+    "virtualized": "QEMU"
+  },
+  "official_qt_run": 45540912138,
+  "exact_source_bytes_match": true,
+  "observation": {
+    "status": "passed",
+    "cleanup_verified": true,
+    "exit_code": 0,
+    "root_reaped": true,
+    "job_active": 0,
+    "result": {
+      "schema": "termforge-winpty-bcd-native-v1",
+      "pair_sha256": {
+        "winpty.dll": "936f611c2129600d35ab7aad45546a837f4f3a9ca7f673e5d66b48c313b9cd75",
+        "winpty-agent.exe": "9add1a61155ec47cf6f347faf776b746eebbde1dc9360d81b8a909da34650642"
+      },
+      "legacy": true,
+      "child_exit": 37,
+      "agent_shutdown_method": "owner_free",
+      "agent_exited_before_free": false,
+      "stream_hex": "1b5b306d1b5b304b53311b5b304b1b5b3f32356c0d0a1b5b304b0d0a20201b5b303b33313b34346d4d41494e1b5b306d1b5b304b0d0a1b5b304b0d0a2020e4b8ad65cc811b5b304b0d0a2020424153451b5b304b0d1b5b35411b5b33471b5b3f3235681b5b306d1b5b313b31481b5b324a1b5b3f32356c0d1b5b306d53321b5b304b0d0a2020414c541b5b304b0d0a20201b5b303b33323b34356d534944451b5b306d1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d0a1b5b304b0d1b5b3233411b5b33471b5b3f3235681b5b3f32356c0d53331b5b304b0d0a20204e45571b5b304b0d0a1b5b304b0d1b5b32411b5b33471b5b3f3235681b5b306d1b5b313b31481b5b324a1b5b3f32356c0d1b5b306d5334211b5b304b0d0a1b5b304b0d0a20201b5b303b33313b34346d4d41494e1b5b306d1b5b304b0d0a1b5b304b0d0a2020e4b8ad65cc811b5b304b0d0a2020424153451b5b304b0d1b5b35411b5b33471b5b3f3235681b5b3f32356c0d5335211b5b304b0d0a1b5b304b0d0a20201b5b303b33313b34346d4d41494e1b5b306d1b5b304b0d0a1b5b304b0d0a2020e4b8ad65cc811b5b304b0d0a2020424153451b5b304b0d0a1b5b304b0d0a202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020201b5b304b420d0a1b5b304b0d0a202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020201b5b304b430d0a441b5b304b0d1b5b3130411b5b33471b5b3f3235681b5b3f32356c0d0a0d0a0d0a0d0a0d0a0d0a0d0a1b5b304b0d0a20202020202020202020202020202020202020421b5b304b0d0a1b5b304b0d0a1b5b304b0d0a2020202020202020202020202020202020202043441b5b304b0d1b5b3131411b5b33471b5b3f3235681b5b3f32356c0d5336211b5b304b0d0a1b5b304b0d0a20201b5b303b33313b34346d4d41494e1b5b306d1b5b304b0d0a1b5b304b0d0a2020e4b8ad65cc811b5b304b0d0a2020424153451b5b304b0d0a1b5b304b0d0a1b5b304b0d0a20202020202020202020202020202020202020421b5b304b0d0a1b5b304b0d0a1b5b304b0d0a524553495a454420202020202020202020202043441b5b304b0d1b5b3131411b5b33471b5b3f323568",
+      "phases": [
+        {
+          "phase": 0,
+          "source_hex": "1b5b306d1b5b324a1b5b333b33481b5b33313b34346d4d41494e1b5b306d1b5b353b3348e4b8ad65cc811b5b363b3348424153451b5b313b31485331",
+          "size": [
+            80,
+            3000
+          ],
+          "window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "cursor_rc": [
+            0,
+            2
+          ],
+          "native_rows": [
+            "S1",
+            "",
+            "  MAIN",
+            "",
+            "  中中é",
+            "  BASE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "phase": 1,
+          "source_hex": "1b5b3f31303439681b5b306d1b5b323b3348414c541b5b333b33481b5b33323b34356d534944451b5b306d1b5b313b31485332",
+          "size": [
+            80,
+            24
+          ],
+          "window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "cursor_rc": [
+            0,
+            2
+          ],
+          "native_rows": [
+            "S2",
+            "  ALT",
+            "  SIDE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "phase": 2,
+          "source_hex": "1b5b3f31303439681b5b323b33484e45571b5b313b31485333",
+          "size": [
+            80,
+            24
+          ],
+          "window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "cursor_rc": [
+            0,
+            2
+          ],
+          "native_rows": [
+            "S3",
+            "  NEW",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "phase": 3,
+          "source_hex": "1b5b3f313034396c211b5b313b31485334",
+          "size": [
+            80,
+            3000
+          ],
+          "window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "cursor_rc": [
+            0,
+            2
+          ],
+          "native_rows": [
+            "S4!",
+            "",
+            "  MAIN",
+            "",
+            "  中中é",
+            "  BASE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "phase": 4,
+          "source_hex": "1b5b306d1b5b3f376c1b5b383b38304841421b5b3f37681b5b31303b38304843441b5b313b31485335",
+          "size": [
+            80,
+            3000
+          ],
+          "window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "cursor_rc": [
+            0,
+            2
+          ],
+          "native_rows": [
+            "S5!",
+            "",
+            "  MAIN",
+            "",
+            "  中中é",
+            "  BASE",
+            "",
+            "                                                                               B",
+            "",
+            "                                                                               C",
+            "D",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "phase": 5,
+          "source_hex": "1b5b31323b3148524553495a45441b5b313b31485336",
+          "size": [
+            60,
+            3000
+          ],
+          "window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "cursor_rc": [
+            0,
+            2
+          ],
+          "native_rows": [
+            "S6!",
+            "",
+            "  MAIN",
+            "",
+            "  中中é",
+            "  BASE",
+            "",
+            "",
+            "                   B",
+            "",
+            "",
+            "RESIZED            CD"
+          ]
+        }
+      ]
+    }
+  }
+}

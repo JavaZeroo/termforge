@@ -20,6 +20,15 @@ PHASES = (
     ((60, 12), b"\x1b[12;1HRESIZED\x1b[6n"),
     ((80, 24), b"\x1b[6n"),
 )
+LEGACY_PHASES = (
+    ((80, 24), b"\x1b[0m\x1b[2J\x1b[3;3H\x1b[31;44mMAIN\x1b[0m"
+     b"\x1b[5;3H\xe4\xb8\xade\xcc\x81\x1b[6;3HBASE\x1b[1;1HS1"),
+    ((80, 24), b"\x1b[?1049h\x1b[0m\x1b[2;3HALT\x1b[3;3H\x1b[32;45mSIDE\x1b[0m\x1b[1;1HS2"),
+    ((80, 24), b"\x1b[?1049h\x1b[2;3HNEW\x1b[1;1HS3"),
+    ((80, 24), b"\x1b[?1049l!\x1b[1;1HS4"),
+    ((80, 24), b"\x1b[0m\x1b[?7l\x1b[8;80HAB\x1b[?7h\x1b[10;80HCD\x1b[1;1HS5"),
+    ((60, 12), b"\x1b[12;1HRESIZED\x1b[1;1HS6"),
+)
 
 
 def bind(library, name, result, *args):
@@ -73,7 +82,7 @@ def wait_file(path, deadline, poll=lambda: None):
     raise TimeoutError(f"{path.name} did not arrive")
 
 
-def child(directory):
+def child(directory, phases):
     is_owned(bind(KERNEL, "GetCurrentProcess", w.HANDLE)())
     std_handle = bind(KERNEL, "GetStdHandle", w.HANDLE, w.DWORD)
     output = std_handle(-11)
@@ -99,9 +108,9 @@ def child(directory):
             time.sleep(0.025)
         raise TimeoutError(f"child viewport did not reach {expected}")
 
-    wait_grid(PHASES[0][0], deadline)
+    wait_grid(phases[0][0], deadline)
     atomic_json(directory / "ready.json", {"ready": True})
-    for phase, (expected, source) in enumerate(PHASES):
+    for phase, (expected, source) in enumerate(phases):
         request = wait_file(directory / f"phase-{phase}-request.json", deadline)
         if request != {"phase": phase}:
             raise ValueError("unexpected phase control")
@@ -128,7 +137,8 @@ def child(directory):
     return 37
 
 
-def host(dll_path, directory):
+def host(dll_path, directory, legacy):
+    phases = LEGACY_PHASES if legacy else PHASES
     directory.mkdir(exist_ok=False)
     is_owned(bind(KERNEL, "GetCurrentProcess", w.HANDLE)())
     dll = c.CDLL(str(dll_path.resolve()), winmode=0x1100)
@@ -169,7 +179,7 @@ def host(dll_path, directory):
 
     config = require_winpty(config_new(0, c.byref(error)), "winpty config")
     try:
-        set_initial(config, *PHASES[0][0])
+        set_initial(config, *phases[0][0])
         set_timeout(config, 3000)
         agent = require_winpty(start_agent(config, c.byref(error)), "winpty open")
     finally:
@@ -179,7 +189,10 @@ def host(dll_path, directory):
         agent_handle = agent_process(agent)
         is_owned(agent_handle)
         executable = sys.executable
-        args = subprocess.list2cmdline([executable, str(Path(__file__).resolve()), str(directory), "--child"])
+        command = [executable, str(Path(__file__).resolve()), str(directory), "--child"]
+        if legacy:
+            command.append("--legacy")
+        args = subprocess.list2cmdline(command)
         with open(pipe_name["in"](agent), "wb", buffering=0) as input_pipe, \
                 open(pipe_name["out"](agent), "rb", buffering=0) as pipe:
             process_config = require_winpty(
@@ -209,9 +222,11 @@ def host(dll_path, directory):
 
             wait_file(directory / "ready.json", deadline, drain)
             observations = []
-            for phase, (grid, _) in enumerate(PHASES):
-                if phase in (1, 3):
+            current_grid = phases[0][0]
+            for phase, (grid, _) in enumerate(phases):
+                if grid != current_grid:
                     require_winpty(set_size(agent, *grid, c.byref(error)), "winpty resize")
+                    current_grid = grid
                 atomic_json(directory / f"phase-{phase}-request.json", {"phase": phase})
                 observations.append(wait_file(directory / f"phase-{phase}.json", deadline, drain))
             input_pipe.close()
@@ -229,7 +244,7 @@ def host(dll_path, directory):
             for path in (dll_path, dll_path.with_name("winpty-agent.exe")):
                 identity[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
             atomic_json(directory / "result.json", {
-                "schema": "termforge-winpty-bcd-native-v1", "pair_sha256": identity,
+                "schema": "termforge-winpty-bcd-native-v1", "pair_sha256": identity, "legacy": legacy,
                 "child_exit": code.value, "agent_shutdown_method": "owner_free",
                 "agent_exited_before_free": wait(agent_handle, 0) == 0, "stream_hex": stream.hex(),
                 "phases": observations,
@@ -245,10 +260,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("directory", type=Path)
     parser.add_argument("--child", action="store_true")
+    parser.add_argument("--legacy", action="store_true", help="send the original six-stage Qt resize workload")
     parser.add_argument("--dll", type=Path)
     args = parser.parse_args()
     if args.child:
-        raise SystemExit(child(args.directory.resolve()))
+        raise SystemExit(child(args.directory.resolve(), LEGACY_PHASES if args.legacy else PHASES))
     if args.dll is None or args.dll.name.lower() != "winpty.dll":
         parser.error("the frozen local reference winpty.dll is required")
-    raise SystemExit(host(args.dll.resolve(), args.directory.resolve()))
+    raise SystemExit(host(args.dll.resolve(), args.directory.resolve(), args.legacy))
