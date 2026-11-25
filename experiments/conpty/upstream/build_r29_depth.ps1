@@ -92,6 +92,11 @@ try {
     $state.source_hashes = $sourceHashes
     $patch = "$PSScriptRoot/r29-native-depth.patch"
     $state.patch_sha256 = Digest $patch
+    # Both pinned upstream files use CRLF on disk.
+    $applicablePatch = "$Out/_private/r29-native-depth.patch"
+    $patchText = [IO.File]::ReadAllText($patch).Replace("`r`n", "`n").Replace("`n", "`r`n")
+    [IO.File]::WriteAllText($applicablePatch, $patchText)
+    $state.applied_patch_sha256 = Digest $applicablePatch
     $state.source_hashes_verified = $true
     $triplet = Get-Content -Raw -LiteralPath "$Source/dep/vcpkg-overlay-triplets/x64-windows-static.cmake"
     if ($triplet -notmatch 'set\(VCPKG_PLATFORM_TOOLSET v145\)') { throw 'Unexpected upstream toolset requirement.' }
@@ -129,7 +134,7 @@ try {
     [void](Invoke-Native 'nuget-restore' "$Source/dep/nuget/nuget.exe" @('restore', "$Source/dep/nuget/packages.config",
         '-ConfigFile', "$Source/NuGet.Config", '-PackagesDirectory', "$Source/packages", '-DisableParallelProcessing', '-NonInteractive'))
 
-    [void](Invoke-Native 'candidate-patch-check' 'git' @('apply', '--unidiff-zero', '--check', $patch))
+    [void](Invoke-Native 'candidate-patch-check' 'git' @('apply', '--unidiff-zero', '--check', $applicablePatch))
 
     # Single-project builds do not inherit OpenConsole.slnx BuildDependency edges.
     Build-Project 'baseline-proxy-build' 'src/host/proxy/Host.Proxy.vcxproj'
@@ -141,7 +146,7 @@ try {
     $currentStage = 'baseline-pair-identity'
     $state.baseline_files = Copy-Pair 'baseline-pair'
 
-    [void](Invoke-Native 'candidate-patch' 'git' @('apply', '--unidiff-zero', $patch))
+    [void](Invoke-Native 'candidate-patch' 'git' @('apply', '--unidiff-zero', $applicablePatch))
     $expectedFiles = @('src/host/getset.cpp', 'src/host/screenInfo.cpp')
     if ((@(& git diff --name-only) -join ',') -ne ($expectedFiles -join ',')) { throw 'Unexpected patched source files.' }
     $state.candidate_source_hashes = [ordered]@{}
