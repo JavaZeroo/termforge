@@ -97,6 +97,14 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
 
 原生缓冲对照复现了覆盖过程。固定 ConPTY 的宿主 resize 将应用设置的 `80×3000` 缓冲收至 `60×12`。原 `D` 被重排到 0 基第 11 行第 0 列，随后被应用写入覆盖。由同一上游源码构建的候选保留了缓冲深度，`D` 随窗口恢复回到 `(10,0)`，`RESIZED` 则随 `C` 回卷到 `(9,60)`。原来的六阶段断言在官方包、同源基线、同源候选下都在第 6 阶段失败。候选还改变了应用读到的原生缓冲高度。根因修复仍需要验证跨 resize 的寻址映射。 [原生缓冲对照](../../experiments/shell/results/2026-11-25-bcd-native-depth/README.md) · [同源矩阵](../../experiments/shell/results/2026-11-25-bcd-native-depth/same-source-ab.md)
 
+WindTerm 本地 Shell 用旧六阶段完全相同的子进程输入运行。第 6 阶段原版可见页和独立原生网格均得到 `RESIZED` + 12 空格 + `CD`。TermForge 的源行和显示页仍将写入分开。这一原版观测直接支持把旧失败作为产品可见回归。 [本地 Shell 证据](../../experiments/shell/results/2026-11-25-bcd-native-depth/windterm-local-legacy.json)
+
+### 固定 ConPTY 源码修订提案（待确认）
+
+在已固定的 Microsoft 源提交上，验证由 resize 事务产生版本化的网格到逻辑行映射，使原生 Console API 及 VT 写入能在同一尺寸版本中与 Qt 的正文、显示和读者位置对应。沿用 Screen 的正文所有权、行 ID、版本和淘汰规则。官方固定包的导出接口提供尺寸请求与进程生命周期，缺少可供 Qt 消费的网格映射。需要验证源码修订版能提供准确映射，并处理新行、软换行、结合字和淘汰条件。 [固定 DLL 导出](https://github.com/microsoft/terminal/blob/dc8ae365847d41f62d1ebca93815bb00959bc12f/src/winconpty/dll/winconpty.def)
+
+首批候选验证须覆盖旧六阶段未变的断言、四阶段独立旧字符保留和写入位置、真实子进程的 Win32 尺寸与读写、连续 resize 版本、备用屏与选择／查找。源码修订版需要审查固定补丁、可复建双文件、许可证与后续维护。源构建原型与产品依赖的选择分别记录。 [ADR-0007](../adr/0007-bundled-microsoft-conpty.md) · [ADR-0010](../adr/0010-bounded-resize-retention.md)
+
 ## 8. 现有批准与未批准
 
 - **已批准/已实施**：ADR-0010 的保留正文与显示投影方向；隐藏帧返回保留完整正文并接受该处原版差异；当前历史/锚点/滚轮切片；旧六阶段失败保留。

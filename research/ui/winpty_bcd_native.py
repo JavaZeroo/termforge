@@ -82,7 +82,7 @@ def wait_file(path, deadline, poll=lambda: None):
     raise TimeoutError(f"{path.name} did not arrive")
 
 
-def child(directory, phases):
+def child(directory, phases, await_ui=False):
     is_owned(bind(KERNEL, "GetCurrentProcess", w.HANDLE)())
     std_handle = bind(KERNEL, "GetStdHandle", w.HANDLE, w.DWORD)
     output = std_handle(-11)
@@ -97,13 +97,22 @@ def child(directory, phases):
     check(set_mode(output, mode.value | 0xF), "child VT output mode")
     check(bind(KERNEL, "SetConsoleOutputCP", w.BOOL, w.UINT)(65001), "child UTF-8 output")
     info = ConsoleInfo()
-    deadline = time.monotonic() + 20
+    deadline = time.monotonic() + (27 if await_ui else 20)
+    last_grid = None
+
+    def current_grid():
+        nonlocal last_grid
+        check(get_info(output, c.byref(info)), "child console geometry")
+        box = info.window
+        actual = box.right - box.left + 1, box.bottom - box.top + 1
+        if await_ui and actual != last_grid:
+            atomic_json(directory / "ui-native-grid.json", {"grid": actual})
+            last_grid = actual
+        return actual
 
     def wait_grid(expected, limit):
         while time.monotonic() < limit:
-            check(get_info(output, c.byref(info)), "child console geometry")
-            rect = info.window
-            if (rect.right - rect.left + 1, rect.bottom - rect.top + 1) == expected:
+            if current_grid() == expected:
                 return
             time.sleep(0.025)
         raise TimeoutError(f"child viewport did not reach {expected}")
@@ -111,7 +120,7 @@ def child(directory, phases):
     wait_grid(phases[0][0], deadline)
     atomic_json(directory / "ready.json", {"ready": True})
     for phase, (expected, source) in enumerate(phases):
-        request = wait_file(directory / f"phase-{phase}-request.json", deadline)
+        request = wait_file(directory / f"phase-{phase}-request.json", deadline, current_grid if await_ui else lambda: None)
         if request != {"phase": phase}:
             raise ValueError("unexpected phase control")
         wait_grid(expected, min(deadline, time.monotonic() + 4))
@@ -134,6 +143,8 @@ def child(directory, phases):
             "window": [box.left, box.top, box.right, box.bottom], "cursor_rc": [info.cursor.y, info.cursor.x],
             "native_rows": text,
         })
+    if await_ui and wait_file(directory / "ui-release.json", deadline) != {"observed": len(phases)}:
+        raise ValueError("unexpected UI release")
     return 37
 
 
@@ -261,10 +272,13 @@ if __name__ == "__main__":
     parser.add_argument("directory", type=Path)
     parser.add_argument("--child", action="store_true")
     parser.add_argument("--legacy", action="store_true", help="send the original six-stage Qt resize workload")
+    parser.add_argument("--await-ui", action="store_true")
     parser.add_argument("--dll", type=Path)
     args = parser.parse_args()
+    if args.await_ui and not (args.child and args.legacy):
+        parser.error("UI release applies only to the six-stage local shell child")
     if args.child:
-        raise SystemExit(child(args.directory.resolve(), LEGACY_PHASES if args.legacy else PHASES))
+        raise SystemExit(child(args.directory.resolve(), LEGACY_PHASES if args.legacy else PHASES, args.await_ui))
     if args.dll is None or args.dll.name.lower() != "winpty.dll":
         parser.error("the frozen local reference winpty.dll is required")
     raise SystemExit(host(args.dll.resolve(), args.directory.resolve(), args.legacy))
