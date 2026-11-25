@@ -241,7 +241,9 @@ public:
                 ++result.source_rows_read; ++state.source_rows_read;
                 if (line.size() > 500 || line.content_columns > line.size())
                     throw std::invalid_argument("projection source fragment exceeds bounds");
-                size_t extent = line.content_columns;
+                size_t extent = line.logical_wrap_padding
+                    ? (std::max)(line.content_columns, (std::min)(line.wrap_columns, line.size()))
+                    : line.content_columns;
                 for (size_t index = 0; index < line.size();) {
                     const auto& cell = line[index];
                     if (!complete_atom(cell) || cell.clipped || cell.grapheme_fragment || cell.leading_spacer)
@@ -395,7 +397,9 @@ public:
             if (line.size() > 500) throw std::invalid_argument("projection source fragment exceeds cell bound");
             if (line.content_columns > line.size())
                 throw std::invalid_argument("projection content extent exceeds source fragment");
-            size_t extent = line.content_columns;
+            size_t extent = line.logical_wrap_padding
+                ? (std::max)(line.content_columns, (std::min)(line.wrap_columns, line.size()))
+                : line.content_columns;
             for (size_t index = 0; index < line.size();) {
                 const auto& cell = line[index];
                 if (!complete_atom(cell) || cell.clipped || cell.grapheme_fragment || cell.leading_spacer)
