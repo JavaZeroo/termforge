@@ -139,12 +139,12 @@ diff --git a/src/host/screenInfo.cpp b/src/host/screenInfo.cpp
 @@ -597,0 +598,17 @@
 +void SCREEN_INFORMATION::ResizeHiddenPrimary(const til::size size, const bool widthChanged)
 +{
++    // The shared state machine restores this position on 1049l. An earlier
++    // reduction still bounds it if the alternate grows before that return.
++    auto& engine = static_cast<OutputStateMachineEngine&>(GetStateMachine().Engine());
++    static_cast<AdaptDispatch&>(engine.Dispatch()).ClampSavedPrimaryCursor(size, widthChanged);
 +    if (widthChanged)
 +    {
-+        // The state machine is shared between the two pages. Update its saved
-+        // protocol column on every width change, even if the text later fits.
-+        auto& engine = static_cast<OutputStateMachineEngine&>(GetStateMachine().Engine());
-+        static_cast<AdaptDispatch&>(engine.Dispatch()).ClampSavedPrimaryColumn(size.width);
 +        _fitWidthOnReturn = true;
 +    }
 +    // Apply height revisions now, retaining the main buffer's source columns.
@@ -215,12 +215,16 @@ diff --git a/src/terminal/adapter/adaptDispatch.cpp b/src/terminal/adapter/adapt
 diff --git a/src/terminal/adapter/adaptDispatch.hpp b/src/terminal/adapter/adaptDispatch.hpp
 --- a/src/terminal/adapter/adaptDispatch.hpp
 +++ b/src/terminal/adapter/adaptDispatch.hpp
-@@ -39,0 +40,7 @@
-+        void ClampSavedPrimaryColumn(const VTInt width) noexcept
+@@ -39,0 +40,11 @@
++        void ClampSavedPrimaryCursor(const til::size size, const bool widthChanged) noexcept
 +        {
 +            auto& saved = _savedCursorState.front();
-+            saved.Column = std::min(saved.Column, width);
-+            saved.IsDelayedEOLWrap = false;
++            saved.Row = std::min<VTInt>(saved.Row, size.height);
++            if (widthChanged)
++            {
++                saved.Column = std::min<VTInt>(saved.Column, size.width);
++                saved.IsDelayedEOLWrap = false;
++            }
 +        }
 +
 diff --git a/src/winconpty/dll/winconpty.def b/src/winconpty/dll/winconpty.def

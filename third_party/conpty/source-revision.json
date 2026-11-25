@@ -1,6 +1,6 @@
 {
   "name": "Microsoft Windows Console ConPTY (TermForge source revision)",
-  "version": "1.25.260930003-termforge.2",
+  "version": "1.25.260930003-termforge.3",
   "architecture": "win-x64",
   "license": "MIT",
   "source_commit": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
