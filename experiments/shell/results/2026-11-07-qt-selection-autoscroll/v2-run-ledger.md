@@ -34,3 +34,9 @@
 - 首个失败是 sanity 复制后 `pre-drag state drifted`，未启动定时器拖拽，18 字节仍待验证。主管退出 1，Job 后置活动进程为 0。本次授权执行 1/1。
 - v2 第 3 步要求在正式拖拽前重新定位 `TF_H_100`，原夹具只断言视口仍在原处。Qt 6.10.3 的 `QTest::keyClick` 会先投递单独的修饰键 press，当前 `TerminalWidget` 会把此类事件送进历史回到底部的路径。这解释了复制字节正确且 viewport 可能改变的机制，失败记录没有保存漂移终点。 [v2 协议](https://github.com/JavaZeroo/termforge/pull/327#issuecomment-6717182670) · [Qt 6.10.3 源码](https://github.com/qt/qtbase/blob/v6.10.3/src/testlib/qtestkeyboard.h)
 - 下一版夹具在 sanity 使用明确的同行鼠标 Move，记录复制后视口，通过独立的公开 Home 和滚动条单步重新定位后再拖拽。正式产品逻辑、固定字面、500ms 稳定窗、默认 40ms 定时均沿用原协议。
+
+## 重新定位后的授权复验（2026-11-25，已通过）
+
+- 冻结 `cf5fd1d`，在 Windows hosted runner、Qt offscreen、随包固定 ConPTY 下手动执行一次。38 行网格与 100 行历史保留 `TF_H_099`、`TF_H_100`；同行普通拖选复制精确得到 `54465f485f313030`（8 字节）。复制后读到视口回到 `top=100`、`row0=TF_H_185`，第二次公开定位回到 `top=13`、`row0=TF_H_100`。 [运行](https://github.com/JavaZeroo/termforge/actions/runs/45525355821/job/138907208208) · [脱敏结果](literal-v2-positioned-20261125.json)
+- 默认 40ms 定时器只产生一次 `valueChanged`（13→12）；在该槽中送出鼠标释放，200ms 观察期无后续滚动。两行起止点与可见高亮通过夹具断言，复制精确得到 `54465f485f3039390d0a54465f485f313030`（18 字节，无尾随 CRLF）。监督器退出 0，Job 活动进程为 0。
+- 授权已执行 1/1。本切片覆盖 Qt offscreen、固定硬行和默认定时器的一次拖拽，系统剪贴板、物理输入呈现以及其他历史/resize 交叉保持其各自验收范围。
