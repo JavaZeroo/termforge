@@ -103,6 +103,7 @@ jobs:
           $codes | ConvertTo-Json | Set-Content -LiteralPath "$out/exit-codes.json" -Encoding UTF8
           if ($codes['win32-compat'] -ne 0 -or ($env:VARIANT -eq 'candidate' -and
             ($codes['native-resize-map'] -ne 0 -or $codes['resize'] -ne 0))) { exit 1 }
+          exit 0
       - name: Run the retained text, resize and Qt interaction matrix
         if: always()
         run: |
