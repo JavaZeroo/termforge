@@ -278,8 +278,31 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         terminal.grab();
         const auto& page = terminal.painted_page();
         require(page.has_value(), "BCD painted page unavailable");
+        const size_t offset = terminal.painted_row_offset();
         for (size_t row = 0; row < page->lines.size(); ++row)
             painted_rows.append(QString::fromStdString(hex(display_row(*page, row))));
+        // The frozen reference's marker rectangles are aligned to its 8x18
+        // cells. Normalize them to visible row/column before comparing the
+        // Qt paint page. This oracle uses neither native cells nor source rank.
+        auto expected_visible = std::vector<std::string>(static_cast<size_t>(rows));
+        if (!shrunk) {
+            expected_visible[7] = expected[7];
+            expected_visible[9] = expected[9];
+            expected_visible[10] = "D";
+            if (stage == 4) expected_visible[11] = "RESIZED";
+        } else if (stage == 2) {
+            expected_visible[7] = std::string(19, ' ') + 'B';
+            expected_visible[10] = std::string(19, ' ') + 'C';
+            expected_visible[11] = "D";
+        } else {
+            expected_visible[6] = std::string(19, ' ') + 'B';
+            expected_visible[9] = std::string(19, ' ') + 'C';
+            expected_visible[10] = "D";
+            expected_visible[11] = "RESIZED";
+        }
+        bool display_matches = offset + expected_visible.size() <= page->lines.size();
+        for (size_t row = 0; display_matches && row < expected_visible.size(); ++row)
+            display_matches = display_row(*page, offset + row) == expected_visible[row];
         const QJsonObject record{
             {"schema", "termforge-qt-bcd-stage-v1"}, {"reference_phase", static_cast<int>(stage - 1)},
             {"child_source_hex", QString::fromStdString(hex(bcd_source(stage)))},
@@ -297,14 +320,15 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
             {"native_cursor_rc", QJsonArray{info.dwCursorPosition.Y, info.dwCursorPosition.X}},
             {"core_cursor_rc", QJsonArray{screen.row, screen.column}},
             {"painted_caret_rc", QJsonArray{terminal.display_caret_row(), terminal.display_caret_column()}},
-            {"painted_row_offset", static_cast<qint64>(terminal.painted_row_offset())},
+            {"painted_row_offset", static_cast<qint64>(offset)},
             {"native_rows_hex", native_rows}, {"source_rows_hex", source_rows}, {"projected_rows_hex", painted_rows},
             {"source_matches_reference", source_matches}, {"dsr_matches_reference", dsr_matches},
+            {"display_matches_reference", display_matches},
             {"child_geometry_matches", geometry_matches}};
         std::cerr << QJsonDocument(record).toJson(QJsonDocument::Compact).constData() << '\n';
         transport_offset = static_cast<size_t>(transport_end);
         ++compared;
-        if (!source_matches || !dsr_matches || !geometry_matches) ++different;
+        if (!source_matches || !dsr_matches || !geometry_matches || !display_matches) ++different;
     }
     QTest::keyClicks(&terminal, QStringLiteral("x"));
     await([&] { return model.finished(); }, model, lifecycle, "BCD child did not finish naturally");
