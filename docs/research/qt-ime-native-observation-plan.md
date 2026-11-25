@@ -2,6 +2,8 @@
 
 本页维护观察协议、资源上限与执行前置；各次尝试的源码/运行包、失败和验收状态由 [#155](https://github.com/JavaZeroo/termforge/issues/155)维护，N1等名称仅标识历史尝试。本文不构成执行授权或原生通过结论，也不改变 [R2](../milestones/R2-local-terminal.md)、原版优先规则或性能容差。公开事件与原生观察各自留证；每次由 root 在源码、运行包和协议经审查后冻结独立租约，独占隔离 Windows 11 VM 执行。
 
+Qt IME 接线前的测试设计和待验证假设见[初始计划存档](https://github.com/JavaZeroo/termforge/blob/b1671e15fe6517e243895595afec7b4e0980467b/docs/research/qt-ime-integration-plan.md)。
+
 ## 固定入口与来源
 
 入口为 qt_ime_input_test.exe --native-ime-observer <new-absolute-output-directory>。从既有 stdin 精确 GO+LF、OwnedJob 检查之后创建 QApplication；native分支立即进入观察器，不调用默认测试数组的 QInputMethodEvent/QKeyEvent/QTest 注入函数。它只接受 windows 平台插件，拒绝 offscreen。显式 --offscreen-ime-observer-lifecycle 复用同一个观察器、实际SessionTabs/ConPTY与两个接收端，仅检查正常/取消应用生命周期，绝不替代原生IME。两个独立lifecycle CTest各保留25秒supervisor、5秒共享清理及35秒CTest上限；旧focused的25/35秒和20秒controlled-child默认保持不变。

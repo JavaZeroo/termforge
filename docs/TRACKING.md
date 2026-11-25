@@ -44,20 +44,7 @@ python tools/sync_github_project.py           # 同步字段、视图、条目�
 
 ## R2 实施与交付入口
 
-当前队列与计数以 [#7](https://github.com/JavaZeroo/termforge/issues/7) 为准。下表按用户结果分组；父项、汇总项和子任务不能重复计算工作量。`ready-for-agent` 只说明独立工作可开始，实际开工仍须核对原生阻塞关系。
-
-| 工作包 | 责任任务 | 交付边界 |
-|---|---|---|
-| 终端模式、备用屏与滚动区 | [#27](https://github.com/JavaZeroo/termforge/issues/27) | 原版合同下的自主 C++ 模式及交叉验证；已实现切片不等于全部模式验收 |
-| 查询回复、应用模式与真实 TUI | [#28](https://github.com/JavaZeroo/termforge/issues/28) | 固定应用矩阵，进入/操作/resize/退出/恢复，产品路径协议与字节独立验证 |
-| resize、逻辑行与历史 | [#29](https://github.com/JavaZeroo/termforge/issues/29) | 用户明确保留；软硬行、宽字、历史/淘汰、选择/Find 和真实 child 尺寸 |
-| Unicode、IME 与文字交互 | [#30](https://github.com/JavaZeroo/termforge/issues/30)，含 [Qt IME #155](https://github.com/JavaZeroo/termforge/issues/155) | 用户明确保留；#155 是其子项，固定拼音/候选框的局部结果不代替完整文字输入 |
-| controller 正常退出 | [#44](https://github.com/JavaZeroo/termforge/issues/44) | close 前自然退出观测与清理分列，不由后续绿解释旧因 |
-| hosted 四 shell 退出 | [#80](https://github.com/JavaZeroo/termforge/issues/80) | 原 stage6 事件与已实现就绪握手分别留证 |
-| hosted 剪贴板超时 | [#99](https://github.com/JavaZeroo/termforge/issues/99) | 原占用反馈后超时、重试/取消/关闭与回收边界 |
-| 最终基础开发包 | [#35](https://github.com/JavaZeroo/termforge/issues/35) | 产品默认入口切换后重建复验、单屏 96/144、声明配置范围、来源许可与逐项已知差异清单 |
-
-[#38](https://github.com/JavaZeroo/termforge/issues/38)汇总可靠性，#7 汇总 R2；两者不重复算作实现工作包。最终包按 [R2 合同](milestones/R2-local-terminal.md)核对保留任务，不能把“附差异清单”解释成任意缺口均可豁免。
+工作包、责任 issue 和完成条件见 [R2 交付顺序与责任](milestones/R2-local-terminal.md#交付顺序与责任)。当前队列与计数见 [R2 总项 #7](https://github.com/JavaZeroo/termforge/issues/7)。开工前核对 issue 的状态与原生阻塞关系。
 
 ## 已确认收口与责任承接
 
