@@ -4,7 +4,7 @@
 
 ## 运行与停止
 
-[工作流](../../.github/workflows/r54-cost.yml)只在实验分支 `perf/grapheme-hosted-r54` 的创建 push 事件执行成本作业，不在 PR 事件或后续源码/证据修正时自动补跑，也不改变 main 的默认构建。每次工作流用独立 run ID、attempt、源码和输出目录；拒绝对旧 workflow run 的 attempt 2 及后续重跑。首次运行后，新的调查需先明确假设、范围和新身份，再审查执行入口，不能由导出器修正偷偷触发替代样本。
+[归档工作流](https://github.com/JavaZeroo/termforge/blob/b1671e15fe6517e243895595afec7b4e0980467b/.github/workflows/r54-cost.yml)当时只在实验分支 `perf/grapheme-hosted-r54` 的创建 push 事件执行成本作业，不在 PR 事件或后续源码/证据修正时自动补跑，也不改变 main 的默认构建。原执行入口和复建配方可从固定提交查阅，已发布样本可按[结果页](results/2026-10-27-r54-hosted/README.md)复核。每次工作流用独立 run ID、attempt、源码和输出目录；拒绝对旧 workflow run 的 attempt 2 及后续重跑。首次运行后，新的调查需先明确假设、范围和新身份，再审查执行入口，不能由导出器修正偷偷触发替代样本。
 
 同一虚拟机依次完成固定 Python/Rust、纯合同测试、两份来源构建、四次短正确性检查，再运行原两个种子。构建和测试结束后才开始成本预检与计时。没有自动恢复、补样、重试或放宽5%环境诊断护栏的入口；第一批失败即保留当前位置，第二批不启动。两批成功也只写 `complete_diagnostic`，`performance_gate=not_evaluated`。
 

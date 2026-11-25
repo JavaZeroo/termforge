@@ -4,7 +4,7 @@
 
 ## 固定执行
 
-以 PR #106 的 `beeb64496b2e2898e8619fa5e9c39f490a3891c4` 为基点。入口为[工作流](../../.github/workflows/r54-cpu.yml)，只接受下述三个明确分支的创建push，拒绝attempt2；后续代码/导出器/证据修正不自动触发替代观察。原 `r54-cost.yml`、两批各112位置、原5%护栏及其失败记录不变。
+以 PR #106 的 `beeb64496b2e2898e8619fa5e9c39f490a3891c4` 为基点。当时的入口是[归档工作流](https://github.com/JavaZeroo/termforge/blob/b1671e15fe6517e243895595afec7b4e0980467b/.github/workflows/r54-cpu.yml)，只接受下述三个明确分支的创建push，拒绝attempt2；后续代码/导出器/证据修正不自动触发替代观察。原[成本批次工作流](https://github.com/JavaZeroo/termforge/blob/b1671e15fe6517e243895595afec7b4e0980467b/.github/workflows/r54-cost.yml)与两批各112位置、原5%护栏及失败记录可继续复核。
 
 首个`perf/grapheme-cpu-hosted-r54`创建作业 [40509157581](https://github.com/JavaZeroo/termforge/actions/runs/40509157581) 来自`eed0ab7bae5fcc5d05a25cea5161dabc4f935878`，attempt1，在31项准备测试中的发布夹具路径边界比较处失败。夹具根路径未规范化，被测发布器则将输入路径resolve后比较；旧job没有记录该临时目录的实际路径形式。构建、诊断和导出均未启动，实际观察为0，旧run不重跑。本地使用真实8.3别名复现了该缺陷：旧比较为false、规范化后为true；这不是旧hosted路径形式的直接证据。修正仅将夹具根目录规范化，不放宽发布器路径边界。
 
