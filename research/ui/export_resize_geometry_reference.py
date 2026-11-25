@@ -12,25 +12,14 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from research.ui import export_mode_state_reference as common
 from research.ui import resize_geometry_reference as probe
+from research.ui.resize_export_io import read
 
 require, sha, digest, integer = common.require, common.sha, common.digest, common.integer
-EXPORT_SOURCES = ("research/ui/export_resize_geometry_reference.py", "research/ui/export_mode_state_reference.py")
+EXPORT_SOURCES = ("research/ui/export_resize_geometry_reference.py", "research/ui/export_mode_state_reference.py",
+                  "research/ui/resize_export_io.py")
 RAW_NAMES = ("evidence.json", "run.json", "probe.js", "peer.json", probe.RESULT_FILE, "files.json",
              "mechanics-check.json", "stderr.txt", "profile-check.json", "cleanup.json", "fixture-ready",
              "ack-0", "ack-1", "resize-request-1", "geometry-ready-1")
-
-
-def read(path):
-    require(path.stat().st_size <= 4*1024*1024, "Recording exceeds byte bound")
-    def unique(pairs):
-        result = {}
-        for key, value in pairs:
-            require(key not in result, "Duplicate recording field")
-            result[key] = value
-        return result
-    def nonfinite(_):
-        raise ValueError("Nonfinite JSON value")
-    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique, parse_constant=nonfinite)
 
 
 def fields(value, names):

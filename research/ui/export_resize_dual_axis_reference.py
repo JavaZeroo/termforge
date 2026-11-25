@@ -13,11 +13,12 @@ sys.path.insert(0, str(ROOT))
 from research.ui import export_mode_state_reference as common
 from research.ui import export_resize_state_reference as resize_export
 from research.ui import resize_dual_axis_reference as probe
+from research.ui.resize_export_io import adapt, extract, read
 
 require, sha, digest, integer = common.require, common.sha, common.digest, common.integer
 MARKERS = probe.MARKERS
 EXPORT_SOURCES = ("research/ui/export_resize_dual_axis_reference.py", "research/ui/export_resize_state_reference.py",
-                  "research/ui/export_mode_state_reference.py")
+                  "research/ui/export_mode_state_reference.py", "research/ui/resize_export_io.py")
 
 
 def raw_names(case):
@@ -25,32 +26,6 @@ def raw_names(case):
             "mechanics-check.json", "stderr.txt", "profile-check.json", "cleanup.json", "fixture-ready",
             *(f"ack-{n}" for n in range(len(probe.phases(case)))),
             *(f"resize-{kind}-{n}" for n in probe.resize_phases(case) for kind in ("request", "ready")))
-
-
-def read(path):
-    require(path.stat().st_size <= 4*1024*1024, "Recording exceeds byte bound")
-    def unique(pairs):
-        result = {}
-        for key, value in pairs:
-            require(key not in result, "Duplicate recording field")
-            result[key] = value
-        return result
-    def nonfinite(_):
-        raise ValueError("Nonfinite JSON value")
-    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique, parse_constant=nonfinite)
-
-
-def adapt(source, changes):
-    for old, new in changes.items():
-        require(source.count(old) == 1, "Protected offline audit adapter changed: "+old)
-        source = source.replace(old, new)
-    return source
-
-
-def extract(path, start, end):
-    source = path.read_text(encoding="utf-8")
-    require(source.count(start) == source.count(end) == 1, "Protected offline audit function boundary changed")
-    return start+source.split(start, 1)[1].split(end, 1)[0]
 
 
 def expected_probe(plan, run, source_root):
@@ -68,8 +43,7 @@ def expected_probe(plan, run, source_root):
     return generated.encode().replace(b"\n", b"\r\n")
 
 
-# The immutable existing helpers are adapted in fresh namespaces. Each textual
-# boundary is checked, and all three offline source files are identified below.
+# Adapt frozen functions in fresh namespaces and record their origins in EXPORT_SOURCES.
 _source = extract(Path(common.__file__), "def provenance_facts(", "\n\ndef export(")
 _source = adapt(_source, {
     "One original launch attempt; retain after failure and never retry this plan.": probe.ATTEMPT.rstrip("\n"),
