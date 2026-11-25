@@ -395,10 +395,11 @@ public:
     void enter_alternate_mode() {
         if (active_buffer_ == ScreenBuffer::alternate) {
             invalidate_buffer_readers();
-            return;
+        } else {
+            activate_buffer(ScreenBuffer::alternate);
+            primary_cursor_after_alternate_reset_.reset();
         }
-        activate_buffer(ScreenBuffer::alternate);
-        primary_cursor_after_alternate_reset_.reset();
+        // Each 1049 entry restores full-height margins on the active alternate frame.
         scroll_top = 0;
         scroll_bottom = -1;
     }

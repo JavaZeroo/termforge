@@ -186,7 +186,7 @@ std::string exchange(HANDLE input, HANDLE output, std::string_view source, bool&
 // Child-side receiver. It never reads the screen or console APIs beyond modes,
 // so it cannot trigger conhost's cursor-sync DSR path; the only observed input
 // is what the host actually delivered through ConPTY.
-int query_child(const std::filesystem::path& result, bool ris_trace = false) {
+int query_child(const std::filesystem::path& result, bool cursor_trace = false) {
     try {
         const HANDLE input = GetStdHandle(STD_INPUT_HANDLE);
         const HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -203,10 +203,10 @@ int query_child(const std::filesystem::path& result, bool ris_trace = false) {
                                           ENABLE_VIRTUAL_TERMINAL_PROCESSING |
                                           DISABLE_NEWLINE_AUTO_RETURN),
                 "query child VT output mode setup failed");
-        if (ris_trace) {
+        if (cursor_trace) {
             std::ifstream phases("sources.hex");
             std::ofstream replies(result, std::ios::binary);
-            require(bool(phases) && bool(replies), "RIS trace files unavailable");
+            require(bool(phases) && bool(replies), "Cursor trace files unavailable");
             std::string line;
             size_t count = 0;
             while (std::getline(phases, line)) {
@@ -214,7 +214,7 @@ int query_child(const std::filesystem::path& result, bool ris_trace = false) {
                 bool timed_out, complete;
                 const auto received = exchange(input, output, source, timed_out, complete);
                 replies << hex(received) << std::endl;
-                require(bool(replies) && complete && !timed_out, "RIS phase reply incomplete");
+                require(bool(replies) && complete && !timed_out, "Cursor phase reply incomplete");
                 ++count;
             }
             return phases.eof() && count == 14 ? 0 : 5;
@@ -390,52 +390,59 @@ ProductStage run_product(const std::filesystem::path& executable, const std::fil
 
 // The child receives only the recorded inputs. Collect the entire trajectory
 // before comparing its DSR replies with the independent WindTerm observation.
-int compare_ris_trace(const std::filesystem::path& exe, const std::filesystem::path& directory,
-                      const std::filesystem::path& reference) {
+int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem::path& directory,
+                      const std::filesystem::path& reference, bool margin_case) {
     const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(read_binary(reference)));
     const auto record = document.object().value("reference").toObject();
+    if (margin_case)
+        require(document.object().value("case_id").toString() == QStringLiteral("alternate-duplicate-margin"),
+                "wrong duplicate-margin reference file");
+    else
+        require(document.object().value("schema").toString() == QStringLiteral("termforge-original-alternate-ris-followup-summary-v1"),
+                "wrong RIS reference file");
     const auto phases = record.value("phases").toArray();
     const auto grid = record.value("grid").toArray();
     require(grid.size() == 2 && grid[0].toInt() == 91 && grid[1].toInt() == 25 && phases.size() == 14,
-            "invalid RIS reference geometry or phase count");
+            "invalid cursor reference geometry or phase count");
     std::ofstream sources(directory / "sources.hex");
     for (int index = 0; index < phases.size(); ++index) {
         const auto phase = phases[index].toObject();
         const auto source = phase.value("source_hex").toString().toLatin1();
         require(phase.value("phase").toInt(-1) == index && !source.isEmpty() &&
-                QByteArray::fromHex(source).toHex() == source, "invalid RIS phase input");
+                QByteArray::fromHex(source).toHex() == source, "invalid cursor phase input");
         sources << source.toStdString() << '\n';
     }
     sources.close();
-    require(bool(sources), "could not write RIS inputs");
+    require(bool(sources), "could not write cursor inputs");
 
     SessionModel model;
     model.enable_transport_capture();
-    require(model.resize(91, 25) && model.start(exe.wstring(), L"--ris-child", directory.wstring()),
-            "could not start the RIS session");
+    require(model.resize(91, 25) && model.start(exe.wstring(), L"--cursor-child", directory.wstring()),
+            "could not start the cursor trace session");
     QElapsedTimer lifecycle;
     lifecycle.start();
     while (!model.finished() && lifecycle.elapsed() < static_cast<qint64>(product_finish_timeout_ms))
         QTest::qWait(5);
     require(model.finished() && model.error().isEmpty() && model.natural_exit() && model.output_eof() &&
-            model.cleanup_verified() && model.active_processes_after() == 0, "RIS session lifecycle failed");
-    std::cerr << "RIS transport_hex=" << hex(model.transport_capture())
+            model.cleanup_verified() && model.active_processes_after() == 0, "cursor trace session lifecycle failed");
+    std::cerr << "cursor trace transport_hex=" << hex(model.transport_capture())
               << " child_exit=" << model.exit_code() << '\n';
     std::ifstream replies(directory / "replies.hex", std::ios::binary);
     int differences = 0;
     for (int index = 0; index < phases.size(); ++index) {
         const auto cursor = phases[index].toObject().value("cursor_reply").toArray();
-        require(cursor.size() == 2, "RIS reference cursor missing");
+        require(cursor.size() == 2, "reference cursor missing");
         const auto expected = hex("\x1b[" + std::to_string(cursor[0].toInt()) + ";" +
                                   std::to_string(cursor[1].toInt()) + "R");
         std::string actual;
-        require(bool(std::getline(replies, actual)), "RIS child result missing a phase");
-        std::cerr << "RIS phase=" << index << " expected=" << expected << " child=" << actual << '\n';
+        require(bool(std::getline(replies, actual)), "cursor trace child result missing a phase");
+        std::cerr << "cursor trace phase=" << index << " expected=" << expected << " child=" << actual << '\n';
         if (actual != expected) ++differences;
     }
     require(replies.peek() == std::char_traits<char>::eof() && model.exit_code() == 0,
-            "RIS child did not finish the fixed trajectory");
-    std::cout << "{\"scenario\":\"alternate-ris-cursor\",\"phases\":14,\"differences\":"
+            "cursor trace child did not finish the fixed trajectory");
+    std::cout << "{\"scenario\":\"" << (margin_case ? "alternate-duplicate-margin" : "alternate-ris-cursor")
+              << "\",\"phases\":14,\"differences\":"
               << differences << ",\"cleanup_verified\":true}\n";
     return differences ? 1 : 0;
 }
@@ -458,10 +465,11 @@ int main(int argc, char** argv) {
     if (argc == 3 && std::string_view(argv[1]) == "--query-child") {
         return query_child(std::filesystem::path(argv[2]));
     }
-    if (argc == 2 && std::string_view(argv[1]) == "--ris-child") return query_child("replies.hex", true);
+    if (argc == 2 && (std::string_view(argv[1]) == "--cursor-child" || std::string_view(argv[1]) == "--ris-child")) return query_child("replies.hex", true);
     const bool ris = argc == 3 && std::string_view(argv[1]) == "--ris-reference";
-    if (argc != 1 && !ris) {
-        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE]\n";
+    const bool margin = argc == 3 && std::string_view(argv[1]) == "--duplicate-margin-reference";
+    if (argc != 1 && !ris && !margin) {
+        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE]\n";
         return 2;
     }
     char gate[3]{};
@@ -482,7 +490,7 @@ int main(int argc, char** argv) {
         const std::filesystem::path exe(executable);
         const std::filesystem::path directory(workspace.path().toStdWString());
 
-        if (ris) return compare_ris_trace(exe, directory, argv[2]);
+        if (ris || margin) return compare_cursor_trace(exe, directory, argv[2], margin);
 
         const auto silent = run_raw(exe, directory, directory / "raw-silent.bin", std::nullopt);
         emit_raw("raw-silent", silent);
