@@ -56,7 +56,7 @@ diff --git a/src/host/PtySignalInputThread.cpp b/src/host/PtySignalInputThread.c
 +void PtySignalInputThread::_DoResizeWindow(const ResizeWindowData& data, const std::array<uint8_t, 16>* token)
 @@ -182,0 +193 @@
 +        _earlyResizeToken = token ? std::optional(*token) : std::nullopt;
-@@ -186 +197,50 @@
+@@ -186 +197,58 @@
 -    _api.ResizeWindow(data.sx, data.sy);
 +    if (!token)
 +    {
@@ -72,6 +72,14 @@ diff --git a/src/host/PtySignalInputThread.cpp b/src/host/PtySignalInputThread.c
 +    screen.PtyResizeOperations = &operations;
 +    const auto stopRecording = wil::scope_exit([&] { screen.PtyResizeOperations = nullptr; });
 +    const auto success = _api.ResizeWindow(data.sx, data.sy);
++    auto& primary = screen.GetMainBuffer();
++    if (success && &primary != &screen)
++    {
++        // The terminal retains the hidden primary during each size revision.
++        // Bring its native viewport forward under the same console lock.
++        const til::size size{ data.sx, data.sy };
++        primary.SetViewportSize(&size);
++    }
 +    const auto target = screen.GetBufferSize().Dimensions();
 +    const auto window = screen.GetViewport().ToInclusive();
 +    const auto cursor = screen.GetTextBuffer().GetCursor().GetPosition();
