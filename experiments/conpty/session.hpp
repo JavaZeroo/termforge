@@ -1,4 +1,4 @@
-// Original, bounded ConPTY lifecycle experiment. MIT; see repository LICENSE.
+// Bounded ConPTY lifecycle management. MIT; see repository LICENSE.
 #pragma once
 #include <windows.h>
 #include <atomic>
@@ -34,10 +34,9 @@ public:
     }
 };
 
-// Output has its own draining thread: ClosePseudoConsole must not block the
-// only reader. Input calls are deliberately small in this lifecycle probe.
-// The local shell supplies an external bounded streaming consumer and input
-// worker; the lifecycle probe uses bounded capture and its --child entry point.
+// A separate reader keeps draining output during ClosePseudoConsole.
+// The local shell supplies a streaming consumer and input worker. The
+// lifecycle probe uses bounded capture and its --child entry point.
 class Session {
     // Keep the API module alive until the reader, HPCON and handles stop.
     Backend backend_;

@@ -1,4 +1,3 @@
-// Bounded CF_UNICODETEXT reader for the formal Qt paste entry.
 #pragma once
 #include <QGuiApplication>
 #include <QClipboard>

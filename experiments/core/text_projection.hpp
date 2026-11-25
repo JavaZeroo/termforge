@@ -1,4 +1,4 @@
-// Shared original text/coordinate projection for later selection and search.
+// Source text and coordinate projection shared by selection and search.
 // Project one physical row at a time so callers can bound work and cancel.
 #pragma once
 #include "screen.hpp"

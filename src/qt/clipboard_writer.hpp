@@ -1,4 +1,3 @@
-// Bounded CF_UNICODETEXT writer for the formal Qt copy entry.
 #pragma once
 #include <QGuiApplication>
 #include <QClipboard>

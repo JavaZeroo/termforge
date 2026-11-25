@@ -53,9 +53,8 @@
 
 namespace termforge::qt {
 
-// Isolated diagnostic injection for the wheel regression. It models the three
-// native outcomes without changing the host setting: a line count (0 disables),
-// WHEEL_PAGESCROLL, or a failed SPI query (the R1 fallback is 3 lines).
+// Inject a line count (0 disables), a page, or a failed native wheel query
+// without changing the host setting.
 struct WheelSettingForTest {
     enum class Kind { line_count, page, query_failure };
     Kind kind = Kind::line_count;
@@ -118,8 +117,6 @@ class TerminalWidget final : public QWidget {
     // Whole wheel detents only; the remainder is retained like the Win32
     // history path. A browsing page is projected from its source anchor.
     int wheel_remainder_ = 0;
-    // Recoverable diagnostic override used by the isolated Qt history
-    // regression; production reads the native Windows setting per event.
     std::optional<WheelSettingForTest> wheel_setting_override_;
     void refresh_metrics() {
         const QFontMetricsF metrics(font());
@@ -510,18 +507,14 @@ class TerminalWidget final : public QWidget {
             }
         }
 #ifdef Q_OS_WIN
-        // Reuse the R1 native query on every wheel event. R1 initializes the
-        // value to 3 before SPI; a failed query therefore keeps 3 lines rather
-        // than inventing a page mode. WHEEL_PAGESCROLL is the documented
-        // page-sized value and becomes visible height minus one, at least one.
+        // Read the native setting per event. Keep the three-line fallback
+        // on failure and overlap successive pages by one row.
         UINT lines = 3;
         if (!SystemParametersInfoW(SPI_GETWHEELSCROLLLINES, 0, &lines, 0)) return 3;
         if (lines == WHEEL_PAGESCROLL)
             return (std::max)(int64_t{1}, static_cast<int64_t>(model_.screen().height()) - 1);
         return static_cast<int64_t>(lines);
 #else
-        // Other platforms have no confirmed page marker in this route: only a
-        // positive QStyleHints line count scrolls; zero disables.
         const int lines = QGuiApplication::styleHints()->wheelScrollLines();
         return lines > 0 ? lines : 0;
 #endif
@@ -639,8 +632,6 @@ class TerminalWidget final : public QWidget {
             case Qt::Key_F1: case Qt::Key_F2: case Qt::Key_F3: case Qt::Key_F4:
             case Qt::Key_F5: case Qt::Key_F6: case Qt::Key_F7: case Qt::Key_F8:
             case Qt::Key_F9: case Qt::Key_F10: case Qt::Key_F11: case Qt::Key_F12: {
-                // Same table the Win32 encoder uses: SS3 letters for F1-F4 and
-                // the xterm tilde numbers for F5-F12.
                 static const char* const function_keys[] = {
                     "\x1bOP", "\x1bOQ", "\x1bOR", "\x1bOS",
                     "\x1b[15~", "\x1b[17~", "\x1b[18~", "\x1b[19~",
@@ -1046,8 +1037,7 @@ public:
         fixed.setStyleHint(QFont::TypeWriter); fixed.setPointSize(11); setFont(fixed);
         refresh_metrics();
         setFocusPolicy(Qt::StrongFocus);
-        // #155: composition, commit and cancel arrive through Qt's input method
-        // events; the widget only forwards committed text and never guesses.
+        // Qt input method events keep preedit local and forward only committed text.
         setAttribute(Qt::WA_InputMethodEnabled, true);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         resize(sizeHint());
@@ -1102,9 +1092,6 @@ public:
     // never mutate the painted page or the protocol cursor.
     const std::optional<ViewSnapshot>& painted_page() const { return painted_page_; }
     size_t painted_row_offset() const { return painted_row_offset_; }
-    // Diagnostic/read-only history state for the Qt regression; state is
-    // reconciled against the current owner screen.
-    // Isolated Qt test/diagnostic setting; does not change the host setting.
     void setWheelSettingForTest(std::optional<WheelSettingForTest> setting) {
         wheel_setting_override_ = setting;
     }
@@ -1114,8 +1101,7 @@ public:
     int history_scrollbar_extent_for_test() const { return scrollbar_extent_; }
     bool history_following() const { return viewport_.following(); }
     uint64_t history_anchor() const { return viewport_.anchor(); }
-    // Internal selection extraction for the Qt regression and future copy UI.
-    // This is not a system-clipboard path and is bounded by the caller's limit.
+    // Extract selection bytes up to the caller's limit without using the clipboard.
     SelectionCopy copy_selection(size_t maximum_bytes = 4 * 1024 * 1024) {
         return selection_.copy(TextDocument(model_.screen()), maximum_bytes);
     }

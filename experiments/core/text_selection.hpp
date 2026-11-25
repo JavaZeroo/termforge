@@ -11,18 +11,14 @@ struct SelectionCopy {
 };
 class TextSelection {
 public:
-    // Diagnostics only: never changes behaviour. A consumer may install a hook to
-    // learn why a reconciled selection was discarded; the hook runs synchronously
-    // on the caller's thread and must not reenter selection or the document.
-    // Diagnostics only: the report names the branch and, where it helps, the
-    // row plus the saved/current projection shape that differed.
+    // A discard report identifies the failed check and any differing row projection.
+    // The observer runs synchronously and must not reenter selection or the document.
     struct DiscardReport {
         const char* reason = "";
         size_t row = 0;
         size_t saved_bytes = 0, current_bytes = 0;
         size_t saved_columns = 0, current_columns = 0;
-        // #194: the bytes that differed, so a partial repaint can be told apart
-        // from a real content change without re-running the scenario.
+        // Differing bytes help distinguish a partial repaint from a content change.
         std::string saved_text, current_text;
     };
     using DiscardObserver = void (*)(const DiscardReport&);
