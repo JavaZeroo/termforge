@@ -106,6 +106,17 @@ Screen hidden_frame(const Screen& screen) {
 std::string line_text(const termforge::Line& line) {
     return termforge::project_line(line).text;
 }
+bool retained_marker(const Screen& screen, size_t index, bool mapped) {
+    if (index >= screen.retained_size()) return false;
+    const auto& row = screen.retained_line(index);
+    if (mapped && screen.width() == 61) {
+        const TextDocument document(screen);
+        return index + 1 < document.size() && row.size() == 61 && document.meta(index).joins_next &&
+               document.line(index).projection.text == std::string(61, ' ') &&
+               document.line(index + 1).projection.text == std::string(28, ' ') + "uvw";
+    }
+    return row.size() == 91 && line_text(row) == std::string(89, ' ') + "uv";
+}
 std::string display_row(const termforge::ViewSnapshot& page, size_t row) {
     if (row >= page.lines.size()) return {};
     std::string text;
@@ -283,6 +294,7 @@ int main(int argc, char** argv) {
                             QString::fromUtf8(child_log_path).toStdWString() + L"\"",
                             workspace.path().toStdWString()), "hidden-retention child did not start");
         const auto ready = wait_reply(fixture, 0, model, lifecycle);
+        const bool mapped = model.uses_host_resize_maps();
         require(ready.info.dwSize.X == 80 && ready.info.dwSize.Y == 24,
                 "child did not start at the literal 80x24 geometry");
         require(model.screen().width() == 80 && model.screen().height() == 24 &&
@@ -343,9 +355,7 @@ int main(int argc, char** argv) {
         records.push_back(capture_stage(2, reply, model.screen()));
         check(model.screen().active_buffer() == ScreenBuffer::primary, "phase 2 is not primary");
         check(body_of(model.screen()) == expected_body(), "phase 2 narrowing lost retained body text");
-        check(model.screen().visible_lines()[11].size() == 91 &&
-              line_text(model.screen().visible_lines()[11]) == std::string(89, ' ') + "uv",
-              "phase 2 narrowing rewrote the retained source row");
+        check(retained_marker(model.screen(), 11, mapped), "phase 2 narrowing changed the retained logical row");
         check(model.screen().visible_lines()[11].id == retained_id, "phase 2 line identity changed");
         {
             terminal.grab();
@@ -362,8 +372,8 @@ int main(int argc, char** argv) {
                 const auto hit = page->mapping.hit(TextDocument(model.screen()), 12, 28,
                                                    termforge::ViewAffinity::leading,
                                                    page->mapping.layout_revision());
-                check(hit.has_value() && hit->line_id == retained_id && hit->column == 89,
-                      "phase 2 hit-test did not return retained row 11 column 89");
+                check(hit && hit->line_id == (mapped ? model.screen().visible_lines()[12].id : retained_id) &&
+                      hit->column == (mapped ? 28 : 89), "phase 2 hit-test did not return the retained u cell");
             }
         }
 
@@ -381,8 +391,8 @@ int main(int argc, char** argv) {
             check(hidden.active_buffer() == ScreenBuffer::primary, "phase 3 hidden frame is not primary");
             check(hidden.history_size() == 0 && body_of(hidden) == expected_body(),
                   "phase 3 hidden primary body was lost on alternate entry");
-            check(hidden.visible_lines()[11].size() == 91 && hidden.visible_lines()[11].id == retained_id,
-                  "phase 3 hidden primary row identity changed");
+            check(retained_marker(hidden, 11, mapped) && hidden.visible_lines()[11].id == retained_id,
+                  "phase 3 hidden primary logical row or identity changed");
             check(hidden.row == 18 && hidden.column == 6, "phase 3 hidden primary cursor changed");
         }
 
@@ -401,9 +411,8 @@ int main(int argc, char** argv) {
             check(hidden.history_size() == 5, "phase 4 hidden height shrink did not append the prefix");
             check(body_of(hidden) == expected_body(), "phase 4 hidden height-only shrink lost body text");
             const auto index = hidden.locate(retained_id);
-            check(index.has_value() && *index == 11 && hidden.retained_line(*index).size() == 91 &&
-                  line_text(hidden.retained_line(*index)) == std::string(89, ' ') + "uv",
-                  "phase 4 hidden height-only shrink rewrote the retained row");
+            check(index && *index == 11 && retained_marker(hidden, *index, mapped),
+                  "phase 4 hidden height-only shrink changed the retained logical row");
             check(hidden.row == 13 && hidden.column == 6,
                   "phase 4 hidden primary cursor did not follow the retained prefix");
         }
@@ -423,8 +432,8 @@ int main(int argc, char** argv) {
             check(hidden.history_size() == 5, "phase 5 hidden history changed during height restore");
             check(body_of(hidden) == expected_body(), "phase 5 hidden height restore lost body text");
             const auto index = hidden.locate(retained_id);
-            check(index.has_value() && *index == 11 && hidden.retained_line(*index).size() == 91,
-                  "phase 5 hidden height restore rewrote the retained row");
+            check(index && *index == 11 && retained_marker(hidden, *index, mapped),
+                  "phase 5 hidden height restore changed the retained logical row");
         }
 
         // Phase 6: return to the primary frame at 61x20. The confirmed contract
@@ -446,10 +455,8 @@ int main(int argc, char** argv) {
               "phase 6 retained prefix is not the expected history");
         {
             const auto index = model.screen().locate(retained_id);
-            check(index.has_value() && *index == 11 &&
-                  line_text(model.screen().retained_line(*index)) == std::string(89, ' ') + "uv" &&
-                  model.screen().retained_line(*index).size() == 91,
-                  "phase 6 hidden height-only path rewrote the retained source row");
+            check(index && *index == 11 && retained_marker(model.screen(), *index, mapped),
+                  "phase 6 hidden height-only path changed the retained logical row");
         }
         check(model.screen().row == 13 && model.screen().column == 6 &&
               model.screen().history_lines().size() + static_cast<size_t>(model.screen().row) == 18,
@@ -469,7 +476,8 @@ int main(int argc, char** argv) {
                 const auto hit = page->mapping.hit(TextDocument(model.screen()), 7, 28,
                                                    termforge::ViewAffinity::leading,
                                                    page->mapping.layout_revision());
-                check(hit.has_value() && hit->line_id == retained_id && hit->column == 89,
+                check(hit && hit->line_id == (mapped ? model.screen().visible_lines()[7].id : retained_id) &&
+                      hit->column == (mapped ? 28 : 89),
                       "phase 6 hit-test did not return the retained full row");
             }
         }

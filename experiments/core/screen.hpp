@@ -68,6 +68,7 @@ struct Line : std::vector<Cell> {
     // Cursor-addressed writes preserve this event and its successor; they may
     // fill the old wrap gap or columns added by a later physical resize.
     size_t wrap_columns = 0;
+    bool logical_wrap_padding = false; // Geometry-only padding copied across a reported host wrap.
     // Minimum source extent, including retained editing blanks. This is not a
     // claim that those cells were explicitly printed, nor allocated padding.
     size_t content_columns = 0;
@@ -223,7 +224,10 @@ class Screen {
         for (int c = first; c < last; ++c) break_glyph(line, c);
         // Erasing the end destroys a recorded continuation, even if the row
         // happens to remain full of visible characters after later edits.
-        if (last == width()) { line.ending = LineEnding::none; line.next_id = 0; line.wrap_columns = 0; }
+        if (last == width()) {
+            line.ending = LineEnding::none; line.next_id = 0; line.wrap_columns = 0;
+            line.logical_wrap_padding = false;
+        }
         // A complete erasure replaces every remnant of the clipped row.
         // Later real wraps describe new content at the current width.
         if (first == 0 && last == width()) line.cropped = false;
@@ -651,7 +655,7 @@ public:
                 if (has_text(target[c]) || static_cast<size_t>(source_column) < source.content_columns)
                     target.content_columns = static_cast<size_t>(c) + 1;
             }
-            if (anchor < 0) anchor = first;
+            if (anchor < 0 || (first >= 0 && lines[first].logical_wrap_padding)) anchor = first;
             if (anchor >= 0) {
                 reused[anchor] = true;
                 target.id = lines[anchor].id;
@@ -674,7 +678,7 @@ public:
             next.live[r].ending = LineEnding::soft_wrap;
             next.live[r].next_id = next.live[r + 1].id;
             next.live[r].wrap_columns = static_cast<size_t>(columns);
-            next.live[r].content_columns = static_cast<size_t>(columns);
+            next.live[r].logical_wrap_padding = true;
         }
         size_t outgoing = 0;
         for (int r = 0; r < height(); ++r) {
@@ -699,6 +703,7 @@ public:
             retained.ending = LineEnding::none;
             retained.next_id = 0;
             retained.wrap_columns = 0;
+            retained.logical_wrap_padding = false;
             if (reused[r]) retained.id = make_line(1, Cell{}, identity).id;
             stamp_line(retained);
             next.outgoing.push_back(std::move(retained));
@@ -770,6 +775,7 @@ public:
         auto& previous = lines[row];
         changed(previous);
         previous.ending = automatic ? LineEnding::soft_wrap : LineEnding::hard_break;
+        previous.logical_wrap_padding = false;
         previous.wrap_columns = automatic ? used_columns : 0;
         // At the bottom margin, the successor is the row about to be allocated,
         // even when a physical row still exists below the scrolling region.
