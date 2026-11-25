@@ -28,3 +28,19 @@ Windows 11 x64 QEMU 来宾中的原版 WindTerm 2.7.0 本地 Shell 也完成同�
 同一固定 Microsoft 源提交构建的修订版在 resize 时报告实际执行的两次网格复制。报告通过同一输出流传递，由 Qt 在独立观察入口核对。六阶段样本中，`B(7,79) → (8,19)`、`C(9,79) → (11,19)`、`D(10,0) → (11,20)` 均与子进程原生读回相符。官方包与修订版均通过三个尺寸的 Win32 光标、文字写入、矩形读写与扩展查询。该轮验证范围是映射接口与独立 Win32 读写，旧 `--resize` 的核心同步断言仍退出 1。 [同源构建](https://github.com/JavaZeroo/termforge/actions/runs/45560850010) · [Windows 对照](https://github.com/JavaZeroo/termforge/actions/runs/45561963694) · [验证数据](ordered-map-validation.json)
 
 原版 WindTerm 本地 Shell 另完成两轮固定输入。六阶段只缩宽时，`60×24` 的原版可见第 12 行仍是 `RESIZED` + 12 空格 + `CD`。四阶段分别定位 `C` 和 `D` 的输入中，原版缩小后可见 `CD` 同行，后续 `RESIZED` 写到单独的一行。恢复后 `D` 与 `RESIZED` 都仍可读。两轮都同时核对真实子进程网格和 UI 文档，证据包含逐阶段原始合成字节和像素矩形。 [本地 Shell 补充样本](ordered-map-validation.json)
+
+## 应用映射后的 Windows 验证
+
+同源候选把两个原生重排步骤和最终软换行通过原输出流交付，Qt 在解析后续应用输出前更新网格。补齐软换行空白及隐藏主屏的逐次尺寸事务后，原样 `--resize` 六阶段通过，Win32 探针通过，Qt 离屏回归 15/15。Win32 夹具实测了三种尺寸的光标定位、字符写入、矩形读写、扩展缓冲区查询和两次窗口尺寸输入事件。独立四阶段对照仍能复现旧 `D` 被覆盖。 [候选构建](https://github.com/JavaZeroo/termforge/actions/runs/45565249061) · [Windows 运行](https://github.com/JavaZeroo/termforge/actions/runs/45566213536)
+
+另一同源候选在缩高的原生重排中保留了光标下原有的空行。两项入口和 15 项 Qt 回归复验通过，四阶段后续 CUP 写入与恢复后也保住了 `D`、`RESIZED`。缩窄时的换行形状仍有差异。下表的坐标相对当前原生视口，行、列从零计数。 [候选构建](https://github.com/JavaZeroo/termforge/actions/runs/45565606407) · [Windows 运行](https://github.com/JavaZeroo/termforge/actions/runs/45567001706)
+
+| 阶段 | 原版 WindTerm 本地 Shell 原生网格 | 同源候选原生网格和 Qt 投影 |
+|---|---|---|
+| 缩窄、未写入 | `B(7,19) C(9,19) D(9,20)` | `B(6,19) C(9,19) D(10,0)` |
+| 后续 CUP 写入 | `B(7,19) C(9,19) D(9,20) RESIZED(11,0)` | `B(6,19) C(9,19) D(10,0) RESIZED(11,0)` |
+| 恢复 | `B(7,79) C(8,79) D(9,0) RESIZED(11,0)` | `B(5,79) C(7,79) D(8,0) RESIZED(9,0)` |
+
+原版恢复后的 UI 文档滚动量为一行，UI 可见标记比同次原生视口各高一行。正式产品依赖和 #29 的四阶段合同仍待验证。
+
+原版另跑同一四阶段。子进程在发送首段输入前用 `SetConsoleScreenBufferSize` 把默认 3000 行缓冲调成与视口相等的 24 行。缩小的缓冲和视口均为 `60×12`，恢复均为 `80×24`。缩小后原生和 UI 可见坐标为 `B(8,19) C(10,19) D(10,20)`，CUP 后另有 `RESIZED(11,0))。恢复后两层均为 `B(7,79) C(8,79) D(9,0) RESIZED(10,0)`。这组坐标使用与旧 Win32 几何合同一致的缓冲深度，供 `--bcd-local-reference` 独立比对。 [视口深度对照](windterm-viewport-depth.json)
