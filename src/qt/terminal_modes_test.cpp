@@ -217,7 +217,7 @@ static std::string display_row(const termforge::ViewSnapshot& page, size_t row) 
 }
 
 static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& terminal,
-                          termforge::qt::SessionModel& model, QElapsedTimer& lifecycle, bool depth_control) {
+                          termforge::qt::SessionModel& model, QElapsedTimer& lifecycle, bool depth_control, bool inspect_backing) {
     int compared = 0;
     int different = 0;
     size_t transport_offset = 0;
@@ -273,7 +273,7 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         const bool source_matches = logical_lines == expected;
         const bool dsr_matches = dsr == reference_dsr;
         const auto& info = reply.info;
-        const bool geometry_matches = info.dwSize.X == columns && (depth_control || info.dwSize.Y == rows) &&
+        const bool geometry_matches = info.dwSize.X == columns && (inspect_backing || info.dwSize.Y == rows) &&
             info.srWindow.Right - info.srWindow.Left + 1 == columns &&
             viewport_rows == rows;
         terminal.grab();
@@ -326,6 +326,12 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
             {"source_matches_reference", source_matches}, {"dsr_matches_reference", dsr_matches},
             {"display_matches_reference", display_matches},
             {"child_geometry_matches", geometry_matches}};
+        if (inspect_backing) {
+            QJsonArray hidden;
+            for (int row = viewport_rows; row < reply.captured_rows; ++row)
+                hidden.append(QString::fromStdString(hex(native_row(reply, row))));
+            record["native_backing_after_viewport_hex"] = hidden;
+        }
         if (depth_control && stage == 1) {
             record["native_depth_request_succeeded"] = reply.depth_request_succeeded;
             record["native_depth_request_error"] = static_cast<qint64>(reply.depth_request_error);
@@ -481,20 +487,24 @@ static void transport_diagnostic(const std::wstring& executable, const std::wstr
 
 int main(int argc, char** argv) {
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
-    const bool depth_child = argc == 5 && std::string_view(argv[3]) == "4" &&
-        std::string_view(argv[4]) == "--native-depth-control";
-    if ((argc == 4 || depth_child) && std::string_view(argv[1]) == "--modes-child" &&
+    const bool depth_child = argc == 5 && std::string_view(argv[4]) == "--native-depth-control";
+    const bool viewport_child = argc == 5 && std::string_view(argv[4]) == "--native-viewport";
+    if ((argc == 4 || ((depth_child || viewport_child) && std::string_view(argv[3]) == "4")) &&
+        std::string_view(argv[1]) == "--modes-child" &&
         (std::string_view(argv[3]) == "4" || std::string_view(argv[3]) == "5" || std::string_view(argv[3]) == "6")) {
         try { return termforge::qt::test::modes_child(QString::fromLocal8Bit(argv[2]).toStdWString(),
-                                                    static_cast<unsigned>(argv[3][0] - '0'), argv[3][0] == '4', depth_child); }
+                                                    static_cast<unsigned>(argv[3][0] - '0'), argv[3][0] == '4', depth_child,
+                                                    depth_child || viewport_child); }
         catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
     const bool resize_repro = argc == 2 && std::string_view(argv[1]) == "--resize";
     const bool retained_contract = argc == 2 && std::string_view(argv[1]) == "--retained-contract";
     const bool depth_control = argc == 2 && std::string_view(argv[1]) == "--bcd-depth-control";
-    const bool bcd = depth_control || (argc == 2 && std::string_view(argv[1]) == "--bcd-comparison");
+    const bool viewport = argc == 2 && std::string_view(argv[1]) == "--bcd-native-viewport";
+    const bool inspect_backing = depth_control || viewport;
+    const bool bcd = inspect_backing || (argc == 2 && std::string_view(argv[1]) == "--bcd-comparison");
     if (argc != 1 && !resize_repro && !retained_contract && !bcd) {
-        std::cerr << "usage: qt_terminal_modes_test [--resize|--retained-contract|--bcd-comparison|--bcd-depth-control]\n"; return 2;
+        std::cerr << "usage: qt_terminal_modes_test [--resize|--retained-contract|--bcd-comparison|--bcd-depth-control|--bcd-native-viewport]\n"; return 2;
     }
     const bool capture_transport = qEnvironmentVariableIsSet("TERMFORGE_MODES_TRANSPORT_DIAGNOSTIC");
     if (capture_transport && !resize_repro) {
@@ -515,7 +525,7 @@ int main(int argc, char** argv) {
         wchar_t executable[32768]{};
         const DWORD length = GetModuleFileNameW(nullptr, executable, 32768);
         require(length && length < 32768, "mode fixture executable unavailable");
-        ModeFixture fixture(bcd, depth_control);
+        ModeFixture fixture(bcd, inspect_backing);
         termforge::qt::SessionModel model;
         QWidget window;
         window.resize(1200, 900);
@@ -523,12 +533,12 @@ int main(int argc, char** argv) {
         window.show(); terminal.setFocus();
         if (bcd) model.enable_transport_capture();
         require(model.start(executable, L"--modes-child \"" + fixture.pipe_name() + L"\" " +
-                            std::to_wstring(final_stage) + (depth_control ? L" --native-depth-control" : L""),
+                            std::to_wstring(final_stage) + (depth_control ? L" --native-depth-control" : viewport ? L" --native-viewport" : L""),
                             workspace.path().toStdWString()), "mode child did not start");
         const auto initial = wait_reply(fixture, 0, model, lifecycle);
         require(initial.info.dwSize.X == 80 && initial.info.dwSize.Y == 24,
                 "mode child did not start at the literal 80x24 geometry");
-        if (bcd) return bcd_comparison(fixture, terminal, model, lifecycle, depth_control);
+        if (bcd) return bcd_comparison(fixture, terminal, model, lifecycle, depth_control, inspect_backing);
         size_t failures = 0;
         size_t retained_failures = 0;
         const bool trace_resize = resize_repro && !retained_contract;

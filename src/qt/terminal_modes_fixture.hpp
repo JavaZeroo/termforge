@@ -1,6 +1,7 @@
 // Test-only source VT and independent active native-grid acknowledgements.
 #pragma once
 #include "resize_fixture.hpp"
+#include <algorithm>
 #include <array>
 
 namespace termforge::qt::test {
@@ -39,6 +40,7 @@ struct ModeReply {
     std::array<CHAR_INFO, 80 * 24> cells{};
     std::array<char, 16> dsr{};
     uint32_t dsr_bytes = 0;
+    int captured_rows = 0;
     uint32_t depth_request_error = 0;
     bool depth_request_succeeded = false;
 };
@@ -49,9 +51,9 @@ class ModeFixture final {
     bool connected_ = false;
     DWORD client_pid_ = 0;
     bool bcd_;
-    bool depth_control_;
+    bool inspect_backing_;
 public:
-    explicit ModeFixture(bool bcd = false, bool depth_control = false) : bcd_(bcd), depth_control_(depth_control) {
+    explicit ModeFixture(bool bcd = false, bool inspect_backing = false) : bcd_(bcd), inspect_backing_(inspect_backing) {
         name_ = L"\\\\.\\pipe\\TermForgeQtModes-v1-" + std::to_wstring(GetCurrentProcessId()) + L"-" +
             std::to_wstring(GetTickCount64());
         pipe_.reset(CreateNamedPipeW(name_.c_str(), PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE,
@@ -91,7 +93,7 @@ public:
             reply.stage > (bcd_ ? 4u : 6u) || reply.source_bytes != (bcd_ ? bcd_source : mode_source)(reply.stage).size() ||
             reply.dsr_bytes > reply.dsr.size() || ((!bcd_ || reply.stage == 0) && reply.dsr_bytes != 0) ||
             reply.info.dwSize.X < 1 || reply.info.dwSize.X > 80 ||
-            reply.info.dwSize.Y < 1 || reply.info.dwSize.Y > (depth_control_ ? 3000 : 24))
+            reply.info.dwSize.Y < 1 || reply.info.dwSize.Y > (inspect_backing_ ? 3000 : 24))
             throw std::runtime_error("Mode fixture reply identity/source/geometry mismatch");
         return reply;
     }
@@ -116,7 +118,7 @@ inline uint32_t read_mode_dsr(HANDLE input, std::array<char, 16>& bytes) {
     return size;
 }
 
-inline int modes_child(const std::wstring& pipe_name, unsigned final_stage, bool bcd = false, bool depth_control = false) {
+inline int modes_child(const std::wstring& pipe_name, unsigned final_stage, bool bcd = false, bool depth_control = false, bool inspect_backing = false) {
     if (bcd ? final_stage != 4 : final_stage != 5 && final_stage != 6)
         throw std::runtime_error("Mode child final stage invalid");
     const std::wstring prefix = L"\\\\.\\pipe\\TermForgeQtModes-v1-";
@@ -174,11 +176,16 @@ inline int modes_child(const std::wstring& pipe_name, unsigned final_stage, bool
         const auto size = value.info.dwSize;
         const SMALL_RECT viewport = value.info.srWindow;
         const int viewport_rows = viewport.Bottom - viewport.Top + 1;
-        if (size.X < 1 || size.X > 80 || size.Y < 1 || size.Y > (depth_control ? 3000 : 24) ||
+        if (size.X < 1 || size.X > 80 || size.Y < 1 || size.Y > (inspect_backing ? 3000 : 24) ||
             viewport_rows < 1 || viewport_rows > 24)
             throw std::runtime_error("Mode child native grid exceeds fixed bound");
-        const SMALL_RECT expected = depth_control ?
-            viewport : SMALL_RECT{0, 0, static_cast<SHORT>(size.X - 1), static_cast<SHORT>(size.Y - 1)};
+        SMALL_RECT expected{0, 0, static_cast<SHORT>(size.X - 1), static_cast<SHORT>(size.Y - 1)};
+        if (inspect_backing) {
+            // Include the bounded backing rows immediately after the viewport.
+            expected = viewport;
+            expected.Bottom = static_cast<SHORT>(std::min<int>(size.Y - 1, viewport.Top + 23));
+        }
+        value.captured_rows = expected.Bottom - expected.Top + 1;
         SMALL_RECT rect = expected;
         if (!ReadConsoleOutputW(active.get(), value.cells.data(), {80, 24}, {0, 0}, &rect) ||
             rect.Left != expected.Left || rect.Top != expected.Top ||
