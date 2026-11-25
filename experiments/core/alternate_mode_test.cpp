@@ -408,6 +408,27 @@ static void observed_alternate_ris_cursor_transitions(ParseMode mode, bool bytew
     check_observed_cursor(initial, 2, mode, bytewise);
     check_observed_cursor(controls, 6, mode, bytewise);
 }
+// A synthetic top-left crop leaves the saved cell at the same absolute
+// position. The host cursor describes the active frame at resize time.
+static void alternate_ris_across_host_resize(ParseMode mode) {
+    Parser parser(4, 8, 2, mode);
+    parser.feed("\x1b[3;6H\x1b[?1049hALT\x1b" "c");
+    parser.screen.resize_from_host(3, 7, 0, 0, {
+        0, 1, 2, 3, 4, 5, 6,
+        8, 9, 10, 11, 12, 13, 14,
+        16, 17, 18, 19, 20, 21, 22,
+    }, "000");
+    parser.feed("\x1b[6n\x1b[?1049l\x1b[6nX\x1b[1;2H\x1b[?1049l\x1b[6nY");
+    const auto replies = parser.take_replies();
+    check(replies.size() == 3 && replies[0] == "\x1b[1;1R" &&
+          replies[1] == "\x1b[3;6R" && replies[2] == "\x1b[1;2R",
+          "host viewport publication lost or rearmed the one-shot RIS cursor");
+    check(parser.screen.active_buffer() == ScreenBuffer::primary &&
+          text(parser.screen.visible_lines()[2]) == "     X " &&
+          text(parser.screen.visible_lines()[0]) == " Y     ",
+          "writes following RIS cursor restores landed in the wrong cells");
+    parser.finish();
+}
 static void strict_rejects_unsupported_private_modes_atomically() {
     for (const auto* input : {"\x1b[?31m", "\x1b[?1049;25h", "\x1b[?1049;1049h", "\x1b[?12l"}) {
         Parser parser(2, 8, 1);
@@ -435,6 +456,7 @@ int main() {
             identical_repeated_text_is_a_new_document(mode);
             observed_alternate_ris_cursor_transitions(mode, false);
             observed_alternate_ris_cursor_transitions(mode, true);
+            alternate_ris_across_host_resize(mode);
             // The fixed five sources contain 208 bytes, excluding DSR queries.
             for (size_t split = 0; split <= 208; ++split) observed_colour_trace(mode, split, false);
             observed_colour_trace(mode, 0, true);
