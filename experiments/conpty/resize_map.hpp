@@ -1,5 +1,6 @@
 // Ordered geometry published by the same fixed host that performs the resize.
 #pragma once
+#include <algorithm>
 #include <array>
 #include <charconv>
 #include <cstdint>
@@ -14,17 +15,19 @@ namespace tf_conpty {
 
 struct NativeSize {
     int columns, rows;
-    bool operator==(const NativeSize&) const = default;
+    bool operator==(const NativeSize& other) const { return columns == other.columns && rows == other.rows; }
 };
 
 struct NativeCell {
     int column, row;
-    bool operator==(const NativeCell&) const = default;
+    bool operator==(const NativeCell& other) const { return column == other.column && row == other.row; }
 };
 
 struct NativeWindow {
     int left, top, right, bottom;
-    bool operator==(const NativeWindow&) const = default;
+    bool operator==(const NativeWindow& other) const {
+        return left == other.left && top == other.top && right == other.right && bottom == other.bottom;
+    }
 };
 
 struct NativeSpan {
@@ -125,7 +128,7 @@ inline NativeResizeMap decode_native_resize_map(std::string_view input) {
         auto record = take(input, '|');
         const auto fields = numbers<6>(take(record, ';'));
         NativeReflow step{{fields[1], fields[2]}, {fields[3], fields[4]}, fields[5], fields[0] == 1, {}};
-        if (fields[0] > 1 || step.origin != origin || !valid(step.destination) || map.steps.size() == 8)
+        if (fields[0] > 1 || !(step.origin == origin) || !valid(step.destination) || map.steps.size() == 8)
             throw std::runtime_error("Invalid ConPTY resize operation chain");
         while (!record.empty()) {
             const auto cells = numbers<6>(take(record, ';'));
@@ -137,7 +140,7 @@ inline NativeResizeMap decode_native_resize_map(std::string_view input) {
         origin = step.destination;
         map.steps.push_back(std::move(step));
     }
-    if (origin != map.destination) throw std::runtime_error("ConPTY resize operation chain ended at the wrong size");
+    if (!(origin == map.destination)) throw std::runtime_error("ConPTY resize operation chain ended at the wrong size");
     return map;
 }
 
@@ -145,6 +148,7 @@ class NativeResizeMapObservation {
     std::string prefix_ = "\x1b]633;TermForgeResizeMap;1;";
     std::string pending_;
     std::optional<NativeResizeMap> observed_;
+    size_t scan_ = 0;
 public:
     explicit NativeResizeMapObservation(const std::array<uint8_t, 16>& token) {
         constexpr char hex[] = "0123456789abcdef";
@@ -155,23 +159,49 @@ public:
         prefix_.push_back(';');
     }
 
-    void observe(std::string_view bytes) {
-        if (observed_) return;
-        pending_.append(bytes);
-        const auto start = pending_.find(prefix_);
-        if (start == std::string::npos) {
-            if (pending_.size() >= prefix_.size()) pending_.erase(0, pending_.size() - prefix_.size() + 1);
+    template<class Output, class Apply>
+    void feed(std::string_view bytes, Output&& output, Apply&& apply) {
+        if (observed_) {
+            output(bytes);
             return;
         }
-        if (start) pending_.erase(0, start);
-        const auto end = pending_.find("\x1b\\", prefix_.size());
+        pending_.append(bytes);
+        if (!scan_) {
+            const auto start = pending_.find(prefix_);
+            if (start == std::string::npos) {
+                size_t overlap = (std::min)(pending_.size(), prefix_.size() - 1);
+                while (overlap && pending_.compare(pending_.size() - overlap, overlap, prefix_, 0, overlap) != 0)
+                    --overlap;
+                const size_t count = pending_.size() - overlap;
+                if (count) output(std::string_view(pending_).substr(0, count));
+                pending_.erase(0, count);
+                return;
+            }
+            if (start) {
+                output(std::string_view(pending_).substr(0, start));
+                pending_.erase(0, start);
+            }
+            scan_ = prefix_.size();
+        }
+        const auto end = pending_.find("\x1b\\", scan_);
         constexpr size_t maximum_frame = 4 * 1024 * 1024;
         if (end == std::string::npos) {
             if (pending_.size() > maximum_frame) throw std::runtime_error("ConPTY resize map exceeded its observation bound");
+            scan_ = pending_.size() > prefix_.size() ? pending_.size() - 1 : prefix_.size();
             return;
         }
         if (end > maximum_frame) throw std::runtime_error("ConPTY resize map exceeded its observation bound");
         observed_ = decode_native_resize_map(std::string_view(pending_).substr(prefix_.size(), end - prefix_.size()));
+        apply(*observed_);
+        if (end + 2 < pending_.size()) output(std::string_view(pending_).substr(end + 2));
+        pending_.clear();
+        scan_ = 0;
+    }
+
+    template<class Output>
+    void finish(Output&& output) {
+        if (scan_) throw std::runtime_error("ConPTY output ended inside an authenticated resize map");
+        if (!pending_.empty()) output(pending_);
         pending_.clear();
     }
 
