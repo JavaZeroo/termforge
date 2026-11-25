@@ -1,4 +1,4 @@
-// Original bounded UTF-8 terminal experiment; see README for contract.
+// Bounded UTF-8 terminal parser. See README for its contract.
 #pragma once
 #include "screen.hpp"
 #include <limits>
@@ -33,8 +33,7 @@ class Parser {
     uint32_t mode_bits_ = 1u << 1;
     void dispatch(unsigned char final) {
         if (private_csi) {
-            // DECCKM (?1) and DECTCEM (?25) only change terminal state the host
-            // reads later; everything else private is still unsupported.
+            // Host key encoding and painting read DECCKM (?1) and DECTCEM (?25).
             if (params.size() == 1 && (params[0] == 1 || params[0] == 25) && (final == 'h' || final == 'l')) {
                 const uint32_t bit = params[0] == 1 ? 1u << 0 : 1u << 1;
                 if (final == 'h') mode_bits_ |= bit; else mode_bits_ &= ~bit;
@@ -47,10 +46,8 @@ class Parser {
                 return;
             }
             if (params.size() == 1 && (params[0] == 1004 || params[0] == 9001) && (final == 'h' || final == 'l'))
-                // Real ConPTY sessions request focus reporting (?1004) and Win32
-                // input mode (?9001). Neither changes what this core draws or
-                // sends, and the host has nothing to act on yet, so they are
-                // accepted without being recorded.
+                // Accept ConPTY's focus-reporting (?1004) and Win32 input
+                // mode (?9001) requests without changing terminal state.
                 return;
             if (params.size() != 1 || (params[0] != 1049 && params[0] != 7) || (final != 'h' && final != 'l'))
                 throw InputError("unsupported private CSI command");
@@ -121,14 +118,9 @@ class Parser {
             }
             throw InputError("unsupported CSI command");
         case 'c':
-            // Primary device attributes. Only the strict path (replay/tests)
-            // answers, at the VT102 level the core actually implements (cursor
-            // addressing, erase, insert/delete line and character, SGR, DECAWM,
-            // alternate screen), matching the reference candidate's \x1b[?6c.
-            // The product recovery path must stay silent: the fixed ConPTY
-            // emits DA1 once in its startup packet, and a reply bounced back
-            // through the bounded input path at startup races with the session
-            // lifecycle (PR #272).
+            // Strict replay answers DA1 with the candidate's VT102 reply (\x1b[?6c).
+            // Fixed ConPTY emits DA1 during startup. A product reply on the
+            // bounded input path could race with session shutdown.
             if (mode == ParseMode::strict && params.size() == 1 && params[0] == 0) {
                 pending_replies.push_back("\x1b[?6c");
                 return;
@@ -257,7 +249,6 @@ class Parser {
                     stats.max_parameters = (std::max)(stats.max_parameters, params.size()); return;
                 }
                 if (state == State::escape && c == 'c') {
-                    // RIS also works on the recovery path the product uses.
                     screen.reset();
                     mode_bits_ = 1u << 1;
                     reset_sequence();

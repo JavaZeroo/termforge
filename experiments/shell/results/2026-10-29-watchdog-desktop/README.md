@@ -1,5 +1,7 @@
 # 自有 desktop 生命周期的有界诊断（#160）
 
+执行前冻结的步骤和限制见[历史诊断计划](https://github.com/JavaZeroo/termforge/blob/e9982e9c70e8496f4de9179c50ea781ba4318b09/docs/research/watchdog-desktop-diagnostic-plan.md)。
+
 两组固定观察已完成；本地原watchdog首次probe为已消失，**未复现CI首次可重新打开的现象，原CI原因仍未知**。正对照验证显式第二个handle存活时可重新打开，释放后四次独立probe均不存在。本次只修补充观察器，未修改生产监督器或首次判据，不宣布产品修复或关闭#160/#38/R2。
 
 ## 实际身份与执行

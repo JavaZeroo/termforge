@@ -41,7 +41,7 @@ Qt 层实际拒绝场景使用现有单包上限。16KiB 总队列容量沿既�
 
 ## 复验与限制
 
-按 [Qt 构建说明](../../../../../src/qt/README.md)配置后：
+按 [Qt 构建说明](../../../../src/qt/README.md)配置后：
 
 ```powershell
 cmake --build build/qt-cpp --config Release --target qt_unicode_input_test

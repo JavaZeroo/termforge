@@ -103,8 +103,7 @@ private:
             throw std::runtime_error("ConPTY reviewed backend module identity differs");
         if (width != GlyphWidth::Default && width != GlyphWidth::Console)
             throw std::runtime_error("ConPTY reviewed glyph width policy invalid");
-        // Fixed official 1.25 conpty.h: GLYPH_WIDTH_CONSOLE=0x18. This is
-        // a console API compatibility policy, not the removed passthrough.
+        // The fixed 1.25 conpty.h defines GLYPH_WIDTH_CONSOLE as 0x18.
         return Backend(std::move(api), width == GlyphWidth::Console ? 0x18 : 0);
     }
 public:
@@ -114,7 +113,7 @@ public:
     }
     static Backend reviewed_side_by_side(const std::filesystem::path& directory,
                                         GlyphWidth width = GlyphWidth::Default) {
-        // Diagnostic probes can still load the original NuGet pair explicitly.
+        // Diagnostic probes can explicitly load the original NuGet pair.
         return load_side_by_side(directory, width,
             "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
             "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586");

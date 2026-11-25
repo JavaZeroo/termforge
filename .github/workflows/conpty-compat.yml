@@ -1,12 +1,8 @@
-name: ConPTY legacy compatibility probe (known failing)
+name: ConPTY compatibility diagnostics
 
-# This platform has a recorded resource regression; it is not a supported gate.
-# Keep a fully automatic, strictly failing reproduction available for follow-up.
 on:
   workflow_dispatch:
     inputs:
-      # Optional focus: when set, only the named job runs. Sampling one shape
-      # costs a single job instead of eight; the default run is unchanged.
       only:
         description: 'Run only this job (empty runs every job)'
         required: false
@@ -33,8 +29,7 @@ jobs:
     timeout-minutes: 10
     env:
       PYTHONUTF8: '1'
-      # #21: this platform duplicates one Job handle per session inside the host
-      # process, so the batch records the counts instead of gating on zero growth.
+      # Record Server 2022 handle growth while enforcing the other lifecycle checks (#21).
       TERMFORGE_CONPTY_RECORD_HANDLES: '1'
       TERMFORGE_TEST_ARTIFACTS: ${{ github.workspace }}/build/test-artifacts
     steps:

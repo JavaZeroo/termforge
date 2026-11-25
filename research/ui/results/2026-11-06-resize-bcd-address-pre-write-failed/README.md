@@ -38,4 +38,4 @@
 
 ## 与决策材料的关系
 
-[决策材料 §6](../../../../docs/research/r29-bcd-local-addressing-decision.md#6-单个最小取证计划未执行) 的最小取证尚未完成；本文件只记录本次授权尝试的失败与身份，不能作为 WindTerm 对 B/C/D/CUP 的行为证据，也不把失败归因为产品实现差异。#27/#29/R2 继续 OPEN。
+[当时的决策材料 §6](https://github.com/JavaZeroo/termforge/blob/b76711359a2df303dd5b88ed38381f07a6bb43d9/docs/research/r29-bcd-local-addressing-decision.md#L76) 的最小取证尚未完成；本文件只记录本次授权尝试的失败与身份，不能作为 WindTerm 对 B/C/D/CUP 的行为证据，也不把失败归因为产品实现差异。#27/#29/R2 继续 OPEN。

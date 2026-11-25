@@ -4,25 +4,23 @@
 
 An independent, fully open-source terminal project targeting WindTerm 2.7.0 feature, behavior, UI and performance parity. Windows 11 x64 first; Windows, Linux and macOS ultimately. Not affiliated with WindTerm or KingToolbox.
 
-当前是有限 Windows 本地终端原型，**R1 基础文字交互已按限定合同验收，正在推进 R2 可靠本地终端与开发版**。已有 Win32 原型、有限多会话与配置恢复，以及独立 Alacritty 参考实验。正式路线已确定为自主 C++ 核心、当前采用 Qt Widgets GUI 与随包固定微软 ConPTY；[最小单会话整合](https://github.com/JavaZeroo/termforge/issues/115)和[固定依赖专用 CI](https://github.com/JavaZeroo/termforge/issues/117)已合入 main，核心模式、resize/历史、Qt 文字与输入、可靠性和最终包仍需闭合。按 [ADR-0009](docs/adr/0009-r2-scope-decisions.md)，R2 交付为“本地终端基础＋已知差异清单”，保留单屏 96/144 DPI，跨屏转 R4；不宣称日常可用或与 WindTerm 等价。现状见[能力矩阵](docs/FEATURES.md)，接续顺序见 [R2 交付路线与验收](docs/milestones/R2-local-terminal.md)。SSH/SFTP 属于 R3，完整 UI 与 WindTerm 性能等价均未验收。`TermForge` 是暂名。
+TermForge 处于 Windows 本地终端原型阶段。R1 基础文字交互已在既有 Win32 配置按限定合同验收，当前推进 R2 的“本地终端基础＋已知差异清单”。正式配置由自主 C++ 核心、Qt Widgets 和随包固定源码修订的微软 ConPTY 组成，须显式启用 Qt 构建。R2 最终包、完整 WindTerm 对照及性能等价仍未验收。 [能力矩阵](docs/FEATURES.md) · [R2 交付路线与验收](docs/milestones/R2-local-terminal.md)
 
-方向已经用户确认，依据见 [ADR-0006](docs/adr/0006-confirmed-project-direction.md)：原版行为优先，内部结构不强求一致，但认真研究、借鉴原版；用户已确认[自主 C++ 核心与当前 Qt Widgets GUI 路线](docs/adr/0008-cpp-core-qt-widgets.md)，Windows 本地 Shell 后端采用[随包固定微软 ConPTY](docs/adr/0007-bundled-microsoft-conpty.md)。Alacritty 保留为参考，路线确认与实现验收分开。关键性能指标分别验收，具体允许波动范围后续与用户明确。
+首个完整版本以 Windows 11 x64 为目标，后续覆盖 Windows、Linux、macOS。以 WindTerm 2.7.0 的实际行为为准，内部结构可独立设计。Alacritty 保留为差分参考。 [项目方向](docs/adr/0006-confirmed-project-direction.md) · [C++ / Qt](docs/adr/0008-cpp-core-qt-widgets.md) · [ConPTY](docs/adr/0007-bundled-microsoft-conpty.md)
 
 ## 开始使用
 
 下载首个 [Windows x64 Alpha 预发布包](https://github.com/JavaZeroo/termforge/releases/tag/v0.1.0-alpha.1)：完整解压 `TermForge-v0.1.0-alpha.1-windows-x64.zip` 后双击 `termforge_shell.exe`，保留同目录的 `shell_clipboard_reader.exe` 和 `assets/fonts/`。运行不需要 Python、CMake 或 Visual C++ Redistributable；包内附版本、源码身份和文件哈希，发布页另附 `SHA256SUMS.txt`。
 
-这是未签名的免安装体验包，尚未达到 R2 日常开发版。已验环境限 Windows 11 本机与 Windows Server 2025 CI；不据此声明 Windows 10/Server 2022 支持。布局仍保存到 `%LOCALAPPDATA%\TermForge\workspace-v1.layout`，并非全数据便携模式。具体边界见[发布说明](docs/releases/v0.1.0-alpha.1.md)。也可按[贡献与构建指南](CONTRIBUTING.md)从源码构建，Visual Studio 入口为 `build/bin/Release/termforge_shell.exe`。
+这是基于 Win32 与系统 ConPTY 的未签名 R1 体验包，验证范围为 Windows 11 本机和 Windows Server 2025 CI。布局保存到 `%LOCALAPPDATA%\TermForge\workspace-v1.layout`。以下快捷键适用于该体验包。 [发布说明](docs/releases/v0.1.0-alpha.1.md)
 
 - `Ctrl+Shift+T` 新建主区会话，`Ctrl+T` 新建底部会话。
 - `F2` 重命名当前区域标签，`F11` 扩大底部 Shell；五条分隔线可拖动。
 - `Ctrl++` / `Ctrl+-` 调整当前会话文字大小，`Ctrl+0` 恢复 100%，范围 50%–200%。
 
-完整操作、自动验证与限制见[本地 shell 说明](experiments/shell/README.md)。默认核心 resize 按物理行裁剪，无 reflow；显式候选构建采用独立的 [resize 与历史合同](experiments/core/CANDIDATE.md)。受控 DPI 测试不等于实际跨显示器验证。
+从源码构建时，默认 Win32 原型的 Visual Studio 产物为 `build/bin/Release/termforge_shell.exe`。正式 Qt 配置使用独立构建目录和固定源码 ConPTY 文件对。 [默认构建](CONTRIBUTING.md) · [Win32 操作与限制](experiments/shell/README.md) · [Qt 构建与运行](src/qt/README.md#构建与运行)
 
 ## 项目地图
-
-新的[自主 C++ / Qt 会话入口](src/qt/README.md)以显式构建开关提供默认 80×24、随可用区域变化的 cmd 标签，可新增、切换、独立关闭并在应用退出前核对会话回收；[基础动态尺寸验证](experiments/shell/results/2026-10-29-qt-resize/README.md)分离窗口、核心、transport 完成和真实 child 尺寸，不继承旧配置能力。当前默认入口和上面的操作说明仍属于既有 Win32 原型。已接入 IME 组合/提交/取消并有固定微软拼音证据；分屏、其他 shell、工作区恢复、历史/选择/Find、完整字素与 resize/reflow 尚有缺口。它们须在正式产品交付声明中逐项列明，旧 Win32 能力不自动计入 Qt。
 
 | 要了解什么 | 唯一入口 |
 |---|---|

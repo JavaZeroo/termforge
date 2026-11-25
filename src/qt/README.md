@@ -1,36 +1,37 @@
-# C++ / Qt 本地会话迁移入口
+# C++ / Qt 本地终端
 
-按 [ADR-0008](../../docs/adr/0008-cpp-core-qt-widgets.md)采用自主 C++ 核心和 Qt Widgets，Windows 进程由[固定微软 ConPTY](../../third_party/conpty/README.md)承载。当前入口提供默认 80×24、随窗口可用区域变化的本地 cmd 标签、基础 ASCII 与限定 Unicode 按键文本传输、IME 组合/提交/取消、基础鼠标拖选高亮、16 色与部分样式绘制、启动错误与关闭回收。R2 按 [ADR-0009](../../docs/adr/0009-r2-scope-decisions.md)交付本地终端基础及已知差异清单，当前入口尚未完成该发布验收，也不是完整 WindTerm 界面。
+Windows x64 的正式配置使用自主 C++ 核心、Qt Widgets 和随包固定源码修订的微软 ConPTY。`TERMFORGE_BUILD_QT_SHELL=ON` 启用 Qt 构建，产品入口为 `termforge_qt_shell.exe`。R2 交付范围为本地终端基础与已知差异清单，最终包仍待验收。 [产品配置与差距](../../docs/FEATURES.md) · [R2 验收](../../docs/milestones/R2-local-terminal.md)
 
-现有 C++ 核心的[能力限制](../../experiments/core/README.md)继续有效。Qt 已迁移有限历史浏览与源阅读锚点（滚轮、`Ctrl+Shift+Home/End`，见[固定结果](../../experiments/shell/results/2026-11-05-qt-history-anchor/README.md)）；Windows 滚轮入口直接读取 `SPI_GETWHEELSCROLLLINES`，区分 0 禁用、正整数行数与 `WHEEL_PAGESCROLL` 页步长，并在查询失败时按 R1 回退 3 行（见[原生滚轮结果](../../experiments/shell/results/2026-11-05-qt-wheel-native/README.md)），尚未迁移原 Win32 的完整工作区、分屏、滚动条/翻页键历史、自动滚动、选词/选行、系统复制/粘贴、Find 或会话恢复；完整键盘/IME 交叉、resize/reflow 仍需按目标调查和实现，也不能继承 Alacritty 分支的通过结果。普通方向键与无修饰 Home/End 可随 DECCKM 切换 CSI/SS3，无修饰 Insert/Delete/PageUp/PageDown 复用已有终端键表，另有 F1–F12 编码；当前 Ctrl 字母组合仅接入 Ctrl+C，修饰导航键不被当作普通导航发送，不能据此声明完整编辑器键盘或 bracketed paste。
+| 功能 | 当前入口和固定验证 |
+|---|---|
+| cmd 标签 | `+` 新建标签，可切换和独立关闭。初始网格为 80×24，按可用区域调整。收到关闭操作后等待自有会话回收，无法验证回收时报告失败。有限八会话的接收隔离、关闭及回收采用真实子进程与离屏 Qt 事件。 [会话证据](../../experiments/shell/results/2026-11-08-qt-eight-session-isolation/README.md) |
+| 历史 | 滚轮、`Ctrl+Shift+Home/End` 和 `QScrollBar` 按源行锚点浏览。滚轮使用 Windows 的行数或按页设置，查询失败时回退 3 行。 [阅读锚点](../../experiments/shell/results/2026-11-05-qt-history-anchor/README.md) · [系统滚轮](../../experiments/shell/results/2026-11-05-qt-wheel-native/README.md) · [滚动条](../../experiments/shell/results/2026-11-07-qt-history-scrollbar/README.md) |
+| 选择与复制 | 左键正反拖选、跨历史有界自动滚动，`Ctrl+Shift+C` 或上下文菜单 Copy 有界写入 `CF_UNICODETEXT`。选区与显示页通过 `ViewMapping` 对应到源行。 [选区迁移](../../experiments/shell/results/2026-11-06-qt-selection-migration/README.md) · [自动滚动](../../experiments/shell/results/2026-11-07-qt-selection-autoscroll/README.md) · [系统复制](../../experiments/shell/results/2026-11-06-qt-system-copy/README.md) |
+| 粘贴 | `Ctrl+Shift+V`、`Shift+Insert` 或上下文菜单 Paste 读取系统剪贴板并绑定发起会话。传输有界，多行先确认。固定 hosted Windows QPA 样本核对了占用/重试及多行取消/确认的真实接收字节，历史失败按原源码保留。 [系统粘贴](../../experiments/shell/results/2026-11-06-qt-system-paste/README.md) · [多行对照](../../experiments/shell/results/2026-11-06-qt-system-paste/attempt-ledger.md) |
+| Find | `Ctrl+Shift+F` 打开有界字面量查询，支持上一项、下一项、关闭及主屏/历史页的定位高亮。限制为 4096 字节、1024 个结果，忽略大小写只折叠 ASCII。 [Find 回归](../../experiments/shell/results/2026-11-06-qt-find/README.md) |
+| 键盘、文字与 IME | 支持基础导航键、F1–F12、限定 Unicode 文本传输与 16 色/部分样式绘制。IME 预编辑只在界面显示，提交后才发送 UTF-8，取消或失焦清理预编辑。 [键盘/文本](../../experiments/shell/results/2026-10-29-qt-unicode-input/README.md) · [离屏绘制](../../experiments/shell/results/2026-11-04-qt-unicode-presentation/README.md) · [固定微软拼音](../../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/README.md) |
 
-网格沿当前 Roboto Mono 字体度量和终端可用区域计算，保留八像素边距与一行状态区，并沿现有 Screen 资源上限限制为 1..500 列、1..200 行。字体变化重新计算度量；隐藏标签在显示/布局后同步。GUI 线程负责核心尺寸事务，现有生命周期 worker 用单个最新请求串行执行 ConPTY resize、wait、cancel 和 close；GUI 不等待 native resize。重复同尺寸不重新初始化屏幕或发起新尺寸操作；关闭、错误与退出停止接受并清除待处理请求，已选取的 native 操作由同一 worker 收尾，不重新激活会话。
-
-正式路径的尺寸事务改用 `Screen::resize_preserving`：变窄时保留源 Cell、行身份与软续接，不立即销毁右侧正文。绘制消费者按当前宽度生成独立显示投影页（`HistoryViewport::project`），协议光标只被翻译为显示光标，供光标下划线、IME 候选位置与预编辑预览使用；选择/命中继续消费同一份 `ViewMapping`，并用页面 layout revision 拒绝过期页。不支持的保留 Cell 或无法映射的光标回退到物理视图页，避免隐藏输出。当前验证与仍存差异见[固定结果](../../experiments/shell/results/2026-11-03-qt-retained-display/README.md)：只缩宽的显示重排与保留行合同已通过真实 child/固定 ConPTY 核对；旧六阶段 native-sync 诊断仍失败并保留，原生重排网格不被当作产品寻址 oracle。2026-11-04 又补[隐藏帧七阶段正式路径离屏证据](../../experiments/shell/results/2026-11-04-qt-hidden-retention/README.md)：主屏正文→缩窄→1049h→仅缩高→恢复→1049l→恢复宽度的保留正文、行身份、显示页/光标/命中通过 58 项检查；child 原生网格仅记录，不是保留文本 oracle。同时缩宽+缩高的原版视口/滚动与后续 CUP 仍缺独立证据，物理呈现/DPI、完整 reflow 和历史/选择/Find 用户流程未验收。
-
-终端可在无修饰、无组合文本时用左键正向或反向拖选，普通点击清除旧选区。每个 widget 独立持有 `TextSelection`，命中与高亮经 `HistoryViewport` 显示快照中的 `ViewMapping` 映射到文档位置；只装饰显示副本，不修改核心文字或样式。部分列选区只投影到相应列，避免整行高亮。该接线也覆盖保留历史/软续接/显示重排页上的选区源位置迁移（内部提取与高亮投影，见[固定结果](../../experiments/shell/results/2026-11-06-qt-selection-migration/README.md)）；已接入 Ctrl+Shift+C 与实际 Copy 菜单的有界 CF_UNICODETEXT 写入（失败/空/失效/容量分开报告；hosted Windows CI 已用独立 CF 读回分别验证 offscreen 注入 owner 与 Windows QPA 默认 writer/真实控件 HWND 的键盘/实际菜单/空/占用/释放/淘汰，见[系统复制结果](../../experiments/shell/results/2026-11-06-qt-system-copy/README.md)）；已接 Ctrl+Shift+V/Shift+Insert/实际 Paste 菜单的有界系统粘贴（默认 CF 读取、分块发送、目标绑定、多行确认；hosted Windows QPA 验证三入口/占用/释放，多行确认仅本地 fake reader，见[系统粘贴结果](../../experiments/shell/results/2026-11-06-qt-system-paste/README.md)）；不包含滚动条/翻页键历史浏览、选词/选行或 Find；[固定实现与验证边界](../../experiments/shell/results/2026-11-01-r2-core-input/README.md)与完整 #29/#30 出口分开。
-
-标签栏的 `+` 创建同类型 cmd，点击标签选择输入目标，关闭按钮只取消对应会话；关闭父窗口取消所有会话。后台标签继续独立排空输出，已关闭标签完成自有进程回收后释放。成功启动的最后会话结束时沿用原最小入口的应用退出路径；有失败启动页时保留该页错误供关闭。当前标签外观、默认动作和多会话退出汇总仅为这批迁移入口的工程合同，未作 WindTerm 完整标签行为对比。
-
-产品入口禁用 Qt 的最后窗口自动退出。关闭父窗口或最后标签后，事件循环继续排空可见及已移除会话，等模型结束并核对回收后统一退出；用户关闭的成功状态为 0，已结束但回收无法验证时为 1，不等待一个不会再变化的验证标志。自然结束继续返回最后会话状态；启动失败页在用户关闭前保持可见。
+`PageUp/PageDown` 仍按应用导航键处理。历史翻页键映射、粘贴回底、选词/选行、其他 shell、分屏及工作区恢复仍待迁移。Qt 的各项定向测试和历史 IME 观察按运行身份记录。整合交叉、实际呈现、单屏 96/144 DPI、完整输入法和可靠性按 R2 合同逐项验证。
 
 ## 构建与运行
 
-按 [Qt 依赖说明](../../third_party/qt/README.md)准备 Qt 6.10.3 / MSVC 2022 x64 qtbase、固定 ConPTY 文件对和 [app-local 微软 CRT](../../third_party/msvc_runtime/README.md)：
+先构建[固定 ConPTY 文件对](../../third_party/conpty/README.md)，按[Qt 依赖说明](../../third_party/qt/README.md)准备 Qt 6.10.3 / MSVC 2022 x64 qtbase 和固定 app-local CRT。以下从仓库根目录执行。
 
 ```powershell
 cmake -S . -B build/qt-cpp -G "Visual Studio 17 2022" -A x64 `
-  -DTERMFORGE_BUILD_QT_SHELL=ON `
+  -DTERMFORGE_BUILD_QT_SHELL=ON -DBUILD_TESTING=ON `
   -DTERMFORGE_BUILD_CANDIDATE_ADAPTER=OFF `
-  -DQt6_DIR="<Qt SDK prefix>/lib/cmake/Qt6" `
-  -DTERMFORGE_CONPTY_BACKEND_DIR="<absolute fixed ConPTY pair directory>" `
-  -DTERMFORGE_MSVC_RUNTIME_DIR="<absolute prepared CRT directory>"
-cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke qt_unicode_input_test qt_unicode_render_test qt_eight_session_test qt_terminal_modes_test qt_hidden_retention_test
-build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe
-ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_unicode_input|qt_unicode_render|qt_eight_session|qt_terminal_modes(_retained)?|qt_hidden_retention)$' --output-on-failure
+  "-DQt6_DIR=$PWD/local/qt-build-deps/qt/lib/cmake/Qt6" `
+  "-DTERMFORGE_CONPTY_BACKEND_DIR=$PWD/local/qt-build-deps/conpty" `
+  "-DTERMFORGE_MSVC_RUNTIME_DIR=$PWD/local/qt-build-deps/crt"
+cmake --build build/qt-cpp --config Release --target termforge_qt_shell qt_cpp_shell_smoke qt_cpp_resize_smoke
+./build/qt-cpp/qt-bin/Release/termforge_qt_shell.exe
+ctest --test-dir build/qt-cpp -C Release -R '^qt_cpp_(shell|resize)$' --no-tests=error --output-on-failure
 ```
 
-生成可核对的工程候选 staging（仍不是 R2 包，也不发布或执行产品）：
+启用 Qt 时默认使用固定源码 ConPTY。配置和构建都会核对文件对、许可及 NOTICE，运行时从程序目录旁的 `conpty-backend/` 校验和加载。`TERMFORGE_CONPTY_SOURCE_BUILD=OFF` 供显式旧官方包对照。固定依赖路径缺失或校验失败时构建报错。 [固定源码与产物清单](../../third_party/conpty/source-revision.json) · [专用 CI](../../.github/workflows/qt-cpp.yml)
+
+生成工程 staging 并核对文件身份。
 
 ```powershell
 python -m tools.stage_qt_product stage `
@@ -42,38 +43,12 @@ python -m tools.stage_qt_product stage `
 python -m tools.stage_qt_product verify --staging local/qt-product-staging
 ```
 
-staging 只接收 [`packaging/qt-product/manifest.json`](../../packaging/qt-product/manifest.json) 冻结的文件集合，并要求依赖准备摘要、固定 Qt SDK 树哈希、ConPTY/CRT/字体许可标识和每个实际文件字节都匹配；缺文件、测试夹具、额外文件、来源不符或摘要与当前仓库清单不一致都会明确失败。Qt 部署组件清单 [`components.json`](../../third_party/qt/components.json) 会对照固定 SDK 的 SBOM 重新推导并核验，随后连同 22 份规范许可文本、`QT-THIRD-PARTY-NOTICES.txt` 和机器可读清单副本一起进入 staging。输出 `product-manifest.json` 记录 source commit/tree、构建参数、入口、逐文件 SHA-256、部署组件证据、许可文件与仍未闭合的分发项，不含本机绝对路径；同目录由 `tools/msvc_runtime.py manifest` 生成的 `runtime-manifest.json` 视为派生证据，不进入 staging。本地产物只写入忽略的 `local/`。
-
-当前主线注册的 Qt CTest 包括上述六项与 `qt_terminal_modes_retained`（只缩宽的保留/投影契约）、`qt_unicode_render`（固定 Unicode 样本的独立接收 + 离屏绘制/fallback 记录）、`qt_eight_session`（八会话目标隔离与生命周期）；IME 合成事件检查在 `qt_cpp_shell` 内。历史冻结包的 `qt_ime_input_test.exe` 不属于当前主线构建目标，不用于替代这组验证。旧六阶段 `--resize` 仍以显式诊断运行并保留失败，不注册进默认 CI。
-
-固定 ConPTY/CRT 输入缺失或篡改时构建明确失败；实际工具集更新到固定 CRT 之外时须重新审查依赖。产品中的 shell 启动失败保留可关闭的错误窗口。随目录保留 Qt 动态运行库、平台插件、`conpty-backend/`、`assets/fonts/`、十个固定 CRT DLL 及其原许可/NOTICE；每次构建重新校验并部署 CRT，不运行安装器、不修改 System32。windeployqt 显式跳过系统 D3D/DXC 重分发文件；`icuuc.dll` 由 Windows 11 提供，构建目录中由 windeployqt 从 System32 复制的副本在 staging 核对一致后被排除，不随包分发。`tools/msvc_runtime.py manifest` 仍可记录构建目录的全部运行时文件。当前产物是工程候选 staging，不是 R2 包：Qt 部署组件来源/许可材料已整理（42 个组件、22 份许可文本，`materials_prepared_user_review_pending`），但对应源码/替换条件审查、干净 Windows 运行、单屏 96/144 DPI、完整 IME/TUI/reliability 及最终包验收仍未完成。
+staging 核对固定 Qt SDK、ConPTY、CRT、字体、逐文件哈希及许可证据，按清单排除测试夹具和系统 DLL 副本。对应源码与替换条件审查、干净机器运行和 R2 最终包验收仍须完成。 [文件清单](../../packaging/qt-product/manifest.json) · [Qt 部署与许可](../../third_party/qt/README.md#产品-staging-与部署边界)
 
 ## 独立验证面
 
-Parser/Screen 仅在 Qt 线程修改；ConPTY reader 向有界输出队列写入，输入由独立有界 worker 发送。自然退出等待子进程、reader EOF、输出排空和 Parser.finish；人工关闭按取消处理。外层监督器在 GO 前把测试根进程纳入自有 Job，超时或残留不能通过。
+会话模型在 Qt 线程处理 Parser/Screen，ConPTY 读写通过有界队列。自然退出等待进程、输出排空和解析结束，关闭路径独立核对 Job 回收。基础 smoke 覆盖真实 cmd 输入输出、标签新增/切换/关闭、启动错误与可用区域引发的 resize。窗口尺寸、核心尺寸、transport 完成与真实 child 确认分别记录。 [基础会话](../../experiments/shell/results/2026-10-28-qt-tabs/README.md) · [基础 resize](../../experiments/shell/results/2026-10-29-qt-resize/README.md)
 
-`qt_cpp_shell` 保留单会话真实 cmd 的 `750` 正文三格新增墨迹、自然退出 37、启动失败可见错误与人工关闭检查。多标签部分实际点击新增、切换及关闭，再核对独立字面量 `750` / `427` 与父窗口中的正文墨迹、输入隔离、关闭后存活页的 `778` 与自然退出 41；失败页关闭后存活页继续得到 `147`，父窗口关闭回收所有会话，单个失败启动页保持可见。外层自有 Job 和原有期限不变。
+固定源码 ConPTY 按原输出流报告尺寸版本、实际原生网格搬移及软换行。Qt 应用实际重排后继续解析，另以保留文档投影生成显示、光标和命中位置。固定修订已在原样六阶段、真实 Win32 读写及与视口同缓冲深度的 WindTerm 本地 Shell 四阶段完成核对。早期官方包的失败、不同缓冲深度及直接 Telnet 的差异各按样本记录。更广尺寸、持续输出交叉、应用兼容与完整 reflow 仍待验证。 [固定对照](../../experiments/shell/results/2026-11-25-bcd-native-depth/same-source-ab.md) · [历史早期失败](../../experiments/shell/results/2026-11-05-qt-resize-divergence/README.md) · [保留策略](../../docs/adr/0010-bounded-resize-retention.md)
 
-基础拖选检查通过公开 Qt 鼠标事件核对正反方向的局部高亮、点击清除和核心样式不变；导航键检查通过独立 `ReadConsoleW` 接收端比较字面预期，保留修饰键拒绝、代理项边界与既有会话隔离。源码身份、实际红绿和联合验证结果统一见[核心/输入切片记录](../../experiments/shell/results/2026-11-01-r2-core-input/README.md)，不把消息注入或离屏像素当成物理鼠标、完整应用模式或系统复制验收。
-
-退出路径另在真实 `app.exec()` 中覆盖双会话父窗口关闭、最后活动标签关闭、单个失败启动页关闭，以及已自然结束标签关闭。在统一完成回调、`aboutToQuit` 和 `exec` 返回时分别核对模型已结束、回收可验证和各自 Job active=0；已移除页的记录在其销毁前取得，不用析构后的外层 active=0 代替退出前证明。
-
-独立的 `qt_cpp_resize` 在同一 25 秒 OwnedJob 监督合同内验证 80×24→60×12→100×30→80×24、极窄/极短/1×1、重复、资源上限、字体变化、隐藏页、关闭隔离及尺寸请求与退出交叉。测试 child 用各次 nonce 通过独立命名管道返回真实 `GetConsoleScreenBufferInfo` 的 buffer/window 值，避免极小屏幕容不下回复；保留每条旧值与新值。`resize_state()` 的 requested/core 与 transport 完成不是 child ACK；正常退出可丢弃尚未应用的请求。有限 2 MiB ASCII 输出同时经过有界队列，核对 GUI 事件、实际读取、排空及回收。[固定结果与原失败](../../experiments/shell/results/2026-10-29-qt-resize/README.md)不外推为原版 reflow、真实不同 DPI、物理呈现或性能验收。
-
-字面网格测试使用可见父窗口内的终端子区域；独立顶层测试保留一列请求并根据原生事件处理后的实际可用区域核对 core 和 child，记录平台调整差异。大 child 的资源上限验证保留 owner 裁剪范围。旧 678 离屏通过后的原生极窄失败、新夹具离屏验证及[0ff 冻结包的一次隔离原生成功](../../experiments/shell/results/2026-10-29-qt-resize/native-validation.json)分别保留；后者只观察到 DPI 96，不代替不同 DPI 或完整产品验收。
-
-`qt_unicode_input` 通过公开 Qt 文本/焦点/隐藏/标签动作，将 UTF-16 整事件及跨事件代理项经每目标 `KeyboardEncoder` 交给固定 ConPTY，独立 `ReadConsoleW` 接收端核对中文、NFD、非BMP、固定ZWJ/keycap、NUL与原有正常模式按键的精确UTF-8。整包1024B上限与拒绝反馈、失焦/关闭/不可用目标的状态隔离有[红绿与联合源码验证](../../experiments/shell/results/2026-10-29-qt-unicode-input/README.md)；未配对单元及焦点清理是当前 TermForge 策略，尚无原版对照。该测试核对按键文本编码，不替代 OS IME 事件、相应字形、字素宽度或原始物理按键验收。
-
-`qt_unicode_render` 补上同一正式路径此前未覆盖的“解析后实际绘制”合同：固定 ASCII/CJK/补充平面/结合标样本经公开 Qt 事件进入真实 child，独立 `ReadConsoleW` 接收端与 child 回显文件分别核对接收字节和呈现源；核心解析为既有 `Cell`/width/marks 后由 `TerminalWidget` 离屏抓图，并逐 cell 记录实际 glyph faces、missing glyph、advance 与无裁剪参考墨迹，同时用第二条空会话观察目标隔离。实测 CJK 使用宿主 fallback 字体、emoji 的 advance 超出两格但参考墨迹未越格；U+200D/U+FE0F 被 recovery parser 替换为 U+FFFD（既有缺口，只记录）。该检查只证明离屏局部链，`presented_done=null`，不是物理呈现、原生 IME 或字素/宽度策略的批准，详见[固定结果](../../experiments/shell/results/2026-11-04-qt-unicode-presentation/README.md)。
-
-`qt_eight_session` 用公开 `+`/标签切换/关闭入口创建 8 个真实固定 ConPTY child，每个 child 通过 `TF8_READY pid=… nonce=…` 打印身份并写独立 `<nonce>.bin` 接收文件；测试以硬编码字面预期核对 ASCII/CJK/补充平面/结合标文本与无修饰 Home 只到达活动目标，按非创建顺序切换，用固定 120 行受控后台输出核对后台排空/不夺输入，关闭非活动与活动标签后核对存活目标，替代页不继承已关闭会话的待发单元，父窗口关闭经 `aboutToQuit`/`on_all_exited` 与模型 `cleanup_verified/active_processes_after` 核对 6 个存活会话回收（外层 Job active=0）。只覆盖固定 8 会话/80×24/离屏合成事件；未定义或测试第 9 个会话行为，不是真实键盘、原生 IME、系统剪贴板或完整 R2 验收，详见[固定结果](../../experiments/shell/results/2026-11-08-qt-eight-session-isolation/README.md)。
-
-IME 实现通过 `QInputMethodEvent` 绘制未提交的 preedit，仅把 commit 的 UTF-8 交给会话；空 preedit 取消预览，失焦/隐藏清理预览，光标格通过 `ImCursorRectangle` 查询。预览按字体度量计算宽度，失败提交保留错误反馈。`qt_cpp_shell` 的合成事件检查覆盖 preedit 不进入终端正文、commit 到达、cancel 不写入。独立的[固定微软拼音记录](../../research/ui/results/2026-10-30-qt-ime-fixed-pinyin/README.md)已有隔离 Windows VM 中 `ni'hao` 组合、取消及「你好」提交的限定证据；完整会话交叉、候选窗身份、其他 DPI 和实际呈现仍由 [#155](https://github.com/JavaZeroo/termforge/issues/155) / [#30](https://github.com/JavaZeroo/termforge/issues/30) 接续。
-
-[N11 候选框几何对照](../../docs/research/qt-ime-candidate-panel-reference-2026-11-01.md)在冻结源 `5fab30b` 与官方 WindTerm 2.7.0 上各采集三次：输出后两侧面板均保持旧位置，resize 后均在固定延后采集点前更新；原版字体放大未触发，字体阶段仍不可比。这份历史冻结包证据不等于当前主线已复验；亮度带几何不证明候选窗身份，原版三次收尾关闭均失败，也不能把几何片段记成整次原生验收通过。
-
-上述自动测试使用 Qt offscreen 平台和本项目独立取得的 OFL Roboto Mono 字体；没有物理键盘、实际不同 DPI、Windows 原生窗口上屏或用户呈现时间验收，`presented_done=null`。隔离 VM 原生观察保留自己的源码与环境身份。八会话目标隔离已有本切片的限定证据（合成 Qt 事件/离屏/固定 120 行后台输出），但仍不代表真实物理键盘、原生 IME、系统剪贴板或完整 Copy→Paste→IME 与工作区验收；测试耗时不是终端性能指标。
-
-构建开关默认关闭只是从旧原型向新入口迁移的状态；正式路线已确认，旧构建保留为回归对照。Qt 文字与图形资源均独立取得，不使用 WindTerm 的专有字体、图标或主题。
-
-- 历史滚动条：真实 `QScrollBar` 拖动/页区/Home/End 通过 `HistoryViewport` 源锚点定位；见[结果](../../experiments/shell/results/2026-11-07-qt-history-scrollbar/README.md)。
+专用 CI 的固定源码构建、Qt 离屏回归和 hosted Windows 剪贴板用例独立记录。原生 IME、实际呈现和受控合成事件各用自己的验证身份。旧冻结候选窗几何对照的面板身份和字体阶段仍未知。 [CI 当前入口](../../.github/workflows/qt-cpp.yml) · [IME 历史几何](../../docs/research/qt-ime-candidate-panel-reference-2026-11-01.md) · [证据索引](../../docs/EVIDENCE.md)

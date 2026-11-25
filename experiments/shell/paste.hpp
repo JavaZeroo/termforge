@@ -8,8 +8,7 @@
 #include <string_view>
 
 namespace tf_shell {
-// Application policy, not a claim about WindTerm defaults. No bracketed-paste
-// wrapper is added: that requires terminal mode negotiation in a later slice.
+// TermForge paste preparation emits text without bracketed-paste framing.
 enum class Newlines { carriage_return, line_feed, preserve };
 enum class InvalidUtf16 { reject, replace };
 struct PastePolicy {

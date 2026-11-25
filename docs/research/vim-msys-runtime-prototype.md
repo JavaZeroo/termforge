@@ -28,20 +28,20 @@ TermForge 基点 `ed55a8758423b3273fbd98f07e0bfd77d88e46ac`，产品代码与 `c
 
 此前记录显示：`process_input_message` Peek 到 resize 后调用 `send_winch_maybe`，后者为信号递送临时释放 `input_mutex`；另一线程可以消耗 resize。旧调用恢复后按旧数量清理队列，取走新到的 Ctrl-O。这是已捕获失败的调用顺序，不能追溯填补没有原生输入记录的历史失败。
 
-[研究补丁](../../research/msys-runtime-window-prefix/README.md)仅修改 `winsup/cygwin/fhandler/console.cc` 的 `WINDOW_BUFFER_SIZE_EVENT` 分支，12 行新增、6 行删除：在输入锁仍保护旧 Peek 前缀时，先 `ReadConsoleInputW` 消费已处理前缀并调整 `num_processed`；再保留原 `send_winch_maybe` 解锁、SIGWINCH 与再加锁，返回现有 read 循环，下一次重新 Peek。即使尺寸未实际变化也结束当前快照处理，后续输入进入新一轮。
+[研究补丁](https://github.com/JavaZeroo/termforge/blob/27bea78ec5e04cfd4fa1923a33d8e72003d47b3d/research/msys-runtime-window-prefix/window-prefix.patch)仅修改 `winsup/cygwin/fhandler/console.cc` 的 `WINDOW_BUFFER_SIZE_EVENT` 分支，12 行新增、6 行删除：在输入锁仍保护旧 Peek 前缀时，先 `ReadConsoleInputW` 消费已处理前缀并调整 `num_processed`；再保留原 `send_winch_maybe` 解锁、SIGWINCH 与再加锁，返回现有 read 循环，下一次重新 Peek。即使尺寸未实际变化也结束当前快照处理，后续输入进入新一轮。
 
 没有删除为 less 信号处理器 longjmp 保留的解锁。结构保留不等于已做实际 longjmp 回归；`MOUSE_EVENT` 中的同类信号路径、读取失败注入、其他应用和正式兼容/分发策略尚未验证。补丁沿用既有 `ReadConsoleInputW` 错误处理，未声称修复这些边界。
 
 ## 构建条件与来源
 
 - 运行库：[固定 MSYS 源码](https://github.com/git-for-windows/msys2-runtime/tree/2e2ef940151485490aff0c7b00c00965ef7a71a4)，提交 `2e2ef940151485490aff0c7b00c00965ef7a71a4`。未修补基点 tracked 源码干净；修补变体仅上述文件有 diff，公开补丁已做 `git apply --check` 并比对应用后的源码哈希。
-- 独立 Git SDK：提交 `36b102843d99c4993084b29d839dc6f5ef4db2f9`，构建依赖只装入私有 SDK。完整[包版本清单](../../research/msys-runtime-window-prefix/build-packages.txt)随研究记录保存；其中 GCC/G++ 16.2.0，GNU C/C++17，binutils 2.47、make 4.4.1。
+- 独立 Git SDK：提交 `36b102843d99c4993084b29d839dc6f5ef4db2f9`，构建依赖只装入私有 SDK。完整[包版本清单](https://github.com/JavaZeroo/termforge/blob/27bea78ec5e04cfd4fa1923a33d8e72003d47b3d/research/msys-runtime-window-prefix/build-packages.txt)随研究记录保存；其中 GCC/G++ 16.2.0，GNU C/C++17，binutils 2.47、make 4.4.1。
 - Win32 头文件：SDK 提交 `eb069c08fe8ef4d2f19dc6b99c4816a4c51fd2ae`（2024-07-10）的 `usr/include/w32api`，包版本 `12.0.0.r0.g819a6ec2e-1`；同时固定裸包含与 `w32api/` 前缀包含路径。不能仅设置顶层 `CPPFLAGS` 后假定子目录采用了旧头文件。
 - 配置保留 `--disable-dependency-tracking --disable-doc --disable-dumper --with-msys2-runtime-commit=2e2ef940151485490aff0c7b00c00965ef7a71a4`，生成构建文件后在目标 `winsup/cygwin` 目录构建 `all`。C 使用 `gcc -std=gnu17 -Wno-error=old-style-definition`；C++ 使用 `g++ -std=gnu++17` 和 `-O2 -g -Wno-error -Wno-narrowing -Wno-use-after-free`。最终 make 显式传入两个旧头文件的 `-isystem` 路径，`-j2`，每次构建上限 900 秒。构建准备失败和编译警告原件保留在本地，不计 GUI 结果。
 
 这是新工具链重建实验，不是官方 2024 DLL 的逐字节复建。两个重建变体的 310 项构建对象清单具有相同键集合，六项哈希不同：`fhandler/console.o`、`libdll.a`、`msysdll.a`、`new-msys-2.0.dll`、`version.o`、`winver.o`，包含再生成的版本对象。只能声称一处主动源码修改，不能声称二进制只有一个函数或一个文件不同。
 
-公开源码补丁遵循固定上游的 LGPLv3-or-later 与 `CYGWIN_LICENSE` 中的 Linking Exception；完整许可及修改归属见[来源说明](../../research/msys-runtime-window-prefix/README.md)，不套用项目 MIT。它是 MSYS/Cygwin 研究材料，不属于 WindTerm 公开或逆向源码。
+公开源码补丁遵循固定上游的 LGPLv3-or-later 与 `CYGWIN_LICENSE` 中的 Linking Exception；完整许可及修改归属见[来源说明](https://github.com/JavaZeroo/termforge/blob/27bea78ec5e04cfd4fa1923a33d8e72003d47b3d/research/msys-runtime-window-prefix/README.md)，不套用项目 MIT。它是 MSYS/Cygwin 研究材料，不属于 WindTerm 公开或逆向源码。
 
 ## 证据与结论限制
 

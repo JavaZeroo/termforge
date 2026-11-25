@@ -7,7 +7,7 @@
 - 取证环境仍在：本机 QEMU 域 `termforge-r2-win11-20261028-7d7e678b` 运行中，可通过宿主 `virsh` + QGA 只读访问。
 - 环境内保留完整工具、发放的发行物与历史录制：`C:\TermForgeHarness`（`Tools`/`Results`/`State`）。
 - 此前在宿主侧“blocked”的隐藏主屏高度审计不是不可恢复：宿主归档只含 27 个结果文件，缺 `app`、`profile`、`reference-source.json` 等取证输入；完整输入仍在环境内。
-- 已用其余正确归档完成一次**离线补充审计**（不重跑原版、不改旧失败）：见[隐藏主屏高度结果](../ui/results/2026-11-02-resize-hidden-height-reference/README.md)。
+- 已用其余正确归档完成一次**离线补充审计**（不重跑原版、不改旧失败）：见[隐藏主屏高度结果](../../research/ui/results/2026-11-02-resize-hidden-height-reference/README.md)。
 
 ## 已核验身份
 

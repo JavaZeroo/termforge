@@ -18,9 +18,9 @@ R1 基础文字交互已按限定合同验收，当前推进 R2 的联合配置�
 
 ## 干净构建与自动检查
 
-当前交付是 Python 工具、有限 C++17 核心实验与支持物理行缩放的 Windows shell 原型，尚无日常开发版。需要 CMake 3.20+、Python 3.10+ 和 C++17 编译器；主 CI 使用 Python 3.12、Windows Server 2025 runner 的 Visual Studio 与 Ubuntu 24.04 / GCC，本机另验证 Windows 11 / Visual Studio 2022。正常构建使用仓库内已生成的 Unicode 表，不访问 WindTerm 安装目录，也不下载私有程序。
+下面的默认构建验证 C++ 核心与 Windows 上的旧 Win32／系统 ConPTY 原型。需要 CMake 3.20+、Python 3.10+ 和 C++17 编译器。默认 CI 用 Python 3.12，在 Windows Server 2025 与 Ubuntu 24.04 执行。正式路线的 Windows x64 Qt／固定源码 ConPTY 有独立的[依赖准备、构建和复验入口](src/qt/README.md)。两种构建均使用仓库内已生成的 Unicode 表。
 
-从仓库根目录运行，推荐使用 Python 虚拟环境：
+从仓库根目录运行，可使用 Python 虚拟环境。
 
 ```sh
 python -m pip install -r benchmarks/requirements.txt
@@ -47,7 +47,7 @@ python -m experiments.core.run --fixture unicode --out local/experiments/core-un
 
 [GitHub Actions](.github/workflows/build.yml) 在干净检出上构建并执行相同检查及两套完整回放。Windows 剪贴板/窗口合成场景保留成功或失败产物；其余失败产物限于本次 CTest/CMake 日志和 `build/test-artifacts` 内的合成用例结果。主构建不上传仓库 `local/`、WindTerm、个人终端会话或完整工作目录。[R1 参考探针](.github/workflows/r1-reference.yml)在相关探针文件进入 main 后自动运行，也保留手动入口；[IME 工作流](.github/workflows/r1-ime.yml)的自动入口只做有界只读盘点，语言准备与真实输入须显式选择 `verify`。两者仅上传白名单事实和自有探针记录。测试可通过 `TERMFORGE_TEST_ARTIFACTS` 指定合成记录目录。CI 的运行时间用于回归诊断，不是受控性能基准。
 
-Server 2022 的 ConPTY 稳态句柄增长尚未解决，未列入已验收平台。它保留为[按需兼容性探针](.github/workflows/conpty-compat.yml)，运行同样严格的断言，失败仍报告失败；[原因与证据](docs/research/conpty-platform-check-2026-10-22.md)独立保留，不能把现代 Windows 主 CI 通过解释为旧系统也通过。
+Windows Server 2022 的[按需兼容性探针](.github/workflows/conpty-compat.yml)按 [#21](https://github.com/JavaZeroo/termforge/issues/21)记录系统 ConPTY 的稳态句柄增长，其余生命周期断言仍严格运行。平台边界与原始失败见[兼容性记录](docs/research/conpty-platform-check-2026-10-22.md)。
 
 ## Windows Alpha 构建与打包
 
@@ -66,4 +66,4 @@ python tools/alpha_smoke.py --bundle local/alpha-unpacked-new/TermForge-v0.1.0-a
 
 ZIP 包含 `termforge_shell.exe`、`shell_clipboard_reader.exe`、三个 `assets/fonts` 文件、`LICENSE`、`README.txt` 和 `build-info.json`；`SHA256SUMS.txt` 作为单独发布资产。保留资源许可和原始字体字节；打包清单不包括测试二进制或个人配置。包内身份与哈希用于核对构建输入和文件，不能单独证明可复现的逐字节二进制构建。
 
-[Alpha 工作流](.github/workflows/alpha-release.yml)从干净源码构建、验证并保留待发布产物；上传 Actions artifact 不等于发布 GitHub release。审核产物和验证证据后，再以 `v0.1.0-alpha.1` 创建 GitHub prerelease。此包未签名，已验环境限 Windows 11 本机和 Windows Server 2025 CI；最低系统版本与其他 Windows 版本仍须单独验收。布局写入 `%LOCALAPPDATA%\TermForge\workspace-v1.layout`，所以免安装不代表所有数据都在解压目录。
+[Alpha 工作流](.github/workflows/alpha-release.yml)从干净源码构建、验证并保留候选产物。已发布的 Alpha 1 以[发行说明](docs/releases/v0.1.0-alpha.1.md)中的固定源码、ZIP 哈希和验证环境为准。以上命令可用于本地重建和检查旧 Win32 包。

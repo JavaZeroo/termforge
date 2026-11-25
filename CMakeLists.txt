@@ -500,7 +500,6 @@ add_test(NAME edit_csi_core COMMAND edit_csi_test)
   add_test(NAME keyboard COMMAND keyboard_test)
   add_test(NAME text_action_policy COMMAND text_action_policy_test)
   find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
-  # New experiment suites can register ordinary Python module invocations here.
   function(termforge_add_python_test name)
     add_test(NAME ${name} COMMAND "${Python3_EXECUTABLE}" ${ARGN})
     set_tests_properties(${name} PROPERTIES
@@ -687,11 +686,8 @@ if(TERMFORGE_BUILD_QT_SHELL)
         "$<TARGET_FILE_DIR:${target}>/assets/fonts"
       VERBATIM)
     add_dependencies(${target} ${target}_font_bundle)
-    # The system D3D compiler and Microsoft DXC redistributables are not part
-    # of the fixed, pinned product set: the Widgets raster entry does not link
-    # them, and windeployqt would otherwise copy them from the developer's
-    # Windows SDK/system directories. Product staging verifies the remaining
-    # files against the pinned SDK; see tools/stage_qt_product.py.
+    # Widgets raster rendering needs no D3D/DXC compiler. Suppress their
+    # automatic deployment from the host SDK so product staging stays pinned.
     add_custom_command(TARGET ${target} POST_BUILD
       COMMAND "${qt_deploy_tool}" --release --no-translations --no-compiler-runtime
         --no-system-d3d-compiler --no-system-dxc-compiler
