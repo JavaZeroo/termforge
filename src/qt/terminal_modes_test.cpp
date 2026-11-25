@@ -273,7 +273,7 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         // The local capture includes native cursor coordinates. Convert its
         // zero-based position to the page-relative one-based protocol report.
         constexpr std::string_view local_cursors[]{
-            "\x1b[11;2R", "\x1b[11;22R", "\x1b[12;8R", "\x1b[11;8R]"};
+            "\x1b[11;2R", "\x1b[11;22R", "\x1b[12;8R", "\x1b[11;8R"};
         const std::string_view reference_dsr = local_reference ? local_cursors[stage - 1]
             : stage < 3 ? "\x1b[11;2R" : "\x1b[12;8R";
         const bool source_matches = logical_lines == expected;
