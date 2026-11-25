@@ -212,10 +212,12 @@ class MeasuredHeightPlanTests(unittest.TestCase):
     def prepare(self,authorized=False):
         return probe.prepare_plan(self.source,self.out,self.root/"rea.cmd",self.plan,"height-retention-measured",authorized)
 
-    def test_archive_plan_is_offline_and_exactly_ten_source_files(self):
+    def test_archive_plan_is_offline_and_binds_shared_preparation_source(self):
         with patch.object(probe.common.subprocess,"check_output",side_effect=AssertionError("No archive Git")):
             plan=self.prepare()
-        self.assertEqual(len(plan["source_files_sha256"]),10)
+        self.assertEqual(set(plan["source_files_sha256"]), set(probe.SOURCE_FILES))
+        shared_source = "research/ui/resize_observation_plan.py"
+        self.assertEqual(plan["source_files_sha256"][shared_source], probe.sha(self.root / shared_source))
         self.assertEqual(plan["actual_original_runs"],0);self.assertFalse(self.out.exists())
         with self.assertRaisesRegex(ValueError,"not authorized"):probe.run_plan(self.plan)
         self.assertFalse(self.plan.with_suffix(".attempted").exists())
