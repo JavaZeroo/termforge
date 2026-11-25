@@ -1,4 +1,4 @@
-name: Qt autoscroll literal compile only
+name: Qt BCD resize comparison
 
 on:
   workflow_dispatch:
@@ -7,24 +7,24 @@ permissions:
   contents: read
 
 jobs:
-  literal-v2:
-    if: github.event_name == 'workflow_dispatch' && github.run_attempt == 1 && github.ref_name == 'codex/r29-autoscroll-literal-compile'
+  bcd-comparison:
+    if: github.event_name == 'workflow_dispatch' && github.run_attempt == 1 && github.ref_name == 'codex/r29-qt-bcd-ci'
     runs-on: windows-2025
     timeout-minutes: 15
     env:
       PYTHONUTF8: '1'
-      FROZEN_SOURCE: cf5fd1dac63d5fb911de11839c6be1e84f20f744
+      FROZEN_SOURCE: b7ef9cef5218e866c35ba6d80acb8d0717209af7
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: cf5fd1dac63d5fb911de11839c6be1e84f20f744
+          ref: b7ef9cef5218e866c35ba6d80acb8d0717209af7
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
       - name: Prepare manifest-pinned Qt, ConPTY and CRT
         run: python -m tools.prepare_qt_build
-      - name: Configure and build the literal target
+      - name: Configure and build the Qt modes test
         run: |
           $deps = Join-Path $env:GITHUB_WORKSPACE 'local/qt-build-deps'
           cmake -S . -B build/qt-cpp -G 'Visual Studio 18 2026' -A x64 -T v143 `
@@ -35,4 +35,46 @@ jobs:
             "-DTERMFORGE_CONPTY_BACKEND_DIR=$deps/conpty" `
             "-DTERMFORGE_MSVC_RUNTIME_DIR=$deps/crt"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cmake --build build/qt-cpp --config Release --target qt_autoscroll_literal_test --parallel 2
+          cmake --build build/qt-cpp --config Release --target qt_terminal_modes_test --parallel 2
+      - name: Run the four-phase Qt comparison
+        env:
+          TERMFORGE_QT_QPA_PLATFORM: offscreen
+        run: |
+          $head = git rev-parse HEAD
+          $tree = git rev-parse 'HEAD^{tree}'
+          if ($head -ne $env:FROZEN_SOURCE -or (git status --porcelain --untracked-files=no)) { throw 'Frozen source differs' }
+          $out = Join-Path $env:RUNNER_TEMP 'tf29-bcd'
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          $exe = 'build/qt-cpp/qt-modes-bin/Release/qt_terminal_modes_test.exe'
+          $files = @('src/qt/terminal_modes_test.cpp','src/qt/terminal_modes_fixture.hpp','src/qt/terminal_session.hpp',
+            'src/qt/terminal_widget.hpp','research/ui/results/2026-11-24-resize-bcd-reference/addressing.json')
+          $hashes = [ordered]@{}
+          foreach ($path in $files) { $hashes[$path] = (Get-FileHash -LiteralPath $path).Hash.ToLowerInvariant() }
+          [ordered]@{
+            source = $head
+            tree = $tree
+            source_sha256 = $hashes
+            executable_sha256 = (Get-FileHash -LiteralPath $exe).Hash.ToLowerInvariant()
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            runner_image = $env:ImageVersion
+            qpa = $env:TERMFORGE_QT_QPA_PLATFORM
+          } | ConvertTo-Json -Depth 7 | Set-Content -LiteralPath "$out/identity.json" -Encoding UTF8
+          python src/qt/run_smoke.py $exe --bcd-comparison *> "$out/run.log"
+          $code = $LASTEXITCODE
+          $records = @(Get-Content -LiteralPath "$out/run.log" | ForEach-Object {
+            try { $_ | ConvertFrom-Json -ErrorAction Stop } catch {}
+          } | Where-Object schema -in @('termforge-qt-bcd-stage-v1','termforge-qt-bcd-comparison-v1','termforge-qt-cpp-supervisor-v1'))
+          ConvertTo-Json -InputObject $records -Depth 18 | Set-Content -LiteralPath "$out/records.json" -Encoding UTF8
+          Get-Content -LiteralPath "$out/run.log"
+          exit $code
+      - name: Archive the source identity and synthetic observations
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qt-bcd-comparison
+          if-no-files-found: warn
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/tf29-bcd/identity.json
+            ${{ runner.temp }}/tf29-bcd/records.json
