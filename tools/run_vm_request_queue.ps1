@@ -6,11 +6,14 @@ $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
 $Root=[IO.Path]::GetFullPath($Root)
 if($Root.TrimEnd('\') -eq [IO.Path]::GetPathRoot($Root).TrimEnd('\')){throw 'A dedicated owned harness directory is required'}
+$RequestDirectory=Join-Path $Root 'Requests'
+if(-not (Test-Path -LiteralPath $RequestDirectory -PathType Container)){throw 'Owned request directory is missing'}
 Add-Type -Path (Join-Path $PSScriptRoot 'owned_vm_request.cs')
 if(Test-Path "$Root\State\queue-quarantined.json"){throw 'Earlier cleanup is unverified; inspect the owned record before resuming'}
 @{protocol='termforge-owned-vm-request-v2';ready_utc=[DateTime]::UtcNow.ToString('o');pid=$PID;session_id=(Get-Process -Id $PID).SessionId;user=[Security.Principal.WindowsIdentity]::GetCurrent().Name} | ConvertTo-Json | Set-Content "$Root\State\interactive-ready.json" -Encoding UTF8
 while($true){
- foreach($Req in @(Get-ChildItem "$Root\Requests" -Filter '*.ps1' -File | Sort-Object Name)){
+ foreach($Req in @(Get-ChildItem -LiteralPath $RequestDirectory -Filter '*.ps1' -File | Sort-Object Name)){
+  if($Req -isnot [IO.FileInfo] -or $Req.DirectoryName -ine $RequestDirectory -or $Req.Extension -ine '.ps1'){continue}
   $Id=$Req.BaseName
   if($Id -notmatch '^[A-Za-z0-9_-]{1,80}$'){continue}
   $Claim="$Root\State\$Id.running.ps1"
