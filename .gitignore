@@ -5,6 +5,11 @@
 /build/
 /build-alpha/
 /dist/
+
+# Local Visual Studio and CMake settings
+/.vs/
+/CMakeUserPresets.json
+
 __pycache__/
 *.pyc
 .venv/

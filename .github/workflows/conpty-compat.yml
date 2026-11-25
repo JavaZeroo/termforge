@@ -196,14 +196,15 @@ jobs:
       - name: Time the node contract fixture
         shell: pwsh
         run: |
+          New-Item -ItemType Directory -Force build/test-artifacts | Out-Null
           @'
           import json, os, platform, subprocess, sys, tempfile, time
           from pathlib import Path
           from concurrent.futures import ThreadPoolExecutor
           script = "research/ui/test_raster_native_contract.js"
           node = subprocess.run(["node", "--version"], capture_output=True, text=True)
-          preload = "node-timing-preload.js"
-          Path(preload).write_text(
+          preload = Path(__file__).with_name("node-timing-preload.js").resolve()
+          preload.write_text(
               "const fs=require('fs');fs.writeFileSync(process.env.TERMFORGE_NODE_CHECKPOINT,"
               "JSON.stringify({started:Date.now(),version:process.version}));",
               encoding="utf-8")
@@ -214,7 +215,7 @@ jobs:
               checkpoint = Path(tempfile.mkdtemp()) / "checkpoint.json"
               environment = dict(os.environ, TERMFORGE_NODE_CHECKPOINT=str(checkpoint))
               try:
-                  result = subprocess.run(["node", "--require", preload, script], capture_output=True,
+                  result = subprocess.run(["node", "--require", str(preload), script], capture_output=True,
                                           text=True, timeout=10, env=environment)
                   elapsed = time.monotonic() - start
                   return {"elapsed": round(elapsed, 3), "returncode": result.returncode, "timeout": False}
@@ -238,11 +239,11 @@ jobs:
               "max_concurrent": max(row["elapsed"] for batch in concurrent for row in batch),
           }
           print(json.dumps(report))
-          with open("node-contract-timing.json", "w", encoding="utf-8") as stream:
+          with Path(__file__).with_suffix(".json").open("w", encoding="utf-8") as stream:
               json.dump(report, stream, indent=2)
           sys.exit(1 if report["sequential_timeouts"] or report["concurrent_timeouts"] else 0)
-          '@ | Out-File -Encoding utf8 node-contract-timing.py
-          python node-contract-timing.py
+          '@ | Out-File -Encoding utf8 build/test-artifacts/node-contract-timing.py
+          python build/test-artifacts/node-contract-timing.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Preserve timing evidence
         if: always()
@@ -251,7 +252,7 @@ jobs:
           name: node-contract-timing-r144
           retention-days: 14
           if-no-files-found: warn
-          path: node-contract-timing.json
+          path: build/test-artifacts/node-contract-timing.json
 
   windows-2025-actions-repeat:
     if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2025-actions-repeat' }}
@@ -299,8 +300,10 @@ jobs:
       - name: Measure subprocess start-up latency
         shell: pwsh
         run: |
+          New-Item -ItemType Directory -Force build/test-artifacts | Out-Null
           @'
           import json, platform, subprocess, sys, time
+          from pathlib import Path
           def samples(command, count, timeout):
               rows = []
               for _ in range(count):
@@ -326,10 +329,10 @@ jobs:
                     "powershell": summary(ps), "node": summary(node),
                     "powershell_samples": ps, "node_samples": node}
           print(json.dumps({k: v for k, v in report.items() if not k.endswith("_samples")}))
-          with open("startup-latency.json", "w", encoding="utf-8") as stream:
+          with Path(__file__).with_suffix(".json").open("w", encoding="utf-8") as stream:
               json.dump(report, stream, indent=2)
-          '@ | Out-File -Encoding utf8 startup-latency.py
-          python startup-latency.py
+          '@ | Out-File -Encoding utf8 build/test-artifacts/startup-latency.py
+          python build/test-artifacts/startup-latency.py
       - name: Preserve latency evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -337,7 +340,7 @@ jobs:
           name: startup-latency-r2
           retention-days: 14
           if-no-files-found: warn
-          path: startup-latency.json
+          path: build/test-artifacts/startup-latency.json
 
   windows-2025-startup-under-load:
     if: ${{ github.event.inputs.only == '' || github.event.inputs.only == 'windows-2025-startup-under-load' }}
@@ -353,8 +356,10 @@ jobs:
       - name: Measure start-up latency under CPU load
         shell: pwsh
         run: |
+          New-Item -ItemType Directory -Force build/test-artifacts | Out-Null
           @'
           import json, multiprocessing, platform, subprocess, time
+          from pathlib import Path
           def burn(deadline):
               while time.monotonic() < deadline:
                   sum(i * i for i in range(20000))
@@ -376,22 +381,23 @@ jobs:
                       "over_1s": sum(1 for t in times if t >= 1.0),
                       "over_5s": sum(1 for t in times if t >= 5.0),
                       "timeouts": sum(1 for row in rows if row["timeout"])}
-          command = ["powershell.exe", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "exit 0"]
-          deadline = time.monotonic() + 120
-          workers = [multiprocessing.Process(target=burn, args=(deadline,)) for _ in range(8)]
-          for worker in workers:
-              worker.start()
-          time.sleep(2)
-          loaded = samples(command, 20, 15)
-          for worker in workers:
-              worker.terminate()
-          report = {"schema": "termforge-startup-under-load-v1", "platform": platform.platform(),
-                    "workers": 8, "loaded": summary(loaded), "samples": loaded}
-          print(json.dumps({k: v for k, v in report.items() if k != "samples"}))
-          with open("startup-under-load.json", "w", encoding="utf-8") as stream:
-              json.dump(report, stream, indent=2)
-          '@ | Out-File -Encoding utf8 startup-under-load.py
-          python startup-under-load.py
+          if __name__ == "__main__":
+              command = ["powershell.exe", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", "exit 0"]
+              deadline = time.monotonic() + 120
+              workers = [multiprocessing.Process(target=burn, args=(deadline,)) for _ in range(8)]
+              for worker in workers:
+                  worker.start()
+              time.sleep(2)
+              loaded = samples(command, 20, 15)
+              for worker in workers:
+                  worker.terminate()
+              report = {"schema": "termforge-startup-under-load-v1", "platform": platform.platform(),
+                        "workers": 8, "loaded": summary(loaded), "samples": loaded}
+              print(json.dumps({k: v for k, v in report.items() if k != "samples"}))
+              with Path(__file__).with_suffix(".json").open("w", encoding="utf-8") as stream:
+                  json.dump(report, stream, indent=2)
+          '@ | Out-File -Encoding utf8 build/test-artifacts/startup-under-load.py
+          python build/test-artifacts/startup-under-load.py
       - name: Preserve latency evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -399,4 +405,4 @@ jobs:
           name: startup-under-load-r2
           retention-days: 14
           if-no-files-found: warn
-          path: startup-under-load.json
+          path: build/test-artifacts/startup-under-load.json
