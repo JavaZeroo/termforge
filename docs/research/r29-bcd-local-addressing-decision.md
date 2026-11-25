@@ -95,7 +95,7 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
 
 固定四阶段样本中，Qt 保留源位置、可见标记和 child DSR 都与 WindTerm Telnet 样本一致。固定 ConPTY 原生网格在 `CUP 12;1` 写入后覆盖了原 `D`，恢复后仍缺。用户明确要求根因修复，旧六阶段失败仍计入 #29 的待解决范围。 [同输入正式路径对照](../../experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md)
 
-原生缓冲对照进一步复现了一个中间步骤。应用在初始阶段将固定 ConPTY 原生缓冲设置为 `80×3000`。公开 resize 将原生缓冲和视口都变为 `60×12`。写入前，原生重排让 `D` 占据 0 基第 11 行第 0 列。紧随的写入覆盖该单元格。WindTerm 随附 WinPTY 在独立 Windows VM 保持 3000 行缓冲，并将 `D` 和 `RESIZED` 放在不同原生行。两条路径同时存在主机和重排实现差异。待验证固定 ConPTY 的缓冲与视口分离能否消除覆盖，以及旧六阶段输入上的同步是否恢复。 [原生缓冲对照](../../experiments/shell/results/2026-11-25-bcd-native-depth/README.md)
+原生缓冲对照复现了覆盖过程。固定 ConPTY 的宿主 resize 将应用设置的 `80×3000` 缓冲收至 `60×12`。原 `D` 被重排到 0 基第 11 行第 0 列，随后被应用写入覆盖。由同一上游源码构建的候选保留了缓冲深度，`D` 随窗口恢复回到 `(10,0)`，`RESIZED` 则随 `C` 回卷到 `(9,60)`。原来的六阶段断言在官方包、同源基线、同源候选下都在第 6 阶段失败。候选还改变了应用读到的原生缓冲高度。根因修复仍需要验证跨 resize 的寻址映射。 [原生缓冲对照](../../experiments/shell/results/2026-11-25-bcd-native-depth/README.md) · [同源矩阵](../../experiments/shell/results/2026-11-25-bcd-native-depth/same-source-ab.md)
 
 ## 8. 现有批准与未批准
 

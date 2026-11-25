@@ -15,4 +15,4 @@ WinPTY 对照在 Windows 11 x64 QEMU 来宾内使用 WindTerm 2.7.0 随附的 DL
 
 固定 ConPTY 的 [resize 链路](https://github.com/microsoft/terminal/blob/dc8ae365847d41f62d1ebca93815bb00959bc12f/src/host/outputStream.cpp#L375-L425) 先更新原生缓冲信息，再更新视口。两处视口更新都能将缓冲调整至视口尺寸。 [`SetViewportSize`](https://github.com/microsoft/terminal/blob/dc8ae365847d41f62d1ebca93815bb00959bc12f/src/host/screenInfo.cpp#L605-L622) · [`SetConsoleWindowInfoImpl`](https://github.com/microsoft/terminal/blob/dc8ae365847d41f62d1ebca93815bb00959bc12f/src/host/getset.cpp#L849-L902)
 
-已验证固定包会在宿主 resize 中收回应用设置的缓冲高度，以及原 `D` 先被重排到写入格、再被覆盖。WinPTY 对照还有控制台宿主实现差异。单独解除缓冲深度与视口高度的绑定能否避免覆盖，以及旧六阶段 `--resize` 是否恢复同步，留待同源候选运行验证。
+同源候选保持缓冲深度后，原 `D` 留在视口下方，并于恢复尺寸后重新可读。候选的原生绝对寻址和 Qt 源行仍有差异，旧六阶段 `--resize` 仍在第 6 阶段失败。 [同源对照](same-source-ab.md)

@@ -1,0 +1,1669 @@
+{
+  "schema": "termforge-r29-native-depth-ab-v1",
+  "upstream_build": {
+    "initial_failed_run": 45539682234,
+    "initial_failure": "patch context line endings",
+    "verified_run": 45540116248,
+    "identity_archive_id": 14988902597,
+    "identity_archive_sha256": "f7e8d5be932a815f5820e090a6e92381ff8084d73c79d1a1dac0f35a59932657",
+    "summary": {
+      "schema": "termforge-r29-conpty-depth-build-v1",
+      "purpose": "isolated same-source ConPTY depth experiment",
+      "status": "built",
+      "termforge_source": "07f971b3a5903039e7d1eee9bf11c8ac9664c603",
+      "upstream_source": "dc8ae365847d41f62d1ebca93815bb00959bc12f",
+      "vcpkg_source": "927f62e4b8838bd7e441e9c45103a16ffd75007e",
+      "image_os": "win25-vs2026",
+      "image_version": "20261116.315.1",
+      "workflow_run": "45540116248",
+      "workflow_attempt": "1",
+      "configuration": "Release/x64/v145/WindowsSDK10.0.26100.0",
+      "stages": [
+        {
+          "name": "vcpkg-tool-download",
+          "exit_code": 0,
+          "elapsed_seconds": 0.5331868,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "vcpkg-version",
+          "exit_code": 0,
+          "elapsed_seconds": 0.0508036,
+          "log_sha256": "fea4ead8f40a8aeca48fc22406d6102a7f1e07373fc0d6a5decb129457a43161"
+        },
+        {
+          "name": "nuget-restore",
+          "exit_code": 0,
+          "elapsed_seconds": 9.8223206,
+          "log_sha256": "89557d1f1cf6a3180a7cb98ddd9f714e3ec4aca7d9e1a2aa68a93feb6030b628"
+        },
+        {
+          "name": "candidate-patch-check",
+          "exit_code": 0,
+          "elapsed_seconds": 0.0505631,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "baseline-proxy-build",
+          "exit_code": 0,
+          "elapsed_seconds": 73.9232427,
+          "log_sha256": "d156b7b41b41cd9485fde4c526a14bbf3c9e5eb5d6917697ae2f23a7405e982b"
+        },
+        {
+          "name": "baseline-types-build",
+          "exit_code": 0,
+          "elapsed_seconds": 8.8332611,
+          "log_sha256": "2517edeadee0c2ece0eb57d76fc9b638eb4c24dcb36bff67d7aff6bce2c01fd4"
+        },
+        {
+          "name": "baseline-buffer-build",
+          "exit_code": 0,
+          "elapsed_seconds": 9.669123,
+          "log_sha256": "5e0cd5be3d1fa74b0db5bd0ca246b75cad536912d1264cb2a04ce5243fe483cc"
+        },
+        {
+          "name": "baseline-render-base-build",
+          "exit_code": 0,
+          "elapsed_seconds": 6.5196172,
+          "log_sha256": "6a80b6b730498b86e451d25f08194d592438d4f02dca945aa6dd7ad4c67919c4"
+        },
+        {
+          "name": "baseline-render-gdi-build",
+          "exit_code": 0,
+          "elapsed_seconds": 6.2188098,
+          "log_sha256": "5ffba2be38849e5bedbc3f852b4a416fbc44eb25b859c0ad59115626ece82867"
+        },
+        {
+          "name": "baseline-propsheet-build",
+          "exit_code": 0,
+          "elapsed_seconds": 28.033274,
+          "log_sha256": "673fde1c52127a90cb19f0499abf1a7d96fa36073fa894b4b00d20894706f50b"
+        },
+        {
+          "name": "baseline-host-build",
+          "exit_code": 0,
+          "elapsed_seconds": 99.4597751,
+          "log_sha256": "326a2f0450b2fa829994a3f325b397ba73303cb8a467abc755b2d9cfe26a8696"
+        },
+        {
+          "name": "baseline-dll-build",
+          "exit_code": 0,
+          "elapsed_seconds": 10.6977801,
+          "log_sha256": "d67cf8eb01652a06b3db44c8986f684a0f3c4c92b24d7f008dce3aa2e96cf888"
+        },
+        {
+          "name": "candidate-patch",
+          "exit_code": 0,
+          "elapsed_seconds": 0.0428036,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "candidate-propsheet-build",
+          "exit_code": 0,
+          "elapsed_seconds": 1.0061744,
+          "log_sha256": "fd638f0969daef7e599fa8151210c63fc249df769639a208d10d9925becef4ad"
+        },
+        {
+          "name": "candidate-host-build",
+          "exit_code": 0,
+          "elapsed_seconds": 8.7248231,
+          "log_sha256": "04aa3a504bb43bfa64004a17e488941171bffdeff8503e128e1119b3e69d1824"
+        },
+        {
+          "name": "candidate-dll-build",
+          "exit_code": 0,
+          "elapsed_seconds": 0.8885647,
+          "log_sha256": "568584e4abd446efe5e74f0f66c1aa921f5f337201ac5910122a66aa73b3a156"
+        }
+      ],
+      "vcpkg_shallow": "false",
+      "source_hashes": {
+        "src/host/screenInfo.cpp": "fced7e15d63ce8e7cf791d09fd1ba57a46a7bf65430e8770a372340650b483b0",
+        "src/host/getset.cpp": "aab0a2d8c6b4f50e3ab37d6454797a91850f1b0e325e289ea378210eb6012187"
+      },
+      "patch_sha256": "9b14fdc1b3d8998b80ac81b751ddb13e923ded8328b0f7b8df739fc0188461b2",
+      "applied_patch_sha256": "1ede027e97f9bd4691a8cc8879d284b1668166c79d23054eab2130c852271e04",
+      "source_hashes_verified": true,
+      "tools": {
+        "visual_studio": "18.0",
+        "msvc": "14.52.37025",
+        "sdk": "10.0.26100.0\\",
+        "compiler_sha256": "87b094e4fb3c646247b8eb515b5daa4fd73f991fe7cc42e98c0c9e3d3805d6fb",
+        "msbuild_sha256": "1eaa178cd17c7d3c2e33f98928e9ebbe098b0f0a397517f10f16cd06a3f23085"
+      },
+      "vcpkg_exe_sha256": "f1edbf3a39de350e2bb065214fdc057111aa87a2e2ed9a7dcb8ddc86e17751b9",
+      "baseline_files": {
+        "OpenConsole.exe": {
+          "sha256": "7bd315497819d310259470a5f22957585042ecec6b4ba74baff844f77be0494d",
+          "bytes": 1134080
+        },
+        "conpty.dll": {
+          "sha256": "e5a3a0d2c1d978cfd22cb38ee2d4b8fccee46a7515cfd90b53ca3650de6e589e",
+          "bytes": 105984
+        }
+      },
+      "candidate_source_hashes": {
+        "src/host/getset.cpp": "90dcca7acae4b5f66d99a01459f3a786281fd3d37c8244b9ce41454fcd7a8d6a",
+        "src/host/screenInfo.cpp": "862fd291da8e706be649222369bf1fb20c31468f2037358781a761bbfb7b7542"
+      },
+      "candidate_files": {
+        "OpenConsole.exe": {
+          "sha256": "f3818775effdb31f4765cf466257669967dd6d45baaa7e4d4d37be83dc1f6ff8",
+          "bytes": 1134080
+        },
+        "conpty.dll": {
+          "sha256": "e5a3a0d2c1d978cfd22cb38ee2d4b8fccee46a7515cfd90b53ca3650de6e589e",
+          "bytes": 105984
+        }
+      }
+    }
+  },
+  "runtime_workflow_run": 45540912138,
+  "runner": "windows-2025",
+  "qt": "6.10.3",
+  "qpa": "offscreen",
+  "qt_compiler": "v143",
+  "samples": {
+    "candidate": {
+      "identity": {
+        "variant": "candidate",
+        "files": {
+          "conpty.dll": "e5a3a0d2c1d978cfd22cb38ee2d4b8fccee46a7515cfd90b53ca3650de6e589e",
+          "OpenConsole.exe": "f3818775effdb31f4765cf466257669967dd6d45baaa7e4d4d37be83dc1f6ff8"
+        },
+        "source": "60c8689dbe29b7dc45f5941913a025d16e4c2944",
+        "variant_build_run": "45540116248",
+        "variant_build_head": "07f971b3a5903039e7d1eee9bf11c8ac9664c603",
+        "pair_artifact": {
+          "files": {
+            "conpty.dll": "e5a3a0d2c1d978cfd22cb38ee2d4b8fccee46a7515cfd90b53ca3650de6e589e",
+            "OpenConsole.exe": "f3818775effdb31f4765cf466257669967dd6d45baaa7e4d4d37be83dc1f6ff8"
+          },
+          "artifact": 14989012240,
+          "archive_sha256": "4c27cf7fb99089de23284395ee5a56835b7688549a6d42927e559052fcbacbbf"
+        },
+        "runner_image": "20261116.315.1",
+        "workflow_run": "45540912138",
+        "executable_sha256": "e09496c5402c8876fd811b12755274eff79bd2bebe8bde3376610c80408dca87"
+      },
+      "archive": {
+        "digest": "sha256:a07e54a98ade48701d0a0aa099626729c49af65137a912641e89a5d0e61f3cae",
+        "id": 14989107323,
+        "name": "r29-native-runtime-candidate"
+      },
+      "exit_codes": {
+        "resize": 1,
+        "bcd-native-viewport": 0,
+        "bcd-depth-control": 0
+      },
+      "four_stage": [
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b383b383048421b5b31303b383048431b5b31313b3148441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 0,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043"
+          ],
+          "native_size": [
+            60,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 1,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b31323b3148524553495a45441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "524553495a454420202020202020202020202043"
+          ],
+          "native_size": [
+            60,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 2,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020524553495a454420202020202020202020202043",
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 3,
+          "source_matches_reference": true
+        }
+      ],
+      "four_stage_depth_control": [
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b383b383048421b5b31303b383048431b5b31313b3148441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_depth_request_error": 0,
+          "native_depth_request_succeeded": true,
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            3000
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 0,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043"
+          ],
+          "native_size": [
+            60,
+            3000
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 1,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b31323b3148524553495a45441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "524553495a454420202020202020202020202043"
+          ],
+          "native_size": [
+            60,
+            3000
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 2,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020524553495a454420202020202020202020202043",
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            3000
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 3,
+          "source_matches_reference": true
+        }
+      ],
+      "four_stage_summary": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "sample": {
+          "child_exit": 37,
+          "cleanup_verified": true,
+          "compared_stages": 4,
+          "different_stages": 0,
+          "native_depth_control": false,
+          "presented_done": null,
+          "schema": "termforge-qt-bcd-comparison-v1"
+        }
+      },
+      "depth_control_summary": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "sample": {
+          "child_exit": 37,
+          "cleanup_verified": true,
+          "compared_stages": 4,
+          "different_stages": 0,
+          "native_depth_control": true,
+          "presented_done": null,
+          "schema": "termforge-qt-bcd-comparison-v1"
+        }
+      },
+      "legacy_stage_6": {
+        "source_hex": "1b5b31323b3148524553495a45441b5b313b31485336",
+        "native": [
+          60,
+          24
+        ],
+        "core": [
+          60,
+          12
+        ],
+        "transport_hex": "1b5b31323b3148524553495a45441b5b313b314853361b5b366e",
+        "rows": [
+          {
+            "row": 7,
+            "native_utf8_hex": "",
+            "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042"
+          },
+          {
+            "row": 8,
+            "native_utf8_hex": "2020202020202020202020202020202020202042",
+            "core_utf8_hex": ""
+          },
+          {
+            "row": 9,
+            "native_utf8_hex": "",
+            "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043"
+          },
+          {
+            "row": 10,
+            "native_utf8_hex": "",
+            "core_utf8_hex": "44"
+          },
+          {
+            "row": 11,
+            "native_utf8_hex": "524553495a45442020202020202020202020204344",
+            "core_utf8_hex": "524553495a4544"
+          }
+        ],
+        "failures": [
+          "stage 6 failed: native buffer/window size differs from the independent literal geometry",
+          "stage 6 failed: core resize is not synchronized with the literal native B/CD rows"
+        ],
+        "supervisor": {
+          "schema": "termforge-qt-cpp-supervisor-v1",
+          "status": "failed",
+          "timed_out": false,
+          "exit_code": 1,
+          "job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "error": "Qt smoke failed or left owned processes active"
+        }
+      }
+    },
+    "baseline": {
+      "identity": {
+        "variant": "baseline",
+        "files": {
+          "conpty.dll": "e5a3a0d2c1d978cfd22cb38ee2d4b8fccee46a7515cfd90b53ca3650de6e589e",
+          "OpenConsole.exe": "7bd315497819d310259470a5f22957585042ecec6b4ba74baff844f77be0494d"
+        },
+        "source": "60c8689dbe29b7dc45f5941913a025d16e4c2944",
+        "variant_build_run": "45540116248",
+        "variant_build_head": "07f971b3a5903039e7d1eee9bf11c8ac9664c603",
+        "pair_artifact": {
+          "files": {
+            "conpty.dll": "e5a3a0d2c1d978cfd22cb38ee2d4b8fccee46a7515cfd90b53ca3650de6e589e",
+            "OpenConsole.exe": "7bd315497819d310259470a5f22957585042ecec6b4ba74baff844f77be0494d"
+          },
+          "artifact": 14988543599,
+          "archive_sha256": "c0d110e3598caccad23208074361bd7762aa4d1f5eeabf0c6ed1eb44a12635aa"
+        },
+        "runner_image": "20261116.315.1",
+        "workflow_run": "45540912138",
+        "executable_sha256": "2705ca726675c8d53613c2712ef81201bd0bf6a81189e80e4e366533a7aa6277"
+      },
+      "archive": {
+        "digest": "sha256:8913c8ecb73a946e4c32852ad2f95edecfa461ede80331066b09fc8f87580335",
+        "id": 14988744120,
+        "name": "r29-native-runtime-baseline"
+      },
+      "exit_codes": {
+        "resize": 1,
+        "bcd-native-viewport": 0,
+        "bcd-depth-control": 0
+      },
+      "four_stage": [
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b383b383048421b5b31303b383048431b5b31313b3148441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 0,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043",
+            "44"
+          ],
+          "native_size": [
+            60,
+            12
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 1,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b31323b3148524553495a45441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043",
+            "524553495a4544"
+          ],
+          "native_size": [
+            60,
+            12
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 2,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "524553495a4544",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 3,
+          "source_matches_reference": true
+        }
+      ],
+      "four_stage_depth_control": [
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b383b383048421b5b31303b383048431b5b31313b3148441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_depth_request_error": 0,
+          "native_depth_request_succeeded": true,
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            3000
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 0,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043",
+            "44"
+          ],
+          "native_size": [
+            60,
+            12
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 1,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b31323b3148524553495a45441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043",
+            "524553495a4544"
+          ],
+          "native_size": [
+            60,
+            12
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 2,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "524553495a4544",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 3,
+          "source_matches_reference": true
+        }
+      ],
+      "four_stage_summary": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "sample": {
+          "child_exit": 37,
+          "cleanup_verified": true,
+          "compared_stages": 4,
+          "different_stages": 0,
+          "native_depth_control": false,
+          "presented_done": null,
+          "schema": "termforge-qt-bcd-comparison-v1"
+        }
+      },
+      "depth_control_summary": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "sample": {
+          "child_exit": 37,
+          "cleanup_verified": true,
+          "compared_stages": 4,
+          "different_stages": 0,
+          "native_depth_control": true,
+          "presented_done": null,
+          "schema": "termforge-qt-bcd-comparison-v1"
+        }
+      },
+      "legacy_stage_6": {
+        "source_hex": "1b5b31323b3148524553495a45441b5b313b31485336",
+        "native": [
+          60,
+          12
+        ],
+        "core": [
+          60,
+          12
+        ],
+        "transport_hex": "1b5b31323b3148524553495a45441b5b313b314853361b5b366e",
+        "rows": [
+          {
+            "row": 7,
+            "native_utf8_hex": "",
+            "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042"
+          },
+          {
+            "row": 8,
+            "native_utf8_hex": "2020202020202020202020202020202020202042",
+            "core_utf8_hex": ""
+          },
+          {
+            "row": 9,
+            "native_utf8_hex": "",
+            "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043"
+          },
+          {
+            "row": 10,
+            "native_utf8_hex": "",
+            "core_utf8_hex": "44"
+          },
+          {
+            "row": 11,
+            "native_utf8_hex": "524553495a45442020202020202020202020204344",
+            "core_utf8_hex": "524553495a4544"
+          }
+        ],
+        "failures": [
+          "stage 6 failed: core resize is not synchronized with the literal native B/CD rows"
+        ],
+        "supervisor": {
+          "schema": "termforge-qt-cpp-supervisor-v1",
+          "status": "failed",
+          "timed_out": false,
+          "exit_code": 1,
+          "job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "error": "Qt smoke failed or left owned processes active"
+        }
+      }
+    },
+    "official": {
+      "identity": {
+        "variant": "official",
+        "files": {
+          "conpty.dll": "feeef341d891643c62d30b6b07800bc70f0bc148f44cb8c3bee84aa557ae805a",
+          "OpenConsole.exe": "3d66b23d0a71bb8eed2b77edc8b9df9bf54ce6c8fb74c863a30e760997f80586"
+        },
+        "source": "60c8689dbe29b7dc45f5941913a025d16e4c2944",
+        "variant_build_run": "45540116248",
+        "variant_build_head": "07f971b3a5903039e7d1eee9bf11c8ac9664c603",
+        "pair_artifact": null,
+        "runner_image": "20261116.315.1",
+        "workflow_run": "45540912138",
+        "executable_sha256": "66bd0c15ef8f8a6b1268fd8d3d39c15131b6ab33aa0f94c2f4df74f6ccc61435"
+      },
+      "archive": {
+        "digest": "sha256:96fb4402ca38b8ee436255139d319cc7792263adeb70bb913d8f95eb5f12ac22",
+        "id": 14988499071,
+        "name": "r29-native-runtime-official"
+      },
+      "exit_codes": {
+        "resize": 1,
+        "bcd-native-viewport": 0,
+        "bcd-depth-control": 0
+      },
+      "four_stage": [
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b383b383048421b5b31303b383048431b5b31313b3148441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 0,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043",
+            "44"
+          ],
+          "native_size": [
+            60,
+            12
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 1,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b31323b3148524553495a45441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043",
+            "524553495a4544"
+          ],
+          "native_size": [
+            60,
+            12
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 2,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "524553495a4544",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 3,
+          "source_matches_reference": true
+        }
+      ],
+      "four_stage_depth_control": [
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b383b383048421b5b31303b383048431b5b31313b3148441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_depth_request_error": 0,
+          "native_depth_request_succeeded": true,
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "44",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            3000
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 0,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31313b3252",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            10,
+            1
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043",
+            "44"
+          ],
+          "native_size": [
+            60,
+            12
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 1,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b31323b3148524553495a45441b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202042",
+            "",
+            "",
+            "2020202020202020202020202020202020202043",
+            "524553495a4544"
+          ],
+          "native_size": [
+            60,
+            12
+          ],
+          "native_window": [
+            0,
+            0,
+            59,
+            11
+          ],
+          "reference_phase": 2,
+          "source_matches_reference": true
+        },
+        {
+          "child_dsr_hex": "1b5b31323b3852",
+          "child_geometry_matches": true,
+          "child_source_hex": "1b5b366e",
+          "display_matches_reference": true,
+          "dsr_matches_reference": true,
+          "native_backing_after_viewport_hex": [],
+          "native_cursor_rc": [
+            11,
+            7
+          ],
+          "native_rows_hex": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042",
+            "",
+            "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043",
+            "524553495a4544",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "native_size": [
+            80,
+            24
+          ],
+          "native_window": [
+            0,
+            0,
+            79,
+            23
+          ],
+          "reference_phase": 3,
+          "source_matches_reference": true
+        }
+      ],
+      "four_stage_summary": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "sample": {
+          "child_exit": 37,
+          "cleanup_verified": true,
+          "compared_stages": 4,
+          "different_stages": 0,
+          "native_depth_control": false,
+          "presented_done": null,
+          "schema": "termforge-qt-bcd-comparison-v1"
+        }
+      },
+      "depth_control_summary": {
+        "schema": "termforge-qt-cpp-supervisor-v1",
+        "status": "passed",
+        "timed_out": false,
+        "exit_code": 0,
+        "job_after": {
+          "active": 0,
+          "total": 4,
+          "terminated": 0
+        },
+        "sample": {
+          "child_exit": 37,
+          "cleanup_verified": true,
+          "compared_stages": 4,
+          "different_stages": 0,
+          "native_depth_control": true,
+          "presented_done": null,
+          "schema": "termforge-qt-bcd-comparison-v1"
+        }
+      },
+      "legacy_stage_6": {
+        "source_hex": "1b5b31323b3148524553495a45441b5b313b31485336",
+        "native": [
+          60,
+          12
+        ],
+        "core": [
+          60,
+          12
+        ],
+        "transport_hex": "1b5b31323b3148524553495a45441b5b313b314853361b5b366e",
+        "rows": [
+          {
+            "row": 7,
+            "native_utf8_hex": "",
+            "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202042"
+          },
+          {
+            "row": 8,
+            "native_utf8_hex": "2020202020202020202020202020202020202042",
+            "core_utf8_hex": ""
+          },
+          {
+            "row": 9,
+            "native_utf8_hex": "",
+            "core_utf8_hex": "2020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202020202043"
+          },
+          {
+            "row": 10,
+            "native_utf8_hex": "",
+            "core_utf8_hex": "44"
+          },
+          {
+            "row": 11,
+            "native_utf8_hex": "524553495a45442020202020202020202020204344",
+            "core_utf8_hex": "524553495a4544"
+          }
+        ],
+        "failures": [
+          "stage 6 failed: core resize is not synchronized with the literal native B/CD rows"
+        ],
+        "supervisor": {
+          "schema": "termforge-qt-cpp-supervisor-v1",
+          "status": "failed",
+          "timed_out": false,
+          "exit_code": 1,
+          "job_after": {
+            "active": 0,
+            "total": 4,
+            "terminated": 0
+          },
+          "error": "Qt smoke failed or left owned processes active"
+        }
+      }
+    }
+  }
+}
