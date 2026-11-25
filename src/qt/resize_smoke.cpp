@@ -22,7 +22,8 @@ static void record_reply(const SizeReply& reply) {
               << ",\"buffer_rows\":" << reply.buffer_rows << ",\"window_left\":" << reply.window_left
               << ",\"window_top\":" << reply.window_top << ",\"window_right\":" << reply.window_right
               << ",\"window_bottom\":" << reply.window_bottom << ",\"win32_checks\":" << reply.win32_checks
-              << ",\"win32_error\":" << reply.win32_error << "}\n";
+              << ",\"win32_error\":" << reply.win32_error << ",\"event_columns\":" << reply.event_columns
+              << ",\"event_rows\":" << reply.event_rows << "}\n";
 }
 static void record_state(int stage, int columns, int rows, const termforge::qt::TerminalWidget& terminal,
                          const termforge::qt::SessionModel& model) {
@@ -423,8 +424,48 @@ static void win32_resize_compat(const std::wstring& executable, const std::wstri
     unsigned long long nonce = 2200;
     const QSize grids[]{{80, 24}, {60, 12}, {100, 30}};
     for (const auto grid : grids) {
+        const bool changing = model.screen().width() != grid.width() || model.screen().height() != grid.height();
+        if (changing) {
+            require(model.send("A " + std::to_string(++nonce) + "\r"), "Win32 window event arm was rejected");
+            const auto armed = wait_reply(fixture, nonce);
+            require(armed.child_pid == model.resize_state().child_pid && !armed.event_columns,
+                    "Win32 window event arm came from another child");
+        }
         terminal.resize(16 + grid.width() * terminal.cell_width(),
                         24 + (grid.height() + 1) * terminal.cell_height());
+        if (changing) {
+            const auto next_event = [&]() -> std::optional<SizeReply> {
+                const auto reply = fixture.take_reply();
+                if (!reply) return std::nullopt;
+                record_reply(*reply);
+                require(reply->child_pid == model.resize_state().child_pid && reply->query_error == ERROR_SUCCESS,
+                        "Win32 window event came from another child or had no queried geometry");
+                return reply;
+            };
+            bool final_event = false;
+            await([&] {
+                if (final_event) return true;
+                const auto event = next_event();
+                if (!event) return false;
+                require(event->nonce == nonce && event->event_columns > 0 && event->event_rows > 0,
+                        "malformed WINDOW_BUFFER_SIZE_EVENT reply");
+                final_event = event->event_columns == grid.width() && event->event_rows == grid.height() &&
+                              event->window_columns() == grid.width() && event->window_rows() == grid.height();
+                return final_event;
+            }, model, "Win32 child did not receive the final WINDOW_BUFFER_SIZE_EVENT");
+            require(model.send(std::string("~")), "Win32 event stop input was rejected");
+            ++nonce;
+            bool event_done = false;
+            await([&] {
+                if (event_done) return true;
+                const auto reply = next_event();
+                if (!reply) return false;
+                require(reply->nonce == nonce || (reply->nonce + 1 == nonce && reply->event_columns > 0),
+                        "unexpected Win32 window event phase reply");
+                event_done = reply->nonce == nonce && !reply->event_columns;
+                return event_done;
+            }, model, "Win32 input did not finish the window event phase");
+        }
         await_child_size(fixture, model, grid.width(), grid.height(), nonce);
         require(model.send("W " + std::to_string(++nonce) + "\r"), "Win32 child request was rejected");
         const auto reply = wait_reply(fixture, nonce);
@@ -449,7 +490,7 @@ static void win32_resize_compat(const std::wstring& executable, const std::wstri
     await([&] { return model.finished(); }, model, "Win32 resize child did not exit");
     require(model.natural_exit() && model.exit_code() == 37 && model.cleanup_verified() && model.output_eof() &&
             model.active_processes_after() == 0, "Win32 resize child cleanup failed");
-    std::cout << "{\"schema\":\"termforge-qt-win32-resize-v1\",\"grids\":3,\"api_checks_per_grid\":5,"
+    std::cout << "{\"schema\":\"termforge-qt-win32-resize-v1\",\"grids\":3,\"api_checks_per_grid\":5,\"window_size_events\":2,"
                  "\"child_exit\":37,\"cleanup_verified\":true,\"presented_done\":null}\n";
 }
 
