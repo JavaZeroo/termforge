@@ -338,17 +338,15 @@ static void identical_repeated_text_is_a_new_document(ParseMode mode) {
           "identical text after repeated 1049 entry revived a prior alternate selection");
     parser.finish();
 }
-static void observed_alternate_ris_homes_primary(ParseMode mode, bool bytewise) {
-    // Frozen 91x25 direct Telnet observation. The primary and alternate
-    // margins are distinct so a restored margin cannot look like a reset.
-    const std::pair<std::string_view, std::string_view> phases[] = {
-        {"\x1b[?6l\x1b[r\x1b[2J\x1b[1;1HHIST\x1b[25;1H\r\n\r\n"
-         "\x1b[4;2HMAIN\x1b[2;6r\x1b[?6h\x1b[2;7H", "\x1b[2;7R"},
-        {"\x1b[?1049h\x1b[3;7r\x1b[?6h\x1b[2;4HALT", "\x1b[2;7R"},
-        {"\x1b" "c", "\x1b[1;1R"},
-        {"\x1b[1;1HAFTER\x1b[99;1H", "\x1b[25;1R"},
-        {"\x1b[?6h\x1b[99;1H", "\x1b[25;1R"},
-    };
+struct CursorPhase {
+    std::string_view input;
+    std::string_view reply;
+    bool alternate = false;
+};
+
+template<size_t N>
+static void check_observed_cursor(const CursorPhase (&phases)[N], size_t alternate_reset,
+                                  ParseMode mode, bool bytewise) {
     Parser parser(25, 91, 1000, mode);
     const auto feed = [&](std::string_view bytes) {
         if (bytewise) {
@@ -356,19 +354,59 @@ static void observed_alternate_ris_homes_primary(ParseMode mode, bool bytewise) 
         } else parser.feed(bytes);
     };
     for (size_t phase = 0; phase < std::size(phases); ++phase) {
-        const auto& [input, expected] = phases[phase];
+        const auto& [input, expected, alternate] = phases[phase];
         feed(input);
         feed("\x1b[6n");
+        // The core contract covers DSR. WindTerm's Telnet-only flow-control
+        // prefix stays in the raw observation, independently of this reply.
         const auto replies = parser.take_replies();
         if (replies.size() != 1 || replies[0] != expected)
-            throw std::runtime_error("alternate RIS reply differs at phase " + std::to_string(phase));
-        check(parser.screen.active_buffer() == (phase == 1 ? ScreenBuffer::alternate : ScreenBuffer::primary),
+            throw std::runtime_error("alternate RIS reply differs at phase " + std::to_string(phase) +
+                " of " + std::to_string(N));
+        check(parser.screen.active_buffer() == (alternate ? ScreenBuffer::alternate : ScreenBuffer::primary),
               "alternate RIS buffer differs from the observed transition");
-        if (phase == 2)
+        if (phase == alternate_reset)
             check(parser.screen.region_top() == 0 && parser.screen.region_bottom() == 24,
                   "alternate RIS restored a restricted primary margin");
     }
     parser.finish();
+}
+
+static void observed_alternate_ris_cursor_transitions(ParseMode mode, bool bytewise) {
+    const CursorPhase initial[] = {
+        {"\x1b[?6l\x1b[r\x1b[2J\x1b[1;1HHIST\x1b[25;1H\r\n\r\n"
+         "\x1b[4;2HMAIN\x1b[2;6r\x1b[?6h\x1b[2;7H", "\x1b[2;7R"},
+        {"\x1b[?1049h\x1b[3;7r\x1b[?6h\x1b[2;4HALT", "\x1b[2;7R", true},
+        {"\x1b" "c", "\x1b[1;1R"},
+        {"\x1b[1;1HAFTER\x1b[99;1H", "\x1b[25;1R"},
+        {"\x1b[?6h\x1b[99;1H", "\x1b[25;1R"},
+        {"\x1b[?1049l", "\x1b[3;7R"},
+        {"\x1b[?1049h", "\x1b[1;1R", true},
+        {"\x1b[?6h\x1b[99;1H", "\x1b[25;1R", true},
+        {"\x1b[?1049l", "\x1b[3;7R"},
+        {"\x1b" "c", "\x1b[1;1R"},
+    };
+    // The independent follow-up distinguishes an ordinary redundant return,
+    // a return after alternate RIS, and a second return after the same RIS.
+    const CursorPhase controls[] = {
+        {"\x1b[?6l\x1b[2;6r\x1b[?6h\x1b[2;7H", "\x1b[2;7R"},
+        {"\x1b[?1049h\x1b[3;7r\x1b[?6h\x1b[2;4H", "\x1b[2;4R", true},
+        {"\x1b[?1049l", "\x1b[2;7R"},
+        {"\x1b[?6l\x1b[10;11H\x1b[?1049l", "\x1b[10;11R"},
+        {"\x1b[?1049h\x1b[?6h\x1b[99;1H", "\x1b[25;1R", true},
+        {"\x1b[?1049l\x1b[?6l\x1b[2;6r\x1b[?6h\x1b[2;7H"
+         "\x1b[?1049h\x1b[3;7r\x1b[?6h\x1b[2;4H", "\x1b[2;4R", true},
+        {"\x1b" "c", "\x1b[1;1R"},
+        {"\x1b[?6h\x1b[99;1H", "\x1b[25;1R"},
+        {"\x1b[?1049l", "\x1b[3;7R"},
+        {"\x1b[9;11H\x1b[?1049l", "\x1b[9;11R"},
+        {"\x1b[?1049h\x1b[?6h\x1b[99;1H", "\x1b[25;1R", true},
+        {"\x1b[?1049l", "\x1b[9;11R"},
+        {"\x1b" "c", "\x1b[1;1R"},
+        {"\x1b[8;10H\x1b[?1049l", "\x1b[8;10R"},
+    };
+    check_observed_cursor(initial, 2, mode, bytewise);
+    check_observed_cursor(controls, 6, mode, bytewise);
 }
 static void strict_rejects_unsupported_private_modes_atomically() {
     for (const auto* input : {"\x1b[?31m", "\x1b[?1049;25h", "\x1b[?1049;1049h", "\x1b[?12l"}) {
@@ -395,8 +433,8 @@ int main() {
             history_and_resize(mode);
             readers_follow_protocol_transitions(mode);
             identical_repeated_text_is_a_new_document(mode);
-            observed_alternate_ris_homes_primary(mode, false);
-            observed_alternate_ris_homes_primary(mode, true);
+            observed_alternate_ris_cursor_transitions(mode, false);
+            observed_alternate_ris_cursor_transitions(mode, true);
             // The fixed five sources contain 208 bytes, excluding DSR queries.
             for (size_t split = 0; split <= 208; ++split) observed_colour_trace(mode, split, false);
             observed_colour_trace(mode, 0, true);

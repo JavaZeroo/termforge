@@ -87,8 +87,8 @@ class Screen {
         // True only while the retained sequence is known to be ordered by id.
         // False is the safe fallback: lookups scan instead of bisecting.
         bool ordered_ = true;
-        // DECSTBM margins belong to the frame: the primary and alternate buffers
-        // keep their own scrolling region across a 1049 switch.
+        // Frame storage retains DECSTBM margins for buffer activation. The
+        // terminal mode may reset a margin when it enters an alternate frame.
         int scroll_top = 0;
         int scroll_bottom = -1;
         bool origin_mode_ = false;
@@ -125,6 +125,7 @@ class Screen {
     int last_row = -1, last_column = -1;
     ScreenBuffer active_buffer_ = ScreenBuffer::primary;
     std::optional<FrameState> inactive_;
+    std::optional<std::pair<int, int>> primary_cursor_after_alternate_reset_;
     FrameState active_state_copy() const {
         return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history, ordered_,
                 scroll_top, scroll_bottom, origin_mode_};
@@ -390,6 +391,27 @@ public:
         next_id_ = identity;
         ++buffer_epoch_;
         advance_order(ordered_);
+    }
+    void enter_alternate_mode() {
+        if (active_buffer_ == ScreenBuffer::alternate) {
+            invalidate_buffer_readers();
+            return;
+        }
+        activate_buffer(ScreenBuffer::alternate);
+        primary_cursor_after_alternate_reset_.reset();
+        scroll_top = 0;
+        scroll_bottom = -1;
+    }
+    void leave_alternate_mode() {
+        if (active_buffer_ == ScreenBuffer::alternate) {
+            activate_buffer(ScreenBuffer::primary);
+        } else if (primary_cursor_after_alternate_reset_) {
+            // Alternate RIS returns to primary and homes it. An explicit
+            // 1049 exit can still restore the original cursor once.
+            const auto [saved_row, saved_column] = *primary_cursor_after_alternate_reset_;
+            primary_cursor_after_alternate_reset_.reset();
+            move(saved_row, saved_column);
+        }
     }
     // Short-lived, read-only views. Callers must not retain them across a
     // structure change; copy rows they need as values.
@@ -922,10 +944,13 @@ public:
         activate_buffer(ScreenBuffer::primary);
         if (was_alternate) {
             // RIS in alternate returns to a homed primary with full-height
-            // margins. Activation alone restores the previous primary state.
+            // margins. Keep its old position for a later explicit 1049 exit.
+            primary_cursor_after_alternate_reset_.emplace(row, column);
             scroll_top = 0;
             scroll_bottom = -1;
             move(0, 0);
+        } else {
+            primary_cursor_after_alternate_reset_.reset();
         }
         invalidate_attachment();
     }

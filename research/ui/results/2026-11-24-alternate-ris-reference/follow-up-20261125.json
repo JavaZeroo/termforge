@@ -1,0 +1,222 @@
+{
+  "schema": "termforge-original-alternate-ris-followup-summary-v1",
+  "issue": 27,
+  "status": "strict_export_passed",
+  "reference": {
+    "executable_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "source_base_commit": "cd6a43b51c50f8ced1b777b6d756e368f32aa3d2",
+    "probe_source_sha256": "0a058407e9c5a179aab924d727edb4b2e3fe0a1ca300ada8b7daccd0ec2f7d88",
+    "grid": [
+      91,
+      25
+    ],
+    "original_runs": 1,
+    "status": "passed",
+    "outer_job_active": 0,
+    "outer_cleanup": true,
+    "artifact_sha256": "ef88c7faedd0ea3eea9e1f24f3ebacd44da042e942c654427438234567512019",
+    "capture_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "plan_sha256": "b7f1414fdd8a71c4a320e653e61cc3034c7bdff2edc22dea9a092407b05542c4",
+    "provenance_source": {
+      "kind": "source-archive",
+      "manifest_sha256": "25be116976c25c33a20cac9d220f5e63e365131852b64e7760f19ff92483f32d"
+    },
+    "phases": [
+      {
+        "phase": 0,
+        "label": "primary-cursor-and-region",
+        "source_hex": "1b5b3f366c1b5b323b36721b5b3f36681b5b323b3748",
+        "cursor_reply": [
+          2,
+          7
+        ],
+        "response_hex": "1b5b323b3752",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 1,
+        "label": "alternate-cursor-and-region",
+        "source_hex": "1b5b3f31303439681b5b333b37721b5b3f36681b5b323b3448",
+        "cursor_reply": [
+          2,
+          4
+        ],
+        "response_hex": "1b5b323b3452",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 2,
+        "label": "ordinary-return",
+        "source_hex": "1b5b3f313034396c",
+        "cursor_reply": [
+          2,
+          7
+        ],
+        "response_hex": "1b5b323b3752",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 3,
+        "label": "ordinary-redundant-return",
+        "source_hex": "1b5b3f366c1b5b31303b3131481b5b3f313034396c",
+        "cursor_reply": [
+          10,
+          11
+        ],
+        "response_hex": "1b5b31303b313152",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 4,
+        "label": "reentry-region-without-ris",
+        "source_hex": "1b5b3f31303439681b5b3f36681b5b39393b3148",
+        "cursor_reply": [
+          25,
+          1
+        ],
+        "response_hex": "1b5b32353b3152",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 5,
+        "label": "prime-asymmetric-ris",
+        "source_hex": "1b5b3f313034396c1b5b3f366c1b5b323b36721b5b3f36681b5b323b37481b5b3f31303439681b5b333b37721b5b3f36681b5b323b3448",
+        "cursor_reply": [
+          2,
+          4
+        ],
+        "response_hex": "1b5b323b3452",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 6,
+        "label": "ris-in-alternate",
+        "source_hex": "1b63",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "response_hex": "13111b5b313b3152",
+        "flow_control_hex": "1311"
+      },
+      {
+        "phase": 7,
+        "label": "move-on-primary-after-ris",
+        "source_hex": "1b5b3f36681b5b39393b3148",
+        "cursor_reply": [
+          25,
+          1
+        ],
+        "response_hex": "1b5b32353b3152",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 8,
+        "label": "first-explicit-return-after-ris",
+        "source_hex": "1b5b3f313034396c",
+        "cursor_reply": [
+          3,
+          7
+        ],
+        "response_hex": "1b5b333b3752",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 9,
+        "label": "second-explicit-return-after-ris",
+        "source_hex": "1b5b393b3131481b5b3f313034396c",
+        "cursor_reply": [
+          9,
+          11
+        ],
+        "response_hex": "1b5b393b313152",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 10,
+        "label": "reentry-region-after-ris",
+        "source_hex": "1b5b3f31303439681b5b3f36681b5b39393b3148",
+        "cursor_reply": [
+          25,
+          1
+        ],
+        "response_hex": "1b5b32353b3152",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 11,
+        "label": "ordinary-return-after-ris",
+        "source_hex": "1b5b3f313034396c",
+        "cursor_reply": [
+          9,
+          11
+        ],
+        "response_hex": "1b5b393b313152",
+        "flow_control_hex": null
+      },
+      {
+        "phase": 12,
+        "label": "ris-in-primary",
+        "source_hex": "1b63",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "response_hex": "13111b5b313b3152",
+        "flow_control_hex": "1311"
+      },
+      {
+        "phase": 13,
+        "label": "explicit-return-after-primary-ris",
+        "source_hex": "1b5b383b3130481b5b3f313034396c",
+        "cursor_reply": [
+          8,
+          10
+        ],
+        "response_hex": "1b5b383b313052",
+        "flow_control_hex": null
+      }
+    ],
+    "display": [
+      "display_result=0 bounds=1600x1200",
+      "display_result=0 bounds=1024x768"
+    ]
+  },
+  "core_red": {
+    "source_base_commit": "cd6a43b51c50f8ced1b777b6d756e368f32aa3d2",
+    "test": "alternate_mode_core",
+    "first_failed_phase": 5,
+    "phase_count": 10,
+    "actual_cursor": [
+      25,
+      1
+    ],
+    "expected_cursor": [
+      3,
+      7
+    ]
+  },
+  "core_green": {
+    "test": "alternate_mode_core",
+    "phase_counts": [
+      10,
+      14
+    ],
+    "modes": [
+      "strict",
+      "recovery"
+    ],
+    "feed": [
+      "whole",
+      "bytewise"
+    ],
+    "total_phase_checks": 96
+  },
+  "full_active_grid_verified": null,
+  "local_shell_transport_verified": null,
+  "presented_done": null
+}
