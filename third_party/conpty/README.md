@@ -21,6 +21,8 @@ python -m tools.prepare_qt_build --conpty-pair local/conpty-source-build/candida
 
 根构建将 `TERMFORGE_CONPTY_BACKEND_DIR` 设为准备目录下 `conpty/` 的绝对路径。配置和每次构建都核对双文件、MIT 许可和 NOTICE，再部署至程序旁的 `conpty-backend/`。运行时 `Backend::configured()` 以编译时绑定的哈希查验文件对，并加载修订版的有序重排接口。后端模块在 create/resize/close 期间保持加载。Console 字符宽度策略沿用 `0x18`；完整 Unicode 与原生控制台匹配仍须验证。
 
+修订版 `termforge.2` 在进入备用屏时将原生光标移至该页起点。备用屏宽度变化时同步限制保存的主屏列，保留隐藏正文直到返回时按实际宽度裁剪。两种返回顺序的固定样本均检查下一字符的写入位置。[WindTerm 对照](../../research/ui/results/2026-11-02-resize-frame-reference/README.md#2026-11-25-补充主屏保存格超出新宽度)
+
 ## 官方包对照
 
 `-DTERMFORGE_CONPTY_SOURCE_BUILD=OFF` 启用 `Microsoft.Windows.Console.ConPTY 1.25.260930003` 的旧官方包对照。按 [manifest.json](manifest.json) 的 URL 获取归档并核对大小和 SHA-256，只保留指定的 `conpty.dll` 与 `OpenConsole.exe`。双文件须来自同一归档。清单中的 `experimental`、`default_backend` 和 `supported_client_platforms_verified` 记录该包当时的集成状态。系统 ConPTY 也保留为独立诊断对照。
