@@ -90,6 +90,10 @@ jobs:
             } | Where-Object { $_.schema -like 'termforge-qt-*' })
             if (!$records.Count) { throw "No structured records for $scenario" }
             ConvertTo-Json -InputObject $records -Depth 22 | Set-Content -LiteralPath "$out/$scenario.json" -Encoding UTF8
+            if ($scenario -eq 'resize') {
+              $failures = @(Get-Content -LiteralPath "$out/$scenario.log" | Where-Object { $_ -match '^stage [1-6] failed: ' })
+              ConvertTo-Json -InputObject $failures | Set-Content -LiteralPath "$out/resize-assertions.json" -Encoding UTF8
+            }
           }
           $codes | ConvertTo-Json | Set-Content -LiteralPath "$out/exit-codes.json" -Encoding UTF8
           if ($codes['bcd-native-viewport'] -ne 0 -or $codes['bcd-depth-control'] -ne 0) {
