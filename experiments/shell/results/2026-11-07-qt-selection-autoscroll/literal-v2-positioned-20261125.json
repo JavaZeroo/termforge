@@ -1,0 +1,210 @@
+{
+  "schema": "termforge-r29-autoscroll-literal-recovery-record-v1",
+  "issue": 29,
+  "pull_request": 327,
+  "status": "passed",
+  "reposition_recovery_allowance": {
+    "maximum": 1,
+    "used": 1
+  },
+  "run": {
+    "id": 45525355821,
+    "job_id": 138907208208,
+    "artifact_id": 14981953140,
+    "artifact_sha256": "d30ecc784e196b736223bdd886dd1617c97fa5f3a0ac5947fdfeaaffbff15768"
+  },
+  "identity": {
+    "schema": "termforge-qt-literal-ci-identity-v1",
+    "source_commit": "cf5fd1dac63d5fb911de11839c6be1e84f20f744",
+    "source_tree": "da98d4db149686b4457c0870a80f05aa8bc81ad2",
+    "source_sha256": {
+      "src/qt/autoscroll_literal_test.cpp": "2ca44e9e3271c7caf936117453eb3b1dfb043700dd01dc61b2a55317f336270c",
+      "src/qt/history_fixture.hpp": "dbd122153d019ac217ac113d9906dec94dd5f6d95eaa2ee6b2db49cf773ee4c3",
+      "src/qt/terminal_widget.hpp": "cf5ac6d3e2bdfd5028058241657346705dfe5e95ffac23bf9487ae6867ffa815",
+      "src/qt/run_smoke.py": "74d4c882bb859e8c85bace5e6db9741af7128008ca04df7a97da22c76d870692"
+    },
+    "executable_sha256": "2e98fc7af0efcd4f9ebd6c1f1eee86ba72cab1803549e10c8473ebb3b9d82ddb",
+    "run_id": "45525355821",
+    "run_attempt": "1",
+    "qpa": "offscreen",
+    "runner_image": "20261116.315.1"
+  },
+  "supervisor": {
+    "schema": "termforge-qt-cpp-supervisor-v1",
+    "status": "passed",
+    "exit_code": 0,
+    "timed_out": false,
+    "job_after": {
+      "active": 0,
+      "total": 4,
+      "terminated": 0
+    },
+    "job_at_timeout": null,
+    "cleanup_errors_present": false
+  },
+  "literal": {
+    "after_sanity_copy": {
+      "row0": "TF_H_185",
+      "top": "100",
+      "value": 100
+    },
+    "bounded_one_tick": true,
+    "cell_height": 22,
+    "cell_width": 9,
+    "copy_hex": "54465f485f3039390d0a54465f485f313030",
+    "copy_length": 18,
+    "copy_source": true,
+    "offscreen_only": true,
+    "sanity_copy_hex": "54465f485f313030",
+    "sanity_position": {
+      "home_row0": "TF_H_087",
+      "row0": "TF_H_100",
+      "steps": [
+        {
+          "row0": "TF_H_088",
+          "value": 1
+        },
+        {
+          "row0": "TF_H_089",
+          "value": 2
+        },
+        {
+          "row0": "TF_H_090",
+          "value": 3
+        },
+        {
+          "row0": "TF_H_091",
+          "value": 4
+        },
+        {
+          "row0": "TF_H_092",
+          "value": 5
+        },
+        {
+          "row0": "TF_H_093",
+          "value": 6
+        },
+        {
+          "row0": "TF_H_094",
+          "value": 7
+        },
+        {
+          "row0": "TF_H_095",
+          "value": 8
+        },
+        {
+          "row0": "TF_H_096",
+          "value": 9
+        },
+        {
+          "row0": "TF_H_097",
+          "value": 10
+        },
+        {
+          "row0": "TF_H_098",
+          "value": 11
+        },
+        {
+          "row0": "TF_H_099",
+          "value": 12
+        },
+        {
+          "row0": "TF_H_100",
+          "value": 13
+        }
+      ],
+      "top": "13",
+      "value": 13
+    },
+    "schema": "termforge-qt-selection-autoscroll-literal-v2",
+    "screen_height": 38,
+    "settled": {
+      "anchor": "187",
+      "following": true,
+      "history_lines": "100",
+      "maximum_top": "100",
+      "retained_size": "138",
+      "scrollbar_maximum": 100,
+      "scrollbar_value": 100,
+      "top": "100"
+    },
+    "status": "passed",
+    "target_top": "13",
+    "tick": {
+      "first_value_ms": 45,
+      "move_ms": 0,
+      "post_release_value_changes": 0,
+      "release_ms": 45,
+      "ticks": 1,
+      "top_after_200ms": "12",
+      "top_at_release": "12",
+      "v0": 13
+    },
+    "tick_position": {
+      "home_row0": "TF_H_087",
+      "row0": "TF_H_100",
+      "steps": [
+        {
+          "row0": "TF_H_088",
+          "value": 1
+        },
+        {
+          "row0": "TF_H_089",
+          "value": 2
+        },
+        {
+          "row0": "TF_H_090",
+          "value": 3
+        },
+        {
+          "row0": "TF_H_091",
+          "value": 4
+        },
+        {
+          "row0": "TF_H_092",
+          "value": 5
+        },
+        {
+          "row0": "TF_H_093",
+          "value": 6
+        },
+        {
+          "row0": "TF_H_094",
+          "value": 7
+        },
+        {
+          "row0": "TF_H_095",
+          "value": 8
+        },
+        {
+          "row0": "TF_H_096",
+          "value": 9
+        },
+        {
+          "row0": "TF_H_097",
+          "value": 10
+        },
+        {
+          "row0": "TF_H_098",
+          "value": 11
+        },
+        {
+          "row0": "TF_H_099",
+          "value": 12
+        },
+        {
+          "row0": "TF_H_100",
+          "value": 13
+        }
+      ],
+      "top": "13",
+      "value": 13
+    },
+    "value_trace": [
+      {
+        "ms": 45,
+        "value": 12
+      }
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "termforge-r29-autoscroll-literal-recovery-record-v1",
+  "issue": 29,
+  "pull_request": 327,
+  "status": "failed",
+  "history_recovery_allowance": {
+    "maximum": 1,
+    "used": 1
+  },
+  "run": {
+    "id": 45399066643,
+    "job_id": 138462569257,
+    "artifact_id": 14922198328,
+    "artifact_sha256": "aa494727b5be3405fd23a55861114a0d34711995d52837e367286201c8104989"
+  },
+  "identity": {
+    "schema": "termforge-qt-literal-ci-identity-v1",
+    "source_commit": "cd6a43b51c50f8ced1b777b6d756e368f32aa3d2",
+    "source_tree": "20a5c2a26ae4535725cfa96d3eccd69dd3e93093",
+    "source_sha256": {
+      "src/qt/autoscroll_literal_test.cpp": "3f594992cb781ddda02cd39e9e0318dbd6c499d0ee79da19d59045668db96117",
+      "src/qt/history_fixture.hpp": "dbd122153d019ac217ac113d9906dec94dd5f6d95eaa2ee6b2db49cf773ee4c3",
+      "src/qt/terminal_widget.hpp": "cf5ac6d3e2bdfd5028058241657346705dfe5e95ffac23bf9487ae6867ffa815",
+      "src/qt/run_smoke.py": "74d4c882bb859e8c85bace5e6db9741af7128008ca04df7a97da22c76d870692"
+    },
+    "executable_sha256": "c4fcdb468c4d63bd8ada825e8288110294f6b2f140996c768b3d53ccbf8e0b8f",
+    "run_id": "45399066643",
+    "run_attempt": "1",
+    "qpa": "offscreen",
+    "runner_image": "20261116.315.1"
+  },
+  "supervisor": {
+    "schema": "termforge-qt-cpp-supervisor-v1",
+    "status": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "job_after": {
+      "active": 0,
+      "total": 4,
+      "terminated": 0
+    },
+    "job_at_timeout": null,
+    "cleanup_errors_present": false
+  },
+  "literal": {
+    "cell_height": 22,
+    "cell_width": 9,
+    "error": "positioning row0 is not a TF_H_ literal: 54465f454e44",
+    "home_row0": "TF_H_101",
+    "schema": "termforge-qt-selection-autoscroll-literal-v2",
+    "screen_height": 24,
+    "settled": {
+      "anchor": "201",
+      "following": true,
+      "history_lines": "100",
+      "maximum_top": "100",
+      "retained_size": "124",
+      "scrollbar_maximum": 100,
+      "scrollbar_value": 100,
+      "top": "100"
+    },
+    "status": "failed"
+  },
+  "first_failed_stage": "positioning after history Home; the fixed copy and timer stages had not started"
+}
