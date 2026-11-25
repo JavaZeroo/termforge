@@ -270,7 +270,12 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         expected[10] = "D";
         if (stage >= 3) expected.emplace_back("RESIZED");
         const std::string_view dsr(reply.dsr.data(), reply.dsr_bytes);
-        const std::string_view reference_dsr = stage < 3 ? "\x1b[11;2R" : "\x1b[12;8R";
+        // The local capture includes native cursor coordinates. Convert its
+        // zero-based position to the page-relative one-based protocol report.
+        constexpr std::string_view local_cursors[]{
+            "\x1b[11;2R", "\x1b[11;22R", "\x1b[12;8R", "\x1b[11;8R]"};
+        const std::string_view reference_dsr = local_reference ? local_cursors[stage - 1]
+            : stage < 3 ? "\x1b[11;2R" : "\x1b[12;8R";
         const bool source_matches = logical_lines == expected;
         const bool dsr_matches = dsr == reference_dsr;
         const auto& info = reply.info;
@@ -335,7 +340,7 @@ static int bcd_comparison(ModeFixture& fixture, termforge::qt::TerminalWidget& t
         const int native_row_in_viewport = info.dwCursorPosition.Y - info.srWindow.Top;
         const auto native_dsr = "\x1b[" + std::to_string(native_row_in_viewport + 1) + ';' +
             std::to_string(info.dwCursorPosition.X + 1) + 'R';
-        const bool child_address_matches = dsr == native_dsr && screen.row == native_row_in_viewport &&
+        const bool child_address_matches = dsr_matches && dsr == native_dsr && screen.row == native_row_in_viewport &&
             screen.column == info.dwCursorPosition.X;
         QJsonObject record{
             {"schema", "termforge-qt-bcd-stage-v1"}, {"reference_phase", static_cast<int>(stage - 1)},
