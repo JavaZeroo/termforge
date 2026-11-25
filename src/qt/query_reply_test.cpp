@@ -23,6 +23,9 @@
 
 #include <QApplication>
 #include <QElapsedTimer>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
 #include <QTemporaryDir>
 #include <QTest>
 
@@ -139,10 +142,51 @@ ChildObservation read_child(const std::filesystem::path& result) {
     return observation;
 }
 
+std::string exchange(HANDLE input, HANDLE output, std::string_view source, bool& timed_out, bool& complete) {
+    DWORD written = 0;
+    require(WriteFile(output, source.data(), static_cast<DWORD>(source.size()), &written,
+                      nullptr) &&
+                written == source.size(),
+            "query child source write failed");
+
+    std::string received;
+    timed_out = false;
+    complete = false;
+    const ULONGLONG deadline = GetTickCount64() + child_reply_timeout_ms;
+    while (!complete) {
+        const ULONGLONG now = GetTickCount64();
+        if (now >= deadline) {
+            timed_out = true;
+            break;
+        }
+        const DWORD state = WaitForSingleObject(input, static_cast<DWORD>(deadline - now));
+        if (state == WAIT_TIMEOUT) {
+            timed_out = true;
+            break;
+        }
+        require(state == WAIT_OBJECT_0, "query child console wait failed");
+        wchar_t units[64];
+        DWORD count = 0;
+        require(ReadConsoleW(input, units, 64, &count, nullptr) && count,
+                "query child console read failed");
+        for (DWORD i = 0; i < count; ++i) {
+            require(units[i] >= 0 && units[i] <= 127, "query child reply is not ASCII");
+            received.push_back(static_cast<char>(units[i]));
+            require(received.size() <= 1024, "query child reply exceeds its fixed budget");
+            if (units[i] == L'R') {
+                require(i + 1 == count, "query child received trailing input after the reply");
+                complete = true;
+                break;
+            }
+        }
+    }
+    return received;
+}
+
 // Child-side receiver. It never reads the screen or console APIs beyond modes,
 // so it cannot trigger conhost's cursor-sync DSR path; the only observed input
 // is what the host actually delivered through ConPTY.
-int query_child(const std::filesystem::path& result) {
+int query_child(const std::filesystem::path& result, bool ris_trace = false) {
     try {
         const HANDLE input = GetStdHandle(STD_INPUT_HANDLE);
         const HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -159,43 +203,24 @@ int query_child(const std::filesystem::path& result) {
                                           ENABLE_VIRTUAL_TERMINAL_PROCESSING |
                                           DISABLE_NEWLINE_AUTO_RETURN),
                 "query child VT output mode setup failed");
-        DWORD written = 0;
-        require(WriteFile(output, query_source.data(), static_cast<DWORD>(query_source.size()), &written,
-                          nullptr) &&
-                    written == query_source.size(),
-                "query child source write failed");
-
-        std::string received;
-        bool timed_out = false;
-        bool complete = false;
-        const ULONGLONG deadline = GetTickCount64() + child_reply_timeout_ms;
-        while (!complete) {
-            const ULONGLONG now = GetTickCount64();
-            if (now >= deadline) {
-                timed_out = true;
-                break;
+        if (ris_trace) {
+            std::ifstream phases("sources.hex");
+            std::ofstream replies(result, std::ios::binary);
+            require(bool(phases) && bool(replies), "RIS trace files unavailable");
+            std::string line;
+            size_t count = 0;
+            while (std::getline(phases, line)) {
+                const auto source = QByteArray::fromHex(QByteArray::fromStdString(line)).toStdString() + "\x1b[6n";
+                bool timed_out, complete;
+                const auto received = exchange(input, output, source, timed_out, complete);
+                replies << hex(received) << std::endl;
+                require(bool(replies) && complete && !timed_out, "RIS phase reply incomplete");
+                ++count;
             }
-            const DWORD state = WaitForSingleObject(input, static_cast<DWORD>(deadline - now));
-            if (state == WAIT_TIMEOUT) {
-                timed_out = true;
-                break;
-            }
-            require(state == WAIT_OBJECT_0, "query child console wait failed");
-            wchar_t units[64];
-            DWORD count = 0;
-            require(ReadConsoleW(input, units, 64, &count, nullptr) && count,
-                    "query child console read failed");
-            for (DWORD i = 0; i < count; ++i) {
-                require(units[i] >= 0 && units[i] <= 127, "query child reply is not ASCII");
-                received.push_back(static_cast<char>(units[i]));
-                require(received.size() <= 1024, "query child reply exceeds its fixed budget");
-                if (units[i] == L'R') {
-                    complete = true;
-                    break;
-                }
-            }
+            return phases.eof() && count == 14 ? 0 : 5;
         }
-
+        bool timed_out, complete;
+        const auto received = exchange(input, output, query_source, timed_out, complete);
         write_binary(result, received);
         std::ofstream metadata(result.string() + ".json", std::ios::binary | std::ios::trunc);
         require(bool(metadata), "query child metadata file could not be created");
@@ -363,6 +388,58 @@ ProductStage run_product(const std::filesystem::path& executable, const std::fil
     return stage;
 }
 
+// The child receives only the recorded inputs. Collect the entire trajectory
+// before comparing its DSR replies with the independent WindTerm observation.
+int compare_ris_trace(const std::filesystem::path& exe, const std::filesystem::path& directory,
+                      const std::filesystem::path& reference) {
+    const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(read_binary(reference)));
+    const auto record = document.object().value("reference").toObject();
+    const auto phases = record.value("phases").toArray();
+    const auto grid = record.value("grid").toArray();
+    require(grid.size() == 2 && grid[0].toInt() == 91 && grid[1].toInt() == 25 && phases.size() == 14,
+            "invalid RIS reference geometry or phase count");
+    std::ofstream sources(directory / "sources.hex");
+    for (int index = 0; index < phases.size(); ++index) {
+        const auto phase = phases[index].toObject();
+        const auto source = phase.value("source_hex").toString().toLatin1();
+        require(phase.value("phase").toInt(-1) == index && !source.isEmpty() &&
+                QByteArray::fromHex(source).toHex() == source, "invalid RIS phase input");
+        sources << source.toStdString() << '\n';
+    }
+    sources.close();
+    require(bool(sources), "could not write RIS inputs");
+
+    SessionModel model;
+    model.enable_transport_capture();
+    require(model.resize(91, 25) && model.start(exe.wstring(), L"--ris-child", directory.wstring()),
+            "could not start the RIS session");
+    QElapsedTimer lifecycle;
+    lifecycle.start();
+    while (!model.finished() && lifecycle.elapsed() < static_cast<qint64>(product_finish_timeout_ms))
+        QTest::qWait(5);
+    require(model.finished() && model.error().isEmpty() && model.natural_exit() && model.output_eof() &&
+            model.cleanup_verified() && model.active_processes_after() == 0, "RIS session lifecycle failed");
+    std::cerr << "RIS transport_hex=" << hex(model.transport_capture())
+              << " child_exit=" << model.exit_code() << '\n';
+    std::ifstream replies(directory / "replies.hex", std::ios::binary);
+    int differences = 0;
+    for (int index = 0; index < phases.size(); ++index) {
+        const auto cursor = phases[index].toObject().value("cursor_reply").toArray();
+        require(cursor.size() == 2, "RIS reference cursor missing");
+        const auto expected = hex("\x1b[" + std::to_string(cursor[0].toInt()) + ";" +
+                                  std::to_string(cursor[1].toInt()) + "R");
+        std::string actual;
+        require(bool(std::getline(replies, actual)), "RIS child result missing a phase");
+        std::cerr << "RIS phase=" << index << " expected=" << expected << " child=" << actual << '\n';
+        if (actual != expected) ++differences;
+    }
+    require(replies.peek() == std::char_traits<char>::eof() && model.exit_code() == 0,
+            "RIS child did not finish the fixed trajectory");
+    std::cout << "{\"scenario\":\"alternate-ris-cursor\",\"phases\":14,\"differences\":"
+              << differences << ",\"cleanup_verified\":true}\n";
+    return differences ? 1 : 0;
+}
+
 void emit_raw(const char* name, const RawStage& stage) {
     std::cerr << "{\"schema\":\"termforge-qt-query-reply-raw-v1\",\"stage\":\"" << name
               << "\",\"backend\":\"" << stage.backend << "\",\"creation_flags\":" << stage.creation_flags
@@ -381,8 +458,10 @@ int main(int argc, char** argv) {
     if (argc == 3 && std::string_view(argv[1]) == "--query-child") {
         return query_child(std::filesystem::path(argv[2]));
     }
-    if (argc != 1) {
-        std::cerr << "usage: qt_query_reply_test\n";
+    if (argc == 2 && std::string_view(argv[1]) == "--ris-child") return query_child("replies.hex", true);
+    const bool ris = argc == 3 && std::string_view(argv[1]) == "--ris-reference";
+    if (argc != 1 && !ris) {
+        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE]\n";
         return 2;
     }
     char gate[3]{};
@@ -402,6 +481,8 @@ int main(int argc, char** argv) {
         require(length && length < 32768, "query reply test executable path unavailable");
         const std::filesystem::path exe(executable);
         const std::filesystem::path directory(workspace.path().toStdWString());
+
+        if (ris) return compare_ris_trace(exe, directory, argv[2]);
 
         const auto silent = run_raw(exe, directory, directory / "raw-silent.bin", std::nullopt);
         emit_raw("raw-silent", silent);
