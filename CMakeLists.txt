@@ -706,262 +706,103 @@ if(TERMFORGE_BUILD_QT_SHELL)
 
   if(BUILD_TESTING)
     find_package(Qt6 6.10.3 EXACT REQUIRED COMPONENTS Test)
-    add_executable(qt_cpp_shell_smoke src/qt/shell_smoke.cpp)
-    set_target_properties(qt_cpp_shell_smoke PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-smoke-bin/$<CONFIG>")
-    termforge_qt_entry(qt_cpp_shell_smoke)
-    target_link_libraries(qt_cpp_shell_smoke PRIVATE Qt6::Test)
-    # windeployqt deploys the Windows product plugin; this independent
-    # non-input test uses Qt's offscreen platform and needs its own plugin.
-    add_custom_command(TARGET qt_cpp_shell_smoke POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_cpp_shell_smoke>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_cpp_shell COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_shell_smoke>")
-    set_tests_properties(qt_cpp_shell PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
 
-    add_executable(qt_unicode_input_test src/qt/unicode_input_test.cpp)
-    set_target_properties(qt_unicode_input_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-unicode-bin/$<CONFIG>")
-    termforge_qt_entry(qt_unicode_input_test)
-    target_link_libraries(qt_unicode_input_test PRIVATE Qt6::Test)
-    add_dependencies(qt_unicode_input_test shell_input_client)
-    add_custom_command(TARGET qt_unicode_input_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_unicode_input_test>/platforms/"
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:shell_input_client>" "$<TARGET_FILE_DIR:qt_unicode_input_test>/"
-      VERBATIM)
-    add_test(NAME qt_unicode_input COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_unicode_input_test>")
-    set_tests_properties(qt_unicode_input PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
-    add_executable(qt_unicode_render_test src/qt/unicode_render_test.cpp)
-    set_target_properties(qt_unicode_render_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-unicode-render-bin/$<CONFIG>")
-    termforge_qt_entry(qt_unicode_render_test)
-    target_link_libraries(qt_unicode_render_test PRIVATE Qt6::Test)
-    add_dependencies(qt_unicode_render_test shell_unicode_echo_client)
-    add_custom_command(TARGET qt_unicode_render_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_unicode_render_test>/platforms/"
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:shell_unicode_echo_client>" "$<TARGET_FILE_DIR:qt_unicode_render_test>/"
-      VERBATIM)
-    add_test(NAME qt_unicode_render COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_unicode_render_test>")
-    set_tests_properties(qt_unicode_render PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
-    add_executable(qt_eight_session_test src/qt/eight_session_test.cpp)
-    set_target_properties(qt_eight_session_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-eight-session-bin/$<CONFIG>")
-    termforge_qt_entry(qt_eight_session_test)
-    target_link_libraries(qt_eight_session_test PRIVATE Qt6::Test)
-    add_dependencies(qt_eight_session_test shell_eight_session_client)
-    add_custom_command(TARGET qt_eight_session_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_eight_session_test>/platforms/"
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:shell_eight_session_client>" "$<TARGET_FILE_DIR:qt_eight_session_test>/"
-      VERBATIM)
-    add_test(NAME qt_eight_session COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_eight_session_test>")
-    set_tests_properties(qt_eight_session PROPERTIES TIMEOUT 60
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
-    add_executable(qt_cpp_resize_smoke src/qt/resize_smoke.cpp)
-    set_target_properties(qt_cpp_resize_smoke PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-resize-bin/$<CONFIG>")
-    termforge_qt_entry(qt_cpp_resize_smoke)
-    target_link_libraries(qt_cpp_resize_smoke PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_cpp_resize_smoke POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_cpp_resize_smoke>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_cpp_resize COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_resize_smoke>")
-    set_tests_properties(qt_cpp_resize PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    add_test(NAME qt_win32_resize_compat COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_cpp_resize_smoke>" --win32-compat)
-    set_tests_properties(qt_win32_resize_compat PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    add_executable(qt_terminal_modes_test src/qt/terminal_modes_test.cpp)
-    set_target_properties(qt_terminal_modes_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-modes-bin/$<CONFIG>")
-    termforge_qt_entry(qt_terminal_modes_test)
-    target_link_libraries(qt_terminal_modes_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_terminal_modes_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_terminal_modes_test>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_terminal_modes COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>")
-    set_tests_properties(qt_terminal_modes PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    add_test(NAME qt_terminal_modes_retained COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --retained-contract)
-    set_tests_properties(qt_terminal_modes_retained PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    add_executable(qt_hidden_retention_test src/qt/hidden_retention_test.cpp)
-    set_target_properties(qt_hidden_retention_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-hidden-retention-bin/$<CONFIG>")
-    termforge_qt_entry(qt_hidden_retention_test)
-    target_link_libraries(qt_hidden_retention_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_hidden_retention_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_hidden_retention_test>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_hidden_retention COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_hidden_retention_test>")
-    set_tests_properties(qt_hidden_retention PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen;TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
-    add_executable(qt_history_navigation_test src/qt/history_navigation_test.cpp)
-    set_target_properties(qt_history_navigation_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-history-bin/$<CONFIG>")
-    termforge_qt_entry(qt_history_navigation_test)
-    target_link_libraries(qt_history_navigation_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_history_navigation_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_history_navigation_test>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_history_navigation COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_history_navigation_test>")
-    set_tests_properties(qt_history_navigation PROPERTIES TIMEOUT 35
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    add_executable(qt_selection_migration_test src/qt/selection_migration_test.cpp)
-    set_target_properties(qt_selection_migration_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-selection-bin/$<CONFIG>")
-    termforge_qt_entry(qt_selection_migration_test)
-    target_link_libraries(qt_selection_migration_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_selection_migration_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_selection_migration_test>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_selection_migration COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_selection_migration_test>")
-    set_tests_properties(qt_selection_migration PROPERTIES TIMEOUT 40
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    add_executable(qt_paste_test src/qt/paste_test.cpp)
-    set_target_properties(qt_paste_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-paste-bin/$<CONFIG>")
-    termforge_qt_entry(qt_paste_test)
-    target_link_libraries(qt_paste_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_paste_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_paste_test>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_paste COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_paste_test>")
-    set_tests_properties(qt_paste PROPERTIES TIMEOUT 45
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    add_executable(qt_find_test src/qt/find_test.cpp)
-    set_target_properties(qt_find_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-find-bin/$<CONFIG>")
-    termforge_qt_entry(qt_find_test)
-    target_link_libraries(qt_find_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_find_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_find_test>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_find COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_find_test>")
-    set_tests_properties(qt_find PROPERTIES TIMEOUT 45
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    add_executable(qt_autoscroll_test src/qt/autoscroll_test.cpp)
-    set_target_properties(qt_autoscroll_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-autoscroll-bin/$<CONFIG>")
-    termforge_qt_entry(qt_autoscroll_test)
-    target_link_libraries(qt_autoscroll_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_autoscroll_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_autoscroll_test>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_autoscroll COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_autoscroll_test>")
-    set_tests_properties(qt_autoscroll PROPERTIES TIMEOUT 45
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    # Opt-in single-run literal oracle for the #327 recovery protocol v2. It is
-    # built on demand but deliberately NOT registered with add_test(): the
-    # literal run consumes a separately authorized one-shot budget, so CTest,
-    # push and PR runs must never execute it. Invoke it manually through
-    # run_smoke.py with --literal-v2 and an evidence path.
-    add_executable(qt_autoscroll_literal_test src/qt/autoscroll_literal_test.cpp)
-    set_target_properties(qt_autoscroll_literal_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-autoscroll-literal-bin/$<CONFIG>")
-    termforge_qt_entry(qt_autoscroll_literal_test)
-    target_link_libraries(qt_autoscroll_literal_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_autoscroll_literal_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_autoscroll_literal_test>/platforms/"
-      VERBATIM)
-    add_executable(qt_scrollbar_size_test src/qt/scrollbar_size_test.cpp)
-    set_target_properties(qt_scrollbar_size_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-scrollbar-size-bin/$<CONFIG>")
-    termforge_qt_entry(qt_scrollbar_size_test)
-    target_link_libraries(qt_scrollbar_size_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_scrollbar_size_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_scrollbar_size_test>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_scrollbar_size COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_scrollbar_size_test>")
-    set_tests_properties(qt_scrollbar_size PROPERTIES TIMEOUT 45
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-    add_executable(qt_clipboard_system_test src/qt/clipboard_system_test.cpp)
-    set_target_properties(qt_clipboard_system_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-clipboard-bin/$<CONFIG>")
-    termforge_qt_entry(qt_clipboard_system_test)
-    target_link_libraries(qt_clipboard_system_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_clipboard_system_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_clipboard_system_test>/platforms/"
-      VERBATIM)
-    add_executable(qt_query_reply_test src/qt/query_reply_test.cpp)
-    set_target_properties(qt_query_reply_test PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qt-query-reply-bin/$<CONFIG>")
-    termforge_qt_entry(qt_query_reply_test)
-    target_link_libraries(qt_query_reply_test PRIVATE Qt6::Test)
-    add_custom_command(TARGET qt_query_reply_test POST_BUILD
-      COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-        "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
-        "$<TARGET_FILE_DIR:qt_query_reply_test>/platforms/"
-      VERBATIM)
-    add_test(NAME qt_query_reply COMMAND "${Python3_EXECUTABLE}"
-      "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_query_reply_test>")
-    set_tests_properties(qt_query_reply PROPERTIES TIMEOUT 45
-      ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    function(termforge_qt_test_target target source output_directory)
+      cmake_parse_arguments(PARSE_ARGV 3 test "" "CHILD" "")
+      add_executable(${target} "src/qt/${source}")
+      set_target_properties(${target} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${output_directory}/$<CONFIG>")
+      termforge_qt_entry(${target})
+      target_link_libraries(${target} PRIVATE Qt6::Test)
+
+      # windeployqt deploys the Windows platform plugin. Tests also stage
+      # the offscreen plugin and any child executable used by the fixture.
+      set(copy_child)
+      if(test_CHILD)
+        add_dependencies(${target} ${test_CHILD})
+        list(APPEND copy_child
+          COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+          "$<TARGET_FILE:${test_CHILD}>" "$<TARGET_FILE_DIR:${target}>/")
+      endif()
+      add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+          "$<TARGET_FILE:Qt6::QOffscreenIntegrationPlugin>"
+          "$<TARGET_FILE_DIR:${target}>/platforms/"
+        ${copy_child}
+        VERBATIM)
+    endfunction()
+
+    function(termforge_qt_smoke name target timeout)
+      cmake_parse_arguments(PARSE_ARGV 3 smoke "ARTIFACTS" "" "ARGS")
+      set(test_environment "QT_QPA_PLATFORM=offscreen")
+      if(smoke_ARTIFACTS)
+        list(APPEND test_environment "TERMFORGE_TEST_ARTIFACTS=${PROJECT_BINARY_DIR}/test-artifacts")
+      endif()
+      add_test(NAME ${name} COMMAND "${Python3_EXECUTABLE}"
+        "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:${target}>" ${smoke_ARGS})
+      set_tests_properties(${name} PROPERTIES TIMEOUT ${timeout}
+        ENVIRONMENT "${test_environment}")
+    endfunction()
+
+    termforge_qt_test_target(qt_cpp_shell_smoke shell_smoke.cpp qt-smoke-bin)
+    termforge_qt_smoke(qt_cpp_shell qt_cpp_shell_smoke 35)
+
+    termforge_qt_test_target(qt_unicode_input_test unicode_input_test.cpp qt-unicode-bin
+      CHILD shell_input_client)
+    termforge_qt_smoke(qt_unicode_input qt_unicode_input_test 35 ARTIFACTS)
+
+    termforge_qt_test_target(qt_unicode_render_test unicode_render_test.cpp qt-unicode-render-bin
+      CHILD shell_unicode_echo_client)
+    termforge_qt_smoke(qt_unicode_render qt_unicode_render_test 35 ARTIFACTS)
+
+    termforge_qt_test_target(qt_eight_session_test eight_session_test.cpp qt-eight-session-bin
+      CHILD shell_eight_session_client)
+    termforge_qt_smoke(qt_eight_session qt_eight_session_test 60 ARTIFACTS)
+
+    termforge_qt_test_target(qt_cpp_resize_smoke resize_smoke.cpp qt-resize-bin)
+    termforge_qt_smoke(qt_cpp_resize qt_cpp_resize_smoke 35)
+    termforge_qt_smoke(qt_win32_resize_compat qt_cpp_resize_smoke 35 ARGS --win32-compat)
+
+    termforge_qt_test_target(qt_terminal_modes_test terminal_modes_test.cpp qt-modes-bin)
+    termforge_qt_smoke(qt_terminal_modes qt_terminal_modes_test 35)
+    termforge_qt_smoke(qt_terminal_modes_retained qt_terminal_modes_test 35 ARGS --retained-contract)
+
+    termforge_qt_test_target(qt_hidden_retention_test hidden_retention_test.cpp qt-hidden-retention-bin)
+    termforge_qt_smoke(qt_hidden_retention qt_hidden_retention_test 35 ARTIFACTS)
+
+    termforge_qt_test_target(qt_history_navigation_test history_navigation_test.cpp qt-history-bin)
+    termforge_qt_smoke(qt_history_navigation qt_history_navigation_test 35)
+
+    termforge_qt_test_target(qt_selection_migration_test selection_migration_test.cpp qt-selection-bin)
+    termforge_qt_smoke(qt_selection_migration qt_selection_migration_test 40)
+
+    termforge_qt_test_target(qt_paste_test paste_test.cpp qt-paste-bin)
+    termforge_qt_smoke(qt_paste qt_paste_test 45)
+
+    termforge_qt_test_target(qt_find_test find_test.cpp qt-find-bin)
+    termforge_qt_smoke(qt_find qt_find_test 45)
+
+    termforge_qt_test_target(qt_autoscroll_test autoscroll_test.cpp qt-autoscroll-bin)
+    termforge_qt_smoke(qt_autoscroll qt_autoscroll_test 45)
+
+    # The #327 literal oracle consumes a separately authorized run. Keep it
+    # out of CTest and invoke it explicitly through run_smoke.py --literal-v2.
+    termforge_qt_test_target(qt_autoscroll_literal_test autoscroll_literal_test.cpp qt-autoscroll-literal-bin)
+
+    termforge_qt_test_target(qt_scrollbar_size_test scrollbar_size_test.cpp qt-scrollbar-size-bin)
+    termforge_qt_smoke(qt_scrollbar_size qt_scrollbar_size_test 45)
+
+    termforge_qt_test_target(qt_clipboard_system_test clipboard_system_test.cpp qt-clipboard-bin)
+
+    termforge_qt_test_target(qt_query_reply_test query_reply_test.cpp qt-query-reply-bin)
+    termforge_qt_smoke(qt_query_reply qt_query_reply_test 45)
+
     if(TERMFORGE_CONPTY_SOURCE_BUILD OR TERMFORGE_ENABLE_RESIZE_REPRO)
-      add_test(NAME qt_terminal_modes_resize_repro COMMAND "${Python3_EXECUTABLE}"
-        "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --resize)
-      set_tests_properties(qt_terminal_modes_resize_repro PROPERTIES TIMEOUT 35
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+      termforge_qt_smoke(qt_terminal_modes_resize_repro qt_terminal_modes_test 35 ARGS --resize)
     endif()
     if(TERMFORGE_CONPTY_SOURCE_BUILD)
-      add_test(NAME qt_bcd_local_reference COMMAND "${Python3_EXECUTABLE}"
-        "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --bcd-local-reference)
-      set_tests_properties(qt_bcd_local_reference PROPERTIES TIMEOUT 35
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-      add_test(NAME qt_native_resize_map COMMAND "${Python3_EXECUTABLE}"
-        "${PROJECT_SOURCE_DIR}/src/qt/run_smoke.py" "$<TARGET_FILE:qt_terminal_modes_test>" --native-resize-map)
-      set_tests_properties(qt_native_resize_map PROPERTIES TIMEOUT 35
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+      termforge_qt_smoke(qt_bcd_local_reference qt_terminal_modes_test 35 ARGS --bcd-local-reference)
+      termforge_qt_smoke(qt_native_resize_map qt_terminal_modes_test 35 ARGS --native-resize-map)
     endif()
   endif()
 endif()
