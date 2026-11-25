@@ -1,4 +1,4 @@
-name: R29 ConPTY native depth experiment
+name: R29 ConPTY ordered native resize mapping
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   upstream:
-    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'codex/r29-native-build'
+    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'codex/r29-map-build'
     runs-on: windows-2025
     timeout-minutes: 45
     env:
@@ -44,13 +44,13 @@ jobs:
       - name: Build baseline and candidate from pinned source
         shell: pwsh
         run: >-
-          ./project/experiments/conpty/upstream/build_r29_depth.ps1
+          ./project/experiments/conpty/upstream/build_r29_map.ps1
           -Source ./upstream -Vcpkg ./vcpkg -Out ./upstream-result
       - name: Preserve source and test identity
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: r29-native-build-identity
+          name: r29-native-map-build-identity
           retention-days: 14
           if-no-files-found: warn
           path: upstream-result/public/
@@ -58,7 +58,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: r29-native-depth-candidate
+          name: r29-native-map-candidate
           retention-days: 14
           if-no-files-found: error
           path: upstream-result/candidate-pair/
@@ -66,7 +66,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: r29-native-depth-baseline
+          name: r29-native-map-baseline
           retention-days: 14
           if-no-files-found: error
           path: upstream-result/baseline-pair/
