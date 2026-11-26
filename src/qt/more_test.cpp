@@ -1,7 +1,7 @@
 // A real cmd runs the pinned Microsoft pager, then accepts another command in
 // the same primary screen. The oracle comes from the numbered file and the
 // independent 80x24 More trajectory, not from the product's output stream.
-#include "terminal_widget.hpp"
+#include "tui_test_support.hpp"
 #include <QApplication>
 #include <QCryptographicHash>
 #include <QElapsedTimer>
@@ -16,49 +16,7 @@
 namespace {
 using termforge::qt::SessionModel;
 using termforge::qt::TerminalWidget;
-
-void require(bool ok, const char* message) {
-    if (!ok) throw std::runtime_error(message);
-}
-
-std::mutex input_mutex;
-std::string written;
-void observe_input(const void*, bool delivered, std::string_view bytes, bool accepted) {
-    if (delivered && accepted) {
-        std::lock_guard lock(input_mutex);
-        written.append(bytes);
-    }
-}
-std::string input_bytes() {
-    std::lock_guard lock(input_mutex);
-    return written;
-}
-
-std::string row_text(const termforge::Line& row) {
-    std::string text;
-    for (const auto& cell : row) text += cell.text;
-    text.erase(text.find_last_not_of(' ') + 1);
-    return text;
-}
-template<class Predicate>
-void wait(SessionModel& model, Predicate ready, const char* failure) {
-    QElapsedTimer timer;
-    timer.start();
-    while (!ready() && model.error().isEmpty() && !model.finished() && timer.elapsed() < 4000)
-        QTest::qWait(5);
-    if (!ready()) {
-        std::cerr << failure << " model=" << model.error().toStdString() << " screen:\n";
-        for (const auto& line : model.screen().visible_lines()) std::cerr << row_text(line) << '\n';
-        std::cerr << "input_hex=" << QByteArray::fromStdString(input_bytes()).toHex().constData()
-                  << " transport_hex=" << QByteArray::fromStdString(model.transport_capture()).toHex().constData() << '\n';
-        throw std::runtime_error(failure);
-    }
-}
-
-void resize(TerminalWidget& window, int columns) {
-    const int margin = window.content_margin();
-    window.resize(2 * margin + columns * window.cell_width(), 3 * margin + 25 * window.cell_height());
-}
+using namespace termforge::qt::tui_test;
 
 void check_page(SessionModel& model, TerminalWidget& window, int columns, int first, int percent) {
     const auto& screen = model.screen();
@@ -94,11 +52,6 @@ void check_page(SessionModel& model, TerminalWidget& window, int columns, int fi
     require(tile(0,0) != tile(0,50) && tile(23,0) != tile(23,50), "pager text or prompt has no rendered ink");
     std::cerr << "more grid=" << columns << "x24 lines=" << first << ".." << first + 22
               << " prompt=" << percent << "% input_hex=" << QByteArray::fromStdString(input_bytes()).toHex().constData() << '\n';
-}
-
-void write_file(const QString& path, const QByteArray& data) {
-    QFile file(path);
-    require(file.open(QIODevice::WriteOnly) && file.write(data) == data.size() && file.flush(), "fixture write failed");
 }
 
 QJsonObject scenario() {
@@ -179,11 +132,7 @@ QJsonObject scenario() {
 }
 
 int main(int argc, char** argv) {
-    char gate[3]{};
-    DWORD count = 0;
-    BOOL owned = FALSE;
-    if (!ReadFile(GetStdHandle(STD_INPUT_HANDLE), gate, sizeof(gate), &count, nullptr) ||
-        std::string_view(gate,count) != "GO\n" || !IsProcessInJob(GetCurrentProcess(),nullptr,&owned) || !owned) return 2;
+    if (!owned_job_ready()) return 2;
     QApplication app(argc, argv);
     try {
         std::cout << QJsonDocument(scenario()).toJson(QJsonDocument::Compact).constData() << '\n';
