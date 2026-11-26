@@ -602,7 +602,7 @@ if(TERMFORGE_BUILD_QT_SHELL)
     termforge_qt_smoke(qt_more qt_more_test 35)
 
     termforge_qt_test_target(qt_vim_test vim_test.cpp qt-vim-bin)
-    termforge_qt_smoke(qt_vim qt_vim_test 35 ARGS "${PROJECT_SOURCE_DIR}/local/r28-vim/fixture/usr/bin")
+    termforge_qt_smoke(qt_vim qt_vim_test 35 ARGS "${PROJECT_SOURCE_DIR}/local/r28-vim/fixture")
 
     termforge_qt_test_target(qt_unicode_input_test unicode_input_test.cpp qt-unicode-bin
       CHILD shell_input_client)

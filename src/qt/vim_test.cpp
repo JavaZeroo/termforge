@@ -12,15 +12,16 @@ using namespace termforge::qt::tui_test;
 
 void stage_vim(const QString& source, const QDir& workspace) {
     const struct { const char* name; const char* sha256; } files[] = {
-        {"vim.exe", "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a"},
-        {"msys-2.0.dll", "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f"},
-        {"msys-ncursesw6.dll", "73ff8bc8b1f515e57b185e57d25d9ad29067057ff0819a8e588677c65ca61629"},
-        {"msys-intl-8.dll", "23d30f4bcbc0a258cf5ecfe29e707f9b05d51c32d5b16a910f1012b889136c12"},
-        {"msys-iconv-2.dll", "9cbf5613b946be7bad403ac0d7277efbd514a35faa644c6a0d6e7f6cc0b40780"}
+        {"usr/bin/vim.exe", "2e0fda63a89171adfc46c9417d5105cc39ed778cc69a890b83a4eabc34e7646a"},
+        {"usr/bin/msys-2.0.dll", "3096d2ba9be20e90be1399edd391bac65d84bc387f5a419b502c9b326081930f"},
+        {"usr/bin/msys-ncursesw6.dll", "73ff8bc8b1f515e57b185e57d25d9ad29067057ff0819a8e588677c65ca61629"},
+        {"usr/bin/msys-intl-8.dll", "23d30f4bcbc0a258cf5ecfe29e707f9b05d51c32d5b16a910f1012b889136c12"},
+        {"usr/bin/msys-iconv-2.dll", "9cbf5613b946be7bad403ac0d7277efbd514a35faa644c6a0d6e7f6cc0b40780"},
+        {"usr/share/terminfo/78/xterm-256color", "7f27e57e318f32605466c781de06fba0ff27f212667140cde50ff65498123f84"}
     };
-    require(workspace.mkdir("vim"), "could not create Vim fixture directory");
+    require(workspace.mkpath("usr/bin") && workspace.mkpath("usr/share/terminfo/78"), "could not create Vim fixture directories");
     for (const auto& entry : files) {
-        const auto target = workspace.filePath(QStringLiteral("vim/") + entry.name);
+        const auto target = workspace.filePath(entry.name);
         require(QFile::copy(QDir(source).filePath(entry.name), target), "frozen Vim fixture unavailable");
         QFile file(target);
         QCryptographicHash sha(QCryptographicHash::Sha256);
@@ -71,8 +72,8 @@ QJsonObject scenario(const QString& source) {
         "autocmd VimResized * call writefile([printf('%dx%d', &columns, &lines)], 'resized', 'b')\n");
     write_file(workspace.filePath("run.cmd"),
         "@echo off\r\nprompt TF_READY$G\r\necho TF_VIM_PRIMARY\r\n"
-        "set \"PATH=%CD%\\vim;%SystemRoot%\\System32\"\r\nset TERM=xterm-256color\r\nset LC_ALL=C\r\n"
-        "vim\\vim.exe -Nu NONE -n -i NONE --cmd \"source observe.vim\" editor.txt\r\n"
+        "set \"PATH=%CD%\\usr\\bin;%SystemRoot%\\System32\"\r\nset TERM=xterm-256color\r\nset TERMINFO=/usr/share/terminfo\r\nset LC_ALL=C\r\n"
+        "usr\\bin\\vim.exe -Nu NONE -n -i NONE --cmd \"source observe.vim\" editor.txt\r\n"
         "echo TF_VIM_EXIT_%errorlevel%\r\n");
     wchar_t sys[MAX_PATH]{};
     const auto count = GetSystemDirectoryW(sys, MAX_PATH);
