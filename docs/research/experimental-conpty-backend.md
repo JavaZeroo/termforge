@@ -20,7 +20,7 @@
 
 原 ESC resize 场景曾以宿主的 `CSI ?25h` 当 resize 完成信号。新宿主没有这个重绘副作用，原夹具超时。现在由真实 peer `GetConsoleScreenBufferInfo` 确认60×12并发出独立 ack，随后发送原单个 ESC；resize与输入共用原五秒预算，外层期限不变。真实 ESC 两轮通过；Vim/DSR/resize写盘曾在早期flags0阶段通过两轮，不能将它用于证明最终Console-width策略通过。
 
-最终C++源码固定在 `5030058`，随后 `0954fea` 只整合 margin Python 诊断的异常/清理修复。[公开验证记录](../../experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)包含15个源码文件的git blob哈希、四项二进制哈希、固定包/完整MIT身份、逐后端margin结果和白名单化的正反结果；未提交原始屏幕、transport或路径。
+最终C++源码固定在 `5030058`，随后 `0954fea` 只整合 margin Python 诊断的异常/清理修复。[公开验证记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)包含15个源码文件的git blob哈希、四项二进制哈希、固定包/完整MIT身份、逐后端margin结果和白名单化的正反结果；未提交原始屏幕、transport或路径。
 
 最终Console-width构建的后端生命期/拒绝检查6/6、margin诊断清理检查9/9、既有TUI检查5/6；TUI中ESC、主/备用屏、局部滚动、每屏margin和完整Unicode各两轮通过。基础cmd Unicode/编辑/Ctrl-C/正常退出三轮、四种本地shell/CWD/退出两轮、持续输出关闭三轮通过。More子阶段完整提示→单q→EOF通过，但包含Vim的整套native capture失败，不能将More成功表述成整套通过。
 

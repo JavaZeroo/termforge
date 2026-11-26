@@ -1,6 +1,6 @@
 # WindTerm 2.7.0：U+0302 后的 Q 与位置单位候选
 
-这是 #27/#29 的新独立 `unicode_caret_reference` namespace，承接 [既有 Unicode 原版观察](results/2026-11-02-resize-unicode-reference/README.md)。准备 **3 个全新进程、各 4 阶段，共 12 观察**；尚未运行原版。旧 `resize_unicode_reference` 等已冻结工具、输入计划和结果不修改、不重放。
+这是 #27/#29 的新独立 `unicode_caret_reference` namespace，承接 [既有 Unicode 原版观察](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-unicode-reference/README.md)。准备 **3 个全新进程、各 4 阶段，共 12 观察**；尚未运行原版。旧 `resize_unicode_reference` 等已冻结工具、输入计划和结果不修改、不重放。
 
 旧样本在 resize 后输入 U+0302，得到正文 `60空格 + U+0302 + e + U+0301`，DSR 仍为 `8;61`，caretPosition 为 85。下一 Q 在什么位置写入尚未观察；caret API 是否按 UTF-8 字节计量也需要候选查询，不能直接沿用 JS 文本偏移矩形作 glyph/Cell oracle。
 

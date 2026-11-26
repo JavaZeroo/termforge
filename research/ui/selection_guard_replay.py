@@ -18,8 +18,8 @@ def decision(caret,anchor):
 
 
 def make_replay(r126_result,destination):
-    prior=json.loads((ROOT/"research/ui/results/2026-10-28-raster-style-reference/selection-getter-counterexample.json").read_text(encoding="utf-8"))
-    current=json.loads((ROOT/"research/ui/results/2026-10-28-raster-style-reference/validation.json").read_text(encoding="utf-8"))
+    prior=json.loads((ROOT/"research/ui/fixtures/2026-10-28-raster-style-reference/selection-getter-counterexample.json").read_text(encoding="utf-8"))
+    current=json.loads((ROOT/"research/ui/fixtures/2026-10-28-raster-style-reference/validation.json").read_text(encoding="utf-8"))
     raw=r126_result.read_bytes()
     raw_sha=hashlib.sha256(raw).hexdigest()
     require(raw_sha==current["raw_files"]["raster-result.json"]["sha256"],"R126 private phase0 identity differs")

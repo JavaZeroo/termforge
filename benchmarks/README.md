@@ -4,11 +4,11 @@
 
 > M0/M1/M2 是协议 v0.1 的历史阶段名称；场景和测量约束继续有效，当前交付路标与执行顺序以 [R1–R5 计划](../docs/PLAN.md)及 [#3/#4 跟踪](../docs/TRACKING.md)为准。
 
-已定义 [M0 实验协议 v0.1](PROTOCOL.md)、[机器可读场景参数](cases.json) 与 [记录模板](run-template.json)。[工具使用说明](tools/README.md) 包含生成器、播放器、Windows 资源采样与自建窗口视觉诊断。已有[真实 WindTerm 诊断烟测](results/2026-10-21-windterm-smoke/README.md)，#3 的实际终端端点适配及正式开销校准仍未完成，尚无正式 WindTerm 性能基线。执行以 PROTOCOL.md 为准，本页为导航摘要。
+已定义 [M0 实验协议 v0.1](PROTOCOL.md)、[机器可读场景参数](cases.json) 与 [记录模板](run-template.json)。[工具使用说明](tools/README.md) 包含生成器、播放器、Windows 资源采样与自建窗口视觉诊断。已有[真实 WindTerm 诊断烟测](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/benchmarks/results/2026-10-21-windterm-smoke/README.md)，#3 的实际终端端点适配及正式开销校准仍未完成，尚无正式 WindTerm 性能基线。执行以 PROTOCOL.md 为准，本页为导航摘要。
 
-[2026-10-20 工具自检记录](results/2026-10-20-tool-calibration/README.md) 保留了开销问题及修正后的诊断；校准门槛仍未通过。
+[2026-10-20 工具自检记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/benchmarks/results/2026-10-20-tool-calibration/README.md) 保留了开销问题及修正后的诊断；校准门槛仍未通过。
 
-[视觉链路两批诊断](results/2026-10-20-visual-diagnostic/README.md) 保留了全部事件、捕获间隔与时钟区间；当前实际捕获粒度不足以可靠比较几毫秒差异。
+[视觉链路两批诊断](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/benchmarks/results/2026-10-20-visual-diagnostic/README.md) 保留了全部事件、捕获间隔与时钟区间；当前实际捕获粒度不足以可靠比较几毫秒差异。
 
 ## 测量矩阵
 
@@ -42,5 +42,5 @@
 
 - `generated/`：生成的大数据，默认忽略。
 - `local-results/`：本机原始结果，默认忽略。
-- 审查后的公开结果另建 `results/<date>/<case>/`，附重现步骤、原始样本和局限。
+- 每次测量在 `local/` 或 `benchmarks/local-results/` 下单独保存。审查后的公开摘要及复验入口写入责任 issue 或[证据索引](../docs/EVIDENCE.md)，附固定源码、可公开的样本身份和限制。
 - `run-template.json` 是字段草案，后续工具实现前应补 schema/校验规则。空值不是零分或已测结果。

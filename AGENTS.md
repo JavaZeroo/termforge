@@ -14,7 +14,7 @@
 - Keep parser/screen state, history, transport and presentation independently testable in later implementation.
 - Preserve terminal correctness and interactive latency while optimizing throughput or memory.
 - Do not commit proprietary WindTerm artifacts, resources, private sessions, credentials, crash dumps or raw binary extraction dumps.
-- Keep benchmark data local until reviewed for provenance and privacy. Publish synthetic workloads and sanitized results.
+- Keep benchmark data local until reviewed for provenance and privacy. Use ignored `results/`, `local/` or build output directories for generated runs. Track reviewed inputs used by tests under `fixtures/` and cite reviewed results from the evidence index.
 - Prefer focused changes with validation appropriate to the work. Do not invent measurements or percentage-complete estimates.
 - Keep the roadmap and known differences current when scope changes.
 - Follow docs/adr/0002-automation-first-investigation.md: prefer unattended CLI/test workflows; do not turn automation blockers into repeated user clicks, commands or per-run confirmations. Preserve unresolved evidence gaps and continue independent investigation/prototype work.

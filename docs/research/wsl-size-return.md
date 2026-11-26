@@ -20,7 +20,7 @@
 
 ## 来源与复验
 
-实现固定为 `2b85fef48149f022b50d9d8878f62539e02c92ba`，基点 `c8206911fb511bc2996579f2bb108ef54ae7acbd`。当前证据配置为 Windows 11 26200、默认自研核心/system 后端；[审核后记录](../../experiments/shell/results/2026-10-27-wsl-size-return/validation.json)分别保存原 CI、原六次未复现、受控 stage6、旧条件红例、中间 stage5 和最终结果的身份与限制。私有目录、实际桌面名及完整运输原件留在本地。
+实现固定为 `2b85fef48149f022b50d9d8878f62539e02c92ba`，基点 `c8206911fb511bc2996579f2bb108ef54ae7acbd`。当前证据配置为 Windows 11 26200、默认自研核心/system 后端；[审核后记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-27-wsl-size-return/validation.json)分别保存原 CI、原六次未复现、受控 stage6、旧条件红例、中间 stage5 和最终结果的身份与限制。私有目录、实际桌面名及完整运输原件留在本地。
 
 在完整 Release 构建后，设 `TERMFORGE_BIN_DIR` 指向该构建的 `bin/Release`，运行：
 

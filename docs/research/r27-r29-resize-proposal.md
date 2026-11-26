@@ -8,8 +8,8 @@
 
 | 证据 | 已观察事实 | 尚不能推出的结论 |
 |---|---|---|
-| [WindTerm 2.7.0 原版三阶段样本](../../research/ui/results/2026-11-02-resize-state-reference/README.md) | 受控 Telnet，公开窗口 `1360×749 → 1000×749 → 1360×749`，NAWS `91×20 → 61×20 → 91×20`；合成 `v/w/x` 的文档位置不变，可见矩形重排后恢复；三次 DSR 都为 `11;2` | 只有一个正文及一次收缩/恢复；没有后续可打印字符或 CUP，不能确定 resize 后写入、擦除、插删和协议光标怎样对应正文；不证明备用屏、复杂 Unicode、历史或本地 Shell 路径 |
-| [Qt / 固定 ConPTY 模式及 resize 诊断](../../experiments/shell/results/2026-11-02-qt-terminal-modes/README.md) | 独立 `80×24 → 60×12` 场景中，native grid 重排 B/CD，核心物理裁剪丢失右端正文；第六阶段字面断言失败。另一条独立 raw transport 观测未见搬移 B/CD 或清旧 D 的重绘字节 | 不是原版相同几何，也不是同次 Qt 会话捕获；不能把 native grid 直接当 WindTerm oracle，不能认定末端 parser 忽略了重绘字节 |
+| [WindTerm 2.7.0 原版三阶段样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-state-reference/README.md) | 受控 Telnet，公开窗口 `1360×749 → 1000×749 → 1360×749`，NAWS `91×20 → 61×20 → 91×20`；合成 `v/w/x` 的文档位置不变，可见矩形重排后恢复；三次 DSR 都为 `11;2` | 只有一个正文及一次收缩/恢复；没有后续可打印字符或 CUP，不能确定 resize 后写入、擦除、插删和协议光标怎样对应正文；不证明备用屏、复杂 Unicode、历史或本地 Shell 路径 |
+| [Qt / 固定 ConPTY 模式及 resize 诊断](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-02-qt-terminal-modes/README.md) | 独立 `80×24 → 60×12` 场景中，native grid 重排 B/CD，核心物理裁剪丢失右端正文；第六阶段字面断言失败。另一条独立 raw transport 观测未见搬移 B/CD 或清旧 D 的重绘字节 | 不是原版相同几何，也不是同次 Qt 会话捕获；不能把 native grid 直接当 WindTerm oracle，不能认定末端 parser 忽略了重绘字节 |
 | 当前 [Screen](../../experiments/core/screen.hpp) 与 [Qt 会话](../../src/qt/terminal_session.hpp)，代码身份 `abf9e23` | `resize_frame` 对行执行 `line.resize(columns)`；被截掉的单元格没有后续恢复来源。UI 请求逐次改变 core 尺寸，transport worker 从 `pending_resize_` 取最新请求 | 多次尺寸请求可能被 transport 合并、core 却逐次裁剪，是静态可达风险；尚未实测证明连续 resize 的竞态或丢字原因 |
 
 原版结果必须区分三个坐标层。例如 `x` 的文档位置始终是零基逻辑行 9、列 91；可见矩形从 `(147,180)` 变为 `(387,198)` 再恢复；DSR 却保持一基 `(11,2)`。因此不能在显示行重排时，直接把协议光标改成新的显示行列。此样本也没有证明原版内部采用哪一种存储结构。

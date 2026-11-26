@@ -134,7 +134,7 @@ static std::vector<Marker> with_controls(std::initializer_list<Marker> markers) 
 }
 
 static Case pending_on_shrink() {
-    // Oracle: research/ui/results/2026-11-02-resize-frame-reference/pending-on-shrink.json, SHA256
+    // Oracle: 1f8bf75:research/ui/results/2026-11-02-resize-frame-reference/pending-on-shrink.json, SHA256
     // 0e37a46dccec9c2d0620487c63486d086c205874c62835ce506ba333ebd70bb9.
     // Initial source: 57 bytes, SHA256
     // a052dbd92f9c02f5ca260e577ac30424caa775da86dd37532dc2f611f89e2819.

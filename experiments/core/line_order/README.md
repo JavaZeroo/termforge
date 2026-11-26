@@ -2,7 +2,7 @@
 
 状态：**精确header绑定源a84a287已独立编译；首租约真实caller RED为3 FAIL/exit1，两Adapter correctness通过；独立18case成本租约均exit0。无产品选型或性能验收。** 基线为 `35a323a3165dae6998237bfd768c7c54c9c8ae99`。这不是区域/origin协议实现，也不恢复任何实验产品后端。
 
-本目录是独立CMake工程，目标 `r164_probe` 带 `EXCLUDE_FROM_ALL`；根CMake和生产Parser/Screen/TextDocument/TextSelection/TextSearch/HistoryViewport均不修改。没有新增依赖。本次运行源为 `a84a287b1cb0404ce6245ba42d6bcb55a0c96f64`，实际Release x64 EXE为144896B、SHA256 `187d349cd8356aef2abd8ced617223b42178034837fef80e6dec7ab4538a3c08`。新编译、实际CL.read两header依赖、首租约及成本租约分开保留。详细原始数值、环境/端点、推荐及回收缺口见[结果报告](../results/2026-10-29-line-order-r164/README.md)和[脱敏validation](../results/2026-10-29-line-order-r164/validation.json)；本文后续更新仅文档，不把新HEAD冒充已执行源。
+本目录是独立CMake工程，目标 `r164_probe` 带 `EXCLUDE_FROM_ALL`；根CMake和生产Parser/Screen/TextDocument/TextSelection/TextSearch/HistoryViewport均不修改。没有新增依赖。本次运行源为 `a84a287b1cb0404ce6245ba42d6bcb55a0c96f64`，实际Release x64 EXE为144896B、SHA256 `187d349cd8356aef2abd8ced617223b42178034837fef80e6dec7ab4538a3c08`。新编译、实际CL.read两header依赖、首租约及成本租约分开保留。详细原始数值、环境/端点、推荐及回收缺口见[结果报告](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-29-line-order-r164/README.md)和[脱敏validation](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-29-line-order-r164/validation.json)；本文后续更新仅文档，不把新HEAD冒充已执行源。
 
 旧源码 `28c98d58b05e5590a2ef483f16eda8807cc7cde5` 已由root做一次configure/build，两个root均exit0；实际 `r164_probe.exe` 为144896B、SHA256 `2cde284594264bc6bb348a00aec8d0e4edd24751620a0cfd45c010926adad4a2`。两次即时Job accounting仍有残留成员，各请求一次终止后最终Job0，不能称全树自然构建。原计划/命令/stdout/stderr/清理和EXE身份留在私有 `local/compile-r164-0/`，该EXE未执行。此编译不归属于当前header绑定修订，不提供原caller RED、两Adapter正确性或成本结果；preflight-v1/v2原件保持不变。
 

@@ -1,4 +1,5 @@
 # Generated workloads and local measurements (publish only reviewed results)
+results/
 /benchmarks/generated/
 /benchmarks/local-results/
 /local/

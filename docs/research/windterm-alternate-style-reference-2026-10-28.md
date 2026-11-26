@@ -2,7 +2,7 @@
 
 [#123](https://github.com/JavaZeroo/termforge/issues/123) 在固定原版上完成一次 11 阶段取证：实际调用主/备用屏状态接口、核对四个边界标记和一个延迟换行往返。**样式观测未成功，进入时继承、退出后当前样式恢复仍未知。** 精确 QPainter 入口经过受限设备过滤后没有匹配，不能把它解释成原版没有样式或样式符合某种默认规则。
 
-完整合成源、DSR、文档投影、标记矩形、真实模式返回值和失败边界见[脱敏摘要](../../research/ui/results/2026-10-28-alternate-style-reference/validation.json)。它补充[首次模式观察](windterm-alternate-reference-2026-10-28.md)，不替代本地 Shell 运输、完整 active grid、颜色或 R2 验收。
+完整合成源、DSR、文档投影、标记矩形、真实模式返回值和失败边界见[脱敏摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-28-alternate-style-reference/validation.json)。它补充[首次模式观察](windterm-alternate-reference-2026-10-28.md)，不替代本地 Shell 运输、完整 active grid、颜色或 R2 验收。
 
 ## 固定身份与一次执行
 

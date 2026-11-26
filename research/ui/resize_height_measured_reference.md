@@ -4,7 +4,7 @@
 
 ## 已知几何与待观察语义
 
-[独立几何结果](results/2026-11-02-resize-geometry-reference/README.md)实际测得窗口 `1360×749 → 1360×569` 对应 `91×20 → 91×14`；终端 viewport 高度只减少 120 px，另一 splitter 子区域减少 60 px。严格公开件 SHA256 为 `f18a2320c073ed477f773b42076c9968c0c8af8530af19548d5695e66e8cf9b5`。该两状态结果只提供本样本的缩高几何依据，未观察正文、DSR 或恢复。
+[独立几何结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-geometry-reference/README.md)实际测得窗口 `1360×749 → 1360×569` 对应 `91×20 → 91×14`；终端 viewport 高度只减少 120 px，另一 splitter 子区域减少 60 px。严格公开件 SHA256 为 `f18a2320c073ed477f773b42076c9968c0c8af8530af19548d5695e66e8cf9b5`。该两状态结果只提供本样本的缩高几何依据，未观察正文、DSR 或恢复。
 
 新 case **`height-retention-measured`** 固定为：
 

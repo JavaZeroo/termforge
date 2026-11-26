@@ -109,14 +109,14 @@
 | vim-exit | 60×12 | recovery | 通过 | 主屏 12 行空 |
 | vim-full | 60×12 | strict | 失败 | 同上 |
 
-逐阶段记录见 experiments/shell/results/2026-11-02-tui-vim/validation.json，冻结样本见 experiments/core/fixtures/vim-fixed-80x24-trajectory.bin 与 vim-fixed-60x12-trajectory.bin。
+冻结样本保存在核心夹具目录。 [80×24 样本](../../experiments/core/fixtures/vim-fixed-80x24-trajectory.bin) · [60×12 样本](../../experiments/core/fixtures/vim-fixed-60x12-trajectory.bin) · [逐阶段结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-02-tui-vim/validation.json)
 
 ## 未知项与未验证
 
 - strict 拒绝多参数 XTWINOPS t、括号粘贴、DCS 同步与 DA2 是否应实现、以何种字节回复，未决定；本切片只记录失败位置，不猜原版回复。
 - 原版 WindTerm 的 60×3000 缓冲区与 60×12 窗口（dwSize vs srWindow）与 ConPTY 60×12 的映射关系未验证。
 - #52/#56 记录的 resize 中途丢输入（MSYS 运行时 SIGWINCH 竞态）未在 ConPTY 产品路径复现，本切片未做中途 resize，只做 60×12 固定起点变体。
-- DSR 6n 的回复字节（ESC[row;colR）在本切片只核对到核心有回复能力（reply_test），未核对 Vim 实际消费回复后继续的行为（本切片 Vim 在 ConPTY 下不等待回复即可进入编辑，ConPTY 由 conhost 代答）。**后续修正（2026-11-09）**：固定 ConPTY 1.25 的静默/不同值对照显示 conhost 不代答 DSR，host 回复可原样到达启用 VT 输入模式的 child；见 [分层结果](../../experiments/shell/results/2026-11-09-qt-query-reply/README.md)。该括注保留为原假设。
+- DSR 6n 的回复字节（ESC[row;colR）在本切片只核对到核心有回复能力（reply_test），未核对 Vim 实际消费回复后继续的行为（本切片 Vim 在 ConPTY 下不等待回复即可进入编辑，ConPTY 由 conhost 代答）。**后续修正（2026-11-09）**：固定 ConPTY 1.25 的静默/不同值对照显示 conhost 不代答 DSR，host 回复可原样到达启用 VT 输入模式的 child；见 [分层结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-09-qt-query-reply/README.md)。该括注保留为原假设。
 - 其他终端类型（TERM 变量）、其他 vim 启动参数、多文件/多窗口、鼠标模式、宽字符正文均未覆盖。
 - 未观测 DA1/DA2 的原版 WindTerm 回复字节（既有 issue28-probe.md 记录原版 DA/OSC 探针未能采集）。
 

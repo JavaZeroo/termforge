@@ -1,6 +1,6 @@
 # 缩宽后寻址的独立原版观察协议
 
-这组工具继续 [固定正文的三阶段原版观察](results/2026-11-02-resize-state-reference/README.md)，用于 #29 与 #27 的寻址边界调查。旧三阶段工具和归档保持不变；新工具为 [resize_address_reference.py](resize_address_reference.py)、[控制器](resize_address_reference.js)和[严格离线导出器](export_resize_address_reference.py)。本文件定义准备与判读合同，不是原版运行结果。
+这组工具继续 [固定正文的三阶段原版观察](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-state-reference/README.md)，用于 #29 与 #27 的寻址边界调查。旧三阶段工具和归档保持不变；新工具为 [resize_address_reference.py](resize_address_reference.py)、[控制器](resize_address_reference.js)和[严格离线导出器](export_resize_address_reference.py)。本文件定义准备与判读合同，不是原版运行结果。
 
 ## 五份独立计划
 

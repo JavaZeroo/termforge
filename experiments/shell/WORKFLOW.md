@@ -17,7 +17,7 @@ python -m unittest experiments.shell.test_workflow_sessions -v
 
 `workflow_fixture` 包含跨平台纯校验与 Windows 两轮 fresh ConPTY 运行。外层 runner 使用新目录、OwnedJob、`GO` 门控和超时；原生 host 再核对内层 Job、正常退出和回收。Linux 跳过原生运行，不能据此宣称客户端支持。默认产物在 `build/test-artifacts/workflow-fixture/run-*`；显式 `TERMFORGE_TEST_ARTIFACTS` 可改产物根目录。
 
-`workflow_sessions` 的 Windows 驱动为每轮创建新目录、Job和自有非输入desktop，默认执行两个fresh rounds；实际完成轮数、固定源码及回归结果以[公开审计](results/2026-10-24-r1-eight-sessions/validation.json)和[复验](results/2026-10-24-r1-eight-sessions/regression.json)为准。native场景/launcher/外层runner时限分别为70/80/90秒，整组CTest为300秒。`resources=True`仅由此专用驱动启用，普通启动和其他默认执行不采集资源、不写观测文件。
+`workflow_sessions` 的 Windows 驱动为每轮创建新目录、Job和自有非输入desktop，默认执行两个fresh rounds；实际完成轮数、固定源码及回归结果以[公开审计](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-24-r1-eight-sessions/validation.json)和[复验](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-24-r1-eight-sessions/regression.json)为准。native场景/launcher/外层runner时限分别为70/80/90秒，整组CTest为300秒。`resources=True`仅由此专用驱动启用，普通启动和其他默认执行不采集资源、不写观测文件。
 
 ## 角色和负载
 
@@ -51,7 +51,7 @@ python -m unittest experiments.shell.test_workflow_sessions -v
 
 Controller 的正常结束回归另外记录 `exit\r` 的实际写入字节、原五秒 `wait_exit` 布尔、原生 wait 返回值/错误以及 close 前退出码；尚未 signaled 的退出码保留 null。close 后退出码、强制取消与 Job 回收分别记录，不能用最终回收成功补成自然退出。发送前和 close 前的运输偏移/prompt 次数仅为输出观察，不证明 cmd 已读取输入，也不增加 fresh-prompt 等待、重发或期限。Python 在检查原生失败码之前保存固定 scalar 白名单，私有 PID/创建时间与 raw transport 不进入该摘要。
 
-[#44 的原失败](results/2026-10-26-controller-exit/validation.json)仍未复现；[有界重放及新诊断](results/2026-10-26-controller-exit-observation/validation.json)不能覆盖原件或当作根因修复。当前正常返回的 fresh 重放同样可在只观察到初始 prompt 时完成 `exit\r`，因此不能仅由历史红推断必须增加 prompt 等待。两个 CMake 配置中的 controller probe 均不链接候选核心，相关通过不构成候选 GUI 或完整 R2 验收。
+[#44 的原失败](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-controller-exit/validation.json)仍未复现；[有界重放及新诊断](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-controller-exit-observation/validation.json)不能覆盖原件或当作根因修复。当前正常返回的 fresh 重放同样可在只观察到初始 prompt 时完成 `exit\r`，因此不能仅由历史红推断必须增加 prompt 等待。两个 CMake 配置中的 controller probe 均不链接候选核心，相关通过不构成候选 GUI 或完整 R2 验收。
 
 旧 `shell_text_client` 80行模式和 `shell_ime_client` 20行模式保持。后者的新 workflow 入口仍位于原严格 hosted IME 守卫之后；本机数据回归使用 text client，不伪造环境标志。
 
@@ -85,7 +85,7 @@ Shell的`enable_runtime_observation()`为opt-in；`runtime_snapshot()`只允许U
 
 关闭前快照在清除Find/search/paste之前取得；最终生命周期证据只在实际关闭线程join及Session关闭完成后收集。运行中或查询失败的子进程/worker状态保持unknown，不能把尚未读取当成0。场景以实际字节、状态、join与Job查询共同判断回收；单独queued=0不证明内核管道排空。
 
-`operation_observation.hpp`为显式启用的窗口提供最多8条按值滚动记录。记录实际WM_VSCROLL接收、该处理器发布的状态revision，以及包含同一revision且成功BitBlt/GdiFlush的实际WM_PAINT提交；WM_PRINT、离屏绘制、隐藏、被新revision覆盖和关闭均不能冒充提交。未知端点保持null并附原因，`presented_done`始终为null。系统组合场景预先固定两次A会话滚动及实际`110→109→110`内容/身份检查，合成单元测试不替代[同次场景托管验收](results/2026-10-24-r1-system-workflow/validation.json)。
+`operation_observation.hpp`为显式启用的窗口提供最多8条按值滚动记录。记录实际WM_VSCROLL接收、该处理器发布的状态revision，以及包含同一revision且成功BitBlt/GdiFlush的实际WM_PAINT提交；WM_PRINT、离屏绘制、隐藏、被新revision覆盖和关闭均不能冒充提交。未知端点保持null并附原因，`presented_done`始终为null。系统组合场景预先固定两次A会话滚动及实际`110→109→110`内容/身份检查，合成单元测试不替代[同次场景托管验收](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)。
 
 `completed_generation` 表示 resize API 已返回，不代表子进程已应用该尺寸，更不代表已绘制或呈现。队列探针另外从真实子进程查询尺寸并有界等待固定预期；两种端点分别检查。
 
@@ -99,7 +99,7 @@ Shell的`enable_runtime_observation()`为opt-in；`runtime_snapshot()`只允许U
 
 native另写最多32条`resource-phases.jsonl`（schema `termforge-workflow-resource-phase-v1`），记录实际QPC counter/frequency。完整E2有19个marker，其中每轮`cycle-six`→`cycle-six-end`是同6个身份、无新建的1秒等待区间，之后到`cycle-eight`包含创建。
 
-`workflow_resource_phases.py`使用采样前后各4次`perf_counter_ns→QPC→perf_counter_ns`实际夹测，验证频率与时钟偏移区间交集，保留分辨率和tick误差。公开夹测可离线复算；不能假设时钟同纪元或直接相减两个elapsed。整个样本采集区间必须落在保守阶段内界；CPU还须同身份连续有效样本对，跨创建、缺失或窗口边界不拼接。缺夹测、校准不一致、无有效样本均为unknown；旧产物不能追溯补出校准。五次短驻留比较只描述观察值，不能推出长期无泄漏。阶段接点已在[最终源码的系统组合与同源码数据回归](results/2026-10-24-r1-system-workflow/validation.json)独立验证；证据与性能结论分列。
+`workflow_resource_phases.py`使用采样前后各4次`perf_counter_ns→QPC→perf_counter_ns`实际夹测，验证频率与时钟偏移区间交集，保留分辨率和tick误差。公开夹测可离线复算；不能假设时钟同纪元或直接相减两个elapsed。整个样本采集区间必须落在保守阶段内界；CPU还须同身份连续有效样本对，跨创建、缺失或窗口边界不拼接。缺夹测、校准不一致、无有效样本均为unknown；旧产物不能追溯补出校准。五次短驻留比较只描述观察值，不能推出长期无泄漏。阶段接点已在[最终源码的系统组合与同源码数据回归](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)独立验证；证据与性能结论分列。
 
 ## Paste 后输入的期望
 
@@ -115,4 +115,4 @@ native另写最多32条`resource-phases.jsonl`（schema `termforge-workflow-reso
 
 新增`workflow-system.json`的13个观察点与`workflow-system-progress.jsonl`的28条动作/检查点逐项对照，系统记录总预算512，data-only仍为256且不读取剪贴板/IME。独立oracle核对源/raw/日志、真实选区、候选位置、代次、容量、两个滚动端点与回收；退出码或原生完成标记不能单独通过。系统产物使用独立白名单，私有进程身份、完整监督记录、EXE与任意异常原文不公开。
 
-公开`result.public.json`保留实际GO顺序、Job计数和原始安全流身份；只有通过严格字段及递归重复键检查的两行原生JSON可原字节导出`public/stdout.jsonl`，stderr仅为空时导出。下载后可调用`research.ime.workflow_system_checks.validate_workflow_system_public(case_directory)`直接复核公开事实、所有原始内容与阶段资源，不制造私有record替身，也不依赖上次runner的verified标记。[固定源码独立审计](results/2026-10-24-r1-system-workflow/validation.json)已结合R1-01–07和同源码回归验收有限R1出口；单轮公开记录自身的complete_r1_verified仍为false，不冒充总项结论。
+公开`result.public.json`保留实际GO顺序、Job计数和原始安全流身份；只有通过严格字段及递归重复键检查的两行原生JSON可原字节导出`public/stdout.jsonl`，stderr仅为空时导出。下载后可调用`research.ime.workflow_system_checks.validate_workflow_system_public(case_directory)`直接复核公开事实、所有原始内容与阶段资源，不制造私有record替身，也不依赖上次runner的verified标记。[固定源码独立审计](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-24-r1-system-workflow/validation.json)已结合R1-01–07和同源码回归验收有限R1出口；单轮公开记录自身的complete_r1_verified仍为false，不冒充总项结论。

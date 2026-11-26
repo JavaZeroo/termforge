@@ -30,7 +30,7 @@
 
 [SetThreadDesktop 文档](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setthreaddesktop)明确线程仍有窗口或 hook 时会失败；本轮未逐项确定哪一个系统资源持有附着。最终让私有 desktop 的 GUI 工作在独立线程中运行，线程退出后由未附着的父线程关闭 desktop，不再要求活跃 GUI 线程切回原 desktop。
 
-修复后 GDI/DirectWrite × 96/144 逻辑缩放重复五轮，共 20 次和超时清理通过。[该轮身份](../../../experiments/shell/results/2026-10-23/window-regression/manifest.json)、[原始样本](../../../experiments/shell/results/2026-10-23/window-regression/samples.jsonl)。随后 runner 仅增强了非零退出的错误信息，本轮样本仍保留运行时原始 runner 哈希。最终窗口套件也通过定向重测。历史 V1 结果未改写。
+修复后 GDI/DirectWrite × 96/144 逻辑缩放重复五轮，共 20 次和超时清理通过。[该轮身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-23/window-regression/manifest.json)、[原始样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-23/window-regression/samples.jsonl)。随后 runner 仅增强了非零退出的错误信息，本轮样本仍保留运行时原始 runner 哈希。最终窗口套件也通过定向重测。历史 V1 结果未改写。
 
 ## 有界调度与前后观察
 
@@ -40,8 +40,8 @@
 
 | 版本 | 原始数据 | 三次正常场景观察 |
 |---|---|---|
-| 初始 8 KiB/tick | [身份](../../../experiments/shell/results/2026-10-23/manifest.json)、[7 场景](../../../experiments/shell/results/2026-10-23/samples.jsonl) | Ctrl-C 到后续标记状态 670.007–816.838 ms；帧提交 680.149–824.466 ms；队列高水位 214,831–262,143 字节 |
-| 有界批量消费 | [身份](../../../experiments/shell/results/2026-10-23-budgeted/manifest.json)、[7 场景](../../../experiments/shell/results/2026-10-23-budgeted/samples.jsonl)、[自有画面](../../../experiments/shell/results/2026-10-23-budgeted/frame.png) | 同一端点状态 14.6096–28.5255 ms；帧提交 21.5379–36.2011 ms；队列高水位 22,351–34,861 字节 |
+| 初始 8 KiB/tick | [身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-23/manifest.json)、[7 场景](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-23/samples.jsonl) | Ctrl-C 到后续标记状态 670.007–816.838 ms；帧提交 680.149–824.466 ms；队列高水位 214,831–262,143 字节 |
+| 有界批量消费 | [身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-23-budgeted/manifest.json)、[7 场景](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-23-budgeted/samples.jsonl)、[自有画面](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-23-budgeted/frame.png) | 同一端点状态 14.6096–28.5255 ms；帧提交 21.5379–36.2011 ms；队列高水位 22,351–34,861 字节 |
 
 上述时长从**脚本 Ctrl-C 消息实际被处理**到后续 `TF_AFTER`，包含中断、另一条命令、调度和输出，不是单键延迟。提交仅到 GDI BitBlt/Flush；`presented_done=null`。样本很少，不能发布 P95/P99、跨终端速度排名或 WindTerm 差距；它们支持继续检查队列积压这一机制。BMP 仅来自本任务窗口的 retained DIB，PNG 只做无损格式转换并经过实际查看。
 

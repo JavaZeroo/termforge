@@ -12,7 +12,7 @@
 
 ## 固定产品证据
 
-产品固定 `6a165c8`：[主 CI 独立审计](../../experiments/shell/results/2026-10-24-r1-actions-accepted/validation.json)重算 local26/system36 各两轮、Paste v2 四轮及原始字节/日志/帧/回收；[五模式真实 IME](../../research/ime/results/2026-10-24-product-ime-contexts/validation.json)另审28检查点、9组历史/Find上下文与 rename 双 Escape。[逐项合同复核](../../experiments/shell/results/2026-10-24-r1-actions-accepted/contract-coverage.json)将这些证据与已验收的基础切片关联。二进制仅有托管运行记录哈希，未上传供独立重哈希；旧33阶段、旧取消默认和早期失败不追认为新覆盖。
+产品固定 `6a165c8`：[主 CI 独立审计](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-24-r1-actions-accepted/validation.json)重算 local26/system36 各两轮、Paste v2 四轮及原始字节/日志/帧/回收；[五模式真实 IME](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ime/results/2026-10-24-product-ime-contexts/validation.json)另审28检查点、9组历史/Find上下文与 rename 双 Escape。[逐项合同复核](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-24-r1-actions-accepted/contract-coverage.json)将这些证据与已验收的基础切片关联。二进制仅有托管运行记录哈希，未上传供独立重哈希；旧33阶段、旧取消默认和早期失败不追认为新覆盖。
 
 ## 动作与入口
 

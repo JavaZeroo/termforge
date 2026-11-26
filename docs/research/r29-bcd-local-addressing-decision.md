@@ -2,9 +2,9 @@
 
 - 状态：**用户要求根因修复**。2026-11-25 用户回复「不要保留workaround，做根因修复」。
 - 日期：2026-11-05
-- 取证状态：WindTerm Telnet、Qt／固定 ConPTY、WindTerm 随附 WinPTY 都已有四阶段记录。固定 ConPTY 内部缓冲深度的干预已复现覆盖。 [原版观察](../../research/ui/results/2026-11-24-resize-bcd-reference/README.md) · [正式 Qt 对照](../../experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md) · [原生缓冲对照](../../experiments/shell/results/2026-11-25-bcd-native-depth/README.md)
+- 取证状态：WindTerm Telnet、Qt／固定 ConPTY、WindTerm 随附 WinPTY 都已有四阶段记录。固定 ConPTY 内部缓冲深度的干预已复现覆盖。 [原版观察](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-24-resize-bcd-reference/README.md) · [正式 Qt 对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md) · [原生缓冲对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-25-bcd-native-depth/README.md)
 - 范围：[#29](https://github.com/JavaZeroo/termforge/issues/29) / [#27](https://github.com/JavaZeroo/termforge/issues/27) 联合出口中的“旧六阶段 `--resize` B/CD 同步失败”
-- 依据：[ADR-0010](../adr/0010-bounded-resize-retention.md)、[#308 顺序宽高样本](../../research/ui/results/2026-11-02-resize-combined-reference/README.md)、[#309 只缩宽样本](../../research/ui/results/2026-11-02-resize-state-reference/README.md)、[#316 双轴写后端点](../../research/ui/results/2026-11-04-resize-dual-axis-reference/README.md)、[#317 同次 Qt/固定 ConPTY trace](../../experiments/shell/results/2026-11-05-qt-resize-divergence/README.md)
+- 依据：[ADR-0010](../adr/0010-bounded-resize-retention.md)、[#308 顺序宽高样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-combined-reference/README.md)、[#309 只缩宽样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-state-reference/README.md)、[#316 双轴写后端点](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-04-resize-dual-axis-reference/README.md)、[#317 同次 Qt/固定 ConPTY trace](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-05-qt-resize-divergence/README.md)
 
 本文记录历史方案和用户决定。旧六阶段 `--resize` 及其原断言继续作为根因修复的回归入口。
 
@@ -75,11 +75,11 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
 
 ## 6. 单个最小取证计划与运行结果
 
-**2026-11-05 执行结果**：计划 `windterm-bcd-address-pre-write-v1` 已冻结并由调度者授权一次运行；实际初始 NAWS 为 **80×25**（非目标 80×24），控制器在 `fixed initial grid differs` 停止，未发送 B/C/D、未产生写前/写后端点，严格导出未运行。失败身份、计划/attempt 哈希与精确阻塞见[失败记录](../../research/ui/results/2026-11-06-resize-bcd-address-pre-write-failed/README.md)；同一计划不重放，也未据此选择 A/B/C。下面是原计划的目标与区分力，保留为下一次新计划的设计依据。
+**2026-11-05 执行结果**：计划 `windterm-bcd-address-pre-write-v1` 已冻结并由调度者授权一次运行；实际初始 NAWS 为 **80×25**（非目标 80×24），控制器在 `fixed initial grid differs` 停止，未发送 B/C/D、未产生写前/写后端点，严格导出未运行。失败身份、计划/attempt 哈希与精确阻塞见[失败记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-06-resize-bcd-address-pre-write-failed/README.md)；同一计划不重放，也未据此选择 A/B/C。下面是原计划的目标与区分力，保留为下一次新计划的设计依据。
 
-**2026-11-09 恢复进展（blocked）**：主机重新可达后完成严格身份核验；`1228×839` 初始窗口实测为 **80×24**，但固定 `988×509` 的 `60×12` resize 在校准 peer 报 `Resize changed row count`，仅 phase0 完成。未发送 B/C/D 正文，未执行原 v2 正式重试；旧 plan/marker 未变。一次校准计划 SHA `954636ee…`，详见[恢复记录](../../research/ui/results/2026-11-09-bcd-recovery/README.md)。解除条件：另一次授权的 60×12 校准/诊断解释该错误并成功，之后才可冻结 v2。
+**2026-11-09 恢复进展（blocked）**：主机重新可达后完成严格身份核验；`1228×839` 初始窗口实测为 **80×24**，但固定 `988×509` 的 `60×12` resize 在校准 peer 报 `Resize changed row count`，仅 phase0 完成。未发送 B/C/D 正文，未执行原 v2 正式重试；旧 plan/marker 未变。一次校准计划 SHA `954636ee…`，详见[恢复记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-09-bcd-recovery/README.md)。解除条件：另一次授权的 60×12 校准/诊断解释该错误并成功，之后才可冻结 v2。
 
-**2026-11-24 取证结果**：校准实测窗口 `1228×839 → 988×509 → 1228×839` 对应 `80×24 → 60×12 → 80×24`。正式探针改用这组尺寸后执行一次，严格导出通过。缩小写前 `B/C/D` 的文档位置与 `11;2` DSR 保持，`scrollTop` 由 0 到 1。执行 `CUP 12;1` 后，`RESIZED` 出现在 0 基文档行 11、列 0，三个原标记均保留，DSR 为 `12;8`，恢复时正文位置保持。 [四阶段记录](../../research/ui/results/2026-11-24-resize-bcd-reference/README.md)
+**2026-11-24 取证结果**：校准实测窗口 `1228×839 → 988×509 → 1228×839` 对应 `80×24 → 60×12 → 80×24`。正式探针改用这组尺寸后执行一次，严格导出通过。缩小写前 `B/C/D` 的文档位置与 `11;2` DSR 保持，`scrollTop` 由 0 到 1。执行 `CUP 12;1` 后，`RESIZED` 出现在 0 基文档行 11、列 0，三个原标记均保留，DSR 为 `12;8`，恢复时正文位置保持。 [四阶段记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-24-resize-bcd-reference/README.md)
 
 **固定问题**：WindTerm 2.7.0 在同一轮 `80×24→60×12` 主屏会话中，缩高后、写入前的正文/滚动/DSR 是什么；随后固定 `CUP 12;1+marker+DSR` 的 marker 落在保留源的哪一行、显示在哪一行。
 
@@ -93,11 +93,11 @@ ADR-0010 的确认覆盖：resize 不物理裁剪正文、历史/显示投影/�
 
 ## 7. 用户决定与根因验证
 
-固定四阶段样本中，Qt 保留源位置、可见标记和 child DSR 都与 WindTerm Telnet 样本一致。固定 ConPTY 原生网格在 `CUP 12;1` 写入后覆盖了原 `D`，恢复后仍缺。用户明确要求根因修复，旧六阶段失败仍计入 #29 的待解决范围。 [同输入正式路径对照](../../experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md)
+固定四阶段样本中，Qt 保留源位置、可见标记和 child DSR 都与 WindTerm Telnet 样本一致。固定 ConPTY 原生网格在 `CUP 12;1` 写入后覆盖了原 `D`，恢复后仍缺。用户明确要求根因修复，旧六阶段失败仍计入 #29 的待解决范围。 [同输入正式路径对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-25-qt-bcd-comparison/README.md)
 
-原生缓冲对照复现了覆盖过程。固定 ConPTY 的宿主 resize 将应用设置的 `80×3000` 缓冲收至 `60×12`。原 `D` 被重排到 0 基第 11 行第 0 列，随后被应用写入覆盖。由同一上游源码构建的候选保留了缓冲深度，`D` 随窗口恢复回到 `(10,0)`，`RESIZED` 则随 `C` 回卷到 `(9,60)`。原来的六阶段断言在官方包、同源基线、同源候选下都在第 6 阶段失败。候选还改变了应用读到的原生缓冲高度。根因修复仍需要验证跨 resize 的寻址映射。 [原生缓冲对照](../../experiments/shell/results/2026-11-25-bcd-native-depth/README.md) · [同源矩阵](../../experiments/shell/results/2026-11-25-bcd-native-depth/same-source-ab.md)
+原生缓冲对照复现了覆盖过程。固定 ConPTY 的宿主 resize 将应用设置的 `80×3000` 缓冲收至 `60×12`。原 `D` 被重排到 0 基第 11 行第 0 列，随后被应用写入覆盖。由同一上游源码构建的候选保留了缓冲深度，`D` 随窗口恢复回到 `(10,0)`，`RESIZED` 则随 `C` 回卷到 `(9,60)`。原来的六阶段断言在官方包、同源基线、同源候选下都在第 6 阶段失败。候选还改变了应用读到的原生缓冲高度。根因修复仍需要验证跨 resize 的寻址映射。 [原生缓冲对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-25-bcd-native-depth/README.md) · [同源矩阵](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-25-bcd-native-depth/same-source-ab.md)
 
-WindTerm 本地 Shell 用旧六阶段完全相同的子进程输入运行。第 6 阶段原版可见页和独立原生网格均得到 `RESIZED` + 12 空格 + `CD`。TermForge 的源行和显示页仍将写入分开。这一原版观测直接支持把旧失败作为产品可见回归。 [本地 Shell 证据](../../experiments/shell/results/2026-11-25-bcd-native-depth/windterm-local-legacy.json)
+WindTerm 本地 Shell 用旧六阶段完全相同的子进程输入运行。第 6 阶段原版可见页和独立原生网格均得到 `RESIZED` + 12 空格 + `CD`。TermForge 的源行和显示页仍将写入分开。这一原版观测直接支持把旧失败作为产品可见回归。 [本地 Shell 证据](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-25-bcd-native-depth/windterm-local-legacy.json)
 
 ### 固定 ConPTY 源码修订（已确认验证）
 
@@ -115,10 +115,10 @@ WindTerm 本地 Shell 用旧六阶段完全相同的子进程输入运行。第 
 
 ## 9. 固定源码与证据索引
 
-- 旧六阶段入口与断言：[`src/qt/terminal_modes_test.cpp`](../../src/qt/terminal_modes_test.cpp)、[旧模式报告](../../experiments/shell/results/2026-11-02-qt-terminal-modes/README.md)；`--resize` 仍为显式失败诊断。
-- 正式 Qt 保留显示与历史/锚点： [`src/qt/terminal_widget.hpp`](../../src/qt/terminal_widget.hpp)、[`experiments/core/history_view.hpp`](../../experiments/core/history_view.hpp)、[只缩宽契约](../../experiments/shell/results/2026-11-03-qt-retained-display/README.md)、[历史浏览结果](../../experiments/shell/results/2026-11-05-qt-history-anchor/README.md)。
-- 同次 Qt/固定 ConPTY trace：[README](../../experiments/shell/results/2026-11-05-qt-resize-divergence/README.md)、[trace.json](../../experiments/shell/results/2026-11-05-qt-resize-divergence/trace.json)；源码提交 `5e29437`，合并 main `c11e85e`。
-- #316 双轴写后端点：[结果](../../research/ui/results/2026-11-04-resize-dual-axis-reference/README.md)；冻结运行源 `dee3c78`，离线出口/核心回放源 `2fc3f25`。
-- #308/#309：[顺序宽高](../../research/ui/results/2026-11-02-resize-combined-reference/README.md)、[只缩宽](../../research/ui/results/2026-11-02-resize-state-reference/README.md)。
+- 旧六阶段入口与断言：[`src/qt/terminal_modes_test.cpp`](../../src/qt/terminal_modes_test.cpp)、[旧模式报告](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-02-qt-terminal-modes/README.md)；`--resize` 仍为显式失败诊断。
+- 正式 Qt 保留显示与历史/锚点： [`src/qt/terminal_widget.hpp`](../../src/qt/terminal_widget.hpp)、[`experiments/core/history_view.hpp`](../../experiments/core/history_view.hpp)、[只缩宽契约](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-03-qt-retained-display/README.md)、[历史浏览结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-05-qt-history-anchor/README.md)。
+- 同次 Qt/固定 ConPTY trace：[README](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-05-qt-resize-divergence/README.md)、[trace.json](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-05-qt-resize-divergence/trace.json)；源码提交 `5e29437`，合并 main `c11e85e`。
+- #316 双轴写后端点：[结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-04-resize-dual-axis-reference/README.md)；冻结运行源 `dee3c78`，离线出口/核心回放源 `2fc3f25`。
+- #308/#309：[顺序宽高](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-combined-reference/README.md)、[只缩宽](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-state-reference/README.md)。
 - ConPTY 输出/尺寸观察：[conpty-resize-output-2026-11-02.md](conpty-resize-output-2026-11-02.md)。
 - 已确认架构：[ADR-0010](../adr/0010-bounded-resize-retention.md)、[ADR-0005](../adr/0005-physical-row-resize.md)、[r27-r29 方案](r27-r29-resize-proposal.md)。

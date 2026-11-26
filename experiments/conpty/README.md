@@ -45,7 +45,7 @@ child 显式设置 `STARTF_USESTDHANDLES` 并将三个标准句柄保持 null，
 
 代码为独立实现；API 使用依据为 Microsoft 的 [ConPTY 会话文档](https://learn.microsoft.com/en-us/windows/console/creating-a-pseudoconsole-session)、[CreatePseudoConsole](https://learn.microsoft.com/en-us/windows/console/createpseudoconsole) 和 [关闭语义](https://learn.microsoft.com/en-us/windows/console/closepseudoconsole)。关闭期间保持独立输出线程，适用于旧 Windows 上可能阻塞的关闭路径；本机测试系统是 Windows 11 build 26200。
 
-审阅后的纯合成历史记录位于 [results/2026-10-22](results/2026-10-22/manifest.json)，保存源码/二进制身份、系统版本、退出状态与资源计数；后续修复和远端系统验证不回写这些结果。`elapsed_ms` 是含启动/同步/关闭的诊断耗时，不是吞吐、输入延迟或 WindTerm 对照结果。
+审阅后的纯合成历史记录位于 [results/2026-10-22](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-22/manifest.json)，保存源码/二进制身份、系统版本、退出状态与资源计数；后续修复和远端系统验证不回写这些结果。`elapsed_ms` 是含启动/同步/关闭的诊断耗时，不是吞吐、输入延迟或 WindTerm 对照结果。
 
 当前已验收环境为本机 Windows 11 build 26200 和 `windows-2025` runner；不承诺整个 Windows 10/Server 系列。Server 2022 的中文回显已修复，但稳态句柄仍增加 1，未满足资源门槛，定位与修复由 [#21](https://github.com/JavaZeroo/termforge/issues/21)承接。保留[严格兼容性探针](../../.github/workflows/conpty-compat.yml)，可由代理执行 `gh workflow run conpty-compat.yml` 自动重跑；失败仍使该 workflow 失败，不用用户操作测试会话。
 

@@ -43,7 +43,7 @@ Linux/macOS 使用相同 Cargo 命令和相应 CMake 配置；工具链须预先
 
 ## 语义与验收边界
 
-- [流式字素合同](../../../docs/research/streaming-graphemes.md)定义 Unicode 17 分段/宽度、首样式、固定 ZWJ/keycap、无损有界分片、单列 resize 和实际 DWrite 整形。默认自研仍为固定 Unicode 15。固定样本的[红/绿与实际场景验证](../../shell/results/2026-10-26-streaming-graphemes/validation.json)不扩展为全部文字系统或 WindTerm 运行时等价；吞吐成本由 [#54](https://github.com/JavaZeroo/termforge/issues/54)独立裁决。
+- [流式字素合同](../../../docs/research/streaming-graphemes.md)定义 Unicode 17 分段/宽度、首样式、固定 ZWJ/keycap、无损有界分片、单列 resize 和实际 DWrite 整形。默认自研仍为固定 Unicode 15。固定样本的[红/绿与实际场景验证](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-streaming-graphemes/validation.json)不扩展为全部文字系统或 WindTerm 运行时等价；吞吐成本由 [#54](https://github.com/JavaZeroo/termforge/issues/54)独立裁决。
 - C++ 适配器验证分块一致性、真实回复、备用屏/滚动区、ED、Unicode、resize、ID/版本、选择、搜索和 HistoryViewport。核心模型、真实 ConPTY、实际 GUI 与系统输入是不同层，不能用其中一层代替完整 [#27](https://github.com/JavaZeroo/termforge/issues/27) / [#28](https://github.com/JavaZeroo/termforge/issues/28)验收。
 - [margin 研究](../../../docs/research/conpty-margin-backends.md)区分公开源 VT、宿主原生控制台与末端状态；[More 合同](../../../docs/research/more-capture-ech.md)分开捕获完成、默认 ECH 修复与候选 pending-wrap 差异，不把旧失败或差异观察改判为通过。
 - 默认/ANSI 16 色映射为现有数值；其他颜色以 `-2` 保留未投影。上游 `Cell::is_empty` 合并空格和空单元格，不能裁决显式尾空格。`replies` 是相邻检查点的新回复，不是累计队列。

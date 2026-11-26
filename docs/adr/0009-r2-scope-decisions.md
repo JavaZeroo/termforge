@@ -59,7 +59,7 @@
 **依据**：
 
 - 原版观察：`docs/research/windterm-styled-margin-reference.md`（固定 211B 样式/切屏输入下，原生与 UI 文字均含 `REGION_CIXED`）；
-- 后端对照：`experiments/conpty/results/2026-10-26-margin-backends/validation.json`；
+- [后端对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-margin-backends/validation.json)。
 - 用户确认：2026-11-01「windterm 如果有问题那就需要进一步处理即可，选 A」。
 
 **边界**：

@@ -4,7 +4,7 @@
 
 ## 身份与方法
 
-固定官方 2.7.0 Windows x64 EXE SHA-256 为 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`；复制的 4,047 个发行文件按既有 `e459adf2…203` 清单守卫核对。完整来源、探针哈希、精确输入、每阶段输出及限制见[白名单摘要](../../research/ui/results/2026-10-28-alternate-reference/validation.json)。REA Frida Evidence ID 为 `ev_3bdab796b335d64f0ffc8dc26bbcfd3c1441a2805993157451f8602311609a6f`。
+固定官方 2.7.0 Windows x64 EXE SHA-256 为 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`；复制的 4,047 个发行文件按既有 `e459adf2…203` 清单守卫核对。完整来源、探针哈希、精确输入、每阶段输出及限制见[白名单摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-28-alternate-reference/validation.json)。REA Frida Evidence ID 为 `ev_3bdab796b335d64f0ffc8dc26bbcfd3c1441a2805993157451f8602311609a6f`。
 
 复用 [r1_launch.py](../../research/ui/r1_launch.py) 的独立 WindowStation/Desktop、挂起创建后分配 OwnedJob、独立 HOME 和单个合成 profile；没有切换用户桌面、访问剪贴板或修改显示设置。合成 Telnet peer 只监听 `127.0.0.1` 的随机端口，直接发送 VT，避开 WinPTY/ConPTY 的本地控制台改写。最终 NAWS 为 **91×25**，所有已存 UI 快照 capacity 均为 25；没有校准或重试。源生成器在首次 NAWS 时冻结压力输入，实际源唯一对应其 rows=24 分支，初始 NAWS 值及转换序列未单独保留，不能声称启动全过程网格固定。原版最多运行一次。
 

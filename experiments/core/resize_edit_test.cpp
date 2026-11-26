@@ -266,7 +266,7 @@ static void replay(Checks& checks, const Case& test, ParseMode mode, bool bytewi
 }
 
 int main() {
-    // Oracles: research/ui/results/2026-11-02-resize-edit-reference/*.json
+    // Oracles: 1f8bf75:research/ui/results/2026-11-02-resize-edit-reference/*.json
     // right-edge-wrap: 7bb6fe826a60aac32209cc9a7dab33963b71d5e6445a68f8a1b3bdee24d31676
     // insert-char: 1b1880db342fcd73bd228c3ba65af22a2ee5d2a6b06fe5c3702452fddfd78ba7
     // delete-char: 9ae8f94d4ea6289e1c945abac27f4ca53ff0acb86937b662989e6f3baadbe349

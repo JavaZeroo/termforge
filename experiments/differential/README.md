@@ -74,15 +74,15 @@ python -m unittest discover -s experiments/differential -p test_candidate_compar
 
 共同投影只额外统一 NFC 与空白/空单元格表示；显式空格、`mode_bits` 和回复不在这一投影裁决，样式、宽度、光标、屏幕和历史仍逐格比较。`expected` 仅是自研核心字段位置、`actual` 是候选，二者都不是真值。`execution_passed=true` 只表示执行与分块检查通过，`semantic_acceptance` 固定为 false，差异不得自动视为兼容通过或任一实现错误。
 
-2026-10-25 的原始候选批次见[Windows 摘要](results/2026-10-25-candidate-common-v3/summary.json)，pyte 批次见[独立摘要](results/2026-10-25/summary.json)。`erase_display` 的最早差异随分块检查点位置而不同，[ED1/ED2 已分开裁决](decisions.md#erase_display-的-ed1ed2-分离裁决)；原批次按五种计划固定输入、最早差异和最终状态，新输入或新补丁不能复用旧裁决。`differences_adjudicated=true` 只覆盖该批已裁决的差异，`semantic_acceptance=false` 不把它们算作兼容一致。未构建可选 Rust 候选的通用主回归会明确跳过候选项，candidate workflow 强制构建并执行，不能以跳过代替通过。
+2026-10-25 的原始候选批次见[Windows 摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-candidate-common-v3/summary.json)，pyte 批次见[独立摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25/summary.json)。`erase_display` 的最早差异随分块检查点位置而不同，[ED1/ED2 已分开裁决](decisions.md#erase_display-的-ed1ed2-分离裁决)；原批次按五种计划固定输入、最早差异和最终状态，新输入或新补丁不能复用旧裁决。`differences_adjudicated=true` 只覆盖该批已裁决的差异，`semantic_acceptance=false` 不把它们算作兼容一致。未构建可选 Rust 候选的通用主回归会明确跳过候选项，candidate workflow 强制构建并执行，不能以跳过代替通过。
 
 ## 扩展能力轨迹（#25）
 
 `capability_matrix.py` 另跑备用屏、滚动区、光标查询、异常恢复和 resize 各 5 种分块，共 25 次。严格模式未支持的自研功能记为 `core_unsupported`，必须同时满足候选执行成功，不能当作兼容通过或静默跳过。Recovery 由测试 trace 的显式 `--recovery` 启用，非法 UTF-8、未知 CSI 和 OSC 流与候选逐检查点一致。
 
-自动断言包括备用屏恢复后的 `A/BZ` 主屏、滚动区结果 `B/D/X`、真实回复 `ESC[1;2R`、Recovery 的 `ABC U+FFFD D` 及双方分块不变性；[原始批次摘要](results/2026-10-25-capabilities-v2/summary.json)保留具体分类。未构建候选时主回归明确跳过可选项，candidate workflow 强制执行。
+自动断言包括备用屏恢复后的 `A/BZ` 主屏、滚动区结果 `B/D/X`、真实回复 `ESC[1;2R`、Recovery 的 `ABC U+FFFD D` 及双方分块不变性；[原始批次摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-capabilities-v2/summary.json)保留具体分类。未构建候选时主回归明确跳过可选项，candidate workflow 强制执行。
 
-自主核心接入限定 `1049h/l` 后，[当前参考诊断](results/2026-10-29-1049-reference/README.md)将该固定 `alternate_screen` 输入标为支持；这不表示全部备用屏模式通过。原输入/五种分块未变，whole 为 match，其余四计划保留为 `reference_difference`：原版 #118 观察支持进入归首格，自研保留该方向，Alacritty 参考在本例继承主光标。25 次分类为 10 core_unsupported、4 reference_difference、6 match、5 resize_difference，semantic_acceptance 仍为 false。
+自主核心接入限定 `1049h/l` 后，[当前参考诊断](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-29-1049-reference/README.md)将该固定 `alternate_screen` 输入标为支持；这不表示全部备用屏模式通过。原输入/五种分块未变，whole 为 match，其余四计划保留为 `reference_difference`：原版 #118 观察支持进入归首格，自研保留该方向，Alacritty 参考在本例继承主光标。25 次分类为 10 core_unsupported、4 reference_difference、6 match、5 resize_difference，semantic_acceptance 仍为 false。
 
 这些四项台账除输入/尺寸/首差异/最终状态外，还精确固定双方**完整有序共同投影数组 SHA 和检查点数**。投影仍只作已有 NFC/空白表示统一，不隐藏光标、样式或历史差异。缺失字段、缺少任一初始/feed/显式 resize 检查点、未列计划或后续中间状态漂移均不能沿已知签名放行；即使首差异及双方最终状态保持相同也必须拒绝。原始 CI 失败、两个 OS 的独立签名重算与本地新诊断身份分别保留，不改写旧结果。
 
@@ -94,7 +94,7 @@ More 捕获等待完整英文提示，再发送一个 q；进程退出后继续�
 
 `real_app_capture` 通过 ConPTY 启动真实 Windows cmd、`more.com` 和 Vim，分别验证正常退出、`q` 退出及无配置/无交换文件/无 viminfo 的编辑 `:wq` 与文件内容。Vim 握手要求 `VimEnter` 写入 `READY`、`InsertEnter` 写入 `INSERT`，并观察到 `[New]` 和实际插入文本，再发送 Escape 与 `:wq`，不以一个 ESC 或固定延时代替状态；等待真实事件文件，不依赖消息是否被重绘覆盖。manifest 记录真实编辑器路径和事件验证结果，事件文件一并保留。失败时保存阶段、错误、退出码、合成输出和 Job 清理结果，真实负例验证这些证据可用。`real_app_matrix.py` 将捕获字节原样交给双方核心，自研使用产品同源的 Recovery 模式；它不是截图或 GUI 验收。
 
-[原始应用摘要](results/2026-10-25-real-applications/summary.json)记录应用版本、二进制/源码哈希和退出/文件结果；[握手与失败诊断](results/2026-10-25-real-applications-v4/validation.json)与[事件文件握手](results/2026-10-25-real-applications-v5/validation.json)保留各自历史身份。Vim 的 `echon` 消息可能被后续重绘覆盖，因此握手依赖实际事件文件。[固定 Windows CI](https://github.com/JavaZeroo/termforge/actions/runs/40190890251)的限定结果与后续回归分别留证，不用本地通过代替远端执行。
+[原始应用摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-real-applications/summary.json)记录应用版本、二进制/源码哈希和退出/文件结果；[握手与失败诊断](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-real-applications-v4/validation.json)与[事件文件握手](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-real-applications-v5/validation.json)保留各自历史身份。Vim 的 `echon` 消息可能被后续重绘覆盖，因此握手依赖实际事件文件。[固定 Windows CI](https://github.com/JavaZeroo/termforge/actions/runs/40190890251)的限定结果与后续回归分别留证，不用本地通过代替远端执行。
 
 Windows candidate workflow 强制构建并执行，其他平台或缺少 Vim/捕获依赖时明确跳过可选测试。`real_application_covered=true` 仅指固定三条真实核心轨迹，`presented_done=null`、`semantic_acceptance=false`；这不代表产品 TUI 已交付或所有应用已兼容，完整用户工作流由 [#28](https://github.com/JavaZeroo/termforge/issues/28)验收。
 
@@ -104,11 +104,11 @@ Windows candidate workflow 强制构建并执行，其他平台或缺少 Vim/捕
 
 首个 seed 3 是行首组合标记后接宽字：自研按 Recovery 合同替换无相邻基字标记，候选附着到后续宽字，属于参考行为差异而非通过。逆序删除得到最小例 `81 e4 b8 ad 1b 5b 48`，保留同一 `.screen.cells[0][0].text` 差异。`fuzz-known-failures.json` 固定原输入和最小例的输入哈希、最早差异与双方最终状态；改变输入不能复用旧裁决。
 
-[原始摘要](results/2026-10-25-fuzz/summary.json)保留 seed 0–3 的 8 次 whole/byte 分类，[首次失败与最小化](results/2026-10-25-fuzz/first-failure.json)独立保留。candidate workflow 持续运行固定小矩阵；该种子范围不是广泛兼容证明，扩大范围发现的新差异仍需逐项裁决，性能由独立[计量工具](../measure/README.md)观测。
+[原始摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-fuzz/summary.json)保留 seed 0–3 的 8 次 whole/byte 分类，[首次失败与最小化](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-fuzz/first-failure.json)独立保留。candidate workflow 持续运行固定小矩阵；该种子范围不是广泛兼容证明，扩大范围发现的新差异仍需逐项裁决，性能由独立[计量工具](../measure/README.md)观测。
 
 ## 2026-10-22 实际验证
 
-[历史运行摘要](results/2026-10-22/summary.json)记录共同子集、精确已知差异和分块不变性检查结果；已知差异不算兼容通过。摘要保存输入/源码/二进制/参考包源码哈希和每次最早差异；完整 trace 留在本地输出目录，可按上面的命令重建。
+[历史运行摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-22/summary.json)记录共同子集、精确已知差异和分块不变性检查结果；已知差异不算兼容通过。摘要保存输入/源码/二进制/参考包源码哈希和每次最早差异；完整 trace 留在本地输出目录，可按上面的命令重建。
 
 自动测试覆盖实际运行整个矩阵、故意制造额外差异、截断序列执行失败、错误分块计划，以及中间状态恢复的漏检回归。变更已知差异前须核查规范和用例，再审查预期；测试不会自动更新预期。
 
@@ -118,12 +118,12 @@ Windows candidate workflow 强制构建并执行，其他平台或缺少 Vim/捕
 
 | 固定补丁 | 共同矩阵 | 扩展能力 | 真实应用 | fuzz |
 |---|---|---|---|---|
-| termforge.1：ED 与行元数据 | [v4](results/2026-10-25-candidate-common-v4/summary.json) | [v3](results/2026-10-25-capabilities-v3/summary.json) | [v2](results/2026-10-25-real-applications-v2/summary.json) | [v2](results/2026-10-25-fuzz-v2/summary.json) |
-| termforge.2：拥有值适配 | [v5](results/2026-10-25-candidate-common-v5/summary.json) | [v4](results/2026-10-25-capabilities-v4/summary.json) | [v3](results/2026-10-25-real-applications-v3/summary.json) | [v3](results/2026-10-25-fuzz-v3/summary.json) |
-| termforge.3：每缓冲区 margin | [v6](results/2026-10-26-candidate-common-v6/summary.json) | [v5](results/2026-10-26-capabilities-v5/summary.json) | [v6](results/2026-10-26-real-applications-v6/summary.json) | [v4](results/2026-10-26-fuzz-v4/summary.json) |
+| termforge.1：ED 与行元数据 | [v4](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-candidate-common-v4/summary.json) | [v3](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-capabilities-v3/summary.json) | [v2](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-real-applications-v2/summary.json) | [v2](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-fuzz-v2/summary.json) |
+| termforge.2：拥有值适配 | [v5](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-candidate-common-v5/summary.json) | [v4](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-capabilities-v4/summary.json) | [v3](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-real-applications-v3/summary.json) | [v3](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-fuzz-v3/summary.json) |
+| termforge.3：每缓冲区 margin | [v6](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-26-candidate-common-v6/summary.json) | [v5](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-26-capabilities-v5/summary.json) | [v6](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-26-real-applications-v6/summary.json) | [v4](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-26-fuzz-v4/summary.json) |
 
-两批 termforge.1 原始 JSONL 轨迹保留在固定快照的[共同矩阵 v4](https://github.com/JavaZeroo/termforge/tree/fcdd0da93de0c06e87af8cf83810597b702e2a4d/experiments/differential/results/2026-10-25-candidate-common-v4)和[扩展能力 v3](https://github.com/JavaZeroo/termforge/tree/fcdd0da93de0c06e87af8cf83810597b702e2a4d/experiments/differential/results/2026-10-25-capabilities-v3)。当前目录中的摘要、逐例报告、合成输入和分块计划仍可用于复验。
+两批 termforge.1 原始 JSONL 轨迹保留在固定快照的[共同矩阵 v4](https://github.com/JavaZeroo/termforge/tree/fcdd0da93de0c06e87af8cf83810597b702e2a4d/experiments/differential/results/2026-10-25-candidate-common-v4)和[扩展能力 v3](https://github.com/JavaZeroo/termforge/tree/fcdd0da93de0c06e87af8cf83810597b702e2a4d/experiments/differential/results/2026-10-25-capabilities-v3)。摘要、逐例报告、合成输入和分块计划从对应的固定快照查阅。
 
-termforge.2 的四组批次摘要保留各自的源码、程序与结果身份。保留的同内容复现输入可在上表 termforge.1 的对应目录查阅。按原摘要相对路径复核时，使用固定快照中的完整目录，见[共同矩阵 v5](https://github.com/JavaZeroo/termforge/tree/b1671e15fe6517e243895595afec7b4e0980467b/experiments/differential/results/2026-10-25-candidate-common-v5)、[扩展能力 v4](https://github.com/JavaZeroo/termforge/tree/b1671e15fe6517e243895595afec7b4e0980467b/experiments/differential/results/2026-10-25-capabilities-v4)、[真实应用 v3](https://github.com/JavaZeroo/termforge/tree/b1671e15fe6517e243895595afec7b4e0980467b/experiments/differential/results/2026-10-25-real-applications-v3)、[fuzz v3](https://github.com/JavaZeroo/termforge/tree/b1671e15fe6517e243895595afec7b4e0980467b/experiments/differential/results/2026-10-25-fuzz-v3)。
+termforge.2 的四组批次摘要保留各自的源码、程序与结果身份。同内容的复现输入可从 termforge.1 对应的固定快照查阅。按原摘要相对路径复核时，检出包含原始目录的固定提交，在独立工作树中执行，见[共同矩阵 v5](https://github.com/JavaZeroo/termforge/tree/b1671e15fe6517e243895595afec7b4e0980467b/experiments/differential/results/2026-10-25-candidate-common-v5)、[扩展能力 v4](https://github.com/JavaZeroo/termforge/tree/b1671e15fe6517e243895595afec7b4e0980467b/experiments/differential/results/2026-10-25-capabilities-v4)、[真实应用 v3](https://github.com/JavaZeroo/termforge/tree/b1671e15fe6517e243895595afec7b4e0980467b/experiments/differential/results/2026-10-25-real-applications-v3)、[fuzz v3](https://github.com/JavaZeroo/termforge/tree/b1671e15fe6517e243895595afec7b4e0980467b/experiments/differential/results/2026-10-25-fuzz-v3)。
 
 termforge.4 的流式字素与实际绘制验证见[专门合同](../../docs/research/streaming-graphemes.md)。跨模块结果统一由[证据地图](../../docs/EVIDENCE.md)索引；宿主 margin、完整 resize、模式和用户工作流仍受 [R2 联合验收](../../docs/milestones/R2-local-terminal.md)约束。

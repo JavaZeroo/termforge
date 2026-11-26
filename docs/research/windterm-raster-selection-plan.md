@@ -2,13 +2,13 @@
 
 状态：完成最终复核及明确单次授权后，已按固定生产源执行一次，得到[三阶段受控栅格的 partial 结果](windterm-raster-selection-reference-2026-10-29.md)。#126 的执行源 `15c736b`、一次 phase0/0 grab/0 pixel 记录保持不变。下面保留执行前方案；原 `execution_authorized=false` 准备计划未修改，新授权计划另建并绑定准备 HEAD `1aa8054`。
 
-固定生产源为 `e302fa3acb6a2ed2982aad5550e027d37c772da6`。[脱敏准备计划](../../research/ui/results/2026-10-28-raster-selection-proposal/plan.json)列出每阶段 hex/SHA、源哈希与固定 Qt 身份；五阶段长度为 `43/38/20/53/54` 字节，另各追加 DSR。它是不可执行的离线提案，不是已获运行授权的计划；最终明确指令后应另生成新的授权计划及唯一输出，不修改旧批身份。
+固定生产源为 `e302fa3acb6a2ed2982aad5550e027d37c772da6`。[脱敏准备计划](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-28-raster-selection-proposal/plan.json)列出每阶段 hex/SHA、源哈希与固定 Qt 身份；五阶段长度为 `43/38/20/53/54` 字节，另各追加 DSR。它是不可执行的离线提案，不是已获运行授权的计划；最终明确指令后应另生成新的授权计划及唯一输出，不修改旧批身份。
 
 ## 选区守卫与分开回放
 
 生产读取已验证的 `selectionCaretP`、`selectionAnchorP`，只接受两个已知、非负、有限的安全整数且相等。先把 `selectionText` 投影为 type/length，再读取端点；非空文本不参与判定，字符串本身不进入新捕获记录。端点不同或未知均停止，不能只删除守卫。
 
-[离线回放](../../research/ui/results/2026-10-28-raster-selection-proposal/replay.json)明确分开三个记录：两条历史原版反例的端点相等，选区门槛允许；旧 #126 实际 phase0 没有采集 P 端点，保持 null、门槛拒绝。历史端点没有移植给 #126 的 marker/ROI，门槛允许也不代表任何栅格或整条工作流通过。每个记录独立绑定原 Evidence ID 和原始文件 SHA。
+[离线回放](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-28-raster-selection-proposal/replay.json)明确分开三个记录：两条历史原版反例的端点相等，选区门槛允许；旧 #126 实际 phase0 没有采集 P 端点，保持 null、门槛拒绝。历史端点没有移植给 #126 的 marker/ROI，门槛允许也不代表任何栅格或整条工作流通过。每个记录独立绑定原 Evidence ID 和原始文件 SHA。
 
 保留实际 caret 对 H/space ROI 的重叠拒绝。对于 API 返回的零宽插入点，按至少 1 个逻辑像素的占用保守检查；H 与其前置 space 还必须同高、同行且精确相邻。没有缩小、平移 ROI 或假定光标 blink 隐藏。坐标与 DPR 均从新批实际返回值校准，不复用旧批尺寸。
 
@@ -38,7 +38,7 @@ S1=`SGR31;44`，S2=`SGR32;45`，D0=`SGR0`。比较对象始终为字形 H 及其
 
 [GUI 脚本](../../research/ui/raster_selection_reference.js)沿用已只读核实的固定 Qt5Widgets/Qt5Gui 完整 SHA、模块路径和导出 RVA，GUI 线程执行 QWidget::grab→QPixmap::toImage→QImage::pixel。QPixmap/QImage 各 32B、不预构造；正常返回后按 image→pixmap 普通析构。QRect 为 inclusive 边界，不读取或猜测 format/stride。既有 Qt 栅格计划提供静态 ABI 依据；旧 #126 没有实际调用这些函数，不能转记为原生栅格已验证。
 
-仍为独立 station/desktop、OwnedJob、合成 loopback/profile、一个新唯一目录。新批最多启动原版一次、每阶段至多一次 grab，共最多五次；capture45、CLI wait60，整程上限另列未知。执行前的不可运行提案与[新授权计划的脱敏投影](../../research/ui/results/2026-10-29-raster-selection-reference/plan.json)分别保留；新批实际只尝试 phase0/1/2 的三次 grab。
+仍为独立 station/desktop、OwnedJob、合成 loopback/profile、一个新唯一目录。新批最多启动原版一次、每阶段至多一次 grab，共最多五次；capture45、CLI wait60，整程上限另列未知。执行前的不可运行提案与[新授权计划的脱敏投影](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-raster-selection-reference/plan.json)分别保留；新批实际只尝试 phase0/1/2 的三次 grab。
 
 空图、无墨迹、DPR/坐标/端点/caret/标签不成立即保存 partial/unknown 并停止，不移动 ROI、追加抓取或重跑。只公开合成输入、颜色/尺寸标量和 ROI 哈希；原始像素、截图、路径、PID 和资源均留 local。受控栅格不代表 presented 或性能结果。
 

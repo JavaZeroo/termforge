@@ -4,7 +4,7 @@
 
 ## 已知依据与本次合同
 
-[组合尺寸观察](results/2026-11-02-resize-combined-reference/README.md)已经实际验证本次使用的五组窗口/NAWS 几何，并在始终活动的主屏中保留 75 B 正文。其执行源为 `2c7c5929e11d911ad69a7e2b7c420120591862ed`，严格公开件 SHA256 为 `6a1561f3e6f6bc480c6a2f086adf7ed4798d5007b04a7bc71c7ae9deba90cfe6`。本工具的 `geometry_basis.hidden_primary_height_previously_observed=false` 明确隐藏主屏语义仍未知；不能由活动主屏的 DSR 或文档恢复结果推出它。
+[组合尺寸观察](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-combined-reference/README.md)已经实际验证本次使用的五组窗口/NAWS 几何，并在始终活动的主屏中保留 75 B 正文。其执行源为 `2c7c5929e11d911ad69a7e2b7c420120591862ed`，严格公开件 SHA256 为 `6a1561f3e6f6bc480c6a2f086adf7ed4798d5007b04a7bc71c7ae9deba90cfe6`。本工具的 `geometry_basis.hidden_primary_height_previously_observed=false` 明确隐藏主屏语义仍未知；不能由活动主屏的 DSR 或文档恢复结果推出它。
 
 唯一 case `hidden-primary-height`，独立新进程最多运行一次：
 

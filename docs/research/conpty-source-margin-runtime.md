@@ -9,7 +9,7 @@
 [PR #96](https://github.com/JavaZeroo/termforge/pull/96) 的 [v2 构建 40449292015](https://github.com/JavaZeroo/termforge/actions/runs/40449292015) 使用同一固定源码、依赖和工具链：
 
 - Terminal 提交如上，vcpkg baseline 为 `927f62e4b8838bd7e441e9c45103a16ffd75007e`；原 NuGet/vcpkg 版本和 feature 不变。
-- 实际 CI checkout 为 `ad857d448dfe64c0c11d10254043a8b893e7546a`，VS18 / MSVC 14.51.36231 / SDK 26100；详细工具和文件身份见[构建摘要](../../experiments/conpty/results/2026-10-27-source-margin-runtime/build-summary.json)。
+- 实际 CI checkout 为 `ad857d448dfe64c0c11d10254043a8b893e7546a`，VS18 / MSVC 14.51.36231 / SDK 26100；详细工具和文件身份见[构建摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-27-source-margin-runtime/build-summary.json)。
 - 补丁 SHA-256 为 `dc27377e399bd0217a0b76e16cc89f087c1b781929e4c958ad30c3a475322b81`。仅测试补丁时 focused 测试明确失败一次、退出 1；随后保存 baseline EXE/DLL，再应用两个生产文件的补丁，focused 1/1、完整 adapter 412/412、零跳过，最后保存 patched EXE/DLL。
 - 两组都有独立 `variant.json`，绑定生产补丁是否应用、测试状态、双文件 SHA 与大小；共享 summary 的完整 adapter 通过只属于 patched。baseline 没有执行完整 adapter。
 
@@ -18,7 +18,7 @@
 | OpenConsole.exe | `fabdc934d9755c405fe848251905e8c0e70a2bf7702b8ed7ccd104eec6591588` / 1146880 | `1c8f071f6e4779ec297fb041af4eaea39be29b6920cef625ab91d1cbc20c79cb` / 1147392 |
 | conpty.dll | `9d165745cce4b29a5818a45c23f68e962b3a3140c2e00566bd17fee970fdd9d1` / 108544 | 与 baseline 逐字相同 |
 
-原始 summary SHA 为 `8132695b32162ff22e61d2de166a31fad508f0b63cbb46de8d1612bd197e1ded`，两个 pair 和 summary artifact 中相同。artifact `12710186210`（summary）、`12710186222`（baseline）、`12710146241`（patched）的 ZIP SHA、来源和内部文件均已核对，记录在[验证清单](../../experiments/conpty/results/2026-10-27-source-margin-runtime/validation.json)。入库构建摘要是规范化 UTF-8/LF 的解析内容；原始摘要字节 SHA 不冒充入库文件 SHA。
+原始 summary SHA 为 `8132695b32162ff22e61d2de166a31fad508f0b63cbb46de8d1612bd197e1ded`，两个 pair 和 summary artifact 中相同。artifact `12710186210`（summary）、`12710186222`（baseline）、`12710146241`（patched）的 ZIP SHA、来源和内部文件均已核对，记录在[验证清单](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-27-source-margin-runtime/validation.json)。入库构建摘要是规范化 UTF-8/LF 的解析内容；原始摘要字节 SHA 不冒充入库文件 SHA。
 
 这些是带 Microsoft MIT LICENSE/NOTICE 的短期实验产物，不是正式包。没有把二进制、私人路径、原始提取或 WindTerm 文件加入源码库。artifact 保留期为 14 天；之后可按固定构建入口重建，但新文件身份须重新审核，不宣称逐字节可复现。
 

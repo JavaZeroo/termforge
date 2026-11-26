@@ -1,5 +1,5 @@
 // Literal WindTerm 2.7.0 combining-boundary diagnostic. Independent strict
-// public recording: research/ui/results/2026-11-02-resize-unicode-reference/
+// public recording: 1f8bf75:research/ui/results/2026-11-02-resize-unicode-reference/
 // combining-boundary.json, SHA256:
 // f6ac486eb30ebcc0908d402299728727970df72386f042c8345a0f471e3ab93e.
 // Compare only the complete UTF-8 body, DSR and grid. API marker rectangles,

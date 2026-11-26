@@ -2,7 +2,7 @@
 
 ## 证据层级与结论
 
-输入、分块和检查点沿用 `cases.py`。pyte 0.8.2 是第一独立参考，`alacritty_terminal 0.26.0` 是第二独立参考；两者都不自动成为真值。2026-10-25 修复前的[候选共同矩阵](results/2026-10-25-candidate-common/summary.json)显示，第二参考在五类上与 TermForge 一致，在 `styled_scroll_blank` 上与 pyte 一致。规范未定义的细节明确标为本项目策略，不把多数实现相同写成标准事实，也不据此声称 WindTerm 行为已经验证。
+输入、分块和检查点沿用 `cases.py`。pyte 0.8.2 是第一独立参考，`alacritty_terminal 0.26.0` 是第二独立参考；两者都不自动成为真值。2026-10-25 修复前的[候选共同矩阵](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-candidate-common/summary.json)显示，第二参考在五类上与 TermForge 一致，在 `styled_scroll_blank` 上与 pyte 一致。规范未定义的细节明确标为本项目策略，不把多数实现相同写成标准事实，也不据此声称 WindTerm 行为已经验证。
 
 | 场景 | 规范与第二参考 | 裁决 |
 |---|---|---|
@@ -21,7 +21,7 @@
 
 ## `erase_display` 的 ED1/ED2 分离裁决
 
-复合用例混有两个行为，因此另跑 `ed1_only` 与 `ed2_only`，公开[最小报告](results/2026-10-25-erase-display/)如下：
+复合用例混有两个行为，因此另跑 `ed1_only` 与 `ed2_only`，公开[最小报告](https://github.com/JavaZeroo/termforge/tree/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-erase-display)如下：
 
 - **ED1 是候选实现错误。** ECMA-48 8.3.39 明确规定参数 1 将页首至当前位置（包含当前位置）置为 erased。pyte 与 TermForge 都清除这些位置，Alacritty 却保留前序行；保留 TermForge，不把候选行为当成规范差异。
 - **ED2 的历史迁移是参考策略差异。** 同一节参数 2 只要求活动页全部置为 erased，不要求创建、迁移或清空终端历史；xterm 还把 saved lines 单独列为 ED3。TermForge 与 pyte 清屏但不新增历史，Alacritty 将三行可见内容迁入历史。保留 TermForge 当前“清屏但不新增/清空历史”的策略；候选策略可供 #26 适配成本分析，但不是必须照搬的目标。
@@ -34,7 +34,7 @@
 
 后续按 ADR-0003 的固定补丁路线，在 `0.26.1-dev+termforge.1` 中修正 ED1 前序行清理，并把 ED2 调整为 TermForge 已裁决的“清屏但不新增/清空历史”。补丁同时纳入上游零宽字符内存等修复；[来源与补丁身份](../../experiments/candidates/alacritty/PROVENANCE.md)独立保存。
 
-[当前共同矩阵](results/2026-10-25-candidate-common-v4/summary.json)为 95 次、1011 检查点全部 `match`，真实 cmd/more.com/Vim 也全部一致。旧差异签名已从当前 `candidate-known-differences.json` 移除，防止旧候选差异被继续放行；上述旧批次与裁决保留原样。新差异仍须单独复现和裁决，95 次一致不扩大为完整 VT、WindTerm 或产品 TUI 认证。
+[当前共同矩阵](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-candidate-common-v4/summary.json)为 95 次、1011 检查点全部 `match`，真实 cmd/more.com/Vim 也全部一致。旧差异签名已从当前 `candidate-known-differences.json` 移除，防止旧候选差异被继续放行；上述旧批次与裁决保留原样。新差异仍须单独复现和裁决，95 次一致不扩大为完整 VT、WindTerm 或产品 TUI 认证。
 
 ## 1049 固定输入的参考差异（#135）
 
@@ -42,4 +42,4 @@
 
 原版证据来自独立合成 Telnet 末端，网格和完整输入与此参考例不同；它支持已经观察的进入光标方向，不证明原版全部 grid、背景、非颜色属性、其他模式或本地 shell 已对齐。本次没有运行 WindTerm，`reference_difference` 也不是审批 WindTerm 行为偏差或声明兼容等价。
 
-Windows/Linux 初始 PR 原件的完整有序投影签名一致，四个有中间观察的计划逐项列入严格台账，whole 仍必须 match。旧首差异+最终哈希不足以约束后续检查点，已以双方全轨迹 SHA/检查点数补强；缺字段的旧条目不会继续授权。独立字面 fixture 固定首差异、最终状态及完整哈希，并使后续单一检查点变异失败。证据、旧 CI 失败与未覆盖项见[独立报告](results/2026-10-29-1049-reference/README.md)。
+Windows/Linux 初始 PR 原件的完整有序投影签名一致，四个有中间观察的计划逐项列入严格台账，whole 仍必须 match。旧首差异+最终哈希不足以约束后续检查点，已以双方全轨迹 SHA/检查点数补强；缺字段的旧条目不会继续授权。独立字面 fixture 固定首差异、最终状态及完整哈希，并使后续单一检查点变异失败。证据、旧 CI 失败与未覆盖项见[独立报告](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-29-1049-reference/README.md)。

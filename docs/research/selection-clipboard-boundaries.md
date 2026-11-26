@@ -24,7 +24,7 @@ PR83 的 [Windows CI 40377249027](https://github.com/JavaZeroo/termforge/actions
 
 ## 验证与限制
 
-固定源码、构建身份、原失败、纯清理反例及本地回归见[验证清单](../../experiments/shell/results/2026-10-27-selection-clipboard-boundaries/validation.json)。纯反例通过抽取原无保护清理顺序验证主错误覆盖；这是异常处理边界测试，不是对原 hosted 占用原因的复现。最终测试校验异常类型、值和文本，不以异常对象地址作为合同。
+固定源码、构建身份、原失败、纯清理反例及本地回归见[验证清单](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-27-selection-clipboard-boundaries/validation.json)。纯反例通过抽取原无保护清理顺序验证主错误覆盖；这是异常处理边界测试，不是对原 hosted 占用原因的复现。最终测试校验异常类型、值和文本，不以异常对象地址作为合同。
 
 新工作树首次完整回归缺少已声明的 Python 依赖，41/46、234.70s，五个失败保留；后续使用独立 venv 安装仓库既有固定依赖。初次抽取测试曾使用异常对象地址，不能作为修复证据，已另存并排除；有效反例与最终测试使用相同类型/值合同。
 

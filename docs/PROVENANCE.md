@@ -2,7 +2,7 @@
 
 原创代码/文档采用 MIT。所有第三方代码和资产须记录来源、版本、许可证和修改情况；不能给第三方材料重新套用项目许可证。
 
-可进入仓库的材料：原创实现、公开规范链接、简洁事实性研究、授权明确的第三方代码、自生成测试输入和审查后的测量结果。
+可进入仓库的材料包括原创实现、公开规范链接、简洁事实性研究、授权明确的第三方代码、自生成测试输入和审查后的结果摘要。持续测试直接读取的已审核输入放在所属模块的 `fixtures/`；各级 `results/` 留作本地输出。
 
 不进入仓库的材料：WindTerm 可执行文件/DLL、专有终端定义/主题/资源、个人连接配置和凭据、崩溃转储、大批反编译或字符串提取内容。二进制研究的功能推断不等于源码复用授权。
 
@@ -28,4 +28,4 @@
 
 - 候选新增精确锁定 `unicode-segmentation 1.13.3`（Unicode 17，MIT OR Apache-2.0），官方来源为 [unicode-rs](https://github.com/unicode-rs/unicode-segmentation) 与 [crates.io 固定版本](https://crates.io/crates/unicode-segmentation/1.13.3)。保留原依赖许可证；与既有 `unicode-width 0.2.2` 同使用 Unicode 17，默认自研核心仍使用 Unicode 15。版本、包哈希、MSRV、依赖成本和修改边界见[候选来源台账](../experiments/candidates/alacritty/PROVENANCE.md)。
 
-- 候选规范测试数据 `GraphemeBreakTest-17.0.0.txt` 从 [Unicode 17 官方数据](https://www.unicode.org/Public/17.0.0/ucd/auxiliary/GraphemeBreakTest.txt)原样取得（766 例、126570 字节，SHA-256 `e2d134d2c52919bace503ebb6a551c1855fe1a1faec18478c78fff254a1793ec`），随附[Unicode License V3](../experiments/candidates/alacritty/vendor/alacritty_terminal/tests/data/UNICODE-LICENSE.txt)，不由项目 MIT 许可证覆盖。它验证分段 helper 的规范边界，不代表完整 Term/VT 状态正确性；原始执行字节身份与 Git blob 换行身份分列保存在[验证记录](../experiments/shell/results/2026-10-26-streaming-graphemes/validation.json)。
+- 候选规范测试数据 `GraphemeBreakTest-17.0.0.txt` 从 [Unicode 17 官方数据](https://www.unicode.org/Public/17.0.0/ucd/auxiliary/GraphemeBreakTest.txt)原样取得（766 例、126570 字节，SHA-256 `e2d134d2c52919bace503ebb6a551c1855fe1a1faec18478c78fff254a1793ec`），随附[Unicode License V3](../experiments/candidates/alacritty/vendor/alacritty_terminal/tests/data/UNICODE-LICENSE.txt)，不由项目 MIT 许可证覆盖。它验证分段 helper 的规范边界，不代表完整 Term/VT 状态正确性；原始执行字节身份与 Git blob 换行身份分列保存在[验证记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-streaming-graphemes/validation.json)。

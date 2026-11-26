@@ -12,7 +12,7 @@ TermForge 默认后端或现有官方双 SHA 校验。附加的上游 `Alternate
 
 ## 下一次隔离构建的具体入口
 
-在单独的 Microsoft Terminal 源码 checkout 固定上述提交，校验 [validation.json](../results/2026-10-26-native-margin-path/validation.json)
+在单独的 Microsoft Terminal 源码 checkout 固定上述提交，校验 [validation.json](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-native-margin-path/validation.json)
 的源文件 SHA 后，先用 `git apply --unidiff-zero --check` 检查、再以同一选项应用本 patch。完整保留上游许可证、依赖锁和构建日志。
 按固定 [上游 README](https://github.com/microsoft/terminal/blob/dc8ae365847d41f62d1ebca93815bb00959bc12f/README.md#building-the-code)
 准备工具链；不要执行会更改个人系统的 winget/Developer Mode 安装步骤。优先使用已有工具或隔离构建宿主。

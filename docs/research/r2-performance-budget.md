@@ -20,7 +20,7 @@
 
 | 测量项 | 来源 | 备注 |
 |---|---|---|
-| 启动耗时（p50/p95） | `windows-2025-startup-latency` | 已有结果目录 `research/ui/results/2026-10-30-hosted-startup-latency/` |
+| 启动耗时（p50/p95） | `windows-2025-startup-latency` | [已归档的启动测量](https://github.com/JavaZeroo/termforge/tree/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-30-hosted-startup-latency) |
 | 字素吞吐 | 核心测量目标 | 单位与工作负载必须随结果一起记录 |
 | repaint 批量与消费耗时 | `TERMFORGE_OUTPUT_TRACE` 分析 | 只看相对变化 |
 | `resource_settle_ms` | conpty 探针 | 用于捕捉资源回收变慢 |

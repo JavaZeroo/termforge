@@ -8,11 +8,11 @@
 
 - 固定生产源为 `f6d9a97e2b2685b6ce39c83dc7107cb52aec7a6a`，执行前准备 HEAD 为 `46f90d89e5b80b96989861f437b4b10e75ccb199`。七个生产源逐字节匹配固定生产提交、false proposal 与新授权计划；本次证据收尾未改生产源或原件。
 - 原 `execution_authorized=false` proposal 保持不变。复核明确授权后另建新计划，私有 SHA 为 `8dbeaae26ed19c6d8f3c22a16308fdf3b85f1d02a14aaa7e20af96c76405d288`；启动前新输出目录及 attempt marker 均不存在，唯一 attempt 随后保留，没有第二次原版运行。
-- [授权计划的脱敏投影](../../research/ui/results/2026-10-29-raster-raw-reference/plan.json)列出全部五段 `43/38/20/53/54` 字节及 hex/SHA，每段另追加 `CSI 6n`。本批五段均实际发送。
+- [授权计划的脱敏投影](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-raster-raw-reference/plan.json)列出全部五段 `43/38/20/53/54` 字节及 hex/SHA，每段另追加 `CSI 6n`。本批五段均实际发送。
 - 固定官方 WindTerm 2.7.0 EXE SHA 为 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`，4,047 文件清单 SHA 为 `e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203`。离线重审逐个核对实际复制文件，以及 WindTerm/Qt5Core/Qt5Gui/Qt5Widgets 四个原件和副本的完整 SHA；运行时实际模块路径与固定导出 RVA 守卫通过。
 - 独立 WindowStation/Desktop、OwnedJob、隔离 HOME/profile、单个合成 loopback Telnet 会话。没有操作用户输入桌面、个人剪贴板或 DPI。Telnet 直达终端观察不代表 WinPTY/ConPTY local-shell 合同。
 
-REA Evidence ID 为 `ev_931e2e152246d132fdf497ec9f4180843ef6244beb4cc9c1ec2fb6e19805326f`。源、模块、输入、白名单标量、histogram/有序签名和原件 SHA 见[脱敏结果](../../research/ui/results/2026-10-29-raster-raw-reference/validation.json)。
+REA Evidence ID 为 `ev_931e2e152246d132fdf497ec9f4180843ef6244beb4cc9c1ec2fb6e19805326f`。源、模块、输入、白名单标量、histogram/有序签名和原件 SHA 见[脱敏结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-raster-raw-reference/validation.json)。
 
 ## 五阶段实际观察
 

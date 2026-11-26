@@ -42,7 +42,7 @@
 
 若优化 segmentation、宽度、Cell 保留、投影或分配，先有同一输入上可证伪的成本归因对照，不能只凭总吞吐推断某一层；完整控制边界、Unicode 17 语料、全部输入分块、实际 glyph、原文选择/复制及取消边界继续回归。接收/输入延迟/实际呈现端点仍为 null，不声明 WindTerm 等价。
 
-原 [12 样本](../shell/results/2026-10-26-streaming-graphemes/cost/) 及其二进制/源码身份保持原样；共享宿主、allocator 包装和旧顺序都不同，只作为历史诊断，不能升格、覆盖或与 v1 合并统计。
+原 [12 样本](https://github.com/JavaZeroo/termforge/tree/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-streaming-graphemes/cost) 及其二进制/源码身份保持原样；共享宿主、allocator 包装和旧顺序都不同，只作为历史诊断，不能升格、覆盖或与 v1 合并统计。
 
 ## 自动入口和当前缺口
 

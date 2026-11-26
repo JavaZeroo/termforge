@@ -39,7 +39,7 @@ ctest --test-dir build/candidate -C Release -R '^candidate_(core|resize_replay)$
 
 ## 验证与限制
 
-[固定验证记录](../../experiments/conpty/results/2026-10-27-native-viewport-resize/validation.json)区分原 `.4` 真失败、正式 `.5` 与早期临时探针。原 GUI 的精确 marker、Unicode、位置/历史、child ack、Job/desktop 回收断言及原期限保持；未删除 `OW`、改成子串、清屏或关闭 reflow。
+[固定验证记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-27-native-viewport-resize/validation.json)区分原 `.4` 真失败、正式 `.5` 与早期临时探针。原 GUI 的精确 marker、Unicode、位置/历史、child ack、Job/desktop 回收断言及原期限保持；未删除 `OW`、改成子串、清屏或关闭 reflow。
 
 诊断中有两组结果不进入因果证据：只保留错误字符串的缩减最终删掉全部 resize，不能作为此缺陷的最小复现；另一次用保留旧 mtime 的文件复制恢复源码，增量构建复用了旧修复二进制。后者已按实际二进制哈希排除，重新写入源码、实际编译后恢复了原 stage43 red。公开记录保留这些排除原因。
 

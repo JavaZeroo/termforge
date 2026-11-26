@@ -26,7 +26,7 @@
 
 ## 正式验证与复现
 
-固定源码、EXE／依赖哈希、旧红、新绿、完整回归、内部 skip 和回收结果见[公开白名单记录](../../experiments/shell/results/2026-10-27-workflow-record-checkpoint/validation.json)。原运输、窗口路径和 desktop 身份保留本地。最终原完整八会话测试包含两个新进程、每次五轮替换；它与受控诊断运行分别记录。
+固定源码、EXE／依赖哈希、旧红、新绿、完整回归、内部 skip 和回收结果见[公开白名单记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-27-workflow-record-checkpoint/validation.json)。原运输、窗口路径和 desktop 身份保留本地。最终原完整八会话测试包含两个新进程、每次五轮替换；它与受控诊断运行分别记录。
 
 最终源码 `c662011`、候选 `.5`／固定官方后端 flags24 的完整 CTest 为 **56/57，402.66 秒**，两轮原八会话均通过，Job active=0、desktop 已回收。唯一失败为 Vim stage59，仍由 #52 定位；8 项内部 skip 逐项列出，不算真实 CF/IME 通过。关闭 guard 的实际新用例先红后绿；红例未独立保留 EXE 哈希，该字段明确为 null，源码、相同测试、构建日志和失败日志仍在。更早 `f89b0ac` 的 57/57 只属于关闭 guard 前版本，不能拼入最终源码，也不能解释 Vim 历史失败。候选 CI 另增加该跨平台核心回归；CI 的 system 后端与本机官方配置分列。
 

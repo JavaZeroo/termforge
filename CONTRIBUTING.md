@@ -16,6 +16,8 @@ R1 基础文字交互已按限定合同验收，当前推进 R2 的联合配置�
 
 遵守 [PROVENANCE](docs/PROVENANCE.md)。使用自生成输入与隔离测试配置，上传前检查用户名、路径、主机名、地址和凭据。第三方实现单独说明许可证；项目 MIT 许可不覆盖未获授权的第三方材料。
 
+各级 `results/` 仅作本地输出。测试所需的已审核输入放在所属模块的 `fixtures/`，运行产物写到 `local/` 或 `build/test-artifacts/`。提交证据链接时注明固定源码、产物身份和验证边界。
+
 ## 干净构建与自动检查
 
 下面的默认构建验证 C++ 核心与 Windows 上的旧 Win32／系统 ConPTY 原型。需要 CMake 3.20+、Python 3.10+ 和 C++17 编译器。默认 CI 用 Python 3.12，在 Windows Server 2025 与 Ubuntu 24.04 执行。正式路线的 Windows x64 Qt／固定源码 ConPTY 有独立的[依赖准备、构建和复验入口](src/qt/README.md)。两种构建均使用仓库内已生成的 Unicode 表。

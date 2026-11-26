@@ -2,7 +2,7 @@
 
 对应 [#144](https://github.com/JavaZeroo/termforge/issues/144)。旧 Windows CI 在 `test_raster_native_contract.js` 的原 10 秒等待中超时，没有 Node 阶段记录。这里提供后续有限调查的工具，**没有解释或修复旧超时**；新源码、新宿主或受控挂起的结果不能补写旧样本。
 
-新工具在冻结源码 `02aac45` 上完成了[一次正式三 case 诊断](../../research/ui/results/2026-10-29-node-contract-deadline/README.md)：正常通过、受控挂起超时和受控异常失败分别保留。CLI0仅表示预定义诊断结果齐全，原超时根因仍未知；原始记录留私有目录，公开只投影白名单标量、阶段和哈希。
+新工具在冻结源码 `02aac45` 上完成了[一次正式三 case 诊断](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-node-contract-deadline/README.md)：正常通过、受控挂起超时和受控异常失败分别保留。CLI0仅表示预定义诊断结果齐全，原超时根因仍未知；原始记录留私有目录，公开只投影白名单标量、阶段和哈希。
 
 ## 执行与证据边界
 
@@ -36,7 +36,7 @@ python -B -X utf8 -m research.ui.node_contract_deadline prepare-plan --plan loca
 
 公开边界为计划/launcher 和 checkpoint 记录。`research.ui.test_node_contract_deadline` 检查前缀保留、顺序/PID/字段/时钟拒绝、假 final、false/漂移计划拒绝，以及 Windows OwnedJob 中正常、受控挂起和异常三条独立路径。后两条不能因 Job 清空而转为通过。
 
-原件、环境路径和 stderr 栈留 `local/`；[正式批次的白名单结果](../../research/ui/results/2026-10-29-node-contract-deadline/validation.json)经离线核对后另行发布，不为旧超时填写根因。#144、#38 和 R2 继续开放。
+原件、环境路径和 stderr 栈留 `local/`；[正式批次的白名单结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-node-contract-deadline/validation.json)经离线核对后另行发布，不为旧超时填写根因。#144、#38 和 R2 继续开放。
 
 离线出口的公开 seam 是 `export_node_contract_deadline.export`。纯内存回归替换文件字节读取，不启动 Node，也不修改真实原件；normal/throw 的 timeout Job 非空、hang Job 任意额外字段/非整数，以及任一 false 提案的源码或字节漂移必须拒绝。固定批次出口钉住三份 false 原 SHA256/commit，所有 Job 都只投影三项计数；版本、commit、hash、阶段与状态分别受类型、格式或枚举约束。CTest 的 `node_contract_export` 只含纯出口和 trace/launcher 判定类，`node_contract_plan` 仅在 WIN32 注册纯计划类；不注册 `OwnedNodeTests`，不自动运行授权批次。
 
@@ -58,4 +58,4 @@ python -B -X utf8 -m research.ui.node_contract_deadline prepare-plan --plan loca
 
 ## 白名单出口的发布预审修正
 
-`30da569` 的真实公开文件没有泄漏；纯内存恶意输入表明，未校验的非超时 `job_at_timeout` 和未固定身份的 p3 false 源码字段可被公开。red `5c8bc63` 的3项测试有5个失败子例；green `504c0fd` 在公开离线 export seam 拒绝注入，普通与 `-O` 各15项相关纯测试通过。三份 false 的原 SHA256、commit 和未执行状态均固定，非超时项只能缺失/null，超时 Job 只重建三个计数。旧原件、执行五源、旧公开 `db97e95…` 不改；新[派生结果与出口验证](../../research/ui/results/2026-10-29-node-contract-deadline/README.md#离线出口的发布预审修正)只有导出器源码哈希变化。此次不重跑 Node/10秒控制场景、原版、guest 或 CI；这些是新出口缺陷的修复，与旧 CI 超时原因分列。
+`30da569` 的真实公开文件没有泄漏；纯内存恶意输入表明，未校验的非超时 `job_at_timeout` 和未固定身份的 p3 false 源码字段可被公开。red `5c8bc63` 的3项测试有5个失败子例；green `504c0fd` 在公开离线 export seam 拒绝注入，普通与 `-O` 各15项相关纯测试通过。三份 false 的原 SHA256、commit 和未执行状态均固定，非超时项只能缺失/null，超时 Job 只重建三个计数。旧原件、执行五源、旧公开 `db97e95…` 不改；新[派生结果与出口验证](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-node-contract-deadline/README.md#离线出口的发布预审修正)只有导出器源码哈希变化。此次不重跑 Node/10秒控制场景、原版、guest 或 CI；这些是新出口缺陷的修复，与旧 CI 超时原因分列。

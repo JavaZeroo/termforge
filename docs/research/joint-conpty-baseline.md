@@ -1,6 +1,6 @@
 # 候选 .4 与显式官方 ConPTY 的联合基线（#55）
 
-本记录固定后续 #51–#53 的共同复现输入，不宣布后端兼容性或 R2 通过。[验证清单](../../experiments/conpty/results/2026-10-26-joint-backend/validation.json)是逐配置结果与身份的入口；旧 [.3 记录](../../experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)不改写。
+本记录固定后续 #51–#53 的共同复现输入，不宣布后端兼容性或 R2 通过。[验证清单](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-joint-backend/validation.json)是逐配置结果与身份的入口；旧 [.3 记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-reviewed-backend/validation.json)不改写。
 
 ## 固定源码与配置
 
@@ -47,7 +47,7 @@ ctest --test-dir build/candidate -C Release --output-on-failure
 
 同源175B A/B 保留两网格与 vt-on/off：system 的 vt-on 末端 margin 两尺寸均错，固定官方两尺寸均正确；所有8次 child37、EOF109、Job0。原生 CHAR_INFO 的 margin 缺口继续由 #41/#56 处理。没有通过末端成功豁免原生合同。
 
-完整 CTest、内部 skip、真实 Unicode/glyph、API 生命期/拒绝以及额外失败按[清单](../../experiments/conpty/results/2026-10-26-joint-backend/validation.json)分配置记录。共享 Windows 宿主同时运行多组测试；这些是正确性诊断，不能作为空闲环境性能或稳定性结论。失败不被后续成功覆盖；未建立因果关系的失败继续保留。
+完整 CTest、内部 skip、真实 Unicode/glyph、API 生命期/拒绝以及额外失败按[清单](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-joint-backend/validation.json)分配置记录。共享 Windows 宿主同时运行多组测试；这些是正确性诊断，不能作为空闲环境性能或稳定性结论。失败不被后续成功覆盖；未建立因果关系的失败继续保留。
 
 ## 接续边界
 

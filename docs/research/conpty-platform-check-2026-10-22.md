@@ -23,4 +23,4 @@ Microsoft 的 [console UTF-8 A API 问题讨论](https://github.com/microsoft/te
 
 [`75e39f9` 的三平台运行](https://github.com/JavaZeroo/termforge/actions/runs/39807244160)及上述 `2bd61ec` 运行中，Server 2025 和 Ubuntu 均通过全部对应构建、测试和 ASCII/Unicode 回放。Server 2022 没有通过。主 CI 因而固定为 `windows-2025` / `ubuntu-24.04`，与本机 Windows 11 的验证共同构成本批已验收范围；这不代表 Windows 10 全系列或真实桌面应用均已支持。
 
-Server 2022 的兼容性问题保留为后续任务，不扩大本批去修改私有 HPCON 布局。独立[兼容性 workflow](../../.github/workflows/conpty-compat.yml)可由代理 `gh workflow run conpty-compat.yml` 无交互触发，使用相同严格 T1 断言，失败仍使运行失败。原始已知失败和[审阅后的摘要](../../experiments/conpty/results/2026-10-22-server2022/summary.json)保留。此范围决定没有把资源增长改成合格，也没有据此宣称产品已经无泄漏。
+Server 2022 的兼容性问题保留为后续任务，不扩大本批去修改私有 HPCON 布局。独立[兼容性 workflow](../../.github/workflows/conpty-compat.yml)可由代理 `gh workflow run conpty-compat.yml` 无交互触发，使用相同严格 T1 断言，失败仍使运行失败。原始已知失败和[审阅后的摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-22-server2022/summary.json)保留。此范围决定没有把资源增长改成合格，也没有据此宣称产品已经无泄漏。

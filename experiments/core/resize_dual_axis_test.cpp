@@ -1,6 +1,6 @@
 // Bounded literal replays of the 2026-11-04 and 2026-11-24 WindTerm observations.
 //
-// Recorded original sample (research/ui/results/2026-11-04-resize-dual-axis-reference):
+// Recorded original sample (1f8bf75:research/ui/results/2026-11-04-resize-dual-axis-reference):
 // 91x20 body -> one window action 61x14 -> CUP(7;2)+"DQ"+DSR (original DSR
 // 7;4, scroll 5, document row 11 " DQ"+58 spaces+"w", 62 chars) -> one window
 // action back to 91x20, DSR/scroll still 7;4/5 and the written row unchanged.
