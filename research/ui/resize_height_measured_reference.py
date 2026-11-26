@@ -257,7 +257,8 @@ def synthetic_lines(case, phase):
     """Finite ASCII source-derived words; loss is observation, not acceptance."""
     validate_case(case)
     require(type(phase) is int and 0 <= phase < len(phases(case)), "Phase bound")
-    base = {"", " " * 61, " " * 91}
+    # CUP and resize can materialize the blank prefix up to the addressed cell.
+    base = {" " * column for column in range(92)}
     if phase >= next(i for i, (_, data) in enumerate(phases(case)) if data == b"X"):
         base.update(" " * column + "X" for column in range(91))
     return frozenset(bounded_fragments(base, True))
