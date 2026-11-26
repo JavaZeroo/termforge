@@ -215,7 +215,21 @@ std::string native_content_strip(HANDLE output) {
     return result;
 }
 
-enum class CursorTrace { single_query, fixed_grid, saved_resize, content };
+std::string native_style_grid(HANDLE output) {
+    std::array<CHAR_INFO, 91 * 25> cells{};
+    SMALL_RECT bounds{0, 0, 90, 24};
+    require(ReadConsoleOutputW(output, cells.data(), {91, 25}, {0, 0}, &bounds) &&
+            bounds.Left == 0 && bounds.Top == 0 && bounds.Right == 90 && bounds.Bottom == 24,
+            "incomplete native style grid");
+    std::string result;
+    for (const auto& cell : cells) {
+        const auto ch = cell.Char.UnicodeChar;
+        result.push_back(ch == 0 ? ' ' : ch < 128 ? static_cast<char>(ch) : '?');
+    }
+    return result;
+}
+
+enum class CursorTrace { single_query, fixed_grid, saved_resize, content, style_grid };
 
 int query_child(const std::filesystem::path& result, CursorTrace trace = CursorTrace::single_query) {
     try {
@@ -242,7 +256,7 @@ int query_child(const std::filesystem::path& result, CursorTrace trace = CursorT
             size_t count = 0;
             while (std::getline(phases, line)) {
                 const auto phase = std::to_string(count);
-                const bool gated = trace == CursorTrace::saved_resize || trace == CursorTrace::content;
+                const bool gated = trace == CursorTrace::saved_resize || trace == CursorTrace::content || trace == CursorTrace::style_grid;
                 if (gated) {
                     const auto deadline = GetTickCount64() + child_reply_timeout_ms;
                     while (!std::filesystem::exists("release-" + phase) && GetTickCount64() < deadline) Sleep(2);
@@ -255,7 +269,7 @@ int query_child(const std::filesystem::path& result, CursorTrace trace = CursorT
                 require(bool(replies) && complete && !timed_out, "Cursor phase reply incomplete");
                 if (gated) {
                     write_binary("cells-" + phase, trace == CursorTrace::content ?
-                                 native_content_strip(output) : native_marker_grid(output));
+                                 native_content_strip(output) : trace == CursorTrace::style_grid ? native_style_grid(output) : native_marker_grid(output));
                     write_binary("done-" + phase, "");
                 }
                 ++count;
@@ -432,20 +446,25 @@ ProductStage run_product(const std::filesystem::path& executable, const std::fil
     return stage;
 }
 
+#include "grid_style_comparison.hpp"
+
 // The child receives only the recorded inputs. Collect the entire trajectory
 // before comparing its DSR replies with the independent WindTerm observation.
 int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem::path& directory,
                          const std::filesystem::path& reference, std::string_view option) {
     const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(read_binary(reference)));
     const bool content = option == "--ris-content-reference";
-    const auto record = content ? document.object() : document.object().value("reference").toObject();
+    const bool style_grid = option == "--grid-style-reference";
+    const auto record = (content || style_grid) ? document.object() : document.object().value("reference").toObject();
     const bool resized = option == "--saved-cursor-reference";
     const bool margin_case = option == "--duplicate-margin-reference";
     const auto case_id = document.object().value("case_id").toString();
     const bool ris_resize = resized && case_id.startsWith(QStringLiteral("ris-return-"));
     const auto axis_case = case_id.section('-', -1);
     const bool height_case = axis_case == QStringLiteral("short") || axis_case == QStringLiteral("tall");
-    if (content)
+    if (style_grid)
+        require(record.value("case") == QStringLiteral("grid-style-switch"), "wrong grid style reference");
+    else if (content)
         require(record.value("case") == QStringLiteral("ris-content-pages"), "wrong content reference");
     else if (resized)
         require(case_id == (ris_resize ? QStringLiteral("ris-return-") : QStringLiteral("saved-return-")) + axis_case &&
@@ -476,14 +495,24 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     require(bool(sources), "could not write cursor inputs");
 
     SessionModel model;
+    std::unique_ptr<termforge::qt::TerminalWidget> terminal;
+    GridStyleComparison comparison;
+    if (style_grid) {
+        using termforge::qt::TerminalWidget;
+        TerminalWidget::setHistoryScrollbarEnabledForTest(false);
+        terminal = std::make_unique<TerminalWidget>(model);
+        const int margin = TerminalWidget::content_margin();
+        terminal->resize(2 * margin + 91 * terminal->cell_width(), 3 * margin + 26 * terminal->cell_height());
+        terminal->show();
+    }
     model.enable_transport_capture();
     require(model.resize(91, grid[1].toInt()) &&
-            model.start(exe.wstring(), content ? L"--content-child" : resized ? L"--saved-cursor-child" : L"--cursor-child", directory.wstring()),
+            model.start(exe.wstring(), style_grid ? L"--style-grid-child" : content ? L"--content-child" : resized ? L"--saved-cursor-child" : L"--cursor-child", directory.wstring()),
             "could not start the cursor trace session");
     QElapsedTimer lifecycle;
     lifecycle.start();
     int differences = 0;
-    if (resized || content) {
+    if (resized || content || style_grid) {
         require(model.uses_host_resize_maps(), "saved cursor test requires the product resize path");
         const auto wait = [&](auto ready, const char* failure) {
             while (!ready() && !model.finished() && model.error().isEmpty() &&
@@ -492,10 +521,10 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
         };
         for (int index = 0; index < phases.size(); ++index) {
             const auto phase = phases[index].toObject();
-            const auto size = content ? grid : phase.value("frozen_grid").toArray();
+            const auto size = (content || style_grid) ? grid : phase.value("frozen_grid").toArray();
             require(size.size() == 2, "missing saved cursor grid");
             const int width = size[0].toInt(), height = size[1].toInt();
-            require(content ? width == 91 && height == 25 : height_case ? width == 91 && (height == 14 || height == 20)
+            require((content || style_grid) ? width == 91 && height == 25 : height_case ? width == 91 && (height == 14 || height == 20)
                                 : height == 20 && (width == 61 || width == 91), "invalid saved cursor grid");
             require(model.resize(width, height), "saved cursor resize failed");
             wait([&] {
@@ -506,6 +535,11 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
             write_binary(directory / ("release-" + std::to_string(index)), "");
             wait([&] { return std::filesystem::exists(directory / ("done-" + std::to_string(index))); },
                  "saved cursor child did not receive the phase reply");
+            if (style_grid) {
+                differences += comparison.check(index, phase, model, *terminal,
+                    read_binary(directory / ("cells-" + std::to_string(index))));
+                continue;
+            }
             if (content) {
                 const auto native = read_binary(directory / ("cells-" + std::to_string(index)));
                 require(native.size() == 100, "incomplete native content strip");
@@ -647,7 +681,7 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     }
     require(replies.peek() == std::char_traits<char>::eof() && model.exit_code() == 0,
             "cursor trace child did not finish the fixed trajectory");
-    std::cout << "{\"scenario\":\"" << (content ? "ris-content-return" : resized ? case_id.toStdString() :
+    std::cout << "{\"scenario\":\"" << (style_grid ? "grid-style-switch" : content ? "ris-content-return" : resized ? case_id.toStdString() :
               margin_case ? "alternate-duplicate-margin" : "alternate-ris-cursor")
               << "\",\"phases\":" << phases.size() << (content ? ",\"cursor_reply_differences\":" : ",\"differences\":")
               << differences << ",\"cleanup_verified\":true}\n";
@@ -675,12 +709,14 @@ int main(int argc, char** argv) {
     if (argc == 2 && (std::string_view(argv[1]) == "--cursor-child" || std::string_view(argv[1]) == "--ris-child")) return query_child("replies.hex", CursorTrace::fixed_grid);
     if (argc == 2 && std::string_view(argv[1]) == "--saved-cursor-child") return query_child("replies.hex", CursorTrace::saved_resize);
     if (argc == 2 && std::string_view(argv[1]) == "--content-child") return query_child("replies.hex", CursorTrace::content);
+    if (argc == 2 && std::string_view(argv[1]) == "--style-grid-child") return query_child("replies.hex", CursorTrace::style_grid);
+    const bool style_grid = argc == 3 && std::string_view(argv[1]) == "--grid-style-reference";
     const bool ris = argc == 3 && std::string_view(argv[1]) == "--ris-reference";
     const bool margin = argc == 3 && std::string_view(argv[1]) == "--duplicate-margin-reference";
     const bool saved = argc == 3 && std::string_view(argv[1]) == "--saved-cursor-reference";
     const bool content = argc == 3 && std::string_view(argv[1]) == "--ris-content-reference";
-    if (argc != 1 && !ris && !margin && !saved && !content) {
-        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE|--saved-cursor-reference FILE|--ris-content-reference FILE]\n";
+    if (argc != 1 && !ris && !margin && !saved && !content && !style_grid) {
+        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE|--saved-cursor-reference FILE|--ris-content-reference FILE|--grid-style-reference FILE]\n";
         return 2;
     }
     char gate[3]{};
@@ -701,7 +737,7 @@ int main(int argc, char** argv) {
         const std::filesystem::path exe(executable);
         const std::filesystem::path directory(workspace.path().toStdWString());
 
-        if (ris || margin || saved || content) return compare_cursor_trace(exe, directory, argv[2], argv[1]);
+        if (ris || margin || saved || content || style_grid) return compare_cursor_trace(exe, directory, argv[2], argv[1]);
 
         const auto silent = run_raw(exe, directory, directory / "raw-silent.bin", std::nullopt);
         emit_raw("raw-silent", silent);

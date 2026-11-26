@@ -172,6 +172,8 @@ jobs:
             if ($LASTEXITCODE -ne 0) { $failed = 1 }
           }
           exit $failed
+      - name: Compare fourteen full grids and painted style controls across buffer switches and RIS
+        run: python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --grid-style-reference research/ui/fixtures/2026-11-26-grid-style.json
       - name: Check RIS text and scrollable history against the original and confirmed output policy
         run: |
           foreach ($case in 'scroll-last','long-alternate','long-primary','reentry-write') {

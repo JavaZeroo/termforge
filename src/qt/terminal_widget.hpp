@@ -183,6 +183,17 @@ class TerminalWidget final : public QWidget {
         };
         return palette[index >= 0 && index < 16 ? static_cast<size_t>(index) : foreground ? 7 : 0];
     }
+    static std::pair<QColor, QColor> cell_colours(const Style& style) {
+        int index = style.fg;
+        if (style.bold && index >= 0 && index < 8) index += 8;
+        auto ink = colour(index, true);
+        auto paper = colour(style.bg, false);
+        if (style.reverse) std::swap(ink, paper);
+        if (style.dim)
+            ink = QColor((ink.red() + paper.red()) / 2, (ink.green() + paper.green()) / 2,
+                         (ink.blue() + paper.blue()) / 2);
+        return {ink, paper};
+    }
     void closeEvent(QCloseEvent* event) override {
         keyboard_.reset();
         stop_selection_autoscroll();
@@ -967,20 +978,19 @@ class TerminalWidget final : public QWidget {
                 style.bg = 4; style.fg = 15; style.reverse = false;
             }
         }
-        const auto base_font = font();
         for (size_t row = 0; row < visible_rows; ++row) {
             const auto& line = page.lines[painted_row_offset_ + row];
             for (size_t column = 0; column < columns; ++column) {
                 const auto& cell = line[column];
                 const QRectF area(margin + static_cast<int>(column) * cell_width_, margin + static_cast<int>(row) * cell_height_, cell_width_, cell_height_);
                 // Reverse video swaps the cell's own foreground and background.
-                painter.fillRect(area, colour(cell.style.reverse ? cell.style.fg : cell.style.bg, false));
+                painter.fillRect(area, cell_colours(cell.style).second);
             }
             for (size_t column = 0; column < columns; ++column) {
                 const auto& cell = line[column];
                 if (!cell.width || cell.text.empty() || cell.style.hidden) continue;
-                auto cell_font = base_font; cell_font.setBold(cell.style.bold); painter.setFont(cell_font);
-                painter.setPen(colour(cell.style.reverse ? cell.style.bg : cell.style.fg, true));
+                const auto ink = cell_colours(cell.style).first;
+                painter.setPen(ink);
                 const QRectF area(margin + static_cast<int>(column) * cell_width_, margin + static_cast<int>(row) * cell_height_,
                                   cell_width_ * cell.width, cell_height_);
                 painter.save(); painter.setClipRect(area);
@@ -988,7 +998,11 @@ class TerminalWidget final : public QWidget {
                                  QString::fromUtf8(cell.text.data(), static_cast<qsizetype>(cell.text.size())));
                 if (cell.style.strikethrough)
                     painter.fillRect(QRectF(area.left(), area.center().y() - 0.5, area.width(), 1.0),
-                                     colour(cell.style.reverse ? cell.style.bg : cell.style.fg, true));
+                                     ink);
+                if (cell.style.underline)
+                    painter.fillRect(QRectF(area.left(), area.bottom() - 1, area.width(), 1), ink);
+                if (cell.style.overline)
+                    painter.fillRect(QRectF(area.left(), area.top(), area.width(), 1), ink);
                 painter.restore();
             }
         }
