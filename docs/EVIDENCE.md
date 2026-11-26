@@ -8,6 +8,7 @@
 
 | 配置 | 证据定位 | 覆盖边界 |
 |---|---|---|
+| 主备屏与 RIS 的完整网格（#335） | [逐格夹具、原版观察与产品判定](research/r335-grid-styles.md) | 两次独立会话各 14 阶段、每阶段 91×25 格。含空复入、首次写入、两种 RIS 和有字格／空白格样式。 |
 | 备用屏 RIS 的正文与历史（#334） | [原版观察、用户决定与 Win32／Qt 对照](research/r334-ris-content.md) | 六个独立原版会话。正式产品四组各八阶段，核对有界历史、复位后新输出、复入后的实际写入和主屏滚动回看。 |
 | 备用屏 RIS 后跨尺寸显式返回（#27） | [四份原版轨迹与修复前后对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-26-ris-resize/README.md) | 从第 19 行第 91 列进入备用屏。RIS 后缩窄或缩短，在恢复尺寸前后分别显式返回。四组各九阶段检查子进程 DSR，并在主屏可见时核对 Qt 与 Win32 的实际写入位置。 |
 | 主屏保存行超出缩短后的视口（#27） | [原版轨迹与微软宿主修复前后对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-26-saved-row/README.md) | 91 列，20→14→20 行。在 14 行时返回或恢复 20 行后返回均于第 14 行继续写入。两条轨迹各六阶段，核对协议回复、Qt 与 Win32 的 W/X 位置。 |
