@@ -2,7 +2,7 @@
 
 本文件冻结 TermForge 在 Windows 11 x64 下用固定 ConPTY 1.25 驱动固定 Vim for Windows 的第二批应用身份、入口、平台与操作轨迹，并按其逐步写出独立协议字节预期，再对照自主 C++ 核心的 strict/recovery 两路回放逐项核对。来源为 [WindTerm 原版对照](vim-windterm-reference.md)、本机 2026-11-02 实测与 Vim 公开行为，未观测处明确标为未知。本文只冻结轨迹与预期，不改产品行为，也不代表 #28 整体验收。
 
-复用 More 切片的成熟模式（PR #306，轨迹见 [tui-more-trajectory-2026-11-02.md](tui-more-trajectory-2026-11-02.md)）。与 More 的关键差别：Vim 是全屏 TUI，轨迹中出现 1049 备用屏进出、DA1/DA2、DSR 6n、DECSTBM 与 XTWINOPS 标题保存/恢复，这些在 More 轨迹中均不出现。
+复用 More 切片的成熟模式（PR #306，轨迹见 [tui-more-trajectory-2026-11-02.md](tui-more-trajectory-2026-11-02.md)）。与 More 的关键差别：Vim 是全屏 TUI，轨迹中出现 1049 备用屏进出、DA1/DA2、DSR 6n、DECSTBM 与 XTWINOPS 标题保存/恢复，More 的固定尺寸轨迹只观察到宿主启动 DA1；后续在分页中途缩窄的 More 场景另观察到 DSR 6n，详见上述分页器记录。
 
 ## 冻结身份
 
