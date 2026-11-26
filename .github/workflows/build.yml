@@ -26,6 +26,14 @@ jobs:
       TERMFORGE_TEST_ARTIFACTS: ${{ github.workspace }}/build/test-artifacts
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Reject tracked generated results
+        shell: bash
+        run: |
+          tracked_results=$(git ls-files -- ':(glob)**/results/**')
+          if [[ -n "$tracked_results" ]]; then
+            echo 'Tracked results/ files found. Move required test inputs to fixtures/ and keep generated output local.'
+            exit 1
+          fi
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
