@@ -1,7 +1,7 @@
 // Literal display-caret mapping for the frozen post-reflow sample.
 //
 // The protocol cursor stays a retained source position (see
-// research/ui/results/2026-11-03-reflow-addressing-reference). The display page
+// 1f8bf75:research/ui/results/2026-11-03-reflow-addressing-reference). The display page
 // reflows the same atoms at another width, and the caret cell must follow that
 // page without moving the protocol cursor or inventing source content.
 #include "terminal.hpp"

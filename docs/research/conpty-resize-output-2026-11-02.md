@@ -29,9 +29,9 @@
 
 ## 对已有 B/CD 红例的解释与限制
 
-[既有 Qt / 固定 ConPTY 记录](../../experiments/shell/results/2026-11-02-qt-terminal-modes/README.md)中，80×24→60×12 后原生网格重排 B/CD，物理裁剪核心丢失右端正文并留下旧 D。另一条同源 transport 会话捕获 265 B，resize 边界后没有搬移 B/CD、清旧 D 或整屏重绘字节。这与固定源码的“内部 reflow + 按写入生成 VT”一致，不能据此归因于 parser 忽略已有重绘，也不能通过添加旧 flag 修复。
+[既有 Qt / 固定 ConPTY 记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-02-qt-terminal-modes/README.md)中，80×24→60×12 后原生网格重排 B/CD，物理裁剪核心丢失右端正文并留下旧 D。另一条同源 transport 会话捕获 265 B，resize 边界后没有搬移 B/CD、清旧 D 或整屏重绘字节。这与固定源码的“内部 reflow + 按写入生成 VT”一致，不能据此归因于 parser 忽略已有重绘，也不能通过添加旧 flag 修复。
 
-该运输捕获**不是同一次 Qt 会话**，源码不能替代其动态顺序证据。原生 grid 也不能替代 [WindTerm 原版分层观察](../../research/ui/results/2026-11-02-resize-state-reference/README.md)的显示 oracle；同时，原生缓冲会影响 legacy Console API 读写，不能整体忽略。保留旧 B/CD 失败，不把独立模块、纯 VT 或尺寸通过扩写为完整本地 shell 验收。
+该运输捕获**不是同一次 Qt 会话**，源码不能替代其动态顺序证据。原生 grid 也不能替代 [WindTerm 原版分层观察](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-state-reference/README.md)的显示 oracle；同时，原生缓冲会影响 legacy Console API 读写，不能整体忽略。保留旧 B/CD 失败，不把独立模块、纯 VT 或尺寸通过扩写为完整本地 shell 验收。
 
 ## 最小下一实验（尚未执行）
 

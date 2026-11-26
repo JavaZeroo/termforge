@@ -1,6 +1,6 @@
 # #133：本地 cmd 实际网格与设置读取诊断
 
-状态：生产源 `28f293a5d2c01954dc8b418a02231603128955a6`、准备 HEAD `b22293f` 经复核后，由 root 监督一次独立实际执行，CLI 已结束、Job 已清理。[结果](results/2026-10-29-c0-settings-reference/README.md)为 partial：producer console 和原版 view 的窗口均读到 120×40，其他 C0 设置仍有未知。[原 false proposal](results/2026-10-29-c0-settings-proposal/plan.json)保持不变；另建的[授权计划](results/2026-10-29-c0-settings-reference/plan.json)与新原件分开绑定，不改旧 #119 证据。
+状态：生产源 `28f293a5d2c01954dc8b418a02231603128955a6`、准备 HEAD `b22293f` 经复核后，由 root 监督一次独立实际执行，CLI 已结束、Job 已清理。[结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/benchmarks/tools/results/2026-10-29-c0-settings-reference/README.md)为 partial：producer console 和原版 view 的窗口均读到 120×40，其他 C0 设置仍有未知。[原 false proposal](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/benchmarks/tools/results/2026-10-29-c0-settings-proposal/plan.json)保持不变；另建的[授权计划](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/benchmarks/tools/results/2026-10-29-c0-settings-reference/plan.json)与新原件分开绑定，不改旧 #119 证据。
 
 [#133](https://github.com/JavaZeroo/termforge/issues/133) 的父项为 #3，真实前置 #119 已关闭。沿用其 14 行/536B ASCII 全文 oracle、原版本地 cmd→producer、OwnedJob 和非输入 desktop 边界；本项只调查请求配置是否有实际读取路径，不取得完整 C0、历史淘汰或性能验收。
 

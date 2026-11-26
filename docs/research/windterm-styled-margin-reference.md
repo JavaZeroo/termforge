@@ -8,7 +8,7 @@
 
 - 官方 WindTerm 2.7.0 Windows x64：EXE SHA `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`，4,047 文件清单 SHA `e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203`，由[既有准备守卫](../../research/ui/launch.py)核对。cmd 横幅为 Windows `10.0.26200.9711`，与此前 Vim 参考样本的 OS 修订号分列。
 - 自有夹具源码 `dc5c631ffdf83dfbdfcb8b359137e0d87212ac6d`；复用原 controls EXE，SHA `ca19645b65aea8ac74b56d1e59837cb7514c3acf5932d24112411725b92206d7`。只调用其原 `--client styled-cursor`，未使用源码 ConPTY host，也未改写五阶段输入或 capture helper。
-- 新建一个合成 cmd、独立 HOME/profile、非输入 window station 和自有 Job。REA CLI 固定 6.7.0，原版及驱动身份、实际调用和证据 ID 见[白名单记录](../../research/ui/results/2026-10-27-styled-native-reference/validation.json)。不接触个人剪贴板、显示设置、用户配置或日常 WindTerm 进程。
+- 新建一个合成 cmd、独立 HOME/profile、非输入 window station 和自有 Job。REA CLI 固定 6.7.0，原版及驱动身份、实际调用和证据 ID 见[白名单记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-27-styled-native-reference/validation.json)。不接触个人剪贴板、显示设置、用户配置或日常 WindTerm 进程。
 - 执行前声明最多一次。UI 请求 1230×887 后，实际 WinPTY `set_size(80,24)`、UI capacity=24 和原生 viewport=80×24 相互核对；未使用预留的两次几何校准。原生等待 5 秒、失败清理 5 秒；独立 wrapper 最多保留最终内容 8 秒供 UI 读取。REA 30 秒、外监督 45 秒。实际仅运行一次，无重试。
 
 ## 五阶段的原生结果

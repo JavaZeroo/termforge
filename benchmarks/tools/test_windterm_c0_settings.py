@@ -18,7 +18,8 @@ def missing():return {'status':'unavailable','type':'undefined','value':None}
 
 class SettingsTests(unittest.TestCase):
     def test_fixed_public_proposal_has_no_actual_values_or_execution_authorization(self):
-        plan=json.loads((settings.ROOT/'benchmarks/tools/results/2026-10-29-c0-settings-proposal/plan.json').read_text())
+        fixture = Path(__file__).with_name('fixtures') / 'c0-settings-proposal.json'
+        plan = json.loads(fixture.read_text(encoding='utf-8'))
         self.assertFalse(plan['execution_authorized']);self.assertEqual(plan['actual_original_runs'],0)
         self.assertIsNone(plan['actual_settings']);self.assertFalse(plan['c0_verified'])
         self.assertEqual(len(plan['workload']['lines']),14);self.assertEqual(plan['workload']['payload_bytes'],536)

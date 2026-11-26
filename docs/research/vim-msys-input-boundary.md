@@ -10,7 +10,7 @@
 
 首批最多4轮，出现原 stage59 与诊断成功后停止，实际为两红一绿。随后为核对具体调用点，另设最多2轮、首次原失败或其他失败即停止的批次，实际1轮原 stage59。第二批核验加载模块路径、PE时间戳、COFF函数位置及4个入口的实际32 B前缀，然后观察两个函数的进入/返回；它不是新的修复方案。
 
-每轮上限512条事件，每次原生调用最多256个记录，每次 `read` 最多512 B；四轮均未截断。全部原件、工具完整 Evidence、源代码补丁与二进制留在本地，公开[白名单时间线及哈希](../../experiments/shell/results/2026-10-27-vim-msys-input/validation.json)。所有运行均原期限内结束、外层 Job active0/terminated0、私有 desktop 已回收。
+每轮上限512条事件，每次原生调用最多256个记录，每次 `read` 最多512 B；四轮均未截断。全部原件、工具完整 Evidence、源代码补丁与二进制留在本地，公开[白名单时间线及哈希](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-27-vim-msys-input/validation.json)。所有运行均原期限内结束、外层 Job active0/terminated0、私有 desktop 已回收。
 
 ## 直接观察
 

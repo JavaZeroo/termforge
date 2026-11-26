@@ -8,7 +8,7 @@
 
 共享 helper 的确定性反例直接使用原 CI 数值：`{14,11}→{16,14}` 必须等待；只有 bottom 再推进到 17 后才满足门槛。另验证主会话过慢、不同绝对计数、基点重置及计数倒退。真实数据模式继续由独立文本、运输、物理行、完整重绘及回收 oracle 验证；系统 CF 必须在真实 hosted VM 运行，不能用本地数据模式或伪造环境变量代替。
 
-[固定源码与脱敏复核](../../experiments/shell/results/2026-10-26-selection-tick-gate/validation.json)保留原 artifact 身份、原失败和新数据模式结果。原始运输、完整屏幕、frame 与 desktop 信息留本地；最终 `frame.bmp` 不是 reverse 阶段截图。每阶段 `frame_matches_full` 也不证明实际呈现完成。
+[固定源码与脱敏复核](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-selection-tick-gate/validation.json)保留原 artifact 身份、原失败和新数据模式结果。原始运输、完整屏幕、frame 与 desktop 信息留本地；最终 `frame.bmp` 不是 reverse 阶段截图。每阶段 `frame_matches_full` 也不证明实际呈现完成。
 
 ```powershell
 ctest --test-dir build/r66 -C Release -R '^scenario_tick_gate$' --output-on-failure
@@ -19,4 +19,4 @@ python -m unittest experiments.shell.test_selection_bytes -v
 
 普通本地环境会明确跳过实际系统 CF，用例仍检查 native/Python 的 hosted 保护。完整系统门槛由 PR 的 Windows hosted CI 执行；本页和固定记录不借用其他核心/后端或历史成功。
 
-[同实现的 hosted 复核](../../experiments/shell/results/2026-10-26-selection-tick-gate/hosted-validation.json)固定实现 `dcb7e6e`、PR head `c634134` 与实际 checkout tree 相等。Windows [CI 40310013544](https://github.com/JavaZeroo/termforge/actions/runs/40310013544) 的 `system-0/1` 确实执行，各九阶段；原字节、CF、完整重绘、隔离和回收合同均通过，后八阶段的双会话计数差至少三。首阶段没有相邻观察，delta 保持 null；逐运行 EXE 哈希仍缺失，不声称 source-to-binary 或实际呈现证明。两条 CI 与独立双轴复核通过，#66 限定关闭，不扩大到候选/实验后端或完整 R2。
+[同实现的 hosted 复核](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-selection-tick-gate/hosted-validation.json)固定实现 `dcb7e6e`、PR head `c634134` 与实际 checkout tree 相等。Windows [CI 40310013544](https://github.com/JavaZeroo/termforge/actions/runs/40310013544) 的 `system-0/1` 确实执行，各九阶段；原字节、CF、完整重绘、隔离和回收合同均通过，后八阶段的双会话计数差至少三。首阶段没有相邻观察，delta 保持 null；逐运行 EXE 哈希仍缺失，不声称 source-to-binary 或实际呈现证明。两条 CI 与独立双轴复核通过，#66 限定关闭，不扩大到候选/实验后端或完整 R2。

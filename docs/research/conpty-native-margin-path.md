@@ -39,7 +39,7 @@ oracle 同时比较两个原生读入口的文字、完整格/属性和光标。
 
 ## 本批固定运行与失败保留
 
-[白名单证据](../../experiments/conpty/results/2026-10-26-native-margin-path/validation.json) 固定 main `3d6d44d` 的未修改原生探针、
+[白名单证据](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-native-margin-path/validation.json) 固定 main `3d6d44d` 的未修改原生探针、
 单独冻结的候选 `.4` trace、官方同包 DLL/EXE 双 SHA、源码、flags、期限与生命周期；原件只留 `local/`。
 这是源头诊断配置，**不是 #55 的联合产品验收**。本批官方探针 flags 为 0，不能替代 Draft 产品的 Console-width flags 24。
 

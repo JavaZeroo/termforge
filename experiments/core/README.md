@@ -4,7 +4,7 @@
 
 解析器提供默认 `strict` 和显式 `ParseMode::recovery` 两种模式。replay/receive、trace 默认值和共同子集差分使用严格模式，本地 shell 选择恢复模式；测试 trace 可用第七个参数 `--recovery` 比较恢复行为，或 `--resize=RxC` 在输入结束点 resize 并追加检查点。[恢复策略](RECOVERY.md)定义未知控制序列、非法 UTF-8、超长输入、取消及 EOF 的有界处理；下表未支持输入的失败规则适用于严格模式。
 
-默认 Win32 工作区调用 `Screen::resize`，沿用[物理行裁剪契约](../../docs/adr/0005-physical-row-resize.md)。`resize_test` 覆盖内容、历史、宽字符和字节边界，replay CLI 只执行显式请求的 resize。正式 Qt 工作区使用 `resize_preserving` 及[有界正文保留与显示重排](../../docs/adr/0010-bounded-resize-retention.md)。核心回归有[宽高组合保留](results/2026-11-02-retained-combined/README.md)和[重排后的寻址与 DSR](results/2026-11-03-reflow-addressing/README.md)。
+默认 Win32 工作区调用 `Screen::resize`，沿用[物理行裁剪契约](../../docs/adr/0005-physical-row-resize.md)。`resize_test` 覆盖内容、历史、宽字符和字节边界，replay CLI 只执行显式请求的 resize。正式 Qt 工作区使用 `resize_preserving` 及[有界正文保留与显示重排](../../docs/adr/0010-bounded-resize-retention.md)。核心回归有[宽高组合保留](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-11-02-retained-combined/README.md)和[重排后的寻址与 DSR](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-11-03-reflow-addressing/README.md)。
 
 ## 支持范围和约定
 
@@ -24,9 +24,9 @@
 | `CSI top;bottom r` | DECSTBM 设置当前缓冲区的滚动区域；主/备用屏各自保存边距，非法区域忽略；归位经当前 origin 规则钳制。完整原版交叉语义仍由 [#27](https://github.com/JavaZeroo/termforge/issues/27) 验收 |
 | UTF-8 | 跨块解码 1–4 字节；严格拒绝过长编码、代理区、越界、孤立续字节及截断输入 |
 | `CSI m` | 0 重置；1/2 与 22 控制粗体/暗色；4/24 下划线、7/27 反显、8/28 隐藏、9/29 删除线、53/55 上划线；30–37/40–47 和 90–97/100–107 前景/背景色，39/49 恢复默认色。保存属性状态不等于各渲染入口已绘制该属性 |
-| `CSI ?1049h/l` | [限定文字/光标/颜色合同](results/2026-10-29-cpp-1049/README.md)：进入/重复进入归首格、清旧备用文本及复位前景/背景；按[六属性对照](results/2026-11-02-1049-attributes/README.md)清除暗色/下划线/反显/删除线/隐藏/上划线，并按[重复及再次进入对照](results/2026-11-02-1049-reentry/README.md)关闭备用屏 origin。退出恢复主屏写入状态、origin 与 pending-wrap；重复进入的逻辑世代使旧读者失效。粗体仍保留现有策略，原版完整网格背景、任意属性组合、resize 和运输交叉未验收 |
-| `CSI ?7h/l` | [主屏 ASCII DECAWM 切片](results/2026-10-29-cpp-decawm/README.md)：精确单参数开启/关闭；关闭后末列覆盖，关闭时写满末列后重新开启仍可换行。跨1049、宽/结合字及resize组合未完成原版对照 |
-| `CSI ?6h/l` | [DECOM 限定切片](results/2026-11-01-decom-origin/README.md)：开启时归位区域左上、关闭时归位屏幕原点；与相对行定位、DSR 和 1049 交叉。[新原版对照](../../research/ui/results/2026-11-02-mode-state-reference/README.md)支持每屏保存 origin；1049 进入关闭备用屏 origin，返回恢复主屏原状态，完整网格和 resize 交叉仍待验收 |
+| `CSI ?1049h/l` | [限定文字/光标/颜色合同](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-29-cpp-1049/README.md)：进入/重复进入归首格、清旧备用文本及复位前景/背景；按[六属性对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-11-02-1049-attributes/README.md)清除暗色/下划线/反显/删除线/隐藏/上划线，并按[重复及再次进入对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-11-02-1049-reentry/README.md)关闭备用屏 origin。退出恢复主屏写入状态、origin 与 pending-wrap；重复进入的逻辑世代使旧读者失效。粗体仍保留现有策略，原版完整网格背景、任意属性组合、resize 和运输交叉未验收 |
+| `CSI ?7h/l` | [主屏 ASCII DECAWM 切片](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-29-cpp-decawm/README.md)：精确单参数开启/关闭；关闭后末列覆盖，关闭时写满末列后重新开启仍可换行。跨1049、宽/结合字及resize组合未完成原版对照 |
+| `CSI ?6h/l` | [DECOM 限定切片](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-11-01-decom-origin/README.md)：开启时归位区域左上、关闭时归位屏幕原点；与相对行定位、DSR 和 1049 交叉。[新原版对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-mode-state-reference/README.md)支持每屏保存 origin；1049 进入关闭备用屏 origin，返回恢复主屏原状态，完整网格和 resize 交叉仍待验收 |
 | `CSI ?1h/l`、`CSI ?25h/l` | 分别保存 DECCKM 应用方向键和 DECTCEM 光标可见状态，供调用方读取；Qt/Win32 的相关接线不代表完整应用键盘或鼠标模式已支持 |
 | `CSI 6 n` | 产生一基光标位置回复，由调用方排空回复队列；origin 开启时回复行相对区域顶部 |
 | `CSI c` / `CSI 0 c` | 仅 **strict** 回复 `ESC[?6c`（VT102）；**recovery 产品路径仍消费而不回复**。这不是对产品 DA1 或 WindTerm 设备属性一致性的验收 |
@@ -92,9 +92,9 @@ build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 
 显式 `HistoryViewport::begin_projection` / `step_projection` 按每步至多200个源片段生成指定宽度的页面；`ProjectionJob` 独占未完成半行和页面，完成前不发布。源被修改、导入或换屏、真实尺寸变化、新请求及取消会使任务失效；尺寸no-op不打断。它与默认物理`resize`/`snapshot`仍分开；正式 Qt 目前消费单次 `project` 绘制显示页，分步入口仍未被 Qt 使用。
 
-返回cursor是绑定owner/行身份/version/epoch/order的源锚点，可以定义另一宽度下的局部起点，不代表全局显示行号。静止500片段的分步进展和选择/Find交叉见[固定验证](results/2026-11-02-projection-job/README.md)；持续输出下的调度与进展、任意显示位置定位仍未交付。旧单次`project`保留有界窗口语义，部分软行在`source_limit`可能不推进，跨预算任务应使用新分步入口。
+返回cursor是绑定owner/行身份/version/epoch/order的源锚点，可以定义另一宽度下的局部起点，不代表全局显示行号。静止500片段的分步进展和选择/Find交叉见[固定验证](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-11-02-projection-job/README.md)；持续输出下的调度与进展、任意显示位置定位仍未交付。旧单次`project`保留有界窗口语义，部分软行在`source_limit`可能不推进，跨预算任务应使用新分步入口。
 
-`display_cursor`（`display_cursor.hpp`）把协议光标这一保留源位置翻译为指定投影页上的显示单元，不移动源光标、不创造源文字；`ViewMapping` 暴露 `columns()`/`sources()`/`layout_revision()` 供消费者校验页面。宽度重排、软续接片段、空硬行、尾部 padding 与宽字后的光标位置由 `display_cursor_core` 锁定；Qt 侧光标/IME 与选择命中消费同一页布局 revision，见 [Qt 保留/投影结果](../shell/results/2026-11-03-qt-retained-display/README.md)。
+`display_cursor`（`display_cursor.hpp`）把协议光标这一保留源位置翻译为指定投影页上的显示单元，不移动源光标、不创造源文字；`ViewMapping` 暴露 `columns()`/`sources()`/`layout_revision()` 供消费者校验页面。宽度重排、软续接片段、空硬行、尾部 padding 与宽字后的光标位置由 `display_cursor_core` 锁定；Qt 侧光标/IME 与选择命中消费同一页布局 revision，见 [Qt 保留/投影结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-03-qt-retained-display/README.md)。
 
 ## 文字投影与选择
 
@@ -116,10 +116,10 @@ build/bin/Release/receive.exe 512 edge stream 580000 512 input.bin
 
 2026-10-22 的 v0.2 ASCII/Unicode 回放满足当时的字节、画面、历史、样式及背压检查。结果按版本保留，不代表当前提交重新执行了同一批测量：
 
-- v0.2 ASCII：[身份](results/2026-10-22-v02-ascii/manifest.json)、[记录](results/2026-10-22-v02-ascii/samples.jsonl)、[期望](results/2026-10-22-v02-ascii/expected.json)
-- v0.2 Unicode：[身份](results/2026-10-22-v02-unicode/manifest.json)、[记录](results/2026-10-22-v02-unicode/samples.jsonl)、[期望](results/2026-10-22-v02-unicode/expected.json)
+- v0.2 ASCII：[身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-22-v02-ascii/manifest.json)、[记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-22-v02-ascii/samples.jsonl)、[期望](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-22-v02-ascii/expected.json)
+- v0.2 Unicode：[身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-22-v02-unicode/manifest.json)、[记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-22-v02-unicode/samples.jsonl)、[期望](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-22-v02-unicode/expected.json)
 
-- v0.1（`d15a1fc`）：[输入及源码身份](results/2026-10-22/manifest.json)、[完整预期屏幕/历史](results/2026-10-22/expected.json)、[运行记录](results/2026-10-22/samples.jsonl)
+- v0.1（`d15a1fc`）：[输入及源码身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-22/manifest.json)、[完整预期屏幕/历史](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-22/expected.json)、[运行记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-22/samples.jsonl)
 
 每个配置只跑一次，是正确性与计量端点烟测，没有预热和统计对照。`parse_ms` 在文件回放中是整个 feed 循环，在管道中是各块 feed 的墙钟耗时总和；后者包含计时开销及可能的线程抢占，排除队列等待和字节比较。它已经包含于整体运行时间，不能重复相加。解析、屏幕更新和历史维护尚未各自计量。管道原有的队列到校验延迟字段在解析模式下结束于 feed 之后，不能与旧的纯字节校验样本直接等同比较。
 

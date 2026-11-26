@@ -1,6 +1,6 @@
 # WindTerm 2.7.0：一次窗口动作同时缩宽缩高后的正文、视口与新写入
 
-本工具补齐 #27/#29 的一个独立原版缺口：既有[只缩宽 CUP/DSR](results/2026-11-03-reflow-addressing-reference/README.md)、[顺序宽高组合](results/2026-11-02-resize-combined-reference/README.md)与[隐藏帧七阶段](../../experiments/shell/results/2026-11-04-qt-hidden-retention/README.md)都不足以决定“同一窗口动作同时改变宽高”后正文/视口/新 CUP 写入位置。本工具用新的 namespace、源码归档与单次计划做一次固定三阶段直接 Telnet 观察，不修改旧探针或旧结果。
+本工具补齐 #27/#29 的一个独立原版缺口：既有[只缩宽 CUP/DSR](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-03-reflow-addressing-reference/README.md)、[顺序宽高组合](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-combined-reference/README.md)与[隐藏帧七阶段](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-04-qt-hidden-retention/README.md)都不足以决定“同一窗口动作同时改变宽高”后正文/视口/新 CUP 写入位置。本工具用新的 namespace、源码归档与单次计划做一次固定三阶段直接 Telnet 观察，不修改旧探针或旧结果。
 
 ## 固定三阶段合同
 

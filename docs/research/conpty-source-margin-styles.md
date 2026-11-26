@@ -43,7 +43,7 @@
 
 ## 身份、验证与复验
 
-[脱敏清单](../../experiments/conpty/results/2026-10-27-source-margin-styles/validation.json)保留原运行身份、原始 summary 哈希、四份捕获身份、离线修正来源及两种失败结论。
+[脱敏清单](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-27-source-margin-styles/validation.json)保留原运行身份、原始 summary 哈希、四份捕获身份、离线修正来源及两种失败结论。
 
 - 实际原生运行源码 `485c3e253e88a2d83f72326c0ff9185b94d87269`，当时工作树干净；离线判据修正源码 `6e52e6957de10c14c570d3b7b83992c585fcc3a9`，不冒充重新运行。
 - Windows 11 x64 build 26200；VS17 / MSVC 19.42.34433 / SDK 26100，Release x64。独立探针 SHA `ca19645b65aea8ac74b56d1e59837cb7514c3acf5932d24112411725b92206d7`；复用前批 `.5` trace SHA `5941d4569d0ae146eb005f12ecfb15014bc06c18ee48d1c9460824ab65df93d3`。上游 pair 是 hosted VS18 构建，两者身份分列。

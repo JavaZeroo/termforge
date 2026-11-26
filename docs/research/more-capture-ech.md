@@ -21,7 +21,7 @@
 | [more-pager-360.bin](../../experiments/core/fixtures/more-pager-360.bin) | 360 | `d035d53385788d2b68dcc0d866b5a2fe68897cdcb28a761bd4d36efcc6df6cf9` |
 | [more-pager-366.bin](../../experiments/core/fixtures/more-pager-366.bin) | 366 | `bb9dbe77353245a2aad7ef07e12da9a8371cc7ac56d6b47ebc0bfecee35b9958` |
 
-来源为既有 #42 [margin 记录](../../experiments/shell/results/2026-10-26-margin-state/validation.json)所指的捕获及相同哈希的历史 360 字节捕获。原始字节继续保留，不把旧记录补写为 EOF 已验证。3×12 独立断言保留第二行 `-- More (56%`；360 字节第三行为 `) --`，366 字节第三行清空。整段、逐字节与不均匀拆包分别核对，不删除 ECH 来制造一致。
+来源为既有 #42 [margin 记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-margin-state/validation.json)所指的捕获及相同哈希的历史 360 字节捕获。原始字节继续保留，不把旧记录补写为 EOF 已验证。3×12 独立断言保留第二行 `-- More (56%`；360 字节第三行为 `) --`，366 字节第三行清空。整段、逐字节与不均匀拆包分别核对，不删除 ECH 来制造一致。
 
 ## 真实应用捕获合同
 
@@ -31,7 +31,7 @@ q 写完后要求退出码 0，独立线程经 `ClosePseudoConsole()` 后继续�
 
 `pager-lifecycle.json` 保存完整提示末偏移、实际 q 字节数、退出码、reader 终点、最终长度和取消状态；Python 独立检查原始提示及这些条件。提示等待期间、关闭前和失败路径先保留实际字节，再进行可能阻塞的关闭；60 秒外层监督只清理自己的 Job。超时留下的前缀标为未完成，不伪造 EOF。
 
-新鲜完整样本为 382 字节：提示结束偏移 360，后续 CR、模式关闭和 ECH 全部保留。合法长度和重绘可能变化，验收不锁定长度或改写尾部。三应用比较通过仅代表这些核心轨迹，不代表 GUI、物理呈现或完整 VT 验收。修复前后、同输入候选/pyte 对照和端点证据见[审阅摘要](../../experiments/differential/results/2026-10-26-more-ech/validation.json)。
+新鲜完整样本为 382 字节：提示结束偏移 360，后续 CR、模式关闭和 ECH 全部保留。合法长度和重绘可能变化，验收不锁定长度或改写尾部。三应用比较通过仅代表这些核心轨迹，不代表 GUI、物理呈现或完整 VT 验收。修复前后、同输入候选/pyte 对照和端点证据见[审阅摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-26-more-ech/validation.json)。
 
 ## 复验入口
 

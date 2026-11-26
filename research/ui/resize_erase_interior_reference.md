@@ -2,7 +2,7 @@
 
 本协议由 [运行工具](resize_erase_interior_reference.py)、[控制器](resize_erase_interior_reference.js)及[严格导出器](export_resize_erase_interior_reference.py)实现，限于 #27/#29 的一个剩余歧义：此前在新末列 61 擦除后得到的文档长度 60，究竟随光标前缀移动，还是固定于宽度减一或其他正文策略。它定义新观察，不是原版结果或生产实现验收。
 
-[末列擦除证据](results/2026-11-02-resize-erase-reference/README.md)的两次原失败与两次离线补充成功保持原样。新协议不修改旧源码、不复用旧计划、不重放旧录制；每个新 case 使用独立 fresh 原版进程和一次性计划。
+[末列擦除证据](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-erase-reference/README.md)的两次原失败与两次离线补充成功保持原样。新协议不修改旧源码、不复用旧计划、不重放旧录制；每个新 case 使用独立 fresh 原版进程和一次性计划。
 
 ## 固定输入与五阶段
 

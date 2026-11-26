@@ -45,7 +45,7 @@
 
 四次配置检查均只含一个合成会话；Job 最终 active 均为 0，总进程数分别为 13、14、15、10，原始 terminated 计数均为 0。外层仍明确请求了终止与回收，该计数不等于所有成员自然退出；只有 `mode` 的 shell 单独观察到自然退出 37。
 
-[白名单摘要](../../research/ui/results/2026-10-27-vim-native-reference/validation.json)记录每份样本的输入/工具/原件哈希、实际调用、错误、文件检查和限制。导出重新核对四份私有记录及合成文件，未重新启动 GUI。REA provider 的 subject/environment 仍为 `null`、捕获时 state 为 `running`；包身份由本地准备守卫单独补充，不能改写成 provider 自己完成了身份认证。采集结束后的自有回收另列。
+[白名单摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-27-vim-native-reference/validation.json)记录每份样本的输入/工具/原件哈希、实际调用、错误、文件检查和限制。导出重新核对四份私有记录及合成文件，未重新启动 GUI。REA provider 的 subject/environment 仍为 `null`、捕获时 state 为 `running`；包身份由本地准备守卫单独补充，不能改写成 provider 自己完成了身份认证。采集结束后的自有回收另列。
 
 原件和临时原创驱动保留在 ignored `local/r52-windterm-reference`、`local/r52-windterm-vim-contract`、`local/r52-windterm-native-size`、`local/r52-windterm-cpr-mode`，每处计划/驱动/参数/观察/回收可本地复核。公开摘要不含私有驱动全文或原始插桩输出，因此不是一套公开的一键复现包；不得据此扩大重复性结论。发行物、DLL、资源、绝对路径、PID/句柄及用户配置均不进入公开材料。
 

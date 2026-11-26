@@ -109,7 +109,7 @@
 
 ## 产品配置冒烟结论
 
-固定 ConPTY 1.25 的进入与退出字节经自主 C++ 核心 strict 与 recovery 两路回放均通过（exit 0，屏幕正确：首屏 TF_PAGE_1 到 TF_PAGE_23 + 提示，退出后正文进历史、末行空）。系统 ConPTY 的进入字节 recovery 通过、strict 以 unsupported escape 失败于 OSC 标题。逐阶段通过/失败/跳过见 experiments/shell/results/2026-11-02-tui-more/validation.json。
+固定 ConPTY 1.25 的进入与退出字节经自主 C++ 核心 strict 与 recovery 两路回放均通过（exit 0，屏幕正确：首屏 TF_PAGE_1 到 TF_PAGE_23 + 提示，退出后正文进历史、末行空）。系统 ConPTY 的进入字节 recovery 通过、strict 以 unsupported escape 失败于 OSC 标题。 [逐阶段结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-02-tui-more/validation.json)
 
 ## 未知项与未验证
 

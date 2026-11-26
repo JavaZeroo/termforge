@@ -27,7 +27,7 @@ equal(pure.completeTokenIndices(' M1 H M1S1 H','M1 H'),[1]);
 equal(pure.completeTokenIndices('XM1 H','M1 H'),[]);
 assert(pure.overlap({x:0,y:0,width:2,height:2},pure.caretOccupancy({x:0,y:0,width:0,height:2})));
 assert(!pure.overlap({x:0,y:0,width:2,height:2},pure.caretOccupancy({x:2,y:0,width:0,height:2})));
-const replay=JSON.parse(fs.readFileSync(require('path').join(__dirname,'results/2026-10-28-raster-selection-proposal/replay.json'),'utf8'));
+const replay=JSON.parse(fs.readFileSync(require('path').join(__dirname,'fixtures/2026-10-28-raster-selection-proposal/replay.json'),'utf8'));
 for(const row of replay.records){let allowed=true,reason=null;try{pure.requireCollapsedSelection(row.selection_caret,row.selection_anchor);}catch(error){allowed=false;reason=error.code;}assert.strictEqual(allowed,row.selection_gate_allowed);assert.strictEqual(reason,row.reason);}
 function lifecycle(failure){
     const calls=[],allocations=[];

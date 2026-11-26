@@ -1,12 +1,12 @@
 # 八会话的 resize 重放成本与关闭回复
 
-接续 [UI sender fence](ui-paste-fence.md) 的 [#53](https://github.com/JavaZeroo/termforge/issues/53)。候选 `.4` × 显式官方 ConPTY `1.25.260930003`、flags24 在源码 `eae4b6a4ef3e044ebfebbbbfeccf9aec74cd7f0d` 上通过两轮原八会话 **data-only** 合同。修复保留原 3MB 汉字、768B checkpoint、16KiB sender 门槛、后台输出量、UI70秒和 fixture55秒期限。[固定身份与最终回归](../../experiments/shell/results/2026-10-26-replay-cost-and-close/validation.json)与[全部诊断样本](../../experiments/shell/results/2026-10-26-replay-cost-and-close/)分列，不把真实剪贴板/IME、其他构建或整个 R2 算作通过。
+接续 [UI sender fence](ui-paste-fence.md) 的 [#53](https://github.com/JavaZeroo/termforge/issues/53)。候选 `.4` × 显式官方 ConPTY `1.25.260930003`、flags24 在源码 `eae4b6a4ef3e044ebfebbbbfeccf9aec74cd7f0d` 上通过两轮原八会话 **data-only** 合同。修复保留原 3MB 汉字、768B checkpoint、16KiB sender 门槛、后台输出量、UI70秒和 fixture55秒期限。[固定身份与最终回归](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-replay-cost-and-close/validation.json)与[全部诊断样本](https://github.com/JavaZeroo/termforge/tree/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-replay-cost-and-close)分列，不把真实剪贴板/IME、其他构建或整个 R2 算作通过。
 
 ## 成本定位与有限优化
 
-旧源 `8ff112e` 的两次真实八会话插桩仍在 stage45 失败，Job0、desktop 已回收。第一次把约64秒定位到 parser feed；第二次进一步分开内部阶段：parser feed 63.987秒、Rust feed 0.560秒、synchronize 63.420秒，其中 cell export 2.031秒、reconcile_replay 60.905秒。计数是主线程累计的嵌套 wall time，不能相加，也不是实际呈现或输入延迟。两次均关闭资源采样，仅作诊断；[完整计时、源码/二进制身份与原始记录哈希](../../experiments/shell/results/2026-10-26-replay-cost-and-close/ui-profiles.json)保留。
+旧源 `8ff112e` 的两次真实八会话插桩仍在 stage45 失败，Job0、desktop 已回收。第一次把约64秒定位到 parser feed；第二次进一步分开内部阶段：parser feed 63.987秒、Rust feed 0.560秒、synchronize 63.420秒，其中 cell export 2.031秒、reconcile_replay 60.905秒。计数是主线程累计的嵌套 wall time，不能相加，也不是实际呈现或输入延迟。两次均关闭资源采样，仅作诊断；[完整计时、源码/二进制身份与原始记录哈希](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-replay-cost-and-close/ui-profiles.json)保留。
 
-普通无 resize 的 headless F1 输入未复现高成本：[2,048,000B 的六样本](../../experiments/shell/results/2026-10-26-replay-cost-and-close/headless-ordinary.json)均满足逐行文字、光标和历史预期，未插桩三次 wall 为0.446–0.486秒。缩小到204,800B后，只在计时前加入一次同尺寸 `resize(17,74)`，未插桩两次从无 resize 的0.046/0.044秒变成0.929/0.969秒；六次最终 screen JSON 哈希全部相同。[全部样本与冻结输入](../../experiments/shell/results/2026-10-26-replay-cost-and-close/headless-resize.json)、[诊断驱动及计时边界](../../experiments/shell/results/2026-10-26-replay-cost-and-close/probe/README.md)可审查。
+普通无 resize 的 headless F1 输入未复现高成本：[2,048,000B 的六样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-replay-cost-and-close/headless-ordinary.json)均满足逐行文字、光标和历史预期，未插桩三次 wall 为0.446–0.486秒。缩小到204,800B后，只在计时前加入一次同尺寸 `resize(17,74)`，未插桩两次从无 resize 的0.046/0.044秒变成0.929/0.969秒；六次最终 screen JSON 哈希全部相同。[全部样本与冻结输入](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-replay-cost-and-close/headless-resize.json)、[诊断驱动及计时边界](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-replay-cost-and-close/probe/README.md)可审查。
 
 观察与源码共同支持一个有限原因：resize 保留了重放起始屏幕，后续每次同步的 `reconcile_replay` 会反复序列化同一行，查找 origin 时还会再次生成行键。`06bf6b5` 让同次同步生成的 expected/actual 键向量保留空行位置，并直接按索引复用；计数仍跳过空键。键内容、重复行处理、匹配顺序、行 ID/version 映射、重放生命期和历史策略保持原合同。缓存只在一次调用内存在。
 
@@ -14,11 +14,11 @@
 
 ## 关闭期间仍发送回复的独立错误
 
-只完成键复用后的原八会话在27.467秒完成后台消费，35.974秒完成粘贴关闭和后续输入，但退出时因 `terminal reply rejected by input queue` 返回2。额外诊断的两轮分别成功与失败；失败现场为 `closing=1, stopping=1, queued=0, failed=0, paste_busy=0`，回复是 `ESC[4;4R`。这些成功/失败均保留在[中间运行记录](../../experiments/shell/results/2026-10-26-replay-cost-and-close/intermediate-workflows.json)，一次成功不消除退出错误。
+只完成键复用后的原八会话在27.467秒完成后台消费，35.974秒完成粘贴关闭和后续输入，但退出时因 `terminal reply rejected by input queue` 返回2。额外诊断的两轮分别成功与失败；失败现场为 `closing=1, stopping=1, queued=0, failed=0, paste_busy=0`，回复是 `ESC[4;4R`。这些成功/失败均保留在[中间运行记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-replay-cost-and-close/intermediate-workflows.json)，一次成功不消除退出错误。
 
 原因是关闭已停止输入队列，剩余输出中的光标位置查询仍经 `route_terminal_events` 发送回复。新增真实 ConPTY 回归先将查询留在 OutputQueue，明确要求尚未消费输出，再关闭并确认输入停止，最后才泵窗口消息。旧代码0.19秒即因输入拒绝失败；`eae4b6a` 仅在 `closing_` 时不再发送回复，两次新进程均实际观察查询、消费65B、解析标记文字、零输入拒绝并完成回收。输出仍解析、排空和发布；正常会话的回复失败仍严格报错。
 
-[红绿身份](../../experiments/shell/results/2026-10-26-replay-cost-and-close/closing-reply.json)明确记录夹具变化：绿色版本增加了已解析标记与消费字节断言，未放宽旧条件。测试只注册于候选＋显式后端组合，不能据此声明默认/system 配置已验收。
+[红绿身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-26-replay-cost-and-close/closing-reply.json)明确记录夹具变化：绿色版本增加了已解析标记与消费字节断言，未放宽旧条件。测试只注册于候选＋显式后端组合，不能据此声明默认/system 配置已验收。
 
 ## 最终结果与剩余边界
 

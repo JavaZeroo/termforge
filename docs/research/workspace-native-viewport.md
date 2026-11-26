@@ -22,7 +22,7 @@ UI 内层20秒、主区内层30秒、每轮外层40秒保持。原三轮方法�
 
 用保存的 feed 分块和 parser resize 顺序离线回放，旧策略逐字段重现同次失败核心，新策略得到精确标记；活动主会话在两策略下均正确。这将实际运输和调度之外的策略差异独立出来。原因与 #51 一致：通用 reflow 将历史拉回可见区，与原生控制台绝对坐标布局分歧，后续局部写入留下旧行残尾。
 
-UI 与主区各一红一绿的探针 EXE、helper、源码补丁、每轮原件和全部回放保存在本地；公开[白名单记录与哈希](../../experiments/shell/results/2026-10-27-workspace-native-viewport/validation.json)。resize观察上限1024事件/128KiB运输，helper最多读取100000格，各轮未截断。观测读写会扰动调度，离线回放不证明时序或性能等价。原生快照采于 helper 写出后，不等于后续窗口提交或实际呈现。
+UI 与主区各一红一绿的探针 EXE、helper、源码补丁、每轮原件和全部回放保存在本地；公开[白名单记录与哈希](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-27-workspace-native-viewport/validation.json)。resize观察上限1024事件/128KiB运输，helper最多读取100000格，各轮未截断。观测读写会扰动调度，离线回放不证明时序或性能等价。原生快照采于 helper 写出后，不等于后续窗口提交或实际呈现。
 
 ## 无插桩验收与边界
 

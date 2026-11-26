@@ -22,7 +22,7 @@
 
 ## 源码、构建与验证身份
 
-- 本地实际运行源码 `edec26bb3c4d04858a667a96debf69c139476172`，工作树干净；参与文件 SHA、探针、trace、输入、运输、每阶段捕获及监督记录 SHA 见[脱敏清单](../../experiments/conpty/results/2026-10-27-source-margin-controls/validation.json)。
+- 本地实际运行源码 `edec26bb3c4d04858a667a96debf69c139476172`，工作树干净；参与文件 SHA、探针、trace、输入、运输、每阶段捕获及监督记录 SHA 见[脱敏清单](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-27-source-margin-controls/validation.json)。
 - Windows 11 x64 build 26200；VS17 / MSVC 19.42.34433 / SDK 26100，Release x64。controls 探针 SHA `a71c94795806a40062ace7788ee69cfbac0cd8a274765dce6b28aa6d7f33c7ee`；`.5` trace SHA `5941d4569d0ae146eb005f12ecfb15014bc06c18ee48d1c9460824ab65df93d3`。
 - 新旧 margin 判据与 GO/回收回归 17/17，通过耗时 0.375 秒；原 loader/API/清理回归 14/14、零跳过，1.020 秒。后者复用前一批相同源码的原探针 EXE，运行本次修改后的 Python supervisor；不冒充重新编译原探针。两个实际 stdout 日志均保存在本地并记录 SHA，时长仅为测试诊断。
 - `TERMFORGE_BUILD_SOURCE_CONPTY_EXPERIMENT` 仍默认 OFF；新增 `conpty_source_margin_controls` 独立目标。仅 supervisor 增加可选参数和期限，既有 API 调用默认仍为 20 秒。纯 controls 判据纳入 Windows/Linux CTest，不依赖 native DLL；原生矩阵需显式运行。

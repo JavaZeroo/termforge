@@ -153,22 +153,22 @@ jobs:
       - name: Compare the fourteen recorded RIS cursor replies through the real child
         run: >-
           python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe
-          --ris-reference research/ui/results/2026-11-24-alternate-ris-reference/follow-up-20261125.json
+          --ris-reference research/ui/fixtures/2026-11-24-alternate-ris-reference/follow-up-20261125.json
       - name: Compare repeated alternate entry with WindTerm's margin controls
         run: >-
           python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe
-          --duplicate-margin-reference research/ui/results/2026-11-24-alternate-ris-reference/duplicate-margin.json
+          --duplicate-margin-reference research/ui/fixtures/2026-11-24-alternate-ris-reference/duplicate-margin.json
       - name: Check saved cursor returns and writes at both widths
         run: |
           foreach ($case in 'saved-return-narrow','saved-return-wide') {
-            python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/results/2026-11-02-resize-frame-reference/$case.json"
+            python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/fixtures/2026-11-02-resize-frame-reference/$case.json"
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
       - name: Check saved row and next write after hidden height changes
         run: |
           $failed = 0
           foreach ($case in 'saved-return-short','saved-return-tall') {
-            python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/results/2026-11-26-saved-row/$case.json"
+            python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/fixtures/2026-11-26-saved-row/$case.json"
             if ($LASTEXITCODE -ne 0) { $failed = 1 }
           }
           exit $failed
@@ -176,7 +176,7 @@ jobs:
         run: |
           $failed = 0
           foreach ($case in 'narrow','wide','short','tall') {
-            python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/results/2026-11-26-ris-resize/ris-return-$case.json"
+            python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/fixtures/2026-11-26-ris-resize/ris-return-$case.json"
             if ($LASTEXITCODE -ne 0) { $failed = 1 }
           }
           exit $failed

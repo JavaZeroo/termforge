@@ -141,4 +141,4 @@ Windows Terminal 安装版本 `1.24.12741.0` 对应 annotated tag [`v1.24.12741.
 
 一次性原始反馈已整理为[受监督 cmd 回归入口](../../experiments/conpty/README.md#持续-cmd-输出与-ctrlc-独立回归)。输入输出、系统文件、构建身份和回收结果分别落盘，失败保留原样。旧 9444 失败原因和原生处理函数的独立信号仍缺证据。后续处置见 [#36](https://github.com/JavaZeroo/termforge/issues/36)。
 
-最终入口的[三次 fresh 公开样本](../../experiments/conpty/results/2026-10-26-ctrl-c-retest/validation.json)另有本地离线复核：全部原件大小/哈希和独立完整标记重新计算一致，内外回收通过。原始运输没有公开，源码到二进制没有独立构建证明；这些限制随记录保留。
+最终入口的[三次 fresh 公开样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-ctrl-c-retest/validation.json)另有本地离线复核：全部原件大小/哈希和独立完整标记重新计算一致，内外回收通过。原始运输没有公开，源码到二进制没有独立构建证明；这些限制随记录保留。

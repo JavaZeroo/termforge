@@ -1,7 +1,7 @@
 // Literal hidden-primary observations, with protocol, source and display
 // coordinates kept separate. The original runtime audit failed; the unchanged
 // recording passed a separate, narrowly bounded offline supplemental audit:
-// research/ui/results/2026-11-02-resize-frame-reference/hidden-primary-supplement.json
+// 1f8bf75:research/ui/results/2026-11-02-resize-frame-reference/hidden-primary-supplement.json
 // SHA256 1fde75cb4f841177ab868377b8621624afa0383601b994dd511c0f138d2a6974.
 // These assertions do not classify private origin or pending-wrap bits.
 #include "terminal.hpp"

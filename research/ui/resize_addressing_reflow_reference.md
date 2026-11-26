@@ -1,6 +1,6 @@
 # 缩窄后跨前方重排的 CUP 寻址独立原版观察协议
 
-本文件为 **运行前冻结** 的观察合同：先固定"能区分竞争解释的动作与独立预期"，再对固定 WindTerm 2.7.0 取证一次；失败保留、不重跑、不改断言。承接 [三阶段正文保留观察](results/2026-11-02-resize-state-reference/README.md) 与 [缩窄后单动作寻址观察](results/2026-11-02-resize-address-reference/README.md)，服务 #27/#29 与 [ADR-0010](../../docs/adr/0010-bounded-resize-retention.md)。本文件不是原版运行结果；正文中的"预期"是假设，不是用当前实现充当 oracle。
+本文件为 **运行前冻结** 的观察合同：先固定"能区分竞争解释的动作与独立预期"，再对固定 WindTerm 2.7.0 取证一次；失败保留、不重跑、不改断言。承接 [三阶段正文保留观察](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-state-reference/README.md) 与 [缩窄后单动作寻址观察](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-address-reference/README.md)，服务 #27/#29 与 [ADR-0010](../../docs/adr/0010-bounded-resize-retention.md)。本文件不是原版运行结果；正文中的"预期"是假设，不是用当前实现充当 oracle。
 
 ## 为什么需要新样本
 

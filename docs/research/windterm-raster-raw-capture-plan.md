@@ -2,7 +2,7 @@
 
 本方案完成复核后，另建授权计划并执行一次新原版，已取得[五阶段完整 raw ROI 与离线签名证据](windterm-raster-raw-reference-2026-10-29.md)。原 `execution_authorized=false` proposal 保持不可运行且未修改。旧 [#126 的 0 grab 停止](windterm-1049-raster-reference-2026-10-28.md)和 [#129 的 3 grab partial](windterm-raster-selection-reference-2026-10-29.md)随 [PR #132](https://github.com/JavaZeroo/termforge/pull/132) 独立保留，均未改写，也没有关闭 parent 颜色调查。
 
-新 case 为 `raw-capture-v1`，独立工作树及分支 `research/windterm-raster-raw-capture`，固定生产源 `f6d9a97e2b2685b6ce39c83dc7107cb52aec7a6a`。[不可运行计划](../../research/ui/results/2026-10-29-raster-raw-proposal/plan.json)列出七个生产源 SHA、分析源 SHA、四个完整模块 SHA、五段输入的 hex/长度/SHA 与单次预算。最终复核及明确运行指令后，必须另建新授权计划和唯一目录，不能把此 false proposal 改为 true 或复用旧批目录。
+新 case 为 `raw-capture-v1`，独立工作树及分支 `research/windterm-raster-raw-capture`，固定生产源 `f6d9a97e2b2685b6ce39c83dc7107cb52aec7a6a`。[不可运行计划](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-raster-raw-proposal/plan.json)列出七个生产源 SHA、分析源 SHA、四个完整模块 SHA、五段输入的 hex/长度/SHA 与单次预算。最终复核及明确运行指令后，必须另建新授权计划和唯一目录，不能把此 false proposal 改为 true 或复用旧批目录。
 
 ## 本次改变的合同
 
@@ -46,7 +46,7 @@ Qt5 API/ABI 沿用已核实的完整模块 SHA、实际模块路径与固定导�
 
 ## 离线复现与验证
 
-[既有 phase2 回放](../../research/ui/results/2026-10-29-raster-raw-proposal/replay.json)绑定原 Evidence ID `ev_432abe8baf4fc86efd4994cd12cc3ab5fe0b5120476d22540c5b26e2e3c693a4` 和原 raster-result SHA `3887faaa8d055f42388eafc4b0a9ee2e2b8111d3fa1384e07ec5f0a50585f34d`。新分析器正确保留两个 16 次候选；旧批第二个 H 没有采样、phase3/4 没有发送，这些缺口均未补造。既有 phase1 的完整 raw 签名也唯一匹配同帧 D0。该回放的新原版运行数为 0，不能把旧 partial 变成新完整采集。
+[既有 phase2 回放](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-raster-raw-proposal/replay.json)绑定原 Evidence ID `ev_432abe8baf4fc86efd4994cd12cc3ab5fe0b5120476d22540c5b26e2e3c693a4` 和原 raster-result SHA `3887faaa8d055f42388eafc4b0a9ee2e2b8111d3fa1384e07ec5f0a50585f34d`。新分析器正确保留两个 16 次候选；旧批第二个 H 没有采样、phase3/4 没有发送，这些缺口均未补造。既有 phase1 的完整 raw 签名也唯一匹配同帧 D0。该回放的新原版运行数为 0，不能把旧 partial 变成新完整采集。
 
 [公共测试](../../research/ui/test_raster_raw_reference.py)与[合成 Qt 边界](../../research/ui/test_raster_raw_native.js)按已确认的采集入口/离线 CLI seam 逐项红→绿：旧逻辑遇 tie 只留 1/4 ROI，新逻辑收全 4；tie 分类从异常变为 null/candidates；重复 marker、重复 ROI 和错误完整 label 从可通过变为拒绝。完整合成五阶段即使 phase2 tie 也能导出全部 ROI；同 histogram 但不同排列不匹配，别名及无墨迹保持未知。另覆盖普通/优化解释器的隐私/身份/结构拒绝不得生成公开输出、32B sret 和异常析构边界，以及 false proposal 不得启动或产生 attempt。
 

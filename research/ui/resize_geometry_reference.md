@@ -1,6 +1,6 @@
 # 固定高度请求的独立几何观察
 
-本工具调查旧 [height-only 失败](results/2026-11-02-resize-height-reference/README.md) 缺失的实际窗口几何。旧 749→569 请求后 NAWS 为 91×14，失败时没有记录实际窗口，不能确定最小窗口、终端区域或 splitter 的作用。本工具使用新 namespace、源码归档、计划和进程；不修改旧探针或将其预期 10 行改成 14 行。
+本工具调查旧 [height-only 失败](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-height-reference/README.md) 缺失的实际窗口几何。旧 749→569 请求后 NAWS 为 91×14，失败时没有记录实际窗口，不能确定最小窗口、终端区域或 splitter 的作用。本工具使用新 namespace、源码归档、计划和进程；不修改旧探针或将其预期 10 行改成 14 行。
 
 ## 一次固定请求变化
 

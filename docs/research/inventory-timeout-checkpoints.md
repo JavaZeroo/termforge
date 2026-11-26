@@ -19,7 +19,7 @@
 
 ## 验证
 
-[初版脱敏结果](../../research/ime/results/2026-10-26-inventory-timeout-checkpoints/validation.json) 记录该次固定源码哈希和以下对照；它不覆盖下节新增的清理修订，原件与哈希不改写：
+[初版脱敏结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ime/results/2026-10-26-inventory-timeout-checkpoints/validation.json) 记录该次固定源码哈希和以下对照；它不覆盖下节新增的清理修订，原件与哈希不改写：
 
 1. 正常纯 AST 三个 fresh 子进程均返回 `status=failed`、`started/ended/failed`，阶段完整；退出 0 是抽取 AST 夹具的进程结果，不能当成 worker 业务成功。进程已 reap、stdout/stderr 已 drain、自有 Job 0。
 2. 在实际同一 Try AST 的 `ended` 回调中受控挂起，仍按原 10 秒超时，最后阶段为 `progress-ended`；`outcome=null`，没有伪造 `progress-failed`。清理后进程 reap、流 drain、Job 0。

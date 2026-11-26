@@ -1,7 +1,7 @@
 // One independent WindTerm 2.7.0 observation: narrowing a 123-character line
 // before the target rows shifts later display rows by one, while CUP, DSR and
 // caret keep addressing the retained (pre-resize) source rows. The literal
-// expectations come from research/ui/results/2026-11-03-reflow-addressing-reference;
+// expectations come from 1f8bf75:research/ui/results/2026-11-03-reflow-addressing-reference;
 // this exercises the explicit retained-width transaction, not default Screen::resize.
 #include "terminal.hpp"
 #include "history_view.hpp"

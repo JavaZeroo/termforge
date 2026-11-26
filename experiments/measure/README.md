@@ -1,6 +1,6 @@
 # 核心连续区间计量与校准
 
-当前正式 C++ 路线另有 [recovery 双构建协议与命令](RECOVERY-PREPARE.md)及[一次限定准备结果](results/2026-10-29-recovery-core-prepare/README.md)：同源的包装/无本工具 allocator 包装、实际对象/构建身份与短正确性；不复用下面旧 strict 样本作为 recovery 数据，不扩展历史 Alacritty 成本路线，也不构成 Qt/ConPTY 或 WindTerm 性能验收。
+当前正式 C++ 路线另有 [recovery 双构建协议与命令](RECOVERY-PREPARE.md)及[一次限定准备结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-29-recovery-core-prepare/README.md)：同源的包装/无本工具 allocator 包装、实际对象/构建身份与短正确性；不复用下面旧 strict 样本作为 recovery 数据，不扩展历史 Alacritty 成本路线，也不构成 Qt/ConPTY 或 WindTerm 性能验收。
 
 `core_measure` 使用原创固定输入与独立状态检查。v2 修正了 v1 将很多短轮次 CPU 差值相加的计量问题；`compare.py` 另提供自研/候选 project 与 interactive 成本诊断。解码、屏幕更新、历史仍未完整独立归因，不能据此判断 WindTerm 性能差距。R2 流式字素成本的受控定位与预算由 [#54](https://github.com/JavaZeroo/termforge/issues/54)承接，完整产品性能和跨目标基线仍按 [R4 工作包 #9](https://github.com/JavaZeroo/termforge/issues/9)验收。
 
@@ -39,13 +39,13 @@ python experiments/measure/compare.py --out local/core-compare-new --cpu-seconds
 python experiments/measure/compare.py --route interactive --out local/core-interactive-new --cpu-seconds 1 --repeats 2
 ```
 
-2026-10-25 [project 正式批次](results/2026-10-25-core-compare/)在 Windows 11 build 26200 上完成 12 组×2 个连续 1 秒样本，未并行构建/测试，但不是隔离机器。纯 feed 的 CPU 中位数：自研 42.61–44.42 ns/字节，候选 28.12–29.70；观察开启后自研 50.89–52.82，候选 539.40–580.09。它说明当前候选全量投影/JSON 成本远高于其纯 feed，不能把核心处理和适配观测混成“语言速度”，也不证明产品路径更快。
+2026-10-25 [project 正式批次](https://github.com/JavaZeroo/termforge/tree/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-25-core-compare)在 Windows 11 build 26200 上完成 12 组×2 个连续 1 秒样本，未并行构建/测试，但不是隔离机器。纯 feed 的 CPU 中位数：自研 42.61–44.42 ns/字节，候选 28.12–29.70；观察开启后自研 50.89–52.82，候选 539.40–580.09。它说明当前候选全量投影/JSON 成本远高于其纯 feed，不能把核心处理和适配观测混成“语言速度”，也不证明产品路径更快。
 
-同日 [interactive 正式批次](results/2026-10-25-core-interactive/)按 1/16/64/22000 字节分块完成 16 组×2 个连续 1 秒交错样本。纯 feed CPU 中位数范围为自研 64.64–76.49、候选 62.82–90.22 ns/字节；观察开启为自研 89.50–102.21、候选 1834.75–2041.90。交互批次同样只描述固定核心回放和当前观测适配，不是键盘到呈现延迟、真实 ConPTY 或产品 GUI/TUI 验收。
+同日 [interactive 正式批次](https://github.com/JavaZeroo/termforge/tree/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-25-core-interactive)按 1/16/64/22000 字节分块完成 16 组×2 个连续 1 秒交错样本。纯 feed CPU 中位数范围为自研 64.64–76.49、候选 62.82–90.22 ns/字节；观察开启为自研 89.50–102.21、候选 1834.75–2041.90。交互批次同样只描述固定核心回放和当前观测适配，不是键盘到呈现延迟、真实 ConPTY 或产品 GUI/TUI 验收。
 
 普通 C++ `new` 与 Rust global allocator 统计范围不同，不是等价内存指标；peak working set 包含整个进程准备/检查。观察开启/关闭不是无插桩 A/B，任何差值都不扣除。当前仅覆盖固定 ASCII 长输出与编辑回放，无插桩对照、真实输入/接收/呈现、跨平台与维护成本另审；`performance_gate=not_evaluated`，不能据此作最终路线决定或 WindTerm 性能结论。
 
-候选 `.4` 为完整 trace 投影新增 `grapheme_overflows: 0`，因此 project / interactive 的全对象摘要分别从 `11966868740884721388` / `8035857386658397897` 迁移为 `16178973312633948535` / `6154007251599136798`。屏幕、历史、光标、样式、模式和回复逐字段不变；字段继续进入哈希，不排除计数器来维持旧摘要。独立构造的完整固定负载状态、旧/新摘要迁移及实际 trace 对象由 `test_compare.py` 验证，实际计量批次继续覆盖全部块大小与观察开关，错误摘要继续拒绝。旧结果原样保留；首次 CI 红反馈及身份见[迁移记录](results/2026-10-26-projection-digest/validation.json)。这次修复仅更新诊断身份合同，没有改变产品、负载、计时或性能验收标准。
+候选 `.4` 为完整 trace 投影新增 `grapheme_overflows: 0`，因此 project / interactive 的全对象摘要分别从 `11966868740884721388` / `8035857386658397897` 迁移为 `16178973312633948535` / `6154007251599136798`。屏幕、历史、光标、样式、模式和回复逐字段不变；字段继续进入哈希，不排除计数器来维持旧摘要。独立构造的完整固定负载状态、旧/新摘要迁移及实际 trace 对象由 `test_compare.py` 验证，实际计量批次继续覆盖全部块大小与观察开关，错误摘要继续拒绝。旧结果原样保留；首次 CI 红反馈及身份见[迁移记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-26-projection-digest/validation.json)。这次修复仅更新诊断身份合同，没有改变产品、负载、计时或性能验收标准。
 
 ## 校准能回答什么
 
@@ -64,7 +64,7 @@ python experiments/measure/compare.py --route interactive --out local/core-inter
 
 ## v1 历史结果（未改写）
 
-2026-10-22 的 [身份](results/2026-10-22/manifest.json) 与 [原始样本](results/2026-10-22/samples.jsonl) 保持原样。当时存在同时构建与测试活动，且采用有缺陷的短轮次 CPU 累加端点；达到累计时长门槛不能证明无偏，分配计数也不能证明它主导耗时。v2 独立保留新身份、schema 与数据，旧结果不用于速度排名。
+2026-10-22 的 [身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-22/manifest.json) 与 [原始样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-22/samples.jsonl) 保持原样。当时存在同时构建与测试活动，且采用有缺陷的短轮次 CPU 累加端点；达到累计时长门槛不能证明无偏，分配计数也不能证明它主导耗时。v2 独立保留新身份、schema 与数据，旧结果不用于速度排名。
 
 ## 自动验证
 

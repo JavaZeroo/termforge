@@ -1,6 +1,6 @@
 # 窄屏边界 / 编辑的独立原版观察协议
 
-本文件定义 [运行工具](resize_edit_reference.py)、[控制器](resize_edit_reference.js)和[严格导出器](export_resize_edit_reference.py)的协议。它承接 [原始三阶段观察](results/2026-11-02-resize-state-reference/README.md)与 [resize 后寻址协议](resize_address_reference.md)，保留旧工具和归档；本文不是本组原版运行结果或产品验收。
+本文件定义 [运行工具](resize_edit_reference.py)、[控制器](resize_edit_reference.js)和[严格导出器](export_resize_edit_reference.py)的协议。它承接 [原始三阶段观察](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-state-reference/README.md)与 [resize 后寻址协议](resize_address_reference.md)，保留旧工具和归档；本文不是本组原版运行结果或产品验收。
 
 ## 目的与坐标口径
 

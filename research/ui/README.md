@@ -50,7 +50,7 @@ QWidget 字体与 QPainter 文本绘制字体分别记录，后者仅读取 devi
   --evidence-id <本次证据ID> --out local/ui-reference/new-typography/summary.json
 ```
 
-摘要需通过脚本/目标身份、阶段完整性、错误/截断、父链、主区域矩形及回收/配置门槛；只输出白名单几何/字体及证据元数据。审核后才可提交摘要，不提交整个证据包、截图、profile 或复制发行物。
+摘要须核对脚本和目标身份、阶段完整性、错误与截断、父链、主区域矩形以及回收和配置。原件保存在 `local/`。审核通过的白名单几何、字体与证据元数据引用到责任 issue 或[证据索引](../../docs/EVIDENCE.md)。
 
 ## R1 文字动作参考
 
@@ -62,7 +62,7 @@ QWidget 字体与 QPainter 文本绘制字体分别记录，后者仅读取 devi
 
 ## Resize 离线复验
 
-复算历史导出时，按报告核对执行源、导出源与计划 SHA-256。例如[双轴报告](results/2026-11-04-resize-dual-axis-reference/README.md)分别记录运行源 `dee3c78` 和离线导出源 `2fc3f25`。用对应版本的导出器读取原始目录（`--directory`）和冻结计划（`--plan`），填入报告中的 `--expected-plan-sha256`。`--source-root` 指向对应执行源。使用源码归档时保留其原始 `reference-source.json`。如果参考发行物已移动，用 `--reference-source` 指定其目录。结果写入新 `--destination`，再与报告的公开件 SHA-256 比对。旧公开脚本见[共享模块引入前的快照](https://github.com/JavaZeroo/termforge/tree/2c5d7f0d78475e21b4b52ee988eb4b6de2bc5829/research/ui)。
+复算历史导出时，按报告核对执行源、导出源与计划 SHA-256。例如[双轴报告](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-04-resize-dual-axis-reference/README.md)分别记录运行源 `dee3c78` 和离线导出源 `2fc3f25`。用对应版本的导出器读取原始目录（`--directory`）和冻结计划（`--plan`），填入报告中的 `--expected-plan-sha256`。`--source-root` 指向对应执行源。使用源码归档时保留其原始 `reference-source.json`。如果参考发行物已移动，用 `--reference-source` 指定其目录。结果写入新 `--destination`，再与报告的公开件 SHA-256 比对。旧公开脚本见[共享模块引入前的快照](https://github.com/JavaZeroo/termforge/tree/2c5d7f0d78475e21b4b52ee988eb4b6de2bc5829/research/ui)。
 
 在已配置的构建目录中，可运行下列离线测试，复验当前脚本的纯高度、测量高度、顺序宽高和双轴场景。
 

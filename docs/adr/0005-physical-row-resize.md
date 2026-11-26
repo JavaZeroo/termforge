@@ -49,4 +49,4 @@ API 依据是 [Microsoft ResizePseudoConsole](https://learn.microsoft.com/en-us/
 
 固定 WindTerm 2.7.0 的限定静态复核中，`0x140238f90` 仅在缩短时进入 `0x140233a30` 的保存路径；增高走 `0x1402ee110`，分配并初始化新屏幕行，不消耗 scrollback 来回填视口。该路径支持独立保留旧历史，与上述保守合同一致，但不要求照抄上游或宣称所有 WindTerm 配置均如此。本地 `local/analysis/windterm-resize-history-20261026/` 的 44 个定向函数均完成反编译并核对关键汇编，目标 SHA-256 为 `7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0`。原始输出只留本地；这是静态、限定路径证据，不是运行时全量行为比较，也不覆盖 Document/Scintilla 的所有动态连接。
 
-命令、哈希、默认/候选完整回归及未满足项见[重放与历史验证记录](../../experiments/core/results/2026-10-26-resize-replay/validation.json)。
+命令、哈希、默认/候选完整回归及未满足项见[重放与历史验证记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-26-resize-replay/validation.json)。

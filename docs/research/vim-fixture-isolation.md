@@ -10,7 +10,7 @@
 
 修正将应用工作目录设为本轮刚新建的 capture 目录。相对文件名、事件文件握手、输入字节、`[New]`、写盘内容、退出、真实 reader EOF 与外层 Job 检查均保留。兄弟运行和父目录已有文件不再影响本轮，也不会删除或覆盖父目录的文件。
 
-新增真实回归在父目录预置旧编辑文件和 READY/INSERT，然后执行两个兄弟 capture，检查各自新文件、事件及父目录原件未变。该回归对旧 EXE 真实失败，对本树重建的修正 EXE 通过；完整真实应用模块 9 项通过。详细身份、原期限、原件哈希和回收结果见[脱敏证据](../../experiments/conpty/results/2026-10-26-vim-fixture-isolation/validation.json)。
+新增真实回归在父目录预置旧编辑文件和 READY/INSERT，然后执行两个兄弟 capture，检查各自新文件、事件及父目录原件未变。该回归对旧 EXE 真实失败，对本树重建的修正 EXE 通过；完整真实应用模块 9 项通过。详细身份、原期限、原件哈希和回收结果见[脱敏证据](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-vim-fixture-isolation/validation.json)。
 
 ## 复验
 

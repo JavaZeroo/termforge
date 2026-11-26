@@ -47,7 +47,7 @@ def write_records(directory,data):
 
 class RawRasterTests(unittest.TestCase):
     def test_fixed_proposal_is_non_executable_and_preserves_exact_five_sources(self):
-        plan=json.loads((ROOT/'research/ui/results/2026-10-29-raster-raw-proposal/plan.json').read_text())
+        plan=json.loads((ROOT/'research/ui/fixtures/2026-10-29-raster-raw-proposal/plan.json').read_text())
         self.assertFalse(plan['execution_authorized']);self.assertEqual(plan['actual_original_runs'],0)
         self.assertEqual(plan['case_id'],'raw-capture-v1')
         self.assertEqual([row['source_bytes'] for row in plan['phases']],[43,38,20,53,54])
@@ -153,7 +153,7 @@ class RawRasterTests(unittest.TestCase):
             with self.subTest(case=index):self.reject_cli(change)
 
     def test_real_partial_replay_does_not_fabricate_missing_roi_or_later_phases(self):
-        replay=json.loads((ROOT/'research/ui/results/2026-10-29-raster-raw-proposal/replay.json').read_text())
+        replay=json.loads((ROOT/'research/ui/fixtures/2026-10-29-raster-raw-proposal/replay.json').read_text())
         self.assertEqual(replay['new_original_runs'],0);self.assertFalse(replay['new_capture_inferred'])
         self.assertEqual(replay['original_phase2_rois_captured'],1);self.assertEqual(replay['original_phase2_markers'],2)
         self.assertFalse(replay['missing_rois_fabricated']);self.assertEqual(replay['original_grab_phases'],[0,1,2])

@@ -49,4 +49,4 @@ $windTermExe = (Resolve-Path -LiteralPath 'local/windterm-official/WindTerm_2.7.
 
 准备器已在真实官方包上运行，启动的新实例在指定 `profile-home` 内创建了 `.wind`；这验证了定位配置生效，尚非全部文件访问的隔离审计。运行器通过受控文件接收端集成测试与超时保留测试。
 
-2026-10-21 已核验首次真实 WindTerm 生产端烟测：100 行、7,732 字节全部写出，退出码 0，7 个资源样本有效。见[烟测记录](../results/2026-10-21-windterm-smoke/README.md)。**实际 C0 配置、完整画面正确性与正式性能基线仍待验证。**
+2026-10-21 已核验首次真实 WindTerm 生产端烟测：100 行、7,732 字节全部写出，退出码 0，7 个资源样本有效。见[烟测记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/benchmarks/results/2026-10-21-windterm-smoke/README.md)。**实际 C0 配置、完整画面正确性与正式性能基线仍待验证。**

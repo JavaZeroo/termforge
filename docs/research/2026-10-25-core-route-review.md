@@ -13,8 +13,8 @@
 选择依据是实际行为覆盖、维护边界和共同计量，而不是 Rust/C++ 语言标签：
 
 - 共同矩阵为 95 次、1011 检查点，90 次一致、5 次精确锁定的候选参考差异；[ED1/ED2 裁决](../../experiments/differential/decisions.md) 不把差异算作兼容通过。
-- [扩展能力](../../experiments/differential/results/2026-10-25-capabilities-v2/summary.json) 已实际提供备用屏、滚动区、回复和 resize；自研对应多项明确未支持。[真实 cmd/more.com/Vim 核心轨迹](../../experiments/differential/results/2026-10-25-real-applications/summary.json)与[有界 fuzz/最小回归](../../experiments/differential/results/2026-10-25-fuzz/summary.json)均可复验，但不代表产品 GUI/TUI。
-- [project](../../experiments/measure/results/2026-10-25-core-compare/)与 [interactive](../../experiments/measure/results/2026-10-25-core-interactive/)原始批次分开 feed 和观测。纯 feed CPU 中位数分别为自研 42.61–44.42 / 候选 28.12–29.70 ns/字节，以及自研 64.64–76.49 / 候选 62.82–90.22 ns/字节。候选全量投影/JSON 观察成本显著，不能进入产品热路径，也不能据此作性能排名。
+- [扩展能力](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-capabilities-v2/summary.json) 已实际提供备用屏、滚动区、回复和 resize；自研对应多项明确未支持。[真实 cmd/more.com/Vim 核心轨迹](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-real-applications/summary.json)与[有界 fuzz/最小回归](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-fuzz/summary.json)均可复验，但不代表产品 GUI/TUI。
+- [project](https://github.com/JavaZeroo/termforge/tree/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-25-core-compare)与 [interactive](https://github.com/JavaZeroo/termforge/tree/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-25-core-interactive)原始批次分开 feed 和观测。纯 feed CPU 中位数分别为自研 42.61–44.42 / 候选 28.12–29.70 ns/字节，以及自研 64.64–76.49 / 候选 62.82–90.22 ns/字节。候选全量投影/JSON 观察成本显著，不能进入产品热路径，也不能据此作性能排名。
 - 候选已有 `Term::damage` / `reset_damage` 和 `EventListener`，具备做增量呈现与回复适配的实际接口；自研完整模式、回复和兼容维护则需本项目逐项承担。
 
 ## 平台差距
@@ -40,7 +40,7 @@
 
 具体兼容修复不是“改投影文字”：
 
-1. **ED1：** [最小差分](../../experiments/differential/results/2026-10-25-erase-display/)与规范裁决证明候选错误。固定源码 [`Term::clear_screen`](https://github.com/alacritty/alacritty/blob/94e7c8874e526b1e67b349d9ba30ddf81669119e/alacritty_terminal/src/term/mod.rs) 的 `ClearMode::Above` 只在 `cursor.line > 1` 时清理前序行，需形成最小上游回归与修复；产品不能保留该已知错误。
+1. **ED1：** [最小差分](https://github.com/JavaZeroo/termforge/tree/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/differential/results/2026-10-25-erase-display)与规范裁决证明候选错误。固定源码 [`Term::clear_screen`](https://github.com/alacritty/alacritty/blob/94e7c8874e526b1e67b349d9ba30ddf81669119e/alacritty_terminal/src/term/mod.rs) 的 `ClearMode::Above` 只在 `cursor.line > 1` 时清理前序行，需形成最小上游回归与修复；产品不能保留该已知错误。
 2. **ED2：** 同一路径 `ClearMode::All` 在非备用屏调用 `clear_viewport`，会把可见行迁入历史；TermForge 已裁决保留“清屏但不新增/清空历史”。需争取可配置上游行为，或以固定许可兼容补丁维持项目策略，并用原复合轨迹、ED2 最小例及真实 shell 回放验证。
 3. 需要本地补丁时，固定精确 Git commit、保留 Apache-2.0 与来源、记录相对发布版的 diff；不得把修改后的源码继续伪称未修改的 crates.io 0.26.0。每次 rebase/升级重跑共同/扩展/真实应用/fuzz、完整 R1 和成本探针。
 4. 升级时审查 changelog、tag→commit、整个 lockfile 的 MSRV/yank/许可/API 变化，以及 released 与 unreleased 修复。CI 的 Windows 真实应用失败不得跳过或改成警告。

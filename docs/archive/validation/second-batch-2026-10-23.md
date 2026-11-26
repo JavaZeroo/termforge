@@ -10,7 +10,7 @@ Windows 11 build 26200、Intel Core i7-9700、MSVC 19.42.34433、CMake 3.31.0、
 
 - C2：30 项，包括百万字节 ESC/CSI/OSC、非法 UTF-8、随机字节流、各种拆包、取消与 EOF 重入；[契约](../../../experiments/core/RECOVERY.md)。旧核心/Unicode 30 项仍通过。
 - C1：95 次运行保持 65 一致、30 精确已知差异，没有放宽差异匹配或参考版本。
-- V1：4 项集成测试；另有 8 次固定场景运行与 1 次真实窗口创建后的超时清理。[原始样本](../../../experiments/presentation/results/2026-10-23/samples.jsonl)、[身份](../../../experiments/presentation/results/2026-10-23/manifest.json)。两张自有图像经实际查看，中文、组合重音、颜色和移动后的光标可见。
+- V1：4 项集成测试；另有 8 次固定场景运行与 1 次真实窗口创建后的超时清理。[原始样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/presentation/results/2026-10-23/samples.jsonl)、[身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/presentation/results/2026-10-23/manifest.json)。两张自有图像经实际查看，中文、组合重音、颜色和移动后的光标可见。
 - P1：9 项，包括真实短区间、失败/超时输出保留及失败 manifest。其余现有工具、ConPTY 生命周期与资源回收回归均通过。
 
 一次合并测试使用了 V1 新增校验字段前的 EXE，4 个窗口组合因缺字段失败；重编译 `presentation_probe` 后该套通过。原始失败仍保留于本地 CTest/合成产物目录。随后新增的计量失败 manifest 用例也做了定向重测。不把开发期间的构建不同步记录隐去或当成通过。
@@ -36,8 +36,8 @@ Windows 11 build 26200、Intel Core i7-9700、MSVC 19.42.34433、CMake 3.31.0、
 
 | 批次 | 原始记录 | 校验与区间 |
 |---|---|---|
-| A | [身份](../../../experiments/measure/results/2026-10-23-v2-a/manifest.json)、[24 样本](../../../experiments/measure/results/2026-10-23-v2-a/samples.jsonl)、[2 校准](../../../experiments/measure/results/2026-10-23-v2-a/calibration.jsonl) | 全通过，CPU 2.000–2.250 秒 |
-| B | [身份](../../../experiments/measure/results/2026-10-23-v2-b/manifest.json)、[24 样本](../../../experiments/measure/results/2026-10-23-v2-b/samples.jsonl)、[2 校准](../../../experiments/measure/results/2026-10-23-v2-b/calibration.jsonl) | 全通过，CPU 2.000–2.234375 秒 |
+| A | [身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-23-v2-a/manifest.json)、[24 样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-23-v2-a/samples.jsonl)、[2 校准](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-23-v2-a/calibration.jsonl) | 全通过，CPU 2.000–2.250 秒 |
+| B | [身份](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-23-v2-b/manifest.json)、[24 样本](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-23-v2-b/samples.jsonl)、[2 校准](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/measure/results/2026-10-23-v2-b/calibration.jsonl) | 全通过，CPU 2.000–2.234375 秒 |
 
 四次时钟校准的最小正 CPU 增量均为 15.625 ms。该值是观察结果，不是保证的时钟精度。schema v2 使用整个连续区间的一次起终点差值，包含低频门槛检查以及除最后一轮之外的 Parser 析构；预热、前后独立 oracle 和摘要在区间外。中间轮次没有逐一检查。v1 的短轮次累加数据原样保留，计时边界不同，不能直接比较速度变化。
 

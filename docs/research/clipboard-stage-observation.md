@@ -14,7 +14,7 @@
 
 ## 实际结果
 
-[push/default run 40459936505，Windows job 122041868650](https://github.com/JavaZeroo/termforge/actions/runs/40459936505/job/122041868650) 使用默认核心与系统 ConPTY。[白名单摘要](../../experiments/shell/results/2026-10-27-clipboard-stages/validation.json)记录来源、构建清单和原件哈希；[trace 0](../../experiments/shell/results/2026-10-27-clipboard-stages/trace-0.jsonl)及[trace 1](../../experiments/shell/results/2026-10-27-clipboard-stages/trace-1.jsonl)经字段检查后保留原字节。
+[push/default run 40459936505，Windows job 122041868650](https://github.com/JavaZeroo/termforge/actions/runs/40459936505/job/122041868650) 使用默认核心与系统 ConPTY。[白名单摘要](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-27-clipboard-stages/validation.json)记录来源、构建清单和原件哈希；[trace 0](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-27-clipboard-stages/trace-0.jsonl)及[trace 1](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-10-27-clipboard-stages/trace-1.jsonl)经字段检查后保留原字节。
 
 | 检查 | 第一轮 | 第二轮 |
 |---|---|---|

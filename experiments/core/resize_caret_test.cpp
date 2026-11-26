@@ -1,5 +1,5 @@
 // Literal WindTerm 2.7.0 controls for combining input after DSR, CUP and resize.
-// Public recordings: research/ui/results/2026-11-02-unicode-caret-reference/
+// Public recordings: 1f8bf75:research/ui/results/2026-11-02-unicode-caret-reference/
 // dsr-only-q.json: eb2ec7b8f84ec5a78f3597ef8b2f86947f0a430c9e9b4849680e97d6f8d9544b
 // cup-position-q.json: 24a5bad1a5455bb4b95bb9ef20b05b81c79f4237d1310e7fdcb93dd6da98972a
 // resize-mark-q.json: 1e8e152e659c93f77e96e8b611e5fc9df43d8947912ac804f1f239eb7535f6f2

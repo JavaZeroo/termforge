@@ -4,8 +4,8 @@
 
 ## 已知来源与本次未知
 
-- [独立窗口几何](results/2026-11-02-resize-geometry-reference/README.md)：执行源 `3d4c8c2d6222caf0fc024729d9e0b34c020a69cf`，严格公开件 SHA256 `f18a2320c073ed477f773b42076c9968c0c8af8530af19548d5695e66e8cf9b5`，只观察 `1360×749 → 1360×569` 的 `91×20 → 91×14`。
-- [纯高度正文观察](results/2026-11-02-resize-height-measured-reference/README.md)：执行源 `50a560739e45d00ee31177d84b7c54a144f5273e`，严格公开件 SHA256 `32d3f6cf2d1c6746ff517b684ecd8c631c86ecc87874209ba5f831ea244730e0`，在 `91×20 → 91×14 → 91×20` 保留正文，DSR `19;7 → 14;7 → 14;7`，恢复高度后查询矩形保持缩高位置。
+- [独立窗口几何](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-geometry-reference/README.md)：执行源 `3d4c8c2d6222caf0fc024729d9e0b34c020a69cf`，严格公开件 SHA256 `f18a2320c073ed477f773b42076c9968c0c8af8530af19548d5695e66e8cf9b5`，只观察 `1360×749 → 1360×569` 的 `91×20 → 91×14`。
+- [纯高度正文观察](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-resize-height-measured-reference/README.md)：执行源 `50a560739e45d00ee31177d84b7c54a144f5273e`，严格公开件 SHA256 `32d3f6cf2d1c6746ff517b684ecd8c631c86ecc87874209ba5f831ea244730e0`，在 `91×20 → 91×14 → 91×20` 保留正文，DSR `19;7 → 14;7 → 14;7`，恢复高度后查询矩形保持缩高位置。
 
 上述事实不证明 **1000×569 对应 61×14**，也不证明先缩宽后的高度行为。本工具将这组尺寸作为固定待检验预测，`geometry_basis.combined_grid_previously_observed=false`；运行时保存实际测量后再检查，不自动调整窗口、行数、splitter 或期限。
 

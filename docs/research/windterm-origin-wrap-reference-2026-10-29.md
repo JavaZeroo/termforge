@@ -2,7 +2,7 @@
 
 **一次直达终端观察完成，未实现或验收 TermForge 模式。** 固定91×25网格下取得25阶段、25条bare DSR和25份Qt文档快照，可用于自主C++的下一项有限实现。完整活动网格、样式、所有模式交叉和本地ConPTY路径仍未由本项验证；#27/#41/#56/R2保持开放。
 
-输入、次数和期限先按 [#151计划](windterm-origin-wrap-plan.md)固定，再由根代理执行唯一原版尝试。[完整白名单数据](../../research/ui/results/2026-10-29-origin-wrap-reference/validation.json)和[独立发布审计](../../research/ui/results/2026-10-29-origin-wrap-reference/publication-audit.json)保留实际来源，公开内容只有原创合成字节、回复、合成文档及脱敏元数据。
+输入、次数和期限先按 [#151计划](windterm-origin-wrap-plan.md)固定，再由根代理执行唯一原版尝试。[完整白名单数据](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-origin-wrap-reference/validation.json)和[独立发布审计](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-origin-wrap-reference/publication-audit.json)保留实际来源，公开内容只有原创合成字节、回复、合成文档及脱敏元数据。
 
 ## 来源与完整性
 
@@ -60,4 +60,4 @@
 
 反例内容提交 `9d36d4efa02a70ab6d7585d50f1e42df32ebedc6`；最小修正 `74d4cadd9fa90fd6b6a1de6c61e96f8369e67951` 仅将夹具目录改为 `(root / "capture").resolve()`，在生成probe和source元数据前与真实launcher一致。生产exporter、source/path/lifecycle校验、189行LF→CRLF及私密文字白名单均未改。两个新增回归直接驱动真实capture/publicCLI：red为1个Provider错误和普通/-O两个CLI失配；green相关纯测试普通/-O各23项通过，别名下有效记录通过，私密文本仍在正确白名单门槛拒绝且不创建输出。
 
-[路径修正审计](../../research/ui/results/2026-10-29-origin-wrap-reference/fixture-path-validation.json)单列本次反例、源码、日志和派生出口。原件43项、原版执行源72e、三个false及旧公开 `9774e25…` 原字节保持。修正后的实际raw普通/-O重导仍相同，新SHA `6ad6820884d4f94b9a42fd1a669253c72df38512b9f8dadb461250e3425e4557`；与旧公开文件只差 `offline_export_source_commit` 由fb1a40a变为74d4cad，其余投影和字节完全相同。这是调用HEAD元数据变化，不是新观测、数据修正或新原版运行。新source的自动CI及最终审查另行核对；没有用本地green覆盖旧CI红。
+[路径修正审计](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-29-origin-wrap-reference/fixture-path-validation.json)单列本次反例、源码、日志和派生出口。原件43项、原版执行源72e、三个false及旧公开 `9774e25…` 原字节保持。修正后的实际raw普通/-O重导仍相同，新SHA `6ad6820884d4f94b9a42fd1a669253c72df38512b9f8dadb461250e3425e4557`；与旧公开文件只差 `offline_export_source_commit` 由fb1a40a变为74d4cad，其余投影和字节完全相同。这是调用HEAD元数据变化，不是新观测、数据修正或新原版运行。新source的自动CI及最终审查另行核对；没有用本地green覆盖旧CI红。

@@ -12,7 +12,7 @@
 - 独立 WindowStation/Desktop、OwnedJob、独立 HOME/profile 和一个合成 loopback Telnet 会话；没有用户输入桌面、剪贴板或 DPI 变更。计划的单次 marker 保留，实际仅启动原版一次。
 - REA capture=45 秒、CLI wait timeout=60 秒；原版更早启动并另有 2 秒等待，回收在 CLI 返回后进行，不提供整程 45/60 秒保证。动态插桩只用于正确性，不计性能。
 
-REA Evidence ID 为 `ev_cedd36bf326d1769fa8d0d7b1cc508314eb22da43ba97faf80debbcf9b085e63`。完整脱敏标量及原件哈希见[白名单结果](../../research/ui/results/2026-10-28-raster-style-reference/validation.json)。
+REA Evidence ID 为 `ev_cedd36bf326d1769fa8d0d7b1cc508314eb22da43ba97faf80debbcf9b085e63`。完整脱敏标量及原件哈希见[白名单结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-28-raster-style-reference/validation.json)。
 
 ## 本次实际发生的步骤
 
@@ -39,7 +39,7 @@ REA Evidence ID 为 `ev_cedd36bf326d1769fa8d0d7b1cc508314eb22da43ba97faf80debbcf
 
 该原件的 shell-ready、actual80x24 快照均为 `caret=anchor=97`，但 `selectionText` 长度为 5；styled-final 为 `caret=anchor=400`，但文本长度为 10。这是“非空返回值足以证明有选区”的直接反例。它不替代本批未采集的 anchor，也不证明本批实际选区已折叠；只说明本批使用的守卫判据不成立。下一次调查应先按原版实际 anchor/caret 合同明确选区状态，再决定是否抓取。
 
-[两条脱敏反例](../../research/ui/results/2026-10-28-raster-style-reference/selection-getter-counterexample.json)只发布 caret、anchor 和 selection_length 三个值，并绑定原 Evidence ID、文件 SHA 与固定 EXE 身份；没有文字或路径。[专用离线导出器](../../research/ui/export_selection_counterexample.py)从固定原件核对并投影这些值，不启动原版。
+[两条脱敏反例](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-10-28-raster-style-reference/selection-getter-counterexample.json)只发布 caret、anchor 和 selection_length 三个值，并绑定原 Evidence ID、文件 SHA 与固定 EXE 身份；没有文字或路径。[专用离线导出器](../../research/ui/export_selection_counterexample.py)从固定原件核对并投影这些值，不启动原版。
 
 ## 离线审计与剩余边界
 

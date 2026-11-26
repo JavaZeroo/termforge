@@ -12,7 +12,7 @@
 
 ## 同源 A/B 与证伪
 
-同一探针、源字节和四阶段 capture，仅改变后端、输出 mode、合法网格大小。每个后端运行 `vt-on`/`vt-off` × `80×24`/`12×7`，两次 fresh 矩阵均完成；所有成功探针都要求 child 自然退出 37、管道 EOF 109、内外自有 Job 归零、无强制进程或读线程取消。结果与源码身份见[白名单记录](../../experiments/conpty/results/2026-10-26-margin-backends/validation.json)。
+同一探针、源字节和四阶段 capture，仅改变后端、输出 mode、合法网格大小。每个后端运行 `vt-on`/`vt-off` × `80×24`/`12×7`，两次 fresh 矩阵均完成；所有成功探针都要求 child 自然退出 37、管道 EOF 109、内外自有 Job 归零、无强制进程或读线程取消。结果与源码身份见[白名单记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-margin-backends/validation.json)。
 
 | 分支及可证伪预测 | 观察 | 裁决 |
 |---|---|---|

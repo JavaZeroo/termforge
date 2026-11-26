@@ -4,7 +4,7 @@
 
 ## 1. 合同已经固定（不再重写预期）
 
-- 逐字段判据、四阶段固定 oracle 与 175B 源：[conpty-native-margin-path.md](conpty-native-margin-path.md)、[margin_contract.py](../../experiments/conpty/margin_contract.py)、[白名单记录](../../experiments/conpty/results/2026-10-26-native-margin-path/validation.json)。
+- 逐字段判据、四阶段固定 oracle 与 175B 源：[conpty-native-margin-path.md](conpty-native-margin-path.md)、[margin_contract.py](../../experiments/conpty/margin_contract.py)、[白名单记录](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/conpty/results/2026-10-26-native-margin-path/validation.json)。
 - 分层检查点始终分开：**应用源 VT / 源控制台 CHAR_INFO / transport / 末端候选**；末端正确不能替代原生状态，原生正确也不能补回 transport 已丢失的控制序列。
 - 原失败（系统后端 native final 红、官方 80 列原 5 秒生命周期失败）保留在原记录中，未重跑覆盖。
 
