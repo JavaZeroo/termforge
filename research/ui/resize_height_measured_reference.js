@@ -1,11 +1,11 @@
-// Every fixed single-axis resize is observed before the next; no input after the ASCII body except DSR.
+// Every fixed single-axis resize is observed before the next; the peer sends the fixed switch and write actions.
 let stage=0,busy=false,finished=false,due=0,stable=null,stableSince=0,lastPhase=-1;
 let gridKey=null,gridSince=0,nawsSeen=0,lastNaws=null,requested=0,resized=0,committed=0;
 const contract=__RESIZE_HEIGHT_MEASURED_CASE_JSON__,caseId=contract.case_id;
-const counts={'height-retention-measured':3};
+const counts={'ris-return-narrow':9,'ris-return-wide':9,'ris-return-short':9,'ris-return-tall':9};
 const phaseCount=counts[caseId],lastStage=phaseCount-1;
 const windows=contract.windows,grids=contract.grids,resizePhases=contract.resize_phases;
-if(!phaseCount||windows.length!==phaseCount||grids.length!==phaseCount||contract.labels.length!==phaseCount||resizePhases.length!==phaseCount-1||!Array.isArray(contract.marker_labels))throw Error('fixed height contract');
+if(!phaseCount||windows.length!==phaseCount||grids.length!==phaseCount||contract.labels.length!==phaseCount||resizePhases.length!==2||!Array.isArray(contract.marker_labels))throw Error('fixed height contract');
 const started=Date.now(),observations=[],geometryChecks=[];
 for(const module of [wind,core,gui,widgets]){
     const expected=(__RUN_DIRECTORY_JSON__+'/app/'+module.name).replace(/\\/g,'/').toLowerCase();
@@ -87,12 +87,9 @@ Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
             if(state!==stable){stable=state;stableSince=Date.now();return;}
             if(Date.now()-stableSince<400)return;
             if(peer.phase===0){
-                if(JSON.stringify(record.cursor_reply)!==JSON.stringify([19,7]))throw Error('initial fixture DSR differs');
+                if(JSON.stringify(record.cursor_reply)!==JSON.stringify([19,91]))throw Error('initial fixture DSR differs');
                 if(!Array.isArray(terminal.lines))throw Error('initial fixture text missing');
-                for(const label of contract.marker_labels){
-                    const count=terminal.lines.reduce((total,line)=>total+line.split(label).length-1,0);
-                    if(count!==1)throw Error('initial fixture sentinel missing or repeated '+label);
-                }
+                if(terminal.markers.length)throw Error('unexpected initial marker');
             }
             if(observations.length!==peer.phase||observations.length>=phaseCount)throw Error('resize-height-measured phase order');
             const observation={phase:peer.phase,label:peer.phase_label,terminal,...geometry,cursor_reply:record.cursor_reply,
