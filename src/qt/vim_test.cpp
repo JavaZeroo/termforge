@@ -60,6 +60,28 @@ void check_painted(SessionModel& model, TerminalWidget& window) {
         require(row_text(page->lines[offset + i]) == row_text(rows[i]), "painted Vim row differs");
 }
 
+// Vim probes a glyph at 2;1, probes the next row, then probes home twice.
+// After 13 inserted ASCII cells the post-resize caret is at 1;14.
+void check_edit_input(const std::string& bytes) {
+    std::string keys;
+    std::vector<std::string> replies;
+    for (size_t i = 0; i < bytes.size();) {
+        if (bytes.compare(i, 2, "\x1b[") == 0) {
+            const auto end = bytes.find('R', i + 2);
+            require(end != std::string::npos, "unfinished or unexpected Vim terminal reply");
+            replies.push_back(bytes.substr(i, end - i + 1));
+            i = end + 1;
+        } else {
+            keys.push_back(bytes[i++]);
+        }
+    }
+    const std::vector<std::string> expected{"\x1b[2;2R","\x1b[3;1R","\x1b[1;1R","\x1b[1;1R","\x1b[1;14R"};
+    if (keys != "iTF_CANDIDATE_TUI" || replies != expected) {
+        std::cerr << "edit_input_hex=" << QByteArray::fromStdString(bytes).toHex().constData() << '\n';
+        throw std::runtime_error("Vim keystrokes or cursor replies differ");
+    }
+}
+
 QJsonObject scenario(const QString& source) {
     QTemporaryDir workspace;
     require(workspace.isValid(), "Vim workspace unavailable");
@@ -104,6 +126,8 @@ QJsonObject scenario(const QString& source) {
     QTest::keyClicks(&window, "TUI");
     wait(model, [&] { return editor_grid(model, 60, 12, "TF_CANDIDATE_TUI", true); }, "post-resize edit differs");
     check_painted(model, window);
+    const auto edited_input = input_bytes();
+    check_edit_input(edited_input);
     QTest::keyClick(&window, Qt::Key_Escape);
     QTest::keyClicks(&window, ":wq");
     QTest::keyClick(&window, Qt::Key_Return);
@@ -112,6 +136,7 @@ QJsonObject scenario(const QString& source) {
         return false;
     };
     wait(model, [&] { return has_line("TF_VIM_EXIT_0") && has_line("TF_READY>"); }, "Vim did not return to cmd");
+    require(input_bytes().compare(edited_input.size(), 5, "\x1b:wq\r") == 0, "save and quit key bytes differ");
     require(contents(workspace.filePath("editor.txt")) == "TF_CANDIDATE_TUI\n", "saved Vim file differs");
     require(model.screen().active_buffer() == termforge::ScreenBuffer::primary && !model.application_cursor_keys() &&
             has_line("TF_VIM_PRIMARY"), "original primary screen or cursor mode did not return");
@@ -137,7 +162,7 @@ QJsonObject scenario(const QString& source) {
     require(model.error().isEmpty() && model.natural_exit() && model.exit_code() == 0 && model.output_eof() &&
             model.cleanup_verified() && model.active_processes_after() == 0, "incomplete Vim shell lifecycle");
     return {{"scenario","vim-edit-live-resize"},{"vim_enter","80x24"},{"vim_resized","60x12"},
-            {"file_bytes",17},{"shell_answer",750},{"cleanup_verified",true}};
+            {"edit_input_hex",QString::fromLatin1(QByteArray::fromStdString(edited_input).toHex())},{"file_bytes",17},{"shell_answer",750},{"cleanup_verified",true}};
 }
 }
 
