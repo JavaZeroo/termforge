@@ -27,4 +27,5 @@ python -m tools.prepare_qt_build --conpty-pair local/conpty-source-build/candida
 
 ## 官方包对照
 
+
 `-DTERMFORGE_CONPTY_SOURCE_BUILD=OFF` 启用 `Microsoft.Windows.Console.ConPTY 1.25.260930003` 的旧官方包对照。按 [manifest.json](manifest.json) 的 URL 获取归档并核对大小和 SHA-256，只保留指定的 `conpty.dll` 与 `OpenConsole.exe`。双文件须来自同一归档。清单中的 `experimental`、`default_backend` 和 `supported_client_platforms_verified` 记录该包当时的集成状态。系统 ConPTY 也保留为独立诊断对照。
