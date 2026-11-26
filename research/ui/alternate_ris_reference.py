@@ -36,7 +36,7 @@ def phases(rows, columns, case):
         ("alternate-ris", b"\x1bc"),
         ("post-reset-write", cup(8) + b"POST\x1b[2;2H"),
         ("explicit-return", b"\x1b[?1049l"),
-        ("alternate-reentry", b"\x1b[?1049h"),
+        ("alternate-reentry", b"\x1b[?1049h" + cup(11) + b"POST\x1b[2;2H"),
         ("final-return", b"\x1b[?1049l"),
     ]
 
