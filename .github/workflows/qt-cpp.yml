@@ -172,6 +172,14 @@ jobs:
             if ($LASTEXITCODE -ne 0) { $failed = 1 }
           }
           exit $failed
+      - name: Check explicit cursor return after RIS and resize
+        run: |
+          $failed = 0
+          foreach ($case in 'narrow') {
+            python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/results/2026-11-26-ris-resize/ris-return-$case.json"
+            if ($LASTEXITCODE -ne 0) { $failed = 1 }
+          }
+          exit $failed
       # Keep this configuration independent from the default/system-backend and
       # Alacritty reference jobs. SDKs, runtime folders and raw logs are not
       # publication artifacts; this job does not produce a release package.

@@ -129,7 +129,7 @@ def capture_facts(directory, plan, source_root=ROOT):
                        "utf8_bytes": len(line.encode("utf-8")), "unicode_scalars": len(line),
                        "utf16_code_units": len(line.encode("utf-16-le"))//2} for line in lines]}
     result["stateful_observation_count"] = len(roles)
-    result["post_initial_terminal_input"] = "1049h, RIS, resize, 1049l, X and repeat-return control; per-stage DSR"
+    result["post_initial_terminal_input"] = "DSR only"
     result["independent_dsr_bounds"] = {"row": [1, 200], "column": [1, 500]}
     result["text_units"] = {"source": "UTF-8 bytes", "document_line": "original public API index",
                             "marker_text_offsets": "JS UTF-16 code units; scalar count coincides only for this ASCII source alphabet",
@@ -168,14 +168,14 @@ def export(directory, plan_path, destination, expected_plan_sha256, source_root=
               "cli_wait_timeout_seconds": 60, "whole_lifecycle_bound_seconds": None,
               "deliberate_original_process_termination": True, "natural_gui_exit_verified": False,
               "capture": facts, "provenance": provenance, "limitations": [
-                  "One fresh direct Telnet process executes the immutable RIS/resize schedule for the recorded axis; every stage is observed before the next resize.",
-                  "The child resets alternate, resizes primary, explicitly restores and writes one X before the second-return control.",
-                  "Stage zero requires an empty marker set and DSR19;91; later missing markers are observations, never semantic acceptance.",
+                  "One fresh direct Telnet process executes the immutable height-retention-measured schedule 91x20 -> 91x14 -> 91x20; every stage is observed before the next resize.",
+                  "After stage zero, terminal input is DSR only: no CUP, CR/LF, redraw, replacement text or post-resize write.",
+                  "Stage zero requires every preloaded sentinel and DSR19;7; later missing markers are observations, never semantic acceptance.",
                   "The lower window height569 and 91x14 endpoint follow the separate geometry observation; restoration to 1360x749 and 91x20 is verified in this run. Exact geometry and NAWS remain mandatory, with no calibration or retries.",
                   "Document indices, API positions, ASCII byte/UTF16 offsets, DSR and pixel rectangles are recorded separately; no general original position-unit or C++ Cell mapping is inferred.",
                   "DSR safety bounds remain row1..200/column1..500 independently of the fourteen-row viewport.",
                   "Only finite ASCII source-derived catalog strings may be published, with complete reconstructible document arrays. Unrestricted recording stays private.",
-                  "This single schedule does not establish general alternate-frame behavior, combined width/height changes, Unicode, arbitrary dimensions, post-resize editing, ConPTY, performance or R2 acceptance."]}
+                  "This single schedule does not establish alternate-frame, combined width/height changes, Unicode, arbitrary dimensions, post-resize editing, ConPTY, performance or R2 acceptance."]}
     payload = (json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False)+"\n").encode()
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("xb") as stream:

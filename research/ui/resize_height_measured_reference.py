@@ -17,30 +17,13 @@ require, sha = common.require, common.sha
 qrect_size = baseline.qrect_size
 EXE_SHA256, MANIFEST_SHA256 = common.EXE_SHA256, common.MANIFEST_SHA256
 RESET = b"\x1b[?6l\x1b[?7h\x1b[r\x1b[0m\x1b[2J"
-MARKERS = ("X",)
-
-
-def ris_schedule(width, height, grow_first):
-    initial = [("save-primary", 91, 20, RESET + b"\x1b[19;91H"),
-               ("enter-alternate", 91, 20, b"\x1b[?1049h"),
-               ("alternate-ris", 91, 20, b"\x1bc"),
-               ("shrink-after-ris", width, height, b"")]
-    restore = ("explicit-return", width, height, b"\x1b[?1049l")
-    write = ("write-after-return", width, height, b"X")
-    grow = ("restore-size", 91, 20, b"")
-    if grow_first:
-        middle = [grow, (restore[0], 91, 20, restore[3]), (write[0], 91, 20, write[3])]
-    else:
-        middle = [restore, write, grow]
-    return tuple(initial + middle + [("move-after-write", 91, 20, b"\x1b[2;3H"),
-                                    ("repeat-return", 91, 20, b"\x1b[?1049l")])
-
-
+BODY = (RESET + b"\x1b[2;1HHTOP\x1b[6;1HHARD_A\r\nHARD_B"
+        b"\x1b[12;90Huvw\x1b[19;1HLOWEND")
+MARKERS = ("HTOP", "HARD_A", "HARD_B", "u", "v", "w", "LOWEND")
 CASES = {
-    "ris-return-narrow": ris_schedule(61, 20, False),
-    "ris-return-wide": ris_schedule(61, 20, True),
-    "ris-return-short": ris_schedule(91, 14, False),
-    "ris-return-tall": ris_schedule(91, 14, True),
+    "height-retention-measured": (("initial-body", 91, 20, BODY),
+                                  ("height-shrunk-unmodified", 91, 14, b""),
+                                  ("height-restored-unmodified", 91, 20, b"")),
 }
 RESULT_FILE = "resize-height-measured-result.json"
 ATTEMPT = "One original resize-height-measured launch attempt; preserve failures and never retry this plan.\n"
@@ -77,7 +60,7 @@ def controller_contract(case):
     return {"case_id": case, "labels": [label for label, _, _, _ in CASES[case]],
             "windows": [list(v) for v in windows(case)], "grids": [list(v) for v in required_grids(case)],
             "resize_phases": list(resize_phases(case)), "marker_labels": list(MARKERS),
-            "initial_dsr": [19, 91]}
+            "initial_dsr": [19, 7]}
 
 
 def phases(case, rows=20, columns=91):
@@ -86,16 +69,9 @@ def phases(case, rows=20, columns=91):
     return [(label, value) for label, _, _, value in CASES[case]]
 
 
-def reply_observation(data, phase):
-    payload = data
-    if phase == 2 and data.startswith(b"\x13"):
-        if len(data) == 1:
-            return None
-        require(data.startswith(b"\x13\x11"), "Unexpected RIS flow-control prefix")
-        payload = data[2:]
-    result = common.reply_observation(payload)
+def reply_observation(data):
+    result = common.reply_observation(data)
     if result is not None:
-        result["response_hex"] = data.hex()
         row, column = result["cursor_reply"]
         require(1 <= row <= 200 and 1 <= column <= 500, "DSR exceeds independent safety bounds")
     return result
@@ -122,10 +98,10 @@ def peer_class(case):
     base = baseline.peer_class()
     # baseline creates a fresh module namespace for each class, not a shared peer.
     base._serve.__globals__["phases"] = lambda rows, columns: phases(case, rows, columns)
+    base._serve.__globals__["reply_observation"] = reply_observation
 
     class HeightPeer(base):
         def _freeze_initial(self):
-            base._serve.__globals__["reply_observation"] = lambda data: reply_observation(data, self.state["phase"])
             super()._freeze_initial()
             require(self.state["frozen_grid"] == [91, 20], "Fixed initial grid differs")
             self.state["case_id"] = case
@@ -153,7 +129,7 @@ def peer_class(case):
                 return False
             require(ack.read_text(encoding="utf-8") == "observed", "UI acknowledgement differs")
             if index == 0:
-                require(self.state["records"][0]["cursor_reply"] == [19, 91], "Initial fixture DSR differs")
+                require(self.state["records"][0]["cursor_reply"] == [19, 7], "Initial fixture DSR differs")
             if index == len(phases(case))-1:
                 return True
             target = index + 1
@@ -226,15 +202,15 @@ def fixed_contract(case):
             "rea_capture_seconds": 45, "cli_wait_timeout_seconds": 60, "whole_lifecycle_bound_seconds": None,
             "phases": phase_records(case), "reference_exe_sha256": EXE_SHA256,
             "reference_files_manifest_sha256": MANIFEST_SHA256, "semantic_acceptance": False,
-            "controller_contract": controller_contract(case), "execution_group": "alternate-ris-resize-return",
+            "controller_contract": controller_contract(case), "execution_group": "one-measured-height-case",
             "independent_dsr_bounds": {"row": [1, 200], "column": [1, 500]},
-            "initial_fixture_dsr": [19, 91], "initial_fixture_markers": [],
+            "initial_fixture_dsr": [19, 7], "initial_fixture_markers": list(MARKERS),
             "geometry_basis": {"reference": "research/ui/results/2026-11-02-resize-geometry-reference/strict-export.json",
                 "strict_export_sha256": "f18a2320c073ed477f773b42076c9968c0c8af8530af19548d5695e66e8cf9b5",
                 "observed_windows": [[1360, 749], [1360, 569]], "observed_grids": [[91, 20], [91, 14]],
                 "restore_geometry_previously_observed": False},
             "height_geometry_status": "The two shrink geometries were independently measured; restore91x20 is checked in this new run, without calibration or retries",
-            "post_initial_terminal_input": "1049h, RIS, resize, 1049l, X and repeat-return control; per-stage DSR",
+            "post_initial_terminal_input": "DSR only; no CUP, redraw, CR/LF or replacement text",
             "scope": "Fresh direct Telnet process per case; document/API positions, DSR and pixel rectangles remain separate observations",
             "stop": "Wrong fixed geometry/grid, unarmed or wrong-axis NAWS, stale snapshots, initial fixture/source/reply/phase mismatch, bounds or deadline failure; no retries"}
 
@@ -257,11 +233,8 @@ def synthetic_lines(case, phase):
     """Finite ASCII source-derived words; loss is observation, not acceptance."""
     validate_case(case)
     require(type(phase) is int and 0 <= phase < len(phases(case)), "Phase bound")
-    # CUP and resize can materialize the blank prefix up to the addressed cell.
-    base = {" " * column for column in range(92)}
-    if phase >= next(i for i, (_, data) in enumerate(phases(case)) if data == b"X"):
-        base.update(" " * column + "X" for column in range(91))
-    return frozenset(bounded_fragments(base, True))
+    base = {"", "HTOP", "HARD_A", "HARD_B", "LOWEND", " "*89+"uvw"}
+    return frozenset(bounded_fragments(base, False))
 
 
 def validate_document(case, phase, terminal):
@@ -273,7 +246,7 @@ def validate_document(case, phase, terminal):
     counts = {marker: sum(line.count(marker) for line in lines) for marker in MARKERS}
     require(all(count <= 1 for count in counts.values()), "Repeated height-source marker")
     if phase == 0:
-        require(counts == {"X": 0}, "Initial fixture sentinel missing")
+        require(all(count == 1 for count in counts.values()), "Initial fixture sentinel missing")
 
 
 def audit_mechanics(directory, case):
@@ -317,9 +290,9 @@ def audit_mechanics(directory, case):
     for index, (expected, actual, observed, check) in enumerate(zip(phase_records(case), records, observations, checks)):
         grid, window = expected_grids[index], expected_windows[index]
         require(all(actual.get(k) == v for k, v in expected.items()) and actual["frozen_grid"] == grid, "Exact action source differs")
-        raw = bytes.fromhex(actual["response_hex"]); reply = reply_observation(raw, index)
+        raw = bytes.fromhex(actual["response_hex"]); reply = reply_observation(raw)
         if index == 0:
-            require(reply is not None and reply["cursor_reply"] == [19, 91], "Initial fixture DSR differs")
+            require(reply is not None and reply["cursor_reply"] == [19, 7], "Initial fixture DSR differs")
         require(reply is not None and all(actual.get(k) == v for k, v in reply.items()), "DSR differs")
         require(all(observed.get(k) == actual[k] for k in ("phase", "label", "frozen_grid", *reply)), "Peer/UI phase differs")
         require(check.get("phase") == index and check.get("expected_size") == window and check.get("window_size") == window and

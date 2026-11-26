@@ -243,7 +243,8 @@ int query_child(const std::filesystem::path& result, CursorTrace trace = CursorT
                 }
                 ++count;
             }
-            return phases.eof() && count == (trace == CursorTrace::saved_resize ? 6u : 14u) ? 0 : 5;
+            // The parent validates the exact phase count for the selected reference.
+            return phases.eof() && count > 0 ? 0 : 5;
         }
         bool timed_out, complete;
         const auto received = exchange(input, output, query_source, timed_out, complete);
@@ -423,9 +424,12 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     const bool resized = option == "--saved-cursor-reference";
     const bool margin_case = option == "--duplicate-margin-reference";
     const auto case_id = document.object().value("case_id").toString();
-    const bool height_case = case_id == QStringLiteral("saved-return-short") || case_id == QStringLiteral("saved-return-tall");
+    const bool ris_resize = resized && case_id.startsWith(QStringLiteral("ris-return-"));
+    const auto axis_case = case_id.section('-', -1);
+    const bool height_case = axis_case == QStringLiteral("short") || axis_case == QStringLiteral("tall");
     if (resized)
-        require(height_case || case_id == QStringLiteral("saved-return-narrow") || case_id == QStringLiteral("saved-return-wide"),
+        require(case_id == (ris_resize ? QStringLiteral("ris-return-") : QStringLiteral("saved-return-")) + axis_case &&
+                    (height_case || axis_case == QStringLiteral("narrow") || axis_case == QStringLiteral("wide")),
                 "wrong saved cursor reference file");
     else if (margin_case)
         require(document.object().value("case_id").toString() == QStringLiteral("alternate-duplicate-margin"),
@@ -437,7 +441,7 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     require(!phases.isEmpty(), "empty cursor trace");
     const auto grid = resized ? phases.at(0).toObject().value("frozen_grid").toArray() : record.value("grid").toArray();
     require(grid.size() == 2 && grid[0].toInt() == 91 && grid[1].toInt() == (resized ? 20 : 25) &&
-            phases.size() == (resized ? 6 : 14),
+            phases.size() == (ris_resize ? 9 : resized ? 6 : 14),
             "invalid cursor reference geometry or phase count");
     std::ofstream sources(directory / "sources.hex");
     for (int index = 0; index < phases.size(); ++index) {
@@ -484,7 +488,7 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
                  "saved cursor child did not receive the phase reply");
             // WindTerm's document API also exposes the hidden primary text;
             // compare cells only when the source has made the primary visible.
-            const int restore = (case_id == QStringLiteral("saved-return-narrow") || case_id == QStringLiteral("saved-return-short")) ? 3 : 4;
+            const int restore = ris_resize ? 2 : (axis_case == QStringLiteral("narrow") || axis_case == QStringLiteral("short")) ? 3 : 4;
             const bool primary = index == 0 || index >= restore;
             if ((model.screen().active_buffer() == termforge::ScreenBuffer::primary) != primary) ++differences;
             if (!primary) continue;
