@@ -32,7 +32,7 @@ def phases(rows, columns, case):
          b"".join(cup(row) + word.encode() for row, word in zip(controls, MARKERS)) + b"\x1b[H"),
         ("primary-history", erase_controls + cup(1) + b"HIST" + f"\x1b[{rows};1H".encode() +
          b"\r\n\r\n" + cup(4) + b"MAIN\x1b[3;2H"),
-        ("alternate", b"\x1b[?1049h" + cup(6) + b"ALTT\x1b[2;2H"),
+        ("alternate", b"\x1b[?1049h" + cup(17) + b"ALTT\x1b[2;2H"),
         ("alternate-ris", b"\x1bc"),
         ("post-reset-write", cup(8) + b"POST\x1b[2;2H"),
         ("explicit-return", b"\x1b[?1049l"),
