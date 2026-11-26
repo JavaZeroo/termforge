@@ -77,9 +77,10 @@ struct GridStyleComparison {
             }
             // Spaces anchor the directions of the decorations, including reverse and palette fills.
             const auto paper = templates[0].pixelColor(0,0);
-            require(templates[11].pixelColor(w/2,h-1) != paper && templates[17].pixelColor(w/2,0) != paper &&
+            const bool styled_spaces = templates[11].pixelColor(w/2,h-1) != paper && templates[17].pixelColor(w/2,0) != paper &&
                     templates[15].pixelColor(w/2,h/2) != paper && templates[13].pixelColor(0,0) == QColor(216,222,228) &&
-                    templates[19].pixelColor(0,0) == QColor(89,155,218), "incorrect styled spaces");
+                    templates[19].pixelColor(0,0) == QColor(89,155,218);
+            if (!styled_spaces) { std::cerr << "incorrect styled spaces\n"; ++pixels; }
         }
         std::cerr << "style grid phase=" << phase << " cells=" << classes.size() << " pixel_diffs=" << pixels
                   << " text_diffs=" << model_cells << " native_diffs=" << native_cells << '\n';

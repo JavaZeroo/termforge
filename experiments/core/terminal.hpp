@@ -62,12 +62,8 @@ class Parser {
                 // Each 1049 entry, including re-entry, disables alternate
                 // origin. The saved primary origin is restored on return.
                 screen.set_origin_mode(false);
-                // Entry resets colours and the supported non-bold attributes.
-                // Bold retains this frame's existing policy; the saved primary
-                // writing state is owned by the other frame and remains intact.
-                screen.style.fg = screen.style.bg = -1;
-                screen.style.dim = screen.style.underline = screen.style.reverse = false;
-                screen.style.strikethrough = screen.style.hidden = screen.style.overline = false;
+                // Enter and re-enter with a fresh pen; the saved primary owns its pen.
+                screen.style = {};
                 screen.erase_display(2);
                 screen.move(0, 0);
             } else screen.leave_alternate_mode();

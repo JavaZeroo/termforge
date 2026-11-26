@@ -1000,12 +1000,12 @@ public:
         // returning to primary. Identities already spent stay spent.
         const bool was_alternate = active_buffer_ == ScreenBuffer::alternate;
         if (was_alternate) retain_alternate_reset_rows();
+        style = {}; // New blank cells use the reset pen; archived cells retain their own styles.
         for (int r = 0; r < height(); ++r) erase_range(lines[r], 0, width());
         if (!history.empty()) {
             history.clear();
             advance_order(ordered_);
         }
-        style = Style{};
         row = column = 0;
         wrap_pending = false;
         autowrap_enabled_ = true;
@@ -1016,6 +1016,7 @@ public:
         if (was_alternate) {
             // RIS in alternate returns to a homed primary with full-height
             // margins. Keep its old position for a later explicit 1049 exit.
+            style = {}; // New writes on the restored primary also start with the reset pen.
             primary_cursor_after_alternate_reset_.emplace(row, column);
             scroll_top = 0;
             scroll_bottom = -1;

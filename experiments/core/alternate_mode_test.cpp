@@ -106,20 +106,17 @@ static void unicode_roundtrip_chunks(ParseMode mode) {
     for (size_t split = 0; split <= source.size(); ++split) unicode_pending_roundtrip(mode, source, split, false);
     unicode_pending_roundtrip(mode, source, 0, true);
 }
-// Full-cell styles and blank-cell attributes remain engineering policy. The
-// original colour-output controls do not establish a complete styled grid.
+// Protocol attributes are checked independently of their visible colour or ink.
 static void styled_grid_roundtrip(ParseMode mode) {
     Parser parser(3, 6, 2, mode);
     parser.feed("\x1b[31;44;1;2;4;7;8;9;53m A\x1b[?1049h");
     for (const auto& line : parser.screen.visible_lines()) for (const auto& cell : line)
         check(cell.text == " " && cell.width == 1 && cell.style.plain(),
               "first alternate frame inherited primary grid attributes");
-    // Keep the unclassified bold policy separate from the observed strike reset.
+    // The red foreground control reveals the intensity reset on duplicate entry.
     parser.feed("\x1b[0;32;45;1;9m\x1b[2JZ\x1b[?1049h");
     for (const auto& line : parser.screen.visible_lines()) for (const auto& cell : line)
-        check(cell.text == " " && cell.width == 1 && cell.style.fg == -1 && cell.style.bg == -1 &&
-              cell.style.bold && !cell.style.dim && !cell.style.underline && !cell.style.reverse &&
-              !cell.style.strikethrough && !cell.style.hidden && !cell.style.overline,
+        check(cell.text == " " && cell.width == 1 && cell.style.plain(),
               "repeated alternate entry retained styled text or applied stale writing attributes to blanks");
     parser.feed("\x1b[0;32;45mALT\x1b[?1049lB");
     const auto& screen = parser.screen;

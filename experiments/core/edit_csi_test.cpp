@@ -140,9 +140,18 @@ int main() {
         require(reset.screen.row == 0 && reset.screen.column == 0, "RIS did not home the cursor");
         require(reset.cursor_visible() && !reset.application_cursor_keys(), "RIS did not reset the modes");
         require(row_text(reset.screen, 0).empty(), "RIS did not clear the screen");
+        for (const auto& line : reset.screen.visible_lines()) for (const auto& cell : line)
+            require(cell.style.plain(), "RIS blank inherited the pre-reset pen");
         reset.feed("Y");
         require(reset.screen.visible_lines()[0][0].style.plain() &&
                 reset.screen.visible_lines()[0][0].style.fg == -1, "RIS did not reset attributes");
+    }
+    {
+        Parser reset(2, 6, 10, termforge::ParseMode::strict);
+        reset.feed("\x1b[33;44mX\x1b[?1049h\x1b[4mA\x1b" "c\x1b[2;1HY");
+        require(reset.screen.visible_lines()[0][0].style.bg == 4 &&
+                reset.screen.visible_lines()[1][0].style.plain(),
+                "alternate RIS must keep old primary cells and reset the pen for new writes");
     }
     // Editing cells cancels a pending delayed wrap, so the next glyph stays on
     // the current row instead of starting a new one.
