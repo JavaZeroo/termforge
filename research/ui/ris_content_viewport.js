@@ -52,8 +52,10 @@ function scanPages(phase, terminal) {
     if (!traversal) {
         if (max < 0 || max > 200) throw Error('synthetic scroll range');
         const positions = [];
-        for (let v = 0; v < max; v += terminal.capacity) positions.push(v);
-        positions.push(max);
+        if (phase === 7) {
+            for (let v = 0; v < max; v += terminal.capacity) positions.push(v);
+        }
+        positions.push(phase === 7 ? max : saved);
         traversal = {saved, max, positions, pages:[], moving:false};
     }
     const t = traversal;
@@ -64,7 +66,7 @@ function scanPages(phase, terminal) {
         return {original_value:t.saved, maximum:max, strip:geometryOfStrip, pages:t.pages};
     }
     const target = t.positions[t.pages.length];
-    if (!t.moving) { sliderSet(scroll,target); t.moving=true; due=Date.now()+150; return null; }
+    if (!t.moving && saved !== target) { sliderSet(scroll,target); t.moving=true; due=Date.now()+150; return null; }
     if (saved !== target) throw Error('scroll position was not applied');
     t.pages.push({value:saved, scroll_top:terminal.scroll, rows:visibleLabels(phase, terminal)});
     t.moving=false;
