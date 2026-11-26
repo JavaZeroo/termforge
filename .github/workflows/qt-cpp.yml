@@ -175,7 +175,7 @@ jobs:
       - name: Check explicit cursor return after RIS and resize
         run: |
           $failed = 0
-          foreach ($case in 'narrow') {
+          foreach ($case in 'narrow','wide','short','tall') {
             python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe --saved-cursor-reference "research/ui/results/2026-11-26-ris-resize/ris-return-$case.json"
             if ($LASTEXITCODE -ne 0) { $failed = 1 }
           }

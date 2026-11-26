@@ -73,9 +73,9 @@ diff --git a/src/host/PtySignalInputThread.cpp b/src/host/PtySignalInputThread.c
 +    const auto stopRecording = wil::scope_exit([&] { screen.PtyResizeOperations = nullptr; });
 +    const auto success = _api.ResizeWindow(data.sx, data.sy);
 +    auto& primary = screen.GetMainBuffer();
-+    if (success && &primary != &screen)
++    if (success)
 +    {
-+        primary.ResizeHiddenPrimary({ data.sx, data.sy }, (sourceWindow.right - sourceWindow.left + 1) != data.sx);
++        primary.UpdatePrimaryAfterResize({ data.sx, data.sy }, (sourceWindow.right - sourceWindow.left + 1) != data.sx, &primary != &screen);
 +    }
 +    const auto target = screen.GetBufferSize().Dimensions();
 +    const auto window = screen.GetViewport().ToInclusive();
@@ -136,13 +136,19 @@ diff --git a/src/host/PtySignalInputThread.hpp b/src/host/PtySignalInputThread.h
 diff --git a/src/host/screenInfo.cpp b/src/host/screenInfo.cpp
 --- a/src/host/screenInfo.cpp
 +++ b/src/host/screenInfo.cpp
-@@ -597,0 +598,17 @@
-+void SCREEN_INFORMATION::ResizeHiddenPrimary(const til::size size, const bool widthChanged)
+@@ -597,0 +598,23 @@
++void SCREEN_INFORMATION::UpdatePrimaryAfterResize(const til::size size, const bool widthChanged, const bool hidden)
 +{
 +    // The shared state machine restores this position on 1049l. An earlier
 +    // reduction still bounds it if the alternate grows before that return.
 +    auto& engine = static_cast<OutputStateMachineEngine&>(GetStateMachine().Engine());
-+    static_cast<AdaptDispatch&>(engine.Dispatch()).ClampSavedPrimaryCursor(size, widthChanged);
++    auto& dispatch = static_cast<AdaptDispatch&>(engine.Dispatch());
++    if (!hidden)
++    {
++        dispatch.ClampPrimaryCursorAfterAltReset(size);
++        return;
++    }
++    dispatch.ClampSavedPrimaryCursor(size, widthChanged);
 +    if (widthChanged)
 +    {
 +        _fitWidthOnReturn = true;
@@ -154,7 +160,7 @@ diff --git a/src/host/screenInfo.cpp b/src/host/screenInfo.cpp
 +    _deferredPtyResize = size;
 +}
 +
-@@ -1299 +1316,7 @@
+@@ -1299 +1322,7 @@
 -    TextBuffer::Reflow(*_textBuffer.get(), *newTextBuffer.get());
 +    PtyResizeOperation operation{ GetBufferSize().Dimensions(), coordNewScreenSize, {}, false };
 +    TextBuffer::Reflow(*_textBuffer.get(), *newTextBuffer.get(), nullptr, nullptr,
@@ -163,27 +169,27 @@ diff --git a/src/host/screenInfo.cpp b/src/host/screenInfo.cpp
 +    {
 +        PtyResizeOperations->push_back(std::move(operation));
 +    }
-@@ -1338,0 +1362,4 @@
+@@ -1338,0 +1368,4 @@
 +    if (PtyResizeOperations)
 +    {
 +        PtyResizeOperations->push_back({ GetBufferSize().Dimensions(), coordNewScreenSize, {}, true });
 +    }
-@@ -1381 +1408 @@
+@@ -1381 +1414 @@
 -    if (fWrapText && !_IsAltBuffer())
 +    if (fWrapText && !_IsAltBuffer() && !(_fitWidthOnReturn && coordNewScreenSize.width != GetBufferSize().Width()))
-@@ -1908 +1935,4 @@
+@@ -1908 +1941,4 @@
 -    _handleDeferredResize(siMain);
 +    if (!siMain._fitWidthOnReturn)
 +    {
 +        _handleDeferredResize(siMain);
 +    }
-@@ -1952,0 +1983 @@
+@@ -1952,0 +1989 @@
 +        psiMain->_fitWidthOnReturn = false;
 diff --git a/src/host/screenInfo.hpp b/src/host/screenInfo.hpp
 --- a/src/host/screenInfo.hpp
 +++ b/src/host/screenInfo.hpp
 @@ -83,0 +84,10 @@
-+    void ResizeHiddenPrimary(til::size size, bool widthChanged);
++    void UpdatePrimaryAfterResize(til::size size, bool widthChanged, bool hidden);
 +    struct PtyResizeOperation
 +    {
 +        til::size source;
@@ -206,16 +212,51 @@ diff --git a/src/terminal/adapter/adaptDispatch.cpp b/src/terminal/adapter/adapt
 +                {
 +                    textBuffer.GetMutableRowByOffset(cursorPosition.y).SetWrapForced(true);
 +                }
-@@ -1748,0 +1756,5 @@
+@@ -1744,0 +1752 @@
++        _primaryCursorAfterAltReset.reset();
+@@ -1748,0 +1757,5 @@
 +        // A new alternate page starts at its own home. Resize maps read this
 +        // native cursor even if no character has yet been written to the page.
 +        const auto alternate = _pages.ActivePage();
 +        alternate.Cursor().ResetDelayEOLWrap();
 +        alternate.Cursor().SetPosition({ 0, alternate.Top() });
+@@ -1750 +1763 @@
+-    else
++    else if (_usingAltBuffer)
+@@ -1755,0 +1769,12 @@
++    else if (_primaryCursorAfterAltReset)
++    {
++        // RIS switches buffers and clears the saved attributes. Only the
++        // primary cursor position survives until the first explicit return.
++        const auto page = _pages.ActivePage();
++        auto position = *_primaryCursorAfterAltReset;
++        _primaryCursorAfterAltReset.reset();
++        position.y = std::clamp(page.Top() + position.y, page.Top(), page.Bottom() - 1);
++        position.x = std::clamp(position.x, 0, page.Width() - 1);
++        page.Cursor().ResetDelayEOLWrap();
++        page.Cursor().SetPosition(page.Buffer().ClampPositionWithinLine(position));
++    }
+@@ -3025 +3050 @@
+-    // If in the alt buffer, switch back to main before doing anything else.
++    _primaryCursorAfterAltReset.reset();
+@@ -3029,0 +3055,4 @@
++        const auto page = _pages.ActivePage();
++        auto position = page.Cursor().GetPosition();
++        position.y -= page.Top();
++        _primaryCursorAfterAltReset = position;
 diff --git a/src/terminal/adapter/adaptDispatch.hpp b/src/terminal/adapter/adaptDispatch.hpp
 --- a/src/terminal/adapter/adaptDispatch.hpp
 +++ b/src/terminal/adapter/adaptDispatch.hpp
-@@ -39,0 +40,11 @@
+@@ -39,0 +40,20 @@
++        void ClampPrimaryCursorAfterAltReset(const til::size size) noexcept
++        {
++            if (_primaryCursorAfterAltReset)
++            {
++                _primaryCursorAfterAltReset->x = std::min(_primaryCursorAfterAltReset->x, size.width - 1);
++                _primaryCursorAfterAltReset->y = std::min(_primaryCursorAfterAltReset->y, size.height - 1);
++            }
++        }
++
 +        void ClampSavedPrimaryCursor(const til::size size, const bool widthChanged) noexcept
 +        {
 +            auto& saved = _savedCursorState.front();
@@ -227,6 +268,8 @@ diff --git a/src/terminal/adapter/adaptDispatch.hpp b/src/terminal/adapter/adapt
 +            }
 +        }
 +
+@@ -327,0 +348 @@
++        std::optional<til::point> _primaryCursorAfterAltReset;
 diff --git a/src/winconpty/dll/winconpty.def b/src/winconpty/dll/winconpty.def
 --- a/src/winconpty/dll/winconpty.def
 +++ b/src/winconpty/dll/winconpty.def

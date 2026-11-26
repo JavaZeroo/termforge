@@ -1,0 +1,213 @@
+{
+  "schema": "termforge-original-saved-cursor-summary-v1",
+  "issue": 27,
+  "case_id": "ris-return-short",
+  "reference": {
+    "executable_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "plan_sha256": "dfa8cb2d4b463312b199b64a97c41acd6be9207d6a265164fb6703f7089ad549",
+    "export_sha256": "84ef49c7b01ec0257df4f77554367e7bba6c0ba63b3df3bf5cb3201c94d33211",
+    "source_base_commit": "ee83fc6ee4de653e311d4edb98f933587b888fcc",
+    "capture_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "outer_cleanup": true,
+    "original_runs": 1,
+    "evidence_id": "ev_a626813378ea9814c3144ac008377ccaf3d34ed7ca6659407703937ce7a58455",
+    "phases": [
+      {
+        "phase": 0,
+        "label": "save-primary",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b31393b393148",
+        "response_hex": "1b5b31393b393152",
+        "cursor_reply": [
+          19,
+          91
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 1,
+        "label": "enter-alternate",
+        "source_hex": "1b5b3f3130343968",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 2,
+        "label": "alternate-ris",
+        "source_hex": "1b63",
+        "response_hex": "13111b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 3,
+        "label": "shrink-after-ris",
+        "source_hex": "",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          14
+        ],
+        "scroll": 5,
+        "markers": []
+      },
+      {
+        "phase": 4,
+        "label": "explicit-return",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b31343b393152",
+        "cursor_reply": [
+          14,
+          91
+        ],
+        "frozen_grid": [
+          91,
+          14
+        ],
+        "scroll": 5,
+        "markers": []
+      },
+      {
+        "phase": 5,
+        "label": "write-after-return",
+        "source_hex": "58",
+        "response_hex": "1b5b31343b393152",
+        "cursor_reply": [
+          14,
+          91
+        ],
+        "frozen_grid": [
+          91,
+          14
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 90,
+            "rect": {
+              "x": 867,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 6,
+        "label": "restore-size",
+        "source_hex": "",
+        "response_hex": "1b5b31343b393152",
+        "cursor_reply": [
+          14,
+          91
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 90,
+            "rect": {
+              "x": 867,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 7,
+        "label": "move-after-write",
+        "source_hex": "1b5b323b3348",
+        "response_hex": "1b5b323b3352",
+        "cursor_reply": [
+          2,
+          3
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 90,
+            "rect": {
+              "x": 867,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 8,
+        "label": "repeat-return",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b323b3352",
+        "cursor_reply": [
+          2,
+          3
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 90,
+            "rect": {
+              "x": 867,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

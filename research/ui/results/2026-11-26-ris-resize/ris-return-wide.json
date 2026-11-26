@@ -1,0 +1,201 @@
+{
+  "schema": "termforge-original-saved-cursor-summary-v1",
+  "issue": 27,
+  "case_id": "ris-return-wide",
+  "reference": {
+    "executable_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "plan_sha256": "75064303eb0a2d5512be17b222c59a7d68381612e07e992bb7517e321a5e0304",
+    "export_sha256": "7fee9ff0cefa00d572009f96cf85eaf1226ddbba8f2ba11d21fb6391bf79106b",
+    "source_base_commit": "ee83fc6ee4de653e311d4edb98f933587b888fcc",
+    "capture_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "outer_cleanup": true,
+    "original_runs": 1,
+    "evidence_id": "ev_899a7cff3045ff05abbc94cfe428e3289384db05c28bdd8703c73a7a0fc4a2ed",
+    "phases": [
+      {
+        "phase": 0,
+        "label": "save-primary",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b31393b393148",
+        "response_hex": "1b5b31393b393152",
+        "cursor_reply": [
+          19,
+          91
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 1,
+        "label": "enter-alternate",
+        "source_hex": "1b5b3f3130343968",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 2,
+        "label": "alternate-ris",
+        "source_hex": "1b63",
+        "response_hex": "13111b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 3,
+        "label": "shrink-after-ris",
+        "source_hex": "",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          61,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 4,
+        "label": "restore-size",
+        "source_hex": "",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 5,
+        "label": "explicit-return",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b31393b363152",
+        "cursor_reply": [
+          19,
+          61
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 6,
+        "label": "write-after-return",
+        "source_hex": "58",
+        "response_hex": "1b5b31393b363252",
+        "cursor_reply": [
+          19,
+          62
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 60,
+            "rect": {
+              "x": 627,
+              "y": 324,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 7,
+        "label": "move-after-write",
+        "source_hex": "1b5b323b3348",
+        "response_hex": "1b5b323b3352",
+        "cursor_reply": [
+          2,
+          3
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 60,
+            "rect": {
+              "x": 627,
+              "y": 324,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 8,
+        "label": "repeat-return",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b323b3352",
+        "cursor_reply": [
+          2,
+          3
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 60,
+            "rect": {
+              "x": 627,
+              "y": 324,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

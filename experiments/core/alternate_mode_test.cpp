@@ -429,6 +429,24 @@ static void alternate_ris_across_host_resize(ParseMode mode) {
           "writes following RIS cursor restores landed in the wrong cells");
     parser.finish();
 }
+static void alternate_ris_after_regrow(ParseMode mode) {
+    for (const bool preserve : {false, true}) {
+        Parser parser(20, 91, 2, mode);
+        const auto resize = [&](int rows, int columns) {
+            if (preserve) parser.screen.resize_preserving(rows, columns);
+            else parser.screen.resize(rows, columns);
+        };
+        parser.feed("\x1b[19;91H\x1b[?1049h\x1b" "c");
+        resize(20, 61);
+        resize(20, 91);
+        resize(14, 91);
+        resize(20, 91);
+        parser.feed("\x1b[?1049lX");
+        check(parser.screen.visible_lines()[13][60].text == "X",
+              "regrowth resurrected a clipped post-RIS cursor coordinate");
+        parser.finish();
+    }
+}
 static void duplicate_entry_resets_alternate_margins(ParseMode mode) {
     Parser parser(25, 91, 2, mode);
     parser.feed("\x1b[2;5r\x1b[?6h\x1b[99;1H\x1b[?1049h");
@@ -476,6 +494,7 @@ int main() {
             observed_alternate_ris_cursor_transitions(mode, true);
             alternate_ris_across_host_resize(mode);
             duplicate_entry_resets_alternate_margins(mode);
+            alternate_ris_after_regrow(mode);
             // The fixed five sources contain 208 bytes, excluding DSR queries.
             for (size_t split = 0; split <= 208; ++split) observed_colour_trace(mode, split, false);
             observed_colour_trace(mode, 0, true);

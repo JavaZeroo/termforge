@@ -127,6 +127,13 @@ class Screen {
     std::optional<FrameState> inactive_;
     bool fit_primary_on_return_ = false;
     std::optional<std::pair<int, int>> primary_cursor_after_alternate_reset_;
+    void clamp_cursor_after_alternate_reset() noexcept {
+        if (primary_cursor_after_alternate_reset_) {
+            auto& [saved_row, saved_column] = *primary_cursor_after_alternate_reset_;
+            saved_row = (std::min)(saved_row, height() - 1);
+            saved_column = (std::min)(saved_column, width() - 1);
+        }
+    }
     FrameState active_state_copy() const {
         return {row, column, last_row, last_column, wrap_pending, discarded, style, lines, history, ordered_,
                 scroll_top, scroll_bottom, origin_mode_};
@@ -341,6 +348,7 @@ class Screen {
         if (hidden) commit(*inactive_, *hidden);
         if (active_buffer_ == ScreenBuffer::alternate && columns != width()) fit_primary_on_return_ = true;
         columns_ = columns; next_id_ = identity;
+        clamp_cursor_after_alternate_reset();
         ++content_revision_; ++order_revision_;
     }
 public:
@@ -621,6 +629,7 @@ public:
         if (hidden) inactive_->lines.swap(*hidden);
         if (active_buffer_ == ScreenBuffer::alternate) fit_primary_on_return_ = true;
         columns_ = columns;
+        clamp_cursor_after_alternate_reset();
         ++content_revision_;
         column = (std::min)(column, columns - 1);
         wrap_pending = false;
@@ -774,6 +783,7 @@ public:
         swap_active(next);
         if (hidden) inactive_->swap(*hidden);
         columns_ = columns; next_id_ = identity;
+        clamp_cursor_after_alternate_reset();
         ++content_revision_;
         // Physical-row resize policy resets both frames' margins so a stale
         // bottom cannot point past the new height. This is not a WindTerm claim.

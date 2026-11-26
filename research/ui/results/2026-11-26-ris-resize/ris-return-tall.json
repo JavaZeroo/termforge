@@ -1,0 +1,201 @@
+{
+  "schema": "termforge-original-saved-cursor-summary-v1",
+  "issue": 27,
+  "case_id": "ris-return-tall",
+  "reference": {
+    "executable_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+    "plan_sha256": "5e037d0cc320e821cc86edaacdccef48218f828018d6c97ce045e88317fa8f7a",
+    "export_sha256": "59014860e8173886b15ed62237bdf548cb6f8eeb33b834eb441d2a35773a447e",
+    "source_base_commit": "ee83fc6ee4de653e311d4edb98f933587b888fcc",
+    "capture_job": {
+      "active": 0,
+      "total": 3,
+      "terminated": 0
+    },
+    "outer_cleanup": true,
+    "original_runs": 1,
+    "evidence_id": "ev_cc2cd7cc84712024f3a723cc7a06b60db435974256c77eeb7f92f1d6b028d6ec",
+    "phases": [
+      {
+        "phase": 0,
+        "label": "save-primary",
+        "source_hex": "1b5b3f366c1b5b3f37681b5b721b5b306d1b5b324a1b5b31393b393148",
+        "response_hex": "1b5b31393b393152",
+        "cursor_reply": [
+          19,
+          91
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 1,
+        "label": "enter-alternate",
+        "source_hex": "1b5b3f3130343968",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 2,
+        "label": "alternate-ris",
+        "source_hex": "1b63",
+        "response_hex": "13111b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 0,
+        "markers": []
+      },
+      {
+        "phase": 3,
+        "label": "shrink-after-ris",
+        "source_hex": "",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          14
+        ],
+        "scroll": 5,
+        "markers": []
+      },
+      {
+        "phase": 4,
+        "label": "restore-size",
+        "source_hex": "",
+        "response_hex": "1b5b313b3152",
+        "cursor_reply": [
+          1,
+          1
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": []
+      },
+      {
+        "phase": 5,
+        "label": "explicit-return",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b31343b393152",
+        "cursor_reply": [
+          14,
+          91
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": []
+      },
+      {
+        "phase": 6,
+        "label": "write-after-return",
+        "source_hex": "58",
+        "response_hex": "1b5b31343b393152",
+        "cursor_reply": [
+          14,
+          91
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 90,
+            "rect": {
+              "x": 867,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 7,
+        "label": "move-after-write",
+        "source_hex": "1b5b323b3348",
+        "response_hex": "1b5b323b3352",
+        "cursor_reply": [
+          2,
+          3
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 90,
+            "rect": {
+              "x": 867,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      },
+      {
+        "phase": 8,
+        "label": "repeat-return",
+        "source_hex": "1b5b3f313034396c",
+        "response_hex": "1b5b323b3352",
+        "cursor_reply": [
+          2,
+          3
+        ],
+        "frozen_grid": [
+          91,
+          20
+        ],
+        "scroll": 5,
+        "markers": [
+          {
+            "label": "X",
+            "document_line": 18,
+            "column": 90,
+            "rect": {
+              "x": 867,
+              "y": 234,
+              "width": 8,
+              "height": 18
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
