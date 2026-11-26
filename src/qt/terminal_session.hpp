@@ -287,7 +287,7 @@ public:
         if (lifecycle_.joinable()) lifecycle_.join();
     }
     bool start(const std::wstring& executable, const std::wstring& arguments,
-               const std::wstring& working_directory = {}) {
+               const std::wstring& working_directory = {}, InputQueue::TraceHook input_trace = nullptr) {
         if (started_) {
             remember_error(QStringLiteral("This terminal session has already been started"));
             notify(); return false;
@@ -300,6 +300,7 @@ public:
                 throw std::runtime_error("The Qt product entry requires the fixed bundled ConPTY backend");
             apply_native_maps_ = session_->supports_resize_map() && !native_map_token_;
             input_ = std::make_unique<InputQueue>(*session_);
+            input_->set_trace_hook(input_trace);
             session_->start(executable, arguments, [this](std::string_view bytes) { output_.push(bytes); },
                             working_directory, {static_cast<short>(parser_.screen.width()),
                                                 static_cast<short>(parser_.screen.height())});

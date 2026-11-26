@@ -70,7 +70,7 @@ void selection_discard_diagnostic(const termforge::TextSelection::DiscardReport&
 struct TraceTarget { std::ofstream* stream = nullptr; uint64_t terminal = 0; };
 std::mutex g_trace_mutex;
 std::map<const void*, TraceTarget> g_trace_targets;
-void trace_input(const void* owner, bool written, size_t bytes, bool accepted) {
+void trace_input(const void* owner, bool written, std::string_view bytes, bool accepted) {
     std::lock_guard<std::mutex> lock(g_trace_mutex);
     const auto found = g_trace_targets.find(owner);
     if (found == g_trace_targets.end() || !found->second.stream || !found->second.stream->good()) return;
@@ -78,7 +78,7 @@ void trace_input(const void* owner, bool written, size_t bytes, bool accepted) {
     const uint64_t terminal = found->second.terminal;
     stream << "{\"schema\":\"termforge-input-trace-v1\",\"terminal\":" << terminal
                     << ",\"phase\":\"" << (written ? "write" : "enqueue")
-                    << "\",\"t_ms\":" << GetTickCount64() << ",\"bytes\":" << bytes
+                    << "\",\"t_ms\":" << GetTickCount64() << ",\"bytes\":" << bytes.size()
                     << ",\"accepted\":" << (accepted ? "true" : "false") << "}\n";
     stream.flush();
 }

@@ -598,6 +598,9 @@ if(TERMFORGE_BUILD_QT_SHELL)
     termforge_qt_test_target(qt_cpp_shell_smoke shell_smoke.cpp qt-smoke-bin)
     termforge_qt_smoke(qt_cpp_shell qt_cpp_shell_smoke 35)
 
+    termforge_qt_test_target(qt_more_test more_test.cpp qt-more-bin)
+    termforge_qt_smoke(qt_more qt_more_test 35)
+
     termforge_qt_test_target(qt_unicode_input_test unicode_input_test.cpp qt-unicode-bin
       CHILD shell_input_client)
     termforge_qt_smoke(qt_unicode_input qt_unicode_input_test 35 ARTIFACTS)

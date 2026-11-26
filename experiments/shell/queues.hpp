@@ -65,7 +65,7 @@ public:
     };
     // Opt-in trace of input acceptance and of the bytes that reached the
     // session, used to tell a stalled input path from a stalled output path.
-    using TraceHook = void (*)(const void* owner, bool written, size_t bytes, bool accepted);
+    using TraceHook = void (*)(const void* owner, bool written, std::string_view bytes, bool accepted);
     static constexpr size_t capacity = 16 * 1024;
     // The legacy high water is max(queued keystroke bytes, individual paste
     // chunk bytes); it is not queued + in-flight or a total retained budget.
@@ -105,7 +105,7 @@ public:
                         session_.send(bytes, [&](size_t written) { writing_paste->acknowledge_written(written); });
                         writing_paste->finish_chunk();
                     } else session_.send(bytes);
-                    if (trace_hook_) trace_hook_(this, true, bytes.size(), true);
+                    if (trace_hook_) trace_hook_(this, true, bytes, true);
                     bytes.clear(); // Payload is released; string allocation is not measured here.
                     lock.lock(); in_flight_bytes_ = 0;
                 }
@@ -138,7 +138,7 @@ public:
                 ready_.notify_one(); accepted = true;
             }
         }
-        if (trace_hook_) trace_hook_(this, false, bytes.size(), accepted);
+        if (trace_hook_) trace_hook_(this, false, bytes, accepted);
         return accepted;
     }
     // The queue is already bound to one Session. The UI retains the transfer
