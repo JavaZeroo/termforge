@@ -244,6 +244,11 @@ diff --git a/src/terminal/adapter/adaptDispatch.cpp b/src/terminal/adapter/adapt
 +        auto position = page.Cursor().GetPosition();
 +        position.y -= page.Top();
 +        _primaryCursorAfterAltReset = position;
+@@ -3050 +3079,3 @@
+-    if (erase)
++    // Leaving the alternate has already discarded its native page. Keep the
++    // restored primary cells while resetting its modes and cursor below.
++    if (erase && !_primaryCursorAfterAltReset)
 diff --git a/src/terminal/adapter/adaptDispatch.hpp b/src/terminal/adapter/adaptDispatch.hpp
 --- a/src/terminal/adapter/adaptDispatch.hpp
 +++ b/src/terminal/adapter/adaptDispatch.hpp

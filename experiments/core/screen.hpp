@@ -170,6 +170,49 @@ class Screen {
         Line line(columns, cell); line.id = identity++; line.version = 1;
         return line;
     }
+    static size_t used_rows(const std::vector<Line>& page) {
+        for (size_t count = page.size(); count; --count) {
+            const auto& line = page[count - 1];
+            if (line.content_columns || line.ending == LineEnding::soft_wrap ||
+                std::any_of(line.begin(), line.end(), [](const Cell& cell) { return cell.written; }))
+                return count;
+        }
+        return 0;
+    }
+    void retain_alternate_reset_rows() {
+        // The primary document's used height bounds the alternate prefix
+        // retained above it on RIS. Untouched screen padding is not a page.
+        if (!used_rows(lines)) return;
+        auto& primary = *inactive_;
+        const auto count = used_rows(primary.lines);
+        if (!count) return;
+        auto& saved = primary.history;
+        const auto keep = (std::min)(count, history_limit);
+        auto identity = next_id_;
+        const auto previous_size = saved.size();
+        try {
+            for (size_t i = 0; i < keep; ++i)
+                saved.push_back(make_line(width(), Cell{}, identity));
+        } catch (...) {
+            while (saved.size() > previous_size) saved.pop_back();
+            throw;
+        }
+        // Move complete rows, including styles and wrap identities. Every
+        // transferred row gets fresh empty storage in the alternate frame.
+        for (size_t i = 0; i < keep; ++i)
+            std::swap(saved[previous_size + i], lines[count - keep + i]);
+        if (keep && saved.back().ending == LineEnding::soft_wrap) {
+            saved.back().ending = LineEnding::none;
+            saved.back().next_id = 0;
+            saved.back().wrap_columns = 0;
+            saved.back().logical_wrap_padding = false;
+        }
+        primary.discarded += count - keep;
+        while (saved.size() > history_limit) { saved.pop_front(); ++primary.discarded; }
+        next_id_ = identity;
+        primary.ordered_ = false;
+        ordered_ = false;
+    }
     static void resize_frame(FrameState& state, int rows, int columns, size_t limit, uint64_t& identity) {
         const int shift = (std::max)(0, state.row - rows + 1);
         for (int index = 0; index < shift; ++index) {
@@ -956,6 +999,7 @@ public:
         // Clear the active text/history and reset the supported modes before
         // returning to primary. Identities already spent stay spent.
         const bool was_alternate = active_buffer_ == ScreenBuffer::alternate;
+        if (was_alternate) retain_alternate_reset_rows();
         for (int r = 0; r < height(); ++r) erase_range(lines[r], 0, width());
         if (!history.empty()) {
             history.clear();

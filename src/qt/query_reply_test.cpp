@@ -18,6 +18,7 @@
 // depend on the implementation under test. Test-only: no product behavior,
 // default entry or query support is changed.
 #include "terminal_session.hpp"
+#include "terminal_widget.hpp"
 #include "../../experiments/conpty/session.hpp"
 #include "../../experiments/core/text_projection.hpp"
 
@@ -436,7 +437,7 @@ ProductStage run_product(const std::filesystem::path& executable, const std::fil
 int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem::path& directory,
                          const std::filesystem::path& reference, std::string_view option) {
     const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(read_binary(reference)));
-    const bool content = option == "--observe-ris-content";
+    const bool content = option == "--ris-content-reference";
     const auto record = content ? document.object() : document.object().value("reference").toObject();
     const bool resized = option == "--saved-cursor-reference";
     const bool margin_case = option == "--duplicate-margin-reference";
@@ -530,11 +531,33 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
                     {"history_rows",static_cast<int>(model.screen().scrollback_lines())},
                     {"alternate",model.screen().active_buffer() == termforge::ScreenBuffer::alternate}};
                 std::cerr << "RIS content " << QJsonDocument(observed).toJson(QJsonDocument::Compact).toStdString() << '\n';
-                if (index == 0) {
-                    const auto controls = phase.value("pages").toArray().at(0).toObject().value("nonblank_rows").toObject();
-                    require(native_rows == controls && observed.value("visible").toObject() == controls,
-                            "product did not render the four input controls at their measured cells");
+                const auto final = phases.last().toObject();
+                const auto pages = final.value("pages").toArray();
+                const int history_rows = final.value("max").toInt(-1);
+                const auto top = pages.first().toObject().value("nonblank_rows").toObject();
+                QJsonObject expected_history;
+                for (auto it = top.begin(); it != top.end(); ++it)
+                    if (it.key().toInt() <= history_rows) expected_history.insert(it.key(), it.value());
+                const bool alternate = phase.value("alternate").toBool();
+                auto expected = phase.value("pages").toArray().last().toObject().value("nonblank_rows").toObject();
+                if (index == 2) {
+                    // The original paints the active alternate marker with a different signature.
+                    require(expected.size() == 1 && expected.begin().value() == QStringLiteral("?"),
+                            "missing occupied alternate marker cell");
+                    expected.begin().value() = QStringLiteral("ALTT");
+                } else if (index == 6 && phase.value("source_hex") == QStringLiteral("1b5b3f3130343968")) {
+                    // A fresh alternate page contains none of the restored primary's text.
+                    expected = {};
+                } else if (index >= 4 && !alternate) {
+                    // Confirmed #334 policy: new output after RIS remains visible.
+                    expected.insert(QStringLiteral("8"), QStringLiteral("POST"));
                 }
+                require(observed.value("alternate").toBool() == alternate &&
+                        observed.value("visible").toObject() == expected && native_rows == expected,
+                        "post-RIS primary/alternate text differs from the content contract");
+                if (index >= 3 && !alternate)
+                    require(model.screen().scrollback_lines() == static_cast<size_t>(history_rows) &&
+                            observed.value("history").toObject() == expected_history, "archived alternate rows differ");
                 continue;
             }
             // WindTerm's document API also exposes the hidden primary text;
@@ -579,6 +602,36 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
         QTest::qWait(5);
     require(model.finished() && model.error().isEmpty() && model.natural_exit() && model.output_eof() &&
             model.cleanup_verified() && model.active_processes_after() == 0, "cursor trace session lifecycle failed");
+    if (content) {
+        // Browse the completed session, so measuring the widget cannot resize the child.
+        termforge::qt::TerminalWidget terminal(model);
+        terminal.resize(1200, 750);
+        terminal.show();
+        terminal.refresh_session();
+        terminal.grab();
+        auto* bar = terminal.history_scrollbar_for_test();
+        const auto final = phases.last().toObject();
+        require(bar->maximum() == final.value("max").toInt(-1), "history scrollbar range differs");
+        for (const auto& page : final.value("pages").toArray()) {
+            const auto reference_page = page.toObject();
+            bar->setValue(reference_page.value("value").toInt(-1));
+            terminal.grab();
+            auto rows = reference_page.value("nonblank_rows").toObject();
+            const int post_row = bar->maximum() - bar->value() + 8;
+            if (post_row <= 25) rows.insert(QString::number(post_row), QStringLiteral("POST"));
+            const auto& snapshot = terminal.painted_page();
+            require(snapshot.has_value(), "scrolling did not produce a painted page");
+            for (int r = 0; r < 25; ++r) {
+                auto line = terminal.painted_row_offset() + static_cast<size_t>(r);
+                std::string word;
+                if (line < snapshot->lines.size())
+                    for (const auto& cell : snapshot->lines[line]) word += cell.text;
+                word.resize((std::max)(word.size(), size_t{12}), ' ');
+                require(word.substr(8,4) == rows.value(QString::number(r+1)).toString(QStringLiteral("    ")).toStdString(),
+                        "scrolling the Qt widget did not paint the expected text");
+            }
+        }
+    }
     std::cerr << "cursor trace transport_hex=" << hex(model.transport_capture())
               << " child_exit=" << model.exit_code() << '\n';
     std::ifstream replies(directory / "replies.hex", std::ios::binary);
@@ -594,7 +647,7 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     }
     require(replies.peek() == std::char_traits<char>::eof() && model.exit_code() == 0,
             "cursor trace child did not finish the fixed trajectory");
-    std::cout << "{\"scenario\":\"" << (content ? "ris-content-observation" : resized ? case_id.toStdString() :
+    std::cout << "{\"scenario\":\"" << (content ? "ris-content-return" : resized ? case_id.toStdString() :
               margin_case ? "alternate-duplicate-margin" : "alternate-ris-cursor")
               << "\",\"phases\":" << phases.size() << (content ? ",\"cursor_reply_differences\":" : ",\"differences\":")
               << differences << ",\"cleanup_verified\":true}\n";
@@ -625,9 +678,9 @@ int main(int argc, char** argv) {
     const bool ris = argc == 3 && std::string_view(argv[1]) == "--ris-reference";
     const bool margin = argc == 3 && std::string_view(argv[1]) == "--duplicate-margin-reference";
     const bool saved = argc == 3 && std::string_view(argv[1]) == "--saved-cursor-reference";
-    const bool content = argc == 3 && std::string_view(argv[1]) == "--observe-ris-content";
+    const bool content = argc == 3 && std::string_view(argv[1]) == "--ris-content-reference";
     if (argc != 1 && !ris && !margin && !saved && !content) {
-        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE|--saved-cursor-reference FILE|--observe-ris-content FILE]\n";
+        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE|--saved-cursor-reference FILE|--ris-content-reference FILE]\n";
         return 2;
     }
     char gate[3]{};

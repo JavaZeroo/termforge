@@ -447,6 +447,24 @@ static void alternate_ris_after_regrow(ParseMode mode) {
         parser.finish();
     }
 }
+static void alternate_ris_history(ParseMode mode) {
+    for (const size_t limit : {0u, 3u, 12u, 32u}) {
+        Parser parser(25, 91, limit, mode);
+        parser.feed("\x1b[3;9HHIST\x1b[6;9HMAIN\x1b[9;9HALTT\x1b[12;9HPOST"
+                    "\x1b[3;9H    \x1b[6;9H    \x1b[9;9H    \x1b[12;9H    "
+                    "\x1b[1;9HHIST\x1b[25;1H\r\n\r\n\x1b[4;9HMAIN\x1b[3;2H"
+                    "\x1b[?1049h\x1b[6;9HALTT\x1b[2;2H\x1b" "c");
+        auto& screen = parser.screen;
+        check(screen.scrollback_lines() == (std::min)(limit, size_t{12}), "RIS retained the wrong history extent");
+        if (limit >= 12) {
+            check(text(screen.history_lines()[0]).substr(8,4) == "HIST" &&
+                  text(screen.history_lines()[7]).substr(8,4) == "ALTT", "RIS lost archived frame text");
+        }
+        parser.feed("\x1b[8;9HPOST\x1b[?1049l\x1b[?1049h\x1b[?1049l");
+        check(text(screen.visible_lines()[3]).substr(8,4) == "MAIN" &&
+              text(screen.visible_lines()[7]).substr(8,4) == "POST", "explicit return lost primary text");
+    }
+}
 static void duplicate_entry_resets_alternate_margins(ParseMode mode) {
     Parser parser(25, 91, 2, mode);
     parser.feed("\x1b[2;5r\x1b[?6h\x1b[99;1H\x1b[?1049h");
@@ -495,6 +513,7 @@ int main() {
             alternate_ris_across_host_resize(mode);
             duplicate_entry_resets_alternate_margins(mode);
             alternate_ris_after_regrow(mode);
+            alternate_ris_history(mode);
             // The fixed five sources contain 208 bytes, excluding DSR queries.
             for (size_t split = 0; split <= 208; ++split) observed_colour_trace(mode, split, false);
             observed_colour_trace(mode, 0, true);

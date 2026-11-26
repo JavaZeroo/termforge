@@ -1,0 +1,285 @@
+{
+  "case": "ris-content-pages",
+  "grid": [
+    91,
+    25
+  ],
+  "probe_commit": "08b15fba0b736a83b333a15d1f03a2629c449329",
+  "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "plan_sha256": "177005600021acce8d27e4194a417da15972c5f213a40debdb663dc4406fd11b",
+  "export_sha256": "f14f5e89cfdb0c19ef3638a1c9c7735031bf993005bcd89a2168b118de65ffdf",
+  "raw_result_sha256": "9dbe1ae50a775eab639482e6b4d3d7b7b6e74cad57dc1aed6f377762d4f99690",
+  "evidence_id": "ev_47db2b0ac930204db913b4b79d258ee660f5eba98133dfe03d6464cd2dfc7522",
+  "capture_job": {
+    "active": 0,
+    "total": 3,
+    "terminated": 0
+  },
+  "outer_cleanup": true,
+  "phases": [
+    {
+      "phase": 0,
+      "label": "glyph-controls",
+      "source_hex": "1b5b306d1b5b3f366c1b5b721b5b324a1b5b333b3948484953541b5b363b39484d41494e1b5b393b3948414c54541b5b31323b3948504f53541b5b48",
+      "cursor_reply": [
+        1,
+        1
+      ],
+      "response_hex": "1b5b313b3152",
+      "alternate": false,
+      "scrollbar_at_capture": 0,
+      "max": 0,
+      "pages": [
+        {
+          "value": 0,
+          "scroll_top": 0,
+          "grid_matches": [
+            {
+              "label": "HIST",
+              "row": 3,
+              "column": 9
+            },
+            {
+              "label": "MAIN",
+              "row": 6,
+              "column": 9
+            },
+            {
+              "label": "ALTT",
+              "row": 9,
+              "column": 9
+            },
+            {
+              "label": "POST",
+              "row": 12,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "3": "HIST",
+            "6": "MAIN",
+            "9": "ALTT",
+            "12": "POST"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "label": "primary-history",
+      "source_hex": "1b5b333b3948202020201b5b363b3948202020201b5b393b3948202020201b5b31323b3948202020201b5b313b3948484953541b5b32353b31480d0a0d0a1b5b343b39484d41494e1b5b333b3248",
+      "cursor_reply": [
+        3,
+        2
+      ],
+      "response_hex": "1b5b333b3252",
+      "alternate": false,
+      "scrollbar_at_capture": 2,
+      "max": 2,
+      "pages": [
+        {
+          "value": 2,
+          "scroll_top": 2,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "label": "alternate",
+      "source_hex": "1b5b3f31303439681b5b31373b3948414c54541b5b323b3248",
+      "cursor_reply": [
+        2,
+        2
+      ],
+      "response_hex": "1b5b323b3252",
+      "alternate": true,
+      "scrollbar_at_capture": 12,
+      "max": 12,
+      "pages": [
+        {
+          "value": 12,
+          "scroll_top": 12,
+          "grid_matches": [],
+          "nonblank_rows": {
+            "17": "?"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "label": "alternate-ris",
+      "source_hex": "1b63",
+      "cursor_reply": [
+        1,
+        1
+      ],
+      "response_hex": "13111b5b313b3152",
+      "alternate": false,
+      "scrollbar_at_capture": 12,
+      "max": 12,
+      "pages": [
+        {
+          "value": 12,
+          "scroll_top": 12,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "label": "post-reset-write",
+      "source_hex": "1b5b383b3948504f53541b5b323b3248",
+      "cursor_reply": [
+        2,
+        2
+      ],
+      "response_hex": "1b5b323b3252",
+      "alternate": false,
+      "scrollbar_at_capture": 12,
+      "max": 12,
+      "pages": [
+        {
+          "value": 12,
+          "scroll_top": 12,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "label": "explicit-return",
+      "source_hex": "1b5b3f313034396c",
+      "cursor_reply": [
+        3,
+        2
+      ],
+      "response_hex": "1b5b333b3252",
+      "alternate": false,
+      "scrollbar_at_capture": 12,
+      "max": 12,
+      "pages": [
+        {
+          "value": 12,
+          "scroll_top": 12,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "label": "alternate-reentry",
+      "source_hex": "1b5b3f3130343968",
+      "cursor_reply": [
+        1,
+        1
+      ],
+      "response_hex": "1b5b313b3152",
+      "alternate": true,
+      "scrollbar_at_capture": 12,
+      "max": 12,
+      "pages": [
+        {
+          "value": 12,
+          "scroll_top": 12,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "label": "final-return",
+      "source_hex": "1b5b3f313034396c",
+      "cursor_reply": [
+        3,
+        2
+      ],
+      "response_hex": "1b5b333b3252",
+      "alternate": false,
+      "scrollbar_at_capture": 12,
+      "max": 12,
+      "pages": [
+        {
+          "value": 0,
+          "scroll_top": 0,
+          "grid_matches": [
+            {
+              "label": "HIST",
+              "row": 1,
+              "column": 9
+            },
+            {
+              "label": "MAIN",
+              "row": 16,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "1": "HIST",
+            "16": "MAIN"
+          }
+        },
+        {
+          "value": 12,
+          "scroll_top": 12,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    }
+  ]
+}

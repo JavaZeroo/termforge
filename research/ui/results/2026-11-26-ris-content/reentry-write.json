@@ -1,0 +1,291 @@
+{
+  "case": "ris-content-pages",
+  "grid": [
+    91,
+    25
+  ],
+  "probe_commit": "dca21e989e8a951e8f9640d0d25b0f126bd24a84",
+  "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "plan_sha256": "1d3086cc57c241a4902439edda07330e38c2a96024ddba8599062a99a6b2227e",
+  "export_sha256": "b7079e2d6180d5037d940034fb168f8beaaf9ffe5aafa4a0c096a8c3cfc8d089",
+  "raw_result_sha256": "e2e14c3dda957cfbc928f62e0565743e859a1932bd4e88d61f365d480b7370f6",
+  "evidence_id": "ev_e5034dfd769fb5c48baf72f7064d761fcd3c82e66043e231fb8601e925ca0124",
+  "capture_job": {
+    "active": 0,
+    "total": 3,
+    "terminated": 0
+  },
+  "outer_cleanup": true,
+  "phases": [
+    {
+      "phase": 0,
+      "label": "glyph-controls",
+      "source_hex": "1b5b306d1b5b3f366c1b5b721b5b324a1b5b333b3948484953541b5b363b39484d41494e1b5b393b3948414c54541b5b31323b3948504f53541b5b48",
+      "cursor_reply": [
+        1,
+        1
+      ],
+      "response_hex": "1b5b313b3152",
+      "alternate": false,
+      "scrollbar_at_capture": 0,
+      "max": 0,
+      "pages": [
+        {
+          "value": 0,
+          "scroll_top": 0,
+          "grid_matches": [
+            {
+              "label": "HIST",
+              "row": 3,
+              "column": 9
+            },
+            {
+              "label": "MAIN",
+              "row": 6,
+              "column": 9
+            },
+            {
+              "label": "ALTT",
+              "row": 9,
+              "column": 9
+            },
+            {
+              "label": "POST",
+              "row": 12,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "3": "HIST",
+            "6": "MAIN",
+            "9": "ALTT",
+            "12": "POST"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "label": "primary-history",
+      "source_hex": "1b5b333b3948202020201b5b363b3948202020201b5b393b3948202020201b5b31323b3948202020201b5b313b3948484953541b5b32353b31480d0a0d0a1b5b343b39484d41494e1b5b31363b3948202020201b5b333b3248",
+      "cursor_reply": [
+        3,
+        2
+      ],
+      "response_hex": "1b5b333b3252",
+      "alternate": false,
+      "scrollbar_at_capture": 2,
+      "max": 2,
+      "pages": [
+        {
+          "value": 2,
+          "scroll_top": 2,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "label": "alternate",
+      "source_hex": "1b5b3f31303439681b5b31343b3948414c54541b5b323b3248",
+      "cursor_reply": [
+        2,
+        2
+      ],
+      "response_hex": "1b5b323b3252",
+      "alternate": true,
+      "scrollbar_at_capture": 18,
+      "max": 18,
+      "pages": [
+        {
+          "value": 18,
+          "scroll_top": 18,
+          "grid_matches": [],
+          "nonblank_rows": {
+            "14": "?"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "label": "alternate-ris",
+      "source_hex": "1b63",
+      "cursor_reply": [
+        1,
+        1
+      ],
+      "response_hex": "13111b5b313b3152",
+      "alternate": false,
+      "scrollbar_at_capture": 18,
+      "max": 18,
+      "pages": [
+        {
+          "value": 18,
+          "scroll_top": 18,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "label": "post-reset-write",
+      "source_hex": "1b5b383b3948504f53541b5b323b3248",
+      "cursor_reply": [
+        2,
+        2
+      ],
+      "response_hex": "1b5b323b3252",
+      "alternate": false,
+      "scrollbar_at_capture": 18,
+      "max": 18,
+      "pages": [
+        {
+          "value": 18,
+          "scroll_top": 18,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "label": "explicit-return",
+      "source_hex": "1b5b3f313034396c",
+      "cursor_reply": [
+        3,
+        2
+      ],
+      "response_hex": "1b5b333b3252",
+      "alternate": false,
+      "scrollbar_at_capture": 18,
+      "max": 18,
+      "pages": [
+        {
+          "value": 18,
+          "scroll_top": 18,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "label": "alternate-reentry",
+      "source_hex": "1b5b3f31303439681b5b31313b3948504f53541b5b323b3248",
+      "cursor_reply": [
+        2,
+        2
+      ],
+      "response_hex": "1b5b323b3252",
+      "alternate": true,
+      "scrollbar_at_capture": 34,
+      "max": 34,
+      "pages": [
+        {
+          "value": 34,
+          "scroll_top": 34,
+          "grid_matches": [
+            {
+              "label": "POST",
+              "row": 11,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "11": "POST"
+          }
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "label": "final-return",
+      "source_hex": "1b5b3f313034396c",
+      "cursor_reply": [
+        3,
+        2
+      ],
+      "response_hex": "1b5b333b3252",
+      "alternate": false,
+      "scrollbar_at_capture": 18,
+      "max": 18,
+      "pages": [
+        {
+          "value": 0,
+          "scroll_top": 0,
+          "grid_matches": [
+            {
+              "label": "HIST",
+              "row": 1,
+              "column": 9
+            },
+            {
+              "label": "ALTT",
+              "row": 16,
+              "column": 9
+            },
+            {
+              "label": "MAIN",
+              "row": 22,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "1": "HIST",
+            "16": "ALTT",
+            "22": "MAIN"
+          }
+        },
+        {
+          "value": 18,
+          "scroll_top": 18,
+          "grid_matches": [
+            {
+              "label": "MAIN",
+              "row": 4,
+              "column": 9
+            }
+          ],
+          "nonblank_rows": {
+            "4": "MAIN"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -38,7 +38,7 @@ source = probe.substitute(Path(base.__file__).read_text(encoding="utf-8"), {
 _runtime = {"__file__": __file__, "__name__": "termforge_alternate_ris_export"}
 exec(compile(source, str(Path(base.__file__)), "exec"), _runtime)
 _runtime.update(expected_probe=expected_probe, MARKERS=probe.MARKERS,
-                SYNTHETIC_LINE=re.compile(r" *(?:HIST|MAIN|ALTT|POST)? *"))
+                SYNTHETIC_LINE=re.compile(r" *(?:HIST|MAIN|ALT|AFTER)? *"))
 export = _runtime["export"]
 
 
