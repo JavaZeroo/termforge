@@ -141,8 +141,16 @@ QJsonObject scenario() {
     check_page(model, window, 80, 24, 45);
     resize(window,60);
     check_page(model, window, 60, 24, 45);
+    require(input_bytes() == " ", "unexpected input before the line advance");
+    const size_t before_line = model.transport_capture().size();
     QTest::keyClick(&window, Qt::Key_Return);
     check_page(model, window, 60, 25, 46);
+    // The first console operation following the live resize asks the host for
+    // the caret. The 17-character prompt fills columns 1..17 of the last row.
+    const auto line_output = model.transport_capture(before_line);
+    const auto query = line_output.find("\x1b[6n");
+    require(query != std::string::npos && query < line_output.find("TF_PAGE_47") &&
+            input_bytes() == " \r\x1b[24;18R", "resize cursor query or independent CPR differs");
     QTest::keyClicks(&window, QStringLiteral("q"));
     const auto has_line = [&](const std::string& expected) {
         for (const auto& line : model.screen().visible_lines()) if (row_text(line) == expected) return true;
@@ -152,10 +160,11 @@ QJsonObject scenario() {
     require(!has_line("-- More (46%) --") && has_line("TF_PAGE_47") &&
             model.screen().active_buffer() == termforge::ScreenBuffer::primary, "pager exit damaged the primary screen");
     const auto transport = model.transport_capture();
-    require(transport.find("\x1b[6n") == std::string::npos &&
+    require(transport.find("\x1b[6n") == before_line + query &&
+            transport.find("\x1b[6n", before_line + query + 4) == std::string::npos &&
             transport.find("\x1b[?1049h") == std::string::npos, "unexpected pager query or alternate-screen request");
     const auto keys = QByteArray::fromStdString(input_bytes()).toHex();
-    require(keys == "200d71", "bytes written to the pager differ from Space, Return, q");
+    require(keys == "200d1b5b32343b31385271", "pager keys and cursor reply differ");
     QTest::keyClicks(&window, QStringLiteral("set /a 731+19"));
     QTest::keyClick(&window, Qt::Key_Return);
     wait(model, [&] { return has_line("750"); }, "restored shell did not calculate the answer");
@@ -165,7 +174,7 @@ QJsonObject scenario() {
     require(model.error().isEmpty() && model.natural_exit() && model.exit_code() == 0 && model.output_eof() &&
             model.cleanup_verified() && model.active_processes_after() == 0, "incomplete pager lifecycle");
     return {{"scenario","more-pager-resize"},{"more_sha256",QString::fromLatin1(digest)},
-            {"startup_da1",true},{"dsr6n",false},{"input_hex",QString::fromLatin1(keys)},{"shell_answer",750},{"natural_exit",true},{"cleanup_verified",true}};
+            {"startup_da1",true},{"dsr6n_reply","24;18R"},{"input_hex",QString::fromLatin1(keys)},{"shell_answer",750},{"natural_exit",true},{"cleanup_verified",true}};
 }
 }
 
