@@ -125,7 +125,8 @@ QJsonObject scenario() {
                         workspace.path().toStdWString(), observe_input), "could not start the pager shell");
     require(model.uses_host_resize_maps(), "pager requires the product fixed-source resize path");
     check_page(model, window, 80, 1, 22);
-    require(input_bytes().empty(), "unexpected startup reply before the first pager key");
+    require(model.transport_capture().find("\x1b[c") != std::string::npos && input_bytes().empty(),
+            "fixed ConPTY startup DA1 or the recovery-mode silent response differs");
     QTest::keyClick(&window, Qt::Key_Space);
     check_page(model, window, 80, 24, 45);
     resize(window,60);
@@ -140,6 +141,9 @@ QJsonObject scenario() {
     wait(model, [&] { return has_line("TF_MORE_EXIT_0") && has_line("TF_READY>"); }, "original shell did not resume");
     require(!has_line("-- More (46%) --") && has_line("TF_PAGE_47") &&
             model.screen().active_buffer() == termforge::ScreenBuffer::primary, "pager exit damaged the primary screen");
+    const auto transport = model.transport_capture();
+    require(transport.find("\x1b[6n") == std::string::npos &&
+            transport.find("\x1b[?1049h") == std::string::npos, "unexpected pager query or alternate-screen request");
     const auto keys = QByteArray::fromStdString(input_bytes()).toHex();
     require(keys == "200d71", "bytes written to the pager differ from Space, Return, q");
     QTest::keyClicks(&window, QStringLiteral("set /a 731+19"));
@@ -151,7 +155,7 @@ QJsonObject scenario() {
     require(model.error().isEmpty() && model.natural_exit() && model.exit_code() == 0 && model.output_eof() &&
             model.cleanup_verified() && model.active_processes_after() == 0, "incomplete pager lifecycle");
     return {{"scenario","more-pager-resize"},{"more_sha256",QString::fromLatin1(digest)},
-            {"input_hex",QString::fromLatin1(keys)},{"shell_answer",750},{"natural_exit",true},{"cleanup_verified",true}};
+            {"startup_da1",true},{"dsr6n",false},{"input_hex",QString::fromLatin1(keys)},{"shell_answer",750},{"natural_exit",true},{"cleanup_verified",true}};
 }
 }
 
