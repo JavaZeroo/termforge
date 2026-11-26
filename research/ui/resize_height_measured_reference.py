@@ -86,9 +86,16 @@ def phases(case, rows=20, columns=91):
     return [(label, value) for label, _, _, value in CASES[case]]
 
 
-def reply_observation(data):
-    result = common.reply_observation(data)
+def reply_observation(data, phase):
+    payload = data
+    if phase == 2 and data.startswith(b"\x13"):
+        if len(data) == 1:
+            return None
+        require(data.startswith(b"\x13\x11"), "Unexpected RIS flow-control prefix")
+        payload = data[2:]
+    result = common.reply_observation(payload)
     if result is not None:
+        result["response_hex"] = data.hex()
         row, column = result["cursor_reply"]
         require(1 <= row <= 200 and 1 <= column <= 500, "DSR exceeds independent safety bounds")
     return result
@@ -115,10 +122,10 @@ def peer_class(case):
     base = baseline.peer_class()
     # baseline creates a fresh module namespace for each class, not a shared peer.
     base._serve.__globals__["phases"] = lambda rows, columns: phases(case, rows, columns)
-    base._serve.__globals__["reply_observation"] = reply_observation
 
     class HeightPeer(base):
         def _freeze_initial(self):
+            base._serve.__globals__["reply_observation"] = lambda data: reply_observation(data, self.state["phase"])
             super()._freeze_initial()
             require(self.state["frozen_grid"] == [91, 20], "Fixed initial grid differs")
             self.state["case_id"] = case
@@ -309,7 +316,7 @@ def audit_mechanics(directory, case):
     for index, (expected, actual, observed, check) in enumerate(zip(phase_records(case), records, observations, checks)):
         grid, window = expected_grids[index], expected_windows[index]
         require(all(actual.get(k) == v for k, v in expected.items()) and actual["frozen_grid"] == grid, "Exact action source differs")
-        raw = bytes.fromhex(actual["response_hex"]); reply = reply_observation(raw)
+        raw = bytes.fromhex(actual["response_hex"]); reply = reply_observation(raw, index)
         if index == 0:
             require(reply is not None and reply["cursor_reply"] == [19, 91], "Initial fixture DSR differs")
         require(reply is not None and all(actual.get(k) == v for k, v in reply.items()), "DSR differs")
