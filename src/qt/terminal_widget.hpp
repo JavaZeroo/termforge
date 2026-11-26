@@ -978,6 +978,7 @@ class TerminalWidget final : public QWidget {
                 style.bg = 4; style.fg = 15; style.reverse = false;
             }
         }
+        const auto base_font = font();
         for (size_t row = 0; row < visible_rows; ++row) {
             const auto& line = page.lines[painted_row_offset_ + row];
             for (size_t column = 0; column < columns; ++column) {
