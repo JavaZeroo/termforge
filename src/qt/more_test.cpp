@@ -82,6 +82,16 @@ void check_page(SessionModel& model, TerminalWidget& window, int columns, int fi
     for (int r = 0; r < 24; ++r)
         require(row_text(page->lines.at(window.painted_row_offset() + r)) == expected(r),
                 "Qt painted a different pager row");
+    // The first letter and prompt dash should both have ink next to the
+    // otherwise empty part of their respective rows on the rendered surface.
+    const auto tile = [&](int row, int column) {
+        const qreal scale = image.devicePixelRatio();
+        const int x = window.content_margin() + column * window.cell_width();
+        const int y = window.content_margin() + row * window.cell_height();
+        return image.copy(qRound(x * scale), qRound(y * scale),
+                          qRound(window.cell_width() * scale), qRound(window.cell_height() * scale));
+    };
+    require(tile(0,0) != tile(0,50) && tile(23,0) != tile(23,50), "pager text or prompt has no rendered ink");
     std::cerr << "more grid=" << columns << "x24 lines=" << first << ".." << first + 22
               << " prompt=" << percent << "% input_hex=" << QByteArray::fromStdString(input_bytes()).toHex().constData() << '\n';
 }
@@ -121,7 +131,7 @@ QJsonObject scenario() {
     window.show();
     window.setFocus();
     QApplication::processEvents();
-    require(model.start((system + "/cmd.exe").toStdWString(), L"/d /q /k run.cmd",
+    require(model.start((system + "\\cmd.exe").toStdWString(), L"/d /q /k run.cmd",
                         workspace.path().toStdWString(), observe_input), "could not start the pager shell");
     require(model.uses_host_resize_maps(), "pager requires the product fixed-source resize path");
     check_page(model, window, 80, 1, 22);
