@@ -10,12 +10,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from research.ui import mode_state_reference as base
 
-CASE_ID = "alternate-ris"
-PHASE_COUNT = 10
-MARKERS = ("HIST", "MAIN", "ALT", "AFTER")
-RIS_PHASES = (2, 9)
+CASE_ID = "grid-style-switch"
+PHASE_COUNT = 14
+MARKERS = ("GRID",)
+RIS_PHASES = (7, 13)
 FLOW_CONTROL = b"\x13\x11"
-SOURCE_FILES = ("research/ui/alternate_ris_reference.py", *base.SOURCE_FILES)
+SOURCE_FILES = ("research/ui/alternate_ris_reference.py", "research/ui/grid_style_capture.js", "research/ui/raster_raw_reference.js", *base.SOURCE_FILES)
 EXE_SHA256, MANIFEST_SHA256 = base.EXE_SHA256, base.MANIFEST_SHA256
 require = base.require
 
@@ -24,18 +24,28 @@ def phases(rows, columns, case):
     require(case == CASE_ID, "Unexpected RIS case")
     require(type(rows) is int and type(columns) is int and 20 <= rows <= 60 and 40 <= columns <= 160,
             "Controlled grid out of bounds")
+    require((columns, rows) == (91, 25), "fixed grid")
+    def cup(r, c): return f"\x1b[{r};{c}H".encode()
+    def sgr(v): return f"\x1b[0;{v}m".encode()
+    modes = ("0", "1", "31", "31;1", "91", "2", "4", "7", "9", "8", "53", "44", "33;44")
+    def controls(row):
+        return b"".join(cup(row, 5+5*i) + sgr(v) + b"M M " for i, v in enumerate(modes))
+    park = b"\x1b[?25l" + cup(24,80)
     return [
-        ("primary-with-history-and-margin", b"\x1b[?6l\x1b[r\x1b[2J\x1b[1;1HHIST" + f"\x1b[{rows};1H".encode() +
-         b"\r\n\r\n\x1b[4;2HMAIN\x1b[2;6r\x1b[?6h\x1b[2;7H"),
-        ("alternate-with-margin", b"\x1b[?1049h\x1b[3;7r\x1b[?6h\x1b[2;4HALT"),
-        ("ris-in-alternate", b"\x1bc"),
-        ("implicit-origin-after-ris", b"\x1b[1;1HAFTER\x1b[99;1H"),
-        ("explicit-origin-after-ris", b"\x1b[?6h\x1b[99;1H"),
-        ("explicit-primary-return", b"\x1b[?1049l"),
-        ("alternate-reentry", b"\x1b[?1049h"),
-        ("explicit-origin-after-reentry", b"\x1b[?6h\x1b[99;1H"),
-        ("final-primary-return", b"\x1b[?1049l"),
-        ("ris-in-primary", b"\x1bc"),
+        ("primary-controls", b"\x1b[0m\x1b[2J" + cup(2,5) + b"GRID" + controls(4) + park),
+        ("alternate-entry", b"\x1b[?1049h"),
+        ("alternate-controls", cup(8,5) + b"M M " + controls(10) + park),
+        ("repeat-entry", b"\x1b[?1049h"),
+        ("repeat-first-write", cup(12,5) + b"M M " + park),
+        ("ordinary-return", b"\x1b[?1049l"),
+        ("alternate-before-ris", b"\x1b[?1049h" + cup(14,5) + sgr("4") + b"M M " + park),
+        ("alternate-ris", b"\x1bc"),
+        ("primary-first-write", cup(16,5) + b"M M " + park),
+        ("explicit-return", b"\x1b[?1049l"),
+        ("empty-reentry", b"\x1b[?1049h"),
+        ("reentry-first-write", cup(18,5) + b"M M " + park),
+        ("final-return", b"\x1b[?1049l"),
+        ("primary-ris", b"\x1bc"),
     ]
 
 
@@ -62,7 +72,11 @@ def observed_reply(data, phase):
 
 def javascript_source():
     source = (ROOT / "research/ui/mode_state_reference.js").read_text(encoding="utf-8")
-    return substitute(source, {
+    raw = (ROOT / "research/ui/raster_raw_reference.js").read_text(encoding="utf-8")
+    capture = raw[raw.index("function modulePathMatches"):raw.index("function must(")]
+    capture += (ROOT / "research/ui/grid_style_capture.js").read_text(encoding="utf-8")
+    return capture + substitute(source, {
+        "const observation={phase:": "const observation={grid_capture:captureGrid(peer.phase, terminal),phase:",
         "__MODE_STATE_CASE_JSON__": json.dumps(CASE_ID),
         "phaseCount=14": f"phaseCount={PHASE_COUNT}",
         "['main-on-alt-off','main-off-alt-on']": json.dumps([CASE_ID]),
