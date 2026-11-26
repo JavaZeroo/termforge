@@ -4,6 +4,22 @@
 
 复用 More 切片的成熟模式（PR #306，轨迹见 [tui-more-trajectory-2026-11-02.md](tui-more-trajectory-2026-11-02.md)）。与 More 的关键差别：Vim 是全屏 TUI，轨迹中出现 1049 备用屏进出、DA1/DA2、DSR 6n、DECSTBM 与 XTWINOPS 标题保存/恢复，More 的固定尺寸轨迹只观察到宿主启动 DA1；后续在分页中途缩窄的 More 场景另观察到 DSR 6n，详见上述分页器记录。
 
+## Qt 全屏交互的复验入口（2026-11-26）
+
+`tools/prepare_vim_test.ps1` 从 Git for Windows 2.46.0 官方便携包提取 Vim、四个原始 MSYS DLL 和同包的 `usr/share/terminfo/78/xterm-256color`。脚本校验发行包，测试在隔离目录逐一校验六个文件。终端描述的 SHA-256 为 `7f27e57e318f32605466c781de06fba0ff27f212667140cde50ff65498123f84`。这些文件仅用于测试。[上游发行包](https://github.com/git-for-windows/git/releases/tag/v2.46.0.windows.1) · [准备脚本](../../tools/prepare_vim_test.ps1)
+
+在已配置的 Qt 产品测试构建中，构建 `qt_vim_test`，再运行 `ctest --test-dir build/qt-cpp -C Release -R '^qt_vim$' --no-tests=error -V`。同一个 cmd 先输出 `TF_VIM_PRIMARY`，再启动固定 Vim。三个 Vim 自动命令只写观察文件，分别记录进入时的尺寸、进入插入模式和应用收到的尺寸变化。输入来自 Qt 键盘事件，缩放来自同一个窗口。[正式场景源码](../../src/qt/vim_test.cpp)
+
+| 检查点 | 独立预期 |
+|---|---|
+| 80×24 进入 | Vim 报告 80×24，备用屏首行空白，中间 22 行为 `~`，末行含 `[New]`。按 `i` 后显示 `-- INSERT --`。 |
+| 编辑并缩小窗口 | 首行已显示 `TF_CANDIDATE_`。Vim 报告 60×12，插入状态仍在末行，中间 10 行为 `~`。继续输入 `TUI`，首行完整显示 `TF_CANDIDATE_TUI`。 |
+| 查询与按键 | Vim 进入时的四次光标位置为 `2;2`、`3;1`、`1;1`、`1;1`。缩放时第一行已有 13 个 ASCII 单元，下一个位置为 `1;14`。传输实写的五个 CPR 和编辑按键分别核对。 |
+| 保存退出 | 普通 Esc 后输入 `:wq` 并回车，保存命令字节为 `1b 3a 77 71 0d`。Vim 退出码为 0，文件逐字节为 16 个 ASCII 字符加一个 LF。 |
+| 主屏与原 shell | 原标记和提示符可见，编辑器填充行、插入提示和正文均未混入主屏及其历史。原 cmd 执行 `set /a 731+19` 得到 `750`，自然退出并读到 EOF，自有 Job 最终活动进程为 0。 |
+
+Windows 11 本机使用官方未修订 ConPTY 的对照说明了终端描述对该场景的影响。缺少这项描述时，Vim 可以保存文件，但传输里没有 1049 进出，返回提示符时仍可见编辑器填充行。加入同包描述后观察到了 1049 进出和原主屏标记恢复，另有运行在尺寸改变后未观察到 Vim 重绘。下文 11 月 2 日的两种固定起始尺寸、WindTerm 的 Ctrl-O 轨迹和此处的运行中缩放分属各自的配置。
+
 ## 冻结身份
 
 | 项目 | 值 | 证据/来源 |

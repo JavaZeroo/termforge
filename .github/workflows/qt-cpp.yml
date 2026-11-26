@@ -148,6 +148,8 @@ jobs:
             build/qt-cpp/qt-paste-bin/Release/runtime-manifest.json
       - name: Run Qt offscreen smoke in its owned Job
         run: ctest --test-dir build/qt-cpp -C Release -R '^(qt_cpp_(shell|resize)|qt_win32_resize_compat|qt_native_resize_map|qt_bcd_local_reference|qt_unicode_input|qt_unicode_render|qt_eight_session|qt_terminal_modes(_retained|_resize_repro)?|qt_hidden_retention|qt_history_navigation|qt_selection_migration|qt_find|qt_scrollbar_size|qt_autoscroll|qt_query_reply|qt_paste|qt_more|qt_vim)$' --no-tests=error --verbose
+      - name: Repeat the live Vim resize with a fresh shell and file each time
+        run: ctest --test-dir build/qt-cpp -C Release -R '^qt_vim$' --no-tests=error --repeat until-fail:10 --verbose
       - name: Run hosted-only Qt system clipboard copy
         run: python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe --hosted-copy
       - name: Run hosted Windows QPA product-writer clipboard copy
