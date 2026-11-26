@@ -10,12 +10,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from research.ui import mode_state_reference as base
 
-CASE_ID = "ris-content-pages"
-PHASE_COUNT = 8
-MARKERS = ("HIST", "MAIN", "ALTT", "POST")
-RIS_PHASES = (3,)
+CASE_ID = "alternate-ris"
+PHASE_COUNT = 10
+MARKERS = ("HIST", "MAIN", "ALT", "AFTER")
+RIS_PHASES = (2, 9)
 FLOW_CONTROL = b"\x13\x11"
-SOURCE_FILES = ("research/ui/alternate_ris_reference.py", "research/ui/ris_content_viewport.js", "research/ui/raster_raw_reference.js", *base.SOURCE_FILES)
+SOURCE_FILES = ("research/ui/alternate_ris_reference.py", *base.SOURCE_FILES)
 EXE_SHA256, MANIFEST_SHA256 = base.EXE_SHA256, base.MANIFEST_SHA256
 require = base.require
 
@@ -24,20 +24,18 @@ def phases(rows, columns, case):
     require(case == CASE_ID, "Unexpected RIS case")
     require(type(rows) is int and type(columns) is int and 20 <= rows <= 60 and 40 <= columns <= 160,
             "Controlled grid out of bounds")
-    cup = lambda row: f"\x1b[{row};9H".encode()
-    controls = (3, 6, 9, 12)
-    erase_controls = b"".join(cup(row) + b"    " for row in controls)
     return [
-        ("glyph-controls", b"\x1b[0m\x1b[?6l\x1b[r\x1b[2J" +
-         b"".join(cup(row) + word.encode() for row, word in zip(controls, MARKERS)) + b"\x1b[H"),
-        ("primary-history", erase_controls + cup(1) + b"HIST" + f"\x1b[{rows};1H".encode() +
-         b"\r\n\r\n" + cup(4) + b"MAIN\x1b[3;2H"),
-        ("alternate", b"\x1b[?1049h" + cup(6) + b"ALTT\x1b[2;2H"),
-        ("alternate-ris", b"\x1bc"),
-        ("post-reset-write", cup(8) + b"POST\x1b[2;2H"),
-        ("explicit-return", b"\x1b[?1049l"),
+        ("primary-with-history-and-margin", b"\x1b[?6l\x1b[r\x1b[2J\x1b[1;1HHIST" + f"\x1b[{rows};1H".encode() +
+         b"\r\n\r\n\x1b[4;2HMAIN\x1b[2;6r\x1b[?6h\x1b[2;7H"),
+        ("alternate-with-margin", b"\x1b[?1049h\x1b[3;7r\x1b[?6h\x1b[2;4HALT"),
+        ("ris-in-alternate", b"\x1bc"),
+        ("implicit-origin-after-ris", b"\x1b[1;1HAFTER\x1b[99;1H"),
+        ("explicit-origin-after-ris", b"\x1b[?6h\x1b[99;1H"),
+        ("explicit-primary-return", b"\x1b[?1049l"),
         ("alternate-reentry", b"\x1b[?1049h"),
-        ("final-return", b"\x1b[?1049l"),
+        ("explicit-origin-after-reentry", b"\x1b[?6h\x1b[99;1H"),
+        ("final-primary-return", b"\x1b[?1049l"),
+        ("ris-in-primary", b"\x1bc"),
     ]
 
 
@@ -64,11 +62,7 @@ def observed_reply(data, phase):
 
 def javascript_source():
     source = (ROOT / "research/ui/mode_state_reference.js").read_text(encoding="utf-8")
-    raw = (ROOT / "research/ui/raster_raw_reference.js").read_text(encoding="utf-8")
-    capture = raw[raw.index("function modulePathMatches"):raw.index("function must(")]
-    capture += (ROOT / "research/ui/ris_content_viewport.js").read_text(encoding="utf-8")
-    return capture + substitute(source, {
-        "const observation={phase:": "const viewport=scanPages(peer.phase,terminal);if(!viewport)return;const observation={viewport,phase:",
+    return substitute(source, {
         "__MODE_STATE_CASE_JSON__": json.dumps(CASE_ID),
         "phaseCount=14": f"phaseCount={PHASE_COUNT}",
         "['main-on-alt-off','main-off-alt-on']": json.dumps([CASE_ID]),

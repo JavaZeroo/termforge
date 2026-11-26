@@ -172,6 +172,10 @@ jobs:
             if ($LASTEXITCODE -ne 0) { $failed = 1 }
           }
           exit $failed
+      - name: Observe RIS content in the real child and product screen model
+        run: >-
+          python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe
+          --observe-ris-content research/ui/results/2026-11-26-ris-content/scroll-last.json
       - name: Check explicit cursor return after RIS and resize
         run: |
           $failed = 0

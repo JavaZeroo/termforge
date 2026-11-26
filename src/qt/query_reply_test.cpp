@@ -200,7 +200,21 @@ std::string native_marker_grid(HANDLE output) {
     return grid;
 }
 
-enum class CursorTrace { single_query, fixed_grid, saved_resize };
+std::string native_content_strip(HANDLE output) {
+    std::array<CHAR_INFO, 4 * 25> cells{};
+    SMALL_RECT bounds{8, 0, 11, 24};
+    require(ReadConsoleOutputW(output, cells.data(), {4, 25}, {0, 0}, &bounds) &&
+            bounds.Left == 8 && bounds.Right == 11 && bounds.Top == 0 && bounds.Bottom == 24,
+            "native content strip read failed");
+    std::string result;
+    for (const auto& cell : cells) {
+        const auto ch = cell.Char.UnicodeChar;
+        result.push_back(ch == 0 ? ' ' : ch < 128 ? static_cast<char>(ch) : '?');
+    }
+    return result;
+}
+
+enum class CursorTrace { single_query, fixed_grid, saved_resize, content };
 
 int query_child(const std::filesystem::path& result, CursorTrace trace = CursorTrace::single_query) {
     try {
@@ -227,7 +241,8 @@ int query_child(const std::filesystem::path& result, CursorTrace trace = CursorT
             size_t count = 0;
             while (std::getline(phases, line)) {
                 const auto phase = std::to_string(count);
-                if (trace == CursorTrace::saved_resize) {
+                const bool gated = trace == CursorTrace::saved_resize || trace == CursorTrace::content;
+                if (gated) {
                     const auto deadline = GetTickCount64() + child_reply_timeout_ms;
                     while (!std::filesystem::exists("release-" + phase) && GetTickCount64() < deadline) Sleep(2);
                     require(std::filesystem::exists("release-" + phase), "cursor trace resize gate timed out");
@@ -237,8 +252,9 @@ int query_child(const std::filesystem::path& result, CursorTrace trace = CursorT
                 const auto received = exchange(input, output, source, timed_out, complete);
                 replies << hex(received) << std::endl;
                 require(bool(replies) && complete && !timed_out, "Cursor phase reply incomplete");
-                if (trace == CursorTrace::saved_resize) {
-                    write_binary("cells-" + phase, native_marker_grid(output));
+                if (gated) {
+                    write_binary("cells-" + phase, trace == CursorTrace::content ?
+                                 native_content_strip(output) : native_marker_grid(output));
                     write_binary("done-" + phase, "");
                 }
                 ++count;
@@ -420,14 +436,17 @@ ProductStage run_product(const std::filesystem::path& executable, const std::fil
 int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem::path& directory,
                          const std::filesystem::path& reference, std::string_view option) {
     const auto document = QJsonDocument::fromJson(QByteArray::fromStdString(read_binary(reference)));
-    const auto record = document.object().value("reference").toObject();
+    const bool content = option == "--observe-ris-content";
+    const auto record = content ? document.object() : document.object().value("reference").toObject();
     const bool resized = option == "--saved-cursor-reference";
     const bool margin_case = option == "--duplicate-margin-reference";
     const auto case_id = document.object().value("case_id").toString();
     const bool ris_resize = resized && case_id.startsWith(QStringLiteral("ris-return-"));
     const auto axis_case = case_id.section('-', -1);
     const bool height_case = axis_case == QStringLiteral("short") || axis_case == QStringLiteral("tall");
-    if (resized)
+    if (content)
+        require(record.value("case") == QStringLiteral("ris-content-pages"), "wrong content reference");
+    else if (resized)
         require(case_id == (ris_resize ? QStringLiteral("ris-return-") : QStringLiteral("saved-return-")) + axis_case &&
                     (height_case || axis_case == QStringLiteral("narrow") || axis_case == QStringLiteral("wide")),
                 "wrong saved cursor reference file");
@@ -441,7 +460,7 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     require(!phases.isEmpty(), "empty cursor trace");
     const auto grid = resized ? phases.at(0).toObject().value("frozen_grid").toArray() : record.value("grid").toArray();
     require(grid.size() == 2 && grid[0].toInt() == 91 && grid[1].toInt() == (resized ? 20 : 25) &&
-            phases.size() == (ris_resize ? 9 : resized ? 6 : 14),
+            phases.size() == (content ? 8 : ris_resize ? 9 : resized ? 6 : 14),
             "invalid cursor reference geometry or phase count");
     std::ofstream sources(directory / "sources.hex");
     for (int index = 0; index < phases.size(); ++index) {
@@ -458,12 +477,12 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     SessionModel model;
     model.enable_transport_capture();
     require(model.resize(91, grid[1].toInt()) &&
-            model.start(exe.wstring(), resized ? L"--saved-cursor-child" : L"--cursor-child", directory.wstring()),
+            model.start(exe.wstring(), content ? L"--content-child" : resized ? L"--saved-cursor-child" : L"--cursor-child", directory.wstring()),
             "could not start the cursor trace session");
     QElapsedTimer lifecycle;
     lifecycle.start();
     int differences = 0;
-    if (resized) {
+    if (resized || content) {
         require(model.uses_host_resize_maps(), "saved cursor test requires the product resize path");
         const auto wait = [&](auto ready, const char* failure) {
             while (!ready() && !model.finished() && model.error().isEmpty() &&
@@ -472,10 +491,10 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
         };
         for (int index = 0; index < phases.size(); ++index) {
             const auto phase = phases[index].toObject();
-            const auto size = phase.value("frozen_grid").toArray();
+            const auto size = content ? grid : phase.value("frozen_grid").toArray();
             require(size.size() == 2, "missing saved cursor grid");
             const int width = size[0].toInt(), height = size[1].toInt();
-            require(height_case ? width == 91 && (height == 14 || height == 20)
+            require(content ? width == 91 && height == 25 : height_case ? width == 91 && (height == 14 || height == 20)
                                 : height == 20 && (width == 61 || width == 91), "invalid saved cursor grid");
             require(model.resize(width, height), "saved cursor resize failed");
             wait([&] {
@@ -486,6 +505,38 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
             write_binary(directory / ("release-" + std::to_string(index)), "");
             wait([&] { return std::filesystem::exists(directory / ("done-" + std::to_string(index))); },
                  "saved cursor child did not receive the phase reply");
+            if (content) {
+                const auto native = read_binary(directory / ("cells-" + std::to_string(index)));
+                require(native.size() == 100, "incomplete native content strip");
+                const auto collect = [](const auto& lines) {
+                    QJsonObject rows;
+                    int row = 0;
+                    for (const auto& line : lines) {
+                        ++row;
+                        std::string word;
+                        for (int col = 8; col < 12; ++col)
+                            word += line[col].text.empty() ? " " : line[col].text;
+                        if (word != "    ") rows.insert(QString::number(row), QString::fromStdString(word));
+                    }
+                    return rows;
+                };
+                QJsonObject native_rows;
+                for (int row = 0; row < 25; ++row) {
+                    const auto word = native.substr(4 * row, 4);
+                    if (word != "    ") native_rows.insert(QString::number(row + 1), QString::fromStdString(word));
+                }
+                QJsonObject observed{{"phase",index},{"native",native_rows},
+                    {"visible",collect(model.screen().visible_lines())},{"history",collect(model.screen().history_lines())},
+                    {"history_rows",static_cast<int>(model.screen().scrollback_lines())},
+                    {"alternate",model.screen().active_buffer() == termforge::ScreenBuffer::alternate}};
+                std::cerr << "RIS content " << QJsonDocument(observed).toJson(QJsonDocument::Compact).toStdString() << '\n';
+                if (index == 0) {
+                    const auto controls = phase.value("pages").toArray().at(0).toObject().value("nonblank_rows").toObject();
+                    require(native_rows == controls && observed.value("visible").toObject() == controls,
+                            "product did not render the four input controls at their measured cells");
+                }
+                continue;
+            }
             // WindTerm's document API also exposes the hidden primary text;
             // compare cells only when the source has made the primary visible.
             const int restore = ris_resize ? 2 : (axis_case == QStringLiteral("narrow") || axis_case == QStringLiteral("short")) ? 3 : 4;
@@ -543,9 +594,9 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     }
     require(replies.peek() == std::char_traits<char>::eof() && model.exit_code() == 0,
             "cursor trace child did not finish the fixed trajectory");
-    std::cout << "{\"scenario\":\"" << (resized ? case_id.toStdString() :
+    std::cout << "{\"scenario\":\"" << (content ? "ris-content-observation" : resized ? case_id.toStdString() :
               margin_case ? "alternate-duplicate-margin" : "alternate-ris-cursor")
-              << "\",\"phases\":" << phases.size() << ",\"differences\":"
+              << "\",\"phases\":" << phases.size() << (content ? ",\"cursor_reply_differences\":" : ",\"differences\":")
               << differences << ",\"cleanup_verified\":true}\n";
     return differences ? 1 : 0;
 }
@@ -570,11 +621,13 @@ int main(int argc, char** argv) {
     }
     if (argc == 2 && (std::string_view(argv[1]) == "--cursor-child" || std::string_view(argv[1]) == "--ris-child")) return query_child("replies.hex", CursorTrace::fixed_grid);
     if (argc == 2 && std::string_view(argv[1]) == "--saved-cursor-child") return query_child("replies.hex", CursorTrace::saved_resize);
+    if (argc == 2 && std::string_view(argv[1]) == "--content-child") return query_child("replies.hex", CursorTrace::content);
     const bool ris = argc == 3 && std::string_view(argv[1]) == "--ris-reference";
     const bool margin = argc == 3 && std::string_view(argv[1]) == "--duplicate-margin-reference";
     const bool saved = argc == 3 && std::string_view(argv[1]) == "--saved-cursor-reference";
-    if (argc != 1 && !ris && !margin && !saved) {
-        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE|--saved-cursor-reference FILE]\n";
+    const bool content = argc == 3 && std::string_view(argv[1]) == "--observe-ris-content";
+    if (argc != 1 && !ris && !margin && !saved && !content) {
+        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE|--saved-cursor-reference FILE|--observe-ris-content FILE]\n";
         return 2;
     }
     char gate[3]{};
@@ -595,7 +648,7 @@ int main(int argc, char** argv) {
         const std::filesystem::path exe(executable);
         const std::filesystem::path directory(workspace.path().toStdWString());
 
-        if (ris || margin || saved) return compare_cursor_trace(exe, directory, argv[2], argv[1]);
+        if (ris || margin || saved || content) return compare_cursor_trace(exe, directory, argv[2], argv[1]);
 
         const auto silent = run_raw(exe, directory, directory / "raw-silent.bin", std::nullopt);
         emit_raw("raw-silent", silent);
