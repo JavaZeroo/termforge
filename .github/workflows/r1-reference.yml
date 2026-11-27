@@ -44,6 +44,7 @@ jobs:
           if ($LASTEXITCODE) { throw 'Evidence boundary checks failed' }
       - name: Observe clipboard paste in default, enabled and disabled modes
         run: |
+          $env:R28_BRACKETED_REFERENCE = "1"
           foreach ($i in 1,2) {
             $out = "local/ui-reference/bracketed-$i"
             python research/ui/r1_launch.py --source local/windterm-official/WindTerm_2.7.0 --out $out --rea research/ui/r1-tools/node_modules/.bin/rea.cmd --scenario menu-wrap --hosted-ci --seconds 35
