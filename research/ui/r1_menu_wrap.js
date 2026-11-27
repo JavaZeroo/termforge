@@ -21,29 +21,27 @@ Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
         if(stage===0){observationStep='ui-ready';if(!ready('ui'))return;sample('initial');observationStep='resize-main';resize(main,1360,860);}
         else if(stage===1){scan();expandAll(tree);focus(tree,7);key(tree,0x1000011);}
         else if(stage===2){key(tree,0x1000004);}
-        else if(stage===3){observationStep='vt-ready';if(!ready('vt'))return;sample('vt-session');send({kind:'vt_projection',value:evalText('JSON.stringify({protocol:window.activeText.protocolName(),connected:window.activeText.isConnected(),line0:window.activeText.lineText(0),line1:window.activeText.lineText(1),line2:window.activeText.lineText(2),line3:window.activeText.lineText(3),line4:window.activeText.lineText(4),line5:window.activeText.lineText(5)})')});focus(editor,7);key(editor,65,CTRL|SHIFT);}
-        else if(stage===4){sample('vt-select-all');key(editor,0x1000000);key(editor,70,CTRL|SHIFT);key(focused(),0,0,'LEFTRIGHT');}
-        else if(stage===5){sample('vt-soft-search');key(focused(),0x1000032);}
-        else if(stage===6){sample('vt-soft-search-wrap');key(focused(),0x1000000);key(editor,0x1000000);evalText('window.activeText.gotoPosition(5); "selection setup"');}
-        else if(stage===7){sample('before-context');return openContext(8);}
-        else if(stage===8){menuSnapshot('context-open');return menuChoose(9,'select-all',/^(?:Select All|全选)$/i);}
-        else if(stage===9){sample('menu-select-all');evalText('window.activeText.gotoPosition(5); "selection setup"');return openContext(10);}
-        else if(stage===10){return menuChoose(11,'find',/^(?:Find|查找)(?:\.\.\.)?$/i);}
-        else if(stage===11){sample('menu-find-open');key(focused(),65,CTRL);key(focused(),0,0,'LEFTRIGHT');}
-        else if(stage===12){sample('menu-find-result');key(focused(),0x1000000);if(!hostedCI){finished=true;send({kind:'scenario_complete',coverage:'menu-wrap-only',clipboard:'requires-disposable-hosted-vm'});return;}focus(editor,7);key(editor,65,CTRL|SHIFT);}
-        else if(stage===13){observationStep='menu-copy';sample('menu-copy-before');writeClipboard('TF-COPY-SENTINEL');return openContext(14);}
-        else if(stage===14){return menuChoose(15,'copy',/^(?:Copy|复制)$/i);}
-        else if(stage===15){sample('menu-copy-result');send({kind:'menu-copy-system',system_clipboard:rawClipboard()});sample('paste-before');writeClipboard('TF-SINGLE');return openContext(16);}
-        else if(stage===16){observationStep='menu-paste-single';return menuChoose(17,'paste',/^(?:Paste|粘贴)$/i);}
-        else if(stage===17){sample('paste-single-delivered');return modalKey(18,focused(),0x1000000);}
-        else if(stage===18){sample('paste-single-after-escape');writeClipboard('TF-FIRST\r\nTF-SECOND\nTF-THIRD');return openContext(19);}
-        else if(stage===19){observationStep='menu-paste-multiline';return menuChoose(20,'paste',/^(?:Paste|粘贴)$/i);}
-        else if(stage===20){sample('paste-multiline');return modalKey(21,focused(),0x1000000);}
-        else if(stage===21){sample('paste-multiline-cancel');focus(editor,7);return openContext(22);}
-        else if(stage===22){return menuChoose(23,'paste',/^(?:Paste|粘贴)$/i);}
-        else if(stage===23){sample('paste-multiline-confirm');const buttons=cached.filter(x=>x.class==='QPushButton'&&x.default);if(buttons.length!==1)throw Error('expected one default confirmation button');send({kind:'confirmation_action',text:buttons[0].text});stage=24;due=Date.now()+600;busy=false;buttonClick(ptr(buttons[0].ptr));return;}
-        else if(stage===24){sample('paste-multiline-accepted');}
-        else if(stage===25){sample('paste-settled');finished=true;send({kind:'scenario_complete',coverage:'menu-wrap-system-clipboard-paste'});return;}
-        stage++;due=Date.now()+(stage===3?2500:500);
-    }catch(error){finished=true;send({error:String(error),stage,operation:observationStep,stack:error.stack});}finally{busy=false;}
+        else {
+            const phase=Math.floor((stage-3)/2);
+            if(phase===6){
+                if((peerState()||{}).completed!==6)return;
+                finished=true;send({kind:'scenario_complete',coverage:'bracketed-paste'});return;
+            }
+            scan();
+            if((stage-3)%2===0){
+                if(!editor || !engine || !evalText("String(window.activeText.lineText("+phase+"))").includes('TF-PHASE-'+phase))return;
+                focus(editor,7);
+                writeClipboard(phase%2===0 ? 'TF-PASTE' : 'A\r\nB\n中END');
+                return modalKey(stage+1,editor,86,CTRL|SHIFT);
+            }
+            if(!modalWidget().isNull()){
+                if(typeOf(modalWidget())!=='PasteDialog')throw Error('unexpected paste dialog');
+                return modalKey(stage,focused(),0x1000004);
+            }
+            const peer=peerState();
+            if(!peer || !(peer.received_hex.split('7c').pop()||'').includes(phase%2===0?'54462d5041535445':'454e44'))return;
+            key(editor,124,0,'|');
+        }
+        stage++;due=Date.now()+250;
+    }catch(e){finished=true;send({kind:'failed',stage,error:String(e)});}finally{busy=false;}
 }});

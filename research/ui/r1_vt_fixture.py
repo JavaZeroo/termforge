@@ -106,11 +106,17 @@ class Peer:
                 if len(received) > 65536:
                     raise RuntimeError("Input bound")
                 if self.state["columns"] and not sent:
-                    content = payload(self.state["columns"])
+                    content = b"TF-PHASE-0\r\n"
                     connection.sendall(content)
                     self.state["sent_sha256"] = hashlib.sha256(content).hexdigest()
                     self.state["sent_columns"] = self.state["columns"]
                     sent = True
+                completed = received.count(b"|")
+                if completed != self.state.get("completed", 0):
+                    if completed < 6:
+                        control = {2: b"\x1b[?2004h", 4: b"\x1b[?2004l"}.get(completed, b"")
+                        connection.sendall(control + f"TF-PHASE-{completed}\r\n".encode())
+                    self.state["completed"] = completed
                 self.state["received_hex"] = received.hex()
                 self._record()
         except (OSError, RuntimeError, ValueError) as error:
