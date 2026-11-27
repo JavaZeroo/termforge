@@ -8,12 +8,43 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <thread>
 
 static bool output(const char* value, DWORD size) {
     DWORD written=0;
     return WriteFile(GetStdHandle(STD_OUTPUT_HANDLE),value,size,&written,nullptr) && written==size;
 }
+
+// Each marker follows the child's mode request. The parent sends one group
+// of real key events and a '|' delimiter before the child changes mode again.
+static int cursor_mode_receiver(const wchar_t* path) {
+    const HANDLE input = GetStdHandle(STD_INPUT_HANDLE);
+    const HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD mode = 0;
+    if (!SetConsoleMode(input, ENABLE_VIRTUAL_TERMINAL_INPUT) || !GetConsoleMode(out, &mode) ||
+        !SetConsoleMode(out, mode | ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING)) return 3;
+    std::ofstream capture(std::filesystem::path(path), std::ios::binary);
+    if (!capture) return 4;
+    constexpr std::string_view stages[]{"TF_CURSOR_DEFAULT\r\n", "\x1b[?1hTF_CURSOR_APP\r\n",
+                                         "\x1b[?1lTF_CURSOR_RESET\r\n"};
+    for (const auto stage : stages) {
+        if (!output(stage.data(), static_cast<DWORD>(stage.size()))) return 5;
+        for (int n = 0;; ++n) {
+            wchar_t unit = 0;
+            DWORD count = 0;
+            if (n >= 64 || !ReadConsoleW(input, &unit, 1, &count, nullptr) || count != 1 ||
+                unit > 127 || unit == 4) return 6;
+            capture.put(static_cast<char>(unit));
+            if (unit == L'|') break;
+        }
+    }
+    capture.close();
+    wchar_t end = 0;
+    DWORD count = 0;
+    return capture && ReadConsoleW(input, &end, 1, &count, nullptr) && count == 1 && end == 4 ? 0 : 7;
+}
+
 static int keyboard_receiver(const wchar_t* path) {
     const HANDLE input=GetStdHandle(STD_INPUT_HANDLE);
     if(!SetConsoleCP(CP_UTF8) || !SetConsoleOutputCP(CP_UTF8) ||
@@ -256,6 +287,7 @@ static int paste_receiver(const wchar_t* path,const wchar_t* prefix) {
 
 int wmain(int argc,wchar_t** argv) {
     if(argc==2) return keyboard_receiver(argv[1]);
+    if(argc==3 && std::wstring(argv[1])==L"--cursor-modes") return cursor_mode_receiver(argv[2]);
     if(argc!=4 || std::wstring(argv[1])!=L"--paste-gated") return 2;
     try { return paste_receiver(argv[2],argv[3]); }
     catch(const std::exception& error) {

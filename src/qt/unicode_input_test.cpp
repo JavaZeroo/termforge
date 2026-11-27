@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <mutex>
 
 using termforge::qt::SessionModel;
 using termforge::qt::TerminalWidget;
@@ -166,6 +167,48 @@ static QJsonObject normal_keys(const QString& receiver, const QString& directory
     return {{"case", "normal-keys"}, {"received_hex", QString::fromLatin1(actual.toHex())},
             {"exit_code", 0}, {"job_active", 0}};
 }
+static std::mutex cursor_trace_mutex;
+static std::string cursor_writes;
+static void trace_cursor_write(const void*, bool written, std::string_view bytes, bool accepted) {
+    if (written && accepted) {
+        std::lock_guard lock(cursor_trace_mutex);
+        cursor_writes.append(bytes);
+    }
+}
+
+static QJsonObject cursor_modes(const QString& receiver, const QString& directory) {
+    const QString path = directory + QStringLiteral("/cursor-modes.bin");
+    SessionModel model;
+    TerminalWidget terminal(model);
+    focus(terminal);
+    const auto args = QStringLiteral("--cursor-modes \"") + path + QLatin1Char('"');
+    require(model.start(receiver.toStdWString(), args.toStdWString(), directory.toStdWString(), trace_cursor_write),
+            "cursor-mode receiver could not start");
+    const struct { const char* marker; bool application; } stages[]{
+        {"TF_CURSOR_DEFAULT", false}, {"TF_CURSOR_APP", true}, {"TF_CURSOR_RESET", false}
+    };
+    for (const auto& stage : stages) {
+        await([&] { return has_text(model.screen(), stage.marker); }, "missing cursor-mode stage");
+        require(model.application_cursor_keys() == stage.application, "cursor mode at child marker differs");
+        for (auto key : {Qt::Key_Up, Qt::Key_Down, Qt::Key_Right, Qt::Key_Left, Qt::Key_Home, Qt::Key_End})
+            QTest::keyClick(&terminal, key);
+        QTest::keyClicks(&terminal, QStringLiteral("|"));
+    }
+    finish(model);
+    const QByteArray normal = QByteArray::fromHex("1b5b411b5b421b5b431b5b441b5b481b5b467c");
+    const QByteArray application = QByteArray::fromHex("1b4f411b4f421b4f431b4f441b4f481b4f467c");
+    const auto expected = normal + application + normal;
+    const auto actual = received(path);
+    std::lock_guard lock(cursor_trace_mutex);
+    const auto written = QByteArray::fromStdString(cursor_writes);
+    std::cerr << "cursor modes written=" << written.toHex().constData()
+              << " child=" << actual.toHex().constData() << '\n';
+    require(written == expected + '\x04', "cursor-mode transport bytes differ");
+    require(actual == expected, "cursor-mode child bytes differ");
+    return {{"case", "application-cursor-keys"}, {"received_hex", QString::fromLatin1(actual.toHex())},
+            {"exit_code", 0}, {"job_active", 0}};
+}
+
 static QJsonObject navigation_keys(const QString& receiver, const QString& directory) {
     const QString path = directory + QStringLiteral("/navigation-keys.bin");
     SessionModel model;
@@ -300,6 +343,7 @@ int main(int argc, char** argv) {
         require(QFile::exists(receiver), "independent receiver is missing");
         QJsonArray cases{unicode_text(receiver, workspace.path()), focus_and_packet_rejection(receiver, workspace.path()),
                          normal_keys(receiver, workspace.path()), navigation_keys(receiver, workspace.path()),
+                         cursor_modes(receiver, workspace.path()),
                          tab_and_close_isolation(receiver, workspace.path()),
                          unavailable_targets(receiver, workspace.path())};
         const QJsonObject result{{"schema", "termforge-qt-unicode-input-v1"}, {"cases", cases},
