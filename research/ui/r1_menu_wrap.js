@@ -36,6 +36,7 @@ Interceptor.attach(user.getExportByName('DispatchMessageW'),{onEnter(){
             }
             if(!modalWidget().isNull()){
                 if(typeOf(modalWidget())!=='PasteDialog')throw Error('unexpected paste dialog');
+                send({kind:'paste_confirmed',phase});
                 return modalKey(stage,focused(),0x1000004);
             }
             const peer=peerState();

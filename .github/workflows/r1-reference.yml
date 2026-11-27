@@ -53,5 +53,8 @@ jobs:
             $identity = Get-Content "$out/run.json" -Raw | ConvertFrom-Json
             $identity | Select-Object sha256,files_sha256,clipboard | ConvertTo-Json -Compress
             $peer | Select-Object columns,rows,received_hex,completed | ConvertTo-Json -Compress
+            $record = Get-Content "$out/evidence.json" -Raw | ConvertFrom-Json
+            $confirmed = [regex]::Matches(($record | ConvertTo-Json -Depth 50 -Compress), '"kind":"paste_confirmed","phase":(\d+)') | ForEach-Object { $_.Groups[1].Value }
+            Write-Output ("PasteDialog confirmed in phases [{0}]" -f ($confirmed -join ','))
             if ($peer.completed -ne 6) { throw "Incomplete paste observation" }
           }
