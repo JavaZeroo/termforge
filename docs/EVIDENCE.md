@@ -8,6 +8,7 @@
 
 | 配置 | 证据定位 | 覆盖边界 |
 |---|---|---|
+| 正式 Qt 的应用光标键（#28） | [三阶段 Qt 按键与独立字节预期](../src/qt/unicode_input_test.cpp) · [WindTerm 2.7.0 对端字节](../research/ui/fixtures/2026-11-27-cursor-keys.json) · [Windows 固定源码 ConPTY 回归](https://github.com/JavaZeroo/termforge/actions/runs/45923780379/job/140260333792) | 同一子进程依次使用默认模式、发出 `CSI ?1h`、发出 `CSI ?1l`。每阶段检查核心模式、四个方向键和 Home、End 的实际传输字节与 `ReadConsoleW` 接收结果。原版两次独立 91×25 Telnet 会话均收到相同的 57 字节（含三个分隔符）；首次采集结束时对端记录连接复位，第二次在回收前主动关闭连接。仅覆盖无修饰键。 |
 | 正式 Qt 的 More 分页器（#28） | [应用身份、固定动作与回放入口](research/tui-more-trajectory-2026-11-02.md) | 100 行英文分页，80×24 到 60×24，实际按键和 DSR 回复、四次活动网格与 Qt 绘制页、退出后原 cmd 继续执行及进程清理。 |
 | 主备屏与 RIS 的完整网格（#335） | [逐格夹具、原版观察与产品判定](research/r335-grid-styles.md) | 两次独立会话各 14 阶段、每阶段 91×25 格。含空复入、首次写入、两种 RIS 和有字格／空白格样式。 |
 | 备用屏 RIS 的正文与历史（#334） | [原版观察、用户决定与 Win32／Qt 对照](research/r334-ris-content.md) | 六个独立原版会话。正式产品四组各八阶段，核对有界历史、复位后新输出、复入后的实际写入和主屏滚动回看。 |

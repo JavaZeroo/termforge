@@ -176,7 +176,7 @@ static void trace_cursor_write(const void*, bool written, std::string_view bytes
     }
 }
 
-static QJsonObject cursor_modes(const QString& receiver, const QString& directory) {
+static QJsonObject cursor_modes(const QString& receiver, const QString& directory, const QString& reference) {
     const QString path = directory + QStringLiteral("/cursor-modes.bin");
     SessionModel model;
     TerminalWidget terminal(model);
@@ -205,8 +205,13 @@ static QJsonObject cursor_modes(const QString& receiver, const QString& director
               << " child=" << actual.toHex().constData() << '\n';
     require(written == expected + '\x04', "cursor-mode transport bytes differ");
     require(actual == expected, "cursor-mode child bytes differ");
+    if (!reference.isEmpty()) {
+        const auto original = QJsonDocument::fromJson(received(reference)).object();
+        require(original.value("received_hex").toString() == QString::fromLatin1(actual.toHex()),
+                "cursor-mode child bytes differ from the recorded WindTerm peer");
+    }
     return {{"case", "application-cursor-keys"}, {"received_hex", QString::fromLatin1(actual.toHex())},
-            {"exit_code", 0}, {"job_active", 0}};
+            {"windterm_reference_checked", !reference.isEmpty()}, {"exit_code", 0}, {"job_active", 0}};
 }
 
 static QJsonObject navigation_keys(const QString& receiver, const QString& directory) {
@@ -334,6 +339,13 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
     QApplication::setQuitOnLastWindowClosed(false);
     try {
+        const auto args = app.arguments();
+        QString reference;
+        if (args.size() != 1) {
+            require(args.size() == 3 && args[1] == "--cursor-reference" && !args[2].isEmpty(),
+                    "usage: qt_unicode_input_test [--cursor-reference FILE]");
+            reference = args[2];
+        }
         const auto artifacts = qEnvironmentVariable("TERMFORGE_TEST_ARTIFACTS");
         if (!artifacts.isEmpty()) require(QDir().mkpath(artifacts), "artifact directory could not be created");
         QTemporaryDir workspace(artifacts.isEmpty() ? QString() : artifacts + QStringLiteral("/qt-unicode-XXXXXX"));
@@ -343,7 +355,7 @@ int main(int argc, char** argv) {
         require(QFile::exists(receiver), "independent receiver is missing");
         QJsonArray cases{unicode_text(receiver, workspace.path()), focus_and_packet_rejection(receiver, workspace.path()),
                          normal_keys(receiver, workspace.path()), navigation_keys(receiver, workspace.path()),
-                         cursor_modes(receiver, workspace.path()),
+                         cursor_modes(receiver, workspace.path(), reference),
                          tab_and_close_isolation(receiver, workspace.path()),
                          unavailable_targets(receiver, workspace.path())};
         const QJsonObject result{{"schema", "termforge-qt-unicode-input-v1"}, {"cases", cases},

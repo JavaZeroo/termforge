@@ -603,7 +603,8 @@ if(TERMFORGE_BUILD_QT_SHELL)
 
     termforge_qt_test_target(qt_unicode_input_test unicode_input_test.cpp qt-unicode-bin
       CHILD shell_input_client)
-    termforge_qt_smoke(qt_unicode_input qt_unicode_input_test 35 ARTIFACTS)
+    termforge_qt_smoke(qt_unicode_input qt_unicode_input_test 35 ARTIFACTS ARGS --cursor-reference
+      "${PROJECT_SOURCE_DIR}/research/ui/fixtures/2026-11-27-cursor-keys.json")
 
     termforge_qt_test_target(qt_unicode_render_test unicode_render_test.cpp qt-unicode-render-bin
       CHILD shell_unicode_echo_client)
