@@ -35,6 +35,22 @@ int main() {
         require(pair.size() == 2 && pair[0] == "\x1b[0n" && pair[1] == "\x1b[5;9R",
                 "device status or following cursor report differs");
     }
+    for (const auto mode : {ParseMode::strict, ParseMode::recovery}) {
+        Parser attributes(10, 20, 0, mode);
+        for (const auto query : {"\x1b[>c", "\x1b[>0c"}) {
+            attributes.feed("\x1b[4;8H");
+            for (const char byte : std::string_view(query)) {
+                require(attributes.take_replies().empty(), "premature secondary device attributes");
+                attributes.feed(std::string_view(&byte, 1));
+            }
+            attributes.feed("\x1b[6n");
+            const auto replies = attributes.take_replies();
+            require(replies.size() == 2 && replies[0] == "\x1b[>65;330;0c" && replies[1] == "\x1b[4;8R",
+                    "secondary device attributes or following cursor report differs");
+        }
+    }
+    parser.feed("\x1b[>1c\x1b[>0;0c\x1b[>6n\x1b[>?25l\x1b[>\x18" "c");
+    require(parser.take_replies().empty() && parser.cursor_visible(), "unsupported or cancelled CSI took effect");
     // DA1 answers only on the strict path. The product recovery path must stay
     // silent because the fixed ConPTY emits DA1 in its startup packet and a
     // reply sent back through the bounded input path at startup races with the

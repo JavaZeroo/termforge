@@ -21,7 +21,8 @@ class Parser {
     State state = State::ground;
     const ParseMode mode;
     RecoveryDiagnostics stats;
-    bool osc = false, private_csi = false;
+    bool osc = false;
+    unsigned char csi_prefix = 0;
     std::vector<int> params;
     size_t sequence_bytes = 0;
     uint32_t scalar = 0, minimum = 0;
@@ -32,7 +33,15 @@ class Parser {
     // Bit 0: DECCKM application cursor keys; bit 1: DECTCEM cursor visible.
     uint32_t mode_bits_ = 1u << 1;
     void dispatch(unsigned char final) {
-        if (private_csi) {
+        if (csi_prefix == '>') {
+            // Secondary device attributes observed in the fixed WindTerm peer.
+            if (final == 'c' && params.size() == 1 && params[0] == 0) {
+                pending_replies.emplace_back("\x1b[>65;330;0c");
+                return;
+            }
+            throw InputError("unsupported secondary CSI command");
+        }
+        if (csi_prefix == '?') {
             // Host key encoding and painting read DECCKM (?1) and DECTCEM (?25).
             if (params.size() == 1 && (params[0] == 1 || params[0] == 25) && (final == 'h' || final == 'l')) {
                 const uint32_t bit = params[0] == 1 ? 1u << 0 : 1u << 1;
@@ -149,18 +158,18 @@ class Parser {
                     continue;
                 }
                 if (c != '[') throw std::runtime_error("unsupported escape");
-                state = State::csi; params.assign(1, 0); sequence_bytes = 0; private_csi = false; continue;
+                state = State::csi; params.assign(1, 0); sequence_bytes = 0; csi_prefix = 0; continue;
             }
             if (state == State::csi) {
                 if (++sequence_bytes > 32) throw std::runtime_error("CSI exceeds limit");
-                if (c == '?' && sequence_bytes == 1) { private_csi = true; continue; }
+                if ((c == '?' || c == '>') && sequence_bytes == 1) { csi_prefix = c; continue; }
                 if (c >= '0' && c <= '9') {
                     if (params.back() > 9999) throw std::runtime_error("CSI parameter exceeds limit");
                     params.back() = params.back() * 10 + c - '0';
                 } else if (c == ';') {
                     if (params.size() == 16) throw std::runtime_error("too many CSI parameters");
                     params.push_back(0);
-                } else { dispatch(c); state = State::ground; private_csi = false; }
+                } else { dispatch(c); state = State::ground; csi_prefix = 0; }
                 continue;
             }
             if (c >= 0x80) {
@@ -185,7 +194,7 @@ class Parser {
         if (value != (std::numeric_limits<uint64_t>::max)()) ++value;
     }
     void reset_sequence() {
-        state = State::ground; params.clear(); sequence_bytes = 0; private_csi = false;
+        state = State::ground; params.clear(); sequence_bytes = 0; csi_prefix = 0;
     }
     void reset_utf8() { remaining = 0; encoded.clear(); scalar = minimum = 0; }
     void replacement() { screen.put(0xFFFD, "\xEF\xBF\xBD"); }
@@ -212,7 +221,7 @@ class Parser {
     }
     void ignore_sequence(State ignored) {
         if (state != State::escape_ignore && state != State::csi_ignore) count(stats.ignored_sequences);
-        state = ignored; params.clear(); private_csi = false;
+        state = ignored; params.clear(); csi_prefix = 0;
     }
     void feed_recovering(unsigned char c) {
         if (remaining) {
@@ -270,7 +279,7 @@ class Parser {
                 reset_sequence(); return;
             }
             if (state == State::csi_ignore) return;
-            if (c == '?' && sequence_bytes == 1) private_csi = true;
+            if ((c == '?' || c == '>') && sequence_bytes == 1) csi_prefix = c;
             else if (c >= '0' && c <= '9') {
                 if (params.back() > 9999) ignore_sequence(State::csi_ignore);
                 else params.back() = params.back() * 10 + c - '0';

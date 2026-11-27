@@ -26,6 +26,7 @@
 | `CSI m` | 0 重置；1/2 与 22 控制粗体/暗色；4/24 下划线、7/27 反显、8/28 隐藏、9/29 删除线、53/55 上划线；30–37/40–47 和 90–97/100–107 前景/背景色，39/49 恢复默认色。保存属性状态不等于各渲染入口已绘制该属性 |
 | `CSI ?1049h/l` | [限定文字/光标/颜色合同](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-29-cpp-1049/README.md)：进入/重复进入归首格、清旧备用文本及复位前景/背景；按[六属性对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-11-02-1049-attributes/README.md)清除暗色/下划线/反显/删除线/隐藏/上划线，并按[重复及再次进入对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-11-02-1049-reentry/README.md)关闭备用屏 origin。退出恢复主屏写入状态、origin 与 pending-wrap；重复进入的逻辑世代使旧读者失效。[红色前景对照](../../docs/research/r335-grid-styles.md)区分了强度：进入和重复进入均清除粗体，退出恢复主屏强度。任意属性组合仍超出固定场景 |
 | `CSI ?7h/l` | [主屏 ASCII DECAWM 切片](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-10-29-cpp-decawm/README.md)：精确单参数开启/关闭；关闭后末列覆盖，关闭时写满末列后重新开启仍可换行。跨1049、宽/结合字及resize组合未完成原版对照 |
+| `CSI > c`、`CSI > 0 c` | strict/recovery 均回复 `CSI >65;330;0c`。两种请求均已用固定 WindTerm 的独立对端核对，随后查询仍返回原光标位置。[两轮原版字节](../../research/ui/fixtures/2026-11-27-secondary-device-attributes.json) |
 | `CSI 5n` | strict/recovery 均回复设备状态正常 `CSI 0n`，随后查询光标位置仍按原坐标回复。[固定原版字节](../../research/ui/fixtures/2026-11-27-device-queries.json) |
 | `CSI ?6h/l` | [DECOM 限定切片](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/core/results/2026-11-01-decom-origin/README.md)：开启时归位区域左上、关闭时归位屏幕原点；与相对行定位、DSR 和 1049 交叉。[新原版对照](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/research/ui/results/2026-11-02-mode-state-reference/README.md)支持每屏保存 origin；1049 进入关闭备用屏 origin，返回恢复主屏原状态，完整网格和 resize 交叉仍待验收 |
 | `CSI ?1h/l`、`CSI ?25h/l` | 分别保存 DECCKM 应用方向键和 DECTCEM 光标可见状态，供调用方读取；Qt/Win32 的相关接线不代表完整应用键盘或鼠标模式已支持 |
@@ -38,7 +39,7 @@
 
 解析器在 `feed` 调用之间保留 ESC/CSI 和 UTF-8 状态。SGR 参数最多 16 个，其他命令按语义限制为 1 或 2 个；数值最多 99,999、CSI 参数到终止字符最多 32 字节。尺寸限制为 1–200 行、1–500 列，历史容量 0–10,000；容量为零时只累计淘汰数。
 
-**明确未支持：** 完整字素簇和文字整形、ZWJ/变体选择符/旗帜/肤色修饰序列、256 色/真彩色、SGR 58 等未列出的属性、OSC/DCS 的功能（含 OSC 10/11 回复）、DA2、bracketed paste、鼠标模式、实际焦点上报/Win32 输入模式、完整备用屏关联模式和逻辑行 reflow。DA1 仅 strict 有回复，不能列作产品能力。严格模式下，未支持输入、非法参数或 EOF 时截断的序列使运行失败；上表明确接受忽略的序列除外。严格模式不支持控制序列内部的 C0 中断/取消；错误后不得继续复用该解析器对象。Recovery 可消费未实现功能，但不会执行它们。以上核心切片不等于 Qt、固定 ConPTY 或真实 TUI 的完整工作流通过。
+**明确未支持：** 完整字素簇和文字整形、ZWJ/变体选择符/旗帜/肤色修饰序列、256 色/真彩色、SGR 58 等未列出的属性、OSC/DCS 的功能（含 OSC 10/11 回复）、bracketed paste、鼠标模式、实际焦点上报/Win32 输入模式、完整备用屏关联模式和逻辑行 reflow。DA1 仅 strict 有回复，不能列作产品能力。严格模式下，未支持输入、非法参数或 EOF 时截断的序列使运行失败；上表明确接受忽略的序列除外。严格模式不支持控制序列内部的 C0 中断/取消；错误后不得继续复用该解析器对象。Recovery 可消费未实现功能，但不会执行它们。以上核心切片不等于 Qt、固定 ConPTY 或真实 TUI 的完整工作流通过。
 
 ## 字符宽度与单元格契约
 

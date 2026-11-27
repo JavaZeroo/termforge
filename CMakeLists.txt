@@ -653,6 +653,8 @@ if(TERMFORGE_BUILD_QT_SHELL)
     termforge_qt_smoke(qt_query_reply qt_query_reply_test 45)
     termforge_qt_smoke(qt_device_status qt_query_reply_test 35 ARGS --device-status-reference
       "${PROJECT_SOURCE_DIR}/research/ui/fixtures/2026-11-27-device-queries.json")
+    termforge_qt_smoke(qt_secondary_device_attributes qt_query_reply_test 35 ARGS --secondary-device-reference
+      "${PROJECT_SOURCE_DIR}/research/ui/fixtures/2026-11-27-secondary-device-attributes.json")
 
     if(TERMFORGE_CONPTY_SOURCE_BUILD OR TERMFORGE_ENABLE_RESIZE_REPRO)
       termforge_qt_smoke(qt_terminal_modes_resize_repro qt_terminal_modes_test 35 ARGS --resize)
