@@ -634,6 +634,7 @@ class TerminalWidget final : public QWidget {
                     virtual_key, {}, model_.application_cursor_keys()).bytes;
             } else switch (event->key()) {
             case Qt::Key_Return: case Qt::Key_Enter: bytes = "\r"; break;
+            case Qt::Key_Escape: bytes = "\x1b"; break;
             case Qt::Key_Backspace: bytes = std::string(1, '\x7f'); break;
             case Qt::Key_Tab: bytes = "\t"; break;
             case Qt::Key_Up: bytes = model_.application_cursor_keys() ? "\x1bOA" : "\x1b[A"; break;

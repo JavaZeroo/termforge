@@ -18,7 +18,7 @@
 // depend on the implementation under test. Test-only: no product behavior,
 // default entry or query support is changed.
 #include "terminal_session.hpp"
-#include "terminal_widget.hpp"
+#include "tui_test_support.hpp"
 #include "../../experiments/conpty/session.hpp"
 #include "../../experiments/core/text_projection.hpp"
 
@@ -36,7 +36,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <mutex>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -690,17 +689,6 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     return differences ? 1 : 0;
 }
 
-// Each invocation runs one device-query child. The input writer runs on its own thread.
-std::mutex device_input_mutex;
-std::string device_input;
-
-void observe_device_input(const void*, bool written, std::string_view bytes, bool accepted) {
-    if (written && accepted) {
-        std::lock_guard lock(device_input_mutex);
-        device_input.append(bytes);
-    }
-}
-
 int compare_device_queries(const std::filesystem::path& exe, const std::filesystem::path& directory,
                            const std::filesystem::path& reference, bool secondary) {
     const auto record = QJsonDocument::fromJson(QByteArray::fromStdString(read_binary(reference))).object();
@@ -726,7 +714,7 @@ int compare_device_queries(const std::filesystem::path& exe, const std::filesyst
     write_binary(directory / "sources.hex", sources);
     SessionModel model;
     model.enable_transport_capture();
-    require(model.resize(91,25) && model.start(exe.wstring(), L"--cursor-child", directory.wstring(), observe_device_input),
+    require(model.resize(91,25) && model.start(exe.wstring(), L"--cursor-child", directory.wstring(), termforge::qt::tui_test::observe_input),
             "device-query child did not start");
     QElapsedTimer timer;
     timer.start();
@@ -743,7 +731,7 @@ int compare_device_queries(const std::filesystem::path& exe, const std::filesyst
     }
     const auto received = read_binary(directory / "replies.hex");
     require(received == expected_lines, "child received unexpected device replies");
-    std::lock_guard lock(device_input_mutex);
+    const auto device_input = termforge::qt::tui_test::input_bytes();
     require(device_input == expected_input, "transport wrote unexpected device replies");
     std::cout << "{\"scenario\":\"" << (secondary ? "secondary-device-attributes" : "device-status")
               << "\",\"written_hex\":\"" << hex(device_input) << "\",\"received_hex\":\""

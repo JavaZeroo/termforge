@@ -111,7 +111,13 @@
 
 冻结样本保存在核心夹具目录。 [80×24 样本](../../experiments/core/fixtures/vim-fixed-80x24-trajectory.bin) · [60×12 样本](../../experiments/core/fixtures/vim-fixed-60x12-trajectory.bin) · [逐阶段结果](https://github.com/JavaZeroo/termforge/blob/1f8bf759a051f8c5872359ccb5433873666e2dde/experiments/shell/results/2026-11-02-tui-vim/validation.json)
 
-## 未知项与未验证
+## 固定 80×24 的正式 Qt 用例
+
+`qt_vim_fixed_grid` 从新 cmd 启动 Git for Windows 2.46.0 的 Vim 9.1。测试校验 Vim、四个原 DLL 和 xterm-256color 终端描述各自的 SHA-256。通过 Qt 按键进入插入模式、输入 `TF_CANDIDATE_TUI`、Esc、`:wq`、回车，核对五次 CPR、一次 DA2、17 字节文件（含 LF）、主屏标记、无编辑器正文的回看历史，以及原 cmd 的计算结果 750。[正式 Qt 用例](../../src/qt/vim_test.cpp) · [固定应用准备](../../tools/prepare_vim_test.ps1)
+
+此场景始终使用 80×24。编辑途中缩到 60×12 的独立场景仍要求原 DLL 保留首键、精确保存并恢复主屏，间歇失败继续由 [#28](https://github.com/JavaZeroo/termforge/issues/28) 跟踪。[缩放复现用例](https://github.com/JavaZeroo/termforge/blob/0bb53ab502a07ec5533cf642df359605ab5688b9/src/qt/vim_test.cpp)
+
+## 历史回放当时的未知项
 
 - strict 拒绝多参数 XTWINOPS t、括号粘贴、DCS 同步与 DA2 是否应实现、以何种字节回复，未决定；本切片只记录失败位置，不猜原版回复。
 - 原版 WindTerm 的 60×3000 缓冲区与 60×12 窗口（dwSize vs srWindow）与 ConPTY 60×12 的映射关系未验证。
