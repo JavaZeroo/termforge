@@ -152,7 +152,7 @@ int main(int argc, char** argv) {
         // Keyboard single-line: immediate, exactly once, no confirmation.
         fake->value = {ClipboardRead::Status::ok, u"TF-PASTE", {}};
         QTest::keyClick(&terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
-        await([&] { return read_file(child_input) == "TF-PASTE"; }, model, lifecycle, "single-line paste bytes differ");
+        await([&] { return terminal.paste_notice() == QStringLiteral("Pasted") && read_file(child_input) == "TF-PASTE"; }, model, lifecycle, "single-line paste bytes differ");
         require(terminal.paste_notice() == QStringLiteral("Pasted"), "single-line paste did not report success");
 
         // Shift+Insert multiline: dialog cancel sends nothing; confirm through the
@@ -170,7 +170,7 @@ int main(int argc, char** argv) {
         fake->value = {ClipboardRead::Status::ok, u"A\r\nB", {}};
         click_dialog("Paste", QMessageBox::AcceptRole);
         terminal.initiate_paste_for_test();
-        await([&] { return read_file(child_input) == baseline + "A\rB"; },
+        await([&] { return terminal.paste_notice() == QStringLiteral("Pasted") && read_file(child_input) == baseline + "A\rB"; },
               model, lifecycle, "confirmed multiline paste bytes differ");
         require(read_file(child_input) == baseline + "A\rB", "multiline paste was duplicated or not CR-normalized");
         require(terminal.paste_notice() == QStringLiteral("Pasted"), "confirmed dialog did not report success");
@@ -178,7 +178,7 @@ int main(int argc, char** argv) {
         // Actual Paste context-menu action, Unicode + NFD, immediate single line.
         fake->value = {ClipboardRead::Status::ok, u"中文 e\u0301", {}};
         open_menu(terminal);
-        await([&] { return read_file(child_input) == baseline + "A\rB中文 e\xcc\x81"; },
+        await([&] { return terminal.paste_notice() == QStringLiteral("Pasted") && read_file(child_input) == baseline + "A\rB中文 e\xcc\x81"; },
               model, lifecycle, "menu paste bytes differ");
 
         // Busy: a second entry while the fake read is in flight is rejected.

@@ -337,6 +337,10 @@ public:
         }
         notify(); return false;
     }
+    bool begin_paste(const std::shared_ptr<tf_shell::PasteTransfer>& transfer) {
+        return running() && input_ && input_->begin_paste(transfer, true);
+    }
+    bool bracketed_paste() const { return parser_.bracketed_paste(); }
     bool send(const QByteArray& bytes) {
         return send(std::string(bytes.constData(), static_cast<size_t>(bytes.size())));
     }

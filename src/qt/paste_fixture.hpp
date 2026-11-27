@@ -11,7 +11,7 @@
 
 namespace termforge::qt::test {
 
-inline int paste_child(const std::wstring& path) {
+inline int paste_child(const std::wstring& path, bool switch_paste_mode = false) {
     BOOL owned = FALSE;
     if (!IsProcessInJob(GetCurrentProcess(), nullptr, &owned) || !owned)
         throw std::runtime_error("paste child requires its owned Session Job");
@@ -32,6 +32,7 @@ inline int paste_child(const std::wstring& path) {
     if (!WriteFile(output.get(), ready, sizeof(ready) - 1, &written, nullptr) ||
         written != sizeof(ready) - 1)
         tf_conpty::fail("WriteFile(paste child prompt)");
+    unsigned separators = 0;
     for (;;) {
         char byte = 0; DWORD count = 0;
         if (!ReadFile(input.get(), &byte, 1, &count, nullptr) || count != 1)
@@ -39,6 +40,14 @@ inline int paste_child(const std::wstring& path) {
         if (static_cast<unsigned char>(byte) == 0x03) {
             file.flush();
             return 37;
+        }
+        if (switch_paste_mode && byte == '|') {
+            ++separators;
+            if (separators == 2 || separators == 4 || separators == 6) {
+                const std::string mode = separators == 4 ? "\x1b[?2004l" : "\x1b[?2004h";
+                if (!WriteFile(output.get(), mode.data(), static_cast<DWORD>(mode.size()), &written, nullptr) ||
+                    written != mode.size()) tf_conpty::fail("WriteFile(paste mode)");
+            }
         }
         file.put(byte);
         file.flush();

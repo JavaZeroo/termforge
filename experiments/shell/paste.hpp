@@ -8,7 +8,7 @@
 #include <string_view>
 
 namespace tf_shell {
-// TermForge paste preparation emits text without bracketed-paste framing.
+// Clipboard validation and text encoding precede any terminal framing.
 enum class Newlines { carriage_return, line_feed, preserve };
 enum class InvalidUtf16 { reject, replace };
 struct PastePolicy {
@@ -108,13 +108,19 @@ class PasteTransfer {
     bool writer_claimed_ = false;
 public:
     static constexpr size_t chunk_limit = 1024;
-    PasteTransfer(uint64_t target, PreparedPaste&& prepared, bool confirmed = false) {
+    PasteTransfer(uint64_t target, PreparedPaste&& prepared, bool confirmed = false, bool bracketed = false) {
         if (prepared.bytes.size() > PastePolicy::hard_utf8_bytes ||
             prepared.bytes.capacity() > PastePolicy::hard_utf8_bytes + 32)
             throw std::length_error("paste exceeds hard memory limit");
         if (prepared.confirmation_required && !confirmed)
             throw std::invalid_argument("multiline paste requires confirmation");
-        bytes_ = std::move(prepared.bytes);
+        if (bracketed && !prepared.bytes.empty()) {
+            constexpr std::string_view open = "\x1b[200~", close = "\x1b[201~";
+            bytes_.reserve(open.size() + prepared.bytes.size() + close.size());
+            bytes_.append(open).append(prepared.bytes).append(close);
+        } else {
+            bytes_ = std::move(prepared.bytes);
+        }
         progress_.target = target; progress_.total = bytes_.size();
         progress_.retained_capacity = bytes_.capacity();
         if (bytes_.empty()) progress_.state = PasteState::completed;

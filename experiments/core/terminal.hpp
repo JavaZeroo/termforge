@@ -32,6 +32,7 @@ class Parser {
     std::vector<std::string> pending_replies;
     // Bit 0: DECCKM application cursor keys; bit 1: DECTCEM cursor visible.
     uint32_t mode_bits_ = 1u << 1;
+    bool bracketed_paste_ = false;
     void dispatch(unsigned char final) {
         if (csi_prefix == '>') {
             // Secondary device attributes observed in the fixed WindTerm peer.
@@ -42,6 +43,10 @@ class Parser {
             throw InputError("unsupported secondary CSI command");
         }
         if (csi_prefix == '?') {
+            if (params.size() == 1 && params[0] == 2004 && (final == 'h' || final == 'l')) {
+                bracketed_paste_ = final == 'h';
+                return;
+            }
             // Host key encoding and painting read DECCKM (?1) and DECTCEM (?25).
             if (params.size() == 1 && (params[0] == 1 || params[0] == 25) && (final == 'h' || final == 'l')) {
                 const uint32_t bit = params[0] == 1 ? 1u << 0 : 1u << 1;
@@ -154,6 +159,7 @@ class Parser {
                 if (c == 'c') {
                     screen.reset();
                     mode_bits_ = 1u << 1;
+                    bracketed_paste_ = false;
                     state = State::ground;
                     continue;
                 }
@@ -258,6 +264,7 @@ class Parser {
                 if (state == State::escape && c == 'c') {
                     screen.reset();
                     mode_bits_ = 1u << 1;
+                    bracketed_paste_ = false;
                     reset_sequence();
                     return;
                 }
@@ -315,6 +322,7 @@ public:
     const RecoveryDiagnostics& diagnostics() const { return stats; }
     std::vector<std::string> take_replies() { return std::exchange(pending_replies, {}); }
     uint32_t mode_bits() const { return mode_bits_; }
+    bool bracketed_paste() const { return bracketed_paste_; }
     bool application_cursor_keys() const { return (mode_bits_ & (1u << 0)) != 0; }
     bool cursor_visible() const { return (mode_bits_ & (1u << 1)) != 0; }
     size_t buffered_input_bytes() const { return params.size() * sizeof(int) + encoded.size(); }

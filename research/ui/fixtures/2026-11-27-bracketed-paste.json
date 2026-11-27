@@ -1,0 +1,22 @@
+{
+  "application": "WindTerm 2.7.0 Windows x64",
+  "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "reference_job": "https://github.com/JavaZeroo/termforge/actions/runs/45952937954/job/140352738726",
+  "transport": "loopback Telnet",
+  "columns": 63,
+  "rows": 20,
+  "matching_sessions": 2,
+  "paste_dialog_confirmed_phases_zero_based": [1, 3, 5],
+  "input": "CF_UNICODETEXT via Ctrl+Shift+V",
+  "clipboard_text": [
+    "TF-PASTE",
+    "A\r\nB\n中END"
+  ],
+  "mode_before_each_pair_hex": [
+    "",
+    "1b5b3f3230303468",
+    "1b5b3f323030346c"
+  ],
+  "separator_key_hex": "7c",
+  "received_hex": "54462d50415354457c410d420de4b8ad454e447c1b5b3230307e54462d50415354451b5b3230317e7c1b5b3230307e410d420de4b8ad454e441b5b3230317e7c54462d50415354457c410d420de4b8ad454e447c"
+}

@@ -4,6 +4,7 @@
 #include "paste.hpp"
 #include <deque>
 #include <memory>
+#include <optional>
 
 class OutputQueue {
     mutable std::mutex mutex_;
@@ -58,6 +59,8 @@ class InputQueue {
     std::exception_ptr error_;
     std::thread writer_;
     std::shared_ptr<tf_shell::PasteTransfer> paste_;
+    // When later input may queue, only the chunks already present precede the paste.
+    std::optional<size_t> before_paste_;
 public:
     struct Snapshot {
         size_t queued_bytes = 0, in_flight_bytes = 0, high_water_bytes = 0, rejected = 0;
@@ -92,7 +95,9 @@ public:
                     if (stopping_) break;
                     std::string bytes;
                     writing_paste.reset();
-                    if (!chunks_.empty()) {
+                    const bool paste_first = before_paste_ == 0 && !tf_shell::paste_terminal(paste_->progress().state);
+                    if (!chunks_.empty() && !paste_first) {
+                        if (before_paste_ && *before_paste_) --*before_paste_;
                         bytes = std::move(chunks_.front()); chunks_.pop_front(); bytes_ -= bytes.size();
                     } else {
                         writing_paste = paste_; bytes = writing_paste->take_chunk();
@@ -132,7 +137,7 @@ public:
             std::lock_guard<std::mutex> lock(mutex_);
             if (error_) std::rethrow_exception(error_);
             if (stopping_ || bytes.empty() || bytes.size() > 1024 || bytes_ + bytes.size() > capacity ||
-                (paste_ && !tf_shell::paste_terminal(paste_->progress().state))) ++rejected;
+                (paste_ && !before_paste_ && !tf_shell::paste_terminal(paste_->progress().state))) ++rejected;
             else {
                 chunks_.push_back(bytes); bytes_ += bytes.size(); high_water = (std::max)(high_water, bytes_);
                 ready_.notify_one(); accepted = true;
@@ -143,12 +148,12 @@ public:
     }
     // The queue is already bound to one Session. The UI retains the transfer
     // handle and target identity; later tab switches never retarget this queue.
-    // Previously accepted keystrokes drain first. New keystrokes are rejected
-    // while pasting, so they cannot interleave with clipboard bytes.
-    bool begin_paste(const std::shared_ptr<tf_shell::PasteTransfer>& paste) {
+    // Preceding keys drain first. Following input is either rejected or queued behind the transfer.
+    bool begin_paste(const std::shared_ptr<tf_shell::PasteTransfer>& paste, bool queue_following_input = false) {
         std::lock_guard<std::mutex> lock(mutex_);
         if (error_) std::rethrow_exception(error_);
         if (stopping_ || !paste || (paste_ && !tf_shell::paste_terminal(paste_->progress().state)) || !paste->claim_writer()) return false;
+        before_paste_ = queue_following_input ? std::optional<size_t>(chunks_.size()) : std::nullopt;
         paste_ = paste; ready_.notify_one(); return true;
     }
     void stop() noexcept {

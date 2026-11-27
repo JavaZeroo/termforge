@@ -3,6 +3,7 @@
 
 #include "terminal_session.hpp"
 #include "clipboard_writer.hpp"
+#include <QScopeGuard>
 #include "clipboard_reader.hpp"
 #include "../../experiments/shell/paste.hpp"
 #include "../../experiments/core/display_cursor.hpp"
@@ -103,9 +104,8 @@ class TerminalWidget final : public QWidget {
     QString paste_notice_;
     std::thread paste_read_thread_;
     bool paste_reading_ = false;
-    std::unique_ptr<tf_shell::PasteTransfer> paste_transfer_;
+    std::shared_ptr<tf_shell::PasteTransfer> paste_transfer_;
     std::optional<bool> paste_dialog_auto_confirm_;
-    std::string paste_pending_chunk_;
     unsigned long long paste_target_ = 0;
     static constexpr int margin = 8;
     int cell_width_ = 9;
@@ -251,7 +251,7 @@ class TerminalWidget final : public QWidget {
         update();
     }
     void finish_paste_read(ClipboardRead result) {
-        paste_reading_ = false;
+        const auto finish_read = qScopeGuard([this] { paste_reading_ = false; });
         if (paste_read_thread_.joinable()) paste_read_thread_.join();
         if (result.status == ClipboardRead::Status::empty) {
             set_paste_notice(QStringLiteral("Paste: clipboard empty"));
@@ -309,60 +309,29 @@ class TerminalWidget final : public QWidget {
             return;
         }
         try {
-            paste_transfer_ = std::make_unique<tf_shell::PasteTransfer>(paste_target_, std::move(prepared), confirmed);
+            auto transfer = std::make_shared<tf_shell::PasteTransfer>(
+                paste_target_, std::move(prepared), confirmed, model_.bracketed_paste());
+            if (!model_.begin_paste(transfer)) {
+                set_paste_notice(QStringLiteral("Paste failed: input unavailable"));
+                return;
+            }
+            paste_transfer_ = std::move(transfer);
         } catch (const std::exception& error) {
             set_paste_notice(QStringLiteral("Paste failed: ") + QString::fromUtf8(error.what()));
             return;
         }
-        if (paste_transfer_->progress().state == tf_shell::PasteState::completed) {
-            set_paste_notice(QStringLiteral("Pasted"));
-            paste_transfer_.reset();
-            return;
-        }
-        QMetaObject::invokeMethod(this, [this] { pump_paste(); }, Qt::QueuedConnection);
+        check_paste_completion();
     }
-    void pump_paste() {
-        if (!paste_transfer_) return;
-        if (!model_.running() || model_.resize_state().child_pid != paste_target_) {
-            paste_transfer_->fail("target session changed or closed");
-            set_paste_notice(QStringLiteral("Paste failed: target session changed or closed"));
-            paste_transfer_.reset();
-            paste_pending_chunk_.clear();
+    void check_paste_completion() {
+        const auto progress = paste_transfer_->progress();
+        if (!tf_shell::paste_terminal(progress.state)) {
+            QTimer::singleShot(5, this, [this] { check_paste_completion(); });
             return;
         }
-        std::string chunk = paste_pending_chunk_;
-        if (chunk.empty()) {
-            chunk = paste_transfer_->take_chunk();
-            if (chunk.empty()) {
-                const auto state = paste_transfer_->progress().state;
-                if (state == tf_shell::PasteState::completed) set_paste_notice(QStringLiteral("Pasted"));
-                else if (state == tf_shell::PasteState::cancelled) set_paste_notice(QStringLiteral("Paste cancelled"));
-                else if (state == tf_shell::PasteState::failed)
-                    set_paste_notice(QStringLiteral("Paste failed: ") + QString::fromStdString(paste_transfer_->progress().error));
-                paste_transfer_.reset();
-                return;
-            }
-        }
-        if (!model_.send(chunk)) {
-            // Keep the same chunk: a rejected submission was not accepted and
-            // must not be acknowledged or duplicated.
-            paste_pending_chunk_ = std::move(chunk);
-            QTimer::singleShot(10, this, [this] { pump_paste(); });
-            return;
-        }
-        paste_pending_chunk_.clear();
-        paste_transfer_->acknowledge_written(chunk.size());
-        paste_transfer_->finish_chunk();
-        if (tf_shell::paste_terminal(paste_transfer_->progress().state)) {
-            const auto state = paste_transfer_->progress().state;
-            if (state == tf_shell::PasteState::completed) set_paste_notice(QStringLiteral("Pasted"));
-            else if (state == tf_shell::PasteState::cancelled) set_paste_notice(QStringLiteral("Paste cancelled"));
-            else set_paste_notice(QStringLiteral("Paste failed: ") +
-                                  QString::fromStdString(paste_transfer_->progress().error));
-            paste_transfer_.reset();
-            return;
-        }
-        QTimer::singleShot(0, this, [this] { pump_paste(); });
+        if (progress.state == tf_shell::PasteState::completed) set_paste_notice(QStringLiteral("Pasted"));
+        else if (progress.state == tf_shell::PasteState::cancelled) set_paste_notice(QStringLiteral("Paste cancelled"));
+        else set_paste_notice(QStringLiteral("Paste failed: ") + QString::fromStdString(progress.error));
+        paste_transfer_.reset();
     }
     void initiate_paste() {
         if (paste_reading_ || paste_transfer_) {
@@ -378,6 +347,7 @@ class TerminalWidget final : public QWidget {
             set_paste_notice(QStringLiteral("Paste failed: no active terminal"));
             return;
         }
+        set_paste_notice(QStringLiteral("Reading clipboard"));
         paste_reading_ = true;
         if (paste_read_thread_.joinable()) paste_read_thread_.join();
         const quintptr owner = static_cast<quintptr>(winId());
@@ -390,12 +360,6 @@ class TerminalWidget final : public QWidget {
                 if (self) self->finish_paste_read(std::move(value));
             }, Qt::QueuedConnection);
         });
-    }
-    void cancel_paste() {
-        if (paste_transfer_) {
-            paste_transfer_->cancel();
-            paste_pending_chunk_.clear();
-        }
     }
     ClipboardWrite copy_selection_to_clipboard() {
         const TextDocument document(model_.screen());

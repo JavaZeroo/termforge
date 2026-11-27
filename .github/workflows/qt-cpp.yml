@@ -160,6 +160,12 @@ jobs:
         env:
           TERMFORGE_QT_QPA_PLATFORM: windows
         run: python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe --hosted-windows-paste
+      - name: Compare bracketed clipboard paste with the fixed WindTerm peer
+        env:
+          TERMFORGE_QT_QPA_PLATFORM: windows
+        run: >-
+          python src/qt/run_smoke.py build/qt-cpp/qt-clipboard-bin/Release/qt_clipboard_system_test.exe
+          --hosted-bracketed-paste research/ui/fixtures/2026-11-27-bracketed-paste.json
       - name: Compare the fourteen recorded RIS cursor replies through the real child
         run: >-
           python src/qt/run_smoke.py build/qt-cpp/qt-query-reply-bin/Release/qt_query_reply_test.exe

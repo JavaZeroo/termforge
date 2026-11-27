@@ -1,6 +1,8 @@
 // Hosted-only system CF_UNICODETEXT verification for the formal Qt copy entry.
 // Locally this executable returns a bounded skip without touching the user CF.
-#include "terminal_widget.hpp"
+#include "tui_test_support.hpp"
+#include <QJsonDocument>
+#include <QJsonObject>
 #include "selection_fixture.hpp"
 #include "paste_fixture.hpp"
 #include <QApplication>
@@ -217,7 +219,58 @@ std::string read_input_file(const QString& path) {
     QFile file(path); require(file.open(QIODevice::ReadOnly), "paste input file unavailable");
     return file.readAll().toStdString();
 }
-void hosted_windows_paste() {
+void check_bracketed_paste(SessionModel& model, TerminalWidget& terminal, HWND hwnd,
+                           const QString& input_path, const QString& reference, QElapsedTimer& lifecycle) {
+    namespace trace = termforge::qt::tui_test;
+    const auto record = QJsonDocument::fromJson(QByteArray::fromStdString(read_input_file(reference))).object();
+    const auto peer = QByteArray::fromHex(record.value("received_hex").toString().toLatin1());
+    const auto phases = peer.split('|');
+    require(phases.size() == 7 && phases.back().isEmpty(), "incomplete original paste reference");
+    auto paste = [&] {
+        terminal.setFocus();
+        QTest::keyClick(&terminal, Qt::Key_V, Qt::ControlModifier | Qt::ShiftModifier);
+    };
+    std::string expected;
+    for (int phase = 0; phase < 6; ++phase) {
+        const bool enabled = phase == 2 || phase == 3;
+        await([&] { return model.bracketed_paste() == enabled; }, model, lifecycle, "child mode transition missing");
+        write_cf(hwnd, phase % 2 == 0 ? u"TF-PASTE" : u"A\r\nB\n中END");
+        if (phase == 3) {
+            click_paste_dialog("Cancel", QMessageBox::RejectRole);
+            paste();
+            await([&] { return terminal.paste_notice() == "Paste cancelled"; }, model, lifecycle, "paste cancel failed");
+            require(read_input_file(input_path) == expected && trace::input_bytes() == expected, "cancel sent bytes");
+        }
+        if (phase % 2) click_paste_dialog("Paste", QMessageBox::AcceptRole);
+        paste();
+        expected += phases[phase].toStdString();
+        await([&] { return terminal.paste_notice() == "Pasted" && read_input_file(input_path) == expected; },
+              model, lifecycle, "clipboard bytes differ from original peer");
+        QTest::keyClicks(&terminal, "|");
+        expected += '|';
+    }
+    await([&] { return model.bracketed_paste() && read_input_file(input_path) == expected; },
+          model, lifecycle, "final delimiter or mode missing");
+    require(trace::input_bytes() == expected, "transport writes differ from original peer");
+    const auto received_hex = QByteArray::fromStdString(read_input_file(input_path)).toHex();
+
+    // Cross two writer chunk boundaries, including a UTF-8 scalar near the first.
+    const std::u16string long_text = std::u16string(1017, u'x') + u"中" + std::u16string(1100, u'y');
+    write_cf(hwnd, long_text);
+    paste();
+    expected += "\x1b[200~" + std::string(1017, 'x') + "中" + std::string(1100, 'y') + "\x1b[201~";
+    await([&] { return terminal.paste_notice() == "Pasted" && read_input_file(input_path) == expected; },
+          model, lifecycle, "multi-chunk paste frame differs");
+    require(trace::input_bytes() == expected, "multi-chunk transport write differs");
+    require(model.send(std::string(1, '\x03')), "paste child quit rejected");
+    await([&] { return model.finished(); }, model, lifecycle, "paste child did not exit");
+    require(model.natural_exit() && model.exit_code() == 37 && model.output_eof() &&
+            model.cleanup_verified() && model.active_processes_after() == 0, "paste child cleanup differs");
+    std::cout << "{\"scenario\":\"bracketed-paste\",\"child_received_hex\":\"" << received_hex.constData()
+              << "\",\"cf_verified\":true,\"transport_matches\":true,\"multichunk_verified\":true}\n";
+}
+
+void hosted_windows_paste(const QString& reference = {}) {
 #ifdef Q_OS_WIN
     QElapsedTimer lifecycle; lifecycle.start();
     QTemporaryDir workspace;
@@ -228,13 +281,19 @@ void hosted_windows_paste() {
     const QString input_path = workspace.path() + "/paste-input.bin";
     SessionModel model; QWidget window; TerminalWidget terminal(model, &window);
     window.resize(1200, 900); window.show(); terminal.setFocus();
-    require(model.start(executable, L"--paste-child \"" + input_path.toStdWString() + L"\"",
-                        workspace.path().toStdWString()), "paste child did not start");
+    const std::wstring child = reference.isEmpty() ? L"--paste-child" : L"--bracketed-paste-child";
+    require(model.start(executable, child + L" \"" + input_path.toStdWString() + L"\"",
+                        workspace.path().toStdWString(), reference.isEmpty() ? nullptr : termforge::qt::tui_test::observe_input),
+            "paste child did not start");
     await([&] { return termforge::project_line(model.screen().visible_lines()[0]).text.find("PASTE_READY") != std::string::npos; },
           model, lifecycle, "paste child prompt missing");
     require(terminal.hasFocus(), "paste terminal lost focus");
     const HWND hwnd = reinterpret_cast<HWND>(terminal.winId());
     require(hwnd != nullptr, "Windows QPA widget has no native HWND");
+    if (!reference.isEmpty()) {
+        check_bracketed_paste(model, terminal, hwnd, input_path, reference, lifecycle);
+        return;
+    }
     auto wait_notice = [&](const QString& text) {
         QElapsedTimer phase; phase.start();
         while (terminal.paste_notice() != text && phase.elapsed() < 5000) QTest::qWait(10);
@@ -343,16 +402,17 @@ int main(int argc, char** argv) {
     if (argc == 2 && std::string_view(argv[1]) == "--selection-child") {
         try { return selection_child(); } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
-    if (argc == 3 && std::string_view(argv[1]) == "--paste-child") {
-        try { return paste_child(QString::fromLocal8Bit(argv[2]).toStdWString()); }
+    if (argc == 3 && (std::string_view(argv[1]) == "--paste-child" || std::string_view(argv[1]) == "--bracketed-paste-child")) {
+        try { return paste_child(QString::fromLocal8Bit(argv[2]).toStdWString(), std::string_view(argv[1]) == "--bracketed-paste-child"); }
         catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 3; }
     }
     const std::string_view mode = argc == 2 ? std::string_view(argv[1]) : std::string_view{};
     const bool injected_owner = mode == "--hosted-copy";
     const bool windows_qpa = mode == "--hosted-windows-copy";
     const bool windows_paste = mode == "--hosted-windows-paste";
-    if (!injected_owner && !windows_qpa && !windows_paste) {
-        std::cerr << "usage: qt_clipboard_system_test --hosted-copy|--hosted-windows-copy|--hosted-windows-paste|--selection-child|--paste-child <file>|--clipboard-holder <ready> <release>\n";
+    const bool bracketed = argc == 3 && std::string_view(argv[1]) == "--hosted-bracketed-paste";
+    if (!injected_owner && !windows_qpa && !windows_paste && !bracketed) {
+        std::cerr << "usage: qt_clipboard_system_test --hosted-copy|--hosted-windows-copy|--hosted-windows-paste|--hosted-bracketed-paste FILE|--selection-child|--paste-child <file>|--clipboard-holder <ready> <release>\n";
         return 2;
     }
     if (!hosted()) {
@@ -369,8 +429,8 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
     QApplication::setQuitOnLastWindowClosed(false);
     try {
-        if (windows_paste) {
-            hosted_windows_paste();
+        if (windows_paste || bracketed) {
+            hosted_windows_paste(bracketed ? QString::fromLocal8Bit(argv[2]) : QString{});
             return 0;
         }
         QElapsedTimer lifecycle; lifecycle.start();

@@ -66,10 +66,22 @@ static void device_attributes_claim_only_vt102() {
     check(replies.size() == 1 && replies[0] == "\x1b[?6c", "device attributes reply changed");
 }
 
+static void bracketed_paste_mode() {
+    for (const auto mode : {ParseMode::strict, ParseMode::recovery}) {
+        Parser p(5, 20, 10, mode);
+        p.feed("\x1b[?2004");
+        check(!p.bracketed_paste(), "default or incomplete bracketed paste mode differs");
+        p.feed("h\x1b[?2004h");
+        check(p.bracketed_paste(), "enable bracketed paste failed");
+        p.feed("\x1b[?2004l");
+        check(!p.bracketed_paste(), "disable bracketed paste failed");
+        p.feed("\x1b[?2004h\x1b" "c");
+        check(!p.bracketed_paste() && p.take_replies().empty(), "RIS did not reset bracketed paste");
+    }
+}
+
 static void unsupported_sequences_still_fail_loudly() {
-    // Bracketed paste is not implemented, so enabling it must not be accepted
-    // silently as if the terminal supported it.
-    check_rejected("\x1b[?2004h", "bracketed paste must remain unsupported");
+    check_rejected("\x1b[?2004;1h", "combined private modes must remain unsupported");
     check_rejected("\x1b[?1000h", "mouse reporting must remain unsupported");
     // CSI t beyond the iconify/move commands are queries; an unanswered query
     // must stay a loud failure so it cannot look like a satisfied request.
@@ -224,6 +236,7 @@ int main() {
         focus_and_win32_input_mode_are_accepted_without_effect();
         window_commands_are_ignored_but_queries_are_not();
         device_attributes_claim_only_vt102();
+        bracketed_paste_mode();
         unsupported_sequences_still_fail_loudly();
         const auto interrupted_cases = interrupted_private_modes_across_chunks();
         const auto find_cases = alternate_find_epoch_across_chunks();
