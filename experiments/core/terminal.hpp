@@ -102,9 +102,11 @@ class Parser {
         case '@': screen.insert_characters(n); break;
         case 'P': screen.delete_characters(n); break;
         case 'n':
-            // Device status report 6 reports the 1-based cursor position, which
-            // origin mode makes relative to the scroll-region top. Other reports
-            // are not implemented and stay unsupported rather than faked.
+            if (params.size() == 1 && params[0] == 5) {
+                pending_replies.emplace_back("\x1b[0n");
+                return;
+            }
+            // Origin mode makes the 1-based cursor row relative to the scroll region.
             if (params.size() == 1 && params[0] == 6) {
                 const int report_row =
                     screen.origin_mode() ? screen.row - screen.region_top() + 1 : screen.row + 1;

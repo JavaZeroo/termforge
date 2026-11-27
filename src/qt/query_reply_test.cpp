@@ -688,6 +688,35 @@ int compare_cursor_trace(const std::filesystem::path& exe, const std::filesystem
     return differences ? 1 : 0;
 }
 
+int compare_device_status(const std::filesystem::path& exe, const std::filesystem::path& directory,
+                          const std::filesystem::path& reference) {
+    const auto record = QJsonDocument::fromJson(QByteArray::fromStdString(read_binary(reference))).object();
+    const auto phase = record.value("queries").toObject().value("DSR5").toObject();
+    const std::string source = "\x1b[5;9H\x1b[5n";
+    const auto request = source + "\x1b[6n";
+    require(phase.value("sent_hex").toString().toStdString() == hex(request), "wrong device-status reference");
+    // The existing child appends DSR 6n to each source as an end marker.
+    write_binary(directory / "sources.hex", hex(source) + "\n");
+    SessionModel model;
+    model.enable_transport_capture();
+    require(model.resize(91,25) && model.start(exe.wstring(), L"--cursor-child", directory.wstring()),
+            "device-status child did not start");
+    QElapsedTimer timer;
+    timer.start();
+    while (!model.finished() && timer.elapsed() < static_cast<qint64>(product_finish_timeout_ms)) QTest::qWait(5);
+    require(model.finished() && model.error().isEmpty() && model.natural_exit() && model.exit_code() == 0 &&
+            model.output_eof() && model.cleanup_verified() && model.active_processes_after() == 0,
+            "device-status child lifecycle failed");
+    const auto actual = read_binary(directory / "replies.hex");
+    require(model.transport_capture().find(request) != std::string::npos, "device-status query missing from transport");
+    require(actual == hex("\x1b[0n\x1b[5;9R") + "\n" &&
+            actual == phase.value("received_hex").toString().toStdString() + "\n",
+            "device-status reply or following cursor position differs");
+    std::cout << "{\"scenario\":\"device-status\",\"received_hex\":\"" << actual.substr(0, actual.size()-1)
+              << "\",\"cleanup_verified\":true}\n";
+    return 0;
+}
+
 void emit_raw(const char* name, const RawStage& stage) {
     std::cerr << "{\"schema\":\"termforge-qt-query-reply-raw-v1\",\"stage\":\"" << name
               << "\",\"backend\":\"" << stage.backend << "\",\"creation_flags\":" << stage.creation_flags
@@ -715,8 +744,9 @@ int main(int argc, char** argv) {
     const bool margin = argc == 3 && std::string_view(argv[1]) == "--duplicate-margin-reference";
     const bool saved = argc == 3 && std::string_view(argv[1]) == "--saved-cursor-reference";
     const bool content = argc == 3 && std::string_view(argv[1]) == "--ris-content-reference";
-    if (argc != 1 && !ris && !margin && !saved && !content && !style_grid) {
-        std::cerr << "usage: qt_query_reply_test [--ris-reference FILE|--duplicate-margin-reference FILE|--saved-cursor-reference FILE|--ris-content-reference FILE|--grid-style-reference FILE]\n";
+    const bool status = argc == 3 && std::string_view(argv[1]) == "--device-status-reference";
+    if (argc != 1 && !status && !ris && !margin && !saved && !content && !style_grid) {
+        std::cerr << "usage: qt_query_reply_test [--device-status-reference FILE|--ris-reference FILE|--duplicate-margin-reference FILE|--saved-cursor-reference FILE|--ris-content-reference FILE|--grid-style-reference FILE]\n";
         return 2;
     }
     char gate[3]{};
@@ -737,6 +767,7 @@ int main(int argc, char** argv) {
         const std::filesystem::path exe(executable);
         const std::filesystem::path directory(workspace.path().toStdWString());
 
+        if (status) return compare_device_status(exe, directory, argv[2]);
         if (ris || margin || saved || content || style_grid) return compare_cursor_trace(exe, directory, argv[2], argv[1]);
 
         const auto silent = run_raw(exe, directory, directory / "raw-silent.bin", std::nullopt);

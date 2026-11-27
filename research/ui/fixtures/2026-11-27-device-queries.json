@@ -1,0 +1,35 @@
+{
+  "application": "WindTerm 2.7.0 Windows x64",
+  "exe_sha256": "7b10531dccc7cd614ae559f36f1ef518e0c96335637431b4646354823b2804d0",
+  "distribution_files_sha256": "e459adf2f12adb6a1b7f55e66a9da1c22794185e66e848057d21e0c60d669203",
+  "transport": "loopback Telnet",
+  "columns": 91,
+  "rows": 25,
+  "queries": {
+    "DA1": {
+      "sent_hex": "1b5b333b37481b5b631b5b366e",
+      "received_hex": "1b5b3f36353b313b323b363b393b31353b31363b31383b32313b32323b32383b3239631b5b333b3752",
+      "control_hex": "1b5b333b3752"
+    },
+    "DA2": {
+      "sent_hex": "1b5b343b38481b5b3e631b5b366e",
+      "received_hex": "1b5b3e36353b3333303b30631b5b343b3852",
+      "control_hex": "1b5b343b3852"
+    },
+    "DSR5": {
+      "sent_hex": "1b5b353b39481b5b356e1b5b366e",
+      "received_hex": "1b5b306e1b5b353b3952",
+      "control_hex": "1b5b353b3952"
+    },
+    "OSC10-ST": {
+      "sent_hex": "1b5b363b3130481b5d31303b3f1b5c1b5b366e",
+      "received_hex": "1b5d31303b7267623a66382f66382f66321b5c1b5b363b313052",
+      "control_hex": "1b5b363b313052"
+    },
+    "OSC11-ST": {
+      "sent_hex": "1b5b373b3131481b5d31313b3f1b5c1b5b366e",
+      "received_hex": "1b5d31313b7267623a31632f31632f31631b5c1b5b373b313152",
+      "control_hex": "1b5b373b313152"
+    }
+  }
+}

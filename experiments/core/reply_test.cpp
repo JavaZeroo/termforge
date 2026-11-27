@@ -24,8 +24,17 @@ int main() {
     const auto moved = parser.take_replies();
     require(moved.size() == 1 && moved[0] == "\x1b[2;7R", "moved cursor report mismatch");
     // An unimplemented report must stay unimplemented instead of being faked.
-    parser.feed("\x1b[5n");
+    parser.feed("\x1b[7n");
     require(parser.take_replies().empty(), "unsupported report produced a reply");
+    for (const auto mode : {ParseMode::strict, ParseMode::recovery}) {
+        Parser status(10, 20, 0, mode);
+        status.feed("\x1b[5;9H\x1b[5");
+        require(status.take_replies().empty(), "incomplete status query produced a reply");
+        status.feed("n\x1b[6n");
+        const auto pair = status.take_replies();
+        require(pair.size() == 2 && pair[0] == "\x1b[0n" && pair[1] == "\x1b[5;9R",
+                "device status or following cursor report differs");
+    }
     // DA1 answers only on the strict path. The product recovery path must stay
     // silent because the fixed ConPTY emits DA1 in its startup packet and a
     // reply sent back through the bounded input path at startup races with the
